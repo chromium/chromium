@@ -155,6 +155,11 @@ bool ShouldShowAnimatedIdentityOnOpeningWindow(Profile& profile);
 base::AutoReset<std::optional<base::TimeDelta>>
 CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting();
 
+// Creates a scoped override that makes the delay for cross window animation
+// replay infinite.
+base::AutoReset<std::optional<base::TimeDelta>>
+CreateInfiniteOverrideDelayForCrossWindowAnimationReplayForTesting();
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 base::AutoReset<SigninUiDelegate*> SetSigninUiDelegateForTesting(
     SigninUiDelegate* delegate);

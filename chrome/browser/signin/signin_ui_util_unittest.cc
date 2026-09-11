@@ -50,6 +50,53 @@ TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
   EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile));
 }
 
+TEST(ShouldShowAnimatedIdentityOnOpeningWindow,
+     ReturnsTrueWithInfiniteOverride) {
+  content::BrowserTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+  std::string name("testing_profile");
+  TestingProfile* profile = profile_manager.CreateTestingProfile(
+      name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
+      base::UTF8ToUTF16(name), 0,
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactories());
+
+  EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile));
+
+  // Animation is shown once.
+  RecordAnimatedIdentityTriggered(profile);
+
+  {
+    // Set infinite override delay for cross window replay.
+    base::AutoReset<std::optional<base::TimeDelta>> delay_override =
+        CreateInfiniteOverrideDelayForCrossWindowAnimationReplayForTesting();
+
+    // Wait well past the default 5 seconds.
+    task_environment.FastForwardBy(base::Seconds(60));
+
+    // Animation is still shown again in a new window due to the infinite
+    // override.
+    EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile));
+
+    // Overriding the value a second time (e.g. with zero) prevents the value
+    // from remaining true.
+    {
+      base::AutoReset<std::optional<base::TimeDelta>> zero_override =
+          CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting();
+      EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile));
+    }
+
+    // Restored back to infinite override.
+    EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile));
+  }
+
+  // Once the infinite override scope ends, the default delay is restored and
+  // has already elapsed, preventing the value from remaining true.
+  EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile));
+}
+
 std::unique_ptr<KeyedService> BuildTestAccountPreviewDataService(
     content::BrowserContext* context) {
   return std::make_unique<signin::TestAccountPreviewDataService>();

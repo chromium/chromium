@@ -364,6 +364,18 @@ class AvatarToolbarButtonInterfaceBaseBrowserTest {
             CreateScopedInfiniteDelayOverrideForTesting(delay_type));
   }
 
+  void SetInfiniteDelayForCrossWindowAnimationReplay() {
+    delay_resets_.push_back(
+        signin_ui_util::
+            CreateInfiniteOverrideDelayForCrossWindowAnimationReplayForTesting());
+  }
+
+  void SetZeroDelayForCrossWindowAnimationReplay() {
+    delay_resets_.push_back(
+        signin_ui_util::
+            CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting());
+  }
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Special override for the `AvatarDelayType::kSigninPendingText` delay to set
   // it to 0 given that the start time is stored as a ProfileUserData, which can
@@ -561,9 +573,7 @@ class AvatarToolbarButtonInterfaceBaseBrowserTest {
     }
     // Make sure the cross window animation replay is not triggered. This is
     // needed to clear the animation in all windows.
-    delay_resets_.push_back(
-        signin_ui_util::
-            CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting());
+    SetZeroDelayForCrossWindowAnimationReplay();
 
     // Clears the sync optin promo if it is enabled. This is a no-op if the
     // promo is disabled. When `syncer::kReplaceSyncPromosWithSignInPromos` is
@@ -662,9 +672,7 @@ class AvatarToolbarButtonInterfaceBaseBrowserTest {
               .WaitForText(std::u16string()));
     // Make sure the cross window animation replay is not triggered. This is
     // needed to clear the animation in all windows.
-    delay_resets_.push_back(
-        signin_ui_util::
-            CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting());
+    SetZeroDelayForCrossWindowAnimationReplay();
     return account_info;
   }
 
@@ -1242,6 +1250,10 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
     OpenNewBrowserWhileNameIsShown) {
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // Ensure the cross-window animation replay delay does not expire if the test
+  // execution or setup takes longer than the default 5 seconds.
+  SetInfiniteDelayForCrossWindowAnimationReplay();
 
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
   EXPECT_EQ(avatar_accessor.GetText(),

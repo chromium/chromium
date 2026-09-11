@@ -513,6 +513,13 @@ CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting() {
       base::TimeDelta());
 }
 
+base::AutoReset<std::optional<base::TimeDelta>>
+CreateInfiniteOverrideDelayForCrossWindowAnimationReplayForTesting() {
+  return base::AutoReset<std::optional<base::TimeDelta>>(
+      &g_delay_for_cross_window_animation_replay_for_testing,
+      base::TimeDelta::Max());
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 base::AutoReset<SigninUiDelegate*> SetSigninUiDelegateForTesting(  // IN-TEST
     SigninUiDelegate* delegate) {
