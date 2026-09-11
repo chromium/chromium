@@ -14833,6 +14833,28 @@
             ]
         }
     ],
+    "PDFViewerV2Android": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "form_factors": [
+                "phone",
+                "tablet"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InlinePdfV2",
+                        "InlinePdfV2Incognito",
+                        "PdfLauncherActivity",
+                        "PdfReuseFragment"
+                    ]
+                }
+            ]
+        }
+    ],
     "PMLoadingPageVoter": [
         {
             "platforms": [
@@ -15702,21 +15724,6 @@
                     },
                     "enable_features": [
                         "PdfInk2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PdfReuseFragment": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PdfReuseFragment"
                     ]
                 }
             ]
