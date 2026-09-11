@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,9 +77,16 @@ public class SettingsHostFragmentTest {
 
     /** Subclass SettingsHostFragment to mock initial fragment instantiation. */
     public static class TestSettingsHostFragment extends SettingsHostFragment {
+        private @Nullable Intent mCapturedIntent;
+
         @Override
         protected Fragment createInitialFragment(@Nullable Intent intent) {
+            mCapturedIntent = intent;
             return new FirstFakeSettingsFragment();
+        }
+
+        public @Nullable Intent getCapturedIntent() {
+            return mCapturedIntent;
         }
     }
 
@@ -201,6 +209,38 @@ public class SettingsHostFragmentTest {
         assertTrue(
                 "Initial fragment should be MultiColumnSettings",
                 initial instanceof MultiColumnSettings);
+    }
+
+    @Test
+    public void testOnViewCreated_usesLastIntentIfPresent() {
+        Intent lastIntent = new Intent();
+        lastIntent.putExtra("test_extra", "value");
+        SettingsIntentUtil.setLastIntentForTesting(lastIntent);
+
+        var fragment = new TestSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(android.R.id.content, fragment, SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        assertSame(lastIntent, fragment.getCapturedIntent());
+        // The intent is consumed, so a settings tab opened later won't reuse it.
+        assertNull(SettingsIntentUtil.takeLastIntent());
+    }
+
+    @Test
+    public void testOnViewCreated_noLastIntent_fallsBackToActivityIntent() {
+        SettingsIntentUtil.setLastIntentForTesting(null);
+
+        var fragment = new TestSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(android.R.id.content, fragment, SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        assertSame(mActivity.getIntent(), fragment.getCapturedIntent());
     }
 
     @Test

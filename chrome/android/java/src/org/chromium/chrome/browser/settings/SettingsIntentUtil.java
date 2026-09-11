@@ -13,6 +13,7 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -24,6 +25,12 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 public class SettingsIntentUtil {
     private static final String TAG = "SettingsIntentUtil";
 
+    // The last intent used to launch settings. Temporary workaround for navigating to settings
+    // sub-pages like Downloads under SettingsInTab. This will be replaced once SettingsInTabUrlNav
+    // launches. See
+    // https://crbug.com/559534170.
+    private static @Nullable Intent sLastIntent;
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
 
@@ -33,6 +40,22 @@ public class SettingsIntentUtil {
     public static final String EXTRA_FRAGMENT_TAG = "fragment_tag";
 
     private SettingsIntentUtil() {}
+
+    /**
+     * Returns the last intent used to launch settings, or null if there isn't one. The saved intent
+     * is cleared, so it is not reused by settings tabs opened later in the session.
+     */
+    public static @Nullable Intent takeLastIntent() {
+        Intent intent = sLastIntent;
+        sLastIntent = null;
+        return intent;
+    }
+
+    /** Sets the last intent used to launch settings for testing. */
+    public static void setLastIntentForTesting(@Nullable Intent intent) {
+        sLastIntent = intent;
+        ResettersForTesting.register(() -> sLastIntent = null);
+    }
 
     /**
      * Creates an {@link Intent} that launches the settings activity.
@@ -128,6 +151,9 @@ public class SettingsIntentUtil {
         if (addToBackStack) {
             intent.putExtra(EXTRA_ADD_TO_BACK_STACK, addToBackStack);
             if (tag != null) intent.putExtra(EXTRA_FRAGMENT_TAG, tag);
+        }
+        if (useSettingsInTab && !isStandaloneFragment) {
+            sLastIntent = intent;
         }
         return intent;
     }

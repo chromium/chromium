@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -13,6 +14,7 @@ import android.content.Intent;
 
 import androidx.fragment.app.Fragment;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -27,6 +29,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
 import org.chromium.chrome.browser.autofill.settings.NonCardPaymentMethodsManagementFragment;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -76,6 +79,13 @@ public class SettingsNavigationImplTest {
     public SettingsNavigationImplTest() {
         mContext = Robolectric.buildActivity(Activity.class).get();
         mSettingsNavigationImpl = new SettingsNavigationImpl();
+    }
+
+    @Before
+    public void setUp() {
+        // Several tests call createIntent(), which mutates the static last-intent in
+        // SettingsIntentUtil. This registers a resetter that clears it after each test.
+        SettingsIntentUtil.setLastIntentForTesting(null);
     }
 
     @Test
@@ -235,5 +245,22 @@ public class SettingsNavigationImplTest {
 
         // Should return to initial fragment without casting activity to SettingsActivity.
         assertTrue(hostFragment.getActiveFragment() instanceof FirstFakeSettingsFragment);
+    }
+
+    /** Regression test for https://crbug.com/559534170. */
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "sw600dp")
+    public void testStartSettings_SettingsInTab_downloads_savesLastIntent() {
+        var scenario = Robolectric.buildActivity(TestActivity.class).setup();
+        TestActivity activity = scenario.get();
+
+        mSettingsNavigationImpl.startSettings(activity, DownloadSettings.class);
+
+        Intent lastIntent = SettingsIntentUtil.takeLastIntent();
+        assertNotNull(lastIntent);
+        assertEquals(
+                DownloadSettings.class.getName(),
+                lastIntent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT));
     }
 }

@@ -294,7 +294,15 @@ public class SettingsHostFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null) {
-            Fragment initialFragment = createInitialFragment(requireActivity().getIntent());
+            // When settings is opened in a tab, the host activity (e.g. ChromeTabbedActivity)
+            // does not carry the original launch intent containing extras like EXTRA_SHOW_FRAGMENT.
+            // Prefer the last saved settings intent, falling back to the activity's intent. The
+            // saved intent is consumed so it does not affect settings tabs opened later.
+            Intent intent = SettingsIntentUtil.takeLastIntent();
+            if (intent == null) {
+                intent = requireActivity().getIntent();
+            }
+            Fragment initialFragment = createInitialFragment(intent);
             getChildFragmentManager()
                     .beginTransaction()
                     .add(CONTAINER_ID, initialFragment)
