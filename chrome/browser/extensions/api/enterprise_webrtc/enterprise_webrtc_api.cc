@@ -18,6 +18,8 @@ namespace extensions {
 
 namespace {
 
+constexpr char kNotCapturingError[] =
+    "No capture session is active for this extension.";
 constexpr char kAlreadyCapturingError[] =
     "A capture session is already active for this extension.";
 constexpr char kInvalidOriginError[] =
@@ -63,6 +65,19 @@ ExtensionFunction::ResponseAction EnterpriseWebrtcStartCaptureFunction::Run() {
     case content::WebRtcDiagnostics::StartCaptureResult::kUnavailable:
       // The profile is shutting down, so it cannot host a capture session.
       return RespondNow(Error(kFeatureUnavailableError));
+  }
+  NOTREACHED();
+}
+
+ExtensionFunction::ResponseAction EnterpriseWebrtcStopCaptureFunction::Run() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  switch (content::WebRtcDiagnostics::GetInstance()->StopCaptureForClient(
+      browser_context(), extension_id())) {
+    case content::WebRtcDiagnostics::StopCaptureResult::kSuccess:
+      return RespondNow(NoArguments());
+    case content::WebRtcDiagnostics::StopCaptureResult::kNotCapturing:
+      return RespondNow(Error(kNotCapturingError));
   }
   NOTREACHED();
 }

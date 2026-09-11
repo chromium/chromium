@@ -16,6 +16,14 @@ dictionary CaptureFilter {
   sequence<DOMString> origins;
 };
 
+callback OnCaptureStoppedListener = undefined ();
+
+interface OnCaptureStoppedEvent : ExtensionEvent {
+  static undefined addListener(OnCaptureStoppedListener listener);
+  static undefined removeListener(OnCaptureStoppedListener listener);
+  static boolean hasListener(OnCaptureStoppedListener listener);
+};
+
 // Programmatic access to WebRTC diagnostic information equivalent to
 // chrome://webrtc-internals. Extensions using this API in incognito mode MUST
 // declare "incognito": "split" in their manifest. Spanning-mode extensions
@@ -30,11 +38,18 @@ interface Webrtc {
   // |Returns|: Rejects if the session cannot be started, for example if
   // one is already active or the filter is invalid.
   static Promise<undefined> startCapture(optional CaptureFilter filter);
+  // Stops the active capture session for this extension in this profile.
+  // |Returns|: Rejects if there is no session to stop.
+  static Promise<undefined> stopCapture();
 
   // Returns the current capture status for this extension in this
   // profile.
   // |PromiseValue|: result
   static Promise<StatusResult> getCaptureStatus();
+
+  // Fired when this extension's active capture session in this profile
+  // stops.
+  static attribute OnCaptureStoppedEvent onCaptureStopped;
 };
 
 partial interface Enterprise {

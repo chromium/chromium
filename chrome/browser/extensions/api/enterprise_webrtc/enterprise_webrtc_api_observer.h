@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_WEBRTC_ENTERPRISE_WEBRTC_API_OBSERVER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_WEBRTC_ENTERPRISE_WEBRTC_API_OBSERVER_H_
 
+#include <string>
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/webrtc_diagnostics.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -19,8 +23,10 @@ class BrowserContext;
 
 namespace extensions {
 
-class EnterpriseWebrtcApiObserver : public BrowserContextKeyedAPI,
-                                    public ExtensionRegistryObserver {
+class EnterpriseWebrtcApiObserver
+    : public BrowserContextKeyedAPI,
+      public ExtensionRegistryObserver,
+      public content::WebRtcDiagnostics::Observer {
  public:
   explicit EnterpriseWebrtcApiObserver(content::BrowserContext* context);
   ~EnterpriseWebrtcApiObserver() override;
@@ -34,9 +40,14 @@ class EnterpriseWebrtcApiObserver : public BrowserContextKeyedAPI,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
+  // content::WebRtcDiagnostics::Observer implementation.
+  void OnCaptureStopped(std::string_view stopped_client_id) override;
+
   static EnterpriseWebrtcApiObserver* Get(content::BrowserContext* context);
 
  private:
+  void DispatchCaptureStopped(const std::string& extension_id);
+
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<EnterpriseWebrtcApiObserver>*
   GetFactoryInstance();

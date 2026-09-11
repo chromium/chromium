@@ -20,6 +20,16 @@ class EnterpriseWebrtcStartCaptureFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class EnterpriseWebrtcStopCaptureFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("enterprise.webrtc.stopCapture",
+                             ENTERPRISE_WEBRTC_STOPCAPTURE)
+
+ protected:
+  ~EnterpriseWebrtcStopCaptureFunction() override = default;
+  ResponseAction Run() override;
+};
+
 class EnterpriseWebrtcGetCaptureStatusFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("enterprise.webrtc.getCaptureStatus",

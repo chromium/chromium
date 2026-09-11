@@ -808,6 +808,7 @@ Called by update_extension_histograms.py.-->
   <int value="577" label="DICTATION_PRIVATE_ON_CONTEXT_UPDATE"/>
   <int value="578" label="DICTATION_PRIVATE_ON_BROWSER_LOG_EVENT"/>
   <int value="579" label="RUNTIME_ON_ENABLED"/>
+  <int value="580" label="ENTERPRISE_WEBRTC_ON_CAPTURE_STOPPED"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_event_histogram_value.h:HistogramValue) -->
@@ -2919,6 +2920,7 @@ Called by update_extension_histograms.py.-->
   <int value="1985" label="TABS_UNSPLIT"/>
   <int value="1986" label="ENTERPRISE_WEBRTC_STARTCAPTURE"/>
   <int value="1987" label="ENTERPRISE_WEBRTC_GETCAPTURESTATUS"/>
+  <int value="1988" label="ENTERPRISE_WEBRTC_STOPCAPTURE"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

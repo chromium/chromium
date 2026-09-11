@@ -6,9 +6,8 @@
 // apitest, which keeps only the ones needing two profiles or a non-policy
 // install.
 //
-// These share one worker and there is no stopCapture yet, so the order
-// matters: everything that must run without a session comes before the test
-// that starts one.
+// Each test owns its capture session: it starts what it needs and stops it
+// before returning, so tests do not depend on run order.
 
 const TOO_MANY_ORIGINS = new Array(129).fill('https://example.com');
 
@@ -33,6 +32,13 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function stopCaptureRejectsWithNoSession() {
+    await chrome.test.assertPromiseRejects(
+        chrome.enterprise.webrtc.stopCapture(),
+        'Error: No capture session is active for this extension.');
+    chrome.test.succeed();
+  },
+
   async function startCaptureThenStatusIsActive() {
     await chrome.enterprise.webrtc.startCapture();
 
@@ -41,11 +47,14 @@ chrome.test.runTests([
         'boolean', typeof result.active, 'status has no active flag');
     chrome.test.assertTrue(result.active, 'status not active');
 
+    await chrome.enterprise.webrtc.stopCapture();
+
     chrome.test.succeed();
   },
 
-  // Runs last: it relies on the session started above.
   async function secondStartRejectsAsAlreadyCapturing() {
+    await chrome.enterprise.webrtc.startCapture();
+
     await chrome.test.assertPromiseRejects(
         chrome.enterprise.webrtc.startCapture(),
         'Error: A capture session is already active for this extension.');
@@ -54,6 +63,38 @@ chrome.test.runTests([
     const result = await chrome.enterprise.webrtc.getCaptureStatus();
     chrome.test.assertTrue(result.active, 'existing session was lost');
 
+    await chrome.enterprise.webrtc.stopCapture();
+
+    chrome.test.succeed();
+  },
+
+  async function stopCaptureFiresEvent() {
+    await chrome.enterprise.webrtc.startCapture();
+
+    // stopCapture() resolving only means the function replied; the event is
+    // delivered separately, so wait for it rather than assuming it arrived.
+    const stopped =
+        chrome.test.listenOnce(chrome.enterprise.webrtc.onCaptureStopped);
+
+    await chrome.enterprise.webrtc.stopCapture();
+
+    const result = await chrome.enterprise.webrtc.getCaptureStatus();
+    chrome.test.assertFalse(result.active, 'status still active');
+
+    await stopped;
+
+    chrome.test.succeed();
+  },
+
+  async function secondStopRejectsAsNotCapturing() {
+    await chrome.enterprise.webrtc.startCapture();
+    await chrome.enterprise.webrtc.stopCapture();
+
+    // Stopping an already-stopped session must fail the same way as
+    // stopping with no session at all.
+    await chrome.test.assertPromiseRejects(
+        chrome.enterprise.webrtc.stopCapture(),
+        'Error: No capture session is active for this extension.');
     chrome.test.succeed();
   },
 ]);
