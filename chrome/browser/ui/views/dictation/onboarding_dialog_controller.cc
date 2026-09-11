@@ -52,6 +52,12 @@ inline constexpr char kOnboardingDialogName[] = "DictationOnboardingDialog";
 // TODO(crbug.com/530962875): Update typography font styles once PM & UX
 // reach alignment.
 std::unique_ptr<views::View> CreateOnboardingCardView() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const gfx::VectorIcon& mic_bullet_icon = vector_icons::kMicDetectAutoIcon;
+#else
+  const gfx::VectorIcon& mic_bullet_icon = vector_icons::kMicIcon;
+#endif
+
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetBetweenChildSpacing(1)
@@ -100,7 +106,7 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
               .AddChildren(
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
-                          vector_icons::kMicIcon, ui::kColorSysPrimary, 20))
+                          mic_bullet_icon, ui::kColorSysPrimary, 20))
                       .SetProperty(views::kMarginsKey,
                                    gfx::Insets::TLBR(2, 0, 0, 0)),
                   views::Builder<views::Label>()

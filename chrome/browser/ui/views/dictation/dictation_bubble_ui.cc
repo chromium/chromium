@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -94,10 +95,16 @@ void DictationToastView::Init() {
   // TODO(b/510738735): Finalize placeholder strings.
   // TODO(b/512495405): Wrap the visual aspects of the view into a model so this
   // setup is common across elements..
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const gfx::VectorIcon& mic_icon_source = vector_icons::kMicDetectAutoIcon;
+#else
+  const gfx::VectorIcon& mic_icon_source = vector_icons::kMicIcon;
+#endif
+
   views::ImageView* mic_icon =
       AddChildView(std::make_unique<views::ImageView>());
   mic_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kMicIcon, ui::kColorSysOnSurface,
+      mic_icon_source, ui::kColorSysOnSurface,
       lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE)));
 
   WaveformView* waveform_view =
