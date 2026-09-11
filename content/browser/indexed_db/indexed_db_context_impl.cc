@@ -318,12 +318,14 @@ IndexedDBContextImpl::IndexedDBContextImpl(
         blob_storage_context,
     mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
         file_system_access_context,
-    scoped_refptr<base::SequencedTaskRunner> custom_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> custom_task_runner,
+    DisallowInactiveClientCallback client_state_checker)
     : idb_task_runner_(custom_task_runner),
       base_data_path_(base_data_path),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       quota_client_receiver_(&quota_client_wrapper_),
-      force_single_thread_(!!custom_task_runner) {
+      force_single_thread_(!!custom_task_runner),
+      client_state_checker_(std::move(client_state_checker)) {
   TRACE_EVENT0("IndexedDB", "init");
 
   if (!idb_task_runner_) {
@@ -394,21 +396,18 @@ void IndexedDBContextImpl::BindControl(
 void IndexedDBContextImpl::BindIndexedDB(
     const BucketLocator& bucket_locator,
     const storage::BucketClientInfo& client_info,
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   // Fast path when the `BucketContext` already exists.
   auto iter = bucket_contexts_.find(bucket_locator);
   if (iter != bucket_contexts_.end()) {
     iter->second.AsyncCall(&BucketContext::AddReceiver)
-        .WithArgs(client_info, std::move(client_state_checker_remote),
-                  std::move(receiver));
+        .WithArgs(client_info, std::move(receiver));
     return;
   }
 
-  auto on_got_bucket = base::BindOnce(
-      &IndexedDBContextImpl::BindIndexedDBImpl, weak_factory_.GetWeakPtr(),
-      client_info, std::move(client_state_checker_remote), std::move(receiver));
+  auto on_got_bucket = base::BindOnce(&IndexedDBContextImpl::BindIndexedDBImpl,
+                                      weak_factory_.GetWeakPtr(), client_info,
+                                      std::move(receiver));
 
   // Need to create the `BucketContext`: first get the full `BucketInfo`.
   if (bucket_locator.is_default) {
@@ -426,8 +425,6 @@ void IndexedDBContextImpl::BindIndexedDB(
 
 void IndexedDBContextImpl::BindIndexedDBImpl(
     const storage::BucketClientInfo& client_info,
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
   std::optional<storage::BucketInfo> bucket;
@@ -439,8 +436,7 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
     auto iter = bucket_contexts_.find(bucket->ToBucketLocator());
     CHECK(iter != bucket_contexts_.end());
     iter->second.AsyncCall(&BucketContext::AddReceiver)
-        .WithArgs(client_info, std::move(client_state_checker_remote),
-                  std::move(pending_receiver));
+        .WithArgs(client_info, std::move(pending_receiver));
   } else {
     mojo::MakeSelfOwnedReceiver(std::make_unique<MissingBucketErrorEndpoint>(),
                                 std::move(pending_receiver));
@@ -1200,6 +1196,7 @@ void IndexedDBContextImpl::EnsureBucketContext(
       idb_task_runner_,
       base::BindRepeating(&IndexedDBContextImpl::OnFilesWritten,
                           weak_factory_.GetWeakPtr(), bucket_locator));
+  bucket_delegate.client_state_checker = client_state_checker_;
 
   mojo::PendingRemote<storage::mojom::BlobStorageContext>
       cloned_blob_storage_context;

@@ -15,10 +15,10 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/indexed_db/indexed_db_client_state_checker.h"
 #include "content/browser/indexed_db/instance/database.h"
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "content/common/content_export.h"
@@ -61,9 +61,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
              base::RepeatingClosure on_version_change_ignored,
              base::OnceCallback<void(Connection&)> on_close,
              std::unique_ptr<DatabaseCallbacks> callbacks,
-             mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
-                 client_state_checker,
-             base::UnguessableToken client_token,
+             const storage::BucketClientInfo& client_info,
              int scheduling_priority);
 
   Connection(const Connection&) = delete;
@@ -100,9 +98,8 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   // if so. This is called when the client is not supposed to be inactive,
   // otherwise it may affect the IndexedDB service (e.g. blocking others from
   // acquiring the locks).
-  void DisallowInactiveClient(
-      storage::mojom::DisallowInactiveClientReason reason,
-      base::OnceCallback<void(bool)> callback);
+  void DisallowInactiveClient(DisallowInactiveClientReason reason,
+                              base::OnceCallback<void(bool)> callback);
 
   // We ignore calls where the id doesn't exist to facilitate the AbortAll call.
   // TODO(dmurph): Change that so this doesn't need to ignore unknown ids.
@@ -230,23 +227,19 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   // May be nullptr in unit tests.
   std::unique_ptr<DatabaseCallbacks> callbacks_;
 
-  mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
-      client_state_checker_;
+  const storage::BucketClientInfo client_info_;
 
   // TODO(381086791): Remove the per-reason split when the regression is fixed.
   static constexpr size_t kNumKeepActiveReasons =
-      static_cast<size_t>(
-          storage::mojom::DisallowInactiveClientReason::kMaxValue) +
-      1;
-  std::array<mojo::Remote<storage::mojom::IndexedDBClientKeepActive>,
-             kNumKeepActiveReasons>
-      client_keep_active_remotes_;
+      static_cast<size_t>(DisallowInactiveClientReason::kMaxValue) + 1;
+  std::array<ScopedKeepActive, kNumKeepActiveReasons>
+      client_keep_active_handles_;
 
   // Uniquely identifies the document or worker that owns the other side of this
-  // connection, i.e. the "client" of `client_state_checker_`. Since multiple
-  // transactions/connections associated with a single client should never cause
-  // that client to be ineligible for BFCache, this token is used to avoid
-  // unnecessary calls to `DisallowInactiveClient()`.
+  // connection. Since multiple transactions/connections associated with a
+  // single client should never cause that client to be ineligible for BFCache,
+  // this token is used to avoid unnecessary calls to
+  // `DisallowInactiveClient()`.
   base::UnguessableToken client_token_;
 
   // The priority for transactions made on this connection. This corresponds to

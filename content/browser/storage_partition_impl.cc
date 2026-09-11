@@ -89,6 +89,7 @@
 #include "content/browser/push_messaging/push_messaging_context.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/indexed_db_client_state_checker_factory.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -1470,7 +1471,8 @@ void StoragePartitionImpl::Initialize(
           path, browser_context_->GetSpecialStoragePolicy(),
           quota_manager_proxy,
           ChromeBlobStorageContext::GetRemoteFor(browser_context_),
-          std::move(file_system_access_context), GetIOThreadTaskRunner({}));
+          std::move(file_system_access_context), GetIOThreadTaskRunner({}),
+          IndexedDBClientStateCheckerFactory::GetClientStateCheckerCallback());
 
   cache_storage_control_wrapper_ = std::make_unique<CacheStorageControlWrapper>(
       GetIOThreadTaskRunner({}), path,
@@ -3381,12 +3383,9 @@ StoragePartitionImpl::GetStorageService() {
 void StoragePartitionImpl::BindIndexedDB(
     const storage::BucketLocator& bucket_locator,
     const storage::BucketClientInfo& client_info,
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  indexed_db_control_wrapper_->BindIndexedDB(
-      bucket_locator, client_info, std::move(client_state_checker_remote),
-      std::move(receiver));
+  indexed_db_control_wrapper_->BindIndexedDB(bucket_locator, client_info,
+                                             std::move(receiver));
 }
 
 void StoragePartitionImpl::BindLockManager(

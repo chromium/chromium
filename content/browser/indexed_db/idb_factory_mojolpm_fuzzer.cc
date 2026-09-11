@@ -14,7 +14,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -27,7 +26,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -76,27 +74,6 @@ scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() {
   return GetEnvironment().fuzzer_task_runner();
 }
 
-// TODO(crbug.com/448235811): Hook up the actual state checker since it lives in
-// the browser process.
-class MockIndexedDBClientStateChecker
-    : public storage::mojom::IndexedDBClientStateChecker {
- public:
-  MockIndexedDBClientStateChecker() = default;
-  ~MockIndexedDBClientStateChecker() override = default;
-
-  // storage::mojom::IndexedDBClientStateChecker:
-  void DisallowInactiveClient(
-      int32_t connection_id,
-      storage::mojom::DisallowInactiveClientReason reason,
-      mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
-          keep_active,
-      storage::mojom::IndexedDBClientStateChecker::
-          DisallowInactiveClientCallback callback) override {}
-  void MakeClone(
-      mojo::PendingReceiver<storage::mojom::IndexedDBClientStateChecker>
-          checker) override {}
-};
-
 // Per-testcase state needed to run the interface being tested.
 //
 // The lifetime of this is scoped to a single testcase, and it is created and
@@ -134,11 +111,8 @@ class IdbFactoryTestcase
   void FlushBucketSequence(base::OnceClosure done_closure);
   void EnableSqliteMigration(base::OnceClosure done_closure);
   void AdvanceTime(base::OnceClosure done_closure);
-  void BindIndexedDB(
-      storage::BucketClientInfo client_info,
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          checker_remote,
-      mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
+  void BindIndexedDB(storage::BucketClientInfo client_info,
+                     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
 
   // Helpers called from the fuzzer thread.
   void CreateAndAddIdbFactory(uint32_t id, base::OnceClosure done_closure)
@@ -156,11 +130,6 @@ class IdbFactoryTestcase
   storage::BucketLocator bucket_locator_;
   std::unique_ptr<content::TestBrowserContext> browser_context_;
   mojo::Remote<storage::mojom::IndexedDBControlTest> indexed_db_control_test_;
-
-  // These live on the fuzzer thread for now.
-  MockIndexedDBClientStateChecker mock_client_state_checker_;
-  mojo::ReceiverSet<storage::mojom::IndexedDBClientStateChecker>
-      checker_receivers_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 IdbFactoryTestcase::IdbFactoryTestcase(
@@ -253,7 +222,6 @@ void IdbFactoryTestcase::TearDownOnUIThread(base::OnceClosure done_closure) {
 void IdbFactoryTestcase::TearDownOnFuzzerThread(
     base::OnceClosure done_closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  checker_receivers_.Clear();
   mojolpm::GetContext()->EndTestcase();
   std::move(done_closure).Run();
 }
@@ -373,24 +341,17 @@ void IdbFactoryTestcase::AdvanceTime(base::OnceClosure done_closure) {
 
 void IdbFactoryTestcase::BindIndexedDB(
     storage::BucketClientInfo client_info,
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   browser_context_->GetDefaultStoragePartition()
       ->GetIndexedDBControl()
       .BindIndexedDB(bucket_locator_, std::move(client_info),
-                     std::move(checker_remote), std::move(receiver));
+                     std::move(receiver));
 }
 
 void IdbFactoryTestcase::CreateAndAddIdbFactory(
     uint32_t id,
     base::OnceClosure done_closure) {
   storage::BucketClientInfo client_info;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  checker_receivers_.Add(&mock_client_state_checker_,
-                         checker_remote.InitWithNewPipeAndPassReceiver(),
-                         GetFuzzerTaskRunner());
 
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
   auto factory_receiver = factory_remote.BindNewPipeAndPassReceiver();
@@ -400,8 +361,7 @@ void IdbFactoryTestcase::CreateAndAddIdbFactory(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&IdbFactoryTestcase::BindIndexedDB, base::Unretained(this),
-                     std::move(client_info), std::move(checker_remote),
-                     std::move(factory_receiver)));
+                     std::move(client_info), std::move(factory_receiver)));
 
   // Since the `PendingReceiver` to `IDBFactory` is consumed asynchronously by
   // `BindIndexedDB`, flush the remote before running `done_closure`.

@@ -20,6 +20,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
+#include "content/browser/indexed_db/indexed_db_client_state_checker.h"
 #include "content/browser/indexed_db/instance/leveldb/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
@@ -65,7 +66,8 @@ IndexedDBTestBase::IndexedDBTestBase(bool use_default_buckets, bool use_sqlite)
   context_ = std::make_unique<IndexedDBContextImpl>(
       temp_dir_.GetPath(), quota_manager_proxy_.get(),
       std::move(pending_blob_storage_context), std::move(fsa_context),
-      base::SequencedTaskRunner::GetCurrentDefault());
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      CreateAlwaysActiveClientStateCheckerForTesting());
   // Let the mojo pipes be bound before proceeding. See
   // IndexedDBContextImpl::BindPipesOnIDBSequence().
   RunPostedTasks();
@@ -105,7 +107,8 @@ void IndexedDBTestBase::SetUpInMemoryContext() {
   context_ = std::make_unique<IndexedDBContextImpl>(
       base::FilePath(), quota_manager_proxy_.get(),
       std::move(pending_blob_storage_context), std::move(fsa_context),
-      base::SequencedTaskRunner::GetCurrentDefault());
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      CreateAlwaysActiveClientStateCheckerForTesting());
   // The mojo pipes are bound asynchronously, and must be bound before
   // proceeding with testing.
   RunPostedTasks();
@@ -158,12 +161,9 @@ base::WeakPtr<BucketContext> IndexedDBTestBase::InitBucketContext(
 }
 
 void IndexedDBTestBase::BindFactory(
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-  context()->BindIndexedDBImpl(storage::BucketClientInfo{},
-                               std::move(checker_remote), std::move(receiver),
+  context()->BindIndexedDBImpl(storage::BucketClientInfo{}, std::move(receiver),
                                bucket_info);
 }
 

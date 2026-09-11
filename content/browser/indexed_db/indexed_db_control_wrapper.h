@@ -28,7 +28,8 @@ class IndexedDBControlWrapper {
           blob_storage_context,
       mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
           file_system_access_context,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      DisallowInactiveClientCallback client_state_checker);
 
   IndexedDBControlWrapper(const IndexedDBControlWrapper&) = delete;
   IndexedDBControlWrapper& operator=(const IndexedDBControlWrapper&) = delete;
@@ -38,8 +39,6 @@ class IndexedDBControlWrapper {
   void BindIndexedDB(
       const storage::BucketLocator& bucket_locator,
       const storage::BucketClientInfo& client_info,
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
 
   // Returns the mojom interface to the `IndexedDBContextImpl`, creating the

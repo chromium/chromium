@@ -30,7 +30,6 @@
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
@@ -291,8 +290,7 @@ void Database::RequireBlockingTransactionClientsToBeActive(
     // lock IDs, require that client to be active.
     if (connection->IsHoldingLocks(blocked_lock_ids)) {
       connection->DisallowInactiveClient(
-          storage::mojom::DisallowInactiveClientReason::
-              kTransactionIsAcquiringLocks,
+          DisallowInactiveClientReason::kTransactionIsAcquiringLocks,
           base::DoNothing());
     }
   }
@@ -1069,9 +1067,7 @@ const IndexedDBDataLossInfo& Database::GetDataLossInfo() const {
 
 std::unique_ptr<Connection> Database::CreateConnection(
     std::unique_ptr<DatabaseCallbacks> database_callbacks,
-    mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker,
-    base::UnguessableToken client_token,
+    const storage::BucketClientInfo& client_info,
     int scheduling_priority,
     base::OnceClosure on_connection_closed) {
   auto connection = std::make_unique<Connection>(
@@ -1080,8 +1076,7 @@ std::unique_ptr<Connection> Database::CreateConnection(
                           weak_factory_.GetWeakPtr()),
       base::BindOnce(&Database::ConnectionClosed, weak_factory_.GetWeakPtr(),
                      std::move(on_connection_closed)),
-      std::move(database_callbacks), std::move(client_state_checker),
-      client_token, scheduling_priority);
+      std::move(database_callbacks), client_info, scheduling_priority);
   connections_.push_back(connection.get());
   return connection;
 }
@@ -1118,7 +1113,7 @@ void Database::SendVersionChangeToAllConnections(int64_t old_version,
     // matter which path it follows, the `SendVersionChangeToAllConnections`
     // method is executed asynchronously.
     connection->DisallowInactiveClient(
-        storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent,
+        DisallowInactiveClientReason::kVersionChangeEvent,
         base::BindOnce(
             [](base::WeakPtr<Connection> connection, int64_t old_version,
                int64_t new_version, bool was_client_active) {

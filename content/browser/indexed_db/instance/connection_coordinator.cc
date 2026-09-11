@@ -32,7 +32,6 @@
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
@@ -199,7 +198,7 @@ class ConnectionCoordinator::OpenRequest
     // a queue of outstanding lock requests to contend with.
     lock_receiver_.SetUserData(
         LockRequestData::kKey,
-        std::make_unique<LockRequestData>(pending_->client_token,
+        std::make_unique<LockRequestData>(pending_->client_token(),
                                           /*scheduling_priority=*/0));
   }
 
@@ -290,12 +289,11 @@ class ConnectionCoordinator::OpenRequest
       Log(DatabaseConnectionOpenResult::kSuccessDirectOpen,
           bucket_context_->GetHistogramSuffix());
       if (pending_->request_shared_connection &&
-          db_->HasConnectionForClient(pending_->client_token)) {
+          db_->HasConnectionForClient(pending_->client_token())) {
         OnOpenSuccess(nullptr);
       } else {
         OnOpenSuccess(db_->CreateConnection(
-            std::move(pending_->database_callbacks),
-            std::move(pending_->client_state_checker), pending_->client_token,
+            std::move(pending_->database_callbacks), pending_->client_info,
             pending_->scheduling_priority));
       }
       state_ = RequestState::kDone;
@@ -394,8 +392,7 @@ class ConnectionCoordinator::OpenRequest
 
     CHECK(!lock_receiver_.locks.empty());
     upgrade_connection_ = db_->CreateConnection(
-        std::move(pending_->database_callbacks),
-        std::move(pending_->client_state_checker), pending_->client_token,
+        std::move(pending_->database_callbacks), pending_->client_info,
         pending_->scheduling_priority,
         base::BindOnce(&OpenRequest::OnConnectionClosedDuringUpgrade,
                        weak_factory_.GetWeakPtr()));

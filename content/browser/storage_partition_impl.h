@@ -23,12 +23,12 @@
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom-forward.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/content_index/content_index_context_impl.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
+#include "content/browser/indexed_db/indexed_db_client_state_checker.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -381,8 +381,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   void BindIndexedDB(
       const storage::BucketLocator& bucket_locator,
       const storage::BucketClientInfo& client_info,
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
 
   // Binds the mojo endpoint for a `LockManager`.

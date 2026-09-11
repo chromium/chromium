@@ -34,31 +34,10 @@ namespace {
 
 class IndexedDBContextTest : public IndexedDBTestBase {
  public:
-  class MockIndexedDBClientStateChecker
-      : public storage::mojom::IndexedDBClientStateChecker {
-   public:
-    MockIndexedDBClientStateChecker() = default;
-    ~MockIndexedDBClientStateChecker() override = default;
-
-    // storage::mojom::IndexedDBClientStateChecker overrides
-    void DisallowInactiveClient(
-        int32_t connection_id,
-        storage::mojom::DisallowInactiveClientReason reason,
-        mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
-            keep_active,
-        storage::mojom::IndexedDBClientStateChecker::
-            DisallowInactiveClientCallback callback) override {}
-    void MakeClone(
-        mojo::PendingReceiver<storage::mojom::IndexedDBClientStateChecker>
-            checker) override {}
-  };
-
   IndexedDBContextTest()
       : IndexedDBTestBase(/*use_default_buckets=*/true, /*use_sqlite=*/false) {}
 
  protected:
-  MockIndexedDBClientStateChecker example_checker_;
-
   const blink::StorageKey example_storage_key_ =
       blink::StorageKey::CreateFromStringForTesting("https://example.com");
   const blink::StorageKey google_storage_key_ =
@@ -67,21 +46,15 @@ class IndexedDBContextTest : public IndexedDBTestBase {
 
 TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   mojo::Remote<blink::mojom::IDBFactory> example_remote;
-  mojo::Receiver<storage::mojom::IndexedDBClientStateChecker>
-      example_checker_receiver(&example_checker_);
   context()->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(example_storage_key_),
       storage::BucketClientInfo{},
-      example_checker_receiver.BindNewPipeAndPassRemote(),
       example_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<blink::mojom::IDBFactory> google_remote;
-  mojo::Receiver<storage::mojom::IndexedDBClientStateChecker>
-      google_checker_receiver(&example_checker_);
   context()->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(google_storage_key_),
       storage::BucketClientInfo{},
-      google_checker_receiver.BindNewPipeAndPassRemote(),
       google_remote.BindNewPipeAndPassReceiver());
 
   storage::QuotaManagerProxySync quota_manager_proxy_sync(
@@ -123,12 +96,9 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
   quota_manager_->SetDisableDatabase(true);
 
   mojo::Remote<blink::mojom::IDBFactory> example_remote;
-  mojo::Receiver<storage::mojom::IndexedDBClientStateChecker>
-      example_checker_receiver(&example_checker_);
   context()->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(example_storage_key_),
       storage::BucketClientInfo{},
-      example_checker_receiver.BindNewPipeAndPassRemote(),
       example_remote.BindNewPipeAndPassReceiver());
 
   // IDBFactory::GetDatabaseInfo

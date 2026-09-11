@@ -50,7 +50,6 @@
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
@@ -308,10 +307,8 @@ class IndexedDBTestBaseWithExtras : public IndexedDBTestBase {
     base::FilePath test_path = GetFilePathForTesting(bucket_locator);
 
     // Bind the IDBFactory.
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        checker_remote;
-    BindFactory(std::move(checker_remote),
-                factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
+
+    BindFactory(factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
 
     // Open new connection/database, wait for success.
     MockMojoFactoryClient client;
@@ -423,11 +420,9 @@ TEST_P(IndexedDBTest, CloseConnectionBeforeUpgrade) {
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
 
   // Bind the IDBFactory.
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
+
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
-  BindFactory(std::move(checker_remote),
-              bounded_factory_remote.BindNewPipeAndPassReceiver(),
+  BindFactory(bounded_factory_remote.BindNewPipeAndPassReceiver(),
               BucketInfo());
 
   base::RunLoop loop;
@@ -455,11 +450,9 @@ TEST_P(IndexedDBTest, CloseAfterUpgrade) {
   const char16_t kObjectStoreName[] = u"os";
 
   // Bind the IDBFactory.
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
+
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
-  BindFactory(std::move(checker_remote),
-              bounded_factory_remote.BindNewPipeAndPassReceiver(),
+  BindFactory(bounded_factory_remote.BindNewPipeAndPassReceiver(),
               BucketInfo());
 
   MojoConnectionHelper mojo_helper;
@@ -504,11 +497,9 @@ TEST_P(IndexedDBTest, MAYBE_OpenNewConnectionWhileUpgrading) {
   IndexedDBDatabaseMetadata metadata1;
 
   // Bind the IDBFactory.
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
+
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
-  BindFactory(std::move(checker_remote),
-              bounded_factory_remote.BindNewPipeAndPassReceiver(),
+  BindFactory(bounded_factory_remote.BindNewPipeAndPassReceiver(),
               BucketInfo());
 
   std::optional<base::RunLoop> loop;
@@ -588,11 +579,9 @@ TEST_P(IndexedDBTest, DISABLED_PutWithInvalidBlob) {
   const char16_t kObjectStoreName[] = u"os";
 
   // Bind the IDBFactory.
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
+
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
-  BindFactory(std::move(checker_remote),
-              bounded_factory_remote.BindNewPipeAndPassReceiver(),
+  BindFactory(bounded_factory_remote.BindNewPipeAndPassReceiver(),
               BucketInfo());
 
   MojoConnectionHelper mojo_helper;
@@ -659,12 +648,10 @@ TEST_P(IndexedDBTest, InvalidObjectStoreId) {
   const char16_t kIndexName[] = u"index";
 
   // Bind the IDBFactory.
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
+
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
   const BucketLocator bucket_locator = InitBucketContext()->bucket_locator();
-  BindFactory(std::move(checker_remote),
-              bounded_factory_remote.BindNewPipeAndPassReceiver(),
+  BindFactory(bounded_factory_remote.BindNewPipeAndPassReceiver(),
               ToBucketInfo(bucket_locator));
 
   MojoConnectionHelper mojo_helper;
@@ -705,12 +692,10 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
   EXPECT_EQ(0, observer.notify_content_changed_count);
 
   // Bind the IDBFactory.
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
+
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
   const BucketLocator bucket_locator = InitBucketContext()->bucket_locator();
-  BindFactory(std::move(checker_remote),
-              bounded_factory_remote.BindNewPipeAndPassReceiver(),
+  BindFactory(bounded_factory_remote.BindNewPipeAndPassReceiver(),
               ToBucketInfo(bucket_locator));
 
   // Open connection 1.
@@ -831,13 +816,11 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
   EXPECT_EQ(0, observer.notify_content_changed_count);
 
   // Bind the IDBFactory.
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
+
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
 
   const BucketLocator bucket_locator = InitBucketContext()->bucket_locator();
-  BindFactory(std::move(checker_remote),
-              bounded_factory_remote.BindNewPipeAndPassReceiver(),
+  BindFactory(bounded_factory_remote.BindNewPipeAndPassReceiver(),
               ToBucketInfo(bucket_locator));
 
   // Open connection 1.
@@ -927,11 +910,9 @@ TEST_P(IndexedDBTest, DISABLED_DatabaseOperationSequencing) {
   const std::u16string kObjectStoreName3 = u"os3";
 
   // Bind the IDBFactory.
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
+
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
-  BindFactory(std::move(checker_remote),
-              bounded_factory_remote.BindNewPipeAndPassReceiver(),
+  BindFactory(bounded_factory_remote.BindNewPipeAndPassReceiver(),
               BucketInfo());
 
   MojoConnectionHelper mojo_helper;
@@ -1257,10 +1238,8 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteDatabase) {
 TEST_P(IndexedDBTest, AvoidCrashAfterForceCloseDbAndThenOpen) {
   BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Open a database.
   base::RunLoop run_loop_for_first_open;
@@ -1408,10 +1387,8 @@ TEST_P(IndexedDBTest, CloseWithReceiversActive) {
   const BucketLocator bucket_locator = bucket_context->bucket_locator();
   // Connect an IDBFactory mojo client.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
+
   bucket_context->AddReceiver(storage::BucketClientInfo{},
-                              std::move(checker_remote),
                               factory_remote.BindNewPipeAndPassReceiver());
 
   // The bucket context and the backing store should exist.
@@ -1444,10 +1421,8 @@ TEST_P(IndexedDBTest, CloseWithReceiversInactive) {
   const BucketLocator bucket_locator = bucket_context->bucket_locator();
   // Connect an IDBFactory mojo client.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
+
   bucket_context->AddReceiver(storage::BucketClientInfo{},
-                              std::move(checker_remote),
                               factory_remote.BindNewPipeAndPassReceiver());
 
   // The bucket context and the backing store should exist.
@@ -1485,10 +1460,8 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
     const BucketLocator bucket_locator = bucket_context->bucket_locator();
 
     mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        checker_remote;
-    BindFactory(std::move(checker_remote),
-                factory_remote.BindNewPipeAndPassReceiver(),
+
+    BindFactory(factory_remote.BindNewPipeAndPassReceiver(),
                 bucket_context->bucket_info());
 
     NudgeBackingStoreCloseLogic(bucket_context.get());
@@ -1657,7 +1630,6 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
   // Trigger the bucket context to be created.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote1;
   BindFactory(
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>(),
       factory_remote1.BindNewPipeAndPassReceiver(), bucket_info);
 
   ASSERT_TRUE(context()->BucketContextExists(bucket_locator));
@@ -1680,7 +1652,6 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
   // BucketContext::AddReceiver().
   mojo::Remote<blink::mojom::IDBFactory> factory_remote2;
   BindFactory(
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>(),
       factory_remote2.BindNewPipeAndPassReceiver(),
       ToBucketInfo(bucket_locator));
 
@@ -1702,10 +1673,8 @@ TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Now create a database and thus the backing store.
   MojoConnectionHelper mojo_helper;
@@ -1728,10 +1697,8 @@ TEST_P(IndexedDBTestWithBucketType, OpenExistingDatabase) {
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Create a database with a valid version so that it gets persisted.
   {
@@ -1785,10 +1752,8 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Don't create a backing store if one doesn't exist.
   {
@@ -1837,10 +1802,8 @@ TEST_P(IndexedDBTestWithBucketType, DeleteDatabase_Cold) {
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Create a database with a valid version so that it gets persisted.
   {
@@ -1892,10 +1855,8 @@ TEST_P(IndexedDBTest, DeleteDatabase_DuplicateRequests) {
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Open (create) a database and keep the connection alive.
   mojo::AssociatedRemote<blink::mojom::IDBDatabase> connection =
@@ -1940,10 +1901,8 @@ TEST_P(IndexedDBTestWithBucketType, GetDatabaseNames) {
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Don't create a backing store if one doesn't exist.
   {
@@ -2009,10 +1968,8 @@ TEST_P(IndexedDBTest, UpdatePriorityAfterForceClose) {
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Bind a connection/database.
   MojoConnectionHelper mojo_helper;
@@ -2033,10 +1990,8 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
   BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
 
   // Bind the IDBFactory.
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Create a database with a valid version so that a version change transaction
   // is created.
@@ -2184,10 +2139,8 @@ TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {
   // Bind the IDBFactory.
   BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   std::optional<base::FilePermissionRestorer> permission_restorer;
   if (IsSqliteBackingStoreEnabled()) {
@@ -2244,10 +2197,8 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Create at version 2.
   CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1,
@@ -2287,10 +2238,8 @@ TEST_P(IndexedDBTestWithBucketType, DataLoss) {
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Set a data format version and create a new database. No data loss.
   {
@@ -2337,10 +2286,8 @@ TEST_P(IndexedDBTest, FilePathLengthLogging) {
 
   {
     mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        checker_remote;
-    BindFactory(std::move(checker_remote),
-                factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+    BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
     {
       const int64_t db_version = 1;
@@ -2375,10 +2322,8 @@ TEST_P(IndexedDBTest, FilePathLengthLogging) {
       std::string("https://") + std::string(230, 'a') + ".com:81"));
   {
     mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        checker_remote;
-    BindFactory(std::move(checker_remote),
-                factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+    BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
     {
       const int64_t db_version = 1;
@@ -2419,10 +2364,7 @@ TEST_P(IndexedDBTest, ForceCloseWithQueuedDelete) {
   BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
+  BindFactory(factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Open a database at version 1 and complete the upgrade.
   CreateDatabase(factory_remote_, kDatabaseName, /*transaction_id=*/1);
@@ -2450,10 +2392,8 @@ TEST_P(IndexedDBTest, IdleTasksHistograms) {
   BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
 
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
   // Create a database and fast forward by the idle timeout, which should
   // trigger idle tasks.
@@ -2527,10 +2467,8 @@ TEST_F(IndexedDBSqliteTest, BlobReadPutsOffIdleWork) {
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Bind the IDBFactory.
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
+
+  BindFactory(factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
 
   const IndexedDBKey key(u"key");
 
@@ -2644,10 +2582,7 @@ TEST_P(IndexedDBTest, BlobWithForgedSize) {
 
   storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
 
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
+  BindFactory(factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
 
   MockMojoFactoryClient client;
   MockMojoDatabaseCallbacks database_callbacks;

@@ -26,6 +26,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/indexed_db/file_path_util.h"
+#include "content/browser/indexed_db/indexed_db_client_state_checker.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -79,7 +80,8 @@ class IndexedDBQuotaClientTest : public testing::Test,
         temp_dir_.GetPath(), quota_manager_->proxy(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunner::GetCurrentDefault());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        CreateAlwaysActiveClientStateCheckerForTesting());
     base::RunLoop().RunUntilIdle();
     SetupTempDir();
   }
@@ -460,7 +462,8 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaFirstParty) {
       base::FilePath(), quota_manager->proxy(),
       /*blob_storage_context=*/mojo::NullRemote(),
       /*file_system_access_context=*/mojo::NullRemote(),
-      base::SequencedTaskRunner::GetCurrentDefault());
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      CreateAlwaysActiveClientStateCheckerForTesting());
   base::RunLoop().RunUntilIdle();
 
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
@@ -485,7 +488,8 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
       base::FilePath(), quota_manager->proxy(),
       /*blob_storage_context=*/mojo::NullRemote(),
       /*file_system_access_context=*/mojo::NullRemote(),
-      base::SequencedTaskRunner::GetCurrentDefault());
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      CreateAlwaysActiveClientStateCheckerForTesting());
   base::RunLoop().RunUntilIdle();
 
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>

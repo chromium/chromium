@@ -5,40 +5,25 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INDEXED_DB_CLIENT_STATE_CHECKER_FACTORY_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INDEXED_DB_CLIENT_STATE_CHECKER_FACTORY_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <optional>
 
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
+#include "content/browser/indexed_db/indexed_db_client_state_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-
-namespace storage {
-struct BucketClientInfo;
-}
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 
+// Factory for providing a callback that checks whether an IndexedDB client
+// document is currently in an inactive state (e.g. in BFCache or frozen) and
+// keeps it active while necessary.
 class CONTENT_EXPORT IndexedDBClientStateCheckerFactory {
  public:
-  IndexedDBClientStateCheckerFactory() = delete;
-  ~IndexedDBClientStateCheckerFactory() = delete;
-
-  // Factory method that creates and returns a client state checker for the
-  // client represented by `client_info`. Callers must check the validity of the
-  // returned `PendingRemote` before consuming it since it will be bound only if
-  // the client is in a valid state.
-  // This method is called on the browser UI thread and the object it returns is
-  // suitable for use from other (privileged) threads or processes.
-  static mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-  InitializePendingRemote(const storage::BucketClientInfo& client_info);
-
-  // Factory method that returns the pointer to the implementation of
-  // `storage::mojom::IndexedDBClientStateChecker`. `rfh_id` should be a valid
-  // one here.
-  static storage::mojom::IndexedDBClientStateChecker*
-  GetOrCreateIndexedDBClientStateCheckerForTesting(
-      const GlobalRenderFrameHostId& rfh_id);
+  // Returns a repeating callback bound to the UI thread that performs client
+  // state checks and manages keep-active scopes on the associated
+  // RenderFrameHost.
+  static ::content::DisallowInactiveClientCallback
+  GetClientStateCheckerCallback();
 };
 
 }  // namespace content

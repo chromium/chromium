@@ -293,7 +293,7 @@ TEST_P(DatabaseTest, SharedConnectionRequiresMatchingClientToken) {
           database_callbacks1.BindNewEndpointAndPassDedicatedRemote()),
       /*transaction_id=*/1, /*version=*/1,
       transaction_remote1.BindNewEndpointAndPassDedicatedReceiver());
-  connection1->client_token = token1;
+  connection1->client_info.document_token = blink::DocumentToken(token1);
   db_->ScheduleOpenConnection(std::move(connection1),
                               /*synchronous_duration=*/{});
   run_loop1.Run();
@@ -332,7 +332,7 @@ TEST_P(DatabaseTest, SharedConnectionRequiresMatchingClientToken) {
       std::make_unique<DatabaseCallbacks>(
           database_callbacks2.BindNewEndpointAndPassDedicatedRemote()),
       /*transaction_id=*/2, /*version=*/1, mojo::NullAssociatedReceiver());
-  connection2->client_token = token2;
+  connection2->client_info.document_token = blink::DocumentToken(token2);
   connection2->request_shared_connection = true;
   db_->ScheduleOpenConnection(std::move(connection2),
                               /*synchronous_duration=*/{});
@@ -362,7 +362,7 @@ TEST_P(DatabaseTest, SharedConnectionRequiresMatchingClientToken) {
       std::make_unique<DatabaseCallbacks>(
           database_callbacks3.BindNewEndpointAndPassDedicatedRemote()),
       /*transaction_id=*/3, /*version=*/1, mojo::NullAssociatedReceiver());
-  connection3->client_token = token1;
+  connection3->client_info.document_token = blink::DocumentToken(token1);
   connection3->request_shared_connection = true;
   db_->ScheduleOpenConnection(std::move(connection3),
                               /*synchronous_duration=*/{});

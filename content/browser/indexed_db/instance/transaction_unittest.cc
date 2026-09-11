@@ -83,10 +83,11 @@ class TransactionTestBase : public IndexedDBTestBase {
     if (db_->connections_.empty()) {
       db_->OpenInternal();
     }
+    storage::BucketClientInfo client_info;
+    client_info.context_token = blink::LocalFrameToken();
     return db_->CreateConnection(
         std::make_unique<DatabaseCallbacks>(mojo::NullAssociatedRemote()),
-        mojo::Remote<storage::mojom::IndexedDBClientStateChecker>(),
-        base::UnguessableToken::Create(), priority, base::DoNothing());
+        client_info, priority, base::DoNothing());
   }
 
   Transaction* CreateTransaction(Connection* connection,

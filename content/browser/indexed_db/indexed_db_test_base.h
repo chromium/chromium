@@ -66,8 +66,6 @@ class IndexedDBTestBase : public testing::Test {
       std::optional<storage::BucketInfo> maybe_bucket = std::nullopt,
       bool create_backing_store = true);
   void BindFactory(
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
   blink::StorageKey GetTestStorageKey();

@@ -49,7 +49,6 @@
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/types/expected.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -702,19 +701,15 @@ void BucketContext::RunIdleTasks(bool long_idle) {
 
 void BucketContext::AddReceiver(
     const storage::BucketClientInfo& client_info,
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
   // When `on_ready_for_destruction` is non-null, `this` hasn't requested its
   // own destruction. When it is null, this is to be torn down and has to bounce
   // the AddReceiver request back to the delegate.
   if (delegate().on_ready_for_destruction) {
-    receivers_.Add(
-        this, std::move(pending_receiver),
-        ReceiverContext(client_info, std::move(client_state_checker_remote)));
+    receivers_.Add(this, std::move(pending_receiver),
+                   ReceiverContext(client_info));
   } else {
     delegate().on_receiver_bounced.Run(client_info,
-                                       std::move(client_state_checker_remote),
                                        std::move(pending_receiver));
   }
 }
@@ -813,6 +808,7 @@ void BucketContext::Open(
   }
 
   Log(DatabaseConnectionOpenResult::kReceivedRequest, GetHistogramSuffix());
+
   auto connection = std::make_unique<PendingConnection>(
       std::move(factory_client),
       std::make_unique<DatabaseCallbacks>(std::move(database_callbacks_remote)),
@@ -822,19 +818,7 @@ void BucketContext::Open(
   connection->request_shared_connection = request_shared_connection;
 
   ReceiverContext& client = receivers_.current_context();
-  // `Connection` only needs an opaque token to uniquely identify the
-  // document or worker that owns the other side of the connection.
-  connection->client_token = client.client_info.document_token
-                                 ? client.client_info.document_token->value()
-                                 : client.client_info.context_token.value();
-  // Null in unit tests.
-  if (client.client_state_checker_remote) {
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        state_checker_clone;
-    client.client_state_checker_remote->MakeClone(
-        state_checker_clone.InitWithNewPipeAndPassReceiver());
-    connection->client_state_checker.Bind(std::move(state_checker_clone));
-  }
+  connection->client_info = client.client_info;
 
   Database* database_ptr = nullptr;
   auto it = databases_.find(name);
@@ -1518,11 +1502,8 @@ void BucketContext::RecordInternalsSnapshot() {
 }
 
 BucketContext::ReceiverContext::ReceiverContext(
-    const storage::BucketClientInfo& client_info,
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker_remote)
-    : client_info(client_info),
-      client_state_checker_remote(std::move(client_state_checker_remote)) {}
+    const storage::BucketClientInfo& client_info)
+    : client_info(client_info) {}
 
 BucketContext::ReceiverContext::ReceiverContext(
     BucketContext::ReceiverContext&&) noexcept = default;

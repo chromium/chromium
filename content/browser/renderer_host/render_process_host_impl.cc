@@ -121,7 +121,6 @@
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
-#include "content/browser/renderer_host/indexed_db_client_state_checker_factory.h"
 #include "content/browser/renderer_host/media/media_stream_track_metrics_host.h"
 #include "content/browser/renderer_host/recently_destroyed_hosts.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -207,6 +206,7 @@
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
 #include "third_party/blink/public/mojom/disk_allocator.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
@@ -2354,17 +2354,9 @@ void RenderProcessHostImpl::BindIndexedDB(
     return;
   }
 
-  storage::BucketClientInfo client_info = bucket_context.GetBucketClientInfo();
-  auto state_checker =
-      IndexedDBClientStateCheckerFactory::InitializePendingRemote(client_info);
-  if (!state_checker) {
-    // The client is not in a valid state to use IndexedDB.
-    return;
-  }
-
   storage_partition_impl_->BindIndexedDB(
-      storage::BucketLocator::ForDefaultBucket(storage_key), client_info,
-      std::move(state_checker), std::move(receiver));
+      storage::BucketLocator::ForDefaultBucket(storage_key),
+      bucket_context.GetBucketClientInfo(), std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindBucketManagerHost(

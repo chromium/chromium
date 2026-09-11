@@ -26,7 +26,6 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -34,6 +33,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
+#include "content/browser/indexed_db/indexed_db_client_state_checker.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
@@ -139,8 +139,6 @@ class CONTENT_EXPORT BucketContext
     // `on_ready_for_destruction`.
     base::RepeatingCallback<void(
         const storage::BucketClientInfo& /*client_info*/,
-        mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        /*client_state_checker_remote*/,
         mojo::PendingReceiver<blink::mojom::IDBFactory> /*pending_receiver*/)>
         on_receiver_bounced;
 
@@ -156,6 +154,9 @@ class CONTENT_EXPORT BucketContext
     // the amount of disk space used has completed. The parameter is true for
     // transactions that caused the backing store to flush.
     base::RepeatingCallback<void(bool /*did_sync*/)> on_files_written;
+
+    // Called to check whether a client is active and disallow inactivity.
+    DisallowInactiveClientCallback client_state_checker;
   };
 
   BucketContext(storage::BucketInfo bucket_info,
@@ -276,8 +277,6 @@ class CONTENT_EXPORT BucketContext
 
   void AddReceiver(
       const storage::BucketClientInfo& client_info,
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
 
   // blink::mojom::IDBFactory implementation:
@@ -354,10 +353,7 @@ class CONTENT_EXPORT BucketContext
   // The data structure that stores everything bound to the receiver. This will
   // be stored together with the receiver in the `mojo::ReceiverSet`.
   struct ReceiverContext {
-    ReceiverContext(
-        const storage::BucketClientInfo& client_info,
-        mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-            client_state_checker_remote);
+    explicit ReceiverContext(const storage::BucketClientInfo& client_info);
 
     ~ReceiverContext();
 
@@ -367,8 +363,6 @@ class CONTENT_EXPORT BucketContext
     ReceiverContext& operator=(ReceiverContext&&) = delete;
 
     const storage::BucketClientInfo client_info;
-    mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker_remote;
   };
 
   void DoForceClose(bool doom, const std::string& message);

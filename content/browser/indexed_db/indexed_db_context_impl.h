@@ -18,14 +18,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
-#include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -67,7 +65,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
           blob_storage_context,
       mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
           file_system_access_context,
-      scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> custom_task_runner,
+      DisallowInactiveClientCallback client_state_checker);
 
   ~IndexedDBContextImpl() override;
 
@@ -84,8 +83,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void BindIndexedDB(
       const storage::BucketLocator& bucket_locator,
       const storage::BucketClientInfo& client_info,
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void ForceClose(storage::BucketId bucket_id,
                   base::OnceClosure callback) override;
@@ -177,8 +174,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // mojom::IndexedDBControl internal implementation:
   void BindIndexedDBImpl(
       const storage::BucketClientInfo& client_info,
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
 
@@ -361,6 +356,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   // Timer started when `Shutdown()` was called. Used for UMA.
   std::optional<base::ElapsedTimer> shutdown_timer_;
+
+  DisallowInactiveClientCallback client_state_checker_;
 
   // weak_factory_->GetWeakPtr() may be used on any thread, but the resulting
   // pointer must only be checked/used on idb_task_runner_.

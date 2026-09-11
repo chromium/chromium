@@ -279,9 +279,7 @@ class CONTENT_EXPORT Database {
 
   std::unique_ptr<Connection> CreateConnection(
       std::unique_ptr<DatabaseCallbacks> database_callbacks,
-      mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
-          client_state_checker,
-      base::UnguessableToken client_token,
+      const storage::BucketClientInfo& client_info,
       int scheduling_priority,
       // Not called during a force close.
       base::OnceClosure on_connection_close = {});

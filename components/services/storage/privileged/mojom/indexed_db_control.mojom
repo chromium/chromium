@@ -5,7 +5,6 @@
 module storage.mojom;
 
 import "components/services/storage/privileged/mojom/bucket_client_info.mojom";
-import "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_control_test.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom";
 import "components/services/storage/public/mojom/buckets/bucket_id.mojom";
@@ -45,8 +44,6 @@ interface IndexedDBControl {
   BindIndexedDB(
       storage.mojom.BucketLocator bucket_locator,
       storage.mojom.BucketClientInfo client_info,
-      pending_remote<storage.mojom.IndexedDBClientStateChecker>
-          client_state_checker_remote,
       pending_receiver<blink.mojom.IDBFactory> receiver);
 
   // Forcibly closes all connections to all databases within the bucket.
