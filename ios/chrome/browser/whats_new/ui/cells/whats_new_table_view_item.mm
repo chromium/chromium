@@ -123,7 +123,7 @@ const CGFloat trailingMargin = -24.0;
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel.font =
-        CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
+        PreferredFontForTextStyle(UIFontTextStyleBody, UIFontWeightSemibold);
     _textLabel.adjustsFontForContentSizeCategory = YES;
     _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _textLabel.backgroundColor = UIColor.clearColor;
@@ -133,7 +133,7 @@ const CGFloat trailingMargin = -24.0;
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _detailTextLabel.font =
-        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
     _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _detailTextLabel.backgroundColor = UIColor.clearColor;
