@@ -3927,10 +3927,14 @@ public class ToolbarManager
         mSuppressToolbarSceneLayerSupplier.set(mIsXrFsm || mIsVerticalTabsHiddenDueToNarrow);
     }
 
-    private void onToolbarRightMarginChanged(int rightMargin) {
-        // When Vertical Tabs is in auto-hidden mode, keep the right margin intact. It is
-        // required only for VT - HT switching.
-        if (mIsVerticalTabsHiddenDueToNarrow) return;
+    @VisibleForTesting
+    void onToolbarRightMarginChanged(int rightMargin) {
+        // When Vertical Tabs is in auto-hidden mode, keep the right margin intact on the layout
+        // and update the margin to be restored when Vertical Tabs un-hides.
+        if (mIsVerticalTabsHiddenDueToNarrow) {
+            mRestoredRightMargin = rightMargin;
+            return;
+        }
 
         if (mControlContainer == null) return;
         View toolbarTabletLayout = mControlContainer.findViewById(R.id.toolbar_tablet_layout);

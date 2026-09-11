@@ -1198,6 +1198,45 @@ public class ToolbarManagerUnitTest {
     }
 
     @Test
+    public void testSetToolbarTabletMarginsForAutoHiddenVerticalTab_UpdateRightMarginWhileHidden()
+            throws Exception {
+        ToolbarControlContainer controlContainer = mock(ToolbarControlContainer.class);
+        View tabletLayout = new View(mActivityController.get());
+        MarginLayoutParams params = new MarginLayoutParams(100, 100);
+        // Simulate returning from fullscreen where right margin was 0.
+        params.rightMargin = 0;
+        params.topMargin = 0;
+        params.leftMargin = 0;
+        tabletLayout.setLayoutParams(params);
+
+        when(controlContainer.findViewById(R.id.toolbar_tablet_layout)).thenReturn(tabletLayout);
+        when(controlContainer.getContext()).thenReturn(mActivityController.get());
+
+        Field controlContainerField = ToolbarManager.class.getDeclaredField("mControlContainer");
+        controlContainerField.setAccessible(true);
+        controlContainerField.set(mToolbarManager, controlContainer);
+
+        SettableNonNullObservableSupplier<Boolean> isAutoHiddenSupplier =
+                ObservableSuppliers.createNonNull(false);
+        mToolbarManager.setVerticalTabsAutoHiddenSupplier(isAutoHiddenSupplier);
+
+        // Vertical Tabs is auto-hidden in narrow window.
+        isAutoHiddenSupplier.set(true);
+        verify(controlContainer).setToolbarContainerTopMarginForAutoHiddenVerticalTab(true);
+        assertEquals(0, params.rightMargin);
+
+        // Insets update notifies a new right margin while Vertical Tabs is auto-hidden.
+        mToolbarManager.onToolbarRightMarginChanged(20);
+        // Active layout margin remains 0 while auto-hidden.
+        assertEquals(0, params.rightMargin);
+
+        // When Vertical Tabs gets shown again on window widening, the updated margin is restored.
+        isAutoHiddenSupplier.set(false);
+        verify(controlContainer).setToolbarContainerTopMarginForAutoHiddenVerticalTab(false);
+        assertEquals(20, params.rightMargin);
+    }
+
+    @Test
     public void testMaybeShowGlicIph_nullGlicActionChipView() throws Exception {
         // Setup Glic eligibility conditions.
         when(mTab.isIncognitoBranded()).thenReturn(false);
