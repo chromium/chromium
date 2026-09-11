@@ -239,6 +239,7 @@ content::WebContents* OmniboxEverywhereUIManager::web_contents() const {
 void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
                                                 gfx::NativeWindow context) {
   deactivation_task_.Cancel();
+  hotkey_dropdown_deactivation_task_.Cancel();
   last_shown_time_ = base::TimeTicks::Now();
   if (widget_ && profile_ == profile) {
     ActivateAndFocus();
@@ -564,6 +565,7 @@ void OmniboxEverywhereUIManager::Close() {
   MaybeRecordFreImpression();
   last_shown_time_.reset();
   deactivation_task_.Cancel();
+  hotkey_dropdown_deactivation_task_.Cancel();
   if (widget_) {
     if (HasOpenModalDialog()) {
       CleanUpWidget();
@@ -581,6 +583,7 @@ void OmniboxEverywhereUIManager::Close() {
 void OmniboxEverywhereUIManager::Demote() {
   last_shown_time_.reset();
   deactivation_task_.Cancel();
+  hotkey_dropdown_deactivation_task_.Cancel();
   if (!widget_ || !widget_->IsVisible() || is_demoted_ ||
       HasOpenModalDialog()) {
     return;
@@ -610,6 +613,7 @@ void OmniboxEverywhereUIManager::Demote() {
 
 void OmniboxEverywhereUIManager::CleanUpWidget() {
   deactivation_task_.Cancel();
+  hotkey_dropdown_deactivation_task_.Cancel();
   if (disclosure_dialog_widget_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(disclosure_dialog_widget_));
@@ -651,6 +655,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   last_context_menu_params_ = content::ContextMenuParams();
   is_file_chooser_open_ = false;
   is_drive_picker_open_ = false;
+  is_hotkey_dropdown_open_ = false;
   is_context_menu_open_ = false;
   is_demoted_ = false;
   is_screenshare_picker_open_ = false;
@@ -667,6 +672,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
 
 void OmniboxEverywhereUIManager::Shutdown() {
   deactivation_task_.Cancel();
+  hotkey_dropdown_deactivation_task_.Cancel();
   last_shown_time_.reset();
   permission_prompt_observation_.Reset();
   browser_collection_observation_.Reset();
@@ -686,7 +692,8 @@ bool OmniboxEverywhereUIManager::IsActive() const {
 bool OmniboxEverywhereUIManager::HasOpenModalDialog() const {
   return is_file_chooser_open_ || is_drive_picker_open_ ||
          is_screenshare_picker_open_ || is_screenshare_disclosure_open_ ||
-         is_permission_prompt_open_ || region_select_overlay_ != nullptr;
+         is_permission_prompt_open_ || region_select_overlay_ != nullptr ||
+         is_hotkey_dropdown_open_;
 }
 
 void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
@@ -694,6 +701,7 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     bool active) {
   if (active) {
     deactivation_task_.Cancel();
+    hotkey_dropdown_deactivation_task_.Cancel();
     is_demoted_ = false;
     return;
   }
@@ -841,6 +849,29 @@ void OmniboxEverywhereUIManager::OnDrivePickerClosed() {
   is_drive_picker_open_ = false;
 }
 
+void OmniboxEverywhereUIManager::OnHotkeyDropdownOpened() {
+  hotkey_dropdown_deactivation_task_.Cancel();
+  is_hotkey_dropdown_open_ = true;
+}
+
+void OmniboxEverywhereUIManager::OnHotkeyDropdownClosed() {
+  is_hotkey_dropdown_open_ = false;
+  // Delay check by a tick to allow native window activation to settle if widget
+  // was reactivated.
+  hotkey_dropdown_deactivation_task_.Reset(base::BindOnce(
+      &OmniboxEverywhereUIManager::CheckDeactivationAfterHotkeyDropdownClosed,
+      weak_factory_.GetWeakPtr()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, hotkey_dropdown_deactivation_task_.callback());
+}
+
+void OmniboxEverywhereUIManager::CheckDeactivationAfterHotkeyDropdownClosed() {
+  if (widget_ && !widget_->IsActive() && !HasOpenModalDialog() &&
+      !is_context_menu_open_ && prefs::IsEphemeralModelEnabled()) {
+    HandleWidgetDeactivated();
+  }
+}
+
 void OmniboxEverywhereUIManager::OnScreensharePickerOpened() {
   is_screenshare_picker_open_ = true;
   if (widget_) {
@@ -919,6 +950,7 @@ void OmniboxEverywhereUIManager::OnScreenshotDisclosureClosed(
     base::OnceClosure on_cancelled,
     views::Widget::ClosedReason reason) {
   deactivation_task_.Cancel();
+  hotkey_dropdown_deactivation_task_.Cancel();
   if (disclosure_dialog_widget_) {
     disclosure_dialog_widget_->Hide();
   }

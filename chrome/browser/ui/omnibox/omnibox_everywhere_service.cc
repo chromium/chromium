@@ -213,6 +213,18 @@ void OmniboxEverywhereService::OnFileChooserClosed() {
   }
 }
 
+void OmniboxEverywhereService::OnHotkeyDropdownOpened() {
+  if (ui_manager()) {
+    ui_manager()->OnHotkeyDropdownOpened();
+  }
+}
+
+void OmniboxEverywhereService::OnHotkeyDropdownClosed() {
+  if (ui_manager()) {
+    ui_manager()->OnHotkeyDropdownClosed();
+  }
+}
+
 void OmniboxEverywhereService::OpenUrl(const GURL& url,
                                        WindowOpenDisposition disposition,
                                        ui::PageTransition transition) {

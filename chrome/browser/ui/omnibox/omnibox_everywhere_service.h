@@ -79,6 +79,8 @@ class OmniboxEverywhereService : public KeyedService {
                                        RegionSelectedCallback callback);
   virtual void OnFileChooserOpened();
   virtual void OnFileChooserClosed();
+  virtual void OnHotkeyDropdownOpened();
+  virtual void OnHotkeyDropdownClosed();
   void OpenUrl(const GURL& url,
                WindowOpenDisposition disposition,
                ui::PageTransition transition);

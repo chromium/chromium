@@ -174,6 +174,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnDrivePickerOpened();
   void OnDrivePickerClosed();
 
+  void OnHotkeyDropdownOpened();
+  void OnHotkeyDropdownClosed();
+
   using RegionCaptureSource = OmniboxEverywhereService::RegionCaptureSource;
 
   void OnScreensharePickerOpened();
@@ -231,6 +234,15 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   bool is_permission_prompt_open_for_testing() const {
     return is_permission_prompt_open_;
   }
+  bool is_hotkey_dropdown_open_for_testing() const {
+    return is_hotkey_dropdown_open_;
+  }
+  bool is_hotkey_dropdown_deactivation_task_pending_for_testing() const {
+    return !hotkey_dropdown_deactivation_task_.IsCancelled();
+  }
+  void CheckDeactivationAfterHotkeyDropdownClosedForTesting() {
+    CheckDeactivationAfterHotkeyDropdownClosed();
+  }
   OmniboxEverywhereRegionSelectOverlay* region_select_overlay_for_testing() {
     return region_select_overlay_.get();
   }
@@ -280,6 +292,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnWidgetClosed(views::Widget::ClosedReason reason);
   void OnContextMenuClosed();
   void HandleWidgetDeactivated();
+  void CheckDeactivationAfterHotkeyDropdownClosed();
   void OnScreenshotDisclosureClosed(base::OnceClosure on_accepted,
                                     base::OnceClosure on_cancelled,
                                     views::Widget::ClosedReason reason);
@@ -303,6 +316,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   bool is_file_chooser_open_ = false;
   bool is_drive_picker_open_ = false;
+  bool is_hotkey_dropdown_open_ = false;
   bool is_context_menu_open_ = false;
   bool is_demoted_ = false;
   bool is_screenshare_picker_open_ = false;
@@ -325,6 +339,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // Task posted when the widget is deactivated, used to either dismiss or
   // reactivate the widget after the grace period.
   base::CancelableOnceClosure deactivation_task_;
+  base::CancelableOnceClosure hotkey_dropdown_deactivation_task_;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
   PrefChangeRegistrar profile_pref_change_registrar_;

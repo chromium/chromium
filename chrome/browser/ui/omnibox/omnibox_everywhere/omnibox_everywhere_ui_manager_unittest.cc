@@ -2510,4 +2510,72 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringPermissionPrompt) {
   ui_manager->Shutdown();
 }
 
+TEST_F(OmniboxEverywhereUIManagerTest, HotkeyDropdownStateTracking) {
+  auto ui_manager = CreateUIManager();
+  EXPECT_FALSE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+
+  ui_manager->OnHotkeyDropdownOpened();
+  EXPECT_TRUE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+
+  ui_manager->OnHotkeyDropdownClosed();
+  EXPECT_FALSE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringHotkeyDropdown) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Mark hotkey dropdown as open.
+  ui_manager->OnHotkeyDropdownOpened();
+  EXPECT_TRUE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+
+  // Simulating deactivation while hotkey dropdown is open should NOT close
+  // the widget.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Closing hotkey dropdown posts a deactivation check.
+  ui_manager->OnHotkeyDropdownClosed();
+  EXPECT_FALSE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+  EXPECT_TRUE(
+      ui_manager->is_hotkey_dropdown_deactivation_task_pending_for_testing());
+
+  // Reopening the hotkey dropdown should cancel the pending deactivation task.
+  ui_manager->OnHotkeyDropdownOpened();
+  EXPECT_FALSE(
+      ui_manager->is_hotkey_dropdown_deactivation_task_pending_for_testing());
+  EXPECT_TRUE(ui_manager->is_hotkey_dropdown_open_for_testing());
+
+  // Close it again, verify the pending task is scheduled, and run it.
+  ui_manager->OnHotkeyDropdownClosed();
+  EXPECT_TRUE(
+      ui_manager->is_hotkey_dropdown_deactivation_task_pending_for_testing());
+  task_environment()->FastForwardBy(base::Milliseconds(1));
+  EXPECT_FALSE(
+      ui_manager->is_hotkey_dropdown_deactivation_task_pending_for_testing());
+
+  // Advance time past the grace period and simulate deactivation.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
+
+  ui_manager->Shutdown();
+}
+
 }  // namespace omnibox_everywhere
