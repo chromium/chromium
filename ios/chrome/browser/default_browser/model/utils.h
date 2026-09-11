@@ -129,6 +129,12 @@ void LogOpenHTTPURLFromExternalURL();
 // Logs to the FET that a default browser promo has been shown.
 void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker);
 
+// Logs to the FET that a Gemini session was terminated and records whether the
+// contextual default browser promo would have triggered to the opportunity UMA
+// histogram.
+void LogDefaultBrowserPromoOpportunityForGemini(
+    feature_engagement::Tracker* tracker);
+
 // Returns whether blue dot display timestamp has already been set.
 bool HasDefaultBrowserBlueDotDisplayTimestamp();
 

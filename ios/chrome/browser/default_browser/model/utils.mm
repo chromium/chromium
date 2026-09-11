@@ -201,6 +201,18 @@ void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker) {
   tracker->NotifyEvent(feature_engagement::events::kDefaultBrowserPromoShown);
 }
 
+void LogDefaultBrowserPromoOpportunityForGemini(
+    feature_engagement::Tracker* tracker) {
+  if (!tracker) {
+    return;
+  }
+  tracker->NotifyEvent(feature_engagement::events::kGeminiSessionTerminated);
+  bool would_trigger = tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature);
+  base::UmaHistogramBoolean(
+      "IOS.DefaultBrowserContextualPromo.Gemini.Opportunity", would_trigger);
+}
+
 bool HasDefaultBrowserBlueDotDisplayTimestamp() {
   return !GetApplicationContext()
               ->GetLocalState()

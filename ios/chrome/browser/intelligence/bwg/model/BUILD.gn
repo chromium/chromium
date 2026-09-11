@@ -42,6 +42,8 @@ source_set("model") {
     "//components/prefs/ios",
     "//components/sessions:session_id",
     "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/browser/default_browser/model:features",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",

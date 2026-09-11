@@ -10,6 +10,8 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
@@ -516,6 +518,10 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   // Record prompt counts for the session.
   RecordSessionPromptCount(_totalPromptsInSession);
   RecordSessionFirstPrompt(_hasSubmittedFirstPrompt);
+
+  if (_tracker && IsIOSDefaultBrowserContextualPromoEnabled()) {
+    LogDefaultBrowserPromoOpportunityForGemini(_tracker);
+  }
 }
 
 // Records the quota reached metric if Nano Banana quota has been exhausted,

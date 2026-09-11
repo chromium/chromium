@@ -1497,6 +1497,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserContextualPromo.{PromoType}.Opportunity"
+    enum="Boolean" expires_after="2027-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records whether the {PromoType} contextual default browser promo would have
+    been eligible to trigger when the trigger opportunity event occurred (e.g.
+    on Gemini session termination). Recorded each time a Gemini session is
+    terminated if the contextual promo feature is enabled.
+  </summary>
+  <token key="PromoType">
+    <variant name="Gemini" summary="Gemini contextual promo"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoAllTabs"
     enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2027-02-07">
   <owner>sebsg@chromium.org</owner>
