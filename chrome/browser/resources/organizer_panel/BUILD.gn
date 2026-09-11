@@ -27,6 +27,8 @@ build_webui("build") {
     "organizer_list_section_delegate.ts",
     "organizer_list_section_item.html.ts",
     "organizer_list_section_item.ts",
+    "organizer_list_section_item_description.html.ts",
+    "organizer_list_section_item_description.ts",
     "organizer_list_section_item_title.html.ts",
     "organizer_list_section_item_title.ts",
     "organizer_panel.ts",
@@ -38,6 +40,7 @@ build_webui("build") {
     "organizer_list.css",
     "organizer_list_section.css",
     "organizer_list_section_item.css",
+    "organizer_list_section_item_description.css",
     "organizer_list_section_item_title.css",
     "stacked_favicons.css",
   ]
