@@ -81,13 +81,13 @@ std::pair<String, bool> NormalizeSpacesAndMaybeBidiInternal(
   return {text.ToString(), maybe_bidi};
 }
 
-template <bool split_by_zws>
+template <bool kSplitByZws>
 bool IsWordDelimiter(UChar ch) {
   // As of 2025 March, Google Docs always wraps text with BiDi control
   // characters, and they are replaced with ZWS for HarfBuzzShaper.
   // Assuming ZWS as a word delimiter improves hit rate of a shape cache.
   return ch == uchar::kSpace || ch == uchar::kTab ||
-         (split_by_zws && ch == uchar::kZeroWidthSpace);
+         (kSplitByZws && ch == uchar::kZeroWidthSpace);
 }
 
 unsigned NextWordEndIndex(StringView text, unsigned start_index) {

@@ -395,12 +395,12 @@ HeapHashSet<Member<const SimpleFontData>> ShapeResultView::UsedFonts() const {
   return used_fonts;
 }
 
-template <bool has_non_zero_glyph_offsets>
+template <bool kHasNonZeroGlyphOffsets>
 float ShapeResultView::ForEachGlyphImpl(float initial_advance,
                                         GlyphCallback glyph_callback,
                                         void* context,
                                         const RunInfoPart& part) const {
-  auto glyph_offsets = part.GetGlyphOffsets<has_non_zero_glyph_offsets>();
+  auto glyph_offsets = part.GetGlyphOffsets<kHasNonZeroGlyphOffsets>();
   const ShapeResultRun* run = part.GetRunInfo();
   auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
   bool is_horizontal = run->IsHorizontal();
@@ -435,7 +435,7 @@ float ShapeResultView::ForEachGlyph(float initial_advance,
   return total_advance;
 }
 
-template <bool has_non_zero_glyph_offsets>
+template <bool kHasNonZeroGlyphOffsets>
 float ShapeResultView::ForEachGlyphImpl(float initial_advance,
                                         unsigned from,
                                         unsigned to,
@@ -443,7 +443,7 @@ float ShapeResultView::ForEachGlyphImpl(float initial_advance,
                                         GlyphCallback glyph_callback,
                                         void* context,
                                         const RunInfoPart& part) const {
-  auto glyph_offsets = part.GetGlyphOffsets<has_non_zero_glyph_offsets>();
+  auto glyph_offsets = part.GetGlyphOffsets<kHasNonZeroGlyphOffsets>();
   auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
   const ShapeResultRun* run = part.GetRunInfo();
   bool is_horizontal = run->IsHorizontal();
@@ -599,7 +599,7 @@ float ShapeResultView::ForEachGraphemeClusters(const StringView& text,
   return advance_so_far;
 }
 
-template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+template <bool kIsHorizontalRun, bool kHasNonZeroGlyphOffsets>
 void ShapeResultView::ComputePartInkBounds(
     const ShapeResultView::RunInfoPart& part,
     float run_advance,
@@ -607,17 +607,16 @@ void ShapeResultView::ComputePartInkBounds(
 #if defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
   constexpr size_t kVectorizationThreshold = 16;
   if (part.NumGlyphs() >= kVectorizationThreshold) {
-    return ComputePartInkBoundsVectorized<is_horizontal_run,
-                                          has_non_zero_glyph_offsets>(
+    return ComputePartInkBoundsVectorized<kIsHorizontalRun,
+                                          kHasNonZeroGlyphOffsets>(
         part, run_advance, ink_bounds);
   }
 #endif
-  return ComputePartInkBoundsScalar<is_horizontal_run,
-                                    has_non_zero_glyph_offsets>(
+  return ComputePartInkBoundsScalar<kIsHorizontalRun, kHasNonZeroGlyphOffsets>(
       part, run_advance, ink_bounds);
 }
 
-template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+template <bool kIsHorizontalRun, bool kHasNonZeroGlyphOffsets>
 void ShapeResultView::ComputePartInkBoundsScalar(
     const ShapeResultView::RunInfoPart& part,
     float run_advance,
@@ -628,7 +627,7 @@ void ShapeResultView::ComputePartInkBoundsScalar(
   // https://bugs.chromium.org/p/skia/issues/detail?id=5328, and the cost to
   // prepare batching, which is normally much less than the benefit of
   // batching, is not ignorable unfortunately.
-  auto glyph_offsets = part.GetGlyphOffsets<has_non_zero_glyph_offsets>();
+  auto glyph_offsets = part.GetGlyphOffsets<kHasNonZeroGlyphOffsets>();
   const SimpleFontData& current_font_data = *part.GetRunInfo()->font_data_;
   unsigned num_glyphs = part.NumGlyphs();
   const GlyphDataRange::Reader reader = part.CreateReader();
@@ -641,7 +640,7 @@ void ShapeResultView::ComputePartInkBoundsScalar(
   current_font_data.BoundsForGlyphs(glyphs, &bounds_list);
 #endif
 
-  GlyphBoundsAccumulator<is_horizontal_run> bounds;
+  GlyphBoundsAccumulator<kIsHorizontalRun> bounds;
   InlineLayoutUnit origin = InlineLayoutUnit::FromFloatCeil(run_advance);
   for (unsigned j = 0; j < num_glyphs; ++j) {
     const HarfBuzzRunGlyphData& glyph_data = reader[j];
@@ -661,19 +660,19 @@ void ShapeResultView::ComputePartInkBoundsScalar(
 }
 
 #if defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
-template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+template <bool kIsHorizontalRun, bool kHasNonZeroGlyphOffsets>
 void ShapeResultView::ComputePartInkBoundsVectorized(
     const ShapeResultView::RunInfoPart& part,
     float run_advance,
     gfx::RectF* ink_bounds) const {
-  using AccuType = VectorizedGlyphBoundsAccumulator<is_horizontal_run>;
+  using AccuType = VectorizedGlyphBoundsAccumulator<kIsHorizontalRun>;
   // Get glyph bounds from Skia. It's a lot faster if we give it list of glyph
   // IDs rather than calling it for each glyph.
   // TODO(kojii): MacOS does not benefit from batching the Skia request due to
   // https://bugs.chromium.org/p/skia/issues/detail?id=5328, and the cost to
   // prepare batching, which is normally much less than the benefit of
   // batching, is not ignorable unfortunately.
-  auto glyph_offsets = part.GetGlyphOffsets<has_non_zero_glyph_offsets>();
+  auto glyph_offsets = part.GetGlyphOffsets<kHasNonZeroGlyphOffsets>();
   const SimpleFontData& current_font_data = *part.GetRunInfo()->font_data_;
   unsigned num_glyphs = part.NumGlyphs();
   DCHECK_GE(num_glyphs, 4u);

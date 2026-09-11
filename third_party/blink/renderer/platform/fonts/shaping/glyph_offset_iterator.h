@@ -15,7 +15,7 @@ namespace blink {
 //
 // Since it could be empty if there are no glyph offsets in the run, this
 // iterator makes iterating offsets to be no-operations in such case.
-template <bool has_non_zero_glyph_offsets>
+template <bool kHasNonZeroGlyphOffsets>
 struct PLATFORM_EXPORT GlyphOffsetIterator final {};
 
 // For non-zero glyph offset array

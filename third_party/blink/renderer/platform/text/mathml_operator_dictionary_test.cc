@@ -138,8 +138,8 @@ static const UChar32 category_m[]{
     0x003B,
 };
 
-template <typename T, size_t N>
-bool IsInCategory(const T (&table)[N], UChar32 character) {
+template <typename T, size_t kSize>
+bool IsInCategory(const T (&table)[kSize], UChar32 character) {
   return std::binary_search(table, UNSAFE_TODO(table + std::size(table)),
                             character);
 }

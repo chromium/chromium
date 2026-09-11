@@ -339,9 +339,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
                      : base::span<GlyphOffset>();
     }
 
-    template <bool has_non_zero_glyph_offsets>
-    GlyphOffsetIterator<has_non_zero_glyph_offsets> GetOffsets() const {
-      return GlyphOffsetIterator<has_non_zero_glyph_offsets>(Offsets());
+    template <bool kHasNonZeroGlyphOffsets>
+    GlyphOffsetIterator<kHasNonZeroGlyphOffsets> GetOffsets() const {
+      return GlyphOffsetIterator<kHasNonZeroGlyphOffsets>(Offsets());
     }
 
     // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.

@@ -265,8 +265,8 @@ struct LazyLineBreakIterator::Context {
 };
 
 template <typename CharacterType,
-          LineBreakType line_break_type,
-          BreakSpaceType break_space>
+          LineBreakType kLineBreakType,
+          BreakSpaceType kBreakSpace>
 inline unsigned LazyLineBreakIterator::NextBreakablePosition(
     unsigned pos,
     base::span<const CharacterType> span) const {
@@ -275,12 +275,12 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
   Context<CharacterType> context(str, len, start_offset_, pos);
   unsigned next_break = 0;
   ULineBreak last_line_break;
-  if constexpr (line_break_type == LineBreakType::kBreakAll) {
+  if constexpr (kLineBreakType == LineBreakType::kBreakAll) {
     last_line_break =
         LineBreakPropertyValue(context.last_last_ch, context.last.ch);
   }
   for (unsigned i = pos; context.Fetch(str, len, i); context.Advance(i)) {
-    switch (break_space) {
+    switch (kBreakSpace) {
       case BreakSpaceType::kAfterSpaceRun:
         if (context.current.is_space) {
           continue;
@@ -308,7 +308,7 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
       return i;
     }
 
-    if constexpr (line_break_type == LineBreakType::kBreakAll) {
+    if constexpr (kLineBreakType == LineBreakType::kBreakAll) {
       if (!U16_IS_LEAD(context.current.ch)) {
         // https://drafts.csswg.org/css-text-4/#line-break-property
         // * The following breaks are allowed for 'loose' line breaking if the
@@ -335,7 +335,7 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
           last_line_break = line_break;
         }
       }
-    } else if constexpr (line_break_type == LineBreakType::kKeepAll) {
+    } else if constexpr (kLineBreakType == LineBreakType::kKeepAll) {
       if (ShouldKeepAfterKeepAll(context.last_last_ch, context.last.ch,
                                  context.current.ch)) {
         // word-break:keep-all prevents breaks between East Asian ideographic.
@@ -386,22 +386,22 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
   return len;
 }
 
-template <typename CharacterType, LineBreakType lineBreakType>
+template <typename CharacterType, LineBreakType kLineBreakType>
 inline unsigned LazyLineBreakIterator::NextBreakablePosition(
     unsigned pos,
     base::span<const CharacterType> span) const {
   switch (break_space_) {
     case BreakSpaceType::kAfterSpaceRun:
-      return NextBreakablePosition<CharacterType, lineBreakType,
+      return NextBreakablePosition<CharacterType, kLineBreakType,
                                    BreakSpaceType::kAfterSpaceRun>(pos, span);
     case BreakSpaceType::kAfterEverySpace:
-      return NextBreakablePosition<CharacterType, lineBreakType,
+      return NextBreakablePosition<CharacterType, kLineBreakType,
                                    BreakSpaceType::kAfterEverySpace>(pos, span);
   }
   NOTREACHED();
 }
 
-template <LineBreakType lineBreakType>
+template <LineBreakType kLineBreakType>
 inline unsigned LazyLineBreakIterator::NextBreakablePosition(
     unsigned pos,
     unsigned len) const {
@@ -409,10 +409,10 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
     return 0;
   }
   if (string_.Is8Bit()) {
-    return NextBreakablePosition<LChar, lineBreakType>(
+    return NextBreakablePosition<LChar, kLineBreakType>(
         pos, string_.Span8().first(len));
   }
-  return NextBreakablePosition<UChar, lineBreakType>(
+  return NextBreakablePosition<UChar, kLineBreakType>(
       pos, string_.Span16().first(len));
 }
 

@@ -431,7 +431,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   TextRunLayoutUnit ApplySpacingOrExpansion(ShapeResultSpacing&,
                                             std::optional<TextJustify> method,
                                             int text_start_offset = 0);
-  template <bool is_horizontal_run>
+  template <bool kIsHorizontalRun>
   void ComputeGlyphPositions(ShapeResultRun*,
                              unsigned start_glyph,
                              unsigned num_glyphs,
@@ -447,17 +447,17 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   void InsertRun(ShapeResultRun*);
   void ReorderRtlRuns(unsigned run_size_before);
 
-  template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+  template <bool kIsHorizontalRun, bool kHasNonZeroGlyphOffsets>
   void ComputeRunInkBounds(const ShapeResultRun&,
                            float run_advance,
                            gfx::RectF* ink_bounds) const;
 
-  template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+  template <bool kIsHorizontalRun, bool kHasNonZeroGlyphOffsets>
   void ComputeRunInkBoundsScalar(const ShapeResultRun&,
                                  float run_advance,
                                  gfx::RectF* ink_bounds) const;
 #if defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
-  template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+  template <bool kIsHorizontalRun, bool kHasNonZeroGlyphOffsets>
   void ComputeRunInkBoundsVectorized(const ShapeResultRun&,
                                      float run_advance,
                                      gfx::RectF* ink_bounds) const;
@@ -513,13 +513,13 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
                                float offset,
                                Vector<CharacterRange>* ranges);
 
-  template <bool has_non_zero_glyph_offsets>
+  template <bool kHasNonZeroGlyphOffsets>
   float ForEachGlyphImpl(float initial_advance,
                          GlyphCallback,
                          void* context,
                          const ShapeResultRun& run) const;
 
-  template <bool has_non_zero_glyph_offsets>
+  template <bool kHasNonZeroGlyphOffsets>
   float ForEachGlyphImpl(float initial_advance,
                          unsigned from,
                          unsigned to,
@@ -531,7 +531,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // Internal implementation of `ApplyTextAutoSpacing`. The iterator can be
   // Vector::iterator or Vector::reverse_iterator, depending on the text
   // direction.
-  template <TextDirection direction, class Iterator>
+  template <TextDirection kDirection, class Iterator>
   void ApplyTextAutoSpacingCore(Iterator offset_begin, Iterator offset_end);
 };
 

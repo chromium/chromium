@@ -255,10 +255,10 @@ consteval bool MaybeEmojiPresentationForAscii(unsigned char ch) {
          Character::IsEmojiKeycapBase(ch);
 }
 
-template <std::size_t N, typename Function>
+template <std::size_t kSize, typename Function>
 consteval auto GenerateTable(Function&& f) {
-  std::array<bool, N> arr;
-  for (unsigned char i = 0; i < N; ++i) {
+  std::array<bool, kSize> arr;
+  for (unsigned char i = 0; i < kSize; ++i) {
     arr[i] = f(i);
   }
   return arr;

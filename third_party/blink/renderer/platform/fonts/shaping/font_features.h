@@ -49,9 +49,9 @@ struct PLATFORM_EXPORT FontFeatureRange : public FontFeatureValue {
   static constexpr wtf_size_t kInitialSize = 1;
 
   // Initialize the list from |FontDescription|.
-  template <wtf_size_t InlineCapacity>
+  template <wtf_size_t kInlineCapacity>
   static void FromFontDescription(const FontDescription&,
-                                  Vector<FontFeatureRange, InlineCapacity>&);
+                                  Vector<FontFeatureRange, kInlineCapacity>&);
 
   // This struct has the same size and layout as `hb_feature_t`.
   static const hb_feature_t* ToHarfBuzzData(const FontFeatureRange* features) {

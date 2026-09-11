@@ -174,9 +174,9 @@ class PLATFORM_EXPORT ShapeResultView final
     GlyphDataRange::Reader CreateReader() const {
       return GlyphDataRange::Reader(range_);
     }
-    template <bool has_non_zero_glyph_offsets>
-    GlyphOffsetIterator<has_non_zero_glyph_offsets> GetGlyphOffsets() const {
-      return GlyphOffsetIterator<has_non_zero_glyph_offsets>(range_);
+    template <bool kHasNonZeroGlyphOffsets>
+    GlyphOffsetIterator<kHasNonZeroGlyphOffsets> GetGlyphOffsets() const {
+      return GlyphOffsetIterator<kHasNonZeroGlyphOffsets>(range_);
     }
     bool HasGlyphOffsets() const { return range_.HasOffsets(); }
     // The end character index of |this| without considering offsets in
@@ -264,17 +264,17 @@ class PLATFORM_EXPORT ShapeResultView final
 
   unsigned CharacterIndexOffsetForGlyphData(const RunInfoPart&) const;
 
-  template <bool is_horizontal_run, bool has_glyph_offsets>
+  template <bool kIsHorizontalRun, bool kHasGlyphOffsets>
   void ComputePartInkBounds(const ShapeResultView::RunInfoPart&,
                             float run_advance,
                             gfx::RectF* ink_bounds) const;
 
-  template <bool is_horizontal_run, bool has_glyph_offsets>
+  template <bool kIsHorizontalRun, bool kHasGlyphOffsets>
   void ComputePartInkBoundsScalar(const ShapeResultView::RunInfoPart&,
                                   float run_advance,
                                   gfx::RectF* ink_bounds) const;
 #if defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
-  template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+  template <bool kIsHorizontalRun, bool kHasNonZeroGlyphOffsets>
   void ComputePartInkBoundsVectorized(const ShapeResultView::RunInfoPart&,
                                       float run_advance,
                                       gfx::RectF* ink_bounds) const;
@@ -308,13 +308,13 @@ class PLATFORM_EXPORT ShapeResultView final
  private:
   friend class ShapeResult;
 
-  template <bool has_glyph_offsets>
+  template <bool kHasGlyphOffsets>
   float ForEachGlyphImpl(float initial_advance,
                          GlyphCallback,
                          void* context,
                          const RunInfoPart& part) const;
 
-  template <bool has_glyph_offsets>
+  template <bool kHasGlyphOffsets>
   float ForEachGlyphImpl(float initial_advance,
                          unsigned from,
                          unsigned to,

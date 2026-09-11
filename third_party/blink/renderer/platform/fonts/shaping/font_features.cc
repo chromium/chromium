@@ -29,10 +29,10 @@ static_assert(offsetof(FontFeatureRange, start) ==
               offsetof(hb_feature_t, start));
 static_assert(offsetof(FontFeatureRange, end) == offsetof(hb_feature_t, end));
 
-template <wtf_size_t InlineCapacity>
+template <wtf_size_t kInlineCapacity>
 void FontFeatureRange::FromFontDescription(
     const FontDescription& description,
-    Vector<FontFeatureRange, InlineCapacity>& features) {
+    Vector<FontFeatureRange, kInlineCapacity>& features) {
   DCHECK(features.empty());
   const bool is_horizontal = !description.IsVerticalAnyUpright();
 

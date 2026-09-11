@@ -282,11 +282,11 @@ class PLATFORM_EXPORT SegmentedString {
 
   // Check the current characters are `expected_string` with DCHECK(), then
   // advance by the length of `expected_string`.
-  template <size_t length>
-  inline void AdvanceExpecting(const char (&expected_string)[length])
-      ENABLE_IF_ATTR(expected_string[length - 1u] == 0,
+  template <size_t kLength>
+  inline void AdvanceExpecting(const char (&expected_string)[kLength])
+      ENABLE_IF_ATTR(expected_string[kLength - 1u] == 0,
                      "requires string literal as input") {
-    for (size_t i = 0; i < length - 1u; ++i) {
+    for (size_t i = 0; i < kLength - 1u; ++i) {
       // SAFETY: `i` is always less than `length - 1`, which is less than the
       // actual length of the array.
       DCHECK_EQ(CurrentChar(), UNSAFE_BUFFERS(expected_string[i]));
@@ -296,12 +296,12 @@ class PLATFORM_EXPORT SegmentedString {
 
   // Check the current characters are `expected_string` ASCII case insensitively
   // with DCHECK(), then advance by the length of `expected_string`.
-  template <size_t length>
+  template <size_t kLength>
   inline void AdvanceExpectingIgnoringAsciiCase(
-      const char (&expected_string)[length])
-      ENABLE_IF_ATTR(expected_string[length - 1u] == 0,
+      const char (&expected_string)[kLength])
+      ENABLE_IF_ATTR(expected_string[kLength - 1u] == 0,
                      "requires string literal as input") {
-    for (size_t i = 0; i < length - 1u; ++i) {
+    for (size_t i = 0; i < kLength - 1u; ++i) {
       // SAFETY: `i` is always less than `length - 1`, which is less than the
       // actual length of the array.
       DCHECK_EQ(ToAsciiLower(CurrentChar()),
@@ -353,19 +353,19 @@ class PLATFORM_EXPORT SegmentedString {
   // `length()`.
   void AdvanceAndCollect(base::span<UChar> characters);
 
-  template <TextCaseSensitivity case_sensitivity>
+  template <TextCaseSensitivity kCaseSensitivity>
   inline LookAheadResult LookAheadInline(const String& string) {
     if (string.length() <= static_cast<unsigned>(current_string_.length())) {
       StringView current_prefix =
           current_string_.CurrentSubString(string.length());
-      if (case_sensitivity == TextCaseSensitivity::kTextCaseSensitive
+      if (kCaseSensitivity == TextCaseSensitivity::kTextCaseSensitive
               ? current_prefix == string
               : EqualIgnoringAsciiCase(current_prefix, string)) {
         return kDidMatch;
       }
       return kDidNotMatch;
     }
-    return LookAheadSlowCase(string, case_sensitivity);
+    return LookAheadSlowCase(string, kCaseSensitivity);
   }
 
   LookAheadResult LookAheadSlowCase(const String& string,
