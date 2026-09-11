@@ -2619,7 +2619,7 @@ const CSSValue* StyleCascade::CoerceIntoNumericValue(
     const CSSParserContext& context) {
   STACK_UNINITIALIZED StyleCascade cascade(state);
   CascadeResolver resolver{CascadeFilter()};
-  bool is_attr_tainted_unused;
+  bool is_attr_tainted_unused = false;
   CSSParserLocalContext local_context =
       CSSParserLocalContext::CreateWithoutPropertyForAtRules();
   return cascade.CoerceIntoNumericValueInternal(
