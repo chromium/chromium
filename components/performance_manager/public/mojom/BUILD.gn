@@ -5,10 +5,11 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom_component("mojom") {
+  generate_blink = true
   output_prefix = "performance_manager_public_mojom"
   macro_prefix = "PERFORMANCE_MANAGER_PUBLIC_MOJOM"
 
-  cpp_only = true
+  generate_legacy_js = false
 
   sources = [
     "coordination_unit.mojom",

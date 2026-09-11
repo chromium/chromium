@@ -249,6 +249,7 @@ if (is_android) {
 }
 
 mojom("mojom") {
+  generate_blink = true
   generate_java = true
   sources = [
     "color_id.mojom",

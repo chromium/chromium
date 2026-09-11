@@ -21,6 +21,7 @@ component("shared_mojom_traits") {
 }
 
 mojom("mojom") {
+  generate_blink = true
   generate_java = true
   sources = [
     "browser_controls_state.mojom",
@@ -101,6 +102,7 @@ mojom("mojom") {
 }
 
 mojom("mojom_browser_controls") {
+  generate_blink = true
   generate_java = true
   sources = [
     "browser_controls_offset_tag_modifications.mojom",
@@ -146,6 +148,7 @@ mojom("mojom_browser_controls") {
 }
 
 mojom("mojom_layer_trees") {
+  generate_blink = true
   generate_java = true
   sources = [
     "element_id.mojom",

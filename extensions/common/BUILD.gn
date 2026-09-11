@@ -82,8 +82,6 @@ source_set("extension_features") {
 
 mojom("mojom") {
   # We don't want Blink variants of bindings to be generated.
-  disable_variants = true
-
   sources = [
     "mojom/api_permission_id.mojom",
     "mojom/app_window.mojom",

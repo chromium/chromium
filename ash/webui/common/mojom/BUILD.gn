@@ -10,9 +10,6 @@ mojom("mojom") {
   sources = [ "accessibility_features.mojom" ]
 
   webui_module_path = "/ash/webui/common"
-
-  disable_variants = true
-
   public_deps = [
     ":accelerator_fetcher",
     ":shortcut_input_provider",
@@ -26,7 +23,6 @@ mojom("mojom") {
 # advantage of JS module Mojom files, without having to generate WebUI Mojom
 # files for all dependencies(and their dependencies) in //ash/public/mojom.
 mojom("shortcut_input_provider") {
-  disable_variants = true
   webui_module_path = "/"
 
   sources = [ "shortcut_input_provider.mojom" ]
@@ -37,7 +33,6 @@ mojom("shortcut_input_provider") {
 }
 
 mojom("accelerator_fetcher") {
-  disable_variants = true
   webui_module_path = "/"
 
   sources = [ "accelerator_fetcher.mojom" ]
@@ -48,7 +43,6 @@ mojom("accelerator_fetcher") {
 }
 
 mojom("webui_syslog_emitter") {
-  disable_variants = true
   sources = [ "webui_syslog_emitter.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
 
@@ -57,7 +51,6 @@ mojom("webui_syslog_emitter") {
 }
 
 mojom("sea_pen") {
-  disable_variants = true
   webui_module_path = "/"
   sources = [
     "sea_pen.mojom",

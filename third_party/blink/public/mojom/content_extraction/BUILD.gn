@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 # This is a separate target to produce legacy bindings so that
 # these interfaces can be used in Blink and WebUI clients.
 mojom("content_extraction") {
+  generate_blink = true
   sources = [ "ai_page_content_metadata.mojom" ]
   public_deps = [
     "//mojo/public/mojom/base",

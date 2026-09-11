@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("video_capture") {
+  generate_blink = true
   generate_java = true
   sources = [ "video_capture.mojom" ]
 
@@ -23,6 +24,7 @@ mojom("video_capture") {
 }
 
 mojom("video_capture_buffer") {
+  generate_blink = true
   generate_java = true
   sources = [ "video_capture_buffer.mojom" ]
 
@@ -41,6 +43,7 @@ mojom("video_capture_buffer") {
 }
 
 mojom("video_capture_types") {
+  generate_blink = true
   generate_java = true
   sources = [ "video_capture_types.mojom" ]
 
@@ -136,6 +139,7 @@ component("video_capture_mojom_support") {
 }
 
 mojom("image_capture") {
+  generate_blink = true
   sources = [ "image_capture.mojom" ]
 
   # ImageCapture Mojom interfaces are exposed publicly to layout tests which use

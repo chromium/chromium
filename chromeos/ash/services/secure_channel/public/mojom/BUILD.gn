@@ -18,7 +18,7 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
   ]
 
-  cpp_only = true
+  generate_legacy_js = false
 
   cpp_typemaps = [
     {

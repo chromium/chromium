@@ -16,9 +16,6 @@ mojom("mojo_bindings") {
     "//third_party/blink/public/mojom/quota",
     "//url/mojom:url_mojom_origin",
   ]
-
-  disable_variants = true
-
   component_output_prefix = "storage_browser_interfaces"
   component_macro_prefix = "STORAGE_BROWSER_INTERFACES"
 }

@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_blink = true
   sources = [ "seatbelt_extension_token.mojom" ]
 
   cpp_typemaps = [

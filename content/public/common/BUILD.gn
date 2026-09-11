@@ -355,8 +355,6 @@ source_set("common_sources") {
 
 mojom("interfaces") {
   # We don't want Blink variants of these bindings to be generated.
-  disable_variants = true
-
   # Must depend on //content/public/common/ instead, for component build.
   visibility = [
     ":common_sources",

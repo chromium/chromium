@@ -193,13 +193,7 @@ if (enable_scrambled_message_ids) {
 #   visibility_blink (optional)
 #       The value to use for visibility for the blink variant. If unset,
 #       |visibility| is used.
-#
-#   cpp_only (optional)
-#       If set to true, only the C++ bindings targets will be generated.
-#
-#       NOTE: If the global |enable_mojom_fuzzer| build arg is true, JS bindings
-#       will still be generated even when |cpp_only| is set to |true|, unless
-#       you also set |enable_fuzzing| to |false| in your mojom target.
+
 #
 #   cpp_typemaps (optional)
 #       A list of typemaps to be applied to the generated C++ bindings for this
@@ -266,29 +260,46 @@ if (enable_scrambled_message_ids) {
 #       Same as above but depends on "foo_blink_cpp_sources" and is used for
 #       dependencies that specify a `blink_cpp_proxy_target`.
 #
-#   generate_java (optional)
-#       If set to true, Java bindings are generated for Android builds. If
-#       |cpp_only| is set to true, it overrides this to prevent generation of
-#       Java bindings.
+#   generate_cpp (optional)
+#       If `false`, no C++ bindings will be generated for the target. Defaults
+#       to `true`.
 #
-#   generate_rust (optional, under development)
-#       If set to true, Rust bindings are generated, unless |cpp_only| is also
-#       set to true. Still being worked on, and not ready for production use.
+#   generate_blink (optional)
+#       If `true`, blink bindings will be generated for the target.
+#       Defaults to `false`.
+#
+#   generate_java (optional)
+#       If `true`, Java bindings are generated for Android builds. Defaults
+#       to `false`.
+#
+#   generate_rust (optional)
+#       If `true`, Rust bindings are generated. Defaults to `false`.
+#
+#   generate_legacy_js (optional)
+#       Whether to generate legacy JavaScript bindings. Defaults to `true` for
+#       targets that do not specify webui_module_path, and `false` for WebUI
+#       targets (which generate TypeScript instead).
+#
+#   generate_closure_exports (optional)
+#       Generates JS lite bindings will use goog.provide and goog.require
+#       annotations to export its symbols and import core Mojo bindings support
+#       and other mojom dependency modules. Use this if you plan to compile your
+#       bindings into a larger JS binary. Defaults to `false`, instead
+#       generating JS lite bindings which assume they will be manually loaded in
+#       correct dependency order. Note that this only has an effect if
+#       the `enable_mojom_closure_compile` global arg is set to `true as well.
+#
+#   js_generate_struct_deserializers (optional)
+#       Generates JS deerialize methods for structs.
 #
 #   enable_js_fuzzing (optional)
 #       Enables generation of javascript fuzzing sources for the target if the
 #       global build arg |enable_mojom_fuzzer| is also set to |true|.
-#       Defaults to |true|. If JS fuzzing generation is enabled for a target,
-#       the target will always generate JS bindings even if |cpp_only| is set to
-#       |true|. See note above.
+#       Defaults to |true|.
 #
 #   enable_mojolpm_fuzzing (optional)
 #       Enables generation of fuzzing sources for the target if the global build
 #       arg |enable_mojom_fuzzer| is also set to |true|. Defaults to |true|.
-#
-#   disable_variants (optional)
-#       If |true|, no variant sources will be generated for the target. Defaults
-#       to |false|.
 #
 #   disallow_native_types (optional)
 #       If set to |true|, mojoms in this target may not apply the [Native]
@@ -329,23 +340,6 @@ if (enable_scrambled_message_ids) {
 #       the value specified by the attribute does not match any items in the
 #       list of enabled_features, the definition will be disabled, with no code
 #       emitted for it.
-#
-#   generate_closure_exports (optional)
-#       Generates JS lite bindings will use goog.provide and goog.require
-#       annotations to export its symbols and import core Mojo bindings support
-#       and other mojom dependency modules. Use this if you plan to compile your
-#       bindings into a larger JS binary. Defaults to |false|, instead
-#       generating JS lite bindings which assume they will be manually loaded in
-#       correct dependency order. Note that this only has an effect if
-#       the |enable_mojom_closure_compile| global arg is set to |true| as well.
-#
-#   generate_legacy_js_bindings (optional)
-#       Generate js_data_deps target containing legacy JavaScript bindings files
-#       for Blink tests and other non-WebUI users when generating TypeScript
-#       bindings for WebUI.
-#
-#   js_generate_struct_deserializers (optional)
-#       Generates JS deerialize methods for structs.
 #
 #   extra_cpp_template_paths (optional)
 #       List of extra C++ templates that are used to generate additional source
@@ -710,6 +704,7 @@ template("mojom") {
   generate_js_fuzzing =
       (!defined(invoker.enable_js_fuzzing) || invoker.enable_js_fuzzing) &&
       enable_mojom_fuzzer && (!defined(invoker.testonly) || !invoker.testonly)
+  not_needed([ "generate_js_fuzzing" ])
 
   generate_mojolpm_fuzzing =
       (!defined(invoker.enable_mojolpm_fuzzing) ||
@@ -1203,34 +1198,36 @@ template("mojom") {
     }
   }
 
+  generate_cpp = true
+  if (defined(invoker.generate_cpp)) {
+    generate_cpp = invoker.generate_cpp
+  }
+
+  generate_blink = false
+  if (defined(invoker.generate_blink)) {
+    generate_blink = invoker.generate_blink
+  }
+
   # Generate code for variants.
   default_variant = {
     component_macro_suffix = ""
   }
-  if ((!defined(invoker.disable_variants) || !invoker.disable_variants) &&
-      use_blink) {
+  enabled_configurations = [ default_variant ]
+  if (generate_blink && use_blink) {
     blink_variant = {
       variant = "blink"
       component_macro_suffix = "_BLINK"
       for_blink = true
     }
-    enabled_configurations = [
-      default_variant,
-      blink_variant,
-    ]
-  } else {
-    enabled_configurations = [ default_variant ]
+    enabled_configurations += [ blink_variant ]
   }
   foreach(bindings_configuration, enabled_configurations) {
-    cpp_only = false
-    if (defined(invoker.cpp_only)) {
-      cpp_only = invoker.cpp_only
-    }
+    generate_cpp_for_variant =
+        generate_cpp || defined(bindings_configuration.variant)
     variant_suffix = ""
     if (defined(bindings_configuration.variant)) {
       variant = bindings_configuration.variant
       variant_suffix = "_${variant}"
-      cpp_only = true
     }
 
     cpp_typemap_configs = []
@@ -1310,7 +1307,8 @@ template("mojom") {
     }
 
     generate_java = false
-    if (!cpp_only && defined(invoker.generate_java)) {
+    if (!defined(bindings_configuration.variant) &&
+        defined(invoker.generate_java)) {
       generate_java = invoker.generate_java
     }
     type_mappings_target_name = "${target_name}${variant_suffix}__type_mappings"
@@ -1367,113 +1365,120 @@ template("mojom") {
 
       generator_target_name = "${target_name}${variant_suffix}__generator"
 
-      # TODO(crbug.com/40758345): Investigate nondeterminism in Py3 builds.
-      action(generator_target_name) {
-        visibility = [ ":*" ]
-        script = mojom_generator_script
-        inputs = mojom_generator_sources + jinja2_sources
-        sources = sources_list + [ type_mappings_path ]
-        deps = [
-          ":$parser_target_name",
-          ":$type_mappings_target_name",
-          "//mojo/public/tools/bindings:precompile_cpp_templates",
-        ]
-        if (generate_mojolpm_fuzzing &&
-            !defined(bindings_configuration.variant)) {
-          deps +=
-              [ "//mojo/public/tools/bindings:precompile_mojolpm_templates" ]
-        }
-
-        if (defined(invoker.parser_deps)) {
-          deps += invoker.parser_deps
-        }
-        outputs = []
-        args = common_generator_args + export_args
-        filelist = []
-        foreach(source, sources_list) {
-          filelist += [ rebase_path(source, root_build_dir) ]
-        }
-        foreach(base_path, output_file_base_paths) {
-          filename = get_path_info(base_path, "file")
-          dirname = get_path_info(base_path, "dir")
-          inputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
-
-          outputs += [
-            "$root_gen_dir/${base_path}${variant_dash_suffix}-forward.h",
-            "$root_gen_dir/${base_path}${variant_dash_suffix}-import-headers.h",
-            "$root_gen_dir/${base_path}${variant_dash_suffix}-test-utils.h",
-            "$root_gen_dir/${base_path}${variant_dash_suffix}.cc",
-            "$root_gen_dir/${base_path}${variant_dash_suffix}.h",
+      if (generate_cpp_for_variant) {
+        # TODO(crbug.com/40758345): Investigate nondeterminism in Py3 builds.
+        action(generator_target_name) {
+          visibility = [ ":*" ]
+          script = mojom_generator_script
+          inputs = mojom_generator_sources + jinja2_sources
+          sources = sources_list + [ type_mappings_path ]
+          deps = [
+            ":$parser_target_name",
+            ":$type_mappings_target_name",
+            "//mojo/public/tools/bindings:precompile_cpp_templates",
           ]
           if (generate_mojolpm_fuzzing &&
               !defined(bindings_configuration.variant)) {
+            deps +=
+                [ "//mojo/public/tools/bindings:precompile_mojolpm_templates" ]
+          }
+
+          if (defined(invoker.parser_deps)) {
+            deps += invoker.parser_deps
+          }
+          outputs = []
+          args = common_generator_args + export_args
+          filelist = []
+          foreach(source, sources_list) {
+            filelist += [ rebase_path(source, root_build_dir) ]
+          }
+          foreach(base_path, output_file_base_paths) {
+            filename = get_path_info(base_path, "file")
+            dirname = get_path_info(base_path, "dir")
+            inputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
+
             outputs += [
-              "$root_gen_dir/${base_path}${variant_dash_suffix}-mojolpm.cc",
-              "$root_gen_dir/${base_path}${variant_dash_suffix}-mojolpm.h",
+              "$root_gen_dir/${base_path}${variant_dash_suffix}-forward.h",
+              "$root_gen_dir/${base_path}${variant_dash_suffix}-import-headers.h",
+              "$root_gen_dir/${base_path}${variant_dash_suffix}-test-utils.h",
+              "$root_gen_dir/${base_path}${variant_dash_suffix}.cc",
+              "$root_gen_dir/${base_path}${variant_dash_suffix}.h",
+            ]
+            if (generate_mojolpm_fuzzing &&
+                !defined(bindings_configuration.variant)) {
+              outputs += [
+                "$root_gen_dir/${base_path}${variant_dash_suffix}-mojolpm.cc",
+                "$root_gen_dir/${base_path}${variant_dash_suffix}-mojolpm.h",
+              ]
+            }
+          }
+
+          # Workaround for https://github.com/ninja-build/ninja/issues/1966.
+          rsp_file = "$target_gen_dir/${target_name}.rsp"
+          write_file(rsp_file, filelist)
+          inputs += [ rsp_file ]
+          args += [
+            "--filelist=" + rebase_path("$rsp_file", root_build_dir),
+            "-g",
+          ]
+
+          if (generate_mojolpm_fuzzing &&
+              !defined(bindings_configuration.variant)) {
+            args += [ "c++,mojolpm" ]
+          } else {
+            args += [ "c++" ]
+          }
+
+          if (defined(bindings_configuration.variant)) {
+            args += [
+              "--variant",
+              bindings_configuration.variant,
             ]
           }
-        }
 
-        # Workaround for https://github.com/ninja-build/ninja/issues/1966.
-        rsp_file = "$target_gen_dir/${target_name}.rsp"
-        write_file(rsp_file, filelist)
-        inputs += [ rsp_file ]
-        args += [
-          "--filelist=" + rebase_path("$rsp_file", root_build_dir),
-          "-g",
-        ]
-
-        if (generate_mojolpm_fuzzing &&
-            !defined(bindings_configuration.variant)) {
-          args += [ "c++,mojolpm" ]
-        } else {
-          args += [ "c++" ]
-        }
-
-        if (defined(bindings_configuration.variant)) {
           args += [
-            "--variant",
-            bindings_configuration.variant,
+            "--typemap",
+            rebase_path(type_mappings_path, root_build_dir),
           ]
-        }
 
-        args += [
-          "--typemap",
-          rebase_path(type_mappings_path, root_build_dir),
-        ]
+          if (defined(bindings_configuration.for_blink) &&
+              bindings_configuration.for_blink) {
+            args += [ "--for_blink" ]
+          }
 
-        if (defined(bindings_configuration.for_blink) &&
-            bindings_configuration.for_blink) {
-          args += [ "--for_blink" ]
-        }
+          if (enable_kythe_annotations) {
+            args += [ "--enable_kythe_annotations" ]
+          }
 
-        if (enable_kythe_annotations) {
-          args += [ "--enable_kythe_annotations" ]
-        }
+          if (!defined(invoker.scramble_message_ids) ||
+              invoker.scramble_message_ids) {
+            inputs += message_scrambling_inputs
+            args += message_scrambling_args
+          }
 
-        if (!defined(invoker.scramble_message_ids) ||
-            invoker.scramble_message_ids) {
-          inputs += message_scrambling_inputs
-          args += message_scrambling_args
-        }
+          if (defined(invoker.extra_cpp_template_paths)) {
+            foreach(extra_cpp_template, invoker.extra_cpp_template_paths) {
+              args += [
+                "--extra_cpp_template_paths",
+                rebase_path(extra_cpp_template, root_build_dir),
+              ]
+              inputs += [ extra_cpp_template ]
 
-        if (defined(invoker.extra_cpp_template_paths)) {
-          foreach(extra_cpp_template, invoker.extra_cpp_template_paths) {
-            args += [
-              "--extra_cpp_template_paths",
-              rebase_path(extra_cpp_template, root_build_dir),
-            ]
-            inputs += [ extra_cpp_template ]
-
-            assert(
-                get_path_info(extra_cpp_template, "extension") == "tmpl",
-                "--extra_cpp_template_paths only accepts template files ending in extension .tmpl")
-            foreach(base_path, output_file_base_paths) {
-              template_file_name = get_path_info("$extra_cpp_template", "name")
-              outputs += [ "$root_gen_dir/${base_path}${variant_dash_suffix}-${template_file_name}" ]
+              assert(
+                  get_path_info(extra_cpp_template, "extension") == "tmpl",
+                  "--extra_cpp_template_paths only accepts template files ending in extension .tmpl")
+              foreach(base_path, output_file_base_paths) {
+                template_file_name =
+                    get_path_info("$extra_cpp_template", "name")
+                outputs += [ "$root_gen_dir/${base_path}${variant_dash_suffix}-${template_file_name}" ]
+              }
             }
           }
         }
+      } else {
+        group(generator_target_name) {
+        }
+        not_needed([ "export_args" ])
       }
     }
 
@@ -1593,7 +1598,8 @@ template("mojom") {
     }
 
     generate_rust = false
-    if (!cpp_only && defined(invoker.generate_rust)) {
+    if (!defined(bindings_configuration.variant) &&
+        defined(invoker.generate_rust)) {
       generate_rust = invoker.generate_rust
     }
 
@@ -1605,109 +1611,134 @@ template("mojom") {
       }
     }
 
-    target(sources_target_type, sources_target_name) {
-      if (defined(output_name_override)) {
-        output_name = output_name_override
-      }
-      visibility = output_visibility + [
-                     ":$output_target_name",
-                     ":${target_name}_mojolpm",
-                   ]
-      if (defined(invoker.testonly)) {
-        testonly = invoker.testonly
-      }
-      defines = export_defines
-      configs += [ "//build/config/compiler:wexit_time_destructors" ]
-      configs += extra_configs
-      if (output_file_base_paths != []) {
-        sources = []
-        foreach(base_path, output_file_base_paths) {
-          foreach(suffix, generator_cpp_output_suffixes) {
-            sources += [ "$root_gen_dir/${base_path}$suffix" ]
+    if (generate_cpp_for_variant) {
+      target(sources_target_type, sources_target_name) {
+        if (defined(output_name_override)) {
+          output_name = output_name_override
+        }
+        visibility = output_visibility + [
+                       ":$output_target_name",
+                       ":${target_name}_mojolpm",
+                     ]
+        if (defined(invoker.testonly)) {
+          testonly = invoker.testonly
+        }
+        defines = export_defines
+        configs += [ "//build/config/compiler:wexit_time_destructors" ]
+        configs += extra_configs
+        if (output_file_base_paths != []) {
+          sources = []
+          foreach(base_path, output_file_base_paths) {
+            foreach(suffix, generator_cpp_output_suffixes) {
+              sources += [ "$root_gen_dir/${base_path}$suffix" ]
+            }
           }
         }
-      }
-      deps = [
-        ":$generator_cpp_message_ids_target_name",
-        "//mojo/public/cpp/bindings:struct_traits",
-        "//mojo/public/interfaces/bindings:bindings_headers",
-      ]
-      public_deps = [
-        ":$shared_cpp_library_target_name",
-        "//base",
-      ]
-
-      if (require_full_cpp_deps) {
-        public_deps += [ "//mojo/public/cpp/bindings" ]
-      } else {
-        public_deps += [ "//mojo/public/cpp/bindings:bindings_base" ]
-      }
-
-      if (sources_list != []) {
-        public_deps += [ ":$generator_target_name" ]
-      }
-      foreach(d, mojom_cpp_deps) {
-        # Resolve the name, so that a target //mojo/something becomes
-        # //mojo/something:something and we can append variant_suffix to
-        # get the cpp dependency name.
-        full_name = get_label_info(d, "label_no_toolchain")
-        public_deps += [ "${full_name}${variant_suffix}" ]
-      }
-      foreach(d, cpp_source_deps) {
-        full_name = get_label_info(d, "label_no_toolchain")
-        public_deps += [
-          "${full_name}${variant_suffix}__has_cpp_proxy",
-          "${full_name}${variant_suffix}_cpp_sources",
+        deps = [
+          ":$generator_cpp_message_ids_target_name",
+          "//mojo/public/cpp/bindings:struct_traits",
+          "//mojo/public/interfaces/bindings:bindings_headers",
         ]
-      }
-      if (defined(bindings_configuration.for_blink) &&
-          bindings_configuration.for_blink) {
-        if (defined(invoker.overridden_deps_blink)) {
-          foreach(d, invoker.overridden_deps_blink) {
-            # Resolve the name, so that a target //mojo/something becomes
-            # //mojo/something:something and we can append variant_suffix
-            # to get the cpp dependency name.
-            full_name = get_label_info("$d", "label_no_toolchain")
-            public_deps -= [ "${full_name}${variant_suffix}" ]
+        public_deps = [
+          ":$shared_cpp_library_target_name",
+          "//base",
+        ]
+
+        if (require_full_cpp_deps) {
+          public_deps += [ "//mojo/public/cpp/bindings" ]
+        } else {
+          public_deps += [ "//mojo/public/cpp/bindings:bindings_base" ]
+        }
+
+        if (sources_list != []) {
+          public_deps += [ ":$generator_target_name" ]
+        }
+        foreach(d, mojom_cpp_deps) {
+          # Resolve the name, so that a target //mojo/something becomes
+          # //mojo/something:something and we can append variant_suffix to
+          # get the cpp dependency name.
+          full_name = get_label_info(d, "label_no_toolchain")
+          public_deps += [ "${full_name}${variant_suffix}" ]
+        }
+        foreach(d, cpp_source_deps) {
+          full_name = get_label_info(d, "label_no_toolchain")
+          public_deps += [
+            "${full_name}${variant_suffix}__has_cpp_proxy",
+            "${full_name}${variant_suffix}_cpp_sources",
+          ]
+        }
+        if (defined(bindings_configuration.for_blink) &&
+            bindings_configuration.for_blink) {
+          if (defined(invoker.overridden_deps_blink)) {
+            foreach(d, invoker.overridden_deps_blink) {
+              # Resolve the name, so that a target //mojo/something becomes
+              # //mojo/something:something and we can append variant_suffix
+              # to get the cpp dependency name.
+              full_name = get_label_info("$d", "label_no_toolchain")
+              public_deps -= [ "${full_name}${variant_suffix}" ]
+            }
+            public_deps += invoker.component_deps_blink
           }
-          public_deps += invoker.component_deps_blink
-        }
-        if (defined(invoker.check_includes_blink)) {
-          check_includes = invoker.check_includes_blink
-        }
-      } else {
-        if (defined(invoker.check_includes_blink)) {
-          not_needed(invoker, [ "check_includes_blink" ])
-        }
-        if (defined(invoker.overridden_deps)) {
-          foreach(d, invoker.overridden_deps) {
-            # Resolve the name, so that a target //mojo/something becomes
-            # //mojo/something:something and we can append variant_suffix
-            # to get the cpp dependency name.
-            full_name = get_label_info("$d", "label_no_toolchain")
-            public_deps -= [ "${full_name}${variant_suffix}" ]
+          if (defined(invoker.check_includes_blink)) {
+            check_includes = invoker.check_includes_blink
           }
-          public_deps += invoker.component_deps
+        } else {
+          if (defined(invoker.check_includes_blink)) {
+            not_needed(invoker, [ "check_includes_blink" ])
+          }
+          if (defined(invoker.overridden_deps)) {
+            foreach(d, invoker.overridden_deps) {
+              # Resolve the name, so that a target //mojo/something becomes
+              # //mojo/something:something and we can append variant_suffix
+              # to get the cpp dependency name.
+              full_name = get_label_info("$d", "label_no_toolchain")
+              public_deps -= [ "${full_name}${variant_suffix}" ]
+            }
+            public_deps += invoker.component_deps
+          }
+        }
+        foreach(config, cpp_typemap_configs) {
+          if (defined(config.traits_sources)) {
+            sources += config.traits_sources
+          }
+          if (defined(config.traits_deps)) {
+            deps += config.traits_deps
+          }
+          if (defined(config.traits_public_deps)) {
+            public_deps += config.traits_public_deps
+          }
+        }
+        if (defined(bindings_configuration.for_blink) &&
+            bindings_configuration.for_blink) {
+          public_deps += [ "//mojo/public/cpp/bindings:wtf_support" ]
         }
       }
-      foreach(config, cpp_typemap_configs) {
-        if (defined(config.traits_sources)) {
-          sources += config.traits_sources
-        }
-        if (defined(config.traits_deps)) {
-          deps += config.traits_deps
-        }
-        if (defined(config.traits_public_deps)) {
-          public_deps += config.traits_public_deps
+    } else {
+      if (proxy_target == "") {
+        group(output_target_name) {
+          visibility = output_visibility
+          if (defined(invoker.testonly)) {
+            testonly = invoker.testonly
+          }
         }
       }
-      if (defined(bindings_configuration.for_blink) &&
-          bindings_configuration.for_blink) {
-        public_deps += [ "//mojo/public/cpp/bindings:wtf_support" ]
-      }
+      not_needed([
+                   "cpp_source_deps",
+                   "cpp_typemap_configs",
+                   "export_defines",
+                   "extra_configs",
+                   "generator_cpp_message_ids_target_name",
+                   "generator_shared_target_name",
+                   "mojom_cpp_deps",
+                   "require_full_cpp_deps",
+                   "shared_cpp_library_target_name",
+                   "sources_target_name",
+                   "sources_target_type",
+                 ])
     }
 
-    if (generate_mojolpm_fuzzing && !defined(variant)) {
+    if (generate_cpp_for_variant && generate_mojolpm_fuzzing &&
+        !defined(variant)) {
       # This block contains the C++ targets for the MojoLPM fuzzer, we need to
       # do this here so that we can use the typemap configuration for the
       # empty-variant Mojo target.
@@ -1879,22 +1910,21 @@ template("mojom") {
 
   use_typescript_for_target = defined(invoker.webui_module_path)
 
-  generate_legacy_js = !use_typescript_for_target ||
-                       (defined(invoker.generate_legacy_js_bindings) &&
-                        invoker.generate_legacy_js_bindings)
-
-  if (!use_typescript_for_target &&
-      defined(invoker.generate_legacy_js_bindings)) {
-    not_needed(invoker, [ "generate_legacy_js_bindings" ])
+  generate_legacy_js = !use_typescript_for_target
+  if (defined(invoker.generate_legacy_js)) {
+    generate_legacy_js = invoker.generate_legacy_js
+  } else if (defined(invoker.generate_js)) {
+    generate_legacy_js = invoker.generate_js
+  } else if (defined(invoker.generate_legacy_js_bindings)) {
+    generate_legacy_js = invoker.generate_legacy_js_bindings
   }
 
   # Targets needed by both TS and JS bindings targets. These are needed
   # unconditionally for JS bindings targets, and are needed for TS bindings
-  # targets when generate_legacy_js_bindings is true. This option is provided
+  # targets when generate_legacy_js is true. This option is provided
   # since the legacy bindings are needed by Blink tests and non-Chromium users,
   # which are not expected to migrate to modules or TypeScript.
-  if (generate_legacy_js && (generate_js_fuzzing ||
-                             !defined(invoker.cpp_only) || !invoker.cpp_only)) {
+  if (generate_legacy_js) {
     if (sources_list != []) {
       generator_js_target_name = "${target_name}_js__generator"
 
@@ -1991,10 +2021,8 @@ template("mojom") {
   }
 
   # js_library() closure compiler targets, primarily used on ChromeOS. Only
-  # generate these targets if the mojom target is not C++ only and is not using
-  # TypeScript.
-  if (generate_mojom_closure_libraries &&
-      (!defined(invoker.cpp_only) || !invoker.cpp_only) && generate_legacy_js) {
+  # generate these targets if the mojom target is not using TypeScript.
+  if (generate_mojom_closure_libraries && generate_legacy_js) {
     js_library_for_compile_target_name = "${target_name}_js_library_for_compile"
     if (sources_list != []) {
       js_library(js_library_for_compile_target_name) {
@@ -2021,8 +2049,7 @@ template("mojom") {
       }
     }
   }
-  if ((generate_js_fuzzing || !defined(invoker.cpp_only) ||
-       !invoker.cpp_only) && use_typescript_for_target) {
+  if (use_typescript_for_target) {
     if (sources_list != []) {
       source_filelist = []
       foreach(source, sources_list) {

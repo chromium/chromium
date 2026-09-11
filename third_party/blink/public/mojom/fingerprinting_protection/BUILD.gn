@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("fingerprinting_protection") {
+  generate_blink = true
   sources = [ "noise_token.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]

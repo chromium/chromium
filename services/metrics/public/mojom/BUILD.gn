@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_blink = true
   sources = [ "ukm_interface.mojom" ]
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]

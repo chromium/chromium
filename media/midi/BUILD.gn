@@ -175,6 +175,7 @@ component("midi") {
 }
 
 mojom("mojo") {
+  generate_blink = true
   sources = [ "midi_service.mojom" ]
 
   deps = [ "//mojo/public/mojom/base" ]

@@ -7,8 +7,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_chromeos)
 
 mojom("mojom") {
-  disable_variants = true
-
   webui_module_path = "/ash/webui/firmware_update_ui"
 
   sources = [ "firmware_update.mojom" ]

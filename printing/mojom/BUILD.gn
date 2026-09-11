@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//printing/buildflags/buildflags.gni")
 
 mojom("mojom") {
+  generate_blink = true
   sources = [ "print.mojom" ]
 
   webui_module_path = "/"

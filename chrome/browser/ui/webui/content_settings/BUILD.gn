@@ -5,7 +5,6 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  disable_variants = true
   public_deps = [
     "//components/content_settings/core/common:mojo_bindings",
     "//mojo/public/mojom/base",

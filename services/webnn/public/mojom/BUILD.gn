@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 # The features file is separate to allow WebNN-dependent components to use
 # features without importing the rest of WebNN (ex. //gpu/config).
 mojom_component("features") {
+  generate_blink = true
   output_prefix = "webnn_mojom_features"
   macro_prefix = "WEBNN_MOJOM_FEATURES"
 
@@ -17,6 +18,7 @@ mojom_component("features") {
 # Device enum without creating a dependency cycle through the typemapped :mojom
 # target.
 mojom_component("device") {
+  generate_blink = true
   output_prefix = "webnn_mojom_device"
   macro_prefix = "WEBNN_MOJOM_DEVICE"
 
@@ -24,6 +26,7 @@ mojom_component("device") {
 }
 
 mojom_component("webnn_service_introspection") {
+  generate_blink = true
   output_prefix = "webnn_mojom_webnn_service_introspection"
   macro_prefix = "WEBNN_MOJOM_WEBNN_SERVICE_INTROSPECTION"
 
@@ -35,6 +38,7 @@ mojom_component("webnn_service_introspection") {
 }
 
 mojom_component("mojom") {
+  generate_blink = true
   output_prefix = "webnn_mojom"
   macro_prefix = "WEBNN_MOJOM"
 

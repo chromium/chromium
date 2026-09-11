@@ -152,7 +152,6 @@ mojom_component("mojom") {
 
   # Don't generate a variant sources since we depend on generated internal
   # bindings types and we don't generate or build variants of those.
-  disable_variants = true
 }
 
 mojom("mojom_constants") {

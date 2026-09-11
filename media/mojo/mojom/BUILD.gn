@@ -6,6 +6,7 @@ import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_blink = true
   generate_java = true
 
   # TODO(crbug.com/40499115): Conditionally add source files in this list when
@@ -429,6 +430,7 @@ mojom("mojom") {
 }
 
 mojom("media_types") {
+  generate_blink = true
   generate_java = true
   sources = [
     "channel_layout.mojom",
@@ -841,11 +843,13 @@ mojom("media_types") {
 }
 
 mojom("audio_data") {
+  generate_blink = true
   generate_java = true
   sources = [ "audio_data.mojom" ]
 }
 
 mojom("encryption_pattern") {
+  generate_blink = true
   generate_java = true
   sources = [ "encryption_pattern.mojom" ]
   cpp_typemaps = [
@@ -867,6 +871,7 @@ mojom("encryption_pattern") {
 }
 
 mojom("speech_recognition_audio_forwarder") {
+  generate_blink = true
   generate_java = true
   sources = [ "speech_recognition_audio_forwarder.mojom" ]
   public_deps = [ ":audio_data" ]
@@ -875,6 +880,7 @@ mojom("speech_recognition_audio_forwarder") {
 # Speech recognition API used between renderer/browser/service and between
 # LaCrOS/Ash.
 mojom("speech_recognition") {
+  generate_blink = true
   generate_java = true
   sources = [ "speech_recognition.mojom" ]
   cpp_typemaps = [
@@ -920,6 +926,7 @@ mojom("speech_recognition") {
 }
 
 mojom("speech_recognition_recognition_context") {
+  generate_blink = true
   generate_java = true
   sources = [ "speech_recognition_recognition_context.mojom" ]
   cpp_typemaps = [
@@ -952,12 +959,14 @@ mojom("speech_recognition_recognition_context") {
 }
 
 mojom("media_log") {
+  generate_blink = true
   generate_java = true
   sources = [ "media_log.mojom" ]
   public_deps = [ ":media_types" ]
 }
 
 mojom("video_encode") {
+  generate_blink = true
   generate_java = true
   sources = [
     "video_encode_accelerator.mojom",
@@ -1161,6 +1170,7 @@ source_set("unit_tests") {
 }
 
 mojom("web_speech_recognition") {
+  generate_blink = true
   generate_java = true
 
   sources = [

@@ -9,6 +9,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 # itself is used from shared_image_format_mojom_traits.*.
 # Not intended for client usage.
 mojom("singleplanar_format") {
+  generate_blink = true
   generate_java = true
   sources = [ "singleplanar_format.mojom" ]
   visibility = [

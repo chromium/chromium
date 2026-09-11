@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("usb") {
+  generate_blink = true
   generate_java = true
 
   # Ideally, this mojom file should be compiled directly in "mojom_platform"

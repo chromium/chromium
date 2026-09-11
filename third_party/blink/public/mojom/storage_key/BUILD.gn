@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("storage_key") {
+  generate_blink = true
   sources = [
     "ancestor_chain_bit.mojom",
     "storage_key.mojom",

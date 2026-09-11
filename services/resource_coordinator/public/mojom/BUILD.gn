@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom_component("mojom") {
+  generate_blink = true
   output_prefix = "resource_coordinator_public_mojom"
   macro_prefix = "RESOURCE_COORDINATOR_PUBLIC_MOJOM"
 

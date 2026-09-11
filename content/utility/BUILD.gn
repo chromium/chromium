@@ -158,8 +158,6 @@ source_set("utility") {
 
 if (is_win) {
   mojom("delegate_data") {
-    disable_variants = true
-
     sources = [ "sandbox_delegate_data.mojom" ]
     public_deps = [ "//mojo/public/mojom/base" ]
   }

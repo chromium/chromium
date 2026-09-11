@@ -15,7 +15,7 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
-  cpp_only = true
+  generate_legacy_js = false
 
   enabled_features = []
 

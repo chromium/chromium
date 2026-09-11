@@ -49,6 +49,7 @@ action_foreach("validation_test_data_list") {
 }
 
 mojom("test_deserializer_interface") {
+  generate_blink = true
   testonly = true
   generate_java = true
   sources = [ "deserializer.test-mojom" ]
@@ -56,6 +57,7 @@ mojom("test_deserializer_interface") {
 }
 
 mojom("test_interfaces") {
+  generate_blink = true
   testonly = true
   generate_java = true
   webui_module_path = "/"
@@ -230,6 +232,7 @@ if (use_blink) {
 }
 
 mojom("test_export") {
+  generate_blink = true
   testonly = true
   sources = [ "test_export.test-mojom" ]
   export_class_attribute = "MOJO_TEST_EXPORT"
@@ -246,6 +249,7 @@ mojom("test_export") {
 }
 
 mojom("test_exported_import") {
+  generate_blink = true
   testonly = true
   sources = [ "test_import.test-mojom" ]
   public_deps = [ ":test_export" ]
@@ -280,6 +284,7 @@ mojom("test_export2") {
 }
 
 mojom("test_mojom_import") {
+  generate_blink = true
   testonly = true
   generate_java = true
   webui_module_path = "/"
@@ -288,18 +293,21 @@ mojom("test_mojom_import") {
 }
 
 mojom("test_mojom_import_wrapper") {
+  generate_blink = true
   testonly = true
   generate_java = true
   public_deps = [ ":test_mojom_import" ]
 }
 
 mojom("test_mojom_import_wrapper_wrapper") {
+  generate_blink = true
   testonly = true
   generate_java = true
   public_deps = [ ":test_mojom_import_wrapper" ]
 }
 
 mojom("test_mojom_import2") {
+  generate_blink = true
   testonly = true
   generate_java = true
   webui_module_path = "/"
@@ -395,6 +403,7 @@ mojom("test_associated_interfaces") {
 }
 
 mojom("test_wtf_types") {
+  generate_blink = true
   testonly = true
 
   sources = [ "test_wtf_types.test-mojom" ]
@@ -407,6 +416,7 @@ mojom("test_no_sources") {
 }
 
 mojom("echo") {
+  generate_blink = true
   testonly = true
   generate_java = true
   sources = [

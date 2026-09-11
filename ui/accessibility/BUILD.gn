@@ -20,11 +20,13 @@ if (is_android) {
 }
 
 mojom("ax_constants_mojo") {
+  generate_blink = true
   generate_java = true
   sources = [ "ax_constants.mojom" ]
 }
 
 mojom_component("ax_enums_mojo") {
+  generate_blink = true
   generate_java = true
   sources = [ "ax_enums.mojom" ]
 

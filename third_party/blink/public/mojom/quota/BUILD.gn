@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("quota") {
+  generate_blink = true
   sources = [
     "quota_manager_host.mojom",
     "quota_types.mojom",

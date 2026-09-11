@@ -13,6 +13,7 @@ buildflag_header("buildflags") {
 
 if (enable_vrp_flags) {
   mojom_component("mojom") {
+    generate_blink = true
     sources = [ "vrp_flags.mojom" ]
     public_deps = [ "//mojo/public/mojom/base" ]
     output_prefix = "vrp_flags_mojom"

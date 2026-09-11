@@ -17,8 +17,6 @@ source_set("common") {
 }
 
 mojom("mojo_bindings") {
-  disable_variants = true
-
   sources = [
     "web_page_metadata.mojom",
     "web_page_metadata_agent.mojom",

@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("common") {
+  generate_blink = true
   sources = [
     "dmabuf.mojom",
     "jpeg_encode_accelerator.mojom",

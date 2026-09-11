@@ -54,9 +54,7 @@ mojom("media_router") {
     component_deps = [ "//third_party/blink/public/common" ]
   }
 
-  cpp_only = true
-  disable_variants = true
-
+  generate_legacy_js = false
   cpp_typemaps = [
     {
       types = [
@@ -98,8 +96,7 @@ mojom("media_router_test_interfaces") {
 
   public_deps = [ ":media_router" ]
 
-  cpp_only = true
-  disable_variants = true
+  generate_legacy_js = false
 }
 
 mojom("route_request_result_code") {

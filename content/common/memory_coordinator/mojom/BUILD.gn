@@ -9,7 +9,7 @@ mojom_component("mojom") {
   output_prefix = "content_browser_memory_coordinator_mojom"
   macro_prefix = "CONTENT_BROWSER_MEMORY_COORDINATOR_MOJOM"
 
-  cpp_only = true
+  generate_legacy_js = false
 
   sources = [ "memory_coordinator.mojom" ]
 
@@ -50,7 +50,7 @@ mojom_component("mojom") {
 }
 
 mojom("test_interfaces") {
-  cpp_only = true
+  generate_legacy_js = false
 
   sources = [ "memory_consumer_traits_test.mojom" ]
 

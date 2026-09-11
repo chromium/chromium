@@ -14,6 +14,7 @@ if (is_android) {
 }
 
 mojom("dom_node_id") {
+  generate_blink = true
   generate_java = true
   generate_legacy_js_bindings = true
   sources = [ "dom/dom_node_id.mojom" ]
@@ -52,6 +53,7 @@ mojom("dom_node_id") {
 # mojom_platform C++ bindings is linked into the //content component and
 # //content/public/common has private dependencies there.
 mojom("mojom_platform") {
+  generate_blink = true
   generate_java = true
   sources = [
     "ad_tagging/ad_evidence.mojom",
@@ -1039,6 +1041,7 @@ mojom("mojom_platform") {
 # needed by Android's implementation (in chrome/android or in android_webview)
 # for following mojom files.
 mojom("android_mojo_bindings") {
+  generate_blink = true
   generate_java = true
   sources = [
     "android_font_lookup/android_font_lookup.mojom",
@@ -1144,6 +1147,7 @@ mojom("android_mojo_bindings") {
 # modules dependencies if it looks necessary, at that time we can put all of
 # those high-level service worker mojom files there.
 mojom("mojom_core") {
+  generate_blink = true
   generate_java = true
   sources = [
     "array_buffer/array_buffer_contents.mojom",
@@ -1490,6 +1494,7 @@ mojom("mojom_core") {
 # to a type in renderer/modules. This also means these interfaces are not
 # available from renderer/platform or renderer/core.
 mojom("mojom_modules") {
+  generate_blink = true
   sources = [
     "buckets/bucket_manager_host.mojom",
     "indexeddb/indexeddb.mojom",
@@ -1624,6 +1629,7 @@ mojom("mojom_modules") {
 }
 
 mojom("web_bluetooth_mojo_bindings") {
+  generate_blink = true
   visibility = [
     "//third_party/blink/common",
     "//third_party/blink/public/common",
@@ -1675,6 +1681,7 @@ mojom("web_bluetooth_mojo_bindings") {
 }
 
 mojom("mojom_mhtml_load_result") {
+  generate_blink = true
   generate_java = true
   sources = [ "loader/mhtml_load_result.mojom" ]
 
@@ -1684,6 +1691,7 @@ mojom("mojom_mhtml_load_result") {
 }
 
 mojom_component("script_type_mojo_bindings") {
+  generate_blink = true
   generate_java = true
   sources = [
     "script/script_evaluation_params.mojom",
@@ -1702,6 +1710,7 @@ mojom_component("script_type_mojo_bindings") {
 # because the chromium typemap for blink mojo_bindings has private content
 # dependencies.
 mojom_component("web_feature_mojo_bindings") {
+  generate_blink = true
   generate_java = true
   sources = [
     "use_counter/metrics/css_property_id.mojom",
@@ -1717,6 +1726,7 @@ mojom_component("web_feature_mojo_bindings") {
 # files because its deps contain too many files in Chromium that would pollute
 # the include paths in generated mojom-blink files for other services.
 mojom("embedded_frame_sink_mojo_bindings") {
+  generate_blink = true
   visibility = [ "//content/*" ]
   visibility_blink = [ "//third_party/blink/renderer/platform" ]
   sources = [ "frame_sinks/embedded_frame_sink.mojom" ]
@@ -1735,6 +1745,7 @@ mojom("embedded_frame_sink_mojo_bindings") {
 }
 
 mojom("memory_usage_monitor_linux_mojo_bindings") {
+  generate_blink = true
   visibility = [
     "//content/browser",
     "//third_party/blink/renderer/controller",
@@ -1751,6 +1762,7 @@ mojom("memory_usage_monitor_linux_mojo_bindings") {
 }
 
 mojom("color_scheme_mojo_bindings") {
+  generate_blink = true
   generate_java = true
   visibility_blink = [
     "//third_party/blink/public/mojom:mojom_core_blink",
@@ -1768,6 +1780,7 @@ mojom("color_scheme_mojo_bindings") {
 }
 
 mojom_component("credentialmanagement_mojo_bindings") {
+  generate_blink = true
   generate_java = true
 
   sources = [
@@ -1819,6 +1832,7 @@ mojom_component("credentialmanagement_mojo_bindings") {
 }
 
 mojom_component("authenticator_mojo_bindings") {
+  generate_blink = true
   generate_java = true
 
   sources = [ "webauthn/authenticator.mojom" ]

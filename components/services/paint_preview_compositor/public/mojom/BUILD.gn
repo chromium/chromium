@@ -7,8 +7,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   # The blink variant is unable to hash UnguessableToken for use in the map.
   # This isn't used from blink so disabling the variant is fine.
-  disable_variants = true
-
   sources = [ "paint_preview_compositor.mojom" ]
 
   public_deps = [

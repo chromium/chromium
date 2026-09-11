@@ -17,8 +17,6 @@ component("common") {
 }
 
 mojom("mojom") {
-  disable_variants = true
-
   sources = [ "surface_embed.mojom" ]
 
   deps = [

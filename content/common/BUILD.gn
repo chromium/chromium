@@ -438,9 +438,6 @@ group("for_content_tests") {
 mojom("mojo_bindings") {
   # This interface is internal to content.
   visibility = [ "//content/*" ]
-
-  disable_variants = true
-
   sources = [
     "agent_scheduling_group.mojom",
     "associated_interfaces.mojom",

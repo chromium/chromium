@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_blink = true
   generate_java = true
   sources = [
     "event.mojom",
@@ -116,6 +117,7 @@ mojom("mojom") {
 }
 
 mojom("event_latency_metadata_mojom") {
+  generate_blink = true
   generate_java = true
   sources = [ "event_latency_metadata.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]

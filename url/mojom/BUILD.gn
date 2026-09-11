@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("url_mojom_gurl") {
+  generate_blink = true
   generate_java = true
   sources = [ "url.mojom" ]
 
@@ -61,6 +62,7 @@ mojom("url_mojom_gurl") {
 }
 
 mojom("url_mojom_origin") {
+  generate_blink = true
   generate_java = true
   sources = [ "origin.mojom" ]
 
@@ -106,6 +108,7 @@ mojom("url_mojom_origin") {
 }
 
 mojom("url_mojom_scheme_host_port") {
+  generate_blink = true
   generate_java = true
   sources = [ "scheme_host_port.mojom" ]
 
@@ -126,6 +129,7 @@ mojom("url_mojom_scheme_host_port") {
 }
 
 mojom("test_url_mojom_gurl") {
+  generate_blink = true
   sources = [ "url_test.mojom" ]
 
   public_deps = [

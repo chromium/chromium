@@ -10,6 +10,7 @@ import("//testing/test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 mojom("variations_mojom") {
+  generate_blink = true
   generate_java = true
   sources = [ "variations.mojom" ]
 }

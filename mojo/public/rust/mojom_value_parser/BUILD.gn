@@ -66,6 +66,7 @@ mojom("shadowing_unittest") {
     "test_util/shadowing_unittest_union.test-mojom",
   ]
   generate_rust = true
+  generate_cpp = false
   visibility = [ "//mojo/public/rust/*" ]
 }
 
@@ -73,6 +74,7 @@ mojom("dup_enum_unittest") {
   testonly = true
   sources = [ "test_util/dup_enum_unittest.test-mojom" ]
   generate_rust = true
+  generate_cpp = false
   visibility = [ "//mojo/public/rust/*" ]
 }
 

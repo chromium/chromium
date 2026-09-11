@@ -687,8 +687,6 @@ if (is_mac) {
 }
 
 mojom("mojo_bindings") {
-  disable_variants = true
-
   sources = [
     "actor.mojom",
     "chrome_render_frame.mojom",
@@ -810,8 +808,6 @@ mojom("mojo_bindings") {
 }
 
 mojom("glic_enums_mojom") {
-  disable_variants = true
-
   sources = [ "glic_enums.mojom" ]
 
   webui_module_path = "/"
@@ -822,8 +818,6 @@ mojom("glic_enums_mojom") {
 }
 
 mojom("actor_webui_mojom") {
-  disable_variants = true
-
   sources = [ "actor_webui.mojom" ]
 
   webui_module_path = "/"

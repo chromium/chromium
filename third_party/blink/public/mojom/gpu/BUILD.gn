@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom_component("gpu") {
+  generate_blink = true
   output_prefix = "blink_gpu_mojom"
   macro_prefix = "BLINK_GPU_MOJOM"
 

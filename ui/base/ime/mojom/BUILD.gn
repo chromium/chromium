@@ -22,6 +22,7 @@ component("shared_mojom_traits") {
 }
 
 mojom("mojom") {
+  generate_blink = true
   generate_java = true
   sources = [
     "ime_types.mojom",

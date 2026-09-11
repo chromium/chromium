@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_blink = true
   generate_java = true
   sources = [
     "themes.mojom",
@@ -64,6 +65,7 @@ mojom("mojom") {
 # TODO(crbug.com/370252254): Move back `MenuSourceType` enum to
 # ui_base_types.mojom.
 mojom("ui_base_types") {
+  generate_blink = true
   generate_java = true
   sources = [
     "dialog_button.mojom",

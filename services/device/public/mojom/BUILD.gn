@@ -11,6 +11,7 @@ if (is_ios) {
 }
 
 mojom("mojom") {
+  generate_blink = true
   generate_java = true
   sources = [
     "battery_monitor.mojom",
@@ -87,8 +88,7 @@ mojom("device_service") {
   # We can't depend on the Blink variant of ":generic_sensors", but we need the
   # non-Blink variant as a dependency. Blink can never use the DeviceService
   # interface directly anyway, so don't generate bindings for it.
-  disable_variants = true
-  cpp_only = true
+  generate_legacy_js = false
 
   # The interfaces defined here are privileged, and not vended to a renderer, so
   # they are not fuzzable by javascript-based fuzzers.
@@ -113,6 +113,7 @@ mojom("device_service") {
 }
 
 mojom("generic_sensor") {
+  generate_blink = true
   generate_java = true
   sources = [
     "sensor.mojom",
@@ -166,6 +167,7 @@ mojom("generic_sensor") {
 }
 
 mojom("usb") {
+  generate_blink = true
   generate_java = true
   sources = [
     "usb_device.mojom",
@@ -217,6 +219,7 @@ mojom("usb_test") {
 }
 
 mojom("geoposition") {
+  generate_blink = true
   generate_java = true
   sources = [ "geoposition.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]

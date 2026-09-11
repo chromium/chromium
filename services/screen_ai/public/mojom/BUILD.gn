@@ -18,7 +18,6 @@ mojom("mojom") {
 }
 
 mojom("factory") {
-  disable_variants = true
   sources = [ "screen_ai_factory.mojom" ]
   public_deps = [
     ":mojom",

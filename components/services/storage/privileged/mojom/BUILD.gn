@@ -44,7 +44,7 @@ mojom("mojom") {
     "indexed_db_control_test.mojom",
   ]
 
-  cpp_only = true
+  generate_legacy_js = false
 
   # The interfaces defined here are privileged, and not vended to a renderer, so
   # they are not fuzzable by javascript-based fuzzers.

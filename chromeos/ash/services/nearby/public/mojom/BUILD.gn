@@ -53,7 +53,7 @@ mojom("mojom") {
 
   enable_js_fuzzing = false
 
-  cpp_only = true
+  generate_legacy_js = false
 
   cpp_typemaps = [
     {

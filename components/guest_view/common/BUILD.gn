@@ -9,8 +9,7 @@ static_library("common") {
 }
 
 mojom("mojom") {
-  cpp_only = true
-  disable_variants = true
+  generate_legacy_js = false
   sources = [ "guest_view.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
 }

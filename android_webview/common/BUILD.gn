@@ -69,8 +69,6 @@ source_set("common") {
 
 mojom("mojom") {
   # We don't want Blink variants of bindings to be generated.
-  disable_variants = true
-
   sources = [
     "mojom/frame.mojom",
     "mojom/render_message_filter.mojom",

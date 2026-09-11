@@ -12,6 +12,7 @@ import("//services/network/public/cpp/features.gni")
 # which comes from the fact that proxy_resolver service uses these interfaces,
 # and the network service uses the proxy_resolver service.
 mojom("mojom_ip_address") {
+  generate_blink = true
   generate_java = true
   sources = [
     "address_family.mojom",
@@ -158,6 +159,7 @@ mojom("mojom_ip_address") {
 }
 
 mojom("mojom_network_isolation_partition") {
+  generate_blink = true
   generate_java = true
   sources = [ "network_isolation_partition.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
@@ -183,6 +185,7 @@ mojom("mojom_network_isolation_partition") {
 # Separate from |mojom_ip_address| because a bunch of other consumers are
 # depending on that and don't need this.
 mojom("mojom_network_isolation_key") {
+  generate_blink = true
   generate_java = true
   sources = [ "network_isolation_key.mojom" ]
 
@@ -216,6 +219,7 @@ mojom("mojom_network_isolation_key") {
 }
 
 mojom("mojom_shared_dictionary") {
+  generate_blink = true
   generate_java = true
   sources = [
     "shared_dictionary_error.mojom",
@@ -270,6 +274,7 @@ mojom("mojom_shared_dictionary") {
 # Separate from `mojom_ip_address` because a bunch of other consumers are
 # depending on that and don't need this.
 mojom("mojom_network_anonymization_key") {
+  generate_blink = true
   generate_java = true
   sources = [ "network_anonymization_key.mojom" ]
 
@@ -306,6 +311,7 @@ mojom("mojom_network_anonymization_key") {
 # is separate from other targets because only this needs to be included in
 # proxy_resolver_win builds.
 mojom("mojom_proxy_config") {
+  generate_blink = true
   generate_java = true
   sources = [
     "mutable_network_traffic_annotation_tag.mojom",
@@ -410,6 +416,7 @@ mojom("mojom_proxy_config") {
 }
 
 mojom("mojom_connection_allowlist") {
+  generate_blink = true
   generate_java = true
   sources = [ "connection_allowlist.mojom" ]
   public_deps = [
@@ -446,6 +453,7 @@ mojom("mojom_connection_allowlist") {
 }
 
 mojom("mojom_cors_origin_pattern") {
+  generate_blink = true
   generate_java = true
   sources = [ "cors_origin_pattern.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_origin" ]
@@ -457,6 +465,7 @@ mojom("mojom_cors_origin_pattern") {
 }
 
 mojom("mojom_integrity_algorithm") {
+  generate_blink = true
   generate_java = true
   sources = [ "integrity_algorithm.mojom" ]
   if (!is_ios) {
@@ -467,6 +476,7 @@ mojom("mojom_integrity_algorithm") {
 }
 
 mojom("mojom_integrity_metadata") {
+  generate_blink = true
   generate_java = true
   sources = [ "integrity_metadata.mojom" ]
   public_deps = [ ":mojom_integrity_algorithm" ]
@@ -496,6 +506,7 @@ mojom("mojom_integrity_metadata") {
 }
 
 mojom("mojom_unencoded_digest") {
+  generate_blink = true
   generate_java = true
   sources = [ "unencoded_digest.mojom" ]
   public_deps = [ ":mojom_integrity_metadata" ]
@@ -507,6 +518,7 @@ mojom("mojom_unencoded_digest") {
 }
 
 mojom("mojom_source_location") {
+  generate_blink = true
   generate_java = true
   sources = [ "source_location.mojom" ]
   if (!is_ios) {
@@ -517,6 +529,7 @@ mojom("mojom_source_location") {
 }
 
 mojom("mojom_web_sandbox_flags") {
+  generate_blink = true
   generate_java = true
   sources = [ "web_sandbox_flags.mojom" ]
   if (!is_ios) {
@@ -527,6 +540,7 @@ mojom("mojom_web_sandbox_flags") {
 }
 
 mojom("mojom_content_security_policy") {
+  generate_blink = true
   generate_java = true
   sources = [ "content_security_policy.mojom" ]
   public_deps = [
@@ -545,6 +559,7 @@ mojom("mojom_content_security_policy") {
 }
 
 mojom("mojom_origin_or_wildcard_header_value") {
+  generate_blink = true
   generate_java = true
   sources = [ "origin_or_wildcard_header_value.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_origin" ]
@@ -559,6 +574,7 @@ mojom("mojom_origin_or_wildcard_header_value") {
 # which comes from the fact that the typemap for url_loader.mojom
 # (ResourceRequest) depends on them.
 mojom("url_loader_base") {
+  generate_blink = true
   generate_java = true
   sources = [
     "accept_ch_frame_observer.mojom",
@@ -1077,6 +1093,7 @@ mojom("url_loader_base") {
 
 # Make this a separate target to avoid a circular dependency.
 mojom("mojom_schemeful_site") {
+  generate_blink = true
   generate_java = true
   sources = [ "schemeful_site.mojom" ]
 
@@ -1130,6 +1147,7 @@ mojom("mojom_schemeful_site") {
 }
 
 mojom("mojom_network_param") {
+  generate_blink = true
   generate_java = true
   sources = [
     "auth.mojom",
@@ -1406,6 +1424,7 @@ mojom("mojom_network_param") {
 # This target is split from "mojom" target as the lazy serialization may
 # cause problems. See https://crbug.com/822732.
 mojom("websocket_mojom") {
+  generate_blink = true
   generate_java = true
   sources = [ "websocket.mojom" ]
 
@@ -1425,6 +1444,7 @@ mojom("websocket_mojom") {
 }
 
 mojom("mojom_first_party_sets") {
+  generate_blink = true
   generate_java = true
   sources = [ "first_party_sets.mojom" ]
 
@@ -1488,6 +1508,7 @@ mojom("mojom_first_party_sets") {
 }
 
 mojom("mojom_storage_access_api") {
+  generate_blink = true
   generate_java = true
   sources = [ "storage_access_api.mojom" ]
 
@@ -1518,6 +1539,7 @@ mojom("mojom_storage_access_api") {
 }
 
 mojom("mojom_structured_headers") {
+  generate_blink = true
   generate_java = true
   sources = [ "structured_headers.mojom" ]
 
@@ -1579,6 +1601,7 @@ mojom("mojom_structured_headers") {
 }
 
 mojom("cookies_mojom") {
+  generate_blink = true
   generate_java = true
   sources = [
     "cookie_access_observer.mojom",
@@ -1756,6 +1779,7 @@ mojom("cookies_mojom") {
 }
 
 mojom("mojom_host_resolver") {
+  generate_blink = true
   generate_java = true
   sources = [ "host_resolver.mojom" ]
 
@@ -1836,6 +1860,7 @@ mojom("mojom_host_resolver") {
 }
 
 mojom("mojom_integrity_policy") {
+  generate_blink = true
   generate_java = true
   sources = [ "integrity_policy.mojom" ]
 
@@ -1864,6 +1889,7 @@ mojom("mojom_integrity_policy") {
 }
 
 mojom("mojom_permissions_policy") {
+  generate_blink = true
   generate_java = true
   sources = [
     "permissions_policy/permissions_policy.mojom",
@@ -1912,6 +1938,7 @@ mojom("mojom_permissions_policy") {
 }
 
 mojom("mojom") {
+  generate_blink = true
   generate_java = true
   sources = [
     "cache_encryption_provider.mojom",

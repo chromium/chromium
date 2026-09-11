@@ -721,8 +721,6 @@ source_set("impl") {
 }
 
 mojom("mojo_bindings") {
-  disable_variants = true
-
   sources = [
     "experimental_opt_in/glic_experimental_opt_in.mojom",
     "gemini_enterprise/gemini_enterprise.mojom",

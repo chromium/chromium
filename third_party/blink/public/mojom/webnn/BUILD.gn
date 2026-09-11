@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//services/webnn/public/webnn_features.gni")
 
 mojom("webnn") {
+  generate_blink = true
   sources = [ "webnn_introspection.mojom" ]
 
   deps = [ "//mojo/public/mojom/base" ]

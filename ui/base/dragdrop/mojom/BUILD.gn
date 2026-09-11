@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom_component("mojom") {
+  generate_blink = true
   output_prefix = "ui_base_dragdrop_mojom"
   macro_prefix = "UI_BASE_DRAGDROP_MOJOM"
   generate_java = true

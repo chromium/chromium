@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("common_mojom") {
+  generate_blink = true
   generate_java = true
   sources = [ "encryptor.mojom" ]
 
@@ -44,6 +45,8 @@ mojom("common_mojom") {
 }
 
 mojom("algorithm_mojom") {
+  generate_blink = true
+
   # External code should depend on ":common_mojom" instead.
   visibility = [ ":*" ]
 

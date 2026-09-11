@@ -53,7 +53,6 @@ source_set("selection") {
 }
 
 mojom("mojo_bindings") {
-  disable_variants = true
   sources = [ "selection_overlay.mojom" ]
   public_deps = [
     "//skia/public/mojom",

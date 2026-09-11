@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom_component("mojom") {
+  generate_blink = true
   sources = [ "gamepad.mojom" ]
 
   deps = [ "//mojo/public/mojom/base" ]

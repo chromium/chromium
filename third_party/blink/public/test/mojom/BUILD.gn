@@ -17,6 +17,7 @@ if (is_android) {
 # CDP to achieve the same results.
 
 mojom("core_test_automation") {
+  generate_blink = true
   generate_java = false
   testonly = true
   sources = [
@@ -34,6 +35,7 @@ mojom("core_test_automation") {
 }
 
 mojom("modules_test_automation") {
+  generate_blink = true
   generate_java = false
   testonly = true
   sources = [

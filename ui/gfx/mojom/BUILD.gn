@@ -7,6 +7,7 @@ import("//build/config/ozone.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_blink = true
   generate_java = true
   sources = [
     "accelerated_widget.mojom",
@@ -380,6 +381,7 @@ mojom("mojom") {
 }
 
 mojom("native_handle_types") {
+  generate_blink = true
   sources = [ "native_handle_types.mojom" ]
   supports_native_pixmap = is_linux || is_chromeos || use_ozone
 
@@ -486,6 +488,7 @@ if (is_win) {
 }
 
 mojom("test_interfaces") {
+  generate_blink = true
   sources = [ "traits_test_service.mojom" ]
 
   enabled_features = []
@@ -520,6 +523,7 @@ component("native_handle_types_mojom_traits") {
 }
 
 mojom("hdr_metadata") {
+  generate_blink = true
   generate_java = true
 
   sources = [ "hdr_metadata.mojom" ]

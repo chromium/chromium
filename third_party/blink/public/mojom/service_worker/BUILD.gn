@@ -12,6 +12,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 # to avoid introducing a dependency on the entire public blink platform for
 # non-blink dependents.
 mojom_component("storage") {
+  generate_blink = true
   output_prefix = "service_worker_storage_mojom"
   macro_prefix = "SERVICE_WORKER_STORAGE_MOJOM"
 
