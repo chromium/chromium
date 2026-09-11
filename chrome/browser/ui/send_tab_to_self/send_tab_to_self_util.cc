@@ -220,16 +220,12 @@ void ShowTabSentFailure(content::WebContents* web_contents,
   }
 }
 
-void OpenManageDevicesPage(Profile* profile, int event_flags) {
+void OpenManageDevicesPage(Profile* profile,
+                           WindowOpenDisposition disposition) {
   CHECK(profile);
   NavigateParams params(profile, GURL(chrome::kGoogleAccountDeviceActivityURL),
                         ui::PAGE_TRANSITION_LINK);
-  // NEW_FOREGROUND_TAB is passed as the default to avoid navigating away from
-  // the current page, which the user possibly wants to share.
-  // DispositionFromEventFlags() ensures that any modifier keys are respected
-  // (e.g. to open a new window instead).
-  params.disposition = ui::DispositionFromEventFlags(
-      event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  params.disposition = disposition;
   Navigate(&params);
 }
 

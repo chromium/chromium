@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -20,6 +21,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/menus/simple_menu_model.h"
@@ -145,7 +147,11 @@ void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
   actions::ActionItem* action_ptr = action_iterator->second->GetActionItem();
   CHECK(action_ptr);
 
-  action_ptr->InvokeAction();
+  action_ptr->InvokeAction(
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(chrome::kDispositionKey,
+                       ui::DispositionFromEventFlags(mouse_event_flags))
+          .Build());
 }
 
 void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {

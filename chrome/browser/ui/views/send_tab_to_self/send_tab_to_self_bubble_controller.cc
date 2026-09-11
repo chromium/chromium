@@ -40,6 +40,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -255,7 +256,10 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
 
 void SendTabToSelfBubbleController::OnManageDevicesClicked(
     const ui::Event& event) {
-  OpenManageDevicesPage(GetProfile(), event.flags());
+  OpenManageDevicesPage(
+      GetProfile(),
+      ui::DispositionFromEventFlags(event.flags(),
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
 void SendTabToSelfBubbleController::PrimaryPageChanged(content::Page& page) {

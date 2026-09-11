@@ -15,6 +15,7 @@
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
@@ -113,7 +114,12 @@ void BookmarksDynamicMenu::AddBookmarkNodeAction(
         [](BrowserWindowInterface* browser, GURL url, actions::ActionItem* item,
            actions::ActionInvocationContext context) {
           if (browser) {
-            browser->OpenGURL(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+            WindowOpenDisposition disposition =
+                context.GetProperty(chrome::kDispositionKey);
+            if (disposition == WindowOpenDisposition::UNKNOWN) {
+              disposition = WindowOpenDisposition::CURRENT_TAB;
+            }
+            browser->OpenGURL(url, disposition);
           }
         },
         browser_window_interface_, url));

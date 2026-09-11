@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync_device_info/device_info.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -63,9 +64,10 @@ void ShowTabSentFailure(content::WebContents* web_contents,
                         SendTabToSelfResult result,
                         const GURL& url = GURL());
 
-// Opens the "Manage account devices" page in a new foreground tab for
-// `profile` (respecting any modifier keys in `event_flags`).
-void OpenManageDevicesPage(Profile* profile, int event_flags);
+// Opens the "Manage account devices" page for `profile` with `disposition`.
+void OpenManageDevicesPage(Profile* profile,
+                           WindowOpenDisposition disposition =
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
 }  // namespace send_tab_to_self
 

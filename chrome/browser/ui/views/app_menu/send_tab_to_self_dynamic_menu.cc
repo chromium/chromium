@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -34,6 +35,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -220,6 +222,12 @@ void SendTabToSelfDynamicMenu::ExecuteManageDevices(
   }
   Profile* profile = browser_window_interface_->GetProfile();
   if (profile) {
-    send_tab_to_self::OpenManageDevicesPage(profile, /*event_flags=*/0);
+    WindowOpenDisposition disposition =
+        context.GetProperty(chrome::kDispositionKey);
+    if (disposition == WindowOpenDisposition::CURRENT_TAB ||
+        disposition == WindowOpenDisposition::UNKNOWN) {
+      disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    }
+    send_tab_to_self::OpenManageDevicesPage(profile, disposition);
   }
 }

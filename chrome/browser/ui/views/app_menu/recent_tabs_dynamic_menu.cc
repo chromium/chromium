@@ -15,6 +15,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -55,9 +56,14 @@ void RecentTabsDynamicMenu::BuildRecentTabsActions(
 
 void RecentTabsDynamicMenu::ExecuteRecentTab(
     const RecentTabItem& recent_item,
-    WindowOpenDisposition disposition,
     actions::ActionItem* item,
     actions::ActionInvocationContext context) {
+  WindowOpenDisposition disposition =
+      context.GetProperty(chrome::kDispositionKey);
+  if (disposition == WindowOpenDisposition::CURRENT_TAB ||
+      disposition == WindowOpenDisposition::UNKNOWN) {
+    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
   if (recent_item.is_local()) {
     ExecuteRestoreEntry(recent_item.session_id(), disposition);
   } else {
@@ -99,37 +105,38 @@ void RecentTabsDynamicMenu::ExecuteRestoreEntry(
 
 void RecentTabsDynamicMenu::ExecuteRecentSplit(
     const RecentTabItem& recent_item,
-    WindowOpenDisposition disposition,
     actions::ActionItem* item,
     actions::ActionInvocationContext context) {
+  WindowOpenDisposition disposition =
+      context.GetProperty(chrome::kDispositionKey);
+  if (disposition == WindowOpenDisposition::CURRENT_TAB ||
+      disposition == WindowOpenDisposition::UNKNOWN) {
+    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
   ExecuteRestoreEntry(recent_item.session_id(), disposition);
 }
 
 actions::ActionItem::InvokeActionCallback
-RecentTabsDynamicMenu::GetInvokeCallback(RecentTabItem recent_item,
-                                         WindowOpenDisposition disposition) {
+RecentTabsDynamicMenu::GetInvokeCallback(RecentTabItem recent_item) {
   switch (recent_item.type()) {
     case RecentTabItem::Type::kCommand: {
       if (recent_item.session_id().is_valid()) {
         return base::BindRepeating(&RecentTabsDynamicMenu::ExecuteRecentSplit,
-                                   base::Unretained(this), recent_item,
-                                   disposition);
+                                   base::Unretained(this), recent_item);
       }
       break;
     }
 
     case RecentTabItem::Type::kTab: {
       return base::BindRepeating(&RecentTabsDynamicMenu::ExecuteRecentTab,
-                                 base::Unretained(this), recent_item,
-                                 disposition);
+                                 base::Unretained(this), recent_item);
     }
 
     case RecentTabItem::Type::kWindow:
     case RecentTabItem::Type::kGroup:
     case RecentTabItem::Type::kSplit: {
       return base::BindRepeating(&RecentTabsDynamicMenu::ExecuteRecentSplit,
-                                 base::Unretained(this), recent_item,
-                                 disposition);
+                                 base::Unretained(this), recent_item);
     }
 
     case RecentTabItem::Type::kHeader:
@@ -146,8 +153,6 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
   if (!parent_item || recent_tabs.empty()) {
     return;
   }
-
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
   for (const auto& recent_tab : recent_tabs) {
     if (recent_tab.type() == RecentTabItem::Type::kDivider) {
@@ -178,7 +183,7 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
         builder.SetText(recent_tab.title())
             .SetImage(recent_tab.icon())
             .SetEnabled(recent_tab.enabled())
-            .SetInvokeActionCallback(GetInvokeCallback(recent_tab, disposition))
+            .SetInvokeActionCallback(GetInvokeCallback(recent_tab))
             .SetProperty(ActionAppMenuManager::kContainerColorKey,
                          ui::kColorMenuBackground);
         if (recent_tab.accelerator().has_value()) {

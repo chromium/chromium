@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -17,8 +18,10 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -224,6 +227,45 @@ TEST_F(ActionAppMenuTest, PopulatesRecentTabsSubmenu) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuTest, PassesClickDisposition) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_TRUE(print_item);
+
+  EXPECT_CALL(mock_action_invoked_, Call(kActionPrint, testing::_, testing::_))
+      .WillOnce([](actions::ActionId, actions::ActionItem*,
+                   actions::ActionInvocationContext context) {
+        EXPECT_EQ(context.GetProperty(chrome::kDispositionKey),
+                  WindowOpenDisposition::CURRENT_TAB);
+      });
+  menu.ExecuteCommand(print_item->GetCommand(), ui::EF_NONE);
+
+  EXPECT_CALL(mock_action_invoked_, Call(kActionPrint, testing::_, testing::_))
+      .WillOnce([](actions::ActionId, actions::ActionItem*,
+                   actions::ActionInvocationContext context) {
+        EXPECT_EQ(context.GetProperty(chrome::kDispositionKey),
+                  WindowOpenDisposition::NEW_BACKGROUND_TAB);
+      });
+  menu.ExecuteCommand(print_item->GetCommand(), ui::EF_MIDDLE_MOUSE_BUTTON);
+
+  EXPECT_CALL(mock_action_invoked_, Call(kActionPrint, testing::_, testing::_))
+      .WillOnce([](actions::ActionId, actions::ActionItem*,
+                   actions::ActionInvocationContext context) {
+        EXPECT_EQ(context.GetProperty(chrome::kDispositionKey),
+                  WindowOpenDisposition::NEW_WINDOW);
+      });
+  menu.ExecuteCommand(print_item->GetCommand(), ui::EF_SHIFT_DOWN);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
   BookmarkModelFactory::GetInstance()->SetTestingFactory(
       profile_.get(), BookmarkModelFactory::GetDefaultFactory());
@@ -334,6 +376,22 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
     }
   }
   ASSERT_NE(other_child_item, nullptr);
+
+  // Verify click disposition for bookmarks.
+  EXPECT_CALL(mock_window_interface_,
+              OpenGURL(GURL("https://www.google.com"),
+                       WindowOpenDisposition::CURRENT_TAB));
+  menu.ExecuteCommand(google_item->GetCommand(), ui::EF_NONE);
+
+  EXPECT_CALL(mock_window_interface_,
+              OpenGURL(GURL("https://www.google.com"),
+                       WindowOpenDisposition::NEW_BACKGROUND_TAB));
+  menu.ExecuteCommand(google_item->GetCommand(), ui::EF_MIDDLE_MOUSE_BUTTON);
+
+  EXPECT_CALL(mock_window_interface_,
+              OpenGURL(GURL("https://www.google.com"),
+                       WindowOpenDisposition::NEW_WINDOW));
+  menu.ExecuteCommand(google_item->GetCommand(), ui::EF_SHIFT_DOWN);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
