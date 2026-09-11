@@ -12,6 +12,7 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -40,6 +41,15 @@ std::string GetOnlineWallpaperFileName(const std::string& file_name,
 base::FilePath GetExistingWallpaperPath(const WallpaperType type,
                                         const base::FilePath& wallpaper_dir,
                                         const std::string& location) {
+  // Multiple-component `location` is permitted, but it must be a relative path
+  // that does not reference a parent.
+  if (const base::FilePath location_path(location);
+      location_path.IsAbsolute() || location_path.ReferencesParent()) {
+    LOG(WARNING) << "Rejecting wallpaper location referencing outside of "
+                    "wallpaper directory";
+    return base::FilePath();
+  }
+
   base::FilePath wallpaper_path;
   // If the wallpaper is an online wallpaper, its location info is the image
   // url. If it is a Google Photos wallpaper, its location is the image name.
@@ -118,7 +128,17 @@ base::FilePath SaveWallpaperToPath(const WallpaperType type,
                                    const gfx::ImageSkia image,
                                    const int resized_width = 0,
                                    const int resized_height = 0) {
-  const base::FilePath file_path = wallpaper_dir.Append(file_name);
+  // Ensure that `file_name` is nothing but a single "safe" base name (i.e., it
+  // is relative and does not reference a parent).
+  base::FilePath file_name_path(file_name);
+  std::optional<base::SafeBaseName> safe_file_name =
+      base::SafeBaseName::Create(file_name_path);
+  if (!safe_file_name || safe_file_name->path() != file_name_path) {
+    LOG(WARNING) << "Rejecting unsafe wallpaper file name: " << file_name;
+    return base::FilePath();
+  }
+  const base::FilePath file_path =
+      wallpaper_dir.Append(*std::move(safe_file_name));
   if (!DeleteWallpaperPath(type, wallpaper_dir)) {
     LOG(ERROR) << "Failed to delete wallpaper path.";
     return base::FilePath();
