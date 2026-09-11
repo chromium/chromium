@@ -25,6 +25,10 @@ class DisconnectWindowMac : public DisconnectWindowBase {
   void Start(const base::WeakPtr<ClientSessionControl>& client_session_control)
       override;
 
+  using DisconnectWindowBase::ResetRepositionAttempts;
+  using DisconnectWindowBase::SetExpectedPosition;
+  using DisconnectWindowBase::ShouldRepositionOnDisplacement;
+
  protected:
   void OnCooldownExpired() override;
 

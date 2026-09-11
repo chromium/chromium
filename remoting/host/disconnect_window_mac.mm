@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -47,6 +48,7 @@ bool IsDarkMode() {
 - (void)updateToggleButtonText;
 - (void)setDialogPosition;
 - (void)onScreenParametersChanged:(NSNotification*)notification;
+- (void)onWindowDidMove:(NSNotification*)notification;
 - (void)onCooldownExpired;
 - (IBAction)toggleAlignment:(id)sender;
 @property(nonatomic, strong) NSButton* toggleButton;
@@ -118,6 +120,10 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
            selector:@selector(onScreenParametersChanged:)
                name:NSApplicationDidChangeScreenParametersNotification
              object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(onWindowDidMove:)
+                                               name:NSWindowDidMoveNotification
+                                             object:window];
   }
   return self;
 }
@@ -276,17 +282,36 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   }
   NSRect screenRect = NSScreen.mainScreen.frame;
   NSRect windowRect = self.window.frame;
-  CGFloat x =
-      NSMinX(screenRect) + (NSWidth(screenRect) - NSWidth(windowRect)) / 2;
-  CGFloat y = (_disconnect_window->current_anchor() ==
-               remoting::DisconnectWindowBase::WindowAnchor::kTop)
-                  ? NSMaxY(screenRect) - NSHeight(windowRect) - kTopMargin
-                  : NSMinY(screenRect) + kBottomMargin;
+  CGFloat x = std::round(NSMinX(screenRect) +
+                         (NSWidth(screenRect) - NSWidth(windowRect)) / 2.0);
+  CGFloat y =
+      std::round((_disconnect_window->current_anchor() ==
+                  remoting::DisconnectWindowBase::WindowAnchor::kTop)
+                     ? NSMaxY(screenRect) - NSHeight(windowRect) - kTopMargin
+                     : NSMinY(screenRect) + kBottomMargin);
+  _disconnect_window->SetExpectedPosition(static_cast<int>(x),
+                                          static_cast<int>(y));
   [self.window setFrameOrigin:NSMakePoint(x, y)];
 }
 
 - (void)onScreenParametersChanged:(NSNotification*)notification {
+  if (!_disconnect_window) {
+    return;
+  }
+  _disconnect_window->ResetRepositionAttempts();
   [self setDialogPosition];
+}
+
+- (void)onWindowDidMove:(NSNotification*)notification {
+  if (!_disconnect_window) {
+    return;
+  }
+  NSRect frame = self.window.frame;
+  if (_disconnect_window->ShouldRepositionOnDisplacement(
+          static_cast<int>(std::round(frame.origin.x)),
+          static_cast<int>(std::round(frame.origin.y)))) {
+    [self setDialogPosition];
+  }
 }
 
 - (void)windowWillClose:(NSNotification*)notification {
