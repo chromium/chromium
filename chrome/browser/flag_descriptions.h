@@ -2180,6 +2180,11 @@ inline constexpr char kDevToolsMobileSafeAreaEmulationName[] =
 inline constexpr char kDevToolsMobileSafeAreaEmulationDescription[] =
     "Enables mobile safe area emulation in DevTools.";
 
+inline constexpr char kDevToolsNetworkBackendLinkingName[] =
+    "Network backend linking in DevTools";
+inline constexpr char kDevToolsNetworkBackendLinkingDescription[] =
+    "Enables backend linking for network requests in DevTools.";
+
 inline constexpr char kDevToolsPlusButtonName[] =
     "Enable the Plus Button in DevTools";
 inline constexpr char kDevToolsPlusButtonDescription[] =

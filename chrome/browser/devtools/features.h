@@ -152,6 +152,8 @@ BASE_DECLARE_FEATURE(kDevToolsAriaLiveRecording);
 BASE_DECLARE_FEATURE(kDevToolsMobileSafeAreaEmulation);
 
 BASE_DECLARE_FEATURE(kDevToolsTargetLevelEvaluation);
+
+BASE_DECLARE_FEATURE(kDevToolsNetworkBackendLinking);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

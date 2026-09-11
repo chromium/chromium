@@ -13086,6 +13086,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsMobileSafeAreaEmulationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsMobileSafeAreaEmulation)},
 
+    {"devtools-network-backend-linking",
+     flag_descriptions::kDevToolsNetworkBackendLinkingName,
+     flag_descriptions::kDevToolsNetworkBackendLinkingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDevToolsNetworkBackendLinking)},
+
     {"unthrottle-async-touch-moves",
      flag_descriptions::kUnthrottleAsyncTouchMovesName,
      flag_descriptions::kUnthrottleAsyncTouchMovesDescription, kOsAll,

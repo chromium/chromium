@@ -2788,6 +2788,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "devtools-network-backend-linking",
+    "owners": [ "pfaffe@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "devtools-plus-button",
     "owners": [ "guangyue.xu@microsoft.com" ],
     "expiry_milestone": 160
