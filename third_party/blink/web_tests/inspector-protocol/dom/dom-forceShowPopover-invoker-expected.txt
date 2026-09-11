@@ -19,4 +19,10 @@ Popover p2 top position: {
 }
 \nTest 4: explicit invalid invokerNodeId returns an error
 Error: invoker id not found
+\nTest 5: invoker in parent tree scope via reference target acts as default invoker
+Popover p-ref-target top position: {
+    description : 400
+    type : number
+    value : 400
+}
 

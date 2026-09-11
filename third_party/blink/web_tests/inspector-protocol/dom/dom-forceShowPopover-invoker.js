@@ -10,6 +10,7 @@
          #btn-command { top: 100px; left: 100px; }
          #btn-popover1 { top: 200px; left: 100px; }
          #btn-popover2 { top: 300px; left: 100px; }
+         #btn-ref-target { top: 400px; left: 100px; }
 
          [popover] {
            position-anchor: auto;
@@ -24,6 +25,21 @@
        <button id="btn-popover1" popovertarget="p2"></button>
        <button id="btn-popover2" popovertarget="p2"></button>
        <div popover id="p2"></div>
+
+       <button id="btn-ref-target" popovertarget="host-ref-target"></button>
+       <div id="host-ref-target">
+         <template shadowrootmode="open" shadowrootreferencetarget="p-ref-target">
+           <style>
+             [popover] {
+               position-anchor: auto;
+               margin: 0;
+               top: anchor(top);
+               left: anchor(right);
+             }
+           </style>
+           <div popover id="p-ref-target"></div>
+         </template>
+       </div>
     `,
       'Tests that DOM.forceShowPopover determines the invoker correctly for implicit anchoring');
   await dp.Runtime.enable();
@@ -45,11 +61,11 @@
   async function forceShowPopover(nodeId, invokerNodeId) {
     const params = {nodeId, enable: true};
     if (invokerNodeId !== undefined) {
-        params.invokerNodeId = invokerNodeId;
+      params.invokerNodeId = invokerNodeId;
     }
     const {result, error} = await dp.DOM.forceShowPopover(params);
     if (error) {
-        testRunner.log('Error: ' + error.message);
+      testRunner.log('Error: ' + error.message);
     }
   }
 
@@ -80,6 +96,24 @@
 
   testRunner.log('\\nTest 4: explicit invalid invokerNodeId returns an error');
   await forceShowPopover(p2.nodeId, 999999);
+
+  testRunner.log(
+      '\\nTest 5: invoker in parent tree scope via reference target acts as default invoker');
+  const hostRefTarget = await getIds('#host-ref-target');
+  const {result: {node: hostNode}} = await dp.DOM.describeNode(
+      {nodeId: hostRefTarget.nodeId, depth: -1, pierce: true});
+  const shadowRootNodeId = hostNode.shadowRoots[0].nodeId;
+  const {result: {nodeId: pRefTargetNodeId}} = await dp.DOM.querySelector(
+      {nodeId: shadowRootNodeId, selector: '#p-ref-target'});
+  await forceShowPopover(pRefTargetNodeId);
+  testRunner.log(
+      (await dp.Runtime.evaluate({
+        returnByValue: true,
+        expression:
+            `document.getElementById('host-ref-target').shadowRoot.getElementById('p-ref-target').getBoundingClientRect().top`
+      })).result.result,
+      'Popover p-ref-target top position: ');
+  await dp.DOM.forceShowPopover({nodeId: pRefTargetNodeId, enable: false});
 
   testRunner.completeTest();
 })

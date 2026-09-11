@@ -1,0 +1,35 @@
+Tests that DOM.getImplicitAnchorCandidates returns expected candidate node IDs
+
+--- Popover with no invokers ---
+Candidate count: 0
+
+--- Popover with multiple invokers ---
+Candidate count: 3
+  <button id="btn-pt1">
+  <button id="btn-pt2">
+  <button id="btn-cf1">
+
+--- Programmatic invoker ---
+Candidate count: 1
+  <button id="btn-programmatic">
+
+--- Invoker in child tree scope is not returned ---
+Candidate count: 0
+
+--- Popover inside shadow DOM invoked from same shadow DOM ---
+Candidate count: 1
+  <button id="btn-for-inner-shadow">
+
+--- Popover inside shadow DOM invoked from parent scope via Reference Target ---
+Candidate count: 1
+  <button id="btn-for-ref-target">
+
+--- Capping at 50 candidates ---
+Capped candidate count (expected 50): 50
+
+--- Error handling: non-popover element ---
+Non-popover error: Node is not a popover
+
+--- Error handling: non-existent node ID ---
+Invalid node ID error: Could not find node with given id
+

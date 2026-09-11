@@ -280,6 +280,10 @@ class CORE_EXPORT InspectorDOMAgent final
       std::unique_ptr<protocol::Array<int>>* out_nodeIds) override;
   void WillHidePopover(HTMLElement* element, bool* force_open);
 
+  protocol::Response getImplicitAnchorCandidates(
+      int node_id,
+      std::unique_ptr<protocol::Array<int>>* out_backendNodeIds) override;
+
   protocol::Response forceShowInterest(int node_id, bool enable) override;
   void WillLoseInterest(Element* element, bool* force_interest);
   void ReleaseForcedInterestInvokers();

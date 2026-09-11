@@ -37,11 +37,11 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_pseudo_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_css_pseudo_element.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
+#include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
@@ -63,7 +64,6 @@
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
-#include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -2118,6 +2118,31 @@ protocol::Response InspectorDOMAgent::getAnchorElement(
   return protocol::Response::Success();
 }
 
+template <typename Callback>
+static void ForEachPopoverInvoker(HTMLElement* popover, Callback callback) {
+  for (TreeScope* scope = &popover->GetTreeScope(); scope;
+       scope = scope->ParentTreeScope()) {
+    ContainerNode& root_node = scope->RootNode();
+    for (auto* item : *root_node.PopoverInvokers()) {
+      auto* invoker = DynamicTo<HTMLFormControlElement>(item);
+      if (invoker && invoker->popoverTargetElement().popover == popover) {
+        if (!callback(invoker)) {
+          return;
+        }
+      }
+    }
+
+    for (auto* item : *root_node.CommandInvokers()) {
+      auto* invoker = DynamicTo<HTMLElement>(item);
+      if (invoker && invoker->commandForElement() == popover) {
+        if (!callback(invoker)) {
+          return;
+        }
+      }
+    }
+  }
+}
+
 static Element* FindEstimatedPopoverInvoker(
     InspectorDOMAgent* agent,
     HTMLElement* element,
@@ -2129,27 +2154,12 @@ static Element* FindEstimatedPopoverInvoker(
     return DynamicTo<Element>(invoker_node);
   }
 
-  HTMLCollection* invokers =
-      element->GetTreeScope().RootNode().PopoverInvokers();
-  for (unsigned i = 0; i < invokers->length(); ++i) {
-    auto* potential_invoker =
-        DynamicTo<HTMLFormControlElement>(invokers->item(i));
-    if (potential_invoker &&
-        potential_invoker->popoverTargetElement().popover == element) {
-      return potential_invoker;
-    }
-  }
-
-  HTMLCollection* command_invokers =
-      element->GetTreeScope().RootNode().CommandInvokers();
-  for (unsigned i = 0; i < command_invokers->length(); ++i) {
-    auto* potential_invoker = To<HTMLElement>(command_invokers->item(i));
-    if (potential_invoker->commandForElement() == element) {
-      return potential_invoker;
-    }
-  }
-
-  return nullptr;
+  Element* found_invoker = nullptr;
+  ForEachPopoverInvoker(element, [&](Element* invoker) {
+    found_invoker = invoker;
+    return false;
+  });
+  return found_invoker;
 }
 
 static void HidePopover(Node* node) {
@@ -2213,6 +2223,40 @@ void InspectorDOMAgent::WillHidePopover(HTMLElement* element,
   if (force_open && forced_popovers_.Contains(element)) {
     *force_open = true;
   }
+}
+
+protocol::Response InspectorDOMAgent::getImplicitAnchorCandidates(
+    int node_id,
+    std::unique_ptr<protocol::Array<int>>* out_backendNodeIds) {
+  Node* node = nullptr;
+  protocol::Response response = AssertNode(node_id, node);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  auto* element = DynamicTo<HTMLElement>(node);
+  if (!element || !element->IsPopover()) {
+    return protocol::Response::ServerError("Node is not a popover");
+  }
+
+  *out_backendNodeIds = std::make_unique<protocol::Array<int>>();
+
+  constexpr size_t kMaxCandidateCount = 50;
+
+  ForEachPopoverInvoker(element, [&](Element* invoker) {
+    int id = IdentifiersFactory::IntIdForNode(invoker);
+    if (id &&
+        std::find((*out_backendNodeIds)->begin(), (*out_backendNodeIds)->end(),
+                  id) == (*out_backendNodeIds)->end()) {
+      (*out_backendNodeIds)->push_back(id);
+      if ((*out_backendNodeIds)->size() >= kMaxCandidateCount) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  return protocol::Response::Success();
 }
 
 void InspectorDOMAgent::ReleaseForcedInterestInvokers() {
