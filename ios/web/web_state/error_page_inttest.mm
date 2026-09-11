@@ -243,6 +243,8 @@ TEST_F(ErrorPageTest, ReloadPageAfterServerIsDown) {
   ASSERT_TRUE(security_state_info()->visible_ssl_status);
   EXPECT_EQ(SECURITY_STYLE_UNAUTHENTICATED,
             security_state_info()->visible_ssl_status->security_style);
+  EXPECT_TRUE([@"file:"
+      isEqualToString:ExecuteJavaScript(@"window.location.protocol")]);
 }
 
 // Sucessfully loads the page, goes back, stops the server, goes forward and

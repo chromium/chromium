@@ -2211,8 +2211,21 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     errorNavigation = [webView loadFileURL:errorPage.errorPageFileURL
                    allowingReadAccessToURL:errorPage.errorPageFileURL];
   } else {
-    errorNavigation = [webView loadHTMLString:@""
-                                      baseURL:errorPage.failedNavigationURL];
+    // SECURITY: Use the error page file URL as the `baseURL` so the committed
+    // error page document gets a `file:` origin instead of the web origin of
+    // the failed URL. Committing the document at `failedNavigationURL` lets a
+    // same-origin window (e.g. an opener) script the interstitial document,
+    // intercept/suppress the injected warning HTML, and post
+    // `IOSInterstitialMessage` commands (e.g. `CMD_PROCEED`) with no user
+    // interaction.
+    // Use `errorPageFileURLWithoutDontLoad` without `dontLoad` so that if this
+    // error page is later restored from session history,
+    // `error_page_loaded.html` will immediately reload the failed navigation
+    // URL.
+    self.allowedErrorPageFileURL = errorPage.errorPageFileURLWithoutDontLoad;
+    errorNavigation =
+        [webView loadHTMLString:@""
+                        baseURL:errorPage.errorPageFileURLWithoutDontLoad];
   }
   [self.navigationStates setState:web::WKNavigationState::REQUESTED
                     forNavigation:errorNavigation];

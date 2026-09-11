@@ -54,6 +54,7 @@ NSString* InjectedErrorPageFilePath() {
 
 @synthesize failedNavigationURL = _failedNavigationURL;
 @synthesize errorPageFileURL = _errorPageFileURL;
+@synthesize errorPageFileURLWithoutDontLoad = _errorPageFileURLWithoutDontLoad;
 
 - (instancetype)initWithError:(NSError*)error {
   if ((self = [super init])) {
@@ -71,21 +72,37 @@ NSString* InjectedErrorPageFilePath() {
   return _failedNavigationURL;
 }
 
-- (NSURL*)errorPageFileURL {
-  if (!_errorPageFileURL) {
-    NSURLQueryItem* itemURL = [NSURLQueryItem
-        queryItemWithName:base::SysUTF8ToNSString(kOriginalUrlKey)
-                    value:EscapeHTMLCharacters(
-                              self.failedNavigationURL.absoluteString)];
+- (NSURL*)errorPageFileURLWithDontLoad:(BOOL)dontLoad {
+  NSURLQueryItem* itemURL = [NSURLQueryItem
+      queryItemWithName:base::SysUTF8ToNSString(kOriginalUrlKey)
+                  value:EscapeHTMLCharacters(
+                            self.failedNavigationURL.absoluteString)];
+  NSURLComponents* components =
+      [[NSURLComponents alloc] initWithString:@"file:///"];
+  components.path = LoadedErrorPageFilePath();
+  if (dontLoad) {
     NSURLQueryItem* itemDontLoad = [NSURLQueryItem queryItemWithName:@"dontLoad"
                                                                value:@"true"];
-    NSURLComponents* URL = [[NSURLComponents alloc] initWithString:@"file:///"];
-    URL.path = LoadedErrorPageFilePath();
-    URL.queryItems = @[ itemURL, itemDontLoad ];
-    DCHECK(URL.URL) << "file URL should be valid";
-    _errorPageFileURL = URL.URL;
+    components.queryItems = @[ itemURL, itemDontLoad ];
+  } else {
+    components.queryItems = @[ itemURL ];
+  }
+  DCHECK(components.URL) << "file URL should be valid";
+  return components.URL;
+}
+
+- (NSURL*)errorPageFileURL {
+  if (!_errorPageFileURL) {
+    _errorPageFileURL = [self errorPageFileURLWithDontLoad:YES];
   }
   return _errorPageFileURL;
+}
+
+- (NSURL*)errorPageFileURLWithoutDontLoad {
+  if (!_errorPageFileURLWithoutDontLoad) {
+    _errorPageFileURLWithoutDontLoad = [self errorPageFileURLWithDontLoad:NO];
+  }
+  return _errorPageFileURLWithoutDontLoad;
 }
 
 - (NSString*)automaticReloadJavaScript {

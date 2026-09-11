@@ -45,6 +45,13 @@ void IOSSecurityInterstitialJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
+  // Security interstitials are committed at local file:// URLs. Ignore
+  // messages sent from web origins (e.g., http:// or https://).
+  if (!script_message.request_url() ||
+      !script_message.request_url()->SchemeIsFile()) {
+    return;
+  }
+
   if (!script_message.legacy_body() ||
       !script_message.legacy_body()->is_dict()) {
     return;

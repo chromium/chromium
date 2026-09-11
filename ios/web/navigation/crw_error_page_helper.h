@@ -17,6 +17,9 @@ class GURL;
 @property(nonatomic, strong, readonly) NSURL* failedNavigationURL;
 // The error page file to be loaded as a new page.
 @property(nonatomic, strong, readonly) NSURL* errorPageFileURL;
+// The error page file URL without the 'dontLoad' query parameter, used as the
+// baseURL when presenting an error page via `loadHTMLString:baseURL:`.
+@property(nonatomic, strong, readonly) NSURL* errorPageFileURLWithoutDontLoad;
 
 - (instancetype)initWithError:(NSError*)error NS_DESIGNATED_INITIALIZER;
 

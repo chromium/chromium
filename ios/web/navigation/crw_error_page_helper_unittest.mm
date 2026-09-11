@@ -7,6 +7,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/strings/sys_string_conversions.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/base/url_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -44,6 +45,29 @@ TEST_F(CRWErrorPageHelperTest, ExtractOriginalURLFromErrorPageURL) {
       failedNavigationURLFromErrorPageFileURL:url_from_helper];
   EXPECT_EQ(GURL(base::SysNSStringToUTF8(url_string)), result_original_url);
   EXPECT_TRUE([CRWErrorPageHelper isErrorPageFileURL:url_from_helper]);
+}
+
+// Tests that errorPageFileURLWithoutDontLoad does not contain the 'dontLoad'
+// parameter but still contains the failed URL and is identified as an error
+// page.
+TEST_F(CRWErrorPageHelperTest, ErrorPageFileURLWithoutDontLoad) {
+  NSString* url_string = @"https://test-error-page.com";
+  NSError* error = [NSError
+      errorWithDomain:NSURLErrorDomain
+                 code:NSURLErrorBadURL
+             userInfo:@{
+               NSURLErrorFailingURLErrorKey : [NSURL URLWithString:url_string]
+             }];
+  CRWErrorPageHelper* helper = [[CRWErrorPageHelper alloc] initWithError:error];
+  GURL url = net::GURLWithNSURL(helper.errorPageFileURLWithoutDontLoad);
+  EXPECT_TRUE([CRWErrorPageHelper isErrorPageFileURL:url]);
+  EXPECT_EQ(GURL(base::SysNSStringToUTF8(url_string)),
+            [CRWErrorPageHelper failedNavigationURLFromErrorPageFileURL:url]);
+  EXPECT_TRUE([helper isErrorPageFileURLForFailedNavigationURL:
+                          helper.errorPageFileURLWithoutDontLoad]);
+
+  std::string dont_load_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "dontLoad", &dont_load_value));
 }
 
 // Tests that the error page is correctly identified as error page.
