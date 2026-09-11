@@ -233,3 +233,41 @@ source_set("at_memory_promo_bubble_view_impl") {
     "//ui/views",
   ]
 }
+
+source_set("autofill_bubble_handler_impl") {
+  public = [ "autofill_bubble_handler_impl.h" ]
+  sources = [ "autofill_bubble_handler_impl.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//components/autofill/core/browser",
+    "//components/signin/public/base:signin_buildflags",
+    "//ui/views",
+  ]
+  deps = [
+    ":save_address_profile_view",
+    ":update_address_profile_view",
+    "//chrome/browser/ui/views:bubble_anchor_util_views",
+    "//chrome/browser/ui/views/autofill/autofill_ai",
+    "//chrome/browser/ui/views/autofill/payments:filled_card_information_bubble_views",
+    "//chrome/browser/ui/views/autofill/payments:manage_saved_iban_bubble_view",
+    "//chrome/browser/ui/views/autofill/payments:mandatory_reauth_confirmation_bubble_view",
+    "//chrome/browser/ui/views/autofill/payments:mandatory_reauth_opt_in_bubble_view",
+    "//chrome/browser/ui/views/autofill/payments:offer_notification_bubble_views",
+    "//chrome/browser/ui/views/autofill/payments:omnibox_autofill_bubble_view",
+    "//chrome/browser/ui/views/autofill/payments:payments_churned_users_bubble_view",
+    "//chrome/browser/ui/views/autofill/payments:save_card_bubble_views",
+    "//chrome/browser/ui/views/autofill/payments:save_card_manage_cards_bubble_views",
+    "//chrome/browser/ui/views/autofill/payments:save_card_offer_bubble_views",
+    "//chrome/browser/ui/views/autofill/payments:save_iban_bubble_view",
+    "//chrome/browser/ui/views/autofill/payments:save_payment_method_and_virtual_card_enroll_confirmation_bubble_views",
+    "//chrome/browser/ui/views/autofill/payments:virtual_card_enroll_bubble_views",
+    "//chrome/browser/ui/views/autofill/payments:wallet_reminder_notice_bubble_view",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//ui/base",
+  ]
+
+  if (enable_dice_support) {
+    deps += [ ":address_sign_in_promo_view" ]
+  }
+}

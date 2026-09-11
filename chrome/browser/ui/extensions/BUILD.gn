@@ -258,6 +258,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/extensions:extension_view_views",
       "//chrome/browser/ui/views/extensions:extensions_container_views",
       "//chrome/browser/ui/views/extensions:extensions_menu_delegate_desktop",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
     ]
   }
@@ -431,6 +432,7 @@ source_set("browser_tests") {
       "//chrome/browser/search_engines",
       "//chrome/browser/themes",
       "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:launch_utils",

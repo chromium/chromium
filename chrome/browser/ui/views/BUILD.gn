@@ -1563,3 +1563,28 @@ source_set("intent_picker_bubble_view") {
     deps += [ "//ui/chromeos" ]
   }
 }
+
+source_set("sad_tab_view") {
+  public = [ "sad_tab_view.h" ]
+  sources = [ "sad_tab_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui:sad_tab",
+    "//ui/base",
+    "//ui/views",
+  ]
+  deps = [
+    ":layout_provider",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui:sad_tab",
+    "//content/public/common:result_codes",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/views/controls/webview",
+  ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/components/kiosk" ]
+  }
+}

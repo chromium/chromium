@@ -66,6 +66,7 @@ source_set("tab_contents") {
       "//content/public/common",
     ]
   }
+  deps += [ "//chrome/browser/ui/views:sad_tab_view" ]
 }
 
 source_set("unit_tests") {

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_local_save_notification_view.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
@@ -43,6 +42,10 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
+#endif
 
 namespace autofill {
 

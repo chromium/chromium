@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -175,10 +175,8 @@ void SidePanelToolbarPinningController::UpdateActiveState(
   // Active extension side-panels have different UI in the toolbar than active
   // built-in side-panels.
   if (key.id() == SidePanelEntryId::kExtension) {
-    if (auto* extensions_container =
-            views::AsViewClass<ExtensionsToolbarDesktop>(
-                BrowserElementsViews::From(&*browser_)
-                    ->GetView(kToolbarExtensionsContainerElementId))) {
+    if (auto* extensions_container = ToolbarButtonProvider::From(&*browser_)
+                                         ->GetExtensionsContainerViews()) {
       extensions_container->UpdateSidePanelState(show_active_in_toolbar);
     }
   } else {

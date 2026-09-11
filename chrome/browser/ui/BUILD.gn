@@ -2530,12 +2530,8 @@ static_library("ui") {
 
   if (toolkit_views) {
     sources += [
-      "views/autofill/autofill_bubble_handler_impl.cc",
-      "views/autofill/autofill_bubble_handler_impl.h",
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
-      "views/extensions/extensions_toolbar_desktop.cc",
-      "views/extensions/extensions_toolbar_desktop.h",
       "views/frame/app_menu_button.cc",
       "views/frame/app_menu_button.h",
       "views/frame/base_tab_strip_region_view.cc",
@@ -2657,6 +2653,7 @@ static_library("ui") {
       "//chrome/browser/ui/views:login_view",
       "//chrome/browser/ui/views:media_picker_utils",
       "//chrome/browser/ui/views:message_box_dialog",
+      "//chrome/browser/ui/views:sad_tab_view",
       "//chrome/browser/ui/views:session_crashed_bubble_view",
       "//chrome/browser/ui/views:simple_web_view_dialog",
       "//chrome/browser/ui/views:ssl_client_certificate_selector",
@@ -2681,6 +2678,7 @@ static_library("ui") {
 
       # at_memory_promo_bubble_view_impl includes browser_view.h.
       "//chrome/browser/ui/views/autofill:at_memory_promo_bubble_view_impl",
+      "//chrome/browser/ui/views/autofill:autofill_bubble_handler_impl",
       "//chrome/browser/ui/views/autofill:autofill_bubble_utils",
       "//chrome/browser/ui/views/autofill:autofill_field_promo_view_impl",
       "//chrome/browser/ui/views/autofill:autofill_field_promo_view_impl_impl",
@@ -2767,6 +2765,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/extensions:extensions_toolbar_button_impl",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator_impl",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop_view_controller",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop_view_controller_impl",
       "//chrome/browser/ui/views/extensions:security_dialog_tracker",
@@ -3606,6 +3605,17 @@ static_library("ui") {
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
   }
+
+  if (toolkit_views) {
+    allow_circular_includes_from += [
+      "//chrome/browser/ui/views:sad_tab_view",
+      "//chrome/browser/ui/views/autofill:autofill_bubble_handler_impl",
+    ]
+    if (enable_extensions) {
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop" ]
+    }
+  }
 }
 
 # These are the dependencies for the "ui" target that are outside of
@@ -4049,6 +4059,7 @@ static_library("test_support") {
       "//chrome/browser/ui/views/extensions:extensions_menu_view",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_button",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
       "//components/constrained_window",
       "//components/webauthn/content/browser",
@@ -4236,7 +4247,6 @@ if (toolkit_views) {
       "sad_tab_controller.h",
       "sad_tab_helper.h",
       "sad_tab_types.h",
-      "views/sad_tab_view.h",
     ]
 
     public_deps = [
@@ -4253,7 +4263,6 @@ if (toolkit_views) {
       "sad_tab.cc",
       "sad_tab_controller.cc",
       "sad_tab_helper.cc",
-      "views/sad_tab_view.cc",
     ]
 
     deps = [
@@ -4270,6 +4279,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views:layout_provider",
+      "//chrome/browser/ui/views:sad_tab_view",
       "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/common",
       "//components/strings:components_strings_grit",
@@ -4311,6 +4321,7 @@ if (toolkit_views) {
       "//chrome/browser/preloading/prefetch/no_state_prefetch",
       "//chrome/browser/preloading/prefetch/no_state_prefetch:test_support",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views:sad_tab_view",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/common",
@@ -4336,6 +4347,7 @@ if (toolkit_views) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/frame",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views:sad_tab_view",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/common",

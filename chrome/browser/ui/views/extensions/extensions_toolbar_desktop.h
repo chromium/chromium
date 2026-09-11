@@ -166,9 +166,8 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
     return close_side_panel_button_;
   }
 
-  // Called when the side panel state has changed for an extensions side panel
-  // to pop out button reflecting the side panel being open.
-  void UpdateSidePanelState(bool is_active);
+  // ExtensionsContainerViews:
+  void UpdateSidePanelState(bool is_active) override;
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;

@@ -73,6 +73,7 @@ source_set("interactive_ui_tests") {
     ":mojo_bindings",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
     "//chrome/browser/ui/views/user_education:impl",
     "//chrome/common",
     "//chrome/test:test_support",

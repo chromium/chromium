@@ -99,6 +99,10 @@ class ExtensionsContainerViews {
 
   // Returns the arrow to use for popups and menus anchored to this container.
   virtual views::BubbleBorder::Arrow GetPopupArrow() const = 0;
+
+  // Called when the side panel state has changed for an extensions side panel
+  // to pop out button reflecting the side panel being open.
+  virtual void UpdateSidePanelState(bool is_active) {}
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_CONTAINER_VIEWS_H_
