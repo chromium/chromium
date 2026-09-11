@@ -176,8 +176,6 @@ DEFINE_VARIATION_PARAM(kIPHReadAloudPlaybackModeFeature,
                        "IPH_ReadAloudPlaybackModeFeature");
 DEFINE_VARIATION_PARAM(kIPHReaderModeDistillInAppFeature,
                        "IPH_ReaderModeDistillInApp");
-DEFINE_VARIATION_PARAM(kIPHReadLaterContextMenuFeature,
-                       "IPH_ReadLaterContextMenu");
 DEFINE_VARIATION_PARAM(kIPHReadLaterAppMenuBookmarkThisPageFeature,
                        "IPH_ReadLaterAppMenuBookmarkThisPage");
 DEFINE_VARIATION_PARAM(kIPHReadLaterAppMenuBookmarksFeature,
@@ -751,7 +749,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHReadLaterAppMenuBookmarksFeature),
         VARIATION_ENTRY(kIPHReadLaterAppMenuBookmarkThisPageFeature),
         VARIATION_ENTRY(kIPHReadLaterBottomSheetFeature),
-        VARIATION_ENTRY(kIPHReadLaterContextMenuFeature),
         VARIATION_ENTRY(kIPHRecentTabsFeature),
         VARIATION_ENTRY(kIPHRequestDesktopSiteDefaultOnFeature),
         VARIATION_ENTRY(kIPHRequestDesktopSiteExceptionsGenericFeature),

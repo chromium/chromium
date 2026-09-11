@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -103,8 +102,6 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -767,7 +764,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         && BookmarkUtils.isReadingListSupported(mParams.getLinkUrl())
                         && (mMode != ContextMenuMode.THIN_WEB_VIEW
                                 || mItemDelegate.supportsReadLater())) {
-                    linkGroup.add(createListItem(Item.READ_LATER, shouldTriggerReadLaterHelpUi()));
+                    linkGroup.add(createListItem(Item.READ_LATER));
                 }
                 if (enableShareFromContextMenu()) {
                     linkGroup.add(createShareListItem(Item.SHARE_LINK, Item.DIRECT_SHARE_LINK));
@@ -1003,13 +1000,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         }
 
         return groupedItems;
-    }
-
-    @VisibleForTesting
-    boolean shouldTriggerReadLaterHelpUi() {
-        Tracker tracker = TrackerFactory.getTrackerForProfile(getProfile());
-        return tracker.isInitialized()
-                && tracker.shouldTriggerHelpUi(FeatureConstants.READ_LATER_CONTEXT_MENU_FEATURE);
     }
 
     @Override
@@ -1728,10 +1718,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     private ListItem createListItem(@Item int item) {
         return createListItem(item, /* showInProductHelp= */ false, /* enabled= */ true);
-    }
-
-    private ListItem createListItem(@Item int item, boolean showInProductHelp) {
-        return createListItem(item, showInProductHelp, /* enabled= */ true);
     }
 
     private ListItem createListItem(@Item int item, boolean showInProductHelp, boolean enabled) {

@@ -501,9 +501,6 @@ BASE_FEATURE(kIPHReadAloudExpandedPlayerFeature,
 BASE_FEATURE(kIPHReadAloudPlaybackModeFeature,
              "IPH_ReadAloudPlaybackModeFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHReadLaterContextMenuFeature,
-             "IPH_ReadLaterContextMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHReadLaterAppMenuBookmarkThisPageFeature,
              "IPH_ReadLaterAppMenuBookmarkThisPage",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -2977,8 +2977,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_OPEN_IN_EPHEMERAL_TAB" desc="Context-sensitive menu item to open a quick preview of the selected linked page.   Note that 'preview' is a verb, not a noun. The selected link will open in an overlay panel on top of the current tab which will go away easily too. [CHAR_LIMIT=30]">
         Preview page
       </message>
-      <message name="IDS_CONTEXTMENU_READ_LATER" desc="Context sensitive menu item for marking a link to be read later. We're also labeling it *New* to draw attention to it when first released. [CHAR_LIMIT=30]">
-        Add to reading list <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+      <message name="IDS_CONTEXTMENU_READ_LATER" desc="Context sensitive menu item for marking a link to be read later. [CHAR_LIMIT=30]">
+        Add to reading list
       </message>
       <message name="IDS_CONTEXTMENU_SHARE_HIGHLIGHT" desc="This string is shown in the context menu for resharing the link-to-text.">
         Share highlight

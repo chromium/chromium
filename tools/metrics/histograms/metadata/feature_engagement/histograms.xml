@@ -646,8 +646,6 @@ chromium-metrics-reviews@google.com.
       summary="read later app menu"/>
   <variant name="IPH_ReadLaterBottomSheet"
       summary="read later bottom sheet entry point"/>
-  <variant name="IPH_ReadLaterContextMenu"
-      summary="read later context menu entry point"/>
   <variant name="IPH_RecentTabs"
       summary="prompting the user that they can find their recently closed
                tabs and windows in the 'Recent tabs' surface"/>

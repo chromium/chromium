@@ -1974,22 +1974,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHReadLaterContextMenuFeature.name == feature->name) {
-    // A config that allows the reading list label on the context menu to show
-    // when the context menu "copy" option is clicked.
-    // This will only occur once every 60 days.
-
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(ANY, 0);
-    config.trigger = EventConfig("read_later_context_menu_tapped_iph_trigger",
-                                 Comparator(EQUAL, 0), 60, 60);
-    config.used = EventConfig("read_later_context_menu_tapped",
-                              Comparator(EQUAL, 0), 60, 60);
-    return config;
-  }
-
   if (kIPHRequestDesktopSiteDefaultOnFeature.name == feature->name) {
     // A config that allows the RDS default-on message to be shown:
     // * If the user has never accepted the message.

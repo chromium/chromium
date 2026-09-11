@@ -115,7 +115,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.READ_LATER_APP_MENU_BOOKMARKS_FEATURE,
     FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE,
     FeatureConstants.READ_LATER_BOTTOM_SHEET_FEATURE,
-    FeatureConstants.READ_LATER_CONTEXT_MENU_FEATURE,
     FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE,
     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE,
     FeatureConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE,
@@ -421,8 +420,6 @@ public @interface FeatureConstants {
     String READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE = "IPH_ReadLaterAppMenuBookmarkThisPage";
 
     String READ_LATER_BOTTOM_SHEET_FEATURE = "IPH_ReadLaterBottomSheet";
-
-    String READ_LATER_CONTEXT_MENU_FEATURE = "IPH_ReadLaterContextMenu";
 
     /**
      * An IPH feature prompting user that they can find their recently closed tabs and windows in

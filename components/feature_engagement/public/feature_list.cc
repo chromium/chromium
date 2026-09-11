@@ -104,7 +104,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHReadLaterAppMenuBookmarksFeature,
     &kIPHReadLaterAppMenuBookmarkThisPageFeature,
     &kIPHReadLaterBottomSheetFeature,
-    &kIPHReadLaterContextMenuFeature,
     &kIPHRecentTabsFeature,
     &kIPHRequestDesktopSiteDefaultOnFeature,
     &kIPHRequestDesktopSiteExceptionsGenericFeature,

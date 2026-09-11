@@ -349,8 +349,6 @@ class ChromeContextMenuItem {
                                 .getDefaultSearchEngineTemplateUrl();
                 assumeNonNull(templateUrl);
                 return context.getString(getStringId(item), templateUrl.getShortName());
-            case Item.READ_LATER:
-                return addOrRemoveNewLabel(context, item, null, showInProductHelp);
             case Item.SEARCH_TAB_WITH_GOOGLE_LENS:
                 return addOrRemoveNewLabel(
                         context,

@@ -235,8 +235,6 @@ public final class EventConstants {
     public static final String READ_LATER_BOOKMARK_FOLDER_OPENED =
             "read_later_bookmark_folder_opened";
 
-    public static final String READ_LATER_CONTEXT_MENU_TAPPED = "read_later_context_menu_tapped";
-
     /**
      * The user selected the 'Recent tabs' app menu option, with at least one closed window in
      * persistence.
