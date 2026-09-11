@@ -966,4 +966,20 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     LayerDrawable getHoverDrawableForTesting() {
         return mHoverDrawable;
     }
+
+    /**
+     * Returns the width of the container view (screen width minus any sidebars like vertical tabs),
+     * falling back to the window width before the container has been laid out.
+     */
+    private @Px int getAvailableContainerWidth() {
+        if (mContainerView != null && mContainerView.getWidth() > 0) {
+            return mContainerView.getWidth();
+        }
+        return getResources().getDisplayMetrics().widthPixels;
+    }
+
+    @Override
+    /* package */ boolean isTooNarrowForExpandedActivationChip() {
+        return getAvailableContainerWidth() <= mMinWidthForExpandedActivationChip;
+    }
 }

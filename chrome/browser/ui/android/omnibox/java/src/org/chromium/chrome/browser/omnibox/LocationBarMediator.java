@@ -154,7 +154,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -3694,25 +3693,11 @@ class LocationBarMediator
     /* package */ void updateActivationChipCompact() {
         if (!OmniboxCapabilities.isDesktopPlatform()) return;
         boolean shouldBeCompact =
-                isScreenTooNarrowForExpandedChip() || isUrlBarTextOverflowing() || mIsTextWrapping;
+                mLocationBarLayout.isTooNarrowForExpandedActivationChip()
+                        || mLocationBarLayout.isUrlBarTextOverflowing()
+                        || mIsTextWrapping;
         if (shouldBeCompact == mLocationBarLayout.isActivationChipCompact()) return;
         mLocationBarLayout.setActivationChipCompact(shouldBeCompact);
-    }
-
-    private boolean isUrlBarTextOverflowing() {
-        int currentWidth = mLocationBarLayout.getUrlBarWidth();
-        int chipDelta = mLocationBarLayout.getActivationChipCompactWidthDelta();
-        boolean isCompact = mLocationBarLayout.isActivationChipCompact();
-        int expandedUrlBarWidth = isCompact ? (currentWidth - chipDelta) : currentWidth;
-        return mLocationBarLayout.getUrlBarTextWidth() > expandedUrlBarWidth;
-    }
-
-    private boolean isScreenTooNarrowForExpandedChip() {
-        Configuration config = mContext.getResources().getConfiguration();
-        int screenWidthPx = ViewUtils.dpToPx(mContext, config.screenWidthDp);
-        int minScreenWidthForExpandedActivationChip =
-                mResourceProvider.getDimen(R.dimen.fusebox_compact_activation_chip_width);
-        return screenWidthPx < minScreenWidthForExpandedActivationChip;
     }
 
     public void setIsTextWrapping(boolean isTextWrapping) {

@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.spy;
 
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
@@ -856,6 +858,60 @@ public class LocationBarTabletUnitTest {
         mLocationBarTablet.setReparentedToPopover(false);
         assertEquals(0, statusParams.getMarginStart());
         assertEquals(0, chipParams.getMarginEnd());
+    }
+
+    @Test
+    public void isTooNarrowForExpandedActivationChip_atThreshold() {
+        View container = new View(mActivity);
+        container.layout(0, 0, mLocationBarTablet.mMinWidthForExpandedActivationChip, 100);
+        mLocationBarTablet.setHolderAndContainer(mHolderView, container);
+
+        assertTrue(mLocationBarTablet.isTooNarrowForExpandedActivationChip());
+    }
+
+    @Test
+    public void isTooNarrowForExpandedActivationChip_aboveThreshold() {
+        View container = new View(mActivity);
+        container.layout(0, 0, mLocationBarTablet.mMinWidthForExpandedActivationChip + 1, 100);
+        mLocationBarTablet.setHolderAndContainer(mHolderView, container);
+
+        assertFalse(mLocationBarTablet.isTooNarrowForExpandedActivationChip());
+    }
+
+    @Test
+    public void isUrlBarTextOverflowing_overflowsWhenExpanded() {
+        LocationBarTablet spyTablet = spy(mLocationBarTablet);
+        doReturn(150).when(spyTablet).getUrlBarTextWidth();
+        doReturn(50).when(spyTablet).getActivationChipCompactWidthDelta();
+        doReturn(100).when(spyTablet).getUrlBarWidth();
+        doReturn(false).when(spyTablet).isActivationChipCompact();
+
+        assertTrue(spyTablet.isUrlBarTextOverflowing());
+    }
+
+    @Test
+    public void isUrlBarTextOverflowing_doesNotOverflowWhenTextFits() {
+        LocationBarTablet spyTablet = spy(mLocationBarTablet);
+        doReturn(50).when(spyTablet).getUrlBarTextWidth();
+        doReturn(50).when(spyTablet).getActivationChipCompactWidthDelta();
+        doReturn(150).when(spyTablet).getUrlBarWidth();
+        doReturn(false).when(spyTablet).isActivationChipCompact();
+
+        assertFalse(spyTablet.isUrlBarTextOverflowing());
+    }
+
+    @Test
+    public void isUrlBarTextOverflowing_safeAgainstOscillationWhenCompact() {
+        LocationBarTablet spyTablet = spy(mLocationBarTablet);
+        doReturn(120).when(spyTablet).getUrlBarTextWidth();
+        doReturn(50).when(spyTablet).getActivationChipCompactWidthDelta();
+
+        // When compact, url bar width grew to 150 because chip shrank by 50.
+        // Effective expanded baseline is 150 - 50 = 100 < 120 text width -> still overflowing.
+        doReturn(150).when(spyTablet).getUrlBarWidth();
+        doReturn(true).when(spyTablet).isActivationChipCompact();
+
+        assertTrue(spyTablet.isUrlBarTextOverflowing());
     }
 
     private void setupContainerAndMeasure(int containerWidth, int prefocusWidth, int leftPosition) {

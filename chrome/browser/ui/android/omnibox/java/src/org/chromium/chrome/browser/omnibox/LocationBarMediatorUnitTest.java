@@ -450,6 +450,8 @@ public class LocationBarMediatorUnitTest {
         lenient().doReturn(mMicButton).when(mLocationBarLayout).getMicButton();
         lenient().doReturn(mNavigateButton).when(mLocationBarLayout).getNavigateButton();
         lenient().doReturn(mFocusThief).when(mLocationBarLayout).getFocusThief();
+        lenient().doReturn(false).when(mLocationBarLayout).isTooNarrowForExpandedActivationChip();
+        lenient().doReturn(false).when(mLocationBarLayout).isUrlBarTextOverflowing();
 
         mMediator =
                 new LocationBarMediator(
@@ -5649,106 +5651,50 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "w300dp")
-    public void updatesActivationChipCompact_screenWidthTriggersCompact() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+    public void updateActivationChipCompact_narrowLocationBarTriggersCompact() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        when(mLocationBarLayout.isTooNarrowForExpandedActivationChip()).thenReturn(true);
         mMediator.updateActivationChipCompact();
         verify(mLocationBarLayout).setActivationChipCompact(true);
+    }
+
+    @Test
+    public void updateActivationChipCompact_wideLocationBarDoesNotTriggerCompact() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        when(mLocationBarLayout.isTooNarrowForExpandedActivationChip()).thenReturn(false);
+        when(mLocationBarLayout.isUrlBarTextOverflowing()).thenReturn(false);
+        mMediator.updateActivationChipCompact();
+        verify(mLocationBarLayout, never()).setActivationChipCompact(true);
     }
 
     @Test
     public void updateActivationChipCompact_textOverflowTriggersCompact() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        when(mLocationBarLayout.getUrlBarWidth()).thenReturn(100);
-        when(mLocationBarLayout.getActivationChipCompactWidthDelta()).thenReturn(50);
-        when(mLocationBarLayout.isActivationChipCompact()).thenReturn(false);
-        when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(150);
-
-        mMediator.updateActivationChipCompact();
-
-        verify(mLocationBarLayout).setActivationChipCompact(true);
-    }
-
-    @Test
-    public void updateActivationChipCompact_safeAgainstOscillation() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(120);
-        when(mLocationBarLayout.getActivationChipCompactWidthDelta()).thenReturn(50);
-
-        // Initial state: expanded, url bar width is 100.
-        when(mLocationBarLayout.getUrlBarWidth()).thenReturn(100);
-        when(mLocationBarLayout.isActivationChipCompact()).thenReturn(false);
+        when(mLocationBarLayout.isUrlBarTextOverflowing()).thenReturn(true);
         mMediator.updateActivationChipCompact();
         verify(mLocationBarLayout).setActivationChipCompact(true);
-
-        // Transitioned state: compact, url bar width grew to 150 because chip shrank by 50.
-        when(mLocationBarLayout.getUrlBarWidth()).thenReturn(150);
-        when(mLocationBarLayout.isActivationChipCompact()).thenReturn(true);
-        mMediator.updateActivationChipCompact();
-
-        // Should remain compact (never set to false).
-        verify(mLocationBarLayout, never()).setActivationChipCompact(false);
     }
 
     @Test
     public void updateActivationChipCompact_isTextWrappingTriggersCompact() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        when(mLocationBarLayout.getUrlBarWidth()).thenReturn(100);
-        when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(50);
-        when(mLocationBarLayout.getActivationChipCompactWidthDelta()).thenReturn(50);
         when(mLocationBarLayout.isActivationChipCompact()).thenReturn(false);
-
         mMediator.setIsTextWrapping(true);
-
         verify(mLocationBarLayout).setActivationChipCompact(true);
     }
 
     @Test
-    public void updateActivationChipCompact_urlBarWidthIncrease() {
+    public void onLocationBarLayoutChange_triggersUpdateActivationChipCompact() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         verify(mLocationBarLayout)
                 .addOnLayoutChangeListener(mOnLayoutChangeListenerCaptor.capture());
-        when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(120);
-        when(mLocationBarLayout.getActivationChipCompactWidthDelta()).thenReturn(50);
 
-        // Initial state: overflowed with url bar width 150 (expanded baseline 100), chip is
-        // compact.
-        when(mLocationBarLayout.getUrlBarWidth()).thenReturn(150);
-        when(mLocationBarLayout.isActivationChipCompact()).thenReturn(true);
-        mMediator.updateActivationChipCompact();
+        when(mLocationBarLayout.isUrlBarTextOverflowing()).thenReturn(true);
+        when(mLocationBarLayout.isActivationChipCompact()).thenReturn(false);
 
-        // Url bar width increases to 200 (expanded baseline is now 200 - 50 = 150 > 120 text
-        // width).
-        when(mLocationBarLayout.getUrlBarWidth()).thenReturn(200);
-
-        // Simulate layout change where location bar width expands.
         mOnLayoutChangeListenerCaptor
                 .getValue()
                 .onLayoutChange(mLocationBarLayout, 0, 0, 400, 50, 0, 0, 300, 50);
-
-        verify(mLocationBarLayout).setActivationChipCompact(false);
-    }
-
-    @Test
-    public void updateActivationChipCompact_urlBarWidthDecrease() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        verify(mLocationBarLayout)
-                .addOnLayoutChangeListener(mOnLayoutChangeListenerCaptor.capture());
-        when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(120);
-        when(mLocationBarLayout.getActivationChipCompactWidthDelta()).thenReturn(50);
-
-        // Initial state: not overflowed with url bar width 200, chip is expanded.
-        when(mLocationBarLayout.getUrlBarWidth()).thenReturn(200);
-        when(mLocationBarLayout.isActivationChipCompact()).thenReturn(false);
-        mMediator.updateActivationChipCompact();
-
-        // Url bar width decreases to 100 (expanded baseline is 100 < 120 text width).
-        when(mLocationBarLayout.getUrlBarWidth()).thenReturn(100);
-
-        // Simulate layout change where location bar width shrinks.
-        mOnLayoutChangeListenerCaptor
-                .getValue()
-                .onLayoutChange(mLocationBarLayout, 0, 0, 200, 50, 0, 0, 300, 50);
 
         verify(mLocationBarLayout).setActivationChipCompact(true);
     }
@@ -5756,9 +5702,6 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testOnTabChanged_resetsActivationChipCompact() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        when(mLocationBarLayout.getUrlBarWidth()).thenReturn(100);
-        when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(50);
-        when(mLocationBarLayout.getActivationChipCompactWidthDelta()).thenReturn(50);
         when(mLocationBarLayout.isActivationChipCompact()).thenReturn(false);
 
         mMediator.beginInput(mSessionState.getAutocompleteInput());

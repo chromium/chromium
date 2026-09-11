@@ -61,7 +61,7 @@ found in the LICENSE file.
     <dimen name="fusebox_carousel_padding_bottom">16dp</dimen>
     <dimen name="fusebox_carousel_padding_horizontal">4dp</dimen>
     <dimen name="fusebox_carousel_padding_top">24dp</dimen>
-    <dimen name="fusebox_compact_activation_chip_width">412dp</dimen>
+    <dimen name="fusebox_compact_activation_chip_min_width_required">412dp</dimen>
     <dimen name="fusebox_compact_status_view_top_margin">8dp</dimen>
     <dimen name="fusebox_glif_blur_stroke_width">3dp</dimen>
     <dimen name="fusebox_glif_stroke_width">2dp</dimen>
@@ -101,7 +101,7 @@ found in the LICENSE file.
     <dimen name="location_bar_icon_margin_end">4dp</dimen>
     <dimen name="location_bar_icon_starting_padding">8dp</dimen>
     <dimen name="location_bar_icon_width">28dp</dimen>
-    <dimen name="location_bar_min_url_width">68dp</dimen>
+    <dimen name="location_bar_min_url_width">20dp</dimen>
     <dimen name="location_bar_min_verbose_status_text_width">48dp</dimen>
     <dimen name="location_bar_minimalistic_ui_threshold">160dp</dimen>
     <dimen name="location_bar_start_padding">0dp</dimen>

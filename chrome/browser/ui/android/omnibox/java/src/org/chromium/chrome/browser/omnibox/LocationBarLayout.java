@@ -74,6 +74,8 @@ public class LocationBarLayout extends ConstraintLayout {
     protected boolean mNativeInitialized;
     private final View mMarginSpacer;
     private final int mLocationBarIconStartingPadding;
+    @VisibleForTesting
+    protected final @Px int mMinWidthForExpandedActivationChip;
 
     protected @Nullable CompositeTouchDelegate mCompositeTouchDelegate;
     protected @Nullable SearchEngineService mSearchEngineService;
@@ -121,6 +123,9 @@ public class LocationBarLayout extends ConstraintLayout {
                 res.getDimensionPixelOffset(R.dimen.location_bar_url_action_offset);
         mLocationBarIconStartingPadding =
                 res.getDimensionPixelSize(R.dimen.location_bar_icon_starting_padding);
+        mMinWidthForExpandedActivationChip =
+                res.getDimensionPixelSize(
+                        R.dimen.fusebox_compact_activation_chip_min_width_required);
     }
 
     /** Called when activity is being destroyed. */
@@ -666,6 +671,19 @@ public class LocationBarLayout extends ConstraintLayout {
 
     /* package */ boolean isActivationChipCompact() {
         return mActivationChip.isCompact();
+    }
+
+    /** Returns whether the URL bar text would overflow if the activation chip were expanded. */
+    /* package */ boolean isUrlBarTextOverflowing() {
+        @Px int currentWidth = getUrlBarWidth();
+        @Px int chipDelta = getActivationChipCompactWidthDelta();
+        boolean isCompact = isActivationChipCompact();
+        @Px int expandedUrlBarWidth = isCompact ? (currentWidth - chipDelta) : currentWidth;
+        return getUrlBarTextWidth() > expandedUrlBarWidth;
+    }
+
+    /* package */ boolean isTooNarrowForExpandedActivationChip() {
+        return false;
     }
 
     public StatusCoordinator getStatusCoordinatorForTesting() {
