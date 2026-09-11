@@ -197,7 +197,7 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   bool force_sync_upload_ = false;
 
   OnceRegisterOnGotHashCallback register_on_got_hash_callback_;
-  bool hash_computation_is_synchronous_ = true;
+  bool file_hash_computation_is_async_ = false;
 
   // The upload URL returned from the metadata request.
   std::string upload_url_;

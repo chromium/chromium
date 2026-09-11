@@ -118,7 +118,7 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
       force_sync_upload_(force_sync_upload),
       register_on_got_hash_callback_(std::move(register_on_got_hash_callback)) {
   AssertCalledOnUIThread();
-  hash_computation_is_synchronous_ = register_on_got_hash_callback_.is_null();
+  file_hash_computation_is_async_ = !register_on_got_hash_callback_.is_null();
 }
 
 ResumableUploadRequestBase::ResumableUploadRequestBase(
@@ -249,7 +249,7 @@ void ResumableUploadRequestBase::SetMetadataRequestHeaders(
 
   request->headers.SetHeader(kUploadProtocolHeader, "resumable");
   request->headers.SetHeader(kUploadCommandHeader, "start");
-  if (hash_computation_is_synchronous_ && data_size_ != 0) {
+  if (!file_hash_computation_is_async_ && data_size_ != 0) {
     // When the request already has hash, let the server know the content size,
     // since there will not need to be an empty final file upload.
     // TODO(b/496284950): Remove this header entirely once webprotect accepts
@@ -285,7 +285,7 @@ std::string ResumableUploadRequestBase::GetUploadInfo() {
 
   return base::StrCat(
       {"Resumable - ", scan_info,
-       hash_computation_is_synchronous_ ? "" : ", hash in final call"});
+       file_hash_computation_is_async_ ? ", hash in final call" : ""});
 }
 
 void ResumableUploadRequestBase::Start() {
@@ -334,9 +334,7 @@ void ResumableUploadRequestBase::MaybeSendHashAndFinish(
     int net_error,
     int response_code,
     std::optional<std::string> response_body) {
-  if (hash_computation_is_synchronous_) {
-    Finish(net_error, response_code, std::move(response_body));
-  } else {
+  if (file_hash_computation_is_async_) {
     CHECK(!upload_url_.empty());
     MaybeRunVerdictReceivedCallback(net_error, response_code,
                                     std::move(response_body));
@@ -351,6 +349,8 @@ void ResumableUploadRequestBase::MaybeSendHashAndFinish(
     std::move(register_on_got_hash_callback_)
         .Run(base::BindOnce(&ResumableUploadRequestBase::SendHashNow,
                             weak_factory_.GetWeakPtr(), std::move(request)));
+  } else {
+    Finish(net_error, response_code, std::move(response_body));
   }
 }
 
@@ -420,7 +420,7 @@ void ResumableUploadRequestBase::SendContentSoon() {
   // If hash computation is synchronous, this is the final request.
   request->headers.SetHeader(
       kUploadCommandHeader,
-      hash_computation_is_synchronous_ ? kCommandUploadFinalize : "upload");
+      file_hash_computation_is_async_ ? "upload" : kCommandUploadFinalize);
   request->headers.SetHeader(kUploadOffsetHeader, "0");
 
   // TODO(crbug.com/322005992): Add retry logics.
