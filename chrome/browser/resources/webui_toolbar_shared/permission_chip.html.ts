@@ -20,10 +20,10 @@ export function getHtml(this: PermissionChipElement) {
     @pointercancel="${this.onPointercancel_}"
     @pointerdown="${this.onPointerdown_}"
     @click="${this.onClick_}">
-  ${this.getIconUrl_() ? html`
-    <div id="icon"
-        style="mask-image: ${this.getIconUrl_()};">
-    </div>` : nothing}
+  ${this.getIconName_() ? html`
+    <cr-icon id="icon"
+        .icon="${this.getIconName_()}">
+    </cr-icon>` : nothing}
   <span id="message" ?visible="${!this.isFullyCollapsed_}"
   >${this.chipState?.message || ''}</span>
 </button>

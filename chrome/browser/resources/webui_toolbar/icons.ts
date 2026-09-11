@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import {getTrustedHTML} from '//resources/js/static_types.js';
-
-import {CrLazyIconset} from './cr_lazy_iconset.js';
+import {CrLazyIconset} from '/shared/cr_lazy_iconset.js';
 
 const iconset = new CrLazyIconset('webui-toolbar');
 

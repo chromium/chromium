@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import './icons.js';
+
 import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -256,14 +259,12 @@ export class PermissionChipElement extends PermissionChipElementBase {
     this.style.setProperty('--chip-fg-color', fgColor);
   }
 
-  protected getIconUrl_(): string {
+  protected getIconName_(): string {
     if (!this.chipState || !this.chipState.iconName) {
       return '';
     }
 
     let iconName = '';
-    // Maps icon names to their modern canonical SVG filenames in
-    // shared/rhs_icons/.
     switch (this.chipState.iconName) {
       case 'kLocationOnIcon':
       case 'kLocationOnChromeRefreshOldIcon':
@@ -300,7 +301,7 @@ export class PermissionChipElement extends PermissionChipElementBase {
       default:
         break;
     }
-    return iconName ? `url('shared/rhs_icons/${iconName}.svg')` : '';
+    return iconName ? `webui-toolbar-shared:${iconName}` : '';
   }
 }
 

@@ -20,8 +20,8 @@ export function getHtml(this: ContentSettingIconElement) {
     @pointerleave="${this.onPointerleave_}"
     @pointercancel="${this.onPointercancel_}"
     @pointerdown="${this.onPointerdown_}">
-  <div id="icon" slot="prefix-icon"
-      style="mask-image: ${this.getIconUrl_()};"></div>
+  <cr-icon id="icon" slot="prefix-icon"
+      .icon="${this.getIconName_()}"></cr-icon>
   <span id="label" @animationend="${this.onLabelAnimationend_}">${this.state.explanatoryString}</span>
 </toolbar-chip-button>
 <!--_html_template_end_-->`;

@@ -4,6 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import type {DragEventSource} from 'chrome://resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
 import type {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -265,9 +266,9 @@ suite('PermissionChipTest', function() {
     assertEquals('visible', style.visibility);
     assertFalse(chipEl.hasAttribute('collapsed'));
 
-    const iconEl = chip.shadowRoot.querySelector<HTMLElement>('#icon');
+    const iconEl = chip.shadowRoot.querySelector<CrIconElement>('#icon');
     assertTrue(!!iconEl);
-    assertTrue(iconEl.style.maskImage.includes('videocam.svg'));
+    assertEquals('webui-toolbar-shared:videocam', iconEl.icon);
 
     const messageEl = chip.shadowRoot.querySelector<HTMLElement>('#message');
     assertTrue(!!messageEl);

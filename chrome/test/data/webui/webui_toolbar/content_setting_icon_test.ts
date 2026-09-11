@@ -4,6 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -74,6 +75,19 @@ suite('ContentSettingIcon', function() {
     const innerButton = icon.$.chip.$.button;
     assertTrue(!!innerButton);
     assertEquals('Accessible Name', innerButton.getAttribute('aria-label'));
+  });
+
+  test('Icon name rendering', async () => {
+    const iconElement = icon.shadowRoot.querySelector<CrIconElement>('#icon');
+    assertTrue(!!iconElement);
+    assertEquals('webui-toolbar-shared:database', iconElement.icon);
+
+    icon.state = {
+      ...icon.state,
+      isBlocked: true,
+    };
+    await microtasksFinished();
+    assertEquals('webui-toolbar-shared:database_off', iconElement.icon);
   });
 
   test('Animation', async () => {

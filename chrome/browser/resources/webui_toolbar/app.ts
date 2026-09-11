@@ -91,8 +91,8 @@ import {OverflowableToolbarActionContainerMixin} from './overflowable_toolbar_ac
 import type {OverflowableToolbarAction, OverflowableToolbarActionContainer} from './overflowable_toolbar_action_container_mixin.js';
 import {getClickSourceType, getContextMenuSourceType, PressHandler} from './toolbar_button.js';
 import {ToolbarChipButtonElement} from './toolbar_chip_button.js';
-import {CrLazyIconset} from './cr_lazy_iconset.js';
 
+import {CrLazyIconset} from '/shared/cr_lazy_iconset.js';
 import {IconsetMap} from '//resources/cr_elements/cr_icon/iconset_map.js';
 import {getTrustedHTML} from '//resources/js/static_types.js';
 

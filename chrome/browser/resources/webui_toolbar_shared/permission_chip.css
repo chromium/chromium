@@ -117,14 +117,12 @@
 }
 
 #icon {
-  background-color: currentColor;
-  display: inline-block;
+  --iron-icon-height: var(--location-bar-chip-icon-size);
+  --iron-icon-width: var(--location-bar-chip-icon-size);
+  display: inline-flex;
   flex-shrink: 0;
   height: var(--location-bar-chip-icon-size);
   margin-inline-end: 0;
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: contain;
   width: var(--location-bar-chip-icon-size);
   transition: margin-inline-end var(--chip-expand-duration)
       var(--ease-out-cubic-bezier);

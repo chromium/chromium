@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import './toolbar_chip_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '/shared/icons.js';
 
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -160,7 +162,7 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
         this.state.type);
   }
 
-  protected getIconUrl_(): string {
+  protected getIconName_(): string {
     const iconType = this.state.type;
     const blocked = this.state.isBlocked;
     let iconName = '';
@@ -232,7 +234,7 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
       default:
         assertNotReachedCase(iconType);
     }
-    return `url('shared/rhs_icons/${iconName}.svg')`;
+    return iconName ? `webui-toolbar-shared:${iconName}` : '';
   }
 
   protected getAriaLabel_(): string {
