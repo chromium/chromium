@@ -917,7 +917,8 @@ std::string RedactionTool::RedactCreditCardNumbers(
     }
 
     const std::u16string stripped_number =
-        autofill::StripCardNumberSeparators(base::UTF8ToUTF16(sequence));
+        autofill::StripSeparatorsAndNormalizeDigits(
+            base::UTF8ToUTF16(sequence));
     const std::string u8number = base::UTF16ToUTF8(stripped_number);
 
     const auto cc_it = credit_cards_.find(u8number);

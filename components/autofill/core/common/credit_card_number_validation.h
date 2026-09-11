@@ -19,8 +19,11 @@ bool HasCorrectCreditCardNumberLength(std::u16string_view number);
 // Returns true if `number` passes the validation by Luhn formula.
 bool PassesLuhnCheck(std::u16string_view number);
 
-// Returns a version of `number` that has any separator characters removed.
-std::u16string StripCardNumberSeparators(std::u16string_view number);
+// Removes Unicode whitespace, dash punctuation, format
+// characters (e.g. zero-width space, bidi marks), and dots, and converts
+// Unicode decimal digits to ASCII digits. Used so that sensitive-value
+// detectors (credit card, IBAN, SSN) cannot be evaded by such characters.
+std::u16string StripSeparatorsAndNormalizeDigits(std::u16string_view value);
 
 // Returns the internal representation of card issuer network corresponding to
 // the given `number`.  The card issuer network is determined purely according

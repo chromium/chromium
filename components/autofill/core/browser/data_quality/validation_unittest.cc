@@ -318,10 +318,16 @@ TEST_P(AutofillIsValidZipTest, IsValidZip) {
 
 TEST(AutofillValidation, IsSSN) {
   const char16_t* const kValidSSNs[] = {
-      u"078-05-1120",           u"078051120",
-      u"078 05 1120",           u"078.05.1120",
+      u"078-05-1120", u"078051120", u"078 05 1120", u"078.05.1120",
       u"078\u00A005\u202F1120", u"078\u300005\u20021120",
-  };
+      // En dash (U+2013) from b/556230099.
+      u"219\u201309\u20139999",
+      // Em dash (U+2014) and minus sign (U+2212).
+      u"219\u201409\u22129999",
+      // Fullwidth hyphen-minus (U+FF0D).
+      u"219\uFF0D09\uFF0D9999",
+      // Zero-width space (U+200B).
+      u"219\u200B09\u200B9999"};
   for (const char16_t* ssn : kValidSSNs) {
     SCOPED_TRACE(base::UTF16ToUTF8(ssn));
     EXPECT_TRUE(IsSSN(ssn));

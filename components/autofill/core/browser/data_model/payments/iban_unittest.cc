@@ -335,6 +335,16 @@ TEST(IbanTest, ValidateIbanValue_ValueWithCharacter) {
   // Valid Germany IBAN with hyphens and dots.
   EXPECT_TRUE(Iban::IsValid(u"DE91-1000-0000-0123-4567-89"));
   EXPECT_TRUE(Iban::IsValid(u"DE91.1000.0000.0123.4567.89"));
+
+  // Valid IBAN with Unicode format characters, dashes, and digits.
+  // Left-to-right mark (U+200E) prefix from bug report.
+  EXPECT_TRUE(Iban::IsValid(u"\u200EDE89 3704 0044 0532 0130 00"));
+  // Zero-width space (U+200B).
+  EXPECT_TRUE(
+      Iban::IsValid(u"DE89\u200B3704\u200B0044\u200B0532\u200B0130\u200B00"));
+  // Typographic dashes (en dash, em dash, minus sign, fullwidth hyphen).
+  EXPECT_TRUE(
+      Iban::IsValid(u"DE91\u20131000\u20140000\u22120123\uFF0D4567-89"));
 }
 
 TEST(IbanTest, ValidateIbanValue_ValidateOnRegexAndCountry) {

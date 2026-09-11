@@ -12,13 +12,16 @@
 #include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/char_iterator.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
+#include "third_party/icu/source/common/unicode/uchar.h"
 
 namespace autofill {
 
@@ -51,7 +54,7 @@ std::u16string AddWhiteSpaceSeparatorForNumber(std::u16string_view number,
 }  // namespace
 
 bool IsValidCreditCardNumber(std::u16string_view text) {
-  const std::u16string number = StripCardNumberSeparators(text);
+  const std::u16string number = StripSeparatorsAndNormalizeDigits(text);
   return HasCorrectCreditCardNumberLength(number) && PassesLuhnCheck(number);
 }
 
@@ -117,11 +120,31 @@ bool PassesLuhnCheck(std::u16string_view number) {
   return (sum % 10) == 0;
 }
 
-std::u16string StripCardNumberSeparators(std::u16string_view number) {
-  std::u16string stripped;
-  base::RemoveChars(number, base::StrCat({u"-.", base::kWhitespaceUTF16}),
-                    &stripped);
-  return stripped;
+std::u16string StripSeparatorsAndNormalizeDigits(std::u16string_view value) {
+  std::u16string result;
+  result.reserve(value.length());
+  for (base::i18n::UTF16CharIterator iter(value); !iter.end(); iter.Advance()) {
+    const int32_t character = iter.get();
+    // Strip whitespace, dash punctuation (including en/em dashes and minus
+    // signs), invisible Unicode format characters (e.g. zero-width spaces,
+    // bidi marks), and dots.
+    if (u_isUWhiteSpace(character) ||
+        u_hasBinaryProperty(character, UCHAR_DASH) ||
+        u_charType(character) == U_FORMAT_CHAR || character == '.') {
+      continue;
+    }
+    // If the character is a decimal digit in any Unicode script (e.g. fullwidth
+    // Zenkaku or Arabic-Indic), fold it to canonical ASCII '0'..'9'.
+    // `u_charDigitValue()` returns 0..9 for decimal digits, or -1 otherwise.
+    if (const int32_t digit = u_charDigitValue(character); digit >= 0) {
+      result.push_back('0' + digit);
+    } else {
+      // Preserve non-separator, non-digit characters (e.g. IBAN country code
+      // letters), safely encoding surrogate pairs if non-BMP.
+      base::WriteUnicodeCharacter(character, &result);
+    }
+  }
+  return result;
 }
 
 const char* GetCardNetwork(std::u16string_view number) {
@@ -148,7 +171,7 @@ const char* GetCardNetwork(std::u16string_view number) {
 
   // Determine the network for the given |number| by going from the longest
   // (most specific) prefix to the shortest (most general) prefix.
-  std::u16string stripped_number = StripCardNumberSeparators(number);
+  std::u16string stripped_number = StripSeparatorsAndNormalizeDigits(number);
 
   // Original Elo parsing included only 6 BIN prefixes. This regex pattern,
   // sourced from the official Elo documentation, attempts to cover missing gaps
@@ -309,7 +332,7 @@ const char* GetCardNetwork(std::u16string_view number) {
 }
 
 std::u16string GetFormattedCardNumberForDisplay(std::u16string_view number) {
-  std::u16string stripped = StripCardNumberSeparators(number);
+  std::u16string stripped = StripSeparatorsAndNormalizeDigits(number);
   if (stripped.size() == 16) {
     return AddWhiteSpaceSeparatorForNumber(stripped,
                                            k16DigitNumberSegmentations);

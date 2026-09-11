@@ -85,7 +85,7 @@ TEST(AutofillValidation, IsValidCreditCardNumberLength) {
   for (std::u16string_view valid_number : kValidNumbers) {
     SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
     EXPECT_TRUE(HasCorrectCreditCardNumberLength(
-        StripCardNumberSeparators(valid_number)));
+        StripSeparatorsAndNormalizeDigits(valid_number)));
   }
   // Only the first 2 invalid numbers in kInvalidNumbers have a bad length.
   static_assert(2 <= kInvalidNumbers.size());
@@ -93,7 +93,7 @@ TEST(AutofillValidation, IsValidCreditCardNumberLength) {
     std::u16string_view invalid_number = kInvalidNumbers[i];
     SCOPED_TRACE(base::UTF16ToUTF8(invalid_number));
     EXPECT_FALSE(HasCorrectCreditCardNumberLength(
-        StripCardNumberSeparators(invalid_number)));
+        StripSeparatorsAndNormalizeDigits(invalid_number)));
   }
 }
 
@@ -101,12 +101,57 @@ TEST(AutofillValidation, IsValidCreditCardNumberLength) {
 TEST(AutofillValidation, CreditCardNumberLuhnTest) {
   for (std::u16string_view valid_number : kValidNumbers) {
     SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
-    EXPECT_TRUE(PassesLuhnCheck(StripCardNumberSeparators(valid_number)));
+    EXPECT_TRUE(
+        PassesLuhnCheck(StripSeparatorsAndNormalizeDigits(valid_number)));
   }
 
   constexpr std::u16string_view invalid_luhn_number = kInvalidNumbers[2];
   SCOPED_TRACE(base::UTF16ToUTF8(invalid_luhn_number));
   EXPECT_FALSE(PassesLuhnCheck(invalid_luhn_number));
+}
+
+// Tests normalizing characters in sensitive values (CC, IBAN, SSN), including
+// removing format characters (ZWSP, LRM/RLM, bidi marks, soft hyphen),
+// typographic dashes (en dash, em dash, minus sign), whitespace, dots, and
+// folding non-ASCII decimal digits (zenkaku fullwidth, Arabic-Indic).
+TEST(AutofillValidation, StripSeparatorsAndNormalizeDigits) {
+  struct TestCase {
+    std::u16string_view input;
+    std::u16string_view expected;
+    const char* description;
+  };
+
+  const TestCase kTestCases[] = {
+      // Zero-width space (U+200B) between digit groups.
+      {u"4111\u200B1111\u200B1111\u200B1111", u"4111111111111111",
+       "Zero-width space in credit card"},
+      // Zenkaku fullwidth digits U+FF10-FF19.
+      {u"\uFF13\uFF15\uFF13\uFF10\uFF11\uFF11\uFF11\uFF13\uFF13\uFF13\uFF13"
+       u"\uFF10\uFF10\uFF10\uFF10\uFF10",
+       u"3530111333300000", "Zenkaku fullwidth digits"},
+      // Arabic-Indic decimal digits U+0660-0669.
+      {u"\u0664\u0661\u0661\u0661\u0661\u0661\u0661\u0661\u0661\u0661\u0661"
+       u"\u0661\u0661\u0661\u0661\u0661",
+       u"4111111111111111", "Arabic-Indic digits"},
+      // Typographic dashes: en dash, em dash, minus sign.
+      {u"219\u201309\u201499\u221299", u"219099999", "Typographic dashes"},
+      // Left-to-right mark (U+200E) prefix and spaces.
+      {u"\u200EDE89 3704 0044 0532 0130 00", u"DE89370400440532013000",
+       "IBAN with LRM prefix and spaces"},
+      // Standard separators: spaces, hyphens, dots.
+      {u"4012-8888.8888 1881", u"4012888888881881", "Standard separators"},
+      // Other Unicode format characters: soft hyphen (U+00AD), BOM (U+FEFF).
+      {u"4111\u00AD1111\uFEFF1111-1111", u"4111111111111111",
+       "Format characters (soft hyphen, BOM)"},
+      // Empty string.
+      {u"", u"", "Empty string"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+    EXPECT_EQ(StripSeparatorsAndNormalizeDigits(test_case.input),
+              test_case.expected);
+  }
 }
 
 struct GetCardNetworkTestCase {

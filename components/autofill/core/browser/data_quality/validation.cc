@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 
 namespace autofill {
 
@@ -137,9 +138,7 @@ bool IsValidZip(std::u16string_view text,
 }
 
 bool IsSSN(std::u16string_view text) {
-  std::u16string number_string;
-  base::RemoveChars(text, base::StrCat({u"-.", base::kWhitespaceUTF16}),
-                    &number_string);
+  std::u16string number_string = StripSeparatorsAndNormalizeDigits(text);
 
   // A SSN is of the form AAA-GG-SSSS (A = area number, G = group number, S =
   // serial number). The validation we do here is simply checking if the area,

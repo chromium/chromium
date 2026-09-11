@@ -274,9 +274,10 @@ void FilledCardInformationBubbleControllerImpl::OnFieldClicked(
   clicked_field_ = field;
   LogFilledCardInformationBubbleFieldClicked(field);
   // Strip the whitespaces that were added to the card number for legibility.
-  UpdateClipboard(field == FilledCardInformationBubbleField::kCardNumber
-                      ? StripCardNumberSeparators(GetValueForField(field))
-                      : GetValueForField(field));
+  UpdateClipboard(
+      field == FilledCardInformationBubbleField::kCardNumber
+          ? StripSeparatorsAndNormalizeDigits(GetValueForField(field))
+          : GetValueForField(field));
 }
 
 bool FilledCardInformationBubbleControllerImpl::ShouldShowGooglePayIconInTitle()

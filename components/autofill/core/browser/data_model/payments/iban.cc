@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 
 namespace autofill {
 
@@ -88,13 +89,6 @@ int GetRemainderOfIbanValue(const std::u16string& stripped_value) {
   return remainder;
 }
 
-std::u16string RemoveIbanSeparators(std::u16string_view value) {
-  std::u16string stripped_value;
-  base::RemoveChars(value, base::StrCat({u"-.", base::kWhitespaceUTF16}),
-                    &stripped_value);
-  return stripped_value;
-}
-
 }  // namespace
 
 constexpr char16_t kCapitalizedIbanGeneralPattern[] =
@@ -130,8 +124,8 @@ PaymentsMetadata Iban::GetMetadata() const {
 
 // static
 bool Iban::IsValid(std::u16string_view value) {
-  std::u16string iban_value = RemoveIbanSeparators(value);
-  iban_value = base::ToUpperASCII(iban_value);
+  std::u16string iban_value = StripSeparatorsAndNormalizeDigits(value);
+  iban_value = base::i18n::ToUpper(iban_value);
   // IBANs must be at least 15 digits and at most 33 digits long.
   if (iban_value.length() < 15 || iban_value.length() > 33) {
     return false;
@@ -469,7 +463,7 @@ void Iban::set_value(const std::u16string& value) {
   }
   CHECK_NE(record_type_, Iban::kServerIban);
   // Get rid of all separators in the value and capitalize them before storing.
-  value_ = RemoveIbanSeparators(value);
+  value_ = StripSeparatorsAndNormalizeDigits(value);
   value_ = base::ToUpperASCII(value_);
   // The `IsValid()` call above ensures we have a valid IBAN length. We should
   // never set the `kPrefixLength` and `kSuffixLength` in a way where they can

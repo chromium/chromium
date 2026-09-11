@@ -29,8 +29,9 @@
   NSString* number = nil;
   if (creditCard.record_type() !=
       autofill::CreditCard::RecordType::kMaskedServerCard) {
-    number = base::SysUTF16ToNSString(autofill::StripCardNumberSeparators(
-        creditCard.GetRawInfo(autofill::CREDIT_CARD_NUMBER)));
+    number =
+        base::SysUTF16ToNSString(autofill::StripSeparatorsAndNormalizeDigits(
+            creditCard.GetRawInfo(autofill::CREDIT_CARD_NUMBER)));
   }
 
   BOOL canFillDirectly =

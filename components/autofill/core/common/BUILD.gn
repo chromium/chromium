@@ -97,6 +97,7 @@ static_library("credit_card_number_validation") {
     ":autofill_regex",
     ":features",
     "//base",
+    "//base:i18n",
   ]
 }
 

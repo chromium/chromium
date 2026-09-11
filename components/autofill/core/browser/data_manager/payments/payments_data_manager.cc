@@ -1330,9 +1330,10 @@ std::string PaymentsDataManager::OnAcceptedLocalIbanSave(Iban imported_iban) {
 }
 
 bool PaymentsDataManager::IsKnownCard(const CreditCard& credit_card) const {
-  const auto stripped_pan = StripCardNumberSeparators(credit_card.number());
+  const auto stripped_pan =
+      StripSeparatorsAndNormalizeDigits(credit_card.number());
   for (const auto& card : local_credit_cards_) {
-    if (stripped_pan == StripCardNumberSeparators(card->number())) {
+    if (stripped_pan == StripSeparatorsAndNormalizeDigits(card->number())) {
       return true;
     }
   }
