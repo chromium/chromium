@@ -1004,6 +1004,9 @@ public class BookmarkManagerMediatorTest {
         mMediator.openFolder(mFolderId1);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
         assertEquals(ViewType.IMPROVED_BOOKMARK_VISUAL, mModelList.get(1).type);
+
+        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
+        assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, mModelList.get(1).type);
     }
 
     @Test
@@ -1234,6 +1237,9 @@ public class BookmarkManagerMediatorTest {
         assertEquals(mFolderId2, model.get(BookmarkManagerProperties.BOOKMARK_ID));
         assertEquals(mFolderItem2.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
         assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
+        assertEquals(
+                ImageVisibility.FOLDER_DRAWABLE,
+                model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));

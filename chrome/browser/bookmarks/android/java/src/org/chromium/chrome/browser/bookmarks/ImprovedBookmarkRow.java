@@ -29,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -128,8 +129,12 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
                                 : R.layout.improved_bookmark_row_layout,
                         row);
         row.onFinishInflate();
-        row.setStartImageRoundedCorners(isVisual);
-        row.setStartImageSize();
+        @BookmarkRowDisplayPref
+        int displayPref = isVisual ? BookmarkRowDisplayPref.VISUAL : BookmarkRowDisplayPref.COMPACT;
+        row.setStartImageCornerRadius(
+                BookmarkViewUtils.getImageIconCornerRadius(context.getResources(), displayPref));
+        row.setStartImageSize(
+                BookmarkViewUtils.getImageIconSize(context.getResources(), displayPref));
         return row;
     }
 
@@ -175,28 +180,14 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         }
     }
 
-    void setStartImageRoundedCorners(boolean isVisual) {
-        assert mStartImageView != null;
-
-        Resources res = getContext().getResources();
-        int dimenRes =
-                (BookmarkUtils.isDesktopBookmarksLayoutEnabled()
-                                || BookmarkUtils.isDesktopBookmarksDialogEnabled())
-                        ? R.dimen.improved_bookmark_start_image_corner_radius_desktop
-                        : (isVisual
-                                ? R.dimen.improved_bookmark_row_outer_corner_radius
-                                : R.dimen.improved_bookmark_icon_radius);
-        int radius = res.getDimensionPixelSize(dimenRes);
-        mStartImageView.setRoundedCorners(radius, radius, radius, radius);
+    void setStartImageCornerRadius(int radius) {
+        if (mStartImageView != null) {
+            mStartImageView.setRoundedCorners(radius, radius, radius, radius);
+        }
     }
 
-    void setStartImageSize() {
-        if ((BookmarkUtils.isDesktopBookmarksLayoutEnabled()
-                        || BookmarkUtils.isDesktopBookmarksDialogEnabled())
-                && mStartImageView != null) {
-            Resources res = getContext().getResources();
-            int size =
-                    res.getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_desktop);
+    void setStartImageSize(int size) {
+        if (mStartImageView != null) {
             ViewGroup.LayoutParams params = mStartImageView.getLayoutParams();
             if (params != null) {
                 params.width = size;

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_ITEM_A;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_A;
@@ -40,6 +41,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -130,6 +132,16 @@ public class ImprovedBookmarkRowCoordinatorTest {
                 model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertEquals(mDrawable, model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE).get());
         assertNull(model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_visual),
+                model.get(ImprovedBookmarkRowProperties.START_IMAGE_SIZE));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_row_outer_corner_radius),
+                model.get(ImprovedBookmarkRowProperties.START_IMAGE_CORNER_RADIUS));
     }
 
     @Test
@@ -143,6 +155,16 @@ public class ImprovedBookmarkRowCoordinatorTest {
                 UrlFormatter.formatUrlForSecurityDisplay(
                         JUnitTestGURLs.RED_1, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
                 model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_compact),
+                model.get(ImprovedBookmarkRowProperties.START_IMAGE_SIZE));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_icon_radius),
+                model.get(ImprovedBookmarkRowProperties.START_IMAGE_CORNER_RADIUS));
     }
 
     @Test
@@ -193,6 +215,71 @@ public class ImprovedBookmarkRowCoordinatorTest {
         assertEquals(
                 "Folder A No bookmarks",
                 model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
+        assertEquals(
+                ImageVisibility.DRAWABLE,
+                model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
+        assertEquals(
+                BookmarkViewUtils.getIconBackground(mActivity, mBookmarkModel, FOLDER_ITEM_A),
+                model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
+    }
+
+    @Test
+    public void testFolder_displayPrefSwitching() {
+        doReturn(BookmarkRowDisplayPref.VISUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
+        PropertyModel visualModel = mCoordinator.createBasePropertyModel(FOLDER_BOOKMARK_ID_A);
+        assertEquals(
+                ImageVisibility.FOLDER_DRAWABLE,
+                visualModel.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
+        assertEquals("Folder A", visualModel.get(ImprovedBookmarkRowProperties.TITLE));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_visual),
+                visualModel.get(ImprovedBookmarkRowProperties.START_IMAGE_SIZE));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_row_outer_corner_radius),
+                visualModel.get(ImprovedBookmarkRowProperties.START_IMAGE_CORNER_RADIUS));
+
+        doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
+        PropertyModel compactModel = mCoordinator.createBasePropertyModel(FOLDER_BOOKMARK_ID_A);
+        assertEquals(
+                ImageVisibility.DRAWABLE,
+                compactModel.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
+        assertEquals("Folder A (0)", compactModel.get(ImprovedBookmarkRowProperties.TITLE));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_compact),
+                compactModel.get(ImprovedBookmarkRowProperties.START_IMAGE_SIZE));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_icon_radius),
+                compactModel.get(ImprovedBookmarkRowProperties.START_IMAGE_CORNER_RADIUS));
+    }
+
+    @Test
+    @org.chromium.base.test.util.Features.EnableFeatures(
+            ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testBookmark_desktopLayoutEnabled() {
+        doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
+        PropertyModel model = mCoordinator.createBasePropertyModel(URL_BOOKMARK_ID_A);
+
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_desktop),
+                model.get(ImprovedBookmarkRowProperties.START_IMAGE_SIZE));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.improved_bookmark_start_image_corner_radius_desktop),
+                model.get(ImprovedBookmarkRowProperties.START_IMAGE_CORNER_RADIUS));
     }
 
     @Test
@@ -255,6 +342,9 @@ public class ImprovedBookmarkRowCoordinatorTest {
         assertNull(model.get(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR));
         assertNull(model.get(ImprovedBookmarkRowProperties.ACCESSORY_VIEW));
         assertEquals(0, model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
+        assertEquals(
+                ImageVisibility.FOLDER_DRAWABLE,
+                model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
         assertEquals(
                 new Pair<>(mDrawable, mDrawable),
                 model.get(ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES).get());

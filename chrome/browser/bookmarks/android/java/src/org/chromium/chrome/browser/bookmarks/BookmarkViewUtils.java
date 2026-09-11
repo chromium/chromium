@@ -129,15 +129,31 @@ public class BookmarkViewUtils {
     /** Returns the size to use when displaying an image. */
     public static int getImageIconSize(
             Resources resources, @BookmarkRowDisplayPref int displayPref) {
+        if (displayPref == BookmarkRowDisplayPref.VISUAL) {
+            return resources.getDimensionPixelSize(
+                    R.dimen.improved_bookmark_start_image_size_visual);
+        }
         if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()
                 || BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             return resources.getDimensionPixelSize(
                     R.dimen.improved_bookmark_start_image_size_desktop);
         }
-        return displayPref == BookmarkRowDisplayPref.VISUAL
-                ? resources.getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_visual)
-                : resources.getDimensionPixelSize(
-                        R.dimen.improved_bookmark_start_image_size_compact);
+        return resources.getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_compact);
+    }
+
+    /** Returns the corner radius to use when displaying an image. */
+    public static int getImageIconCornerRadius(
+            Resources resources, @BookmarkRowDisplayPref int displayPref) {
+        if (displayPref == BookmarkRowDisplayPref.VISUAL) {
+            return resources.getDimensionPixelSize(
+                    R.dimen.improved_bookmark_row_outer_corner_radius);
+        }
+        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                || BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+            return resources.getDimensionPixelSize(
+                    R.dimen.improved_bookmark_start_image_corner_radius_desktop);
+        }
+        return resources.getDimensionPixelSize(R.dimen.improved_bookmark_icon_radius);
     }
 
     /** Returns the size to use when displaying the favicon. */
