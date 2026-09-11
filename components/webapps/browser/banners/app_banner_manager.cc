@@ -291,14 +291,16 @@ AppBannerManager::AppBannerManager(Delegate* delegate,
 AppBannerManager::~AppBannerManager() = default;
 
 AppBannerManager::UrlType AppBannerManager::GetUrlType(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& url) {
-  // Don't start the banner flow unless the primary main frame has finished
-  // loading. |render_frame_host| can be null during retry attempts.
-  if (render_frame_host && !render_frame_host->IsInPrimaryMainFrame())
+    content::RenderFrameHost& render_frame_host) {
+  if (!render_frame_host.IsInPrimaryMainFrame()) {
     return UrlType::kNotPrimaryFrame;
+  }
 
-  if (!IsUrlEligibleForWebApp(url)) {
+  if (render_frame_host.IsErrorDocument()) {
+    return UrlType::kInvalidPrimaryFrameUrl;
+  }
+
+  if (!IsUrlEligibleForWebApp(render_frame_host.GetLastCommittedURL())) {
     return UrlType::kInvalidPrimaryFrameUrl;
   }
 
@@ -362,7 +364,7 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   }
 
   std::optional<webapps::ManifestId> manifest_id =
-        webapps::ManifestId::Create(data.manifest->id);
+      webapps::ManifestId::Create(data.manifest->id);
   CHECK(manifest_id.has_value());
 
   web_app_data_.emplace(*manifest_id, data.manifest->Clone(),
@@ -524,7 +526,6 @@ void AppBannerManager::ResetBindings() {
 void AppBannerManager::ResetCurrentPageData() {
   delegate_->InvalidateWeakPtrsForThisNavigation();
   weak_factory_for_this_navigation_.InvalidateWeakPtrs();
-  load_finished_ = false;
   active_media_players_.clear();
   web_app_data_.reset();
   native_app_data_.reset();
@@ -608,8 +609,9 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
 }
 
 void AppBannerManager::RecheckInstallabilityForLoadedPage() {
-  if (state_ == State::INACTIVE)
+  if (state_ == State::INACTIVE) {
     return;
+  }
 
   if (state_ != State::COMPLETE) {
     Stop(InstallableStatusCode::PIPELINE_RESTARTED);
@@ -693,13 +695,13 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
   ResetCurrentPageData();
 
   if (handle->IsServedFromBackForwardCache()) {
-    UrlType url_type =
-        GetUrlType(/*render_frame_host=*/nullptr, handle->GetURL());
+    content::RenderFrameHost* render_frame_host = handle->GetRenderFrameHost();
+    CHECK(render_frame_host);
+    UrlType url_type = GetUrlType(*render_frame_host);
     if (url_type != UrlType::kValidForBanner) {
       return;
     }
 
-    load_finished_ = true;
     validated_url_ = handle->GetURL();
     RequestAppBanner();
   }
@@ -707,29 +709,33 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
 
 void AppBannerManager::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
+    const GURL& /*validated_url*/) {
   if (TriggeringDisabledForTesting()) {
     return;
   }
 
-  UrlType url_type = GetUrlType(render_frame_host, validated_url);
+  if (!render_frame_host) {
+    return;
+  }
+
+  UrlType url_type = GetUrlType(*render_frame_host);
   if (url_type != UrlType::kValidForBanner) {
     return;
   }
 
-  load_finished_ = true;
-  validated_url_ = validated_url;
+  validated_url_ = render_frame_host->GetLastCommittedURL();
 
   // Start the pipeline immediately if we haven't already started it.
-  if (state_ == State::INACTIVE)
+  if (state_ == State::INACTIVE) {
     RequestAppBanner();
+  }
 }
 
 void AppBannerManager::DidFailLoad(content::RenderFrameHost* render_frame_host,
                                    const GURL& validated_url,
                                    int error_code) {
-  // This is called with `net::ERR_ABORTED` if the developer manually stops the
-  // loading of the page. The pipeline still need to run if this occurs.
+  // This is called with `net::ERR_ABORTED` if the developer manually stops
+  // the loading of the page. The pipeline still need to run if this occurs.
   if (error_code == net::ERR_ABORTED) {
     DidFinishLoad(render_frame_host, validated_url);
   }
@@ -801,8 +807,9 @@ bool AppBannerManager::IsRunningForTesting() const {
 std::u16string AppBannerManager::GetInstallableWebAppName(
     content::WebContents* web_contents) {
   AppBannerManager* manager = FromWebContents(web_contents);
-  if (!manager)
+  if (!manager) {
     return std::u16string();
+  }
   switch (manager->installable_web_app_check_result_) {
     case InstallableWebAppCheckResult::kUnknown:
     case InstallableWebAppCheckResult::kNo:
@@ -819,8 +826,9 @@ std::u16string AppBannerManager::GetInstallableWebAppName(
 std::string AppBannerManager::GetInstallableWebAppManifestId(
     content::WebContents* web_contents) {
   AppBannerManager* manager = FromWebContents(web_contents);
-  if (!manager)
+  if (!manager) {
     return std::string();
+  }
   switch (manager->installable_web_app_check_result_) {
     case InstallableWebAppCheckResult::kUnknown:
     case InstallableWebAppCheckResult::kNo:
@@ -847,8 +855,8 @@ bool AppBannerManager::IsProbablyPromotableWebApp(
     case InstallableWebAppCheckResult::kUnknown:
       break;
   }
-  // If the current status is unknown, try to deduce from the last result if the
-  // last  result has an overlapping scope with the current url.
+  // If the current status is unknown, try to deduce from the last result if
+  // the last  result has an overlapping scope with the current url.
   if (last_known_result_ == std::nullopt) {
     return false;
   }
@@ -885,8 +893,9 @@ bool AppBannerManager::IsPromotableWebApp() const {
 
 bool AppBannerManager::MaybeConsumeInstallAnimation() {
   DCHECK(IsProbablyPromotableWebApp());
-  if (!install_animation_pending_)
+  if (!install_animation_pending_) {
     return false;
+  }
   if (!last_known_result_) {
     return false;
   }

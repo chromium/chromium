@@ -439,15 +439,19 @@ void MLInstallabilityPromoter::DidFinishNavigation(
   // a lot of subresources to wait for, etc.
   ResetRunningStagesAndTasksMaybeReportResult();
   if (handle->IsServedFromBackForwardCache()) {
-    StartPipeline(site_url_);
+    StartPipeline(handle->GetURL());
   }
 }
 
 void MLInstallabilityPromoter::DidFinishLoad(
-    content::RenderFrameHost* /*render_frame_host*/,
-    const GURL& /*validated_url*/ url) {
+    content::RenderFrameHost* render_frame_host,
+    const GURL& /*validated_url*/) {
+  if (!render_frame_host || !render_frame_host->IsInPrimaryMainFrame() ||
+      render_frame_host->IsErrorDocument()) {
+    return;
+  }
   ResetRunningStagesAndTasksMaybeReportResult();
-  StartPipeline(url);
+  StartPipeline(render_frame_host->GetLastCommittedURL());
 }
 
 void MLInstallabilityPromoter::OnVisibilityChanged(

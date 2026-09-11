@@ -123,12 +123,16 @@ TestAppBannerManagerDesktop::AsTestAppBannerManagerDesktopForTesting() {
 
 void TestAppBannerManagerDesktop::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  debug_log_.Append(base::StrCat({"DidFinishLoad ", validated_url.spec()}));
+    const GURL& /*validated_url*/) {
+  if (!render_frame_host || !render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+  const GURL& url = render_frame_host->GetLastCommittedURL();
+  debug_log_.Append(base::StrCat({"DidFinishLoad ", url.spec()}));
   // If the URL is not eligible for web apps, AppBannerManager::DidFinishLoad
   // will return early without starting the installable check pipeline. In that
   // case, we need to unblock WaitForInstallableCheck() ourselves.
-  if (!IsUrlEligibleForWebApp(validated_url)) {
+  if (render_frame_host->IsErrorDocument() || !IsUrlEligibleForWebApp(url)) {
     RunInstallableQuitClosureIfNeeded();
     return;
   }
