@@ -129,10 +129,16 @@ std::string GetNavigationInitiatorString(
   }
 
   if (navigation_handle.IsRendererInitiated() &&
-      navigation_handle.HasUserGesture() &&
-      ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
-                                   ui::PAGE_TRANSITION_LINK)) {
-    return "LinkClick";
+      navigation_handle.HasUserGesture()) {
+    if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
+                                     ui::PAGE_TRANSITION_LINK)) {
+      return "LinkClick";
+    }
+
+    if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
+                                     ui::PAGE_TRANSITION_FORM_SUBMIT)) {
+      return "FormSubmission";
+    }
   }
 
   return "Other";

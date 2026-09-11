@@ -388,6 +388,14 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       MetricValue(
           GetInitiatorLocation(ChromeInitiatorLocation::kFormSubmission)),
       0);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.FormSubmission.All", 0 /* kNoInstantLoad */, 1);
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.FormSubmission.SRP",
+                                    0);
 }
 
 // It's a variant of `FormSubmission_Post` for a GET form submission.
@@ -415,6 +423,14 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       MetricValue(
           GetInitiatorLocation(ChromeInitiatorLocation::kFormSubmission)),
       0);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.FormSubmission.All", 0 /* kNoInstantLoad */, 1);
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.FormSubmission.SRP",
+                                    0);
 }
 
 // Tests that a renderer-initiated POST form submission with a user gesture to a
@@ -450,6 +466,14 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       MetricValue(
           GetInitiatorLocation(ChromeInitiatorLocation::kFormSubmission)),
       1);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.FormSubmission.All", 0 /* kNoInstantLoad */, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.FormSubmission.SRP", 0 /* kNoInstantLoad */, 1);
 }
 
 // It's a variant of `FormSubmissionSRP_Post` for a GET form submission.
@@ -476,6 +500,14 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       MetricValue(
           GetInitiatorLocation(ChromeInitiatorLocation::kFormSubmission)),
       1);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.FormSubmission.All", 0 /* kNoInstantLoad */, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.FormSubmission.SRP", 0 /* kNoInstantLoad */, 1);
 }
 
 // Tests that a renderer-initiated POST form submission without a user gesture
@@ -520,6 +552,14 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       MetricValue(
           GetInitiatorLocation(ChromeInitiatorLocation::kFormSubmission)),
       0);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.FormSubmission.All",
+                                    0);
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.FormSubmission.SRP",
+                                    0);
 }
 
 // It's a variant of `FormSubmission_NoUserGesture_Post` for a GET form
@@ -558,6 +598,14 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       MetricValue(
           GetInitiatorLocation(ChromeInitiatorLocation::kFormSubmission)),
       0);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.FormSubmission.All",
+                                    0);
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.FormSubmission.SRP",
+                                    0);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
