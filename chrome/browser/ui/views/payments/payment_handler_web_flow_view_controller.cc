@@ -433,6 +433,7 @@ bool PaymentHandlerWebFlowViewController::CanContentViewBeScrollable() {
 }
 
 void PaymentHandlerWebFlowViewController::Stop() {
+  delay_prompt_timer_.Stop();
   indicator_chip_collapse_timer_.Stop();
   indicator_dismiss_timer_.Stop();
   chip_observation_.Reset();
@@ -800,8 +801,13 @@ void PaymentHandlerWebFlowViewController::OnCollapseAnimationEnded() {
       !permission_dashboard_view()->GetIndicatorChip()->GetVisible()) {
     return;
   }
+
   indicator_phase_ = IndicatorDisplayPhase::kCompact;
 
+  // Avoid starting indicator_dismiss_timer_ while Page Info is open so the
+  // bubble's anchor view (GetIndicatorChip()) does not disappear while the
+  // user interacts with it. HideIndicatorChip() will be called once the bubble
+  // closes in OnPageInfoBubbleClosed().
   if (page_info_view_tracker_.view()) {
     return;
   }
@@ -826,6 +832,14 @@ void PaymentHandlerWebFlowViewController::OnPromptAdded() {
     return;
   }
 
+  if (CollapseActiveIndicatorIfNeeded()) {
+    delay_prompt_timer_.Start(
+        FROM_HERE, kIndicatorCollapseAnimationDuration,
+        base::BindOnce(&PaymentHandlerWebFlowViewController::OnPromptAdded,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   chip_model_ =
       std::make_unique<PermissionPromptChipModel>(manager->GetWeakPtr());
 
@@ -834,6 +848,7 @@ void PaymentHandlerWebFlowViewController::OnPromptAdded() {
   request_chip->SetChipIcon(chip_model_->GetIcon());
   request_chip->SetTheme(chip_model_->GetChipTheme());
   request_chip->SetMessage(chip_model_->GetChipText());
+  request_chip->SetUserDecision(chip_model_->GetUserDecision());
   request_chip->SetBlockedIconShowing(chip_model_->ShouldDisplayBlockedIcon());
   request_chip->SetCallback(base::BindRepeating(
       &PaymentHandlerWebFlowViewController::OnRequestChipPressed,
@@ -848,10 +863,7 @@ void PaymentHandlerWebFlowViewController::OnPromptAdded() {
   permission_dashboard_view()->UpdateDividerViewVisibility();
 
   if (chip_model_->IsExpandAnimationAllowed()) {
-    request_chip->ResetAnimation(
-        PermissionChipInterface::AnimationState::kCollapsed);
-    request_chip->AnimateExpand(
-        gfx::Animation::RichAnimationDuration(kPromptExpandAnimationDuration));
+    AnimateExpandRequestChip();
   }
 
   if (!chip_model_->ShouldBubbleStartOpen()) {
@@ -892,6 +904,26 @@ void PaymentHandlerWebFlowViewController::CollapseIndicatorChip() {
     permission_dashboard_view()->GetIndicatorChip()->AnimateCollapse(
         gfx::Animation::RichAnimationDuration(
             kIndicatorCollapseAnimationDuration));
+  }
+}
+
+bool PaymentHandlerWebFlowViewController::CollapseActiveIndicatorIfNeeded() {
+  switch (indicator_phase_) {
+    case IndicatorDisplayPhase::kExpanding:
+    case IndicatorDisplayPhase::kExpanded:
+      indicator_chip_collapse_timer_.Stop();
+      if (permission_dashboard_view()) {
+        indicator_phase_ = IndicatorDisplayPhase::kCollapsing;
+        permission_dashboard_view()->GetIndicatorChip()->AnimateCollapse(
+            gfx::Animation::RichAnimationDuration(
+                kIndicatorCollapseAnimationDuration));
+      }
+      return true;
+    case IndicatorDisplayPhase::kCollapsing:
+      return true;
+    case IndicatorDisplayPhase::kHidden:
+    case IndicatorDisplayPhase::kCompact:
+      return false;
   }
 }
 
@@ -974,7 +1006,22 @@ void PaymentHandlerWebFlowViewController::ShowBlockedCameraIndicator() {
   }
 }
 
+void PaymentHandlerWebFlowViewController::AnimateExpandRequestChip() {
+  if (!permission_dashboard_view()) {
+    return;
+  }
+  PermissionChipView* const request_chip =
+      permission_dashboard_view()->GetRequestChip();
+  if (request_chip->GetVisible()) {
+    request_chip->ResetAnimation(
+        PermissionChipInterface::AnimationState::kCollapsed);
+    request_chip->AnimateExpand(
+        gfx::Animation::RichAnimationDuration(kPromptExpandAnimationDuration));
+  }
+}
+
 void PaymentHandlerWebFlowViewController::ResetRequestChip() {
+  delay_prompt_timer_.Stop();
   chip_model_.reset();
   if (!permission_dashboard_view()) {
     return;

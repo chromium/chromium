@@ -2251,6 +2251,97 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+IN_PROC_BROWSER_TEST_F(
+    PaymentHandlerWebFlowViewCameraUxTest,
+    PermissionPrompt_CollapsesActiveBlockedIndicatorAndExpandsPromptCleanly) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+
+  PermissionPromptWaiter prompt_waiter(manager);
+
+  // Request camera via getUserMedia, triggering permission prompt.
+  content::ExecuteScriptAsync(payment_handler_contents, R"(
+    navigator.mediaDevices.getUserMedia({video: true}).catch(() => {});
+  )");
+  prompt_waiter.WaitUntilPromptAdded();
+
+  auto* dashboard = test_api(web_flow_controller).permission_dashboard_view();
+  ASSERT_NE(nullptr, dashboard);
+
+  PermissionChipView* const indicator_chip = dashboard->GetIndicatorChip();
+  ChipAnimationWaiter expand_waiter(indicator_chip);
+
+  // User dismisses prompt (e.g. clicking prompt close button).
+  manager->Dismiss(std::monostate());
+
+  // Wait for expand animation to end.
+  expand_waiter.WaitForExpandAnimation();
+
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_GT(indicator_chip->GetPreferredSize().width(), 24);
+
+  // Now, while indicator is expanded, request camera again via getUserMedia.
+  ChipAnimationWaiter prompt_expand_waiter(dashboard->GetRequestChip());
+  ChipAnimationWaiter indicator_collapse_waiter(indicator_chip);
+  PermissionPromptWaiter prompt_waiter2(manager);
+
+  content::ExecuteScriptAsync(payment_handler_contents, R"(
+    navigator.mediaDevices.getUserMedia({video: true}).catch(() => {});
+  )");
+  prompt_waiter2.WaitUntilPromptAdded();
+
+  // Prompt chip must remain hidden while indicator is collapsing.
+  EXPECT_FALSE(dashboard->GetRequestChip()->GetVisible());
+
+  // Verify OnPromptAdded() triggers collapse on indicator chip
+  indicator_collapse_waiter.WaitForCollapseAnimation();
+
+  EXPECT_LE(dashboard->GetPreferredSize().width(), 176);
+
+  // Wait for prompt chip to expand once indicator collapse animation ends.
+  prompt_expand_waiter.WaitForExpandAnimation();
+
+  EXPECT_TRUE(dashboard->GetRequestChip()->GetVisible());
+  EXPECT_GT(dashboard->GetRequestChip()->GetPreferredSize().width(), 24);
+
+  // Dismiss prompt to cleanly remove prompt UI before test teardown.
+  manager->Dismiss(std::monostate());
+  prompt_waiter2.WaitUntilPromptRemoved();
+  EXPECT_FALSE(dashboard->GetRequestChip()->GetVisible());
+  if (test_api(web_flow_controller).is_indicator_dismiss_timer_running()) {
+    test_api(web_flow_controller).fire_indicator_dismiss_timer();
+  }
+  EXPECT_FALSE(dashboard->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+}
 INSTANTIATE_TEST_SUITE_P(
     All,
     PaymentHandlerWebFlowViewCameraTest,

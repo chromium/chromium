@@ -209,8 +209,10 @@ class PaymentHandlerWebFlowViewController
   void OnPermissionRequestManagerDestructed() override;
 
   void CollapseIndicatorChip();
+  bool CollapseActiveIndicatorIfNeeded();
   void HideIndicatorChip();
   void ShowBlockedCameraIndicator();
+  void AnimateExpandRequestChip();
   void ResetRequestChip();
   void OnRequestChipPressed();
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
@@ -239,6 +241,7 @@ class PaymentHandlerWebFlowViewController
   IndicatorDisplayPhase indicator_phase_ = IndicatorDisplayPhase::kHidden;
   base::OneShotTimer indicator_chip_collapse_timer_;
   base::OneShotTimer indicator_dismiss_timer_;
+  base::OneShotTimer delay_prompt_timer_;
   std::unique_ptr<PermissionPromptChipModel> chip_model_;
   std::unique_ptr<permissions::PermissionIndicatorsTabData>
       permission_indicators_tab_data_;
