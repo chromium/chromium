@@ -910,24 +910,6 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void moreOptionsVisible_accordionDisabled_isGone() {
-        OmniboxFeatures.setUseAccordionForTesting(false);
-        recreateMediator();
-
-        assertFalse(mModel.get(FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
-    }
-
-    @Test
-    public void moreOptionsVisible_accordionEnabled_isVisible() {
-        OmniboxFeatures.setUseAccordionForTesting(true);
-        recreateMediator();
-
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
-    }
-
-    @Test
     public void testEndInput_DismissesPopup() {
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertEquals(PopupState.FLOATING, (int) mModel.get(FuseboxProperties.POPUP_STATE));
@@ -2957,18 +2939,5 @@ public class FuseboxMediatorUnitTest {
         // Beginning a new input session resets it.
         mMediator.beginInput(mSession);
         assertFalse(mMediator.wasPopupItemSelected());
-    }
-
-    @Test
-    public void moreOptionsClicked_togglesAccordionExpanded() {
-        OmniboxFeatures.setUseAccordionForTesting(true);
-        recreateMediator();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
-
-        mModel.get(FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED).run();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
-
-        mModel.get(FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED).run();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
     }
 }

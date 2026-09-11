@@ -27,46 +27,21 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_more_options_button" />
+        <View
+            style="@style/Fusebox.PopupMenu.Divider"
+            android:id="@+id/fusebox_tools_divider"/>
 
-        <LinearLayout
-            android:id="@+id/fusebox_accordion_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
+        <TextView
+            style="@style/Fusebox.PopupMenu.Header"
+            android:id="@+id/fusebox_tools_header"/>
 
-            <include
-                layout="@layout/fusebox_list_item"
-                android:id="@+id/fusebox_pick_file_button"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/listItemHeight"/>
+        <View
+            style="@style/Fusebox.PopupMenu.Divider"
+            android:id="@+id/fusebox_models_divider"/>
 
-            <include
-                layout="@layout/fusebox_list_item"
-                android:id="@+id/fusebox_pick_drive_button"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/listItemHeight"/>
-
-            <View
-                style="@style/Fusebox.PopupMenu.Divider"
-                android:id="@+id/fusebox_tools_divider"/>
-
-            <TextView
-                style="@style/Fusebox.PopupMenu.Header"
-                android:id="@+id/fusebox_tools_header"/>
-
-            <View
-                style="@style/Fusebox.PopupMenu.Divider"
-                android:id="@+id/fusebox_models_divider"/>
-
-            <TextView
-                style="@style/Fusebox.PopupMenu.Header"
-                android:id="@+id/fusebox_models_header"/>
-
-        </LinearLayout>
+        <TextView
+            style="@style/Fusebox.PopupMenu.Header"
+            android:id="@+id/fusebox_models_header"/>
 
     </LinearLayout>
 

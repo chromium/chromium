@@ -206,9 +206,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         .with(
                                 FuseboxProperties.POPUP_IS_BOTTOM_SHEET,
                                 OmniboxFeatures.shouldShowBottomSheetPopup())
-                        .with(
-                                FuseboxProperties.POPUP_USE_CAROUSEL,
-                                OmniboxFeatures.shouldUseCarousel())
                         .build();
 
         new AsyncLayoutInflater(mActivity)
@@ -266,8 +263,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         popupWindowBuilder.build(),
                         popupView,
                         dynamicRectProvider,
-                        OmniboxFeatures.shouldShowBottomSheetPopup(),
-                        OmniboxFeatures.shouldUseCarousel());
+                        OmniboxFeatures.shouldShowBottomSheetPopup());
 
         mViewHolder = new FuseboxViewHolder(mParent, popup);
 

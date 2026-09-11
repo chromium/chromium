@@ -30,4 +30,12 @@ found in the LICENSE file.
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_camera_button"/>
+
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        android:id="@+id/fusebox_pick_file_button"/>
+
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        android:id="@+id/fusebox_pick_drive_button"/>
 </LinearLayout>

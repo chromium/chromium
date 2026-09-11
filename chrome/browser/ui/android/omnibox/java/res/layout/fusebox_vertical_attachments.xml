@@ -55,4 +55,16 @@ found in the LICENSE file.
         android:id="@+id/fusebox_camera_button"
         android:layout_width="match_parent"
         android:layout_height="?attr/listItemHeight"/>
+
+    <include
+        layout="@layout/fusebox_list_item"
+        android:id="@+id/fusebox_pick_file_button"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/listItemHeight"/>
+
+    <include
+        layout="@layout/fusebox_list_item"
+        android:id="@+id/fusebox_pick_drive_button"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/listItemHeight"/>
 </LinearLayout>
