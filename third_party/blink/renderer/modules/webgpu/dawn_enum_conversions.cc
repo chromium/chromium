@@ -766,6 +766,8 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::TextureCompressionUnaligned;
     case V8GPUFeatureName::Enum::kChromiumExperimentalSamplingResourceTable:
       return wgpu::FeatureName::ChromiumExperimentalSamplingResourceTable;
+    case V8GPUFeatureName::Enum::kAtomicVec2UMinMax:
+      return wgpu::FeatureName::AtomicVec2uMinMax;
   }
 }
 

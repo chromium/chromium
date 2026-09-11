@@ -28,6 +28,7 @@ enum GPUFeatureName {
     "texture-formats-tier2",
     "primitive-index",
     "subgroup-size-control",
+    "atomic-vec2u-min-max",
 
     // Non-standard (not currently in the spec).
     "chromium-experimental-sampling-resource-table",
