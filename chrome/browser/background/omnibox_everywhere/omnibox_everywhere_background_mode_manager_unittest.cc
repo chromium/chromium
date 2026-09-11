@@ -230,22 +230,23 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ContextMenuStructure) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   // Initially no browsers are open in this test, so the exit item and separator
   // are visible.
-  ASSERT_EQ(menu->GetItemCount(), 5u);
-  EXPECT_EQ(menu->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
-  EXPECT_EQ(menu->GetCommandIdAt(4),
+  ASSERT_EQ(menu->GetItemCount(), 6u);
+  EXPECT_EQ(menu->GetTypeAt(4), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(menu->GetCommandIdAt(5),
             IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT);
   EXPECT_TRUE(
       menu->IsCommandIdVisible(IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT));
 #else
-  ASSERT_EQ(menu->GetItemCount(), 3u);
+  ASSERT_EQ(menu->GetItemCount(), 4u);
 #endif
 
   EXPECT_EQ(menu->GetCommandIdAt(0),
             IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE);
+  EXPECT_EQ(menu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_EQ(
-      menu->GetCommandIdAt(1),
+      menu->GetCommandIdAt(2),
       IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT);
-  EXPECT_EQ(menu->GetCommandIdAt(2),
+  EXPECT_EQ(menu->GetCommandIdAt(3),
             IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS);
 
   ui::Accelerator accelerator;

@@ -280,6 +280,7 @@ void OmniboxEverywhereBackgroundModeManager::UpdateStatusIconContextMenu() {
   menu->SetAcceleratorForCommandId(
       IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &hotkey);
   menu->SetForceShowAcceleratorForItemAt(0, true);
+  menu->AddSeparator(ui::NORMAL_SEPARATOR);
 
   menu->AddItem(
       IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT,
