@@ -176,13 +176,18 @@ bool InterpolableLength::IsCalcSize() const {
 namespace {
 
 const CSSMathExpressionNode& ExtractCalcSizeBasis(
-    const CSSMathExpressionNode* node) {
+    const CSSMathExpressionNode& node) {
   const auto* operation = DynamicTo<CSSMathExpressionOperation>(node);
   if (!operation || !operation->IsCalcSize()) {
-    return *node;
+    return node;
   }
 
-  return ExtractCalcSizeBasis(operation->GetOperands()[0]);
+  // The outer calc-size() operation has two operands: its basis and
+  // calculation. Either operand may itself contain nested operations.
+  const auto& operands = operation->GetOperands();
+  DCHECK_EQ(operands.size(), 2u);
+  DCHECK(operands.front());
+  return ExtractCalcSizeBasis(*operands.front());
 }
 
 }  // namespace
@@ -240,7 +245,7 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
       return keyword->IsKeywordFullyInterpolable();
     }
     const CSSMathExpressionNode& basis =
-        ExtractCalcSizeBasis(non_keyword->expression_);
+        ExtractCalcSizeBasis(*non_keyword->expression_);
 
     if (const auto* basis_literal =
             DynamicTo<CSSMathExpressionKeywordLiteral>(basis)) {
