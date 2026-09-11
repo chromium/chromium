@@ -47,15 +47,20 @@ struct AdjustOmniboxTextForCopyResult {
   mojo_base.mojom.String16? page_title;
 };
 
+// TrackedElementIdentifier or PinnedToolbarAction of an item that should be
+// shown in the overflow menu. These are checked in the browser against elements
+// that can overflow, to determine the icon and string shown in the menu, and
+// what to do when the item is clicked. Unknown IDs or IDs of elements that
+// can't overflow result in exceptions.
+union OverflowMenuItemId {
+  tracked_element.mojom.TrackedElementIdentifier tracked_element_id;
+  PinnedToolbarAction pinned_action;
+};
+
 // Information about a control that is hidden due to overflow, and should be
 // shown on the overflow button's pulldown menu.
 struct OverflowMenuItem {
-  // TrackedElementIdentifier of the item. This is checked in the browser
-  // against a list of ui::ElementIdentifiers that can overflow, to determine
-  // the icon and string shown in the menu, and what to do when the item is
-  // clicked. Unknown IDs or those of elements that can't overflow result in
-  // an exception.
-  tracked_element.mojom.TrackedElementIdentifier id;
+  OverflowMenuItemId id;
 
   // Whether the menu item should be enabled or greyed out.
   bool is_enabled;

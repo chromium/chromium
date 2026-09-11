@@ -32,6 +32,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/accelerator_utils.h"
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -63,11 +64,13 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -2611,6 +2614,25 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
     });
   }
 
+  // Simulates a mouse click on the MenuItemView matching `title` within
+  // `overflow_menu`.
+  [[nodiscard]] static bool ClickOverflowMenuItem(OverflowMenu& overflow_menu,
+                                                  const std::u16string& title) {
+    views::MenuItemView* root_item = overflow_menu.root_menu_item();
+    if (!root_item || !root_item->GetSubmenu()) {
+      return false;
+    }
+    for (views::MenuItemView* item : root_item->GetSubmenu()->GetMenuItems()) {
+      if (item->title() == title && item->GetVisible()) {
+        gfx::Point center = item->GetBoundsInScreen().CenterPoint();
+        return ui_test_utils::SendMouseMoveSync(center) &&
+               ui_test_utils::SendMouseEventsSync(
+                   ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP);
+      }
+    }
+    return false;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -2985,6 +3007,83 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
       WaitForTrackedElementHidden(kToolbarSplitTabsToolbarButtonElementId));
 }
 
+// Test that clicking a pinned action (the Downloads button) on the overflow
+// menu works.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowMenuClickPinnedActionsButton) {
+  // Pin the download action so it appears in the toolbar.
+  PinnedToolbarActionsModel::Get(browser()->GetProfile())
+      ->UpdatePinnedState(kActionShowDownloads, true);
+
+  auto wait_for_downloads_visible = [&](bool expected_visible) {
+    std::string script = content::JsReplace(
+        R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const pinnedActions =
+                app?.shadowRoot?.querySelector('#pinnedToolbarActions');
+            const actions = pinnedActions ? pinnedActions.getActions() : [];
+            return actions.some(el => el.state?.action === $1 &&
+                el.classList.contains('overflow-display-none') !== $2);
+          })()
+        )",
+        static_cast<int>(
+            toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads),
+        expected_visible);
+    return base::test::RunUntil([&]() -> bool {
+      return content::EvalJs(GetWebUIWebContents(), script).ExtractBool();
+    });
+  };
+
+  // Wait until the pinned download action button is displayed in WebUI toolbar.
+  ASSERT_TRUE(wait_for_downloads_visible(true));
+
+  // Set the spacer width to the full width of the window, forcing all
+  // overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+
+  // Wait until WebUI has hidden the download action due to overflow.
+  ASSERT_TRUE(wait_for_downloads_visible(false));
+
+  // Wait for overflow button to be displayed. This may not be the case
+  // immediately, since the wait for the downloads button to be hidden, as
+  // observed in Javascript, may complete before the TrackedElementManager has
+  // been informed of the new state of the toolbar.
+  ASSERT_TRUE(WaitForTrackedElementVisible(kToolbarOverflowButtonElementId));
+
+  OverflowMenu* overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // Check menu model contents: Forward, <divider>, Downloads.
+  const ui::SimpleMenuModel* menu_model =
+      overflow_menu->menu_model_for_testing();
+  ASSERT_TRUE(menu_model);
+  ASSERT_EQ(menu_model->GetItemCount(), 3u);
+
+  EXPECT_EQ(menu_model->GetTypeAt(0), ui::MenuModel::TYPE_COMMAND);
+  EXPECT_EQ(menu_model->GetLabelAt(0),
+            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
+
+  EXPECT_EQ(menu_model->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+
+  EXPECT_EQ(menu_model->GetTypeAt(2), ui::MenuModel::TYPE_COMMAND);
+  const std::u16string downloads_label = chrome::GetCleanTitleAndTooltipText(
+      l10n_util::GetStringUTF16(IDS_SHOW_DOWNLOADS));
+  EXPECT_EQ(menu_model->GetLabelAt(2), downloads_label);
+
+  // Click the download action item in the overflow menu and wait for navigation
+  // to the downloads page to commit.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver downloads_observer(web_contents);
+  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu, downloads_label));
+  downloads_observer.Wait();
+
+  EXPECT_EQ(web_contents->GetLastCommittedURL(),
+            GURL(chrome::kChromeUIDownloadsURL));
+}
+
 // Test that manual invocations of showOverflowMenu() with an empty list of
 // controls, a list of unknown controls, a list containing a combination of
 // known and unknown controls, and a list of valid controls are handled
@@ -3027,24 +3126,36 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   // Manually invoke showOverflowMenu() with invalid controls. It should throw
   // an exception.
   EXPECT_THAT(show_overflow_menu(R"([
-              {id: {nativeIdentifier: 'invalid-control-1',
-                    secondaryIdentifier: 'sec-1'},
+              {id: {trackedElementId: {nativeIdentifier: 'invalid-control-1',
+                                       secondaryIdentifier: 'sec-1'}},
                isEnabled: true},
-              {id: {nativeIdentifier: 'invalid-control-2',
-                    secondaryIdentifier: 'sec-2'},
+              {id: {trackedElementId: {nativeIdentifier: 'invalid-control-2',
+                                       secondaryIdentifier: 'sec-2'}},
                isEnabled: false}])"),
               testing::HasSubstr("invalid-control-1"));
+  EXPECT_FALSE(overflow_button->overflow_menu_for_testing());
+
+  // Manually invoke showOverflowMenu() with a pinned action enum that is not
+  // mapped to an ActionId. It should throw an exception.
+  int unspecified_action = static_cast<int>(
+      toolbar_ui_api::mojom::PinnedToolbarAction::kUnspecified);
+  EXPECT_THAT(show_overflow_menu(base::StringPrintf(
+                  R"([{id: {pinnedAction: %d}, isEnabled: true}])",
+                  unspecified_action)),
+              testing::HasSubstr(base::StringPrintf(
+                  "Unknown pinned action enum: %d", unspecified_action)));
   EXPECT_FALSE(overflow_button->overflow_menu_for_testing());
 
   // Manually invoke showOverflowMenu() with a mix of valid and invalid
   // controls. It should throw an exception.
   EXPECT_THAT(show_overflow_menu(R"([
-              {id: {nativeIdentifier: 'kToolbarSplitTabsToolbarButtonElementId',
-                    secondaryIdentifier: 'sec-1'},
-               isEnabled: true},
-              {id: {nativeIdentifier: 'invalid-control',
-                    secondaryIdentifier: 'sec-2'},
-               isEnabled: true}])"),
+              {id: {trackedElementId:
+                {nativeIdentifier: 'kToolbarSplitTabsToolbarButtonElementId',
+                  secondaryIdentifier: 'sec-1'}},
+                isEnabled: true},
+              {id: {trackedElementId: {nativeIdentifier: 'invalid-control',
+                                        secondaryIdentifier: 'sec-2'}},
+                isEnabled: true}])"),
               testing::HasSubstr("invalid-control"));
   EXPECT_FALSE(overflow_button->overflow_menu_for_testing());
 
@@ -3052,9 +3163,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   // split-tabs button isn't pinned, we still allow this - as there may have
   // been a race between unpinning the button and showing the overflow menu.
   EXPECT_EQ(show_overflow_menu(R"([
-          {id: {nativeIdentifier: 'kToolbarSplitTabsToolbarButtonElementId',
-                secondaryIdentifier: 'sec-1'},
-           isEnabled: true}])"),
+            {id: {trackedElementId:
+              {nativeIdentifier: 'kToolbarSplitTabsToolbarButtonElementId',
+                secondaryIdentifier: 'sec-1'}},
+              isEnabled: true}])"),
             "SUCCESS");
 
   // Wait for overflow menu to appear.

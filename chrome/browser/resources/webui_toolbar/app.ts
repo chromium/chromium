@@ -86,6 +86,8 @@ import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
 import type {KeyedActionState, ToolbarActionContainerMixinInterface} from './toolbar_action_container_mixin.js';
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import type {ToolbarActionMixinInterface} from './toolbar_action_mixin.js';
+import {OverflowableToolbarActionContainerMixin} from './overflowable_toolbar_action_container_mixin.js';
+import type {OverflowableToolbarAction, OverflowableToolbarActionContainer} from './overflowable_toolbar_action_container_mixin.js';
 import {getClickSourceType, getContextMenuSourceType, PressHandler} from './toolbar_button.js';
 import {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 import {CrLazyIconset} from './cr_lazy_iconset.js';
@@ -137,6 +139,7 @@ export {
   PressHandler,
   ReadonlyOmniboxElement,
   resetInitialStateForTesting,
+  OverflowableToolbarActionContainerMixin,
   ToolbarActionContainerMixin,
   ToolbarActionMixin,
   ToolbarChipButtonElement,
@@ -148,6 +151,8 @@ export type {
   KeyedActionState,
   LocationBarState,
   OmniboxAction,
+  OverflowableToolbarAction,
+  OverflowableToolbarActionContainer,
   PageActionState,
   PermissionChipState,
   PermissionDashboardElement,
@@ -977,9 +982,13 @@ export class ToolbarAppElement extends AppElementBase {
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#home'),
     ];
 
+    const groupedControls =
+        [this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
+            '#pinnedToolbarActions')];
+
     return (this.omniboxResizingPrioritizationEnabled_ ?
-                [locationBar, ...buttons] :
-                [...buttons, locationBar])
+                [locationBar, ...buttons, ...groupedControls] :
+                [...buttons, locationBar, ...groupedControls])
         .filter((el): el is ResponsiveControl&HTMLElement => el !== null);
   }
 

@@ -6,8 +6,9 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=/shared/help_bubble_anchor.css.js
+ * #import=./overflowable_action.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit help-bubble-anchor
+ * #include=cr-hidden-style-lit help-bubble-anchor overflowable-action
  * #css_wrapper_metadata_end */
 
 :host {
@@ -20,10 +21,6 @@
   --button-width: var(--toolbar-button-height);
   height: var(--button-height);
   width: var(--button-width);
-}
-
-:host(.overflow-display-none) {
-  display: none !important;
 }
 
 cr-icon-button {

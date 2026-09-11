@@ -155,7 +155,9 @@ export const OverflowableButtonMixin =
           assert(
               id, `No TrackedElementIdentifier found for element ${this.id}`);
           return [{
-            id,
+            id: {
+              trackedElementId: id,
+            },
             isEnabled: !innerControl.hasAttribute('disabled'),
           }];
         }

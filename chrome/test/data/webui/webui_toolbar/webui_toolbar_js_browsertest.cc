@@ -91,6 +91,12 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ReloadButton) {
   RunTest("webui_toolbar/reload_button_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest,
+                       OverflowableToolbarActionContainerMixin) {
+  RunTest("webui_toolbar/overflowable_toolbar_action_container_mixin_test.js",
+          "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarActionMixin) {
   RunTest("webui_toolbar/toolbar_action_mixin_test.js", "mocha.run();");
 }

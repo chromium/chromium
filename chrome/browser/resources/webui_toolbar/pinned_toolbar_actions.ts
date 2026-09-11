@@ -11,14 +11,16 @@ import {PinnedToolbarAction} from '/shared/toolbar_ui_api_data_model.mojom-webui
 import type {PinnedToolbarActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {OverflowableToolbarActionContainerMixin} from './overflowable_toolbar_action_container_mixin.js';
+import type {OverflowableToolbarAction} from './overflowable_toolbar_action_container_mixin.js';
 import {getHtml} from './pinned_toolbar_actions.html.js';
 import {getCss} from './toolbar_action_container.css.js';
 import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
 
 const initialState: PinnedToolbarActionState[] = [];
 
-const PinnedToolbarActionsElementBase =
-    ToolbarActionContainerMixin(CrLitElement, initialState);
+const PinnedToolbarActionsElementBase = OverflowableToolbarActionContainerMixin(
+    ToolbarActionContainerMixin(CrLitElement, initialState));
 
 export class PinnedToolbarActionsElement extends
     PinnedToolbarActionsElementBase {
@@ -41,6 +43,11 @@ export class PinnedToolbarActionsElement extends
   }
 
   accessor dividerIndex: number = -1;
+
+  override getActions(): Array<CrLitElement&OverflowableToolbarAction> {
+    return Array.from(this.shadowRoot.children) as
+        Array<CrLitElement&OverflowableToolbarAction>;
+  }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
