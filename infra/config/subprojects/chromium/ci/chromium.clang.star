@@ -148,13 +148,9 @@ ci.builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            # TODO(https://crbug.com/527836546): Allow omitting and remove.
-            archive_name_prefix = None,
             archive_path = "linux-release/cfi-linux-release",
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-cfi",
-            # TODO(https://crbug.com/527836546): Flip default to true and remove.
-            use_archive_path = True,
         ),
     ),
     gn_args = gn_args.config(

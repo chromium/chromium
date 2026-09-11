@@ -76,6 +76,5 @@
     "chromium"
   ],
   "upload_bucket": "chromium-browser-libfuzzer",
-  "use_archive_path": true,
   "xcode_build_version": "27a266a"
 }

@@ -280,16 +280,10 @@ def browser_builder(
         target_platform = target_platform,
         use_component_build = use_component_build,
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
-
-            # TODO(https://crbug.com/527836546): Allow omitting and remove.
-            archive_name_prefix = None,
             archive_path = clusterfuzz_archive_path,
             archive_schema_version = clusterfuzz_archive_schema_version,
             gs_acl = "public-read",
             gs_bucket = clusterfuzz_gs_bucket,
-
-            # TODO(https://crbug.com/527836546): Flip default to true and remove.
-            use_archive_path = True,
         ),
         targets = targets.bundle(
             additional_compile_targets = ["blackbox_fuzzing_targets"],
@@ -366,9 +360,6 @@ def fuzz_target_builder(
 
     properties = {
         "upload_bucket": "chromium-browser-" + fuzzing_engine,
-
-        # TODO(https://crbug.com/527836546): Flip default to true and remove.
-        "use_archive_path": True,
     }
 
     if clusterfuzz_ios_targets_only != None:
@@ -600,13 +591,9 @@ ci.builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            # TODO(https://crbug.com/527836546): Allow omitting and remove.
-            archive_name_prefix = None,
             archive_path = "linux-release-v8-sandbox-testing/asan-v8-sandbox-testing-linux-release",
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-asan",
-            # TODO(https://crbug.com/527836546): Flip default to true and remove.
-            use_archive_path = True,
         ),
     ),
     gn_args = gn_args.config(
@@ -657,15 +644,9 @@ ci_builder(
     android_config_name = "base_config",
     chromium_config_name = "main_builder",
     clusterfuzz_archive = builder_config.clusterfuzz_archive(
-
-        # TODO(https://crbug.com/527836546): Allow omitting and remove.
-        archive_name_prefix = None,
         archive_path = "android-release-desktop-x64/asan-android-release",
         gs_acl = "public-read",
         gs_bucket = "chromium-browser-asan",
-
-        # TODO(https://crbug.com/527836546): Flip default to true and remove.
-        use_archive_path = True,
     ),
     console_category = "blackbox|android|asan",
     console_short_name = "desktop-x64",

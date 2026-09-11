@@ -20,8 +20,7 @@
               "clusterfuzz_archive": {
                 "archive_path": "linux-release/cfi-linux-release",
                 "gs_acl": "public-read",
-                "gs_bucket": "chromium-browser-cfi",
-                "use_archive_path": true
+                "gs_bucket": "chromium-browser-cfi"
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {

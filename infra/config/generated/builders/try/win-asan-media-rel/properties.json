@@ -17,8 +17,7 @@
               "clusterfuzz_archive": {
                 "archive_path": "win32-release_x64-media/asan-win32-release_x64",
                 "gs_acl": "public-read",
-                "gs_bucket": "chromium-browser-asan",
-                "use_archive_path": true
+                "gs_bucket": "chromium-browser-asan"
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {

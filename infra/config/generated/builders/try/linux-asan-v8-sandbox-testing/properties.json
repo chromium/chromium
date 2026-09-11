@@ -17,8 +17,7 @@
               "clusterfuzz_archive": {
                 "archive_path": "linux-release-v8-sandbox-testing/asan-v8-sandbox-testing-linux-release",
                 "gs_acl": "public-read",
-                "gs_bucket": "chromium-browser-asan",
-                "use_archive_path": true
+                "gs_bucket": "chromium-browser-asan"
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {

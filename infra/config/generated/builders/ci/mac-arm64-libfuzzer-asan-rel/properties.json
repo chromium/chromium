@@ -64,6 +64,5 @@
   "archive_path": "mac-release-asan/libfuzzer-mac-arm64-release",
   "builder_group": "chromium.fuzz",
   "recipe": "chromium/fuzz",
-  "upload_bucket": "chromium-browser-libfuzzer",
-  "use_archive_path": true
+  "upload_bucket": "chromium-browser-libfuzzer"
 }

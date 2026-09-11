@@ -73,6 +73,5 @@
     "chromium"
   ],
   "upload_bucket": "chromium-browser-libfuzzer",
-  "use_archive_path": true,
   "v8_targets_only": true
 }
