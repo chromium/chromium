@@ -595,9 +595,8 @@ void XRWebGLDrawingBuffer::SwapColorBuffers() {
 
   BindAndResolveDestinationFramebuffer();
 
-  if (back_color_buffer_) {
-    back_color_buffer_->EndAccess();
-  }
+  CHECK(back_color_buffer_);
+  back_color_buffer_->EndAccess();
 
   // Swap buffers
   front_color_buffer_ = back_color_buffer_;
@@ -642,11 +641,7 @@ XRWebGLDrawingBuffer::TransferToSharedImageHolder() {
     SwapColorBuffers();
 
     buffer = front_color_buffer_;
-
-    // This should only fail if the context is lost during the buffer swap.
-    if (buffer->produce_sync_token.HasData()) {
-      success = true;
-    }
+    success = true;
   }
 
   // If we can't get a mailbox, simply crash here since the image returned
