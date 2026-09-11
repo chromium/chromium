@@ -13605,6 +13605,29 @@
             ]
         }
     ],
+    "NetworkQualityEstimatorAsyncNotifyHeadersReceived": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Experiment",
+                    "params": {
+                        "defer_notify_headers_until_next_step": "false"
+                    },
+                    "enable_features": [
+                        "NetworkQualityEstimatorAsyncNotifyHeadersReceived"
+                    ]
+                }
+            ]
+        }
+    ],
     "NetworkServiceIncreasedPriorityWhileLoading": [
         {
             "platforms": [
