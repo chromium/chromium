@@ -546,6 +546,9 @@
 }
 
 - (BOOL)isScrolledToTop {
+  if (IsNTPRedesignEnabled()) {
+    return [self.NTPRedesignViewController isScrolledToTop];
+  }
   if (!self.webState) {
     return YES;
   }
@@ -555,9 +558,11 @@
 }
 
 - (void)scrollToTop {
-  if (!IsNTPRedesignEnabled()) {
-    [self.NTPViewController setContentOffsetToTop];
+  if (IsNTPRedesignEnabled()) {
+    [self.NTPRedesignViewController scrollToTopAnimated:YES];
+    return;
   }
+  [self.NTPViewController setContentOffsetToTop];
 }
 
 - (void)willUpdateSnapshot {
@@ -983,6 +988,12 @@
         tracker && tracker->ShouldTriggerHelpUI(
                        feature_engagement::kIPHiOSHomepageLensNewBadge);
     self.NTPRedesignViewController.useNewBadgeForLensButton = showLensBadge;
+    BOOL showCustomizationBadge =
+        tracker &&
+        tracker->ShouldTriggerHelpUI(
+            feature_engagement::kIPHiOSHomepageCustomizationNewBadge);
+    self.NTPRedesignViewController.useNewBadgeForCustomizationMenu =
+        showCustomizationBadge;
     self.NTPRedesignViewController.layoutGuideCenter =
         LayoutGuideCenterForBrowser(self.browser);
     [self configureMainViewControllerUsing:self.NTPRedesignViewController];
@@ -1491,9 +1502,11 @@
 }
 
 - (void)setContentOffsetToTop {
-  if (!IsNTPRedesignEnabled()) {
-    [self.NTPViewController setContentOffsetToTop];
+  if (IsNTPRedesignEnabled()) {
+    [self.NTPRedesignViewController scrollToTopAnimated:NO];
+    return;
   }
+  [self.NTPViewController setContentOffsetToTop];
 }
 
 - (BOOL)isGoogleDefaultSearchEngine {

@@ -9,21 +9,29 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
+#import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 const CGFloat kMinDragHandleHeight = 24.0;
@@ -551,4 +559,92 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   OCMExpect([mock_mutator notifyLensBadgeDisplayed]);
   [view_controller_ viewDidAppear:NO];
   EXPECT_OCMOCK_VERIFY(mock_mutator);
+}
+
+// Tests that the customization menu button is created with proper accessibility
+// identifier and label.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestCustomizationMenuButtonCreated) {
+  [view_controller_ loadViewIfNeeded];
+
+  ExtendedTouchTargetButton* button = view_controller_.customizationMenuButton;
+  ASSERT_TRUE(button != nil);
+  EXPECT_NSEQ(kNTPCustomizationMenuButtonIdentifier,
+              button.accessibilityIdentifier);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL),
+      button.accessibilityLabel);
+}
+
+// Tests that layout guide kFeedIPHNamedGuide references the customization menu
+// button.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestCustomizationMenuButtonLayoutGuideRegistered) {
+  id mock_guide_center = OCMClassMock([LayoutGuideCenter class]);
+  view_controller_.layoutGuideCenter = mock_guide_center;
+
+  OCMExpect([mock_guide_center referenceView:[OCMArg any]
+                                   underName:kFeedIPHNamedGuide]);
+  [view_controller_ loadViewIfNeeded];
+
+  EXPECT_OCMOCK_VERIFY(mock_guide_center);
+}
+
+// Tests that notifyCustomizationBadgeDisplayed is not called when
+// useNewBadgeForCustomizationMenu is NO.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestCustomizationBadgeNotNotifiedWhenBadgeDisabled) {
+  id mock_mutator = OCMProtocolMock(@protocol(NewTabPageMutator));
+  view_controller_.mutator = mock_mutator;
+  view_controller_.useNewBadgeForCustomizationMenu = NO;
+
+  [view_controller_ loadViewIfNeeded];
+
+  [[mock_mutator reject] notifyCustomizationBadgeDisplayed];
+  [view_controller_ viewDidAppear:NO];
+  EXPECT_OCMOCK_VERIFY(mock_mutator);
+}
+
+// Tests that notifyCustomizationBadgeDisplayed is called when
+// useNewBadgeForCustomizationMenu is YES.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestCustomizationBadgeNotifiedWhenBadgeEnabled) {
+  id mock_mutator = OCMProtocolMock(@protocol(NewTabPageMutator));
+  view_controller_.mutator = mock_mutator;
+  view_controller_.useNewBadgeForCustomizationMenu = YES;
+
+  [view_controller_ loadViewIfNeeded];
+
+  OCMExpect([mock_mutator notifyCustomizationBadgeDisplayed]);
+  [view_controller_ viewDidAppear:NO];
+  EXPECT_OCMOCK_VERIFY(mock_mutator);
+}
+
+// Tests that tapping the customization menu button invokes
+// customizationMenuWasTapped on header commands handler and fades the badge.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestCustomizationMenuButtonAction) {
+  [view_controller_ loadViewIfNeeded];
+  view_controller_.useNewBadgeForCustomizationMenu = YES;
+
+  id mock_header_commands =
+      OCMProtocolMock(@protocol(NewTabPageHeaderCommands));
+  view_controller_.headerCommandsHandler = mock_header_commands;
+
+  ExtendedTouchTargetButton* button = view_controller_.customizationMenuButton;
+  ASSERT_TRUE(button != nil);
+
+  OCMExpect([mock_header_commands customizationMenuWasTapped:button]);
+  [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_OCMOCK_VERIFY(mock_header_commands);
+  EXPECT_FALSE(view_controller_.useNewBadgeForCustomizationMenu);
+}
+
+// Tests that scrollToTopAnimated and isScrolledToTop properly interact with the
+// bottom sheet.
+TEST_F(NewTabPageRedesignViewControllerTest, TestScrollToTop) {
+  [view_controller_ loadViewIfNeeded];
+
+  [view_controller_ scrollToTopAnimated:YES];
+  EXPECT_TRUE([view_controller_ isScrolledToTop]);
 }

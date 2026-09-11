@@ -320,6 +320,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.showsHorizontalScrollIndicator = NO;
   _collectionView.showsVerticalScrollIndicator = NO;
+  _collectionView.scrollsToTop = NO;
   _collectionView.delegate = self;
   _collectionView.backgroundColor = [UIColor clearColor];
 

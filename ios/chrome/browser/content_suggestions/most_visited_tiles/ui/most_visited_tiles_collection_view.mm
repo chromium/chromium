@@ -71,6 +71,7 @@ const int kPlusButtonIdentifier = -1;
     self.backgroundColor = UIColor.clearColor;
     self.showsHorizontalScrollIndicator = NO;
     self.scrollEnabled = NO;  /// Disables vertical scrolling.
+    self.scrollsToTop = NO;
     self.dragDelegate = self;
     self.dropDelegate = self;
     self.dragInteractionEnabled = YES;

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
 
+@class ExtendedTouchTargetButton;
 @class LayoutGuideCenter;
 @protocol NewTabPageMutator;
 @protocol NewTabPageContentDelegate;
@@ -49,14 +50,18 @@
 // Indicates whether the lens button should use the "New" badge.
 @property(nonatomic, assign) BOOL useNewBadgeForLensButton;
 
+// The customization menu button in the top leading corner.
+@property(nonatomic, strong, readonly)
+    ExtendedTouchTargetButton* customizationMenuButton;
+
+// Indicates whether the customization menu button should use the "New" badge.
+@property(nonatomic, assign) BOOL useNewBadgeForCustomizationMenu;
+
 // The search engine/Doodle logo view.
 @property(nonatomic, strong) UIView* searchEngineLogoView;
 
 // The Magic Stack view controller.
 @property(nonatomic, strong) UIViewController* magicStackViewController;
-
-// Sets the feed view controller to embed in the redesign bottom sheet.
-- (void)setFeedViewController:(UIViewController*)feedViewController;
 
 // `YES` if the omnibox should be focused on when the view appears for voice
 // over.
@@ -68,6 +73,15 @@
 // Properties conformed to by NewTabPageConsumer.
 @property(nonatomic, assign) BOOL mostVisitedVisible;
 @property(nonatomic, assign) BOOL magicStackVisible;
+
+// Sets the feed view controller to embed in the redesign bottom sheet.
+- (void)setFeedViewController:(UIViewController*)feedViewController;
+
+// Scrolls the bottom sheet (or feed) back to the top resting position.
+- (void)scrollToTopAnimated:(BOOL)animated;
+
+// Returns YES if the bottom sheet is scrolled to the top.
+- (BOOL)isScrolledToTop;
 
 // Indicates to the receiver to update its state to focus the omnibox.
 - (void)focusOmnibox;

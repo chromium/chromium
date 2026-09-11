@@ -77,6 +77,12 @@
 // Updates the bottom sheet position to match its current snapping state.
 - (void)updateBottomSheetPositionAnimated:(BOOL)animated;
 
+// Scrolls the bottom sheet (or feed) back to the top resting position.
+- (void)scrollToTopAnimated:(BOOL)animated;
+
+// Returns YES if the bottom sheet is scrolled to the top.
+- (BOOL)isScrolledToTop;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_BOTTOM_SHEET_VIEW_CONTROLLER_H_

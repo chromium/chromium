@@ -468,6 +468,8 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
     _feedScrollView.scrollEnabled =
         (_sheetState == BottomSheetSnappingStateExpanded) ||
         [self isVoiceOverRunning];
+    _feedScrollView.scrollsToTop =
+        (_sheetState == BottomSheetSnappingStateExpanded);
     [_feedScrollView.panGestureRecognizer addTarget:self
                                              action:@selector(handleFeedPan:)];
   }
@@ -653,6 +655,8 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
     _feedScrollView.scrollEnabled =
         (_sheetState == BottomSheetSnappingStateExpanded) ||
         UIAccessibilityIsVoiceOverRunning();
+    _feedScrollView.scrollsToTop =
+        (_sheetState == BottomSheetSnappingStateExpanded);
     _feedScrollView.bounces = (_sheetState == BottomSheetSnappingStateExpanded);
     [self updateFeedInsets];
   }
@@ -692,6 +696,30 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
                      }
                      completion:nil];
   }
+}
+
+- (void)scrollToTopAnimated:(BOOL)animated {
+  if (_sheetState == BottomSheetSnappingStateExpanded) {
+    if (_feedScrollView &&
+        _feedScrollView.contentOffset.y > -_feedScrollView.contentInset.top) {
+      [_feedScrollView
+          setContentOffset:CGPointMake(0, -_feedScrollView.contentInset.top)
+                  animated:animated];
+      return;
+    }
+  }
+  _sheetState = BottomSheetSnappingStateResting;
+  [self updateBottomSheetPositionAnimated:animated];
+}
+
+- (BOOL)isScrolledToTop {
+  if (_sheetState == BottomSheetSnappingStateExpanded) {
+    if (!_feedScrollView) {
+      return NO;
+    }
+    return _feedScrollView.contentOffset.y <= -_feedScrollView.contentInset.top;
+  }
+  return YES;
 }
 
 - (void)snapSheetWithVelocity:(CGPoint)velocity
