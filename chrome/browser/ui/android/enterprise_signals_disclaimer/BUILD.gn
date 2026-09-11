@@ -56,6 +56,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerProperties.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerView.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/MetricsHelper.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/ModalDialogDisclaimerHost.java",
   ]
 
@@ -112,6 +113,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerAckSyncerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerControllerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/MetricsHelperUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/ModalDialogDisclaimerHostUnitTest.java",
   ]
   deps = [

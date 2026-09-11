@@ -20,6 +20,9 @@ import java.lang.annotation.Target;
 @NullMarked
 interface EnterpriseSignalsDisclaimerHost {
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(EnterpriseSignalsDisclaimerDismissalCause)
     @IntDef({
         DismissalCause.TAPPED_ACCEPT,
         DismissalCause.TAPPED_SIGN_OUT,
@@ -28,6 +31,7 @@ interface EnterpriseSignalsDisclaimerHost {
         DismissalCause.DISMISSED_BY_TAP_OUTSIDE,
         DismissalCause.DISMISSED_WITHOUT_EXPLICIT_USER_ACTION,
         DismissalCause.DISMISSED_BY_CLOSE_BUTTON,
+        DismissalCause.COUNT,
     })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
@@ -52,7 +56,12 @@ interface EnterpriseSignalsDisclaimerHost {
 
         /** The dismissal was not directly caused by a user action. */
         int DISMISSED_WITHOUT_EXPLICIT_USER_ACTION = 6;
+
+        /** The number of dismissal causes. */
+        int COUNT = 7;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSignalsDisclaimerDismissalCause)
 
     /**
      * Attempts to show the enterprise signals disclaimer. If the dialog cannot be shown it will be

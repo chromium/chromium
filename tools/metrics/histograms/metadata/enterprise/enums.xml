@@ -2675,6 +2675,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed (Permanent Error)"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseSignalsDisclaimerDismissalCause) -->
+
+<enum name="EnterpriseSignalsDisclaimerDismissalCause">
+  <int value="0" label="Tapped accept"/>
+  <int value="1" label="Tapped sign out"/>
+  <int value="2" label="Dismissed by back press"/>
+  <int value="3" label="Dismissed by swipe down"/>
+  <int value="4" label="Dismissed by tap outside"/>
+  <int value="5" label="Dismissed by close button"/>
+  <int value="6" label="Dismissed without explicit user action"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/enterprise_signals_disclaimer/java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerHost.java:EnterpriseSignalsDisclaimerDismissalCause) -->
+
 <!-- LINT.IfChange(EnterpriseSignalsDisclaimerModalResult) -->
 
 <enum name="EnterpriseSignalsDisclaimerModalResult">
@@ -2706,6 +2720,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/enterprise/signin/signals_disclaimer_metrics.h:EnterpriseSignalsDisclaimerProfilePickerResult) -->
+
+<!-- LINT.IfChange(EnterpriseSignalsDisclaimerShownOn) -->
+
+<enum name="EnterpriseSignalsDisclaimerShownOn">
+  <int value="0" label="Startup"/>
+  <int value="1" label="Sign-in"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/enterprise_signals_disclaimer/java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/MetricsHelper.java:EnterpriseSignalsDisclaimerShownOn) -->
 
 <!-- LINT.IfChange(EnterpriseSkillValidationResult) -->
 

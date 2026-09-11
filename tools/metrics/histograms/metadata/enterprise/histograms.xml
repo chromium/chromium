@@ -4308,6 +4308,50 @@ chromium-metrics-reviews@google.com.
   <summary>The source trigger of security signals-only reports</summary>
 </histogram>
 
+<histogram
+    name="Enterprise.SignalsDisclaimer.ExistingProfiles.ImplicitDismissalsBeforeAcceptance"
+    units="dismissals" expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records the number of implicit dismissals (e.g. back press, swipe down, tap
+    outside) that occurred within 5 minutes prior to the user accepting the
+    Enterprise Signals Disclaimer on Android for existing profiles.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SignalsDisclaimer.ExistingProfiles.Result"
+    enum="EnterpriseSignalsDisclaimerDismissalCause" expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records the result of the Enterprise Signals Disclaimer shown on Android for
+    existing profiles. Emitted when the disclaimer is accepted, signed out, or
+    dismissed.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SignalsDisclaimer.ExistingProfiles.Shown"
+    enum="EnterpriseSignalsDisclaimerShownOn" expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records when the Enterprise Signals Disclaimer is shown on Android for
+    existing profiles, categorized by the event that triggered the disclaimer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.SignalsDisclaimer.ExistingProfiles.TimeToUserAction"
+    units="ms" expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records the time elapsed between showing the Enterprise Signals Disclaimer
+    and the user taking an action on Android for existing profiles.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.SignalsDisclaimer.Modal.LearnMoreClicked"
     enum="BooleanClicked" expires_after="2027-04-01">
   <owner>ssolarewicz@chromium.org</owner>
