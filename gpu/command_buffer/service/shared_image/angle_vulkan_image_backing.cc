@@ -327,7 +327,10 @@ bool AngleVulkanImageBacking::Initialize(
       return false;
     }
     SkPixmap pixmap(image_info, data.data(), image_info.minRowBytes());
-    UploadFromMemory({pixmap});
+    if (!UploadFromMemory({pixmap})) {
+      DLOG(ERROR) << "Failed to upload initial pixel data";
+      return false;
+    }
     SetCleared();
   }
 
