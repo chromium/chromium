@@ -14,8 +14,6 @@
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
 
-class PrefRegistrySimple;
-
 namespace component_updater {
 
 class ComponentUpdateService;
@@ -29,8 +27,6 @@ class AimEligibilityComponentInstallerPolicy : public ComponentInstallerPolicy {
       const AimEligibilityComponentInstallerPolicy&) = delete;
   AimEligibilityComponentInstallerPolicy& operator=(
       const AimEligibilityComponentInstallerPolicy&) = delete;
-
-  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // ComponentInstallerPolicy:
   bool VerifyInstallation(const base::DictValue& manifest,

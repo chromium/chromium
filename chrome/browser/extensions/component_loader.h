@@ -30,6 +30,7 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+class PrefService;
 class Profile;
 
 namespace content {
@@ -46,9 +47,15 @@ class ComponentLoader : public KeyedService {
  public:
   static ComponentLoader* Get(content::BrowserContext* context);
 
-  // Extracts the extension version from an extension manifest JSON string.
-  static base::Version GetVersionFromManifest(
-      std::string_view manifest_contents);
+  // Stages `manifest` (downloaded by the component updater) in `local_state`
+  // for the next startup if its public key matches `extension_id` and its
+  // version is strictly newer than the bundled version. Returns true on
+  // success, otherwise clears any staged preferences and returns false.
+  static bool MaybeStageExtension(PrefService& local_state,
+                                  const ExtensionId& extension_id,
+                                  int manifest_resource_id,
+                                  const base::FilePath& relative_path,
+                                  std::optional<base::DictValue> manifest);
 
   ComponentLoader(const ComponentLoader&) = delete;
   ComponentLoader& operator=(const ComponentLoader&) = delete;
@@ -163,22 +170,9 @@ class ComponentLoader : public KeyedService {
  private:
   friend class ComponentLoaderFactory;
   friend class TtsApiTest;
+  friend class ComponentLoaderTest;
   FRIEND_TEST_ALL_PREFIXES(ComponentLoaderTest, ParseManifest);
   FRIEND_TEST_ALL_PREFIXES(ComponentLoaderTest, AddGlicExtension);
-  FRIEND_TEST_ALL_PREFIXES(ComponentLoaderTest,
-                           AddAimEligibilityExtensionLoadsStagedVersionIfNewer);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComponentLoaderTest,
-      AddAimEligibilityExtensionLoadsBundledIfStagedOlderOrEqual);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComponentLoaderTest,
-      AddAimEligibilityExtensionLoadsBundledIfFeatureParamDisabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComponentLoaderTest,
-      AddAimEligibilityExtensionLoadsBundledIfStagedManifestCorrupted);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComponentLoaderTest,
-      AddAimEligibilityExtensionLoadsBundledIfStagedVersionMismatch);
 
   // Information about a registered component extension.
   struct ComponentExtensionInfo {
@@ -219,6 +213,15 @@ class ComponentLoader : public KeyedService {
 
   // Loads a registered component extension.
   void Load(const ComponentExtensionInfo& info);
+
+  // Loads a staged component extension from disk if `local_state` has a staged
+  // manifest and relative install path for `extension_id`, its public key
+  // matches `extension_id`, and its version is strictly newer than the bundled
+  // version. Returns true on success, otherwise clears any staged preferences
+  // and returns false.
+  bool MaybeLoadStagedExtension(PrefService& local_state,
+                                const ExtensionId& extension_id,
+                                int manifest_resource_id);
 
   void AddDefaultComponentExtensionsWithBackgroundPages(
       bool skip_session_components);

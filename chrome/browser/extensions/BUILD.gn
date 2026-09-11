@@ -250,6 +250,8 @@ source_set("extensions") {
     "component_loader.h",
     "component_loader_factory.cc",
     "component_loader_factory.h",
+    "component_loader_prefs.cc",
+    "component_loader_prefs.h",
     "context_menu_helpers.cc",
     "context_menu_helpers.h",
     "context_menu_matcher.cc",

@@ -28,6 +28,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
 #include "chrome/browser/extensions/component_loader_factory.h"
+#include "chrome/browser/extensions/component_loader_prefs.h"
 #include "chrome/browser/extensions/data_deleter.h"
 #include "chrome/browser/extensions/glic_util.h"
 #include "chrome/browser/extensions/profile_util.h"
@@ -113,68 +114,70 @@ bool g_enable_background_extensions_during_testing = false;
 bool g_enable_help_app = true;
 #endif
 
-ExtensionId GenerateId(const base::DictValue& manifest,
-                       const base::FilePath& path) {
-  std::string id_input;
+ExtensionId TryGenerateId(const base::DictValue& manifest) {
   const std::string* raw_key = manifest.FindString(manifest_keys::kPublicKey);
-  CHECK(raw_key != nullptr);
-  CHECK(Extension::ParsePEMKeyBytes(*raw_key, &id_input));
-  ExtensionId id = crx_file::id_util::GenerateId(id_input);
+  if (!raw_key) {
+    return ExtensionId();
+  }
+  std::string id_input;
+  if (!Extension::ParsePEMKeyBytes(*raw_key, &id_input)) {
+    return ExtensionId();
+  }
+  return crx_file::id_util::GenerateId(id_input);
+}
+
+ExtensionId GenerateId(const base::DictValue& manifest) {
+  ExtensionId id = TryGenerateId(manifest);
+  CHECK(!id.empty());
   return id;
 }
 
-bool MaybeLoadStagedAimEligibilityExtension(ComponentLoader& loader,
-                                            PrefService& local_state) {
-  // TODO(b/525368663): Abstract this function into a generic pattern so any
-  // component extension can be updated out-of-band via the component updater.
-  std::string staged_version = local_state.GetString(
-      extension_misc::kAimEligibilityExtensionStagedVersionPref);
-  std::string staged_manifest = local_state.GetString(
-      extension_misc::kAimEligibilityExtensionStagedManifestPref);
-  if (staged_version.empty() && staged_manifest.empty()) {
+// Extracts the extension version from an extension manifest dictionary.
+base::Version GetVersionFromManifest(const base::DictValue& manifest) {
+  const std::string* version_str = manifest.FindString(manifest_keys::kVersion);
+  return version_str ? base::Version(*version_str) : base::Version();
+}
+
+// Validates that `manifest` has an extension ID matching `extension_id` and a
+// valid version that is strictly newer than the bundled version loaded from
+// `manifest_resource_id`.
+bool ValidateCandidateExtensionManifest(const base::DictValue& manifest,
+                                        const ExtensionId& extension_id,
+                                        int manifest_resource_id) {
+  CHECK(!extension_id.empty());
+  if (TryGenerateId(manifest) != extension_id) {
+    VLOG(1) << "Candidate manifest ID does not match " << extension_id << ".";
     return false;
   }
 
-  // Clear staged prefs on any failure return.
-  base::ScopedClosureRunner clear_staged_prefs(base::BindOnce(
-      [](PrefService* prefs) {
-        prefs->ClearPref(
-            extension_misc::kAimEligibilityExtensionStagedVersionPref);
-        prefs->ClearPref(
-            extension_misc::kAimEligibilityExtensionStagedManifestPref);
-      },
-      &local_state));
-
-  base::Version version =
-      ComponentLoader::GetVersionFromManifest(staged_manifest);
-  if (!version.IsValid() || version.GetString() != staged_version) {
+  base::Version version = GetVersionFromManifest(manifest);
+  if (!version.IsValid()) {
+    VLOG(1) << "Candidate manifest version is invalid for " << extension_id
+            << ".";
     return false;
   }
 
   std::string bundled_manifest =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_AIM_ELIGIBILITY_EXTENSION_MANIFEST_JSON);
+          manifest_resource_id);
+  std::optional<base::DictValue> bundled_manifest_dict =
+      base::JSONReader::ReadDict(bundled_manifest,
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!bundled_manifest_dict) {
+    VLOG(1) << "Failed to parse bundled manifest for " << extension_id << ".";
+    return false;
+  }
+
   base::Version bundled_version =
-      ComponentLoader::GetVersionFromManifest(bundled_manifest);
+      GetVersionFromManifest(*bundled_manifest_dict);
+  CHECK(bundled_version.IsValid());
   if (version <= bundled_version) {
+    VLOG(1) << "Candidate version (" << version.GetString()
+            << ") is <= bundled version (" << bundled_version.GetString()
+            << ") for " << extension_id << ".";
     return false;
   }
 
-  base::FilePath user_component_dir;
-  if (!base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                              &user_component_dir)) {
-    return false;
-  }
-
-  base::FilePath install_dir =
-      user_component_dir.Append(extension_misc::kAimEligibilityExtensionDirName)
-          .AppendASCII(staged_version);
-  if (loader.Add(staged_manifest, install_dir).empty()) {
-    return false;
-  }
-
-  // The staged version is valid; reset the closure to avoid clearing the prefs.
-  std::ignore = clear_staged_prefs.Release();
   return true;
 }
 
@@ -228,7 +231,7 @@ ComponentLoader::ComponentExtensionInfo::ComponentExtensionInfo(
     CHECK(base::PathService::Get(chrome::DIR_RESOURCES, &root_directory));
     root_directory = root_directory.Append(directory);
   }
-  extension_id = GenerateId(manifest, root_directory);
+  extension_id = GenerateId(manifest);
 }
 
 ComponentLoader::ComponentExtensionInfo::ComponentExtensionInfo(
@@ -254,16 +257,34 @@ ComponentLoader* ComponentLoader::Get(content::BrowserContext* context) {
 }
 
 // static
-base::Version ComponentLoader::GetVersionFromManifest(
-    std::string_view manifest_contents) {
-  std::optional<base::DictValue> manifest = base::JSONReader::ReadDict(
-      manifest_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  if (!manifest) {
-    return base::Version();
+bool ComponentLoader::MaybeStageExtension(
+    PrefService& local_state,
+    const ExtensionId& extension_id,
+    int manifest_resource_id,
+    const base::FilePath& relative_path,
+    std::optional<base::DictValue> manifest) {
+  // Clear staged prefs on any failure return.
+  base::ScopedClosureRunner clear_staged_prefs(
+      base::BindOnce(&component_loader_prefs::ClearExtension,
+                     std::ref(local_state), extension_id));
+
+  if (!manifest || relative_path.empty() || relative_path.IsAbsolute() ||
+      relative_path.ReferencesParent()) {
+    return false;
   }
-  const std::string* version_str =
-      manifest->FindString(manifest_keys::kVersion);
-  return version_str ? base::Version(*version_str) : base::Version();
+
+  if (!ValidateCandidateExtensionManifest(*manifest, extension_id,
+                                          manifest_resource_id)) {
+    return false;
+  }
+
+  component_loader_prefs::StageExtension(local_state, extension_id,
+                                         relative_path, std::move(*manifest));
+
+  // The downloaded manifest is valid; release the closure to avoid clearing the
+  // prefs.
+  std::ignore = clear_staged_prefs.Release();
+  return true;
 }
 
 ComponentLoader::ComponentLoader(Profile* profile)
@@ -374,7 +395,7 @@ ExtensionId ComponentLoader::AddOrReplace(const base::FilePath& path) {
                << "'. " << error;
     return std::string();
   }
-  Remove(GenerateId(*manifest, absolute_path));
+  Remove(GenerateId(*manifest));
 
   // We don't check component extensions loaded by path because this is only
   // used by developers for testing.
@@ -403,11 +424,56 @@ void ComponentLoader::Load(const ComponentExtensionInfo& info) {
   registrar->AddComponentExtension(extension.get());
 }
 
+bool ComponentLoader::MaybeLoadStagedExtension(PrefService& local_state,
+                                               const ExtensionId& extension_id,
+                                               int manifest_resource_id) {
+  // Clear staged prefs on any failure return.
+  base::ScopedClosureRunner clear_staged_prefs(
+      base::BindOnce(&component_loader_prefs::ClearExtension,
+                     std::ref(local_state), extension_id));
+
+  std::optional<component_loader_prefs::StagedComponentExtensionInfo>
+      staged_info =
+          component_loader_prefs::GetExtension(local_state, extension_id);
+  if (!staged_info) {
+    return false;
+  }
+
+  if (!ValidateCandidateExtensionManifest(staged_info->manifest, extension_id,
+                                          manifest_resource_id)) {
+    return false;
+  }
+
+  base::FilePath user_component_dir;
+  if (!base::PathService::Get(component_updater::DIR_COMPONENT_USER,
+                              &user_component_dir)) {
+    return false;
+  }
+
+  CHECK(!staged_info->relative_path.empty());
+  CHECK(!staged_info->relative_path.IsAbsolute());
+  CHECK(!staged_info->relative_path.ReferencesParent());
+  base::FilePath install_dir =
+      user_component_dir.Append(staged_info->relative_path);
+  if (!base::PathExists(install_dir)) {
+    return false;
+  }
+
+  if (Add(std::move(staged_info->manifest), install_dir).empty()) {
+    return false;
+  }
+
+  // The staged manifest is valid; release the closure to avoid clearing the
+  // prefs.
+  std::ignore = clear_staged_prefs.Release();
+  return true;
+}
+
 void ComponentLoader::Remove(const base::FilePath& root_directory) {
   // Find the ComponentExtensionInfo for the extension.
   for (const auto& component_extension : component_extensions_) {
     if (component_extension.root_directory == root_directory) {
-      Remove(GenerateId(component_extension.manifest, root_directory));
+      Remove(component_extension.extension_id);
       break;
     }
   }
@@ -480,10 +546,11 @@ void ComponentLoader::AddAimEligibilityExtension() {
   // Try to load a newer version from disk installed by the component updater.
   PrefService* local_state =
       g_browser_process ? g_browser_process->local_state() : nullptr;
-  if (local_state && omnibox::kAimEligibilityUseComponentUpdater.Get()) {
-    if (MaybeLoadStagedAimEligibilityExtension(*this, *local_state)) {
-      return;
-    }
+  if (local_state && omnibox::kAimEligibilityUseComponentUpdater.Get() &&
+      MaybeLoadStagedExtension(*local_state,
+                               extension_misc::kAimEligibilityExtensionId,
+                               IDR_AIM_ELIGIBILITY_EXTENSION_MANIFEST_JSON)) {
+    return;
   }
 
   // Fallback to bundled extension if no newer version exists on disk.

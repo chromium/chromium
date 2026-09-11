@@ -15,20 +15,20 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/component_loader_prefs.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/aim_eligibility_extension_resources.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/base/resource/resource_bundle.h"
+#include "extensions/common/file_util.h"
 
 namespace component_updater {
 
@@ -41,20 +41,53 @@ constexpr std::array<uint8_t, 32> kAimEligibilityPublicKeySHA256 = {
     0xdc, 0xab, 0x84, 0x7b, 0x17, 0xa0, 0xb9, 0x5f, 0x0e, 0xa6, 0x9c,
     0xf7, 0x89, 0x39, 0x17, 0xb2, 0x95, 0x5b, 0x02, 0x89, 0xb8};
 
+// The name of the AIM Eligibility component.
 constexpr char kAimEligibilityManifestName[] =
     "AIM Eligibility Component Extension";
 
-// Clears the staged version and manifest preferences. This ensures that
+// The manifest filename of the AIM Eligibility component extension.
+constexpr base::FilePath::CharType kExtensionManifestFilename[] =
+    FILE_PATH_LITERAL("extension_manifest.json");
+
+// Clears the staged extension preferences. This ensures that
 // `extensions::ComponentLoader` will fall back to loading the bundled component
 // extension rather than attempting to load the staged version from disk on the
 // next browser startup.
 void ClearStagedExtensionPrefs() {
   if (g_browser_process && g_browser_process->local_state()) {
-    PrefService* local_state = g_browser_process->local_state();
-    local_state->ClearPref(
-        extension_misc::kAimEligibilityExtensionStagedVersionPref);
-    local_state->ClearPref(
-        extension_misc::kAimEligibilityExtensionStagedManifestPref);
+    extensions::component_loader_prefs::ClearExtension(
+        *g_browser_process->local_state(),
+        extension_misc::kAimEligibilityExtensionId);
+  }
+}
+
+// Tries to load and parse the extension manifest from `install_dir`.
+std::optional<base::DictValue> LoadExtensionManifest(
+    const base::FilePath& install_dir) {
+  std::string error;
+  std::optional<base::DictValue> manifest = extensions::file_util::LoadManifest(
+      install_dir, kExtensionManifestFilename, &error);
+  if (!manifest) {
+    VLOG(1) << "Failed to load extension manifest from " << install_dir << ": "
+            << error;
+  }
+  return manifest;
+}
+
+// Tries to stage `manifest` in Local State preferences for the next startup.
+void OnExtensionManifestLoaded(const base::FilePath& relative_path,
+                               std::optional<base::DictValue> manifest) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!g_browser_process || !g_browser_process->local_state()) {
+    return;
+  }
+  if (!extensions::ComponentLoader::MaybeStageExtension(
+          *g_browser_process->local_state(),
+          extension_misc::kAimEligibilityExtensionId,
+          IDR_AIM_ELIGIBILITY_EXTENSION_MANIFEST_JSON, relative_path,
+          std::move(manifest))) {
+    VLOG(1) << "Failed to stage AIM Eligibility extension from "
+            << relative_path;
   }
 }
 
@@ -65,21 +98,10 @@ AimEligibilityComponentInstallerPolicy::
 AimEligibilityComponentInstallerPolicy::
     ~AimEligibilityComponentInstallerPolicy() = default;
 
-// static
-void AimEligibilityComponentInstallerPolicy::RegisterPrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(
-      extension_misc::kAimEligibilityExtensionStagedVersionPref, std::string());
-  registry->RegisterStringPref(
-      extension_misc::kAimEligibilityExtensionStagedManifestPref,
-      std::string());
-}
-
 bool AimEligibilityComponentInstallerPolicy::VerifyInstallation(
     const base::DictValue& /* manifest */,
     const base::FilePath& install_dir) const {
-  return base::PathExists(
-      install_dir.Append(FILE_PATH_LITERAL("manifest.json")));
+  return base::PathExists(install_dir.Append(kExtensionManifestFilename));
 }
 
 bool AimEligibilityComponentInstallerPolicy::
@@ -106,41 +128,21 @@ void AimEligibilityComponentInstallerPolicy::OnCustomUninstall() {
 void AimEligibilityComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::DictValue manifest) {
+    base::DictValue /* manifest */) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Ignore versions that are less than or equal to the bundled version.
-  std::string bundled_manifest =
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_AIM_ELIGIBILITY_EXTENSION_MANIFEST_JSON);
-  base::Version bundled_version =
-      extensions::ComponentLoader::GetVersionFromManifest(bundled_manifest);
-  if (bundled_version.IsValid() && version <= bundled_version) {
-    VLOG(1) << "Downloaded version (" << version.GetString()
-            << ") is <= bundled version (" << bundled_version.GetString()
-            << "). Clearing staged prefs.";
-    ClearStagedExtensionPrefs();
-    return;
-  }
-
   VLOG(1) << "AIM Eligibility Component ready, version " << version.GetString()
-          << " in " << install_dir.value();
+          << " in " << install_dir;
 
-  // Stage the update in the Prefs to be loaded on the next startup.
-  if (g_browser_process && g_browser_process->local_state()) {
-    PrefService* local_state = g_browser_process->local_state();
-    std::string manifest_json;
-    if (base::JSONWriter::Write(manifest, &manifest_json)) {
-      local_state->SetString(
-          extension_misc::kAimEligibilityExtensionStagedVersionPref,
-          version.GetString());
-      local_state->SetString(
-          extension_misc::kAimEligibilityExtensionStagedManifestPref,
-          manifest_json);
-      VLOG(1) << "Staged AIM Eligibility Extension version "
-              << version.GetString() << " for next startup.";
-    }
-  }
+  base::FilePath relative_path =
+      GetRelativeInstallDir().AppendASCII(version.GetString());
+
+  // The passed-in manifest is the component updater's manifest.json; load the
+  // extension's extension_manifest.json from `install_dir`.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&LoadExtensionManifest, install_dir),
+      base::BindOnce(&OnExtensionManifestLoaded, std::move(relative_path)));
 }
 
 base::FilePath AimEligibilityComponentInstallerPolicy::GetRelativeInstallDir()

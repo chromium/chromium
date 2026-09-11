@@ -28,6 +28,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
+#include "chrome/browser/extensions/component_loader_prefs.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
@@ -61,7 +62,7 @@ namespace extensions {
 
 namespace {
 
-std::string CreateAimEligibilityManifest(std::string_view version) {
+base::DictValue CreateAimEligibilityManifest(std::string_view version) {
   constexpr char kAimEligibilityExtensionKey[] =
       "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApBqd0NT1c0F+CI4e"
       "NK09isJoysNY8QZhW7UrqO2XWwOCG5QH8TykzpAHNdM5vDJwSxDg1vO69dZKhjMdyg4e"
@@ -69,15 +70,16 @@ std::string CreateAimEligibilityManifest(std::string_view version) {
       "4RNRq88GiT+r/GTMxg3lSrIa5u1ROesujmifZbgoyuuLiNE9hr3WVB1OzhWuFkm/mVzoo"
       "EcNhiqs8UcsAKWgJK65fHMlktmDzW6K+g0WVOHkkgtp7H9w6K5nz3UAM4XyTHSESIZuw9"
       "D07/BkKr2U+TSPxjSya/goCm7KMjQbuMbaqj5SYQoMFIgOvJr2QIDAQAB";
-  constexpr char kAimEligibilityManifestTemplate[] =
-      R"({
-        "key": "%s",
-        "version": "%s",
-        "manifest_version": 3,
-        "name": "AIM Staged"
-      })";
-  return base::StringPrintf(kAimEligibilityManifestTemplate,
-                            kAimEligibilityExtensionKey, version.data());
+  return base::DictValue()
+      .Set("key", kAimEligibilityExtensionKey)
+      .Set("version", version)
+      .Set("manifest_version", 3)
+      .Set("name", "AIM Staged");
+}
+
+base::FilePath GetAimEligibilityRelativeInstallDir(std::string_view version) {
+  return base::FilePath(extension_misc::kAimEligibilityExtensionDirName)
+      .AppendASCII(version);
 }
 
 class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
@@ -175,6 +177,29 @@ class ComponentLoaderTest : public testing::Test {
   }
 
   TestingProfile* profile() { return profile_; }
+
+  void AddAimEligibilityExtension() {
+    component_loader_->AddAimEligibilityExtension();
+  }
+
+  void VerifyBundledAimEligibilityExtensionLoaded(
+      bool expect_prefs_cleared = true) {
+    component_loader_->AddAimEligibilityExtension();
+    component_loader_->LoadAll();
+
+    ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+    const Extension* extension = registry->enabled_extensions().GetByID(
+        extension_misc::kAimEligibilityExtensionId);
+    ASSERT_TRUE(extension);
+    EXPECT_EQ(extension->version(), base::Version("1.0"));
+    EXPECT_EQ(extension->name(), "AIM Eligibility Component Extension");
+    PrefService* local_state =
+        TestingBrowserProcess::GetGlobal()->local_state();
+    EXPECT_EQ(component_loader_prefs::GetExtension(
+                  *local_state, extension_misc::kAimEligibilityExtensionId)
+                  .has_value(),
+              !expect_prefs_cleared);
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_{
@@ -506,20 +531,15 @@ TEST_F(ComponentLoaderTest,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::ScopedPathOverride path_override(component_updater::DIR_COMPONENT_USER,
                                          temp_dir.GetPath());
-  base::FilePath version_dir =
-      temp_dir.GetPath()
-          .Append(extension_misc::kAimEligibilityExtensionDirName)
-          .AppendASCII("2.0");
-  ASSERT_TRUE(base::CreateDirectory(version_dir));
+  base::FilePath relative_path = GetAimEligibilityRelativeInstallDir("2.0");
+  ASSERT_TRUE(base::CreateDirectory(temp_dir.GetPath().Append(relative_path)));
 
   PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
-  local_state->SetString(
-      extension_misc::kAimEligibilityExtensionStagedVersionPref, "2.0");
-  local_state->SetString(
-      extension_misc::kAimEligibilityExtensionStagedManifestPref,
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId, relative_path,
       CreateAimEligibilityManifest("2.0"));
 
-  component_loader_->AddAimEligibilityExtension();
+  AddAimEligibilityExtension();
   component_loader_->LoadAll();
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
@@ -538,21 +558,12 @@ TEST_F(ComponentLoaderTest,
 
   PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   // Staged version 1.0 is <= bundled 1.0.
-  local_state->SetString(
-      extension_misc::kAimEligibilityExtensionStagedVersionPref, "1.0");
-  local_state->SetString(
-      extension_misc::kAimEligibilityExtensionStagedManifestPref,
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId,
+      GetAimEligibilityRelativeInstallDir("1.0"),
       CreateAimEligibilityManifest("1.0"));
 
-  component_loader_->AddAimEligibilityExtension();
-  component_loader_->LoadAll();
-
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  const Extension* extension = registry->enabled_extensions().GetByID(
-      extension_misc::kAimEligibilityExtensionId);
-  ASSERT_TRUE(extension);
-  EXPECT_EQ(extension->version(), base::Version("1.0"));
-  EXPECT_EQ(extension->name(), "AIM Eligibility Component Extension");
+  VerifyBundledAimEligibilityExtensionLoaded();
 }
 
 TEST_F(ComponentLoaderTest,
@@ -565,21 +576,12 @@ TEST_F(ComponentLoaderTest,
 
   PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   // Staged version 2.0 exists in prefs, but use_component_updater is false.
-  local_state->SetString(
-      extension_misc::kAimEligibilityExtensionStagedVersionPref, "2.0");
-  local_state->SetString(
-      extension_misc::kAimEligibilityExtensionStagedManifestPref,
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId,
+      GetAimEligibilityRelativeInstallDir("2.0"),
       CreateAimEligibilityManifest("2.0"));
 
-  component_loader_->AddAimEligibilityExtension();
-  component_loader_->LoadAll();
-
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  const Extension* extension = registry->enabled_extensions().GetByID(
-      extension_misc::kAimEligibilityExtensionId);
-  ASSERT_TRUE(extension);
-  EXPECT_EQ(extension->version(), base::Version("1.0"));
-  EXPECT_EQ(extension->name(), "AIM Eligibility Component Extension");
+  VerifyBundledAimEligibilityExtensionLoaded(/*expect_prefs_cleared=*/false);
 }
 
 TEST_F(ComponentLoaderTest,
@@ -589,31 +591,12 @@ TEST_F(ComponentLoaderTest,
       omnibox::kAimEligibilityComponentExtension);
 
   PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
-  // Staged version 2.0 exists in prefs, but manifest is invalid/corrupted JSON.
-  local_state->SetString(
-      extension_misc::kAimEligibilityExtensionStagedVersionPref, "2.0");
-  local_state->SetString(
-      extension_misc::kAimEligibilityExtensionStagedManifestPref,
-      "invalid-corrupted-json");
+  // Staged manifest is missing required keys.
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId,
+      GetAimEligibilityRelativeInstallDir("2.0"), base::DictValue());
 
-  component_loader_->AddAimEligibilityExtension();
-  component_loader_->LoadAll();
-
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  const Extension* extension = registry->enabled_extensions().GetByID(
-      extension_misc::kAimEligibilityExtensionId);
-  ASSERT_TRUE(extension);
-  EXPECT_EQ(extension->version(), base::Version("1.0"));
-  EXPECT_EQ(extension->name(), "AIM Eligibility Component Extension");
-  EXPECT_TRUE(
-      local_state
-          ->GetString(extension_misc::kAimEligibilityExtensionStagedVersionPref)
-          .empty());
-  EXPECT_TRUE(
-      local_state
-          ->GetString(
-              extension_misc::kAimEligibilityExtensionStagedManifestPref)
-          .empty());
+  VerifyBundledAimEligibilityExtensionLoaded();
 }
 
 TEST_F(ComponentLoaderTest,
@@ -623,31 +606,149 @@ TEST_F(ComponentLoaderTest,
       omnibox::kAimEligibilityComponentExtension);
 
   PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
-  // Staged version pref says 2.0, but manifest version says 1.5.
-  local_state->SetString(
-      extension_misc::kAimEligibilityExtensionStagedVersionPref, "2.0");
-  local_state->SetString(
-      extension_misc::kAimEligibilityExtensionStagedManifestPref,
-      CreateAimEligibilityManifest("1.5"));
+  // Staged manifest has an invalid version string.
+  base::DictValue manifest = CreateAimEligibilityManifest("2.0");
+  manifest.Set("version", "invalid.version.format.!");
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId,
+      GetAimEligibilityRelativeInstallDir("2.0"), std::move(manifest));
 
-  component_loader_->AddAimEligibilityExtension();
-  component_loader_->LoadAll();
+  VerifyBundledAimEligibilityExtensionLoaded();
+}
 
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  const Extension* extension = registry->enabled_extensions().GetByID(
-      extension_misc::kAimEligibilityExtensionId);
-  ASSERT_TRUE(extension);
-  EXPECT_EQ(extension->version(), base::Version("1.0"));
-  EXPECT_EQ(extension->name(), "AIM Eligibility Component Extension");
-  EXPECT_TRUE(
-      local_state
-          ->GetString(extension_misc::kAimEligibilityExtensionStagedVersionPref)
-          .empty());
-  EXPECT_TRUE(
-      local_state
-          ->GetString(
-              extension_misc::kAimEligibilityExtensionStagedManifestPref)
-          .empty());
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsBundledIfStagedExtensionIdMismatch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kAimEligibilityComponentExtension);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride path_override(component_updater::DIR_COMPONENT_USER,
+                                         temp_dir.GetPath());
+  base::FilePath relative_path = GetAimEligibilityRelativeInstallDir("2.0");
+  ASSERT_TRUE(base::CreateDirectory(temp_dir.GetPath().Append(relative_path)));
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  // Valid RSA key, but belongs to a different extension ID.
+  constexpr char kDifferentKey[] =
+      "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8xv6iO+j4kzj1HiBL93+XVJH/"
+      "CRyAQMUHS/Z0l8nCAzaAFkW/JsNwxJqQhrZspnxLqbQxNncXs6g6bsXAwKHiEs+"
+      "LSs+bIv0Gc/2ycZdhXJ8GhEsSMakog5dpQd1681c2gLK/8CrAoewE/0GIKhaFcp7a2iZ"
+      "lGh4Am6fgMKy0iQIDAQAB";
+  base::DictValue mismatched_manifest = base::DictValue()
+                                            .Set("key", kDifferentKey)
+                                            .Set("version", "2.0")
+                                            .Set("manifest_version", 3)
+                                            .Set("name", "Different Extension");
+
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId, relative_path,
+      std::move(mismatched_manifest));
+
+  VerifyBundledAimEligibilityExtensionLoaded();
+}
+
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsBundledIfStagedKeyInvalid) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kAimEligibilityComponentExtension);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride path_override(component_updater::DIR_COMPONENT_USER,
+                                         temp_dir.GetPath());
+  base::FilePath relative_path = GetAimEligibilityRelativeInstallDir("2.0");
+  ASSERT_TRUE(base::CreateDirectory(temp_dir.GetPath().Append(relative_path)));
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  // Manifest with a malformed/invalid public key.
+  base::DictValue invalid_key_manifest = CreateAimEligibilityManifest("2.0");
+  invalid_key_manifest.Set("key", "not-a-valid-pem-key");
+
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId, relative_path,
+      std::move(invalid_key_manifest));
+
+  VerifyBundledAimEligibilityExtensionLoaded();
+}
+
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsBundledIfStagedDirectoryDoesNotExist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kAimEligibilityComponentExtension);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride path_override(component_updater::DIR_COMPONENT_USER,
+                                         temp_dir.GetPath());
+  base::FilePath relative_path = GetAimEligibilityRelativeInstallDir("2.0");
+  // Intentionally do NOT create the relative_path directory on disk.
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId, relative_path,
+      CreateAimEligibilityManifest("2.0"));
+
+  VerifyBundledAimEligibilityExtensionLoaded();
+}
+
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsBundledIfStagedPathIsAbsolute) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kAimEligibilityComponentExtension);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride path_override(component_updater::DIR_COMPONENT_USER,
+                                         temp_dir.GetPath());
+  base::FilePath absolute_path = temp_dir.GetPath().AppendASCII("2.0");
+  ASSERT_TRUE(base::CreateDirectory(absolute_path));
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId, absolute_path,
+      CreateAimEligibilityManifest("2.0"));
+
+  VerifyBundledAimEligibilityExtensionLoaded();
+}
+
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsBundledIfStagedPathReferencesParent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kAimEligibilityComponentExtension);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride path_override(component_updater::DIR_COMPONENT_USER,
+                                         temp_dir.GetPath());
+  base::FilePath parent_referencing_path =
+      base::FilePath(FILE_PATH_LITERAL("..")).AppendASCII("2.0");
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId,
+      parent_referencing_path, CreateAimEligibilityManifest("2.0"));
+
+  VerifyBundledAimEligibilityExtensionLoaded();
+}
+
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsBundledIfStagedPathIsEmpty) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kAimEligibilityComponentExtension);
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId,
+      base::FilePath(), CreateAimEligibilityManifest("2.0"));
+
+  VerifyBundledAimEligibilityExtensionLoaded();
 }
 
 }  // namespace extensions
