@@ -1147,9 +1147,8 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   // non-frame widget.
   const bool is_topmost_widget = !view_->IsRenderWidgetHostViewChildFrame();
 
-  // This widget is for a subframe (e.g. an <iframe>), not the main frame of its
-  // frame tree (e.g. top-level tab, GuestView or SurfaceEmbed).
-  const bool is_subframe_widget =
+  // This widget is for a frame, but not the main frame of its frame tree.
+  const bool is_child_frame_widget =
       view_->IsRenderWidgetHostViewChildFrame() && !owner_delegate_;
 
   // These properties come from the main frame RenderWidget and flow down the
@@ -1224,7 +1223,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   gfx::Size viewport_device_px;
   gfx::Size viewport_dips;
   float dip_scale = 1 / GetDeviceScaleFactor();
-  if (is_subframe_widget) {
+  if (is_child_frame_widget) {
     viewport_device_px =
         properties_from_parent_local_root_.visible_viewport_size;
     viewport_dips = gfx::ScaleToCeiledSize(viewport_device_px, dip_scale);
@@ -1234,9 +1233,9 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   }
   visual_properties.visible_viewport_size_device_px = viewport_device_px;
 
-  // The root widget's viewport segments are computed here - subframes just
+  // The root widget's viewport segments are computed here - child frames just
   // use the value provided from the parent.
-  if (!is_subframe_widget) {
+  if (is_topmost_widget) {
     std::optional<DisplayFeature> display_feature = view_->GetDisplayFeature();
     if (display_feature) {
       int top_controls_height =
