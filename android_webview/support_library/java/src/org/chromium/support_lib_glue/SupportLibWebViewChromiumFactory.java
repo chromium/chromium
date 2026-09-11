@@ -840,6 +840,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROXY_CONTROLLER")) {
             recordApiCall(ApiCall.GET_PROXY_CONTROLLER);
+            mAwInit.getStartupController()
+                    .triggerAndWaitForChromiumStarted(StartupCallSite.GET_AW_PROXY_CONTROLLER);
             synchronized (mAwInit.getLazyInitLock()) {
                 if (mProxyController == null) {
                     mProxyController =
