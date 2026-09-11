@@ -2107,7 +2107,7 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
      nullptr},
     {"Bottom Sheet: Carousel, No Accordion",
      kOmniboxAimBottomSheetCarouselNoAccordion, nullptr},
-    {"Hint", kOmniboxAimHint, nullptr},
+    {"Ask Hint", kOmniboxAimHint, nullptr},
 };
 
 #endif  // BUILDFLAG(IS_ANDROID)
