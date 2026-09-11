@@ -233,6 +233,9 @@ class LogoServiceImpl : public LogoService,
   // Clock used to determine current time. Can be overridden in tests.
   raw_ptr<base::Clock> clock_ = nullptr;
 
+  // Whether the default search engine (DSE) is Google.
+  bool is_google_ = false;
+
   base::WeakPtrFactory<LogoServiceImpl> weak_ptr_factory_{this};
 };
 
