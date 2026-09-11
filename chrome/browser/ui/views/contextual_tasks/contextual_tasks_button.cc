@@ -74,15 +74,50 @@ const int kGLogoCircularShapeIconSize = 16;
 
 const int kGLogoPillShapeIconSize = 15;
 
-// The top-left radius is needed to avoid the toolbar upper left rounded corner.
-// This will translate to the top-right if the button is on that side.
-const float kTopLeftRadius = 5.0f;
+// The flat edge's top corner radius is needed to avoid the toolbar upper
+// rounded corner. This applies to the top-left corner when the flat edge is on
+// the left, or the top-right corner when the flat edge is on the right.
+const float kFlatEdgeTopRadius = 5.0f;
 
-// Like the above, this radius corresponds to the button's bottom left corner.
-const float kBottomLeftRadius = 0.0f;
+// The flat edge's bottom corner radius. This applies to the bottom-left corner
+// when the flat edge is on the left, or the bottom-right corner when the flat
+// edge is on the right.
+const float kFlatEdgeBottomRadius = 0.0f;
 
 // Margin to outset the background painted layer so the shadow is not clipped.
 const int kShadowOutset = 12;
+
+gfx::Insets GetPillShadowInsets(ContextualTasksButton::Shape shape) {
+  gfx::Insets shadow_insets =
+      gfx::Insets::VH(kPillShapeShadowInset, kPillShapeShadowInset);
+  if (shape == ContextualTasksButton::Shape::kFlatEdgeRight) {
+    shadow_insets.set_right(0);
+  } else {
+    shadow_insets.set_left(0);
+  }
+
+  return shadow_insets;
+}
+
+SkRRect GetPillRRect(const gfx::Rect& rect,
+                     ContextualTasksButton::Shape shape) {
+  const float radius = rect.height() / 2.0f;
+  SkVector radii[4];
+  if (shape == ContextualTasksButton::Shape::kFlatEdgeRight) {
+    radii[0] = {radius, radius};                                // top-left
+    radii[1] = {kFlatEdgeTopRadius, kFlatEdgeTopRadius};        // top-right
+    radii[2] = {kFlatEdgeBottomRadius, kFlatEdgeBottomRadius};  // bottom-right
+    radii[3] = {radius, radius};                                // bottom-left
+  } else {
+    radii[0] = {kFlatEdgeTopRadius, kFlatEdgeTopRadius};        // top-left
+    radii[1] = {radius, radius};                                // top-right
+    radii[2] = {radius, radius};                                // bottom-right
+    radii[3] = {kFlatEdgeBottomRadius, kFlatEdgeBottomRadius};  // bottom-left
+  }
+  SkRRect rrect;
+  rrect.setRectRadii(gfx::RectToSkRect(rect), radii);
+  return rrect;
+}
 
 // Helper class to paint the contextual tasks button shadow. The general
 // ViewShadow class doesn't work for the contextual tasks button because the
@@ -91,10 +126,8 @@ class ContextualTasksButtonBackgroundPainter : public views::Painter {
  public:
   ContextualTasksButtonBackgroundPainter(SkColor bg_color,
                                          SkColor shadow_color,
-                                         bool circle_shape)
-      : bg_color_(bg_color),
-        shadow_color_(shadow_color),
-        is_circle_shape_(circle_shape) {}
+                                         ContextualTasksButton::Shape shape)
+      : bg_color_(bg_color), shadow_color_(shadow_color), shape_(shape) {}
   ~ContextualTasksButtonBackgroundPainter() override = default;
 
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
@@ -117,41 +150,32 @@ class ContextualTasksButtonBackgroundPainter : public views::Painter {
     gfx::Rect button_rect(size);
     button_rect.Inset(gfx::Insets(kShadowOutset));
 
-    if (is_circle_shape_) {
-      gfx::Rect inset_rect = button_rect;
-      inset_rect.Inset(gfx::Insets(kCircleShadowInset));
-      gfx::RectF fill_rect(gfx::ScaleToEnclosedRect(inset_rect, scale));
-      gfx::PointF center = fill_rect.CenterPoint();
-      float scaled_radius =
-          std::min(fill_rect.width(), fill_rect.height()) / 2.0f;
-      canvas->DrawCircle(center, scaled_radius, flags);
-    } else {
-      gfx::Rect inset_rect = button_rect;
-      inset_rect.Inset(gfx::Insets::TLBR(kPillShapeShadowInset, 0,
-                                         kPillShapeShadowInset,
-                                         kPillShapeShadowInset));
-      gfx::Rect fill_rect = gfx::ScaleToEnclosingRect(inset_rect, scale);
-
-      float radius = fill_rect.height() / 2.0f;
-
-      const SkVector radii[4] = {
-          {kTopLeftRadius, kTopLeftRadius},       // top-left
-          {radius, radius},                       // top-right
-          {radius, radius},                       // bottom-right
-          {kBottomLeftRadius, kBottomLeftRadius}  // bottom-left
-      };
-
-      SkRRect rrect;
-      rrect.setRectRadii(gfx::RectToSkRect(fill_rect), radii);
-
-      canvas->sk_canvas()->drawRRect(rrect, flags);
+    switch (shape_) {
+      case ContextualTasksButton::Shape::kCircle: {
+        gfx::Rect inset_rect = button_rect;
+        inset_rect.Inset(gfx::Insets(kCircleShadowInset));
+        gfx::RectF fill_rect(gfx::ScaleToEnclosedRect(inset_rect, scale));
+        gfx::PointF center = fill_rect.CenterPoint();
+        float scaled_radius =
+            std::min(fill_rect.width(), fill_rect.height()) / 2.0f;
+        canvas->DrawCircle(center, scaled_radius, flags);
+        break;
+      }
+      case ContextualTasksButton::Shape::kFlatEdgeRight:
+      case ContextualTasksButton::Shape::kFlatEdgeLeft: {
+        gfx::Rect inset_rect = button_rect;
+        inset_rect.Inset(GetPillShadowInsets(shape_));
+        gfx::Rect fill_rect = gfx::ScaleToEnclosingRect(inset_rect, scale);
+        canvas->sk_canvas()->drawRRect(GetPillRRect(fill_rect, shape_), flags);
+        break;
+      }
     }
   }
 
  private:
   const SkColor bg_color_;
   const SkColor shadow_color_;
-  const bool is_circle_shape_;
+  const ContextualTasksButton::Shape shape_;
 };
 
 class ContextualTasksButtonHighlightPathGenerator
@@ -164,23 +188,15 @@ class ContextualTasksButtonHighlightPathGenerator
 
   SkPath GetHighlightPath(const views::View* view) override {
     gfx::Rect rect(view->size());
-    if (button_->ShouldApplyCircularBackgroundShadow()) {
-      rect.Inset(gfx::Insets(kCircleShadowInset));
-      return SkPath::Oval(gfx::RectToSkRect(rect));
-    } else {
-      rect.Inset(gfx::Insets::TLBR(kPillShapeShadowInset, 0,
-                                   kPillShapeShadowInset,
-                                   kPillShapeShadowInset));
-      const float radius = rect.height() / 2.0f;
-      const SkVector radii[4] = {
-          {kTopLeftRadius, kTopLeftRadius},       // top-left
-          {radius, radius},                       // top-right
-          {radius, radius},                       // bottom-right
-          {kBottomLeftRadius, kBottomLeftRadius}  // bottom-left
-      };
-      SkRRect rrect;
-      rrect.setRectRadii(gfx::RectToSkRect(rect), radii);
-      return SkPath::RRect(rrect);
+    const ContextualTasksButton::Shape shape = button_->GetShape();
+    switch (shape) {
+      case ContextualTasksButton::Shape::kCircle:
+        rect.Inset(gfx::Insets(kCircleShadowInset));
+        return SkPath::Oval(gfx::RectToSkRect(rect));
+      case ContextualTasksButton::Shape::kFlatEdgeRight:
+      case ContextualTasksButton::Shape::kFlatEdgeLeft:
+        rect.Inset(GetPillShadowInsets(shape));
+        return SkPath::RRect(GetPillRRect(rect, shape));
     }
   }
 
@@ -217,27 +233,21 @@ ContextualTasksButton::ContextualTasksButton(
   GetViewAccessibility().SetName(button_tooltip);
   SetTooltipText(button_tooltip);
 
-  PrefService* const pref_service =
-      browser_window_interface->GetProfile()->GetPrefs();
-  pref_change_registrar_.Init(pref_service);
-  pref_change_registrar_.Add(
-      prefs::kSidePanelHorizontalAlignment,
-      base::BindRepeating(&ContextualTasksButton::OnSidePanelAlignmentChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kSidePanelAlignmentOverrides,
-      base::BindRepeating(&ContextualTasksButton::OnSidePanelAlignmentChanged,
-                          base::Unretained(this)));
-
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     ContextualTasksEphemeralButtonController* const controller =
         ContextualTasksEphemeralButtonController::From(
             browser_window_interface_);
-    should_update_visibility_subscription_ =
-        controller->RegisterShouldUpdateButtonVisibility(base::BindRepeating(
-            &ContextualTasksButton::OnShouldUpdateVisibility,
-            base::Unretained(this)));
+    if (controller) {
+      should_update_visibility_subscription_ =
+          controller->RegisterShouldUpdateButtonVisibility(base::BindRepeating(
+              &ContextualTasksButton::OnShouldUpdateVisibility,
+              base::Unretained(this)));
+      should_update_position_subscription_ =
+          controller->RegisterShouldUpdateButtonPosition(base::BindRepeating(
+              &ContextualTasksButton::OnShouldUpdatePosition,
+              base::Unretained(this)));
+    }
   }
 
   eligibility_change_subscription_ =
@@ -271,7 +281,7 @@ ContextualTasksButton::ContextualTasksButton(
                 base::Unretained(this)));
   }
 
-  OnSidePanelAlignmentChanged();
+  OnShouldUpdatePosition();
   MaybeUpdateVisibility();
 
   if (contextual_tasks::kShowEntryPoint.Get() ==
@@ -289,15 +299,31 @@ ContextualTasksButton::~ContextualTasksButton() {
 float ContextualTasksButton::GetCornerRadiusFor(
     ToolbarButton::Edge edge) const {
   if (contextual_tasks::kShowEntryPoint.Get() ==
-          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded &&
-      !ShouldApplyCircularBackgroundShadow()) {
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    const Shape button_shape = GetShape();
     switch (edge) {
       case ToolbarButton::Edge::kTopLeft:
-        return kTopLeftRadius;
+        if (button_shape == Shape::kFlatEdgeLeft) {
+          return kFlatEdgeTopRadius;
+        }
+        break;
+      case ToolbarButton::Edge::kTopRight:
+        if (button_shape == Shape::kFlatEdgeRight) {
+          return kFlatEdgeTopRadius;
+        }
+        break;
       case ToolbarButton::Edge::kBottomLeft:
-        return kBottomLeftRadius;
+        if (button_shape == Shape::kFlatEdgeLeft) {
+          return kFlatEdgeBottomRadius;
+        }
+        break;
+      case ToolbarButton::Edge::kBottomRight:
+        if (button_shape == Shape::kFlatEdgeRight) {
+          return kFlatEdgeBottomRadius;
+        }
+        break;
       default:
-        return GetRoundedCornerRadius();
+        break;
     }
   }
   // Toolbar buttons always have rounded corners for all its edges.
@@ -382,11 +408,16 @@ void ContextualTasksButton::OnButtonPress() {
   }
 }
 
-void ContextualTasksButton::OnSidePanelAlignmentChanged() {
+bool ContextualTasksButton::IsTrailing() const {
+  return IsSidePanelRightAligned() != base::i18n::IsRTL();
+}
+
+void ContextualTasksButton::OnShouldUpdatePosition() {
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     UpdateColorsAndInsets();
+    UpdateDropShadow();
     MaybeUpdateVisibility();
   } else {
     const gfx::VectorIcon& contextual_tasks_icon =
@@ -413,18 +444,28 @@ void ContextualTasksButton::UpdateColorsAndInsets() {
     return;
   }
 
-  const int icon_size = ShouldApplyCircularBackgroundShadow()
-                            ? kGLogoCircularShapeIconSize
-                            : kGLogoPillShapeIconSize;
-  const int icon_inset = (button_size - icon_size) / 2;
-  const int vertical_inset =
-      ShouldApplyCircularBackgroundShadow() ? icon_inset : 0;
-  const int icon_offset = ShouldApplyCircularBackgroundShadow() ? 0 : 2;
-  const gfx::Insets insets =
-      gfx::Insets::TLBR(vertical_inset, icon_inset - icon_offset,
-                        vertical_inset, icon_inset + icon_offset) +
-      *GetProperty(views::kInternalPaddingKey);
-  SetLayoutInsets(insets);
+  const Shape shape = GetShape();
+  gfx::Insets insets;
+  switch (shape) {
+    case Shape::kCircle: {
+      const int icon_inset = (button_size - kGLogoCircularShapeIconSize) / 2;
+      insets = gfx::Insets(icon_inset);
+      break;
+    }
+    case Shape::kFlatEdgeRight:
+    case Shape::kFlatEdgeLeft: {
+      const int icon_inset = (button_size - kGLogoPillShapeIconSize) / 2;
+      constexpr int kIconOffset = 2;
+      const int rounded_edge_inset = icon_inset + kIconOffset;
+      const int flat_edge_inset = icon_inset - kIconOffset;
+      insets =
+          (shape == Shape::kFlatEdgeRight)
+              ? gfx::Insets::TLBR(0, rounded_edge_inset, 0, flat_edge_inset)
+              : gfx::Insets::TLBR(0, flat_edge_inset, 0, rounded_edge_inset);
+      break;
+    }
+  }
+  SetLayoutInsets(insets + *GetProperty(views::kInternalPaddingKey));
 
   UpdateDropShadow();
 }
@@ -458,16 +499,21 @@ void ContextualTasksButton::OnControllerDestroyed() {
   panel_controller_observation_.Reset();
 }
 
-bool ContextualTasksButton::ShouldApplyCircularBackgroundShadow() const {
-  ImmersiveModeController* immersive_mode_controller =
+ContextualTasksButton::Shape ContextualTasksButton::GetShape() const {
+  ImmersiveModeController* const immersive_mode_controller =
       ImmersiveModeController::From(browser_window_interface_);
   if (immersive_mode_controller && immersive_mode_controller->IsEnabled()) {
-    return true;
+    return Shape::kCircle;
   }
 
-  auto* controller =
+  auto* const controller =
       tabs::VerticalTabStripStateController::From(browser_window_interface_);
-  return controller && controller->ShouldDisplayVerticalTabs();
+  if (controller && controller->ShouldDisplayVerticalTabs()) {
+    return Shape::kCircle;
+  }
+
+  return IsSidePanelRightAligned() ? Shape::kFlatEdgeRight
+                                   : Shape::kFlatEdgeLeft;
 }
 
 ui::Layer* ContextualTasksButton::GetDropShadowLayerForTesting() const {
@@ -505,10 +551,14 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
 
   ContextualTasksEphemeralButtonController* const controller =
       ContextualTasksEphemeralButtonController::From(browser_window_interface_);
+  CHECK(controller);
+
+  const bool matches_dock =
+      !IsTrailing() ||
+      contextual_tasks::GetEnableRightHandContextualTasksEphemeralButton();
 
   const bool was_visible = GetVisible();
-  const bool will_be_visible = !IsSidePanelRightAligned() &&
-                               is_button_eligible && controller &&
+  const bool will_be_visible = matches_dock && is_button_eligible &&
                                controller->ShouldShowEphemeralButton();
 
   if (!was_visible && will_be_visible) {
@@ -572,7 +622,7 @@ void ContextualTasksButton::UpdateDropShadow(bool force_paint,
       std::make_unique<ContextualTasksButtonBackgroundPainter>(
           color_provider->GetColor(kColorToolbar),
           color_provider->GetColor(kColorToolbarContextualTasksButtonShadow),
-          ShouldApplyCircularBackgroundShadow());
+          GetShape());
 
   drop_shadow_painted_layer_ = views::Painter::CreatePaintedLayer(
       std::move(contextual_tasks_button_background_painter));
@@ -641,7 +691,7 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
                                         : kBrowserLogoOldIcon;
 #endif
   return ui::ImageModel::FromVectorIcon(contextual_tasks_icon, ui::kColorIcon,
-                                        ShouldApplyCircularBackgroundShadow()
+                                        GetShape() == Shape::kCircle
                                             ? kGLogoCircularShapeIconSize
                                             : kGLogoPillShapeIconSize);
 }

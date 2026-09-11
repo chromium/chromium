@@ -296,6 +296,22 @@ class ToolbarView : public views::AccessiblePaneView,
   // Logic that must be done on initialization and then on layout.
   void LayoutCommon();
 
+  // Returns true if the contextual tasks button is visible and positioned at
+  // the trailing edge of the toolbar.
+  bool IsTrailingContextualTasksButtonVisible() const;
+
+  // Reorders the contextual tasks button to the leading or trailing edge based
+  // on side panel alignment and RTL state.
+  void ReorderContextualTasksButton();
+
+  // Returns true if the contextual tasks button should be positioned at the
+  // trailing edge of the toolbar.
+  bool IsContextualTasksButtonTrailing() const;
+
+  // Returns whether the app menu control should apply Fitts' law edge padding
+  // to extend to the window border when maximized or fullscreen.
+  bool ShouldAppMenuApplyFittsLaw(bool is_maximized_or_fullscreen) const;
+
   // AppMenuIconController::Delegate:
   void UpdateTypeAndSeverity(
       AppMenuIconController::TypeAndSeverity type_and_severity) override;
@@ -473,6 +489,10 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // Subscription for when tab strip mode changes
   base::CallbackListSubscription vertical_tab_subscription_;
+
+  // Subscription for when contextual tasks button position should update.
+  base::CallbackListSubscription
+      contextual_tasks_button_position_subscription_;
 
   bool should_display_vertical_tabs_ = false;
   bool should_show_glic_button_ = false;

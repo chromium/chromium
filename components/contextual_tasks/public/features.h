@@ -285,6 +285,10 @@ extern const base::FeatureParam<bool>
 // Controls whether the contextual task page action should show
 extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
 
+// Returns whether the right hand contextual tasks ephemeral button is enabled
+// when the side panel is right-aligned.
+extern bool GetEnableRightHandContextualTasksEphemeralButton();
+
 // UI Options to expand the contextual tasks side panel to tab.
 extern const base::FeatureParam<ExpandButtonOption, true> kExpandButtonOptions;
 

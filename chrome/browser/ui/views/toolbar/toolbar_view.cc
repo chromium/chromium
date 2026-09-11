@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
@@ -70,6 +71,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -621,6 +623,17 @@ void ToolbarView::Init() {
       contextual_tasks::GetExpandButtonOption() ==
           contextual_tasks::ExpandButtonOption::kToolbarCloseButton) {
     AddChildView(std::make_unique<ContextualTasksCloseTabButton>(browser_));
+  }
+
+  if (contextual_tasks_button_) {
+    if (auto* const controller =
+            ContextualTasksEphemeralButtonController::From(browser_)) {
+      contextual_tasks_button_position_subscription_ =
+          controller->RegisterShouldUpdateButtonPosition(base::BindRepeating(
+              &ToolbarView::ReorderContextualTasksButton,
+              base::Unretained(this)));
+    }
+    ReorderContextualTasksButton();
   }
 
   LoadImages();
@@ -1655,20 +1668,31 @@ void ToolbarView::LayoutCommon() {
   gfx::Insets interior_margin =
       GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
 
-  // Only zero out the leading interior margin if the contextual tasks button
+  const bool is_contextual_tasks_visible =
+      contextual_tasks_button_ && contextual_tasks_button_->GetVisible();
+  const bool is_trailing_contextual_tasks_visible =
+      IsTrailingContextualTasksButtonVisible();
+  const bool is_leading_contextual_tasks_visible =
+      is_contextual_tasks_visible && !is_trailing_contextual_tasks_visible;
+
+  // Only zero out the interior margin if the contextual tasks button
   // is actually visible and not in vertical tabs mode (where the button does
   // not sit flush at the window edge). When the button is hidden, we must
-  // retain the default interior margin so that the Back button is not
-  // incorrectly shifted to the toolbar's edge. Layout is in logical /
-  // RTL-relative DIPs where `left()` is the leading edge.
-  if (contextual_tasks_button_ && contextual_tasks_button_->GetVisible() &&
-      !should_display_vertical_tabs_) {
-    interior_margin.set_left(0);
+  // retain the default interior margin so that the Back button (or App Menu
+  // button) is not incorrectly shifted to the toolbar's edge. Layout is in
+  // logical / RTL-relative DIPs where `left()` is the leading edge.
+  if (!should_display_vertical_tabs_) {
+    if (is_leading_contextual_tasks_visible) {
+      interior_margin.set_left(0);
+    }
+    if (is_trailing_contextual_tasks_visible) {
+      interior_margin.set_right(0);
+    }
   }
 
   if (app_menu_button_) {
     const bool expanded = app_menu_button_->IsLabelPresentAndVisible();
-    if (expanded) {
+    if (expanded && !is_trailing_contextual_tasks_visible) {
       // The interior margin in an expanded state should be more than in a
       // collapsed state.
       interior_margin.set_right(interior_margin.right() + 1);
@@ -1745,13 +1769,64 @@ void ToolbarView::LayoutCommon() {
     }
   }
 
-  GetAppMenuControl()->SetIsMaximizedOrFullscreen(is_maximized_or_fullscreen);
+  GetAppMenuControl()->SetIsMaximizedOrFullscreen(
+      ShouldAppMenuApplyFittsLaw(is_maximized_or_fullscreen));
 
   if (toolbar_divider_ && extensions_container_) {
     views::ManualLayoutUtil(layout_manager_)
         .SetViewHidden(toolbar_divider_, !extensions_container_->GetVisible());
   }
   // Cast button visibility is controlled externally.
+}
+
+bool ToolbarView::IsTrailingContextualTasksButtonVisible() const {
+  return contextual_tasks_button_ && contextual_tasks_button_->GetVisible() &&
+         GetIndexOf(contextual_tasks_button_).value_or(0) != 0;
+}
+
+void ToolbarView::ReorderContextualTasksButton() {
+  if (!contextual_tasks_button_) {
+    return;
+  }
+  const size_t target_index =
+      IsContextualTasksButtonTrailing() ? children().size() : 0;
+  ReorderChildView(contextual_tasks_button_, target_index);
+}
+
+bool ToolbarView::IsContextualTasksButtonTrailing() const {
+  PrefService* const pref_service = browser_->GetProfile()->GetPrefs();
+  if (!pref_service) {
+    return false;
+  }
+  const base::DictValue& overrides =
+      pref_service->GetDict(prefs::kSidePanelAlignmentOverrides);
+  std::optional<bool> override_value = overrides.FindBool(
+      SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks));
+  const bool is_right_aligned =
+      override_value.has_value()
+          ? *override_value
+          : pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
+  return is_right_aligned != base::i18n::IsRTL();
+}
+
+bool ToolbarView::ShouldAppMenuApplyFittsLaw(
+    bool is_maximized_or_fullscreen) const {
+  if (!is_maximized_or_fullscreen) {
+    return false;
+  }
+
+  // `SetIsMaximizedOrFullscreen()` informs the app menu control to extend its
+  // hit target to the window edge per Fitts' law when maximized or fullscreen.
+  // When the contextual tasks button is placed at the trailing edge, the app
+  // menu button is no longer flush with the window border, so Fitts' law edge
+  // padding must be suppressed to avoid inserting an unwanted gap between the
+  // two buttons.
+  //
+  // Note: The leading edge (Back button) handles this symmetrically: when the
+  // contextual tasks button is visible on the leading edge, the leading
+  // interior margin is zeroed out, which naturally zeroes out the Back
+  // button's leading margin (see `leading_interior_margin`).
+  return !IsTrailingContextualTasksButtonVisible();
 }
 
 // AppMenuIconController::Delegate:
@@ -1928,7 +2003,6 @@ ReloadControl* ToolbarView::GetReloadButton() {
   }
   return reload_;
 }
-
 
 ToolbarButton* ToolbarView::GetDownloadButton() {
   return pinned_toolbar_actions_container_

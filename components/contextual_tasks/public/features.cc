@@ -451,6 +451,10 @@ const base::FeatureParam<EntryPointOption> kShowEntryPoint(
     EntryPointOption::kNoEntryPoint,
     &kEntryPointOptions);
 
+const base::FeatureParam<bool> kEnableRightHandContextualTasksEphemeralButton{
+    &kContextualTasksEphemeralBrandedEntryPoint,
+    "enable-right-hand-contextual-tasks-ephemeral-button", false};
+
 constexpr base::FeatureParam<ExpandButtonOption>::Option kExpandButtonOption[] =
     {{ExpandButtonOption::kSidePanelExpandButton, "side-panel-expand-button"},
      {ExpandButtonOption::kToolbarCloseButton, "toolbar-close-button"}};
@@ -848,6 +852,10 @@ bool GetEnableComposeboxJumpFix() {
 
 ExpandButtonOption GetExpandButtonOption() {
   return kExpandButtonOptions.Get();
+}
+
+bool GetEnableRightHandContextualTasksEphemeralButton() {
+  return kEnableRightHandContextualTasksEphemeralButton.Get();
 }
 
 bool IsRoundedClipPathEnabled() {

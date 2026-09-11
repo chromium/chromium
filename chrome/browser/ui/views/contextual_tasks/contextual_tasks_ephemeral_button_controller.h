@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -82,6 +83,10 @@ class ContextualTasksEphemeralButtonController
   base::CallbackListSubscription RegisterShouldUpdateButtonVisibility(
       ShouldUpdateVisibilityCallbackList::CallbackType callback);
 
+  using ShouldUpdateButtonPositionCallbackList = base::RepeatingClosureList;
+  base::CallbackListSubscription RegisterShouldUpdateButtonPosition(
+      ShouldUpdateButtonPositionCallbackList::CallbackType callback);
+
   bool ShouldShowEphemeralButton();
 
  private:
@@ -92,6 +97,7 @@ class ContextualTasksEphemeralButtonController
   std::optional<SessionID> GetCurrentTabSessionId();
   bool IsActiveTabAssociatedToTask();
   void OnActiveTabChange(BrowserWindowInterface* browser_window_interface);
+  void OnSidePanelAlignmentChanged();
   void MaybeNotifyVisibilityShouldChange();
   void UpdateActiveTabObservation();
   void OnTabDiscarded(tabs::TabInterface* tab,
@@ -107,6 +113,7 @@ class ContextualTasksEphemeralButtonController
       contextual_task_entry_observation_{this};
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
 
+  PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription tab_change_subscription_;
   base::CallbackListSubscription tab_discard_subscription_;
   base::CallbackListSubscription aim_eligibility_service_subscription_;
@@ -119,6 +126,7 @@ class ContextualTasksEphemeralButtonController
                           PinnedToolbarActionsModel::Observer>
       pinned_toolbar_observation_{this};
   ShouldUpdateVisibilityCallbackList should_update_visibility_callbacks_;
+  ShouldUpdateButtonPositionCallbackList should_update_position_callbacks_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTROLLER_H_

@@ -417,6 +417,12 @@ class ToolbarViewInteriorMarginBrowserTestBase
     expected.set_left(0);
     EXPECT_EQ(flex_layout()->interior_margin(), expected);
   }
+
+  void ExpectTrailingMarginZeroed() {
+    gfx::Insets expected = default_margin();
+    expected.set_right(0);
+    EXPECT_EQ(flex_layout()->interior_margin(), expected);
+  }
 };
 
 class ToolbarViewContextualTasksInteriorMarginBrowserTest
@@ -526,6 +532,36 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewContextualTasksInteriorMarginBrowserTest,
     EXPECT_EQ(insets->left(), expected_leading_margin);
     EXPECT_EQ(insets->right(), 0);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(ToolbarViewContextualTasksInteriorMarginBrowserTest,
+                       TrailingButtonInteriorMargin) {
+  const bool is_rtl = GetParam();
+  EXPECT_EQ(base::i18n::IsRTL(), is_rtl);
+
+  ToolbarButton* contextual_tasks_btn =
+      toolbar()->contextual_tasks_button();
+  ASSERT_TRUE(contextual_tasks_btn);
+
+  // Move the button to the trailing position.
+  toolbar()->ReorderChildView(contextual_tasks_btn,
+                              toolbar()->children().size());
+
+  // 1. By default, the trailing button is not visible. Neither margin should be
+  // zeroed out.
+  EXPECT_FALSE(contextual_tasks_btn->GetVisible());
+  ExpectDefaultMargins();
+
+  // 2. When the trailing button becomes visible, only the trailing margin is
+  // zeroed out (right in logical DIPs).
+  contextual_tasks_btn->SetVisible(true);
+  toolbar()->DeprecatedLayoutImmediately();
+  ExpectTrailingMarginZeroed();
+
+  // 3. When hidden again, default margin is restored.
+  contextual_tasks_btn->SetVisible(false);
+  toolbar()->DeprecatedLayoutImmediately();
+  ExpectDefaultMargins();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
