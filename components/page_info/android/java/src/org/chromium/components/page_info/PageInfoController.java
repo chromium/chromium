@@ -300,7 +300,8 @@ public class PageInfoController
                         mView.getConnectionSecurityView(),
                         mView.getConnectionRowView(),
                         mWebContents,
-                        mDelegate);
+                        mDelegate,
+                        publisher);
         mSubpageControllers.add(mConnectionSecurityController);
         mPermissionsController =
                 new PageInfoPermissionsController(

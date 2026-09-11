@@ -61,7 +61,7 @@ public class PageInfoConnectionSecurityControllerUnitTest {
 
         mController =
                 new PageInfoConnectionSecurityController(
-                        mMainController, mView, mRowView, mWebContents, mDelegate);
+                        mMainController, mView, mRowView, mWebContents, mDelegate, null);
     }
 
     @Test
@@ -102,6 +102,23 @@ public class PageInfoConnectionSecurityControllerUnitTest {
         TextView title = mRowView.findViewById(R.id.page_info_row_title);
         assertNotNull(title);
         assertEquals("Connection is secure", title.getText().toString());
+        verify(mMainController).updateConnectionWrapperVisibility();
+    }
+
+    @Test
+    public void testShowSecurityPageButton_contentPublisher() {
+        PageInfoConnectionSecurityController controllerWithPublisher =
+                new PageInfoConnectionSecurityController(
+                        mMainController, mView, mRowView, mWebContents, mDelegate, "example.com");
+
+        controllerWithPublisher.showSecurityPageButton("Connection is secure");
+
+        assertEquals(View.VISIBLE, mRowView.getVisibility());
+        TextView title = mRowView.findViewById(R.id.page_info_row_title);
+        assertNotNull(title);
+        assertEquals(
+                mContext.getString(R.string.page_info_domain_hidden, "example.com"),
+                title.getText().toString());
         verify(mMainController).updateConnectionWrapperVisibility();
     }
 
@@ -193,5 +210,47 @@ public class PageInfoConnectionSecurityControllerUnitTest {
         assertEquals(View.GONE, summary.getVisibility());
         assertEquals(View.VISIBLE, details.getVisibility());
         assertEquals("Showing offline copy", details.getText().toString());
+    }
+
+    @Test
+    public void testSetSecurityDescription_contentPublisher() {
+        PageInfoConnectionSecurityController controllerWithPublisher =
+                new PageInfoConnectionSecurityController(
+                        mMainController, mView, mRowView, mWebContents, mDelegate, "example.com");
+
+        controllerWithPublisher.showSecurityInfo();
+        controllerWithPublisher.setSecurityDescription(
+                0, 0, "Summary", "Details", false, new byte[0][], false, new byte[0][], null);
+
+        TextView summary = mView.findViewById(R.id.security_description_summary);
+        TextView details = mView.findViewById(R.id.security_description_details);
+        assertNotNull(summary);
+        assertNotNull(details);
+        assertEquals(View.GONE, summary.getVisibility());
+        assertEquals(View.VISIBLE, details.getVisibility());
+        assertEquals(
+                mContext.getString(R.string.page_info_domain_hidden, "example.com"),
+                details.getText().toString());
+    }
+
+    @Test
+    public void testCreateViewForSubpage_contentPublisher() {
+        PageInfoConnectionSecurityController controllerWithPublisher =
+                new PageInfoConnectionSecurityController(
+                        mMainController, mView, mRowView, mWebContents, mDelegate, "example.com");
+
+        controllerWithPublisher.setSecurityDescription(
+                0, 0, "Summary", "Details", false, new byte[0][], false, new byte[0][], null);
+        View subpageView = controllerWithPublisher.createViewForSubpage(null);
+
+        TextView summary = subpageView.findViewById(R.id.security_description_summary);
+        TextView details = subpageView.findViewById(R.id.security_description_details);
+        assertNotNull(summary);
+        assertNotNull(details);
+        assertEquals(View.GONE, summary.getVisibility());
+        assertEquals(View.VISIBLE, details.getVisibility());
+        assertEquals(
+                mContext.getString(R.string.page_info_domain_hidden, "example.com"),
+                details.getText().toString());
     }
 }

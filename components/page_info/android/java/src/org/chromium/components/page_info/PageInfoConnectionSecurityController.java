@@ -30,6 +30,7 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
     private @Nullable ConnectionSecurityView mActiveView;
     private final ConnectionSecurityView.ViewParams mViewParams;
     private final PageInfoControllerDelegate mDelegate;
+    private final @Nullable String mContentPublisher;
     private long mNativeConnectionSecurityController;
 
     public PageInfoConnectionSecurityController(
@@ -37,12 +38,14 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
             ConnectionSecurityView view,
             PageInfoRowView rowView,
             WebContents webContents,
-            PageInfoControllerDelegate delegate) {
+            PageInfoControllerDelegate delegate,
+            @Nullable String publisher) {
         mMainController = mainController;
         mView = view;
         mRowView = rowView;
         mWebContents = webContents;
         mDelegate = delegate;
+        mContentPublisher = publisher;
 
         mViewParams = new ConnectionSecurityView.ViewParams();
 
@@ -92,8 +95,14 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
         loadIdentityInfo();
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         String pdfMessage = mDelegate.getPdfPageConnectionMessage();
-        // If its a PDF page type, show the PDF message and don't allow clicking.
-        if (mDelegate.getPdfPageType() != 0 && pdfMessage != null) {
+        if (mContentPublisher != null) {
+            rowParams.title =
+                    mRowView.getContext()
+                            .getString(R.string.page_info_domain_hidden, mContentPublisher);
+            rowParams.clickCallback = null;
+            rowParams.iconResId = R.drawable.ic_lock_24dp;
+        } else if (mDelegate.getPdfPageType() != 0 && pdfMessage != null) {
+            // If its a PDF page type, show the PDF message and don't allow clicking.
             rowParams.title = pdfMessage;
             rowParams.clickCallback = null;
             rowParams.iconResId = R.drawable.omnibox_info;
@@ -128,7 +137,13 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
         mViewParams.iconResId = iconResId;
         mViewParams.iconTint = iconTint;
 
-        if (mDelegate.getPdfPageType() != 0 && mDelegate.getPdfPageConnectionMessage() != null) {
+        if (mContentPublisher != null) {
+            mViewParams.summary = "";
+            mViewParams.details =
+                    mView.getContext()
+                            .getString(R.string.page_info_domain_hidden, mContentPublisher);
+        } else if (mDelegate.getPdfPageType() != 0
+                && mDelegate.getPdfPageConnectionMessage() != null) {
             mViewParams.summary = "";
             mViewParams.details = mDelegate.getPdfPageConnectionMessage();
             mViewParams.iconResId = R.drawable.omnibox_info;
