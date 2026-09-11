@@ -14,6 +14,7 @@ found in the LICENSE file.
     <dimen name="close_button_height_desktop">20dp</dimen>
     <dimen name="close_button_width">48dp</dimen>
     <dimen name="close_button_width_desktop">20dp</dimen>
+    <dimen name="delete_button_popover_end_margin">12dp</dimen>
     <dimen name="delete_button_popover_top_margin">4dp</dimen>
     <dimen name="fake_search_box_elevation">3dp</dimen>
     <dimen name="fake_search_box_end_padding">8dp</dimen>

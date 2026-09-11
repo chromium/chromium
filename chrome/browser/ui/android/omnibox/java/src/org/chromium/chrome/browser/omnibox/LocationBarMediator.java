@@ -1804,10 +1804,14 @@ class LocationBarMediator
 
         set.connect(R.id.delete_button, ConstraintSet.TOP, R.id.url_bar, ConstraintSet.TOP);
         set.clear(R.id.delete_button, ConstraintSet.BOTTOM);
-        int deleteButtonMargin =
+        int deleteButtonTopMargin =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.delete_button_popover_top_margin);
-        set.setMargin(R.id.delete_button, ConstraintSet.TOP, deleteButtonMargin);
+        set.setMargin(R.id.delete_button, ConstraintSet.TOP, deleteButtonTopMargin);
+        int deleteButtonEndMargin =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.delete_button_popover_end_margin);
+        set.setMargin(R.id.delete_button, ConstraintSet.END, deleteButtonEndMargin);
 
         set.connect(
                 R.id.fusebox_plus_button,
