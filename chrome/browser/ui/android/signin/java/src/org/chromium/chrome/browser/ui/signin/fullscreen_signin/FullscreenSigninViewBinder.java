@@ -281,8 +281,15 @@ class FullscreenSigninViewBinder {
 
         if (showSigninProgressSpinner) {
             // Transition is only used when the progress spinner is shown.
+            // Exclude icon and animation so the spin animation plays immediately without 300ms
+            // delay.
             TransitionManager.beginDelayedTransition(
-                    view, new AutoTransition().setStartDelay(300).setDuration(300));
+                    view,
+                    new AutoTransition()
+                            .excludeTarget(R.id.fre_icon, true)
+                            .excludeTarget(R.id.signin_animation, true)
+                            .setStartDelay(300)
+                            .setDuration(300));
         }
         final int bottomGroupVisibility = showSigninProgressSpinner ? View.INVISIBLE : View.VISIBLE;
         view.getSelectedAccountView().setVisibility(bottomGroupVisibility);
