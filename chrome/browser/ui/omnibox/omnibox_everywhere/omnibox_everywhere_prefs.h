@@ -125,6 +125,11 @@ inline constexpr int kMaxFreShortcutReminderImpressions = 3;
 // Legacy maximum number of impressions.
 inline constexpr int kMaxFreImpressions = 3;
 
+// Boolean preference specifying whether the user has accepted the screenshot
+// sharing disclosure dialog in Omnibox Everywhere.
+inline constexpr char kScreenshotDisclosureAccepted[] =
+    "omnibox_everywhere.screenshot_disclosure_accepted";
+
 // Registers Local State preferences for Omnibox Everywhere.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -177,6 +182,17 @@ bool AreShortcutsAvailableForProfile(Profile* profile);
 // profile, falling back to Customize Chrome / NTP settings
 // (kNtpShortcutsVisible) if the Omnibox Everywhere preference is unset.
 bool IsOmniboxEverywhereShortcutsVisible(Profile* profile);
+
+// Returns whether the screenshot sharing disclosure dialog has been accepted
+// for the given profile or preference service. This preference is machine-local
+// and is intentionally not synced across devices.
+bool IsScreenshotDisclosureAccepted(const PrefService* prefs);
+bool IsScreenshotDisclosureAccepted(const Profile* profile);
+
+// Sets whether the screenshot sharing disclosure dialog has been accepted
+// for the given profile or preference service.
+void SetScreenshotDisclosureAccepted(PrefService* prefs, bool accepted);
+void SetScreenshotDisclosureAccepted(Profile* profile, bool accepted);
 
 }  // namespace prefs
 }  // namespace omnibox_everywhere

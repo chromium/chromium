@@ -32,6 +32,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -40,6 +42,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
@@ -57,6 +60,8 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_client_view.h"
+#include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/view_type_utils.h"
@@ -66,12 +71,24 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_screenshare_controller.h"
+#include "media/base/media_switches.h"
+#endif
+
 namespace omnibox_everywhere {
 
 class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
  public:
   OmniboxEverywhereBrowserTest() {
+#if BUILDFLAG(IS_MAC)
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kOmniboxEverywhere},
+        /*disabled_features=*/{kOmniboxEverywhereNativeScreenPicker,
+                               media::kUseSCContentSharingPicker});
+#else
     feature_list_.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
+#endif
   }
   ~OmniboxEverywhereBrowserTest() override = default;
 
@@ -1112,6 +1129,102 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
           initial_avatar_data_url),
       Do([&]() { entry->SetGAIAPicture("gaia_picture_key", gaia_image); }),
       WaitForStateChange(kOmniboxWebContentsId, avatar_updated_to_gaia));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
+                       ScreenshotSharingDisclosureFlow) {
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  ASSERT_TRUE(features);
+  auto* controller = features->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  Profile* profile = browser()->GetProfile();
+  ASSERT_TRUE(profile);
+  PrefService* profile_prefs = profile->GetPrefs();
+  ASSERT_TRUE(profile_prefs);
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kScreenshotDisclosureAcceptedState);
+
+  auto execute_screenshot_command = [&]() {
+    content::WebContents* web_contents =
+        controller->ui_manager()->web_contents();
+    if (!web_contents || !web_contents->GetWebUI()) {
+      return;
+    }
+    auto* omnibox_ui =
+        web_contents->GetWebUI()->GetController()->GetAs<OmniboxEverywhereUI>();
+    if (omnibox_ui) {
+      auto* handler = omnibox_ui->GetContextualSearchboxHandler();
+      if (handler && handler->screenshare_controller_for_testing()) {
+        omnibox_ui->ShowScreenshotMenu(
+            gfx::Rect(),
+            handler->screenshare_controller_for_testing()->GetWeakPtr());
+      }
+      omnibox_ui->ExecuteCommand(OmniboxEverywhereUI::kScreenshotEntireScreen,
+                                 /*event_flags=*/0);
+    }
+  };
+
+  RunTestSequence(
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      PollState(kScreenshotDisclosureAcceptedState,
+                [&]() {
+                  return prefs::IsScreenshotDisclosureAccepted(profile_prefs);
+                }),
+      // Attempt to execute screenshot command before accepting disclosure.
+      Do(execute_screenshot_command),
+      // The disclosure dialog should be shown and tracked as open modal.
+      InAnyContext(
+          WaitForShow(views::DialogClientView::kCancelButtonElementId)),
+      Check([&]() { return controller->ui_manager()->HasOpenModalDialog(); }),
+      // Cancel/close the disclosure dialog by pressing Cancel.
+      InAnyContext(
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          WaitForHide(views::DialogClientView::kCancelButtonElementId)),
+      Check([&]() {
+        return !controller->ui_manager()
+                    ->disclosure_dialog_widget_for_testing() &&
+               !prefs::IsScreenshotDisclosureAccepted(profile_prefs) &&
+               !controller->ui_manager()->HasOpenModalDialog();
+      }),
+      // Subsequent screenshot attempt re-displays the disclosure dialog.
+      Do(execute_screenshot_command),
+      InAnyContext(WaitForShow(views::DialogClientView::kOkButtonElementId)),
+      Check([&]() { return controller->ui_manager()->HasOpenModalDialog(); }),
+      // Accepting the disclosure dialog sets the preference and opens the
+      // screenshare picker dialog.
+      InAnyContext(PressButton(views::DialogClientView::kOkButtonElementId),
+                   WaitForHide(views::DialogClientView::kOkButtonElementId)),
+      WaitForState(kScreenshotDisclosureAcceptedState, true), Check([&]() {
+        return !controller->ui_manager()
+                    ->disclosure_dialog_widget_for_testing() &&
+               !controller->ui_manager()
+                    ->is_screenshare_disclosure_open_for_testing();
+      }),
+      // Dismiss the screenshare picker dialog that opened upon accepting
+      // disclosure.
+      InAnyContext(
+          WaitForShow(views::DialogClientView::kCancelButtonElementId),
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          WaitForHide(views::DialogClientView::kCancelButtonElementId)),
+      WaitForWidgetActiveState(true),
+      // Subsequent attempts when accepted do not show disclosure dialog,
+      // opening the screenshare picker dialog directly.
+      Do(execute_screenshot_command), Check([&]() {
+        return !controller->ui_manager()
+                    ->disclosure_dialog_widget_for_testing();
+      }),
+      // Dismiss the second screenshare picker dialog via its Cancel button.
+      InAnyContext(
+          WaitForShow(views::DialogClientView::kCancelButtonElementId),
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          WaitForHide(views::DialogClientView::kCancelButtonElementId)),
+      WaitForWidgetActiveState(true),
+      // Dismiss the widget to cleanly release keep-alives.
+      InvokeViaHotkey(), CheckWidgetVisible(false));
 }
 
 }  // namespace omnibox_everywhere

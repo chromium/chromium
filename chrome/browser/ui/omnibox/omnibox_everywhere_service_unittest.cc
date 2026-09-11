@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
@@ -44,6 +46,54 @@ TEST_F(OmniboxEverywhereServiceTest, FrePreferenceDefaultsToFalse) {
       profile.GetPrefs()->GetBoolean(omnibox_everywhere::prefs::kFreDismissed));
   EXPECT_EQ(0, profile.GetPrefs()->GetInteger(
                    omnibox_everywhere::prefs::kFreImpressionCount));
+}
+
+TEST_F(OmniboxEverywhereServiceTest,
+       ScreenshotDisclosureWithoutUIManagerCancels) {
+  TestingProfile profile;
+  OmniboxEverywhereService* service =
+      OmniboxEverywhereServiceFactory::GetForProfile(&profile);
+  ASSERT_TRUE(service);
+
+  base::test::TestFuture<void> accepted_future;
+  base::test::TestFuture<void> cancelled_future;
+  service->ShowScreenshotDisclosureDialog(accepted_future.GetCallback(),
+                                          cancelled_future.GetCallback());
+
+  EXPECT_FALSE(accepted_future.IsReady());
+  EXPECT_TRUE(cancelled_future.Wait());
+  EXPECT_FALSE(
+      omnibox_everywhere::prefs::IsScreenshotDisclosureAccepted(&profile));
+}
+
+TEST_F(OmniboxEverywhereServiceTest,
+       ScreenshotDisclosureWithoutUIManagerHandlesNullCallbacks) {
+  TestingProfile profile;
+  OmniboxEverywhereService* service =
+      OmniboxEverywhereServiceFactory::GetForProfile(&profile);
+  ASSERT_TRUE(service);
+
+  // Should not crash when called with null callbacks.
+  service->ShowScreenshotDisclosureDialog(base::NullCallback(),
+                                          base::NullCallback());
+  EXPECT_FALSE(
+      omnibox_everywhere::prefs::IsScreenshotDisclosureAccepted(&profile));
+}
+
+TEST_F(OmniboxEverywhereServiceTest, OnScreenshotDisclosureAccepted) {
+  TestingProfile profile;
+  OmniboxEverywhereService* service =
+      OmniboxEverywhereServiceFactory::GetForProfile(&profile);
+  ASSERT_TRUE(service);
+
+  EXPECT_FALSE(
+      omnibox_everywhere::prefs::IsScreenshotDisclosureAccepted(&profile));
+  base::test::TestFuture<void> accepted_future;
+  service->OnScreenshotDisclosureAcceptedForTesting(
+      accepted_future.GetCallback());
+  EXPECT_TRUE(accepted_future.Wait());
+  EXPECT_TRUE(
+      omnibox_everywhere::prefs::IsScreenshotDisclosureAccepted(&profile));
 }
 
 TEST_F(OmniboxEverywhereServiceTest, ProfileAccessorReturnsProfile) {

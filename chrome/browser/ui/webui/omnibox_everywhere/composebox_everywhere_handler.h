@@ -40,6 +40,10 @@ class ComposeboxEverywhereHandler : public ComposeboxHandler {
 
   // searchbox::mojom::PageHandler:
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
+  void StartScreenshare(bool prefer_entire_screen,
+                        StartScreenshareCallback callback) override;
+  void CaptureRegionScreenshot(
+      CaptureRegionScreenshotCallback callback) override;
 
   // ContextualSearchboxHandler:
   void OpenUrl(GURL url,

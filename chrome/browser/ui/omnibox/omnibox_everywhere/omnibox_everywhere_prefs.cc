@@ -65,6 +65,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(kFreShortcutSetupImpressionCount, 0);
   registry->RegisterBooleanPref(kFreShortcutReminderDismissed, false);
   registry->RegisterIntegerPref(kFreShortcutReminderImpressionCount, 0);
+  registry->RegisterBooleanPref(kScreenshotDisclosureAccepted, false);
 }
 
 namespace {
@@ -351,6 +352,26 @@ bool IsOmniboxEverywhereShortcutsVisible(Profile* profile) {
   }
 
   return false;
+}
+
+bool IsScreenshotDisclosureAccepted(const PrefService* prefs) {
+  return prefs && prefs->GetBoolean(kScreenshotDisclosureAccepted);
+}
+
+bool IsScreenshotDisclosureAccepted(const Profile* profile) {
+  return profile && IsScreenshotDisclosureAccepted(profile->GetPrefs());
+}
+
+void SetScreenshotDisclosureAccepted(PrefService* prefs, bool accepted) {
+  if (prefs) {
+    prefs->SetBoolean(kScreenshotDisclosureAccepted, accepted);
+  }
+}
+
+void SetScreenshotDisclosureAccepted(Profile* profile, bool accepted) {
+  if (profile) {
+    SetScreenshotDisclosureAccepted(profile->GetPrefs(), accepted);
+  }
 }
 
 }  // namespace prefs

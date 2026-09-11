@@ -70,6 +70,8 @@ class OmniboxEverywhereService : public KeyedService {
   virtual void OnDrivePickerClosed();
   virtual void OnScreensharePickerOpened();
   virtual void OnScreensharePickerClosed();
+  virtual void ShowScreenshotDisclosureDialog(base::OnceClosure on_accepted,
+                                              base::OnceClosure on_cancelled);
   using RegionSelectedCallback =
       base::OnceCallback<void(const SkBitmap& result_bitmap)>;
   virtual void ShowRegionSelectOverlay(const SkBitmap& screenshot,
@@ -98,14 +100,19 @@ class OmniboxEverywhereService : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  void OnScreenshotDisclosureAcceptedForTesting(base::OnceClosure on_accepted) {
+    OnScreenshotDisclosureAccepted(std::move(on_accepted));
+  }
+
  private:
+  void OnScreenshotDisclosureAccepted(base::OnceClosure on_accepted);
+
   omnibox_everywhere::OmniboxEverywhereController* controller() const;
   omnibox_everywhere::OmniboxEverywhereUIManager* ui_manager() const;
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<omnibox_everywhere::OmniboxEverywhereFeaturePromoController>
       feature_promo_controller_;
-
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   base::WeakPtrFactory<OmniboxEverywhereService> weak_factory_{this};

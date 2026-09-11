@@ -279,7 +279,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnWidgetClosed(views::Widget::ClosedReason reason);
   void OnContextMenuClosed();
   void HandleWidgetDeactivated();
-  void OnScreenshotDisclosureClosed(base::OnceClosure on_cancelled,
+  void OnScreenshotDisclosureClosed(base::OnceClosure on_accepted,
+                                    base::OnceClosure on_cancelled,
                                     views::Widget::ClosedReason reason);
 
 #if defined(USE_AURA)

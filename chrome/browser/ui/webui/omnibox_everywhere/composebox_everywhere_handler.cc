@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -84,6 +85,28 @@ void ComposeboxEverywhereHandler::OnDriveUploadClicked(
   webui::SetBrowserWindowInterface(web_contents_, active_bwi);
 
   ComposeboxHandler::OnDriveUploadClicked(std::move(callback));
+}
+
+void ComposeboxEverywhereHandler::StartScreenshare(
+    bool prefer_entire_screen,
+    StartScreenshareCallback callback) {
+  if (!service_ ||
+      !omnibox_everywhere::prefs::IsScreenshotDisclosureAccepted(profile_)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  ComposeboxHandler::StartScreenshare(prefer_entire_screen,
+                                      std::move(callback));
+}
+
+void ComposeboxEverywhereHandler::CaptureRegionScreenshot(
+    CaptureRegionScreenshotCallback callback) {
+  if (!service_ ||
+      !omnibox_everywhere::prefs::IsScreenshotDisclosureAccepted(profile_)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  ComposeboxHandler::CaptureRegionScreenshot(std::move(callback));
 }
 
 void ComposeboxEverywhereHandler::CleanupDrivePicker() {

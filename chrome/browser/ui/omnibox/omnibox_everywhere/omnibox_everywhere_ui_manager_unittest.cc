@@ -2056,11 +2056,10 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_AcceptFlow) {
   views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
 
-  bool accepted = false;
-  bool cancelled = false;
-  ui_manager->ShowScreenshotDisclosureDialog(
-      base::BindOnce([](bool* a) { *a = true; }, &accepted),
-      base::BindOnce([](bool* c) { *c = true; }, &cancelled));
+  base::test::TestFuture<void> accepted_future;
+  base::test::TestFuture<void> cancelled_future;
+  ui_manager->ShowScreenshotDisclosureDialog(accepted_future.GetCallback(),
+                                             cancelled_future.GetCallback());
 
   views::Widget* disclosure_widget =
       ui_manager->disclosure_dialog_widget_for_testing();
@@ -2073,8 +2072,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_AcceptFlow) {
   delegate->AcceptDialog();
   waiter.Wait();
 
-  EXPECT_TRUE(accepted);
-  EXPECT_FALSE(cancelled);
+  EXPECT_TRUE(accepted_future.Wait());
+  EXPECT_FALSE(cancelled_future.IsReady());
   EXPECT_FALSE(ui_manager->is_screenshare_disclosure_open_for_testing());
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
 }
@@ -2085,11 +2084,10 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_CancelFlow) {
   views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
 
-  bool accepted = false;
-  bool cancelled = false;
-  ui_manager->ShowScreenshotDisclosureDialog(
-      base::BindOnce([](bool* a) { *a = true; }, &accepted),
-      base::BindOnce([](bool* c) { *c = true; }, &cancelled));
+  base::test::TestFuture<void> accepted_future;
+  base::test::TestFuture<void> cancelled_future;
+  ui_manager->ShowScreenshotDisclosureDialog(accepted_future.GetCallback(),
+                                             cancelled_future.GetCallback());
 
   views::Widget* disclosure_widget =
       ui_manager->disclosure_dialog_widget_for_testing();
@@ -2105,8 +2103,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_CancelFlow) {
   delegate->CancelDialog();
   waiter.Wait();
 
-  EXPECT_FALSE(accepted);
-  EXPECT_TRUE(cancelled);
+  EXPECT_FALSE(accepted_future.IsReady());
+  EXPECT_TRUE(cancelled_future.Wait());
   EXPECT_FALSE(ui_manager->is_screenshare_disclosure_open_for_testing());
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
 }

@@ -210,6 +210,11 @@ class OmniboxEverywhereUI
 
  private:
   void OnComposeboxHandlerDisconnected();
+  void ExecuteScreenshotCommand(
+      int command_id,
+      base::WeakPtr<ContextualSearchboxScreenshareController> controller);
+  void ResetScreenshotMenu();
+
   // Buffers upload status notifications that arrive while the WebUI is
   // transitioning to composebox mode before `composebox_handler_` is bound.
   // Flushed once `CreatePageHandler` instantiates `composebox_handler_`.

@@ -362,5 +362,30 @@ TEST_F(OmniboxEverywherePrefsTest, HotkeyPresetsAndTokens) {
 #endif
 }
 
+TEST_F(OmniboxEverywherePrefsTest,
+       ScreenshotDisclosureAccepted_DefaultsToFalse) {
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kScreenshotDisclosureAccepted));
+  EXPECT_FALSE(IsScreenshotDisclosureAccepted(&profile_));
+  EXPECT_FALSE(IsScreenshotDisclosureAccepted(profile_.GetPrefs()));
+  EXPECT_FALSE(
+      IsScreenshotDisclosureAccepted(static_cast<const Profile*>(nullptr)));
+  EXPECT_FALSE(
+      IsScreenshotDisclosureAccepted(static_cast<const PrefService*>(nullptr)));
+
+  SetScreenshotDisclosureAccepted(&profile_, true);
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(kScreenshotDisclosureAccepted));
+  EXPECT_TRUE(IsScreenshotDisclosureAccepted(&profile_));
+  EXPECT_TRUE(IsScreenshotDisclosureAccepted(profile_.GetPrefs()));
+
+  SetScreenshotDisclosureAccepted(profile_.GetPrefs(), false);
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kScreenshotDisclosureAccepted));
+  EXPECT_FALSE(IsScreenshotDisclosureAccepted(&profile_));
+  EXPECT_FALSE(IsScreenshotDisclosureAccepted(profile_.GetPrefs()));
+
+  // Null safety checks for setters:
+  SetScreenshotDisclosureAccepted(static_cast<Profile*>(nullptr), true);
+  SetScreenshotDisclosureAccepted(static_cast<PrefService*>(nullptr), true);
+}
+
 }  // namespace
 }  // namespace omnibox_everywhere::prefs

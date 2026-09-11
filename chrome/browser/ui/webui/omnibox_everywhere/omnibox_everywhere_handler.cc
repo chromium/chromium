@@ -217,6 +217,28 @@ void OmniboxEverywhereHandler::OnDriveUploadClicked(
   ContextualSearchboxHandler::OnDriveUploadClicked(std::move(callback));
 }
 
+void OmniboxEverywhereHandler::StartScreenshare(
+    bool prefer_entire_screen,
+    StartScreenshareCallback callback) {
+  if (!service_ ||
+      !omnibox_everywhere::prefs::IsScreenshotDisclosureAccepted(profile_)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  ContextualSearchboxHandler::StartScreenshare(prefer_entire_screen,
+                                               std::move(callback));
+}
+
+void OmniboxEverywhereHandler::CaptureRegionScreenshot(
+    CaptureRegionScreenshotCallback callback) {
+  if (!service_ ||
+      !omnibox_everywhere::prefs::IsScreenshotDisclosureAccepted(profile_)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  ContextualSearchboxHandler::CaptureRegionScreenshot(std::move(callback));
+}
+
 void OmniboxEverywhereHandler::CleanupDrivePicker() {
   ContextualSearchboxHandler::CleanupDrivePicker();
   // Notify the service that the Drive picker has closed (either via success,

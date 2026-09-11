@@ -78,6 +78,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -883,17 +884,19 @@ void OmniboxEverywhereUIManager::ShowScreenshotDisclosureDialog(
           .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
               IDS_OMNIBOX_EVERYWHERE_SCREENSHOT_DISCLOSURE_BODY)))
           .AddOkButton(
-              std::move(on_accepted),
+              base::DoNothing(),
               ui::DialogModel::Button::Params()
+                  .SetId(views::DialogClientView::kOkButtonElementId)
                   .SetLabel(l10n_util::GetStringUTF16(IDS_APP_CONTINUE))
                   .SetStyle(ui::ButtonStyle::kProminent))
-          .AddCancelButton(base::DoNothing())
+          .AddCancelButton(base::DoNothing(),
+                           ui::DialogModel::Button::Params().SetId(
+                               views::DialogClientView::kCancelButtonElementId))
           .Build();
 
   auto bubble = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kWindow);
   bubble->set_fixed_width(600);
-  bubble->set_margins(gfx::Insets::VH(16, 20));
   bubble->set_corner_radius(16);
   bubble->SetAnchorView(widget_->GetContentsView());
   bubble->SetArrow(views::BubbleBorder::FLOAT);
@@ -907,18 +910,48 @@ void OmniboxEverywhereUIManager::ShowScreenshotDisclosureDialog(
   disclosure_dialog_widget_->SetZOrderLevel(widget_->GetZOrderLevel());
   disclosure_dialog_widget_->MakeCloseSynchronous(
       base::BindOnce(&OmniboxEverywhereUIManager::OnScreenshotDisclosureClosed,
-                     weak_factory_.GetWeakPtr(), std::move(on_cancelled)));
+                     weak_factory_.GetWeakPtr(), std::move(on_accepted),
+                     std::move(on_cancelled)));
   disclosure_dialog_widget_->Show();
 }
 
 void OmniboxEverywhereUIManager::OnScreenshotDisclosureClosed(
+    base::OnceClosure on_accepted,
     base::OnceClosure on_cancelled,
     views::Widget::ClosedReason reason) {
+  deactivation_task_.Cancel();
+  if (disclosure_dialog_widget_) {
+    disclosure_dialog_widget_->Hide();
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(disclosure_dialog_widget_));
-  is_screenshare_disclosure_open_ = false;
 
-  if (reason != views::Widget::ClosedReason::kAcceptButtonClicked) {
+  if (reason == views::Widget::ClosedReason::kAcceptButtonClicked) {
+    if (on_accepted) {
+      // Defer dispatching on_accepted to ensure the disclosure dialog window
+      // is completely closed and removed from display before any screenshot
+      // capture begins. Keep `is_screenshare_disclosure_open_` true until
+      // `on_accepted` runs to prevent ephemeral deactivation while the dialog
+      // hides and before the screenshare picker opens.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(
+                         [](base::WeakPtr<OmniboxEverywhereUIManager> self,
+                            base::OnceClosure on_accepted) {
+                           if (!self) {
+                             return;
+                           }
+                           self->is_screenshare_disclosure_open_ = false;
+                           if (!self->widget_) {
+                             return;
+                           }
+                           std::move(on_accepted).Run();
+                         },
+                         weak_factory_.GetWeakPtr(), std::move(on_accepted)));
+    } else {
+      is_screenshare_disclosure_open_ = false;
+    }
+  } else {
+    is_screenshare_disclosure_open_ = false;
     if (on_cancelled) {
       std::move(on_cancelled).Run();
     }

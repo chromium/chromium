@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -53,6 +54,7 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/webui/help_bubble_handler.h"
@@ -77,6 +79,16 @@
 
 namespace {
 
+bool IsScreenshotCommand(int command_id) {
+  switch (command_id) {
+    case OmniboxEverywhereUI::kScreenshotEntireScreen:
+    case OmniboxEverywhereUI::kScreenshotWindow:
+    case OmniboxEverywhereUI::kScreenshotRegion:
+      return true;
+    default:
+      return false;
+  }
+}
 // Minimum preferred width for the screenshot Views menu, matching UX specs
 // and the previous dropdown implementation (320px).
 constexpr int kScreenshotMenuWidth = 320;
@@ -681,6 +693,11 @@ void OmniboxEverywhereUI::ShowScreenshotMenu(
     return;
   }
 
+  // Ensure any previous menu runner and its MenuModelAdapter are
+  // torn down in the proper order (runner before adapter) before
+  // re-creating them, avoiding dangling pointers.
+  ResetScreenshotMenu();
+
   active_screenshot_controller_ = std::move(controller);
 
   screenshot_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
@@ -723,19 +740,61 @@ void OmniboxEverywhereUI::ShowScreenshotMenu(
                                      ui::mojom::MenuSourceType::kNone);
 }
 
+void OmniboxEverywhereUI::ResetScreenshotMenu() {
+  if (screenshot_menu_runner_ && screenshot_menu_runner_->IsRunning()) {
+    return;
+  }
+  screenshot_menu_runner_.reset();
+  menu_model_adapter_.reset();
+  screenshot_menu_model_.reset();
+}
+
 void OmniboxEverywhereUI::OnScreenshotMenuClosed() {
   if (active_screenshot_controller_) {
     auto controller = std::move(active_screenshot_controller_);
     controller->OnScreenshotMenuClosed();
   }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&OmniboxEverywhereUI::ResetScreenshotMenu,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void OmniboxEverywhereUI::ExecuteCommand(int command_id, int event_flags) {
-  if (!active_screenshot_controller_ || !IsCommandIdEnabled(command_id)) {
+  if (!IsScreenshotCommand(command_id) || !active_screenshot_controller_ ||
+      !IsCommandIdEnabled(command_id)) {
     return;
   }
+
   auto controller = std::move(active_screenshot_controller_);
   controller->OnScreenshotMenuClosed();
+
+  if (screenshot_menu_runner_ && screenshot_menu_runner_->IsRunning()) {
+    screenshot_menu_runner_->Cancel();
+  }
+
+  if (!omnibox_everywhere::prefs::IsScreenshotDisclosureAccepted(profile_)) {
+    if (auto* service =
+            OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+      // If the user cancels the disclosure prompt, the screenshot command is
+      // aborted.
+      service->ShowScreenshotDisclosureDialog(
+          base::BindOnce(&OmniboxEverywhereUI::ExecuteScreenshotCommand,
+                         weak_factory_.GetWeakPtr(), command_id, controller),
+          /*on_cancelled=*/base::NullCallback());
+    }
+    return;
+  }
+
+  ExecuteScreenshotCommand(command_id, controller);
+}
+
+void OmniboxEverywhereUI::ExecuteScreenshotCommand(
+    int command_id,
+    base::WeakPtr<ContextualSearchboxScreenshareController> controller) {
+  if (!controller) {
+    return;
+  }
+
   switch (command_id) {
     case kScreenshotEntireScreen:
       controller->StartScreenshare(
@@ -748,6 +807,8 @@ void OmniboxEverywhereUI::ExecuteCommand(int command_id, int event_flags) {
     case kScreenshotRegion:
       controller->CaptureRegionScreenshot(base::DoNothing());
       break;
+    default:
+      NOTREACHED();
   }
 }
 

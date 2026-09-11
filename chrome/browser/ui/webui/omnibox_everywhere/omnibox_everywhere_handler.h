@@ -58,6 +58,10 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
                    bool is_voice_search) override;
   void DismissFre(searchbox::mojom::FreStage stage) override;
   void OpenHotkeySettings() override;
+  void StartScreenshare(bool prefer_entire_screen,
+                        StartScreenshareCallback callback) override;
+  void CaptureRegionScreenshot(
+      CaptureRegionScreenshotCallback callback) override;
 
   // SearchboxHandler:
   bool SupportsKeywordMode() const override;
