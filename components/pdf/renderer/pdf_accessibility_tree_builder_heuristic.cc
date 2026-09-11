@@ -76,12 +76,22 @@ constexpr int kDefaultHeadingLevel = 2;
 // to a combination of its font size and other styling, instead of just size.
 constexpr int kLargestStyledHeadingLevel = 3;
 
+// The largest heading level allowed (corresponds to <h1>).
+constexpr int kLargestHeadingLevel = 1;
+
 // The smallest heading level allowed (corresponds to <h6>).
 constexpr int kSmallestHeadingLevel = 6;
 
 // Font weight for semi-bold text. Used to determine if the run could be a
 // heading.
 constexpr int kSemiBoldWeight = 600;
+
+// Returns whether `heading_level` is in bounds, i.e. whether it corresponds to
+// one of <h1> through <h6>.
+bool IsValidHeadingLevel(int heading_level) {
+  return heading_level >= kLargestHeadingLevel &&
+         heading_level <= kSmallestHeadingLevel;
+}
 
 // Helper to determine whether two vertical spans overlap enough to be on the
 // same line.
@@ -260,11 +270,12 @@ void ComputeFontSizes(std::vector<float> font_sizes,
   }
 
   std::ranges::sort(font_sizes);
-  *out_median_font_size = font_sizes[font_sizes.size() / 2];
-  if (*out_median_font_size <= kMinimumFontSize) {
+  float median = font_sizes[font_sizes.size() / 2];
+  if (median <= kMinimumFontSize) {
     return;
   }
 
+  *out_median_font_size = median;
   *out_heading_font_size_threshold =
       *out_median_font_size * kHeadingFontSizeRatio;
 
@@ -523,6 +534,7 @@ HeadingClassifier GetHeadingClassifier(
 }
 
 void PromoteNodeToHeading(ui::AXNodeData* block_node, int heading_level) {
+  CHECK(IsValidHeadingLevel(heading_level));
   block_node->role = ax::mojom::Role::kHeading;
   block_node->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
                               heading_level);
@@ -848,7 +860,7 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
       int heuristic_heading_level = GetHeadingLevelFromSize(
           page_properties.heading_font_size_mapping, font_size);
-      if (heuristic_heading_level >= 1 && heuristic_heading_level <= 6) {
+      if (IsValidHeadingLevel(heuristic_heading_level)) {
         heading_level = heuristic_heading_level;
       }
     }
@@ -864,8 +876,12 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
         current_run, next_run, current_run_chars, page_properties);
 
     if (classifier != HeadingClassifier::kNone) {
-      int heading_level = GetHeadingLevelFromSize(
+      int heading_level = kLargestStyledHeadingLevel;
+      int heuristic_heading_level = GetHeadingLevelFromSize(
           page_properties.heading_font_size_mapping, font_size);
+      if (IsValidHeadingLevel(heuristic_heading_level)) {
+        heading_level = heuristic_heading_level;
+      }
       PromoteNodeToHeading(block_node, heading_level);
       *out_heading_classifier = classifier;
     }

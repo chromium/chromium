@@ -1549,6 +1549,125 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicStyledHeadingUsesMappedHeadingLevel) {
 }
 
 TEST_F(PdfAccessibilityTreeTest,
+       HeuristicStyledHeadingFallbackWhenMappingEmpty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style;
+  normal_style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo bold_style;
+  bold_style.font_weight = kBoldFontWeight;
+
+  // Small font size (1.33f <= kMinimumFontSize = 5.0f) means median font size
+  // is not set (remains 0.0f), and heading_font_size_mapping is empty.
+  // A bold text run on its own line should still be promoted as a styled
+  // heading, but fallback to kLargestStyledHeadingLevel (3) rather than h0.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{1.33f, 1.33f, 1.33f, 1.33f, 1.33f},
+      {bold_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"Heading", "body1", "body2", "body3", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_GE(page->GetChildCount(), 1u);
+
+  // First run (1.33f, bold): styled heading should fallback to level 3 (H3),
+  // never level 0 (H0).
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
+  EXPECT_EQ(
+      3, block1->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel));
+  EXPECT_EQ("h3",
+            block1->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSmallMedianDoesNotSuppressStyledHeading) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style;
+  normal_style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo bold_style;
+  bold_style.font_weight = kBoldFontWeight;
+
+  // With font sizes {2.0f, 3.0f, 3.0f, 3.0f, 3.0f}, the median is 3.0f.
+  // Because median (3.0f) <= kMinimumFontSize (5.0f), ComputeFontSizes should
+  // not set median font size (it remains 0.0f).
+  // If median font size were incorrectly set to 3.0f, the bold run at 2.0f
+  // would be suppressed by the `font_size < median_font_size` check.
+  // With median font size remaining 0.0f, the bold run is not suppressed and is
+  // promoted to a styled heading (fallback level 3).
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{2.0f, 3.0f, 3.0f, 3.0f, 3.0f},
+      {bold_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"Heading", "body1", "body2", "body3", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(5u, page->GetChildCount());
+
+  // First run (2.0f, bold): promoted to styled heading H3.
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
+  EXPECT_EQ(
+      3, block1->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel));
+  EXPECT_EQ("h3",
+            block1->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+
+  // Subsequent runs (3.0f, normal): remain paragraphs.
+  const ui::AXNode* block2 = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, block2);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block2->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicFontSizeHeadingsNotDetectedWhenMedianBelowMinimum) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style;
+  normal_style.font_weight = kNormalFontWeight;
+
+  // Font sizes: candidate at 4.0f, body runs at 2.0f (median is 2.0f).
+  // Although 4.0f is 2.0x the median (above the 1.2x heading font size ratio),
+  // median (2.0f) <= kMinimumFontSize (5.0f) means no heading font size
+  // threshold is set. Thus, font-size heading promotion is suppressed.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{4.0f, 2.0f, 2.0f, 2.0f, 2.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"Heading", "body1", "body2", "body3", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(5u, page->GetChildCount());
+
+  // First run (4.0f, normal): remains a paragraph because font-size heading
+  // detection is disabled when median is below the minimum threshold.
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block1->GetRole());
+
+  const ui::AXNode* block2 = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, block2);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block2->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
        HeuristicSkipsH2WhenGoingDirectlyBelowHeadingThreshold) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
