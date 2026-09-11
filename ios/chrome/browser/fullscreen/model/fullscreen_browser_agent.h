@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/containers/enum_set.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
@@ -159,6 +161,15 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // Notifies observers of transition completion.
   void NotifyFullscreenDidTransition(FullscreenTransition transition);
 
+  // Records metrics and timing when an incremental scroll reaches a boundary.
+  void RecordIncrementalScrollMetrics(CGFloat pre_scroll_top_progress,
+                                      CGFloat pre_scroll_bottom_progress);
+
+  // Records timing histograms and updates timestamps when entering/exiting
+  // fullscreen.
+  void RecordEnterFullscreenTiming();
+  void RecordExitFullscreenTiming();
+
   base::ObserverList<FullscreenBrowserAgentObserver, true> observers_;
 
   // The number of features currently disabling fullscreen.
@@ -204,6 +215,13 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // The fullscreen state the UI has settled on, or is settling on. Committed
   // when the transition starts, alongside the progress.
   FullscreenState settled_state_ = FullscreenState::kUIExpanded;
+
+  // The time at which the user entered fullscreen.
+  std::optional<base::TimeTicks> time_entered_fullscreen_ = std::nullopt;
+
+  // The time at which the user exited fullscreen.
+  std::optional<base::TimeTicks> time_exited_fullscreen_ =
+      base::TimeTicks::Now();
 
   // The animation duration for the current transition.
   base::TimeDelta animation_duration_ = base::TimeDelta();

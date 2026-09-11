@@ -82,7 +82,8 @@ class RangeTestFullscreenBrowserAgentObserver
 // Test fixture for testing FullscreenBrowserAgent class.
 class FullscreenBrowserAgentTest : public PlatformTest {
  protected:
-  FullscreenBrowserAgentTest() {
+  FullscreenBrowserAgentTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
   }
@@ -603,4 +604,113 @@ TEST_F(FullscreenBrowserAgentTest, ForceFullscreenWithDisabledCounter) {
   agent->DecrementDisabledCounter(PassKey());
   EXPECT_TRUE(agent->IsEnabled());
   EXPECT_EQ(FullscreenState::kUICollapsed, agent->State());
+}
+
+// Test that TimeInFullscreen and TimeNotInFullscreen histograms are recorded
+// correctly on transitions, and that forced exits discard TimeInFullscreen.
+TEST_F(FullscreenBrowserAgentTest, FullscreenTimingHistograms) {
+  base::HistogramTester histogram_tester;
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  // Advance time while not in fullscreen.
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  // Enter fullscreen.
+  agent->EnterFullscreen(PassKey(),
+                         FullscreenModeTransitionTrigger::kUserControlled,
+                         /*animated=*/false);
+  histogram_tester.ExpectTotalCount(kTimeNotInFullscreenHistogram, 1);
+  histogram_tester.ExpectTimeBucketCount(kTimeNotInFullscreenHistogram,
+                                         base::Seconds(5), 1);
+  histogram_tester.ExpectTotalCount(kTimeInFullscreenHistogram, 0);
+
+  // Advance time while in fullscreen.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // Exit fullscreen via user action.
+  agent->ExitFullscreen(PassKey(),
+                        FullscreenModeTransitionTrigger::kUserControlled,
+                        /*animated=*/false);
+  histogram_tester.ExpectTotalCount(kTimeInFullscreenHistogram, 1);
+  histogram_tester.ExpectTimeBucketCount(kTimeInFullscreenHistogram,
+                                         base::Seconds(10), 1);
+
+  // Advance time while not in fullscreen again.
+  task_environment_.FastForwardBy(base::Seconds(4));
+
+  // Enter fullscreen again.
+  agent->EnterFullscreen(PassKey(),
+                         FullscreenModeTransitionTrigger::kUserControlled,
+                         /*animated=*/false);
+  histogram_tester.ExpectTotalCount(kTimeNotInFullscreenHistogram, 2);
+  histogram_tester.ExpectTimeBucketCount(kTimeNotInFullscreenHistogram,
+                                         base::Seconds(4), 1);
+
+  // Advance time in fullscreen.
+  task_environment_.FastForwardBy(base::Seconds(8));
+
+  // Exit fullscreen via forced exit (e.g. navigation or code-driven).
+  agent->ExitFullscreen(PassKey(),
+                        FullscreenModeTransitionTrigger::kForcedByCode,
+                        /*animated=*/false);
+  // TimeInFullscreen should NOT be recorded for forced exits.
+  histogram_tester.ExpectTotalCount(kTimeInFullscreenHistogram, 1);
+
+  // Advance time after forced exit.
+  task_environment_.FastForwardBy(base::Seconds(12));
+
+  // Enter fullscreen again.
+  agent->EnterFullscreen(PassKey(),
+                         FullscreenModeTransitionTrigger::kUserControlled,
+                         /*animated=*/false);
+  // Timer should have reset at forced exit, recording 12s.
+  histogram_tester.ExpectTotalCount(kTimeNotInFullscreenHistogram, 3);
+  histogram_tester.ExpectTimeBucketCount(kTimeNotInFullscreenHistogram,
+                                         base::Seconds(12), 1);
+}
+
+// Test that TimeInFullscreen and TimeNotInFullscreen histograms are recorded
+// correctly on incremental scrolls.
+TEST_F(FullscreenBrowserAgentTest, IncrementalScrollTimingHistograms) {
+  base::HistogramTester histogram_tester;
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  RangeTestFullscreenBrowserAgentObserver observer1(UIRectEdgeTop, 10.0, 50.0);
+  RangeTestFullscreenBrowserAgentObserver observer2(UIRectEdgeBottom, 20.0,
+                                                    80.0);
+  agent->AddObserver(&observer1);
+  agent->AddObserver(&observer2);
+  agent->InvalidateInsetRange();
+
+  // Advance time before scrolling.
+  task_environment_.FastForwardBy(base::Seconds(7));
+
+  // Scroll down completely into fullscreen mode.
+  agent->IncrementalScroll(200.0, 0.0, PassKey());
+  EXPECT_EQ(0.0, agent->top_progress());
+  EXPECT_EQ(0.0, agent->bottom_progress());
+
+  histogram_tester.ExpectTotalCount(kTimeNotInFullscreenHistogram, 1);
+  histogram_tester.ExpectTimeBucketCount(kTimeNotInFullscreenHistogram,
+                                         base::Seconds(7), 1);
+  histogram_tester.ExpectTotalCount(kTimeInFullscreenHistogram, 0);
+
+  // Advance time while in fullscreen mode.
+  task_environment_.FastForwardBy(base::Seconds(12));
+
+  // Scroll up completely out of fullscreen mode.
+  agent->IncrementalScroll(-500.0, 0.0, PassKey());
+  EXPECT_EQ(1.0, agent->top_progress());
+  EXPECT_EQ(1.0, agent->bottom_progress());
+
+  histogram_tester.ExpectTotalCount(kTimeInFullscreenHistogram, 1);
+  histogram_tester.ExpectTimeBucketCount(kTimeInFullscreenHistogram,
+                                         base::Seconds(12), 1);
+
+  agent->RemoveObserver(&observer1);
+  agent->RemoveObserver(&observer2);
 }

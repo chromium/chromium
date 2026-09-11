@@ -13,3 +13,5 @@ const char kExitFullscreenModeTransitionTriggerHistogram[] =
 const char kTimeInFullscreenHistogram[] = "IOS.Fullscreen.TimeInFullscreen";
 const char kTimeNotInFullscreenHistogram[] =
     "IOS.Fullscreen.TimeNotInFullscreen";
+const char kFullscreenScrollToTheBottomTime[] =
+    "IOS.Fullscreen.TimeSpentScrollingToTheBottom";

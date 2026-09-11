@@ -47,10 +47,16 @@ const int kPageHeightEM = 400;
 // Tolerance for width increase check.
 const CGFloat kViewportFitCoverTolerance = 5.0;
 
+// Upper bound on swipes used to reach the bottom of a test page. The number of
+// swipes actually required depends on the viewport size, so callers stop as
+// soon as the bottom is reached rather than swiping a fixed number of times.
+const int kMaxScrollToBottomSwipes = 12;
+
 // Hides the toolbar by scrolling down.
 void HideToolbarUsingUI() {
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-      performAction:grey_swipeSlowInDirection(kGREYDirectionUp)];
+      performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionUp,
+                                                            0.5, 0.75)];
 }
 
 // A PDF itself can take a little longer to appear even after the page is
@@ -337,6 +343,64 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
                        FullscreenModeTransitionTrigger::kForcedByCode)
       forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
   GREYAssertNil(exitError1, @"Histogram error: %@", exitError1);
+
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
+}
+
+// Tests that fullscreen timing histograms are logged as expected.
+- (void)testFullscreenTimingHistograms {
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
+  _responses["/tallpage"] = base::StringPrintf(
+      "<p style='height:%dem'>a</p><p id='bottom'>b</p>", kPageHeightEM);
+
+  GURL URL = self.testServer->GetURL("/tallpage");
+  // Use the longer page-load timeout for web state appearance. The default 4s
+  // is not always enough on a cold-started app on a loaded bot.
+  [ChromeEarlGrey loadURL:URL withTimeout:kWaitForPageLoadTimeout];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // 1. Enter fullscreen by scrolling down.
+  HideToolbarUsingUI();
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Verify IOS.Fullscreen.TimeNotInFullscreen is recorded.
+  NSError* notInFullscreenError =
+      [MetricsAppInterface expectTotalCount:1
+                               forHistogram:@(kTimeNotInFullscreenHistogram)];
+  GREYAssertNil(notInFullscreenError, @"Histogram error: %@",
+                notInFullscreenError);
+
+  // 2. Exit fullscreen by scrolling up.
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Verify IOS.Fullscreen.TimeInFullscreen is recorded.
+  NSError* inFullscreenError =
+      [MetricsAppInterface expectTotalCount:1
+                               forHistogram:@(kTimeInFullscreenHistogram)];
+  GREYAssertNil(inFullscreenError, @"Histogram error: %@", inFullscreenError);
+
+  // 3. Scroll to the bottom of the page. The number of swipes needed depends on
+  // the viewport size, so keep swiping until the metric is recorded.
+  NSError* scrollToBottomError = nil;
+  for (int i = 0; i < kMaxScrollToBottomSwipes; ++i) {
+    [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+    // Verify IOS.Fullscreen.TimeSpentScrollingToTheBottom is recorded.
+    scrollToBottomError = [MetricsAppInterface
+        expectTotalCount:1
+            forHistogram:@(kFullscreenScrollToTheBottomTime)];
+    if (!scrollToBottomError) {
+      break;
+    }
+  }
+  GREYAssertNil(scrollToBottomError, @"Histogram error: %@",
+                scrollToBottomError);
 
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");

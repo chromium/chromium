@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/fullscreen/coordinator/fullscreen_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
@@ -114,7 +115,8 @@ class FullscreenMediatorTest : public PlatformTest {
     return {scroll_view, scroll_view_proxy};
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   SceneState* scene_state_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -253,4 +255,130 @@ TEST_F(FullscreenMediatorTest, ExitFullscreenWhenThresholdHit) {
 
   EXPECT_TRUE(agent_->is_animating());
   EXPECT_EQ(agent_->top_progress(), 1.0);
+}
+
+// Tests that scrolling to the bottom records the scroll to bottom time metric.
+TEST_F(FullscreenMediatorTest, ScrollToTheBottomTime) {
+  base::HistogramTester histogram_tester;
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+  id<CRWWebViewScrollViewProxyObserver> observer =
+      static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
+
+  // Start dragging.
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+
+  // Advance time by 3 seconds.
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  // Scroll to bottom (content height 2000 - scroll view height 480 = 1520).
+  scroll_view.contentOffset = CGPointMake(0, 1520);
+  [observer webViewScrollViewDidScroll:scroll_view_proxy];
+
+  // End dragging without decelerating.
+  [observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                             willDecelerate:NO];
+
+  histogram_tester.ExpectTotalCount(kFullscreenScrollToTheBottomTime, 1);
+  histogram_tester.ExpectTimeBucketCount(kFullscreenScrollToTheBottomTime,
+                                         base::Seconds(3), 1);
+
+  // Subsequent drags at the bottom should not record duplicate metrics.
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+  task_environment_.FastForwardBy(base::Seconds(2));
+  [observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                             willDecelerate:NO];
+  histogram_tester.ExpectTotalCount(kFullscreenScrollToTheBottomTime, 1);
+}
+
+// Tests that scroll to bottom time metric is recorded after deceleration ends.
+TEST_F(FullscreenMediatorTest, ScrollToTheBottomTimeDecelerating) {
+  base::HistogramTester histogram_tester;
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+  id<CRWWebViewScrollViewProxyObserver> observer =
+      static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
+
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  scroll_view.contentOffset = CGPointMake(0, 1520);
+  [observer webViewScrollViewDidScroll:scroll_view_proxy];
+
+  // End dragging with deceleration pending.
+  [observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                             willDecelerate:YES];
+  histogram_tester.ExpectTotalCount(kFullscreenScrollToTheBottomTime, 0);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  [observer webViewScrollViewDidEndDecelerating:scroll_view_proxy];
+
+  histogram_tester.ExpectTotalCount(kFullscreenScrollToTheBottomTime, 1);
+  histogram_tester.ExpectTimeBucketCount(kFullscreenScrollToTheBottomTime,
+                                         base::Seconds(3), 1);
+}
+
+// Tests that navigation resets the scroll to bottom time recording state.
+TEST_F(FullscreenMediatorTest, ScrollToTheBottomTimeResetsOnNavigation) {
+  base::HistogramTester histogram_tester;
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+  id<CRWWebViewScrollViewProxyObserver> observer =
+      static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
+
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+  task_environment_.FastForwardBy(base::Seconds(3));
+  scroll_view.contentOffset = CGPointMake(0, 1520);
+  [observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                             willDecelerate:NO];
+  histogram_tester.ExpectTotalCount(kFullscreenScrollToTheBottomTime, 1);
+
+  // Same-document navigation should not reset recording state.
+  id<CRWWebStateObserver> web_state_observer =
+      static_cast<id<CRWWebStateObserver>>(mediator_);
+  web::FakeNavigationContext same_doc_context;
+  same_doc_context.SetIsSameDocument(true);
+  [web_state_observer webState:browser_->GetWebStateList()->GetActiveWebState()
+           didFinishNavigation:&same_doc_context];
+
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+  task_environment_.FastForwardBy(base::Seconds(2));
+  [observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                             willDecelerate:NO];
+  histogram_tester.ExpectTotalCount(kFullscreenScrollToTheBottomTime, 1);
+
+  // New page navigation should reset recording state.
+  web::FakeNavigationContext new_page_context;
+  new_page_context.SetIsSameDocument(false);
+  [web_state_observer webState:browser_->GetWebStateList()->GetActiveWebState()
+           didFinishNavigation:&new_page_context];
+
+  scroll_view.contentOffset = CGPointMake(0, 100);
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+  task_environment_.FastForwardBy(base::Seconds(5));
+  scroll_view.contentOffset = CGPointMake(0, 1520);
+  [observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                             willDecelerate:NO];
+
+  histogram_tester.ExpectTotalCount(kFullscreenScrollToTheBottomTime, 2);
+  histogram_tester.ExpectTimeBucketCount(kFullscreenScrollToTheBottomTime,
+                                         base::Seconds(5), 1);
+}
+
+// Tests that scroll to bottom time metric is not recorded if content cannot
+// collapse toolbar.
+TEST_F(FullscreenMediatorTest,
+       ScrollToTheBottomTimeNotRecordedIfCannotCollapse) {
+  base::HistogramTester histogram_tester;
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+  id<CRWWebViewScrollViewProxyObserver> observer =
+      static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
+
+  // Set content size smaller than scroll view height.
+  scroll_view.contentSize = CGSizeMake(320, 400);
+
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+  task_environment_.FastForwardBy(base::Seconds(3));
+  scroll_view.contentOffset = CGPointMake(0, 0);
+  [observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                             willDecelerate:NO];
+
+  histogram_tester.ExpectTotalCount(kFullscreenScrollToTheBottomTime, 0);
 }

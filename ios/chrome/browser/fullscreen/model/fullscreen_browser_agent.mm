@@ -174,15 +174,8 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount,
     return;
   }
 
-  if (top_progress_ == 0.0 && bottom_progress_ == 0.0) {
-    base::UmaHistogramEnumeration(
-        kEnterFullscreenModeTransitionTriggerHistogram,
-        FullscreenModeTransitionTrigger::kUserControlled);
-  } else if (top_progress_ == 1.0 && bottom_progress_ == 1.0) {
-    base::UmaHistogramEnumeration(
-        kExitFullscreenModeTransitionTriggerHistogram,
-        FullscreenModeTransitionTrigger::kUserControlled);
-  }
+  RecordIncrementalScrollMetrics(pre_scroll_top_progress,
+                                 pre_scroll_bottom_progress);
 
   NotifyObserversOfUpdatedState();
 }
@@ -193,6 +186,9 @@ void FullscreenBrowserAgent::EnterFullscreen(
     bool animated) {
   base::UmaHistogramEnumeration(kEnterFullscreenModeTransitionTriggerHistogram,
                                 trigger);
+  if (top_progress_ > 0.0 || bottom_progress_ > 0.0) {
+    RecordEnterFullscreenTiming();
+  }
   UpdateProgressAndBroadcast(FullscreenTransition::kEnterFullscreen, trigger,
                              animated);
 }
@@ -203,8 +199,54 @@ void FullscreenBrowserAgent::ExitFullscreen(
     bool animated) {
   base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
                                 trigger);
+  if (trigger == FullscreenModeTransitionTrigger::kForcedByCode) {
+    time_entered_fullscreen_ = std::nullopt;
+    time_exited_fullscreen_ = base::TimeTicks::Now();
+  } else if (top_progress_ < 1.0 || bottom_progress_ < 1.0) {
+    RecordExitFullscreenTiming();
+  }
   UpdateProgressAndBroadcast(FullscreenTransition::kExitFullscreen, trigger,
                              animated);
+}
+
+void FullscreenBrowserAgent::RecordIncrementalScrollMetrics(
+    CGFloat pre_scroll_top_progress,
+    CGFloat pre_scroll_bottom_progress) {
+  if (top_progress_ == 0.0 && bottom_progress_ == 0.0) {
+    if (pre_scroll_top_progress > 0.0 || pre_scroll_bottom_progress > 0.0) {
+      base::UmaHistogramEnumeration(
+          kEnterFullscreenModeTransitionTriggerHistogram,
+          FullscreenModeTransitionTrigger::kUserControlled);
+      RecordEnterFullscreenTiming();
+    }
+  } else if (top_progress_ == 1.0 && bottom_progress_ == 1.0) {
+    if (pre_scroll_top_progress < 1.0 || pre_scroll_bottom_progress < 1.0) {
+      base::UmaHistogramEnumeration(
+          kExitFullscreenModeTransitionTriggerHistogram,
+          FullscreenModeTransitionTrigger::kUserControlled);
+      RecordExitFullscreenTiming();
+    }
+  }
+}
+
+void FullscreenBrowserAgent::RecordEnterFullscreenTiming() {
+  if (time_exited_fullscreen_.has_value()) {
+    base::UmaHistogramLongTimes(
+        kTimeNotInFullscreenHistogram,
+        base::TimeTicks::Now() - time_exited_fullscreen_.value());
+  }
+  time_entered_fullscreen_ = base::TimeTicks::Now();
+  time_exited_fullscreen_ = std::nullopt;
+}
+
+void FullscreenBrowserAgent::RecordExitFullscreenTiming() {
+  if (time_entered_fullscreen_.has_value()) {
+    base::UmaHistogramLongTimes(
+        kTimeInFullscreenHistogram,
+        base::TimeTicks::Now() - time_entered_fullscreen_.value());
+  }
+  time_exited_fullscreen_ = base::TimeTicks::Now();
+  time_entered_fullscreen_ = std::nullopt;
 }
 
 void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
