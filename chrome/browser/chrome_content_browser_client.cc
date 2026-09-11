@@ -7916,12 +7916,9 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
       IsClipboardFocusExemptOrigin(main_frame_origin) ||
       render_frame_host->IsFocused();
 
-  // Paste requires either (1) transient user activation on the requesting
-  // frame, ...
-  // Transient user activation propagates from descendants to ancestors; see
-  // https://html.spec.whatwg.org/multipage/interaction.html#user-activation-processing-model.
-  if (render_frame_host->HasTransientUserActivation() &&
-      is_focused_or_is_trusted_origin) {
+  // Paste requires either (1) user activation, ...
+  if (WebContents::FromRenderFrameHost(render_frame_host)
+          ->HasRecentInteraction()) {
     return true;
   }
 
