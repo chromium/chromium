@@ -1,0 +1,6 @@
+Tests that searching in response body works after navigation with DurableMessages enabled.
+Request for http://127.0.0.1:8000/inspector-protocol/network/resources/final.js
+Search before navigation result count: 1
+-- Test Page.navigate() to a cross origin URL --
+Search after navigation result count: 1
+

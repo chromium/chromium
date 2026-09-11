@@ -329,4 +329,147 @@ TEST_F(DevtoolsDurableMessageCollectorTest, RetrieveWorksAfterDisable) {
   WaitForEventCount(1);
 }
 
+TEST_F(DevtoolsDurableMessageCollectorTest, SearchInResponseBody) {
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/1000);
+
+  std::string request_id = "req1";
+  auto msg = collector->CreateDurableMessage(request_id);
+  ASSERT_NE(msg, nullptr);
+  std::string test_message =
+      "Line 0: Hello World\nLine 1: Foo Bar\nLine 2: hello again\r\nLine 3: "
+      "end";
+  AddBytes(msg, test_message);
+  MarkComplete(msg);
+
+  // 1. Case-insensitive plain text search.
+  {
+    base::RunLoop run_loop;
+    collector_remote->Search(
+        request_id, "hello", /*case_sensitive=*/false,
+        base::BindLambdaForTesting(
+            [&](std::optional<std::vector<mojom::MessageSearchMatchPtr>>
+                    matches) {
+              ASSERT_TRUE(matches.has_value());
+              ASSERT_EQ(matches->size(), 2u);
+              EXPECT_EQ((*matches)[0]->line_number, 0);
+              EXPECT_EQ((*matches)[0]->line_content, "Line 0: Hello World");
+              EXPECT_EQ((*matches)[1]->line_number, 2);
+              EXPECT_EQ((*matches)[1]->line_content, "Line 2: hello again");
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  // 2. Case-sensitive regex search.
+  {
+    base::RunLoop run_loop;
+    collector_remote->Search(
+        request_id, "Foo.*", /*case_sensitive=*/true,
+        base::BindLambdaForTesting(
+            [&](std::optional<std::vector<mojom::MessageSearchMatchPtr>>
+                    matches) {
+              ASSERT_TRUE(matches.has_value());
+              ASSERT_EQ(matches->size(), 1u);
+              EXPECT_EQ((*matches)[0]->line_number, 1);
+              EXPECT_EQ((*matches)[0]->line_content, "Line 1: Foo Bar");
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  // 3. Search missing request ID returns nullopt.
+  {
+    base::RunLoop run_loop;
+    collector_remote->Search(
+        "non_existent", "hello", false,
+        base::BindLambdaForTesting(
+            [&](std::optional<std::vector<mojom::MessageSearchMatchPtr>>
+                    matches) {
+              EXPECT_FALSE(matches.has_value());
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+}
+
+TEST_F(DevtoolsDurableMessageCollectorTest, SearchInResponseBodyDecodesGzip) {
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/1000);
+
+  std::string request_id = "req_gzip";
+  auto msg = collector->CreateDurableMessage(request_id);
+  ASSERT_NE(msg, nullptr);
+  msg->set_client_decoding_types({net::SourceStreamType::kGzip});
+
+  const std::string original_body =
+      "first line\nneedle in a haystack\nthird line";
+  auto compressed = net::CompressGzip(original_body);
+  AddBytes(msg, compressed);
+  MarkComplete(msg);
+
+  base::RunLoop run_loop;
+  collector_remote->Search(
+      request_id, "needle", /*case_sensitive=*/false,
+      base::BindLambdaForTesting(
+          [&](std::optional<std::vector<mojom::MessageSearchMatchPtr>>
+                  matches) {
+            ASSERT_TRUE(matches.has_value());
+            ASSERT_EQ(matches->size(), 1u);
+            EXPECT_EQ((*matches)[0]->line_number, 1);
+            EXPECT_EQ((*matches)[0]->line_content, "needle in a haystack");
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(DevtoolsDurableMessageCollectorTest,
+       SearchInResponseBodyIncompleteReturnsNullopt) {
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/1000);
+
+  std::string request_id = "req_incomplete";
+  auto msg = collector->CreateDurableMessage(request_id);
+  std::string test_message = "hello world";
+  AddBytes(msg, test_message);
+  // Not marked complete!
+
+  base::RunLoop run_loop;
+  collector_remote->Search(
+      request_id, "hello", /*case_sensitive=*/false,
+      base::BindLambdaForTesting(
+          [&](std::optional<std::vector<mojom::MessageSearchMatchPtr>>
+                  matches) {
+            EXPECT_FALSE(matches.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(DevtoolsDurableMessageCollectorTest,
+       SearchInResponseBodyBinaryReturnsEmpty) {
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/1000);
+
+  std::string request_id = "req_binary";
+  auto msg = collector->CreateDurableMessage(request_id);
+  ASSERT_NE(msg, nullptr);
+  // Invalid UTF-8 bytes.
+  const uint8_t binary_data[] = {0xFF, 0xFE, 0xFD, 0xFC};
+  AddBytes(msg, binary_data);
+  MarkComplete(msg);
+
+  base::RunLoop run_loop;
+  collector_remote->Search(
+      request_id, "hello", /*case_sensitive=*/false,
+      base::BindLambdaForTesting(
+          [&](std::optional<std::vector<mojom::MessageSearchMatchPtr>>
+                  matches) {
+            ASSERT_TRUE(matches.has_value());
+            EXPECT_TRUE(matches->empty());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
 }  // namespace network

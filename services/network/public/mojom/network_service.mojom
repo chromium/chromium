@@ -522,6 +522,12 @@ struct NetworkDurableMessageConfig {
   uint64 http_storage_max_size;
 };
 
+// Represents a single search match in a durable message.
+struct MessageSearchMatch {
+  int32 line_number;
+  string line_content;
+};
+
 // DurableMessageCollector interface represents a single response body
 // collector. Each instance is self-owned, and is destroyed when the
 // receiver is disconnected. The collector is created by the NetworkService
@@ -547,4 +553,13 @@ interface DurableMessageCollector {
   // if one is available.
   Retrieve(string devtools_request_id)
       => (mojo_base.mojom.BigBuffer? message);
+
+  // Searches within a collected Durable Message for the given DevTools
+  // request ID. Returns null if the message was not found or incomplete, or
+  // the list of matches (capped at 1000).
+  Search(string devtools_request_id,
+         string query_regex,
+         bool case_sensitive)
+      => (array<MessageSearchMatch>? matches);
 };
+

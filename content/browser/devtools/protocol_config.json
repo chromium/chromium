@@ -120,6 +120,7 @@
                   "setRequestInterception",
                   "continueInterceptedRequest",
                   "getResponseBody",
+                  "searchInResponseBody",
                   "getResponseBodyForInterception",
                   "setCacheDisabled",
                   "takeResponseBodyForInterceptionAsStream",
@@ -144,6 +145,7 @@
                   "setCookies",
                   "continueInterceptedRequest",
                   "getResponseBody",
+                  "searchInResponseBody",
                   "getResponseBodyForInterception",
                   "takeResponseBodyForInterceptionAsStream",
                   "loadNetworkResource"
@@ -252,6 +254,7 @@
             {
                 "domain": "Debugger",
                 "include": [
+                    "SearchMatch",
                     "setBreakpointByUrl",
                     "removeBreakpoint"
                 ],

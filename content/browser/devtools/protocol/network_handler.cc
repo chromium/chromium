@@ -38,6 +38,7 @@
 #include "content/browser/devtools/devtools_io_context.h"
 #include "content/browser/devtools/devtools_stream_file.h"
 #include "content/browser/devtools/devtools_stream_pipe.h"
+#include "content/browser/devtools/protocol/debugger.h"
 #include "content/browser/devtools/protocol/devtools_network_resource_loader.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/protocol/network.h"
@@ -116,6 +117,7 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace content {
@@ -133,6 +135,24 @@ using ClearBrowserCookiesCallback =
 
 static constexpr char kInvalidCookieFields[] = "Invalid cookie fields";
 
+void DispatchSearchResults(
+    std::unique_ptr<Network::Backend::SearchInResponseBodyCallback> callback,
+    std::optional<std::vector<network::mojom::MessageSearchMatchPtr>> matches) {
+  if (!matches.has_value()) {
+    callback->fallThrough();
+    return;
+  }
+
+  auto protocol_matches =
+      std::make_unique<protocol::Array<protocol::Debugger::SearchMatch>>();
+  for (const auto& match : *matches) {
+    protocol_matches->emplace_back(protocol::Debugger::SearchMatch::Create()
+                                       .SetLineNumber(match->line_number)
+                                       .SetLineContent(match->line_content)
+                                       .Build());
+  }
+  callback->sendSuccess(std::move(protocol_matches));
+}
 Network::CertificateTransparencyCompliance SerializeCTPolicyCompliance(
     net::ct::CTPolicyCompliance ct_compliance) {
   switch (ct_compliance) {
@@ -3745,6 +3765,25 @@ void NetworkHandler::GetResponseBody(
                                       std::nullopt);
 }
 
+void NetworkHandler::SearchInResponseBody(
+    const std::string& request_id,
+    const std::string& query,
+    std::optional<bool> case_sensitive,
+    std::optional<bool> is_regex,
+    std::unique_ptr<SearchInResponseBodyCallback> callback) {
+  network::mojom::DurableMessageCollector* collector =
+      root_session_->MaybeGetDurableMessageCollector();
+  if (collector) {
+    std::string pattern =
+        is_regex.value_or(false) ? query : re2::RE2::QuoteMeta(query);
+    collector->Search(
+        request_id, pattern, case_sensitive.value_or(false),
+        base::BindOnce(&DispatchSearchResults, std::move(callback)));
+    return;
+  }
+  callback->fallThrough();
+}
+
 // static
 std::string NetworkHandler::ExtractFragment(const GURL& url,
                                             std::string* fragment) {
@@ -4202,7 +4241,6 @@ void NetworkHandler::LoadNetworkResource(
           Response::ServerError("Frame does not have a policy container"));
       return;
     }
-
     RenderFrameHostCSPContext csp_context(frame);
 
     network::CSPCheckResult result = csp_context.IsAllowedByCsp(
@@ -4258,7 +4296,6 @@ void NetworkHandler::LoadNetworkResource(
         },
         base::WrapRefCounted(frame->policy_container_host()),
         frame->GetWeakPtr(), gurl);
-
     url_loader_factory.Bind(std::move(factory));
     auto loader = DevToolsNetworkResourceLoader::Create(
         std::move(url_loader_factory), std::move(gurl),

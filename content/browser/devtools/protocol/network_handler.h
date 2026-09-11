@@ -220,6 +220,12 @@ class NetworkHandler : public DevToolsDomainHandler,
   void GetResponseBody(
       const String& request_id,
       std::unique_ptr<GetResponseBodyCallback> callback) override;
+  void SearchInResponseBody(
+      const std::string& request_id,
+      const std::string& query,
+      std::optional<bool> case_sensitive,
+      std::optional<bool> is_regex,
+      std::unique_ptr<SearchInResponseBodyCallback> callback) override;
 
   void ApplyOverrides(net::HttpRequestHeaders* headers,
                       bool* skip_service_worker,

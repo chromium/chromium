@@ -30,6 +30,7 @@ include_rules = [
   "+third_party/boringssl/src/include",
   "+third_party/boringssl/src/pki",
   "+third_party/fuzztest",
+  "+third_party/re2",
   "+url",
 ]
 

@@ -34,6 +34,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollector
                  ConfigureCallback) override;
   void Retrieve(const std::string& devtools_request_id,
                 RetrieveCallback callback) override;
+  void Search(const std::string& devtools_request_id,
+              const std::string& query_regex,
+              bool case_sensitive,
+              SearchCallback callback) override;
   base::WeakPtr<DevtoolsDurableMessage> CreateDurableMessage(
       const std::string& devtools_request_id);
   base::WeakPtr<DevtoolsDurableMessageCollector> GetWeakPtr() {

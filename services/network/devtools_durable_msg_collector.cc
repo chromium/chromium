@@ -4,7 +4,12 @@
 
 #include "services/network/devtools_durable_msg_collector.h"
 
+#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "services/network/devtools_durable_msg_collector_manager.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace network {
 
@@ -47,6 +52,75 @@ void DevtoolsDurableMessageCollector::Retrieve(
   return std::move(callback).Run(std::nullopt);
 }
 
+namespace {
+
+constexpr size_t kMaxMatches = 1000;
+
+std::optional<std::vector<mojom::MessageSearchMatchPtr>> PerformSearch(
+    mojo_base::BigBuffer buffer,
+    std::string query_regex,
+    bool case_sensitive) {
+  std::string_view data_view = base::as_string_view(base::span(buffer));
+  if (!base::IsStringUTF8(data_view)) {
+    return std::vector<mojom::MessageSearchMatchPtr>{};
+  }
+
+  re2::RE2::Options options;
+  options.set_case_sensitive(case_sensitive);
+  re2::RE2 re(query_regex, options);
+  if (!re.ok()) {
+    return std::vector<mojom::MessageSearchMatchPtr>{};
+  }
+
+  std::vector<mojom::MessageSearchMatchPtr> matches;
+  size_t pos = 0;
+  int32_t line_number = 0;
+  while (pos < data_view.size()) {
+    size_t end = data_view.find('\n', pos);
+    if (end == std::string_view::npos) {
+      end = data_view.size();
+    }
+    std::string_view line = data_view.substr(pos, end - pos);
+    if (!line.empty() && line.back() == '\r') {
+      line.remove_suffix(1);
+    }
+    if (re2::RE2::PartialMatch(line, re)) {
+      auto match = mojom::MessageSearchMatch::New();
+      match->line_number = line_number;
+      match->line_content = std::string(line);
+      matches.push_back(std::move(match));
+      if (matches.size() >= kMaxMatches) {
+        break;
+      }
+    }
+    pos = end + 1;
+    line_number++;
+  }
+  return matches;
+}
+
+}  // namespace
+
+void DevtoolsDurableMessageCollector::Search(
+    const std::string& devtools_request_id,
+    const std::string& query_regex,
+    bool case_sensitive,
+    SearchCallback callback) {
+  auto message = request_id_to_message_map_.find(devtools_request_id);
+  if (message == request_id_to_message_map_.end() ||
+      !message->second->is_complete()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  mojo_base::BigBuffer buffer = message->second->Retrieve();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&PerformSearch, std::move(buffer), query_regex,
+                     case_sensitive),
+      std::move(callback));
+}
 
 base::WeakPtr<DevtoolsDurableMessage>
 DevtoolsDurableMessageCollector::CreateDurableMessage(
