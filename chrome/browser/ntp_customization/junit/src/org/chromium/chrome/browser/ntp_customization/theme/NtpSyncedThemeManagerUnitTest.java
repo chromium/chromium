@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -12,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +41,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -60,6 +63,7 @@ public class NtpSyncedThemeManagerUnitTest {
     @Mock private ImageFetcher mImageFetcher;
     @Mock private NtpSyncedThemeBridge.Natives mNatives;
     @Mock private CrossDeviceThemeTracker.Natives mCrossDeviceThemeTrackerNatives;
+    @Mock private Callback<@Nullable NtpBackgroundDataThemeCollection> mDownloadCallback;
     @Captor private ArgumentCaptor<NtpSyncedThemeBridge> mBridgeCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
 
@@ -285,5 +289,100 @@ public class NtpSyncedThemeManagerUnitTest {
         assertEquals(
                 NtpCustomizationUtils.NtpBackgroundType.DEFAULT,
                 NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
+    }
+
+    @Test
+    public void testAddOneShotCompletionCallback_downloadSuccess() {
+        setupImageDownloading();
+
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        mBitmapCallbackCaptor.getValue().onResult(bitmap);
+
+        ArgumentCaptor<NtpBackgroundDataThemeCollection> dataCaptor =
+                ArgumentCaptor.forClass(NtpBackgroundDataThemeCollection.class);
+        verify(mDownloadCallback).onResult(dataCaptor.capture());
+        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+        assertNotNull(dataCaptor.getValue());
+        assertEquals(bitmap, dataCaptor.getValue().getBitmap());
+    }
+
+    @Test
+    public void testAddOneShotCompletionCallback_downloadFailure() {
+        setupImageDownloading();
+
+        mBitmapCallbackCaptor.getValue().onResult(null);
+
+        verify(mDownloadCallback).onResult(isNull());
+        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+    }
+
+    @Test
+    public void testAddOneShotCompletionCallback_notDownloading() {
+        mNtpSyncedThemeManager = new NtpSyncedThemeManager(mContext, mProfile);
+
+        mNtpSyncedThemeManager.addOneShotCompletionCallback(mDownloadCallback);
+
+        verify(mDownloadCallback).onResult(isNull());
+    }
+
+    @Test
+    public void testDailyRefresh_doesNotTriggerDownloadCallback() {
+        setupDailyRefreshImageFetching();
+
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        mBitmapCallbackCaptor.getValue().onResult(bitmap);
+
+        verify(mDownloadCallback, never()).onResult(any());
+        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+    }
+
+    @Test
+    public void testDailyRefresh_downloadFailure_doesNotTriggerDownloadCallback() {
+        setupDailyRefreshImageFetching();
+
+        mBitmapCallbackCaptor.getValue().onResult(null);
+
+        verify(mDownloadCallback, never()).onResult(any());
+        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+    }
+
+    private void setupDailyRefreshImageFetching() {
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+
+        CustomBackgroundInfo dailyInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_2,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
+        when(mNatives.getCustomBackgroundInfo(anyLong())).thenReturn(dailyInfo);
+        when(mNatives.isProcessingSyncUpdate(anyLong())).thenReturn(false);
+
+        bridge.onCustomBackgroundImageUpdated();
+
+        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+
+        verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
+    }
+
+    private void setupImageDownloading() {
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+
+        CustomBackgroundInfo syncedInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        when(mNatives.getCustomBackgroundInfo(anyLong())).thenReturn(syncedInfo);
+        when(mNatives.isProcessingSyncUpdate(anyLong())).thenReturn(true);
+
+        bridge.onCustomBackgroundImageUpdated();
+
+        assertTrue(mNtpSyncedThemeManager.isImageDownloading());
+
+        mNtpSyncedThemeManager.addOneShotCompletionCallback(mDownloadCallback);
+
+        verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
     }
 }

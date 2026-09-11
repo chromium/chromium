@@ -12,6 +12,8 @@ import android.graphics.Bitmap;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -40,6 +42,11 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
     // download is in-flight, so the in-flight download does not overwrite the user's manual
     // selection when completed.
     private @Nullable String mLatestSyncedBackgroundUrl;
+    // Tracks whether an image is actively downloading via mImageFetcher.
+    private boolean mIsImageDownloading;
+    // Callbacks waiting for the theme image downloading to complete.
+    private final ObserverList<Callback<@Nullable NtpBackgroundDataThemeCollection>>
+            mDownloadCallbacks = new ObserverList<>();
 
     /**
      * Constructs a new NtpSyncedThemeManager.
@@ -69,6 +76,8 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
             mNtpSyncedThemeBridge.destroy();
             mNtpSyncedThemeBridge = null;
         }
+        mDownloadCallbacks.clear();
+        mIsImageDownloading = false;
     }
 
     /**
@@ -111,6 +120,7 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
         }
 
         mLatestSyncedBackgroundUrl = info.backgroundUrl.getSpec();
+        mIsImageDownloading = isProcessingSyncUpdate();
         NtpCustomizationUtils.fetchThemeCollectionImage(
                 mImageFetcher,
                 info.backgroundUrl,
@@ -156,7 +166,12 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
      */
     private void handleFetchedThemeCollectionImage(
             CustomBackgroundInfo info, @Nullable Bitmap bitmap) {
+        mIsImageDownloading = false;
+        boolean isSyncUpdate = isProcessingSyncUpdate();
         if (bitmap == null) {
+            if (isSyncUpdate) {
+                notifyDownloadCallbacks(null);
+            }
             return;
         }
 
@@ -167,13 +182,14 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
         BackgroundImageInfo backgroundImageInfo =
                 NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
 
-        boolean isSyncUpdate =
-                mNtpSyncedThemeBridge != null && mNtpSyncedThemeBridge.isProcessingSyncUpdate();
-
+        @Nullable NtpBackgroundDataThemeCollection themeCollectionData = null;
         if (!isSyncUpdate) {
             // Case 1: Local device next-day daily refresh pre-fetch.
             NtpCustomizationUtils.saveDailyRefreshBackgroundInfo(info, bitmap, backgroundImageInfo);
-        } else if (info.isDailyRefreshEnabled) {
+            return;
+        }
+
+        if (info.isDailyRefreshEnabled) {
             // Case 3: Synced daily refresh setup from another device.
             // TODO(crbug.com/488439751): For synced theme collection daily updates,
             // applying the fetched image on the next NTP launch, saving the
@@ -183,7 +199,7 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
             // Case 2: Synced static theme collection image from another device.
             String fileId = NtpCustomizationUtils.getFileName(info.backgroundUrl.getPath());
             @ColorInt Integer primaryColor = NtpCustomizationUtils.getContentBasedSeedColor(bitmap);
-            NtpBackgroundDataThemeCollection themeCollectionData =
+            themeCollectionData =
                     new NtpBackgroundDataThemeCollection(
                             PlatformType.ANDROID,
                             info,
@@ -194,5 +210,58 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
             mNtpCustomizationConfigManager.onSyncedThemeCollectionImageChanged(
                     mContext, themeCollectionData);
         }
+        notifyDownloadCallbacks(themeCollectionData);
+    }
+
+    /**
+     * Notifies all registered download callbacks with the downloaded theme collection data (or
+     * {@code null} on failure/omission). All callbacks are cleared after being invoked.
+     *
+     * @param themeCollectionData The downloaded theme collection data, or null.
+     */
+    private void notifyDownloadCallbacks(
+            @Nullable NtpBackgroundDataThemeCollection themeCollectionData) {
+        for (Callback<@Nullable NtpBackgroundDataThemeCollection> callback : mDownloadCallbacks) {
+            callback.onResult(themeCollectionData);
+        }
+        mDownloadCallbacks.clear();
+    }
+
+    private boolean isProcessingSyncUpdate() {
+        return mNtpSyncedThemeBridge != null && mNtpSyncedThemeBridge.isProcessingSyncUpdate();
+    }
+
+    /**
+     * Registers a one-shot callback to be invoked when the theme image download completes. If
+     * nothing is downloading, the callback is invoked immediately with {@code null}.
+     *
+     * @param callback The callback receiving the downloaded theme collection data, or null.
+     */
+    public void addOneShotCompletionCallback(
+            Callback<@Nullable NtpBackgroundDataThemeCollection> callback) {
+        if (!isImageDownloading()) {
+            callback.onResult(null);
+            return;
+        }
+        mDownloadCallbacks.addObserver(callback);
+    }
+
+    /**
+     * Removes a previously registered completion callback.
+     *
+     * @param callback The callback to remove.
+     */
+    public void removeCompletionCallback(
+            Callback<@Nullable NtpBackgroundDataThemeCollection> callback) {
+        mDownloadCallbacks.removeObserver(callback);
+    }
+
+    /** Returns whether a theme image is currently downloading. */
+    public boolean isImageDownloading() {
+        return mIsImageDownloading;
+    }
+
+    public void setImageDownloadingForTesting(boolean isDownloading) {
+        mIsImageDownloading = isDownloading;
     }
 }
