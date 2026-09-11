@@ -61,5 +61,8 @@ public class ChromiumAndroidConfigurer extends AndroidConfigurer {
         // allowing them to be pre-warmed concurrently in JunitTestMain.
         builder.doNotAcquirePackage("org.mockito.");
         builder.doNotAcquirePackage("net.bytebuddy.");
+        // Exclude large pure-Java libraries to avoid instrumentation overhead.
+        builder.doNotAcquirePackage("com.google.common.");
+        builder.doNotAcquirePackage("com.google.protobuf.");
     }
 }
