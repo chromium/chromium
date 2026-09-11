@@ -98,6 +98,7 @@ MediaStreamTrack* CreateAudioMediaStreamTrack(
 class TestVideoFrameQueueUnderlyingSource
     : public VideoFrameQueueUnderlyingSource {
  public:
+  using VideoFrameQueueUnderlyingSource::ClearTransferredSource;
   using VideoFrameQueueUnderlyingSource::TransferSource;
   using VideoFrameQueueUnderlyingSource::VideoFrameQueueUnderlyingSource;
 
@@ -509,6 +510,53 @@ TEST_F(MediaStreamTrackProcessorTest, StatsForDirectPushesToTransferredSource) {
   // Verify that Source A's TotalFrames() includes it.
   EXPECT_EQ(source_a->TotalFrames(), 4u);
   EXPECT_EQ(source_b->TotalFrames(), 2u);
+}
+
+TEST_F(MediaStreamTrackProcessorTest, ClearTransferredSourceStopsTransfer) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  auto* source_a = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
+      script_state, 10u, "device_id", 10u, std::nullopt);
+  auto* source_b = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
+      script_state, 10u, "device_id", 10u, std::nullopt);
+
+  scoped_refptr<media::VideoFrame> frame =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5));
+
+  source_a->TransferSource(source_b);
+  source_a->QueueFrame(frame);
+  EXPECT_EQ(source_b->TotalFrames(), 1u);
+
+  // Clearing the transferred source stops forwarding.
+  source_a->ClearTransferredSource();
+  source_a->QueueFrame(frame);
+  EXPECT_EQ(source_b->TotalFrames(), 1u);
+}
+
+TEST_F(MediaStreamTrackProcessorTest, TransferAfterClearDoesNotTransfer) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  auto* source_a = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
+      script_state, 10u, "device_id", 10u, std::nullopt);
+  auto* source_b = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
+      script_state, 10u, "device_id", 10u, std::nullopt);
+
+  // ClearTransferredSource called before TransferSource (simulates Worker
+  // ContextDestroyed running before Main processes TransferSource).
+  source_a->ClearTransferredSource();
+
+  source_a->TransferSource(source_b);
+
+  scoped_refptr<media::VideoFrame> frame =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5));
+  source_a->QueueFrame(frame);
+
+  // Frame should not be forwarded to source B because the destination was
+  // already cleared.
+  EXPECT_EQ(source_b->TotalFrames(), 0u);
+  EXPECT_EQ(source_a->DiscardedFrames(), 1u);
 }
 
 TEST_F(MediaStreamTrackProcessorTest, AudioStats) {

@@ -167,6 +167,7 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // transferred stream.
   CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
       transferred_source_ GUARDED_BY(lock_);
+  bool transferred_source_cleared_ GUARDED_BY(lock_) = false;
   int num_pending_pulls_ GUARDED_BY(lock_) = 0;
   uint64_t total_frames_ GUARDED_BY(lock_) = 0;
   uint64_t discarded_frames_ GUARDED_BY(lock_) = 0;
