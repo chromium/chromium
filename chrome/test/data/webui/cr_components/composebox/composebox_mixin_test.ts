@@ -1470,6 +1470,7 @@ suite('ComposeboxMixinTest', () => {
       const matches = [
         {fillIntoEdit: 'test'} as AutocompleteMatch,
         {fillIntoEdit: 'test2'} as AutocompleteMatch,
+        {fillIntoEdit: 'test3'} as AutocompleteMatch,
       ];
       element.result = {input: 'test', matches} as AutocompleteResult;
       await microtasksFinished();
@@ -1507,12 +1508,37 @@ suite('ComposeboxMixinTest', () => {
           parseFloat(wrapper.style.minHeight) < parseFloat(initialMinHeight));
       assertTrue(wrapper.clientHeight < tallHeight);
 
-      // 5. Verify existing keyboard navigation behaviors (ArrowUp, ctrlKey,
+      // 5. Verify keyboard navigation behaviors (ArrowDown, ArrowUp, ctrlKey,
       // dropdownNeeded).
+      // ArrowDown navigates forward to next suggestion ('test3', index 2).
+      input.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+      await microtasksFinished();
+      assertEquals(2, matchesElement.selectedMatchIndex);
+      assertEquals('test3', element.input);
+
+      // ArrowDown on the last match (index 2) wraps around to the first visible
+      // match (index 1) in typed suggest, skipping the hidden verbatim match.
+      input.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+      await microtasksFinished();
+      assertEquals(1, matchesElement.selectedMatchIndex);
+      assertEquals('test2', element.input);
+
+      // ArrowUp on the first visible match (index 1) wraps around to the last
+      // visible match (index 2) in typed suggest.
       input.dispatchEvent(new KeyboardEvent(
           'keydown', {key: 'ArrowUp', bubbles: true, composed: true}));
       await microtasksFinished();
-      assertEquals(0, matchesElement.selectedMatchIndex);
+      assertEquals(2, matchesElement.selectedMatchIndex);
+      assertEquals('test3', element.input);
+
+      // ArrowUp navigates backwards to previous suggestion ('test2', index 1).
+      input.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'ArrowUp', bubbles: true, composed: true}));
+      await microtasksFinished();
+      assertEquals(1, matchesElement.selectedMatchIndex);
+      assertEquals('test2', element.input);
 
       input.dispatchEvent(new KeyboardEvent('keydown', {
         key: 'ArrowDown',
@@ -1521,13 +1547,13 @@ suite('ComposeboxMixinTest', () => {
         composed: true,
       }));
       await microtasksFinished();
-      assertEquals(0, matchesElement.selectedMatchIndex);
+      assertEquals(1, matchesElement.selectedMatchIndex);
 
       element.dropdownNeeded = false;
       input.dispatchEvent(new KeyboardEvent(
           'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
       await microtasksFinished();
-      assertEquals(0, matchesElement.selectedMatchIndex);
+      assertEquals(1, matchesElement.selectedMatchIndex);
     } finally {
       inputComponent.resetHeight = originalResetHeight;
       element.style.width = originalElementWidth;

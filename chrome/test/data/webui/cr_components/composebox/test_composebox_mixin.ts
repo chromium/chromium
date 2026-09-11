@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 import 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
 import 'chrome://resources/cr_components/composebox/composebox_file_inputs.js';
 import 'chrome://resources/cr_components/composebox/composebox_input.js';
@@ -24,6 +25,7 @@ import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/s
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+// clang-format on
 
 const TestElementBase = ComposeboxEmbedderMixin(I18nMixinLit(CrLitElement));
 
@@ -94,7 +96,9 @@ export class TestComposeboxMixinElement extends TestElementBase {
               .selectedMatchIndex="${this.selectedMatchIndex}"
               @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
               @match-focusin="${this.onMatchFocusin}"
-              @match-click="${this.onMatchClick}">
+              @match-click="${this.onMatchClick}"
+              ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
+              .lastQueriedInput="${this.lastQueriedInput}">
           </cr-composebox-dropdown>
           <cr-composebox-file-inputs id="fileInputs"
               @file-change="${this.onFileChange}"
