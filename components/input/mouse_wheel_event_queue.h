@@ -11,6 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -121,6 +122,8 @@ class COMPONENT_EXPORT(INPUT) MouseWheelEventQueue {
   bool send_wheel_events_async_;
 
   blink::WebGestureDevice scrolling_device_;
+
+  base::WeakPtrFactory<MouseWheelEventQueue> weak_ptr_factory_{this};
 };
 
 }  // namespace input
