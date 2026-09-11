@@ -227,6 +227,21 @@ public class HandoffControllerUnitTest {
     }
 
     @Test
+    public void testUpdateHandoffState_PdfUrl_Disabled() {
+        when(mTab.getUrl())
+                .thenReturn(
+                        new GURL(
+                                "chrome-native://pdf/"
+                                    + "link?url=content%3A%2F%2Fcom.example.provider%2Ffile.pdf"));
+        mController =
+                new HandoffController(
+                        mActivity, mTabModelSelector, mActivityTabProvider, mDelegate);
+        ShadowLooper.idleMainLooper();
+
+        verify(mDelegate, atLeastOnce()).setHandoffEnabled(eq(mActivity), eq(false));
+    }
+
+    @Test
     public void testOnHandoffActivityDataRequested_UnsafeUrl_ReturnsNull() throws Exception {
         initializeController();
         when(mTab.getUrl()).thenReturn(new GURL("chrome://flags"));

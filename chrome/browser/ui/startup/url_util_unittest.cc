@@ -43,6 +43,12 @@ TEST(UrlUtilTest, ValidateLaunchUrlWebUnsafe) {
   EXPECT_FALSE(ValidateLaunchUrlWebUnsafe(GURL("about:about")));
   EXPECT_FALSE(ValidateLaunchUrlWebUnsafe(GURL("about:")));
 
+  // chrome-native: URLs should be rejected
+  EXPECT_FALSE(ValidateLaunchUrlWebUnsafe(GURL("chrome-native://pdf/")));
+  EXPECT_FALSE(ValidateLaunchUrlWebUnsafe(GURL(
+      "chrome-native://pdf/link?url=https%3A%2F%2Fexample.com%2Fdoc.pdf")));
+  EXPECT_FALSE(ValidateLaunchUrlWebUnsafe(GURL("chrome-native://newtab/")));
+
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(ValidateLaunchUrlWebUnsafe(
       GURL("content://packagename.providername/path")));
@@ -71,6 +77,12 @@ TEST(UrlUtilTest, ValidateLaunchUrlWebSafe) {
   EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("about:settings")));
   EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("about:about")));
   EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("about:")));
+
+  // chrome-native: URLs should be rejected in WebSafe context.
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("chrome-native://pdf/")));
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL(
+      "chrome-native://pdf/link?url=https%3A%2F%2Fexample.com%2Fdoc.pdf")));
+  EXPECT_FALSE(ValidateLaunchUrlWebSafe(GURL("chrome-native://newtab/")));
 }
 
 TEST(UrlUtilTest, ValidateUrlRejectsNestedSchemes) {

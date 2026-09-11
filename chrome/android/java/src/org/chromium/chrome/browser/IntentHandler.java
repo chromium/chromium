@@ -1072,7 +1072,7 @@ public class IntentHandler {
                 return tabIdsToUrls.isEmpty();
             } else {
                 return shouldIgnoreIntentUrl(
-                        intent, context, getUrlFromIntent(intent), isCustomTab);
+                        intent, context, getTargetUrlFromIntent(intent), isCustomTab);
             }
         } catch (Throwable t) {
             return true;
@@ -1275,6 +1275,20 @@ public class IntentHandler {
     }
 
     /**
+     * Extracts the target URL from the intent, unwrapping googlechrome:// if present.
+     *
+     * @param intent Intent to examine.
+     * @return Target URL from the Intent, or null if a valid URL couldn't be found.
+     */
+    private static @Nullable String getTargetUrlFromIntent(@Nullable Intent intent) {
+        String url = extractUrlFromIntent(intent);
+        if (isGoogleChromeScheme(url)) {
+            url = ExternalNavigationHandler.getUrlFromSelfSchemeUrl(GOOGLECHROME_SCHEME, url);
+        }
+        return url;
+    }
+
+    /**
      * Retrieve the URL from the Intent, which may be in multiple locations. If the URL is
      * googlechrome:// scheme, parse the actual navigation URL.
      *
@@ -1282,10 +1296,7 @@ public class IntentHandler {
      * @return URL from the Intent, or null if a valid URL couldn't be found.
      */
     public static @Nullable String getUrlFromIntent(@Nullable Intent intent) {
-        String url = extractUrlFromIntent(intent);
-        if (isGoogleChromeScheme(url)) {
-            url = ExternalNavigationHandler.getUrlFromSelfSchemeUrl(GOOGLECHROME_SCHEME, url);
-        }
+        String url = getTargetUrlFromIntent(intent);
         // To display a PDF in Chrome, the content URI must be encoded.
         String encodedPdfUrl =
                 PdfUtils.getEncodedContentUri(url, ContextUtils.getApplicationContext());
