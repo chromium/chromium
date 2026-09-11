@@ -33,8 +33,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
-#include "net/ssl/client_cert_store.h"
-#include "remoting/base/certificate_helpers.h"
 #include "remoting/base/ecdh_key_exchange.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/internal_headers.h"
@@ -213,7 +211,6 @@ void CorpMessagingPlayground::OnKeyPairGenerated(
   client_ = std::make_unique<CorpMessagingClient>(
       username_, key_pair_->GetPublicKey(),
       url_loader_factory_owner_->GetURLLoaderFactory(),
-      CreateClientCertStoreInstance(),
       base::BindRepeating(&CorpMessagingPlayground::OnSignalingAddressChanged,
                           weak_factory_.GetWeakPtr()));
 

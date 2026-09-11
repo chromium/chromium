@@ -104,6 +104,11 @@ void FtlRegistrationManager::RegistrationClientImpl::SignInGaia(
   request_config->path = kSignInGaiaPath;
   request_config->request_message =
       std::make_unique<ftl::SignInGaiaRequest>(request);
+#if !defined(NDEBUG)
+  // Debug builds default to sandbox endpoints which require client certificate
+  // authentication (mTLS) at the edge.
+  request_config->provide_certificate = true;
+#endif
   auto http_request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   http_request->SetResponseCallback(std::move(on_done));

@@ -5,11 +5,14 @@
 #include "remoting/base/protobuf_http_client.h"
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
+#include "remoting/base/certificate_helpers.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/protobuf_http_request_base.h"
@@ -22,6 +25,38 @@
 #include "url/gurl.h"
 
 namespace remoting {
+
+namespace {
+base::Lock& GetGlobalCreateClientCertStoreLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
+
+ProtobufHttpClient::CreateClientCertStoreCallback&
+GetGlobalCreateClientCertStoreCallbackInternal() {
+  static base::NoDestructor<ProtobufHttpClient::CreateClientCertStoreCallback>
+      callback(base::BindRepeating(&CreateClientCertStoreInstance));
+  return *callback;
+}
+
+ProtobufHttpClient::CreateClientCertStoreCallback
+GetGlobalCreateClientCertStoreCallback() {
+  base::AutoLock lock(GetGlobalCreateClientCertStoreLock());
+  return GetGlobalCreateClientCertStoreCallbackInternal();
+}
+}  // namespace
+
+// static
+void ProtobufHttpClient::SetCreateClientCertStoreCallback(
+    CreateClientCertStoreCallback callback) {
+  base::AutoLock lock(GetGlobalCreateClientCertStoreLock());
+  if (callback) {
+    GetGlobalCreateClientCertStoreCallbackInternal() = std::move(callback);
+  } else {
+    GetGlobalCreateClientCertStoreCallbackInternal() =
+        base::BindRepeating(&CreateClientCertStoreInstance);
+  }
+}
 
 ProtobufHttpClient::ProtobufHttpClient(
     const std::string& server_endpoint,
@@ -138,11 +173,21 @@ ProtobufHttpClient::CreateSimpleUrlLoader(
     }
 
     if (!service_observer_.has_value()) {
-      CHECK(client_cert_store_);
-      service_observer_.emplace(std::move(client_cert_store_));
+      if (!client_cert_store_) {
+        auto callback = GetGlobalCreateClientCertStoreCallback();
+        client_cert_store_ = callback.Run();
+      }
+      if (client_cert_store_) {
+        service_observer_.emplace(std::move(client_cert_store_));
+      } else {
+        LOG(WARNING)
+            << "ClientCertStore is null; request cannot provide client cert";
+      }
     }
-    resource_request->trusted_params->url_loader_network_observer =
-        service_observer_->Bind();
+    if (service_observer_.has_value()) {
+      resource_request->trusted_params->url_loader_network_observer =
+          service_observer_->Bind();
+    }
   }
 
   std::unique_ptr<network::SimpleURLLoader> send_url_loader =

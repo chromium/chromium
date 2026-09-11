@@ -35,6 +35,16 @@ struct ProtobufHttpRequestConfig;
 // Helper class for executing REST/Protobuf requests over HTTP.
 class ProtobufHttpClient final {
  public:
+  using CreateClientCertStoreCallback =
+      base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>;
+
+  // Sets the process-wide callback for creating a ClientCertStore.
+  // If not set, ProtobufHttpClient will fall back to calling
+  // `remoting::CreateClientCertStoreInstance()`.
+  // This method is thread-safe.
+  static void SetCreateClientCertStoreCallback(
+      CreateClientCertStoreCallback callback);
+
   // |server_endpoint|: the hostname of the server.
   // |token_getter|: nullable if none of the requests are authenticated. Must
   //     outlive |this|.

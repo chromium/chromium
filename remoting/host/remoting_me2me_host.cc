@@ -69,6 +69,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
+#include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/base/session_policies.h"
@@ -927,6 +928,9 @@ void HostProcess::StartOnNetworkThread() {
     return;
   }
 
+  ProtobufHttpClient::SetCreateClientCertStoreCallback(
+      context_->create_client_cert_store_callback());
+
   if (!multi_process_) {
     if (host_config_path_ == base::FilePath(kStdinConfigPath)) {
       // Process config we've read from stdin.
@@ -952,6 +956,7 @@ void HostProcess::StartOnNetworkThread() {
 
 void HostProcess::ShutdownOnNetworkThread() {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  ProtobufHttpClient::SetCreateClientCertStoreCallback({});
   config_watcher_.reset();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   cert_watcher_.reset();
@@ -1056,9 +1061,8 @@ void HostProcess::CreateAuthenticatorFactory() {
              (is_corp_host_ && !allow_pin_auth_.value_or(false))) {
     auth_config->AddSessionAuthzAuth(
         base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
-            context_->url_loader_factory(),
-            context_->create_client_cert_store_callback(),
-            service_account_email_, oauth_refresh_token_));
+            context_->url_loader_factory(), service_account_email_,
+            oauth_refresh_token_));
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     if (!cert_watcher_) {
@@ -1956,9 +1960,7 @@ void HostProcess::InitializeSignaling() {
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (cmd_line->HasSwitch(kEnableCorpMessaging)) {
     corp_signal_strategy_ = std::make_unique<CorpSignalStrategy>(
-        context_->url_loader_factory(),
-        context_->create_client_cert_store_callback(), GetUsername(),
-        key_pair_);
+        context_->url_loader_factory(), GetUsername(), key_pair_);
     corp_signaling_connector_ =
         std::make_unique<CorpSignalingConnector>(corp_signal_strategy_.get());
     corp_signaling_connector_->Start();
@@ -2131,9 +2133,8 @@ void HostProcess::StartHost() {
     desktop_environment_options_.set_enable_user_interface(
         enable_user_interface_);
     corp_host_status_logger_ = CorpHostStatusLogger::CreateForRemoteAccess(
-        context_->url_loader_factory(), context_->CreateClientCertStore(),
-        &local_session_policies_provider_, service_account_email_,
-        oauth_refresh_token_);
+        context_->url_loader_factory(), &local_session_policies_provider_,
+        service_account_email_, oauth_refresh_token_);
     corp_host_status_logger_->StartObserving(*session_manager);
   }
 

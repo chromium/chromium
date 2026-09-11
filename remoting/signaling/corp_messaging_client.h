@@ -20,7 +20,6 @@ class MessageLite;
 }  // namespace google::protobuf
 
 namespace net {
-class ClientCertStore;
 struct NetworkTrafficAnnotationTag;
 }  // namespace net
 
@@ -54,7 +53,6 @@ class CorpMessagingClient {
       const std::string& username,
       const std::string& public_key,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<net::ClientCertStore> client_cert_store,
       const SignalingAddressChangedCallback& on_signaling_address_changed);
 
   CorpMessagingClient(const CorpMessagingClient&) = delete;

@@ -30,7 +30,6 @@ namespace remoting {
 class CorpSignalStrategy::Core {
  public:
   Core(scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-       CreateClientCertStoreCallback client_cert_store_callback,
        const std::string& username,
        scoped_refptr<RsaKeyPair> key_pair);
   // CorpSignalStrategyTest uses a private c'tor w/ a fake messaging client.
@@ -83,12 +82,10 @@ class CorpSignalStrategy::Core {
 
 CorpSignalStrategy::Core::Core(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    CreateClientCertStoreCallback client_cert_store_callback,
     const std::string& username,
     scoped_refptr<RsaKeyPair> key_pair) {
   messaging_client_ = std::make_unique<CorpMessagingClient>(
       username, key_pair->GetPublicKey(), url_loader_factory,
-      std::move(client_cert_store_callback).Run(),
       base::BindRepeating(&Core::OnSignalingAddressChanged,
                           weak_factory_.GetWeakPtr()));
 }
@@ -305,12 +302,9 @@ void CorpSignalStrategy::Core::SetState(State state) {
 
 CorpSignalStrategy::CorpSignalStrategy(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    CreateClientCertStoreCallback client_cert_store_callback,
     const std::string& username,
     scoped_refptr<RsaKeyPair> key_pair) {
-  core_ = std::make_unique<Core>(url_loader_factory,
-                                 std::move(client_cert_store_callback),
-                                 username, key_pair);
+  core_ = std::make_unique<Core>(url_loader_factory, username, key_pair);
 }
 
 CorpSignalStrategy::CorpSignalStrategy(

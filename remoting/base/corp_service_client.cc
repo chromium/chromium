@@ -22,25 +22,21 @@
 namespace remoting {
 
 CorpServiceClient::CorpServiceClient(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<net::ClientCertStore> client_cert_store)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : http_client_(ServiceUrls::GetInstance()->remoting_corp_endpoint(),
                    /*oauth_token_getter=*/nullptr,
-                   url_loader_factory,
-                   std::move(client_cert_store)) {}
+                   url_loader_factory) {}
 
 CorpServiceClient::CorpServiceClient(
     const std::string& refresh_token,
     const std::string& service_account_email,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<net::ClientCertStore> client_cert_store)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : oauth_token_getter_(CreateCorpTokenGetter(url_loader_factory,
                                                 service_account_email,
                                                 refresh_token)),
       http_client_(ServiceUrls::GetInstance()->remoting_corp_endpoint(),
                    oauth_token_getter_.get(),
-                   url_loader_factory,
-                   std::move(client_cert_store)) {}
+                   url_loader_factory) {}
 
 CorpServiceClient::~CorpServiceClient() = default;
 

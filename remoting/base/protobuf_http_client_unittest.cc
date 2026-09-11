@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/http/http_status_code.h"
+#include "net/ssl/client_cert_store.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/mock_oauth_token_getter.h"
@@ -150,6 +151,11 @@ class ProtobufHttpClientTest : public testing::Test {
           &test_url_loader_factory_);
   ProtobufHttpClient client_{kTestServerEndpoint, &mock_token_getter_,
                              test_shared_loader_factory_, nullptr};
+
+  void TearDown() override {
+    ProtobufHttpClient::SetCreateClientCertStoreCallback({});
+    testing::Test::TearDown();
+  }
 };
 
 void ProtobufHttpClientTest::ExpectCallWithTokenSuccess() {
@@ -815,6 +821,69 @@ TEST_F(ProtobufHttpClientTest, StreamReadyTimeout) {
       ProtobufHttpStreamRequest::kStreamReadyTimeoutDuration +
       base::Seconds(1));
   ASSERT_FALSE(client_.HasPendingRequests());
+}
+
+class FakeClientCertStore : public net::ClientCertStore {
+ public:
+  FakeClientCertStore() = default;
+  ~FakeClientCertStore() override = default;
+
+  void GetClientCerts(
+      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
+      ClientCertListCallback callback) override {
+    std::move(callback).Run({});
+  }
+};
+
+TEST_F(ProtobufHttpClientTest, ProvideCertificateWithCustomStore) {
+  ProtobufHttpClient client{kTestServerEndpoint, &mock_token_getter_,
+                            test_shared_loader_factory_,
+                            std::make_unique<FakeClientCertStore>()};
+
+  ExpectCallWithTokenSuccess();
+
+  auto config = CreateDefaultRequestConfig();
+  config->provide_certificate = true;
+  auto request = CreateDefaultTestRequest(std::move(config));
+  client.ExecuteRequest(std::move(request));
+
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request->request.trusted_params.has_value());
+  ASSERT_TRUE(
+      pending_request->request.trusted_params->url_loader_network_observer);
+}
+
+TEST_F(ProtobufHttpClientTest, ProvideCertificateWithStaticCallback) {
+  bool callback_called = false;
+  ProtobufHttpClient::SetCreateClientCertStoreCallback(
+      base::BindLambdaForTesting(
+          [&]() -> std::unique_ptr<net::ClientCertStore> {
+            callback_called = true;
+            return std::make_unique<FakeClientCertStore>();
+          }));
+
+  ProtobufHttpClient client{kTestServerEndpoint, &mock_token_getter_,
+                            test_shared_loader_factory_, nullptr};
+
+  ExpectCallWithTokenSuccess();
+
+  auto config = CreateDefaultRequestConfig();
+  config->provide_certificate = true;
+  auto request = CreateDefaultTestRequest(std::move(config));
+  client.ExecuteRequest(std::move(request));
+
+  EXPECT_TRUE(callback_called);
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request->request.trusted_params.has_value());
+  ASSERT_TRUE(
+      pending_request->request.trusted_params->url_loader_network_observer);
+
+  // Clean up global callback.
+  ProtobufHttpClient::SetCreateClientCertStoreCallback({});
 }
 
 }  // namespace remoting

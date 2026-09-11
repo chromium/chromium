@@ -19,13 +19,9 @@ CorpHeartbeatServiceClient::CorpHeartbeatServiceClient(
     const std::string& directory_id,
     const std::string& refresh_token,
     const std::string& service_account_email,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<net::ClientCertStore> client_cert_store)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : directory_id_(directory_id),
-      client_(refresh_token,
-              service_account_email,
-              url_loader_factory,
-              std::move(client_cert_store)) {}
+      client_(refresh_token, service_account_email, url_loader_factory) {}
 
 CorpHeartbeatServiceClient::~CorpHeartbeatServiceClient() = default;
 

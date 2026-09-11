@@ -19,7 +19,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "remoting/base/certificate_helpers.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/url_request_context_getter.h"
@@ -70,7 +69,6 @@ void SessionAuthzPlayground::Start() {
 
   service_client_ = std::make_unique<CorpSessionAuthzServiceClient>(
       url_loader_factory_owner_->GetURLLoaderFactory(),
-      CreateClientCertStoreInstance(),
       CreateOAuthTokenGetter(host_config_file_path),
       /* support_id= */ std::string_view());
 

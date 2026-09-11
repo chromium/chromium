@@ -281,6 +281,11 @@ void FtlMessagingClient::ExecuteRequest(
   auto config = std::make_unique<ProtobufHttpRequestConfig>(tag);
   config->request_message = std::move(request);
   config->path = path;
+#if !defined(NDEBUG)
+  // Debug builds default to sandbox endpoints which require client certificate
+  // authentication (mTLS) at the edge.
+  config->provide_certificate = true;
+#endif
   if (retry_policy) {
     config->retry_policy = std::move(retry_policy);
   }
@@ -335,6 +340,11 @@ FtlMessagingClient::OpenReceiveMessagesStream(
       kReceiveMessagesTrafficAnnotation);
   config->request_message = std::move(request);
   config->path = kReceiveMessagesPath;
+#if !defined(NDEBUG)
+  // Debug builds default to sandbox endpoints which require client certificate
+  // authentication (mTLS) at the edge.
+  config->provide_certificate = true;
+#endif
   auto stream_request =
       std::make_unique<ProtobufHttpStreamRequest>(std::move(config));
   stream_request->SetStreamReadyCallback(std::move(on_channel_ready));

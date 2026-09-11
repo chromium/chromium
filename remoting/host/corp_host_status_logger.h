@@ -16,10 +16,6 @@
 #include "remoting/protocol/session_observer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace net {
-class ClientCertStore;
-}  // namespace net
-
 namespace remoting {
 namespace protocol {
 class SessionManager;
@@ -34,13 +30,11 @@ class CorpHostStatusLogger final : public protocol::SessionObserver {
  public:
   static std::unique_ptr<CorpHostStatusLogger> CreateForRemoteAccess(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<net::ClientCertStore> client_cert_store,
       const LocalSessionPoliciesProvider* local_session_policies_provider,
       const std::string& service_account_email,
       const std::string& refresh_token);
   static std::unique_ptr<CorpHostStatusLogger> CreateForRemoteSupport(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<net::ClientCertStore> client_cert_store,
       const LocalSessionPoliciesProvider* local_session_policies_provider,
       base::WeakPtr<OAuthTokenGetter> oauth_token_getter);
 

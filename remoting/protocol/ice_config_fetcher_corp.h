@@ -24,8 +24,7 @@ class IceConfigFetcherCorp final : public protocol::IceConfigFetcher {
   IceConfigFetcherCorp(
       const std::string& refresh_token,
       const std::string& service_account_email,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<net::ClientCertStore> client_cert_store);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   IceConfigFetcherCorp(const IceConfigFetcherCorp&) = delete;
   IceConfigFetcherCorp& operator=(const IceConfigFetcherCorp&) = delete;

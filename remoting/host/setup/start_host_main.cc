@@ -560,8 +560,7 @@ int StartHostMain(int argc, char** argv) {
   std::unique_ptr<HostStarter> host_starter;
   if (use_corp_machine_flow) {
     host_starter =
-        ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory(),
-                             CreateClientCertStoreInstance());
+        ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory());
   } else if (use_cloud_machine_flow) {
     fprintf(stdout,
             "*** Warning: This workflow is experimental and not fully "

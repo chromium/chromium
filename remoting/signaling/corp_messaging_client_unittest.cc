@@ -60,7 +60,7 @@ class CorpMessagingClientTest : public testing::Test {
       mock_on_signaling_address_changed_;
   CorpMessagingClient messaging_client_{
       kFakeUsername, kFakePublicKeyBase64,
-      test_responder_.GetUrlLoaderFactory(), CreateClientCertStoreInstance(),
+      test_responder_.GetUrlLoaderFactory(),
       mock_on_signaling_address_changed_.Get()};
 };
 

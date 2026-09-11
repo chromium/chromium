@@ -112,6 +112,11 @@ void RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl::
       std::make_unique<ProtobufHttpRequestConfig>(kTrafficAnnotation);
   request_config->path = kRegisterSupportHostPath;
   request_config->request_message = std::move(request);
+#if !defined(NDEBUG)
+  // Debug builds default to sandbox endpoints which require client certificate
+  // authentication (mTLS) at the edge.
+  request_config->provide_certificate = true;
+#endif
   auto http_request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   http_request->SetResponseCallback(std::move(callback));

@@ -34,6 +34,7 @@
 #include "remoting/base/corp_session_authz_service_client_factory.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/host/base/desktop_environment_options.h"
@@ -271,6 +272,10 @@ void It2MeHost::ConnectOnNetworkThread(
     CreateDeferredConnectContext create_context) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK_EQ(It2MeHostState::kDisconnected, state_);
+
+  ProtobufHttpClient::SetCreateClientCertStoreCallback(
+      host_context_->create_client_cert_store_callback());
+
   // This thread is used as a network thread in WebRTC.
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
@@ -378,7 +383,6 @@ void It2MeHost::ConnectOnNetworkThread(
   if (use_corp_session_authz_) {
     corp_host_status_logger_ = CorpHostStatusLogger::CreateForRemoteSupport(
         host_context_->url_loader_factory(),
-        host_context_->CreateClientCertStore(),
         local_session_policies_provider_.get(),
         api_token_getter_->GetWeakPtr());
     corp_host_status_logger_->StartObserving(*session_manager);
@@ -785,7 +789,6 @@ void It2MeHost::OnReceivedSupportID(const std::string& support_id,
     factory->AddSessionAuthzAuth(
         base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
             host_context_->url_loader_factory(),
-            host_context_->create_client_cert_store_callback(),
             api_token_getter_->GetWeakPtr(), support_id_));
   } else {
     CHECK(!host_secret_.empty());
@@ -823,6 +826,8 @@ void It2MeHost::DisconnectOnNetworkThread(protocol::ErrorCode error_code) {
   if (state_ == It2MeHostState::kDisconnected) {
     return;
   }
+
+  ProtobufHttpClient::SetCreateClientCertStoreCallback({});
 
   confirmation_dialog_proxy_.reset();
 

@@ -97,6 +97,11 @@ void IceConfigFetcherDefault::GetIceConfig(OnIceConfigCallback callback) {
     request_config->authenticated = false;
     request_config->api_key = google_apis::GetRemotingAPIKey();
   }
+#if !defined(NDEBUG)
+  // Debug builds default to sandbox endpoints which require client certificate
+  // authentication (mTLS) at the edge.
+  request_config->provide_certificate = true;
+#endif
   request_config->UseSimpleRetryPolicy();
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));

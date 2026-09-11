@@ -8,13 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/signaling/signal_strategy.h"
-
-namespace net {
-class ClientCertStore;
-}  // namespace net
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -28,12 +23,8 @@ class RsaKeyPair;
 // CorpSignalStrategy implements SignalStrategy using the Corp messaging service
 class CorpSignalStrategy : public SignalStrategy {
  public:
-  using CreateClientCertStoreCallback =
-      base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>;
-
   CorpSignalStrategy(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      CreateClientCertStoreCallback client_cert_store_callback,
       const std::string& username,
       scoped_refptr<RsaKeyPair> key_pair);
 

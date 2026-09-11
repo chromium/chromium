@@ -274,6 +274,11 @@ void DirectoryServiceClient::ExecuteRequest(
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
   request_config->path = path;
   request_config->request_message = std::move(request_message);
+#if !defined(NDEBUG)
+  // Debug builds default to sandbox endpoints which require client certificate
+  // authentication (mTLS) at the edge.
+  request_config->provide_certificate = true;
+#endif
   if (enable_retries) {
     request_config->UseSimpleRetryPolicy();
   }
