@@ -15,11 +15,19 @@
 #include "components/enterprise/data_protection/utils.h"
 #include "content/public/browser/web_contents_observer.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace tabs {
 class TabInterface;
 }
 
 namespace enterprise_data_protection {
+
+// Returns true if screen share is blocked for `web_contents` by enterprise
+// screenshot protection.
+bool IsScreenShareBlocked(content::WebContents* web_contents);
 
 // Observes navigations in order to correctly set that tab's Data Protection
 // settings based on the SafeBrowsing verdict for said navigation.
@@ -30,6 +38,12 @@ class DataProtectionNavigationController
     : public content::WebContentsObserver,
       public DataProtectionNavigationDelegate {
  public:
+  // Returns the DataProtectionNavigationController associated with
+  // `web_contents`, or nullptr if `web_contents` is null or does not have an
+  // associated tab.
+  static DataProtectionNavigationController* FromWebContents(
+      content::WebContents* web_contents);
+
   explicit DataProtectionNavigationController(
       tabs::TabInterface* tab_interface);
   ~DataProtectionNavigationController() override;

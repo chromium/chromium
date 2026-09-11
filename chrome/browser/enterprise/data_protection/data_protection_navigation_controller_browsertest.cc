@@ -17,10 +17,12 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
+#include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
@@ -136,6 +138,41 @@ IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest, PolicyUnset) {
   ASSERT_EQ(chain[0].url(), main_url());
   ASSERT_EQ(chain[1].url(), secondary_url());
 }
+
+IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest,
+                       FromWebContents) {
+  EXPECT_EQ(DataProtectionNavigationController::FromWebContents(nullptr),
+            nullptr);
+  EXPECT_NE(DataProtectionNavigationController::FromWebContents(contents()),
+            nullptr);
+}
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest,
+                       IsScreenShareBlocked) {
+  EXPECT_FALSE(IsScreenShareBlocked(nullptr));
+  EXPECT_FALSE(IsScreenShareBlocked(contents()));
+
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
+      "name": "block_screenshot",
+      "rule_id": "1234",
+      "sources": {
+        "urls": ["*"]
+      },
+      "restrictions": [
+        {"class": "SCREENSHOT", "level": "BLOCK"}
+      ]
+    })"});
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url()));
+  EXPECT_TRUE(IsScreenShareBlocked(contents()));
+
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {});
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_FALSE(IsScreenShareBlocked(contents()));
+}
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest, DownloadItem) {
   auto chain = enterprise_connectors::GetReferrerChain(
