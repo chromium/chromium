@@ -317,8 +317,7 @@ TEST_F(FidoHidDeviceTest, TestDeviceError) {
 }
 
 TEST_F(FidoHidDeviceTest, TestRetryChannelAllocation) {
-  constexpr uint8_t kIncorrectNonce[] = {0x00, 0x00, 0x00, 0x00,
-                                         0x00, 0x00, 0x00, 0x00};
+  constexpr std::array<uint8_t, 8> kIncorrectNonce = {};
   auto hid_device = TestHidDevice();
 
   // Replace device HID connection with custom client connection bound to mock
@@ -430,14 +429,11 @@ TEST_F(FidoHidDeviceTest, TestKeepAliveMessage) {
 
 // InvertChannelID inverts all the bits in the given channel ID. This is used to
 // create a channel ID that will not be equal to the expected channel ID.
-std::array<uint8_t, 4> InvertChannelID(
-    const std::array<uint8_t, 4> channel_id) {
-  std::array<uint8_t, 4> ret;
-  UNSAFE_TODO(memcpy(ret.data(), channel_id.data(), ret.size()));
-  for (size_t i = 0; i < ret.size(); i++) {
-    ret[i] ^= 0xff;
+std::array<uint8_t, 4> InvertChannelID(std::array<uint8_t, 4> channel_id) {
+  for (uint8_t& byte : channel_id) {
+    byte ^= 0xff;
   }
-  return ret;
+  return channel_id;
 }
 
 TEST_F(FidoHidDeviceTest, TestMessageOnOtherChannel) {
