@@ -9,13 +9,14 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
+class PrefService;
 class Profile;
 
 namespace ash::settings {
 
 class PeripheralDataAccessHandler : public content::WebUIMessageHandler {
  public:
-  static bool GetPrefState();
+  static bool GetPrefState(const PrefService& local_state);
 
   explicit PeripheralDataAccessHandler(Profile* profile);
   ~PeripheralDataAccessHandler() override;

@@ -314,14 +314,14 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
 
     // Pciguard can only be set by non-guest, primary users. By default,
     // Pciguard is turned on.
+    const bool pref_state =
+        settings::PeripheralDataAccessHandler::GetPrefState(local_state_.get());
     if (PeripheralNotificationManager::IsInitialized()) {
       PeripheralNotificationManager::Get()->SetPcieTunnelingAllowedState(
-          settings::PeripheralDataAccessHandler::GetPrefState());
+          pref_state);
     }
-    PciguardClient::Get()->SendExternalPciDevicesPermissionState(
-        settings::PeripheralDataAccessHandler::GetPrefState());
-    TypecdClient::Get()->SetPeripheralDataAccessPermissionState(
-        settings::PeripheralDataAccessHandler::GetPrefState());
+    PciguardClient::Get()->SendExternalPciDevicesPermissionState(pref_state);
+    TypecdClient::Get()->SetPeripheralDataAccessPermissionState(pref_state);
 
     CrasAudioHandler::Get()->RefreshVoiceIsolationState();
     CrasAudioHandler::Get()->RefreshVoiceIsolationPreferredEffect();

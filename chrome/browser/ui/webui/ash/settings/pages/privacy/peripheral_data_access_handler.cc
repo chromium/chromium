@@ -42,10 +42,10 @@ bool CheckIfThunderboltFilepathExists() {
 }
 
 // static
-bool PeripheralDataAccessHandler::GetPrefState() {
+bool PeripheralDataAccessHandler::GetPrefState(const PrefService& local_state) {
   // If the device is managed, use the local state pref.
   if (InstallAttributes::Get()->IsEnterpriseManaged()) {
-    return g_browser_process->local_state()->GetBoolean(
+    return local_state.GetBoolean(
         ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled);
   }
 
