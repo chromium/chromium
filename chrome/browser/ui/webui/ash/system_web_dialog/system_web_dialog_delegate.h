@@ -23,6 +23,10 @@
 // like the login and lock screens, the dialog must be modal to be displayed on
 // top of the overlay.
 
+namespace content {
+class BrowserContext;
+}
+
 namespace ash {
 
 class SystemWebDialogDelegate : public ui::WebDialogDelegate {

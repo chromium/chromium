@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/media_stream_request.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -20,6 +20,7 @@
 class GURL;
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 class WebUI;
