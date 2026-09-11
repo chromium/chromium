@@ -22,11 +22,6 @@ class SafeChain;
 
 namespace internal {
 
-// TODO(crbug.com/555736563): Support pointer-like return types (such as
-// `gfx::NativeView` / `gfx::NativeWindow`, which are class wrappers on macOS
-// but raw pointers on other platforms) to ensure consistent chaining across
-// platforms.
-
 // TODO(crbug.com/555741149): Support automatic string-like parameter
 // conversions (e.g. between `const char*`, `std::string`, and
 // `std::string_view`) when forwarding return values as arguments along the

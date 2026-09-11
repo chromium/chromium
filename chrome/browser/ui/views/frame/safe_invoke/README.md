@@ -74,6 +74,12 @@ views::ToggleImageButton* pin_button =
     `DCHECK`/crash on non-null targets. We may introduce a specialized
     function (such as `.ThenIfCallIsValid()`) to allow optional callback
     execution in the future.
+- **Do not chain through platform-native handles:** Types like
+  `gfx::NativeView` and `gfx::NativeWindow` are raw pointers on Windows/Linux
+  (`aura::Window*`) but wrapper classes on macOS (`base::apple::WeakNSView`).
+  Consequently, `SafeChain` treats them as chainable intermediate pointers on
+  Windows/Linux, but as terminal `std::optional` values on macOS. Any method
+  chaining through them will compile on one platform but fail on the other.
 
 ---
 
