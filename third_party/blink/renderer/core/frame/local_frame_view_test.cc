@@ -15,11 +15,14 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
@@ -380,6 +383,98 @@ TEST_F(LocalFrameViewTest,
   EXPECT_EQ(2u, frame_view->BackgroundAttachmentFixedObjects().size());
   EXPECT_TRUE(
       frame_view->RequiresMainThreadScrollingForBackgroundAttachmentFixed());
+}
+
+class DraggableRegionsChromeClient : public RenderingTestChromeClient {
+ public:
+  bool SupportsDraggableRegions() override { return true; }
+  void DraggableRegionsChanged() override { ++draggable_regions_changed_; }
+
+  int draggable_regions_changed_ = 0;
+};
+
+class LocalFrameViewDraggableRegionsTest : public RenderingTest {
+ protected:
+  LocalFrameViewDraggableRegionsTest()
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
+        chrome_client_(MakeGarbageCollected<DraggableRegionsChromeClient>()) {}
+
+  RenderingTestChromeClient& GetChromeClient() const override {
+    return *chrome_client_;
+  }
+  int DraggableRegionsChangedCount() const {
+    return chrome_client_->draggable_regions_changed_;
+  }
+
+ private:
+  Persistent<DraggableRegionsChromeClient> chrome_client_;
+};
+
+// A style change that may affect draggable regions but turns out not to must
+// still clear the dirty bit, so that later paints do not keep recomputing the
+// regions.
+TEST_F(LocalFrameViewDraggableRegionsTest,
+       DirtyBitClearedWhenRegionsUnchanged) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #drag { app-region: drag; position: relative; z-index: 1;
+              width: 100px; height: 50px; }
+    </style>
+    <div id="drag"></div>
+  )HTML");
+
+  ASSERT_EQ(1u, GetDocument().DraggableRegions().size());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 50),
+            GetDocument().DraggableRegions()[0].bounds);
+  EXPECT_FALSE(GetDocument().DraggableRegionsDirty());
+  int changed_count = DraggableRegionsChangedCount();
+
+  // A z-index change marks the regions dirty but needs no layout, so they are
+  // recomputed at paint. Here they do not change.
+  Element* drag = GetElementById("drag");
+  drag->SetInlineStyleProperty(CSSPropertyID::kZIndex, "2");
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(GetDocument().DraggableRegionsDirty());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetDocument().DraggableRegionsDirty());
+  EXPECT_EQ(changed_count, DraggableRegionsChangedCount());
+  EXPECT_EQ(1u, GetDocument().DraggableRegions().size());
+}
+
+// Draggable regions are in absolute coordinates, so a transform change, which
+// needs neither layout nor a scroll update, and with will-change not even a
+// repaint, must still update them.
+TEST_F(LocalFrameViewDraggableRegionsTest, TransformChangeUpdatesRegions) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #drag { app-region: drag; width: 100px; height: 50px;
+              will-change: transform; }
+    </style>
+    <div id="drag"></div>
+  )HTML");
+
+  ASSERT_EQ(1u, GetDocument().DraggableRegions().size());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 50),
+            GetDocument().DraggableRegions()[0].bounds);
+  int changed_count = DraggableRegionsChangedCount();
+
+  Element* drag = GetElementById("drag");
+  drag->SetInlineStyleProperty(CSSPropertyID::kTransform, "translateX(30px)");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(1u, GetDocument().DraggableRegions().size());
+  EXPECT_EQ(PhysicalRect(30, 0, 100, 50),
+            GetDocument().DraggableRegions()[0].bounds);
+  EXPECT_EQ(changed_count + 1, DraggableRegionsChangedCount());
+  EXPECT_FALSE(GetDocument().DraggableRegionsDirty());
+
+  drag->SetInlineStyleProperty(CSSPropertyID::kTransform, "translateY(10px)");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(1u, GetDocument().DraggableRegions().size());
+  EXPECT_EQ(PhysicalRect(0, 10, 100, 50),
+            GetDocument().DraggableRegions()[0].bounds);
+  EXPECT_EQ(changed_count + 2, DraggableRegionsChangedCount());
 }
 
 class LocalFrameViewSimTest : public SimTest {};

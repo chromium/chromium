@@ -3478,10 +3478,14 @@ void LayoutObject::StyleDidChange(
     SetShouldInvalidatePaintForHitTest();
   }
 
+  // Draggable regions are in absolute coordinates, so a transform change
+  // moves them without layout or a scroll update.
   if (old_style &&
       (old_style->Visibility() != new_style.Visibility() ||
        old_style->EffectiveZIndex() != new_style.EffectiveZIndex() ||
-       IsStackingContext(*old_style) != IsStackingContext(new_style))) {
+       IsStackingContext(*old_style) != IsStackingContext(new_style) ||
+       diff.transform_changed) &&
+      GetDocument().HasDraggableRegions()) {
     GetDocument().SetDraggableRegionsDirty(true);
   }
 

@@ -2003,10 +2003,15 @@ void LocalFrameView::UpdateDocumentDraggableRegions() const {
       !frame_->GetPage()->GetChromeClient().SupportsDraggableRegions()) {
     return;
   }
+  LayoutView* layout_view = document->GetLayoutView();
+  DCHECK(layout_view);
 
   Vector<DraggableRegionValue> new_regions;
-  CollectDraggableRegions(*(document->GetLayoutBox()), new_regions);
+  CollectDraggableRegions(*layout_view, new_regions);
   if (new_regions == document->DraggableRegions()) {
+    // The request has been served. Without this the bit stays set and every
+    // paint recomputes the regions from now on.
+    document->SetDraggableRegionsDirty(false);
     return;
   }
 
@@ -3340,6 +3345,11 @@ void LocalFrameView::PaintTree(
         if (needs_clear_repaint_flags) {
           if (auto* layout_view = frame_view.GetLayoutView())
             layout_view->Layer()->ClearNeedsRepaintRecursively();
+        }
+        // Regions may have changed with a style change that needs no layout
+        // (visibility, z-index, transform), and possibly no repaint either.
+        if (frame_view.frame_->GetDocument()->DraggableRegionsDirty()) {
+          frame_view.UpdateDocumentDraggableRegions();
         }
         PaintTiming::From(*frame_view.GetFrame().GetDocument())
             .NotifyPaintFinished();
