@@ -10,5 +10,5 @@
 ] interface EventTrigger : AnimationTrigger {
   [CallWith=ExecutionContext, RaisesException] constructor(optional EventTriggerOptions options = {});
   readonly attribute DOMString eventType;
-  readonly attribute EventTarget eventTarget;
+  readonly attribute Node eventTarget;
 };

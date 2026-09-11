@@ -11,9 +11,9 @@
 namespace blink {
 
 class EventListener;
-class EventTarget;
 class EventTriggerOptions;
 class ExecutionContext;
+class Node;
 
 class CORE_EXPORT EventTrigger : public AnimationTrigger {
   DEFINE_WRAPPERTYPEINFO();
@@ -23,7 +23,7 @@ class CORE_EXPORT EventTrigger : public AnimationTrigger {
                               EventTriggerOptions* options,
                               ExceptionState& exception_state);
 
-  EventTrigger(String event_type, EventTarget& event_target);
+  EventTrigger(String event_type, Node& event_target);
 
   void Invoke();
 
@@ -33,7 +33,7 @@ class CORE_EXPORT EventTrigger : public AnimationTrigger {
 
   // IDL
   String eventType() const { return event_type_; }
-  EventTarget* eventTarget() const { return event_target_.Get(); }
+  Node* eventTarget() const { return event_target_.Get(); }
 
   void Trace(Visitor* visitor) const override;
 
@@ -47,7 +47,7 @@ class CORE_EXPORT EventTrigger : public AnimationTrigger {
   void ClearListenerIfNecessary();
 
   String event_type_;
-  WeakMember<EventTarget> event_target_;
+  WeakMember<Node> event_target_;
   WeakMember<EventListener> event_listener_;
 };
 

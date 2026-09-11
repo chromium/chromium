@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -30,7 +31,7 @@ class TriggerEventListener : public NativeEventListener {
 
 }  // namespace
 
-EventTrigger::EventTrigger(String event_type, EventTarget& event_target)
+EventTrigger::EventTrigger(String event_type, Node& event_target)
     : event_type_(event_type), event_target_(&event_target) {}
 
 /* static */
