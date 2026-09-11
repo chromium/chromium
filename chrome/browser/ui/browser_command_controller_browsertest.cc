@@ -778,6 +778,7 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
     command_controller->PrintingStateChanged();
     command_controller->ExtensionStateChanged();
     command_controller->FindBarVisibilityChanged();
+    command_controller->ZoomStateChanged();
     command_controller->UpdateReloadStopState(
         /*is_loading=*/true,
         /*force=*/false);
@@ -838,6 +839,116 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
   // Exit locked fullscreen and verify IDC_EXIT is enabled again.
   ExitLockedFullscreen();
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_EXIT));
+}
+
+// Internal helper methods that update command state must not re-enable
+// restricted commands while in locked fullscreen mode.
+IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
+                       CommandsRemainDisabledWhenNotLockedForOnTask) {
+  SetLockedForOnTask(false);
+  CommandUpdater* const command_updater = GetCommandUpdater();
+  chrome::BrowserCommandController* const controller =
+      chrome::BrowserCommandController::From(browser());
+
+  EnterLockedFullscreen();
+
+  constexpr int kRestrictedCommands[] = {
+      IDC_FIND,
+      IDC_FIND_NEXT,
+      IDC_FIND_PREVIOUS,
+      IDC_CLOSE_FIND_OR_STOP,
+      IDC_ZOOM_PLUS,
+      IDC_ZOOM_NORMAL,
+      IDC_ZOOM_MINUS,
+      IDC_DUPLICATE_TARGET_TAB,
+      IDC_PIN_TARGET_TAB,
+      IDC_GROUP_TARGET_TAB,
+      IDC_MUTE_TARGET_SITE,
+      IDC_OPEN_GLIC,
+  };
+
+  // Commands must be disabled initially upon entering locked fullscreen.
+  for (int id : kRestrictedCommands) {
+    EXPECT_FALSE(command_updater->IsCommandEnabled(id))
+        << "Command " << id
+        << " should be disabled initially in locked fullscreen";
+  }
+
+  // Simulate a tab blocked state transition.
+  const int active = browser()->tab_strip_model()->active_index();
+  browser()->tab_strip_model()->SetTabBlocked(active, true);
+  browser()->tab_strip_model()->SetTabBlocked(active, false);
+
+  // Simulate zoom, tab focus, and active Glic instance changes.
+  controller->ZoomStateChanged();
+  controller->TabKeyboardFocusChangedTo(active);
+  controller->GlicActiveInstanceChanged(nullptr);
+
+  // Commands must remain disabled in locked fullscreen mode.
+  for (int id : kRestrictedCommands) {
+    EXPECT_FALSE(command_updater->IsCommandEnabled(id))
+        << "Command " << id << " should remain disabled in locked fullscreen";
+  }
+}
+
+// When locked for OnTask, restricted commands (such as `IDC_ZOOM_*` and
+// `IDC_OPEN_GLIC`) must remain disabled after state updates, while
+// OnTask allowlisted commands (such as `IDC_FIND`) remain enabled.
+IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
+                       CommandsRemainRestrictedWhenLockedForOnTask) {
+  SetLockedForOnTask(true);
+  CommandUpdater* const command_updater = GetCommandUpdater();
+  chrome::BrowserCommandController* const controller =
+      chrome::BrowserCommandController::From(browser());
+
+  EnterLockedFullscreen();
+
+  // When locked for OnTask, Find commands are allowlisted and enabled, while
+  // `IDC_ZOOM_*` and `IDC_OPEN_GLIC` are restricted.
+  constexpr int kFindCommands[] = {
+      IDC_FIND,
+      IDC_FIND_NEXT,
+      IDC_FIND_PREVIOUS,
+      IDC_CLOSE_FIND_OR_STOP,
+  };
+  for (int id : kFindCommands) {
+    EXPECT_TRUE(command_updater->IsCommandEnabled(id))
+        << "Command " << id
+        << " should be enabled initially when locked for OnTask";
+  }
+
+  constexpr int kRestrictedCommands[] = {
+      IDC_ZOOM_PLUS,        IDC_ZOOM_NORMAL,
+      IDC_ZOOM_MINUS,       IDC_DUPLICATE_TARGET_TAB,
+      IDC_PIN_TARGET_TAB,   IDC_GROUP_TARGET_TAB,
+      IDC_MUTE_TARGET_SITE, IDC_OPEN_GLIC,
+  };
+  for (int id : kRestrictedCommands) {
+    EXPECT_FALSE(command_updater->IsCommandEnabled(id))
+        << "Command " << id
+        << " should be disabled initially when locked for OnTask";
+  }
+
+  // Simulate a tab blocked state transition.
+  const int active = browser()->tab_strip_model()->active_index();
+  browser()->tab_strip_model()->SetTabBlocked(active, true);
+  browser()->tab_strip_model()->SetTabBlocked(active, false);
+
+  // Simulate zoom, tab focus, and active Glic instance changes.
+  controller->ZoomStateChanged();
+  controller->TabKeyboardFocusChangedTo(active);
+  controller->GlicActiveInstanceChanged(nullptr);
+
+  // Find commands must remain enabled when locked for OnTask, while restricted
+  // commands remain disabled.
+  for (int id : kFindCommands) {
+    EXPECT_TRUE(command_updater->IsCommandEnabled(id))
+        << "Command " << id << " should remain enabled when locked for OnTask";
+  }
+  for (int id : kRestrictedCommands) {
+    EXPECT_FALSE(command_updater->IsCommandEnabled(id))
+        << "Command " << id << " should remain disabled when locked for OnTask";
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,

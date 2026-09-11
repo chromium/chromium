@@ -585,11 +585,9 @@ void BrowserCommandController::FindBarVisibilityChanged() {
   // locked for OnTask (only relevant for non-web browser scenarios).
   // TODO(crbug.com/365146870): Remove once we consolidate locked fullscreen
   // with OnTask.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_ && !IsLockedForOnTask(browser_)) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/true)) {
     return;
   }
-#endif
   UpdateCloseFindOrStop();
 }
 
@@ -1625,11 +1623,9 @@ bool BrowserCommandController::UpdateCommandEnabled(int id, bool state) {
   // scenarios).
   // TODO(crbug.com/365146870): Remove once we consolidate locked fullscreen
   // with OnTask.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_ && !IsLockedForOnTask(browser_)) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/true)) {
     return false;
   }
-#endif
 
   return command_updater_->UpdateCommandEnabled(id, state);
 }
@@ -1717,11 +1713,9 @@ void BrowserCommandController::InitCommandState() {
   // (like Back & Forward with initial page load) must have their state
   // initialized here, otherwise they will be forever disabled.
 
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   // Navigation commands
   const bool can_reload = CanReload(browser_);
@@ -2095,11 +2089,9 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
 }
 
 void BrowserCommandController::UpdateCommandsForIncognitoAvailability() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   UpdateSharedCommandsForIncognitoAvailability(command_updater_.get(),
                                                profile());
@@ -2127,11 +2119,9 @@ void BrowserCommandController::UpdateCommandsForIncognitoAvailability() {
 void BrowserCommandController::UpdateCommandsForExtensionsMenu() {
   // TODO(crbug.com/41124423): Talk with isandrk@chromium.org about whether this
   // is necessary for the experiment or not.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   command_updater_->UpdateCommandEnabled(
       IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
@@ -2148,11 +2138,9 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   // (only relevant for non-web browser scenarios).
   // TODO(b/365146870): Remove once we consolidate locked fullscreen with
   // OnTask.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_ && !IsLockedForOnTask(browser_)) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/true)) {
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   content::WebContents* current_web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
@@ -2170,15 +2158,13 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_->UpdateCommandEnabled(IDC_RELOAD_BYPASSING_CACHE,
                                          can_reload);
   command_updater_->UpdateCommandEnabled(IDC_RELOAD_CLEARING_CACHE, can_reload);
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     // Skip other command updates.
     // NOTE: If new commands are being added, please add them after this
     // conditional and notify the ChromeOS team by filing a bug under this
     // component -- b/?q=componentid:1389107.
     return;
   }
-#endif
 
   // Window management commands
   bool is_app =
@@ -2262,6 +2248,10 @@ void BrowserCommandController::UpdateCommandsForTabState() {
 }
 
 void BrowserCommandController::UpdateCommandsForZoomState() {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
+    return;
+  }
+
   content::WebContents* contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!contents) {
@@ -2288,11 +2278,9 @@ void BrowserCommandController::UpdateCommandsForContentRestrictionState() {
 
 // TODO(crbug.com/442892562): Remove this function once the feature is launched.
 void BrowserCommandController::UpdateCommandsForDevTools() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   bool dev_tools_enabled = DevToolsWindow::AllowDevToolsFor(
       profile(), browser_->tab_strip_model()->GetActiveWebContents());
@@ -2313,11 +2301,9 @@ void BrowserCommandController::UpdateCommandsForDevTools() {
 }
 
 void BrowserCommandController::UpdateCommandsForBookmarkEditing() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   command_updater_->UpdateCommandEnabled(IDC_BOOKMARK_THIS_TAB,
                                          CanBookmarkCurrentTab(browser_));
@@ -2326,11 +2312,9 @@ void BrowserCommandController::UpdateCommandsForBookmarkEditing() {
 }
 
 void BrowserCommandController::UpdateCommandsForBookmarkBar() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   const bool common_enabled =
       browser_defaults::bookmarks_enabled && !profile()->IsGuestSession() &&
@@ -2358,22 +2342,18 @@ void BrowserCommandController::UpdateCommandsForBookmarkBar() {
 }
 
 void BrowserCommandController::UpdateCommandsForFileSelectionDialogs() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   UpdateSaveAsState();
   command_updater_->UpdateCommandEnabled(IDC_OPEN_FILE, CanOpenFile(browser_));
 }
 
 void BrowserCommandController::UpdateCommandsForFullscreenMode() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   const bool is_fullscreen = window() && window()->IsFullscreen();
   const bool show_main_ui = IsShowingMainUI();
@@ -2532,6 +2512,10 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
 }
 
 void BrowserCommandController::UpdateTabSwitchingCommandState() {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/true)) {
+    return;
+  }
+
   command_updater_->UpdateCommandEnabled(IDC_SELECT_NEXT_TAB,
                                          is_tab_switching_enabled_);
   command_updater_->UpdateCommandEnabled(IDC_SELECT_PREVIOUS_TAB,
@@ -2567,11 +2551,9 @@ void BrowserCommandController::SetTabSwitchCommandsEnabled(bool enabled) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void BrowserCommandController::UpdatePrintingState() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   UpdateCommandAndActionEnabled(IDC_PRINT, kActionPrint, CanPrint(browser_));
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -2581,6 +2563,10 @@ void BrowserCommandController::UpdatePrintingState() {
 }
 
 void BrowserCommandController::UpdateGlicState() {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
+    return;
+  }
+
   if (glic::GlicEnabling::IsEnabledByGlobalCriteria()) {
     auto* service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile());
@@ -2602,11 +2588,9 @@ void BrowserCommandController::UpdateGlicState() {
 }
 
 void BrowserCommandController::UpdateSaveAsState() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   command_updater_->UpdateCommandEnabled(IDC_SAVE_PAGE, CanSavePage(browser_));
 }
@@ -2617,11 +2601,9 @@ void BrowserCommandController::UpdateReloadStopState(bool is_loading,
   // locked for OnTask (only relevant for non-web browser scenarios).
   // TODO(crbug.com/365146870): Remove once we consolidate locked fullscreen
   // with OnTask.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_ && !IsLockedForOnTask(browser_)) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/true)) {
     return;
   }
-#endif
 
   window()->UpdateReloadStopState(is_loading, force);
   command_updater_->UpdateCommandEnabled(IDC_STOP, is_loading);
@@ -2629,11 +2611,9 @@ void BrowserCommandController::UpdateReloadStopState(bool is_loading,
 }
 
 void BrowserCommandController::UpdateTabRestoreCommandState() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(profile());
@@ -2646,6 +2626,10 @@ void BrowserCommandController::UpdateTabRestoreCommandState() {
 }
 
 void BrowserCommandController::UpdateCommandsForFind() {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/true)) {
+    return;
+  }
+
   TabStripModel* model = browser_->tab_strip_model();
   int active_index = model->active_index();
   bool is_actor_overlay_visible = false;
@@ -2684,11 +2668,9 @@ void BrowserCommandController::UpdateCloseFindOrStop() {
 }
 
 void BrowserCommandController::UpdateCommandsForMediaRouter() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     return;
   }
-#endif
 
   UpdateCommandAndActionEnabled(IDC_ROUTE_MEDIA, kActionRouteMedia,
                                 CanRouteMedia(browser_));
@@ -2696,6 +2678,10 @@ void BrowserCommandController::UpdateCommandsForMediaRouter() {
 
 void BrowserCommandController::UpdateCommandsForTabKeyboardFocus(
     std::optional<int> target_index) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
+    return;
+  }
+
   command_updater_->UpdateCommandEnabled(
       IDC_DUPLICATE_TARGET_TAB,
       browser_->GetType() != BrowserWindowInterface::Type::TYPE_APP &&
@@ -2722,13 +2708,11 @@ void BrowserCommandController::UpdateCommandsForWebContentsFocus() {
 }
 
 void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_locked_fullscreen_) {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
     // Keep tab management commands disabled when in locked fullscreen so users
     // cannot exit this mode. Only relevant for non-web browser scenarios.
     return;
   }
-#endif
 
   int tab_index = browser_->tab_strip_model()->active_index();
   // No commands are updated if there is not yet any selected tab.
@@ -2754,6 +2738,10 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
 }
 
 void BrowserCommandController::UpdateCommandsForEnableGlicChanged() {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
+    return;
+  }
+
   command_updater_->UpdateCommandEnabled(
       IDC_OPEN_GLIC, glic::GlicEnabling::IsEnabledForProfile(profile()));
 
@@ -2770,6 +2758,10 @@ void BrowserCommandController::UpdateCommandsForEnableGlicChanged() {
 }
 
 void BrowserCommandController::UpdateCommandsForTabGroupFocusChanged() {
+  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
     const bool is_focused =
         browser_->tab_strip_model()->GetFocusedGroup().has_value();
@@ -2793,6 +2785,19 @@ void BrowserCommandController::UpdateCommandAndActionEnabled(
       action->SetEnabled(enabled);
     }
   }
+}
+
+bool BrowserCommandController::IsInLockedFullscreenMode(
+    bool allow_ontask) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (is_locked_fullscreen_) {
+    if (allow_ontask && IsLockedForOnTask(browser_)) {
+      return false;
+    }
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return false;
 }
 
 std::unique_ptr<CommandUpdater>

@@ -267,6 +267,12 @@ class BrowserCommandController : public CommandUpdater,
                                      actions::ActionId action_id,
                                      bool enabled);
 
+  // Returns true if the browser is in locked fullscreen mode. If `allow_ontask`
+  // is true, returns false when the browser is locked for `OnTask`.
+  //
+  // Always returns false on non ChromeOS platforms.
+  bool IsInLockedFullscreenMode(bool allow_ontask) const;
+
   std::unique_ptr<CommandUpdater> CreateCommandUpdater();
 
   BrowserWindow* window();
