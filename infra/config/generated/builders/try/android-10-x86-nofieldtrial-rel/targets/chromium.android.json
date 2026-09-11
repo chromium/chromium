@@ -1155,8 +1155,15 @@
             }
           ],
           "optional_dimensions": {
-            "60": {
+            "120": {
               "caches": "android_29_google_apis_x86"
+            },
+            "30": {
+              "caches": "android_29_google_apis_x86",
+              "cpu": "x86-64-n4"
+            },
+            "60": {
+              "cpu": "x86-64-n4"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
