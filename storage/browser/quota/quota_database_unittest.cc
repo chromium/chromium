@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <memory>
 #include <set>
@@ -115,9 +116,9 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
     std::set<EntryType> table;
 
     template <size_t length>
-    explicit EntryVerifier(const EntryType (&entries)[length]) {
-      for (size_t i = 0; i < length; ++i) {
-        table.insert(UNSAFE_TODO(entries[i]->Clone()));
+    explicit EntryVerifier(const std::array<EntryType, length>& entries) {
+      for (const auto& entry : entries) {
+        table.insert(entry->Clone());
       }
     }
 
@@ -763,7 +764,7 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
   StorageKey storage_key3 =
       StorageKey::CreateFromStringForTesting("http://gle/");
 
-  Entry kTableEntries[] = {
+  const std::array kTableEntries = {
       mojom::BucketTableEntry::New(1, storage_key1.Serialize(),
                                    kDefaultBucketName, -1, 2147483647, now,
                                    now),
