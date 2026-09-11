@@ -309,7 +309,7 @@ void NTPResourceCache::CreateNewTabIsolatedHTML(
   ui::TemplateReplacements replacements;
   base::DictValue localized_strings;
 
-  replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_TAB_TITLE);
+  replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_TITLE);
   replacements["isolatedTabHeading"] =
       l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_HEADING);
   replacements["isolatedTabDescription"] =

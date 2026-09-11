@@ -119,6 +119,10 @@
                desc="Title of the new incognito tab page, not to be confused with the action of opening a new incognito tab.">
         New Incognito Tab
       </message>
+      <message name="IDS_NEW_ISOLATED_TAB_TITLE"
+               desc="Title of the new isolated tab page, not to be confused with the action of opening a new isolated tab.">
+        New Isolated Tab
+      </message>
       <message name="IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL"
           desc="Accessibility label for a link labeled 'Learn more' that links to a help article about Incognito mode."
           formatter_data="android_java">

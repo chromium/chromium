@@ -89,11 +89,14 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   Profile* profile = GetProfile();
 
   // The title should be "New Tab" for regular mode and guest mode, while it
-  // should be "New Incognito Tab" for incognito mode.
-  const int title_resource_id =
-      profile->IsOffTheRecord() && !profile->IsGuestSession()
-          ? IDS_NEW_INCOGNITO_TAB_TITLE
-          : IDS_NEW_TAB_TITLE;
+  // should be "New Incognito Tab" for incognito mode and "New Isolated Tab"
+  // for isolated mode.
+  int title_resource_id = IDS_NEW_TAB_TITLE;
+  if (profile->IsEnterpriseIsolatedModeProfile()) {
+    title_resource_id = IDS_NEW_ISOLATED_TAB_TITLE;
+  } else if (profile->IsIncognitoProfile()) {
+    title_resource_id = IDS_NEW_INCOGNITO_TAB_TITLE;
+  }
   web_ui->OverrideTitle(l10n_util::GetStringUTF16(title_resource_id));
 
   if (!profile->IsGuestSession()) {
