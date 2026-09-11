@@ -26,8 +26,8 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
-#include "remoting/base/email_utils.h"
 #include "remoting/host/client_session_control.h"
+#include "remoting/host/disconnect_window_base.h"
 #include "remoting/host/host_window.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/win/core_resource.h"
@@ -46,24 +46,13 @@ constexpr int kWindowBorderRadius = 14;
 // Margin between dialog controls (in dialog units).
 constexpr int kWindowTextMargin = 8;
 
-// The amount of time to wait before allowing another position toggle.
-constexpr base::TimeDelta kToggleCooldown = base::Seconds(3);
-
 // The amount of time to wait before hiding the disconnect window.
 constexpr base::TimeDelta kAutoHideTimeout = base::Seconds(10);
 
 // The length of the hide and show animations.
 constexpr DWORD kAnimationDurationMs = 200;
 
-enum class WindowAnchor {
-  kBottom,
-  kTop,
-};
-
-// Remembers the last selected anchor position across dialog instances.
-WindowAnchor g_current_anchor = WindowAnchor::kBottom;
-
-class DisconnectWindowWin : public HostWindow {
+class DisconnectWindowWin : public DisconnectWindowBase {
  public:
   DisconnectWindowWin();
 
@@ -79,6 +68,9 @@ class DisconnectWindowWin : public HostWindow {
   // HostWindow overrides.
   void Start(const base::WeakPtr<ClientSessionControl>& client_session_control)
       override;
+
+ protected:
+  void OnCooldownExpired() override;
 
  private:
   static INT_PTR CALLBACK DialogProc(HWND hwnd,
@@ -104,9 +96,6 @@ class DisconnectWindowWin : public HostWindow {
 
   // Toggles the dialog anchor between top and bottom.
   void ToggleAlignment();
-
-  // Re-enables the toggle button when cooldown expires.
-  void OnCooldownExpired();
 
   // Updates the toggle button text according to the current anchor.
   void UpdateToggleButtonText();
@@ -135,18 +124,11 @@ class DisconnectWindowWin : public HostWindow {
   // Called when local keyboard event is seen and shows the dialog (if hidden).
   void OnLocalKeyPressed(uint32_t usb_keycode);
 
-  // Used to disconnect the client session.
-  base::WeakPtr<ClientSessionControl> client_session_control_;
-
   // Used to watch for local input which will trigger the dialog to be reshown.
   std::unique_ptr<LocalInputMonitor> local_input_monitor_;
 
-  // Specifies the remote user's email address.
-  std::string email_;
-
   bool was_auto_hidden_ = false;
   base::OneShotTimer auto_hide_timer_;
-  base::OneShotTimer cooldown_timer_;
 
   HWND hwnd_ = nullptr;
   HWND hwnd_toggle_button_ = nullptr;
@@ -203,13 +185,10 @@ void DisconnectWindowWin::EnableAutoHide(
 void DisconnectWindowWin::Start(
     const base::WeakPtr<ClientSessionControl>& client_session_control) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!client_session_control_);
   DCHECK(client_session_control);
 
-  client_session_control_ = client_session_control;
+  DisconnectWindowBase::Start(client_session_control);
 
-  std::string client_jid = client_session_control_->client_jid();
-  email_ = client_jid.substr(0, client_jid.find('/'));
   if (!BeginDialog()) {
     EndDialog();
     return;
@@ -387,14 +366,10 @@ void DisconnectWindowWin::EndDialog() {
     hwnd_toggle_button_ = nullptr;
   }
 
-  // Disable auto-hide and cooldown events since the window has been destroyed.
+  // Disable auto-hide since the window has been destroyed.
   auto_hide_timer_.Stop();
-  cooldown_timer_.Stop();
 
-  if (client_session_control_) {
-    client_session_control_->DisconnectSession(
-        ErrorCode::OK, "Disconnect window closed.", FROM_HERE);
-  }
+  DisconnectSession("Disconnect window closed.");
 }
 
 void DisconnectWindowWin::ShowDialog() {
@@ -419,8 +394,7 @@ void DisconnectWindowWin::ShowDialog() {
 
     // If the window still isn't visible, then disconnect the session.
     if (!IsWindowVisible(hwnd_)) {
-      client_session_control_->DisconnectSession(
-          ErrorCode::OK, "Disconnect window is invisible.", FROM_HERE);
+      DisconnectSession("Disconnect window is invisible.");
     }
   }
   was_auto_hidden_ = false;
@@ -490,20 +464,14 @@ bool DisconnectWindowWin::GetControlRect(HWND control, RECT* rect) {
 
 void DisconnectWindowWin::ToggleAlignment() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (cooldown_timer_.IsRunning()) {
+  if (is_cooldown_active()) {
     return;
   }
 
-  g_current_anchor = (g_current_anchor == WindowAnchor::kBottom)
-                         ? WindowAnchor::kTop
-                         : WindowAnchor::kBottom;
+  DisconnectWindowBase::ToggleAlignment();
   UpdateToggleButtonText();
   if (hwnd_toggle_button_) {
     EnableWindow(hwnd_toggle_button_, FALSE);
-    cooldown_timer_.Start(
-        FROM_HERE, kToggleCooldown,
-        base::BindOnce(&DisconnectWindowWin::OnCooldownExpired,
-                       weak_factory_.GetWeakPtr()));
   }
   SetDialogPosition();
 }
@@ -521,9 +489,9 @@ void DisconnectWindowWin::UpdateToggleButtonText() {
   }
 
   SetWindowText(hwnd_toggle_button_,
-                (g_current_anchor == WindowAnchor::kBottom) ? L"▲" : L"▼");
+                (current_anchor() == WindowAnchor::kBottom) ? L"▲" : L"▼");
 
-  int string_id = (g_current_anchor == WindowAnchor::kBottom)
+  int string_id = (current_anchor() == WindowAnchor::kBottom)
                       ? IDS_MOVE_TO_TOP_BUTTON
                       : IDS_MOVE_TO_BOTTOM_BUTTON;
   const wchar_t* string_ptr = nullptr;
@@ -563,7 +531,7 @@ void DisconnectWindowWin::SetDialogPosition() {
   int window_height = window_rect.bottom - window_rect.top;
 
   int top = 0;
-  if (g_current_anchor == WindowAnchor::kTop) {
+  if (current_anchor() == WindowAnchor::kTop) {
     top = monitor_info.rcWork.top;
     // Check if the taskbar is at the top of the monitor (even if auto-hidden).
     APPBARDATA abd = {sizeof(abd)};
@@ -586,6 +554,8 @@ void DisconnectWindowWin::SetDialogPosition() {
 
   int left =
       (monitor_info.rcWork.right + monitor_info.rcWork.left - window_width) / 2;
+
+  SetExpectedPosition(left, top);
 
   // Use HWND_TOPMOST to ensure the dialog stays above shell surfaces (such as
   // a relocated taskbar) without stealing keyboard focus (SWP_NOACTIVATE).
@@ -630,7 +600,7 @@ bool DisconnectWindowWin::SetStrings() {
 
   // Format "Your desktop is shared with ..." message.
   message_text = base::AsWString(base::ReplaceStringPlaceholders(
-      base::AsString16(message_text), FormatEmailForDisplay(email_), nullptr));
+      base::AsString16(message_text), formatted_email(), nullptr));
 
   if (!SetWindowText(hwnd_message, message_text.c_str())) {
     return false;

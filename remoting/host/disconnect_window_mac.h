@@ -7,19 +7,45 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include <string>
+#include "base/memory/weak_ptr.h"
+#include "remoting/host/disconnect_window_base.h"
 
-#include "base/functional/callback.h"
+@class DisconnectWindowController;
+
+namespace remoting {
+
+class DisconnectWindowMac : public DisconnectWindowBase {
+ public:
+  DisconnectWindowMac();
+  DisconnectWindowMac(const DisconnectWindowMac&) = delete;
+  DisconnectWindowMac& operator=(const DisconnectWindowMac&) = delete;
+  ~DisconnectWindowMac() override;
+
+  // HostWindow overrides.
+  void Start(const base::WeakPtr<ClientSessionControl>& client_session_control)
+      override;
+
+ protected:
+  void OnCooldownExpired() override;
+
+ private:
+  DisconnectWindowController* __strong window_controller_;
+  base::WeakPtrFactory<DisconnectWindowMac> weak_factory_{this};
+};
+
+}  // namespace remoting
 
 // Controller for the disconnect window which allows the host user to
 // quickly disconnect a session.
 @interface DisconnectWindowController : NSWindowController
 
-- (instancetype)initWithCallback:(base::OnceClosure)disconnect_callback
-                           email:(const std::string&)email
-                          window:(NSWindow*)window;
+- (instancetype)initWithDisconnectWindow:
+                    (base::WeakPtr<remoting::DisconnectWindowMac>)
+                        disconnect_window
+                                  window:(NSWindow*)window;
 - (void)initializeWindow;
 - (void)stopSharing:(id)sender;
+- (void)onCooldownExpired;
 @end
 
 // A floating window with a custom border. The custom border and background
