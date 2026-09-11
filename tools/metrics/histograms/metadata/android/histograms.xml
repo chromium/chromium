@@ -2509,6 +2509,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Foldable.PageLoadedInTabletMode" enum="Boolean"
+    expires_after="2027-09-10">
+  <owner>lizeb@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records true if a page load occurred on the inner screen (tablet mode), and
+    false if on the outer screen (phone mode). Note that corner cases such as
+    multi-window / split-screen on the inner screen (e.g. CCT opened
+    side-by-side) are not handled and will still be recorded as true. Recorded
+    when a page load completes on foldable Android devices.
+  </summary>
+</histogram>
+
 <histogram name="Android.FontLookup.GmsFontRequest.Time" units="ms"
     expires_after="2023-08-08">
   <owner>twellington@chromium.org</owner>

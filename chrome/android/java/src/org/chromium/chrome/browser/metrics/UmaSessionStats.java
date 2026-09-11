@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.metrics;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -16,6 +17,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -34,6 +37,7 @@ import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
@@ -68,7 +72,8 @@ public class UmaSessionStats {
         mContext = context;
     }
 
-    private void recordPageLoadStats(Tab tab) {
+    @VisibleForTesting
+    void recordPageLoadStats(Tab tab) {
         WebContents webContents = tab.getWebContents();
         boolean isDesktopUserAgent =
                 webContents != null
@@ -86,6 +91,19 @@ public class UmaSessionStats {
         }
         if (EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(tab)) {
             UmaSessionStatsJni.get().recordPageLoadedWithToEdge();
+        }
+        if (DeviceInfo.isFoldable()) {
+            Activity activity = ContextUtils.activityFromContext(tab.getContext());
+            // Not all tabs are associated with an Activity. If there is no
+            // activity, skip it, since then it's not clear what is the display.
+            if (activity != null) {
+                // Approximates inner screen (tablet mode) vs outer screen (phone mode) usage.
+                // Note: Does not handle corner cases like multi-window/split-screen where an
+                // inner screen window has phone-like dimensions.
+                boolean isTabletMode = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.Foldable.PageLoadedInTabletMode", isTabletMode);
+            }
         }
 
         // If the session has ended (i.e. chrome is in the background), escape early. Ideally we
