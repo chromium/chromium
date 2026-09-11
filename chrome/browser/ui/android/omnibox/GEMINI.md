@@ -134,6 +134,12 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 - **JNI Type Conversions (`@JniType`)**:
   - Rely on `@JniType` when declaring native methods to avoid manually converting types.
   - If a conversion doesn't exist and is used more than 3 times already, the conversion should be added and existing call sites should be updated.
+- **Time Measurement (`TimeUtils` over `SystemClock`)**: Prefer `TimeUtils` (`org.chromium.base.TimeUtils`, e.g. `TimeUtils.uptimeMillis()`, `TimeUtils.elapsedRealtimeMillis()`) over `SystemClock` or `System.currentTimeMillis()`. `TimeUtils` provides a unified, mockable clock in tests via `FakeTimeTestRule` and eliminates wall-clock flakiness.
+- **Static Test Overrides (`ResettersForTesting`)**: Any static variable (`sVariableName`) that provides a `setVariableNameForTesting(...)` method must register a resetter inside the setter:
+  ```java
+  ResettersForTesting.register(() -> sVariableName = defaultValue);
+  ```
+  This ensures test overrides do not bleed over into subsequent tests. Resetting static overrides in an `@After` block is strictly prohibited.
 
 ## Feature Flags
 
@@ -145,7 +151,7 @@ When introducing or modifying Omnibox feature flags:
   - Expose it to Java by adding `&kOmniboxFoo` to `kFeaturesExposedToJava` in `components/omnibox/common/omnibox_features.cc`. This automatically generates `OmniboxFeatureList.OMNIBOX_FOO`.
 - **Java Wrapper**:
   - In `components/omnibox/common/android/java/src/org/chromium/components/omnibox/OmniboxFeatures.java`, define a `CachedFlag` via `newFlag(OmniboxFeatureList.OMNIBOX_FOO, FeatureState.DISABLED)`.
-  - Expose a public accessor `isFooEnabled()`, and if needed for Robolectric unit tests, a `@Nullable Boolean` test override setter (`setFooForTesting(@Nullable Boolean)`).
+  - Expose a public accessor `isFooEnabled()`, and if needed for Robolectric unit tests, a `@Nullable Boolean` test override setter (`setFooForTesting(@Nullable Boolean)`), registering `ResettersForTesting.register(() -> sFooForTesting = null)` inside the setter.
 - **chrome://flags Exposure**:
   - Add name and description constants to `chrome/browser/flag_descriptions.h` (`kOmniboxFooName`, `kOmniboxFooDescription`).
   - Add the entry under `#if BUILDFLAG(IS_ANDROID)` in `chrome/browser/about_flags.cc` using `FEATURE_VALUE_TYPE(omnibox::kOmniboxFoo)`.
@@ -183,6 +189,12 @@ When introducing or modifying Omnibox feature flags:
 - **Use `@UiThreadTest` over `runOnUiThreadBlocking()`**:
   - Tests that wrap their entire logic with `runOnUiThreadBlocking()` should be rewritten as `@UiThreadTest`.
   - Wrapping whole test bodies in `runOnUiThreadBlocking()` introduces gratuitous lambda nesting, obscures failure stack traces, and incurs unnecessary thread-hopping overhead. Annotate the test method directly with `@UiThreadTest` (from `androidx.test.annotation.UiThreadTest`) instead.
+- **Use `TimeUtils` over `SystemClock`**:
+  - Unit tests must use `TimeUtils` (`org.chromium.base.TimeUtils`) and avoid using `SystemClock`.
+  - Using `TimeUtils` makes the clock properly mockable (e.g. via `FakeTimeTestRule`), allowing tests to advance time deterministically and run without any unnecessary `Thread.sleep()` statements or real-time delays.
+- **Static Test Overrides & `ResettersForTesting` (No `@After` Resets)**:
+  - ANY static variable (`sVariableName`) that has a `setVariableNameForTesting(...)` method **must** add `ResettersForTesting.register(() -> sVariableName = defaultValue)` inside the setter so that the override does not bleed over to subsequent tests.
+  - It is **not permitted** to reset the value in an `@After` section, because if a test throws an exception, `@After` may not get executed, resulting in cross-test state leakage.
 - **Strict Mockito Stubs**: All new tests **must** (and existing tests ideally **should**) use strict Mockito stubbing to prevent aggregating dead stubbed code:
   ```java
   @Rule
@@ -224,5 +236,8 @@ When introducing or modifying Omnibox feature flags:
     - *Alternative*: Use standardized Robolectric configuration across test suites; avoid custom shadows or SDK variants when real Android or POJO classes can be used. Using `@Config(qualifiers = ...)` is acceptable for establishing device/screen configurations, but avoid proliferating too many distinct configs—standardize on and reuse existing common configs where possible, or adjust qualifiers dynamically during test execution (e.g. `RuntimeEnvironment.setQualifiers(...)`).
   - **Java Reflection (`setAccessible(true)` / `ReflectionTestUtils`) (Unwelcome)**:
     - *Problem*: Bypasses encapsulation, breaks JIT escape analysis and method inlining, and produces fragile tests.
-    - *Alternative*: Interact with the class under test through existing public contracts or via its `PropertyModel` (the primary intended interface in Clank MVC). If internal state access is unavoidable, provide package-private `@VisibleForTesting` accessors or `getFooForTesting()` / `setFooForTesting()` methods. (Note: methods with a `ForTesting` suffix must **never** be annotated with `@VisibleForTesting`, as this triggers Checkstyle `VisibleForTestingForTesting`.)
+    - *Alternative*: Interact with the class under test through existing public contracts or via its `PropertyModel` (the primary intended interface in Clank MVC). If internal state access is unavoidable, provide package-private `@VisibleForTesting` accessors or `getFooForTesting()` / `setFooForTesting()` methods. (Note: methods with a `ForTesting` suffix must **never** be annotated with `@VisibleForTesting`, as this triggers Checkstyle `VisibleForTestingForTesting`. Any static setter must register a resetter with `ResettersForTesting.register(...)`.)
+  - **`Thread.sleep(...)` / Wall-Clock Waiting (Unwelcome)**:
+    - *Problem*: Causes slow, flaky, and non-deterministic tests dependent on host CPU scheduling and execution speed.
+    - *Alternative*: Use `TimeUtils` and `FakeTimeTestRule` to advance simulated time deterministically without sleeping.
 
