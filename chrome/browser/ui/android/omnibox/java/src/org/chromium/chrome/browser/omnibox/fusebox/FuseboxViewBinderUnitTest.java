@@ -49,10 +49,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxViewHolder.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -132,6 +132,7 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, false);
         mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
         mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.TOOLBAR);
+        mModel.set(FuseboxProperties.ANCHORING_MODE, AnchoringMode.TOOLBAR_MULTI_LINE);
         mModel.set(
                 FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE,
                 BackgroundStyle.INTERACT_ONLY_SMALL);
@@ -190,6 +191,7 @@ public class FuseboxViewBinderUnitTest {
                 .with(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, false)
                 .with(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT)
                 .with(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.TOOLBAR)
+                .with(FuseboxProperties.ANCHORING_MODE, AnchoringMode.TOOLBAR_MULTI_LINE)
                 .with(
                         FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE,
                         BackgroundStyle.INTERACT_ONLY_SMALL)
@@ -218,6 +220,11 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(
                 FuseboxProperties.FUSEBOX_STATE,
                 testCase == Variant.COMPACT ? FuseboxState.COMPACT : FuseboxState.EXPANDED);
+        mModel.set(
+                FuseboxProperties.ANCHORING_MODE,
+                testCase == Variant.COMPACT
+                        ? AnchoringMode.TOOLBAR_SINGLE_LINE
+                        : AnchoringMode.TOOLBAR_MULTI_LINE);
         mModel.set(FuseboxProperties.REQUEST_TYPE, requestType);
         mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, "test label");
         mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, false);
@@ -346,9 +353,9 @@ public class FuseboxViewBinderUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         FuseboxMetrics.REANCHOR_VIEWS_DURATION_HISTOGRAM);
-        mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mModel.set(FuseboxProperties.ANCHORING_MODE, AnchoringMode.POPOVER);
 
-        assertEquals(AnchoringMode.POPOVER, mViewHolder.currentAnchoringMode);
+        assertEquals(AnchoringMode.POPOVER, mModel.get(FuseboxProperties.ANCHORING_MODE));
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.plusButton.getLayoutParams();
         assertEquals(ConstraintSet.UNSET, lp.topToTop);
         assertEquals(R.id.omnibox_suggestions_dropdown, lp.topToBottom);
@@ -363,31 +370,35 @@ public class FuseboxViewBinderUnitTest {
                         FuseboxMetrics.REANCHOR_VIEWS_DURATION_HISTOGRAM);
         configureFusebox(Variant.COMPACT, AutocompleteRequestType.SEARCH);
 
-        assertEquals(AnchoringMode.TOOLBAR_SINGLE_LINE, mViewHolder.currentAnchoringMode);
+        assertEquals(
+                AnchoringMode.TOOLBAR_SINGLE_LINE, mModel.get(FuseboxProperties.ANCHORING_MODE));
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.plusButton.getLayoutParams();
         assertEquals(R.id.url_bar, lp.topToTop);
         assertEquals(ConstraintSet.UNSET, lp.topToBottom);
         assertEquals(ConstraintSet.UNSET, lp.bottomToBottom);
         histogramWatcher.assertExpected();
 
-        // Transitioning between DISABLED and COMPACT maintains singleLine without re-anchoring.
+        // Setting the same anchoring mode maintains singleLine without re-anchoring.
         histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        FuseboxMetrics.REANCHOR_VIEWS_DURATION_HISTOGRAM);
-        mModel.set(FuseboxProperties.FUSEBOX_STATE, FuseboxState.DISABLED);
-        assertEquals(AnchoringMode.TOOLBAR_SINGLE_LINE, mViewHolder.currentAnchoringMode);
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(FuseboxMetrics.REANCHOR_VIEWS_DURATION_HISTOGRAM)
+                        .build();
+        mModel.set(FuseboxProperties.ANCHORING_MODE, AnchoringMode.TOOLBAR_SINGLE_LINE);
+        assertEquals(
+                AnchoringMode.TOOLBAR_SINGLE_LINE, mModel.get(FuseboxProperties.ANCHORING_MODE));
         var lpDisabled = (ConstraintLayout.LayoutParams) mViewHolder.plusButton.getLayoutParams();
         assertEquals(R.id.url_bar, lpDisabled.topToTop);
         assertEquals(ConstraintSet.UNSET, lpDisabled.topToBottom);
         assertEquals(ConstraintSet.UNSET, lpDisabled.bottomToBottom);
         histogramWatcher.assertExpected();
 
-        // Transitioning to EXPANDED updates anchoring mode to TOOLBAR_MULTI_LINE.
+        // Transitioning to TOOLBAR_MULTI_LINE updates anchoring mode.
         histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         FuseboxMetrics.REANCHOR_VIEWS_DURATION_HISTOGRAM);
-        mModel.set(FuseboxProperties.FUSEBOX_STATE, FuseboxState.EXPANDED);
-        assertEquals(AnchoringMode.TOOLBAR_MULTI_LINE, mViewHolder.currentAnchoringMode);
+        mModel.set(FuseboxProperties.ANCHORING_MODE, AnchoringMode.TOOLBAR_MULTI_LINE);
+        assertEquals(
+                AnchoringMode.TOOLBAR_MULTI_LINE, mModel.get(FuseboxProperties.ANCHORING_MODE));
         histogramWatcher.assertExpected();
     }
 

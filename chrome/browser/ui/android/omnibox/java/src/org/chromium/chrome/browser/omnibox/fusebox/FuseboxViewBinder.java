@@ -35,12 +35,10 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxViewHolder.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
@@ -69,6 +67,8 @@ class FuseboxViewBinder {
     public void bind(PropertyModel model, FuseboxViewHolder view, PropertyKey propertyKey) {
         if (propertyKey == FuseboxProperties.ADAPTER) {
             view.attachmentsView.setAdapter(model.get(FuseboxProperties.ADAPTER));
+        } else if (propertyKey == FuseboxProperties.ANCHORING_MODE) {
+            reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey == FuseboxProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(FuseboxProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -94,10 +94,6 @@ class FuseboxViewBinder {
             }
         } else if (propertyKey == FuseboxProperties.COLOR_SCHEME) {
             updateButtonsVisibilityAndStyling(model, view);
-        } else if (propertyKey == FuseboxProperties.FUSEBOX_LAYOUT_MODE) {
-            reanchorViewsForCompactFusebox(model, view);
-        } else if (propertyKey == FuseboxProperties.FUSEBOX_STATE) {
-            reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey == FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE) {
             updatePlusButtonVisuals(model, view);
         } else if (propertyKey == FuseboxProperties.PLUS_BUTTON_CLICKED) {
@@ -690,22 +686,7 @@ class FuseboxViewBinder {
     private static void reanchorViewsForCompactFusebox(
             PropertyModel model, FuseboxViewHolder view) {
         long startTime = SystemClock.elapsedRealtime();
-        @AnchoringMode int targetMode;
-        if (model.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
-                == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
-            targetMode = AnchoringMode.POPOVER;
-        } else if (model.get(FuseboxProperties.FUSEBOX_STATE) == FuseboxState.EXPANDED) {
-            targetMode = AnchoringMode.TOOLBAR_MULTI_LINE;
-        } else {
-            targetMode = AnchoringMode.TOOLBAR_SINGLE_LINE;
-        }
-
-        // TODO(crbug.com/546568339): Refactor layout anchoring mode into PropertyModel once this
-        // optimization feature is cleaned up.
-        if (view.currentAnchoringMode == targetMode) {
-            FuseboxMetrics.recordReanchorViewsDuration(startTime);
-            return;
-        }
+        @AnchoringMode int targetMode = model.get(FuseboxProperties.ANCHORING_MODE);
 
         int topToTop = ConstraintSet.UNSET;
         int topToBottom = ConstraintSet.UNSET;
@@ -752,7 +733,6 @@ class FuseboxViewBinder {
 
         cs.applyTo(view.parentView);
 
-        view.currentAnchoringMode = targetMode;
         FuseboxMetrics.recordReanchorViewsDuration(startTime);
     }
 

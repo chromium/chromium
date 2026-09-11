@@ -42,6 +42,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -193,9 +194,15 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mDeferredInitialized) return;
         mDeferredInitialized = true;
 
+        @AnchoringMode
+        int initialAnchoringMode =
+                getFuseboxLayoutMode() == FuseboxLayoutMode.SUGGESTIONS_POPOVER
+                        ? AnchoringMode.POPOVER
+                        : AnchoringMode.TOOLBAR_SINGLE_LINE;
         mModel =
                 new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
                         .with(FuseboxProperties.FUSEBOX_LAYOUT_MODE, getFuseboxLayoutMode())
+                        .with(FuseboxProperties.ANCHORING_MODE, initialAnchoringMode)
                         .with(
                                 FuseboxProperties.POPUP_IS_BOTTOM_SHEET,
                                 OmniboxFeatures.shouldShowBottomSheetPopup())

@@ -32,6 +32,21 @@ import java.util.List;
 /** The properties associated with the Fusebox bar. */
 @NullMarked
 class FuseboxProperties {
+    @IntDef({
+        AnchoringMode.UNSET,
+        AnchoringMode.POPOVER,
+        AnchoringMode.TOOLBAR_SINGLE_LINE,
+        AnchoringMode.TOOLBAR_MULTI_LINE,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
+    public @interface AnchoringMode {
+        int UNSET = 0;
+        int POPOVER = 1;
+        int TOOLBAR_SINGLE_LINE = 2;
+        int TOOLBAR_MULTI_LINE = 3;
+    }
+
     @IntDef({PopupButtonType.RECENT_TAB, PopupButtonType.TOOL, PopupButtonType.MODEL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PopupButtonType {
@@ -107,6 +122,10 @@ class FuseboxProperties {
     /** The adapter for the attachments RecyclerView. */
     public static final WritableObjectPropertyKey<SimpleRecyclerViewAdapter> ADAPTER =
             new WritableObjectPropertyKey<>();
+
+    /** The layout anchoring mode for views in Fusebox; see {@link AnchoringMode}. */
+    public static final WritableIntDefPropertyKey<AnchoringMode> ANCHORING_MODE =
+            new WritableIntDefPropertyKey<>(AnchoringMode.UNSET);
 
     /** Whether the attachments RecyclerView is visible. */
     public static final WritableBooleanPropertyKey ATTACHMENTS_VISIBLE =
@@ -293,6 +312,7 @@ class FuseboxProperties {
     public static final PropertyKey[] ALL_KEYS = {
         // go/keep-sorted start
         ADAPTER,
+        ANCHORING_MODE,
         ATTACHMENTS_VISIBLE,
         COLOR_SCHEME,
         FUSEBOX_LAYOUT_MODE,

@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.SetActiveModelSource;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
@@ -220,6 +221,7 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, false);
         mBackPressManager.addHandler(this, BackPressHandler.Type.FUSEBOX_POPUP);
         updatePlusButtonBackgroundStyle();
+        updateAnchoringMode();
     }
 
     /* package */ void destroy() {
@@ -525,6 +527,20 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.PLUS_BUTTON_VISIBLE, targetState == FuseboxState.EXPANDED);
         mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, showRequestTypeButton);
         updateAttachmentsVisibility();
+        updateAnchoringMode();
+    }
+
+    private void updateAnchoringMode() {
+        @AnchoringMode int targetMode;
+        if (mModel.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
+                == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            targetMode = AnchoringMode.POPOVER;
+        } else if (mModel.get(FuseboxProperties.FUSEBOX_STATE) == FuseboxState.EXPANDED) {
+            targetMode = AnchoringMode.TOOLBAR_MULTI_LINE;
+        } else {
+            targetMode = AnchoringMode.TOOLBAR_SINGLE_LINE;
+        }
+        mModel.set(FuseboxProperties.ANCHORING_MODE, targetMode);
     }
 
     private void updateAttachmentsVisibility() {
