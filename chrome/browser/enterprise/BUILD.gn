@@ -30,6 +30,7 @@ source_set("enterprise") {
     "net/enterprise_network_auth_service_factory.h",
     "net/enterprise_proxy_error_service_factory.h",
     "net/enterprise_proxy_service_factory.h",
+    "net/enterprise_proxy_tab_helper_delegate.h",
     "net/proxy_error_utils.h",
     "profile_management/saml_response_parser.h",
     "reporting/cloud_profile_reporting_service.h",
@@ -430,6 +431,7 @@ source_set("impl") {
     "net/enterprise_network_auth_service_factory.cc",
     "net/enterprise_proxy_error_service_factory.cc",
     "net/enterprise_proxy_service_factory.cc",
+    "net/enterprise_proxy_tab_helper_delegate.cc",
     "net/proxy_error_utils.cc",
     "profile_management/saml_response_parser.cc",
     "remote_commands/job_profile_picker.cc",
@@ -861,6 +863,20 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//testing/gtest",
   ]
+
+  if (is_android) {
+    sources += [ "net/enterprise_proxy_tab_helper_delegate_unittest.cc" ]
+    deps += [
+      "//chrome/browser/android:tabs_impl",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/signin",
+      "//chrome/browser/signin:identity_test_support",
+      "//components/signin/public/identity_manager:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//url",
+    ]
+  }
 }
 
 if (!is_android) {

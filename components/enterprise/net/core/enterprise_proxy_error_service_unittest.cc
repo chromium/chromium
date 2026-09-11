@@ -62,52 +62,6 @@ constexpr char kPvdConfigJsonTemplate[] = R"({
       ]
     })";
 
-class TestDelegate : public EnterpriseProxyErrorService::Delegate {
- public:
-  explicit TestDelegate(bool* attached_flag = nullptr,
-                        EnterpriseProxyErrorData* error_data_out = nullptr,
-                        bool* signin_prompt_shown_out = nullptr,
-                        GURL* signin_destination_url_out = nullptr)
-      : attached_flag_(attached_flag),
-        error_data_out_(error_data_out),
-        signin_prompt_shown_out_(signin_prompt_shown_out),
-        signin_destination_url_out_(signin_destination_url_out) {}
-  ~TestDelegate() override = default;
-
-  const EnterpriseProxyErrorData* GetDisguisedErrorData() const override {
-    return has_error_data_ ? &error_data_ : nullptr;
-  }
-
-  void AttachDisguisedErrorData(
-      const EnterpriseProxyErrorData& error_data) override {
-    has_error_data_ = true;
-    error_data_ = error_data;
-    if (attached_flag_) {
-      *attached_flag_ = true;
-    }
-    if (error_data_out_) {
-      *error_data_out_ = error_data;
-    }
-  }
-
-  void OnSignInRequired(const GURL& destination_url) override {
-    if (signin_prompt_shown_out_) {
-      *signin_prompt_shown_out_ = true;
-    }
-    if (signin_destination_url_out_) {
-      *signin_destination_url_out_ = destination_url;
-    }
-  }
-
- private:
-  raw_ptr<bool> attached_flag_ = nullptr;
-  raw_ptr<EnterpriseProxyErrorData> error_data_out_ = nullptr;
-  raw_ptr<bool> signin_prompt_shown_out_ = nullptr;
-  raw_ptr<GURL> signin_destination_url_out_ = nullptr;
-  bool has_error_data_ = false;
-  EnterpriseProxyErrorData error_data_;
-};
-
 base::DictValue CreateDomainPolicyEntry(const std::string& pvd_id,
                                         bool use_oauth) {
   base::DictValue entry;
@@ -202,13 +156,11 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
   std::optional<net::AuthCredentials> InterceptChallenge(
       std::string_view realm = "",
       int64_t navigation_id = kTestNavigationId,
-      std::unique_ptr<EnterpriseProxyErrorService::Delegate> delegate = nullptr,
       const GURL& destination_url = GURL("https://target.example.com/test")) {
     base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
     bool handled = error_service_->InterceptProxyAuthChallenge(
         CreateProxyAuthChallengeInfo("proxy.example.com", realm),
-        destination_url, nullptr, navigation_id, std::move(delegate),
-        future.GetCallback());
+        destination_url, nullptr, navigation_id, future.GetCallback());
     EXPECT_TRUE(handled);
     return future.Get();
   }
@@ -338,85 +290,6 @@ TEST_F(EnterpriseProxyErrorServiceTest,
   ASSERT_TRUE(error_data.has_value());
   EXPECT_EQ(error_data->error_category(),
             EnterpriseProxyErrorData::ErrorCategory::kAuthentication);
-}
-
-TEST_F(EnterpriseProxyErrorServiceTest,
-       SignInRequired_WithDelegate_RecordsErrorAndTriggersSignIn) {
-  SetupManagedDomainWithProxy("proxy.example.com");
-  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
-
-  bool signin_prompt_shown = false;
-  GURL signin_destination_url;
-  auto delegate = std::make_unique<TestDelegate>(
-      /*attached_flag=*/nullptr, /*error_data_out=*/nullptr,
-      &signin_prompt_shown, &signin_destination_url);
-
-  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-  bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
-      GURL("https://target.example.com/test"), nullptr, kTestNavigationId,
-      std::move(delegate), future.GetCallback());
-  TriggerInvalidGaiaCredentials();
-
-  EXPECT_TRUE(handled);
-  EXPECT_FALSE(future.Get().has_value());
-
-  std::optional<EnterpriseProxyErrorData> error_data =
-      error_service_->TakeDisguisedError(kTestNavigationId);
-  ASSERT_TRUE(error_data.has_value());
-  EXPECT_EQ(error_data->error_category(),
-            EnterpriseProxyErrorData::ErrorCategory::kAuthentication);
-
-  EXPECT_TRUE(signin_prompt_shown);
-  EXPECT_EQ(signin_destination_url, GURL("https://target.example.com/test"));
-}
-
-TEST_F(EnterpriseProxyErrorServiceTest,
-       DisguisedErrorRealm403_WithDelegate_AttachesToDelegateAndRecords) {
-  SetupManagedDomainWithProxy("proxy.example.com");
-
-  bool attached_flag = false;
-  EnterpriseProxyErrorData delegate_error_data;
-  auto delegate =
-      std::make_unique<TestDelegate>(&attached_flag, &delegate_error_data);
-
-  std::optional<net::AuthCredentials> credentials =
-      InterceptChallenge("403", kTestNavigationId, std::move(delegate));
-  EXPECT_FALSE(credentials.has_value());
-
-  std::optional<EnterpriseProxyErrorData> error_data =
-      error_service_->TakeDisguisedError(kTestNavigationId);
-  ASSERT_TRUE(error_data.has_value());
-  EXPECT_EQ(error_data->error_code(), 403);
-  EXPECT_EQ(error_data->error_category(),
-            EnterpriseProxyErrorData::ErrorCategory::kAuthorization);
-
-  EXPECT_TRUE(attached_flag);
-  EXPECT_EQ(delegate_error_data.error_code(), 403);
-}
-
-TEST_F(EnterpriseProxyErrorServiceTest,
-       LegacyDelegateOverload_SignInRequired_TriggersSignIn) {
-  SetupManagedDomainWithProxy("proxy.example.com");
-  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
-
-  bool signin_prompt_shown = false;
-  GURL signin_destination_url;
-  auto delegate = std::make_unique<TestDelegate>(
-      /*attached_flag=*/nullptr, /*error_data_out=*/nullptr,
-      &signin_prompt_shown, &signin_destination_url);
-
-  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-  bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
-      GURL("https://target.example.com/test"), nullptr, std::move(delegate),
-      future.GetCallback());
-  TriggerInvalidGaiaCredentials();
-
-  EXPECT_TRUE(handled);
-  EXPECT_FALSE(future.Get().has_value());
-  EXPECT_TRUE(signin_prompt_shown);
-  EXPECT_EQ(signin_destination_url, GURL("https://target.example.com/test"));
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, RemoveDisguisedError_CleansUpMap) {

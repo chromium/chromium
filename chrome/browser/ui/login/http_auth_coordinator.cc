@@ -8,7 +8,6 @@
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/login/enterprise_proxy_login_delegate.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
@@ -144,13 +143,9 @@ bool HttpAuthCoordinator::Flow::ForwardToEnterpriseProxy(
     }
   }
 
-  auto delegate = std::make_unique<EnterpriseProxyLoginDelegate>(
-      web_contents_, is_request_for_primary_main_frame_navigation_);
-
   auto callback = base::BindOnce(&Flow::OnCredentials, GetWeakPtr());
   return error_service->InterceptProxyAuthChallenge(
-      auth_info_, url_, response_headers_, navigation_id, std::move(delegate),
-      std::move(callback));
+      auth_info_, url_, response_headers_, navigation_id, std::move(callback));
 }
 
 bool HttpAuthCoordinator::Flow::ForwardToExtension(
