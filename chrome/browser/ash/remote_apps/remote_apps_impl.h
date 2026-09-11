@@ -15,7 +15,6 @@
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "url/gurl.h"
 

@@ -7,7 +7,6 @@
 
 #include "base/observer_list.h"
 #include "components/browser_apis/tab_strip/events/event.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace tabs_api {
 

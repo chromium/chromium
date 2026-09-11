@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)

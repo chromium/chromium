@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/synchronization/waitable_event.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"

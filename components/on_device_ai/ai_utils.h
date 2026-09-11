@@ -8,7 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 

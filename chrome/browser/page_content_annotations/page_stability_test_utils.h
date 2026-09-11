@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom-forward.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class GURL;
 

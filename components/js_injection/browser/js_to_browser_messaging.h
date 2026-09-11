@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "components/origin_matcher/origin_matcher.h"
-#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"

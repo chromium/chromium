@@ -12,7 +12,6 @@
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/webrtc/rtc_logging.mojom.h"
 
 namespace content {

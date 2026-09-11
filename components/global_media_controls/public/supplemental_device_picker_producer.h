@@ -19,9 +19,7 @@
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/global_media_controls/supplemental_device_picker_item.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace global_media_controls {

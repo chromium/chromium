@@ -20,7 +20,6 @@
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"

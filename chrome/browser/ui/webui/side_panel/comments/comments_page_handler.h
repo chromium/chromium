@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/webui/side_panel/comments/comments.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class CommentsSidePanelUI;
 class BrowserWindowInterface;

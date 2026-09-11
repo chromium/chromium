@@ -6,7 +6,6 @@
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DISCOVERY_SESSION_STATUS_NOTIFIER_H_
 
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash::bluetooth_config {

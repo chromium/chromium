@@ -8,9 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash::connectivity {

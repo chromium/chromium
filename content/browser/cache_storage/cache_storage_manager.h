@@ -26,7 +26,6 @@
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"

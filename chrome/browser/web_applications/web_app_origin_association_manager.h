@@ -16,7 +16,6 @@
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/origin.h"
 

@@ -26,7 +26,6 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom-forward.h"
 #include "ui/aura/window.h"

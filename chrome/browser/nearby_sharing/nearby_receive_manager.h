@@ -11,7 +11,6 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 // |NearbyReceiveManager| is a mojo implementation that is bound in os-settings

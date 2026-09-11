@@ -13,7 +13,6 @@
 #include "components/live_caption/translation_util.h"
 #include "components/soda/constants.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 

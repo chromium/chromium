@@ -16,7 +16,6 @@
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer_observer.h"

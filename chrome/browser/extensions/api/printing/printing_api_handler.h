@@ -26,7 +26,6 @@
 #include "chrome/common/extensions/api/printing.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/native_ui_types.h"
 
 class PrefRegistrySimple;

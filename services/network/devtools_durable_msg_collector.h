@@ -9,8 +9,6 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/devtools_durable_msg.h"
 #include "services/network/devtools_durable_msg_accounting_delegate.h"
 #include "services/network/public/mojom/network_service.mojom.h"

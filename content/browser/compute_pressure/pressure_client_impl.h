@@ -10,7 +10,6 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom-forward.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"

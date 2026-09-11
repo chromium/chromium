@@ -17,7 +17,6 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"

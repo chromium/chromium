@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/resource_coordinator/memory_instrumentation/queued_request.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/registry.h"

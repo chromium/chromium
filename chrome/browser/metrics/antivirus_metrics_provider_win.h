@@ -15,7 +15,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "components/metrics/metrics_provider.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 // As discussed on http://crbug.com/40283669#comment2, retain this feature.

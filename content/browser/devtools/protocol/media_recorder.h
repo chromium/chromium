@@ -26,7 +26,6 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/capture/video/video_frame_receiver_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "ui/gfx/geometry/size.h"
 

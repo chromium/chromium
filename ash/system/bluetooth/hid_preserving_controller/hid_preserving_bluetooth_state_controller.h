@@ -11,7 +11,6 @@
 #include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
 #include "ash/system/bluetooth/hid_preserving_controller/disable_bluetooth_dialog_controller_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/events/devices/input_device.h"

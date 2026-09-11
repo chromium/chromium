@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "net/http/http_connection_info.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"

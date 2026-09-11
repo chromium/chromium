@@ -18,7 +18,6 @@
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "content/public/browser/console_message.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 

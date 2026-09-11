@@ -11,7 +11,6 @@
 #import "mojo/public/cpp/bindings/pending_receiver.h"
 #import "mojo/public/cpp/bindings/pending_remote.h"
 #import "mojo/public/cpp/bindings/receiver.h"
-#import "mojo/public/cpp/bindings/remote.h"
 
 // The WebUI handler for chrome://inspect which displays JavaScript console
 // messages.

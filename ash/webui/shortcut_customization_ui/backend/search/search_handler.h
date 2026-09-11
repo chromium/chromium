@@ -15,6 +15,8 @@
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash::shortcut_ui {
 

@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
 

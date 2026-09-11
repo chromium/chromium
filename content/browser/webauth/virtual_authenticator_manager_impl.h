@@ -16,7 +16,6 @@
 #include "content/common/content_export.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace content {
 

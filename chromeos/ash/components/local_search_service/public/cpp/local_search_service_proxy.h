@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "chromeos/ash/components/local_search_service/search_metrics_reporter.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class PrefService;
 

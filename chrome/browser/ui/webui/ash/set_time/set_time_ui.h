@@ -11,7 +11,6 @@
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 

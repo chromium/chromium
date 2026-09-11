@@ -13,7 +13,7 @@
 #include "base/unguessable_token.h"
 #include "components/remote_cocoa/common/menu.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/controls/menu/menu_runner_impl_interface.h"
 
 namespace ui {

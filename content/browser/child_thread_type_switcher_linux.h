@@ -12,7 +12,7 @@
 #include "content/common/content_export.h"
 #include "content/common/thread_type_switcher.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 

@@ -10,8 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace on_device_translation {
 

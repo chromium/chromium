@@ -16,7 +16,6 @@
 #include "components/push_notification/push_notification_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace {
 const char kNearbyPresencePushNotificationTypeId[] = "nearby_presence";

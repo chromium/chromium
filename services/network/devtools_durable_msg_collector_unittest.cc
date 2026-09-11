@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/filter/filter_source_stream_test_util.h"
 #include "services/network/devtools_durable_msg_collector_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"

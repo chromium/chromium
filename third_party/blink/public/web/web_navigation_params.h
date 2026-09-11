@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"

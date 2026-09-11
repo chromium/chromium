@@ -13,8 +13,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_validator.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace optimization_guide {
 

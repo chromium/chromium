@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_handle.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/datagram_socket.h"

@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_PUBLIC_CPP_LOCAL_SEARCH_SERVICE_PROVIDER_H_
 
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom-forward.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash::local_search_service {
 

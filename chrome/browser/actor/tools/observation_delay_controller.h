@@ -21,7 +21,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class RenderFrameHost;

@@ -7,7 +7,6 @@
 
 #include "components/guest_view/browser/slim_web_view/slim_web_view.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class RenderFrameHost;
