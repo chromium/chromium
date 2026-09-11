@@ -210,20 +210,13 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     }
 
     private String getDefaultHintText() {
-        @AutocompleteRequestType
-        int requestType =
-                mCurrentInput == null
-                        ? AutocompleteRequestType.SEARCH
-                        : mCurrentInput.getRequestType();
         FuseboxSessionState fuseboxSession = FuseboxSessionState.from(mLocationBarDataProvider);
-        return getOmniboxHintText(requestType, fuseboxSession);
+        return getOmniboxHintText(fuseboxSession);
     }
 
-    private String getOmniboxHintText(
-            @AutocompleteRequestType int requestType,
-            @Nullable FuseboxSessionState fuseboxSessionState) {
+    private String getOmniboxHintText(@Nullable FuseboxSessionState fuseboxSessionState) {
         if (fuseboxSessionState != null) {
-            var input = fuseboxSessionState.getAutocompleteInput();
+            AutocompleteInput input = fuseboxSessionState.getAutocompleteInput();
             if (input != null) {
                 GURL url = input.getPageUrl();
                 String title = input.getPageTitle();
@@ -234,40 +227,41 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         }
 
         assert mSearchEngineService != null;
-        String searchEngineName = mSearchEngineService.getSearchEngineName();
+        SearchEngineService searchEngineService = mSearchEngineService;
+        String searchEngineName = searchEngineService.getSearchEngineName();
         if (TextUtils.isEmpty(searchEngineName)) {
             return mResourceProvider.getString(R.string.omnibox_empty_hint);
         }
 
-        if (ToolModeUtils.isAimRequest(requestType)) {
-            String toolHint = getToolHintFromInputState(requestType, fuseboxSessionState);
-            if (!TextUtils.isEmpty(toolHint)) {
-                return toolHint;
-            }
+        String toolHint = getToolHintFromInputState(fuseboxSessionState);
+        if (!TextUtils.isEmpty(toolHint)) {
+            return toolHint;
         }
 
-        switch (requestType) {
-            case AutocompleteRequestType.AI_MODE:
-                return mResourceProvider.getString(
-                        R.string.omnibox_ai_mode_scope_placeholder_text, searchEngineName);
-            case AutocompleteRequestType.IMAGE_GENERATION:
-                return mResourceProvider.getString(
-                        R.string.omnibox_empty_hint_for_image_generation, searchEngineName);
-        }
-        return mSearchEngineService.getOmniboxHintString();
+        return getSearchEngineHintText(searchEngineService, searchEngineName);
     }
 
     private @Nullable String getToolHintFromInputState(
-            @AutocompleteRequestType int requestType,
             @Nullable FuseboxSessionState fuseboxSessionState) {
-        if (fuseboxSessionState == null) return null;
+        if (fuseboxSessionState == null || mCurrentInput == null) {
+            return null;
+        }
+
+        @AutocompleteRequestType int requestType = mCurrentInput.getRequestType();
+        if (!ToolModeUtils.isAimRequest(requestType)) {
+            return null;
+        }
 
         ComposeboxQueryControllerBridge bridge =
                 fuseboxSessionState.getComposeboxQueryControllerBridge();
-        if (bridge == null || bridge.getInputStateSupplier() == null) return null;
+        if (bridge == null || bridge.getInputStateSupplier() == null) {
+            return null;
+        }
 
         InputState inputState = bridge.getInputStateSupplier().get();
-        if (inputState == null) return null;
+        if (inputState == null) {
+            return null;
+        }
 
         int activeTool =
                 ToolModeUtils.getToolModeForRequestType(requestType, /* hasAttachments= */ false);
@@ -278,6 +272,21 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         }
 
         return null;
+    }
+
+    private String getSearchEngineHintText(
+            SearchEngineService searchEngineService, String searchEngineName) {
+        if (mCurrentInput != null) {
+            switch (mCurrentInput.getRequestType()) {
+                case AutocompleteRequestType.AI_MODE:
+                    return mResourceProvider.getString(
+                            R.string.omnibox_ai_mode_scope_placeholder_text, searchEngineName);
+                case AutocompleteRequestType.IMAGE_GENERATION:
+                    return mResourceProvider.getString(
+                            R.string.omnibox_empty_hint_for_image_generation, searchEngineName);
+            }
+        }
+        return searchEngineService.getOmniboxHintString();
     }
 
     private boolean useAimActivationOrEmptyHint() {
