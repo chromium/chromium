@@ -42,6 +42,10 @@ magchen@chromium.org
 # scheduling / begin frames
 jonross@chromium.org
 
+# overdraw/occlusion
+per-file occlusion_culler*=zoraiznaeem@chromium.org
+per-file overdraw_tracker*=zoraiznaeem@chromium.org
+
 # general
 vmpstr@chromium.org
 kylechar@chromium.org
