@@ -36,6 +36,9 @@ enum OcrClientType {
   kScreenshotTextDetection,
   // Used in accessibility to convert canvas to text.
   kCanvas,
+  // Used by the Text Detection API (TextDetector) to extract text and bounding
+  // boxes from images provided by web pages.
+  kTextDetectionApi,
 };
 
 // Clients of the Main Content Extraction service.

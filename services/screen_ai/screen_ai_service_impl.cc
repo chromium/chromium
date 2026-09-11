@@ -72,7 +72,8 @@ enum class OcrClientTypeForMetrics {
   kMediaApp = 5,
   kScreenshotTextDetection = 6,
   kCanvas = 7,
-  kMaxValue = kCanvas
+  kTextDetectionApi = 8,
+  kMaxValue = kTextDetectionApi
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:OCRClientType)
 
@@ -93,6 +94,8 @@ OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
       return OcrClientTypeForMetrics::kMediaApp;
     case mojom::OcrClientType::kScreenshotTextDetection:
       return OcrClientTypeForMetrics::kScreenshotTextDetection;
+    case mojom::OcrClientType::kTextDetectionApi:
+      return OcrClientTypeForMetrics::kTextDetectionApi;
   }
 }
 
