@@ -166,17 +166,38 @@ constexpr IOSurfaceFormatInfo kIOSurfaceFormats[] = {
         8,
     },
     {
+        kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+        {viz::MultiPlaneFormat::kNV12},
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::FULL,
+        8,
+    },
+    {
         kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kNV16},
-        kCanDisplayAsAVSampleBuffer,
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
         ColorSpace::RangeID::LIMITED,
+        8,
+    },
+    {
+        kCVPixelFormatType_422YpCbCr8BiPlanarFullRange,
+        {viz::MultiPlaneFormat::kNV16},
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::FULL,
         8,
     },
     {
         kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kNV24},
-        kCanDisplayAsAVSampleBuffer,
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
         ColorSpace::RangeID::LIMITED,
+        8,
+    },
+    {
+        kCVPixelFormatType_444YpCbCr8BiPlanarFullRange,
+        {viz::MultiPlaneFormat::kNV24},
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::FULL,
         8,
     },
     {
@@ -198,22 +219,44 @@ constexpr IOSurfaceFormatInfo kIOSurfaceFormats[] = {
     {
         kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kP010},
-        kCanDisplayAsAVSampleBuffer,
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
         ColorSpace::RangeID::LIMITED,
         10,
     },
     {
+        kCVPixelFormatType_420YpCbCr10BiPlanarFullRange,
+        {viz::MultiPlaneFormat::kP010},
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::FULL,
+        10,
+    },
+
+    {
         kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kP210},
-        kCanDisplayAsAVSampleBuffer,
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
         ColorSpace::RangeID::LIMITED,
+        10,
+    },
+    {
+        kCVPixelFormatType_422YpCbCr10BiPlanarFullRange,
+        {viz::MultiPlaneFormat::kP210},
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::FULL,
         10,
     },
     {
         kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kP410},
-        kCanDisplayAsAVSampleBuffer,
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
         ColorSpace::RangeID::LIMITED,
+        10,
+    },
+    {
+        kCVPixelFormatType_444YpCbCr10BiPlanarFullRange,
+        {viz::MultiPlaneFormat::kP410},
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::FULL,
         10,
     },
 
@@ -228,10 +271,24 @@ constexpr IOSurfaceFormatInfo kIOSurfaceFormats[] = {
         8,
     },
     {
+        kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarFullRange,
+        {viz::MultiPlaneFormat::kNV12},
+        kCompressed,
+        ColorSpace::RangeID::FULL,
+        8,
+    },
+    {
         kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange,
         {viz::MultiPlaneFormat::kP010},
         kCompressed,
         ColorSpace::RangeID::LIMITED,
+        10,
+    },
+    {
+        kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarFullRange,
+        {viz::MultiPlaneFormat::kP010},
+        kCompressed,
+        ColorSpace::RangeID::FULL,
         10,
     },
     {
@@ -387,16 +444,13 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   // also not available in some SDK versions.
   // https://crbug.com/1101041: Introduces the HDR copier.
   // https://crbug.com/1061723: Discussion of issues related to HLG.
-  if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
-                                ColorSpace::TransferID::PQ,
-                                ColorSpace::MatrixID::BT2020_NCL,
-                                ColorSpace::RangeID::LIMITED)) {
-    color_space_name = kCGColorSpaceITUR_2100_PQ;
-  } else if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
-                                       ColorSpace::TransferID::HLG,
-                                       ColorSpace::MatrixID::BT2020_NCL,
-                                       ColorSpace::RangeID::LIMITED)) {
-    color_space_name = kCGColorSpaceITUR_2100_HLG;
+  if (color_space.GetPrimaryID() == ColorSpace::PrimaryID::BT2020 &&
+      color_space.GetMatrixID() == ColorSpace::MatrixID::BT2020_NCL) {
+    if (color_space.GetTransferID() == ColorSpace::TransferID::PQ) {
+      color_space_name = kCGColorSpaceITUR_2100_PQ;
+    } else if (color_space.GetTransferID() == ColorSpace::TransferID::HLG) {
+      color_space_name = kCGColorSpaceITUR_2100_HLG;
+    }
   }
 
   // https://crbug.com/1488397: Set parameters that will be rendering YUV

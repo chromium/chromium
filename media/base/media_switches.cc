@@ -1396,6 +1396,10 @@ BASE_FEATURE(kVTVideoEncodeAcceleratorCalculatePSNR,
 BASE_FEATURE(kVTVideoEncodeAcceleratorOpaqueSharedImageEncode,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Match the VideoToolbox output pixel format range to the frame color space so
+// VideoToolbox does not rescale code values.
+BASE_FEATURE(kVideoToolboxFullRangeOutput, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_CHROMEOS)

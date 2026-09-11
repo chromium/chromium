@@ -254,6 +254,27 @@ bool VideoToolboxDecompressionSessionManager::CreateSession(
     pixel_format = kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
   }
 
+  if (session_metadata.full_range) {
+    constexpr auto kFullRangeFormats =
+        base::MakeFixedFlatMap<uint32_t, uint32_t>(
+            {{kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+              kCVPixelFormatType_420YpCbCr8BiPlanarFullRange},
+             {kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange,
+              kCVPixelFormatType_422YpCbCr8BiPlanarFullRange},
+             {kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange,
+              kCVPixelFormatType_444YpCbCr8BiPlanarFullRange},
+             {kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange,
+              kCVPixelFormatType_420YpCbCr10BiPlanarFullRange},
+             {kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange,
+              kCVPixelFormatType_422YpCbCr10BiPlanarFullRange},
+             {kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange,
+              kCVPixelFormatType_444YpCbCr10BiPlanarFullRange}});
+    const auto found = kFullRangeFormats.find(pixel_format);
+    if (found != kFullRangeFormats.end()) {
+      pixel_format = found->second;
+    }
+  }
+
   // Prefer compressed pixel formats, if available.
   // https://crbug.com/500766607
   if (@available(macOS 12.0, iOS 15.0, *)) {
@@ -264,7 +285,12 @@ bool VideoToolboxDecompressionSessionManager::CreateSession(
            {kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange,
             kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange},
            {kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange,
-            kCVPixelFormatType_Lossless_422YpCbCr10PackedBiPlanarVideoRange}});
+            kCVPixelFormatType_Lossless_422YpCbCr10PackedBiPlanarVideoRange},
+           // Only 4:2:0 has full-range counterparts.
+           {kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+            kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarFullRange},
+           {kCVPixelFormatType_420YpCbCr10BiPlanarFullRange,
+            kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarFullRange}});
       const auto found = kFormatMap.find(pixel_format);
       if (found != kFormatMap.end()) {
         const auto compressed_format = found->second;

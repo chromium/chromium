@@ -374,6 +374,12 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
   metadata->hdr_metadata.MergeMetadataFrom(
       metadata->picture->dynamic_hdr_metadata());
 
+  // Match the output pixel format range to the resolved color space so
+  // VideoToolbox does not rescale code values.
+  session_metadata.full_range =
+      base::FeatureList::IsEnabled(kVideoToolboxFullRangeOutput) &&
+      metadata->color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL;
+
   metadata->session_metadata = session_metadata;
 
   video_toolbox_.Decode(std::move(sample), std::move(metadata));

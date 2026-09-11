@@ -9,10 +9,11 @@
 #include <Metal/Metal.h>
 #include <MetalKit/MetalKit.h>
 
+#include <array>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
@@ -22,6 +23,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/hdr_metadata_mac.h"
+#include "ui/gfx/mac/io_surface.h"
 
 namespace {
 
@@ -202,13 +204,13 @@ uint32_t GetTransferFunctionIndex(const gfx::ColorSpace& color_space) {
 // `is_unorm` if the format, when sampled, can produce values outside of [0, 1].
 bool IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer,
                                 uint32_t& num_planes,
-                                MTLPixelFormat format[2],
+                                std::array<MTLPixelFormat, 2>& format,
                                 bool& is_unorm) {
   num_planes = 1;
-  format[0] = MTLPixelFormatInvalid;
-  UNSAFE_TODO(format[1]) = MTLPixelFormatInvalid;
+  format = {MTLPixelFormatInvalid, MTLPixelFormatInvalid};
   is_unorm = true;
-  switch (IOSurfaceGetPixelFormat(buffer)) {
+  const uint32_t pixel_format = IOSurfaceGetPixelFormat(buffer);
+  switch (pixel_format) {
     case kCVPixelFormatType_64RGBAHalf:
       is_unorm = false;
       format[0] = MTLPixelFormatRGBA16Float;
@@ -222,27 +224,28 @@ bool IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer,
     case kCVPixelFormatType_32RGBA:
       format[0] = MTLPixelFormatRGBA8Unorm;
       return true;
-    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
-    case kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarVideoRange:
-    case kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange:
-    case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
-      num_planes = 2;
-      format[0] = MTLPixelFormatR8Unorm;
-      UNSAFE_TODO(format[1]) = MTLPixelFormatRG8Unorm;
-      return true;
-    case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
-    case kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange:
-    case kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange:
-    case kCVPixelFormatType_Lossless_422YpCbCr10PackedBiPlanarVideoRange:
-    case kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange:
-      num_planes = 2;
-      format[0] = MTLPixelFormatR16Unorm;
-      UNSAFE_TODO(format[1]) = MTLPixelFormatRG16Unorm;
-      return true;
     default:
       break;
   }
-  return false;
+
+  // Biplanar YUV (video-range, full-range, and lossless) share Metal plane
+  // formats. Bits-per-component comes from kIOSurfaceFormats; 10-bit YUV is
+  // stored in 16-bit unorm planes.
+  if (IOSurfaceGetPlaneCount(buffer) != 2) {
+    return false;
+  }
+  const uint32_t bits_per_component =
+      gfx::IOSurfacePixelFormatMaxBitsPerComponent(pixel_format);
+  if (!bits_per_component) {
+    return false;
+  }
+  num_planes = 2;
+  if (bits_per_component <= 8) {
+    format = {MTLPixelFormatR8Unorm, MTLPixelFormatRG8Unorm};
+  } else {
+    format = {MTLPixelFormatR16Unorm, MTLPixelFormatRG16Unorm};
+  }
+  return true;
 }
 
 id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
@@ -337,7 +340,8 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
   size_t width = IOSurfaceGetWidth(buffer);
   size_t height = IOSurfaceGetHeight(buffer);
   uint32_t numPlanes = 1;
-  MTLPixelFormat mtlFormat[2] = {MTLPixelFormatInvalid, MTLPixelFormatInvalid};
+  std::array<MTLPixelFormat, 2> mtlFormat = {MTLPixelFormatInvalid,
+                                             MTLPixelFormatInvalid};
   bool isUnorm = false;
   if (!IOSurfaceGetMTLPixelFormat(buffer, numPlanes, mtlFormat, isUnorm)) {
     DLOG(ERROR) << "Unsupported IOSurface format.";
@@ -390,12 +394,12 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
   self.drawableSize = CGSizeMake(width, height);
 
   // Create a texture to wrap the IOSurface.
-  id<MTLTexture> bufferTexture[2] = {nil, nil};
+  std::array<id<MTLTexture>, 2> bufferTexture = {nil, nil};
   for (uint32_t i = 0; i < numPlanes; ++i) {
     MTLTextureDescriptor* texDesc = [[MTLTextureDescriptor alloc] init];
     texDesc.textureType = MTLTextureType2D;
     texDesc.usage = MTLTextureUsageShaderRead;
-    texDesc.pixelFormat = UNSAFE_TODO(mtlFormat[i]);
+    texDesc.pixelFormat = mtlFormat[i];
     texDesc.width = IOSurfaceGetWidthOfPlane(buffer, i);
     texDesc.height = IOSurfaceGetHeightOfPlane(buffer, i);
     texDesc.depth = 1;
@@ -405,9 +409,9 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
 #if BUILDFLAG(IS_MAC)
     texDesc.storageMode = MTLStorageModeManaged;
 #endif
-    UNSAFE_TODO(bufferTexture[i]) = [device newTextureWithDescriptor:texDesc
-                                                           iosurface:buffer
-                                                               plane:i];
+    bufferTexture[i] = [device newTextureWithDescriptor:texDesc
+                                              iosurface:buffer
+                                                  plane:i];
   }
 
   // Create a texture to wrap the drawable.
@@ -544,7 +548,8 @@ bool ShouldUseHDRCopier(IOSurfaceRef buffer,
   // Only some pixel formats are supported.
   bool is_unorm = false;
   uint32_t num_planes = 0;
-  MTLPixelFormat format[2] = {MTLPixelFormatInvalid, MTLPixelFormatInvalid};
+  std::array<MTLPixelFormat, 2> format = {MTLPixelFormatInvalid,
+                                          MTLPixelFormatInvalid};
   if (!IOSurfaceGetMTLPixelFormat(buffer, num_planes, format, is_unorm)) {
     return false;
   }

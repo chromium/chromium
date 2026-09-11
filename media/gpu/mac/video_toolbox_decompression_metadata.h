@@ -33,6 +33,8 @@ struct MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionMetadata {
   bool has_alpha = false;
   // Selects the output image size.
   gfx::Rect visible_rect;
+  // Selects a full-range pixel format.
+  bool full_range = false;
 };
 
 // Metadata used when decoding a frame.

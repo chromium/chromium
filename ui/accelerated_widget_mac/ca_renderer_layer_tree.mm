@@ -229,16 +229,14 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
     return false;
   }
 
-  if (io_surface_color_space ==
-          gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                          gfx::ColorSpace::TransferID::PQ,
-                          gfx::ColorSpace::MatrixID::BT2020_NCL,
-                          gfx::ColorSpace::RangeID::LIMITED) ||
-      io_surface_color_space ==
-          gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                          gfx::ColorSpace::TransferID::HLG,
-                          gfx::ColorSpace::MatrixID::BT2020_NCL,
-                          gfx::ColorSpace::RangeID::LIMITED)) {
+  if (io_surface_color_space.GetPrimaryID() ==
+          gfx::ColorSpace::PrimaryID::BT2020 &&
+      io_surface_color_space.GetMatrixID() ==
+          gfx::ColorSpace::MatrixID::BT2020_NCL &&
+      (io_surface_color_space.GetTransferID() ==
+           gfx::ColorSpace::TransferID::PQ ||
+       io_surface_color_space.GetTransferID() ==
+           gfx::ColorSpace::TransferID::HLG)) {
     CVBufferSetAttachment(cv_pixel_buffer.get(),
                           kCVImageBufferColorPrimariesKey,
                           kCVImageBufferColorPrimaries_ITU_R_2020,
