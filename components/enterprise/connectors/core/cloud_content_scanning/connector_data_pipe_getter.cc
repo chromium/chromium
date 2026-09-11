@@ -15,10 +15,8 @@
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/network_request_data_reader.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/resource_request_body.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
@@ -278,19 +276,6 @@ ConnectorDataPipeGetter::CreateResumablePipeGetter(
                                                    std::move(mapping));
 }
 
-// static
-std::unique_ptr<ConnectorDataPipeGetter>
-ConnectorDataPipeGetter::CreateResumablePipeGetter(
-    std::unique_ptr<NetworkRequestDataReader> network_request_data_reader) {
-  if (!network_request_data_reader) {
-    return nullptr;
-  }
-
-  return std::make_unique<ConnectorDataPipeGetter>(
-      /*boundary=*/std::string(),
-      /*metadata=*/std::string(), std::move(network_request_data_reader));
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     std::unique_ptr<ChunkedFileDataPipeProducer> chunked_file_producer)
@@ -313,8 +298,7 @@ ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     : ConnectorDataPipeGetter(boundary,
                               metadata,
                               std::move(file),
-                              /*page=*/base::ReadOnlySharedMemoryMapping(),
-                              /*network_request_data_reader=*/nullptr) {
+                              /*page=*/base::ReadOnlySharedMemoryMapping()) {
   CHECK(file_->IsValid());
 
   if (is_obfuscated) {
@@ -330,32 +314,16 @@ ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     : ConnectorDataPipeGetter(boundary,
                               metadata,
                               /*file=*/nullptr,
-                              std::move(page),
-                              /*network_request_data_reader=*/nullptr) {
+                              std::move(page)) {
   CHECK(page_.IsValid());
 }
 
 ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
-    std::unique_ptr<NetworkRequestDataReader> network_request_data_reader)
-    : ConnectorDataPipeGetter(boundary,
-                              metadata,
-                              /*file=*/nullptr,
-                              /*page=*/base::ReadOnlySharedMemoryMapping(),
-                              std::move(network_request_data_reader)) {
-  CHECK(network_request_data_reader_);
-}
-
-ConnectorDataPipeGetter::ConnectorDataPipeGetter(
-    const std::string& boundary,
-    const std::string& metadata,
     std::unique_ptr<InternalMemoryMappedFile> file,
-    base::ReadOnlySharedMemoryMapping page,
-    std::unique_ptr<NetworkRequestDataReader> network_request_data_reader)
-    : file_(std::move(file)),
-      page_(std::move(page)),
-      network_request_data_reader_(std::move(network_request_data_reader)) {
+    base::ReadOnlySharedMemoryMapping page)
+    : file_(std::move(file)), page_(std::move(page)) {
   if (!boundary.empty() && !metadata.empty()) {
     PrepareMultipartRequestFormat(boundary, metadata);
   }
@@ -647,10 +615,6 @@ bool ConnectorDataPipeGetter::is_chunked_file_data_pipe() const {
 
 bool ConnectorDataPipeGetter::is_page_data_pipe() const {
   return page_.data();
-}
-
-bool ConnectorDataPipeGetter::is_network_request_data_pipe() const {
-  return network_request_data_reader_.get() != nullptr;
 }
 
 }  // namespace enterprise_connectors
