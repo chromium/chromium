@@ -1,0 +1,6 @@
+Testing that touch emulation is preserved across Page.captureScreenshot
+Emulation.setTouchEmulationEnabled
+Touch state: {"enabled":true,"maxTouchPoints":7}
+Page.captureScreenshot(captureBeyondViewport: true)
+Touch state: {"enabled":true,"maxTouchPoints":7}
+

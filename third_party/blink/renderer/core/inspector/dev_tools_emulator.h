@@ -42,6 +42,7 @@ class CORE_EXPORT DevToolsEmulator final
   void SetCookieEnabled(bool);
   void SetDoubleTapToZoomEnabled(bool);
   bool DoubleTapToZoomEnabled() const;
+  void SetMaxTouchPoints(int);
   void SetAvailablePointerTypes(int);
   void SetPrimaryPointerType(mojom::blink::PointerType);
   void SetAvailableHoverTypes(int);
@@ -54,6 +55,7 @@ class CORE_EXPORT DevToolsEmulator final
   void SetViewportEnabled(bool);
   void SetViewportMetaEnabled(bool);
   void SetTextSizeAdjustEnabled(bool);
+  void SetForceDarkModeEnabled(bool);
 
   // Enables and/or sets the parameters for emulation. Returns the emulation
   // transform to be used as a result.
@@ -166,7 +168,7 @@ class CORE_EXPORT DevToolsEmulator final
 
   bool touch_event_emulation_enabled_;
   bool double_tap_to_zoom_enabled_;
-  int original_max_touch_points_;
+  int embedder_max_touch_points_;
 
   bool embedder_script_enabled_;
   bool script_execution_disabled_;

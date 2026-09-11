@@ -1,0 +1,7 @@
+Testing that auto dark mode is preserved across Page.captureScreenshot
+Background color: rgb(255, 255, 255)
+Emulation.setAutoDarkModeOverride({enabled: true})
+Background color: rgb(0, 0, 0)
+Page.captureScreenshot(captureBeyondViewport: true)
+Background color: rgb(0, 0, 0)
+

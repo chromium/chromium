@@ -159,7 +159,7 @@ void WebSettingsImpl::SetAutoZoomFocusedEditableToLegibleScale(
 }
 
 void WebSettingsImpl::SetTextSizeAdjustEnabled(bool enabled) {
-  settings_->SetTextSizeAdjustEnabled(enabled);
+  dev_tools_emulator_->SetTextSizeAdjustEnabled(enabled);
 }
 
 // TODO(pdr): Rename this OSTextScaleFactor.
@@ -426,7 +426,7 @@ void WebSettingsImpl::SetMainFrameClipsContent(bool enabled) {
 }
 
 void WebSettingsImpl::SetMaxTouchPoints(int max_touch_points) {
-  settings_->SetMaxTouchPoints(max_touch_points);
+  dev_tools_emulator_->SetMaxTouchPoints(max_touch_points);
 }
 
 void WebSettingsImpl::SetAllowUniversalAccessFromFileURLs(bool allow) {
@@ -775,7 +775,7 @@ void WebSettingsImpl::SetLazyLoadingImageMarginPx4G(int distance_px) {
 }
 
 void WebSettingsImpl::SetForceDarkModeEnabled(bool enabled) {
-  settings_->SetForceDarkModeEnabled(enabled);
+  dev_tools_emulator_->SetForceDarkModeEnabled(enabled);
 }
 
 void WebSettingsImpl::SetInForcedColors(bool in_forced_colors) {

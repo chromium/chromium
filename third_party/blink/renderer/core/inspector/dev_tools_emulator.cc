@@ -113,7 +113,8 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
           web_view->GetPage()->GetSettings().GetTextSizeAdjustEnabled()),
       touch_event_emulation_enabled_(false),
       double_tap_to_zoom_enabled_(false),
-      original_max_touch_points_(0),
+      embedder_max_touch_points_(
+          web_view->GetPage()->GetSettings().GetMaxTouchPoints()),
       embedder_script_enabled_(
           web_view->GetPage()->GetSettings().GetScriptEnabled()),
       script_execution_disabled_(false),
@@ -244,6 +245,13 @@ void DevToolsEmulator::SetTextSizeAdjustEnabled(bool enabled) {
   embedder_text_size_adjust_enabled_ = enabled;
   if (!emulate_mobile_enabled()) {
     web_view_->GetPage()->GetSettings().SetTextSizeAdjustEnabled(enabled);
+  }
+}
+
+void DevToolsEmulator::SetMaxTouchPoints(int max_touch_points) {
+  embedder_max_touch_points_ = max_touch_points;
+  if (!touch_event_emulation_enabled_) {
+    web_view_->GetPage()->GetSettings().SetMaxTouchPoints(max_touch_points);
   }
 }
 
@@ -594,16 +602,12 @@ float DevToolsEmulator::InputEventsScaleForEmulation() {
 
 void DevToolsEmulator::SetTouchEventEmulationEnabled(bool enabled,
                                                      int max_touch_points) {
-  if (!touch_event_emulation_enabled_) {
-    original_max_touch_points_ =
-        web_view_->GetPage()->GetSettings().GetMaxTouchPoints();
-  }
   touch_event_emulation_enabled_ = enabled;
   web_view_->GetPage()
       ->GetSettings()
       .SetForceTouchEventFeatureDetectionForInspector(enabled);
   web_view_->GetPage()->GetSettings().SetMaxTouchPoints(
-      enabled ? max_touch_points : original_max_touch_points_);
+      enabled ? max_touch_points : embedder_max_touch_points_);
   web_view_->GetPage()->GetSettings().SetAvailablePointerTypes(
       enabled ? static_cast<int>(mojom::blink::PointerType::kPointerCoarseType)
               : embedder_available_pointer_types_);
@@ -683,6 +687,13 @@ void DevToolsEmulator::SetDocumentCookieDisabled(bool disabled) {
   document_cookie_disabled_ = disabled;
   web_view_->GetPage()->GetSettings().SetCookieEnabled(
       !document_cookie_disabled_ && embedder_cookie_enabled_);
+}
+
+void DevToolsEmulator::SetForceDarkModeEnabled(bool enabled) {
+  embedder_force_dark_mode_enabled_ = enabled;
+  if (!auto_dark_overriden_) {
+    web_view_->GetPage()->GetSettings().SetForceDarkModeEnabled(enabled);
+  }
 }
 
 void DevToolsEmulator::SetAutoDarkModeOverride(bool enabled) {

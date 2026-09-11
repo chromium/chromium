@@ -1,0 +1,7 @@
+Testing that mobile text-size-adjust is preserved across Page.captureScreenshot
+Font size: 10px
+Emulation.setDeviceMetricsOverride(mobile: true)
+Font size: 20px
+Page.captureScreenshot(captureBeyondViewport: true)
+Font size: 20px
+
