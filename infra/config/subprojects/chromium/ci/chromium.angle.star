@@ -540,11 +540,11 @@ shared_gpu.ci.mac_builder(
         configs = [
             "angle_deqp_tests",
             "arm64",
-            "dcheck_always_on",
             "ios_simulator",
             "minimal_symbols",
-            "release_builder",
+            "release_with_dchecks",
             "remoteexec",
+            "static",
             "xctest",
         ],
     ),
@@ -579,8 +579,9 @@ shared_gpu.ci.mac_builder(
     gn_args = gn_args.config(
         configs = [
             "angle_deqp_tests",
-            "release_builder",
+            "release_with_dchecks",
             "remoteexec",
+            "static",
             "minimal_symbols",
             "dcheck_always_on",
             "ios_simulator",
