@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class MagicStackCollectionViewController;
 @class NewTabPageBottomSheetViewController;
 
 // Delegate for events in the bottom sheet view controller.
@@ -50,7 +51,8 @@
 @property(nonatomic, strong) UIViewController* feedViewController;
 
 // The magic stack view controller.
-@property(nonatomic, strong) UIViewController* magicStackViewController;
+@property(nonatomic, strong)
+    MagicStackCollectionViewController* magicStackViewController;
 
 // Embeds the Most Visited view.
 - (void)embedMostVisitedView:(UIView*)mostVisitedView;

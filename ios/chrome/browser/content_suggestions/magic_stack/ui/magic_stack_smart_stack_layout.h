@@ -7,9 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_paging_layout_provider.h"
+
 // A custom collection view layout that arranges items horizontally with a 3D
 // perspective cylindrical stack effect centered on the active card.
-@interface MagicStackSmartStackLayout : UICollectionViewFlowLayout
+@interface MagicStackSmartStackLayout
+    : UICollectionViewFlowLayout <MagicStackPagingLayoutProvider>
 
 @end
 

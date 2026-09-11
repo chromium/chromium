@@ -21,6 +21,7 @@
 @protocol NewTabPageContentDelegate;
 @protocol NewTabPageHeaderCommands;
 @protocol NewTabPageShortcutsHandler;
+@class MagicStackCollectionViewController;
 
 // View controller shell for the New Tab Page Redesign.
 @interface NewTabPageRedesignViewController
@@ -61,7 +62,8 @@
 @property(nonatomic, strong) UIView* searchEngineLogoView;
 
 // The Magic Stack view controller.
-@property(nonatomic, strong) UIViewController* magicStackViewController;
+@property(nonatomic, strong)
+    MagicStackCollectionViewController* magicStackViewController;
 
 // `YES` if the omnibox should be focused on when the view appears for voice
 // over.

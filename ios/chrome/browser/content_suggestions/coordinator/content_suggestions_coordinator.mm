@@ -519,7 +519,12 @@ using segmentation_platform::TipIdentifier;
   _magicStackRankingModel.delegate = self.contentSuggestionsMediator;
   _magicStackRankingModel.homeStartDataSource = self.homeStartDataSource;
 
-  _magicStackCollectionView = [[MagicStackCollectionViewController alloc] init];
+  MagicStackLayoutType layoutType = IsNTPRedesignEnabled()
+                                        ? MagicStackLayoutType::kSmartStack
+                                        : MagicStackLayoutType::kClassic;
+  _magicStackCollectionView = [[MagicStackCollectionViewController alloc]
+      initWithLayoutType:layoutType];
+  _magicStackCollectionView.showsEditButton = !IsNTPRedesignEnabled();
   _magicStackCollectionView.audience = self;
   if (!IsNTPRedesignEnabled()) {
     _mostVisitedTilesMediator.consumer = self.contentSuggestionsViewController;

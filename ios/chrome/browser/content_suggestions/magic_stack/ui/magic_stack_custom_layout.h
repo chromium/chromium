@@ -7,10 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-// Custom layout for the magic stack. Used because some cells contain
-// UIVisualEffectView, and the default animation for inserting/removing cells
-// changes the cell's alpha, which does not work with UIVisualEffectView.
-@interface MagicStackCustomLayout : UICollectionViewCompositionalLayout
+#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_paging_layout_provider.h"
+
+@class MagicStackModule;
+
+// Custom layout for the Magic Stack that controls cell attributes during
+// animations and provides horizontal paging and section sizing.
+@interface MagicStackCustomLayout
+    : UICollectionViewCompositionalLayout <MagicStackPagingLayoutProvider>
+
+// Initializes the layout with default horizontal paging configuration.
+- (instancetype)init;
 
 @end
 

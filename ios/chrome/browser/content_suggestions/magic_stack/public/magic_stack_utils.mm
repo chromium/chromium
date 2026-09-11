@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_utils.h"
 
+#import <algorithm>
+#import <cmath>
+
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/prefs/pref_service.h"
@@ -75,4 +78,26 @@ CGFloat GetMagicStackHeight(id<UITraitEnvironment> trait_environment) {
     // The minimum Magic Stack height in px.
     return 150;
   }
+}
+
+NSUInteger MagicStackTargetPage(CGFloat currentOffset,
+                                CGFloat velocity,
+                                CGFloat pageWidth,
+                                NSUInteger totalPageCount) {
+  if (totalPageCount <= 1 || pageWidth <= 0) {
+    return 0;
+  }
+
+  NSInteger closestPage =
+      static_cast<NSInteger>(std::round(currentOffset / pageWidth));
+
+  if (velocity <= -kMagicStackMinimumPaginationScrollVelocity) {
+    closestPage--;
+  } else if (velocity >= kMagicStackMinimumPaginationScrollVelocity) {
+    closestPage++;
+  }
+
+  closestPage = std::clamp<NSInteger>(
+      closestPage, 0, static_cast<NSInteger>(totalPageCount - 1));
+  return static_cast<NSUInteger>(closestPage);
 }

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_bottom_sheet_view_controller.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
@@ -135,7 +136,8 @@ TEST_F(NewTabPageBottomSheetViewControllerTest, TestEmbedFeedViewController) {
 // view controller.
 TEST_F(NewTabPageBottomSheetViewControllerTest,
        TestEmbedMagicStackViewController) {
-  UIViewController* child_vc = [[UIViewController alloc] init];
+  MagicStackCollectionViewController* child_vc =
+      [[MagicStackCollectionViewController alloc] init];
   view_controller_.magicStackViewController = child_vc;
 
   [view_controller_ loadViewIfNeeded];
@@ -582,7 +584,8 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
 // when feed is absent.
 TEST_F(NewTabPageBottomSheetViewControllerTest,
        TestMagicStackParentageWithAndWithoutFeed) {
-  UIViewController* magic_stack_vc = [[UIViewController alloc] init];
+  MagicStackCollectionViewController* magic_stack_vc =
+      [[MagicStackCollectionViewController alloc] init];
   view_controller_.magicStackViewController = magic_stack_vc;
 
   // Without feed: magic stack is child of view_controller_.
@@ -638,7 +641,8 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
       [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 400, 800)];
   [feed_vc.view addSubview:scroll_view];
 
-  view_controller_.magicStackViewController = magic_stack_vc;
+  view_controller_.magicStackViewController =
+      (MagicStackCollectionViewController*)magic_stack_vc;
   view_controller_.feedViewController = feed_vc;
 
   [view_controller_ loadViewIfNeeded];
@@ -652,7 +656,8 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
 TEST_F(NewTabPageBottomSheetViewControllerTest,
        TestCleanDetachmentOnNilAssignment) {
   UIViewController* feed_vc = [[UIViewController alloc] init];
-  UIViewController* magic_stack_vc = [[UIViewController alloc] init];
+  MagicStackCollectionViewController* magic_stack_vc =
+      [[MagicStackCollectionViewController alloc] init];
 
   view_controller_.feedViewController = feed_vc;
   view_controller_.magicStackViewController = magic_stack_vc;
@@ -677,7 +682,8 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
 TEST_F(NewTabPageBottomSheetViewControllerTest,
        TestInvalidateCleansUpChildren) {
   UIViewController* feed_vc = [[UIViewController alloc] init];
-  UIViewController* magic_stack_vc = [[UIViewController alloc] init];
+  MagicStackCollectionViewController* magic_stack_vc =
+      [[MagicStackCollectionViewController alloc] init];
 
   view_controller_.feedViewController = feed_vc;
   view_controller_.magicStackViewController = magic_stack_vc;

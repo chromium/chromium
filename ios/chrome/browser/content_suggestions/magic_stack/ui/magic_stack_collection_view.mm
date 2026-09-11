@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 
+#import <algorithm>
+
 #import "base/check.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
@@ -14,10 +16,12 @@
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_utils.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/edit_button_config.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view_audience.h"
+#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_custom_layout.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_edit_button_cell.h"
-#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_layout_configurator.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_collection_view_cell.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container.h"
+#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_paging_layout_provider.h"
+#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_smart_stack_layout.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/placeholder_config.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
@@ -48,7 +52,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 @end
 
 @implementation MagicStackCollectionViewController {
-  MagicStackLayoutConfigurator* _magicStackCollectionViewLayoutConfigurator;
+  MagicStackLayoutType _layoutType;
   UICollectionView* _collectionView;
   UICollectionViewCellRegistration* _moduleCellRegistration;
   UICollectionViewCellRegistration* _editButtonRegistration;
@@ -56,6 +60,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   NSUInteger _magicStackPage;
   BOOL _hasSeenEphemeralCard;
   NSLayoutConstraint* _heightConstraint;
+}
+
+#pragma mark - Initializers
+
+- (instancetype)initWithLayoutType:(MagicStackLayoutType)layoutType {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _layoutType = layoutType;
+  }
+  return self;
+}
+
+- (instancetype)init {
+  return [self initWithLayoutType:MagicStackLayoutType::kClassic];
 }
 
 - (void)loadView {
@@ -111,11 +129,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   [self populateWithPlaceholders];
 }
 
-- (void)updateCollectionViewLayout:(UICollectionViewLayout*)layout {
-  // Trigger view loading if not yet loaded.
-  [self loadViewIfNeeded];
-  _collectionView.collectionViewLayout = layout;
-}
 
 #pragma mark - MagicStackConsumer
 
@@ -299,21 +312,40 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint*)targetContentOffset {
+  UICollectionViewLayout* layout = _collectionView.collectionViewLayout;
+  if (![layout conformsToProtocol:@protocol(MagicStackPagingLayoutProvider)]) {
+    return;
+  }
+
+  id<MagicStackPagingLayoutProvider> pagingProvider =
+      (id<MagicStackPagingLayoutProvider>)layout;
   targetContentOffset->x =
-      [self getNextPageOffsetForOffset:scrollView.contentOffset.x
-                              velocity:velocity.x];
+      [pagingProvider targetPageOffsetForOffset:scrollView.contentOffset.x
+                                       velocity:velocity.x
+                                traitCollection:self.traitCollection
+                                     viewBounds:self.view.bounds
+                                    currentPage:&_magicStackPage];
+  [self logNavigationToPage:_magicStackPage];
 }
 
 #pragma mark - Private
 
 // Configures the collectionView.
 - (void)configureCollectionView {
-  _magicStackCollectionViewLayoutConfigurator =
-      [[MagicStackLayoutConfigurator alloc] init];
-  _collectionView = [[UICollectionView alloc]
-             initWithFrame:CGRectZero
-      collectionViewLayout:_magicStackCollectionViewLayoutConfigurator
-                               .magicStackCompositionalLayout];
+  UICollectionViewLayout* layout = nil;
+  switch (_layoutType) {
+    case MagicStackLayoutType::kClassic: {
+      layout = [[MagicStackCustomLayout alloc] init];
+      break;
+    }
+    case MagicStackLayoutType::kSmartStack: {
+      layout = [[MagicStackSmartStackLayout alloc] init];
+      break;
+    }
+  }
+
+  _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
+                                       collectionViewLayout:layout];
   _collectionView.accessibilityIdentifier =
       kMagicStackScrollViewAccessibilityIdentifier;
   _collectionView.clipsToBounds = [self shouldHaveWideLayout];
@@ -352,8 +384,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
                 }];
 
   _collectionView.dataSource = self.diffableDataSource;
-  _magicStackCollectionViewLayoutConfigurator.dataSource =
-      self.diffableDataSource;
 }
 
 - (UICollectionViewDiffableDataSource*)diffableDataSource {
@@ -416,7 +446,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   [snapshot appendSectionsWithIdentifiers:@[ kMagicStackSectionIdentifier ]];
   [snapshot appendItemsWithIdentifiers:items
              intoSectionWithIdentifier:kMagicStackSectionIdentifier];
-  if (!isPlaceholder && !IsNTPRedesignEnabled()) {
+  if (!isPlaceholder && self.showsEditButton) {
     [snapshot
         appendSectionsWithIdentifiers:@[ kMagicStackEditSectionIdentifier ]];
     [snapshot appendItemsWithIdentifiers:@[ [[EditButtonConfig alloc] init] ]
@@ -424,74 +454,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   }
 
   [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
-}
-
-// Determines the final page offset given the scroll `offset` and the `velocity`
-// scroll. If the drag is slow enough, then the closest page is the final state.
-// If the drag is in the negative direction, then go to the page previous to the
-// closest current page. If the drag is in the positive direction, then go to
-// the page after the closest current page.
-- (CGFloat)getNextPageOffsetForOffset:(CGFloat)offset
-                             velocity:(CGFloat)velocity {
-  CGFloat moduleWidth = self.view.frame.size.width -
-                        MagicStackModuleNarrowerWidthToAllowPeeking(
-                            self.traitCollection, self.view.frame.size.width);
-
-  // Find closest page to the current scroll offset.
-  CGFloat closestPage = roundf(offset / moduleWidth);
-
-  if (velocity <= -kMagicStackMinimumPaginationScrollVelocity) {
-    closestPage--;
-
-    UMA_HISTOGRAM_EXACT_LINEAR(kMagicStackScrollToIndexHistogram, closestPage,
-                               kMaxModuleHistogramIndex);
-  } else if (velocity >= kMagicStackMinimumPaginationScrollVelocity) {
-    closestPage++;
-    UMA_HISTOGRAM_EXACT_LINEAR(kMagicStackScrollToIndexHistogram, closestPage,
-                               kMaxModuleHistogramIndex);
-  }
-  NSArray<MagicStackModule*>* items =
-      [self.diffableDataSource.snapshot itemIdentifiers];
-  closestPage = std::clamp<CGFloat>(closestPage, 0, [items count] - 1);
-  _magicStackPage = closestPage;
-  if ([items count] > 0 && !_hasSeenEphemeralCard &&
-      [self isCardEphemeral:items[_magicStackPage]]) {
-    [self.audience logEphemeralCardVisibility:items[_magicStackPage].type];
-  }
-  return _magicStackPage * (moduleWidth + kMagicStackSpacing) -
-         [self peekOffsetForMagicStackPage:_magicStackPage];
-}
-
-// Returns the extra offset needed to have a MagicStack module be left, center,
-// or right aligned depending on whether the module is first, in the middle, or
-// last.
-- (CGFloat)peekOffsetForMagicStackPage:(NSInteger)page {
-  if (IsNTPRedesignEnabled()) {
-    return 0;
-  }
-  NSInteger numberOfItems = [self.diffableDataSource.snapshot
-      numberOfItemsInSection:kMagicStackSectionIdentifier];
-
-  // If there's only one module, no peek offset is needed.
-  if (numberOfItems <= 1) {
-    return 0;
-  }
-
-  NSInteger lastPageIndex = numberOfItems - 1;
-  if (page == lastPageIndex) {
-    // The last module should be trailing aligned so the previous module peeks.
-    return [self magicStackPeekInset];
-  }
-  return 0;
-}
-
-// Returns the amount that MagicStack modules are narrower than the ScrollView,
-// in order to allow peeking at the sides.
-- (CGFloat)magicStackPeekInset {
-  // For the narrow width layout, adjust the inset just enough to have the
-  // UICollectionView render the adjacent module.
-  return [self shouldHaveWideLayout] ? kMagicStackPeekInsetLandscape
-                                     : kMagicStackPeekInset + 1;
 }
 
 // Logs UMA histogram and ephemeral card visibility for a page navigation.
@@ -508,14 +470,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 
 // Scrolls to the given page index, optionally animated.
 - (void)scrollToPage:(NSUInteger)page animated:(BOOL)animated {
-  CGFloat moduleWidth = self.view.frame.size.width -
-                        MagicStackModuleNarrowerWidthToAllowPeeking(
-                            self.traitCollection, self.view.frame.size.width);
-  CGFloat targetX = page * (moduleWidth + kMagicStackSpacing) -
-                    [self peekOffsetForMagicStackPage:page];
+  UICollectionViewLayout* layout = _collectionView.collectionViewLayout;
+  if (![layout conformsToProtocol:@protocol(MagicStackPagingLayoutProvider)]) {
+    return;
+  }
+
+  id<MagicStackPagingLayoutProvider> pagingProvider =
+      (id<MagicStackPagingLayoutProvider>)layout;
+  CGFloat targetX = [pagingProvider offsetForPage:page
+                                  traitCollection:self.traitCollection
+                                       viewBounds:self.view.bounds];
+
   CGFloat maxOffset = MAX(
       0, _collectionView.contentSize.width - _collectionView.bounds.size.width);
-  targetX = MIN(targetX, maxOffset);
+  targetX = std::clamp<CGFloat>(targetX, 0, maxOffset);
   [_collectionView setContentOffset:CGPointMake(targetX, 0) animated:animated];
 }
 
@@ -549,8 +517,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 - (void)updateCardHeightOnTraitChange {
   _heightConstraint.constant = GetMagicStackHeight(self.view);
 
-  [_magicStackCollectionViewLayoutConfigurator
-          .magicStackCompositionalLayout invalidateLayout];
+  [_collectionView.collectionViewLayout invalidateLayout];
 }
 
 @end

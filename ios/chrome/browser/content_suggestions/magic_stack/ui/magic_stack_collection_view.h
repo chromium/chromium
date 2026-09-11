@@ -12,6 +12,14 @@
 typedef UICollectionViewDiffableDataSource<NSString*, MagicStackModule*>
     MagicStackDiffableDataSource;
 
+// Layout types supported by MagicStackCollectionViewController.
+enum class MagicStackLayoutType {
+  // Classic compositional layout for standard NTP.
+  kClassic,
+  // Redesign Smart Stack layout with 3D roll/stack transition.
+  kSmartStack,
+};
+
 @protocol MagicStackCollectionViewControllerAudience;
 @protocol MagicStackModuleContainerDelegate;
 
@@ -19,16 +27,28 @@ typedef UICollectionViewDiffableDataSource<NSString*, MagicStackModule*>
 @interface MagicStackCollectionViewController
     : UIViewController <MagicStackConsumer>
 
+// Whether the Magic Stack should show the edit button at the end of the stack.
+@property(nonatomic, assign) BOOL showsEditButton;
+
 // Audience for Magic Stack module events.
 @property(nonatomic, weak) id<MagicStackCollectionViewControllerAudience,
                               MagicStackModuleContainerDelegate>
     audience;
 
+// Initializes the collection view controller with the default classic layout.
+- (instancetype)init;
+
+// Initializes the collection view controller with the specified layout type.
+- (instancetype)initWithLayoutType:(MagicStackLayoutType)layoutType
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
 // Called when the module width has changed.
 - (void)moduleWidthDidUpdate;
 
-// Sets a custom collection view layout on the collection view.
-- (void)updateCollectionViewLayout:(UICollectionViewLayout*)layout;
 
 // Resets the Magic Stack.
 - (void)reset;
