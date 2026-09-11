@@ -20,12 +20,16 @@
   width: fit-content;
   font: 20px/1 Ahem;
 }
-#outer2 > div {
+#outer2 > :is(div, fieldset) {
   width: fit-content;
   max-width: 100px;
 }
-#outer2 > div > div {
+#outer2 > :is(div, fieldset) > div {
   width: fit-content;
+}
+fieldset, legend {
+  border: 0;
+  padding: 0;
 }
 </style>
 
@@ -48,6 +52,20 @@
     <div title="The target width should not be larger than max-width"
          data-expected-width="60">abc abc abc</div>
   </div>
+  <fieldset title="The target width should not be larger than max-width"
+         data-expected-width="60">abc abc abc</fieldset>
+  <fieldset>
+    <div title="The target width should not be larger than max-width"
+         data-expected-width="60">abc abc abc</div>
+  </fieldset>
+  <fieldset title="The target width should not be larger than max-width"
+         data-expected-width="60">
+    <legend>abc abc abc</legend>
+  </fieldset>
+  <fieldset>
+    <legend title="The target width should not be larger than max-width"
+            data-expected-width="60">abc abc abc</legend>
+  </fieldset>
 </div>
 
 <script>
