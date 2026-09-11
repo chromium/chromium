@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
@@ -32,6 +33,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 
@@ -40,7 +42,12 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
+    EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
+        .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
+
     profile_ = std::make_unique<TestingProfile>();
+    EXPECT_CALL(mock_browser_window_interface_, GetProfile())
+        .WillRepeatedly(testing::Return(profile()));
 
     // Create a root action item for the panel.
     root_action_item_ =
@@ -48,26 +55,19 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
             .AddChildren(actions::ActionItem::Builder().SetActionId(
                 kActionToggleOrganizerPanel))
             .Build();
-
-    // Create a real State Controller.
-    EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
-        .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
-
+    browser_actions_ =
+        std::make_unique<BrowserActions>(&mock_browser_window_interface_);
+    browser_actions_->set_root_action_item_for_testing(root_action_item_.get());
     animation_controller_ = std::make_unique<BrowserAnimationController>(
         mock_browser_window_interface_);
     animation_controller_->AddAnimationProvider(
         std::make_unique<OrganizerPanelAnimations>());
     state_controller_ = std::make_unique<OrganizerPanelStateController>(
         mock_browser_window_interface_, root_action_item_.get());
-
-    EXPECT_CALL(mock_browser_window_interface_, GetProfile())
-        .WillRepeatedly(testing::Return(profile()));
   }
 
   void CreateView() {
-    auto view = std::make_unique<OrganizerPanelView>(
-        &mock_browser_window_interface_, root_action_item_.get(),
-        state_controller_.get());
+    auto view = OrganizerPanelView::Create(mock_browser_window_interface_);
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     view_ = widget_->SetContentsView(std::move(view));
     widget_->SetBounds(gfx::Rect(0, 0, 800, 600));
@@ -85,6 +85,10 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
 
     state_controller_.reset();
     animation_controller_.reset();
+    if (browser_actions_) {
+      browser_actions_->set_root_action_item_for_testing(nullptr);
+      browser_actions_.reset();
+    }
     profile_.reset();
     ChromeViewsTestBase::TearDown();
   }
@@ -98,6 +102,13 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
 
   OrganizerPanelView* organizer_panel_view() { return view_; }
 
+  views::View* GetWebView() {
+    auto* const tracker = views::ElementTrackerViews::GetInstance();
+    return tracker->GetFirstMatchingView(
+        OrganizerPanelView::kWebViewElementId,
+        tracker->GetContextForWidget(widget_.get()));
+  }
+
   base::MockCallback<base::OnceClosure> panel_closed_callback_;
 
  private:
@@ -106,6 +117,7 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<actions::ActionItem> root_action_item_;
+  std::unique_ptr<BrowserActions> browser_actions_;
   std::unique_ptr<BrowserAnimationController> animation_controller_;
   std::unique_ptr<OrganizerPanelStateController> state_controller_;
 
@@ -120,10 +132,11 @@ TEST_F(OrganizerPanelViewTest, NoWebViewWhenExtensionSidePanelFlagEnabled) {
       organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
 
   CreateView();
-  EXPECT_EQ(organizer_panel_view()->GetWebViewForTesting(), nullptr);
+  EXPECT_EQ(GetWebView(), nullptr);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  EXPECT_TRUE(
-      organizer_panel_view()->has_extension_observer_helper_for_testing());
+  EXPECT_TRUE(organizer_panel_view()->IsInExtensionModeForTesting());
+#else
+  EXPECT_FALSE(organizer_panel_view()->IsInExtensionModeForTesting());
 #endif
 }
 
@@ -133,9 +146,6 @@ TEST_F(OrganizerPanelViewTest, DefaultWebViewCreatedWhenFlagDisabled) {
       organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
 
   CreateView();
-  EXPECT_NE(organizer_panel_view()->GetWebViewForTesting(), nullptr);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  EXPECT_FALSE(
-      organizer_panel_view()->has_extension_observer_helper_for_testing());
-#endif
+  EXPECT_NE(GetWebView(), nullptr);
+  EXPECT_FALSE(organizer_panel_view()->IsInExtensionModeForTesting());
 }

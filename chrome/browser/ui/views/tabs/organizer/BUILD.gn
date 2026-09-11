@@ -68,6 +68,11 @@ source_set("impl") {
   ]
 
   if (enable_extensions) {
+    sources += [
+      "organizer_panel_extension_view.cc",
+      "organizer_panel_extension_view.h",
+    ]
+
     deps += [
       "//chrome/browser/extensions",
       "//chrome/common/extensions/api",

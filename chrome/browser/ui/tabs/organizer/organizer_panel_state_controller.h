@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -74,6 +75,10 @@ class OrganizerPanelStateController {
 
   const raw_ref<BrowserWindowInterface> browser_window_;
   const raw_ptr<actions::ActionItem> root_action_item_;
+
+  // Records the last time the panel was opened. Used for recording how long the
+  // panel was open.
+  base::TimeTicks last_opened_time_;
 
   // Callback list for state changes to the visibility.
   base::RepeatingCallbackList<void(OrganizerPanelStateController*)>

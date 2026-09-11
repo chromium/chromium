@@ -408,16 +408,6 @@ class OrganizerPanelExtensionInteractiveUiTest
     return steps;
   }
 
-  auto CheckHasWebView() {
-    return CheckView(
-               kOrganizerPanelViewElementId,
-               [](OrganizerPanelView* panel) {
-                 return panel->GetWebViewForTesting();
-               },
-               testing::Ne(nullptr))
-        .SetDescription("CheckHasWebView()");
-  }
-
   OrganizerPanelStateController* organizer_panel_state_controller() {
     return OrganizerPanelStateController::From(browser());
   }
@@ -443,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
             *browser(), /*web_contents=*/nullptr, extension->id());
       }),
       WaitForPanelOpen(), CheckControllerState(true, extension->id()),
-      CheckHasWebView());
+      WaitForShow(OrganizerPanelView::kWebViewElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
@@ -503,7 +493,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
         extensions::side_panel_util::OpenGlobalExtensionSidePanel(
             *browser(), /*web_contents=*/nullptr, ext2->id());
       }),
-      CheckControllerState(true, ext2->id()), CheckHasWebView());
+      CheckControllerState(true, ext2->id()),
+      WaitForShow(OrganizerPanelView::kWebViewElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
@@ -516,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
       Do([this]() {
         organizer_panel_state_controller()->SetOrganizerVisible(true);
       }),
-      WaitForPanelOpen(), CheckHasWebView());
+      WaitForPanelOpen(), WaitForShow(OrganizerPanelView::kWebViewElementId));
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

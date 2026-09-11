@@ -1012,9 +1012,7 @@ BrowserView::BrowserView(BrowserWindowInterface* browser)
   auto* const organizer_panel_state_controller =
       OrganizerPanelStateController::From(browser_);
   if (organizer_panel_state_controller) {
-    auto organizer_panel = std::make_unique<OrganizerPanelView>(
-        browser_.get(), BrowserActions::From(browser_)->root_action_item(),
-        organizer_panel_state_controller);
+    auto organizer_panel = OrganizerPanelView::Create(*browser_);
     organizer_tray_ =
         AddChildView(std::make_unique<OrganizerTrayView>(*browser_, this));
     organizer_tray_->SetPanelView(std::move(organizer_panel));
