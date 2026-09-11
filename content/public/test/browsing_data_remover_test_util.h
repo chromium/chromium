@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 namespace content {
@@ -31,21 +30,17 @@ class BrowsingDataRemoverCompletionObserver
 
   void BlockUntilCompletion();
 
-  bool browsing_data_remover_done() { return browsing_data_remover_done_; }
+  bool browsing_data_remover_done() const {
+    return browsing_data_remover_done_;
+  }
 
-  uint64_t failed_data_types() { return failed_data_types_; }
+  uint64_t failed_data_types() const { return failed_data_types_; }
 
  protected:
   // BrowsingDataRemover::Observer:
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override;
 
  private:
-  void FlushForTestingComplete();
-  void QuitRunLoopWhenTasksComplete();
-
-  // Tracks when the Task Scheduler task flushing is done.
-  bool flush_for_testing_complete_ = false;
-
   // Tracks when BrowsingDataRemover::Observer::OnBrowsingDataRemoverDone() is
   // called.
   bool browsing_data_remover_done_ = false;
@@ -57,7 +52,6 @@ class BrowsingDataRemoverCompletionObserver
   base::RunLoop run_loop_;
   base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemover::Observer>
       observation_{this};
-  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 };
 
 // The completion inhibitor can artificially delay completion of the browsing
@@ -88,12 +82,6 @@ class BrowsingDataRemoverCompletionInhibitor {
       base::OnceClosure continue_to_completion);
 
  private:
-  void FlushForTestingComplete();
-  void QuitRunLoopWhenTasksComplete();
-
-  // Tracks when the Task Scheduler task flushing is done.
-  bool flush_for_testing_complete_ = false;
-
   // Tracks when OnBrowsingDataRemoverWouldComplete() is called.
   bool browsing_data_remover_would_complete_done_ = false;
 
@@ -103,7 +91,6 @@ class BrowsingDataRemoverCompletionInhibitor {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure continue_to_completion_callback_;
-  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 };
 
 }  // namespace content
