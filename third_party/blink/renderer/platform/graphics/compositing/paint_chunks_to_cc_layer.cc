@@ -1077,7 +1077,7 @@ ConversionContext<cc::DisplayItemList>::ComputeScrollTranslationAction(
     return {ScrollTranslationAction::kStart, &target_scroll_translation};
   }
 
-  DCHECK(target_scroll_translation.IsAncestorOf(*current_scroll_translation_));
+  CHECK(target_scroll_translation.IsAncestorOf(*current_scroll_translation_));
   return {ScrollTranslationAction::kEnd};
 }
 
