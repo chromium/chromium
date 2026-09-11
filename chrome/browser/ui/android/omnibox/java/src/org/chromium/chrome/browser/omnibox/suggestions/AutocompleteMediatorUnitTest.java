@@ -122,6 +122,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -191,6 +192,7 @@ public class AutocompleteMediatorUnitTest {
     @Captor private ArgumentCaptor<Consumer<SiteSearchData>> mKeywordModeEnteredCaptor;
     @Captor private ArgumentCaptor<Callback<GURL>> mUrlCallbackCaptor;
     @Captor private ArgumentCaptor<AutocompleteInput> mAutocompleteInputCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mDialogCaptor;
 
     private PropertyModel mListModel;
     private OmniboxResourceProvider mResourceProvider;
@@ -2674,6 +2676,48 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onTopResumedActivityChanged(/* isTopResumedActivity= */ false);
         verify(mModalDialogManager)
                 .dismissDialog(any(), eq(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
+    }
+
+    @Test
+    public void confirmDeleteMatch_positiveClickDeletesMatch() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        doReturn(true).when(mAutocompleteMatch).isDeletable();
+        doReturn(1L).when(mAutocompleteMatch).getNativeObjectRef();
+
+        mMediator.confirmDeleteMatch(mAutocompleteMatch, "Title");
+
+        verify(mModalDialogManager)
+                .showDialog(mDialogCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+        var dialog = mDialogCaptor.getValue();
+        dialog.get(ModalDialogProperties.CONTROLLER)
+                .onClick(dialog, ModalDialogProperties.ButtonType.POSITIVE);
+
+        verify(mAutocompleteController).deleteMatch(mAutocompleteMatch);
+        verify(mModalDialogManager)
+                .dismissDialog(dialog, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+    }
+
+    @Test
+    public void confirmDeleteMatch_negativeClickDismissesWithoutDeleting() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        doReturn(true).when(mAutocompleteMatch).isDeletable();
+        doReturn(1L).when(mAutocompleteMatch).getNativeObjectRef();
+
+        mMediator.confirmDeleteMatch(mAutocompleteMatch, "Title");
+
+        verify(mModalDialogManager)
+                .showDialog(mDialogCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+        var dialog = mDialogCaptor.getValue();
+        dialog.get(ModalDialogProperties.CONTROLLER)
+                .onClick(dialog, ModalDialogProperties.ButtonType.NEGATIVE);
+
+        verify(mAutocompleteController, never()).deleteMatch(any());
+        verify(mModalDialogManager)
+                .dismissDialog(dialog, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
 
     private void setUpSiteSearchSpaceTrigger(
