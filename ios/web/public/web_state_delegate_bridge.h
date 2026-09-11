@@ -76,8 +76,12 @@
 
 // Called when a request receives an authentication challenge specified by
 // `protectionSpace`, and is unable to respond using cached credentials.
-// Clients must call `handler` even if they want to cancel authentication
-// (in which case `username` or `password` should be nil).
+// Also called for proxy authentication challenges (HTTP 407) when
+// `webState:didRequestProxyAuthForProtectionSpace:...` is not implemented, so
+// that embedders that still rely on this method to handle proxy auth
+// challenges keep working. Clients must call `handler` even if they want to
+// cancel authentication (in which case `username` or `password` should be
+// nil).
 - (void)webState:(web::WebState*)webState
     didRequestHTTPAuthForProtectionSpace:(NSURLProtectionSpace*)protectionSpace
                       proposedCredential:(NSURLCredential*)proposedCredential
@@ -93,6 +97,25 @@
         (NSURLProtectionSpace*)protectionSpace
                              completionHandler:
                                  (void (^)(SecIdentityRef))handler;
+
+// Called when a request receives a proxy authentication challenge (HTTP 407)
+// specified by `protectionSpace`, and is unable to respond using cached
+// credentials. `failureResponse` is the response that caused the challenge to
+// be issued, or nil if no response was received. Clients must call `handler`
+// with `username` and `password` on success, with `error` to cancel navigation
+// with a specific error, or with nil parameters to cancel authentication.
+// If not implemented, forwards the challenge to
+// `webState:didRequestHTTPAuthForProtectionSpace...`
+// to maintain backwards compatibility for embedders that rely on that method
+// for handling proxy auth challenges. Available in iOS 18.1 and later.
+- (void)webState:(web::WebState*)webState
+    didRequestProxyAuthForProtectionSpace:(NSURLProtectionSpace*)protectionSpace
+                       proposedCredential:(NSURLCredential*)proposedCredential
+                          failureResponse:(NSURLResponse*)failureResponse
+                        completionHandler:(void (^)(NSString* username,
+                                                    NSString* password,
+                                                    NSError* error))handler
+    API_AVAILABLE(ios(18.1));
 
 // Called to know the size of the view containing the WebView.
 - (UIView*)webViewContainerForWebState:(web::WebState*)webState;
@@ -163,6 +186,12 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
   void OnAuthRequired(WebState* source,
                       NSURLProtectionSpace* protection_space,
                       ClientCertAuthCallback callback) override;
+  void OnProxyAuthChallenge(WebState* source,
+                            NSURLProtectionSpace* protection_space,
+                            NSURLCredential* proposed_credential,
+                            NSURLResponse* failure_response,
+                            ProxyAuthCallback callback) override
+      API_AVAILABLE(ios(18.1));
   UIView* GetWebViewContainer(WebState* source) override;
   void ContextMenuConfiguration(
       WebState* source,

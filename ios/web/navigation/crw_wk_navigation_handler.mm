@@ -17,6 +17,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/timer/timer.h"
+#import "components/enterprise/net/core/features.h"
 #import "components/security_interstitials/core/insecure_form_util.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/net/protocol_handler_util.h"
@@ -67,6 +68,13 @@ namespace {
 // Cache holds errors only for pending navigations, so the actual number of
 // stored errors is not expected to be high.
 const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
+
+// Maximum number of previous proxy authentication failures allowed before
+// cancelling authentication. This guards against unbounded retries for
+// unsuccessful authentication attempts when credentials are supplied
+// programmatically. Although WebKit appears to stop after ~60 retries, this
+// check provides an extra safety guard.
+constexpr NSInteger kMaxProxyAuthFailureCount = 100;
 
 // Returns true if the navigation was upgraded to HTTPS but failed due to an
 // SSL or net error. This can happen when HTTPS-Only Mode feature automatically
@@ -1914,6 +1922,32 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
          [space.authenticationMethod
              isEqualToString:NSURLAuthenticationMethodHTTPDigest]);
 
+  if (@available(iOS 18.1, *)) {
+    if (space.isProxy && base::FeatureList::IsEnabled(
+                             enterprise_net::kEnableDynamicRouteFetching)) {
+      if (challenge.previousFailureCount >= kMaxProxyAuthFailureCount) {
+        completionHandler(
+            NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+        return;
+      }
+
+      __weak CRWWKNavigationHandler* weakSelf = self;
+      auto callback =
+          base::BindOnce(^(NSString* user, NSString* password, NSError* error) {
+            [CRWWKNavigationHandler processProxyAuthForUser:user
+                                                   password:password
+                                                      error:error
+                                          navigationHandler:weakSelf
+                                          completionHandler:completionHandler];
+          });
+
+      self.webStateImpl->OnProxyAuthChallenge(
+          space, challenge.proposedCredential, challenge.failureResponse,
+          std::move(callback));
+      return;
+    }
+  }
+
   self.webStateImpl->OnAuthRequired(
       space, challenge.proposedCredential,
       base::BindRepeating(^(NSString* user, NSString* password) {
@@ -1921,6 +1955,26 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                                               password:password
                                      completionHandler:completionHandler];
       }));
+}
+
+// Used in webView:didReceiveAuthenticationChallenge:completionHandler: to reply
+// with NSURLSessionAuthChallengeDisposition and credentials, or cancel with
+// `error` if non-nil.
++ (void)processProxyAuthForUser:(NSString*)user
+                       password:(NSString*)password
+                          error:(NSError*)error
+              navigationHandler:(CRWWKNavigationHandler*)navigationHandler
+              completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition,
+                                          NSURLCredential*))completionHandler {
+  if (error) {
+    navigationHandler.pendingNavigationInfo.cancellationError = error;
+    completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge,
+                      nil);
+    return;
+  }
+  [CRWWKNavigationHandler processHTTPAuthForUser:user
+                                        password:password
+                               completionHandler:completionHandler];
 }
 
 // Used in webView:didReceiveAuthenticationChallenge:completionHandler: to reply

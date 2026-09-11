@@ -43,6 +43,9 @@
 // Whether `webState:didRequestClientCertAuthForProtectionSpace:...` has been
 // called or not.
 @property(nonatomic, readonly) BOOL clientCertAuthenticationRequested;
+// Whether `webState:didRequestProxyAuthForProtectionSpace:...` has been called
+// or not.
+@property(nonatomic, readonly) BOOL proxyAuthenticationRequested;
 // Specifies the return value of `isAppLaunchingAllowedForWebState:`.
 @property(nonatomic) BOOL isAppLaunchingAllowedForWebStateReturnValue;
 

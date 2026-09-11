@@ -26,6 +26,7 @@
 @synthesize httpAuthenticationRequested = _httpAuthenticationRequested;
 @synthesize clientCertAuthenticationRequested =
     _clientCertAuthenticationRequested;
+@synthesize proxyAuthenticationRequested = _proxyAuthenticationRequested;
 @synthesize isAppLaunchingAllowedForWebStateReturnValue =
     _isAppLaunchingAllowedForWebStateReturnValue;
 
@@ -113,6 +114,20 @@
                                  (void (^)(SecIdentityRef))handler {
   _webState = webState;
   _clientCertAuthenticationRequested = YES;
+}
+
+- (void)webState:(web::WebState*)webState
+    didRequestProxyAuthForProtectionSpace:(NSURLProtectionSpace*)protectionSpace
+                       proposedCredential:(NSURLCredential*)proposedCredential
+                          failureResponse:(NSURLResponse*)failureResponse
+                        completionHandler:(void (^)(NSString* username,
+                                                    NSString* password,
+                                                    NSError* error))handler {
+  _webState = webState;
+  _proxyAuthenticationRequested = YES;
+  if (handler) {
+    handler(@"user", @"password", nil);
+  }
 }
 
 - (const web::WebState::OpenURLParams*)openURLParams {

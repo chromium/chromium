@@ -619,6 +619,20 @@ void WebStateImpl::RealizedWebState::OnAuthRequired(
   }
 }
 
+void WebStateImpl::RealizedWebState::OnProxyAuthChallenge(
+    NSURLProtectionSpace* protection_space,
+    NSURLCredential* proposed_credential,
+    NSURLResponse* failure_response,
+    WebStateDelegate::ProxyAuthCallback callback) {
+  if (delegate_) {
+    delegate_->OnProxyAuthChallenge(owner_, protection_space,
+                                    proposed_credential, failure_response,
+                                    std::move(callback));
+  } else {
+    std::move(callback).Run(nil, nil, nil);
+  }
+}
+
 void WebStateImpl::RealizedWebState::RetrieveExistingFrames() {
   JavaScriptFeatureManager* feature_manager =
       JavaScriptFeatureManager::FromBrowserState(owner_->GetBrowserState());

@@ -97,6 +97,9 @@ class WebStateDelegate {
 
   // Called when a request receives an authentication challenge specified by
   // `protection_space`, and is unable to respond using cached credentials.
+  // Also called for proxy authentication challenges (HTTP 407) when
+  // `OnProxyAuthChallenge` is not implemented, so that embedders that still
+  // rely on `OnAuthRequired` to handle proxy auth challenges keep working.
   // Clients must call `callback` even if they want to cancel authentication
   // (in which case `username` or `password` should be nil).
   using HTTPAuthCallback =
@@ -115,6 +118,25 @@ class WebStateDelegate {
   virtual void OnAuthRequired(WebState* source,
                               NSURLProtectionSpace* protection_space,
                               ClientCertAuthCallback callback);
+
+  // Called when a request receives a proxy authentication challenge (HTTP 407)
+  // specified by `protection_space`, and is unable to respond using cached
+  // credentials. `failure_response` is the response that caused the challenge
+  // to be issued, or nil if no response was received. Clients must call
+  // `callback` with `username` and `password` on success, with `error` to
+  // cancel navigation with a specific error, or with nil parameters to cancel
+  // authentication. By default, forwards the challenge to `OnAuthRequired` to
+  // maintain backwards compatibility for embedders that rely on
+  // `OnAuthRequired` for handling proxy auth challenges. Available in iOS 18.1
+  // and later.
+  using ProxyAuthCallback = base::OnceCallback<
+      void(NSString* username, NSString* password, NSError* error)>;
+  virtual void OnProxyAuthChallenge(WebState* source,
+                                    NSURLProtectionSpace* protection_space,
+                                    NSURLCredential* proposed_credential,
+                                    NSURLResponse* failure_response,
+                                    ProxyAuthCallback callback)
+      API_AVAILABLE(ios(18.1));
 
   // Returns the UIView used to contain the WebView for sizing purposes. Can be
   // nil.

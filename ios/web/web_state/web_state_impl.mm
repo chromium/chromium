@@ -420,6 +420,16 @@ void WebStateImpl::OnAuthRequired(
   RealizedState()->OnAuthRequired(protection_space, std::move(callback));
 }
 
+void WebStateImpl::OnProxyAuthChallenge(
+    NSURLProtectionSpace* protection_space,
+    NSURLCredential* proposed_credential,
+    NSURLResponse* failure_response,
+    WebStateDelegate::ProxyAuthCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RealizedState()->OnProxyAuthChallenge(protection_space, proposed_credential,
+                                        failure_response, std::move(callback));
+}
+
 void WebStateImpl::CancelDialogs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->ClearDialogs();

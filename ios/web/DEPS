@@ -1,5 +1,6 @@
 include_rules = [
   # go/keep-sorted start
+  "+components/enterprise/net/core/features.h",
   "+components/leveldb_proto/public",
   "+components/security_interstitials/core/insecure_form_util.h",
   "+components/security_state",

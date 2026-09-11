@@ -164,6 +164,11 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
                       WebStateDelegate::HTTPAuthCallback callback);
   void OnAuthRequired(NSURLProtectionSpace* protection_space,
                       WebStateDelegate::ClientCertAuthCallback callback);
+  void OnProxyAuthChallenge(NSURLProtectionSpace* protection_space,
+                            NSURLCredential* proposed_credential,
+                            NSURLResponse* failure_response,
+                            WebStateDelegate::ProxyAuthCallback callback)
+      API_AVAILABLE(ios(18.1));
   void RetrieveExistingFrames();
 
   // WebState:

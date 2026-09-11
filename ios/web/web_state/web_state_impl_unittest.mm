@@ -448,6 +448,30 @@ TEST_F(WebStateImplTest, DelegateTest) {
   ASSERT_TRUE(
       delegate.last_authentication_request()->client_cert_auth_callback);
   ASSERT_FALSE(delegate.last_authentication_request()->http_auth_callback);
+
+  delegate.ClearLastAuthenticationRequest();
+
+  if (@available(iOS 18.1, *)) {
+    // Test that OnProxyAuthChallenge() for Proxy authentication is called.
+    EXPECT_FALSE(delegate.last_proxy_authentication_request());
+    NSURLResponse* failure_response = [[NSURLResponse alloc] init];
+    WebStateDelegate::ProxyAuthCallback proxy_callback = base::DoNothing();
+    web_state.OnProxyAuthChallenge(protection_space, credential,
+                                   failure_response, std::move(proxy_callback));
+    ASSERT_TRUE(delegate.last_proxy_authentication_request());
+    EXPECT_EQ(delegate.last_proxy_authentication_request()->web_state,
+              &web_state);
+    EXPECT_EQ(delegate.last_proxy_authentication_request()->protection_space,
+              protection_space);
+    EXPECT_EQ(delegate.last_proxy_authentication_request()->proposed_credential,
+              credential);
+    EXPECT_EQ(delegate.last_proxy_authentication_request()->failure_response,
+              failure_response);
+    ASSERT_TRUE(
+        delegate.last_proxy_authentication_request()->proxy_auth_callback);
+
+    delegate.ClearLastProxyAuthenticationRequest();
+  }
 }
 
 // Verifies that GlobalWebStateObservers are called when expected.

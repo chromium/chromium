@@ -270,6 +270,14 @@ class WebStateImpl final : public WebState {
   void OnAuthRequired(NSURLProtectionSpace* protection_space,
                       WebStateDelegate::ClientCertAuthCallback callback);
 
+  // Notifies the delegate that request receives a proxy authentication
+  // challenge (HTTP 407) and is unable to respond using cached credentials.
+  void OnProxyAuthChallenge(NSURLProtectionSpace* protection_space,
+                            NSURLCredential* proposed_credential,
+                            NSURLResponse* failure_response,
+                            WebStateDelegate::ProxyAuthCallback callback)
+      API_AVAILABLE(ios(18.1));
+
   // Cancels all dialogs associated with this web_state.
   void CancelDialogs();
 

@@ -170,6 +170,33 @@ void WebStateDelegateBridge::OnAuthRequired(
   }
 }
 
+void WebStateDelegateBridge::OnProxyAuthChallenge(
+    WebState* source,
+    NSURLProtectionSpace* protection_space,
+    NSURLCredential* proposed_credential,
+    NSURLResponse* failure_response,
+    ProxyAuthCallback callback) {
+  if ([delegate_
+          respondsToSelector:
+              @selector(
+                  webState:didRequestProxyAuthForProtectionSpace:
+                  proposedCredential:failureResponse:completionHandler:)]) {
+    [delegate_ webState:source
+        didRequestProxyAuthForProtectionSpace:protection_space
+                           proposedCredential:proposed_credential
+                              failureResponse:failure_response
+                            completionHandler:base::CallbackToBlock(
+                                                  std::move(callback))];
+  } else {
+    // Fall back to the base implementation, which forwards the challenge to
+    // `OnAuthRequired` so that delegates that do not implement the proxy
+    // specific method still get a chance to handle the challenge.
+    WebStateDelegate::OnProxyAuthChallenge(
+        source, protection_space, proposed_credential, failure_response,
+        std::move(callback));
+  }
+}
+
 UIView* WebStateDelegateBridge::GetWebViewContainer(WebState* source) {
   if ([delegate_ respondsToSelector:@selector(webViewContainerForWebState:)]) {
     return [delegate_ webViewContainerForWebState:source];

@@ -29,6 +29,13 @@ FakeAuthenticationRequest::~FakeAuthenticationRequest() = default;
 FakeAuthenticationRequest::FakeAuthenticationRequest(
     FakeAuthenticationRequest&&) = default;
 
+FakeProxyAuthenticationRequest::FakeProxyAuthenticationRequest() = default;
+
+FakeProxyAuthenticationRequest::~FakeProxyAuthenticationRequest() = default;
+
+FakeProxyAuthenticationRequest::FakeProxyAuthenticationRequest(
+    FakeProxyAuthenticationRequest&&) = default;
+
 FakeWebStateDelegate::FakeWebStateDelegate() {}
 
 FakeWebStateDelegate::~FakeWebStateDelegate() = default;
@@ -121,6 +128,21 @@ void FakeWebStateDelegate::OnAuthRequired(
   last_authentication_request_->web_state = source;
   last_authentication_request_->protection_space = protection_space;
   last_authentication_request_->client_cert_auth_callback = std::move(callback);
+}
+
+void FakeWebStateDelegate::OnProxyAuthChallenge(
+    WebState* source,
+    NSURLProtectionSpace* protection_space,
+    NSURLCredential* proposed_credential,
+    NSURLResponse* failure_response,
+    ProxyAuthCallback callback) {
+  last_proxy_authentication_request_ =
+      std::make_unique<FakeProxyAuthenticationRequest>();
+  last_proxy_authentication_request_->web_state = source;
+  last_proxy_authentication_request_->protection_space = protection_space;
+  last_proxy_authentication_request_->proposed_credential = proposed_credential;
+  last_proxy_authentication_request_->failure_response = failure_response;
+  last_proxy_authentication_request_->proxy_auth_callback = std::move(callback);
 }
 
 void FakeWebStateDelegate::HandlePermissionsDecisionRequest(

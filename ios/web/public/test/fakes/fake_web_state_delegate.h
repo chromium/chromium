@@ -58,6 +58,18 @@ struct FakeAuthenticationRequest {
   WebStateDelegate::ClientCertAuthCallback client_cert_auth_callback;
 };
 
+// Encapsulates parameters passed to OnProxyAuthChallenge.
+struct FakeProxyAuthenticationRequest {
+  FakeProxyAuthenticationRequest();
+  FakeProxyAuthenticationRequest(FakeProxyAuthenticationRequest&&);
+  ~FakeProxyAuthenticationRequest();
+  raw_ptr<WebState> web_state = nullptr;
+  NSURLProtectionSpace* protection_space = nil;
+  NSURLCredential* proposed_credential = nil;
+  NSURLResponse* failure_response = nil;
+  WebStateDelegate::ProxyAuthCallback proxy_auth_callback;
+};
+
 // Encapsulates information about popup.
 struct FakePopup {
   FakePopup(const GURL& url, const GURL& opener_url)
@@ -93,6 +105,12 @@ class FakeWebStateDelegate : public WebStateDelegate {
   void OnAuthRequired(WebState* source,
                       NSURLProtectionSpace* protection_space,
                       ClientCertAuthCallback callback) override;
+  void OnProxyAuthChallenge(WebState* source,
+                            NSURLProtectionSpace* protection_space,
+                            NSURLCredential* proposed_credential,
+                            NSURLResponse* failure_response,
+                            ProxyAuthCallback callback) override
+      API_AVAILABLE(ios(18.1));
   void HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,
@@ -148,6 +166,18 @@ class FakeWebStateDelegate : public WebStateDelegate {
     last_authentication_request_.reset();
   }
 
+  // Returns the last proxy authentication request passed to
+  // `OnProxyAuthChallenge`.
+  FakeProxyAuthenticationRequest* last_proxy_authentication_request() const {
+    return last_proxy_authentication_request_.get();
+  }
+
+  // Clears the last proxy authentication request passed to
+  // `OnProxyAuthChallenge`.
+  void ClearLastProxyAuthenticationRequest() {
+    last_proxy_authentication_request_.reset();
+  }
+
   // Returns the last requested permissions passed to
   // `HandlePermissionsDecisionRequest`.
   NSArray<NSNumber*>* last_requested_permissions() {
@@ -190,6 +220,8 @@ class FakeWebStateDelegate : public WebStateDelegate {
   bool get_java_script_dialog_presenter_called_ = false;
   FakeJavaScriptDialogPresenter java_script_dialog_presenter_;
   std::unique_ptr<FakeAuthenticationRequest> last_authentication_request_;
+  std::unique_ptr<FakeProxyAuthenticationRequest>
+      last_proxy_authentication_request_;
   NSArray<NSNumber*>* last_requested_permissions_;
   bool should_allow_app_launching_ = false;
   PermissionDecision permission_decision_ = PermissionDecisionDeny;
