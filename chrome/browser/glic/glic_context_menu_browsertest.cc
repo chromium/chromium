@@ -205,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest,
   TemplateURLData data;
   data.SetShortName(u"Google");
   data.SetKeyword(u"google.com");
-  data.SetURL("http://www.google.com/search?q={searchTerms}");
-  data.image_url = "http://www.google.com/searchbyimage/upload";
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  data.image_url = "https://www.google.com/searchbyimage/upload";
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest,
   TemplateURLData data;
   data.SetShortName(u"Google");
   data.SetKeyword(u"google.com");
-  data.SetURL("http://www.google.com/search?q={searchTerms}");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest,
   TemplateURLData data;
   data.SetShortName(u"Google");
   data.SetKeyword(u"google.com");
-  data.SetURL("http://www.google.com/search?q={searchTerms}");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuSimplificationBrowserTest,
   TemplateURLData data;
   data.SetShortName(u"Google");
   data.SetKeyword(u"google.com");
-  data.SetURL("http://www.google.com/search?q={searchTerms}");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuStandardBrowserTest,
   TemplateURLData data;
   data.SetShortName(u"Google");
   data.SetKeyword(u"google.com");
-  data.SetURL("http://www.google.com/search?q={searchTerms}");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
@@ -608,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuStandardBrowserTest,
   TemplateURLData data;
   data.SetShortName(u"Google");
   data.SetKeyword(u"google.com");
-  data.SetURL("http://www.google.com/search?q={searchTerms}");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBelowSearchBrowserTest,
   TemplateURLData data;
   data.SetShortName(u"Google");
   data.SetKeyword(u"google.com");
-  data.SetURL("http://www.google.com/search?q={searchTerms}");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBelowSearchBrowserTest,
   TemplateURLData data;
   data.SetShortName(u"Google");
   data.SetKeyword(u"google.com");
-  data.SetURL("http://www.google.com/search?q={searchTerms}");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
@@ -860,8 +860,8 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBelowSearchBrowserTest,
   TemplateURLData data;
   data.SetShortName(u"Google");
   data.SetKeyword(u"google.com");
-  data.SetURL("http://www.google.com/search?q={searchTerms}");
-  data.image_url = "http://www.google.com/searchbyimage/upload";
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  data.image_url = "https://www.google.com/searchbyimage/upload";
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   model->SetUserSelectedDefaultSearchProvider(template_url);
 
