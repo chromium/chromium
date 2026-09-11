@@ -162,6 +162,8 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
   if (!frame_connector_)
     return;
 
+  initial_size_ = gfx::Size();
+
   RenderWidgetHostViewBase* parent_view =
       frame_connector_->GetParentRenderWidgetHostView();
 
@@ -235,7 +237,12 @@ void RenderWidgetHostViewChildFrame::InitAsChild(gfx::NativeView parent_view) {
 }
 
 void RenderWidgetHostViewChildFrame::SetSize(const gfx::Size& size) {
-  // Resizing happens in FrameConnector for child frames.
+  // The connector controls the size after attachment. Preserve a size supplied
+  // before attachment so a speculative nested main frame does not initialize
+  // its renderer with an empty viewport.
+  if (!frame_connector_) {
+    initial_size_ = size;
+  }
 }
 
 void RenderWidgetHostViewChildFrame::SetBounds(const gfx::Rect& rect) {
@@ -316,33 +323,33 @@ void RenderWidgetHostViewChildFrame::WasOccluded() {
 
 gfx::Rect RenderWidgetHostViewChildFrame::GetViewBoundsHelper(
     bool without_transform) {
-  gfx::Rect screen_space_rect;
-  if (frame_connector_) {
-    screen_space_rect = frame_connector_->GetRectInParentViewInDip();
-
-    RenderWidgetHostViewBase* parent_view =
-        frame_connector_->GetParentRenderWidgetHostView();
-
-    // The parent_view can be null in tests when using a TestWebContents.
-    if (parent_view) {
-      // Translate screen_space_rect by the parent's RenderWidgetHostView
-      // offset.
-      gfx::Vector2d offset;
-      if (without_transform) {
-        offset =
-            parent_view->GetViewBoundsWithoutTransform().OffsetFromOrigin();
-      } else {
-        offset = parent_view->GetViewBounds().OffsetFromOrigin();
-      }
-      screen_space_rect.Offset(offset);
-    }
-    // TODO(wjmaclean): GetViewBounds is a bit of a mess. It's used to determine
-    // the size of the renderer content and where to place context menus and so
-    // on. We want the location of the frame in screen coordinates to place
-    // popups but we want the size in local coordinates to produce the right-
-    // sized CompositorFrames. https://crbug.com/928825.
-    screen_space_rect.set_size(frame_connector_->GetLocalFrameSizeInDip());
+  if (!frame_connector_) {
+    return gfx::Rect(initial_size_);
   }
+
+  gfx::Rect screen_space_rect = frame_connector_->GetRectInParentViewInDip();
+
+  RenderWidgetHostViewBase* parent_view =
+      frame_connector_->GetParentRenderWidgetHostView();
+
+  // The parent_view can be null in tests when using a TestWebContents.
+  if (parent_view) {
+    // Translate screen_space_rect by the parent's RenderWidgetHostView
+    // offset.
+    gfx::Vector2d offset;
+    if (without_transform) {
+      offset = parent_view->GetViewBoundsWithoutTransform().OffsetFromOrigin();
+    } else {
+      offset = parent_view->GetViewBounds().OffsetFromOrigin();
+    }
+    screen_space_rect.Offset(offset);
+  }
+  // TODO(wjmaclean): GetViewBounds is a bit of a mess. It's used to determine
+  // the size of the renderer content and where to place context menus and so
+  // on. We want the location of the frame in screen coordinates to place
+  // popups but we want the size in local coordinates to produce the right-
+  // sized CompositorFrames. https://crbug.com/928825.
+  screen_space_rect.set_size(frame_connector_->GetLocalFrameSizeInDip());
   return screen_space_rect;
 }
 
@@ -467,7 +474,7 @@ void RenderWidgetHostViewChildFrame::
 gfx::Size RenderWidgetHostViewChildFrame::GetCompositorViewportPixelSize() {
   if (frame_connector_)
     return frame_connector_->GetLocalFrameSizeInPixels();
-  return gfx::Size();
+  return gfx::ScaleToCeiledSize(initial_size_, GetDeviceScaleFactor());
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -945,7 +952,8 @@ bool RenderWidgetHostViewChildFrame::HasSavedCompositorFrame() const {
 }
 
 bool RenderWidgetHostViewChildFrame::HasSize() const {
-  return frame_connector_ && frame_connector_->HasSize();
+  return frame_connector_ ? frame_connector_->HasSize()
+                          : !initial_size_.IsEmpty();
 }
 
 double RenderWidgetHostViewChildFrame::GetCSSZoomFactor() const {

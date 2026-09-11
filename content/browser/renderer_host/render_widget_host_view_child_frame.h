@@ -305,6 +305,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // Surface-related state.
   viz::SurfaceInfo last_activated_surface_info_;
   gfx::Rect last_screen_rect_;
+  gfx::Size initial_size_;
 
   // frame_connector_ provides a platform abstraction. Messages
   // sent through it are routed to the embedding renderer process.

@@ -487,6 +487,21 @@ TEST_F(RenderWidgetHostViewChildFrameTest, GetViewBoundsWithoutTransform) {
   test_frame_connector_->SetParentRenderWidgetHostView(nullptr);
 }
 
+TEST_F(RenderWidgetHostViewChildFrameTest, UsesInitialSizeBeforeAttachment) {
+  view_->SetFrameConnector(nullptr);
+
+  const gfx::Size initial_size(800, 600);
+  view_->SetSize(initial_size);
+
+  EXPECT_TRUE(view_->HasSize());
+  EXPECT_EQ(initial_size, view_->GetViewBounds().size());
+
+  test_frame_connector_->SetLocalFrameSize(gfx::Size(400, 300));
+  view_->SetFrameConnector(test_frame_connector_.get());
+
+  EXPECT_EQ(gfx::Size(400, 300), view_->GetViewBounds().size());
+}
+
 // Tests that SynchronizeVisualProperties is called only once and all the
 // parameters change atomically.
 TEST_F(RenderWidgetHostViewChildFrameTest,
