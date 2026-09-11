@@ -58,10 +58,6 @@ constexpr CGFloat kCustomizationNewBadgeOffset = 14.0;
 // Top margin for header buttons (customization menu and identity disc).
 constexpr CGFloat kHeaderButtonTopMargin = 12.0;
 
-// Leading margin for the customization menu button.
-const CGFloat kCustomizationMenuButtonLeadingMargin =
-    ntp_home::kIdentityAvatarPadding + ntp_home::kHeaderIconMargin;
-
 // New feature badge layout constants for customization menu button.
 constexpr CGFloat kCustomizationNewBadgeSize = 20.0;
 constexpr CGFloat kCustomizationNewBadgeFontSize = 10.0;
@@ -93,7 +89,7 @@ constexpr CGFloat kFakeboxPlusLeadingSpace = 18.0;
 constexpr CGFloat kLogoViewYOffset = 1.0;
 constexpr CGFloat kHintLabelYOffset = -1.0;
 
-const CGFloat kMinDragHandleHeight = 24.0;
+constexpr CGFloat kMinDragHandleHeight = 24.0;
 }  // namespace
 
 @interface NTPRedesignTouchAreaOverflowStackView : UIStackView
@@ -449,7 +445,8 @@ const CGFloat kMinDragHandleHeight = 24.0;
                          constant:kHeaderButtonTopMargin],
       [customizationButton.leadingAnchor
           constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                         constant:kCustomizationMenuButtonLeadingMargin],
+                         constant:(ntp_home::kIdentityAvatarPadding +
+                                   ntp_home::kHeaderIconMargin)],
       [customizationButton.widthAnchor
           constraintEqualToConstant:ntp_home::kNTPMenuButtonDimension],
       [customizationButton.heightAnchor
