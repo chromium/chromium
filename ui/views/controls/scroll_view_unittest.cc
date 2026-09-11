@@ -1441,9 +1441,9 @@ TEST_F(ScrollViewTest, CornerViewVisibility) {
   contents->SetBounds(0, 0, 200, 200);
   InvalidateAndRunScheduledLayoutOnScrollView();
 
-  // Corner view should not exist if using overlay scrollbars.
+  // Corner view should not be visible if using overlay scrollbars.
   if (scroll_view_->vertical_scroll_bar()->OverlapsContent()) {
-    EXPECT_FALSE(corner_view->parent());
+    EXPECT_FALSE(corner_view->GetVisible());
     return;
   }
 
@@ -1457,20 +1457,20 @@ TEST_F(ScrollViewTest, CornerViewVisibility) {
   EXPECT_EQ(scroll_view_->GetScrollBarLayoutWidth(), corner_view->width());
   EXPECT_EQ(scroll_view_->GetScrollBarLayoutHeight(), corner_view->height());
 
-  // Corner view should be removed when only the vertical scrollbar is visible.
+  // Corner view should be hidden when only the vertical scrollbar is visible.
   contents->SetBounds(0, 0, 50, 200);
   InvalidateAndRunScheduledLayoutOnScrollView();
-  EXPECT_FALSE(corner_view->parent());
+  EXPECT_FALSE(corner_view->GetVisible());
 
   // ... or when only the horizontal scrollbar is visible.
   contents->SetBounds(0, 0, 200, 50);
   InvalidateAndRunScheduledLayoutOnScrollView();
-  EXPECT_FALSE(corner_view->parent());
+  EXPECT_FALSE(corner_view->GetVisible());
 
   // ... or when no scrollbar is visible.
   contents->SetBounds(0, 0, 50, 50);
   InvalidateAndRunScheduledLayoutOnScrollView();
-  EXPECT_FALSE(corner_view->parent());
+  EXPECT_FALSE(corner_view->GetVisible());
 
   // Corner view should reappear when both scrollbars reappear.
   contents->SetBounds(0, 0, 200, 200);
@@ -2224,6 +2224,49 @@ TEST_F(ScrollViewTest, HorizontalVerticalOverflowIndicators) {
   // The overflow indicators on the top and left should now be visible.
   EXPECT_TRUE(test_api.more_content_top()->GetVisible());
   EXPECT_TRUE(test_api.more_content_left()->GetVisible());
+}
+
+namespace {
+
+class ScrollOnVisibilityChangedView : public View {
+  METADATA_HEADER(ScrollOnVisibilityChangedView, View)
+
+ public:
+  ScrollOnVisibilityChangedView() = default;
+  ~ScrollOnVisibilityChangedView() override = default;
+
+  void VisibilityChanged(View* starting_from, bool is_visible) override {
+    if (is_visible) {
+      ScrollViewToVisible();
+    }
+  }
+};
+
+BEGIN_METADATA(ScrollOnVisibilityChangedView)
+END_METADATA
+
+}  // namespace
+
+// Regression test for crbug.com/558205215: scrolling a ScrollView during
+// PropagateVisibilityNotifications (e.g. when a child requests focus or scrolls
+// to visible on VisibilityChanged) must not mutate ScrollView::children_ while
+// iterating over them.
+TEST_F(ScrollViewTest, ScrollDuringVisibilityChangedDoesNotCrash) {
+  auto contents = std::make_unique<View>();
+  contents->SetPreferredSize(gfx::Size(100, 500));
+  auto* child =
+      contents->AddChildView(std::make_unique<ScrollOnVisibilityChangedView>());
+  child->SetBounds(0, 400, 100, 50);
+
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
+  scroll_view_->SetDrawOverflowIndicator(true);
+  scroll_view_->SetVisible(false);
+
+  // Making the ScrollView visible propagates visibility notifications down the
+  // tree. When `child` receives `VisibilityChanged(true)`, it scrolls itself
+  // into view, updating overflow indicators. This must not crash.
+  scroll_view_->SetVisible(true);
 }
 
 // Verifies that the next successful frame post-layout callback is called.

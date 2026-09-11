@@ -420,18 +420,18 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   raw_ptr<ScrollBar> vert_sb_;
 
   // Corner view.
-  std::unique_ptr<View> corner_view_;
+  raw_ptr<View> corner_view_;
 
   // Hidden content indicators
   // TODO(crbug.com/40742414): Use preferred width/height instead of
   // thickness members.
-  std::unique_ptr<View> more_content_left_ = std::make_unique<Separator>();
+  raw_ptr<View> more_content_left_;
   int more_content_left_thickness_ = Separator::kThickness;
-  std::unique_ptr<View> more_content_top_ = std::make_unique<Separator>();
+  raw_ptr<View> more_content_top_;
   int more_content_top_thickness_ = Separator::kThickness;
-  std::unique_ptr<View> more_content_right_ = std::make_unique<Separator>();
+  raw_ptr<View> more_content_right_;
   int more_content_right_thickness_ = Separator::kThickness;
-  std::unique_ptr<View> more_content_bottom_ = std::make_unique<Separator>();
+  raw_ptr<View> more_content_bottom_;
   int more_content_bottom_thickness_ = Separator::kThickness;
 
   // The min and max height for the bounded scroll view. These are negative
