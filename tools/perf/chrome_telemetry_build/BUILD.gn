@@ -141,6 +141,7 @@ if (is_android) {
     ]
   }
 
+  # TODO(crbug.com/532501271): Remove once PGO pipeline is migrated.
   group("telemetry_chrome_test_android_trichrome_chrome_bundle") {
     testonly = true
 
@@ -150,6 +151,16 @@ if (is_android) {
     ]
   }
 
+  group("telemetry_chrome_test_android_chrome_bundle") {
+    testonly = true
+
+    data_deps = [
+      ":telemetry_chrome_test",
+      "//chrome/android:chrome_public_bundle",
+    ]
+  }
+
+  # TODO(crbug.com/532501271): Remove once PGO pipeline is migrated.
   if (defined(android_app_secondary_abi)) {
     group("telemetry_chrome_test_android_trichrome_chrome_64_32_bundle") {
       testonly = true

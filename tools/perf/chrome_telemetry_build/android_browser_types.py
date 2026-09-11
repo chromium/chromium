@@ -19,6 +19,8 @@ TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES = [
   '_android_chrome',
   '_android_webview',
   '_android_webview_bundle',
+  '_android_chrome_bundle',
+  # TODO(crbug.com/532501271) Remove when PGO has migrated.
   '_android_trichrome_chrome_bundle',
   '_android_trichrome_chrome_64_32_bundle',
 ]
@@ -41,6 +43,5 @@ else:
     '_android_clank_webview',
     '_android_clank_webview_64_32_bundle',
     '_android_clank_webview_bundle',
-    '_android_trichrome_chrome_google_64_32_bundle',
-    '_android_trichrome_chrome_google_bundle',
+    '_android_chrome_google_bundle',
   ]
