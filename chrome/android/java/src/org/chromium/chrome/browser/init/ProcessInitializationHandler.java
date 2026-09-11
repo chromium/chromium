@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.ui.cars.DrivingRestrictionsManager;
 import org.chromium.chrome.browser.ui.color.ColorProviderBridgeImpl;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerAckSyncer;
 import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
@@ -770,6 +771,7 @@ public class ProcessInitializationHandler {
                 });
 
         tasks.add(() -> FeedbackPolicyManager.getInstance().onFinishNativeInitialization(profile));
+        tasks.add(() -> EnterpriseSignalsDisclaimerAckSyncer.initialize(profile));
     }
 
     private void initChannelsAsync() {

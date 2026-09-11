@@ -39,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -309,6 +310,13 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
                 () ->
                         EnterpriseSignalsDisclaimerBridge.hasAccountAcknowledgedSignalsDisclaimer(
                                 account.getGaiaId()));
+    }
+
+    private void acceptDisclaimerForAccount(CoreAccountInfo account) {
+        waitForDisclaimerVisible();
+        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
+        waitForDisclaimerNotShowing();
+        Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(account));
     }
 
     @Test
@@ -586,15 +594,12 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @Test
     @LargeTest
     public void acknowledgmentPersistsAcrossSignouts() {
-        waitForDisclaimerVisible();
-
-        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
-        waitForDisclaimerNotShowing();
+        acceptDisclaimerForAccount(TestAccounts.MANAGED_ACCOUNT);
 
         mSigninTestRule.signOut();
         waitForSignout();
-
         mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
+
         Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         waitForDisclaimerNotShowing();
     }
@@ -602,11 +607,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @Test
     @LargeTest
     public void acknowledgmentIsPerAccount() {
-        waitForDisclaimerVisible();
-
-        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
-        waitForDisclaimerNotShowing();
-        Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
+        acceptDisclaimerForAccount(TestAccounts.MANAGED_ACCOUNT);
 
         mSigninTestRule.signOut();
         waitForSignout();
@@ -620,5 +621,58 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         mSigninTestRule.forceSignOut();
         waitForSignout();
         mSigninTestRule.removeAccount(MANAGED_ACCOUNT_2.getId());
+    }
+
+    @Test
+    @LargeTest
+    public void syncAcknowledgmentSetAfterRestart() {
+        // Accept the disclaimer for the first account.
+        acceptDisclaimerForAccount(TestAccounts.MANAGED_ACCOUNT);
+
+        // Switch to the second account.
+        mSigninTestRule.signOut();
+        waitForDisclaimerNotShowing();
+        mSigninTestRule.addAccountThenSignin(MANAGED_ACCOUNT_2);
+
+        // Accept the disclaimer for the second account.
+        acceptDisclaimerForAccount(MANAGED_ACCOUNT_2);
+
+        // Simulate a restart, the account is removed before the restart.
+        ThreadUtils.runOnUiThreadBlocking(EnterpriseSignalsDisclaimerAckSyncer::resetForTesting);
+        ApplicationTestUtils.finishActivity(activity());
+
+        mSigninTestRule.removeAccount(MANAGED_ACCOUNT_2.getId());
+
+        mActivityTestRule.startOnBlankPage();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        EnterpriseSignalsDisclaimerAckSyncer.initialize(
+                                ProfileManager.getLastUsedRegularProfile()));
+
+        // Verify that the second account is not acknowledged.
+        Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(MANAGED_ACCOUNT_2));
+    }
+
+    @Test
+    @LargeTest
+    public void syncsAcksWhenAccountIsRemoved() {
+        // Accept the disclaimer shown on startup.
+        acceptDisclaimerForAccount(TestAccounts.MANAGED_ACCOUNT);
+
+        // Remove the account. The acknowledgment should be removed in result.
+        mSigninTestRule.removeAccount(TestAccounts.MANAGED_ACCOUNT.getId());
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Assert.assertFalse(
+                                hasAccountAcknowledgedSignalsDisclaimer(
+                                        TestAccounts.MANAGED_ACCOUNT)));
+
+        // Add the account again and verify that the disclaimer is shown.
+        // forceSignOut still needs to be called, otherwise the next signin will fail.
+        mSigninTestRule.forceSignOut();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
+        waitForDisclaimerVisible();
     }
 }
