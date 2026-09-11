@@ -88,8 +88,15 @@ void WebUIBatterySaverControl::OnBubbleHidden() {
   bubble_ = nullptr;
 }
 
+toolbar_ui_api::mojom::BatterySaverControlStatePtr
+WebUIBatterySaverControl::CreateState() const {
+  auto state = toolbar_ui_api::mojom::BatterySaverControlState::New();
+  state->should_be_shown = is_showing_;
+  return state;
+}
+
 void WebUIBatterySaverControl::UpdateState() {
-  delegate_->OnBatterySaverControlStateChanged(is_showing_);
+  delegate_->OnBatterySaverControlStateChanged(CreateState());
 }
 
 void WebUIBatterySaverControl::CloseFeaturePromo(bool engaged) {

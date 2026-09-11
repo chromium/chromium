@@ -59,7 +59,8 @@ ${this.isBackForwardButtonEnabled_ ? html`
   ` : ''}
   ${this.isBatterySaverButtonEnabled_ ? html`
     <battery-saver-button id="battery-saver"
-        .hidden="${!this.navigationControlsState_.batterySaverButtonVisible}">
+        .state="${this.navigationControlsState_.batterySaverControlState}"
+        .hidden="${!this.navigationControlsState_.batterySaverControlState.shouldBeShown}">
     </battery-saver-button>
   ` : ''}
   ${this.isPerformanceInterventionButtonEnabled_ ? html`

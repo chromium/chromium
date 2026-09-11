@@ -54,12 +54,18 @@ class WebUIBatterySaverControlTest : public testing::Test {
 
 TEST_F(WebUIBatterySaverControlTest, ShowAndHide) {
   EXPECT_CALL(*delegate_, OnPreferredSizeChanged()).Times(1);
-  EXPECT_CALL(*delegate_,
-              OnBatterySaverControlStateChanged(/*is_showing=*/true));
+  EXPECT_CALL(
+      *delegate_,
+      OnBatterySaverControlStateChanged(testing::Pointee(testing::Field(
+          &toolbar_ui_api::mojom::BatterySaverControlState::should_be_shown,
+          true))));
   control_->Show();
 
   EXPECT_CALL(*delegate_, OnPreferredSizeChanged()).Times(1);
-  EXPECT_CALL(*delegate_,
-              OnBatterySaverControlStateChanged(/*is_showing=*/false));
+  EXPECT_CALL(
+      *delegate_,
+      OnBatterySaverControlStateChanged(testing::Pointee(testing::Field(
+          &toolbar_ui_api::mojom::BatterySaverControlState::should_be_shown,
+          false))));
   control_->Hide();
 }

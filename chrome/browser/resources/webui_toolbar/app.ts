@@ -421,8 +421,10 @@ export class ToolbarAppElement extends AppElementBase {
       windowIsMaximizedOrFullscreen: false,
     },
 
-    batterySaverButtonVisible:
-        getTypedBoolean(ToolbarStateKey.BATTERY_SAVER_BUTTON_VISIBLE),
+    batterySaverControlState: {
+      shouldBeShown:
+          getTypedBoolean(ToolbarStateKey.BATTERY_SAVER_BUTTON_VISIBLE),
+    },
     locationBarState: {
       omniboxViewState: {
         browserVersion: 0,
@@ -991,6 +993,8 @@ export class ToolbarAppElement extends AppElementBase {
           '#split-tabs'),
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#forward'),
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#home'),
+      this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
+          '#battery-saver'),
     ];
 
     const groupedControls =

@@ -34,6 +34,8 @@ class WebUIBatterySaverControl : public BatterySaverButtonControllerDelegate,
 
   bool IsVisible() const { return is_showing_; }
 
+  toolbar_ui_api::mojom::BatterySaverControlStatePtr CreateState() const;
+
   // BatterySaverButtonControllerDelegate:
   void Show() override;
   void Hide() override;
@@ -49,6 +51,9 @@ class WebUIBatterySaverControl : public BatterySaverButtonControllerDelegate,
   const raw_ptr<WebUIToolbarControlDelegate> delegate_;
   BatterySaverButtonController controller_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
+
+  // Indicates whether the battery saver button should be shown (i.e. whether
+  // Battery Saver Mode is currently active in the browser).
   bool is_showing_;
 };
 

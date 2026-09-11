@@ -165,7 +165,12 @@ void PopulateInitialState(base::DictValue& dict,
   } else {
     dict.Set(kHomeButtonShouldBeShown, false);
   }
-  dict.Set(kBatterySaverButtonVisible, state->battery_saver_button_visible);
+  if (state->battery_saver_control_state) {
+    dict.Set(kBatterySaverButtonVisible,
+             state->battery_saver_control_state->should_be_shown);
+  } else {
+    dict.Set(kBatterySaverButtonVisible, false);
+  }
   dict.Set(kLayoutConstantsVersion, state->layout_constants_version);
   dict.Set(kTouchUi, state->touch_ui);
 }

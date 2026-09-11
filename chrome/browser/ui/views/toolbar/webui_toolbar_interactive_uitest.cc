@@ -3007,6 +3007,55 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
       WaitForTrackedElementHidden(kToolbarSplitTabsToolbarButtonElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowMenuClickBatterySaverButton) {
+  // Enable the battery saver button.
+  EnableBatterySaverButton();
+
+  // Set the spacer width to the full width of the window, forcing all
+  // overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+
+  // Wait for forward and battery saver buttons to be hidden and overflow button
+  // to be visible.
+  ASSERT_TRUE(WaitForTrackedElements(
+      {kToolbarOverflowButtonElementId},
+      {kToolbarForwardButtonElementId, kToolbarBatterySaverButtonElementId}));
+
+  OverflowMenu* overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // Check that the overflow menu has forward, a separator, and battery saver,
+  // in that order.
+  const ui::SimpleMenuModel* menu_model =
+      overflow_menu->menu_model_for_testing();
+  ASSERT_TRUE(menu_model);
+  ASSERT_EQ(menu_model->GetItemCount(), 3u);
+
+  EXPECT_EQ(menu_model->GetLabelAt(0),
+            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
+  // The forward button should be disabled, since the back button has never been
+  // pressed.
+  EXPECT_FALSE(menu_model->IsEnabledAt(0));
+
+  EXPECT_EQ(menu_model->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+
+  EXPECT_EQ(
+      menu_model->GetLabelAt(2),
+      l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER));
+  EXPECT_TRUE(menu_model->IsEnabledAt(2));
+
+  // Click the battery saver button in the overflow menu and wait for the
+  // overflow menu to close.
+  //
+  // TODO(crbug.com/491791965): Also verify that the battery saver bubble is
+  // shown once clicking the overflow menu item is wired up to open the bubble.
+  ASSERT_TRUE(ClickOverflowMenuItem(
+      *overflow_menu,
+      l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER)));
+}
+
 // Test that clicking a pinned action (the Downloads button) on the overflow
 // menu works.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,

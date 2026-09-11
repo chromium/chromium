@@ -390,8 +390,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       toolbar_ui_api::mojom::ReloadControlState::New();
   last_queued_state_.home_control_state =
       toolbar_ui_api::mojom::HomeControlState::New();
-  last_queued_state_.battery_saver_button_visible =
-      battery_saver_control_.IsVisible();
+  last_queued_state_.battery_saver_control_state =
+      battery_saver_control_.CreateState();
   last_queued_state_.performance_intervention_control_state =
       toolbar_ui_api::mojom::PerformanceInterventionControlState::New();
   last_queued_state_.location_bar_state =
@@ -1267,6 +1267,10 @@ void WebUIToolbarWebView::OverflowButtonClicked(
   } else if (identifier == kToolbarSplitTabsToolbarButtonElementId) {
     split_tabs_control_.HandleContextMenuOverflowClick();
     return;
+  } else if (identifier == kToolbarBatterySaverButtonElementId) {
+    // TODO(crbug.com/491791965): Handle battery saver button click from
+    // overflow menu.
+    return;
   }
   NOTREACHED();
 }
@@ -1525,9 +1529,10 @@ void WebUIToolbarWebView::OnOverflowButtonControlStateChanged(
   }
 }
 
-void WebUIToolbarWebView::OnBatterySaverControlStateChanged(bool is_showing) {
-  if (is_showing != last_queued_state_.battery_saver_button_visible) {
-    last_queued_state_.battery_saver_button_visible = is_showing;
+void WebUIToolbarWebView::OnBatterySaverControlStateChanged(
+    toolbar_ui_api::mojom::BatterySaverControlStatePtr state) {
+  if (*state != *last_queued_state_.battery_saver_control_state) {
+    last_queued_state_.battery_saver_control_state = std::move(state);
     PostPushNavigationState();
   }
 }

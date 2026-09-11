@@ -74,6 +74,10 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
   // Waits until the specified tracked element is hidden (or destroyed).
   [[nodiscard]] bool WaitForTrackedElementHidden(ui::ElementIdentifier id);
 
+  // Enables Battery Saver mode and waits until the button is visible.
+  void EnableBatterySaverButton(
+      content::WebContents* webui_web_contents = nullptr);
+
  protected:
   WebUIToolbarWebViewTestBase(
       const std::vector<base::test::FeatureRef>& enabled,

@@ -36,7 +36,8 @@ namespace {
 bool ElementCanOverflow(ui::ElementIdentifier id) {
   return (id == kToolbarForwardButtonElementId ||
           id == kToolbarHomeButtonElementId ||
-          id == kToolbarSplitTabsToolbarButtonElementId);
+          id == kToolbarSplitTabsToolbarButtonElementId ||
+          id == kToolbarBatterySaverButtonElementId);
 }
 
 }  // namespace
