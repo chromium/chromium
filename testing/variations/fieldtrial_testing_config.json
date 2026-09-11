@@ -19376,6 +19376,36 @@
             ]
         }
     ],
+    "TabSwitcherButtonSwitchIncognitoIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_TabSwitcherButtonSwitchIncognito"
+                    ],
+                    "disable_features": []
+                },
+                {
+                    "name": "Enabled_IPHTrackingOnly",
+                    "params": {
+                        "IPH_TabSwitcherButtonSwitchIncognito_availability": "any",
+                        "IPH_TabSwitcherButtonSwitchIncognito_event_trigger": "name:tab_switcher_switch_incognito_iph_triggered;comparator:==0;window:90;storage:90",
+                        "IPH_TabSwitcherButtonSwitchIncognito_event_used": "name:tab_switcher_button_long_clicked;comparator:==0;window:14;storage:90",
+                        "IPH_TabSwitcherButtonSwitchIncognito_session_rate": "<1",
+                        "IPH_TabSwitcherButtonSwitchIncognito_snooze_params": "max_limit:3,snooze_interval:7"
+                    },
+                    "enable_features": [
+                        "IPH_TabSwitcherButtonSwitchIncognito"
+                    ],
+                    "disable_features": []
+                }
+            ]
+        }
+    ],
     "TaiyakiAllUsers": [
         {
             "platforms": [
