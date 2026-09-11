@@ -19,9 +19,10 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/cookies.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -77,26 +78,30 @@ namespace cookies_helpers {
 static const char kOriginalProfileStoreId[] = "0";
 static const char kOffTheRecordProfileStoreId[] = "1";
 
-Profile* ChooseProfileFromStoreId(const std::string& store_id,
-                                  Profile* profile,
-                                  bool include_incognito) {
-  DCHECK(profile);
-  bool allow_original = !profile->IsOffTheRecord();
-  bool allow_incognito = profile->IsOffTheRecord() ||
-                         (include_incognito && profile->HasPrimaryOTRProfile());
+content::BrowserContext* ChooseBrowserContextFromStoreId(
+    const std::string& store_id,
+    content::BrowserContext* browser_context,
+    bool include_incognito) {
+  DCHECK(browser_context);
+  ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
+  bool allow_original = !browser_context->IsOffTheRecord();
+  bool allow_incognito =
+      browser_context->IsOffTheRecord() ||
+      (include_incognito && client->HasOffTheRecordContext(browser_context));
   if (store_id == kOriginalProfileStoreId && allow_original) {
-    return profile->GetOriginalProfile();
+    return client->GetOriginalContext(browser_context);
   }
   if (store_id == kOffTheRecordProfileStoreId && allow_incognito) {
-    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    return client->GetOffTheRecordContext(browser_context);
   }
   return nullptr;
 }
 
-const char* GetStoreIdFromProfile(Profile* profile) {
-  DCHECK(profile);
-  return profile->IsOffTheRecord() ?
-      kOffTheRecordProfileStoreId : kOriginalProfileStoreId;
+const char* GetStoreIdFromBrowserContext(
+    content::BrowserContext* browser_context) {
+  DCHECK(browser_context);
+  return browser_context->IsOffTheRecord() ? kOffTheRecordProfileStoreId
+                                           : kOriginalProfileStoreId;
 }
 
 Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
@@ -158,10 +163,11 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
   return cookie;
 }
 
-CookieStore CreateCookieStore(Profile* profile, base::ListValue tab_ids) {
-  DCHECK(profile);
+CookieStore CreateCookieStore(content::BrowserContext* browser_context,
+                              base::ListValue tab_ids) {
+  DCHECK(browser_context);
   base::DictValue dict;
-  dict.Set(kIdKey, GetStoreIdFromProfile(profile));
+  dict.Set(kIdKey, GetStoreIdFromBrowserContext(browser_context));
   dict.Set(kTabIdsKey, std::move(tab_ids));
 
   auto cookie_store = CookieStore::FromValue(dict);

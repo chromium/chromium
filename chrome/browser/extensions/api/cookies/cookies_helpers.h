@@ -22,7 +22,9 @@
 #include "net/cookies/cookie_options.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}
 
 namespace net {
 class CanonicalCookie;
@@ -35,15 +37,18 @@ class WindowController;
 
 namespace cookies_helpers {
 
-// Returns either the original profile or the incognito profile, based on the
-// given store ID.  Returns NULL if the profile doesn't exist or is not allowed
-// (e.g. if incognito mode is not enabled for the extension).
-Profile* ChooseProfileFromStoreId(const std::string& store_id,
-                                  Profile* profile,
-                                  bool include_incognito);
+// Returns either the original browser context or the incognito browser
+// context, based on the given store ID. Returns NULL if the context doesn't
+// exist or is not allowed (e.g. if incognito mode is not enabled for the
+// extension).
+content::BrowserContext* ChooseBrowserContextFromStoreId(
+    const std::string& store_id,
+    content::BrowserContext* browser_context,
+    bool include_incognito);
 
-// Returns the store ID for a particular user profile.
-const char* GetStoreIdFromProfile(Profile* profile);
+// Returns the store ID for a particular browser context.
+const char* GetStoreIdFromBrowserContext(
+    content::BrowserContext* browser_context);
 
 // Constructs a new Cookie object representing a cookie as defined by the
 // cookies API.
@@ -51,8 +56,9 @@ api::cookies::Cookie CreateCookie(const net::CanonicalCookie& cookie,
                                   const std::string& store_id);
 
 // Constructs a new CookieStore object as defined by the cookies API.
-api::cookies::CookieStore CreateCookieStore(Profile* profile,
-                                            base::ListValue tab_ids);
+api::cookies::CookieStore CreateCookieStore(
+    content::BrowserContext* browser_context,
+    base::ListValue tab_ids);
 
 // Dispatch a request to the CookieManager for cookies associated with
 // `url` and `partition_key_collection`.

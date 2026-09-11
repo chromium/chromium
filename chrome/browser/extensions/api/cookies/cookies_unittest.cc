@@ -66,36 +66,34 @@ TEST_F(ExtensionCookiesTest, StoreIdProfileConversion) {
   EXPECT_TRUE(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   EXPECT_EQ(std::string("0"),
-            cookies_helpers::GetStoreIdFromProfile(profile.get()));
-  EXPECT_EQ(profile.get(),
-            cookies_helpers::ChooseProfileFromStoreId(
-                "0", profile.get(), true));
-  EXPECT_EQ(profile.get(),
-            cookies_helpers::ChooseProfileFromStoreId(
-                "0", profile.get(), false));
-  EXPECT_EQ(
-      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      cookies_helpers::ChooseProfileFromStoreId("1", profile.get(), true));
-  EXPECT_EQ(nullptr, cookies_helpers::ChooseProfileFromStoreId(
+            cookies_helpers::GetStoreIdFromBrowserContext(profile.get()));
+  EXPECT_EQ(profile.get(), cookies_helpers::ChooseBrowserContextFromStoreId(
+                               "0", profile.get(), true));
+  EXPECT_EQ(profile.get(), cookies_helpers::ChooseBrowserContextFromStoreId(
+                               "0", profile.get(), false));
+  EXPECT_EQ(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+            cookies_helpers::ChooseBrowserContextFromStoreId("1", profile.get(),
+                                                             true));
+  EXPECT_EQ(nullptr, cookies_helpers::ChooseBrowserContextFromStoreId(
                          "1", profile.get(), false));
 
   EXPECT_EQ(std::string("1"),
-            cookies_helpers::GetStoreIdFromProfile(
+            cookies_helpers::GetStoreIdFromBrowserContext(
                 profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
   EXPECT_EQ(
       nullptr,
-      cookies_helpers::ChooseProfileFromStoreId(
+      cookies_helpers::ChooseBrowserContextFromStoreId(
           "0", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
   EXPECT_EQ(nullptr,
-            cookies_helpers::ChooseProfileFromStoreId(
+            cookies_helpers::ChooseBrowserContextFromStoreId(
                 "0", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
                 false));
   EXPECT_EQ(
       profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      cookies_helpers::ChooseProfileFromStoreId(
+      cookies_helpers::ChooseBrowserContextFromStoreId(
           "1", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
   EXPECT_EQ(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-            cookies_helpers::ChooseProfileFromStoreId(
+            cookies_helpers::ChooseBrowserContextFromStoreId(
                 "1", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
                 false));
 }

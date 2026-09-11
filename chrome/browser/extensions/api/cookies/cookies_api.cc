@@ -104,21 +104,20 @@ network::mojom::CookieManager* ParseStoreCookieManager(
     bool include_incognito,
     std::string* store_id,
     std::string* error) {
-  Profile* function_profile = Profile::FromBrowserContext(function_context);
-  Profile* store_profile = nullptr;
+  content::BrowserContext* store_context = nullptr;
   if (!store_id->empty()) {
-    store_profile = cookies_helpers::ChooseProfileFromStoreId(
-        *store_id, function_profile, include_incognito);
-    if (!store_profile) {
+    store_context = cookies_helpers::ChooseBrowserContextFromStoreId(
+        *store_id, function_context, include_incognito);
+    if (!store_context) {
       *error = ErrorUtils::FormatErrorMessage(kInvalidStoreIdError, *store_id);
       return nullptr;
     }
   } else {
-    store_profile = function_profile;
-    *store_id = cookies_helpers::GetStoreIdFromProfile(store_profile);
+    store_context = function_context;
+    *store_id = cookies_helpers::GetStoreIdFromBrowserContext(store_context);
   }
 
-  return store_profile->GetDefaultStoragePartition()
+  return store_context->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
 }
 
@@ -171,7 +170,7 @@ void CookiesEventRouter::OnCookieChange(bool otr,
   CHECK(profile);
 
   api::cookies::Cookie cookie = cookies_helpers::CreateCookie(
-      change.cookie, cookies_helpers::GetStoreIdFromProfile(profile));
+      change.cookie, cookies_helpers::GetStoreIdFromBrowserContext(profile));
   dict.Set(kCookieKey, cookie.ToValue());
 
   // Map the internal cause to an external string.
