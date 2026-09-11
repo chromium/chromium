@@ -823,6 +823,24 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
+    public void testClaimStartupPolicy_subsequentLaunch_suppressesStartupUrls() {
+        // Setup: Initial primary window claims startup policy with LAST pref.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.LAST);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
+
+        // While the session is active, synced pref changes to URLS.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(
+                List.of("https://www.google.com"));
+
+        // Act: A subsequent new window is requested to be opened while the session is active.
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.NEW_WINDOW);
+
+        // Verify: Startup URLs are suppressed for the subsequent window.
+        assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
+    }
+
+    @Test
     public void testResolveStartupUrls_urls_resolvesOnceAndReturnsConfiguredUrls() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
@@ -836,6 +854,18 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
 
         // Subsequent invocations in the same browser process should return empty list.
         assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
+    }
+
+    @Test
+    public void testResolveStartupUrls_afterClaimStartupPolicy_returnsConfiguredUrls() {
+        // Setup: Primary window claims startup policy during cold startup.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(
+                List.of("https://www.google.com"));
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
+
+        // Act & Verify: Primary window resolves startup URLs.
+        assertEquals(List.of("https://www.google.com"), mDelegate.resolveStartupUrls(false));
     }
 
     @Test

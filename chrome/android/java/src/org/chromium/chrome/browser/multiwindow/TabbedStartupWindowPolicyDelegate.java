@@ -281,6 +281,8 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
         }
 
         if (mStartupPolicyClaimed) {
+            // Any subsequent window launch in an active session must never evaluate startup URLs.
+            mHasEvaluatedStartupUrls = true;
             return;
         }
         mStartupPolicyClaimed = true;
@@ -289,8 +291,8 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
                         && (startupMode == StartupMode.MAPPED_TASK
                                 || startupMode == StartupMode.UNMAPPED_TASK);
 
-        // When a fresh new window or incognito is launched, mark startup URLs as evaluated so that
-        // a single NTP is opened instead of startup URLs.
+        // When a fresh new window or incognito window is launched first in a new session, mark
+        // startup URLs as evaluated so that a single NTP is opened instead of startup URLs.
         if (isIncognito || startupMode == StartupMode.NEW_WINDOW) {
             mHasEvaluatedStartupUrls = true;
         }
