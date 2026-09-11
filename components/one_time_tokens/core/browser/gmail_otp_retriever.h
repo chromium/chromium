@@ -21,6 +21,10 @@
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "url/origin.h"
 
+namespace url {
+class SchemeHostPort;
+}
+
 namespace affiliations {
 enum class MatchType;
 class DomainRelationChecker;
@@ -111,6 +115,10 @@ class GmailOtpRetriever {
       std::string_view sender_address,
       base::OnceCallback<void(std::optional<affiliations::MatchType>)>
           callback);
+  void OnSenderDomainMatchChecked(
+      const url::SchemeHostPort& sender_tuple,
+      base::OnceCallback<void(std::optional<affiliations::MatchType>)> callback,
+      std::optional<affiliations::MatchType> match_type);
   void CheckCachedTokenMatch(std::vector<OneTimeToken> cached_tokens,
                              size_t index);
   bool IsMatchTypeAllowed(

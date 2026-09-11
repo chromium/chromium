@@ -183,24 +183,41 @@ void GmailOtpRetriever::CheckSenderDomainMatchesFrameToFill(
 
   CHECK(!otp_frame_origin_.opaque());
 
-  std::string stripped_frame_host =
-      url_formatter::StripWWW(otp_frame_origin_.host());
-
   LOG_OTT(one_time_token_service_->log_sink())
       << "GmailOtpRetriever checking sender domain match: sender_address="
       << sender_address << ", sender_domain=" << sender_domain
-      << ", otp_frame_origin=" << otp_frame_origin_
-      << " (normalized frame: " << stripped_frame_host << ")";
+      << ", otp_frame_origin=" << otp_frame_origin_;
 
-  url::SchemeHostPort normalized_frame_tuple(otp_frame_origin_.scheme(),
-                                             std::move(stripped_frame_host),
-                                             otp_frame_origin_.port());
+  url::SchemeHostPort frame_tuple =
+      otp_frame_origin_.GetTupleOrPrecursorTupleIfOpaque();
   url::SchemeHostPort sender_tuple(
       url::kHttpsScheme, std::move(sender_domain),
       url::DefaultPortForScheme(url::kHttpsScheme));
 
-  domain_relation_checker_->Check(normalized_frame_tuple, sender_tuple,
-                                  std::move(callback));
+  domain_relation_checker_->Check(
+      frame_tuple, sender_tuple,
+      base::BindOnce(&GmailOtpRetriever::OnSenderDomainMatchChecked,
+                     weak_ptr_factory_.GetWeakPtr(), sender_tuple,
+                     std::move(callback)));
+}
+
+void GmailOtpRetriever::OnSenderDomainMatchChecked(
+    const url::SchemeHostPort& sender_tuple,
+    base::OnceCallback<void(std::optional<affiliations::MatchType>)> callback,
+    std::optional<affiliations::MatchType> match_type) {
+  if (!is_login_flow_ && match_type.has_value() &&
+      (static_cast<int>(*match_type) &
+       static_cast<int>(affiliations::MatchType::kPSL))) {
+    std::string stripped_frame_host =
+        url_formatter::StripWWW(otp_frame_origin_.host());
+    url::SchemeHostPort stripped_frame_tuple(otp_frame_origin_.scheme(),
+                                             std::move(stripped_frame_host),
+                                             otp_frame_origin_.port());
+    if (stripped_frame_tuple == sender_tuple) {
+      match_type = affiliations::MatchType::kExact;
+    }
+  }
+  std::move(callback).Run(match_type);
 }
 
 void GmailOtpRetriever::CheckCachedTokenMatch(

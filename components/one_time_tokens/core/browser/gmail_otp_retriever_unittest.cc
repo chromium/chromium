@@ -325,7 +325,7 @@ TEST_F(GmailOtpRetrieverTest,
 }
 
 TEST_F(GmailOtpRetrieverTest,
-       RetrieveOtp_CachedToken_WwwSenderWwwFrame_RejectedForNonLoginFlow) {
+       RetrieveOtp_CachedToken_WwwSenderWwwFrame_AllowedForNonLoginFlow) {
   const std::string kOtp = "123456";
   otp_service().SetCachedTokens(
       {{OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
@@ -334,12 +334,55 @@ TEST_F(GmailOtpRetrieverTest,
   base::test::TestFuture<
       base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
       future;
-  // Both frame origin and sender domain have www., but because frame is
-  // normalized (stripped of www), they evaluate to a PSL match and are rejected
-  // for non-login flows.
+  // Both frame origin and sender domain have www. They match as is and are
+  // allowed for non-login flows.
   auto retriever = GmailOtpRetriever::CreateAndStart(
       otp_service(), domain_relation_checker(),
       url::Origin::Create(GURL("https://www.example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, kOtp);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_CachedToken_WwwSubdomainSenderSubdomain_AllowedForNonLoginFlow) {
+  const std::string kOtp = "123456";
+  otp_service().SetCachedTokens(
+      {{OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
+        "no-reply@sub.example.com"}});
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  // Frame origin has www.sub.example.com, sender has sub.example.com.
+  // Match as is is PSL, but stripping www yields sub.example.com (same origin).
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://www.sub.example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, kOtp);
+}
+
+TEST_F(GmailOtpRetrieverTest,
+       RetrieveOtp_CachedToken_WwwSubdomainSenderRoot_RejectedForNonLoginFlow) {
+  const std::string kOtp = "123456";
+  otp_service().SetCachedTokens(
+      {{OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
+        "no-reply@example.com"}});
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  // Frame origin has www.sub.example.com, sender has example.com.
+  // Match as is is PSL, and stripping www yields sub.example.com which does not
+  // match example.com. Rejected for non-login flow.
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://www.sub.example.com")),
       /*is_login_flow=*/false, future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
@@ -349,6 +392,53 @@ TEST_F(GmailOtpRetrieverTest,
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(),
             OneTimeTokenRetrievalError::kSubscriptionExpired);
+}
+
+TEST_F(GmailOtpRetrieverTest,
+       RetrieveOtp_CachedToken_WwwSubdomainSenderRoot_AllowedForLoginFlow) {
+  const std::string kOtp = "123456";
+  otp_service().SetCachedTokens(
+      {{OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
+        "no-reply@example.com"}});
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  // Frame origin has www.sub.example.com, sender has example.com.
+  // Match as is is PSL, which is allowed for login flow.
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://www.sub.example.com")),
+      /*is_login_flow=*/true, future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, kOtp);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_SubscriptionToken_WwwFrameSenderRoot_AllowedForNonLoginFlow) {
+  const std::string kOtp = "654321";
+  otp_service().SetCachedTokens({});
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://www.example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  ASSERT_FALSE(future.IsReady());
+
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      OneTimeToken(OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
+                   "sender@example.com"));
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, kOtp);
+  EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_AffiliatedMatch) {
