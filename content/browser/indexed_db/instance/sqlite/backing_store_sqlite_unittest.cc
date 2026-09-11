@@ -163,8 +163,22 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
   // standalone files, as if they had been migrated from a LevelDB store.
   std::vector<base::FilePath> ConvertInlinedBlobsToLegacyFileBlobs(
       std::u16string_view name) {
-    AcquireDatabaseLocks(std::u16string(name));
     base::FilePath db_path = GetDatabasePath(name);
+    AcquireDatabaseLocks(std::u16string(name));
+
+    int64_t size_before;
+    BackingStoreImpl* backing_store_impl =
+        reinterpret_cast<BackingStoreImpl*>(backing_store());
+
+    {
+      std::unique_ptr<DatabaseConnection> connection =
+          DatabaseConnection::Open(name, db_path, *backing_store_impl).value();
+      size_before = connection->GetSize();
+      std::move(*connection).GetCleanupTask().Run(/*is_force_closing=*/true);
+      connection.reset();
+      AcquireDatabaseLocks(std::u16string(name));
+    }
+
     sql::Database db(
         sql::DatabaseOptions().set_wal_mode(true).set_enable_triggers(true),
         sql::test::kTestTag);
@@ -194,9 +208,53 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
       EXPECT_TRUE(statement.Run());
     }
     db.Close();
+
+    {
+      std::unique_ptr<DatabaseConnection> connection =
+          DatabaseConnection::Open(name, db_path, *backing_store_impl).value();
+      // Pulling the legacy blobs out into separate files increases the size of
+      // the database since the legacy files are included, and the space in the
+      // database is not reclaimed (vacuumed) due to `is_force_closing`.
+      EXPECT_GT(connection->GetSize(), size_before);
+      std::move(*connection).GetCleanupTask().Run(/*is_force_closing=*/true);
+      connection.reset();
+      AcquireDatabaseLocks(std::u16string(name));
+    }
+
     return blob_files;
   }
 };
+
+TEST_F(BackingStoreSqliteTest, SumSizesOfDatabaseFiles) {
+  const base::FilePath directory = GetDatabasePath(u"").DirName();
+  ASSERT_TRUE(base::CreateDirectory(directory));
+  EXPECT_EQ(BackingStoreImpl::SumSizesOfDatabaseFiles(directory), 0U);
+
+  const base::FilePath first_db = GetDatabasePath(u"");
+  const base::FilePath second_db = GetDatabasePath(u"second");
+  ASSERT_TRUE(base::WriteFile(first_db, std::string(10, 'd')));
+  ASSERT_TRUE(base::WriteFile(second_db, std::string(20, 'd')));
+  EXPECT_EQ(BackingStoreImpl::SumSizesOfDatabaseFiles(directory), 30U);
+
+  const base::FilePath first_blob_dir =
+      first_db.InsertBeforeExtensionASCII("_");
+  const base::FilePath second_blob_dir =
+      second_db.InsertBeforeExtensionASCII("_");
+  ASSERT_TRUE(base::CreateDirectory(first_blob_dir));
+  ASSERT_TRUE(base::CreateDirectory(second_blob_dir));
+  // `SumSizesOfDatabaseFiles` doesn't bother to verify whether the files in the
+  // blob directory are actually blob files, since doing so would require
+  // opening the SQLite DB. It could at least check if the file looks like a
+  // blob based on its name, but even that is skipped for simplicity.
+  ASSERT_TRUE(
+      base::WriteFile(first_blob_dir.AppendASCII("1"), std::string(100, 'b')));
+  ASSERT_TRUE(
+      base::WriteFile(first_blob_dir.AppendASCII("a"), std::string(200, 'b')));
+  ASSERT_TRUE(base::WriteFile(second_blob_dir.AppendASCII("10"),
+                              std::string(400, 'b')));
+  ASSERT_TRUE(base::WriteFile(directory.AppendASCII("unrelated"), "ignored"));
+  EXPECT_EQ(BackingStoreImpl::SumSizesOfDatabaseFiles(directory), 730U);
+}
 
 TEST_F(BackingStoreSqliteTest, BlobBasics) {
   base::HistogramTester histogram_tester;

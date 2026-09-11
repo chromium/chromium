@@ -110,7 +110,8 @@ class CONTENT_EXPORT DatabaseConnection {
   bool IsZygotic() const;
 
   // Get the size of the database, calculated as the number of pages in use
-  // (i.e., excluding free pages) multiplied by the page size.
+  // (i.e., excluding free pages) multiplied by the page size plus the size of
+  // legacy blob files.
   uint64_t GetSize() const;
 
   // Creates a memory dump for this connection at `dump_name`, suballocated to
@@ -293,6 +294,9 @@ class CONTENT_EXPORT DatabaseConnection {
 
   // Returns the delay before a released `DatabaseConnection` destructs.
   static base::TimeDelta GetDestructionGracePeriodForTesting();
+
+  // Gets the absolute file path for the directory containing legacy blob files.
+  static base::FilePath GetLegacyBlobDirectory(const base::FilePath& db_path);
 
  private:
   friend class BackingStoreSqliteTest;

@@ -64,7 +64,9 @@ uint64_t BackingStoreImpl::SumSizesOfDatabaseFiles(
   uint64_t total_size = 0;
   EnumerateDatabasesInDirectory(directory, [&](const base::FilePath& path) {
     if (filter(path)) {
-      total_size += base::GetFileSize(path).value_or(0);
+      total_size += base::GetFileSize(path).value_or(0) +
+                    base::ComputeDirectorySize(
+                        DatabaseConnection::GetLegacyBlobDirectory(path));
     }
   });
   return total_size;

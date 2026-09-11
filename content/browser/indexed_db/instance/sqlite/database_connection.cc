@@ -17,6 +17,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -1223,6 +1224,12 @@ base::OnceCallback<void(bool)> DatabaseConnection::GetCleanupTask() && {
 
   // The error callback is no longer needed since `this` will be deleted soon.
   db_->reset_error_callback();
+
+  if (in_memory()) {
+    db_.reset();
+    return base::DoNothing();
+  }
+
   db_->DetachFromSequence();
   return base::BindOnce(&DatabaseConnection::CloseDatabase, std::move(db_),
                         path_, GetLegacyBlobDirectory(), should_delete_db,
@@ -1454,7 +1461,11 @@ uint64_t DatabaseConnection::GetSize() const {
     // Can only happen if one of the pragmas failed. Log under a common bucket.
     LogEvent(SpecificEvent::kPragmaPageCountFailed);
   }
-  return used_size.InBytes();
+  if (in_memory()) {
+    return used_size.InBytes();
+  }
+  return used_size.InBytes() +
+         base::ComputeDirectorySize(GetLegacyBlobDirectory());
 }
 
 bool DatabaseConnection::ReportMemoryUsage(
@@ -2879,9 +2890,16 @@ std::set<int64_t> DatabaseConnection::SnapshotLegacyBlobFiles() {
 }
 
 base::FilePath DatabaseConnection::GetLegacyBlobDirectory() const {
+  return GetLegacyBlobDirectory(path_);
+}
+
+// static
+base::FilePath DatabaseConnection::GetLegacyBlobDirectory(
+    const base::FilePath& db_path) {
+  CHECK(!db_path.empty());
   // For the sake of avoiding path length limits, the directory is given a short
   // name instead of a descriptive name.
-  return path_.InsertBeforeExtensionASCII("_");
+  return db_path.InsertBeforeExtensionASCII("_");
 }
 
 base::FilePath DatabaseConnection::GetBlobFilePath(int64_t blob_id) const {
