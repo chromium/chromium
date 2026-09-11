@@ -4,11 +4,15 @@
 
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_constants.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/material_timing.h"
 #import "testing/platform_test.h"
 
@@ -340,6 +344,102 @@ TEST_F(FullscreenBrowserAgentTest, FullscreenDidTransition) {
   agent->ExitFullscreen(PassKey(),
                         FullscreenModeTransitionTrigger::kForcedByCode,
                         /*animated=*/false);
+  EXPECT_TRUE(observer.did_transition_called_);
+  EXPECT_EQ(FullscreenTransition::kExitFullscreen, observer.transition_);
+
+  agent->RemoveObserver(&observer);
+}
+
+// Tests that the settled state is committed as soon as an animated transition
+// starts, so that it cannot contradict the progress if the animation is later
+// interrupted.
+TEST_F(FullscreenBrowserAgentTest, SettledStateCommittedWhenAnimationStarts) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  ASSERT_EQ(FullscreenState::kUIExpanded, agent->settled_state());
+
+  agent->EnterFullscreen(
+      PassKey(), FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode,
+      /*animated=*/true);
+
+  // The progress is committed synchronously, so the settled state must be too.
+  EXPECT_TRUE(agent->is_animating());
+  EXPECT_EQ(0.0, agent->top_progress());
+  EXPECT_EQ(0.0, agent->bottom_progress());
+  EXPECT_EQ(FullscreenState::kUICollapsed, agent->settled_state());
+}
+
+// Tests that a non-animated transition requested while an animation towards the
+// same target is in flight still settles the state and releases the animating
+// flag. Regression test for the app being backgrounded mid-animation, where the
+// background handler requests a non-animated exit while an animated exit is
+// already running.
+TEST_F(FullscreenBrowserAgentTest, NonAnimatedTransitionInterruptsAnimation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kFullscreenRefactoring, kFullscreenEasedTransitions}, {});
+
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  agent->EnterFullscreen(PassKey(),
+                         FullscreenModeTransitionTrigger::kForcedByCode,
+                         /*animated=*/false);
+  ASSERT_EQ(FullscreenState::kUICollapsed, agent->settled_state());
+
+  // Start an animated exit. The progress reaches the target immediately, while
+  // the animation is still running.
+  agent->ExitFullscreen(
+      PassKey(), FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode,
+      /*animated=*/true);
+  ASSERT_TRUE(agent->is_animating());
+  ASSERT_EQ(1.0, agent->top_progress());
+
+  // The backgrounding handler requests the same target without animation.
+  agent->ExitFullscreen(PassKey(),
+                        FullscreenModeTransitionTrigger::kForcedByCode,
+                        /*animated=*/false);
+
+  EXPECT_FALSE(agent->is_animating());
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->settled_state());
+
+  // Scrolling must still be handled: a stuck animating flag would drop it.
+  agent->IncrementalScroll(kEasedTransitionScrollDistance / 2.0, 0.0,
+                           PassKey());
+  EXPECT_LT(agent->top_progress(), 1.0);
+}
+
+// Tests that the completion of an animation that was superseded by a newer
+// transition does not clobber the state owned by that newer transition.
+TEST_F(FullscreenBrowserAgentTest, SupersededAnimationDoesNotClobberState) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  TestFullscreenBrowserAgentObserver observer;
+  agent->AddObserver(&observer);
+
+  agent->EnterFullscreen(
+      PassKey(), FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode,
+      /*animated=*/true);
+  ASSERT_TRUE(agent->is_animating());
+
+  // Supersede the enter animation before it completes.
+  agent->ExitFullscreen(PassKey(),
+                        FullscreenModeTransitionTrigger::kForcedByCode,
+                        /*animated=*/true);
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->settled_state());
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return !agent->is_animating();
+      }));
+
+  EXPECT_EQ(1.0, agent->top_progress());
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->settled_state());
   EXPECT_TRUE(observer.did_transition_called_);
   EXPECT_EQ(FullscreenTransition::kExitFullscreen, observer.transition_);
 

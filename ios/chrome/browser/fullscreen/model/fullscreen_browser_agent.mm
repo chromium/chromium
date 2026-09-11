@@ -212,7 +212,11 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
     FullscreenModeTransitionTrigger trigger,
     bool animated) {
   CGFloat target_progress = TargetProgressForTransition(transition);
-  if (top_progress_ == target_progress && bottom_progress_ == target_progress) {
+  // The target is already reached, so there is nothing to broadcast. A
+  // non-animated request is the exception: it must still run to interrupt an
+  // in-flight animation towards that same target and settle immediately.
+  if (top_progress_ == target_progress && bottom_progress_ == target_progress &&
+      (animated || !is_animating_)) {
     return;
   }
 
@@ -220,9 +224,20 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
   top_progress_ = target_progress;
   bottom_progress_ = target_progress;
 
+  // Commit the settled state together with the progress: both describe the
+  // same target. Deferring it to the animation completion would let an
+  // interrupted animation leave the two permanently contradicting each other,
+  // which in turn makes the eased-transition clamps in IncrementalScroll() snap
+  // the progress back to a threshold value.
+  settled_state_ = SettledStateForTransition(transition);
+
+  // Take ownership of the animation state: the completion callback of any
+  // in-flight animation now belongs to a superseded generation and will be
+  // discarded.
+  ++animation_generation_;
+
   if (!animated) {
     is_animating_ = false;
-    settled_state_ = SettledStateForTransition(transition);
     NotifyObserversOfUpdatedState();
     NotifyFullscreenDidTransition(transition);
     return;
@@ -243,9 +258,9 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
   auto update_state = base::CallbackToBlock(
       base::BindOnce(&FullscreenBrowserAgent::NotifyObserversOfUpdatedState,
                      weak_ptr_factory_.GetWeakPtr(), duration));
-  auto completion_block = base::CallbackToBlock(
-      base::BindOnce(&FullscreenBrowserAgent::AnimationDidComplete,
-                     weak_ptr_factory_.GetWeakPtr(), transition));
+  auto completion_block = base::CallbackToBlock(base::BindOnce(
+      &FullscreenBrowserAgent::AnimationDidComplete,
+      weak_ptr_factory_.GetWeakPtr(), transition, animation_generation_));
 
   [UIView animateWithDuration:duration.InSecondsF()
                         delay:0.0
@@ -289,12 +304,22 @@ void FullscreenBrowserAgent::NotifyObserversOfUpdatedState(
 
 void FullscreenBrowserAgent::AnimationDidComplete(
     FullscreenTransition transition,
+    int generation,
     bool finished) {
-  is_animating_ = false;
-  if (finished) {
-    settled_state_ = SettledStateForTransition(transition);
-    NotifyFullscreenDidTransition(transition);
+  // A newer transition has already taken over the animation state; this
+  // completion belongs to the animation it superseded.
+  if (generation != animation_generation_) {
+    return;
   }
+
+  is_animating_ = false;
+
+  // `finished` is deliberately ignored. The progress and the settled state were
+  // committed when the transition started, and an interruption by an external
+  // layout pass snaps the observer views to that committed progress, so the
+  // target is reached either way. Skipping the notification here would strand
+  // observers that only react to completed transitions.
+  NotifyFullscreenDidTransition(transition);
 }
 
 void FullscreenBrowserAgent::NotifyFullscreenDidTransition(
