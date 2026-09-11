@@ -117,6 +117,9 @@ FileChooser::Result ShowFileChooser() {
 
   hr = file_open_dialog->Show(nullptr);
   if (FAILED(hr)) {
+    if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
+      LOG(INFO) << "File chooser dialog was cancelled by user.";
+    }
     return LogFailedHrAndMakeError(FROM_HERE, "show", hr);
   }
 
@@ -132,6 +135,7 @@ FileChooser::Result ShowFileChooser() {
     return LogFailedHrAndMakeError(FROM_HERE, "get path", hr);
   }
 
+  LOG(INFO) << "File chooser dialog succeeded, file selected.";
   return base::FilePath(path.get());
 }
 
@@ -187,7 +191,8 @@ int FileChooserMain() {
     return EXIT_FAILURE;
   }
 
-  auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
+  auto invitation = mojo::IncomingInvitation::Accept(
+      std::move(endpoint), MOJO_ACCEPT_INVITATION_FLAG_INHERIT_BROKER);
   mojo::ScopedMessagePipeHandle pipe = invitation.ExtractMessagePipe(0);
   if (!pipe.is_valid()) {
     LOG(ERROR) << "Invalid Mojo message pipe.";

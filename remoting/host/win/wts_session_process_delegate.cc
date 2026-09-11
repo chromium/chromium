@@ -245,8 +245,9 @@ bool WtsSessionProcessDelegate::Core::Initialize(uint32_t session_id) {
     // that all processes will be killed once the job object is destroyed.
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION info;
     UNSAFE_TODO(memset(&info, 0, sizeof(info)));
-    info.BasicLimitInformation.LimitFlags =
-        JOB_OBJECT_LIMIT_ACTIVE_PROCESS | JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+    info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_ACTIVE_PROCESS |
+                                            JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE |
+                                            JOB_OBJECT_LIMIT_BREAKAWAY_OK;
     info.BasicLimitInformation.ActiveProcessLimit = 2;
     if (!SetInformationJobObject(job.Get(), JobObjectExtendedLimitInformation,
                                  &info, sizeof(info))) {
