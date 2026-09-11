@@ -223,6 +223,10 @@ public class ChromeTabModalPresenter extends TabModalPresenter
                     ContextCompat.getColor(mActivity, R.color.modal_dialog_scrim_color_lff));
         }
 
+        if (mContainerParent != null && mContainerParent.getId() != R.id.coordinator) {
+            scrimModelBuilder.with(ScrimProperties.CUSTOM_PARENT, mContainerParent);
+        }
+
         mScrimModel = scrimModelBuilder.build();
 
         mScrimManager.showScrim(mScrimModel);
@@ -302,14 +306,6 @@ public class ChromeTabModalPresenter extends TabModalPresenter
             mScrimModel = null;
         }
 
-        if (mContainerParent != null
-                && mContainerParent.getId() != R.id.coordinator
-                && mContainerParent.getParent() instanceof ViewGroup coordinator) {
-            View nextSibling = coordinator.findViewById(R.id.constrained_views_container);
-            UiUtils.removeViewFromParent(mContainerParent);
-            UiUtils.insertBefore(coordinator, mContainerParent, assumeNonNull(nextSibling));
-        }
-
         super.removeDialogView(model);
     }
 
@@ -356,25 +352,24 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         ViewGroup dialogContainer = getDialogContainer();
         if (dialogContainer == null) return;
 
-        if (toFront) {
-            dialogContainer.bringToFront();
-        } else {
-            assumeNonNull(mContainerParent);
-            assumeNonNull(mDefaultNextSiblingView);
-            UiUtils.removeViewFromParent(dialogContainer);
-            UiUtils.insertBefore(mContainerParent, dialogContainer, mDefaultNextSiblingView);
-        }
-
         if (mContainerParent != null
                 && mContainerParent.getId() != R.id.coordinator
                 && mContainerParent.getParent() instanceof ViewGroup coordinator) {
             if (toFront) {
                 mContainerParent.bringToFront();
             } else {
-                View controlContainer = coordinator.findViewById(R.id.control_container);
+                assumeNonNull(mDefaultNextSiblingView);
                 UiUtils.removeViewFromParent(mContainerParent);
-                UiUtils.insertBefore(
-                        coordinator, mContainerParent, assumeNonNull(controlContainer));
+                UiUtils.insertBefore(coordinator, mContainerParent, mDefaultNextSiblingView);
+            }
+        } else {
+            if (toFront) {
+                dialogContainer.bringToFront();
+            } else {
+                assumeNonNull(mContainerParent);
+                assumeNonNull(mDefaultNextSiblingView);
+                UiUtils.removeViewFromParent(dialogContainer);
+                UiUtils.insertBefore(mContainerParent, dialogContainer, mDefaultNextSiblingView);
             }
         }
     }

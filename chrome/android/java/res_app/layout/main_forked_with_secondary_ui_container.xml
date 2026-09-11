@@ -88,6 +88,38 @@ TODO(http://crbug.com/485940935): Delete this.
             android:inflatedId="@+id/bottombar"
             android:layout="@layout/custom_tabs_bottombar" />
 
+        <!-- Secondary UI container dedicated to tab-modal dialogs.
+             This container is separated from secondary_ui_container (which hosts messages)
+             for two reasons:
+             1. Side Panel Isolation: When Side Panel or Vertical Tabs is active,
+                ViewMarginAdjusterForSideUi adjusts this container's margins so the dialog
+                and its scrim only cover the active web content area.
+             2. Independent Z-Ordering: Placed here (before omnibox_suggestions_container_stub
+                and control_container_stub) so that when the URL bar is focused, this container
+                sinks behind omnibox suggestions.
+             TODO(crbug.com/559728179): Clean this up -->
+        <FrameLayout
+            android:id="@+id/secondary_ui_container_tab_modal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ViewStub
+                android:id="@+id/tab_modal_dialog_container_stub"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inflatedId="@+id/tab_modal_dialog_container" />
+
+        </FrameLayout>
+
+        <!-- Please do not add anything in between secondary_ui_container_tab_modal and
+             tab_modal_dialog_container_sibling_view. This 0x0 view serves as the permanent anchor
+             to restore secondary_ui_container_tab_modal to its baseline Z-order when sinking
+             behind the omnibox and toolbar. -->
+        <ViewStub
+            android:id="@+id/tab_modal_dialog_container_sibling_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
+
         <ViewStub
             android:id="@+id/bookmark_bar_stub"
             android:layout_width="match_parent"
@@ -187,19 +219,6 @@ TODO(http://crbug.com/485940935): Delete this.
             android:id="@+id/secondary_ui_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <ViewStub
-                android:id="@+id/tab_modal_dialog_container_stub"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inflatedId="@+id/tab_modal_dialog_container" />
-
-            <!-- Please do not add anything in between tab_modal_dialog_container_stub and
-                 tab_modal_dialog_container_sibling_view. -->
-            <ViewStub
-                android:id="@+id/tab_modal_dialog_container_sibling_view"
-                android:layout_width="0dp"
-                android:layout_height="0dp" />
 
             <org.chromium.components.messages.MessageContainer
                 android:id="@+id/message_container"

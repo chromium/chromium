@@ -414,6 +414,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private @Nullable ViewMarginAdjusterForSideUi mSecondaryUiContainerMarginAdjuster;
+    private @Nullable ViewMarginAdjusterForSideUi mTabModalContainerMarginAdjuster;
     private @Nullable BottomSheetContainerMarginAdjusterForSideUi
             mBottomSheetContainerMarginAdjuster;
     private @Nullable ContextualTasksBridge mContextualTasksBridge;
@@ -2500,6 +2501,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mSecondaryUiContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(secondaryUiContainer);
         mSideUiCoordinator.addObserver(mSecondaryUiContainerMarginAdjuster);
 
+        // TODO(crbug.com/559728179): Clean this up.
+        View tabModalContainer = mActivity.findViewById(R.id.secondary_ui_container_tab_modal);
+        if (tabModalContainer != null) {
+            mTabModalContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(tabModalContainer);
+            mSideUiCoordinator.addObserver(mTabModalContainerMarginAdjuster);
+        }
+
         if (ChromeFeatureList.sBottomSheetOnDesktopWindowing.isEnabled()) {
             View sheetContainer = mActivity.findViewById(R.id.sheet_container);
             if (sheetContainer != null) {
@@ -2743,6 +2751,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mSideUiCoordinator != null) {
             if (mSecondaryUiContainerMarginAdjuster != null) {
                 mSideUiCoordinator.removeObserver(mSecondaryUiContainerMarginAdjuster);
+            }
+            if (mTabModalContainerMarginAdjuster != null) {
+                mSideUiCoordinator.removeObserver(mTabModalContainerMarginAdjuster);
             }
             if (mBottomSheetContainerMarginAdjuster != null) {
                 mSideUiCoordinator.removeObserver(mBottomSheetContainerMarginAdjuster);

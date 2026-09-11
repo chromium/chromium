@@ -8,7 +8,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -45,7 +44,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -153,7 +153,6 @@ public class ChromeTabModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
-    @DisabledTest(message = "b/540394692")
     public void testShow_UrlBarFocused() throws Exception {
         // Show a tab modal dialog. The dialog should be shown on top of the toolbar.
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
@@ -162,26 +161,17 @@ public class ChromeTabModalPresenterTest {
         final View dialogContainer = mTabModalPresenter.getDialogContainerForTest();
         final View controlContainer = mActivity.findViewById(R.id.control_container);
         final ViewGroup containerParent = mTabModalPresenter.getContainerParentForTest();
-        final ViewGroup rightParent = (ViewGroup) controlContainer.getParent();
-        // Dialog container may be located under secondary_ui_container, not at the same
-        // level in view hierarchy with Control container. |dialogViewInRightParent| in
-        // such case will be |secondary_ui_container| to compare its index against
-        // that of |controlContainer|.
-        //
-        // CoordinatorLayout +
-        //                   +--- secondary_ui_container +
-        //                   |                           +--- dialog_container
-        //                   +--- control_container
-        final View dialogViewInRightParent =
-                containerParent == rightParent ? dialogContainer : containerParent;
+        final ViewGroup parent = (ViewGroup) controlContainer.getParent();
+        final View dialogViewInParent =
+                containerParent == parent ? dialogContainer : containerParent;
 
         ensureDialogContainerVisible();
 
-        ThreadUtils.runOnUiThreadBlocking(
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    assertThat(
-                            rightParent.indexOfChild(dialogViewInRightParent),
-                            Matchers.greaterThan(rightParent.indexOfChild(controlContainer)));
+                    Criteria.checkThat(
+                            parent.indexOfChild(dialogViewInParent),
+                            Matchers.greaterThan(parent.indexOfChild(controlContainer)));
                 });
 
         // When editing URL, it should be shown on top of the dialog.
@@ -189,22 +179,29 @@ public class ChromeTabModalPresenterTest {
         int callCount = mTestObserver.onUrlFocusChangedCallback.getCallCount();
         mOmnibox.requestFocus();
         mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
-        ThreadUtils.runOnUiThreadBlocking(
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    assertThat(
-                            rightParent.indexOfChild(dialogViewInRightParent),
-                            Matchers.lessThan(rightParent.indexOfChild(controlContainer)));
+                    View suggestionsContainer =
+                            parent.findViewById(R.id.omnibox_suggestions_container);
+                    if (suggestionsContainer == null) {
+                        suggestionsContainer =
+                                parent.findViewById(R.id.omnibox_suggestions_container_stub);
+                    }
+                    Criteria.checkThat(suggestionsContainer, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            parent.indexOfChild(dialogViewInParent),
+                            Matchers.lessThan(parent.indexOfChild(suggestionsContainer)));
                 });
 
         // When URL bar is not focused, the dialog should be shown on top of the toolbar again.
         callCount = mTestObserver.onUrlFocusChangedCallback.getCallCount();
         mOmnibox.clearFocus();
         mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
-        ThreadUtils.runOnUiThreadBlocking(
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    assertThat(
-                            rightParent.indexOfChild(dialogViewInRightParent),
-                            Matchers.greaterThan(rightParent.indexOfChild(controlContainer)));
+                    Criteria.checkThat(
+                            parent.indexOfChild(dialogViewInParent),
+                            Matchers.greaterThan(parent.indexOfChild(controlContainer)));
                 });
 
         // Dismiss the dialog by clicking OK.

@@ -239,10 +239,11 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
      * Inserts {@link TabModalPresenter#mDialogView} into {@link TabModalPresenter#mDialogContainer}
      * and animates the container into view.
      *
-     * Exposed to subclasses as they may want to control the exact start time of the animation.
+     * <p>Exposed to subclasses as they may want to control the exact start time of the animation.
      */
     protected void runEnterAnimation() {
         assumeNonNull(mDialogContainer).animate().cancel();
+        assumeNonNull(mDialogContainer).setClickable(true);
 
         FrameLayout.LayoutParams params =
                 new FrameLayout.LayoutParams(
