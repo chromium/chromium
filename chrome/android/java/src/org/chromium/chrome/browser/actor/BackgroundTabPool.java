@@ -248,20 +248,6 @@ public class BackgroundTabPool
     }
 
     /**
-     * Removes the live in-memory tab with the given original tab ID from memory only.
-     *
-     * @param originalTabId The original tab ID of the tab to remove from memory.
-     */
-    public void removeLiveTabByOriginalId(@TabId int originalTabId) {
-        checkNotDestroyed();
-        LiveBackgroundTab tab = mLiveEntries.remove(originalTabId);
-        if (tab != null) {
-            removeTabObserver(tab.getTab());
-        }
-        notifyIfEmptied();
-    }
-
-    /**
      * Asynchronously preloads tab states for a list of tab IDs.
      *
      * @param tabIds The list of {@link TabId}s to prefetch.
@@ -302,6 +288,7 @@ public class BackgroundTabPool
      *
      * @return The {@link PlaceholderAssociationStore} instance.
      */
+    @VisibleForTesting
     public PlaceholderAssociationStore getAssociationStoreForTesting() {
         checkNotDestroyed();
         return mAssociationStore;
@@ -332,8 +319,7 @@ public class BackgroundTabPool
         return mIsDestroyed;
     }
 
-    @VisibleForTesting
-    void notifyIfEmptied() {
+    private void notifyIfEmptied() {
         if (isEmpty() && !mIsDestroyed) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, mOnEmptyCallback);
         }

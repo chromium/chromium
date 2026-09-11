@@ -84,7 +84,7 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
                 new TabObserver() {
                     @Override
                     public void onDestroyed(Tab tab) {
-                        mPool.removeLiveTabByOriginalId(tab.getId());
+                        mPool.removeTabById(mTab.getId());
                         removeObserver();
                     }
                 };
