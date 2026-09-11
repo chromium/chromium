@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/app_group/widget_constants.h"
 #import "ios/chrome/common/x_callback_url.h"
 #import "url/gurl.h"
@@ -291,11 +292,7 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
   // Only widgets and share extension support profile/account switching when
   // handling an intent.
   bool isWidget = [URL.scheme isEqualToString:@"chromewidgetkit"];
-  bool isShareExtension = [URL.path
-      isEqualToString:
-          [NSString
-              stringWithFormat:@"/%s",
-                               app_group::kChromeAppGroupXCallbackCommand]];
+  bool isShareExtension = app_group::IsShareExtensionCommandURL(URL);
 
   if (!isWidget && !isShareExtension) {
     return;

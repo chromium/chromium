@@ -36,6 +36,7 @@ const char kChromeAppGroupCommandPreference[] =
     "GroupApp.ChromeAppGroupCommand";
 
 const char kChromeAppGroupCommandTimePreference[] = "CommandTime";
+const NSTimeInterval kAppGroupCommandTimeout = 15.0;
 const char kChromeAppGroupCommandAppPreference[] = "SourceApp";
 const char kChromeAppGroupCommandCommandPreference[] = "Command";
 const char kChromeAppGroupCommandTextPreference[] = "Text";

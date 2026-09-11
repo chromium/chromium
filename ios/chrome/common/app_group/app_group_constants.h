@@ -127,6 +127,10 @@ extern const char kChromeAppGroupSearchPasswordsCommand[];
 // `kChromeAppGroupCommandAppPreference` issued the command.
 extern const char kChromeAppGroupCommandTimePreference[];
 
+// The timeout after which an app group command is considered expired (in
+// seconds).
+extern const NSTimeInterval kAppGroupCommandTimeout;
+
 // The key in kChromeAppGroupCommandPreference containing the text use for the
 // command if it requires one. This could be a URL, a string, etc.
 extern const char kChromeAppGroupCommandTextPreference[];

@@ -166,6 +166,7 @@
 #import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/webui/web_ui_url_constants.h"
@@ -1385,11 +1386,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 }
 
 - (BOOL)shareExtensionURLEligibleForAccountChange:(NSURL*)URL {
-  return [URL.path
-      isEqualToString:
-          [NSString
-              stringWithFormat:@"/%s",
-                               app_group::kChromeAppGroupXCallbackCommand]];
+  return app_group::IsShareExtensionCommandURL(URL);
 }
 
 - (URLContext*)findContextRequiringAccountChange:
