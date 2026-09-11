@@ -15,8 +15,9 @@
 namespace autofill {
 namespace {
 
-// Tests that GetPromptTitle returns unbranded strings when is_server_wallet is false,
-// when is_banner_prompt is true, or when kAutofillAiWalletPassBranding2026 feature is disabled.
+// Tests that GetPromptTitle returns unbranded strings when is_server_wallet is
+// false, when is_banner_prompt is true, or when
+// kAutofillAiWalletPassBranding2026 feature is disabled.
 TEST(AutofillAiImportStringUtilsTest, GetPromptTitleUnbranded) {
   EXPECT_EQ(
       GetPromptTitle(EntityTypeName::kPassport, /*is_save_prompt=*/true,
@@ -40,7 +41,8 @@ TEST(AutofillAiImportStringUtilsTest, GetPromptTitleUnbranded) {
 #endif
           ));
 
-  // Banner prompts disable branding even when server wallet is true and feature is enabled.
+  // Banner prompts disable branding even when server wallet is true and feature
+  // is enabled.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
@@ -58,7 +60,8 @@ TEST(AutofillAiImportStringUtilsTest, GetPromptTitleUnbranded) {
   }
 }
 
-// Tests that GetPromptTitle respects branding options and variants when enabled.
+// Tests that GetPromptTitle respects branding options and variants when
+// enabled.
 TEST(AutofillAiImportStringUtilsTest, GetPromptTitleBrandedVariants) {
   {
     base::test::ScopedFeatureList feature_list;
@@ -160,7 +163,8 @@ TEST(AutofillAiImportStringUtilsTest, GetPromptTitleBrandedVariants) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
-        features::kAutofillAiWalletPassBranding2026, {{"string_variant", "99"}});
+        features::kAutofillAiWalletPassBranding2026,
+        {{"string_variant", "99"}});
 
     // Invalid variant falls back to default branded
     EXPECT_EQ(
@@ -176,14 +180,63 @@ TEST(AutofillAiImportStringUtilsTest, GetPromptTitleBrandedVariants) {
   }
 }
 
-// Tests that GetPrimaryButtonTextId returns appropriate string IDs for save and update prompts.
+// Tests that GetPrimaryButtonTextId returns appropriate string IDs for save and
+// update prompts.
 TEST(AutofillAiImportStringUtilsTest, GetPrimaryButtonTextId) {
-  EXPECT_EQ(
-      GetPrimaryButtonTextId(/*is_save_prompt=*/true),
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON);
-  EXPECT_EQ(
-      GetPrimaryButtonTextId(/*is_save_prompt=*/false),
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON);
+  EXPECT_EQ(GetPrimaryButtonTextId(/*is_save_prompt=*/true),
+            IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON);
+  EXPECT_EQ(GetPrimaryButtonTextId(/*is_save_prompt=*/false),
+            IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON);
+}
+
+// Tests that GetSaveEntityToWalletNoticeStringId returns appropriate string IDs
+// across experiment arms.
+TEST(AutofillAiImportStringUtilsTest, GetSaveEntityToWalletNoticeStringId) {
+  // Feature disabled (Arm A): Unbranded subtitle.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kAutofillAiWalletPassBranding2026);
+    EXPECT_EQ(GetSaveEntityToWalletNoticeStringId(),
+              IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW);
+  }
+
+  // Feature enabled, default variant 0 (Arm B): Branded subtitle.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kAutofillAiWalletPassBranding2026);
+    EXPECT_EQ(GetSaveEntityToWalletNoticeStringId(),
+              IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_BRANDED);
+  }
+
+  // Feature enabled, variant 1 (Arm C): Existing subtitle.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillAiWalletPassBranding2026, {{"string_variant", "1"}});
+    EXPECT_EQ(GetSaveEntityToWalletNoticeStringId(),
+              IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW);
+  }
+
+  // Feature enabled, variant 2 (Arm D): Existing subtitle.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillAiWalletPassBranding2026, {{"string_variant", "2"}});
+    EXPECT_EQ(GetSaveEntityToWalletNoticeStringId(),
+              IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW);
+  }
+
+  // Feature enabled, unknown variant: Fallback to default branded.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillAiWalletPassBranding2026,
+        {{"string_variant", "99"}});
+    EXPECT_EQ(GetSaveEntityToWalletNoticeStringId(),
+              IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_BRANDED);
+  }
 }
 
 }  // namespace

@@ -221,8 +221,21 @@ AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle() const {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
   const std::u16string account_email = controller_->GetPrimaryAccountEmail();
 
-  if (controller_->IsSavePrompt() &&
-      base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
+  if (controller_->GetNoticeStringId() ==
+      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_BRANDED) {
+    const std::u16string manage_settings_text = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_MANAGE_YOUR_WALLET_SETTINGS_LINK);
+
+    formatted_text = l10n_util::GetStringFUTF16(
+        controller_->GetNoticeStringId(), {manage_settings_text, account_email},
+        &offsets);
+
+    link_range =
+        gfx::Range(offsets[0], offsets[0] + manage_settings_text.size());
+
+  } else if (controller_->IsSavePrompt() &&
+             base::FeatureList::IsEnabled(
+                 features::kAutofillAiWalletPrivatePasses)) {
     const std::u16string manage_info_text =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK);
 

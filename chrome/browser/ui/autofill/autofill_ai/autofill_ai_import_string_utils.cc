@@ -226,4 +226,18 @@ int GetPrimaryButtonTextId(bool is_save_prompt) {
              : IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON;
 }
 
+int GetSaveEntityToWalletNoticeStringId() {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAiWalletPassBranding2026)) {
+    return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW;
+  }
+  return ResolveStringIdsForWalletPass2026Experiment(
+      /*default_branded_id=*/
+      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_BRANDED,
+      /*variant_1_id=*/
+      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+      /*variant_2_id=*/
+      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW);
+}
+
 }  // namespace autofill

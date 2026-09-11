@@ -1393,6 +1393,9 @@
   <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW" desc="A description that appears beneath the Save title prompt asking users whether they want to save their data to Google Wallet. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Google Wallet with the promise that Chrome can then help the user fill out forms across devices more quickly using their saved info.">
     Save your info in <ph name="GOOGLE_WALLET_TITLE_1">$1<ex>Google Wallet</ex></ph> and get things done faster, like filling forms across Google products. You can <ph name="MANAGE_INFO_LINK">$2<ex>manage your info</ex></ph> in <ph name="GOOGLE_WALLET_TITLE_2">$3<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$4<ex>alexpark@gmail.com</ex></ph>.
   </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_BRANDED" desc="A description that appears beneath the Save title prompt asking users whether they want to save their data to Google Wallet, used when Google Wallet branding is already present in the title.">
+    Save your info and get things done faster, like filling forms across Google products. You can <ph name="MANAGE_WALLET_SETTINGS_LINK">$1<ex>manage your Wallet settings</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>.
+  </message>
   <!-- Prompt strings used on Desktop -->
   <if expr="not is_android">
     <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is renting a car and just filled in info about their driver’s license. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
@@ -1560,6 +1563,9 @@
     </message>
     <message name="IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK" desc="Link text prompting users to manage their autofill information.">
       manage your info
+    </message>
+    <message name="IDS_AUTOFILL_MANAGE_YOUR_WALLET_SETTINGS_LINK" desc="Link text prompting users to manage their Google Wallet settings.">
+      manage your Wallet settings
     </message>
     <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with updated attributes">
       <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> updated

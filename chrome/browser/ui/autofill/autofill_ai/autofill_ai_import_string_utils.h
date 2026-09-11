@@ -18,6 +18,10 @@ std::u16string GetPromptTitle(EntityTypeName type_name,
 
 int GetPrimaryButtonTextId(bool is_save_prompt);
 
+// Returns the notice string ID for saving a walletable entity, taking into
+// account the 2026 Wallet branding experiment arms.
+int GetSaveEntityToWalletNoticeStringId();
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_IMPORT_STRING_UTILS_H_
