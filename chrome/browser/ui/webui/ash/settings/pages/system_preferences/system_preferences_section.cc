@@ -44,11 +44,12 @@ base::span<const SearchConcept> GetSystemPreferencesSearchConcepts() {
 }  // namespace
 
 SystemPreferencesSection::SystemPreferencesSection(
+    PrefService* local_state,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
-      date_time_subsection_(profile, search_tag_registry),
+      date_time_subsection_(local_state, profile, search_tag_registry),
       files_subsection_(profile, search_tag_registry),
       languages_subsection_(profile, search_tag_registry, pref_service),
       multitasking_subsection_(profile, search_tag_registry),
@@ -57,6 +58,7 @@ SystemPreferencesSection::SystemPreferencesSection(
       search_subsection_(profile, search_tag_registry),
       startup_subsection_(profile, search_tag_registry),
       storage_subsection_(profile, search_tag_registry) {
+  CHECK(local_state);
   CHECK(profile);
   CHECK(search_tag_registry);
   CHECK(pref_service);

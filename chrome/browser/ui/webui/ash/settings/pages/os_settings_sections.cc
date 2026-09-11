@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/apps_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/bluetooth_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/crostini/crostini_section.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_section.h"
@@ -104,7 +103,7 @@ OsSettingsSections::OsSettingsSections(
 
   AddSection(mojom::Section::kSystemPreferences,
              std::make_unique<SystemPreferencesSection>(
-                 profile, search_tag_registry, prefs));
+                 local_state, profile, search_tag_registry, prefs));
 }
 
 OsSettingsSections::OsSettingsSections() = default;

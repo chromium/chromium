@@ -90,9 +90,11 @@ bool IsFineGrainedTimeZoneEnabled() {
 
 }  // namespace
 
-DateTimeSection::DateTimeSection(Profile* profile,
+DateTimeSection::DateTimeSection(PrefService* local_state,
+                                 Profile* profile,
                                  SearchTagRegistry* search_tag_registry)
-    : OsSettingsSection(profile, search_tag_registry) {
+    : OsSettingsSection(profile, search_tag_registry),
+      local_state_(CHECK_DEREF(local_state)) {
   CHECK(profile);
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
@@ -156,12 +158,13 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "canSetSystemTimezone",
       ash::system::CanSetSystemTimezone(
-          CHECK_DEREF(g_browser_process->local_state()),
+          local_state_.get(),
           BrowserContextHelper::Get()->GetUserByBrowserContext(profile())));
 }
 
 void DateTimeSection::AddHandlers(content::WebUI* web_ui) {
-  web_ui->AddMessageHandler(std::make_unique<DateTimeHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<DateTimeHandler>(&local_state_.get()));
 }
 
 int DateTimeSection::GetSectionNameMessageId() const {

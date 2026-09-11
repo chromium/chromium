@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -32,30 +33,31 @@ namespace {
 
 // Returns whether the system's automatic time zone detection setting is
 // managed, which may override the user's setting.
-bool IsSystemTimezoneAutomaticDetectionManaged() {
-  return g_browser_process->local_state()->IsManagedPreference(
+bool IsSystemTimezoneAutomaticDetectionManaged(const PrefService& local_state) {
+  return local_state.IsManagedPreference(
       ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
 }
 
 // Returns the system's automatic time zone detection policy value, which
 // corresponds to the SystemTimezoneProto's AutomaticTimezoneDetectionType
 // enum and determines whether the user's setting will be overridden.
-int GetSystemTimezoneAutomaticDetectionPolicyValue() {
-  DCHECK(IsSystemTimezoneAutomaticDetectionManaged());
+int GetSystemTimezoneAutomaticDetectionPolicyValue(
+    const PrefService& local_state) {
+  DCHECK(IsSystemTimezoneAutomaticDetectionManaged(local_state));
 
-  return g_browser_process->local_state()->GetInteger(
+  return local_state.GetInteger(
       ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
 }
 
 // Returns whether the user can set the automatic detection setting, based on
 // flags and policies.
-bool IsTimezoneAutomaticDetectionUserEditable() {
+bool IsTimezoneAutomaticDetectionUserEditable(const PrefService& local_state) {
   if (system::HasSystemTimezonePolicy()) {
     return false;
   }
 
-  if (IsSystemTimezoneAutomaticDetectionManaged()) {
-    return GetSystemTimezoneAutomaticDetectionPolicyValue() ==
+  if (IsSystemTimezoneAutomaticDetectionManaged(local_state)) {
+    return GetSystemTimezoneAutomaticDetectionPolicyValue(local_state) ==
            enterprise_management::SystemTimezoneProto::USERS_DECIDE;
   }
 
@@ -64,7 +66,8 @@ bool IsTimezoneAutomaticDetectionUserEditable() {
 
 }  // namespace
 
-DateTimeHandler::DateTimeHandler() = default;
+DateTimeHandler::DateTimeHandler(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 
 DateTimeHandler::~DateTimeHandler() = default;
 
@@ -101,7 +104,7 @@ void DateTimeHandler::OnJavascriptAllowed() {
               weak_ptr_factory_.GetWeakPtr()));
 
   // The auto-detection policy can force auto-detection on or off.
-  local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+  local_state_pref_change_registrar_.Init(&local_state_.get());
   local_state_pref_change_registrar_.Add(
       ash::prefs::kSystemTimezoneAutomaticDetectionPolicy,
       base::BindRepeating(
@@ -165,7 +168,8 @@ void DateTimeHandler::OnParentAccessValidation(bool success) {
 }
 
 void DateTimeHandler::NotifyTimezoneAutomaticDetectionPolicy() {
-  bool managed = !IsTimezoneAutomaticDetectionUserEditable();
+  bool managed = !IsTimezoneAutomaticDetectionUserEditable(local_state_.get());
+  // TODO(crbug.com/489930598): Avoid using g_browser_process.
   bool force_enabled = managed && g_browser_process->platform_part()
                                       ->GetTimezoneResolverManager()
                                       ->ShouldApplyResolvedTimezone();

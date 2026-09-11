@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DATE_TIME_DATE_TIME_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DATE_TIME_DATE_TIME_HANDLER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
@@ -12,13 +13,16 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
+class PrefService;
+
 namespace ash::settings {
 
 // Chrome OS date and time settings page UI handler.
 class DateTimeHandler : public content::WebUIMessageHandler,
                         public SystemClockClient::Observer {
  public:
-  DateTimeHandler();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit DateTimeHandler(PrefService* local_state);
 
   DateTimeHandler(const DateTimeHandler&) = delete;
   DateTimeHandler& operator=(const DateTimeHandler&) = delete;
@@ -54,6 +58,8 @@ class DateTimeHandler : public content::WebUIMessageHandler,
   // Updates the UI, enabling or disabling the time zone automatic detection
   // setting according to policy.
   void NotifyTimezoneAutomaticDetectionPolicy();
+
+  const raw_ref<PrefService> local_state_;
 
   base::CallbackListSubscription system_timezone_policy_subscription_;
 
