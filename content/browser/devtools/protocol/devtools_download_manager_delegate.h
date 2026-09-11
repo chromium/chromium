@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/download_manager_delegate.h"
 
 namespace base {
@@ -26,7 +27,7 @@ class DownloadManager;
 
 namespace protocol {
 
-class DevToolsDownloadManagerDelegate
+class CONTENT_EXPORT DevToolsDownloadManagerDelegate
     : public base::SupportsUserData::Data,
       public content::DownloadManagerDelegate {
  public:
@@ -81,6 +82,7 @@ class DevToolsDownloadManagerDelegate
       content::DownloadOpenDelayedCallback callback) override;
   void GetNextId(content::DownloadIdCallback callback) override;
   download::DownloadItem* GetDownloadByGuid(const std::string& guid) override;
+  bool SupportsHistoryLoading() override;
 
  private:
   friend class base::RefCounted<DevToolsDownloadManagerDelegate>;

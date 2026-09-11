@@ -199,5 +199,10 @@ download::DownloadItem* DevToolsDownloadManagerDelegate::GetDownloadByGuid(
   return download_manager_->GetDownloadByGuid(guid);
 }
 
+bool DevToolsDownloadManagerDelegate::SupportsHistoryLoading() {
+  return original_download_delegate_ &&
+         original_download_delegate_->SupportsHistoryLoading();
+}
+
 }  // namespace protocol
 }  // namespace content
