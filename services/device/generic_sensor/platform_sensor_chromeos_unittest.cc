@@ -4,10 +4,13 @@
 
 #include "services/device/generic_sensor/platform_sensor_chromeos.h"
 
+#include <array>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -26,11 +29,26 @@ namespace {
 
 constexpr int kFakeDeviceId = 1;
 
-constexpr char kAccelerometerChannels[][10] = {"accel_x", "accel_y", "accel_z"};
-constexpr char kGyroscopeChannels[][10] = {"anglvel_x", "anglvel_y",
-                                           "anglvel_z"};
-constexpr char kMagnetometerChannels[][10] = {"magn_x", "magn_y", "magn_z"};
-constexpr char kGravityChannels[][10] = {"gravity_x", "gravity_y", "gravity_z"};
+constexpr auto kAccelerometerChannels = std::to_array<std::string_view>({
+    "accel_x",
+    "accel_y",
+    "accel_z",
+});
+constexpr auto kGyroscopeChannels = std::to_array<std::string_view>({
+    "anglvel_x",
+    "anglvel_y",
+    "anglvel_z",
+});
+constexpr auto kMagnetometerChannels = std::to_array<std::string_view>({
+    "magn_x",
+    "magn_y",
+    "magn_z",
+});
+constexpr auto kGravityChannels = std::to_array<std::string_view>({
+    "gravity_x",
+    "gravity_y",
+    "gravity_z",
+});
 
 constexpr double kScaleValueLightSensor = device::kAlsRoundingMultiple;
 
@@ -40,7 +58,7 @@ constexpr double kScaleValue = 10.0;
 constexpr uint32_t kNumberOfAxes = 3u;
 
 constexpr int64_t kFakeSampleData = 1;
-constexpr int64_t kFakeAxesSampleData[] = {1, 2, 3};
+constexpr auto kFakeAxesSampleData = std::to_array<int64_t>({1, 2, 3});
 constexpr int64_t kFakeTimestampData = 163176689212344ll;
 
 }  // namespace
@@ -267,7 +285,7 @@ INSTANTIATE_TEST_SUITE_P(
 class PlatformSensorChromeOSAxesTest
     : public PlatformSensorChromeOSTestBase,
       public ::testing::TestWithParam<
-          std::pair<mojom::SensorType, const char (*)[10]>> {
+          std::pair<mojom::SensorType, base::span<const std::string_view>>> {
  protected:
   void SetUp() override {
     SetUpBase();
@@ -286,13 +304,13 @@ class PlatformSensorChromeOSAxesTest
               GetSensorMaxAllowedFrequency(type));
   }
 
-  void SetChannelsWithAxes(const char channels[][10], uint32_t num_of_axes) {
-    CHECK_LE(num_of_axes, kNumberOfAxes);
+  void SetChannelsWithAxes(base::span<const std::string_view> channels) {
+    CHECK_LE(channels.size(), kNumberOfAxes);
     std::vector<chromeos::sensors::FakeSensorDevice::ChannelData> channels_data(
-        num_of_axes + 1);
-    for (uint32_t i = 0; i < num_of_axes; ++i) {
-      channels_data[i].id = UNSAFE_TODO(channels[i]);
-      channels_data[i].sample_data = UNSAFE_TODO(kFakeAxesSampleData[i]);
+        channels.size() + 1);
+    for (size_t i = 0; i < channels.size(); ++i) {
+      channels_data[i].id = channels[i];
+      channels_data[i].sample_data = kFakeAxesSampleData[i];
     }
     channels_data.back().id = chromeos::sensors::mojom::kTimestampChannel;
     channels_data.back().sample_data = kFakeTimestampData;
@@ -359,7 +377,7 @@ class PlatformSensorChromeOSAxesTest
 };
 
 TEST_P(PlatformSensorChromeOSAxesTest, MissingChannels) {
-  SetChannelsWithAxes(GetParam().second, kNumberOfAxes - 1);
+  SetChannelsWithAxes(GetParam().second.first(kNumberOfAxes - 1));
 
   auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
   sensor_->AddClient(client.get());
@@ -376,7 +394,7 @@ TEST_P(PlatformSensorChromeOSAxesTest, MissingChannels) {
 }
 
 TEST_P(PlatformSensorChromeOSAxesTest, GetSamples) {
-  SetChannelsWithAxes(GetParam().second, kNumberOfAxes);
+  SetChannelsWithAxes(GetParam().second);
 
   auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
   sensor_->AddClient(client.get());
@@ -411,11 +429,13 @@ TEST_P(PlatformSensorChromeOSAxesTest, GetSamples) {
 INSTANTIATE_TEST_SUITE_P(
     PlatformSensorChromeOSAxesTestRun,
     PlatformSensorChromeOSAxesTest,
-    ::testing::Values(
-        std::make_pair(mojom::SensorType::ACCELEROMETER,
-                       kAccelerometerChannels),
-        std::make_pair(mojom::SensorType::GYROSCOPE, kGyroscopeChannels),
-        std::make_pair(mojom::SensorType::MAGNETOMETER, kMagnetometerChannels),
-        std::make_pair(mojom::SensorType::GRAVITY, kGravityChannels)));
+    ::testing::Values(std::make_pair(mojom::SensorType::ACCELEROMETER,
+                                     base::span(kAccelerometerChannels)),
+                      std::make_pair(mojom::SensorType::GYROSCOPE,
+                                     base::span(kGyroscopeChannels)),
+                      std::make_pair(mojom::SensorType::MAGNETOMETER,
+                                     base::span(kMagnetometerChannels)),
+                      std::make_pair(mojom::SensorType::GRAVITY,
+                                     base::span(kGravityChannels))));
 
 }  // namespace device
