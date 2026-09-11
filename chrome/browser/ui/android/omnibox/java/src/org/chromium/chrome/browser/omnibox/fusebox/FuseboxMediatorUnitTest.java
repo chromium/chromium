@@ -634,7 +634,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void updateFuseboxState_draftingNoFocus_isDisabled() {
+    public void updateFuseboxState_phone_draftingNoFocus_isDisabled() {
         mInput.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
         recreateMediator();
 
@@ -642,7 +642,34 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void updateFuseboxState_drafting_isDisabled() {
+    public void updateFuseboxState_phone_drafting_isCompact() {
+        mInput.setDisplayState(DisplayState.DRAFTING);
+        recreateMediator();
+
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+    }
+
+    @Test
+    public void updateFuseboxState_phone_aiMode_drafting_isCompact() {
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        mInput.setDisplayState(DisplayState.DRAFTING);
+        recreateMediator();
+
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void updateFuseboxState_tablet_draftingNoFocus_isDisabled() {
+        mInput.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        recreateMediator();
+
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void updateFuseboxState_tablet_drafting_isDisabled() {
         mInput.setDisplayState(DisplayState.DRAFTING);
         recreateMediator();
 
@@ -650,7 +677,8 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void updateFuseboxState_aiMode_drafting_isDisabled() {
+    @Config(qualifiers = "sw600dp")
+    public void updateFuseboxState_tablet_aiMode_drafting_isDisabled() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mInput.setDisplayState(DisplayState.DRAFTING);
         recreateMediator();
