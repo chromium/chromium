@@ -1691,6 +1691,123 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverCrossOriginTokenBypassTest,
             blink::mojom::FileSystemAccessStatus::kInvalidArgument);
 }
 
+// Checks that a `start_in` directory TransferToken from an unexpected origin
+// cannot be used to pick the directory the file picker opens in. Same pattern
+// as the move variant above, applied to the ChooseEntries() code path in
+// ResolveDefaultDirectory.
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverCrossOriginTokenBypassTest,
+                       ChooseEntriesRefusesCrossOriginStartInToken) {
+  base::FilePath victim_dir_path;
+  base::FilePath file_in_victim_dir_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("victim"), &victim_dir_path));
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(victim_dir_path,
+                                               &file_in_victim_dir_path));
+  }
+
+  // Victim site.
+  GURL url_victim = GetURL("a.com", "/title1.html");
+  const url::Origin origin_victim = url::Origin::Create(url_victim);
+  const blink::StorageKey key_victim =
+      blink::StorageKey::CreateFirstParty(origin_victim);
+  // Attacker site. Uses the loopback host so that its origin is potentially
+  // trustworthy, which BindReceiver() requires.
+  GURL url_attacker = GetURL("/title1.html");
+  const url::Origin origin_attacker = url::Origin::Create(url_attacker);
+  const blink::StorageKey key_attacker =
+      blink::StorageKey::CreateFirstParty(origin_attacker);
+  ASSERT_NE(origin_victim, origin_attacker);
+
+  // If the picker were shown, it would select a file inside origin A's
+  // directory. `dialog_params` records whether a dialog was created at all.
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_in_victim_dir_path},
+          &dialog_params));
+
+  // Navigate to the attacker site, whose frame issues the ChooseEntries()
+  // call.
+  ASSERT_TRUE(NavigateToURL(shell(), url_attacker));
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  auto* manager = GetManager();
+  ASSERT_TRUE(manager);
+
+  // Origin A owns the directory with read+write grants.
+  const storage::FileSystemURL victim_dir_url =
+      manager->CreateFileSystemURLFromPath(PathInfo(victim_dir_path));
+  auto victim_read_grant =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+          PathInfo(victim_dir_path));
+  auto victim_write_grant =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+          PathInfo(victim_dir_path));
+  FileSystemAccessManagerImpl::SharedHandleState victim_handle_state(
+      victim_read_grant, victim_write_grant);
+  FileSystemAccessManagerImpl::BindingContext victim_context(
+      key_victim, url_victim, rfh->GetGlobalId());
+  auto victim_dir_handle =
+      std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+          manager, victim_context, victim_dir_url, victim_handle_state);
+
+  // Transfer token for origin A's directory, registered in the manager.
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  manager->CreateTransferToken(*victim_dir_handle,
+                               token_remote.InitWithNewPipeAndPassReceiver());
+
+  // Bind a FileSystemAccessManager for origin B.
+  FileSystemAccessManagerImpl::BindingContext attacker_context(
+      key_attacker, url_attacker, rfh->GetGlobalId());
+  mojo::Remote<blink::mojom::FileSystemAccessManager> attacker_manager;
+  manager->BindReceiver(attacker_context,
+                        attacker_manager.BindNewPipeAndPassReceiver());
+
+  // ChooseEntries() consumes transient user activation; ExecJs grants it.
+  EXPECT_TRUE(ExecJs(shell(), "true"));
+
+  // Call ChooseEntries() from origin B's manager with origin A's directory
+  // TransferToken as the `start_in` option.
+  auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*can_select_multiple_files=*/false);
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewOpenFilePickerOptions(std::move(open_file_picker_options)),
+      /*starting_directory_id=*/std::string(),
+      blink::mojom::FilePickerStartInOptionsUnion::NewDirectoryToken(
+          std::move(token_remote)));
+
+  base::RunLoop run_loop;
+  blink::mojom::FileSystemAccessStatus choose_entries_status;
+  size_t entry_count = 0;
+  attacker_manager->ChooseEntries(
+      std::move(picker_options),
+      base::BindLambdaForTesting(
+          [&](blink::mojom::FileSystemAccessErrorPtr result,
+              std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
+            choose_entries_status = result->status;
+            entry_count = entries.size();
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  // ResolveDefaultDirectory must compare the resolved token's origin against
+  // the caller's binding-context origin and reject the mismatch with
+  // kInvalidArgument, without showing a file picker.
+  ASSERT_EQ(choose_entries_status,
+            blink::mojom::FileSystemAccessStatus::kInvalidArgument);
+  EXPECT_EQ(entry_count, 0u);
+  EXPECT_EQ(dialog_params.type, ui::SelectFileDialog::SELECT_NONE);
+}
+
 // Checks that a possible-child transfer token from a different origin cannot
 // be resolved against a directory handle from the calling origin.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverCrossOriginTokenBypassTest,

@@ -781,6 +781,15 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
     FileSystemAccessTransferTokenImpl* resolved_directory_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (resolved_directory_token &&
+      resolved_directory_token->origin() != context.storage_key.origin()) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            FileSystemAccessStatus::kInvalidArgument),
+        std::vector<blink::mojom::FileSystemAccessEntryPtr>());
+    return;
+  }
+
   PathInfo path_info;
   if (resolved_directory_token) {
     // Prioritize an explicitly stated directory handle to start in over an `id`

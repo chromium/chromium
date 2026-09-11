@@ -2225,6 +2225,77 @@ TEST_F(FileSystemAccessManagerImplTest,
   EXPECT_TRUE(rfh->HasTransientUserActivation());
 }
 
+// A `start_in` directory token that belongs to a different origin than the
+// calling context must be rejected instead of being used as the picker's
+// default directory.
+TEST_F(FileSystemAccessManagerImplTest,
+       ChooseEntries_CrossOriginStartInTokenRejected) {
+  base::FilePath other_origin_dir = dir_.GetPath().AppendASCII("other");
+  ASSERT_TRUE(base::CreateDirectory(other_origin_dir));
+  base::FilePath file_in_dir = other_origin_dir.AppendASCII("file");
+  ASSERT_TRUE(base::WriteFile(file_in_dir, "data"));
+  PathInfo other_origin_dir_info(other_origin_dir);
+
+  // Create a directory handle owned by another origin and register a
+  // transfer token for it.
+  const GURL kOtherURL("https://other.example/test");
+  const blink::StorageKey kOtherStorageKey =
+      blink::StorageKey::CreateFromStringForTesting(kOtherURL.spec());
+  ASSERT_NE(kTestStorageKey.origin(), kOtherStorageKey.origin());
+  FileSystemAccessManagerImpl::BindingContext other_binding_context = {
+      kOtherStorageKey, kOtherURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
+  auto grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+      other_origin_dir_info);
+  FileSystemAccessDirectoryHandleImpl directory_handle(
+      manager_.get(), other_binding_context,
+      manager_->CreateFileSystemURLFromPath(other_origin_dir_info),
+      FileSystemAccessManagerImpl::SharedHandleState(grant, grant));
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  manager_->CreateTransferToken(directory_handle,
+                                token_remote.InitWithNewPipeAndPassReceiver());
+
+  manager_->SetFilePickerResultForTesting(PathInfo(file_in_dir));
+
+  static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
+  manager_->BindReceiver(binding_context,
+                         manager_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(permission_context_,
+              CanObtainReadPermission(kTestStorageKey.origin()))
+      .WillOnce(testing::Return(true));
+
+  auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*can_select_multiple_files=*/false);
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewOpenFilePickerOptions(std::move(open_file_picker_options)),
+      /*starting_directory_id=*/std::string(),
+      blink::mojom::FilePickerStartInOptionsUnion::NewDirectoryToken(
+          std::move(token_remote)));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         std::vector<blink::mojom::FileSystemAccessEntryPtr>>
+      future;
+  manager_remote->ChooseEntries(std::move(picker_options),
+                                future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kInvalidArgument,
+            future.Get<0>()->status);
+  EXPECT_TRUE(future.Get<1>().empty());
+}
+
 TEST_F(FileSystemAccessManagerImplTest,
        ChooseEntries_OpenFile_EnterpriseBlock) {
   base::FilePath test_file = dir_.GetPath().AppendASCII("foo");
