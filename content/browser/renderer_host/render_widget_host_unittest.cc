@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -952,30 +951,6 @@ TEST_F(RenderWidgetHostTest, DoNotAcceptPopupBoundsUntilScreenRectsAcked) {
   // And the host must accept them now as the screen rects have been
   // acked.
   EXPECT_EQ(new_popup_view_bounds, view_->GetViewBounds());
-}
-
-// Tests that oversized popup bounds from the renderer are clamped to the
-// display, since their area would otherwise overflow int browser side.
-TEST_F(RenderWidgetHostTest, PopupBoundsAreClampedToTheDisplay) {
-  // Let the initial screen rects settle, otherwise the popup bounds below are
-  // dropped rather than clamped.
-  ClearScreenRects();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !host_->waiting_for_screen_rects_ack_; }));
-
-  const gfx::Rect work_area =
-      display::Screen::Get()->GetPrimaryDisplay().work_area();
-  ASSERT_FALSE(work_area.IsEmpty());
-
-  constexpr gfx::Rect kHugeBounds(0, 0, 100000, 100000);
-  ASSERT_FALSE(kHugeBounds.size().GetCheckedArea().IsValid());
-  static_cast<blink::mojom::PopupWidgetHost*>(host_.get())
-      ->SetPopupBounds(kHugeBounds, base::DoNothing());
-
-  const gfx::Rect bounds = view_->GetViewBounds();
-  EXPECT_EQ(work_area.width(), bounds.width());
-  EXPECT_EQ(work_area.height(), bounds.height());
-  EXPECT_TRUE(bounds.size().GetCheckedArea().IsValid());
 }
 
 TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {

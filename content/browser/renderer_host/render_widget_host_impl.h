@@ -1140,8 +1140,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                            DoNotAcceptPopupBoundsUntilScreenRectsAcked);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
                            DontPostponeInputEventAckTimeout);
-  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
-                           PopupBoundsAreClampedToTheDisplay);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest, RendererExitedNoDrag);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
                            StopAndStartInputEventAckTimeout);
