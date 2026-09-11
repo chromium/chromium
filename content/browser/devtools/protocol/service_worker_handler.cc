@@ -36,6 +36,7 @@
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
+#include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -127,29 +128,24 @@ ConvertRouterSource(const blink::ServiceWorkerRouterSource& source) {
 }
 
 // Converts blink internal RouterCondition type to that of CDP.
-// `c` shall not have nested conditions(`or` and `not`) because they are not yet
-// supported on CDP.
-// TODO(crbug.com/540469610): Support nested conditions.
 std::unique_ptr<protocol::ServiceWorker::ServiceWorkerRouterCondition>
-ConvertRouterCondition(const blink::ServiceWorkerRouterCondition& c) {
-  auto condition =
+ConvertRouterCondition(const blink::ServiceWorkerRouterCondition& source) {
+  auto destination =
       protocol::ServiceWorker::ServiceWorkerRouterCondition::Create().Build();
   const auto& [url_pattern, request, running_status, or_condition,
-               not_condition] = c.get();
-  DCHECK(!or_condition.has_value() && !not_condition.has_value())
-      << "nested conditions are not yet supported.";
+               not_condition] = source.get();
   if (url_pattern) {
-    condition->SetUrlPattern(SafeURLPatternToString(*url_pattern));
+    destination->SetUrlPattern(SafeURLPatternToString(*url_pattern));
   }
   if (request) {
     if (request->method) {
-      condition->SetRequestMethod(*request->method);
+      destination->SetRequestMethod(*request->method);
     }
     if (request->mode) {
-      condition->SetRequestMode(network::RequestModeToString(*request->mode));
+      destination->SetRequestMode(network::RequestModeToString(*request->mode));
     }
     if (request->destination) {
-      condition->SetRequestDestination(
+      destination->SetRequestDestination(
           network::RequestDestinationToString(*request->destination));
     }
   }
@@ -157,19 +153,33 @@ ConvertRouterCondition(const blink::ServiceWorkerRouterCondition& c) {
     switch (running_status->status) {
       case blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
           kRunning:
-        condition->SetRunningStatus(
+        destination->SetRunningStatus(
             protocol::ServiceWorker::ServiceWorkerVersionRunningStatusEnum::
                 Running);
         break;
       case blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
           kNotRunning:
-        condition->SetRunningStatus(
+        destination->SetRunningStatus(
             protocol::ServiceWorker::ServiceWorkerVersionRunningStatusEnum::
                 Stopped);
         break;
     }
   }
-  return condition;
+  if (or_condition) {
+    auto conditions = std::make_unique<protocol::Array<
+        protocol::ServiceWorker::ServiceWorkerRouterCondition>>();
+    for (const blink::ServiceWorkerRouterCondition& c :
+         or_condition->conditions) {
+      conditions->emplace_back(ConvertRouterCondition(c));
+    }
+    destination->SetOr(std::move(conditions));
+  }
+  if (not_condition) {
+    CHECK(not_condition->condition);
+    destination->SetNot(ConvertRouterCondition(*not_condition->condition));
+  }
+
+  return destination;
 }
 
 std::unique_ptr<

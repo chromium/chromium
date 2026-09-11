@@ -21,7 +21,17 @@ self.addEventListener('install', async e => {
       source: 'fetch-event'
     },
     {condition: {urlPattern: '/**/*.txt??*'}, source: 'fetch-event'},
-    {condition: {urlPattern: new URLPattern({})}, source: 'fetch-event'}
+    {condition: {urlPattern: new URLPattern({})}, source: 'fetch-event'},
+    {condition: {or: []}, source: 'network'}, {
+      condition: {
+        or: [
+          {not: {urlPattern: 'https://example.com/test/*'}},
+          {requestMethod: 'POST'}
+        ]
+      },
+      source: 'network'
+    },
+    {condition: {not: {requestMethod: 'GET'}}, source: 'network'}
   ]);
   self.skipWaiting();
 });

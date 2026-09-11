@@ -2472,12 +2472,8 @@ void ServiceWorkerVersion::CountFeature(blink::mojom::WebFeature feature) {
 ServiceWorkerVersion::RouterRulesForDevTools
 ServiceWorkerVersion::CalculateRouterRulesForDevTools() const {
   RouterRulesForDevTools rules;
-  // Router rules that have nested conditions are currently unsupported. Use
-  // the legacy field for them even if the flag is enabled.
-  // TODO(crbug.com/540469610): support them.
   if (base::FeatureList::IsEnabled(
-          features::kServiceWorkerStaticRouterTypedRulesForDevTools) &&
-      !router_evaluator()->has_nested_conditions()) {
+          features::kServiceWorkerStaticRouterTypedRulesForDevTools)) {
     rules.typed_rules = router_evaluator()->CalculateRouterRulesForDevTools();
   } else {
     rules.legacy_rules = router_evaluator()->ToString();

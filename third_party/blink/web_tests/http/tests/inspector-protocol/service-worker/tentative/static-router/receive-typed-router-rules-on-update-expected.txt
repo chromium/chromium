@@ -72,6 +72,45 @@ Tests receiving static router rules from the service worker.
             type : fetchEvent
         }
     }
+    [8] : {
+        condition : {
+            or : [
+            ]
+        }
+        id : <number>
+        source : {
+            type : network
+        }
+    }
+    [9] : {
+        condition : {
+            or : [
+                [0] : {
+                    not : {
+                        urlPattern : https://example.com/test/*
+                    }
+                }
+                [1] : {
+                    requestMethod : POST
+                }
+            ]
+        }
+        id : <number>
+        source : {
+            type : network
+        }
+    }
+    [10] : {
+        condition : {
+            not : {
+                requestMethod : GET
+            }
+        }
+        id : <number>
+        source : {
+            type : network
+        }
+    }
 ]
 1
 2
@@ -81,4 +120,7 @@ Tests receiving static router rules from the service worker.
 6
 7
 8
+9
+10
+11
 

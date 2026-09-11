@@ -33,9 +33,7 @@ experimental domain ServiceWorker
       redundant
 
   # Mostly corresponds to `RouterCondition` in ServiceWorker spec
-  # (https://www.w3.org/TR/service-workers/#dictdef-routercondition) while this
-  # currently lacks support for the nested conditions ("or" and "not").
-  # TODO(crbug.com/540469610): Support recursive conditions.
+  # (https://www.w3.org/TR/service-workers/#dictdef-routercondition)
   type ServiceWorkerRouterCondition extends object
     properties
       # Plain text, or JSON serialization of URLPatternInit or URLPattern
@@ -44,6 +42,8 @@ experimental domain ServiceWorker
       optional string requestMode
       optional string requestDestination
       optional ServiceWorkerVersionRunningStatus runningStatus
+      optional array of ServiceWorkerRouterCondition or
+      optional ServiceWorkerRouterCondition not
 
   type ServiceWorkerRouterSourceType extends string
     enum
