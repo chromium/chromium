@@ -158,6 +158,7 @@ if (toolkit_views) {
       "//chrome/browser:browser_process",
       "//chrome/browser/enterprise",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/batch_upload",
       "//chrome/browser/signin",
       "//chrome/browser/subscription_eligibility",
       "//chrome/browser/sync",

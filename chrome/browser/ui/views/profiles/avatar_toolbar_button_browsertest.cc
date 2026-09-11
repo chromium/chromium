@@ -885,7 +885,7 @@ class AvatarToolbarButtonInterfaceBaseBrowserTest {
     mock_batch_upload_delegate_ = mock_batch_upload_delegate.get();
 
     batch_upload_test_helper_.SetupBatchUploadTestingFactoryInProfile(
-        Profile::FromBrowserContext(context), /*identity_manager=*/nullptr,
+        Profile::FromBrowserContext(context),
         std::move(mock_batch_upload_delegate));
 #endif
   }

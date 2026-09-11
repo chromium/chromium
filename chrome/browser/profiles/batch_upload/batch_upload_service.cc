@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/local_data_description.h"
@@ -280,6 +281,11 @@ void BatchUploadService::OnGetLocalDataDescriptionsReady(
     return;
   }
 
+  size_t total_item_count = 0;
+  for (const auto& [type, description] : local_data_map) {
+    total_item_count += description.local_data_models.size();
+  }
+
   std::move(state_.dialog_state_->dialog_shown_callback_).Run(true);
   delegate_->ShowBatchUploadDialog(
       state_.dialog_state_->browser_,
@@ -288,11 +294,12 @@ void BatchUploadService::OnGetLocalDataDescriptionsReady(
       state_.dialog_state_->entry_point_,
       /*complete_callback=*/
       base::BindOnce(&BatchUploadService::OnBatchUploadDialogResult,
-                     base::Unretained(this)));
+                     base::Unretained(this), total_item_count));
   // The dialog may be reset at this point: `state_.dialog_state_` may be null.
 }
 
 void BatchUploadService::OnBatchUploadDialogResult(
+    size_t total_item_count,
     const std::map<syncer::DataType,
                    std::vector<syncer::LocalDataItemModel::DataId>>&
         item_ids_to_move) {
@@ -303,6 +310,22 @@ void BatchUploadService::OnBatchUploadDialogResult(
     std::move(state_.dialog_state_->dialog_closed_callback_).Run();
     ResetDialogState();
     return;
+  }
+
+  size_t items_to_move_count = 0;
+  for (const auto& [type, items] : item_ids_to_move) {
+    items_to_move_count += items.size();
+  }
+
+  if (items_to_move_count > 0) {
+    const GaiaId primary_gaia =
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .gaia;
+    int remaining_count =
+        base::checked_cast<int>(total_item_count - items_to_move_count);
+    SigninPrefs(prefs_.get())
+        .SetBatchUploadLastUploadRemainingLocalDataCount(primary_gaia,
+                                                         remaining_count);
   }
 
   sync_service_->TriggerLocalDataMigrationForItems(item_ids_to_move);
@@ -403,4 +426,51 @@ BatchUploadService::ResettableState::DialogState::~DialogState() = default;
 std::vector<syncer::DataType> BatchUploadService::AvailableTypesOrder() {
   // Transforming to vector to avoid changing every definition on updates.
   return base::ToVector(kBatchUploadAvailableTypesOrder);
+}
+
+bool BatchUploadService::CanShowPromo(EntryPoint entry_point) const {
+  if (!IsUserEligibleToOpenDialog()) {
+    return false;
+  }
+
+  switch (entry_point) {
+    // Permanent entry points:
+    // These entry points must ALWAYS remain available and accessible to the
+    // user. They should never be suppressed, even if the user has previously
+    // uploaded a subset of their local data.
+    //
+    // NOTE: When adding a new entry point, carefully consider whether it is a
+    // non-permanent promo (which should be dismissed after a partial upload) or
+    // a permanent entry point (which should always be accessible).
+    case EntryPoint::kPasswordManagerSettings:
+    case EntryPoint::kProfileMenuRowButtonAction:
+    case EntryPoint::kAccountSettingsPage:
+      return true;
+
+    // Non-permanent promo entry points:
+    // These entry points are transient promotions. If the user previously
+    // chose to upload only a subset of their local data via Batch Upload, they
+    // explicitly opted not to upload the rest; therefore, we do not show them
+    // promos again.
+    case EntryPoint::kPasswordPromoCard:
+    case EntryPoint::kBookmarksManagerPromoCard:
+    case EntryPoint::kProfileMenuPrimaryButtonAction:
+    case EntryPoint::kProfileMenuPrimaryButtonWithBookmarksAction:
+    case EntryPoint::kProfileMenuPrimaryButtonWithWindows10DepreciationAction:
+    case EntryPoint::kProfileMenuPrimaryButtonActionFromAvatarPromo:
+    case EntryPoint::
+        kProfileMenuPrimaryButtonWithBookmarksActionFromAvatarPromo:
+    case EntryPoint::
+        kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo:
+      return !HasRemainingLocalDataAfterLastUpload();
+  }
+}
+
+bool BatchUploadService::HasRemainingLocalDataAfterLastUpload() const {
+  const GaiaId primary_gaia =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  return SigninPrefs(prefs_.get())
+             .GetBatchUploadLastUploadRemainingLocalDataCount(primary_gaia)
+             .value_or(0) > 0;
 }

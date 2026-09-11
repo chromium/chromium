@@ -64,6 +64,14 @@ GaiaId GetPrimaryAccountGaiaId(Profile* profile) {
 // Computes whether the promo can be shown based on previous occurrences of it
 // being shown.
 bool CanShowBatchUploadPromo(Profile* profile) {
+  BatchUploadService* batch_upload_service =
+      BatchUploadServiceFactory::GetForProfile(profile);
+  if (batch_upload_service &&
+      !batch_upload_service->CanShowPromo(
+          BatchUploadService::EntryPoint::kBookmarksManagerPromoCard)) {
+    return false;
+  }
+
   GaiaId gaia_id = GetPrimaryAccountGaiaId(profile);
   if (gaia_id.empty()) {
     return false;

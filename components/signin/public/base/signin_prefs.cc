@@ -150,6 +150,11 @@ constexpr std::string_view kBookmarkBatchUploadPromoDismissCount =
 constexpr std::string_view kBookmarkBatchUploadPromoLastDismissTime =
     "BookmarkBatchUploadPromoLastDismissTime";
 
+// The remaining number of local data items that were not moved after the last
+// batch upload.
+constexpr std::string_view kBatchUploadLastUploadRemainingLocalDataCount =
+    "BatchUploadLastUploadRemainingLocalDataCount";
+
 constexpr std::string_view kPolicyDisclaimerLastRegistrationFailureTime =
     "PolicyDisclaimerLastRegistrationFailureTime";
 
@@ -598,6 +603,24 @@ SigninPrefs::GetBookmarkBatchUploadPromoDismissCountWithLastTime(
     const GaiaId& gaia_id) {
   return {GetIntPrefForAccount(gaia_id, kBookmarkBatchUploadPromoDismissCount),
           GetTimePref(gaia_id, kBookmarkBatchUploadPromoLastDismissTime)};
+}
+
+void SigninPrefs::SetBatchUploadLastUploadRemainingLocalDataCount(
+    const GaiaId& gaia_id,
+    int count) {
+  SetIntPrefForAccount(gaia_id, kBatchUploadLastUploadRemainingLocalDataCount,
+                       count);
+}
+
+std::optional<int> SigninPrefs::GetBatchUploadLastUploadRemainingLocalDataCount(
+    const GaiaId& gaia_id) const {
+  CHECK(!gaia_id.empty());
+  const base::DictValue* account_dict =
+      pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id.ToString());
+  if (!account_dict) {
+    return std::nullopt;
+  }
+  return account_dict->FindInt(kBatchUploadLastUploadRemainingLocalDataCount);
 }
 
 base::DictValue& SigninPrefs::GetOrCreateAvatarButtonPromoCountDictionary(

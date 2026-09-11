@@ -282,8 +282,7 @@ class BatchUploadWithFakeDelegateBrowserTest : public BatchUploadBrowserTest {
     auto fake_delegate = std::make_unique<BatchUploadDelegateFake>();
     fake_delegate_ptr_ = fake_delegate.get();
     test_helper().SetupBatchUploadTestingFactoryInProfile(
-        profile, IdentityManagerFactory::GetForProfile(profile),
-        std::move(fake_delegate));
+        profile, std::move(fake_delegate));
   }
 
   raw_ptr<BatchUploadDelegateFake> fake_delegate_ptr_ = nullptr;

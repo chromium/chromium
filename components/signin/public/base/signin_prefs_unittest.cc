@@ -303,6 +303,31 @@ TEST_F(SigninPrefsTest, BookmarkBatchUploadPromo) {
   EXPECT_GT(bookmark_batch_upload_info2.second.value(), reference2);
 }
 
+TEST_F(SigninPrefsTest, BatchUploadLastUploadRemainingLocalDataCount) {
+  const GaiaId gaia_id_1("gaia_id_1");
+  const GaiaId gaia_id_2("gaia_id_2");
+
+  EXPECT_EQ(
+      signin_prefs().GetBatchUploadLastUploadRemainingLocalDataCount(gaia_id_1),
+      std::nullopt);
+  EXPECT_EQ(
+      signin_prefs().GetBatchUploadLastUploadRemainingLocalDataCount(gaia_id_2),
+      std::nullopt);
+
+  signin_prefs().SetBatchUploadLastUploadRemainingLocalDataCount(gaia_id_1, 3);
+  EXPECT_EQ(
+      signin_prefs().GetBatchUploadLastUploadRemainingLocalDataCount(gaia_id_1),
+      3);
+  EXPECT_EQ(
+      signin_prefs().GetBatchUploadLastUploadRemainingLocalDataCount(gaia_id_2),
+      std::nullopt);
+
+  signin_prefs().SetBatchUploadLastUploadRemainingLocalDataCount(gaia_id_1, 0);
+  EXPECT_EQ(
+      signin_prefs().GetBatchUploadLastUploadRemainingLocalDataCount(gaia_id_1),
+      0);
+}
+
 TEST_F(SigninPrefsTest, DeprecatingPrefsInAccountDict) {
   const GaiaId gaia_id("gaia_id_1");
 

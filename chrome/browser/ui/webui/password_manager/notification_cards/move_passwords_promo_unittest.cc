@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/mock_enclave_manager.h"
@@ -22,6 +23,8 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 
@@ -41,8 +44,15 @@ class NotificationCardMovePasswordsTest
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactories();
+  }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     profile_store_ = CreateAndUseTestPasswordStore(profile());
     EnclaveManagerFactory::GetInstance()->SetTestingFactory(
         profile(),
@@ -63,13 +73,20 @@ class NotificationCardMovePasswordsTest
     fake_sync_service_ = nullptr;
     delegate_ = nullptr;
     profile_store_ = nullptr;
+    identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void EnableAccountStorage() {
-    fake_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
-    ASSERT_TRUE(password_manager::features_util::IsAccountStorageActive(
+  AccountInfo EnableAccountStorage(
+      const std::string& email = "user@gmail.com") {
+    AccountInfo account_info =
+        identity_test_env_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable(email, signin::ConsentLevel::kSignin);
+    fake_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin,
+                                    account_info.GetCoreAccountInfo());
+    EXPECT_TRUE(password_manager::features_util::IsAccountStorageActive(
         fake_sync_service_.get()));
+    return account_info;
   }
 
   void SavePassword(password_manager::PasswordForm::Store store_type =
@@ -89,6 +106,8 @@ class NotificationCardMovePasswordsTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
   raw_ptr<syncer::TestSyncService> fake_sync_service_;
   scoped_refptr<password_manager::TestPasswordStore> profile_store_;
   scoped_refptr<extensions::PasswordsPrivateDelegate> delegate_;
@@ -177,4 +196,23 @@ TEST_F(NotificationCardMovePasswordsTest, PromoShownIn7DaysAfterDismiss) {
   past_dismissed_state.last_time_shown =
       base::Time::Now() - base::Days(7) - base::Seconds(1);
   EXPECT_TRUE(promo->ShouldShowCard(past_dismissed_state));
+}
+
+TEST_F(NotificationCardMovePasswordsTest,
+       NoPromoIfBatchUploadRemainingLocalData) {
+  AccountInfo account_info = EnableAccountStorage();
+  SavePassword();
+
+  std::unique_ptr<password_manager::PasswordNotificationCardBase> promo =
+      std::make_unique<MovePasswordsPromo>(profile(), delegate());
+
+  EXPECT_TRUE(
+      promo->ShouldShowCard(password_manager::NotificationCardPrefState{}));
+
+  SigninPrefs(*pref_service())
+      .SetBatchUploadLastUploadRemainingLocalDataCount(account_info.GetGaiaId(),
+                                                       1);
+
+  EXPECT_FALSE(
+      promo->ShouldShowCard(password_manager::NotificationCardPrefState{}));
 }

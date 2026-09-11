@@ -71,6 +71,7 @@ if (!is_android) {
       ":bookmarks",
       "//chrome/browser/bookmarks",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/batch_upload:test_support",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui/views/bookmarks:test_support",

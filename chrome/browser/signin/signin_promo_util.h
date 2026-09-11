@@ -15,6 +15,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/buildflags/buildflags.h"
 
+class BatchUploadService;
 class Profile;
 
 namespace signin_metrics {
@@ -147,11 +148,13 @@ class AvatarButtonPromoManager : public signin::IdentityManager::Observer {
   AvatarButtonPromoManager(
       signin::IdentityManager* identity_manager,
       signin::AccountPreviewDataService* account_preview_data_service,
+      BatchUploadService* batch_upload_service,
       PrefService* pref_service);
   // Used only for testing.
   AvatarButtonPromoManager(
       signin::IdentityManager* identity_manager,
       signin::AccountPreviewDataService* account_preview_data_service,
+      BatchUploadService* batch_upload_service,
       PrefService* pref_service,
       int max_shown_count,
       int max_used_count);
@@ -186,6 +189,7 @@ class AvatarButtonPromoManager : public signin::IdentityManager::Observer {
   raw_ptr<PrefService> pref_service_;
   raw_ptr<signin::AccountPreviewDataService> account_preview_data_service_ =
       nullptr;
+  raw_ptr<BatchUploadService> batch_upload_service_ = nullptr;
 
   const int max_shown_count_ = 0;
   const int max_used_count_ = 0;

@@ -362,6 +362,24 @@ ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
       });
 
   if (allow_batch_upload_promos) {
+    BatchUploadService* batch_upload =
+        BatchUploadServiceFactory::GetForProfile(profile);
+    // The 3 batch upload promos (`kBatchUploadPromo`,
+    // `kBatchUploadBookmarksPromo`, and
+    // `kBatchUploadWindows10DepreciationPromo`) originate from the Avatar
+    // button and behave the same regarding batch upload eligibility. In
+    // `BatchUploadService`, all avatar promo entry points share the same
+    // eligibility logic. Therefore, they can all rely on
+    // `kProfileMenuPrimaryButtonActionFromAvatarPromo` here.
+    if (batch_upload &&
+        !batch_upload->CanShowPromo(
+            BatchUploadService::EntryPoint::
+                kProfileMenuPrimaryButtonActionFromAvatarPromo)) {
+      allow_batch_upload_promos = false;
+    }
+  }
+
+  if (allow_batch_upload_promos) {
     // Batch Upload promo: Windows 10 depreciation promo.
     if (local_data_count > 0 &&
         switches::IsSigninWindows10DepreciationState()) {
@@ -1065,10 +1083,12 @@ void ComputeProfileMenuAvatarButtonPromoInfo(
 AvatarButtonPromoManager::AvatarButtonPromoManager(
     signin::IdentityManager* identity_manager,
     signin::AccountPreviewDataService* account_preview_data_service,
+    BatchUploadService* batch_upload_service,
     PrefService* pref_service)
     : AvatarButtonPromoManager(
           identity_manager,
           account_preview_data_service,
+          batch_upload_service,
           pref_service,
           user_education::features::GetNewBadgeShowCount(),
           user_education::features::GetNewBadgeFeatureUsedCount()) {}
@@ -1076,6 +1096,7 @@ AvatarButtonPromoManager::AvatarButtonPromoManager(
 AvatarButtonPromoManager::AvatarButtonPromoManager(
     signin::IdentityManager* identity_manager,
     signin::AccountPreviewDataService* account_preview_data_service,
+    BatchUploadService* batch_upload_service,
     PrefService* pref_service,
     int max_shown_count,
     int max_used_count)
@@ -1083,6 +1104,7 @@ AvatarButtonPromoManager::AvatarButtonPromoManager(
       signin_prefs_(std::make_unique<SigninPrefs>(CHECK_DEREF(pref_service))),
       pref_service_(pref_service),
       account_preview_data_service_(account_preview_data_service),
+      batch_upload_service_(batch_upload_service),
       max_shown_count_(max_shown_count),
       max_used_count_(max_used_count) {
   CHECK(identity_manager_);
@@ -1113,6 +1135,30 @@ bool AvatarButtonPromoManager::ShouldShowPromo(
 
   const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
       identity_manager_, account_preview_data_service_);
+
+  switch (promo_type) {
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+      // The 3 batch upload promos originate from the Avatar button and behave
+      // the same regarding batch upload eligibility. In `BatchUploadService`,
+      // all avatar promo entry points share the same eligibility logic.
+      // Therefore, they can all rely on
+      // `kProfileMenuPrimaryButtonActionFromAvatarPromo` here.
+      if (batch_upload_service_ &&
+          !batch_upload_service_->CanShowPromo(
+              BatchUploadService::EntryPoint::
+                  kProfileMenuPrimaryButtonActionFromAvatarPromo)) {
+        return false;
+      }
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      break;
+  }
+
   auto [promo_shown_count, promo_used_count, promo_last_shown_time,
         last_external_event_time] =
       GetPromoUsageInfo(*pref_service_.get(), *signin_prefs_.get(), promo_type,
@@ -1229,6 +1275,7 @@ void AvatarButtonPromoManager::OnIdentityManagerShutdown(
   // profile itself).
   pref_service_ = nullptr;
   account_preview_data_service_ = nullptr;
+  batch_upload_service_ = nullptr;
   signin_prefs_.reset();
 }
 

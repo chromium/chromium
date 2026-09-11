@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -424,6 +425,14 @@ TEST_F(BatchUploadServiceTest, LocalDataReturnedShowsDialogAndReturnIdToMove) {
   // originating from the avatar pill promo.
   EXPECT_EQ(0, histogram_tester().GetTotalSumForPrefix(
                    "Signin.AvatarPillPromo.AcceptedAtShownCount"));
+
+  GaiaId primary_gaia =
+      identity_manager()
+          .GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  EXPECT_EQ(SigninPrefs(pref_service())
+                .GetBatchUploadLastUploadRemainingLocalDataCount(primary_gaia),
+            4);
 }
 
 TEST_F(BatchUploadServiceTest,
@@ -462,6 +471,164 @@ TEST_F(BatchUploadServiceTest,
   EXPECT_CALL(closed_callback, Run()).Times(1);
   std::move(returned_complete_callback).Run({});
   EXPECT_FALSE(service.IsDialogOpened());
+
+  GaiaId primary_gaia =
+      identity_manager()
+          .GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  EXPECT_EQ(SigninPrefs(pref_service())
+                .GetBatchUploadLastUploadRemainingLocalDataCount(primary_gaia),
+            std::nullopt);
+}
+
+TEST_F(BatchUploadServiceTest,
+       LocalDataReturnedShowsDialogAndReturnAllIdsToMove) {
+  SigninWithFullInfo();
+  BatchUploadService& service = CreateService();
+  base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
+  base::MockCallback<base::OnceCallback<void()>> closed_callback;
+  const syncer::LocalDataDescription& contact_infos =
+      test_helper().SetReturnDescriptions(syncer::CONTACT_INFO, 2);
+  const syncer::LocalDataDescription& passwords =
+      test_helper().SetReturnDescriptions(syncer::PASSWORDS, 3);
+
+  EXPECT_CALL(sync_service_mock(), GetLocalDataDescriptions(_, _)).Times(1);
+  std::vector<syncer::LocalDataDescription> expected_descriptions{
+      passwords, contact_infos};
+  BatchUploadSelectedDataTypeItemsCallback returned_complete_callback;
+  EXPECT_CALL(delegate_mock(),
+              ShowBatchUploadDialog(_, expected_descriptions, _, _))
+      .WillOnce(
+          [&](BrowserWindowInterface* browser,
+              const std::vector<syncer::LocalDataDescription>&
+                  local_data_description_list,
+              BatchUploadService::EntryPoint entry_point,
+              BatchUploadSelectedDataTypeItemsCallback complete_callback) {
+            returned_complete_callback = std::move(complete_callback);
+          });
+  EXPECT_CALL(opened_callback, Run(true)).Times(1);
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kProfileMenuPrimaryButtonAction,
+      opened_callback.Get(), closed_callback.Get());
+  EXPECT_TRUE(service.IsDialogOpened());
+
+  std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
+      result{{syncer::PASSWORDS,
+              {passwords.local_data_models[0].id,
+               passwords.local_data_models[1].id,
+               passwords.local_data_models[2].id}},
+             {syncer::CONTACT_INFO,
+              {contact_infos.local_data_models[0].id,
+               contact_infos.local_data_models[1].id}}};
+  EXPECT_CALL(sync_service_mock(), TriggerLocalDataMigrationForItems(result))
+      .Times(1);
+  EXPECT_CALL(closed_callback, Run()).Times(1);
+  std::move(returned_complete_callback).Run(result);
+  EXPECT_FALSE(service.IsDialogOpened());
+
+  GaiaId primary_gaia =
+      identity_manager()
+          .GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  EXPECT_EQ(SigninPrefs(pref_service())
+                .GetBatchUploadLastUploadRemainingLocalDataCount(primary_gaia),
+            0);
+}
+
+TEST_F(BatchUploadServiceTest, CanShowPromo) {
+  SigninWithFullInfo();
+  BatchUploadService& service = CreateService();
+
+  const std::vector<BatchUploadService::EntryPoint> promo_entry_points = {
+      BatchUploadService::EntryPoint::kPasswordPromoCard,
+      BatchUploadService::EntryPoint::kBookmarksManagerPromoCard,
+      BatchUploadService::EntryPoint::kProfileMenuPrimaryButtonAction,
+      BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonWithBookmarksAction,
+      BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonWithWindows10DepreciationAction,
+      BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonActionFromAvatarPromo,
+      BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonWithBookmarksActionFromAvatarPromo,
+      BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo,
+  };
+
+  const std::vector<BatchUploadService::EntryPoint> permanent_entry_points = {
+      BatchUploadService::EntryPoint::kProfileMenuRowButtonAction,
+      BatchUploadService::EntryPoint::kAccountSettingsPage,
+      BatchUploadService::EntryPoint::kPasswordManagerSettings,
+  };
+
+  // CanShowPromo returns true initially for all entry points.
+  for (auto entry_point : promo_entry_points) {
+    EXPECT_TRUE(service.CanShowPromo(entry_point));
+  }
+  for (auto entry_point : permanent_entry_points) {
+    EXPECT_TRUE(service.CanShowPromo(entry_point));
+  }
+
+  // Mark that a subset was uploaded (e.g. 2 items remaining).
+  GaiaId primary_gaia =
+      identity_manager()
+          .GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  SigninPrefs(pref_service())
+      .SetBatchUploadLastUploadRemainingLocalDataCount(primary_gaia, 2);
+
+  // Non-permanent promo entry points should no longer be shown.
+  for (auto entry_point : promo_entry_points) {
+    EXPECT_FALSE(service.CanShowPromo(entry_point));
+  }
+
+  // Permanent entry points must ALWAYS return true regardless.
+  for (auto entry_point : permanent_entry_points) {
+    EXPECT_TRUE(service.CanShowPromo(entry_point));
+  }
+
+  // Reset remaining count to 0 (all uploaded).
+  SigninPrefs(pref_service())
+      .SetBatchUploadLastUploadRemainingLocalDataCount(primary_gaia, 0);
+
+  // All entry points should be eligible again.
+  for (auto entry_point : promo_entry_points) {
+    EXPECT_TRUE(service.CanShowPromo(entry_point));
+  }
+  for (auto entry_point : permanent_entry_points) {
+    EXPECT_TRUE(service.CanShowPromo(entry_point));
+  }
+}
+
+TEST_F(BatchUploadServiceTest, CanShowPromo_SignedOut) {
+  BatchUploadService& service = CreateService();
+
+  ASSERT_FALSE(
+      identity_manager().HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  const std::vector<BatchUploadService::EntryPoint> all_entry_points = {
+      BatchUploadService::EntryPoint::kPasswordPromoCard,
+      BatchUploadService::EntryPoint::kBookmarksManagerPromoCard,
+      BatchUploadService::EntryPoint::kProfileMenuPrimaryButtonAction,
+      BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonWithBookmarksAction,
+      BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonWithWindows10DepreciationAction,
+      BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonActionFromAvatarPromo,
+      BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonWithBookmarksActionFromAvatarPromo,
+      BatchUploadService::EntryPoint::
+          kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo,
+      BatchUploadService::EntryPoint::kProfileMenuRowButtonAction,
+      BatchUploadService::EntryPoint::kAccountSettingsPage,
+      BatchUploadService::EntryPoint::kPasswordManagerSettings,
+  };
+
+  // CanShowPromo returns false for all entry points when signed out.
+  for (auto entry_point : all_entry_points) {
+    EXPECT_FALSE(service.CanShowPromo(entry_point));
+  }
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -510,8 +677,6 @@ class BatchUploadServiceWithAvatarPromoEntryPointTest
       scoped_feature_list_.InitAndEnableFeature(
           switches::kSigninWindows10DepreciationStateForTesting);
     }
-
-    SigninPrefs::RegisterProfilePrefs(test_helper().pref_service()->registry());
   }
 
  private:
@@ -522,16 +687,16 @@ TEST_P(BatchUploadServiceWithAvatarPromoEntryPointTest,
        AcceptedBatchUploadWithFromAvatarPromoEntryPoint) {
   SigninWithFullInfo();
 
+  BatchUploadService& service = CreateService();
+
   // Simulate the promo being shown twice.
   signin::AvatarButtonPromoManager avatar_promo_manager(
-      &identity_manager(), /*account_preview_data_service=*/nullptr,
+      &identity_manager(), /*account_preview_data_service=*/nullptr, &service,
       &pref_service());
   const int avatar_promo_shown_count = 2;
   for (int i = 0; i < avatar_promo_shown_count; ++i) {
     avatar_promo_manager.RecordPromoShown(GetParam().promo_type);
   }
-
-  BatchUploadService& service = CreateService();
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
   base::MockCallback<base::OnceCallback<void()>> closed_callback;
   const syncer::LocalDataDescription& passwords =

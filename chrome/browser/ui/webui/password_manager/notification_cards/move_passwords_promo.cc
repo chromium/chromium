@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/password_manager/notification_cards/move_passwords_promo.h"
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -79,6 +81,14 @@ bool MovePasswordsPromo::ShouldShowCard(
   if (!sync_service ||
       !password_manager::features_util::IsAccountStorageActive(sync_service) ||
       !sync_service->IsEngineInitialized()) {
+    return false;
+  }
+
+  BatchUploadService* batch_upload_service =
+      BatchUploadServiceFactory::GetForProfile(profile_);
+  if (batch_upload_service &&
+      !batch_upload_service->CanShowPromo(
+          BatchUploadService::EntryPoint::kPasswordPromoCard)) {
     return false;
   }
 

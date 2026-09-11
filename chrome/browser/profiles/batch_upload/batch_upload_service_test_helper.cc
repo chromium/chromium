@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/profiles/batch_upload_ui_delegate.h"
+#include "components/signin/public/base/signin_prefs.h"
 
 namespace {
 
@@ -29,6 +30,8 @@ syncer::LocalDataItemModel MakeDummyLocalDataModel(size_t id) {
 }  // namespace
 
 BatchUploadServiceTestHelper::BatchUploadServiceTestHelper() {
+  SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
+
   // The real call is asynchronous, the mock calls the callback right away which
   // is simpler for testing.
   ON_CALL(*GetSyncServiceMock(), GetLocalDataDescriptions)
@@ -53,35 +56,47 @@ BatchUploadServiceTestHelper::~BatchUploadServiceTestHelper() = default;
 
 void BatchUploadServiceTestHelper::SetupBatchUploadTestingFactoryInProfile(
     Profile* profile,
-    signin::IdentityManager* identity_manager,
     std::unique_ptr<BatchUploadDelegate> delegate) {
   BatchUploadServiceFactory::GetInstance()->SetTestingFactory(
       profile,
       base::BindOnce(
           &BatchUploadServiceTestHelper::CreateBatchUploadServiceInternal,
-          base::Unretained(this), identity_manager, std::move(delegate)));
+          base::Unretained(this), std::move(delegate)));
 }
 
 std::unique_ptr<KeyedService>
 BatchUploadServiceTestHelper::CreateBatchUploadServiceInternal(
-    signin::IdentityManager* identity_manager,
     std::unique_ptr<BatchUploadDelegate> delegate,
     content::BrowserContext* browser_context) {
-  if (!identity_manager) {
-    identity_manager = IdentityManagerFactory::GetForProfile(
-        Profile::FromBrowserContext(browser_context));
-  }
-
-  return CreateBatchUploadService(identity_manager, std::move(delegate));
+  return CreateBatchUploadService(Profile::FromBrowserContext(browser_context),
+                                  std::move(delegate));
 }
 
-// static
+std::unique_ptr<BatchUploadService>
+BatchUploadServiceTestHelper::CreateBatchUploadService(
+    Profile* profile,
+    std::unique_ptr<BatchUploadDelegate> delegate) {
+  CHECK(profile);
+  return CreateBatchUploadService(
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      std::move(delegate));
+}
+
 std::unique_ptr<BatchUploadService>
 BatchUploadServiceTestHelper::CreateBatchUploadService(
     signin::IdentityManager* identity_manager,
     std::unique_ptr<BatchUploadDelegate> delegate) {
+  return CreateBatchUploadService(identity_manager, &pref_service_,
+                                  std::move(delegate));
+}
+
+std::unique_ptr<BatchUploadService>
+BatchUploadServiceTestHelper::CreateBatchUploadService(
+    signin::IdentityManager* identity_manager,
+    PrefService* pref_service,
+    std::unique_ptr<BatchUploadDelegate> delegate) {
   return std::make_unique<BatchUploadService>(
-      identity_manager, GetSyncServiceMock(), &pref_service_,
+      identity_manager, GetSyncServiceMock(), pref_service,
       std::move(delegate));
 }
 

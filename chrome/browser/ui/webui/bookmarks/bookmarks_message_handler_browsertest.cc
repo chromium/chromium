@@ -9,7 +9,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_test_utils.h"
@@ -20,6 +22,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
@@ -41,6 +44,9 @@ class BookmarkMessageHandlerTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    if (handler_ && handler_->IsJavascriptAllowed()) {
+      handler_->DisallowJavascript();
+    }
     webui_contents_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
@@ -54,6 +60,14 @@ class BookmarkMessageHandlerTest : public InProcessBrowserTest {
     args.Append(id_string);
     handler_->HandleSingleUploadClicked(args);
   }
+
+  void SendHandleGetBatchUploadPromoData(const std::string& callback_id) {
+    base::ListValue args;
+    args.Append(callback_id);
+    handler_->HandleGetBatchUploadPromoData(args);
+  }
+
+  content::TestWebUI* web_ui() { return &web_ui_; }
 
   void ResetWithProfile(Profile* profile) {
     webui_contents_ = content::WebContents::Create(
@@ -283,4 +297,61 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
 
   // Click the single upload icon. This should not crash.
   SendHandleSingleUploadClicked(id_string);
+}
+
+class BookmarkMessageHandlerBatchUploadTest
+    : public BookmarkMessageHandlerTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    BookmarkMessageHandlerTest::SetUpBrowserContextKeyedServices(context);
+    batch_upload_test_helper_.SetupBatchUploadTestingFactoryInProfile(
+        Profile::FromBrowserContext(context));
+  }
+
+  BatchUploadServiceTestHelper& batch_upload_test_helper() {
+    return batch_upload_test_helper_;
+  }
+
+ private:
+  BatchUploadServiceTestHelper batch_upload_test_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerBatchUploadTest,
+                       BatchUploadPromoNotShownIfSubsetUploaded) {
+  Profile* profile = browser()->GetProfile();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  const GaiaId gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  ASSERT_FALSE(gaia_id.empty());
+
+  batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS, 1);
+
+  SendHandleGetBatchUploadPromoData("test-callback-id-1");
+
+  ASSERT_FALSE(web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data_initial =
+      *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data_initial.function_name());
+  EXPECT_EQ("test-callback-id-1", data_initial.arg1()->GetString());
+  EXPECT_TRUE(data_initial.arg2()->GetBool());
+  const base::DictValue* response_initial = data_initial.arg3()->GetIfDict();
+  ASSERT_TRUE(response_initial);
+  EXPECT_TRUE(*response_initial->FindBool("canShow"));
+
+  SigninPrefs(*profile->GetPrefs())
+      .SetBatchUploadLastUploadRemainingLocalDataCount(gaia_id, 1);
+
+  SendHandleGetBatchUploadPromoData("test-callback-id-2");
+
+  ASSERT_FALSE(web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+  EXPECT_EQ("test-callback-id-2", data.arg1()->GetString());
+  EXPECT_TRUE(data.arg2()->GetBool());
+  const base::DictValue* response = data.arg3()->GetIfDict();
+  ASSERT_TRUE(response);
+  EXPECT_FALSE(*response->FindBool("canShow"));
 }

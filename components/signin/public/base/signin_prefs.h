@@ -214,6 +214,13 @@ class SigninPrefs {
   std::pair<int, std::optional<base::Time>>
   GetBookmarkBatchUploadPromoDismissCountWithLastTime(const GaiaId& gaia_id);
 
+  // Batch Upload promo preference: records the number of remaining local data
+  // items that were not moved after the last batch upload.
+  void SetBatchUploadLastUploadRemainingLocalDataCount(const GaiaId& gaia_id,
+                                                       int count);
+  std::optional<int> GetBatchUploadLastUploadRemainingLocalDataCount(
+      const GaiaId& gaia_id) const;
+
   // Note: `callback` will be notified on every change in the main dictionary
   // and sub-dictionries (account dictionaries).
   static void ObserveSigninPrefsChanges(PrefChangeRegistrar& registrar,

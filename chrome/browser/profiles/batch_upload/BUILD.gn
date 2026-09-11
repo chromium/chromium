@@ -35,6 +35,7 @@ source_set("impl") {
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/toolbar",
+    "//components/signin/public/base",
     "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/identity_manager",
     "//components/sync/base",
@@ -63,6 +64,7 @@ source_set("test_support") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//components/signin/public/base",
   ]
 }
 

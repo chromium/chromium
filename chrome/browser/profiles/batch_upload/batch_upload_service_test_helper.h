@@ -46,18 +46,32 @@ class BatchUploadServiceTestHelper {
   // services. Even though `BatchUploadService` is not constructed at profile
   // initialization, it is still recommended to follow this pattern for
   // consistency.
-  //  If `identity_manager` is nullptr, then the IdentityManager from the
-  //  `profile` is used.
   // If `delegate` is not set, then the regular `BatchUploadUIDelegate` is used.
   void SetupBatchUploadTestingFactoryInProfile(
       Profile* profile,
-      signin::IdentityManager* identity_manager = nullptr,
       std::unique_ptr<BatchUploadDelegate> delegate =
           std::make_unique<BatchUploadUIDelegate>());
-  // Constructs a `BatchUploadService` instance that is not tied to any profile.
+
+  // Constructs a `BatchUploadService` using the dependencies from `profile`.
+  std::unique_ptr<BatchUploadService> CreateBatchUploadService(
+      Profile* profile,
+      std::unique_ptr<BatchUploadDelegate> delegate =
+          std::make_unique<BatchUploadUIDelegate>());
+
+  // Constructs a `BatchUploadService` with explicit `identity_manager`.
+  // Uses the test helper's internal `pref_service()`.
   std::unique_ptr<BatchUploadService> CreateBatchUploadService(
       signin::IdentityManager* identity_manager,
-      std::unique_ptr<BatchUploadDelegate> delegate);
+      std::unique_ptr<BatchUploadDelegate> delegate =
+          std::make_unique<BatchUploadUIDelegate>());
+
+  // Constructs a `BatchUploadService` with explicit `identity_manager` and
+  // `pref_service`.
+  std::unique_ptr<BatchUploadService> CreateBatchUploadService(
+      signin::IdentityManager* identity_manager,
+      PrefService* pref_service,
+      std::unique_ptr<BatchUploadDelegate> delegate =
+          std::make_unique<BatchUploadUIDelegate>());
 
   // The following methods will affect the constructed BatchUploadService
   // through this class with the above methods.
@@ -84,7 +98,6 @@ class BatchUploadServiceTestHelper {
 
  private:
   std::unique_ptr<KeyedService> CreateBatchUploadServiceInternal(
-      signin::IdentityManager* identity_manager,
       std::unique_ptr<BatchUploadDelegate> delegate,
       content::BrowserContext* browser_context);
 

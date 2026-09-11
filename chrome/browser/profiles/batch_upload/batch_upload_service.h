@@ -92,7 +92,20 @@ class BatchUploadService : public KeyedService {
   // Gets the ordered list of all available types in BatchUpload.
   static std::vector<syncer::DataType> AvailableTypesOrder();
 
+  // Returns whether a batch upload promo can be shown for a specific entry
+  // point.
+  //
+  // Permanent entry points (such as the Profile Menu row button) always return
+  // true because they must never be suppressed.
+  // Non-permanent promo entry points (such as promo cards and avatar pill
+  // promos) return false if the user previously uploaded only a subset of their
+  // local data via Batch Upload, to avoid over-promoting with promos.
+  bool CanShowPromo(EntryPoint entry_point) const;
+
  private:
+  // Returns whether the user has remaining local data from the last batch
+  // upload for the current primary account.
+  bool HasRemainingLocalDataAfterLastUpload() const;
   // Callback that returns a map of `syncer::LocalDataDescription` for the data
   // types that can be shown in the Batch Upload dialog.
   void OnGetLocalDataDescriptionsReady(
@@ -103,6 +116,7 @@ class BatchUploadService : public KeyedService {
   // storage. Empty map means the dialog was closed explicitly not to move any
   // data.
   void OnBatchUploadDialogResult(
+      size_t total_item_count,
       const std::map<syncer::DataType,
                      std::vector<syncer::LocalDataItemModel::DataId>>&
           item_ids_to_move);
