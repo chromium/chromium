@@ -4,13 +4,62 @@
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {Token} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
-import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
+import type {OrganizerListSectionItem, OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
 import type {BrowserProxy, ProfileData, Tab, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
-import {browserProxyFactory} from '../tab_search.mojom-webui.js';
+import {browserProxyFactory, SplitTabLayout} from '../tab_search.mojom-webui.js';
 
-export class OpenTabsDelegate implements OrganizerListSectionDelegate<Tab> {
+export enum OpenTabsItemType {
+  TAB = 'tab',
+  SPLIT_TAB = 'split_tab',
+}
+
+interface SingleTabItem {
+  type: OpenTabsItemType.TAB;
+  tab: Tab;
+}
+
+interface SplitTabItem {
+  type: OpenTabsItemType.SPLIT_TAB;
+  tabs: [Tab, Tab];
+}
+
+export type OpenTabsItem = SingleTabItem|SplitTabItem;
+
+export function isSplitTab(item: OpenTabsItem): item is SplitTabItem {
+  return item.type === OpenTabsItemType.SPLIT_TAB;
+}
+
+function tokenToString(token: Token): string {
+  return `${token.high.toString()}#${token.low.toString()}`;
+}
+
+function getHostnameOrUrl(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
+function getLastActiveTimeTicks(tab: Tab): bigint {
+  return tab.lastActiveTimeTicks?.internalValue ?? 0n;
+}
+
+function getMostRecentTab(item: OpenTabsItem): Tab {
+  if (!isSplitTab(item)) {
+    return item.tab;
+  }
+  return getLastActiveTimeTicks(item.tabs[1]) >
+          getLastActiveTimeTicks(item.tabs[0]) ?
+      item.tabs[1] :
+      item.tabs[0];
+}
+
+export class OpenTabsDelegate implements
+    OrganizerListSectionDelegate<OpenTabsItem> {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private client_?: OrganizerListSectionClient;
   private listenerIds_: number[] = [];
@@ -37,35 +86,41 @@ export class OpenTabsDelegate implements OrganizerListSectionDelegate<Tab> {
     return loadTimeData.getString('openTabs');
   }
 
-  async getItems(): Promise<Array<OrganizerListSectionItem<Tab>>> {
+  async getItems(): Promise<Array<OrganizerListSectionItem<OpenTabsItem>>> {
     await this.updateTabs_();
-    return this.tabs_.map(tab => this.tabToSectionItem_(tab));
+    return this.getOpenTabsItems_().map(item => this.toSectionItem_(item));
   }
 
-  onItemClick(item: OrganizerListSectionItem<Tab>) {
-    const tab = item.data;
-    assert(tab);
-    this.browserProxy_.handler.switchToTab({tabId: tab.tabId});
+  onItemClick(item: OrganizerListSectionItem<OpenTabsItem>) {
+    const data = item.data;
+    assert(data);
+    const tabId = isSplitTab(data) ? data.tabs[0].tabId : data.tab.tabId;
+    this.browserProxy_.handler.switchToTab({tabId});
   }
 
-  onItemActionButtonClicked(item: OrganizerListSectionItem<Tab>) {
-    const tab = item.data;
-    assert(tab);
-    this.browserProxy_.handler.closeTab(tab.tabId);
+  onItemActionButtonClicked(item: OrganizerListSectionItem<OpenTabsItem>) {
+    const data = item.data;
+    assert(data);
+    if (isSplitTab(data)) {
+      this.browserProxy_.handler.closeTabs(
+          [data.tabs[0].tabId, data.tabs[1].tabId]);
+    } else {
+      this.browserProxy_.handler.closeTab(data.tab.tabId);
+    }
   }
 
   private async updateTabs_() {
     const {profileData} = await this.browserProxy_.handler.getProfileData();
-    this.tabs_ = this.extractAndSortTabs_(profileData);
+    this.tabs_ = this.extractTabs_(profileData);
   }
 
   private notifyClient_() {
     this.client_?.onItemsChanged(
-        this.tabs_.map(tab => this.tabToSectionItem_(tab)));
+        this.getOpenTabsItems_().map(item => this.toSectionItem_(item)));
   }
 
   private onTabsChanged_(profileData: ProfileData) {
-    this.tabs_ = this.extractAndSortTabs_(profileData);
+    this.tabs_ = this.extractTabs_(profileData);
     this.notifyClient_();
   }
 
@@ -86,47 +141,104 @@ export class OpenTabsDelegate implements OrganizerListSectionDelegate<Tab> {
     this.notifyClient_();
   }
 
-  private extractAndSortTabs_(profileData: ProfileData): Tab[] {
+  private extractTabs_(profileData: ProfileData): Tab[] {
     const allTabs: Tab[] = [];
     for (const window of profileData.windows) {
       for (const tab of window.tabs) {
         allTabs.push(tab);
       }
     }
-
-    allTabs.sort((a, b) => {
-      const timeA = a.lastActiveTimeTicks?.internalValue ?? 0n;
-      const timeB = b.lastActiveTimeTicks?.internalValue ?? 0n;
-      return timeB > timeA ? 1 : (timeB < timeA ? -1 : 0);
-    });
-
     return allTabs;
   }
 
-  private tabToSectionItem_(tab: Tab): OrganizerListSectionItem<Tab> {
-    const description: string[] = [];
-    try {
-      const url = new URL(tab.url);
-      description.push(url.hostname);
-    } catch {
-      description.push(tab.url);
+  private getOpenTabsItems_(): OpenTabsItem[] {
+    const items: OpenTabsItem[] = [];
+    const splitTabsMap = new Map<string, Tab[]>();
+    const nonSplitTabs: Tab[] = [];
+
+    for (const tab of this.tabs_) {
+      if (tab.splitId) {
+        const splitIdStr = tokenToString(tab.splitId);
+        if (!splitTabsMap.has(splitIdStr)) {
+          splitTabsMap.set(splitIdStr, []);
+        }
+        splitTabsMap.get(splitIdStr)!.push(tab);
+      } else {
+        nonSplitTabs.push(tab);
+      }
     }
 
-    if (tab.lastActiveElapsedText) {
-      description.push(tab.lastActiveElapsedText);
+    for (const tabs of splitTabsMap.values()) {
+      if (tabs.length === 2) {
+        items.push({
+          type: OpenTabsItemType.SPLIT_TAB,
+          tabs: [tabs[0]!, tabs[1]!],
+        });
+      } else {
+        // If one tab of a split view was removed via `onTabsRemoved_`, the
+        // remaining tab may still have a `splitId` until the browser clears it
+        // in a subsequent update. Render any unmatched tab as a single tab.
+        for (const tab of tabs) {
+          items.push({
+            type: OpenTabsItemType.TAB,
+            tab,
+          });
+        }
+      }
+    }
+
+    for (const tab of nonSplitTabs) {
+      items.push({
+        type: OpenTabsItemType.TAB,
+        tab,
+      });
+    }
+
+    items.sort((a, b) => {
+      const timeA = getLastActiveTimeTicks(getMostRecentTab(a));
+      const timeB = getLastActiveTimeTicks(getMostRecentTab(b));
+      return timeB > timeA ? 1 : (timeB < timeA ? -1 : 0);
+    });
+
+    return items;
+  }
+
+  private toSectionItem_(item: OpenTabsItem):
+      OrganizerListSectionItem<OpenTabsItem> {
+    let title: string;
+    let tabs: Tab[];
+    let prefixIcon: OrganizerListSectionItemIcon;
+
+    if (isSplitTab(item)) {
+      title = loadTimeData.getString('splitView');
+      tabs = item.tabs;
+      prefixIcon = {
+        stackedFavicons: {
+          urls: [item.tabs[0].url, item.tabs[1].url],
+          stackVertically: item.tabs[0].splitLayout === SplitTabLayout.kStacked,
+        },
+      };
+    } else {
+      title = item.tab.title;
+      tabs = [item.tab];
+      prefixIcon = {url: item.tab.url};
+    }
+
+    const description = tabs.map(tab => getHostnameOrUrl(tab.url));
+    const elapsedText = getMostRecentTab(item).lastActiveElapsedText;
+    if (elapsedText) {
+      description.push(elapsedText);
     }
 
     return {
-      title: tab.title,
+      title,
       description,
-      prefixIcon: {
-        url: tab.url,
-      },
+      prefixIcon,
       hoveredActionButton: {
         icon: 'cr:close',
         ariaLabel: loadTimeData.getString('closeTab'),
       },
-      data: tab,
+      data: item,
     };
   }
 }
