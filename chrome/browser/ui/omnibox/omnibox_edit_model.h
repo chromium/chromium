@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
-#include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -36,10 +35,12 @@
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
+class AutocompleteController;
 class OmniboxController;
 class OmniboxPopupView;
-class TemplateURL;
 class Profile;
+class TemplateURL;
+
 namespace contextual_search {
 class ContextualSearchSessionHandle;
 }
