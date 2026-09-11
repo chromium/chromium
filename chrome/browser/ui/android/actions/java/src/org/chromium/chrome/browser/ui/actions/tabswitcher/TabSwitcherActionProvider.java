@@ -33,11 +33,11 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStat
 import org.chromium.chrome.browser.tabmodel.OverridableTabCount;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.ActionUtils;
+import org.chromium.chrome.browser.ui.actions.R;
 import org.chromium.chrome.browser.ui.actions.ResourceTextResolver;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
@@ -304,14 +304,18 @@ public class TabSwitcherActionProvider implements Destroyable {
     private void updateDependentProperties() {
         mModel.set(TabSwitcherActionProperties.IS_INCOGNITO, mIsIncognito);
 
-        @PluralsRes
-        int contentDescriptionRes =
-                mShowDot && ActionUtils.isDataSharingEnabled()
-                        ? R.plurals
-                                .accessibility_toolbar_btn_tabswitcher_toggle_default_with_notification
-                        : R.plurals.accessibility_toolbar_btn_tabswitcher_toggle_default;
-
-        ResourceTextResolver resolver = new ResourceTextResolver(contentDescriptionRes, mTabCount);
+        ResourceTextResolver resolver;
+        if (!mIsTabStateInitialized) {
+            resolver = new ResourceTextResolver(R.string.tab_switcher_button_label);
+        } else {
+            @PluralsRes
+            int contentDescriptionRes =
+                    mShowDot && ActionUtils.isDataSharingEnabled()
+                            ? R.plurals
+                                    .accessibility_toolbar_btn_tabswitcher_toggle_default_with_notification
+                            : R.plurals.accessibility_toolbar_btn_tabswitcher_toggle_default;
+            resolver = new ResourceTextResolver(contentDescriptionRes, mTabCount);
+        }
 
         mModel.set(ActionProperties.CONTENT_DESCRIPTION_RESOLVER, resolver);
         mModel.set(ActionProperties.TOOLTIP_TEXT_RESOLVER, resolver);

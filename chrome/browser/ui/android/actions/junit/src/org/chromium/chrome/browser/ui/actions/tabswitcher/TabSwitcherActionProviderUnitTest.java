@@ -5,14 +5,19 @@
 package org.chromium.chrome.browser.ui.actions.tabswitcher;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 
 import org.junit.After;
@@ -45,11 +50,14 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.OverridableTabCount;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.actions.R;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -65,14 +73,18 @@ import org.chromium.ui.modelutil.PropertyObservable;
 public class TabSwitcherActionProviderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private static final String TAB_SWITCHER_LABEL = "Tabs";
+
     @Mock private UserPrefsJni mMockUserPrefsJni;
     @Mock private PrefService mPrefService;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private VersioningMessageController mVersioningMessageController;
 
     @Mock private ActionRegistry mActionRegistry;
+    @Mock private ActionRegistry mUninitializedActionRegistry;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModelSelector mUninitializedTabModelSelector;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private OverridableTabCount mOverridableTabCount;
     private SettableNonNullObservableSupplier<Integer> mTabCountSupplier;
@@ -86,8 +98,12 @@ public class TabSwitcherActionProviderUnitTest {
     @Mock private Runnable mArchivedTabsIphDismissedCallback;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
+    @Mock private Context mContext;
+    @Mock private Resources mResources;
 
     @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mUninitializedModelCaptor;
+    @Captor private ArgumentCaptor<TabModelSelectorObserver> mSelectorObserverCaptor;
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
 
     @Captor
@@ -98,6 +114,17 @@ public class TabSwitcherActionProviderUnitTest {
 
     @Before
     public void setUp() {
+        when(mContext.getResources()).thenReturn(mResources);
+        when(mContext.getString(R.string.tab_switcher_button_label)).thenReturn(TAB_SWITCHER_LABEL);
+        when(mResources.getQuantityString(
+                        eq(R.plurals.accessibility_toolbar_btn_tabswitcher_toggle_default),
+                        anyInt(),
+                        anyInt()))
+                .thenAnswer(inv -> "See " + inv.getArgument(1) + " tabs");
+
+        when(mUninitializedTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        when(mUninitializedTabModelSelector.getCurrentTabSupplier())
+                .thenReturn(ObservableSuppliers.alwaysNull());
 
         mTabCountSupplier = ObservableSuppliers.createNonNull(1);
         mNotificationDotSupplier =
@@ -117,21 +144,7 @@ public class TabSwitcherActionProviderUnitTest {
                 .thenReturn(mVersioningMessageController);
         when(mVersioningMessageController.isInitialized()).thenReturn(false);
 
-        mProvider =
-                new TabSwitcherActionProvider(
-                        mActionRegistry,
-                        mUserEducationHelper,
-                        mTabModelSelector,
-                        mIncognitoStateProvider,
-                        mOverridableTabCount,
-                        mNotificationDotSupplier,
-                        mPromoShownOneshotSupplier,
-                        mArchivedTabCountSupplier,
-                        mLayoutStateProviderSupplier,
-                        mOnTabSwitcherClicked,
-                        mOnTabSwitcherLongClicked,
-                        mArchivedTabsIphShownCallback,
-                        mArchivedTabsIphDismissedCallback);
+        mProvider = createProvider();
 
         // Verify registration and capture model
         verify(mActionRegistry).register(eq(ActionId.TAB_SWITCHER), mModelCaptor.capture());
@@ -335,21 +348,7 @@ public class TabSwitcherActionProviderUnitTest {
     @Test
     public void testIphNotRequestedWhenTabStateNotInitialized() {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
-        TabSwitcherActionProvider provider =
-                new TabSwitcherActionProvider(
-                        mActionRegistry,
-                        mUserEducationHelper,
-                        mTabModelSelector,
-                        mIncognitoStateProvider,
-                        mOverridableTabCount,
-                        mNotificationDotSupplier,
-                        mPromoShownOneshotSupplier,
-                        mArchivedTabCountSupplier,
-                        mLayoutStateProviderSupplier,
-                        mOnTabSwitcherClicked,
-                        mOnTabSwitcherLongClicked,
-                        mArchivedTabsIphShownCallback,
-                        mArchivedTabsIphDismissedCallback);
+        TabSwitcherActionProvider provider = createProvider();
 
         provider.handlePageLoadFinished();
 
@@ -385,5 +384,93 @@ public class TabSwitcherActionProviderUnitTest {
         DeviceInfo.setIsDesktopForTesting(true);
         mTabCountSupplier.set(5);
         assertEquals(ButtonState.UNCLICKABLE, mModel.get(ActionProperties.BUTTON_STATE));
+    }
+
+    @Test
+    public void testTextResolvers_BeforeAndAfterTabStateInitialized() {
+        TabSwitcherActionProvider provider =
+                createProvider(mUninitializedActionRegistry, mUninitializedTabModelSelector);
+
+        verify(mUninitializedActionRegistry)
+                .register(eq(ActionId.TAB_SWITCHER), mUninitializedModelCaptor.capture());
+        PropertyModel model = mUninitializedModelCaptor.getValue();
+
+        // Resolves static string before tab state is initialized.
+        TextResolver resolverBefore = model.get(ActionProperties.CONTENT_DESCRIPTION_RESOLVER);
+        assertNotNull(resolverBefore);
+        assertEquals(TAB_SWITCHER_LABEL, resolverBefore.resolve(mContext));
+        assertEquals(
+                TAB_SWITCHER_LABEL,
+                model.get(ActionProperties.TOOLTIP_TEXT_RESOLVER).resolve(mContext));
+        verify(mResources, never()).getQuantityString(anyInt(), anyInt(), anyInt());
+
+        // Tab count change before initialization still resolves static string.
+        mTabCountSupplier.set(3);
+        TextResolver resolverBeforeInitWithCount =
+                model.get(ActionProperties.CONTENT_DESCRIPTION_RESOLVER);
+        assertNotNull(resolverBeforeInitWithCount);
+        assertEquals(TAB_SWITCHER_LABEL, resolverBeforeInitWithCount.resolve(mContext));
+        verify(mResources, never()).getQuantityString(anyInt(), anyInt(), anyInt());
+
+        // Initializing tab state triggers plural string resolution.
+        verify(mUninitializedTabModelSelector).addObserver(mSelectorObserverCaptor.capture());
+        when(mUninitializedTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        mSelectorObserverCaptor.getValue().onTabStateInitialized();
+        verify(mUninitializedTabModelSelector).removeObserver(mSelectorObserverCaptor.getValue());
+
+        int count = 3;
+        String expectedPlural = "See " + count + " tabs";
+        TextResolver resolverAfterInit = model.get(ActionProperties.CONTENT_DESCRIPTION_RESOLVER);
+        assertNotNull(resolverAfterInit);
+        assertEquals(expectedPlural, resolverAfterInit.resolve(mContext));
+        assertEquals(
+                expectedPlural,
+                model.get(ActionProperties.TOOLTIP_TEXT_RESOLVER).resolve(mContext));
+        verify(mResources)
+                .getQuantityString(
+                        eq(R.plurals.accessibility_toolbar_btn_tabswitcher_toggle_default),
+                        eq(count),
+                        eq(count));
+
+        // Tab count change after initialization resolves updated plural string.
+        count = 4;
+        expectedPlural = "See " + count + " tabs";
+        mTabCountSupplier.set(count);
+        TextResolver resolverAfterCountUpdate =
+                model.get(ActionProperties.CONTENT_DESCRIPTION_RESOLVER);
+        assertNotNull(resolverAfterCountUpdate);
+        assertEquals(expectedPlural, resolverAfterCountUpdate.resolve(mContext));
+        assertEquals(
+                expectedPlural,
+                model.get(ActionProperties.TOOLTIP_TEXT_RESOLVER).resolve(mContext));
+        verify(mResources)
+                .getQuantityString(
+                        eq(R.plurals.accessibility_toolbar_btn_tabswitcher_toggle_default),
+                        eq(count),
+                        eq(count));
+
+        provider.destroy();
+    }
+
+    private TabSwitcherActionProvider createProvider() {
+        return createProvider(mActionRegistry, mTabModelSelector);
+    }
+
+    private TabSwitcherActionProvider createProvider(
+            ActionRegistry actionRegistry, TabModelSelector tabModelSelector) {
+        return new TabSwitcherActionProvider(
+                actionRegistry,
+                mUserEducationHelper,
+                tabModelSelector,
+                mIncognitoStateProvider,
+                mOverridableTabCount,
+                mNotificationDotSupplier,
+                mPromoShownOneshotSupplier,
+                mArchivedTabCountSupplier,
+                mLayoutStateProviderSupplier,
+                mOnTabSwitcherClicked,
+                mOnTabSwitcherLongClicked,
+                mArchivedTabsIphShownCallback,
+                mArchivedTabsIphDismissedCallback);
     }
 }
