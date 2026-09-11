@@ -233,17 +233,22 @@ exit 0
   }
 
   // TODO(crbug.com/546260882): Use NSPropertyListSerialization instead.
-  std::string ReadLibraryBrand() {
+  std::string ReadPlistItem(const base::FilePath& plist,
+                            const std::string& key) {
     base::CommandLine cmd(base::FilePath("defaults"));
     cmd.AppendArg("read");
-    cmd.AppendArgPath(GetBrandFilePath());
-    cmd.AppendArg("KSBrandID");
+    cmd.AppendArgPath(plist);
+    cmd.AppendArg(key);
     ExecutionRecord result =
         RunWithTimeout(cmd, {{"__CFPREFERENCES_AVOID_DAEMON", "1"}}, mount_dir_,
                        kScriptTimeout);
     EXPECT_EQ(result.status, ProcessExitedWithValue{0})
         << result.combined_output;
     return result.combined_output;
+  }
+
+  std::string ReadLibraryBrand() {
+    return ReadPlistItem(GetBrandFilePath(), "KSBrandID");
   }
 
   std::string GetLastKSAdminArgs() {
@@ -539,6 +544,153 @@ fi)-",
   std::string pid_val;
   ASSERT_TRUE(base::ReadFileToString(pid_path, &pid_val));
   EXPECT_NE(pid_val, base::StrCat({base::NumberToString(pid), "\n"}));
+}
+
+TEST_F(KeystoneInstallTest, VerifyInfoPlistCreatedLast) {
+  base::FilePath fail_path = temp_.GetPath().AppendUTF8("fail.out");
+  base::FilePath plist_rsync_path =
+      temp_.GetPath().AppendUTF8("plist_rsync.out");
+
+  RsyncInterceptor interceptor(
+      temp_.GetPath(),
+      installer::mac::test::ReplaceAll(
+          R"-(
+if [[ -e "@DEST_INFO_PLIST@" ]]; then
+  msg="Top-level Info.plist already exists before rsync call: $*"
+  echo "${msg}" >> "@FAIL_FILE@"
+  echo "${msg}" >& 2
+  exit 100
+fi
+
+if [[ -f "@PLIST_RSYNC_FILE@" ]]; then
+  msg="Unexpected extra rsync call after Info.plist rsync: $*"
+  echo "${msg}" >> "@FAIL_FILE@"
+  echo "${msg}" >& 2
+  exit 100
+fi
+
+non_flags=()
+for arg in "$@"; do
+  if [[ "${arg}" != -* ]]; then
+    non_flags+=("${arg}")
+  fi
+done
+
+if [[ "${#non_flags[@]}" -eq 2 ]] && \
+   [[ "${non_flags[0]}" == *"/Contents/Info.plist" ]] && \
+   [[ "${non_flags[1]}" == *"/Contents" ]] && \
+   [[ "$*" != *"--exclude"* ]] && \
+   [[ "$*" != *"--include"* ]]; then
+  echo "$*" >> "@PLIST_RSYNC_FILE@"
+fi)-",
+          {{"@DEST_INFO_PLIST@", dest_info_plist_path().AsUTF8Unsafe()},
+           {"@FAIL_FILE@", fail_path.AsUTF8Unsafe()},
+           {"@PLIST_RSYNC_FILE@", plist_rsync_path.AsUTF8Unsafe()}}));
+  interceptor.SetUp();
+
+  EXPECT_NO_FATAL_FAILURE(
+      RunInstallScript(ProcessExitedWithValue{0}, interceptor.bin_dir()));
+  if (base::PathExists(fail_path)) {
+    std::string fail_msg;
+    if (!base::ReadFileToString(fail_path, &fail_msg)) {
+      fail_msg = "<error reading fail.out>";
+    }
+    std::string_view trimmed =
+        base::TrimWhitespaceASCII(fail_msg, base::TRIM_ALL);
+    ADD_FAILURE() << "rsync interceptor error: " << trimmed;
+  }
+
+  // Verify that an rsync call copying only Info.plist was intercepted.
+  ASSERT_TRUE(base::PathExists(plist_rsync_path));
+  std::string plist_rsync_args;
+  ASSERT_TRUE(base::ReadFileToString(plist_rsync_path, &plist_rsync_args));
+  EXPECT_NE(plist_rsync_args.find("Contents/Info.plist"), std::string::npos);
+
+  // Verify all files were copied successfully.
+  EXPECT_TRUE(base::PathExists(dest_versioned_path("1")));
+  EXPECT_TRUE(base::PathExists(dest_contents_path().AppendUTF8("PkgInfo")));
+  EXPECT_TRUE(base::PathExists(dest_info_plist_path()));
+}
+
+TEST_F(KeystoneInstallTest, VerifyInfoPlistUpdatedLast) {
+  // Set up a preexisting installation at the destination with an older version.
+  ASSERT_TRUE(base::CreateDirectory(dest_contents_path()));
+  SetPlistItem(dest_contents_path().AppendUTF8("Info"),
+               "CFBundleShortVersionString", "1");
+  SetPlistItem(dest_contents_path().AppendUTF8("Info"), "KSProductID",
+               "com.google.Chrome");
+  SetPlistItem(dest_contents_path().AppendUTF8("Info"), "KSVersion", "1");
+  SetPlistItem(dest_contents_path().AppendUTF8("Info"), "KSUpdateURL",
+               "https://example");
+  ASSERT_EQ(ReadPlistItem(dest_contents_path().AppendUTF8("Info"), "KSVersion"),
+            "1\n");
+
+  base::FilePath fail_path = temp_.GetPath().AppendUTF8("fail.out");
+  base::FilePath plist_rsync_path =
+      temp_.GetPath().AppendUTF8("plist_rsync.out");
+
+  RsyncInterceptor interceptor(
+      temp_.GetPath(),
+      installer::mac::test::ReplaceAll(
+          R"-(
+if [[ "$(__CFPREFERENCES_AVOID_DAEMON=1 defaults read \
+          "@DEST_CONTENTS@/Info" KSVersion 2>/dev/null)" != "1" ]]; then
+  msg="Top-level Info.plist already updated before rsync call: $*"
+  echo "${msg}" >> "@FAIL_FILE@"
+  echo "${msg}" >& 2
+  exit 100
+fi
+
+if [[ -f "@PLIST_RSYNC_FILE@" ]]; then
+  msg="Unexpected extra rsync call after Info.plist rsync: $*"
+  echo "${msg}" >> "@FAIL_FILE@"
+  echo "${msg}" >& 2
+  exit 100
+fi
+
+non_flags=()
+for arg in "$@"; do
+  if [[ "${arg}" != -* ]]; then
+    non_flags+=("${arg}")
+  fi
+done
+
+if [[ "${#non_flags[@]}" -eq 2 ]] && \
+   [[ "${non_flags[0]}" == *"/Contents/Info.plist" ]] && \
+   [[ "${non_flags[1]}" == *"/Contents" ]] && \
+   [[ "$*" != *"--exclude"* ]] && \
+   [[ "$*" != *"--include"* ]]; then
+  echo "$*" >> "@PLIST_RSYNC_FILE@"
+fi)-",
+          {{"@DEST_CONTENTS@", dest_contents_path().AsUTF8Unsafe()},
+           {"@FAIL_FILE@", fail_path.AsUTF8Unsafe()},
+           {"@PLIST_RSYNC_FILE@", plist_rsync_path.AsUTF8Unsafe()}}));
+  interceptor.SetUp();
+
+  EXPECT_NO_FATAL_FAILURE(
+      RunInstallScript(ProcessExitedWithValue{0}, interceptor.bin_dir()));
+  if (base::PathExists(fail_path)) {
+    std::string fail_msg;
+    if (!base::ReadFileToString(fail_path, &fail_msg)) {
+      fail_msg = "<error reading fail.out>";
+    }
+    std::string_view trimmed =
+        base::TrimWhitespaceASCII(fail_msg, base::TRIM_ALL);
+    ADD_FAILURE() << "rsync interceptor error: " << trimmed;
+  }
+
+  // Verify that an rsync call copying only Info.plist was intercepted.
+  ASSERT_TRUE(base::PathExists(plist_rsync_path));
+  std::string plist_rsync_args;
+  ASSERT_TRUE(base::ReadFileToString(plist_rsync_path, &plist_rsync_args));
+  EXPECT_NE(plist_rsync_args.find("Contents/Info.plist"), std::string::npos);
+
+  // Verify all files were copied successfully and Info.plist was updated.
+  EXPECT_TRUE(base::PathExists(dest_versioned_path("1")));
+  EXPECT_TRUE(base::PathExists(dest_contents_path().AppendUTF8("PkgInfo")));
+  EXPECT_TRUE(base::PathExists(dest_info_plist_path()));
+  EXPECT_EQ(ReadPlistItem(dest_contents_path().AppendUTF8("Info"), "KSVersion"),
+            "2\n");
 }
 
 }  // namespace

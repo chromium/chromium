@@ -834,7 +834,10 @@ main() {
   # ${VERSIONS_DIR_NEW} or ${VERSIONS_DIR_OLD} are included to copy their mode
   # bits and timestamps, but their contents are excluded, having already been
   # installed above. The ${VERSIONS_DIR_NEW}/Current symbolic link is updated
-  # or created in this step, however.
+  # or created in this step, however. The top-level Info.plist file is deferred
+  # until after all other copies have succeeded so a version checker will not
+  # regard Chrome as successfully updated when it is broken due to a crash
+  # in the middle of this step.
   note "rsyncing app directory"
 
   # Defer "please exit" signals while performing the stage of copying that, if
@@ -849,8 +852,17 @@ main() {
           --include="/${VERSIONS_DIR_NEW}/Current" \
           --exclude="/${VERSIONS_DIR_NEW}/*" \
           --exclude="/${VERSIONS_DIR_OLD}/*" \
+          --exclude="/Contents/Info.plist" \
           "${update_app}/" "${installed_app}"; then
       err "rsync of app directory failed, status ${PIPESTATUS[0]}"
+      exit 8
+    fi
+
+    note "rsyncing top-level Info.plist"
+    if ! rsync ${RSYNC_FLAGS} \
+          "${update_app}/Contents/Info.plist" \
+          "${installed_app}/Contents" &> /dev/null; then
+      err "rsync of Info.plist failed, status ${PIPESTATUS[0]}"
       exit 8
     fi
   )
