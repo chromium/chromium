@@ -402,8 +402,8 @@ group("gn_all") {
         "//third_party/jni_zero:jni_zero_tests",
         "//third_party/r8:custom_d8_java",
         "//tools/android:android_tools",
-        "//tools/cygprofile:generate_orderfile_android_trichrome_chrome_bundle",
-        "//tools/pgo:generate_profile_android_trichrome_chrome_bundle",
+        "//tools/cygprofile:generate_orderfile_android_chrome_bundle",
+        "//tools/pgo:generate_profile_android_chrome_bundle",
         "//ui:ui_junit_tests",
       ]
       deps -= [

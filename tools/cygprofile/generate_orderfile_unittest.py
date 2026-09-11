@@ -75,9 +75,7 @@ class GenerateOrderfileTest(unittest.TestCase):
       verbosity=0,
     )
 
-    self.mock_get_libchrome.assert_called_once_with(
-      self.mock_out_dir, 'arm64', False
-    )
+    self.mock_get_libchrome.assert_called_once_with(self.mock_out_dir, False)
     self.mock_collect_profiles.assert_called_once_with(
       self.mock_profile_tool,
       False,

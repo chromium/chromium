@@ -44,6 +44,7 @@ To produce an executable built with a custom PGO profile:
 
   ```
   python3 tools/pgo/generate_profile.py -C out/builddir \
+      --target-arch arm64 \
       --android-browser android-trichrome-chrome-google-bundle
   ```
 
@@ -62,6 +63,7 @@ To produce an executable built with a custom PGO profile:
 
   ```
   python3 tools/pgo/generate_profile.py -C out/builddir \
+     --target-arch arm64 \
      --android-browser android-trichrome-chrome-google-bundle \
      --run-public-benchmarks-only
   ```

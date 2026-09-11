@@ -76,21 +76,17 @@ def CollectProfiles(
   )
 
 
-def GetLibchromeSoPath(out_dir, arch, profile_webview=False):
-  """Returns the path to the unstripped libmonochrome.so."""
-  libchrome_target = GetLibchromeTarget(arch, profile_webview)
+def GetLibchromeSoPath(out_dir, profile_webview=False):
+  """Returns the path to the unstripped native library."""
+  libchrome_target = GetLibchromeTarget(profile_webview)
   return str(out_dir / f'lib.unstripped/{libchrome_target}.so')
 
 
-def GetLibchromeTarget(arch, profile_webview=False):
-  """Returns the libmonochrome target name."""
+def GetLibchromeTarget(profile_webview=False):
+  """Returns the native library target name."""
   if profile_webview:
     return 'libwebviewchromium'
-  target = 'libmonochrome'
-  if '64' in arch:
-    # Trichrome has a _64 suffix for arm64 and x64 builds.
-    target += '_64'
-  return target
+  return 'libchrome'
 
 
 def AddCommonArguments(parser):

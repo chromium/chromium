@@ -48,7 +48,7 @@ is compatible with the version of the library you are building.
 Example:
 
 ```
-tools/cygprofile/check_orderfile.py --target-arch=arm64 \
+tools/cygprofile/check_orderfile.py \
   -C out/Release --orderfile-path=clank/orderfiles/orderfile.arm64.out
 ```
 

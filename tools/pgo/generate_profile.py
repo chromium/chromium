@@ -193,11 +193,14 @@ class OptionsNamespace(argparse.Namespace):
     keep_temps: bool
     android_browser: Optional[str]
     android_device_path: Optional[str]
-    # Not an argument: the package of `android_browser`, resolved in
-    # parse_args() and only set when `android_browser` is set.
-    # TODO(crbug.com/479547498): Plumb this separately instead, or create a new
+    target_arch: Optional[str]
+    # Not arguments: the package and the apk (wrapper script) name of
+    # `android_browser`, resolved in parse_args() and only set when
+    # `android_browser` is set.
+    # TODO(crbug.com/479547498): Plumb these separately instead, or create a new
     # object that is not OptionsNamespace.
     android_package: Optional[str]
+    android_apk_name: Optional[str]
     skip_profdata: bool
     run_public_benchmarks_only: bool
     temporal_trace_length: Optional[int]
@@ -235,7 +238,14 @@ def parse_args():
     parser.add_argument(
         '--android-browser',
         help='The type of android browser to test, e.g. '
-        'android-trichrome-chrome-google-bundle.',
+        'android-chromium-bundle.',
+    )
+    parser.add_argument(
+        '--target-arch',
+        choices=['arm', 'arm64', 'x86', 'x64'],
+        default='x64',
+        help='The target architecture the browser was built for. Only used to '
+        'pick the benchmarks to run, see main().',
     )
     parser.add_argument(
         '--android-device-path',
@@ -332,11 +342,13 @@ def parse_args():
     _LOGGER.info(f"Build directory: {args.builddir}")
 
     args.android_package = None
+    args.android_apk_name = None
     if args.android_browser:
         _LOGGER.info(f"Android browser: {args.android_browser}")
         for settings in _ANDROID_SETTINGS:
             if settings.browser_type == args.android_browser:
                 args.android_package = settings.package
+                args.android_apk_name = settings.apk_name
                 break
         else:
             raise ValueError(f'Unable to find {args.android_browser} settings.')
@@ -432,14 +444,18 @@ def get_crossbench_local_file_server_args(benchmark_name: str):
 def get_crossbench_browser_path(args: OptionsNamespace):
     '''Returns the browser wrapper script to pass to crossbench.
 
+    For bundles, Telemetry's `apk_name` is the name of the wrapper script in
+    out/bin, see GenericChromeBundleBackendSettings. Do not derive it from the
+    browser type instead: the two do not always match, e.g.
+    android-chromium-bundle is built by chrome_public_bundle.
+
     Crossbench only accepts wrapper names it knows, see
     CHROME_APK_HELPER_NAMES in
     third_party/crossbench/crossbench/cli/config/apk_helper.py. All browsers
     used for PGO generation are in that list.
     '''
-    assert args.android_browser
-    name = args.android_browser.removeprefix('android-').replace('-', '_')
-    path = os.path.join(args.builddir, 'bin', name)
+    assert args.android_browser and args.android_apk_name
+    path = os.path.join(args.builddir, 'bin', args.android_apk_name)
     if not os.path.exists(path):
         raise FileNotFoundError(
             f'{path} does not exist, is {args.android_browser} built?'
@@ -1099,8 +1115,9 @@ def main():
         ]
 
         # Android arm32 runs on older phones so these benchmarks should only run
-        # for arm64.
-        if platform == 'mobile' and '64' in args.android_browser:
+        # for arm64. Do not infer the architecture from `android_browser`: the
+        # same browser type is used for both arm32 and arm64 builds.
+        if platform == 'mobile' and args.target_arch in ('arm64', 'x64'):
             # Exercise the Skia Graphite/Dawn/Vulkan path.
             benchmarks.append(
                 Benchmark(

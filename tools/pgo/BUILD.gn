@@ -36,6 +36,8 @@ template("generate_profile_test") {
       ".",
       "--android-browser",
       invoker.browser_name,
+      "--target-arch",
+      invoker.arch,
     ]
 
     deps = [ ":generate_profile_py" ]
@@ -59,18 +61,13 @@ template("generate_profile_test") {
   }
 }
 
-generate_profile_test("generate_profile_android_trichrome_chrome_bundle") {
-  browser_name = "android-trichrome-chrome-bundle"
-  suffix = "_android_trichrome_chrome_bundle"
+generate_profile_test("generate_profile_android_chrome_bundle") {
+  browser_name = "android-chromium-bundle"
+  suffix = "_android_chrome_bundle"
+  arch = target_cpu
 }
 
 if (defined(android_app_secondary_abi)) {
-  generate_profile_test(
-      "generate_profile_android_trichrome_chrome_64_32_bundle") {
-    browser_name = "android-trichrome-chrome-64-32-bundle"
-    suffix = "_android_trichrome_chrome_64_32_bundle"
-  }
-
   script_test("generate_profile_android_webview_64") {
     script = "//tools/pgo/generate_profile_webview.py"
 

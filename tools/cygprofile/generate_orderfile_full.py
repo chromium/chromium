@@ -136,15 +136,6 @@ def _GetWebViewTargetAndApk(arch):
   return target, apk
 
 
-def _GetChromeTargetAndBrowserName(arch):
-  # Always use public targets since the bots only use public targets.
-  target = 'trichrome_chrome_bundle'
-  if arch == 'arm64':
-    target = 'trichrome_chrome_64_32_bundle'
-  # e.g. trichrome_chrome_bundle -> android-trichrome-chrome-bundle
-  return target, 'android-' + target.replace('_', '-')
-
-
 def _RemoveBlanks(src_file, dest_file):
   """A utility to remove blank lines from a file.
 
@@ -185,15 +176,14 @@ class ClankCompiler:
     )
 
     # Chrome targets
-    self._chrome_target, self.chrome_browser_name = (
-      _GetChromeTargetAndBrowserName(options.arch)
-    )
+    self._chrome_target = 'chrome_public_bundle'
+    self.chrome_browser_name = 'android-chromium-bundle'
 
     self._libchrome_target = orderfile_shared.GetLibchromeTarget(
-      options.arch, options.profile_webview
+      options.profile_webview
     )
     self.lib_chrome_so = orderfile_shared.GetLibchromeSoPath(
-      out_dir, options.arch, options.profile_webview
+      out_dir, options.profile_webview
     )
 
   def _GenerateGnArgs(self, instrumented):
@@ -303,8 +293,6 @@ class OrderfileGenerator:
   Builds an instrumented binary, profiles a run of the application, and
   generates an updated orderfile.
   """
-
-  _CHECK_ORDERFILE_SCRIPT = _SRC_PATH / 'tools/cygprofile/check_orderfile.py'
 
   # Previous orderfile_generator debug files would be overwritten.
   _DIRECTORY_FOR_DEBUG_FILES = '/tmp/orderfile_generator_debug_files'

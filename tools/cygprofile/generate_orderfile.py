@@ -5,11 +5,11 @@
 """Runs benchmarks and generates an orderfile, similar to generate_profile.py.
 
 Example:
-Build trichrome_chrome_64_32_bundle and install it on device.
+Build chrome_public_bundle and install it on device.
 
 Run this script with:
 $ tools/cygprofile/generate_orderfile.py -C out/orderfile-arm64 \
-    --android-browser android-trichrome-chrome-64-32-bundle \
+    --android-browser android-chromium-bundle \
     --target-arch arm64
 
 The orderfiles should be located in out/orderfile-arm64/orderfiles.
@@ -94,7 +94,7 @@ def GenerateOrderfile(options, device):
   )
 
   lib_chrome_so = orderfile_shared.GetLibchromeSoPath(
-    options.out_dir, options.arch, options.profile_webview
+    options.out_dir, options.profile_webview
   )
   try:
     if options.profile_webview:
