@@ -6,6 +6,7 @@
 #include "media/base/android/media_codec_bridge_impl.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -99,14 +100,13 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
         return false;
       }
 
-      size_t header_length[2];
+      std::array<size_t, 2> header_length = {};
       // |total_length| keeps track of the total number of bytes before the last
       // header.
       size_t total_length = 1;
       const uint8_t* current_pos = extra_data;
       // Calculate the length of the first 2 headers.
-      for (int i = 0; i < 2; ++i) {
-        UNSAFE_TODO(header_length[i]) = 0;
+      for (size_t& length : header_length) {
         while (total_length < extra_data_size) {
           size_t size = *UNSAFE_TODO(++current_pos);
           total_length += 1 + size;
@@ -114,7 +114,7 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
             LOG(ERROR) << "Vorbis header size too large";
             return false;
           }
-          UNSAFE_TODO(header_length[i]) += size;
+          length += size;
           if (size < 0xFF) {
             break;
           }

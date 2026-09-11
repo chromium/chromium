@@ -202,7 +202,7 @@ class RawVideo::VP9Decoder {
                        base::WaitableEvent* done) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
     if (size_t cached_index = target_index % kNumCachedFrames;
-        UNSAFE_TODO(cached_frame_indices_[cached_index]) == target_index) {
+        cached_frame_indices_[cached_index] == target_index) {
       *decoded_frame_buffer = cached_frames_[cached_index];
       done->Signal();
       return;
@@ -230,7 +230,7 @@ class RawVideo::VP9Decoder {
       auto buffer = CreateBufferFromFrame(*last_decoded_frame_);
       last_decoded_frame_.reset();
       const size_t cached_index = i % kNumCachedFrames;
-      UNSAFE_TODO(cached_frame_indices_[cached_index]) = i;
+      cached_frame_indices_[cached_index] = i;
       cached_frames_[cached_index] = std::move(buffer);
       if (i == target_index) {
         *decoded_frame_buffer = cached_frames_[cached_index];
@@ -287,7 +287,7 @@ class RawVideo::VP9Decoder {
       GUARDED_BY_CONTEXT(decoder_sequence_);
   // frame_index -> file index
   static constexpr size_t kNumCachedFrames = 30;
-  size_t cached_frame_indices_[kNumCachedFrames];
+  std::array<size_t, kNumCachedFrames> cached_frame_indices_;
   std::array<std::vector<uint8_t>, kNumCachedFrames> cached_frames_;
 
   SEQUENCE_CHECKER(decoder_sequence_);
