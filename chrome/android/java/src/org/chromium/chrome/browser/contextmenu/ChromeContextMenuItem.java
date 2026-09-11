@@ -357,12 +357,6 @@ class ChromeContextMenuItem {
                         item,
                         ChromePreferenceKeys.CONTEXT_MENU_SEARCH_TAB_WITH_GOOGLE_LENS_CLICKED,
                         showInProductHelp);
-            case Item.SEARCH_IMAGE_WITH_GOOGLE_LENS:
-                return addOrRemoveNewLabel(
-                        context,
-                        item,
-                        ChromePreferenceKeys.CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS_CLICKED,
-                        showInProductHelp);
             case Item.SHOP_IMAGE_WITH_GOOGLE_LENS:
                 return addOrRemoveNewLabel(
                         context,

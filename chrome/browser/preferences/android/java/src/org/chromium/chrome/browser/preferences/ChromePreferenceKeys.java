@@ -176,10 +176,6 @@ public final class ChromePreferenceKeys {
     public static final String CONTEXTUAL_SEARCH_TAP_TRIGGERED_PROMO_COUNT =
             "contextual_search_tap_triggered_promo_count";
 
-    /** Note: The string value intentionally omits "Image" for backward compatibility. */
-    public static final String CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS_CLICKED =
-            "Chrome.ContextMenu.SearchWithGoogleLensClicked";
-
     public static final String CONTEXT_MENU_SEARCH_TAB_WITH_GOOGLE_LENS_CLICKED =
             "Chrome.ContextMenu.SearchTabWithGoogleLensClicked";
 
@@ -1193,7 +1189,6 @@ public final class ChromePreferenceKeys {
                 CLOUD_MANAGEMENT_CLIENT_ID,
                 CLOUD_MANAGEMENT_DM_TOKEN,
                 COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP,
-                CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS_CLICKED,
                 CONTEXT_MENU_SEARCH_TAB_WITH_GOOGLE_LENS_CLICKED,
                 CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
                 CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX,

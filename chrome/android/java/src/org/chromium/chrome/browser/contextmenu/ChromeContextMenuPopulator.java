@@ -867,10 +867,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                                             .LENS_SEARCH_SUPPORTED)
                                     || shouldShowLensOverlay();
                     if (shouldShowSearchImageWithLens) {
-                        imageGroup.add(
-                                createListItem(
-                                        Item.SEARCH_IMAGE_WITH_GOOGLE_LENS,
-                                        /* showInProductHelp= */ true));
+                        imageGroup.add(createListItem(Item.SEARCH_IMAGE_WITH_GOOGLE_LENS));
                         maybeRecordUkmLensShown();
                     } else {
                         imageGroup.add(createListItem(Item.SEARCH_BY_IMAGE));
@@ -1309,9 +1306,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             } else {
                 searchWithGoogleLens(LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM);
             }
-            SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
-            prefManager.writeBoolean(
-                    ChromePreferenceKeys.CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS_CLICKED, true);
         } else if (itemId == R.id.contextmenu_search_by_image) {
             LensMetrics.recordAmbientSearchQuery(
                     LensMetrics.AmbientSearchEntryPoint.CONTEXT_MENU_SEARCH_IMAGE_WITH_WEB);

@@ -2921,7 +2921,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Copy image
       </message>
       <message name="IDS_CONTEXTMENU_SEARCH_IMAGE_WITH_GOOGLE_LENS" desc="Context sensitive menu item for deep linking into google lens. [CHAR_LIMIT=30]">
-        Search image with Google Lens <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+        Search image with Google Lens
       </message>
       <message name="IDS_CONTEXTMENU_TRANSLATE_IMAGE_WITH_GOOGLE_LENS" desc="Context sensitive chip for deep linking into google lens for translate results. [CHAR_LIMIT=30]">
           Translate image with Google Lens <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
