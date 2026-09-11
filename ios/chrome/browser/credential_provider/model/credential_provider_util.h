@@ -7,7 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string>
+#import <string_view>
+
+#import "base/containers/flat_map.h"
 #import "base/memory/weak_ptr.h"
+#import "base/time/time.h"
 #import "url/gurl.h"
 
 namespace password_manager {
@@ -32,7 +37,7 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
                               bool fallback_to_google_server);
 
 // Returns the favicon file key.
-NSString* GetFaviconFileKey(const GURL& url);
+std::string GetFaviconFileKey(const GURL& url);
 
 // Returns whether `key` is a valid favicon file key.
 bool IsValidFaviconFileKey(NSString* key);
@@ -41,14 +46,16 @@ bool IsValidFaviconFileKey(NSString* key);
 void UpdateFaviconsStorageForProfile(base::WeakPtr<ProfileIOS> weak_profile,
                                      bool fallback_to_google_server);
 
-// Returns a dictionary where the keys are favicon file names (they are hashes
-// of the associated URL) and their modification date (or creation date if
+// Returns a map where the keys are favicon file names (they are hashes of the
+// associated URL) and values are their modification date (or creation date if
 // modification date is missing).
-NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness();
+base::flat_map<std::string, base::Time> GetFaviconsListAndFreshness();
 
-// Returns whether a favicon for 'favicon_key' should be fetched.
-bool ShouldFetchFavicon(NSString* favicon_key,
-                        NSDictionary<NSString*, NSDate*>* favicon_dict);
+// Returns whether a favicon for `favicon_key` should be fetched based on the
+// cached freshness in `favicon_map`.
+bool ShouldFetchFavicon(
+    std::string_view favicon_key,
+    const base::flat_map<std::string, base::Time>& favicon_map);
 
 // Returns whether the favicon folder is available.
 bool IsFaviconFolderAvailable();

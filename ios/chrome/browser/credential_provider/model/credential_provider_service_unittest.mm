@@ -610,7 +610,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored_CachedFavicon) {
 
   // Create a dummy favicon file to simulate a fresh cached favicon.
   GURL url(kTestUrl1);
-  NSString* favicon_key = GetFaviconFileKey(url);
+  NSString* favicon_key = base::SysUTF8ToNSString(GetFaviconFileKey(url));
 
   NSURL* folder_url = base::apple::FilePathToNSURL(scoped_temp_dir_.GetPath());
   ASSERT_NE(nil, folder_url);

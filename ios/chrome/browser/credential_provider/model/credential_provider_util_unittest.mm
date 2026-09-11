@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 
+#import <string>
+#import <string_view>
+
 #import "base/apple/foundation_util.h"
+#import "base/containers/flat_map.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -17,7 +21,7 @@
 
 namespace {
 
-NSString* const kTestFaviconKey = @"TEST";
+constexpr std::string_view kTestFaviconKey = "TEST";
 
 class CredentialProviderUtilTest : public PlatformTest {
  protected:
@@ -38,67 +42,55 @@ class CredentialProviderUtilTest : public PlatformTest {
 
 // Test that the expected hash stays the same for the same URL.
 TEST_F(CredentialProviderUtilTest, GetFaviconFileKey) {
-  EXPECT_NSEQ(
-      GetFaviconFileKey(GURL("https://login.yahoo.com/")),
-      @"BD7639C34EA3480A8AAD704306C8870161761506AD948AC6FA037B83CFF22D37");
-  EXPECT_NSEQ(
-      GetFaviconFileKey(GURL("www.kijiji.ca")),
-      @"E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855");
-  EXPECT_NSEQ(
+  EXPECT_EQ(GetFaviconFileKey(GURL("https://login.yahoo.com/")),
+            "BD7639C34EA3480A8AAD704306C8870161761506AD948AC6FA037B83CFF22D37");
+  EXPECT_EQ(GetFaviconFileKey(GURL("www.kijiji.ca")),
+            "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855");
+  EXPECT_EQ(
       GetFaviconFileKey(
           GURL("https://www.theweathernetwork.com/ca/weather/quebec/montreal")),
-      @"A0F3B5AB4012A2EC0EA3AC950B6AD8982F6FF29DE632ECC3645D566E291E3D12");
-  EXPECT_NSEQ(
+      "A0F3B5AB4012A2EC0EA3AC950B6AD8982F6FF29DE632ECC3645D566E291E3D12");
+  EXPECT_EQ(
       GetFaviconFileKey(GURL(
           "https://www.canadapost-postescanada.ca/track-reperage/en#/home")),
-      @"9DD8ED2F4B375E5DDDEA137D8985FFD32521694331753E70AA815692CFE0653B");
+      "9DD8ED2F4B375E5DDDEA137D8985FFD32521694331753E70AA815692CFE0653B");
 }
 
 TEST_F(CredentialProviderUtilTest, ShouldFetchFavicon) {
-  // Setup some dates for later.
-  NSDate* today = [NSDate date];
-  NSCalendar* calendar = [NSCalendar currentCalendar];
-  NSDateComponents* offsetComponents = [[NSDateComponents alloc] init];
-  [offsetComponents setDay:-13];
-  NSDate* thirteenDaysAgo = [calendar dateByAddingComponents:offsetComponents
-                                                      toDate:today
-                                                     options:0];
-  [offsetComponents setDay:-15];
-  NSDate* fifteenDaysAgo = [calendar dateByAddingComponents:offsetComponents
-                                                     toDate:today
-                                                    options:0];
+  base::Time today = base::Time::Now();
+  base::Time thirteenDaysAgo = today - base::Days(13);
+  base::Time fifteenDaysAgo = today - base::Days(15);
+  std::string test_key(kTestFaviconKey);
 
-  EXPECT_TRUE(ShouldFetchFavicon(kTestFaviconKey, @{}));
+  EXPECT_TRUE(ShouldFetchFavicon(kTestFaviconKey, {}));
 
-  EXPECT_FALSE(ShouldFetchFavicon(kTestFaviconKey, @{kTestFaviconKey : today}));
-  EXPECT_FALSE(ShouldFetchFavicon(kTestFaviconKey,
-                                  @{kTestFaviconKey : thirteenDaysAgo}));
+  EXPECT_FALSE(ShouldFetchFavicon(kTestFaviconKey, {{test_key, today}}));
+  EXPECT_FALSE(
+      ShouldFetchFavicon(kTestFaviconKey, {{test_key, thirteenDaysAgo}}));
   EXPECT_TRUE(
-      ShouldFetchFavicon(kTestFaviconKey, @{kTestFaviconKey : fifteenDaysAgo}));
+      ShouldFetchFavicon(kTestFaviconKey, {{test_key, fifteenDaysAgo}}));
 
-  EXPECT_TRUE(ShouldFetchFavicon(kTestFaviconKey, @{@"OtherFavicon" : today}));
+  EXPECT_TRUE(ShouldFetchFavicon(kTestFaviconKey, {{"OtherFavicon", today}}));
 
   // Edge cases around the 14-day boundary.
-  base::Time now = base::Time::Now();
-  NSDate* slightlyLessThanFourteenDaysAgo =
-      (now - base::Days(14) + base::Seconds(5)).ToNSDate();
-  NSDate* slightlyMoreThanFourteenDaysAgo =
-      (now - base::Days(14) - base::Seconds(5)).ToNSDate();
+  base::Time slightlyLessThanFourteenDaysAgo =
+      today - base::Days(14) + base::Seconds(5);
+  base::Time slightlyMoreThanFourteenDaysAgo =
+      today - base::Days(14) - base::Seconds(5);
 
   EXPECT_FALSE(ShouldFetchFavicon(
-      kTestFaviconKey, @{kTestFaviconKey : slightlyLessThanFourteenDaysAgo}));
+      kTestFaviconKey, {{test_key, slightlyLessThanFourteenDaysAgo}}));
   EXPECT_TRUE(ShouldFetchFavicon(
-      kTestFaviconKey, @{kTestFaviconKey : slightlyMoreThanFourteenDaysAgo}));
+      kTestFaviconKey, {{test_key, slightlyMoreThanFourteenDaysAgo}}));
 
   // Date in the future should not trigger a fetch.
-  NSDate* futureDate = (now + base::Days(1)).ToNSDate();
-  EXPECT_FALSE(
-      ShouldFetchFavicon(kTestFaviconKey, @{kTestFaviconKey : futureDate}));
+  base::Time futureDate = today + base::Days(1);
+  EXPECT_FALSE(ShouldFetchFavicon(kTestFaviconKey, {{test_key, futureDate}}));
 }
 
 TEST_F(CredentialProviderUtilTest, GetFaviconsListAndFreshness_NilFolder) {
   SetFaviconsFolderURLForTesting(nil);
-  EXPECT_NSEQ(nil, GetFaviconsListAndFreshness());
+  EXPECT_TRUE(GetFaviconsListAndFreshness().empty());
 }
 
 TEST_F(CredentialProviderUtilTest,
@@ -106,11 +98,11 @@ TEST_F(CredentialProviderUtilTest,
   NSURL* folder_url = [base::apple::FilePathToNSURL(scoped_temp_dir_.GetPath())
       URLByAppendingPathComponent:@"NonExistent"];
   SetFaviconsFolderURLForTesting(folder_url);
-  EXPECT_NSEQ(nil, GetFaviconsListAndFreshness());
+  EXPECT_TRUE(GetFaviconsListAndFreshness().empty());
 }
 
 TEST_F(CredentialProviderUtilTest, GetFaviconsListAndFreshness_EmptyFolder) {
-  EXPECT_NSEQ(nil, GetFaviconsListAndFreshness());
+  EXPECT_TRUE(GetFaviconsListAndFreshness().empty());
 }
 
 TEST_F(CredentialProviderUtilTest, GetFaviconsListAndFreshness_WithFiles) {
@@ -124,10 +116,9 @@ TEST_F(CredentialProviderUtilTest, GetFaviconsListAndFreshness_WithFiles) {
                                 error:&error];
   ASSERT_TRUE(success) << base::SysNSStringToUTF8([error description]);
 
-  NSDictionary<NSString*, NSDate*>* dict = GetFaviconsListAndFreshness();
-  ASSERT_NSNE(nil, dict);
-  EXPECT_EQ(1u, dict.count);
-  EXPECT_NSNE(nil, dict[@"file1"]);
+  base::flat_map<std::string, base::Time> map = GetFaviconsListAndFreshness();
+  EXPECT_EQ(1u, map.size());
+  EXPECT_TRUE(map.contains("file1"));
 }
 
 // Tests that RecordIdentifierForPasswordForm formats unique database keys

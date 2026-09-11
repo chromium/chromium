@@ -7,10 +7,15 @@
 #import <CommonCrypto/CommonDigest.h>
 
 #import <array>
+#import <string>
+#import <string_view>
+#import <utility>
+#import <vector>
 
 #import "base/apple/backup_util.h"
 #import "base/apple/foundation_util.h"
 #import "base/check_is_test.h"
+#import "base/containers/flat_map.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
@@ -124,13 +129,13 @@ NSString* RecordIdentifierForPasswordForm(
   }));
 }
 
-NSString* GetFaviconFileKey(const GURL& url) {
+std::string GetFaviconFileKey(const GURL& url) {
   // We are using SHA256 hashing to hide the website's URL and also to be able
   // to use as the key for the storage (since the character string that makes up
   // a URL (including the scheme and ://) isn't a valid file name).
   unsigned char result[CC_SHA256_DIGEST_LENGTH];
   CC_SHA256(url.spec().data(), url.spec().length(), result);
-  return base::SysUTF8ToNSString(base::HexEncode(result));
+  return base::HexEncode(result);
 }
 
 bool IsValidFaviconFileKey(NSString* key) {
@@ -375,7 +380,7 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader,
     NSString* filename = credential.favicon;
     if (!IsValidFaviconFileKey(filename)) {
       // Ensure the credential has an updated favicon key and update the store.
-      filename = GetFaviconFileKey(url);
+      filename = base::SysUTF8ToNSString(GetFaviconFileKey(url));
       ArchivableCredential* newCredential =
           [[ArchivableCredential alloc] initWithFavicon:filename
                                              credential:credential];
@@ -420,10 +425,10 @@ void UpdateFaviconsStorageForProfile(base::WeakPtr<ProfileIOS> weak_profile,
                         fallback_to_google_server);
 }
 
-NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
+base::flat_map<std::string, base::Time> GetFaviconsListAndFreshness() {
   NSURL* folder_url = GetFaviconsFolderURL();
   if (!folder_url) {
-    return nil;
+    return {};
   }
 
   NSFileManager* file_manager = [NSFileManager defaultManager];
@@ -431,17 +436,17 @@ NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
 
   // If the favicon folder doesn't exist, there are no favicons stored.
   if (![file_manager fileExistsAtPath:path]) {
-    return nil;
+    return {};
   }
 
   NSArray<NSString*>* fileNames = [file_manager contentsOfDirectoryAtPath:path
                                                                     error:nil];
   if (fileNames.count == 0) {
-    return nil;
+    return {};
   }
 
-  NSMutableDictionary<NSString*, NSDate*>* favicon_info_dict =
-      [[NSMutableDictionary alloc] init];
+  std::vector<std::pair<std::string, base::Time>> entries;
+  entries.reserve(fileNames.count);
   for (NSString* fileName in fileNames) {
     NSURL* filePath = [folder_url URLByAppendingPathComponent:fileName
                                                   isDirectory:NO];
@@ -454,32 +459,31 @@ NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
                          ?: fileAttribs[NSFileCreationDate];
 
       // If for some reason these attributes are not set, don't add the info to
-      // the dictionary. The favicon will either be refetched and overwritten,
+      // the map. The favicon will either be refetched and overwritten,
       // or deleted in cleanup if there are no credentials using it anymore.
       if (date) {
-        favicon_info_dict[fileName] = date;
+        entries.emplace_back(base::SysNSStringToUTF8(fileName),
+                             base::Time::FromNSDate(date));
       }
     }
   }
-  return [favicon_info_dict copy];
+  return base::flat_map<std::string, base::Time>(std::move(entries));
 }
 
-bool ShouldFetchFavicon(NSString* favicon_key,
-                        NSDictionary<NSString*, NSDate*>* favicon_dict) {
-  if (!favicon_dict) {
+bool ShouldFetchFavicon(
+    std::string_view favicon_key,
+    const base::flat_map<std::string, base::Time>& favicon_map) {
+  if (favicon_key.empty()) {
     return true;
   }
 
-  // If there is not previous fetch date, it means there is no favicon for that
-  // key. Fetch it.
-  NSDate* favicon_fetch_date = favicon_dict[favicon_key];
-  if (!favicon_fetch_date) {
+  auto it = favicon_map.find(favicon_key);
+  if (it == favicon_map.end()) {
     return true;
   }
 
   // Re-fetch the favicon if it's older than the threshold.
-  return base::Time::Now() - base::Time::FromNSDate(favicon_fetch_date) >
-         kFaviconRefreshInterval;
+  return base::Time::Now() - it->second > kFaviconRefreshInterval;
 }
 
 bool IsFaviconFolderAvailable() {

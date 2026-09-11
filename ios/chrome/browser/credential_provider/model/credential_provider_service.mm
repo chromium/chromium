@@ -6,6 +6,8 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
+#import <unordered_set>
+
 #import "base/check.h"
 #import "base/check_is_test.h"
 #import "base/metrics/histogram_functions.h"
@@ -426,7 +428,7 @@ void CredentialProviderService::AddCredentialsLegacy(
     // not take Android facet URI.
     if (form.url.is_valid()) {
       ++fetched_favicon_count;
-      favicon_key = GetFaviconFileKey(form.url);
+      favicon_key = base::SysUTF8ToNSString(GetFaviconFileKey(form.url));
 
       // Fetch the favicon and save it to the storage.
       FetchFaviconForURLToPath(favicon_loader_, form.url, favicon_key,
@@ -453,30 +455,22 @@ void CredentialProviderService::AddCredentialsRefactored(
     MemoryCredentialStore* store,
     std::vector<password_manager::StoredCredential> forms,
     base::OnceClosure completion) {
-  auto reply_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::ThreadPolicy::PREFER_BACKGROUND,
+       base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&GetFaviconsListAndFreshness),
       base::BindOnce(
           &CredentialProviderService::ContinueAddCredentialsRefactored,
           weak_ptr_factory_.GetWeakPtr(), base::Unretained(store),
           std::move(forms), std::move(completion)));
-
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::ThreadPolicy::PREFER_BACKGROUND,
-       base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          [](base::OnceCallback<void(NSDictionary<NSString*, NSDate*>*)>
-                 reply) {
-            std::move(reply).Run(GetFaviconsListAndFreshness());
-          },
-          std::move(reply_callback)));
 }
 
 void CredentialProviderService::ContinueAddCredentialsRefactored(
     MemoryCredentialStore* store,
     std::vector<password_manager::StoredCredential> forms,
     base::OnceClosure completion,
-    NSDictionary<NSString*, NSDate*>* favicon_dict) {
+    base::flat_map<std::string, base::Time> favicon_map) {
   // Don't rate limit the favicon fetch when adding a single password.
   const bool should_skip_max_verification = forms.size() == 1;
   const bool fallback_to_google_server_allowed =
@@ -484,17 +478,18 @@ void CredentialProviderService::ContinueAddCredentialsRefactored(
   NSString* gaia = PrimaryAccountId();
 
   int fetched_favicon_count = 0;
-  NSMutableSet<NSString*>* fetched_in_batch = [NSMutableSet set];
+  std::unordered_set<std::string> fetched_in_batch;
 
   for (const auto& form : forms) {
     NSString* favicon_key;
     if (form.url.is_valid()) {
-      favicon_key = GetFaviconFileKey(form.url);
+      std::string key = GetFaviconFileKey(form.url);
+      favicon_key = base::SysUTF8ToNSString(key);
 
-      if (ShouldFetchFavicon(favicon_key, favicon_dict) &&
-          ![fetched_in_batch containsObject:favicon_key]) {
+      if (ShouldFetchFavicon(key, favicon_map) &&
+          !fetched_in_batch.contains(key)) {
         ++fetched_favicon_count;
-        [fetched_in_batch addObject:favicon_key];
+        fetched_in_batch.insert(key);
 
         // Fetch the favicon and save it to the storage.
         FetchFaviconForURLToPath(favicon_loader_, form.url, favicon_key,
@@ -533,7 +528,7 @@ void CredentialProviderService::AddCredentials(
     // Only fetch favicon for valid URL.
     NSString* favicon_key;
     if (url.is_valid()) {
-      favicon_key = GetFaviconFileKey(url);
+      favicon_key = base::SysUTF8ToNSString(GetFaviconFileKey(url));
 
       // Fetch the favicon and save it to the storage.
       FetchFaviconForURLToPath(favicon_loader_, url, favicon_key,
