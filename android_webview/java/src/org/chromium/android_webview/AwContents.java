@@ -5144,7 +5144,7 @@ public class AwContents implements SmartClipProvider {
         void updateDefaultLocale(
                 @JniType("std::string") String locale, @JniType("std::string") String localeList);
 
-        @JniType("std::string")
+        @JniType("base::i18n::LanguageTag")
         String getSafeBrowsingLocaleForTesting();
 
         AwContents fromWebContents(WebContents webContents);

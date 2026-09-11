@@ -22,7 +22,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/statistics_recorder.h"
@@ -539,7 +539,7 @@ std::string AwMetricsServiceClient::GetApplicationLocale() {
           metrics::features::kConsolidateMetricsServiceLocales)) {
     return language::GetApplicationLocale(local_state_);
   }
-  return base::i18n::GetConfiguredLocale();
+  return std::string(base::i18n::GetDefaultIcuLocale().tag_string());
 }
 
 const network_time::NetworkTimeTracker*

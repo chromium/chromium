@@ -6,7 +6,7 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "base/android/jni_android.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/grit/components_resources.h"
 #include "components/prefs/pref_service.h"
@@ -59,7 +59,8 @@ AwSupervisedUserBlockingPage::CreateBlockingPage(
       std::make_unique<
           security_interstitials::SecurityInterstitialControllerClient>(
           web_contents, GetMetricsHelper(url), pref_service,
-          base::i18n::GetConfiguredLocale(), GURL(url::kAboutBlankURL),
+          std::string(base::i18n::GetDefaultIcuLocale().tag_string()),
+          GURL(url::kAboutBlankURL),
           /*settings_page_helper=*/nullptr));
 }
 
