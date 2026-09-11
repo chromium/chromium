@@ -8,6 +8,7 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -63,6 +64,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -269,10 +271,17 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
       enterprise_util::CanShowEnterpriseBadgingForAvatar(profile_);
   source->AddBoolean("isEnterpriseProfile", is_enterprise_profile);
   static constexpr webui::LocalizedString kStrings[] = {
+      {"loomniboxFreChangeShortcutIn", IDS_LOOMNIBOX_FRE_CHANGE_SHORTCUT_IN},
       {"loomniboxFreCloseButtonAria", IDS_LOOMNIBOX_FRE_CLOSE_BUTTON_ARIA},
       {"loomniboxFreLensPrimary", IDS_LOOMNIBOX_FRE_LENS_PRIMARY},
       {"loomniboxFreLensSecondary", IDS_LOOMNIBOX_FRE_LENS_SECONDARY},
+      {"loomniboxFreReminderToSearch", IDS_LOOMNIBOX_FRE_REMINDER_TO_SEARCH},
+      {"loomniboxFreSelectKeyboardShortcut",
+       IDS_LOOMNIBOX_FRE_SELECT_KEYBOARD_SHORTCUT},
+      {"loomniboxFreSelectShortcut", IDS_LOOMNIBOX_FRE_SELECT_SHORTCUT},
       {"loomniboxFreTitle", IDS_LOOMNIBOX_FRE_TITLE},
+      {"loomniboxFreToSearchOrCustomize",
+       IDS_LOOMNIBOX_FRE_TO_SEARCH_OR_CUSTOMIZE},
       {"loomniboxFreWhereToFindPrimary",
        IDS_LOOMNIBOX_FRE_WHERE_TO_FIND_PRIMARY},
       {"managedByYourOrganization", IDS_MANAGED},
@@ -286,14 +295,29 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kStrings);
 
-  bool initial_show_fre =
-      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre) &&
-      !profile_->GetPrefs()->GetBoolean(
-          omnibox_everywhere::prefs::kFreDismissed) &&
-      (profile_->GetPrefs()->GetInteger(
-           omnibox_everywhere::prefs::kFreImpressionCount) <
-       omnibox_everywhere::prefs::kMaxFreImpressions);
-  source->AddBoolean("initialShowFre", initial_show_fre);
+  bool fre_enabled =
+      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre);
+  omnibox_everywhere::prefs::FreStage current_stage =
+      fre_enabled ? omnibox_everywhere::prefs::GetCurrentFreStage(profile_)
+                  : omnibox_everywhere::prefs::FreStage::kNone;
+  source->AddInteger("initialFreStage", static_cast<int>(current_stage));
+
+  base::ListValue initial_tokens;
+  if (g_browser_process && g_browser_process->local_state() &&
+      omnibox_everywhere::prefs::HasOmniboxEverywhereHotkey(
+          g_browser_process->local_state())) {
+    ui::Accelerator hotkey =
+        omnibox_everywhere::prefs::GetOmniboxEverywhereHotkey(
+            g_browser_process->local_state());
+    std::vector<std::string> tokens =
+        omnibox_everywhere::prefs::GetOmniboxEverywhereHotkeyTokens(hotkey);
+    for (const auto& token : tokens) {
+      initial_tokens.Append(token);
+    }
+  }
+  base::DictValue initial_dict;
+  initial_dict.Set("initialHotkeyTokens", std::move(initial_tokens));
+  source->AddLocalizedStrings(initial_dict);
 
   // Sanitized image and favicon source initialization
   content::URLDataSource::Add(profile_,

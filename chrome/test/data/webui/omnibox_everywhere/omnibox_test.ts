@@ -4,6 +4,8 @@
 
 import 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 
+import {FreChinMode} from 'chrome://omnibox-everywhere.top-chrome/fre_chin.js';
+import type {FreChinElement} from 'chrome://omnibox-everywhere.top-chrome/fre_chin.js';
 import {ComposeboxProxyImpl, OmniboxEverywhereBrowserProxyImpl, SearchboxBrowserProxy} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, OmniboxEverywhereOmniboxElement, OmniboxEverywhereProfileIconElement} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
@@ -16,6 +18,7 @@ import {GlowAnimationState} from 'chrome://resources/cr_components/search/consta
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {FreStage} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -1035,7 +1038,7 @@ suite('OmniboxEverywhereAppTest', () => {
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
       omniboxEverywhereShowShortcuts: true,
-      initialShowFre: false,
+      initialFreStage: 0,
       composeboxCancelButtonTitle: 'Close AI Mode',
       composeboxCancelButtonTitleInput: 'Clear text',
     });
@@ -1560,7 +1563,7 @@ suite('OmniboxEverywhereAppTest', () => {
         loadTimeData.overrideValues({
           omniboxEverywhereMostVisitedEnabled: true,
           omniboxEverywhereShowShortcuts: true,
-          initialShowFre: false,
+          initialFreStage: 0,
         });
         const appWithMv = document.createElement('omnibox-everywhere-app');
         document.body.appendChild(appWithMv);
@@ -1747,6 +1750,50 @@ suite('OmniboxEverywhereAppTest', () => {
         Array.from(composeboxElement.attachedContext.values())[0]!;
     assertEquals('data:image/png;base64,image_data', updatedFile.dataUrl);
   });
+
+  test(
+      'dismissing shortcut setup chin advances to reminder chin with tokens',
+      async () => {
+        testProxy.page.setFreState({
+          stage: FreStage.kShortcutSetupChin,
+          currentHotkeyTokens: ['Alt', 'Space'],
+        });
+        await microtasksFinished();
+
+        const setupChin = app.shadowRoot?.querySelector<FreChinElement>(
+            '#freShortcutSetupChin');
+        assertTrue(!!setupChin);
+        assertFalse(setupChin.classList.contains('dismissing'));
+
+        const closeBtn =
+            setupChin.shadowRoot?.querySelector<HTMLElement>('.close-button');
+        assertTrue(!!closeBtn);
+        closeBtn.click();
+        await microtasksFinished();
+
+        setupChin.dispatchEvent(new AnimationEvent('animationend', {
+          animationName: 'fadeOutFre',
+        }));
+        await microtasksFinished();
+
+        const dismissedStage = await testProxy.handler.whenCalled('dismissFre');
+        assertEquals(FreStage.kShortcutSetupChin, dismissedStage);
+
+        testProxy.page.setFreState({
+          stage: FreStage.kShortcutReminderChin,
+          currentHotkeyTokens: ['Alt', 'Space'],
+        });
+        await microtasksFinished();
+
+        const reminderChin = app.shadowRoot?.querySelector<FreChinElement>(
+            '#freShortcutReminderChin');
+        assertTrue(!!reminderChin);
+        assertFalse(reminderChin.classList.contains('dismissing'));
+        assertEquals(FreChinMode.SHORTCUT_REMINDER, reminderChin.mode);
+        assertEquals(2, reminderChin.hotkeyTokens.length);
+        assertEquals('Alt', reminderChin.hotkeyTokens[0]);
+        assertEquals('Space', reminderChin.hotkeyTokens[1]);
+      });
 });
 
 suite('OmniboxEverywhereProfileIconTest', () => {

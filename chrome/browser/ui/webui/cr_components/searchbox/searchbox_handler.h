@@ -223,6 +223,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       GetSmartTabSharingActiveCallback callback) override;
 #endif
   void DismissFre(searchbox::mojom::FreStage stage) override {}
+  void ShowHotkeyDropdown(const gfx::Rect& anchor_bounds) override {}
   void OpenHotkeySettings() override {}
   void set_delegate(Delegate* delegate) { omnibox_delegate_ = delegate; }
 

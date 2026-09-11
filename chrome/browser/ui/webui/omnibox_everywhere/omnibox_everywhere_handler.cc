@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_hotkey_bubble_view.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
@@ -36,10 +37,16 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -82,6 +89,20 @@ omnibox_everywhere::prefs::FreStage MojoFreStageToPrefsFreStage(
       return omnibox_everywhere::prefs::FreStage::kShortcutReminderChin;
   }
 }
+searchbox::mojom::FreStage PrefsFreStageToMojoFreStage(
+    omnibox_everywhere::prefs::FreStage stage) {
+  switch (stage) {
+    case omnibox_everywhere::prefs::FreStage::kNone:
+      return searchbox::mojom::FreStage::kNone;
+    case omnibox_everywhere::prefs::FreStage::kIntroModal:
+      return searchbox::mojom::FreStage::kIntroModal;
+    case omnibox_everywhere::prefs::FreStage::kShortcutSetupChin:
+      return searchbox::mojom::FreStage::kShortcutSetupChin;
+    case omnibox_everywhere::prefs::FreStage::kShortcutReminderChin:
+      return searchbox::mojom::FreStage::kShortcutReminderChin;
+  }
+}
+
 class OmniboxEverywhereClient : public ContextualOmniboxClient {
  public:
   OmniboxEverywhereClient(Profile* profile,
@@ -170,11 +191,43 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
             base::Unretained(this)));
     pref_change_registrar_.Add(
         omnibox_everywhere::prefs::kFreIntroDismissed,
-        base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
+        base::BindRepeating(&OmniboxEverywhereHandler::PushFreState,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kFreShortcutSetupDismissed,
+        base::BindRepeating(&OmniboxEverywhereHandler::PushFreState,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kFreShortcutReminderDismissed,
+        base::BindRepeating(&OmniboxEverywhereHandler::PushFreState,
                             base::Unretained(this)));
     pref_change_registrar_.Add(
         omnibox_everywhere::prefs::kFreIntroImpressionCount,
-        base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
+        base::BindRepeating(&OmniboxEverywhereHandler::PushFreState,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kFreShortcutSetupImpressionCount,
+        base::BindRepeating(&OmniboxEverywhereHandler::PushFreState,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kFreShortcutReminderImpressionCount,
+        base::BindRepeating(&OmniboxEverywhereHandler::PushFreState,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kFreDismissed,
+        base::BindRepeating(&OmniboxEverywhereHandler::PushFreState,
+                            base::Unretained(this)));
+  }
+
+  if (g_browser_process && g_browser_process->local_state()) {
+    local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+    local_state_pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kOmniboxEverywhereHotkey,
+        base::BindRepeating(&OmniboxEverywhereHandler::PushFreState,
+                            base::Unretained(this)));
+    local_state_pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kHotkeyEnabled,
+        base::BindRepeating(&OmniboxEverywhereHandler::PushFreState,
                             base::Unretained(this)));
   }
 
@@ -182,7 +235,7 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
     profile_attributes_storage_observation_.Observe(
         &g_browser_process->profile_manager()->GetProfileAttributesStorage());
   }
-  UpdatePromoState();
+  PushFreState();
 
   // Explicitly initialize the `InputStateModel` for the standalone Omnibox
   // Everywhere searchbox. This ensures that dynamic context menu items and
@@ -191,7 +244,12 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
   InitializeInputStateModel();
 }
 
-OmniboxEverywhereHandler::~OmniboxEverywhereHandler() = default;
+OmniboxEverywhereHandler::~OmniboxEverywhereHandler() {
+  omnibox_everywhere::OmniboxEverywhereHotkeyBubbleView::CloseIfOpen();
+  if (service_) {
+    service_->OnHotkeyDropdownClosed();
+  }
+}
 
 void OmniboxEverywhereHandler::OnDriveUploadClicked(
     OnDriveUploadClickedCallback callback) {
@@ -338,18 +396,81 @@ bool OmniboxEverywhereHandler::SupportsKeywordMode() const {
   return true;
 }
 
-void OmniboxEverywhereHandler::UpdatePromoState() {
-  bool fre_enabled =
-      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre);
-  bool show_fre =
-      fre_enabled && (omnibox_everywhere::prefs::GetCurrentFreStage(profile_) ==
-                      omnibox_everywhere::prefs::FreStage::kIntroModal);
-  page()->SetShowFre(show_fre);
+void OmniboxEverywhereHandler::DismissFre(searchbox::mojom::FreStage stage) {
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  omnibox_everywhere::prefs::OnFreStageDismissed(
+      profile_, MojoFreStageToPrefsFreStage(stage), local_state);
+  PushFreState();
 }
 
-void OmniboxEverywhereHandler::DismissFre(searchbox::mojom::FreStage stage) {
-  omnibox_everywhere::prefs::OnFreStageDismissed(
-      profile_, MojoFreStageToPrefsFreStage(stage));
+void OmniboxEverywhereHandler::SetHotkey(const std::string& hotkey_spec) {
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  if (local_state) {
+    omnibox_everywhere::prefs::SetOmniboxEverywhereHotkey(local_state,
+                                                          hotkey_spec);
+  }
+}
+
+void OmniboxEverywhereHandler::ShowHotkeyDropdown(
+    const gfx::Rect& anchor_bounds) {
+  if (!web_contents_) {
+    return;
+  }
+
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      web_contents_->GetTopLevelNativeWindow());
+  if (!widget) {
+    return;
+  }
+
+  gfx::Rect screen_anchor_bounds =
+      anchor_bounds + web_contents_->GetContainerBounds().OffsetFromOrigin();
+
+  // Close any existing bubble before notifying the service to avoid re-entrancy
+  // where the old bubble's close callback resets the newly opened state.
+  omnibox_everywhere::OmniboxEverywhereHotkeyBubbleView::CloseIfOpen();
+
+  if (service_) {
+    service_->OnHotkeyDropdownOpened();
+  }
+
+  omnibox_everywhere::OmniboxEverywhereHotkeyBubbleView::Show(
+      widget, screen_anchor_bounds,
+      base::BindRepeating(&OmniboxEverywhereHandler::SetHotkey,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&OmniboxEverywhereHandler::OnHotkeyDropdownClosed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OmniboxEverywhereHandler::OnHotkeyDropdownClosed() {
+  if (service_) {
+    service_->OnHotkeyDropdownClosed();
+  }
+}
+
+void OmniboxEverywhereHandler::PushFreState() {
+  if (!page_.is_bound()) {
+    return;
+  }
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  auto state = searchbox::mojom::FreState::New();
+  bool fre_enabled =
+      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre);
+  state->stage = PrefsFreStageToMojoFreStage(
+      fre_enabled
+          ? omnibox_everywhere::prefs::GetCurrentFreStage(profile_, local_state)
+          : omnibox_everywhere::prefs::FreStage::kNone);
+  if (omnibox_everywhere::prefs::HasOmniboxEverywhereHotkey(local_state)) {
+    ui::Accelerator current_accelerator =
+        omnibox_everywhere::prefs::GetOmniboxEverywhereHotkey(local_state);
+    state->current_hotkey_tokens =
+        omnibox_everywhere::prefs::GetOmniboxEverywhereHotkeyTokens(
+            current_accelerator);
+  }
+  page()->SetFreState(std::move(state));
 }
 
 void OmniboxEverywhereHandler::OpenHotkeySettings() {

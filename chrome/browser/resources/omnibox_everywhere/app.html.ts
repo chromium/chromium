@@ -5,6 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {OmniboxEverywhereAppElement} from './app.js';
+import {FreChinMode} from './fre_chin.js';
 
 export function getHtml(this: OmniboxEverywhereAppElement) {
   return html`<!--_html_template_start_-->
@@ -38,18 +39,40 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
     </omnibox-everywhere-omnibox>
   `}
   ${
-      this.mostVisitedEnabled_ &&
-      !this.showFreModal_ ? html`
+      this.mostVisitedEnabled_ && this.showShortcuts_ &&
+      !this.isFreIntroModal_() && !this.isFreChin_() ? html`
     <div id="mostVisitedContainer" ?hidden="${!this.hasMostVisitedTiles_}">
       <cr-most-visited id="mostVisited" single-row non-editable hide-title
           max-tiles="7"></cr-most-visited>
     </div>
   ` : ''}
   ${
-      this.showFreModal_ ? html`
+      this.isFreIntroModal_() ? html`
     <fre-modal
         @close="${this.onFreClose_}">
     </fre-modal>
+  ` : ''}
+  ${
+      this.isFreShortcutSetupChin_() ? html`
+    <fre-chin
+        id="freShortcutSetupChin"
+        .mode="${FreChinMode.SHORTCUT_SETUP}"
+        .hotkeyTokens="${this.hotkeyTokens_}"
+        @show-hotkey-dropdown="${this.onFreShowHotkeyDropdown_}"
+        @open-settings="${this.onFreOpenSettings_}"
+        @close="${this.onFreClose_}">
+    </fre-chin>
+  ` : ''}
+  ${
+      this.isFreShortcutReminderChin_() ? html`
+    <fre-chin
+        id="freShortcutReminderChin"
+        .mode="${FreChinMode.SHORTCUT_REMINDER}"
+        .hotkeyTokens="${this.hotkeyTokens_}"
+        @show-hotkey-dropdown="${this.onFreShowHotkeyDropdown_}"
+        @open-settings="${this.onFreOpenSettings_}"
+        @close="${this.onFreClose_}">
+    </fre-chin>
   ` : ''}
 </div>
 <div id="dialogAnchor"></div>

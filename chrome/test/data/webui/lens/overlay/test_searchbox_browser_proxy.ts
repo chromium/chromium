@@ -64,6 +64,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'setSmartComposeStats',
       'setSmartTabSharingActive',
       'showContextMenu',
+      'showHotkeyDropdown',
       'showScreenshotMenu',
       'startScreenshare',
       'captureRegionScreenshot',
@@ -320,6 +321,11 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   dismissFre() {
     this.methodCalled('dismissFre');
+  }
+
+  showHotkeyDropdown(
+      anchorBounds: {x: number, y: number, width: number, height: number}) {
+    this.methodCalled('showHotkeyDropdown', {anchorBounds});
   }
 
   openHotkeySettings() {

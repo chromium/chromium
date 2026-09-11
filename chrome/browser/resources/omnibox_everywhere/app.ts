@@ -5,6 +5,7 @@
 import './omnibox.js';
 import './composebox.js';
 import './fre_modal.js';
+import './fre_chin.js';
 import '/strings.m.js';
 import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/most_visited/most_visited.js';
@@ -22,13 +23,15 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {FreStage} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {FreState, PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import type {OmniboxEverywhereComposeboxElement} from './composebox.js';
+import {FreChinMode} from './fre_chin.js';
+import type {ShowHotkeyDropdownDetail} from './fre_chin.js';
 import type {OmniboxEverywhereOmniboxElement} from './omnibox.js';
 import type {ComposeboxInitialState} from './omnibox_everywhere.mojom-webui.js';
 
@@ -105,7 +108,8 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       hasMostVisitedTiles_: {type: Boolean},
       mostVisitedEnabled_: {type: Boolean},
       showShortcuts_: {type: Boolean},
-      showFreModal_: {type: Boolean},
+      freStage_: {type: Number},
+      hotkeyTokens_: {type: Array},
       isActive_: {
         type: Boolean,
         reflect: true,
@@ -145,8 +149,14 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   protected accessor showShortcuts_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereShowShortcuts');
   protected accessor hasMostVisitedTiles_: boolean = false;
-  protected accessor showFreModal_: boolean =
-      loadTimeData.getBoolean('initialShowFre');
+  protected accessor freStage_: FreStage =
+      (loadTimeData.valueExists('initialFreStage') ?
+           loadTimeData.getInteger('initialFreStage') :
+           FreStage.kNone) as FreStage;
+  protected accessor hotkeyTokens_: string[] =
+      loadTimeData.valueExists('initialHotkeyTokens') ?
+      loadTimeData.getValue('initialHotkeyTokens') :
+      [];
   private eventTracker_ = new EventTracker();
   private mostVisitedListenerId_: number|null = null;
   private searchboxListenerIds_: number[] = [];
@@ -222,8 +232,14 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     };
 
     this.searchboxListenerIds_.push(
-        this.callbackRouter_.setShowFre.addListener((show: boolean) => {
-          this.showFreModal_ = show;
+        this.callbackRouter_.setFreState.addListener((state: FreState) => {
+          this.freStage_ = state.stage;
+          this.hotkeyTokens_ = state.currentHotkeyTokens;
+          const freElement =
+              this.shadowRoot?.querySelector('fre-modal, fre-chin');
+          if (freElement) {
+            freElement.classList.remove('dismissing');
+          }
         }),
         this.callbackRouter_.updateAimPopupEligibility.addListener(
             (aiModePrefEnabled: boolean) => {
@@ -330,11 +346,32 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       this.composebox.focusInput();
       this.composebox.playGlowAnimation();
     }
-    if (this.mostVisitedListenerId_ !== null) {
-      browserProxyFactory.getInstance().callbackRouter.removeListener(
-          this.mostVisitedListenerId_);
-      this.mostVisitedListenerId_ = null;
-    }
+  }
+
+  protected isFreIntroModal_(): boolean {
+    return this.freStage_ === FreStage.kIntroModal && !this.isComposeboxMode_;
+  }
+
+  protected isFreChin_(): boolean {
+    return (this.freStage_ === FreStage.kShortcutSetupChin ||
+            this.freStage_ === FreStage.kShortcutReminderChin) &&
+        !this.isComposeboxMode_;
+  }
+
+  protected isFreShortcutSetupChin_(): boolean {
+    return this.freStage_ === FreStage.kShortcutSetupChin &&
+        !this.isComposeboxMode_;
+  }
+
+  protected isFreShortcutReminderChin_(): boolean {
+    return this.freStage_ === FreStage.kShortcutReminderChin &&
+        !this.isComposeboxMode_;
+  }
+
+  protected getFreChinMode_(): FreChinMode {
+    return this.freStage_ === FreStage.kShortcutSetupChin ?
+        FreChinMode.SHORTCUT_SETUP :
+        FreChinMode.SHORTCUT_REMINDER;
   }
 
   private setIsComposebox_(isComposebox: boolean) {
@@ -347,22 +384,50 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   }
 
   protected onFreClose_() {
-    const freModal = this.shadowRoot.querySelector('fre-modal');
-    if (!freModal) {
-      this.showFreModal_ = false;
-      SearchboxBrowserProxy.getInstance().handler.dismissFre(
-          FreStage.kIntroModal);
+    const stageToDismiss = this.freStage_;
+    const freElement = this.shadowRoot?.querySelector('fre-modal, fre-chin');
+    if (!freElement) {
+      SearchboxBrowserProxy.getInstance().handler.dismissFre(stageToDismiss);
+      return;
+    }
+    if (freElement.classList.contains('dismissing')) {
       return;
     }
 
-    freModal.classList.add('dismissing');
-    freModal.addEventListener('animationend', () => {
-      this.showFreModal_ = false;
-      SearchboxBrowserProxy.getInstance().handler.dismissFre(
-          FreStage.kIntroModal);
-    }, {once: true});
+    freElement.classList.add('dismissing');
+
+    let dismissed = false;
+    const finishDismissal = () => {
+      if (dismissed) {
+        return;
+      }
+      dismissed = true;
+      SearchboxBrowserProxy.getInstance().handler.dismissFre(stageToDismiss);
+    };
+
+    // Use a single named function so we can remove it accurately.
+    const onAnimationDone = (e: Event) => {
+      const animEvent = e as AnimationEvent;
+      if (animEvent.target === freElement &&
+          animEvent.animationName === 'fadeOutFre') {
+        // Only remove the listeners once our specific animation is handled.
+        freElement.removeEventListener('animationend', onAnimationDone);
+        freElement.removeEventListener('animationcancel', onAnimationDone);
+        finishDismissal();
+      }
+    };
+
+    freElement.addEventListener('animationend', onAnimationDone);
+    freElement.addEventListener('animationcancel', onAnimationDone);
   }
 
+  protected onFreShowHotkeyDropdown_(e: CustomEvent<ShowHotkeyDropdownDetail>) {
+    SearchboxBrowserProxy.getInstance().handler.showHotkeyDropdown(e.detail);
+  }
+
+  protected onFreOpenSettings_() {
+    SearchboxBrowserProxy.getInstance().handler.openHotkeySettings();
+  }
   protected async onOpenComposebox_(e: CustomEvent<ComposeboxState>) {
     this.composeboxState_ = e.detail;
     this.setIsComposebox_(true);

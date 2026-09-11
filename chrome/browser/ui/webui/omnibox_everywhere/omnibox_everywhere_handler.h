@@ -57,7 +57,9 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
                    bool shift_key,
                    bool is_voice_search) override;
   void DismissFre(searchbox::mojom::FreStage stage) override;
+  void ShowHotkeyDropdown(const gfx::Rect& anchor_bounds) override;
   void OpenHotkeySettings() override;
+  void SetHotkey(const std::string& hotkey_spec);
   void StartScreenshare(bool prefer_entire_screen,
                         StartScreenshareCallback callback) override;
   void CaptureRegionScreenshot(
@@ -104,15 +106,19 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
 
  private:
   void OnAiModeEligibilityOrPrefChanged();
-  void UpdatePromoState();
+  void OnHotkeyDropdownClosed();
+  void PushFreState();
   void PushProfileInfo();
 
   raw_ptr<OmniboxEverywhereService> service_;
   base::CallbackListSubscription aim_eligibility_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
+  PrefChangeRegistrar local_state_pref_change_registrar_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_attributes_storage_observation_{this};
+
+  base::WeakPtrFactory<OmniboxEverywhereHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_HANDLER_H_

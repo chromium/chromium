@@ -203,6 +203,7 @@ class ContextualTasksExtensionHandler
   void CaptureRegionScreenshot(
       CaptureRegionScreenshotCallback callback) override;
   void DismissFre(searchbox::mojom::FreStage stage) override {}
+  void ShowHotkeyDropdown(const gfx::Rect& anchor_bounds) override {}
   void OpenHotkeySettings() override {}
 
  private:

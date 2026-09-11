@@ -140,7 +140,10 @@ class MockSearchboxPage : public searchbox::mojom::Page {
               (std::vector<searchbox::mojom::TabInfoPtr> tabs),
               (override));
   MOCK_METHOD(void, OnScreenshotMenuClosed, (), (override));
-  MOCK_METHOD(void, SetShowFre, (bool show), (override));
+  MOCK_METHOD(void,
+              SetFreState,
+              (searchbox::mojom::FreStatePtr state),
+              (override));
   MOCK_METHOD(void,
               UpdateProfileInfo,
               (const GURL&, const std::string&, const std::string&),

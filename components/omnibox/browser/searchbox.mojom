@@ -227,6 +227,12 @@ enum FreStage {
   kShortcutReminderChin = 3,
 };
 
+// Represents the active FRE stage and hotkey configuration state for WebUI.
+struct FreState {
+  FreStage stage;
+  array<string> current_hotkey_tokens;
+};
+
 // Information about a contextual input.
 struct SelectedFileInfo {
   // Name of the file.
@@ -618,14 +624,18 @@ interface PageHandler {
   // Dispatched when an FRE stage is dismissed.
   DismissFre(FreStage stage);
 
+  // Shows the native Views dropdown menu for selecting a hotkey preset,
+  // anchored to the specified bounds in WebUI viewport coordinates.
+  ShowHotkeyDropdown(gfx.mojom.Rect anchor_bounds);
+
   // Opens platform/browser shortcut configuration settings.
   OpenHotkeySettings();
 };
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Notifies the page of whether the FRE notice promo should be displayed.
-  SetShowFre(bool show);
+  // Notifies the page of the current FRE stage and hotkey configuration state.
+  SetFreState(FreState state);
 
   // Updates the page with the autocomplete results.
   AutocompleteResultChanged(AutocompleteResult result);
