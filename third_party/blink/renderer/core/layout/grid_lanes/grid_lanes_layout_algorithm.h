@@ -93,6 +93,22 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
     return grid_lanes_available_size_;
   }
 
+  // Initializes the track sizes of a grid-lanes sizing subtree.
+  void InitializeTrackSizes(
+      const GridSizingSubtree& sizing_subtree,
+      const SubgriddedItemData& opt_subgrid_data,
+      const std::optional<GridTrackSizingDirection>& opt_track_direction) const;
+
+  // Completes the track sizing algorithm for non-definite tracks of a
+  // grid-lanes sizing subtree.
+  void CompleteTrackSizingAlgorithm(
+      const GridSizingSubtree& sizing_subtree,
+      const SubgriddedItemData& opt_subgrid_data,
+      GridTrackSizingDirection track_direction,
+      SizingConstraint sizing_constraint,
+      bool* opt_needs_additional_pass,
+      bool needs_intrinsic_track_size = false) const;
+
  private:
   friend class GridLanesLayoutAlgorithmTest;
 
@@ -228,13 +244,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
                            LayoutUnit block_size,
                            HeapVector<Member<LayoutBox>>& oof_children);
 
-  // Initializes the track sizes of a grid-lanes sizing subtree. If
+  // Helper that calls the method above for the entire grid sizing tree. If
   // `only_for_grid_axis` is true, only the grid axis is re-initialized.
-  void InitializeTrackSizes(const GridSizingSubtree& sizing_subtree,
-                            const SubgriddedItemData& opt_subgrid_data,
-                            bool only_for_grid_axis = false) const;
-
-  // Helper that calls the method above for the entire grid sizing tree.
   void InitializeTrackSizes(GridSizingTree* sizing_tree,
                             bool only_for_grid_axis = false) const;
 
@@ -254,17 +265,9 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr,
       bool* opt_needs_additional_pass = nullptr);
 
-  // Completes the track sizing algorithm for non-definite tracks of a
-  // grid-lanes sizing subtree. If `only_for_grid_axis` is true, only the
-  // subgrids' grid-axis tracks are re-completed.
-  void CompleteTrackSizingAlgorithm(
-      const GridSizingSubtree& sizing_subtree,
-      SizingConstraint sizing_constraint,
-      bool needs_intrinsic_track_size,
-      bool only_for_grid_axis = false,
-      bool* opt_needs_additional_pass = nullptr) const;
-
-  // Helper that calls the method above for the entire grid sizing tree.
+  // Helper that calls the method above for the entire grid sizing tree. If
+  // `only_for_grid_axis` is true, only the subgrids' grid-axis tracks are
+  // re-completed.
   void CompleteTrackSizingAlgorithm(
       SizingConstraint sizing_constraint,
       GridSizingTree* sizing_tree,
@@ -289,6 +292,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   //
   // `subgrid_axis_direction` is the subgridded axis in the subgrid's own
   // coordinates.
+  template <typename LayoutAlgorithmType>
   void RebuildSubgridLayoutDataForResolvedPlacement(
       const GridItemData& subgrid_item,
       const GridLayoutData& parent_layout_data,

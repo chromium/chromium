@@ -1250,16 +1250,9 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
     }
   }
 
-  ForEachSubgrid(
-      sizing_subtree, *this,
-      [&](const GridLayoutAlgorithm& subgrid_algorithm,
-          const GridSizingSubtree& subgrid_subtree,
-          const SubgriddedItemData& subgrid_data) {
-        subgrid_algorithm.CompleteTrackSizingAlgorithm(
-            subgrid_subtree, subgrid_data,
-            subgrid_data->RelativeDirectionInSubgrid(track_direction),
-            sizing_constraint, opt_needs_additional_pass);
-      });
+  CompleteTrackSizingAlgorithmForEachSubgrid(sizing_subtree, *this,
+                                             track_direction, sizing_constraint,
+                                             opt_needs_additional_pass);
 }
 
 void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
@@ -1342,14 +1335,17 @@ void GridLayoutAlgorithm::ResolveBaselinesInStandaloneAxes(
     GridSizingTree* sizing_tree,
     SizingConstraint sizing_constraint,
     bool is_measure_after_layout) const {
-  ForEachSubgrid(sizing_subtree, *this,
-                 [&](const GridLayoutAlgorithm& subgrid_algorithm,
-                     const GridSizingSubtree& subgrid_subtree,
-                     const SubgriddedItemData& /*subgrid_data*/) {
-                   subgrid_algorithm.ResolveBaselinesInStandaloneAxes(
-                       subgrid_subtree, sizing_tree, sizing_constraint,
-                       is_measure_after_layout);
-                 });
+  // TODO(yanlingwang): Include grid-lanes subgrids once their baseline
+  // alignment is supported.
+  ForEachSubgrid</*skip_grid_lanes_subgrids=*/true>(
+      sizing_subtree, *this,
+      [&](const GridLayoutAlgorithm& subgrid_algorithm,
+          const GridSizingSubtree& subgrid_subtree,
+          const SubgriddedItemData& /*subgrid_data*/) {
+        subgrid_algorithm.ResolveBaselinesInStandaloneAxes(
+            subgrid_subtree, sizing_tree, sizing_constraint,
+            is_measure_after_layout);
+      });
 
   // If both axes are subgridded, this grid inherits all its baselines top-down
   // and has nothing to resolve here.

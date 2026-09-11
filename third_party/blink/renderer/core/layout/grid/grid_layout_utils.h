@@ -8,6 +8,7 @@
 #include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_node.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/core/style/grid_track_size.h"
@@ -275,7 +276,12 @@ FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
 
 // Helper which iterates over the sizing tree, and instantiates a subgrid
 // algorithm to invoke the callback with.
-template <typename LayoutAlgorithmType, typename CallbackFunc>
+//
+// TODO(yanlingwang): Eventually remove `skip_grid_lanes_subgrids` once
+// grid-lanes subgrid baseline alignment is supported.
+template <bool skip_grid_lanes_subgrids = false,
+          typename LayoutAlgorithmType,
+          typename CallbackFunc>
 void ForEachSubgrid(const GridSizingSubtree& sizing_subtree,
                     const LayoutAlgorithmType& algorithm,
                     const CallbackFunc& callback_func,
@@ -293,6 +299,12 @@ void ForEachSubgrid(const GridSizingSubtree& sizing_subtree,
       continue;
     }
 
+    CHECK(next_subgrid_subtree);
+    if (skip_grid_lanes_subgrids && grid_item.node.IsGridLanes()) {
+      next_subgrid_subtree = next_subgrid_subtree.NextSibling();
+      continue;
+    }
+
     const SubgriddedItemData subgridded_item(
         grid_item, &layout_data,
         algorithm.GetConstraintSpace().GetWritingMode());
@@ -303,13 +315,18 @@ void ForEachSubgrid(const GridSizingSubtree& sizing_subtree,
         should_compute_min_max_sizes ? next_subgrid_subtree
                                      : kNoGridSizingSubtree);
 
-    // TODO(almaher): This should use GridLanesLayoutAlgorithm when the subgrid
-    // is a grid-lanes container.
-    const GridLayoutAlgorithm subgrid_algorithm(
-        {grid_item.node, fragment_geometry, space});
-
-    DCHECK(next_subgrid_subtree);
-    callback_func(subgrid_algorithm, next_subgrid_subtree, subgridded_item);
+    if (grid_item.node.IsGridLanes()) {
+      if constexpr (!skip_grid_lanes_subgrids) {
+        callback_func(GridLanesLayoutAlgorithm(
+                          {grid_item.node, fragment_geometry, space}),
+                      next_subgrid_subtree, subgridded_item);
+      }
+    } else {
+      CHECK(grid_item.node.IsGrid());
+      callback_func(
+          GridLayoutAlgorithm({grid_item.node, fragment_geometry, space}),
+          next_subgrid_subtree, subgridded_item);
+    }
 
     next_subgrid_subtree = next_subgrid_subtree.NextSibling();
   }
@@ -407,10 +424,9 @@ void InitializeTrackSizesForEachSubgrid(
     const GridSizingSubtree& sizing_subtree,
     const LayoutAlgorithmType& algorithm,
     const std::optional<GridTrackSizingDirection>& opt_track_direction) {
-  // TODO(almaher): Support grid-lanes subgrids as well.
   ForEachSubgrid(
       sizing_subtree, algorithm,
-      [&](const GridLayoutAlgorithm& subgrid_algorithm,
+      [&](const auto& subgrid_algorithm,
           const GridSizingSubtree& subgrid_subtree,
           const SubgriddedItemData& subgrid_data) {
         subgrid_algorithm.InitializeTrackSizes(
@@ -430,10 +446,9 @@ void CompleteTrackSizingAlgorithmForEachSubgrid(
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
     bool* opt_needs_additional_pass) {
-  // TODO(almaher): Support grid-lanes subgrids as well.
   ForEachSubgrid(
       sizing_subtree, algorithm,
-      [&](const GridLayoutAlgorithm& subgrid_algorithm,
+      [&](const auto& subgrid_algorithm,
           const GridSizingSubtree& subgrid_subtree,
           const SubgriddedItemData& subgrid_data) {
         subgrid_algorithm.CompleteTrackSizingAlgorithm(
@@ -453,8 +468,9 @@ void ComputeBaselineAlignmentForEachSubgrid(
     const std::optional<GridTrackSizingDirection>& opt_track_direction,
     SizingConstraint sizing_constraint,
     bool is_measure_after_layout = false) {
-  // TODO(almaher): Support grid-lanes subgrids as well.
-  ForEachSubgrid(
+  // TODO(yanlingwang): Include grid-lanes subgrids once their baseline
+  // alignment is supported.
+  ForEachSubgrid</*skip_grid_lanes_subgrids=*/true>(
       sizing_subtree, algorithm,
       [&](const GridLayoutAlgorithm& subgrid_algorithm,
           const GridSizingSubtree& subgrid_subtree,
