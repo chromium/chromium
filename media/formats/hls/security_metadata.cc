@@ -20,6 +20,17 @@ SecurityMetadata SecurityMetadata::CreateForTesting(std::string url,
   };
 }
 
+SecurityMetadata SecurityMetadata::CreateForTesting(const GURL& url,
+                                                    bool would_taint_origin,
+                                                    bool did_redirect) {
+  return SecurityMetadata{
+      .would_taint_origin = would_taint_origin,
+      .did_redirect = did_redirect,
+      .has_range_request = false,
+      .response_origins = {url::Origin::Create(url)},
+  };
+}
+
 bool SecurityMetadata::IsSafeLoadFromManifestOrigin(
     const url::Origin& origin) const {
   if (response_origins.size() != 1) {

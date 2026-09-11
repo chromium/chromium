@@ -56,6 +56,9 @@ struct MEDIA_EXPORT SecurityMetadata {
   static SecurityMetadata CreateForTesting(std::string url,
                                            bool would_taint_origin = false,
                                            bool did_redirect = false);
+  static SecurityMetadata CreateForTesting(const GURL& url,
+                                           bool would_taint_origin = false,
+                                           bool did_redirect = false);
 };
 
 }  // namespace media::hls
