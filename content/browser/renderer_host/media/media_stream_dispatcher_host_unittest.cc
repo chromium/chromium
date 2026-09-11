@@ -702,6 +702,24 @@ TEST_F(MediaStreamDispatcherHostTest,
   host_->OnGenerateStreams(kPageRequestId, controls);
 }
 
+TEST_F(MediaStreamDispatcherHostTest,
+       BadMessageIfRequestAllScreensWithoutVideoCaptureSet) {
+  blink::StreamControls controls;
+  controls.audio.stream_type = MediaStreamType::NO_SERVICE;
+  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  controls.request_all_screens = true;
+
+  SetupFakeUI(/*expect_started=*/true);
+
+  EXPECT_CALL(
+      *this,
+      MockOnBadMessage(
+          main_rfh()->GetGlobalId().child_id,
+          bad_message::MSDH_REQUEST_ALL_SCREENS_WITH_INVALID_STREAM_TYPE))
+      .Times(1);
+  host_->OnGenerateStreams(kPageRequestId, controls);
+}
+
 // This test simulates a shutdown scenario: we don't setup a fake UI proxy for
 // MediaStreamManager, so it will create an ordinary one which will not find
 // a RenderFrameHostDelegate. This normally should only be the case at shutdown.

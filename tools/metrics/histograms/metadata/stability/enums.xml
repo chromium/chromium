@@ -575,6 +575,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="391" label="RFHI_BEGIN_NAVIGATION_INVALID_INITIATOR_PROCESS"/>
   <int value="392" label="RFHI_INVALID_INITIATOR_STATE_TOKEN_UPDATE"/>
   <int value="393" label="RFHI_WEBMCP_INVALID_TOOL_NAME"/>
+  <int value="394" label="MSDH_REQUEST_ALL_SCREENS_WITH_INVALID_STREAM_TYPE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

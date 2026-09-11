@@ -845,6 +845,12 @@ MediaStreamDispatcherHost::ValidateControlsForGenerateStreams(
     return bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION;
   }
 
+  if (controls.request_all_screens &&
+      controls.video.stream_type !=
+          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET) {
+    return bad_message::MSDH_REQUEST_ALL_SCREENS_WITH_INVALID_STREAM_TYPE;
+  }
+
   if (!controls.audio.requested()) {
     if (controls.suppress_local_audio_playback) {
       return bad_message::
