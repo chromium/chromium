@@ -103,7 +103,7 @@
   </message>
 
   <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before pasting to a site.">
-    Continue
+    Paste anyway
   </message>
 
   <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_LABEL" desc="Text displayed at the top of a dialog telling the user that pasting the content is not recommended.">
