@@ -13,11 +13,8 @@ export function getHtml(this: CrActionMenuDemoElement) {
 
 <h2>Typical action menu</h2>
 <div class="demos">
-  <cr-icon-button
-      title="Show menu"
-      aria-haspopup="menu"
-      iron-icon="cr:more-vert"
-      @click="${this.onShowAnchoredMenuClick_}">
+  <cr-icon-button title="Show menu" aria-haspopup="menu"
+      iron-icon="cr:more-vert" @click="${this.onShowAnchoredMenuClick_}">
   </cr-icon-button>
 </div>
 
@@ -30,35 +27,32 @@ export function getHtml(this: CrActionMenuDemoElement) {
 <div id="minMaxContainer" class="demos">
   Action menus opened from this area are automatically confined to this area
 
-  <cr-icon-button class="min-max-anchor top-left"
-      iron-icon="cr:add"
+  <cr-icon-button class="min-max-anchor top-left" iron-icon="cr:add"
       @click="${this.onShowMinMaxMenuClick_}">
   </cr-icon-button>
   <cr-button class="min-max-anchor top-right"
       @click="${this.onShowMinMaxMenuClick_}">
     Open menu
   </cr-button>
-  <cr-icon-button class="min-max-anchor bottom-left"
-      iron-icon="cr20:menu"
+  <cr-icon-button class="min-max-anchor bottom-left" iron-icon="cr20:menu"
       @click="${this.onShowMinMaxMenuClick_}">
   </cr-icon-button>
   <cr-button class="min-max-anchor bottom-right"
       @click="${this.onShowMinMaxMenuClick_}">
     Open menu
-  </cr-icon-button>
+  </cr-button>
 </div>
 
 <h2>Custom anchor alignment</h2>
 <div id="anchorAlignmentDemoOptions">
   <div class="anchor-alignment-option">
     <label id="alignmentXLabel">x alignment</label>
-    <select aria-labelledby="alignmentXLabel"
-        .value="${this.customAlignmentX_}"
+    <select aria-labelledby="alignmentXLabel" .value="${this.customAlignmentX_}"
         @change="${this.onCustomAlignmentXChange_}">
       ${this.alignmentOptions_.map(item => html`
         <option .value="${item}"
-            ?selected="${this.isSelectedAlignment_(
-                this.customAlignmentX_, item)}">
+            ?selected="${
+                this.isSelectedAlignment_(this.customAlignmentX_, item)}">
           ${item}
         </option>
       `)}
@@ -67,13 +61,12 @@ export function getHtml(this: CrActionMenuDemoElement) {
 
   <div class="anchor-alignment-option">
     <label id="alignmentYLabel">y alignment</label>
-    <select aria-labelledby="alignmentYLabel"
-        .value="${this.customAlignmentY_}"
+    <select aria-labelledby="alignmentYLabel" .value="${this.customAlignmentY_}"
         @change="${this.onCustomAlignmentYChange_}">
       ${this.alignmentOptions_.map(item => html`
         <option .value="${item}"
-            ?selected="${this.isSelectedAlignment_(
-                this.customAlignmentY_, item)}">
+            ?selected="${
+                this.isSelectedAlignment_(this.customAlignmentY_, item)}">
           ${item}
         </option>
       `)}

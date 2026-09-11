@@ -16,16 +16,14 @@ export function getHtml(this: DiscardsTabElement) {
   <div is="action-link" @click="${this.onToggleBatterySaverModeClick_}">
     [Toggle battery saver mode]
   </div>
-  ${
-      this.isPerformanceInterventionDemoModeEnabled_ ? html`
+  ${this.isPerformanceInterventionDemoModeEnabled_ ? html`
     <div is="action-link"
         @click="${this.onRefreshPerformanceTabCpuMeasurementsClick_}">
       [Trigger Performance CPU intervention]
     </div>
-  ` :
-                                                       ''}
+  ` : ''}
   <table id="tab-discard-info-table">
-    <thead >
+    <thead>
       <tr id="tab-discards-info-table-header">
         <th data-sort-key="utilityRank" class="sort-column"
             @click="${this.onSortClick}">
@@ -36,8 +34,7 @@ export function getHtml(this: DiscardsTabElement) {
             </div>
           </div>
         </th>
-        <th data-sort-key="siteEngagementScore"
-            @click="${this.onSortClick}">
+        <th data-sort-key="siteEngagementScore" @click="${this.onSortClick}">
           <div class="header-cell-container">
             <div>
               <div>Site</div>
@@ -125,8 +122,8 @@ export function getHtml(this: DiscardsTabElement) {
           <td>${this.getSiteEngagementScore_(item)}</td>
           <td>
             <div class="title-cell-container">
-              <div class="favicon-div"
-                .style="${this.getFavIconStyle_(item)}"></div>
+              <div class="favicon-div" .style="${this.getFavIconStyle_(item)}">
+              </div>
               <div class="title-cell">${item.title}</div>
             </div>
           </td>
@@ -137,17 +134,17 @@ export function getHtml(this: DiscardsTabElement) {
           <td class="boolean-cell">
             <div>${this.boolToString_(item.canDiscard)}</div>
             <div is="action-link" class="tooltip-container"
-              ?disabled="${!this.shouldShowCannotDiscardReason_(item)}">
+                ?disabled="${!this.shouldShowCannotDiscardReason_(item)}">
               [View Reason]
-              <div class="tooltip">${item.cannotDiscardReasons.join(',')}<div>
+              <div class="tooltip">${item.cannotDiscardReasons.join(',')}</div>
             </div>
           </td>
           <td class="boolean-cell">
             <div>${this.canFreezeToString_(item.canFreeze)}</div>
             <div is="action-link" class="tooltip-container"
-              ?disabled="${!this.shouldShowCannotFreezeReason_(item)}">
+                ?disabled="${!this.shouldShowCannotFreezeReason_(item)}">
               [View Reason]
-              <div class="tooltip">${item.cannotFreezeReasons.join(',')}<div>
+              <div class="tooltip">${item.cannotFreezeReasons.join(',')}</div>
             </div>
           </td>
           <td>${item.discardCount}</td>
@@ -167,7 +164,8 @@ export function getHtml(this: DiscardsTabElement) {
             <div is="action-link" data-id="${item.id}"
                 @click="${this.onLoadTabClick_}"
                 ?disabled="${!this.canLoadViaUi_(item)}">
-                [Load]</div>
+              [Load]
+            </div>
             <div is="action-link" data-id="${item.id}"
                 @click="${this.onUrgentDiscardTabClick_}"
                 ?disabled="${!this.canDiscardViaUi_(item)}">
@@ -185,7 +183,7 @@ export function getHtml(this: DiscardsTabElement) {
             </div>
           </td>
         </tr>
-        `)}
+      `)}
     </tbody>
   </table>
 </div>

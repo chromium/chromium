@@ -34,8 +34,7 @@ export function getHtml(this: SpComponentsDemoElement) {
   <div class="row center">
     <label id="itemSizeLabel">Item size</label>
     <select id="itemSizeSelect" class="md-select"
-        aria-labelledby="itemSizeLabel"
-        .value="${this.itemSize_}"
+        aria-labelledby="itemSizeLabel" .value="${this.itemSize_}"
         @change="${this.onItemSizeChange_}">
       ${this.itemSizeOptions_.map(item => html`
         <option .value="${item}">${item}</option>
@@ -53,10 +52,8 @@ export function getHtml(this: SpComponentsDemoElement) {
     </sp-heading>
 
     ${this.urls_.map(item => html`
-      <cr-url-list-item title="${item.title}"
-          description="${item.url}"
-          .url="${item.url}"
-          .size="${this.itemSize_}">
+      <cr-url-list-item title="${item.title}" description="${item.url}"
+          .url="${item.url}" .size="${this.itemSize_}">
         ${this.showBadges_ ? html`
           <sp-list-item-badge slot="badges">
             <cr-icon icon="cr:info"></cr-icon>
@@ -77,17 +74,17 @@ export function getHtml(this: SpComponentsDemoElement) {
 
 <h2>Empty state</h2>
 <div id="emptyStateDemo" class="demos">
-  <sp-empty-state
-      image-path="./demos/side_panel/empty.svg"
+  <sp-empty-state image-path="./demos/side_panel/empty.svg"
       dark-image-path="./demos/side_panel/empty_dark.svg"
       heading="There is no content"
       body="Some more descriptive text explaining how to add content">
   </sp-empty-state>
   <cr-button class="floating-button">
     <cr-icon slot="prefix-icon"
-        icon="${this.webuiRoundedIconsEnabled_
-            ? 'sp:add-circle'
-            : 'sp:add-circle-old'}"></cr-icon>
+        icon="${
+            this.webuiRoundedIconsEnabled_ ? 'sp:add-circle' :
+                                             'sp:add-circle-old'}">
+    </cr-icon>
     Add content
   </cr-button>
 </div>

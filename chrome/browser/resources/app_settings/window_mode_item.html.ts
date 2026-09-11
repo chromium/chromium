@@ -8,9 +8,7 @@ import type {WindowModeItemElement} from './window_mode_item.js';
 
 export function getHtml(this: WindowModeItemElement) {
   return html`<!--_html_template_start_-->
-<app-management-toggle-row
-    id="toggle-row"
-    label="${this.windowModeLabel}"
+<app-management-toggle-row id="toggle-row" label="${this.windowModeLabel}"
     ?value="${this.getValue_()}">
 </app-management-toggle-row>
 <!--_html_template_end_-->`;

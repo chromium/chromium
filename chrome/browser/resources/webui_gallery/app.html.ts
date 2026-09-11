@@ -13,10 +13,11 @@ export function getHtml(this: WebuiGalleryAppElement) {
   <cr-menu-selector id="selector" selectable="a" selected-attribute="selected"
       @iron-select="${this.onMenuItemIronSelect_}">
     ${this.demos_.map(demo => html`
-        <a role="menuitem" href="${demo.path}"
-            class="cr-nav-menu-item" @click="${this.onMenuItemClick_}">
+      <a role="menuitem" href="${demo.path}" class="cr-nav-menu-item"
+          @click="${this.onMenuItemClick_}">
         ${demo.name}
-        </a>`)}
+      </a>
+    `)}
   </cr-menu-selector>
 
   <div class="cr-row">

@@ -8,11 +8,8 @@ import type {RunOnOsLoginItemElement} from './run_on_os_login_item.js';
 
 export function getHtml(this: RunOnOsLoginItemElement) {
   return html`<!--_html_template_start_-->
-<app-management-toggle-row
-   id="toggle-row"
-   label="${this.loginModeLabel}"
-   ?managed="${this.isManaged_()}"
-   ?value="${this.getValue_()}">
+<app-management-toggle-row id="toggle-row" label="${this.loginModeLabel}"
+    ?managed="${this.isManaged_()}" ?value="${this.getValue_()}">
 </app-management-toggle-row>
 <!--_html_template_end_-->`;
 }

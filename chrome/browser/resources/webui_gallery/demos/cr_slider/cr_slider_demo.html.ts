@@ -21,8 +21,7 @@ export function getHtml(this: CrSliderDemoElement) {
 <h2>5 ticks, increments of 5</h2>
 <div class="demos">
   <cr-slider id="tickedSlider" .ticks="${this.ticks_}"
-      marker-count="${this.getMarkerCount_()}"
-      .value="${this.tickedValue_}"
+      marker-count="${this.getMarkerCount_()}" .value="${this.tickedValue_}"
       @cr-slider-value-changed="${this.onTickedCrSliderValueChanged_}">
   </cr-slider>
   <div>Value of slider, the index of selected tick: ${this.tickedValue_}</div>

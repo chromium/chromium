@@ -24,8 +24,8 @@ export function getHtml(this: WelcomeAppElement) {
           ?disabled="${this.shouldDisableButtons_()}"
           @checked-changed="${this.onDefaultBrowserCheckedChanged_}">
       </cr-toggle>
-    </div>`
-  : ''}
+    </div>
+  ` : ''}
 
   <cr-button id="acceptButton" class="action-button"
       ?disabled="${this.shouldDisableButtons_()}"
@@ -36,16 +36,13 @@ export function getHtml(this: WelcomeAppElement) {
 
 ${this.showMetricsOptIn_ ? html`
   <p id="footer" class="footer">
-    <localized-link
-        .linkDisabled="${this.shouldDisableButtons_()}"
+    <localized-link .linkDisabled="${this.shouldDisableButtons_()}"
         .localizedString="${this.getMetricsLabel_()}"
         @link-clicked="${this.onManageLinkClicked_}">
     </localized-link>
   </p>
 
-  <dialog id="dialog"
-      closedby="any"
-      aria-labelledby="dialog-title"
+  <dialog id="dialog" closedby="any" aria-labelledby="dialog-title"
       aria-describedby="dialog-body">
     <div id="dialog-header">
       <div id="dialog-title">$i18n{welcomeMetricsPopupTitle}</div>
@@ -60,8 +57,8 @@ ${this.showMetricsOptIn_ ? html`
         @click="${this.onDialogActionButtonClick_}">
       ${this.getDialogActionButtonLabel_()}
     </cr-button>
-  </dialog>`
-: ''}
+  </dialog>
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

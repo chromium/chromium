@@ -15,10 +15,10 @@ export function getHtml(this: ToggleRowElement) {
     ` : ''}
     <div class="vertical-align">
       <div id="label">${this.label}</div>
-        <div id="description" class="secondary-text">
-          ${this.description}
-          <slot name="description"></slot>
-        </div>
+      <div id="description" class="secondary-text">
+        ${this.description}
+        <slot name="description"></slot>
+      </div>
     </div>
   </div>
 </div>
@@ -27,10 +27,8 @@ export function getHtml(this: ToggleRowElement) {
     <cr-policy-indicator id="policyIndicator" indicator-type="devicePolicy">
     </cr-policy-indicator>
   ` : ''}
-  <cr-toggle id="toggle"
-      ?checked="${this.value}"
-      ?disabled="${this.isDisabled_()}"
-      .ariaLabel="${this.label}">
+  <cr-toggle id="toggle" ?checked="${this.value}"
+      ?disabled="${this.isDisabled_()}" .ariaLabel="${this.label}">
   </cr-toggle>
 </div>
 <!--_html_template_end_-->`;

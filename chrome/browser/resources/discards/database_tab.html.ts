@@ -83,7 +83,7 @@ export function getHtml(this: DatabaseTabElement) {
           <div>
             <div>Average Load</div>
             <div>Time</div>
-        </div>
+          </div>
         </div>
       </th>
     </tr>
@@ -109,15 +109,12 @@ export function getHtml(this: DatabaseTabElement) {
   </tbody>
 </table>
 <div class="add-origin-container">
-  <cr-input id="addOriginInput" label="Add Origin"
-      value="${this.newOrigin_}"
+  <cr-input id="addOriginInput" label="Add Origin" value="${this.newOrigin_}"
       @value-changed="${this.onNewOriginValueChanged_}"
       @keydown="${this.onOriginKeydown_}" placeholder="https://example.org"
       ?invalid="${!this.isEmptyOrValidOrigin_(this.newOrigin_)}"
-      error-message="The origin must be a valid URL without a path."
-      autofocus>
-    <button slot="suffix" label="Add Origin"
-        @click="${this.onAddOriginClick_}"
+      error-message="The origin must be a valid URL without a path." autofocus>
+    <button slot="suffix" label="Add Origin" @click="${this.onAddOriginClick_}"
         ?disabled="${!this.isValidOrigin_(this.newOrigin_)}">
       <cr-icon icon="cr:check"></cr-icon>
     </button>

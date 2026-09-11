@@ -46,13 +46,9 @@ export function getHtml(this: CrDialogDemoElement) {
 </div>
 
 ${this.isDialogOpen_ ? html`
-  <cr-dialog
-      id="dialog"
-      @cr-dialog-open="${this.onDialogCrDialogOpen_}"
-      @cancel="${this.onDialogCancel_}"
-      @close="${this.onDialogClose_}"
-      show-on-attach
-      ?no-cancel="${this.noCancel_}">
+  <cr-dialog id="dialog" @cr-dialog-open="${this.onDialogCrDialogOpen_}"
+      @cancel="${this.onDialogCancel_}" @close="${this.onDialogClose_}"
+      show-on-attach ?no-cancel="${this.noCancel_}">
     <div slot="title">Dialog title</div>
     <div slot="header" ?hidden="${!this.showHeader_}">
       Dialogs can also include a header between the title and the body. It is

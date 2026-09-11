@@ -9,11 +9,8 @@ import type {UninstallButtonElement} from './uninstall_button.js';
 export function getHtml(this: UninstallButtonElement) {
   return html`<!--_html_template_start_-->
 ${this.showPolicyIndicator_() ? html`
-  <cr-tooltip-icon
-      id="policyIndicator"
-      icon-class="cr20:domain"
-      tooltip-text="${this.policyLabel}"
-      icon-aria-label="${this.policyLabel}"
+  <cr-tooltip-icon id="policyIndicator" icon-class="cr20:domain"
+      tooltip-text="${this.policyLabel}" icon-aria-label="${this.policyLabel}"
       tooltip-position="bottom">
   </cr-tooltip-icon>
 ` : ''}

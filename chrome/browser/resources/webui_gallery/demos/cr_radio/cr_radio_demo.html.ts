@@ -27,8 +27,8 @@ export function getHtml(this: CrRadioDemoElement) {
 
   Selected option: ${this.selectedRadioOption_}
   <cr-radio-group selected="option5">
-    <cr-radio-button name="option5" label="Disabled selected"
-        disabled></cr-radio-button>
+    <cr-radio-button name="option5" label="Disabled selected" disabled>
+    </cr-radio-button>
   </cr-radio-group>
 </div>`;
 }

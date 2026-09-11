@@ -16,8 +16,7 @@ export function getHtml(this: AppElement) {
   <div class="cr-row first" id="headerLine">
     <img id="title-icon" src="${this.iconUrl_}" aria-hidden="true">
     <h1 class="cr-title-text">${this.getTitle_()}</h1>
-    <app-management-uninstall-button id="uninstall-button"
-        .app="${this.app_}"
+    <app-management-uninstall-button id="uninstall-button" .app="${this.app_}"
         uninstall-label="$i18n{appManagementUninstallLabel}"
         policy-label="$i18n{appManagementAppInstalledByPolicyLabel}">
     </app-management-uninstall-button>
@@ -52,69 +51,67 @@ export function getHtml(this: AppElement) {
         login-mode-label="$i18n{appManagementRunOnOsLoginModeLabel}"
         .app="${this.app_}">
     </app-management-run-on-os-login-item>
-    <app-management-window-mode-item
-        class="permission-card-row separated-row"
+    <app-management-window-mode-item class="permission-card-row separated-row"
         window-mode-label="$i18n{appManagementWindowModeLabel}"
         .app="${this.app_}">
     </app-management-window-mode-item>
-    <app-management-permission-item
-        class="permission-card-row separated-row"
+    <app-management-permission-item class="permission-card-row separated-row"
         .app="${this.app_}"
         permission-label="$i18n{appManagementNotificationsLabel}"
         permission-type="kNotifications">
       ${this.shouldShowSystemNotificationsSettingsLink_() ? html`
         <localized-link slot="description"
-            .localizedString=
-                "${this.i18nAdvanced('appManagementNotificationsDescription')}"
+            .localizedString="${
+                this.i18nAdvanced('appManagementNotificationsDescription')}"
             @link-clicked="${this.onNotificationsSystemSettingsLinkClicked_}">
         </localized-link>
       ` : ''}
-      </app-management-permission-item>
+    </app-management-permission-item>
     <div id="permissions-card" class="permission-card-row">
       <div class="permission-section-header">
         <div class="header-text">${this.getPermissionsHeader_()}</div>
       </div>
       <div class="permission-list indented-permission-block">
         <app-management-permission-item class="subpermission-row"
-            icon="${this.webuiRoundedIconsEnabled_
-                ? 'app-management:location-on'
-                : 'app-management:location-old'}" .app="${this.app_}"
+            icon="${
+                this.webuiRoundedIconsEnabled_ ?
+                    'app-management:location-on' :
+                    'app-management:location-old'}"
+            .app="${this.app_}"
             permission-label="$i18n{appManagementLocationPermissionLabel}"
             permission-type="kLocation">
         </app-management-permission-item>
         <app-management-permission-item class="subpermission-row"
-            icon="${this.webuiRoundedIconsEnabled_
-                ? 'app-management:videocam'
-                : 'app-management:camera-old'}" .app="${this.app_}"
+            icon="${
+                this.webuiRoundedIconsEnabled_ ? 'app-management:videocam' :
+                                                 'app-management:camera-old'}"
+            .app="${this.app_}"
             permission-label="$i18n{appManagementCameraPermissionLabel}"
             permission-type="kCamera">
         </app-management-permission-item>
         <app-management-permission-item class="subpermission-row"
-            icon="${this.webuiRoundedIconsEnabled_
-                ? 'app-management:mic'
-                : 'app-management:microphone-old'}" .app="${this.app_}"
+            icon="${
+                this.webuiRoundedIconsEnabled_ ?
+                    'app-management:mic' :
+                    'app-management:microphone-old'}"
+            .app="${this.app_}"
             permission-label="$i18n{appManagementMicrophonePermissionLabel}"
             permission-type="kMicrophone">
         </app-management-permission-item>
       </div>
     </div>
-    <app-management-file-handling-item
-        class="permission-card-row separated-row"
+    <app-management-file-handling-item class="permission-card-row separated-row"
         .app="${this.app_}">
     </app-management-file-handling-item>
-    <app-management-app-content-item
-        class="permission-card-row separated-row"
+    <app-management-app-content-item class="permission-card-row separated-row"
         .app="${this.app_}">
     </app-management-app-content-item>
     <app-management-more-permissions-item
         class="permission-card-row separated-row" .app="${this.app_}"
         more-permissions-label="$i18n{appManagementMorePermissionsLabel}">
     </app-management-more-permissions-item>
-    <app-management-supported-links-item
-        id="supportedLinksOption"
-        class="permission-card-row"
-        .app="${this.app_}"
-        .apps="${this.apps_}">
+    <app-management-supported-links-item id="supportedLinksOption"
+        class="permission-card-row" .app="${this.app_}" .apps="${this.apps_}">
     </app-management-supported-links-item>
   </div>
 </div>

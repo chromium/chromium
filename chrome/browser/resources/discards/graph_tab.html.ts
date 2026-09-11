@@ -15,8 +15,8 @@ export function getHtml(this: GraphTabElement) {
 <svg id="graphBody" width="100%" height="100%">
   <defs>
     <marker id="arrowToSource" viewBox="0 -5 10 10" refX="-12" refY="0"
-            markerWidth="9" markerHeight="6" orient="auto">
-      <path d="M15,-7 L0,0 L15,7" >
+        markerWidth="9" markerHeight="6" orient="auto">
+      <path d="M15,-7 L0,0 L15,7"></path>
     </marker>
   </defs>
 </svg>

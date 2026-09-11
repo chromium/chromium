@@ -62,8 +62,8 @@ export function getHtml(this: ButtonsDemoElement) {
 <h1>cr-expand-button</h1>
 <div class="demos">
   <cr-expand-button ?expanded="${this.expanded_}"
-      @expanded-changed="${this.onExpandedChanged_}"
-      expand-title="Expand" collapse-title="Collapse">
+      @expanded-changed="${this.onExpandedChanged_}" expand-title="Expand"
+      collapse-title="Collapse">
     <div ?hidden="${this.expanded_}">Expand row</div>
     <div ?hidden="${!this.expanded_}">Collapse row</div>
   </cr-expand-button>

@@ -46,7 +46,8 @@ export function getHtml(this: CardDemoElement) {
     </cr-link-row>
     <cr-link-row class="hr" external
         label="A row that links to an external website"
-        @click="${this.onExternalLinkClick_}"></cr-link-row>
+        @click="${this.onExternalLinkClick_}">
+    </cr-link-row>
     <cr-link-row no-hover class="hr" label="Link row with no hover effect">
     </cr-link-row>
     <cr-link-row start-icon="cr:check" label="Row with an icon"></cr-link-row>

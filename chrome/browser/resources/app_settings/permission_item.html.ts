@@ -11,16 +11,12 @@ export function getHtml(this: PermissionItemElement) {
 <!-- permission-item does not include any icon-set, so containing
   elements should import the icon-set needed for the specified |icon|. -->
 ${this.available_ ? html`
-  <app-management-toggle-row
-      id="toggle-row"
-      icon="${this.icon}"
-      label="${this.permissionLabel}"
-      ?managed="${this.isManaged_()}"
-      ?disabled="${this.isDisabled_()}"
-      ?value="${this.getValue_()}"
+  <app-management-toggle-row id="toggle-row" icon="${this.icon}"
+      label="${this.permissionLabel}" ?managed="${this.isManaged_()}"
+      ?disabled="${this.isDisabled_()}" ?value="${this.getValue_()}"
       aria-description="Click to toggle ${this.permissionLabel} permissions."
       i18n-aria-descrirption="Label for toggle button to change ${this.permissionLabel} permissions.">
-      <slot name="description" slot="description"></slot>
+    <slot name="description" slot="description"></slot>
   </app-management-toggle-row>
 ` : ''}
 <!--_html_template_end_-->`;

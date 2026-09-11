@@ -12,9 +12,7 @@ export function getHtml(this: DeprecatedAppsLinkElement) {
 ${this.display ? html`
   <div id="container">
     <img src="chrome://resources/images/error_yellow900.svg">
-    <a is="action-link"
-        id="deprecated-apps-link"
-        @click="${this.onLinkClick_}"
+    <a is="action-link" id="deprecated-apps-link" @click="${this.onLinkClick_}"
         href="#">
       ${this.deprecationLinkString}
     </a>

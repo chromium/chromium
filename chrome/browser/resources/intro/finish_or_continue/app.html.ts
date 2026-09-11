@@ -26,22 +26,22 @@ export function getHtml(this: FinishOrContinueAppElement) {
 
 <h1 class="title">$i18n{finishOrContinueTitle}</h1>
 <div id="buttonContainer">
-  <if expr="not is_win">
-    <cr-button id="continueEducationButton"
-        @click="${this.onContinueEducationClick_}">
-      ${this.getContinueEducationButtonLabel_()}
-    </cr-button>
-  </if>
+<if expr="not is_win">
+  <cr-button id="continueEducationButton"
+      @click="${this.onContinueEducationClick_}">
+    ${this.getContinueEducationButtonLabel_()}
+  </cr-button>
+</if>
   <cr-button id="startBrowsingButton" class="action-button"
       @click="${this.onStartBrowsingClick_}">
     $i18n{startBrowsingButtonLabel}
   </cr-button>
-  <if expr="is_win">
-    <cr-button id="continueEducationButton"
-        @click="${this.onContinueEducationClick_}">
-      ${this.getContinueEducationButtonLabel_()}
-    </cr-button>
-  </if>
+<if expr="is_win">
+  <cr-button id="continueEducationButton"
+      @click="${this.onContinueEducationClick_}">
+    ${this.getContinueEducationButtonLabel_()}
+  </cr-button>
+</if>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

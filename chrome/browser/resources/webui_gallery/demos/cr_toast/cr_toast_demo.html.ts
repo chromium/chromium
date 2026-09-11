@@ -11,7 +11,8 @@ export function getHtml(this: CrToastDemoElement) {
 <h1>cr-toast</h1>
 <div class="demos">
   <cr-input type="text" label="Toast message" .value="${this.message_}"
-      @value-changed="${this.onMessageValueChanged_}"></cr-input>
+      @value-changed="${this.onMessageValueChanged_}">
+  </cr-input>
   <cr-checkbox ?checked="${this.showDismissButton_}"
       @checked-changed="${this.onShowDismissButtonCheckedChanged_}">
     Show dismiss button

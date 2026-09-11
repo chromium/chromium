@@ -8,9 +8,7 @@ import type {AppContentItemElement} from './app_content_item.js';
 
 export function getHtml(this: AppContentItemElement) {
   return html`<!--_html_template_start_-->
-<cr-link-row
-    id="appContent"
-    label="$i18n{appManagementAppContentLabel}"
+<cr-link-row id="appContent" label="$i18n{appManagementAppContentLabel}"
     sub-label="$i18n{appManagementAppContentSublabel}"
     @click="${this.onAppContentClick_}">
 </cr-link-row>

@@ -11,9 +11,7 @@ export function getHtml(this: CrToggleDemoElement) {
 <h1>cr-toggle</h1>
 <div class="demos">
   <div class="row">
-    <cr-toggle
-        aria-label="Label for toggle"
-        ?checked="${this.checked_}"
+    <cr-toggle aria-label="Label for toggle" ?checked="${this.checked_}"
         @checked-changed="${this.onCheckedChanged_}">
     </cr-toggle>
     <span aria-hidden="true">Label for toggle</span>
@@ -29,8 +27,7 @@ export function getHtml(this: CrToggleDemoElement) {
   </div>
 
   <div class="row">
-    <cr-toggle aria-label="Disabled unchecked toggle" disabled>
-    </cr-toggle>
+    <cr-toggle aria-label="Disabled unchecked toggle" disabled></cr-toggle>
     <span aria-hidden="true">Disabled unchecked toggle</span>
   </div>
 </div>`;

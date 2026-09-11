@@ -9,19 +9,14 @@ import type {AppItemElement} from './app_item.js';
 
 export function getHtml(this: AppItemElement) {
   return html`<!--_html_template_start_-->
-<div title="${this.appInfo.name}" aria-hidden="true"
-    id="objectContainer">
+<div title="${this.appInfo.name}" aria-hidden="true" id="objectContainer">
   <div id="iconContainer">
-    <img .src="${this.getIconUrl_()}" id="iconImage"
-        alt="${this.appInfo.name}"
-        aria-hidden="true"
-        draggable="false">
-    <img id="deprecatedIcon"
-        src="chrome://resources/images/error_yellow900.svg"
+    <img .src="${this.getIconUrl_()}" id="iconImage" alt="${this.appInfo.name}"
+        aria-hidden="true" draggable="false">
+    <img id="deprecatedIcon" src="chrome://resources/images/error_yellow900.svg"
         ?hidden="${this.appInfo.appType !== AppType.kDeprecatedChromeApp}">
   </div>
-  <div id="textContainer"
-      aria-hidden="true">${this.appInfo.name}</div>
+  <div id="textContainer" aria-hidden="true">${this.appInfo.name}</div>
 </div>
 
 <cr-action-menu id="menu" @mousedown="${this.onMenuMousedown_}"
@@ -31,24 +26,20 @@ export function getHtml(this: AppItemElement) {
       ?hidden="${this.isWebStoreLinkHidden_()}">
     $i18n{viewInWebStore}
   </button>
-  <cr-checkbox id="openInWindow"
-      class="dropdown-item label-first"
+  <cr-checkbox id="openInWindow" class="dropdown-item label-first"
       @change="${this.onOpenInWindowItemChange_}"
       ?hidden="${this.isOpenInWindowHidden_()}"
       ?checked="${this.appInfo.openInWindow}" noink>
     $i18n{appWindowOpenLabel}
   </cr-checkbox>
-  <cr-checkbox
-      id="launchOnStartup"
-      class="dropdown-item label-first"
+  <cr-checkbox id="launchOnStartup" class="dropdown-item label-first"
       @click="${this.onLaunchOnStartupItemClick_}"
       ?hidden="${this.isLaunchOnStartupHidden_()}"
       ?checked="${this.isLaunchOnStartUp_()}"
       ?disabled="${this.isLaunchOnStartupDisabled_()}" noink>
     $i18n{appLaunchAtStartupLabel}
   </cr-checkbox>
-  <button id="createShortcut"
-      class="dropdown-item"
+  <button id="createShortcut" class="dropdown-item"
       @click="${this.onCreateShortcutItemClick_}"
       ?hidden="${this.isCreateShortcutHidden_()}">
     $i18n{createShortcutForAppLabel}

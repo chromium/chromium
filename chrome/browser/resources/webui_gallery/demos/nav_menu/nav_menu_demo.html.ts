@@ -22,8 +22,8 @@ export function getHtml(this: NavMenuDemoElement) {
   <cr-button @click="${this.onShowDrawerMenuClick_}">
     Show menu in a drawer
   </cr-button>
-  <nav-menu ?hidden="${this.isDrawerOpen_}"
-      ?show-icons="${this.showIcons_}" ?show-ripples="${this.showRipples_}"
+  <nav-menu ?hidden="${this.isDrawerOpen_}" ?show-icons="${this.showIcons_}"
+      ?show-ripples="${this.showRipples_}"
       .selectedIndex="${this.selectedIndex_}"
       @selected-index-changed="${this.onSelectedIndexChanged_}">
   </nav-menu>
@@ -32,8 +32,8 @@ export function getHtml(this: NavMenuDemoElement) {
 
 <cr-drawer id="drawer" heading="Drawer" @close="${this.onDrawerClose_}">
   <div slot="body">
-    <nav-menu
-        ?show-icons="${this.showIcons_}" ?show-ripples="${this.showRipples_}"
+    <nav-menu ?show-icons="${this.showIcons_}"
+        ?show-ripples="${this.showRipples_}"
         .selectedIndex="${this.selectedIndex_}"
         @selected-index-changed="${this.onSelectedIndexChanged_}">
     </nav-menu>

@@ -17,42 +17,31 @@ export function getHtml(this: CrUrlListItemDemoElement) {
   <cr-url-list-item count="23" always-show-suffix
       title="A folder with the X icon always visible"
       description="23 bookmarks">
-    <cr-icon-button iron-icon="cr:close" slot="suffix">
-    </cr-icon-button>
+    <cr-icon-button iron-icon="cr:close" slot="suffix"></cr-icon-button>
   </cr-url-list-item>
 
-  <cr-url-list-item url="http://www.google.com"
-      title="Google (as anchor)"
-      description="google.com"
-      description-meta="3 days ago" as-anchor>
-    <cr-icon-button iron-icon="cr:check-circle" slot="suffix">
-    </cr-icon-button>
-    <cr-icon-button iron-icon="cr:more-vert" slot="suffix">
-    </cr-icon-button>
+  <cr-url-list-item url="http://www.google.com" title="Google (as anchor)"
+      description="google.com" description-meta="3 days ago" as-anchor>
+    <cr-icon-button iron-icon="cr:check-circle" slot="suffix"></cr-icon-button>
+    <cr-icon-button iron-icon="cr:more-vert" slot="suffix"></cr-icon-button>
   </cr-url-list-item>
 
-  <cr-url-list-item url="http://www.google.com"
-      title="Google"
-      description="google.com"
-      description-meta="3 days ago">
+  <cr-url-list-item url="http://www.google.com" title="Google"
+      description="google.com" description-meta="3 days ago">
     <div slot="suffix">More descriptive text</div>
-    <cr-icon-button iron-icon="cr:more-vert" slot="suffix">
-    </cr-icon-button>
+    <cr-icon-button iron-icon="cr:more-vert" slot="suffix"></cr-icon-button>
   </cr-url-list-item>
 
-  <cr-url-list-item url="http://www.google.com"
-        title="Google"
-        description="google.com">
+  <cr-url-list-item url="http://www.google.com" title="Google"
+      description="google.com">
     <div class="badge" slot="badges">
       <cr-icon icon="cr:error"></cr-icon> Badge 1
     </div>
     <div class="badge" slot="badges">
       <cr-icon icon="cr:draft-filled"></cr-icon> Badge 2
     </div>
-    <cr-icon-button iron-icon="cr:check-circle" slot="suffix">
-    </cr-icon-button>
-    <cr-icon-button iron-icon="cr:more-vert" slot="suffix">
-    </cr-icon-button>
+    <cr-icon-button iron-icon="cr:check-circle" slot="suffix"></cr-icon-button>
+    <cr-icon-button iron-icon="cr:more-vert" slot="suffix"></cr-icon-button>
   </cr-url-list-item>
 
   <cr-url-list-item url="http://maps.google.com"
@@ -67,15 +56,15 @@ export function getHtml(this: CrUrlListItemDemoElement) {
 <h2>Custom Icon</h2>
 <div class="demos">
   <cr-url-list-item url="http://www.google.com" title="Custom Static Icon"
-    description="A custom computer Icon has been displayed">
+      description="A custom computer Icon has been displayed">
     <cr-icon icon="cr:computer" slot="customIcon"></cr-icon>
   </cr-url-list-item>
 </div>
 
 <h2>Compact</h2>
 <div class="demos">
-  <cr-url-list-item url="http://www.google.com" size="compact"
-      title="Google" description="google.com">
+  <cr-url-list-item url="http://www.google.com" size="compact" title="Google"
+      description="google.com">
     <div class="badge" slot="badges">
       <cr-icon icon="cr:error"></cr-icon> Badge 1
     </div>
@@ -89,21 +78,19 @@ export function getHtml(this: CrUrlListItemDemoElement) {
           really really really really really really really really really really
           really long title"
       description="aurlthatisreallyreallyreallyreallyreallyreallylong.com"
-      reverse-elide-description
-      description-meta="2 hours ago">
+      reverse-elide-description description-meta="2 hours ago">
   </cr-url-list-item>
 
-  <cr-url-list-item count="23" size="compact"
-      title="Bookmark folder" description="23 bookmarks">
-    <cr-icon-button iron-icon="cr:more-vert" slot="suffix">
-    </cr-icon-button>
+  <cr-url-list-item count="23" size="compact" title="Bookmark folder"
+      description="23 bookmarks">
+    <cr-icon-button iron-icon="cr:more-vert" slot="suffix"></cr-icon-button>
   </cr-url-list-item>
 </div>
 
 <h2>Large</h2>
 <div class="demos">
-  <cr-url-list-item url="http://www.google.com" size="large"
-      title="Google" description="google.com" description-meta="2 mins">
+  <cr-url-list-item url="http://www.google.com" size="large" title="Google"
+      description="google.com" description-meta="2 mins">
     <div class="badge" slot="badges">
       <cr-icon icon="cr:error"></cr-icon> Badge 1
     </div>
@@ -119,7 +106,9 @@ export function getHtml(this: CrUrlListItemDemoElement) {
 <div class="demos">
   <cr-url-list-item count="23" size="compact"
       title="This should not be visible">
-    <div slot="content"><cr-input value="Item name"></cr-input></div>
+    <div slot="content">
+      <cr-input value="Item name"></cr-input>
+    </div>
     <cr-icon-button iron-icon="cr:more-vert" slot="suffix" disabled>
     </cr-icon-button>
   </cr-url-list-item>

@@ -11,35 +11,30 @@ export function getHtml(this: SupportedLinksItemElement) {
   return html`<!--_html_template_start_-->
 <div class="permission-section-header">
   <localized-link id="heading" class="header-text"
-      @link-clicked="${this.onLinkClicked_}"
-      .localizedString=
-          "${this.i18nAdvanced('appManagementIntentSettingsTitle')}">
+      @link-clicked="${this.onLinkClicked_}" .localizedString="${
+          this.i18nAdvanced('appManagementIntentSettingsTitle')}">
   </localized-link>
 </div>
 ${this.disabled_ ? html`
   <span class="info-text-row" id="disabledExplanationText">
     <cr-icon id="infoIcon"
-        icon="${this.webuiRoundedIconsEnabled_
-            ? 'app-management:info'
-            : 'app-management:info-old'}"></cr-icon>
+        icon="${
+            this.webuiRoundedIconsEnabled_ ? 'app-management:info' :
+                                             'app-management:info-old'}">
+    </cr-icon>
     <localized-link id="infoString"
         .localizedString="${this.getDisabledExplanation_()}">
     </localized-link>
   </span>
 ` : ''}
 <div class="list-frame">
-  <cr-radio-group id="radioGroup"
-      .selected="${this.getCurrentPreferredApp_()}"
+  <cr-radio-group id="radioGroup" .selected="${this.getCurrentPreferredApp_()}"
       @selected-changed="${this.onSupportedLinkPrefSelectedChanged_}"
       ?disabled="${this.disabled_}">
-    <cr-radio-button
-        id="preferredRadioButton"
-        name="preferred"
+    <cr-radio-button id="preferredRadioButton" name="preferred"
         label="${this.getPreferredLabel_()}">
     </cr-radio-button>
-    <cr-radio-button
-        id="browserRadioButton"
-        name="browser"
+    <cr-radio-button id="browserRadioButton" name="browser"
         label="${this.getBrowserLabel_()}">
     </cr-radio-button>
     ${this.showOverlappingAppsWarning_ ? html`
@@ -53,10 +48,8 @@ ${this.showSupportedLinksDialog_ ? html`
   </app-management-supported-links-dialog>
 ` : ''}
 ${this.showOverlappingAppsDialog_ ? html`
-  <app-management-supported-links-overlapping-apps-dialog
-      id="overlapDialog"
-      .app="${this.app}"
-      .apps="${this.apps}"
+  <app-management-supported-links-overlapping-apps-dialog id="overlapDialog"
+      .app="${this.app}" .apps="${this.apps}"
       @close="${this.onOverlappingDialogClose_}"
       .overlappingAppIds="${this.overlappingAppIds_}">
   </app-management-supported-links-overlapping-apps-dialog>

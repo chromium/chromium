@@ -22,8 +22,7 @@ export function getHtml(this: CrTooltipDemoElement) {
   <div class="target" id="target1">Target 1</div>
   <div class="target" id="target2">Target 2</div>
   <cr-tooltip id="manualTooltip" manual-mode
-      .position="${this.tooltipPosition_}"
-      .offset="${this.tooltipOffset_}">
+      .position="${this.tooltipPosition_}" .offset="${this.tooltipOffset_}">
     <span>Tooltip text</span>
   </cr-tooltip>
   <button @click="${this.onShowAtTarget1Click_}">Show at Target 1</button>
