@@ -116,7 +116,6 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/low_memory_pipeline/save/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/save.rs",
-    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/simd_utils.rs",
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/simple_pipeline/extend.rs",
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/simple_pipeline/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/simple_pipeline/run_stage.rs",
@@ -134,7 +133,6 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/stages/from_linear.rs",
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/stages/gaborish.rs",
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/stages/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/stages/nearest_neighbor.rs",
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/stages/noise.rs",
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/stages/patches.rs",
     "//third_party/rust/chromium_crates_io/vendor/jxl-v0_7/src/render/stages/premultiply_alpha.rs",
@@ -181,7 +179,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "High performance Rust implementation of a JPEG XL decoder"
   cargo_pkg_repository = "https://github.com/libjxl/jxl-rs"
-  cargo_pkg_version = "0.7.1"
+  cargo_pkg_version = "0.7.2"
 
   allow_unsafe = true
 

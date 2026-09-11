@@ -38,6 +38,14 @@ pub struct JxlDecoderOptions {
     /// When true, limits total spline area to min(8 * image_size + 2^25, 2^30).
     /// When false, allows Level 10 limits (min(1024 * image_size + 2^32, 2^42)).
     pub force_level5_splines: bool,
+    /// Whether to force Level 5 limits for patches (default: true).
+    /// When true, limits total patch area to max(8 * num_pixels, 2^20).
+    /// When false, allows Level 10 limits (max(1024 * num_pixels, 2^20)).
+    pub force_level5_patches: bool,
+    /// Whether to force Level 5 limits for modular channels (default: true).
+    /// When true, limits the number of channels after transforms to 256.
+    /// When false, allows Level 10 limits (2^16).
+    pub force_level5_modular: bool,
 }
 
 impl Default for JxlDecoderOptions {
@@ -54,6 +62,8 @@ impl Default for JxlDecoderOptions {
             scan_frames_only: false,
             request_aux_boxes: Vec::new(),
             force_level5_splines: true,
+            force_level5_patches: true,
+            force_level5_modular: true,
         }
     }
 }

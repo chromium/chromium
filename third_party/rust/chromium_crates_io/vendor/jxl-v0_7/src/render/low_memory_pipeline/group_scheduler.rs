@@ -70,6 +70,29 @@ fn foreach_ready_rect(
     Ok(())
 }
 
+fn boundary_points(
+    origin: usize,
+    end: usize,
+    is_first: bool,
+    is_last: bool,
+    border: usize,
+    input_size: usize,
+) -> [usize; 4] {
+    let p0 = if is_first {
+        origin
+    } else {
+        origin.saturating_sub(border)
+    };
+    let p1 = (origin + border).min(end);
+    let p2 = end.saturating_sub(border).max(p1);
+    let p3 = if is_last {
+        end
+    } else {
+        (end + border).min(input_size)
+    };
+    [p0, p1, p2, p3]
+}
+
 fn ready_image_area(
     group_rect: Rect,
     group_position: (usize, usize),
@@ -80,40 +103,29 @@ fn ready_image_area(
     yrange: Range<u8>,
 ) -> Option<Rect> {
     let (gx, gy) = group_position;
-    let y0 = match (gy == 0, yrange.start) {
-        (true, 0) => group_rect.origin.1,
-        (false, 0) => group_rect.origin.1 - border_size.1,
-        (_, 1) => group_rect.origin.1 + border_size.1,
-        // (_, 2)
-        _ => group_rect.end().1 - border_size.1,
-    };
-    let x0 = match (gx == 0, xrange.start) {
-        (true, 0) => group_rect.origin.0,
-        (false, 0) => group_rect.origin.0 - border_size.0,
-        (_, 1) => group_rect.origin.0 + border_size.0,
-        // (_, 2)
-        _ => group_rect.end().0 - border_size.0,
-    };
+    let xs = boundary_points(
+        group_rect.origin.0,
+        group_rect.end().0,
+        gx == 0,
+        gx + 1 == group_count.0,
+        border_size.0,
+        input_size.0,
+    );
+    let ys = boundary_points(
+        group_rect.origin.1,
+        group_rect.end().1,
+        gy == 0,
+        gy + 1 == group_count.1,
+        border_size.1,
+        input_size.1,
+    );
 
-    let y1 = match (gy + 1 == group_count.1, yrange.end) {
-        (true, 3) => group_rect.end().1,
-        (false, 3) => group_rect.end().1 + border_size.1,
-        (_, 2) => group_rect.end().1 - border_size.1,
-        // (_, 1)
-        _ => group_rect.origin.1 + border_size.1,
-    }
-    .min(input_size.1);
+    let x0 = xs[xrange.start as usize];
+    let x1 = xs[xrange.end as usize];
+    let y0 = ys[yrange.start as usize];
+    let y1 = ys[yrange.end as usize];
 
-    let x1 = match (gx + 1 == group_count.0, xrange.end) {
-        (true, 3) => group_rect.end().0,
-        (false, 3) => group_rect.end().0 + border_size.0,
-        (_, 2) => group_rect.end().0 - border_size.0,
-        // (_, 1)
-        _ => group_rect.origin.0 + border_size.0,
-    }
-    .min(input_size.0);
-
-    (x1 >= x0 && y1 >= y0).then_some(Rect {
+    (x1 > x0 && y1 > y0).then(|| Rect {
         origin: (x0, y0),
         size: (x1 - x0, y1 - y0),
     })
@@ -170,7 +182,7 @@ impl LowMemoryRenderPipeline {
                 let width = (1 << self.shared.log_group_size) * ty.size();
                 self.shared
                     .buffer_recycler
-                    .get_raw_buffer((width, height))?
+                    .get_raw_buffer((width, height), false)?
             };
             let mut leftright = if let Some(b) = buf.leftright[c].try_write().unwrap().take() {
                 b
@@ -179,7 +191,7 @@ impl LowMemoryRenderPipeline {
                 let width = 4 * bx * ty.size();
                 self.shared
                     .buffer_recycler
-                    .get_raw_buffer((width, height))?
+                    .get_raw_buffer((width, height), false)?
             };
             let data = buf.data[c].try_read().unwrap();
             let input = data.as_ref().unwrap();
@@ -313,5 +325,24 @@ mod tests {
                 size: (26, 26),
             })
         );
+    }
+
+    // The last group of a 513-pixel-wide image is 1 pixel wide, narrower than
+    // the border, so its interior band starts past the right edge of the image.
+    #[test]
+    fn test_ready_image_area_interior_band_past_image_edge() {
+        let area = ready_image_area(
+            Rect {
+                origin: (512, 0),
+                size: (1, 256),
+            },
+            (2, 0),
+            (3, 2),
+            (513, 321),
+            (3, 3),
+            1..3,
+            0..2,
+        );
+        assert_eq!(area, None);
     }
 }

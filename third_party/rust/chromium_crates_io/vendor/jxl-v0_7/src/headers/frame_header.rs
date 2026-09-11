@@ -75,22 +75,30 @@ pub struct Passes {
 
 impl Passes {
     pub fn downsampling_bracket(&self, pass: usize) -> (usize, usize) {
-        let mut max_shift = 2;
+        let mut max_shift = 3;
         let mut min_shift = 3;
-        for i in 0..pass + 1 {
+        for i in 0..=pass {
+            max_shift = min_shift;
+            let mut found = false;
             for j in 0..self.num_ds as usize {
                 if i == self.last_pass[j] as usize {
                     min_shift = self.downsample[j].floor_log2();
+                    found = true;
                 }
             }
             if i + 1 == self.num_passes as usize {
                 min_shift = 0;
+                found = true;
             }
-            if i != pass {
-                max_shift = min_shift.saturating_sub(1);
+            if !found {
+                min_shift = max_shift;
             }
         }
-        (min_shift as usize, max_shift as usize)
+        if min_shift < max_shift {
+            (min_shift as usize, (max_shift - 1) as usize)
+        } else {
+            (1, 0)
+        }
     }
 }
 

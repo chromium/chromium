@@ -228,10 +228,12 @@ impl SqueezeInfo {
         let next_avg_grid = if let Some(pos) = pos_next {
             let grid = buf_avg.get_grid_idx(output_grid_kind, pos);
             if grid == in_grid {
-                if vertical {
-                    avg_rect.size.1 += 1;
-                } else {
-                    avg_rect.size.0 += 1;
+                if avg_rect.size.0 > 0 && avg_rect.size.1 > 0 {
+                    if vertical {
+                        avg_rect.size.1 += 1;
+                    } else {
+                        avg_rect.size.0 += 1;
+                    }
                 }
                 None
             } else {
@@ -708,6 +710,7 @@ impl TransformStepChunk {
                             &buffers[buf_out[i]].info,
                             buffers[buf_out[i]].storage,
                             recycler,
+                            true,
                         )?;
                     } else {
                         *b_out.data.try_write().unwrap() =

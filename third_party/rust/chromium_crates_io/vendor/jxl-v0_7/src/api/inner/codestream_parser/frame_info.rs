@@ -174,10 +174,7 @@ impl FrameInfo {
             match toc_parser.read_step(br) {
                 Ok(()) => *bits = br.total_bits_read(),
                 Err(Error::OutOfBounds(c)) => {
-                    // Estimate >= 16 bits per remaining entry to read.
-                    return Err(Error::OutOfBounds(
-                        c + toc_parser.remaining_entries() as usize * 2,
-                    ));
+                    return Err(Error::OutOfBounds(c));
                 }
                 Err(e) => return Err(e),
             }

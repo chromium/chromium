@@ -188,7 +188,7 @@ impl ModularBuffer {
         let sample_size = storage.sample_size();
 
         if self.needed_borders.topbottom {
-            let mut topbottom = recycler.get_raw_buffer((w * sample_size, 4))?;
+            let mut topbottom = recycler.get_raw_buffer((w * sample_size, 4), false)?;
             let r0 = chan.data.row(0);
             let r1 = if h > 1 { chan.data.row(1) } else { r0 };
             let rb0 = if h > 1 { chan.data.row(h - 2) } else { r0 };
@@ -240,9 +240,11 @@ impl ModularBuffer {
         info: &ChannelInfo,
         storage: ModularStorage,
         recycler: &BufferRecycler,
+        zero_if_recycled: bool,
     ) -> Result<ModularChannel> {
         let sample_size = storage.sample_size();
-        let data = recycler.get_raw_buffer((self.size.0 * sample_size, self.size.1))?;
+        let data =
+            recycler.get_raw_buffer((self.size.0 * sample_size, self.size.1), zero_if_recycled)?;
         Ok(ModularChannel {
             data,
             shift: info.shift,
@@ -255,10 +257,19 @@ impl ModularBuffer {
         info: &ChannelInfo,
         storage: ModularStorage,
         recycler: &BufferRecycler,
+        zero_if_recycled: bool,
     ) -> Result<()> {
         if !self.has_buffer() {
-            let buf = self.make_buffer(info, storage, recycler)?;
+            let buf = self.make_buffer(info, storage, recycler, zero_if_recycled)?;
             *self.data.try_write().unwrap() = Some(buf);
+        } else if zero_if_recycled {
+            self.data
+                .try_write()
+                .unwrap()
+                .as_mut()
+                .unwrap()
+                .data
+                .fill_zero();
         }
         Ok(())
     }
@@ -363,7 +374,7 @@ pub fn with_buffers<T>(
         // Allocate buffers if they are not present.
         let buf = &buffers[*i];
         let b = &buf.buffer_grid[grid];
-        b.ensure_buffer(&buf.info, buf.storage, recycler)?;
+        b.ensure_buffer(&buf.info, buf.storage, recycler, false)?;
 
         // Skip zero-sized *tiles*.
         //

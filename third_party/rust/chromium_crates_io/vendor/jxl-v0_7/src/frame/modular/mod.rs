@@ -190,6 +190,12 @@ impl ModularBufferInfo {
             (chan_size.0 - bx).min(grid_dim.0),
             (chan_size.1 - by).min(grid_dim.1),
         );
+        if size.0 == 0 || size.1 == 0 {
+            return Rect {
+                origin: (0, 0),
+                size: (0, 0),
+            };
+        }
         let origin = match (output_grid_kind, self.grid_kind) {
             (ModularGridKind::Lf, ModularGridKind::Lf)
             | (ModularGridKind::Hf, ModularGridKind::Hf) => (0, 0),
@@ -200,14 +206,7 @@ impl ModularBufferInfo {
             }
             _ => unreachable!("invalid combination of output grid kind and buffer grid kind"),
         };
-        if size.0 == 0 || size.1 == 0 {
-            Rect {
-                origin: (0, 0),
-                size: (0, 0),
-            }
-        } else {
-            Rect { origin, size }
-        }
+        Rect { origin, size }
     }
 }
 
@@ -266,17 +265,11 @@ pub struct FullModularImage {
     ready_transform_steps: Mutex<Vec<usize>>,
     pub(super) recycler: Arc<BufferRecycler>,
     storage: ModularStorage,
+    pub(super) force_level5: bool,
 }
 
-fn max_channels<'a, T: Iterator<Item = &'a ChannelInfo> + ExactSizeIterator>(channels: T) -> usize {
-    let num = channels.len();
-    let max_dim = channels
-        .flat_map(|c| [c.size.0, c.size.1].into_iter())
-        .chain(std::iter::once(1))
-        .max()
-        .unwrap();
-    let tree_depth = 2 + 2 * max_dim.ceil_log2();
-    num.saturating_mul(tree_depth).saturating_add(64)
+pub(super) fn max_channels(force_level5: bool) -> usize {
+    if force_level5 { 256 } else { 1 << 16 }
 }
 
 impl FullModularImage {
@@ -302,6 +295,7 @@ impl FullModularImage {
         self.pipeline_used_channels = used.to_vec();
     }
 
+    #[allow(clippy::too_many_arguments)]
     #[instrument(level = "debug", skip_all)]
     pub fn read(
         frame_header: &FrameHeader,
@@ -311,6 +305,7 @@ impl FullModularImage {
         recycler: Arc<BufferRecycler>,
         sample_limit: Option<usize>,
         storage: ModularStorage,
+        force_level5: bool,
     ) -> Result<Self> {
         let mut channels = vec![];
         for c in 0..modular_color_channels {
@@ -372,6 +367,7 @@ impl FullModularImage {
                 delayed_ready_sections: Mutex::new(BTreeSet::new()),
                 recycler,
                 storage,
+                force_level5,
             });
         }
 
@@ -392,7 +388,7 @@ impl FullModularImage {
 
         let max_palette_samples = sample_limit.unwrap_or(usize::MAX);
 
-        let max_channels = max_channels(channels.iter());
+        let max_channels = max_channels(force_level5);
 
         let (mut buffer_info, transform_steps) = transforms::meta_apply::meta_apply_transforms(
             &channels,
@@ -552,6 +548,7 @@ impl FullModularImage {
             delayed_ready_sections: Mutex::new(BTreeSet::new()),
             recycler,
             storage,
+            force_level5,
         })
     }
 
@@ -582,6 +579,7 @@ impl FullModularImage {
                     br,
                     Some(&mut decoded_if_partial),
                     &mut scratch,
+                    self.force_level5,
                 )
             },
         );
@@ -674,6 +672,7 @@ impl FullModularImage {
                     br,
                     None,
                     &mut scratch,
+                    self.force_level5,
                 )?;
                 Ok(())
             },
@@ -1071,6 +1070,7 @@ pub(super) fn decode_vardct_lf(
     br: &mut BitReader,
     storage: ModularStorage,
     scratch_space: &mut ScratchSpace,
+    force_level5: bool,
 ) -> Result<()> {
     let extra_precision = br.read(2)?;
     debug!(?extra_precision);
@@ -1101,6 +1101,7 @@ pub(super) fn decode_vardct_lf(
         br,
         None,
         scratch_space,
+        force_level5,
     )?;
     dequant_lf(
         r,
@@ -1131,6 +1132,7 @@ pub(super) fn decode_hf_metadata(
     br: &mut BitReader,
     storage: ModularStorage,
     scratch_space: &mut ScratchSpace,
+    force_level5: bool,
 ) -> Result<()> {
     let stream_id = ModularStreamId::LFMeta(group).get_id(frame_header);
     debug!(?stream_id);
@@ -1159,6 +1161,7 @@ pub(super) fn decode_hf_metadata(
         br,
         None,
         scratch_space,
+        force_level5,
     )?;
     if storage == ModularStorage::I16 {
         decode_hf_metadata_finish::<i16>(&buffers, hf_meta, cr, r, count, frame_header)
@@ -1226,6 +1229,15 @@ fn decode_hf_metadata_finish<T: ImageDataType + Into<i32> + Copy>(
 
             for iy in 0..cy {
                 let trans_row = hf_meta.transform_map.typed_row_mut::<u8>(y + iy);
+                for ix in 0..cx {
+                    if trans_row[x + ix] != HfTransformType::INVALID_TRANSFORM {
+                        return Err(Error::InvalidVarDCTTransformMap);
+                    }
+                }
+            }
+
+            for iy in 0..cy {
+                let trans_row = hf_meta.transform_map.typed_row_mut::<u8>(y + iy);
                 let rq_row = hf_meta.raw_quant_map.typed_row_mut::<i32>(y + iy);
                 for ix in 0..cx {
                     let is_first_block = iy == 0 && ix == 0;
@@ -1240,6 +1252,7 @@ fn decode_hf_metadata_finish<T: ImageDataType + Into<i32> + Copy>(
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn decode_quant_table(
     index: usize,
     frame_header: &FrameHeader,
@@ -1248,6 +1261,7 @@ pub(super) fn decode_quant_table(
     br: &mut BitReader,
     scratch_space: &mut ScratchSpace,
     storage: ModularStorage,
+    force_level5: bool,
 ) -> Result<Vec<i32>> {
     let bit_depth = BitDepth::integer_samples(8);
     let mut image = [
@@ -1265,6 +1279,7 @@ pub(super) fn decode_quant_table(
         br,
         None,
         scratch_space,
+        force_level5,
     )?;
     let mut qtable = Vec::with_capacity(required_size_x * required_size_y * 3);
     for channel in image.iter_mut() {

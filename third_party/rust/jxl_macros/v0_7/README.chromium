@@ -1,7 +1,7 @@
 Name: jxl_macros
 URL: https://crates.io/crates/jxl_macros
-Version: 0.7.1
-Revision: 9e6b9f97d66be22a49c02d966a72f2ab5f7f8801
+Version: 0.7.2
+Revision: 3ac7e26020142a8ca5f1efb1fc0eac6042b96e13
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: BSD-3-Clause
 License File: //third_party/rust/chromium_crates_io/vendor/jxl_macros-v0_7/LICENSE

@@ -34,6 +34,11 @@ pub fn check_squeeze_params(
     if channels[params.begin_channel as usize].1.is_meta() && !params.in_place {
         return Err(Error::MetaSqueezeRequiresInPlace);
     }
+    for c in &channels[params.begin_channel as usize..end_channel] {
+        if c.1.size.0 == 0 || c.1.size.1 == 0 {
+            return Err(Error::TooManySqueezes);
+        }
+    }
     Ok(())
 }
 

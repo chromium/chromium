@@ -48,15 +48,24 @@ impl BufferRecycler {
     }
 
     pub fn get_buffer<T: ImageDataType>(&self, size: (usize, usize)) -> Result<Image<T>> {
-        self.get_raw_buffer((std::mem::size_of::<T>() * size.0, size.1))
+        self.get_raw_buffer((std::mem::size_of::<T>() * size.0, size.1), false)
             .map(Image::from_raw)
     }
 
-    pub fn get_raw_buffer(&self, byte_size: (usize, usize)) -> Result<OwnedRawImage> {
+    pub fn get_raw_buffer(
+        &self,
+        byte_size: (usize, usize),
+        zero_if_recycled: bool,
+    ) -> Result<OwnedRawImage> {
         self.buckets
             .get(&byte_size)
             .and_then(|x| x.images.lock().unwrap().pop())
-            .map(Ok)
+            .map(|mut img| {
+                if zero_if_recycled {
+                    img.fill_zero();
+                }
+                Ok(img)
+            })
             .unwrap_or_else(|| OwnedRawImage::new(byte_size))
     }
 

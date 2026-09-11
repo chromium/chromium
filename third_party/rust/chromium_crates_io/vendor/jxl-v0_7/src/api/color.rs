@@ -1074,17 +1074,6 @@ impl JxlColorEncoding {
         let total_profile_size = final_icc_profile_data.len() as u32;
         write_u32_be(&mut final_icc_profile_data, 0, total_profile_size)?;
 
-        // Assemble the final ICC profile parts: header + tag_table + tags_data
-        let mut final_icc_profile_data: Vec<u8> =
-            Vec::with_capacity(header.len() + tag_table_bytes.len() + tags_data.len());
-        final_icc_profile_data.extend_from_slice(&header);
-        final_icc_profile_data.extend_from_slice(&tag_table_bytes);
-        final_icc_profile_data.extend_from_slice(&tags_data);
-
-        // Update the profile size in the header (at offset 0)
-        let total_profile_size = final_icc_profile_data.len() as u32;
-        write_u32_be(&mut final_icc_profile_data, 0, total_profile_size)?;
-
         // The MD5 checksum (Profile ID) must be computed on the profile with
         // specific header fields zeroed out, as per the ICC specification.
         let mut profile_for_checksum = final_icc_profile_data.clone();
@@ -1620,36 +1609,6 @@ impl TF_HLG {
     #[inline]
     fn display_from_encoded(e: f64) -> f64 {
         Self::inv_oetf(e)
-    }
-
-    /// Converts a linear display value to a non-linear encoded signal (inverse EOTF).
-    ///
-    /// This corresponds to `EncodedFromDisplay(d) = OETF(InvOOTF(d))`.
-    /// Since the InvOOTF is an identity function, this is equivalent to `oetf(d)`.
-    #[inline]
-    #[allow(dead_code)]
-    fn encoded_from_display(d: f64) -> f64 {
-        Self::oetf(d)
-    }
-
-    /// The private HLG OETF, converting scene-referred light to a non-linear signal.
-    fn oetf(mut s: f64) -> f64 {
-        if s == 0.0 {
-            return 0.0;
-        }
-        let original_sign = s.signum();
-        s = s.abs();
-
-        let e = if s <= Self::INV_12 {
-            (3.0 * s).sqrt()
-        } else {
-            Self::A * (12.0 * s - Self::B).ln() + Self::C
-        };
-
-        // The result should be positive for positive inputs.
-        debug_assert!(e > 0.0);
-
-        e.copysign(original_sign)
     }
 
     /// The private HLG inverse OETF, converting a non-linear signal back to scene-referred light.

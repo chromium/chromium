@@ -20,9 +20,6 @@ pub mod upsample;
 mod xyb;
 mod ycbcr;
 
-#[cfg(test)]
-mod nearest_neighbor;
-
 pub use blending::*;
 pub use chroma_upsample::*;
 pub use convert::*;

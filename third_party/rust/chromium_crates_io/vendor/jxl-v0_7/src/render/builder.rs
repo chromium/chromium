@@ -281,7 +281,7 @@ impl<Pipeline: RenderPipeline> RenderPipelineBuilder<Pipeline> {
                 // Arithmetic overflows here should be very uncommon, so custom error variants
                 // are probably unwarranted.
                 let cur_downsample = &mut cur_downsamples[chan];
-                if matches!(stage, Stage::Save(_)) {
+                if matches!(stage, Stage::Save(_)) && uses_channel {
                     if save_downsample.is_none() {
                         save_downsample = Some(*cur_downsample);
                     }

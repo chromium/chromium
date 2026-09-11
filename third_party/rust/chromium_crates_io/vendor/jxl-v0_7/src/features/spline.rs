@@ -195,7 +195,12 @@ impl QuantizedSpline {
     ) -> Result<QuantizedSpline> {
         let num_control_points =
             splines_reader.read_unsigned(splines_histograms, br, NUM_CONTROL_POINTS_CONTEXT);
-        *total_num_control_points += num_control_points;
+        *total_num_control_points = total_num_control_points
+            .checked_add(num_control_points)
+            .ok_or(Error::SplinesTooManyControlPoints(
+                u32::MAX,
+                max_control_points,
+            ))?;
         if *total_num_control_points > max_control_points {
             return Err(Error::SplinesTooManyControlPoints(
                 *total_num_control_points,
@@ -304,20 +309,22 @@ impl QuantizedSpline {
             result.color_dct[2].0[i] += y_to_b * result.color_dct[1].0[i];
         }
 
-        let mut width_estimate = 0;
+        let mut width_estimate = 0u64;
         let mut color = [0u64; 3];
 
         for (c, color_val) in color.iter_mut().enumerate() {
             for i in 0..32 {
-                *color_val += (inv_quant * self.color_dct[c][i].abs() as f32).ceil() as u64;
+                *color_val = color_val.saturating_add(
+                    (inv_quant * self.color_dct[c][i].unsigned_abs() as f32).ceil() as u64,
+                );
             }
         }
 
-        color[0] += y_to_x.abs().ceil() as u64 * color[1];
-        color[2] += y_to_b.abs().ceil() as u64 * color[1];
+        color[0] = color[0].saturating_add((y_to_x.abs().ceil() as u64).saturating_mul(color[1]));
+        color[2] = color[2].saturating_add((y_to_b.abs().ceil() as u64).saturating_mul(color[1]));
 
         let max_color = color[0].max(color[1]).max(color[2]);
-        let logcolor = 1u64.max((1u64 + max_color).ceil_log2());
+        let logcolor = 1u64.max(1u64.saturating_add(max_color).ceil_log2());
 
         let weight_limit =
             (((area_limit as f32 / logcolor as f32) / manhattan_distance.max(1) as f32).sqrt())
@@ -328,12 +335,13 @@ impl QuantizedSpline {
             result.sigma_dct.0[i] =
                 self.sigma_dct[i] as f32 * inv_dct_factor * CHANNEL_WEIGHT[3] * inv_quant;
 
-            let weight_f = (inv_quant * self.sigma_dct[i].abs() as f32).ceil();
+            let weight_f = (inv_quant * self.sigma_dct[i].unsigned_abs() as f32).ceil();
             let weight = weight_limit.min(weight_f.max(1.0)) as u64;
-            width_estimate += weight * weight * logcolor;
+            width_estimate = width_estimate
+                .saturating_add(weight.saturating_mul(weight).saturating_mul(logcolor));
         }
 
-        result.estimated_area_reached = width_estimate * manhattan_distance;
+        result.estimated_area_reached = width_estimate.saturating_mul(manhattan_distance);
 
         Ok(result)
     }

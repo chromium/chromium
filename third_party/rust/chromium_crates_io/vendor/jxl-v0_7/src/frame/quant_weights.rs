@@ -105,15 +105,6 @@ pub enum QuantEncoding {
 }
 
 impl QuantEncoding {
-    // TODO(veluca): figure out if this should actually be unused.
-    #[allow(dead_code)]
-    pub fn raw_from_qtable(qtable: Vec<i32>, shift: i32) -> Self {
-        Self::Raw {
-            qtable,
-            qtable_den: (1 << shift) as f32 * (1.0 / (8.0 * 255.0)),
-        }
-    }
-
     pub fn decode(
         mut required_size_x: usize,
         mut required_size_y: usize,
@@ -246,6 +237,7 @@ impl QuantEncoding {
                         br,
                         &mut scratch,
                         lf_global.modular_global.storage(),
+                        lf_global.modular_global.force_level5,
                     )?,
                     qtable_den,
                 })

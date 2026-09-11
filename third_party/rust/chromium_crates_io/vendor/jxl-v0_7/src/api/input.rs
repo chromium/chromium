@@ -67,8 +67,12 @@ impl<R: Read + Seek> JxlBitstreamInput for BufReader<R> {
 
     fn skip(&mut self, bytes: usize) -> Result<usize, Error> {
         let cur = self.stream_position()?;
-        let offset = i64::try_from(bytes).unwrap_or(i64::MAX);
-        self.seek(SeekFrom::Current(offset))
-            .map(|x| x.saturating_sub(cur) as usize)
+        if let Ok(offset) = i64::try_from(bytes) {
+            self.seek(SeekFrom::Current(offset))
+                .map(|x| x.saturating_sub(cur) as usize)
+        } else {
+            self.seek(SeekFrom::End(0))
+                .map(|x| x.saturating_sub(cur) as usize)
+        }
     }
 }

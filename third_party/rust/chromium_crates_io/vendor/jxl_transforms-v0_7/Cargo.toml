@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.89.0"
 name = "jxl_transforms"
-version = "0.7.1"
+version = "0.7.2"
 authors = ["Luca Versari <veluca93@gmail.com>"]
 build = false
 autolib = false
@@ -50,7 +50,7 @@ path = "benches/dct.rs"
 harness = false
 
 [dependencies.jxl_simd]
-version = "=0.7.1"
+version = "=0.7.2"
 
 [dev-dependencies.paste]
 version = "1.0.15"

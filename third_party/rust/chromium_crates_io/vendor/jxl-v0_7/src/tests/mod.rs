@@ -311,6 +311,7 @@ declare_test_file!(
     "conformance_test_images/upsampling_5.jxl"
 );
 declare_test_file!(cropped_traffic_light, "cropped_traffic_light.jxl");
+declare_test_file!(ec_upsampling8_multi_group, "ec_upsampling8_multi_group.jxl");
 declare_test_file!(
     dice,
     "dice.jxl",
@@ -419,7 +420,12 @@ declare_test_file!(
 );
 declare_test_file!(multiple_lf_420, "multiple_lf_420.jxl");
 declare_test_file!(named_frame_test, "named_frame_test.jxl");
+declare_test_file!(narrow_edge_group, "narrow_edge_group.jxl");
 declare_test_file!(oddsize_ups, "oddsize_ups.jxl");
+declare_test_file!(
+    ooo_jxlp_empty_dc_group_boxes,
+    "ooo_jxlp_empty_dc_group_boxes.jxl"
+);
 declare_test_file!(orientation1_identity, "orientation1_identity.jxl");
 declare_test_file!(
     orientation2_flip_horizontal,
@@ -480,6 +486,7 @@ declare_test_file!(
 );
 declare_test_file!(tree_max_property_20, "tree_max_property_20.jxl");
 declare_test_file!(upsampled_alpha, "upsampled_alpha.jxl");
+declare_test_file!(upsampling2_permuted_toc, "upsampling2_permuted_toc.jxl");
 declare_test_file!(with_icc, "with_icc.jxl");
 declare_test_file!(with_preview, "with_preview.jxl");
 declare_test_file!(

@@ -166,6 +166,7 @@ pub(in crate::frame::modular) fn decode_modular_subbitstream(
     br: &mut BitReader,
     partial_decoded_buffers: Option<&mut usize>,
     scratch_space: &mut ScratchSpace,
+    force_level5: bool,
 ) -> Result<()> {
     // Skip decoding if all grids are zero-sized.
     let is_empty = buffers
@@ -187,8 +188,13 @@ pub(in crate::frame::modular) fn decode_modular_subbitstream(
                 // `buffer_storage` ought to outlive `buffers[..]`'s lifetime, which obviously breaks
                 // applying transforms later.
                 let new_bufs;
-                (new_bufs, transform_steps) =
-                    meta_apply_local_transforms(buffers, &mut buffer_storage, &h, storage)?;
+                (new_bufs, transform_steps) = meta_apply_local_transforms(
+                    buffers,
+                    &mut buffer_storage,
+                    &h,
+                    storage,
+                    force_level5,
+                )?;
                 (h, new_bufs)
             } else {
                 (h, buffers)

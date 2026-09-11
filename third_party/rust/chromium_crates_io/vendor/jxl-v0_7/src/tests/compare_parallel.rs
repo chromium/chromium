@@ -245,7 +245,8 @@ pub fn run_shuttle_test(path: std::path::PathBuf, f: fn(&Path)) {
         Ok("replay") => {
             let schedule =
                 std::fs::read_to_string(std::env::var("SHUTTLE_REPLAY_FILE").unwrap()).unwrap();
-            shuttle::replay(test, schedule.trim());
+            let scheduler = shuttle::scheduler::ReplayScheduler::new_from_encoded(schedule.trim());
+            shuttle::Runner::new(scheduler, config).run(test);
         }
         Ok("pct") => {
             let depth = std::env::var("SHUTTLE_PCT_DEPTH")

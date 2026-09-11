@@ -76,6 +76,12 @@ impl OwnedRawImage {
         self.data.byte_size()
     }
 
+    pub fn fill_zero(&mut self) {
+        for r in 0..self.byte_size().1 {
+            self.row_mut(r).fill(0);
+        }
+    }
+
     pub fn try_clone(&self) -> Result<OwnedRawImage> {
         Ok(Self {
             // SAFETY: we own the data that self.data references, so it is all accessible.

@@ -89,7 +89,7 @@ fn upsample_lf_group(
         let lf_y0 = gy * lf_group_dim_y;
 
         let lf_width = lf_img.size().0.shrc(hs);
-        let lf_height = lf_img.size().1.shrc(hs);
+        let lf_height = lf_img.size().1.shrc(vs);
 
         let start_x = lf_x0.saturating_sub(2);
         let lf_x1 = (lf_x0 + lf_group_dim_x).min(lf_width);
@@ -111,13 +111,12 @@ fn upsample_lf_group(
                 storage[save_start..save_end].copy_from_slice(&lf_img.row(iy)[start_x..end_x]);
 
                 if start_x == lf_x0 {
-                    storage[0] = storage[2 + mirror(-2, copy_width)];
-                    storage[1] = storage[2 + mirror(-1, copy_width)];
+                    storage[1] = storage[2];
+                    storage[0] = storage[if copy_width >= 2 { 3 } else { 2 }];
                 }
                 if end_x == lf_x1 {
-                    storage[save_end] = storage[save_start + mirror(save_end as isize, save_end)];
-                    storage[save_end + 1] =
-                        storage[save_start + mirror(save_end as isize + 1, save_end)];
+                    storage[save_end] = storage[save_end - 1];
+                    storage[save_end + 1] = storage[save_end.saturating_sub(2)];
                 }
             }
 
@@ -363,12 +362,13 @@ impl Frame {
 
             if self.header.has_patches() {
                 info!("decoding patches");
-                let p = PatchesDictionary::read(
+                let p = PatchesDictionary::read_internal(
                     br,
                     self.header.size_padded().0,
                     self.header.size_padded().1,
                     self.decoder_state.extra_channel_info().len(),
                     &self.decoder_state.reference_frames[..],
+                    self.decoder_state.force_level5_patches,
                 )?;
                 *self.patches.try_write().unwrap() = p;
             }
@@ -447,6 +447,7 @@ impl Frame {
                 self.buffer_recycler.clone(),
                 self.decoder_state.sample_limit,
                 self.decoder_state.modular_storage(),
+                self.decoder_state.force_level5_modular,
             )?;
 
             // Ensure that, if we call this function again, we resume from just after
@@ -520,6 +521,7 @@ impl Frame {
                 br,
                 decoder_state.modular_storage(),
                 &mut scratch,
+                decoder_state.force_level5_modular,
             )?;
         }
 
@@ -550,6 +552,7 @@ impl Frame {
                 br,
                 decoder_state.modular_storage(),
                 &mut scratch,
+                decoder_state.force_level5_modular,
             )?;
         }
         Ok(())

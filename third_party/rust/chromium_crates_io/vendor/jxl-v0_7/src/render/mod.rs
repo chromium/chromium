@@ -18,7 +18,6 @@ mod channels;
 mod internal;
 pub mod low_memory_pipeline;
 pub mod save;
-mod simd_utils;
 #[cfg(test)]
 mod simple_pipeline;
 pub mod stages;

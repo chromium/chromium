@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.89.0"
 name = "jxl"
-version = "0.7.1"
+version = "0.7.2"
 authors = ["Luca Versari <veluca93@gmail.com>"]
 build = false
 exclude = ["resources/"]
@@ -64,13 +64,13 @@ optional = true
 version = "1.4.3"
 
 [dependencies.jxl_macros]
-version = "=0.7.1"
+version = "=0.7.2"
 
 [dependencies.jxl_simd]
-version = "=0.7.1"
+version = "=0.7.2"
 
 [dependencies.jxl_transforms]
-version = "=0.7.1"
+version = "=0.7.2"
 
 [dependencies.num-derive]
 version = "0.4"
@@ -93,7 +93,7 @@ optional = true
 version = "0.3.2"
 
 [dev-dependencies.jxl_macros]
-version = "=0.7.1"
+version = "=0.7.2"
 features = ["test"]
 
 [dev-dependencies.paste]
