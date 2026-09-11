@@ -390,6 +390,19 @@ base::TimeDelta GetAdditionalDelayForMainJob() {
   return features::kAdditionalDelay.Get();
 }
 
+std::optional<int> GetQuicSocketSendBufferSize() {
+  if (base::FeatureList::IsEnabled(features::kQuicSocketSendBufferSize)) {
+    int size = features::kQuicSocketSendBufferSizeParam.Get();
+    if (size == -1) {
+      // The default OS value for the send buffer size will be used in this
+      // case.
+      return std::nullopt;
+    }
+    return size;
+  }
+  return quic::kMaxOutgoingPacketSize * 20;
+}
+
 }  // namespace
 
 QuicSessionRequest::QuicSessionRequest(QuicSessionPool* pool) : pool_(pool) {}
@@ -1260,14 +1273,14 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
     return;
   }
 
-  // Set a buffer large enough to contain the initial CWND's worth of packet
-  // to work around the problem with CHLO packets being sent out with the
-  // wrong encryption level, when the send buffer is full.
-  rv = socket->SetSendBufferSize(quic::kMaxOutgoingPacketSize * 20);
-  if (rv != OK) {
-    OnFinishConnectAndConfigureSocketError(
-        std::move(callback), CREATION_ERROR_SETTING_SEND_BUFFER, rv);
-    return;
+  std::optional<int> send_buffer_size = GetQuicSocketSendBufferSize();
+  if (send_buffer_size.has_value()) {
+    rv = socket->SetSendBufferSize(send_buffer_size.value());
+    if (rv != OK) {
+      OnFinishConnectAndConfigureSocketError(
+          std::move(callback), CREATION_ERROR_SETTING_SEND_BUFFER, rv);
+      return;
+    }
   }
 
   if (params_.ios_network_service_type > 0) {
@@ -1372,13 +1385,13 @@ int QuicSessionPool::ConfigureSocket(DatagramClientSocket* socket,
     return rv;
   }
 
-  // Set a buffer large enough to contain the initial CWND's worth of packet
-  // to work around the problem with CHLO packets being sent out with the
-  // wrong encryption level, when the send buffer is full.
-  rv = socket->SetSendBufferSize(quic::kMaxOutgoingPacketSize * 20);
-  if (rv != OK) {
-    HistogramCreateSessionFailure(CREATION_ERROR_SETTING_SEND_BUFFER);
-    return rv;
+  std::optional<int> send_buffer_size = GetQuicSocketSendBufferSize();
+  if (send_buffer_size.has_value()) {
+    rv = socket->SetSendBufferSize(send_buffer_size.value());
+    if (rv != OK) {
+      HistogramCreateSessionFailure(CREATION_ERROR_SETTING_SEND_BUFFER);
+      return rv;
+    }
   }
 
   if (params_.ios_network_service_type > 0) {

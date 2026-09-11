@@ -16986,6 +16986,31 @@
             ]
         }
     ],
+    "QuicSocketSendBufferSize": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "QuicSocketSendBufferSizeParam": "1048576"
+                    },
+                    "enable_features": [
+                        "QuicSocketSendBufferSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReactivePrefetchAndroidDiscardBody": [
         {
             "platforms": [

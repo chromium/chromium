@@ -1081,4 +1081,11 @@ BASE_FEATURE(kEnableWindowsTcpLoopbackFastFail,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kQuicSocketSendBufferSize, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kQuicSocketSendBufferSizeParam,
+                   &kQuicSocketSendBufferSize,
+                   -1);
+
 }  // namespace net::features
+

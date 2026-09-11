@@ -1067,6 +1067,15 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableWindowsTcpLoopbackFastFail);
 #endif
 
+// Controls the socket send buffer size for QUIC client sockets.
+// If the feature is enabled:
+// - If the parameter is -1, SetSendBufferSize() is not called at all.
+// - If the parameter is > 0, SetSendBufferSize() is called with this value.
+// If the feature is disabled, the default behavior (20 packets) is used.
+NET_EXPORT BASE_DECLARE_FEATURE(kQuicSocketSendBufferSize);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kQuicSocketSendBufferSizeParam);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
+
