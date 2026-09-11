@@ -555,6 +555,35 @@ TEST_F(AppBarViewControllerTest, TestIdempotentTitleUpdatesWithHiddenLabels) {
   EXPECT_EQ(assistantButton.configuration.title, nil);
 }
 
+// Tests that invoking and dismissing the Gemini floaty restores the button
+// titles and title alpha.
+TEST_F(AppBarViewControllerTest, TestGeminiFloatyDismissalRestoresTitleAlpha) {
+  // Initially, button titles should have alpha 1.0.
+  NSNumber* initialAlpha = [view_controller_ valueForKey:@"buttonsTitleAlpha"];
+  EXPECT_EQ(initialAlpha.doubleValue, 1.0);
+
+  // Invoke Gemini floaty.
+  [layout_state_
+      setGeminiFloatyInvoked:YES
+                     passKey:LayoutStateTestPassKeyFactory::CreateSceneKey()];
+  NSNumber* invokedAlpha = [view_controller_ valueForKey:@"buttonsTitleAlpha"];
+  EXPECT_EQ(invokedAlpha.doubleValue, 0.0);
+
+  UIButton* assistantButton = [view_controller_ valueForKey:@"assistantButton"];
+  EXPECT_EQ(assistantButton.configuration.title, nil);
+
+  // Dismiss Gemini floaty.
+  [layout_state_
+      setGeminiFloatyInvoked:NO
+                     passKey:LayoutStateTestPassKeyFactory::CreateSceneKey()];
+  NSNumber* dismissedAlpha =
+      [view_controller_ valueForKey:@"buttonsTitleAlpha"];
+  EXPECT_EQ(dismissedAlpha.doubleValue, 1.0);
+
+  EXPECT_NE(assistantButton.configuration.title, nil);
+  EXPECT_EQ(assistantButton.titleLabel.alpha, 1.0);
+}
+
 using AppBarViewControllerTestManual = PlatformTest;
 
 // Tests that setting incognito before the view is loaded correctly applies

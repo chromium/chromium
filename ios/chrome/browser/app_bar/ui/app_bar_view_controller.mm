@@ -296,7 +296,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   [self updateOpenNewTabButtonTitleIfNeeded];
 
   // Update buttons title alpha and configuration.
-  [self setButtonsTitleAlpha:_buttonsTitleAlpha
+  [self setButtonsTitleAlpha:_fullscreenProgress
            animationDuration:kAppBarAnimationDuration];
 
   // Update height constraint smoothly.
