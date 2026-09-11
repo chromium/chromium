@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
@@ -147,6 +148,12 @@ SafeAcquisitionTracker& GetSafeAcquisitionTracker() {
 
 CheckedLockImpl::CheckedLockImpl() : CheckedLockImpl(nullptr) {}
 
+// Specific to `CheckedLockTest.PredecessorCycle*`: an ill-formed lock
+// cycle is constructed from two members of the same struct. Although
+// `is_universal_successor_` is defaulted `false`, at initialization
+// time the very first lock in the cycle will point at a `predecessor`
+// whose contents are indeterminate.
+NO_SANITIZE("bool")
 CheckedLockImpl::CheckedLockImpl(const CheckedLockImpl* predecessor) {
   DCHECK(predecessor == nullptr || !predecessor->is_universal_successor_);
   GetSafeAcquisitionTracker().RegisterLock(this, predecessor);
