@@ -25,11 +25,16 @@ class AwEntropyProviders : public variations::EntropyProviders {
   // allowlisted studies.
   // `nonembedded_low_entropy_source_allowlist`: The set of study names to use
   // the nonembedded low entropy source for.
+  // `limited_entropy_randomization_source`: The limited entropy source used
+  // to randomize limited-layer slots across clients and the groups of
+  // limited-layer-constrained studies across clients.
   AwEntropyProviders(
       std::unique_ptr<const variations::EntropyProviders> standard_providers,
       uint32_t nonembedded_low_entropy_source,
       std::unique_ptr<const std::set<std::string_view>>
-          nonembedded_low_entropy_source_allowlist);
+          nonembedded_low_entropy_source_allowlist,
+      std::string_view limited_entropy_randomization_source =
+          std::string_view());
 
   ~AwEntropyProviders() override;
 

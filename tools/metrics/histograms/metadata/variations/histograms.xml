@@ -364,6 +364,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.LimitedEntropyRandomizationSource.State"
+    enum="LimitedEntropySourceState" expires_after="2026-12-31">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the state of the limited entropy randomization source in an
+    AwVariationsSeed: unset, set and valid, or set and invalid. Android WebView
+    only. It is tracked because the limited source is generated in a new Java
+    class on Android WebView rather than the C++ library used on other
+    platforms. Recorded during an embedder's browser process startup when a seed
+    is loaded.
+  </summary>
+</histogram>
+
 <histogram name="Variations.Limits.VariationKeySize.{Size}" units="KiB"
     expires_after="2027-03-07">
   <owner>caitlinfischer@google.com</owner>

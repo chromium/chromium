@@ -103,4 +103,25 @@ TEST_F(AwEntropyProvidersTest, TestDefaultEntropy) {
   EXPECT_EQ(expected, actual);
 }
 
+TEST_F(AwEntropyProvidersTest, TestLimitedEntropy) {
+  const std::string kLimitedEntropySource = "0123456789ABCDEF0123456789ABCDEF";
+  AwEntropyProviders providers(
+      std::move(standard_providers_), kNonembeddedLowEntropySource,
+      std::make_unique<const std::set<std::string_view>>(kTestAllowlist_),
+      kLimitedEntropySource);
+  EXPECT_TRUE(providers.has_limited_entropy());
+
+  variations::SHA1EntropyProvider expected_provider(kLimitedEntropySource);
+  const std::string trial_name = "LimitedEntropyTrial";
+  EXPECT_EQ(providers.limited_entropy().GetEntropyForTrial(trial_name, 0),
+            expected_provider.GetEntropyForTrial(trial_name, 0));
+}
+
+TEST_F(AwEntropyProvidersTest, TestNoLimitedEntropy) {
+  AwEntropyProviders providers(
+      std::move(standard_providers_), kNonembeddedLowEntropySource,
+      std::make_unique<const std::set<std::string_view>>(kTestAllowlist_));
+  EXPECT_FALSE(providers.has_limited_entropy());
+}
+
 }  // namespace android_webview

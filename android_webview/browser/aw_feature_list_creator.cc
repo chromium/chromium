@@ -32,6 +32,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -40,6 +41,7 @@
 #include "components/embedder_support/origin_trials/origin_trial_prefs.h"
 #include "components/embedder_support/origin_trials/pref_names.h"
 #include "components/metrics/android_metrics_helper.h"
+#include "components/metrics/entropy_state.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/persistent_histograms.h"
@@ -79,6 +81,18 @@ const char* const kNonembeddedLowEntropySourceAllowlist[] = {
     "WebViewTestNonembeddedLowEntropySource",
     "WebViewProfileStoreNotTriggerStartup"
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(LimitedEntropySourceState)
+enum class LimitedEntropySourceState {
+  kUnset = 0,
+  kSetValid = 1,
+  kSetInvalid = 2,
+  kMaxValue = kSetInvalid,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:LimitedEntropySourceState)
 
 // These prefs go in the JsonPrefStore, and will persist across runs. Other
 // prefs go in the InMemoryPrefStore, and will be lost when the process ends.
@@ -242,6 +256,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   std::unique_ptr<variations::SeedResponse> seed;
   base::Time seed_date;  // Initializes to null time.
   int nonembedded_low_entropy_source = -1;
+  std::string limited_entropy_randomization_source;
   if (seed_proto) {
     // We set the seed fetch time to when the service downloaded the seed rather
     // than base::Time::Now() because we want to compute seed freshness based on
@@ -260,6 +275,20 @@ void AwFeatureListCreator::SetUpFieldTrials() {
     if (seed_proto->has_low_entropy_source()) {
       nonembedded_low_entropy_source = seed_proto->low_entropy_source();
     }
+    LimitedEntropySourceState limited_source_state;
+    if (!seed_proto->has_limited_entropy_randomization_source()) {
+      limited_source_state = LimitedEntropySourceState::kUnset;
+    } else if (metrics::EntropyState::IsValidLimitedEntropyRandomizationSource(
+                   seed_proto->limited_entropy_randomization_source())) {
+      limited_source_state = LimitedEntropySourceState::kSetValid;
+      limited_entropy_randomization_source =
+          seed_proto->limited_entropy_randomization_source();
+    } else {
+      limited_source_state = LimitedEntropySourceState::kSetInvalid;
+    }
+    base::UmaHistogramEnumeration(
+        "Variations.LimitedEntropyRandomizationSource.State",
+        limited_source_state);
   }
 
   client_ = std::make_unique<AwVariationsServiceClient>();
@@ -321,7 +350,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
         std::move(standard_providers),
         /*nonembedded_low_entropy_source=*/nonembedded_low_entropy_source,
         std::make_unique<std::set<std::string_view>>(
-            std::from_range, kNonembeddedLowEntropySourceAllowlist));
+            std::from_range, kNonembeddedLowEntropySourceAllowlist),
+        limited_entropy_randomization_source);
   } else {
     entropy_providers = std::move(standard_providers);
   }

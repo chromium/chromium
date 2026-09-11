@@ -55,6 +55,16 @@ chromium-metrics-reviews@google.com.
   <int value="1003" label="No such file"/>
 </enum>
 
+<!-- LINT.IfChange(LimitedEntropySourceState) -->
+
+<enum name="LimitedEntropySourceState">
+  <int value="0" label="Unset"/>
+  <int value="1" label="Set and valid"/>
+  <int value="2" label="Set and invalid"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/browser/aw_feature_list_creator.cc:LimitedEntropySourceState) -->
+
 <!-- LINT.IfChange(SeedSource) -->
 
 <enum name="SeedSource">

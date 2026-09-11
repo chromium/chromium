@@ -58,6 +58,10 @@ class EntropyState final {
   // info.
   std::string_view GetLimitedEntropyRandomizationSource();
 
+  // Checks whether the given value is a valid limited entropy randomization
+  // source.
+  static bool IsValidLimitedEntropyRandomizationSource(std::string_view value);
+
   // The argument used to generate a non-identifying entropy source. We want no
   // more than 13 bits of entropy, so use this max to return a number in the
   // range [0, 7999] as the entropy source (12.97 bits of entropy).
@@ -74,10 +78,6 @@ class EntropyState final {
   FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, HaveOnlyOldLowEntropySource);
   FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, CorruptNewLowEntropySources);
   FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, CorruptOldLowEntropySources);
-  FRIEND_TEST_ALL_PREFIXES(EntropyStateTest,
-                           ValidLimitedEntropyRandomizationSource);
-  FRIEND_TEST_ALL_PREFIXES(EntropyStateTest,
-                           InvalidLimitedEntropyRandomizationSource);
 
   // Default value for prefs::kMetricsLowEntropySource.
   static constexpr int kLowEntropySourceNotSet = -1;
@@ -98,10 +98,6 @@ class EntropyState final {
   // Checks whether a value is on the range of allowed low entropy source
   // values.
   static bool IsValidLowEntropySource(int value);
-
-  // Checks whether the given value is a valid limited entropy randomization
-  // source.
-  static bool IsValidLimitedEntropyRandomizationSource(std::string_view value);
 
   // Generates a new limited entropy randomization source.
   std::string GenerateLimitedEntropyRandomizationSource();
