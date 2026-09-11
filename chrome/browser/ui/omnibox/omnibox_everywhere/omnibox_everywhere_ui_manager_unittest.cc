@@ -518,7 +518,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
-       PersistentDeactivationKeepsWidgetVisible) {
+       PersistentDeactivationDemotesWidgetAndKeepsVisible) {
   if (g_browser_process && g_browser_process->local_state()) {
     g_browser_process->local_state()->SetBoolean(
         omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
@@ -529,24 +529,38 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_FALSE(ui_manager->is_demoted_for_testing());
+  EXPECT_TRUE(ui_manager->IsActive());
   EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
 
-  // Simulating deactivation (active = false) in persistent mode keeps the
-  // widget visible without auto-closing.
+  // Advance time past the activation grace period.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
+
+  // Simulating deactivation (active = false) in persistent mode demotes the
+  // widget (is_demoted_ == true) while keeping it visible on the desktop layer.
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return ui_manager->is_demoted_for_testing(); }));
   EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(ui_manager->IsActive());
   EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
 
-  // Re-invoking ShowForProfile keeps widget visible and active.
+  // Re-invoking ShowForProfile restores active state (clears demoted state).
   ui_manager->ShowForProfile(&profile_, GetContext());
   EXPECT_TRUE(widget->IsVisible());
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_FALSE(ui_manager->is_demoted_for_testing());
+  EXPECT_TRUE(ui_manager->IsActive());
   EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
 
   ui_manager->Close();
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
-       PersistentDeactivationWithinGracePeriodDoesNotReactivate) {
+       PersistentDeactivationWithinGracePeriodReactivatesWidget) {
   if (g_browser_process && g_browser_process->local_state()) {
     g_browser_process->local_state()->SetBoolean(
         omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
@@ -557,20 +571,73 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_FALSE(ui_manager->is_demoted_for_testing());
+  EXPECT_TRUE(ui_manager->IsActive());
 
   // Advance time within the grace period (e.g. 100ms < 500ms).
   task_environment()->FastForwardBy(base::Milliseconds(100));
 
-  // Simulating deactivation in persistent mode within 500ms should NOT trigger
-  // auto-close or reactivation tasks, keeping the widget visible.
+  // Simulating deactivation (active = false) within the grace period should NOT
+  // demote the widget, but instead schedule reactivation and keep it visible.
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return ui_manager->IsActive(); }));
   EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(ui_manager->is_demoted_for_testing());
 
-  // Advancing time past the grace period confirms the widget remains visible
-  // and no delayed close or reactivation tasks run.
+  // Advance time past the grace period.
   task_environment()->FastForwardBy(
       omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod);
+
+  // Deactivation after the grace period has elapsed should cleanly demote.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return ui_manager->is_demoted_for_testing(); }));
   EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(ui_manager->IsActive());
+
+  ui_manager->Close();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       PersistentDeactivationBypassedDuringFileChooser) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_FALSE(ui_manager->is_demoted_for_testing());
+  EXPECT_TRUE(ui_manager->IsActive());
+
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
+
+  ui_manager->OnFileChooserOpened();
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+
+  // Simulating deactivation while file chooser is open should NOT demote.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_FALSE(ui_manager->is_demoted_for_testing());
+  EXPECT_TRUE(ui_manager->IsActive());
+  EXPECT_TRUE(widget->IsVisible());
+
+  ui_manager->OnFileChooserClosed();
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+
+  // Deactivation after file chooser is closed should cleanly demote.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return ui_manager->is_demoted_for_testing(); }));
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(ui_manager->IsActive());
 
   ui_manager->Close();
 }

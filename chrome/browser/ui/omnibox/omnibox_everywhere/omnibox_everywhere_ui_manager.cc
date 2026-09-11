@@ -601,8 +601,9 @@ void OmniboxEverywhereUIManager::Demote() {
 #if BUILDFLAG(IS_WIN)
   HWND hwnd = views::HWNDForWidget(widget_.get());
   if (hwnd) {
-    ::SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0,
-                   SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    ::SetWindowPos(
+        hwnd, HWND_BOTTOM, 0, 0, 0, 0,
+        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
   }
 #endif
 }
@@ -692,11 +693,11 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
   if (active) {
+    deactivation_task_.Cancel();
     is_demoted_ = false;
     return;
   }
-  if (!active && !HasOpenModalDialog() && !is_context_menu_open_ &&
-      prefs::IsEphemeralModelEnabled()) {
+  if (!HasOpenModalDialog() && !is_context_menu_open_) {
     HandleWidgetDeactivated();
   }
 }
@@ -720,15 +721,13 @@ void OmniboxEverywhereUIManager::OnContextMenuClosed() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(context_menu_model_));
   }
-  if (widget_ && !widget_->IsActive() && !HasOpenModalDialog() &&
-      prefs::IsEphemeralModelEnabled()) {
+  if (widget_ && !widget_->IsActive() && !HasOpenModalDialog()) {
     HandleWidgetDeactivated();
   }
 }
 
 void OmniboxEverywhereUIManager::HandleWidgetDeactivated() {
-  if (is_closing_ || !widget_ || !widget_->IsVisible() ||
-      !prefs::IsEphemeralModelEnabled()) {
+  if (is_closing_ || !widget_ || !widget_->IsVisible() || is_demoted_) {
     return;
   }
   if (last_shown_time_.has_value() &&
@@ -740,7 +739,7 @@ void OmniboxEverywhereUIManager::HandleWidgetDeactivated() {
         FROM_HERE, deactivation_task_.callback());
     return;
   }
-  deactivation_task_.Reset(base::BindOnce(&OmniboxEverywhereUIManager::Close,
+  deactivation_task_.Reset(base::BindOnce(&OmniboxEverywhereUIManager::CloseUI,
                                           weak_factory_.GetWeakPtr()));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, deactivation_task_.callback());
