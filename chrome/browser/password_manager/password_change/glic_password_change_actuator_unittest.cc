@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
@@ -39,6 +40,8 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/autofill_test_util.h"
+#include "components/origin_gating/core/actor_container_config.h"
+#include "components/origin_gating/core/types.h"
 #include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
@@ -274,6 +277,7 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     actuator_->RemoveObserver(&mock_observer_);
     actuator_.reset();
+    custom_actuator_.reset();
     form_managers_.clear();
     driver_.SetPasswordGenerationHelper(nullptr);
     password_generation_helper_.reset();
@@ -331,6 +335,36 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(Return(base::span(form_managers_)));
   }
 
+  const origin_gating::ActorContainerConfig& GetContainerConfig(
+      const GURL& target_url = GURL(),
+      const GURL& credential_url = GURL(kTestUrl)) {
+    if (target_url.is_empty() && credential_url == GURL(kTestUrl)) {
+      actuator_->Start();
+    } else {
+      password_manager::PasswordForm form;
+      form.url = credential_url;
+      form.signon_realm = url::Origin::Create(credential_url).GetURL().spec();
+      form.username_value = kTestUsername;
+      form.password_value = password_manager::PasswordString(kTestPassword);
+      form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+      form.match_type = password_manager::PasswordForm::MatchType::kExact;
+      custom_actuator_ = std::make_unique<GlicPasswordChangeActuator>(
+          password_manager::FromPasswordForm(std::move(form)), web_contents(),
+          profile(), target_url);
+      custom_actuator_->Start();
+    }
+    actor::TaskId task_id = actor_service()->CreateTaskForTesting();
+    actor::ActorTask* task = actor_service()->GetTask(task_id);
+    CHECK(task);
+    actor::AddTabToTask(mock_actuation_tab(), *task);
+    actor_service()->NotifyTaskStateChanged(*task);
+    const auto& slot = task->GetExecutionEngine()
+                           .origin_gating_checker()
+                           .actor_container_config_slot();
+    CHECK(slot.has_value());
+    return slot.value();
+  }
+
   GlicPasswordChangeActuator* actuator() { return actuator_.get(); }
   NiceMock<MockPasswordChangeActuatorObserver>& observer() {
     return mock_observer_;
@@ -371,6 +405,7 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
   std::vector<std::unique_ptr<password_manager::PasswordFormManager>>
       form_managers_;
   std::unique_ptr<GlicPasswordChangeActuator> actuator_;
+  std::unique_ptr<GlicPasswordChangeActuator> custom_actuator_;
 };
 
 // 1. VerificationSuccessSavesPasswordAndNotifiesObserver:
@@ -568,4 +603,83 @@ TEST_F(GlicPasswordChangeActuatorTest,
       "FAILED_TO_FIND_CHANGE_PASSWORD_FORM: could not locate password form";
   actuator()->OnUpdate(std::move(update),
                        glic::mojom::SubscriberObservationType::kUpdate);
+}
+
+// Verifies that ActorContainerConfig permits actuation on the target site and
+// its subdomains.
+TEST_F(GlicPasswordChangeActuatorTest,
+       ActorContainerConfigAllowsTargetSiteAndSubdomains) {
+  const auto& config =
+      GetContainerConfig(GURL("https://auth.target.org/change_password"),
+                         GURL("https://credential.com/login"));
+
+  EXPECT_TRUE(config.IsActuationAllowed(
+      url::Origin::Create(GURL("https://auth.target.org"))));
+  EXPECT_TRUE(config.IsActuationAllowed(
+      url::Origin::Create(GURL("https://sub.auth.target.org"))));
+  EXPECT_TRUE(config.IsActuationAllowed(
+      url::Origin::Create(GURL("https://target.org"))));
+}
+
+// Verifies that ActorContainerConfig permits actuation on the credential site
+// and its subdomains.
+TEST_F(GlicPasswordChangeActuatorTest,
+       ActorContainerConfigAllowsCredentialSiteAndSubdomains) {
+  const auto& config =
+      GetContainerConfig(GURL("https://auth.target.org/change_password"),
+                         GURL("https://credential.com/login"));
+
+  EXPECT_TRUE(config.IsActuationAllowed(
+      url::Origin::Create(GURL("https://credential.com"))));
+  EXPECT_TRUE(config.IsActuationAllowed(
+      url::Origin::Create(GURL("https://accounts.credential.com"))));
+}
+
+// Verifies that ActorContainerConfig allows navigation between the target site
+// and the credential site.
+TEST_F(GlicPasswordChangeActuatorTest,
+       ActorContainerConfigAllowsNavigationBetweenAllowedSites) {
+  const auto& config =
+      GetContainerConfig(GURL("https://auth.target.org/change_password"),
+                         GURL("https://credential.com/login"));
+
+  EXPECT_TRUE(config.IsNavigationAllowed(
+      url::Origin::Create(GURL("https://auth.target.org")),
+      url::Origin::Create(GURL("https://credential.com"))));
+  EXPECT_TRUE(config.IsNavigationAllowed(
+      url::Origin::Create(GURL("https://credential.com")),
+      url::Origin::Create(GURL("https://sub.auth.target.org"))));
+}
+
+// Verifies that ActorContainerConfig blocks actuation and navigation on
+// unauthorized external sites.
+TEST_F(GlicPasswordChangeActuatorTest,
+       ActorContainerConfigBlocksUnauthorizedSites) {
+  const auto& config =
+      GetContainerConfig(GURL("https://auth.example.org/change_password"),
+                         GURL("https://example.com/login"));
+
+  EXPECT_FALSE(config.IsActuationAllowed(
+      url::Origin::Create(GURL("https://attacker.com"))));
+  EXPECT_FALSE(config.IsNavigationAllowed(
+      url::Origin::Create(GURL("https://auth.example.org")),
+      url::Origin::Create(GURL("https://attacker.com"))));
+}
+
+// Verifies that when change_password_url is not provided, the container config
+// permits the credential site and subdomains, and blocks third-party sites.
+TEST_F(GlicPasswordChangeActuatorTest,
+       ActorContainerConfigDefaultsToCredentialSite) {
+  const auto& config = GetContainerConfig();
+
+  EXPECT_TRUE(config.IsActuationAllowed(
+      url::Origin::Create(GURL("https://example.com"))));
+  EXPECT_TRUE(config.IsActuationAllowed(
+      url::Origin::Create(GURL("https://auth.example.com"))));
+
+  EXPECT_FALSE(config.IsActuationAllowed(
+      url::Origin::Create(GURL("https://attacker.com"))));
+  EXPECT_FALSE(config.IsNavigationAllowed(
+      url::Origin::Create(GURL("https://example.com")),
+      url::Origin::Create(GURL("https://attacker.com"))));
 }

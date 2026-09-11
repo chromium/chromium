@@ -30,6 +30,7 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/origin_gating/core/actor_container_config.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -42,6 +43,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/schemeful_site.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
@@ -175,6 +177,24 @@ std::optional<GlicPasswordChangeActuator::TaskResult> ParseTaskResult(
   }
 
   return std::nullopt;
+}
+
+origin_gating::ActorContainerConfig BuildPasswordChangeContainerConfig(
+    const std::set<net::SchemefulSite>& allowed_origins) {
+  origin_gating::ActorContainerConfig::LocationRules rules;
+
+  origin_gating::ActorContainerConfig::Rule rule(
+      /*navigation_sources=*/{},
+      /*resources=*/
+      {origin_gating::ActorContainerConfig::Rule::Resource::kSession},
+      /*capabilities=*/
+      {origin_gating::ActorContainerConfig::Rule::Capability::kAll});
+
+  for (const auto& origin : allowed_origins) {
+    rules.emplace(origin_gating::ActorContainerConfig::Location(origin), rule);
+  }
+
+  return origin_gating::ActorContainerConfig(std::move(rules));
 }
 
 }  // namespace
@@ -394,6 +414,23 @@ void GlicPasswordChangeActuator::OnActorTaskStateChanged(
   task.GetExecutionEngine().SetActorLoginService(
       std::make_unique<actor_login::PasswordChangeFromCheckupActorLoginService>(
           password_manager::CloneStoredCredential(credential_)));
+
+  // TODO(crbug.com/559497033): Inject ActorContainerConfig through API when
+  // it's ready
+  CHECK(!task.GetExecutionEngine()
+             .origin_gating_checker()
+             .actor_container_config_slot()
+             .has_value());
+  std::set<net::SchemefulSite> allowed_origins;
+  allowed_origins.emplace(credential_.url);
+  if (change_password_url_.is_valid()) {
+    allowed_origins.emplace(change_password_url_);
+  }
+
+  task.GetExecutionEngine()
+      .origin_gating_checker()
+      .actor_container_config_slot()
+      .Assign(BuildPasswordChangeContainerConfig(allowed_origins));
 
   if (auto logger = GetLoggerIfAvailable(originator_.get())) {
     logger->LogMessage(
