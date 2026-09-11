@@ -2273,7 +2273,8 @@ bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForFrame(
     content::RenderFrameHost& render_frame_host) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host);
-  if (web_contents && glic::IsGlicGuest(web_contents)) {
+  if (web_contents && glic::IsGlicGuest(web_contents) &&
+      !render_frame_host.GetParentOrOuterDocument()) {
     return true;
   }
   // TODO(crbug.com/539909218): Prototype shortcut. Enabling MojoJS for any PWC
