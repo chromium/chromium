@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "build/build_config.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ntp_tiles/pref_names.h"
@@ -16,6 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -385,6 +388,82 @@ TEST_F(OmniboxEverywherePrefsTest,
   // Null safety checks for setters:
   SetScreenshotDisclosureAccepted(static_cast<Profile*>(nullptr), true);
   SetScreenshotDisclosureAccepted(static_cast<PrefService*>(nullptr), true);
+}
+
+TEST_F(OmniboxEverywherePrefsTest, ResetProfilePrefs_NullProfileDoesNotCrash) {
+  EXPECT_NO_FATAL_FAILURE(ResetProfilePrefs(nullptr));
+}
+
+TEST_F(OmniboxEverywherePrefsTest, ResetProfilePrefs) {
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kDisabled));
+  profile_.GetPrefs()->SetBoolean(kOmniboxEverywhereShowAiMode, false);
+  profile_.GetPrefs()->SetBoolean(kFreDismissed, true);
+  profile_.GetPrefs()->SetInteger(kFreImpressionCount, 5);
+  profile_.GetPrefs()->SetBoolean(kFreIntroDismissed, true);
+  profile_.GetPrefs()->SetInteger(kFreIntroImpressionCount, 2);
+  profile_.GetPrefs()->SetBoolean(kFreShortcutSetupDismissed, true);
+  profile_.GetPrefs()->SetInteger(kFreShortcutSetupImpressionCount, 3);
+  profile_.GetPrefs()->SetBoolean(kFreShortcutReminderDismissed, true);
+  profile_.GetPrefs()->SetInteger(kFreShortcutReminderImpressionCount, 3);
+  profile_.GetPrefs()->SetBoolean(kScreenshotDisclosureAccepted, true);
+
+  ResetProfilePrefs(&profile_);
+
+  EXPECT_EQ(std::to_underlying(ShowShortcutsPrefValue::kUnset),
+            profile_.GetPrefs()->GetInteger(kOmniboxEverywhereShowShortcuts));
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(kOmniboxEverywhereShowAiMode));
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kFreDismissed));
+  EXPECT_EQ(0, profile_.GetPrefs()->GetInteger(kFreImpressionCount));
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kFreIntroDismissed));
+  EXPECT_EQ(0, profile_.GetPrefs()->GetInteger(kFreIntroImpressionCount));
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kFreShortcutSetupDismissed));
+  EXPECT_EQ(0,
+            profile_.GetPrefs()->GetInteger(kFreShortcutSetupImpressionCount));
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kFreShortcutReminderDismissed));
+  EXPECT_EQ(
+      0, profile_.GetPrefs()->GetInteger(kFreShortcutReminderImpressionCount));
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kScreenshotDisclosureAccepted));
+}
+
+TEST_F(OmniboxEverywherePrefsTest,
+       ResetLocalStatePrefs_NullLocalStateDoesNotCrash) {
+  EXPECT_NO_FATAL_FAILURE(ResetLocalStatePrefs(nullptr));
+}
+
+TEST_F(OmniboxEverywherePrefsTest, ResetLocalStatePrefs) {
+  const ui::Accelerator custom_hotkey(ui::VKEY_SPACE,
+                                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+
+  local_state_.SetBoolean(kOmniboxEverywhereEnabled, false);
+  local_state_.SetBoolean(kHotkeyEnabled, false);
+  local_state_.SetString(kOmniboxEverywhereHotkey,
+                         ui::Command::AcceleratorToString(custom_hotkey));
+  local_state_.SetBoolean(kOmniboxEverywhereBackgroundMode, true);
+  local_state_.SetBoolean(kOmniboxEverywhereLaunchOnStartup, true);
+  local_state_.SetBoolean(kOmniboxEverywhereEphemeralModel, true);
+  local_state_.SetFilePath(kLastTargetProfileDir,
+                           base::FilePath(FILE_PATH_LITERAL("test_dir")));
+
+  // Verify custom hotkey before reset.
+  EXPECT_EQ(custom_hotkey, GetOmniboxEverywhereHotkey(&local_state_));
+
+  ResetLocalStatePrefs(&local_state_);
+
+  EXPECT_TRUE(local_state_.GetBoolean(kOmniboxEverywhereEnabled));
+  EXPECT_TRUE(local_state_.GetBoolean(kHotkeyEnabled));
+  EXPECT_TRUE(local_state_.GetString(kOmniboxEverywhereHotkey).empty());
+  EXPECT_EQ(GetDefaultOmniboxEverywhereHotkey(),
+            GetOmniboxEverywhereHotkey(&local_state_));
+  EXPECT_FALSE(local_state_.GetBoolean(kOmniboxEverywhereBackgroundMode));
+  EXPECT_FALSE(local_state_.GetBoolean(kOmniboxEverywhereLaunchOnStartup));
+#if BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(local_state_.GetBoolean(kOmniboxEverywhereEphemeralModel));
+#else
+  EXPECT_FALSE(local_state_.GetBoolean(kOmniboxEverywhereEphemeralModel));
+#endif
+  EXPECT_EQ(base::FilePath(), local_state_.GetFilePath(kLastTargetProfileDir));
 }
 
 }  // namespace

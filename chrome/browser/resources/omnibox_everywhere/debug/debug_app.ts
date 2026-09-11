@@ -45,6 +45,7 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
       ephemeralModelEnabled: {type: Boolean},
       selectedInvocationSource: {type: Number},
       shortcutStatus: {type: String},
+      resetStatus: {type: String},
     };
   }
 
@@ -55,6 +56,7 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
   protected accessor selectedInvocationSource: InvocationSource =
       InvocationSource.kGlobalHotkey;
   protected accessor shortcutStatus: string = '';
+  protected accessor resetStatus: string = '';
 
   private listenerIds_: number[] = [];
 
@@ -175,6 +177,23 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
     const res = await browserProxyFactory.getInstance().handler.pinToTaskbar();
     this.shortcutStatus = res.success ? 'Taskbar pin requested successfully.' :
                                         'Failed to pin to taskbar.';
+  }
+
+  protected async onResetProfilePrefsClick() {
+    this.resetStatus = 'Resetting profile preferences...';
+    const res =
+        await browserProxyFactory.getInstance().handler.resetProfilePrefs();
+    this.resetStatus = res.success ?
+        'Profile preferences and IPH state reset successfully.' :
+        'Failed to reset profile preferences.';
+  }
+
+  protected async onResetAllPrefsClick() {
+    this.resetStatus = 'Resetting all Omnibox Everywhere preferences...';
+    const res = await browserProxyFactory.getInstance().handler.resetAllPrefs();
+    this.resetStatus = res.success ?
+        'All Omnibox Everywhere preferences reset successfully.' :
+        'Failed to reset all preferences.';
   }
 }
 

@@ -194,6 +194,14 @@ bool IsScreenshotDisclosureAccepted(const Profile* profile);
 void SetScreenshotDisclosureAccepted(PrefService* prefs, bool accepted);
 void SetScreenshotDisclosureAccepted(Profile* profile, bool accepted);
 
+// Resets all profile-scoped preferences for Omnibox Everywhere for the given
+// profile to their default state.
+void ResetProfilePrefs(Profile* profile);
+
+// Resets all device-scoped (Local State) preferences for Omnibox Everywhere to
+// their default state.
+void ResetLocalStatePrefs(PrefService* local_state);
+
 }  // namespace prefs
 }  // namespace omnibox_everywhere
 

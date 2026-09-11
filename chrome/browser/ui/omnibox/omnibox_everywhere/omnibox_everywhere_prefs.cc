@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -371,6 +372,51 @@ void SetScreenshotDisclosureAccepted(PrefService* prefs, bool accepted) {
 void SetScreenshotDisclosureAccepted(Profile* profile, bool accepted) {
   if (profile) {
     SetScreenshotDisclosureAccepted(profile->GetPrefs(), accepted);
+  }
+}
+
+void ResetProfilePrefs(Profile* profile) {
+  if (!profile || !profile->GetPrefs()) {
+    return;
+  }
+  PrefService* prefs = profile->GetPrefs();
+  static constexpr std::string_view kProfilePrefsToClear[] = {
+      kOmniboxEverywhereShowShortcuts,
+      kOmniboxEverywhereShowAiMode,
+      kFreDismissed,
+      kFreImpressionCount,
+      kFreIntroDismissed,
+      kFreIntroImpressionCount,
+      kFreShortcutSetupDismissed,
+      kFreShortcutSetupImpressionCount,
+      kFreShortcutReminderDismissed,
+      kFreShortcutReminderImpressionCount,
+      kScreenshotDisclosureAccepted,
+  };
+  for (std::string_view pref_name : kProfilePrefsToClear) {
+    if (prefs->FindPreference(pref_name)) {
+      prefs->ClearPref(pref_name);
+    }
+  }
+}
+
+void ResetLocalStatePrefs(PrefService* local_state) {
+  if (!local_state) {
+    return;
+  }
+  static constexpr std::string_view kLocalStatePrefsToClear[] = {
+      kOmniboxEverywhereEnabled,
+      kHotkeyEnabled,
+      kOmniboxEverywhereHotkey,
+      kOmniboxEverywhereBackgroundMode,
+      kOmniboxEverywhereLaunchOnStartup,
+      kOmniboxEverywhereEphemeralModel,
+      kLastTargetProfileDir,
+  };
+  for (std::string_view pref_name : kLocalStatePrefsToClear) {
+    if (local_state->FindPreference(pref_name)) {
+      local_state->ClearPref(pref_name);
+    }
   }
 }
 

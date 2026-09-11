@@ -71,6 +71,14 @@ interface PageHandler {
 
   // Requests pinning Omnibox Everywhere to the Windows taskbar.
   PinToTaskbar() => (bool success);
+
+  // Resets all Omnibox Everywhere preferences and IPH promo data for the
+  // current profile.
+  ResetProfilePrefs() => (bool success);
+
+  // Resets all Omnibox Everywhere preferences across all loaded profiles and
+  // Local State.
+  ResetAllPrefs() => (bool success);
 };
 
 // Factory interface used to set up the connection between the WebUI

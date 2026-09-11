@@ -25,6 +25,7 @@ source_set("debug") {
     "//chrome/browser/ui/omnibox/omnibox_everywhere",
     "//chrome/browser/ui/omnibox/omnibox_everywhere:prefs",
     "//chrome/browser/ui/webui/user_education_internals",
+    "//components/feature_engagement/public",
     "//components/prefs",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",

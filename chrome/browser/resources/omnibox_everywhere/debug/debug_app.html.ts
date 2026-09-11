@@ -83,6 +83,22 @@ export function getHtml(this: OmniboxEverywhereDebugAppElement) {
   ${this.shortcutStatus ? html`
     <div class="status-message">${this.shortcutStatus}</div>
   ` : ''}
+</div>
+<div class="reset-container">
+  <h2>State Reset & Simulation</h2>
+  <div class="button-row">
+    <button id="resetProfilePrefsBtn" class="action-button"
+        @click="${this.onResetProfilePrefsClick}">
+      Reset Profile OE State
+    </button>
+    <button id="resetAllPrefsBtn" class="action-button"
+        @click="${this.onResetAllPrefsClick}">
+      Reset All OE State (All Profiles + Local State)
+    </button>
+  </div>
+  ${this.resetStatus ? html`
+    <div class="status-message">${this.resetStatus}</div>
+  ` : ''}
 </div>`;
 }
 

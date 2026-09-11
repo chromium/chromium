@@ -9,9 +9,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals_page_handler_impl.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 
 namespace omnibox_everywhere_debug {
@@ -29,6 +31,7 @@ OmniboxEverywhereDebugPageHandler::OmniboxEverywhereDebugPageHandler(
               web_ui,
               profile,
               mojo::NullReceiver())) {
+  CHECK(profile_);
   PrefService* local_state = g_browser_process->local_state();
   if (local_state) {
     pref_change_registrar_.Init(local_state);
@@ -153,7 +156,8 @@ void OmniboxEverywhereDebugPageHandler::InvokeOmniboxEverywhere(
 void OmniboxEverywhereDebugPageHandler::ShowLensIph() {
   if (user_education_internals_page_handler_) {
     user_education_internals_page_handler_->ShowFeaturePromo(
-        "IPH_OmniboxEverywhereLensPromo", base::DoNothing());
+        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
+        base::DoNothing());
   }
 }
 
@@ -181,6 +185,51 @@ void OmniboxEverywhereDebugPageHandler::PinToTaskbar(
     }
   }
   std::move(callback).Run(false);
+}
+
+void OmniboxEverywhereDebugPageHandler::ResetProfilePrefs(
+    ResetProfilePrefsCallback callback) {
+  if (profile_->IsRegularProfile()) {
+    omnibox_everywhere::prefs::ResetProfilePrefs(profile_);
+  }
+  if (user_education_internals_page_handler_) {
+    user_education_internals_page_handler_->ClearFeaturePromoData(
+        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
+        base::DoNothing());
+  }
+  std::move(callback).Run(true);
+}
+
+void OmniboxEverywhereDebugPageHandler::ResetAllPrefs(
+    ResetAllPrefsCallback callback) {
+  if (g_browser_process && g_browser_process->profile_manager()) {
+    for (Profile* loaded_profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      if (!loaded_profile->IsRegularProfile()) {
+        continue;
+      }
+      omnibox_everywhere::prefs::ResetProfilePrefs(loaded_profile);
+      UserEducationInternalsPageHandlerImpl handler(
+          /*web_ui=*/nullptr, loaded_profile, mojo::NullReceiver());
+      handler.ClearFeaturePromoData(
+          feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
+          base::DoNothing());
+    }
+  } else if (profile_->IsRegularProfile()) {
+    omnibox_everywhere::prefs::ResetProfilePrefs(profile_);
+    if (user_education_internals_page_handler_) {
+      user_education_internals_page_handler_->ClearFeaturePromoData(
+          feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
+          base::DoNothing());
+    }
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  if (local_state) {
+    omnibox_everywhere::prefs::ResetLocalStatePrefs(local_state);
+  }
+
+  std::move(callback).Run(true);
 }
 
 void OmniboxEverywhereDebugPageHandler::OnPrefChanged(

@@ -59,6 +59,9 @@ class OmniboxEverywhereDebugPageHandler : public mojom::PageHandler {
 
   void PinToTaskbar(PinToTaskbarCallback callback) override;
 
+  void ResetProfilePrefs(ResetProfilePrefsCallback callback) override;
+  void ResetAllPrefs(ResetAllPrefsCallback callback) override;
+
  private:
   void OnPrefChanged(const std::string& pref_name);
 
