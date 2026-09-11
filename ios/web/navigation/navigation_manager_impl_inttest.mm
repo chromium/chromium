@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/test/navigation_test_util.h"
@@ -249,6 +250,152 @@ TEST_F(NavigationManagerImplTest, DetachedModeLoadURLWithParams) {
 
   histogram_tester_.ExpectTotalCount(kRestoreNavigationItemCount, 1);
   histogram_tester_.ExpectBucketCount(kRestoreNavigationItemCount, 3, 1);
+}
+
+// Tests that LoadURLWithParams correctly handles virtual URL masking on a
+// WKWebView navigation while preserving the underlying actual URL.
+TEST_F(NavigationManagerImplTest, LoadURLWithVirtualURL) {
+  GURL actual_url = test_server_->GetURL("/echo");
+  GURL virtual_url("https://virtual.example.com/");
+
+  NavigationManager::WebLoadParams params(actual_url);
+  params.virtual_url = virtual_url;
+
+  ASSERT_TRUE(LoadWithParams(params));
+
+  EXPECT_EQ(1, navigation_manager()->GetItemCount());
+  NavigationItemImpl* item =
+      navigation_manager_impl().GetLastCommittedItemImpl();
+  ASSERT_TRUE(item);
+  EXPECT_EQ(actual_url, item->GetURL());
+  EXPECT_EQ(virtual_url, item->GetVirtualURL());
+
+  // Verify that virtual URL masking has not overwritten the underlying URL in
+  // the visible item.
+  NavigationItem* visible_item = navigation_manager()->GetVisibleItem();
+  ASSERT_TRUE(visible_item);
+  EXPECT_EQ(actual_url, visible_item->GetURL());
+  EXPECT_EQ(virtual_url, visible_item->GetVirtualURL());
+}
+
+// Test that LoadURLWithParams correctly delivers custom HTTP extra headers and
+// POST data to the WKWebView.
+TEST_F(NavigationManagerImplTest, LoadURLWithHeadersAndPostData) {
+  NSString* const kCustomHeaderName = @"X-Custom-Test-Header";
+  NSString* const kCustomHeaderValue = @"CustomHeaderValue123";
+  NSString* const kPostData = @"sample_post_key=sample_post_value";
+
+  GURL actual_url = test_server_->GetURL("/echoall");
+
+  NavigationManager::WebLoadParams params(actual_url);
+  params.extra_headers = @{
+    kCustomHeaderName : kCustomHeaderValue,
+    @"Content-Type" : @"application/x-www-form-urlencoded"
+  };
+  params.post_data = [kPostData dataUsingEncoding:NSUTF8StringEncoding];
+
+  ASSERT_TRUE(LoadWithParams(params));
+
+  EXPECT_EQ(1, navigation_manager()->GetItemCount());
+  NavigationItemImpl* item =
+      navigation_manager_impl().GetLastCommittedItemImpl();
+  ASSERT_TRUE(item);
+  EXPECT_EQ(actual_url, item->GetURL());
+
+  // Verify POST data state and payload on NavigationItem.
+  EXPECT_TRUE(item->HasPostData());
+  EXPECT_TRUE([params.post_data isEqualToData:item->GetPostData()]);
+
+  // Verify custom HTTP headers and POST payload delivered to web
+  // view/server.
+  NSString* const kExpectedHeaderText = [NSString
+      stringWithFormat:@"%@: %@", kCustomHeaderName, kCustomHeaderValue];
+  EXPECT_TRUE(test::IsWebViewContainingText(
+      web_state(), base::SysNSStringToUTF8(kExpectedHeaderText)));
+  EXPECT_TRUE(test::IsWebViewContainingText(
+      web_state(), base::SysNSStringToUTF8(kPostData)));
+}
+
+// Tests that calling LoadURLWithParams while the NavigationManager is in a
+// detached state restores the cached session history into the WKWebView,
+// attaches the web view, and appends the new pending item.
+TEST_F(NavigationManagerImplTest, LoadURLFromDetachedState) {
+  GURL initial_url = test_server_->GetURL("/initial");
+  NavigationManager::WebLoadParams initial_params(initial_url);
+  ASSERT_TRUE(LoadWithParams(initial_params));
+  EXPECT_EQ(1, navigation_manager()->GetItemCount());
+
+  // Put NavigationManager into detached state and discard the web view.
+  navigation_manager_impl().DetachFromWebView();
+  [web::test::GetWebController(web_state()) removeWebView];
+  EXPECT_FALSE([web::test::GetWebController(web_state()) isViewAlive]);
+
+  GURL new_url = test_server_->GetURL("/new");
+  NavigationManager::WebLoadParams params(new_url);
+
+  // LoadURLWithParams will execute the detached branch, restore cached items
+  // and load the new item.
+  ASSERT_TRUE(LoadWithParams(params));
+
+  // Verify web view is re-attached and alive.
+  EXPECT_TRUE([web::test::GetWebController(web_state()) isViewAlive]);
+
+  // Assert real session history state on WKWebView.
+  ASSERT_EQ(2, navigation_manager()->GetItemCount());
+  EXPECT_EQ(1, navigation_manager()->GetLastCommittedItemIndex());
+  EXPECT_EQ(initial_url, navigation_manager()->GetItemAtIndex(0)->GetURL());
+  NavigationItem* item = navigation_manager()->GetLastCommittedItem();
+  ASSERT_TRUE(item);
+  EXPECT_EQ(new_url, item->GetURL());
+
+  // Verify session restore metric recorded 2 items (1 cached + 1 committed).
+  histogram_tester_.ExpectBucketCount(kRestoreNavigationItemCount, 2, 1);
+}
+
+// Tests that LoadURLWithParams with a hash fragment URL (on the same document)
+// marks the pending NavigationItem as created from a hash change.
+TEST_F(NavigationManagerImplTest, LoadURLWithHashChange) {
+  GURL initial_url = test_server_->GetURL("/echo");
+  ASSERT_TRUE(LoadUrl(initial_url));
+
+  GURL hash_url = test_server_->GetURL("/echo#section2");
+  NavigationManager::WebLoadParams params(hash_url);
+
+  ASSERT_TRUE(LoadWithParams(params));
+
+  EXPECT_EQ(2, navigation_manager()->GetItemCount());
+  NavigationItemImpl* item =
+      navigation_manager_impl().GetLastCommittedItemImpl();
+  ASSERT_TRUE(item);
+  EXPECT_EQ(hash_url, item->GetURL());
+  EXPECT_TRUE(item->IsCreatedFromHashChange());
+}
+
+// Tests that LoadURLWithParams on a detached NavigationManager with empty
+// history attaches the web view without restoring items.
+TEST_F(NavigationManagerImplTest, LoadURLFromDetachedStateWithEmptyHistory) {
+  ASSERT_EQ(0, navigation_manager()->GetItemCount());
+
+  // Detach while history is empty and discard the web view.
+  navigation_manager_impl().DetachFromWebView();
+  [web::test::GetWebController(web_state()) removeWebView];
+  EXPECT_FALSE([web::test::GetWebController(web_state()) isViewAlive]);
+
+  GURL url = test_server_->GetURL("/echo");
+  NavigationManager::WebLoadParams params(url);
+
+  ASSERT_TRUE(LoadWithParams(params));
+
+  // Verify web view is re-attached and alive.
+  EXPECT_TRUE([web::test::GetWebController(web_state()) isViewAlive]);
+
+  EXPECT_EQ(1, navigation_manager()->GetItemCount());
+  NavigationItem* item = navigation_manager()->GetLastCommittedItem();
+  ASSERT_TRUE(item);
+  ASSERT_EQ(url, item->GetURL());
+
+  // Verify that restore was skipped when history was empty.
+  histogram_tester_.ExpectTotalCount(kRestoreNavigationItemCount, 0);
 }
 
 }  // namespace web
