@@ -17,7 +17,7 @@ import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getCss} from './searchbox_input.css.js';
 import {getHtml} from './searchbox_input.html.js';
-import {markOnce} from './utils.js';
+import {afterNextPaint, markOnce} from './utils.js';
 
 // Register --placeholder-opacity as type <number> so that we can animate it.
 CSS.registerProperty({
@@ -154,11 +154,14 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   setInputText(text: string) {
-    // TODO(crbug.com/553005514): Investigate a way to track the rendering time
-    // and modify these markings accordingly.
-    markOnce('SearchboxInputElement::setInputText:Start');
+    markOnce('SearchboxInputElement::setInputText:StartupStart');
     this.onSetInputText_(text);
-    markOnce('SearchboxInputElement::setInputText:End');
+    markOnce('SearchboxInputElement::setInputText:StartupEnd');
+    // Records a user timing mark after the initial startup input text has been
+    // painted and presented to the display.
+    afterNextPaint(() => {
+      markOnce('SearchboxInputElement::setInputText:StartupRendered');
+    });
   }
 
   setInput(update: InputUpdate) {
@@ -232,6 +235,16 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     }
 
     this.updateInput_({text: inputValue, inline: ''});
+    // Record a user timing mark if the input has content.
+    if (inputValue.length > 0) {
+      markOnce('SearchboxInputElement::onInputInput_:HasContent');
+      // Records a user timing mark after the user's typed character echo and
+      // trailing caret have been painted to the display.
+      afterNextPaint(() => {
+        markOnce('SearchboxInputElement::onInputInput_:ContentRendered');
+      });
+    }
+
     this.fire('searchbox-input-text-updated', {
       value: inputValue,
       isComposing: e.isComposing,

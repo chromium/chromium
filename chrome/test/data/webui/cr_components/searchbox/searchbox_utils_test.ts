@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {announce, markOnce, sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
+import {afterNextPaint, announce, markOnce, sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
 import type {AriaNotificationOptions} from '//resources/cr_components/searchbox/utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -94,6 +94,21 @@ suite('SearchboxUtilsTest', () => {
 
       assertEquals(1, performance.getEntriesByName(markA).length);
       assertEquals(1, performance.getEntriesByName(markB).length);
+    });
+  });
+
+  suite('afterNextPaint', () => {
+    test('executes callback after animation frame and macrotask', async () => {
+      let called = false;
+
+      await new Promise<void>(resolve => {
+        afterNextPaint(() => {
+          called = true;
+          resolve();
+        });
+      });
+
+      assertTrue(called);
     });
   });
 

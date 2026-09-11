@@ -61,6 +61,22 @@ export function markOnce(name: string): boolean {
   return false;
 }
 
+/**
+ * Schedules a callback to execute after the browser has completed the style,
+ * layout, and paint of the upcoming frame.
+ *
+ * This serves as an approximation for a post-paint lifecycle callback (there is
+ * currently no native `requestPostAnimationFrame` callback in the web
+ * platform). `requestAnimationFrame` runs before the next repaint; chaining
+ * `setTimeout(0)` ensures the callback executes in the macrotask immediately
+ * following the frame's rendering update.
+ */
+export function afterNextPaint(callback: () => void): void {
+  requestAnimationFrame(() => {
+    setTimeout(callback, 0);
+  });
+}
+
 // LINT.IfChange(StripJavascriptSchemas)
 export function stripJavascriptSchemas(text: string): string {
   const kJsPrefix = 'javascript:';
