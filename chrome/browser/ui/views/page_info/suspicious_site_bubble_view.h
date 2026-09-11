@@ -48,6 +48,9 @@ class SuspiciousSiteBubbleView : public PageInfoBubbleViewBase {
   // views::BubbleDialogDelegateView:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // content::WebContentsObserver:
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
   views::MdTextButton* back_to_safety_button_for_testing() {
     return back_to_safety_button_;
   }
@@ -74,6 +77,7 @@ class SuspiciousSiteBubbleView : public PageInfoBubbleViewBase {
   raw_ptr<views::StyledLabel> description_label_ = nullptr;
 
   bool is_web_contents_blocked_ = false;
+  bool is_closing_for_tab_switch_ = false;
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;

@@ -194,14 +194,33 @@ BrowserWindowInterface* SuspiciousSiteBubbleView::GetBrowser() const {
   return tab ? tab->GetBrowserWindowInterface() : nullptr;
 }
 
+void SuspiciousSiteBubbleView::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::HIDDEN) {
+    is_closing_for_tab_switch_ = true;
+    if (GetWidget()) {
+      GetWidget()->Close();
+    }
+  }
+}
+
 void SuspiciousSiteBubbleView::OnWidgetDestroying(views::Widget* widget) {
   UnblockWebContents();
+  if (!is_closing_for_tab_switch_) {
+    if (web_contents()) {
+      if (auto* controller =
+              safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+                  web_contents())) {
+        controller->OnBubbleDismissed();
+      }
+    }
+  }
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
 }
 
 SuspiciousSiteBubbleView::~SuspiciousSiteBubbleView() {
   UnblockWebContents();
-  if (web_contents()) {
+  if (!is_closing_for_tab_switch_ && web_contents()) {
     if (auto* controller =
             safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
                 web_contents())) {

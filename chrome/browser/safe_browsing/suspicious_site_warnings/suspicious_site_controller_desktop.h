@@ -63,6 +63,7 @@ class SuspiciousSiteControllerDesktop
   void OnBackToSafetyClicked();
   void OnMarkAsSafeClicked();
   void OnLearnMoreClicked();
+  void OnBubbleDismissed();
   void OnBubbleDestroyed();
 
   // Shows the bubble view on the window.
@@ -92,6 +93,10 @@ class SuspiciousSiteControllerDesktop
   // Whether the bubble display is currently suspended or waiting for checks to
   // finish.
   bool is_suspended_ = false;
+
+  // Tracks whether the user has explicitly dismissed the warning bubble
+  // (e.g. by clicking the close 'X' button or pressing Esc).
+  bool is_dismissed_ = false;
 
   // Tracks whether the bubble has been shown on screen.
   bool has_shown_ = false;

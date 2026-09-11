@@ -66,6 +66,14 @@ class SuspiciousSiteControllerDesktopTest
     return controller->has_shown_;
   }
 
+  bool IsSuspended(SuspiciousSiteControllerDesktop* controller) {
+    return controller->is_suspended_;
+  }
+
+  bool IsDismissed(SuspiciousSiteControllerDesktop* controller) {
+    return controller->is_dismissed_;
+  }
+
  private:
   scoped_refptr<TestSafeBrowsingService> sb_service_;
   scoped_refptr<safe_browsing::TestSafeBrowsingUIManager> test_ui_manager_;
@@ -268,6 +276,68 @@ TEST_F(SuspiciousSiteControllerDesktopTest, OnVisibilityChanged) {
   // Show web contents.
   web_contents()->WasShown();
   EXPECT_TRUE(shown);
+}
+
+TEST_F(SuspiciousSiteControllerDesktopTest,
+       OnVisibilityChangedAfterBubbleShown) {
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://suspicious.example.com"), web_contents());
+  navigation->Start();
+
+  bool shown = false;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      base::BindOnce([](bool* shown) { *shown = true; }, &shown));
+
+  SuspiciousSiteControllerDesktop* controller =
+      MakeController(navigation->GetNavigationHandle()->GetNavigationId());
+  ASSERT_NE(controller, nullptr);
+
+  navigation->Commit();
+  EXPECT_TRUE(shown);
+
+  // Tab is switched away (hidden).
+  web_contents()->WasHidden();
+  EXPECT_TRUE(IsSuspended(controller));
+
+  // Tab is switched back (visible). Bubble should show again.
+  shown = false;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      base::BindOnce([](bool* shown) { *shown = true; }, &shown));
+  web_contents()->WasShown();
+  EXPECT_TRUE(shown);
+}
+
+TEST_F(SuspiciousSiteControllerDesktopTest, OnVisibilityChangedAfterDismissed) {
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://suspicious.example.com"), web_contents());
+  navigation->Start();
+
+  bool shown = false;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      base::BindOnce([](bool* shown) { *shown = true; }, &shown));
+
+  SuspiciousSiteControllerDesktop* controller =
+      MakeController(navigation->GetNavigationHandle()->GetNavigationId());
+  ASSERT_NE(controller, nullptr);
+
+  navigation->Commit();
+  EXPECT_TRUE(shown);
+
+  // User explicitly dismisses the bubble.
+  controller->OnBubbleDismissed();
+  EXPECT_TRUE(IsDismissed(controller));
+  EXPECT_FALSE(IsSuspended(controller));
+
+  // Tab is hidden.
+  web_contents()->WasHidden();
+  EXPECT_FALSE(IsSuspended(controller));
+
+  // Tab is shown. Bubble should NOT show again.
+  shown = false;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      base::BindOnce([](bool* shown) { *shown = true; }, &shown));
+  web_contents()->WasShown();
+  EXPECT_FALSE(shown);
 }
 
 }  // namespace safe_browsing

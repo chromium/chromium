@@ -34,6 +34,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 namespace safe_browsing {
@@ -334,6 +335,147 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
       chrome_security_state::GetVisibleSecurityState(GetActiveWebContents());
   ASSERT_TRUE(security_state);
   EXPECT_NE(security_state->malicious_content_status,
+            security_state::MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE);
+}
+
+IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
+                       WarningReappearsAfterTabSwitch) {
+  GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
+  SetURLThreatType(malicious_url,
+                   SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  base::test::TestFuture<void> shown_future;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      shown_future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), malicious_url));
+  EXPECT_TRUE(shown_future.Wait());
+
+  views::BubbleDialogDelegateView* bubble =
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  ASSERT_TRUE(bubble);
+  EXPECT_TRUE(bubble->GetWidget()->IsVisible());
+  EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
+
+  // Open a new tab in the foreground.
+  base::test::TestFuture<void> second_shown_future;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      second_shown_future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // Switch back to the malicious site tab (index 0).
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  // Warning bubble should reappear and web contents should be blocked again.
+  EXPECT_TRUE(second_shown_future.Wait());
+  bubble = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  ASSERT_TRUE(bubble);
+  EXPECT_TRUE(bubble->GetWidget()->IsVisible());
+  EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
+}
+
+IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
+                       WarningReappearsAfterLearnMoreClicked) {
+  GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
+  SetURLThreatType(malicious_url,
+                   SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  base::test::TestFuture<void> shown_future;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      shown_future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), malicious_url));
+  EXPECT_TRUE(shown_future.Wait());
+
+  auto* bubble_view = static_cast<SuspiciousSiteBubbleView*>(
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  ASSERT_TRUE(bubble_view);
+  EXPECT_TRUE(bubble_view->GetWidget()->IsVisible());
+
+  // Click the Learn More link in the bubble.
+  base::test::TestFuture<void> second_shown_future;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      second_shown_future.GetCallback());
+
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  auto* controller =
+      safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+          GetActiveWebContents());
+  ASSERT_TRUE(controller);
+  controller->OnLearnMoreClicked();
+  tab_waiter.Wait();
+
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+
+  // Switch back to the malicious tab (index 0).
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  // Warning bubble should reappear.
+  EXPECT_TRUE(second_shown_future.Wait());
+  bubble_view = static_cast<SuspiciousSiteBubbleView*>(
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  ASSERT_TRUE(bubble_view);
+  EXPECT_TRUE(bubble_view->GetWidget()->IsVisible());
+  EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
+}
+
+IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
+                       WarningDoesNotReappearAfterExplicitDismissal) {
+  GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
+  SetURLThreatType(malicious_url,
+                   SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  base::test::TestFuture<void> shown_future;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      shown_future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), malicious_url));
+  EXPECT_TRUE(shown_future.Wait());
+
+  auto* bubble_view = static_cast<SuspiciousSiteBubbleView*>(
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  ASSERT_TRUE(bubble_view);
+
+  // Explicitly close the bubble using close button.
+  views::test::WidgetDestroyedWaiter waiter(bubble_view->GetWidget());
+  bubble_view->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  waiter.Wait();
+  EXPECT_FALSE(PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+
+  // Input events should no longer be ignored and tab is not blocked.
+  EXPECT_FALSE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_FALSE(browser()->GetTabStripModel()->IsTabBlocked(0));
+
+  // Open a new tab in foreground and switch back.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::test::TestFuture<void> unexpected_shown_future;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      unexpected_shown_future.GetCallback());
+
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  // Bubble should NOT reappear.
+  EXPECT_FALSE(unexpected_shown_future.IsReady());
+  EXPECT_FALSE(PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  EXPECT_FALSE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_FALSE(browser()->GetTabStripModel()->IsTabBlocked(0));
+
+  // Suspicious chip should still be present.
+  auto security_state =
+      chrome_security_state::GetVisibleSecurityState(GetActiveWebContents());
+  ASSERT_TRUE(security_state);
+  EXPECT_EQ(security_state->malicious_content_status,
             security_state::MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE);
 }
 

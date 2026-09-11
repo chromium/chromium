@@ -125,7 +125,11 @@ void SuspiciousSiteControllerDesktop::DidFinishNavigation(
 
 void SuspiciousSiteControllerDesktop::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::VISIBLE && is_suspended_) {
+  if (visibility == content::Visibility::HIDDEN) {
+    if (!is_dismissed_) {
+      is_suspended_ = true;
+    }
+  } else if (visibility == content::Visibility::VISIBLE && is_suspended_) {
     MaybeShowBubble();
   }
 }
@@ -140,7 +144,7 @@ void SuspiciousSiteControllerDesktop::
 }
 
 void SuspiciousSiteControllerDesktop::MaybeShowBubble() {
-  if (!web_contents() || !navigation_id_.has_value()) {
+  if (!web_contents() || !navigation_id_.has_value() || is_dismissed_) {
     return;
   }
 
@@ -283,6 +287,11 @@ void SuspiciousSiteControllerDesktop::OnLearnMoreClicked() {
                                ui::PAGE_TRANSITION_LINK, false),
         /*navigation_handle_callback=*/{});
   }
+}
+
+void SuspiciousSiteControllerDesktop::OnBubbleDismissed() {
+  is_dismissed_ = true;
+  is_suspended_ = false;
 }
 
 void SuspiciousSiteControllerDesktop::OnBubbleDestroyed() {
