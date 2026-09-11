@@ -3159,6 +3159,7 @@ static_library("base_static") {
     "immediate_crash.h",
   ]
 
+  public_deps = [ ":compiler_specific" ]
   deps = [ ":fuzzing_buildflags" ]
 
   if (is_win) {
@@ -3167,7 +3168,7 @@ static_library("base_static") {
       "win/static_constants.h",
     ]
 
-    public_deps = [ "//base/win:pe_image" ]
+    public_deps += [ "//base/win:pe_image" ]
 
     # Disable sanitizer coverage in win/pe_image.cc. It is called by the sandbox
     # before sanitizer coverage can initialize. http://crbug.com/484711
