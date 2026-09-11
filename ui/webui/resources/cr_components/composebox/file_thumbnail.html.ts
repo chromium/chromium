@@ -155,8 +155,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
         </div>
         `}
       ` : html`
-        ${(this.file.type.startsWith('image/') || this.file.objectUrl
-            || this.file.dataUrl || this.file.thumbnailUrl) ?
+        ${this.hasVisualThumbnail_() ?
           html`
             ${this.isAndroid_ ? html`
         <div id="imgChip">
@@ -171,7 +170,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                   auto-src="${this.file.thumbnailUrl}"
                   aria-label="${this.file.name}">
               ` : html`
-                ${this.isVideo_() && this.file.objectUrl ? html`
+                ${this.isSupportedVideo_() && this.file.objectUrl ? html`
                   <video class="img-thumbnail"
                     src="${this.file.objectUrl}#t=0.001"
                     preload="metadata"
@@ -211,7 +210,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                 auto-src="${this.file.thumbnailUrl}"
                 aria-label="${this.file.name}">
             ` : html`
-              ${this.isVideo_() && this.file.objectUrl ? html`
+              ${this.isSupportedVideo_() && this.file.objectUrl ? html`
                 <video class="img-thumbnail"
                   src="${this.file.objectUrl}#t=0.001"
                   preload="metadata"

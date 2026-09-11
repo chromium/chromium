@@ -18,6 +18,9 @@ import {ContextUploadStatus, InputType} from './composebox_query.mojom-webui.js'
 import {getCss} from './file_thumbnail.css.js';
 import {getHtml} from './file_thumbnail.html.js';
 
+const SUPPORTED_VIDEO_EXTENSIONS =
+    new Set(['mp4', 'webm', 'ogg', 'mov', 'm4v']);
+
 export interface ComposeboxFileThumbnailElement {
   $: {
     removeImgButton: HTMLElement,
@@ -96,6 +99,31 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
         this.file?.type &&
         (this.file.type.startsWith('video/') ||
          this.file.type.includes('video')));
+  }
+
+  protected isImage_(): boolean {
+    return Boolean(
+        this.file?.type &&
+        (this.file.type.startsWith('image/') ||
+         this.file.type.includes('image')));
+  }
+
+  protected isSupportedVideo_(): boolean {
+    if (!this.isVideo_() || !this.file?.name) {
+      return false;
+    }
+    const dotIndex = this.file.name.lastIndexOf('.');
+    if (dotIndex === -1) {
+      return false;
+    }
+    const extension = this.file.name.slice(dotIndex + 1).toLowerCase();
+    return SUPPORTED_VIDEO_EXTENSIONS.has(extension);
+  }
+
+  protected hasVisualThumbnail_(): boolean {
+    return this.isImage_() ||
+        Boolean(this.file?.dataUrl || this.file?.thumbnailUrl) ||
+        Boolean(this.isSupportedVideo_() && this.file?.objectUrl);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {

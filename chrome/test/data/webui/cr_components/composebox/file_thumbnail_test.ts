@@ -470,6 +470,7 @@ function createThumbnailElement(isAndroid: boolean):
     test('clicking video delete button sends event', async () => {
       // Arrange.
       fileThumbnailElement.file = createFile(1, {
+        name: 'video.mp4',
         type: 'video/mp4',
         objectUrl: 'data:foo',
       });
@@ -489,6 +490,7 @@ function createThumbnailElement(isAndroid: boolean):
     test('hides video delete button when not deletable', async () => {
       // Arrange.
       fileThumbnailElement.file = createFile(1, {
+        name: 'video.mp4',
         type: 'video/mp4',
         objectUrl: 'data:foo',
         isDeletable: false,
@@ -499,6 +501,43 @@ function createThumbnailElement(isAndroid: boolean):
       const removeButton =
           fileThumbnailElement.shadowRoot.querySelector('#removeImgButton');
       assertEquals(null, removeButton);
+    });
+
+    ['mp4', 'webm', 'ogg', 'mov', 'm4v'].forEach(ext => {
+      test(`display supported video format .${ext}`, async () => {
+        fileThumbnailElement.file = createFile(1, {
+          name: `video.${ext}`,
+          type: `video/${ext}`,
+          objectUrl: 'data:foo',
+        });
+        await microtasksFinished();
+
+        const thumbnail =
+            fileThumbnailElement.shadowRoot.querySelector<HTMLVideoElement>(
+                '.img-thumbnail');
+        assertTrue(!!thumbnail);
+        assertEquals(thumbnail.tagName, 'VIDEO');
+      });
+    });
+
+    ['wmv', 'flv', 'avi', 'mkv'].forEach(ext => {
+      test(
+          `fallback to document chip for unsupported video format .${ext}`,
+          async () => {
+            fileThumbnailElement.file = createFile(1, {
+              name: `video.${ext}`,
+              type: `video/${ext}`,
+              objectUrl: 'data:foo',
+            });
+            await microtasksFinished();
+
+            const video =
+                fileThumbnailElement.shadowRoot.querySelector('.img-thumbnail');
+            assertEquals(null, video);
+            const documentChip =
+                fileThumbnailElement.shadowRoot.querySelector('#documentChip');
+            assertTrue(!!documentChip);
+          });
     });
 
     test('clicking document delete button sends event', async () => {
