@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -348,6 +349,39 @@ public class MultiColumnTitleUpdaterTest {
         assertTrue(mContainer.getChildAt(0) instanceof TextView);
         assertEquals(
                 "Privacy and security", ((TextView) mContainer.getChildAt(0)).getText().toString());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testTitleWithoutDetailFragment_doesNotCrash() {
+        // Simulate the detail pane becoming empty while a title is still being tracked. Under
+        // SettingsInTab, MultiColumnSettings.onBackStackEmpty() pops the back stack and removes
+        // the remaining base detail fragment when returning to root settings in single-column
+        // mode. The detail pane is also transiently empty while a fragment transaction has been
+        // committed but not yet executed.
+        FragmentManager fragmentManager = mMultiColumnSettings.getChildFragmentManager();
+        fragmentManager.popBackStackImmediate();
+        Fragment baseDetailFragment = fragmentManager.findFragmentById(R.id.preferences_detail);
+        assertNotNull(baseDetailFragment);
+        fragmentManager.beginTransaction().remove(baseDetailFragment).commitNow();
+        assertNull(fragmentManager.findFragmentById(R.id.preferences_detail));
+
+        // Track exactly one title. This is the case that used to assert, because a single title
+        // is assumed to belong to the fragment currently in the detail pane.
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+
+        // Create the updater after the detail pane is empty, so it starts with no cached state.
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+
+        // Must not crash when there is no detail fragment. https://crbug.com/559531378
+        updater.onHeaderLayoutUpdated();
+
+        // The title still renders, just without a match against the (absent) detail fragment.
+        assertEquals(1, mContainer.getChildCount());
+        assertEquals("Appearance", ((TextView) mContainer.getChildAt(0)).getText().toString());
     }
 
     public static class TestSearchViewProviderFragment extends Fragment

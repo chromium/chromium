@@ -718,7 +718,7 @@ public class MultiColumnSettingsUnitTest {
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
-    public void testEmptyBackStack_InSingleColumnMode_ClosesSlidingPane() {
+    public void testEmptyBackStack_InSingleColumnMode_ClosesSlidingPaneAndClearsTitles() {
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
@@ -766,6 +766,11 @@ public class MultiColumnSettingsUnitTest {
                 () -> settingsHolder[0].getSlidingPaneLayout().isOpen(),
                 "SlidingPaneLayout should open when detail fragment is shown");
 
+        // The resumed detail fragment is tracked so it can be shown in the breadcrumb.
+        CriteriaHelper.pollUiThread(
+                () -> settingsHolder[0].getTitles().size() == 1,
+                "Detail fragment title should be tracked");
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
@@ -782,6 +787,12 @@ public class MultiColumnSettingsUnitTest {
         CriteriaHelper.pollUiThread(
                 () -> !settingsHolder[0].getSlidingPaneLayout().isOpen(),
                 "SlidingPaneLayout closes when detail fragment is popped in single-column mode");
+
+        // The detail pane is empty, so no title may remain. Stale titles used to crash
+        // MultiColumnTitleUpdater.initTitlesList(). See https://crbug.com/559531378
+        CriteriaHelper.pollUiThread(
+                () -> settingsHolder[0].getTitles().isEmpty(),
+                "Titles should be cleared once the detail pane is empty");
     }
 
     @Test

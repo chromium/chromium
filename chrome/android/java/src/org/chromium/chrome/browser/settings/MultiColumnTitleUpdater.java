@@ -302,16 +302,25 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                                 .getChildFragmentManager()
                                 .findFragmentById(R.id.preferences_detail);
 
-                assertNonNull(currentFragment);
+                // The detail pane can be empty even though a title is still tracked, because
+                // titles are added when a detail fragment resumes but the detail pane may be
+                // emptied afterwards (e.g. returning to root settings under SettingsInTab), or a
+                // replacement transaction may be committed but not yet executed. There is nothing
+                // to match the deep link path against in that case, so keep the previously
+                // computed path; it is recomputed on the next update once a detail fragment
+                // exists. https://crbug.com/559531378
+                if (currentFragment != null) {
+                    String currentClass = currentFragment.getClass().getName();
+                    boolean isMatch = false;
+                    if (mInitialBreadcrumbPath != null && !mInitialBreadcrumbPath.isEmpty()) {
+                        String targetClass =
+                                mInitialBreadcrumbPath.get(mInitialBreadcrumbPath.size() - 1)
+                                        .fragment;
+                        isMatch = TextUtils.equals(currentClass, targetClass);
+                    }
 
-                boolean isMatch = false;
-                if (mInitialBreadcrumbPath != null && !mInitialBreadcrumbPath.isEmpty()) {
-                    String targetClass =
-                            mInitialBreadcrumbPath.get(mInitialBreadcrumbPath.size() - 1).fragment;
-                    isMatch = TextUtils.equals(currentFragment.getClass().getName(), targetClass);
+                    mCachedDeepLinkPath = isMatch ? new ArrayList<>(mInitialBreadcrumbPath) : null;
                 }
-
-                mCachedDeepLinkPath = isMatch ? new ArrayList<>(mInitialBreadcrumbPath) : null;
             }
 
             if (mCachedDeepLinkPath != null && mCachedDeepLinkPath.size() > 1) {

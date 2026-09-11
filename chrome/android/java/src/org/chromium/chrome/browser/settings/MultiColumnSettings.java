@@ -257,6 +257,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                             .commitAllowingStateLoss();
                 }
             }
+            // Root settings has no detail fragment, so drop any titles tracked for the detail
+            // fragments being removed above. See clearTitles(). https://crbug.com/559531378
+            mFragmentTracker.clearTitles();
             return null;
         }
 
@@ -283,8 +286,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
      * Handles back stack becoming empty after FragmentManager finishes executing transactions. In
      * two-column mode, populates the initial detail fragment so the detail pane does not remain
      * blank. In single-column mode, removes any remaining detail fragment (if SettingsInTab is
-     * enabled and we are clearing the back stack to return to root), closes the sliding pane, and
-     * restores header focusability.
+     * enabled and we are clearing the back stack to return to root), closes the sliding pane,
+     * restores header focusability, and clears the now-stale detail pane titles.
      */
     private void onBackStackEmpty() {
         if (getView() == null) return;
@@ -294,6 +297,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
         boolean clearingForRoot = mClearingBackStackForRoot;
         mClearingBackStackForRoot = false;
+
+        // Whether the detail pane is left without a fragment.
+        boolean detailPaneEmptied = false;
 
         if (isTwoColumn()) {
             ensureInitialDetailFragment();
@@ -309,12 +315,20 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             }
             getSlidingPaneLayout().closePane();
             updateHeaderPaneFocusability();
+            detailPaneEmptied = true;
         } else if (fragmentManager.findFragmentById(R.id.preferences_detail) == null) {
             // When SettingsInTab is disabled, single-column mode (e.g. portrait on a tablet)
             // retains an initial detail fragment. Only close the sliding pane and restore
             // header focusability if no detail fragment remains (e.g. after exiting search).
             getSlidingPaneLayout().closePane();
             updateHeaderPaneFocusability();
+            detailPaneEmptied = true;
+        }
+
+        // The detail pane no longer has a fragment, so the tracked titles are stale. Drop them
+        // and refresh the breadcrumb. See clearTitles(). https://crbug.com/559531378
+        if (detailPaneEmptied && mFragmentTracker.clearTitles()) {
+            for (Observer o : mObservers) o.onTitleUpdated();
         }
     }
 
@@ -1080,6 +1094,24 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                 for (Observer o : mObservers) o.onTitleUpdated();
                 mTitleInitialized = true;
             }
+        }
+
+        /**
+         * Clears the tracked detail pane titles.
+         *
+         * <p>Titles are only ever added by {@link #onFragmentResumed}, so nothing removes them when
+         * the detail pane is emptied without another detail fragment taking over (e.g. returning to
+         * root settings in single-column mode under SettingsInTab). The leftover titles then
+         * describe a fragment that no longer exists, which breaks the breadcrumb and previously
+         * crashed {@code MultiColumnTitleUpdater.initTitlesList()}. See https://crbug.com/559531378
+         *
+         * @return Whether any title was removed. Callers are responsible for notifying observers.
+         */
+        boolean clearTitles() {
+            if (mTitles.isEmpty()) return false;
+
+            mTitles.clear();
+            return true;
         }
 
         void saveTitles(Bundle outState) {

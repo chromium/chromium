@@ -105,6 +105,19 @@ public class SettingsPageTest {
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
+    /**
+     * Returns the index of the currently selected tab in the current tab model.
+     *
+     * <p>Tests in this class are batched, so they share one activity and tab model, and {@link
+     * ChromeTabbedActivityTestRule#startMainActivityOnBlankPage()} opens an additional tab for each
+     * test. Tests that switch tabs must therefore remember the index of the tab they loaded rather
+     * than assuming it is index 0.
+     */
+    private int getCurrentTabIndex() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getCurrentTabModel().index());
+    }
+
     @Test
     @MediumTest
     public void testOpenSettingsAndClickPreference() {
@@ -288,8 +301,11 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     public void testTwoSettingsTabsThemeSwitchRestoresDetailFragment() {
-        // Tab 0: Open settings and navigate to Search engine detail fragment.
+        // Open settings in the current tab and navigate to the Search engine detail fragment.
+        // Tests in this class are batched, so the current tab is not necessarily index 0. Remember
+        // where settings was loaded so we can switch back to it below.
         mActivityTestRule.loadUrl("chrome-native://settings/");
+        int firstSettingsTab = getCurrentTabIndex();
         onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
 
         var matcher =
@@ -301,7 +317,7 @@ public class SettingsPageTest {
         onViewWaiting(withText(R.string.search_engine_settings)).perform(click());
         onViewWaiting(withText("Microsoft Bing")).check(matches(isDisplayed()));
 
-        // Tab 1: Open a second settings tab at root MainSettings.
+        // Open a second settings tab at root MainSettings.
         mActivityTestRule.loadUrlInNewTab("chrome-native://settings/");
         onViewWaiting(allOf(withText(R.string.prefs_privacy_security), isDisplayed()))
                 .check(matches(isDisplayed()));
@@ -309,28 +325,20 @@ public class SettingsPageTest {
         // Simulate theme switch / activity recreation.
         mActivityTestRule.recreateActivity();
 
-        // Verify Tab 1 (active tab): Action bar and MainSettings header pane are restored.
+        // Verify the second tab (active tab): Action bar and MainSettings header pane are restored.
         onViewWaiting(allOf(withId(R.id.action_bar), isDisplayed())).check(matches(isDisplayed()));
         onViewWaiting(allOf(withText(R.string.prefs_privacy_security), isDisplayed()))
                 .check(matches(isDisplayed()));
 
-        // Switch to Tab 0.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+        // Switch back to the first settings tab.
+        ChromeTabUtils.switchTabInCurrentTabModel(
+                mActivityTestRule.getActivity(), firstSettingsTab);
 
-        // Verify Tab 0 (previously navigated tab): Action bar and SearchEngineSettings detail
-        // fragment are restored.
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        onView(allOf(withId(R.id.action_bar), isDisplayed()))
-                                .check(matches(isDisplayed()));
-                        onView(allOf(withText("Microsoft Bing"), isDisplayed()))
-                                .check(matches(isDisplayed()));
-                        return true;
-                    } catch (AssertionError | Exception e) {
-                        return false;
-                    }
-                });
+        // Verify the first settings tab: Action bar and SearchEngineSettings detail fragment are
+        // restored.
+        onViewWaiting(allOf(withId(R.id.action_bar), isDisplayed())).check(matches(isDisplayed()));
+        onViewWaiting(allOf(withText("Microsoft Bing"), isDisplayed()))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -423,16 +431,17 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     public void testAutoFocusOnSettingsPageByTabSwitching() {
-        // Load Settings in Tab 0.
+        // Load Settings. See getCurrentTabIndex() for why the index is captured.
         mActivityTestRule.loadUrl("chrome-native://settings/");
+        int settingsTab = getCurrentTabIndex();
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
         onViewWaiting(withId(R.id.search_box)).check(matches(isFocused()));
 
         // Open a second tab (about:blank).
         mActivityTestRule.loadUrlInNewTab("about:blank");
 
-        // Switch back to Tab 0 (Settings).
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+        // Switch back to the Settings tab.
+        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), settingsTab);
 
         // Verify the search box is automatically focused on tab switch.
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
@@ -479,21 +488,23 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     public void testTwoSettingsTabs_themeChange_searchBoxRemainsVisibleOnFirstTab() {
-        // Open Tab 0 with Settings.
+        // Open the first tab with Settings. See getCurrentTabIndex() for why the index is captured.
         mActivityTestRule.loadUrl("chrome-native://settings/");
+        int firstSettingsTab = getCurrentTabIndex();
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
 
-        // Open Tab 1 with Settings.
+        // Open a second tab with Settings.
         mActivityTestRule.loadUrlInNewTab("chrome-native://settings/");
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
 
         // Recreate activity (simulating theme change or OS configuration change).
         mActivityTestRule.recreateActivity();
 
-        // Switch back to Tab 0.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+        // Switch back to the first Settings tab.
+        ChromeTabUtils.switchTabInCurrentTabModel(
+                mActivityTestRule.getActivity(), firstSettingsTab);
 
-        // Verify the search box is displayed on Tab 0.
+        // Verify the search box is displayed on the first Settings tab.
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
     }
 
