@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/printing/oauth2/profile_auth_servers_sync_bridge.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chromeos/printing/uri.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/sync/model/data_type_local_change_processor.h"
@@ -68,12 +67,13 @@ class AuthorizationZonesManagerImpl
       private ProfileAuthServersSyncBridge::Observer {
  public:
   // `local_state` must be non-null and must outlive `this`.
-  AuthorizationZonesManagerImpl(PrefService* local_state, Profile* profile)
+  AuthorizationZonesManagerImpl(PrefService* local_state,
+                                Profile* profile,
+                                syncer::OnceDataTypeStoreFactory store_factory)
       : client_ids_database_(ClientIdsDatabase::Create(local_state)),
-        sync_bridge_(ProfileAuthServersSyncBridge::Create(
-            this,
-            DataTypeStoreServiceFactory::GetForProfile(profile)
-                ->GetStoreFactory())),
+        sync_bridge_(
+            ProfileAuthServersSyncBridge::Create(this,
+                                                 std::move(store_factory))),
         url_loader_factory_(profile->GetURLLoaderFactory()),
         auth_zone_creator_(base::BindRepeating(AuthorizationZone::Create,
                                                url_loader_factory_)) {}
@@ -266,9 +266,11 @@ class AuthorizationZonesManagerImpl
 
 std::unique_ptr<AuthorizationZonesManager> AuthorizationZonesManager::Create(
     PrefService* local_state,
-    Profile* profile) {
+    Profile* profile,
+    syncer::OnceDataTypeStoreFactory store_factory) {
   DCHECK(profile);
-  return std::make_unique<AuthorizationZonesManagerImpl>(local_state, profile);
+  return std::make_unique<AuthorizationZonesManagerImpl>(
+      local_state, profile, std::move(store_factory));
 }
 
 std::unique_ptr<AuthorizationZonesManager>

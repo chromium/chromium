@@ -16,6 +16,14 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/sync/data_type_store_service_factory.h",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
 ]
+
+specific_include_rules = {
+  # The keyed-service factory is the //chrome seam: it DependsOn() the
+  # Profile-keyed DataTypeStoreServiceFactory and passes the resulting
+  # syncer::OnceDataTypeStoreFactory (//components/sync) into the manager.
+  "authorization_zones_manager_factory\\.cc": [
+    "+chrome/browser/sync/data_type_store_service_factory.h",
+  ],
+}

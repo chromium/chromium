@@ -8,6 +8,8 @@
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
+#include "components/sync/model/data_type_store_service.h"
 
 namespace ash {
 namespace printing {
@@ -39,15 +41,19 @@ AuthorizationZonesManagerFactory::AuthorizationZonesManagerFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
-              .Build()) {}
+              .Build()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
+}
 
 AuthorizationZonesManagerFactory::~AuthorizationZonesManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
 AuthorizationZonesManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
   return AuthorizationZonesManager::Create(
-      g_browser_process->local_state(), Profile::FromBrowserContext(context));
+      g_browser_process->local_state(), profile,
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 }
 
 }  // namespace oauth2
