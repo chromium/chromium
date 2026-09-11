@@ -139,7 +139,9 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.FORCE_ANDROID_REALBOX, FeatureState.DISABLED);
 
     public static final CachedFlag sDebounceKeyboardVisibility =
-            newFlag(OmniboxFeatureList.OMNIBOX_DEBOUNCE_KEYBOARD_VISIBILITY, FeatureState.DISABLED);
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_DEBOUNCE_KEYBOARD_VISIBILITY,
+                    FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sPostDelayedTaskFocusTab =
             newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, FeatureState.ENABLED_IN_PROD);
