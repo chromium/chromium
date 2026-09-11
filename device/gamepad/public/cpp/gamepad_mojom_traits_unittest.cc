@@ -4,9 +4,9 @@
 
 #include "device/gamepad/public/cpp/gamepad_mojom_traits.h"
 
+#include <algorithm>
 #include <array>
 
-#include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
@@ -26,23 +26,18 @@ enum GamepadTestDataType {
 
 Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
   GamepadButton wgb(true, false, 1.0f);
-  wgb.type = GamepadButtonType::kTrackpad;
 
-  GamepadVector wgv;
-  UNSAFE_TODO(memset(&wgv, 0, sizeof(GamepadVector)));
+  GamepadVector wgv = {};
   wgv.not_null = true;
   wgv.x = wgv.y = wgv.z = 1.0f;
 
-  GamepadQuaternion wgq;
-  UNSAFE_TODO(memset(&wgq, 0, sizeof(GamepadQuaternion)));
+  GamepadQuaternion wgq = {};
   wgq.not_null = true;
   wgq.x = wgq.y = wgq.z = wgq.w = 2.0f;
 
-  GamepadPose wgp;
-  UNSAFE_TODO(memset(&wgp, 0, sizeof(GamepadPose)));
+  GamepadPose wgp = {};
 
-  GamepadTouch wgt;
-  UNSAFE_TODO(memset(&wgt, 0, sizeof(GamepadTouch)));
+  GamepadTouch wgt = {};
 
   if (type == GamepadPose_Null) {
     wgp.not_null = false;
@@ -80,15 +75,11 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
       L'0',
       L'\0',
   });
-  constexpr size_t kTestIdStringLength = std::size(kTestIdString);
 
-  Gamepad send;
-  UNSAFE_TODO(memset(&send, 0, sizeof(Gamepad)));
-
+  Gamepad send = {};
   send.connected = true;
-  for (size_t i = 0; i < kTestIdStringLength; i++) {
-    send.id[i] = kTestIdString[i];
-  }
+
+  std::ranges::copy(kTestIdString, send.id.begin());
   send.mapping = GamepadMapping::kNone;
   send.timestamp = base::TimeTicks::Now().since_origin().InMicroseconds();
   send.axes_length = 0U;
@@ -172,26 +163,23 @@ bool isWebGamepadEqual(const Gamepad& send, const Gamepad& echo) {
       send.touch_events_length != echo.touch_events_length) {
     return false;
   }
-  for (size_t i = 0; i < Gamepad::kIdLengthCap; i++) {
-    if (send.id[i] != echo.id[i]) {
-      return false;
-    }
-  }
-  for (size_t i = 0; i < Gamepad::kAxesLengthCap; i++) {
-    if (send.axes[i] != echo.axes[i]) {
-      return false;
-    }
-  }
-  for (size_t i = 0; i < Gamepad::kButtonsLengthCap; i++) {
-    if (!isWebGamepadButtonEqual(send.buttons[i], echo.buttons[i])) {
-      return false;
-    }
+
+  if (send.id != echo.id) {
+    return false;
   }
 
-  for (size_t i = 0; i < Gamepad::kTouchEventsLengthCap; i++) {
-    if (!isWebGamepadTouchEqual(send.touch_events[i], echo.touch_events[i])) {
-      return false;
-    }
+  if (send.axes != echo.axes) {
+    return false;
+  }
+
+  if (!std::ranges::equal(send.buttons, echo.buttons,
+                          isWebGamepadButtonEqual)) {
+    return false;
+  }
+
+  if (!std::ranges::equal(send.touch_events, echo.touch_events,
+                          isWebGamepadTouchEqual)) {
+    return false;
   }
 
   return true;
