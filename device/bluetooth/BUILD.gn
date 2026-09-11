@@ -4,8 +4,11 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
-import("//device/bluetooth/cast_bluetooth.gni")
 import("//device/bluetooth/emulation/buildflags.gni")
+
+declare_args() {
+  use_bluez = (is_linux && !is_castos && use_dbus) || is_chromeos
+}
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -22,9 +25,6 @@ config("bluetooth_config") {
       "/DELAYLOAD:Bthprops.cpl",
       "/DELAYLOAD:setupapi.dll",
     ]
-  }
-  if (is_castos) {
-    defines = [ "USE_CAST_BLUETOOTH_ADAPTER" ]
   }
 }
 
@@ -337,10 +337,8 @@ component("bluetooth") {
 
   if (is_chromeos || is_linux) {
     if (use_bluez) {
-      if (!force_cast_bluetooth) {
-        sources += [ "bluetooth_adapter_chromeos.cc" ]
-      }
       sources += [
+        "bluetooth_adapter_chromeos.cc",
         "bluez/bluetooth_adapter_bluez.cc",
         "bluez/bluetooth_adapter_bluez.h",
         "bluez/bluetooth_adapter_profile_bluez.cc",
@@ -617,35 +615,9 @@ component("bluetooth") {
       ]
     }
 
-    # force_cast_bluetooth is used to compile with both cast & BlueZ, by
-    # omitting the stubs that would otherwise be added in.
-    if (!use_bluez || force_cast_bluetooth) {
-      if (is_castos) {
-        sources += [
-          "cast/bluetooth_adapter_cast.cc",
-          "cast/bluetooth_adapter_cast.h",
-          "cast/bluetooth_device_cast.cc",
-          "cast/bluetooth_device_cast.h",
-          "cast/bluetooth_remote_gatt_characteristic_cast.cc",
-          "cast/bluetooth_remote_gatt_characteristic_cast.h",
-          "cast/bluetooth_remote_gatt_descriptor_cast.cc",
-          "cast/bluetooth_remote_gatt_descriptor_cast.h",
-          "cast/bluetooth_remote_gatt_service_cast.cc",
-          "cast/bluetooth_remote_gatt_service_cast.h",
-          "cast/bluetooth_utils.cc",
-          "cast/bluetooth_utils.h",
-        ]
-
-        public_deps += [ "//chromecast/public" ]
-
-        deps += [
-          "//chromecast/device/bluetooth:util",
-          "//chromecast/device/bluetooth/le",
-        ]
-      } else {
-        defines += [ "NO_PLATFORM_BLUETOOTH" ]
-        sources += [ "bluetooth_adapter_stub.cc" ]
-      }
+    if (!use_bluez) {
+      defines += [ "NO_PLATFORM_BLUETOOTH" ]
+      sources += [ "bluetooth_adapter_stub.cc" ]
     }
   }
 

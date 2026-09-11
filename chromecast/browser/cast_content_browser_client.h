@@ -43,10 +43,6 @@ namespace breakpad {
 class CrashHandlerHostLinux;
 }
 
-namespace device {
-class BluetoothAdapterCast;
-}
-
 namespace media {
 class CdmFactory;
 }
@@ -146,14 +142,6 @@ class CastContentBrowserClient
       ::media::AudioLogFactory* audio_log_factory) override;
   bool OverridesAudioManager() override;
   media::MediaCapsImpl* media_caps();
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-  // Create a BluetoothAdapter for WebBluetooth support.
-  // TODO(slan): This further couples the browser to the Cast service. Remove
-  // this once the dedicated Bluetooth service has been implemented.
-  // (b/76155468)
-  virtual scoped_refptr<device::BluetoothAdapterCast> CreateBluetoothAdapter();
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
   // chromecast::metrics::CastMetricsServiceDelegate implementation:
   void SetMetricsClientId(const std::string& client_id) override;

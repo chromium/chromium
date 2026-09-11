@@ -42,8 +42,6 @@
 #elif BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "device/bluetooth/test/bluetooth_test_win.h"
-#elif defined(USE_CAST_BLUETOOTH_ADAPTER)
-#include "device/bluetooth/test/bluetooth_test_cast.h"
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "device/bluetooth/test/bluetooth_test_bluez.h"
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -1705,8 +1703,7 @@ TEST_P(BluetoothTestWinrt, SimulateAdvertisementStoppedByOS) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
-    !defined(USE_CAST_BLUETOOTH_ADAPTER)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_RegisterLocalGattServices RegisterLocalGattServices
 #else
 #define MAYBE_RegisterLocalGattServices DISABLED_RegisterLocalGattServices
@@ -1744,8 +1741,7 @@ TEST_F(BluetoothTest, MAYBE_RegisterLocalGattServices) {
                       GetGattErrorCallback(Call::EXPECTED));
 }
 
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
-    !defined(USE_CAST_BLUETOOTH_ADAPTER)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_RegisterMultipleServices RegisterMultipleServices
 #else
 #define MAYBE_RegisterMultipleServices DISABLED_RegisterMultipleServices
@@ -1794,8 +1790,7 @@ TEST_F(BluetoothTest, MAYBE_RegisterMultipleServices) {
   EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {}));
 }
 
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
-    !defined(USE_CAST_BLUETOOTH_ADAPTER)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_DeleteServices DeleteServices
 #else
 #define MAYBE_DeleteServices DISABLED_DeleteServices

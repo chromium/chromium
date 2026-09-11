@@ -1,4 +1,0 @@
-include_rules = [
-  "+chromecast/device/bluetooth",
-  "+chromecast/public/bluetooth"
-]

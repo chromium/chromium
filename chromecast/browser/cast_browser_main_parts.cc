@@ -132,9 +132,6 @@
 #include "chromecast/graphics/cast_window_manager_default.h"  // nogncheck
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-#include "device/bluetooth/cast/bluetooth_adapter_cast.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "chromecast/base/cast_sys_info_util.h"
@@ -551,12 +548,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
             monitor->CreateVoter()));
   }
 
-  // base::Unretained() is safe because the browser client will outlive any
-  // component in the browser; this factory method will not be called after
-  // the browser starts to tear down.
-  device::BluetoothAdapterCast::SetFactory(base::BindRepeating(
-      &CastContentBrowserClient::CreateBluetoothAdapter,
-      base::Unretained(cast_browser_process_->browser_client())));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
   cast_content_browser_client_->SetPersistentCookieAccessSettings(
