@@ -10,6 +10,8 @@
 
 #include <algorithm>
 #include <map>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/apple/bridging.h"
@@ -84,6 +86,10 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
 
       process_annotations["plat"] = std::string("OS X");
     }  // @autoreleasepool
+    for (auto& [key, value] :
+         GetCrashReporterClient()->GetExtraProcessAnnotations()) {
+      process_annotations.insert_or_assign(key, std::move(value));
+    }
     return process_annotations;
   }();
   return annotations;
@@ -161,6 +167,12 @@ bool PlatformCrashpadInitialization(
 
       if (crash_reporter_client->ShouldMonitorCrashHandlerExpensively()) {
         arguments.push_back("--monitor-self");
+      }
+      if (!crash_reporter_client->ShouldRateLimitUploads()) {
+        arguments.push_back("--no-rate-limit");
+      }
+      if (!crash_reporter_client->ShouldCompressUploads()) {
+        arguments.push_back("--no-upload-gzip");
       }
 
       // Set up --monitor-self-annotation even in the absence of --monitor-self

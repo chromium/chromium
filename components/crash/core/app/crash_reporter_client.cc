@@ -148,6 +148,19 @@ std::string CrashReporterClient::GetUploadUrl() {
 #endif
 }
 
+bool CrashReporterClient::ShouldRateLimitUploads() {
+  return true;
+}
+
+bool CrashReporterClient::ShouldCompressUploads() {
+  return true;
+}
+
+std::map<std::string, std::string>
+CrashReporterClient::GetExtraProcessAnnotations() {
+  return {};
+}
+
 bool CrashReporterClient::ShouldMonitorCrashHandlerExpensively() {
   return false;
 }

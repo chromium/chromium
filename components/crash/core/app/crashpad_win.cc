@@ -4,9 +4,11 @@
 
 #include "components/crash/core/app/crashpad.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/debug/crash_logging.h"
 #include "base/environment.h"
@@ -94,6 +96,10 @@ bool PlatformCrashpadInitialization(
 
     std::map<std::string, std::string> process_annotations;
     GetPlatformCrashpadAnnotations(&process_annotations);
+    for (auto& [key, value] :
+         crash_reporter_client->GetExtraProcessAnnotations()) {
+      process_annotations.insert_or_assign(key, std::move(value));
+    }
 
     std::string url = crash_reporter_client->GetUploadUrl();
 
@@ -140,6 +146,12 @@ bool PlatformCrashpadInitialization(
         arguments.push_back(std::string("--monitor-self-argument=") +
                             start_argument);
       }
+    }
+    if (!crash_reporter_client->ShouldRateLimitUploads()) {
+      arguments.push_back("--no-rate-limit");
+    }
+    if (!crash_reporter_client->ShouldCompressUploads()) {
+      arguments.push_back("--no-upload-gzip");
     }
 
     // Set up --monitor-self-annotation even in the absence of --monitor-self so

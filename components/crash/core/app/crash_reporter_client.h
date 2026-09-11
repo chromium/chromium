@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -194,6 +195,21 @@ class CrashReporterClient {
 
   // Returns the URL target for crash report uploads.
   virtual std::string GetUploadUrl();
+
+  // Returns true (the default) if the handler should rate limit uploads.
+  // Returning false passes --no-rate-limit to the Crashpad handler.
+  virtual bool ShouldRateLimitUploads();
+
+  // Returns true (the default) if the handler should gzip-compress uploads.
+  // Returning false passes --no-upload-gzip to the Crashpad handler, for
+  // collection servers that do not accept compressed bodies.
+  virtual bool ShouldCompressUploads();
+
+  // Returns process-wide ("simple") annotations to pass to the Crashpad
+  // handler in addition to the default prod/ver/channel/plat ones. Entries
+  // with the same key replace the defaults. The default implementation returns
+  // an empty map.
+  virtual std::map<std::string, std::string> GetExtraProcessAnnotations();
 
   // This method should return true to configure a crash reporter capable of
   // monitoring itself for its own crashes to do so, even if self-monitoring

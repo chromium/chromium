@@ -8,7 +8,10 @@
 #include <sys/prctl.h>
 
 #include <limits>
+#include <map>
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -221,10 +224,20 @@ bool PlatformCrashpadInitialization(
     // where crash_reporter provides it's own values for lsb-release.
     annotations["lsb-release"] = base::GetLinuxDistro();
 #endif
+    for (auto& [key, value] :
+         crash_reporter_client->GetExtraProcessAnnotations()) {
+      annotations.insert_or_assign(key, std::move(value));
+    }
 
     std::vector<std::string> arguments;
     if (crash_reporter_client->ShouldMonitorCrashHandlerExpensively()) {
       arguments.push_back("--monitor-self");
+    }
+    if (!crash_reporter_client->ShouldRateLimitUploads()) {
+      arguments.push_back("--no-rate-limit");
+    }
+    if (!crash_reporter_client->ShouldCompressUploads()) {
+      arguments.push_back("--no-upload-gzip");
     }
 
     // Set up --monitor-self-annotation even in the absence of --monitor-self
