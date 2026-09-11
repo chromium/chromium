@@ -56,14 +56,5 @@
   (subpath "/System/Library/Extensions")  ; https://crbug.com/515280
 )
 
-(if (param-true? odme-user-dir-access)
-  ; crbug.com/980134
-  (allow file-read* file-write*
-    (subpath (param darwin-user-cache-dir))
-    (subpath (param darwin-user-dir))
-    (subpath (param darwin-user-temp-dir))
-  )
-)
-
 (if (not (maybe-disable-metal-shader-cache))
   (maybe-allow-metal-shader-cache-access))

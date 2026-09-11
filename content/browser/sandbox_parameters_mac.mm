@@ -37,13 +37,6 @@ namespace content {
 
 namespace {
 
-// If enabled, the macOS sandbox for the On-Device Model Execution (ODME)
-// process will allow read and write file access to the user directory, as well
-// as the user's cache and temp directories (https://crbug.com/527915149).
-// TODO(bryanoltman): remove this feature once we have determined the scope of
-// access needed by the ODME process, if any.
-BASE_FEATURE(kMacSandboxOdmeUserDirAccess, base::FEATURE_DISABLED_BY_DEFAULT);
-
 std::optional<base::FilePath>& GetNetworkTestCertsDirectory() {
   // Set by SetNetworkTestCertsDirectoryForTesting().
   static base::NoDestructor<std::optional<base::FilePath>>
@@ -180,10 +173,6 @@ bool SetupGpuSandboxParameters(sandbox::SandboxSerializer* serializer,
       sandbox::policy::kParamDisableMetalShaderCache,
       command_line.HasSwitch(
           sandbox::policy::switches::kDisableMetalShaderCache)));
-
-  CHECK(serializer->SetBooleanParameter(
-      sandbox::policy::kParamOdmeUserDirAccess,
-      base::FeatureList::IsEnabled(kMacSandboxOdmeUserDirAccess)));
 
   base::FilePath helper_bundle_path =
       base::apple::GetInnermostAppBundlePath(command_line.GetProgram());

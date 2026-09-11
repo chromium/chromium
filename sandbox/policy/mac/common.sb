@@ -20,7 +20,6 @@
 (define executable-path "EXECUTABLE_PATH")
 (define homedir-as-literal "USER_HOMEDIR_AS_LITERAL")
 (define log-file-path "LOG_FILE_PATH")
-(define odme-user-dir-access "ODME_USER_DIR_ACCESS")
 (define os-version (string->number (param "OS_VERSION")))
 (define darwin-user-cache-dir "DARWIN_USER_CACHE_DIR")
 (define darwin-user-dir "DARWIN_USER_DIR")
