@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 
 namespace {
@@ -49,11 +50,37 @@ void DeviceBoundSessionPrewarmer::Start(bool is_startup_prewarm) {
 void DeviceBoundSessionPrewarmer::Stop() {
   timer_.Stop();
   weak_ptr_factory_.InvalidateWeakPtrs();
+  receiver_.reset();
+}
+
+void DeviceBoundSessionPrewarmer::EnsureObserverBound(
+    network::mojom::DeviceBoundSessionManager* session_manager) {
+  if (receiver_.is_bound()) {
+    return;
+  }
+
+  session_manager->AddObserver(prewarm_url_,
+                               receiver_.BindNewPipeAndPassRemote());
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&DeviceBoundSessionPrewarmer::OnObserverDisconnected,
+                     base::Unretained(this)));
+}
+
+void DeviceBoundSessionPrewarmer::OnObserverDisconnected() {
+  receiver_.reset();
+  // The network service disconnected (e.g. crash). Schedule DoPrewarm()
+  // after `kMinPrewarmInterval` to re-establish the observer and refresh
+  // session state.
+  timer_.Start(FROM_HERE, kMinPrewarmInterval, this,
+               &DeviceBoundSessionPrewarmer::DoPrewarm);
 }
 
 void DeviceBoundSessionPrewarmer::DoPrewarm() {
+  timer_.Stop();
+
   if (network::mojom::DeviceBoundSessionManager* session_manager =
           session_manager_provider_.Run()) {
+    EnsureObserverBound(session_manager);
     session_manager->PrewarmSessionsForUrl(
         prewarm_url_,
         base::BindOnce(&DeviceBoundSessionPrewarmer::OnPrewarmComplete,
@@ -115,4 +142,25 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
   base::TimeDelta delay = std::max(
       *earliest_next_refresh_time - base::Time::Now(), kMinPrewarmInterval);
   timer_.Start(FROM_HERE, delay, this, &DeviceBoundSessionPrewarmer::DoPrewarm);
+}
+
+// network::mojom::DeviceBoundSessionAccessObserver:
+void DeviceBoundSessionPrewarmer::OnDeviceBoundSessionAccessed(
+    const net::device_bound_sessions::SessionAccess& access) {
+  if (access.access_type !=
+      net::device_bound_sessions::SessionAccess::AccessType::kCreation) {
+    return;
+  }
+  // TODO(crbug.com/544602741): Consider passing next refresh time in
+  // SessionAccess to avoid triggering an immediate prewarm IPC solely to
+  // discover `earliest_next_refresh_time`.
+  DoPrewarm();
+}
+
+void DeviceBoundSessionPrewarmer::Clone(
+    mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
+        observer) {
+  // The `Clone` method is only called for observers that are part of network
+  // requests, so it is not expected to be called here.
+  NOTREACHED();
 }

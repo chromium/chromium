@@ -7,19 +7,80 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/session_access.h"
+#include "net/device_bound_sessions/session_key.h"
 #include "services/network/test/mock_device_bound_session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::net::device_bound_sessions::RefreshResult;
+using ::net::device_bound_sessions::SessionAccess;
+using ::net::device_bound_sessions::SessionKey;
 using ::testing::_;
+
+namespace {
+
+auto RunPrewarmCallback(
+    std::optional<base::Time> earliest_next_refresh_time = std::nullopt,
+    std::vector<RefreshResult> results = {}) {
+  return [earliest_next_refresh_time, results = std::move(results)](
+             const GURL&,
+             network::mojom::DeviceBoundSessionManager::
+                 PrewarmSessionsForUrlCallback callback) {
+    std::move(callback).Run(results, earliest_next_refresh_time);
+  };
+}
+
+auto RunPrewarmCallbackAndQuit(
+    base::RunLoop& run_loop,
+    std::optional<base::Time> earliest_next_refresh_time = std::nullopt,
+    std::vector<RefreshResult> results = {}) {
+  return [&run_loop, earliest_next_refresh_time,
+          results = std::move(results)](
+             const GURL&,
+             network::mojom::DeviceBoundSessionManager::
+                 PrewarmSessionsForUrlCallback callback) {
+    std::move(callback).Run(results, earliest_next_refresh_time);
+    run_loop.Quit();
+  };
+}
+
+}  // namespace
 
 class DeviceBoundSessionPrewarmerTest : public testing::Test {
  public:
+  DeviceBoundSessionPrewarmerTest() {
+    ON_CALL(mock_session_manager(), AddObserver)
+        .WillByDefault(
+            [this](const GURL& url,
+                   mojo::PendingRemote<
+                       network::mojom::DeviceBoundSessionAccessObserver>
+                       observer) {
+              observer_remote_.reset();
+              observer_remote_.Bind(std::move(observer));
+              if (observer_bound_quit_closure_) {
+                std::move(observer_bound_quit_closure_).Run();
+              }
+            });
+  }
+
+  mojo::Remote<network::mojom::DeviceBoundSessionAccessObserver>&
+  WaitForObserverRemote() {
+    if (!observer_remote_.is_bound()) {
+      base::RunLoop run_loop;
+      observer_bound_quit_closure_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
+    return observer_remote_;
+  }
+
   network::MockDeviceBoundSessionManager& mock_session_manager() {
     return mock_device_bound_session_manager_;
   }
@@ -37,6 +98,9 @@ class DeviceBoundSessionPrewarmerTest : public testing::Test {
 
  private:
   network::MockDeviceBoundSessionManager mock_device_bound_session_manager_;
+  mojo::Remote<network::mojom::DeviceBoundSessionAccessObserver>
+      observer_remote_;
+  base::OnceClosure observer_bound_quit_closure_;
 };
 
 TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaTrue) {
@@ -557,3 +621,126 @@ TEST_F(DeviceBoundSessionPrewarmerTest, ResetStartupModeOnRestart) {
       "Net.DeviceBoundSessions.PrewarmResult.Scheduled", 1);
 }
 
+TEST_F(DeviceBoundSessionPrewarmerTest, RegistersObserverForPrewarmUrl) {
+  EXPECT_CALL(mock_session_manager(), AddObserver(target_url_, _));
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _));
+
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest, NewSessionCreationTriggersPrewarm) {
+  // Initial Prewarm on Start(), returning no next refresh time.
+  base::RunLoop initial_prewarm_loop;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(RunPrewarmCallbackAndQuit(initial_prewarm_loop));
+
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  initial_prewarm_loop.Run();
+
+  // A new session is created. This should trigger another
+  // PrewarmSessionsForUrl call.
+  base::RunLoop second_prewarm_loop;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(RunPrewarmCallbackAndQuit(
+          second_prewarm_loop, base::Time::Now() + base::Seconds(90),
+          {RefreshResult::kInScopeRefreshNotYetNeeded}));
+
+  SessionKey session_key{net::SchemefulSite(target_url_),
+                         SessionKey::Id("session_id")};
+  SessionAccess access{SessionAccess::AccessType::kCreation, session_key};
+  WaitForObserverRemote()->OnDeviceBoundSessionAccessed(access);
+  second_prewarm_loop.Run();
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       NewSessionCreationStopsPendingPrewarmTimer) {
+  base::RunLoop initial_prewarm_loop;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(RunPrewarmCallbackAndQuit(
+          initial_prewarm_loop, base::Time::Now() + base::Seconds(60)));
+
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  initial_prewarm_loop.Run();
+
+  // Advance by 30 seconds (halfway through the 60s timer).
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  // A new session is created at t=30s. This should stop the pending 60s timer
+  // and trigger PrewarmSessionsForUrl immediately.
+  base::RunLoop second_prewarm_loop;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(RunPrewarmCallbackAndQuit(
+          second_prewarm_loop, base::Time::Now() + base::Seconds(90)));
+
+  SessionKey session_key{net::SchemefulSite(target_url_),
+                         SessionKey::Id("session_id")};
+  SessionAccess access{SessionAccess::AccessType::kCreation, session_key};
+  WaitForObserverRemote()->OnDeviceBoundSessionAccessed(access);
+  second_prewarm_loop.Run();
+
+  // Fast forward by 30 seconds (reaching t=60s from start).
+  // The original timer must NOT fire.
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl).Times(0);
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  // Fast forward by another 60 seconds (reaching t=120s from start, which is
+  // 90s from the second prewarm). The second prewarm's timer should now fire.
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _));
+  task_environment_.FastForwardBy(base::Seconds(60));
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       NonCreationSessionAccessDoesNotTriggerPrewarm) {
+  base::RunLoop initial_prewarm_loop;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(RunPrewarmCallbackAndQuit(initial_prewarm_loop));
+
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  initial_prewarm_loop.Run();
+
+  // Access events of type kUpdate or kTermination should NOT trigger
+  // PrewarmSessionsForUrl.
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl).Times(0);
+
+  SessionKey session_key{net::SchemefulSite(target_url_),
+                         SessionKey::Id("session_id")};
+  SessionAccess update_access{SessionAccess::AccessType::kUpdate, session_key};
+  WaitForObserverRemote()->OnDeviceBoundSessionAccessed(update_access);
+
+  SessionAccess term_access{SessionAccess::AccessType::kTermination,
+                            session_key};
+  WaitForObserverRemote()->OnDeviceBoundSessionAccessed(term_access);
+
+  // Flush the Mojo pipe to ensure messages have been processed by the
+  // receiver.
+  WaitForObserverRemote().FlushForTesting();
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       ObserverDisconnectReschedulesPrewarmTimer) {
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(RunPrewarmCallback(base::Time::Now() + base::Hours(1)));
+
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+
+  // Disconnect the observer remote. This simulates the network service closing
+  // the pipe and should schedule DoPrewarm() after kMinPrewarmInterval (60s).
+  WaitForObserverRemote().reset();
+
+  // Advancing by 59 seconds should NOT trigger the prewarm yet.
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl).Times(0);
+  task_environment_.FastForwardBy(base::Seconds(59));
+  testing::Mock::VerifyAndClearExpectations(&mock_session_manager());
+
+  // Advancing by 1 more second (total 60s) triggers DoPrewarm(),
+  // which rebinds the observer and triggers prewarm.
+  EXPECT_CALL(mock_session_manager(), AddObserver(target_url_, _));
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(RunPrewarmCallback(base::Time::Now() + base::Hours(1)));
+  task_environment_.FastForwardBy(base::Seconds(1));
+}
