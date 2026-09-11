@@ -357,12 +357,6 @@ class ChromeContextMenuItem {
                         item,
                         ChromePreferenceKeys.CONTEXT_MENU_SEARCH_TAB_WITH_GOOGLE_LENS_CLICKED,
                         showInProductHelp);
-            case Item.SHOP_IMAGE_WITH_GOOGLE_LENS:
-                return addOrRemoveNewLabel(
-                        context,
-                        item,
-                        ChromePreferenceKeys.CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
-                        showInProductHelp);
             case Item.OPEN_IN_CHROME_INCOGNITO_TAB:
                 if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
                     return context.getString(R.string.contextmenu_open_in_incognito_window);

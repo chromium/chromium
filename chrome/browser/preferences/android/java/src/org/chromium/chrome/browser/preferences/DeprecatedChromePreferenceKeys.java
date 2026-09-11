@@ -40,6 +40,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.AuxiliarySearchModule.UserResponded",
                 "Chrome.ContinuousSearch.DismissalCount",
                 "Chrome.ContextMenu.SearchWithGoogleLensClicked",
+                "Chrome.ContextMenu.ShopImageWithGoogleLensClicked",
                 "Chrome.Contextmenu.OpenImageInEphemeralTabClicked",
                 "Chrome.Contextmenu.OpenInEphemeralTabClicked",
                 "Chrome.Cryptid.LastRenderTimestamp",
