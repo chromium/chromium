@@ -22,7 +22,6 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -42,7 +41,7 @@ constexpr std::string_view kRemoteDisplayIdPrefix =
     "/com/google/ChromeRemoteDesktop/RemoteDisplays/";
 
 std::string GetRemoteDisplayName(const gvariant::ObjectPath& remote_id) {
-  if (!base::StartsWith(remote_id.value(), kRemoteDisplayIdPrefix)) {
+  if (!remote_id.value().starts_with(kRemoteDisplayIdPrefix)) {
     return {};
   }
   return remote_id.value().substr(kRemoteDisplayIdPrefix.size());

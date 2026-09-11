@@ -38,7 +38,7 @@ void DataChannelManager::OnIncomingDataChannel(
     const std::string& name,
     std::unique_ptr<MessagePipe> pipe) {
   for (auto& constructor : constructors_) {
-    if (name.find(constructor.first) == 0) {
+    if (name.starts_with(constructor.first)) {
       constructor.second.Run(name, std::move(pipe));
       return;
     }

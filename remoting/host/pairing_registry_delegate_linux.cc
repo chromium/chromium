@@ -18,7 +18,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/cstring_view.h"
-#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "remoting/base/branding.h"
 #include "remoting/base/passwd_utils.h"
@@ -70,14 +69,14 @@ base::ListValue PairingRegistryDelegateLinux::LoadAll() {
     }
 
     std::string client_id;
-    if (base::EndsWith(filename, kUnprivilegedSuffix)) {
+    if (filename.ends_with(kUnprivilegedSuffix)) {
       if (!use_unprivileged_file_) {
         LOG(WARNING) << "Ignored unprivileged file: " << filename;
         continue;
       }
       client_id =
           filename.substr(0, filename.size() - kUnprivilegedSuffix.size());
-    } else if (base::EndsWith(filename, kPrivilegedSuffix)) {
+    } else if (filename.ends_with(kPrivilegedSuffix)) {
       client_id =
           filename.substr(0, filename.size() - kPrivilegedSuffix.size());
     } else {

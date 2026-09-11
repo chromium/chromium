@@ -40,12 +40,10 @@ SdpMessage::SdpMessage(const std::string& sdp) {
   sdp_lines_ = base::SplitString(sdp, "\n", base::TRIM_WHITESPACE,
                                  base::SPLIT_WANT_NONEMPTY);
   for (const auto& line : sdp_lines_) {
-    if (base::StartsWith(line, kAudioLinePrefix,
-                         base::CompareCase::SENSITIVE)) {
+    if (line.starts_with(kAudioLinePrefix)) {
       has_audio_ = true;
     }
-    if (base::StartsWith(line, kVideoLinePrefix,
-                         base::CompareCase::SENSITIVE)) {
+    if (line.starts_with(kVideoLinePrefix)) {
       has_video_ = true;
     }
   }
@@ -128,7 +126,7 @@ SdpMessage::Payloads SdpMessage::FindCodecPayloads(
   Payloads results;
   for (size_t i = 0; i < sdp_lines_.size(); ++i) {
     const std::string_view line = sdp_lines_[i];
-    if (!base::StartsWith(line, kRtpMapPrefix, base::CompareCase::SENSITIVE)) {
+    if (!line.starts_with(kRtpMapPrefix)) {
       continue;
     }
     size_t space_pos = line.find(' ');
@@ -157,8 +155,7 @@ SdpMessage::Payloads SdpMessage::FindCodecPayloads(
   }
 
   for (const auto& line : sdp_lines_) {
-    if (!base::StartsWith(line, kFmtpLinePrefix,
-                          base::CompareCase::SENSITIVE)) {
+    if (!line.starts_with(kFmtpLinePrefix)) {
       continue;
     }
 
@@ -168,8 +165,7 @@ SdpMessage::Payloads SdpMessage::FindCodecPayloads(
       for (const auto& [index, payload_type] : payloads) {
         auto fmtp_with_payload =
             base::StringPrintf("%s%s ", kFmtpLinePrefix, payload_type);
-        if (base::StartsWith(line, fmtp_with_payload,
-                             base::CompareCase::SENSITIVE)) {
+        if (line.starts_with(fmtp_with_payload)) {
           return {{.index = index, .type = payload_type}};
         }
       }

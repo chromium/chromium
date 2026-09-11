@@ -455,8 +455,8 @@ void CorpMessagingPlayground::HandleSystemTest(
               LOG(ERROR) << "Encrypted message too large";
               return;
             }
-            if (base::StartsWith(encrypted_struct.unencrypted_payload,
-                                 kEcdhInitiatePrefix)) {
+            if (encrypted_struct.unencrypted_payload.starts_with(
+                    kEcdhInitiatePrefix)) {
               LOG(INFO) << "Received ECDH initiate message.";
               std::string_view client_public_key_base64 =
                   std::string_view(encrypted_struct.unencrypted_payload)
@@ -497,8 +497,8 @@ void CorpMessagingPlayground::HandleSystemTest(
               LOG(INFO) << "Sending ECDH response: " << *response_json;
               client_->SendMessage(SignalingAddress(messaging_authz_token_),
                                    std::move(peer_message), base::DoNothing());
-            } else if (base::StartsWith(encrypted_struct.unencrypted_payload,
-                                        kEcdhResponsePrefix)) {
+            } else if (encrypted_struct.unencrypted_payload.starts_with(
+                           kEcdhResponsePrefix)) {
               // The ECDH key exchange is initiated by the client so
               // receiving this message is unexpected.
               LOG(ERROR) << "Received unexpected ECDH response message.";

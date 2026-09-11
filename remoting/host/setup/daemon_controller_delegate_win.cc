@@ -21,7 +21,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_info.h"
-#include "base/strings/string_util_win.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "base/win/scoped_handle.h"
@@ -94,10 +93,9 @@ bool IsPathSafe(HANDLE handle, const base::FilePath& expected_path) {
   std::wstring expected_path_str = expected_path.value();
 
   // GetFinalPathNameByHandle prepends \\?\ to the path.
-  if (base::StartsWith(final_path, L"\\\\?\\UNC\\", base::CompareCase::SENSITIVE)) {
+  if (final_path.starts_with(L"\\\\?\\UNC\\")) {
     final_path = L"\\\\" + final_path.substr(8);
-  } else if (base::StartsWith(final_path, L"\\\\?\\",
-                             base::CompareCase::SENSITIVE)) {
+  } else if (final_path.starts_with(L"\\\\?\\")) {
     final_path = final_path.substr(4);
   }
 

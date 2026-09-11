@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
@@ -151,8 +150,7 @@ void WebrtcConnectionToHost::OnWebrtcTransportIncomingDataChannel(
     control_dispatcher_->set_client_stub(client_stub_);
     control_dispatcher_->set_clipboard_stub(clipboard_stub_);
     control_dispatcher_->Init(std::move(pipe), this);
-  } else if (base::StartsWith(name, kVideoStatsChannelNamePrefix,
-                              base::CompareCase::SENSITIVE)) {
+  } else if (name.starts_with(kVideoStatsChannelNamePrefix)) {
     std::string video_stream_label =
         name.substr(strlen(kVideoStatsChannelNamePrefix));
     GetOrCreateVideoAdapter(video_stream_label)
