@@ -178,7 +178,6 @@
 #include "components/strike_database/strike_database.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/background_tracing.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -186,9 +185,9 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/tracing_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/background_tracing.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/mock_download_manager.h"
@@ -1100,7 +1099,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     content::GetNetworkService();
     task_environment_.RunUntilIdle();
     background_tracing_manager_ =
-        content::CreateBackgroundTracingManager(&tracing_delegate_);
+        content::CreateBackgroundTracingManagerForTesting();
 
     // This needs to be done after the test constructor, so that subclasses
     // that initialize a ScopedFeatureList in their constructors can do so
@@ -1324,7 +1323,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   // Cached pointer to BrowsingDataRemover for access to testing methods.
   raw_ptr<content::BrowsingDataRemover> remover_;
 
-  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<tracing::BackgroundTracingManager>
       background_tracing_manager_;
 

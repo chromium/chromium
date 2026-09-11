@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "content/public/browser/tracing_delegate.h"
 
 class PrefRegistrySimple;
+class PrefService;
 namespace tracing {
 class BackgroundTracingStateManager;
 }
@@ -18,13 +20,13 @@ namespace android_webview {
 
 class AwTracingDelegate : public content::TracingDelegate {
  public:
-  AwTracingDelegate();
+  explicit AwTracingDelegate(PrefService& local_state);
   ~AwTracingDelegate() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // content::TracingDelegate implementation:
-  bool IsRecordingAllowed(bool requires_anonymized_data,
+  bool IsRecordingAllowed(IsLocalScenario is_local_scenario,
                           base::TimeTicks session_start) const override;
   std::unique_ptr<tracing::BackgroundTracingStateManager> CreateStateManager()
       override;
@@ -33,6 +35,9 @@ class AwTracingDelegate : public content::TracingDelegate {
   CreateSystemProfileMetadataRecorder() const override;
   tracing::MetadataDataSource::ChromeMetadataRecorder
   CreateChromeMetadataPacketRecorder() const override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 }  // namespace android_webview

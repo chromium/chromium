@@ -45,6 +45,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/tracing_controller.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "content/public/browser/tracing_service.h"
 #include "content/public/common/content_client.h"
 #include "gpu/config/gpu_info.h"
@@ -105,12 +106,10 @@ TracingController* TracingController::GetInstance() {
   return TracingControllerImpl::GetInstance();
 }
 
-TracingControllerImpl::TracingControllerImpl()
-    : delegate_(GetContentClient()->browser()->CreateTracingDelegate()) {
+TracingControllerImpl::TracingControllerImpl(const TracingDelegate& delegate) {
   CHECK(!g_tracing_controller, base::NotFatalUntil::M159);
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-  CHECK(delegate_);
-  InitializeDataSources();
+  InitializeDataSources(delegate);
   g_tracing_controller = this;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -127,14 +126,15 @@ TracingControllerImpl::TracingControllerImpl()
 
 TracingControllerImpl::~TracingControllerImpl() = default;
 
-void TracingControllerImpl::InitializeDataSources() {
+void TracingControllerImpl::InitializeDataSources(
+    const TracingDelegate& delegate) {
   // Metadata only needs to be installed in the browser process.
   tracing::MetadataDataSource::Register(
       base::SequencedTaskRunner::GetCurrentDefault(),
-      {tracing_delegate()->CreateSystemProfileMetadataRecorder(),
+      {delegate.CreateSystemProfileMetadataRecorder(),
        base::BindRepeating(&TracingControllerImpl::RecorderMetadataToBundle)},
       {base::BindRepeating(&TracingControllerImpl::GenerateMetadataPacket)},
-      tracing_delegate()->CreateChromeMetadataPacketRecorder());
+      delegate.CreateChromeMetadataPacketRecorder());
 
 #if BUILDFLAG(IS_CHROMEOS)
   RegisterCrOSTracingDataSource();

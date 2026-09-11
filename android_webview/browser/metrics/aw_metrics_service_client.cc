@@ -489,6 +489,11 @@ bool AwMetricsServiceClient::IsReadyToStart() const {
   return init_finished_ && set_consent_finished_ && !metrics_dir_.empty();
 }
 
+bool AwMetricsServiceClient::IsConsentDetermined() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return set_consent_finished_;
+}
+
 bool AwMetricsServiceClient::IsConsentGiven() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user_consent_ && app_consent_;

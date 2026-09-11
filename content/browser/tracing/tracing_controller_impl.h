@@ -25,6 +25,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
 
 namespace perfetto::protos::pbzero {
+class ChromeEventBundle;
 class TracePacket;
 }  // namespace perfetto::protos::pbzero
 
@@ -51,13 +52,11 @@ class TracingControllerImpl : public TracingController,
   CONTENT_EXPORT static TracingControllerImpl* GetInstance();
 
   // Should be called on the UI thread.
-  CONTENT_EXPORT TracingControllerImpl();
+  CONTENT_EXPORT explicit TracingControllerImpl(
+      const TracingDelegate& delegate);
 
   TracingControllerImpl(const TracingControllerImpl&) = delete;
   TracingControllerImpl& operator=(const TracingControllerImpl&) = delete;
-
-  // Returns the embedder's tracing delegate.
-  TracingDelegate* tracing_delegate() { return delegate_.get(); }
 
   // TracingController implementation.
   bool GetCategories(GetCategoriesDoneCallback callback) override;
@@ -82,7 +81,7 @@ class TracingControllerImpl : public TracingController,
   friend std::default_delete<TracingControllerImpl>;
 
   ~TracingControllerImpl() override;
-  void InitializeDataSources();
+  void InitializeDataSources(const TracingDelegate& delegate);
   void ConnectToServiceIfNeeded();
   static void RecorderMetadataToBundle(
       perfetto::protos::pbzero::ChromeEventBundle* bundle);
@@ -114,8 +113,6 @@ class TracingControllerImpl : public TracingController,
   scoped_refptr<TraceDataEndpoint> trace_data_endpoint_;
   bool is_data_complete_ = false;
   bool read_buffers_complete_ = false;
-
-  std::unique_ptr<TracingDelegate> delegate_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool are_statistics_loaded_ = false;

@@ -629,7 +629,11 @@ bool BackgroundTracingManager::OnScenarioActive(
     return false;
   }
   auto now = base::TimeTicks::Now();
-  if (!IsRecordingAllowed(active_scenario->privacy_filter_enabled(), now)) {
+  // Embedder recording consent is only required for scenarios with privacy
+  // filtering enabled. Unfiltered scenarios (e.g. startup or devtools) bypass
+  // these checks.
+  if (active_scenario->privacy_filter_enabled() &&
+      !IsRecordingAllowed(active_scenario->is_local_scenario(), now)) {
     return false;
   }
   scenario_start_time_ = now;
@@ -661,7 +665,8 @@ bool BackgroundTracingManager::OnScenarioIdle(TracingScenario* idle_scenario) {
   for (auto& scenario : enabled_scenarios_) {
     scenario->Enable();
   }
-  return IsRecordingAllowed(idle_scenario->privacy_filter_enabled(),
+  return !idle_scenario->privacy_filter_enabled() ||
+         IsRecordingAllowed(idle_scenario->is_local_scenario(),
                             scenario_start_time_);
 }
 
@@ -678,7 +683,8 @@ bool BackgroundTracingManager::OnScenarioCloned(
   base::UmaHistogramSparse(
       "Tracing.Background.Scenario.Clone",
       variations::HashName(cloned_scenario->scenario_name()));
-  return IsRecordingAllowed(cloned_scenario->privacy_filter_enabled(),
+  return !cloned_scenario->privacy_filter_enabled() ||
+         IsRecordingAllowed(cloned_scenario->is_local_scenario(),
                             scenario_start_time_);
 }
 

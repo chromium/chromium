@@ -152,6 +152,9 @@ class AwMetricsServiceClient
   void SetFastStartupForTesting(bool fast_startup_for_testing);
   void SetUploadIntervalForTesting(const base::TimeDelta& upload_interval);
 
+  // Returns true if SetHaveMetricsConsent() has been called.
+  bool IsConsentDetermined() const;
+
   // Registers a synthetic field trial with the MetricsService.
   void RegisterSyntheticFieldTrial(
       std::string_view trial_name,

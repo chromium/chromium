@@ -11,6 +11,7 @@
 #include "android_webview/browser/aw_browser_policy_connector.h"
 #include "android_webview/browser/aw_field_trials.h"
 #include "android_webview/browser/variations/aw_variations_service_client.h"
+#include "base/check.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 
@@ -34,6 +35,13 @@ class AwFeatureListCreator {
   void CreateFeatureListAndFieldTrials();
 
   void CreateLocalState();
+
+  // Returns the local state PrefService. Must only be called before
+  // TakePrefService() transfers ownership.
+  PrefService* local_state() const {
+    CHECK(local_state_);
+    return local_state_.get();
+  }
 
   // Passes ownership of the |local_state_| to the caller.
   std::unique_ptr<PrefService> TakePrefService() {

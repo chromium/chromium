@@ -58,6 +58,7 @@
 #include "base/android/yield_to_looper_checker.h"
 #include "base/base_paths_android.h"
 #include "base/base_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
@@ -669,7 +670,13 @@ AwContentBrowserClient::GetLocalTracesDirectory() {
 
 std::unique_ptr<content::TracingDelegate>
 AwContentBrowserClient::CreateTracingDelegate() {
-  return std::make_unique<AwTracingDelegate>();
+  PrefService* local_state = nullptr;
+  if (auto* browser_process = AwBrowserProcess::GetInstance()) {
+    local_state = browser_process->local_state();
+  } else if (aw_feature_list_creator_) {
+    local_state = aw_feature_list_creator_->local_state();
+  }
+  return std::make_unique<AwTracingDelegate>(CHECK_DEREF(local_state));
 }
 
 void AwContentBrowserClient::GetAdditionalMappedFilesForChildProcess(

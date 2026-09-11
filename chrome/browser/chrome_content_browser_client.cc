@@ -5717,7 +5717,13 @@ ChromeContentBrowserClient::GetSpareRendererDelayForSiteURL(
 
 std::unique_ptr<content::TracingDelegate>
 ChromeContentBrowserClient::CreateTracingDelegate() {
-  return std::make_unique<ChromeTracingDelegate>();
+  PrefService* local_state = nullptr;
+  if (g_browser_process) {
+    local_state = g_browser_process->local_state();
+  } else if (startup_data_.chrome_feature_list_creator()) {
+    local_state = startup_data_.chrome_feature_list_creator()->local_state();
+  }
+  return std::make_unique<ChromeTracingDelegate>(CHECK_DEREF(local_state));
 }
 
 bool ChromeContentBrowserClient::IsSystemWideTracingEnabled() {

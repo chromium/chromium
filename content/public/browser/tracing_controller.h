@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/tracing_delegate.h"
 
 namespace base {
 namespace trace_event {

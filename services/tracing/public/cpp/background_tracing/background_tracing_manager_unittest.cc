@@ -88,8 +88,7 @@ class TestBackgroundTracingManager : public BackgroundTracingManager {
   MOCK_METHOD(void, MaybeConstructPendingAgents, (), (override));
   MOCK_METHOD(bool,
               IsRecordingAllowed,
-              (bool privacy_filter_enabled,
-               base::TimeTicks scenario_start_time),
+              (bool is_local_scenario, base::TimeTicks scenario_start_time),
               (override));
   MOCK_METHOD(bool, ShouldSaveUnuploadedTrace, (), (override));
   MOCK_METHOD(std::string,

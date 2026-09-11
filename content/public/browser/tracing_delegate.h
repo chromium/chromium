@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
@@ -23,11 +24,16 @@ namespace content {
 // about://tracing WebUI.
 class CONTENT_EXPORT TracingDelegate {
  public:
+  using IsLocalScenario = base::StrongAlias<class IsLocalScenarioTag, bool>;
+
   virtual ~TracingDelegate() = default;
 
-  // Returns true if a tracing session that started at `tracing_start` is
-  // allowed to record or save data.
-  virtual bool IsRecordingAllowed(bool requires_anonymized_data,
+  // Returns true if a tracing session that started at `session_start` is
+  // allowed to record or save data. Only called for scenarios that require
+  // privacy filtering. `is_local_scenario` indicates whether the scenario saves
+  // traces locally without uploading to metrics servers, in which case metrics
+  // reporting consent is bypassed.
+  virtual bool IsRecordingAllowed(IsLocalScenario is_local_scenario,
                                   base::TimeTicks session_start) const;
 
   // Specifies whether traces that aren't uploaded should still be saved.

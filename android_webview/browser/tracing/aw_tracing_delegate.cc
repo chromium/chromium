@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "base/system/sys_info.h"
 #include "components/metrics/version_utils.h"
 #include "components/tracing/common/background_tracing_metrics_provider.h"
@@ -18,7 +19,9 @@
 
 namespace android_webview {
 
-AwTracingDelegate::AwTracingDelegate() = default;
+AwTracingDelegate::AwTracingDelegate(PrefService& local_state)
+    : local_state_(local_state) {}
+
 AwTracingDelegate::~AwTracingDelegate() = default;
 
 // static
@@ -27,15 +30,24 @@ void AwTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 bool AwTracingDelegate::IsRecordingAllowed(
-    bool requires_anonymized_data,
+    IsLocalScenario is_local_scenario,
     base::TimeTicks session_start) const {
-  return true;
+  // Local scenarios save traces locally without uploading to metrics servers,
+  // so they do not require UMA metrics consent.
+  if (*is_local_scenario) {
+    return true;
+  }
+  auto* client = AwMetricsServiceClient::GetInstance();
+  // Optimistically assume tracing is allowed when consent is not yet
+  // determined to support startup tracing. The trace will not be saved if
+  // metrics reporting is disabled when finalizing.
+  return !client->IsConsentDetermined() || client->IsReportingEnabled();
 }
 
 std::unique_ptr<tracing::BackgroundTracingStateManager>
 AwTracingDelegate::CreateStateManager() {
   return tracing::BackgroundTracingStateManager::CreateInstance(
-      AwBrowserProcess::GetInstance()->local_state());
+      &local_state_.get());
 }
 
 std::string AwTracingDelegate::RecordSerializedSystemProfileMetrics() const {

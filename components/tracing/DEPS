@@ -9,7 +9,6 @@ include_rules = [
   "+sql",
   "+components/variations",
   "+third_party/perfetto/protos",
-  "+content/public/browser/background_tracing.h",
   "+content/public/browser/tracing_delegate.h",
   "+content/public/browser/browser_thread.h",
   "+third_party/snappy",

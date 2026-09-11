@@ -12,9 +12,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "content/public/browser/background_tracing.h"
+#include "content/public/test/background_tracing.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
@@ -65,11 +64,10 @@ class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
  public:
   ChromeBackgroundTracingMetricsProviderTest()
       : background_tracing_manager_(
-            content::CreateBackgroundTracingManager(&tracing_delegate_)) {}
+            content::CreateBackgroundTracingManagerForTesting()) {}
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ChromeTracingDelegate tracing_delegate_;
   std::unique_ptr<tracing::BackgroundTracingManager>
       background_tracing_manager_;
 };

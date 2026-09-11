@@ -195,12 +195,8 @@ void IOSTracingController::OnIncognitoSessionStateChanged(
 }
 
 bool IOSTracingController::IsRecordingAllowed(
-    bool privacy_filter_enabled,
+    bool is_local_scenario,
     base::TimeTicks scenario_start_time) {
-  if (!privacy_filter_enabled) {
-    return true;
-  }
-
   bool incognito_active = false;
   if (GetApplicationContext() &&
       GetApplicationContext()->GetIncognitoSessionTracker()) {

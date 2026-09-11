@@ -60,7 +60,7 @@ class IOSTracingController : public tracing::BackgroundTracingManager {
  protected:
   // tracing::BackgroundTracingManager overrides:
   bool GetBackgroundStartupTracingEnabled() const override;
-  bool IsRecordingAllowed(bool privacy_filter_enabled,
+  bool IsRecordingAllowed(bool is_local_scenario,
                           base::TimeTicks scenario_start_time) override;
   bool ShouldSaveUnuploadedTrace() override;
   std::string RecordSerializedSystemProfileMetrics() override;

@@ -9,6 +9,9 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
+#include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/browser/metrics/aw_metrics_test_utils.h"
+#include "base/check_deref.h"
 #include "base/values.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -29,10 +32,16 @@ class AwTracingDelegateTest : public testing::Test {
         std::make_unique<AwContentBrowserClient>(aw_feature_list_creator);
     browser_process_ = new AwBrowserProcess(aw_content_browser_client.get());
 
-    delegate_ = std::make_unique<android_webview::AwTracingDelegate>();
+    auto client = std::make_unique<TestMetricsServiceClient>();
+    client->Initialize(browser_process_->local_state());
+    AwMetricsServiceClient::SetInstance(std::move(client));
+
+    delegate_ = std::make_unique<android_webview::AwTracingDelegate>(
+        CHECK_DEREF(browser_process_->local_state()));
   }
 
   void TearDown() override {
+    AwMetricsServiceClient::ClearInstanceForTesting();
     delete browser_process_;
   }
 
@@ -44,7 +53,26 @@ class AwTracingDelegateTest : public testing::Test {
 
 TEST_F(AwTracingDelegateTest, IsRecordingAllowed) {
   EXPECT_TRUE(delegate_->IsRecordingAllowed(
-      /*requires_anonymized_data=*/false, base::TimeTicks::Now()));
+      content::TracingDelegate::IsLocalScenario(true), base::TimeTicks::Now()));
+
+  // Consent is not determined yet (early startup), so recording is allowed.
+  EXPECT_TRUE(delegate_->IsRecordingAllowed(
+      content::TracingDelegate::IsLocalScenario(false),
+      base::TimeTicks::Now()));
+
+  // Consent granted.
+  AwMetricsServiceClient::GetInstance()->SetHaveMetricsConsent(
+      /*user_consent=*/true, /*app_consent=*/true);
+  EXPECT_TRUE(delegate_->IsRecordingAllowed(
+      content::TracingDelegate::IsLocalScenario(false),
+      base::TimeTicks::Now()));
+
+  // Consent denied.
+  AwMetricsServiceClient::GetInstance()->SetHaveMetricsConsent(
+      /*user_consent=*/false, /*app_consent=*/false);
+  EXPECT_FALSE(delegate_->IsRecordingAllowed(
+      content::TracingDelegate::IsLocalScenario(false),
+      base::TimeTicks::Now()));
 }
 
 }  // namespace android_webview

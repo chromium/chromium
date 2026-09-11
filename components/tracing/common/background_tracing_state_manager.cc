@@ -41,9 +41,6 @@ BackgroundTracingStateManager::~BackgroundTracingStateManager() {
 
 std::unique_ptr<BackgroundTracingStateManager>
 BackgroundTracingStateManager::CreateInstance(PrefService* local_state) {
-  if (local_state == nullptr) {
-    return nullptr;
-  }
   return base::WrapUnique(new BackgroundTracingStateManager(local_state));
 }
 
@@ -53,7 +50,9 @@ BackgroundTracingStateManager& BackgroundTracingStateManager::GetInstance() {
 }
 
 void BackgroundTracingStateManager::Initialize() {
-  DCHECK(local_state_);
+  if (!local_state_) {
+    return;
+  }
 
   const base::DictValue& dict =
       local_state_->GetDict(kBackgroundTracingSessionState);
@@ -77,7 +76,9 @@ void BackgroundTracingStateManager::Initialize() {
 
 void BackgroundTracingStateManager::SaveState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(local_state_);
+  if (!local_state_) {
+    return;
+  }
 
   base::DictValue dict;
 

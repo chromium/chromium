@@ -23,6 +23,9 @@ namespace tracing {
 // UI thread.
 class TRACING_EXPORT BackgroundTracingStateManager {
  public:
+  // Creates a BackgroundTracingStateManager instance. `local_state` may be null
+  // in test environments or embedders without a PrefService (e.g. Content
+  // Shell), in which case state is kept in memory but not persisted.
   static std::unique_ptr<BackgroundTracingStateManager> CreateInstance(
       PrefService* local_state);
   static BackgroundTracingStateManager& GetInstance();

@@ -252,7 +252,9 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingManager
 
  protected:
   virtual bool GetBackgroundStartupTracingEnabled() const;
-  virtual bool IsRecordingAllowed(bool privacy_filter_enabled,
+  // Called to check embedder-specific consent (e.g. metrics reporting,
+  // incognito) for scenarios that require privacy filtering.
+  virtual bool IsRecordingAllowed(bool is_local_scenario,
                                   base::TimeTicks scenario_start_time) = 0;
   virtual bool ShouldSaveUnuploadedTrace() = 0;
   virtual std::string RecordSerializedSystemProfileMetrics() = 0;

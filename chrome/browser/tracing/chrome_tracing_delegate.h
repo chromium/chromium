@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/tracing_delegate.h"
@@ -19,6 +21,10 @@
 #endif
 
 class BrowserWindowInterface;
+#if !BUILDFLAG(IS_ANDROID)
+class GlobalBrowserCollection;
+#endif
+class PrefService;
 
 namespace tracing {
 class BackgroundTracingStateManager;
@@ -33,10 +39,10 @@ enum class TracingFinalizationDisallowedReason {
   //  kProfileNotLoaded = 1, Obsolete
   //  kCrashMetricsNotLoaded = 2, Obsolete
   //  kLastSessionCrashed = 3, Obsolete
-  //  kMetricsReportingDisabled = 4, Obsolete
+  kMetricsReportingDisabled = 4,
   //  kTraceUploadedRecently = 5, Obsolete
   //  kLastTracingSessionDidNotEnd = 6, Obsolete as of Nov'2024.
-  kMaxValue = kIncognitoLaunched
+  kMaxValue = kMetricsReportingDisabled
 };
 
 class ChromeTracingDelegate : public content::TracingDelegate,
@@ -51,11 +57,11 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   // tracing service is enabled.
   static bool IsSystemWideTracingEnabled();
 
-  ChromeTracingDelegate();
+  explicit ChromeTracingDelegate(PrefService& local_state);
   ~ChromeTracingDelegate() override;
 
   // content::TracingDelegate implementation:
-  bool IsRecordingAllowed(bool requires_anonymized_data,
+  bool IsRecordingAllowed(IsLocalScenario is_local_scenario,
                           base::TimeTicks session_start) const override;
   bool ShouldSaveUnuploadedTrace() const override;
   std::unique_ptr<tracing::BackgroundTracingStateManager> CreateStateManager()
@@ -85,12 +91,22 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
+
+  void EnsureObservingBrowserCollection() const;
 #endif
+
+  const raw_ref<PrefService> local_state_;
 
   // Track the most recent OffTheRecord browser creation time. It's ok to update
   // to a newer timestamp when there are multiple OffTheRecord browsers, since
   // the newer timestamp is stricter.
   base::TimeTicks latest_incognito_launched_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  mutable base::ScopedObservation<GlobalBrowserCollection,
+                                  BrowserCollectionObserver>
+      browser_collection_observation_{this};
+#endif
 };
 
 #endif  // CHROME_BROWSER_TRACING_CHROME_TRACING_DELEGATE_H_

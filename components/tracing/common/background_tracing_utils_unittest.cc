@@ -20,8 +20,8 @@
 #include "components/tracing/common/pref_names.h"
 #include "components/tracing/common/tracing_scenarios_config.h"
 #include "components/tracing/common/tracing_switches.h"
-#include "content/public/browser/background_tracing.h"
 #include "content/public/browser/tracing_delegate.h"
+#include "content/public/test/background_tracing.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
@@ -34,10 +34,9 @@ class BackgroundTracingUtilsTest : public testing::Test {
   tracing::TraceStartupConfig startup_config_;
   content::BrowserTaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<tracing::BackgroundTracingManager>
       background_tracing_manager =
-          content::CreateBackgroundTracingManager(&tracing_delegate_);
+          content::CreateBackgroundTracingManagerForTesting();
 };
 
 const char kInvalidTracingConfig[] = "{][}";
@@ -138,11 +137,6 @@ TEST_F(BackgroundTracingUtilsTest, SetupBackgroundTracingFromProtoConfigFile) {
 }
 
 TEST_F(BackgroundTracingUtilsTest, SetupFieldTracingFromFieldTrialOutputPath) {
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  tracing::RegisterPrefs(pref_service->registry());
-  auto state_manager_ = tracing::BackgroundTracingStateManager::CreateInstance(
-      pref_service.get());
-
   std::string serialized_config =
       GetFieldTracingConfigFromText(kValidProtoTracingConfig);
   std::string compressed_config;

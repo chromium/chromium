@@ -31,9 +31,8 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
-#include "content/public/browser/background_tracing.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/tracing_delegate.h"
+#include "content/public/test/background_tracing.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,7 +95,7 @@ class SigninManagerAndroidTest : public ::testing::Test {
     profile_ = profile_builder.Build();
 
     background_tracing_manager_ =
-        content::CreateBackgroundTracingManager(&tracing_delegate_);
+        content::CreateBackgroundTracingManagerForTesting();
 
     // Creating a BookmarkModel also a creates a StubOfflinePageModel.
     // We need to replace this with a mock that responds to deletions.
@@ -153,7 +152,6 @@ class SigninManagerAndroidTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<tracing::BackgroundTracingManager>
       background_tracing_manager_;
 };

@@ -15,7 +15,7 @@
 
 namespace content {
 
-bool TracingDelegate::IsRecordingAllowed(bool requires_anonymized_data,
+bool TracingDelegate::IsRecordingAllowed(IsLocalScenario is_local_scenario,
                                          base::TimeTicks session_start) const {
   return true;
 }
@@ -26,7 +26,7 @@ bool TracingDelegate::ShouldSaveUnuploadedTrace() const {
 
 std::unique_ptr<tracing::BackgroundTracingStateManager>
 TracingDelegate::CreateStateManager() {
-  return nullptr;
+  return tracing::BackgroundTracingStateManager::CreateInstance(nullptr);
 }
 
 std::string TracingDelegate::RecordSerializedSystemProfileMetrics() const {

@@ -63,14 +63,15 @@ using tracing::BackgroundTracingStateManager;
 
 }  // namespace
 
-ChromeTracingDelegate::ChromeTracingDelegate() {
+ChromeTracingDelegate::ChromeTracingDelegate(PrefService& local_state)
+    : local_state_(local_state) {
   // Ensure that this code is called on the UI thread, except for
   // tests where a UI thread might not have been initialized at this point.
   DCHECK(
       content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
       !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
 #if !BUILDFLAG(IS_ANDROID)
-  GlobalBrowserCollection::GetInstance()->AddObserver(this);
+  EnsureObservingBrowserCollection();
 #else
   TabModelList::AddObserver(this);
 #endif
@@ -101,6 +102,19 @@ void ChromeTracingDelegate::OnTabModelRemoved(TabModel* tab_model) {
 
 #else
 
+void ChromeTracingDelegate::EnsureObservingBrowserCollection() const {
+  if (browser_collection_observation_.IsObserving()) {
+    return;
+  }
+  // `g_browser_process` is null when `ChromeTracingDelegate` is instantiated
+  // early during PreCreateThreads(), or in some unit test environments. Start
+  // observing once the browser process is available.
+  if (g_browser_process) {
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
+  }
+}
+
 void ChromeTracingDelegate::OnBrowserCreated(BrowserWindowInterface* browser) {
   if (browser->GetProfile()->IsOffTheRecord()) {
     latest_incognito_launched_ = base::TimeTicks::Now();
@@ -117,19 +131,27 @@ void ChromeTracingDelegate::OnBrowserClosed(BrowserWindowInterface* browser) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool ChromeTracingDelegate::IsRecordingAllowed(
-    bool requires_anonymized_data,
+    IsLocalScenario is_local_scenario,
     base::TimeTicks session_start) const {
-  // If the background tracing is specified on the command-line, we allow
-  // any scenario to be traced and uploaded.
-  if (!requires_anonymized_data) {
-    return true;
-  }
+#if !BUILDFLAG(IS_ANDROID)
+  EnsureObservingBrowserCollection();
+#endif
 
   if (IsOffTheRecordSessionActive() ||
       session_start <= latest_incognito_launched_) {
     UMA_HISTOGRAM_ENUMERATION(
         "Tracing.Background.FinalizationDisallowedReason",
         TracingFinalizationDisallowedReason::kIncognitoLaunched);
+    return false;
+  }
+
+  // Local scenarios save traces locally without uploading to metrics servers,
+  // so they do not require UMA metrics consent.
+  if (!*is_local_scenario &&
+      !local_state_->GetBoolean(metrics::prefs::kMetricsReportingEnabled)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Tracing.Background.FinalizationDisallowedReason",
+        TracingFinalizationDisallowedReason::kMetricsReportingDisabled);
     return false;
   }
 
@@ -143,7 +165,7 @@ bool ChromeTracingDelegate::ShouldSaveUnuploadedTrace() const {
 std::unique_ptr<tracing::BackgroundTracingStateManager>
 ChromeTracingDelegate::CreateStateManager() {
   return tracing::BackgroundTracingStateManager::CreateInstance(
-      g_browser_process->local_state());
+      &local_state_.get());
 }
 
 std::string ChromeTracingDelegate::RecordSerializedSystemProfileMetrics()
