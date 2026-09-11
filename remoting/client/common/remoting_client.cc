@@ -55,7 +55,7 @@ namespace remoting {
 
 namespace {
 constexpr std::int32_t kMinBitrateBps = 10485760;
-constexpr char kMinHostVersionForProtobuf[] = "155";
+constexpr char kMinHostVersionForProtobuf[] = "156";
 }
 
 RemotingClient::RemotingClient(
