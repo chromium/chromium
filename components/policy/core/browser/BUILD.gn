@@ -156,10 +156,12 @@ source_set("pref_mapping_test_support") {
     "policy_pref_mapping_test.h",
   ]
 
-  public_deps = [ ":test_support" ]
+  public_deps = [
+    ":test_support",
+    "//base",
+  ]
 
   deps = [
-    "//base",
     "//build:android_buildflags",
     "//build:branding_buildflags",
     "//components/policy:generated",

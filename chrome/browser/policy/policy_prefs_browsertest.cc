@@ -32,6 +32,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/variations/variations_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -51,6 +52,10 @@ namespace policy {
 const size_t kNumChunks = 32;
 
 namespace {
+
+constexpr PolicyPrefMappingBuildFlag kPolicyPrefMappingBuildFlags[] = {
+    {"SAFE_BROWSING_AVAILABLE", BUILDFLAG(SAFE_BROWSING_AVAILABLE)},
+};
 
 base::FilePath GetTestCaseDir() {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -186,7 +191,8 @@ IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
 
   VerifyPolicyToPrefMappings(GetTestCaseDir(), local_state, user_prefs,
                              /* signin_profile_prefs= */ nullptr,
-                             GetMockPolicyProvider(), &chunk_info_);
+                             GetMockPolicyProvider(), &chunk_info_,
+                             kPolicyPrefMappingBuildFlags);
 }
 
 INSTANTIATE_TEST_SUITE_P(Chunked,
@@ -222,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
   // checked by PolicyPrefsTest.PolicyToPrefsMapping test.
   VerifyPolicyToPrefMappings(GetTestCaseDir(), /* local_state= */ nullptr,
                              /* user_prefs= */ nullptr, signin_profile_prefs,
-                             GetMockPolicyProvider());
+                             GetMockPolicyProvider(), /*chunk_info=*/nullptr,
+                             kPolicyPrefMappingBuildFlags);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

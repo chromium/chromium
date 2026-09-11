@@ -9,6 +9,9 @@
       "fuchsia"
     ],
     "simple_policy_pref_mapping_test": {
+      "required_buildflags": [
+        "SAFE_BROWSING_AVAILABLE"
+      ],
       "pref_name": "downloads.exempt_domain_filetype_pair_from_file_type_downloads_warnings",
       "default_value": [],
       "values_to_test": [

@@ -16,6 +16,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_test.h"
@@ -23,8 +24,11 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-using safe_browsing::ReusedPasswordAccountType;
 using testing::Return;
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+using safe_browsing::ReusedPasswordAccountType;
+#endif
 
 namespace policy {
 
@@ -246,6 +250,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, PasswordProtectionLoginURLs) {
 
 // Test that when password protection change password URL is set by policy,
 // password protection service gets the correct value.
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
                        PasswordProtectionChangePasswordURL) {
   // Without setting up the enterprise policy,
@@ -419,6 +425,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
             mock_service.GetPasswordProtectionWarningTriggerPref(
                 ReusedPasswordAccountType()));
 }
+
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace policy

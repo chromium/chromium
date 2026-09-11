@@ -7,6 +7,10 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
+#include "base/containers/span.h"
+
 namespace base {
 class FilePath;
 }
@@ -24,6 +28,13 @@ namespace policy {
 struct PrefMappingChunkInfo {
   size_t current_chunk;
   size_t num_chunks;
+};
+
+// Describes an embedder-specific buildflag that policy-to-pref mapping tests
+// may require.
+struct PolicyPrefMappingBuildFlag {
+  std::string_view name;
+  bool enabled;
 };
 
 // The name of the switch to filter the testcases by
@@ -48,12 +59,14 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path);
 // which case the mappings into the respective location are skipped.
 // TODO(https://crbug.com/809991) Policies mapping into CrosSettings are always
 // skipped.
-void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
-                                PrefService* local_state,
-                                PrefService* user_prefs,
-                                PrefService* signin_profile_prefs,
-                                MockConfigurationPolicyProvider* provider,
-                                PrefMappingChunkInfo* chunk_info = nullptr);
+void VerifyPolicyToPrefMappings(
+    const base::FilePath& test_case_path,
+    PrefService* local_state,
+    PrefService* user_prefs,
+    PrefService* signin_profile_prefs,
+    MockConfigurationPolicyProvider* provider,
+    PrefMappingChunkInfo* chunk_info = nullptr,
+    base::span<const PolicyPrefMappingBuildFlag> embedder_buildflags = {});
 
 }  // namespace policy
 
