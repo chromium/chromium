@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Indefinite looping on unaligned buffer (65,201 frames) renders continuously without stopping or firing onended
-  assert_approx_equals: Sample immediately after wrap in iteration 1 must match start of buffer expected 0.1 +/- 0.0001 but got 0.8999999761581421
-Harness: the test ran to completion.
-

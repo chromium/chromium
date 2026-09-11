@@ -65,7 +65,10 @@ class MODULES_EXPORT AudioBufferSourceHandler final
   void SetLoopStart(double loop_start);
   void SetLoopEnd(double loop_end);
 
-  double GetVirtualReadIndexForTesting() const { return virtual_read_index_; }
+  double VirtualReadIndexForTesting() const { return virtual_read_index_; }
+  bool IsUsingFastPathForTesting() const {
+    return is_using_fast_path_for_testing_;
+  }
 
   // If we are no longer playing, propagate silence ahead to downstream nodes.
   bool PropagatesSilence() const override;
@@ -181,14 +184,16 @@ class MODULES_EXPORT AudioBufferSourceHandler final
   double loop_start_ = 0;
   double loop_end_ = 0;
 
-  // Effective loop points resolved under `process_lock_`.
-  double effective_loop_start_ = 0;
-  double effective_loop_end_ = 0;
+  // Precomputed loop boundaries resolved under `process_lock_` in sample
+  // frames. Precomputed to avoid floating point round trips ((N/Fs)*Fs) on the
+  // audio thread.
+  double virtual_loop_start_frame_ = 0.0;
+  double virtual_loop_end_frame_ = 0.0;
 
   // `virtual_read_index_` is a sample-frame index into our buffer representing
   // the current playback position.  Since it's floating-point, it has
   // sub-sample accuracy.
-  double virtual_read_index_ = 0;
+  double virtual_read_index_ = 0.0;
 
   // Granular playback
   bool is_grain_ = false;
@@ -207,6 +212,9 @@ class MODULES_EXPORT AudioBufferSourceHandler final
   // True if the `buffer` attribute has ever been set to a non-null
   // value.  Defaults to false.
   bool buffer_has_been_set_ = false;
+
+  // Recorded in RenderFromBuffer() to verify fast-path execution in tests.
+  bool is_using_fast_path_for_testing_ = false;
 
   base::WeakPtrFactory<AudioScheduledSourceHandler> weak_ptr_factory_{this};
 };

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer_source_handler.h"
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
 
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
@@ -34,6 +36,63 @@ constexpr double kMaxRate = 1024.0;
 // Default to mono. A call to setBuffer() will set the number of output
 // channels to that of the buffer.
 constexpr unsigned kDefaultNumberOfOutputChannels = 1;
+
+// Convert the time to a floating-point sample frame at the given sample rate,
+// snapping to the nearest integer frame if within machine tolerance to
+// eliminate IEEE-754 roundoff from integer divisions (e.g. Fs * (k / Fs) != k).
+double TimeToFloatingSampleFrame(double time, double sample_rate) {
+  DCHECK_GE(time, 0.0);
+  DCHECK_GT(sample_rate, 0.0);
+
+  const double frame = time * sample_rate;
+  const double round_frame = std::round(frame);
+  // Floating-point time values in JavaScript are commonly derived through
+  // chained arithmetic operations such as dividing integer frame counts by
+  // the audio sample rate and adding segment offsets (for example, computing
+  // a loop boundary or grain offset as time = frame_offset / sample_rate +
+  // slice_duration).
+  //
+  // In IEEE 754 double-precision floating-point arithmetic (used by JavaScript
+  // Numbers and Web Audio time parameters), each fundamental arithmetic
+  // operation (+, -, *, /) can introduce a rounding error of up to 0.5 unit
+  // in the last place (ULP) relative to the exact mathematical result.
+  //
+  // For a typical sequence of four chained operations:
+  //   1. Division of start frame index by sample rate: start_time = N1 / Fs
+  //   2. Division of duration frame count by sample rate: duration = N2 / Fs
+  //   3. Addition of time values: end_time = start_time + duration
+  //   4. Multiplication by sample rate in Blink: frame = end_time * Fs
+  //
+  // Each operation incurs a relative error bounded by the machine unit
+  // roundoff u = 0.5 * std::numeric_limits<double>::epsilon(). Propagating
+  // these errors across all four stages yields a total roundoff error bounded
+  // by:
+  //   |frame - round_frame| <= 4 * ULP(round_frame)
+  //
+  // Here, one Unit in the Last Place (ULP) for a floating-point value N is the
+  // distance between N and the next representable floating-point number, which
+  // is given by:
+  //   ULP(N) = std::numeric_limits<double>::epsilon() * std::max(N, 1.0)
+  //
+  // Therefore, a tolerance of 4 ULPs is mathematically sufficient to eliminate
+  // all accumulated roundoff error from standard four-operation chained
+  // calculations.
+  //
+  // We choose a threshold of 10 ULPs (10.0 * epsilon * round_frame) to provide
+  // safe headroom for deeper or more complex JavaScript arithmetic expressions
+  // (such as tempo synchronization or multi-segment timeline splices), while
+  // still remaining orders of magnitude below any intentional sub-sample
+  // fractional offset. For example, for a 1-hour audio buffer at 48 kHz
+  // (where round_frame ~ 1.7e8), 10 ULPs is approximately 3.8e-10 frames,
+  // whereas intentional sub-sample musical loop points or interpolation
+  // boundaries are on the order of 1e-4 frames or larger.
+  const double tolerance = std::max(round_frame, 1.0) *
+                           (10.0 * std::numeric_limits<double>::epsilon());
+  if (std::abs(frame - round_frame) <= tolerance) {
+    return round_frame;
+  }
+  return frame;
+}
 
 }  // namespace
 
@@ -383,10 +442,9 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   unsigned write_index = destination_frame_offset;
 
   uint32_t buffer_length = shared_buffer_->length();
-  double buffer_sample_rate = shared_buffer_->sampleRate();
 
-  const double virtual_start_frame = effective_loop_start_ * buffer_sample_rate;
-  const double virtual_end_frame = effective_loop_end_ * buffer_sample_rate;
+  const double virtual_start_frame = virtual_loop_start_frame_;
+  const double virtual_end_frame = virtual_loop_end_frame_;
   const double virtual_delta_frames = virtual_end_frame - virtual_start_frame;
 
   double computed_playback_rate = ComputePlaybackRate();
@@ -443,6 +501,7 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   bool is_stopping_this_quantum = false;
 
   if (is_duration_given_) {
+    double buffer_sample_rate = shared_buffer_->sampleRate();
     double max_source_frames = grain_duration_ * buffer_sample_rate;
     double source_frames_left = max_source_frames - buffer_played_frames_;
     if (source_frames_left <= 0.0) {
@@ -478,11 +537,13 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
       virtual_read_index == floor(virtual_read_index) &&
       virtual_delta_frames == floor(virtual_delta_frames) &&
       virtual_end_frame == floor(virtual_end_frame)) {
+    is_using_fast_path_for_testing_ = true;
     process_result =
         ProcessFastPath(virtual_delta_frames, virtual_end_frame, buffer_length,
                         destination_length, number_of_channels,
                         frames_to_process, write_index, virtual_read_index);
   } else {
+    is_using_fast_path_for_testing_ = false;
     process_result = ProcessInterpolatedPath(
         virtual_start_frame, virtual_delta_frames, virtual_end_frame,
         buffer_length, number_of_channels, computed_playback_rate,
@@ -636,38 +697,47 @@ void AudioBufferSourceHandler::ClampGrainParameters(
 
 void AudioBufferSourceHandler::UpdateEffectiveLoopPoints() {
   if (!Buffer()) {
-    effective_loop_start_ = 0;
-    effective_loop_end_ = 0;
+    virtual_loop_start_frame_ = 0.0;
+    virtual_loop_end_frame_ = 0.0;
     return;
   }
 
-  double buffer_duration = shared_buffer_->duration();
+  const double buffer_duration = shared_buffer_->duration();
+  const double buffer_sample_rate = shared_buffer_->sampleRate();
+  const double buffer_length = static_cast<double>(shared_buffer_->length());
+
+  // Default to whole buffer.
+  virtual_loop_start_frame_ = 0.0;
+  virtual_loop_end_frame_ = buffer_length;
 
   if (!is_looping_) {
-    effective_loop_start_ = 0;
-    effective_loop_end_ = buffer_duration;
     return;
   }
 
   // Clamp loopStart to [0, buffer_duration]
-  double start = std::clamp(loop_start_, 0.0, buffer_duration);
+  const double start = std::clamp(loop_start_, 0.0, buffer_duration);
 
   // Resolve loopEnd: 0 means buffer duration, otherwise clamp to [0,
   // buffer_duration]
-  double end = loop_end_;
-  if (end == 0) {
-    end = buffer_duration;
-  } else {
-    end = std::clamp(end, 0.0, buffer_duration);
-  }
+  const double end = (loop_end_ == 0.0)
+                         ? buffer_duration
+                         : std::clamp(loop_end_, 0.0, buffer_duration);
 
   if (start < end) {
-    effective_loop_start_ = start;
-    effective_loop_end_ = end;
-  } else {
-    // Fallback to entire buffer
-    effective_loop_start_ = 0;
-    effective_loop_end_ = buffer_duration;
+    if (start > 0.0) {
+      virtual_loop_start_frame_ =
+          TimeToFloatingSampleFrame(start, buffer_sample_rate);
+    }
+    if (end < buffer_duration) {
+      virtual_loop_end_frame_ =
+          TimeToFloatingSampleFrame(end, buffer_sample_rate);
+    }
+  }
+
+  // If snapped loop points collapse or invert, fall back to the whole buffer.
+  if (virtual_loop_start_frame_ >= virtual_loop_end_frame_) {
+    virtual_loop_start_frame_ = 0.0;
+    virtual_loop_end_frame_ = buffer_length;
   }
 }
 

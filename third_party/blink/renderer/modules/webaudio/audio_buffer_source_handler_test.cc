@@ -232,7 +232,7 @@ TEST_P(AudioBufferSourceHandlerParamTest,
             // is finite. Note: We check buffer bounds rather than loop bounds
             // because playback starts at grain_offset (0.0), which precedes
             // loop_start until loop_end is reached.
-            double read_index = handler->GetVirtualReadIndexForTesting();
+            double read_index = handler->VirtualReadIndexForTesting();
             EXPECT_TRUE(std::isfinite(read_index));
             EXPECT_GE(read_index, -1e-5);
             EXPECT_LE(read_index,
@@ -296,10 +296,10 @@ INSTANTIATE_TEST_SUITE_P(
             AudioBufferSourceTestParams{48000.0f, 1.0, 0.0, 0.0, 0.0, false}),
         testing::Values(1.0, -1.0)));
 
-// TODO(crbug.com/553218226): Re-enable once exact integer loop boundaries land
-// in Part 2.
-TEST_F(AudioBufferSourceHandlerTestBase,
-       DISABLED_LoopingUnalignedBufferPrecision) {
+// For unaligned buffer lengths (e.g., 65201 frames at 48 kHz), loop boundaries
+// must be exact integer frames to enter ProcessFastPath and avoid frame
+// duplication.
+TEST_F(AudioBufferSourceHandlerTestBase, LoopingUnalignedBufferPrecision) {
   V8TestingScope scope;
 
   constexpr uint32_t kUnalignedBufferLength = 65201;
@@ -314,20 +314,21 @@ TEST_F(AudioBufferSourceHandlerTestBase,
 
   const auto destination = ProcessOnAudioThread(env.context, env.handler);
 
+  // Exact integer frames preserved, entering ProcessFastPath.
+  EXPECT_TRUE(env.handler.IsUsingFastPathForTesting());
   // Destination sample 0 corresponds to frame 65200 (value 65201.0f).
   EXPECT_FLOAT_EQ(destination[0], 65201.0f);
   // Destination sample 1 must wrap to frame 0 (value 1.0f).
-  // Without integer loop boundaries, IEEE-754 precision residue
-  // causes loop wrapping to fail, duplicating sample 65200 and
-  // skipping frame 0.
+  // Precomputed integer loop boundaries eliminate IEEE-754 residue,
+  // ensuring sample-accurate loop wrapping to frame 0.
   EXPECT_FLOAT_EQ(destination[1], 1.0f);
   EXPECT_FLOAT_EQ(destination[2], 2.0f);
 }
 
-// TODO(crbug.com/553218226): Re-enable once exact integer loop boundaries land
-// in Part 2.
+// Explicitly setting loopEnd to buffer->duration() must also resolve to exact
+// integer frames, preserving fast-path execution and exact loop wrapping.
 TEST_F(AudioBufferSourceHandlerTestBase,
-       DISABLED_LoopingUnalignedBufferExplicitLoopEnd) {
+       LoopingUnalignedBufferExplicitLoopEnd) {
   V8TestingScope scope;
 
   constexpr uint32_t kUnalignedBufferLength = 65201;
@@ -346,6 +347,8 @@ TEST_F(AudioBufferSourceHandlerTestBase,
 
   const auto destination = ProcessOnAudioThread(env.context, env.handler);
 
+  // Exact integer frames preserved, entering ProcessFastPath.
+  EXPECT_TRUE(env.handler.IsUsingFastPathForTesting());
   EXPECT_FLOAT_EQ(destination[0], 65201.0f);
   EXPECT_FLOAT_EQ(destination[1], 1.0f);
   EXPECT_FLOAT_EQ(destination[2], 2.0f);
@@ -369,6 +372,9 @@ TEST_F(AudioBufferSourceHandlerTestBase,
   env.handler.Start(0, grain_offset, ASSERT_NO_EXCEPTION);
 
   const auto destination = ProcessOnAudioThread(env.context, env.handler);
+
+  // Non-zero mantissa forces ProcessInterpolatedPath.
+  EXPECT_FALSE(env.handler.IsUsingFastPathForTesting());
 
   // Frame 65200 is 65201.0f. At frame 65200.0, linear interpolation between
   // frame 65200 and wrapped frame 0 (1.0f) yields:
@@ -440,14 +446,11 @@ struct GranularityTestParam {
   float sample_rate;
 };
 
-// TODO(crbug.com/553218226): Re-enable once exact integer loop boundaries land
-// in Part 2.
 class AudioBufferSourceGranularityTest
     : public AudioBufferSourceHandlerTestBase,
       public testing::WithParamInterface<GranularityTestParam> {};
 
-TEST_P(AudioBufferSourceGranularityTest,
-       DISABLED_LoopingGranularityWrapPrecision) {
+TEST_P(AudioBufferSourceGranularityTest, LoopingGranularityWrapPrecision) {
   V8TestingScope scope;
 
   const GranularityTestParam& param = GetParam();
@@ -463,6 +466,9 @@ TEST_P(AudioBufferSourceGranularityTest,
   env.handler.Start(0, grain_offset, ASSERT_NO_EXCEPTION);
 
   const auto destination = ProcessOnAudioThread(env.context, env.handler);
+
+  // Whole buffer loops at rate 1.0 use ProcessFastPath.
+  EXPECT_TRUE(env.handler.IsUsingFastPathForTesting());
 
   for (uint32_t k = 0; k < kRenderQuantumFrames; ++k) {
     const float expected =
@@ -494,10 +500,8 @@ INSTANTIATE_TEST_SUITE_P(VaryingGranularities,
                              GranularityTestParam{65201, 44100.0f},
                              GranularityTestParam{131071, 48000.0f}));
 
-// TODO(crbug.com/553218226): Re-enable once exact integer loop boundaries land
-// in Part 2.
 TEST_F(AudioBufferSourceHandlerTestBase,
-       DISABLED_VaryingRatesInterpolatedWrapPrecision) {
+       VaryingRatesInterpolatedWrapPrecision) {
   V8TestingScope scope;
 
   // LAME padding case from crbug.com/553218226 Comment #7
@@ -516,6 +520,9 @@ TEST_F(AudioBufferSourceHandlerTestBase,
   env.handler.Start(0, grain_offset, ASSERT_NO_EXCEPTION);
 
   const auto destination = ProcessOnAudioThread(env.context, env.handler);
+
+  // Non-integer playback rate forces ProcessInterpolatedPath.
+  EXPECT_FALSE(env.handler.IsUsingFastPathForTesting());
 
   // Sample 0: exact frame 1485 (value 1486.0f)
   EXPECT_FLOAT_EQ(destination[0], 1486.0f);
@@ -589,6 +596,76 @@ TEST_F(AudioBufferSourceHandlerTestBase, LoopNegativeRateBackwardWrap) {
   // Wraps back to loopEnd (frame 7) minus 1 = frame 6.
   EXPECT_FLOAT_EQ(destination[5], 6.0f);
   EXPECT_FLOAT_EQ(destination[6], 5.0f);
+}
+
+// Sub-ranges specified in seconds where frame conversion introduces IEEE-754
+// roundoff must snap to exact integer frames.
+TEST_F(AudioBufferSourceHandlerTestBase, LoopingExplicitSubRangeIntegerWrap) {
+  V8TestingScope scope;
+  constexpr float kSampleRate = 48000.0f;
+
+  // 1. Explicit loopEnd with positive residue: (7/48000)*48000 > 7.
+  {
+    auto env =
+        CreateEnvironmentWithBuffer(scope, CreateRampBuffer(100, kSampleRate));
+    env.handler.SetLoopStart(0.0);
+    env.handler.SetLoopEnd(7.0 / kSampleRate);
+    env.handler.Start(0, 0.0, ASSERT_NO_EXCEPTION);
+
+    const auto destination = ProcessOnAudioThread(env.context, env.handler);
+
+    EXPECT_TRUE(env.handler.IsUsingFastPathForTesting());
+    for (uint32_t i = 0; i < 7; ++i) {
+      EXPECT_FLOAT_EQ(destination[i], static_cast<float>(i + 1));
+    }
+    EXPECT_FLOAT_EQ(destination[7], 1.0f);
+    EXPECT_FLOAT_EQ(destination[8], 2.0f);
+  }
+
+  // 2. Explicit loopEnd with negative residue: (27/48000)*48000 < 27.
+  {
+    auto env =
+        CreateEnvironmentWithBuffer(scope, CreateRampBuffer(100, kSampleRate));
+    env.handler.SetLoopStart(0.0);
+    env.handler.SetLoopEnd(27.0 / kSampleRate);
+    env.handler.Start(0, 0.0, ASSERT_NO_EXCEPTION);
+
+    const auto destination = ProcessOnAudioThread(env.context, env.handler);
+
+    EXPECT_TRUE(env.handler.IsUsingFastPathForTesting());
+    EXPECT_FLOAT_EQ(destination[26], 27.0f);
+    EXPECT_FLOAT_EQ(destination[27], 1.0f);
+    EXPECT_FLOAT_EQ(destination[28], 2.0f);
+  }
+}
+
+TEST_F(AudioBufferSourceHandlerTestBase,
+       LoopCoincidingSnappedBoundsFallbackToWholeBuffer) {
+  V8TestingScope scope;
+  constexpr float kSampleRate = 48000.0f;
+
+  auto env =
+      CreateEnvironmentWithBuffer(scope, CreateRampBuffer(8, kSampleRate));
+
+  // Choose loopStart and loopEnd such that loopStart < loopEnd in seconds,
+  // but both snap to the same integer frame (frame 3) within machine
+  // tolerance.
+  const double start_time = 3.0 / kSampleRate;
+  const double end_time = std::nextafter(start_time, 1.0);
+  ASSERT_LT(start_time, end_time);
+
+  env.handler.SetLoopStart(start_time);
+  env.handler.SetLoopEnd(end_time);
+  env.handler.Start(0, 0, ASSERT_NO_EXCEPTION);
+
+  const auto destination = ProcessOnAudioThread(env.context, env.handler);
+
+  // Snapped start == end falls back to looping the entire buffer [0, 8].
+  for (uint32_t i = 0; i < 8; ++i) {
+    EXPECT_FLOAT_EQ(destination[i], static_cast<float>(i + 1));
+  }
+  EXPECT_TRUE(env.handler.IsUsingFastPathForTesting());
+  EXPECT_FLOAT_EQ(destination[8], 1.0f);
 }
 
 }  // namespace blink
