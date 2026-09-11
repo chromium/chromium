@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/tts_controller_delegate.h"
+#include "content/public/browser/tts_controller_delegate_chromeos.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 namespace content {
@@ -27,5 +28,9 @@ TtsControllerDelegate::PreferredVoiceIds::operator=(const PreferredVoiceIds&) =
     default;
 
 TtsControllerDelegate::PreferredVoiceIds::~PreferredVoiceIds() = default;
+
+bool TtsControllerDelegate::IsFallbackEngine(std::string_view engine_id) {
+  return false;
+}
 
 }  // namespace content

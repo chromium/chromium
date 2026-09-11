@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_TTS_CONTROLLER_DELEGATE_H_
-#define CONTENT_PUBLIC_BROWSER_TTS_CONTROLLER_DELEGATE_H_
+#ifndef CONTENT_PUBLIC_BROWSER_TTS_CONTROLLER_DELEGATE_CHROMEOS_H_
+#define CONTENT_PUBLIC_BROWSER_TTS_CONTROLLER_DELEGATE_CHROMEOS_H_
 
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "content/common/content_export.h"
 
@@ -61,10 +62,16 @@ class CONTENT_EXPORT TtsControllerDelegate {
                                                 double* rate,
                                                 double* pitch,
                                                 double* volume) = 0;
+
+  // Returns whether the given engine ID is a fallback engine (e.g. eSpeak-ng
+  // on ChromeOS). Fallback engines are de-prioritized in voice scoring
+  // compared to standard/primary engines.
+  virtual bool IsFallbackEngine(std::string_view engine_id);
+
  protected:
   virtual ~TtsControllerDelegate() {}
 };
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_TTS_CONTROLLER_DELEGATE_H_
+#endif  // CONTENT_PUBLIC_BROWSER_TTS_CONTROLLER_DELEGATE_CHROMEOS_H_

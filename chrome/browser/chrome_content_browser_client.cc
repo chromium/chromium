@@ -517,7 +517,7 @@
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service_factory.h"
 #include "chrome/browser/speech/tts_chromeos.h"
-#include "chrome/browser/speech/tts_controller_delegate_impl.h"
+#include "chrome/browser/speech/tts_controller_delegate_chromeos_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/webui/ash/kerberos/kerberos_in_browser_dialog.h"
@@ -4522,7 +4522,7 @@ ChromeContentBrowserClient::GetOnDeviceSpeechRecognitionAvailabilityStatus(
 #if BUILDFLAG(IS_CHROMEOS)
 content::TtsControllerDelegate*
 ChromeContentBrowserClient::GetTtsControllerDelegate() {
-  return TtsControllerDelegateImpl::GetInstance();
+  return TtsControllerDelegateChromeOSImpl::GetInstance();
 }
 #endif
 

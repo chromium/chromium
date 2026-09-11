@@ -40,7 +40,7 @@ platform.
 - The [TtsControllerImpl](https://cs.chromium.org/chromium/src/content/browser/speech/tts_controller_impl.h)
 (in content/) processes utterances and sends them to the correct output engine.
 
-- The [TtsControllerDelegateImpl](https://cs.chromium.org/chromium/src/chrome/browser/speech/tts_controller_delegate_impl.h)
+- The [TtsControllerDelegateChromeOSImpl](https://cs.chromium.org/chromium/src/chrome/browser/speech/tts_controller_delegate_chromeos_impl.h)
 (in chrome/) provides chrome OS specific functionality.
 
 ### Output
@@ -64,7 +64,7 @@ platform.
 
     - TtsControllerUnittest in content/browser/speech
 
-    - TtsControllerDelegateImplUnittest in chrome/browser/speech
+    - TtsControllerDelegateChromeOSImplTest in chrome/browser/speech
 
     - ArcTtsServiceUnittest for ARC++ voices
 

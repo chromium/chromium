@@ -4,7 +4,7 @@
 
 // Unit tests for the TTS Controller.
 
-#include "chrome/browser/speech/tts_controller_delegate_impl.h"
+#include "chrome/browser/speech/tts_controller_delegate_chromeos_impl.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +19,7 @@
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 
 // Subclass of TtsController with a public ctor and dtor.
-class MockTtsControllerDelegate : public TtsControllerDelegateImpl {
+class MockTtsControllerDelegate : public TtsControllerDelegateChromeOSImpl {
  public:
   MockTtsControllerDelegate() = default;
   ~MockTtsControllerDelegate() override = default;
@@ -32,7 +32,8 @@ class MockTtsControllerDelegate : public TtsControllerDelegateImpl {
   }
 };
 
-TEST(TtsControllerDelegateImplTest, TestTtsControllerUtteranceDefaults) {
+TEST(TtsControllerDelegateChromeOSImplTest,
+     TestTtsControllerUtteranceDefaults) {
   std::unique_ptr<MockTtsControllerDelegate> tts_controller_delegate =
       std::make_unique<MockTtsControllerDelegate>();
 
@@ -98,7 +99,7 @@ TEST(TtsControllerDelegateImplTest, TestTtsControllerUtteranceDefaults) {
   EXPECT_EQ(blink::mojom::kSpeechSynthesisDefaultVolume, volume);
 }
 
-TEST(TtsControllerDelegateImplTest, GetPreferredVoiceIdsForUtterance) {
+TEST(TtsControllerDelegateChromeOSImplTest, GetPreferredVoiceIdsForUtterance) {
   MockTtsControllerDelegate delegate;
   std::unique_ptr<content::TtsUtterance> utterance =
       content::TtsUtterance::Create();
