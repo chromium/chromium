@@ -18,12 +18,6 @@ const char kEnableExperimentalAccessibilityAutoclick[] =
 const char kEnableExperimentalAccessibilityLabelsDebugging[] =
     "enable-experimental-accessibility-labels-debugging";
 
-
-// Switches accessibility extensions to use extensions manifest v3 while the
-// migration is still in progress.
-const char kEnableExperimentalAccessibilityManifestV3[] =
-    "enable-experimental-accessibility-manifest-v3";
-
 // Enables in progress Switch Access features for text input.
 const char kEnableExperimentalAccessibilitySwitchAccessText[] =
     "enable-experimental-accessibility-switch-access-text";

@@ -384,7 +384,3 @@ E2ETestBase = class extends AccessibilityTestBase {
 
 /** @override */
 E2ETestBase.prototype.isAsync = true;
-
-/** @override */
-E2ETestBase.prototype.paramCommandLineSwitch =
-    `::switches::kEnableExperimentalAccessibilityManifestV3`;

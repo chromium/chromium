@@ -569,10 +569,6 @@ AccessibilityManager::AccessibilityManager(
     NOTREACHED();
   }
 
-  const bool enable_v3_manifest =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kEnableExperimentalAccessibilityManifestV3);
-
   accessibility_common_extension_loader_ =
       base::WrapUnique(new AccessibilityExtensionLoader(
           extension_misc::kAccessibilityCommonExtensionId,
@@ -587,11 +583,11 @@ AccessibilityManager::AccessibilityManager(
   const bool enable_chromevox_v3_manifest =
       ::features::IsAccessibilityManifestV3EnabledForChromeVox();
   const base::FilePath::CharType* chromevox_manifest_filename =
-      enable_v3_manifest || enable_chromevox_v3_manifest
+      enable_chromevox_v3_manifest
           ? extension_misc::kChromeVoxManifestV3Filename
           : extension_misc::kChromeVoxManifestFilename;
   const base::FilePath::CharType* chromevox_guest_manifest_filename =
-      enable_v3_manifest || enable_chromevox_v3_manifest
+      enable_chromevox_v3_manifest
           ? extension_misc::kChromeVoxGuestManifestV3Filename
           : extension_misc::kChromeVoxGuestManifestFilename;
 
