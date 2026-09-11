@@ -99,6 +99,7 @@ android_library("javatests") {
     "//chrome/browser/commerce/price_insights/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/profiles/android:test_support_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/test/android:chrome_java_integration_test_support",

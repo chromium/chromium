@@ -38,7 +38,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.TestProfile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
@@ -69,10 +69,11 @@ public class PriceTrackingBottomSheetContentRenderTest {
                     .setBugComponent(UI_BROWSER_SHOPPING)
                     .build();
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private final TestProfile mProfile = TestProfile.createRegular();
 
     @Mock private Tab mMockTab;
-    @Mock private Profile mMockProfile;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
     @Mock private Callback<PropertyModel> mMockCallback;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
@@ -97,7 +98,7 @@ public class PriceTrackingBottomSheetContentRenderTest {
                 () -> {
                     Activity activity = sActivityTestRule.getActivity();
                     mPriceTrackingStateSupplier = ObservableSuppliers.createNonNull(false);
-                    doReturn(mMockProfile).when(mMockTab).getProfile();
+                    doReturn(mProfile).when(mMockTab).getProfile();
                     doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
                     ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
                     CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);

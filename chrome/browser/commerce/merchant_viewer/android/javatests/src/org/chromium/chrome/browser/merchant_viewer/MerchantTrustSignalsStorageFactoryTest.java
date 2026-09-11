@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.merchant_viewer;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,29 +24,26 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.TestProfile;
 
 /** Tests for {@link MerchantTrustSignalsStorageFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MerchantTrustSignalsStorageFactoryTest {
     private static final long FAKE_NATIVE_PTR = 1L;
 
-    @Mock private Profile mMockProfile1;
-
-    @Mock private Profile mMockProfile2;
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private final TestProfile mProfile1 = TestProfile.createRegular();
+    private final TestProfile mProfile2 = TestProfile.createRegular();
+
     @Mock private MerchantTrustSignalsEventStorage.Natives mMockStorage;
 
     private SettableNonNullObservableSupplier<Profile> mProfileSupplier;
 
-    @Mock public Profile.Natives mMockProfileNatives;
-
     @Before
     public void setUp() {
         MerchantTrustSignalsEventStorageJni.setInstanceForTesting(mMockStorage);
-        ProfileJni.setInstanceForTesting(mMockProfileNatives);
         // Simulate native init(), which normally calls back into setNativePtr().
         doAnswer(
                         invocation -> {
@@ -58,9 +54,7 @@ public class MerchantTrustSignalsStorageFactoryTest {
                 .when(mMockStorage)
                 .init(any(MerchantTrustSignalsEventStorage.class), any(Profile.class));
 
-        doReturn(false).when(mMockProfile1).isOffTheRecord();
-        doReturn(false).when(mMockProfile2).isOffTheRecord();
-        mProfileSupplier = ObservableSuppliers.createNonNull(mMockProfile1);
+        mProfileSupplier = ObservableSuppliers.createNonNull(mProfile1);
     }
 
     @Test
@@ -73,9 +67,9 @@ public class MerchantTrustSignalsStorageFactoryTest {
 
     @Test
     public void testGetForLastUsedProfileOffTheRecordProfile() {
-        doReturn(true).when(mMockProfile1).isOffTheRecord();
         MerchantTrustSignalsStorageFactory factory =
-                new MerchantTrustSignalsStorageFactory(mProfileSupplier);
+                new MerchantTrustSignalsStorageFactory(
+                        ObservableSuppliers.createNonNull(TestProfile.createIncognito()));
 
         Assert.assertNull(factory.getForLastUsedProfile());
         factory.destroy();
@@ -89,7 +83,7 @@ public class MerchantTrustSignalsStorageFactoryTest {
         MerchantTrustSignalsEventStorage db1 = factory.getForLastUsedProfile();
         Assert.assertNotNull(db1);
 
-        mProfileSupplier.set(mMockProfile2);
+        mProfileSupplier.set(mProfile2);
         MerchantTrustSignalsEventStorage db2 = factory.getForLastUsedProfile();
         Assert.assertNotNull(db2);
 
@@ -99,7 +93,6 @@ public class MerchantTrustSignalsStorageFactoryTest {
 
     @Test
     public void testDestroy() {
-        doReturn(false).when(mMockProfile1).isOffTheRecord();
 
         MerchantTrustSignalsStorageFactory factory =
                 new MerchantTrustSignalsStorageFactory(mProfileSupplier);
@@ -118,7 +111,7 @@ public class MerchantTrustSignalsStorageFactoryTest {
         factory.getForLastUsedProfile();
         Assert.assertEquals(1, MerchantTrustSignalsStorageFactory.sProfileToStorage.size());
 
-        ProfileManager.onProfileDestroyed(mMockProfile1);
+        ProfileManager.onProfileDestroyed(mProfile1);
 
         Assert.assertEquals(0, MerchantTrustSignalsStorageFactory.sProfileToStorage.size());
         verify(mMockStorage, times(1)).destroy(FAKE_NATIVE_PTR);
@@ -128,8 +121,7 @@ public class MerchantTrustSignalsStorageFactoryTest {
 
     @Test
     public void testStorageDestroyPreventsFurtherNativeCalls() {
-        MerchantTrustSignalsEventStorage storage =
-                new MerchantTrustSignalsEventStorage(mMockProfile1);
+        MerchantTrustSignalsEventStorage storage = new MerchantTrustSignalsEventStorage(mProfile1);
         storage.destroy();
         storage.deleteAll();
         storage.destroy();

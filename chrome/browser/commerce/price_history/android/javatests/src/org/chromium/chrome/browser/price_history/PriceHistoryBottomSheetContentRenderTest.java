@@ -37,7 +37,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.TestProfile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -65,16 +65,17 @@ public class PriceHistoryBottomSheetContentRenderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
-    public RenderTestRule mRenderTestRule =
+    public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setRevision(1)
                     .setBugComponent(UI_BROWSER_SHOPPING)
                     .build();
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private final TestProfile mProfile = TestProfile.createRegular();
 
     @Mock private Tab mMockTab;
-    @Mock private Profile mMockProfile;
     @Mock private TabModelSelector mMockTabModelSelector;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
     @Mock private Callback<PropertyModel> mMockCallback;
@@ -121,7 +122,7 @@ public class PriceHistoryBottomSheetContentRenderTest {
 
     @Before
     public void setUp() throws Exception {
-        doReturn(mMockProfile).when(mMockTab).getProfile();
+        doReturn(mProfile).when(mMockTab).getProfile();
         doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
         doReturn(true).when(mMockShoppingService).isPriceInsightsEligible();

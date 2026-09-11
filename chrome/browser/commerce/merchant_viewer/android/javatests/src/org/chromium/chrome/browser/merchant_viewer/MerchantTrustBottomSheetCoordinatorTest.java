@@ -34,6 +34,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -70,8 +71,6 @@ public class MerchantTrustBottomSheetCoordinatorTest {
 
     @Mock private Runnable mMockOnBottomSheetDismissed;
 
-    @Mock private Profile mMockProfile;
-
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     @Captor private ArgumentCaptor<MerchantTrustBottomSheetContent> mSheetContentCaptor;
@@ -80,6 +79,7 @@ public class MerchantTrustBottomSheetCoordinatorTest {
 
     private WindowAndroid mWindowAndroid;
     private MerchantTrustBottomSheetCoordinator mDetailsTabCoordinator;
+    private Profile mProfile;
 
     @BeforeClass
     public static void setupSuite() {
@@ -91,6 +91,7 @@ public class MerchantTrustBottomSheetCoordinatorTest {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mProfile = ProfileManager.getLastUsedRegularProfile();
                     BlankUiTestActivity activity = sActivityTestRule.getActivity();
                     mWindowAndroid =
                             new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true);
@@ -102,7 +103,7 @@ public class MerchantTrustBottomSheetCoordinatorTest {
                                     mMockDecorView,
                                     mMockMetrics,
                                     IntentRequestTracker.createFromActivity(activity),
-                                    ObservableSuppliers.createNonNull(mMockProfile));
+                                    ObservableSuppliers.createNonNull(mProfile));
                 });
         mDetailsTabCoordinator.setMediatorForTesting(mMockMediator);
         requestOpenSheetAndVerify();
