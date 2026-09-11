@@ -152,6 +152,14 @@ bool ShouldApplyFakeboxBackgroundAndShadow();
 // Returns the enabled variation of feature kNewTabPageUICleanup.
 NTPUICleanupVariation GetNewTabPageUICleanupVariation();
 
+// Returns the enabled padding variation of feature kNewTabPageUICleanup.
+// On iPad, returns NTPUICleanupVariation::kDisabled.
+NTPUICleanupVariation GetNewTabPageUICleanupPaddingVariation();
+
+// Whether padding and spacing changes for New Tab Page UI cleanup are enabled.
+// Returns false on iPad.
+bool IsNewTabPageUICleanupPaddingEnabled();
+
 // Returns the active arm for the AimButtonRefactor feature.
 AimButtonRefactorArm GetAimButtonRefactorArm();
 

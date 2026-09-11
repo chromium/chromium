@@ -57,9 +57,6 @@ const CGFloat kSearchFieldTopMargin = 22;
 // Top margin for the search field for single button MIA variations.
 const CGFloat kMIASearchFieldTopMargin = 29;
 
-// Bottom margin for the search field.
-const CGFloat kNTPShrunkLogoSearchFieldBottomPadding = 20;
-
 // Height for the logo and doodle frame.
 const CGFloat kGoogleSearchDoodleHeight = 120;
 
@@ -199,6 +196,7 @@ const CGFloat kReducedModuleSpacingControl = 14.0;
 const CGFloat kQuickActionsTopPadding = 12.0;
 const CGFloat kReducedModuleSpacing = 12.0;
 const CGFloat kReducedModuleSpacingRegularXRegular = 14.0;
+const CGFloat kNTPShrunkLogoSearchFieldBottomPadding = 20.0;
 
 CGFloat DoodleHeight(SearchEngineLogoState logo_state,
                      UITraitCollection* trait_collection) {
@@ -347,7 +345,8 @@ CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
 }
 
 CGFloat HeaderBottomPadding(UITraitCollection* trait_collection) {
-  return IsSplitToolbarMode(trait_collection) || IsNewTabPageUICleanupEnabled()
+  return IsSplitToolbarMode(trait_collection) ||
+                 IsNewTabPageUICleanupPaddingEnabled()
              ? 0
              : kNTPShrunkLogoSearchFieldBottomPadding;
 }
@@ -359,7 +358,7 @@ CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
   }
   const bool is_doodle = (logo_state == SearchEngineLogoState::kDoodle);
   CGFloat padding = 0;
-  switch (GetNewTabPageUICleanupVariation()) {
+  switch (GetNewTabPageUICleanupPaddingVariation()) {
     case NTPUICleanupVariation::kTightPadding:
       padding = is_doodle ? kDoodleTopPaddingTight : kLogoTopPaddingTight;
       break;
@@ -385,7 +384,7 @@ CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
 CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state) {
   const bool is_doodle = (logo_state == SearchEngineLogoState::kDoodle);
   CGFloat padding = 0;
-  switch (GetNewTabPageUICleanupVariation()) {
+  switch (GetNewTabPageUICleanupPaddingVariation()) {
     case NTPUICleanupVariation::kTightPadding:
       padding =
           is_doodle ? kDoodleToFakeboxPaddingTight : kLogoToFakeboxPaddingTight;
@@ -410,7 +409,7 @@ CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state) {
 }
 
 CGFloat QuickActionsTopPadding() {
-  switch (GetNewTabPageUICleanupVariation()) {
+  switch (GetNewTabPageUICleanupPaddingVariation()) {
     case NTPUICleanupVariation::kTightPadding:
     case NTPUICleanupVariation::kMediumPadding:
     case NTPUICleanupVariation::kPreferredPadding:
@@ -429,7 +428,7 @@ CGFloat QuickActionsTopPadding() {
 }
 
 CGFloat MostVisitedTopPadding() {
-  switch (GetNewTabPageUICleanupVariation()) {
+  switch (GetNewTabPageUICleanupPaddingVariation()) {
     case NTPUICleanupVariation::kTightPadding:
       return kMostVisitedTopPaddingTight;
     case NTPUICleanupVariation::kMediumPadding:
@@ -446,7 +445,7 @@ CGFloat ReducedModuleSpacing(UITraitCollection* trait_collection) {
   if (IsRegularXRegularSizeClass(trait_collection)) {
     return kReducedModuleSpacingRegularXRegular;
   }
-  switch (GetNewTabPageUICleanupVariation()) {
+  switch (GetNewTabPageUICleanupPaddingVariation()) {
     case NTPUICleanupVariation::kTightPadding:
     case NTPUICleanupVariation::kMediumPadding:
     case NTPUICleanupVariation::kPreferredPadding:

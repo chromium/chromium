@@ -50,7 +50,7 @@ constexpr CGFloat kHorizontalInsetRegularXRegular = 36.0;
 // class.
 CGFloat HorizontalInsetForQuickActions(
     id<UITraitEnvironment> trait_environment) {
-  if (!IsNewTabPageUICleanupEnabled()) {
+  if (!IsNewTabPageUICleanupPaddingEnabled()) {
     return 0.0;
   }
   return IsRegularXRegularSizeClass(trait_environment)
@@ -105,14 +105,14 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
     [_buttonStackView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
     [_buttonStackView.heightAnchor
-        constraintEqualToConstant:IsNewTabPageUICleanupEnabled()
+        constraintEqualToConstant:IsNewTabPageUICleanupPaddingEnabled()
                                       ? kQuickActionsHeightUICleanup
                                       : kQuickActionsHeight],
     _stackViewLeadingConstraint,
     _stackViewTrailingConstraint,
   ]];
 
-  if (IsNewTabPageUICleanupEnabled()) {
+  if (IsNewTabPageUICleanupPaddingEnabled()) {
     [self registerForTraitChanges:@[
       UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
     ]
@@ -147,7 +147,7 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
 
 - (CGSize)preferredContentSize {
   return CGSizeMake(super.preferredContentSize.width,
-                    IsNewTabPageUICleanupEnabled()
+                    IsNewTabPageUICleanupPaddingEnabled()
                         ? kQuickActionsHeightUICleanup
                         : kQuickActionsHeight);
 }
@@ -157,7 +157,7 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
 // Updates the horizontal constraints for the button stack view based on the
 // layout environment.
 - (void)updateButtonStackConstraints {
-  CHECK(IsNewTabPageUICleanupEnabled());
+  CHECK(IsNewTabPageUICleanupPaddingEnabled());
   if (!_stackViewLeadingConstraint && !_stackViewTrailingConstraint) {
     return;
   }

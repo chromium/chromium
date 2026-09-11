@@ -48,6 +48,7 @@ extern const CGFloat kReducedModuleSpacingControl;
 extern const CGFloat kQuickActionsTopPadding;
 extern const CGFloat kReducedModuleSpacing;
 extern const CGFloat kReducedModuleSpacingRegularXRegular;
+extern const CGFloat kNTPShrunkLogoSearchFieldBottomPadding;
 
 // Returns the proper height for the doodle, based on `logo_state`. The
 // SizeClass of the `trait_collection` of the view displaying the doodle is used
