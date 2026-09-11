@@ -29,7 +29,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.TestProfile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -46,12 +46,11 @@ public class PersistedTabDataTest {
     private static final int CHANGED_VALUE = 51;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private final TestProfile mProfile = TestProfile.createRegular();
+
     @Mock ShoppingPersistedTabData mShoppingPersistedTabDataMock;
-    @Mock Profile mProfile;
-
-    @Mock private PersistedTabData.Natives mPersistedTabDataJni;
-
     @Mock Tab mTab;
+    @Mock private PersistedTabData.Natives mPersistedTabDataJni;
 
     @Before
     public void setUp() throws Exception {

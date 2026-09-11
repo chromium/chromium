@@ -56,14 +56,16 @@ public class AllTabObserverTest {
             new TabModelSelectorObserverTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Profile mProfile;
+
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private TabDelegateFactory mTabDelegateFactory;
+    private Profile mProfile;
 
     @Before
     public void setUp() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mProfile = sTestRule.getSelector().getModel(false).getProfile();
                     TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
                 });
 

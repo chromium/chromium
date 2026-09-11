@@ -53,6 +53,8 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.profiles.TestProfile;
+import org.chromium.chrome.browser.profiles.TestProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
@@ -88,9 +90,11 @@ public class TabbedModeTabPersistencePolicyTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock ProfileProvider mProfileProvider;
-    @Mock Profile mProfile;
-    @Mock Profile mIncognitoProfile;
+    private final TestProfile mProfile = TestProfile.createRegular();
+    private final TestProfile mIncognitoProfile = TestProfile.createIncognito(mProfile);
+    private final TestProfileProvider mProfileProvider =
+            new TestProfileProvider(mProfile, mIncognitoProfile);
+
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock ModalDialogManager mModalDialogManager;
     @Mock MismatchedIndicesHandler mMismatchedIndicesHandler;
@@ -140,8 +144,6 @@ public class TabbedModeTabPersistencePolicyTest {
 
         mCipherFactory = new CipherFactory();
 
-        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
-        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         when(mArchivedTabModelSelector.isTabStateInitialized()).thenReturn(true);

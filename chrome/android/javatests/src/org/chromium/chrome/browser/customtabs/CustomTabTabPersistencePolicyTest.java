@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -55,6 +54,8 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.profiles.TestProfile;
+import org.chromium.chrome.browser.profiles.TestProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -83,9 +84,10 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class CustomTabTabPersistencePolicyTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ProfileProvider mProfileProvider;
-    @Mock private Profile mProfile;
-    @Mock private Profile mIncognitoProfile;
+    private final TestProfile mProfile = TestProfile.createRegular();
+    private final TestProfile mIncognitoProfile = TestProfile.createIncognito(mProfile);
+    private final TestProfileProvider mProfileProvider =
+            new TestProfileProvider(mProfile, mIncognitoProfile);
 
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
@@ -94,8 +96,6 @@ public class CustomTabTabPersistencePolicyTest {
 
     @Before
     public void setUp() throws Exception {
-
-        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 
         // CustomTabsConnection needs a true context, not the mock context set below.
         ThreadUtils.runOnUiThreadBlocking(() -> CustomTabsConnection.getInstance());
@@ -437,7 +437,6 @@ public class CustomTabTabPersistencePolicyTest {
 
         OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = mock();
         when(profileProviderSupplier.get()).thenReturn(mProfileProvider);
-        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 
         CustomTabsTabModelOrchestrator orchestrator = new CustomTabsTabModelOrchestrator();
         orchestrator.createTabModels(
