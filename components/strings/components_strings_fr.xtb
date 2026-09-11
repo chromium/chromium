@@ -3123,7 +3123,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5716325061445053985">Appuyez pour ouvrir l'onglet sur votre téléphone</translation>
 <translation id="5717509257172454543">Patinage sur glace</translation>
 <translation id="5718326209176373202">Ajouter des annotations de texte</translation>
-<translation id="5718601519531438273">Inclut des informations comme les passeports et les permis de conduire</translation>
+<translation id="5718601519531438273">Inclut des informations sur les passeports et les permis de conduire, par exemple</translation>
 <translation id="5720705177508910913">Utilisateur actuel</translation>
 <translation id="5720895412771013401">Ordinateurs de bureau</translation>
 <translation id="5721147290164931316">Scannez pour vous connecter avec votre téléphone</translation>
@@ -3471,7 +3471,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6246382863801034910">Véhicule</translation>
 <translation id="6246868321321344665">Votre organisation peut voir des données de navigation comme les mots de passe et l'historique dans les profils professionnels et personnels</translation>
 <translation id="6248479108671123143"><ph name="MEMBER_FIRST_NAME" /> a modifié cet onglet, <ph name="TAB_TITLE" /></translation>
-<translation id="6248988683584659830">Paramètres de recherche</translation>
+<translation id="6248988683584659830">Rechercher dans les paramètres</translation>
 <translation id="6250932670816326647">Produits pour le bain et le corps</translation>
 <translation id="6251906504834538140">{0,plural, =1{Déplacement bloqué pour le fichier}one{Déplacement bloqué pour <ph name="FILE_COUNT" /> fichier}other{Déplacement bloqué pour <ph name="FILE_COUNT" /> fichiers}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>
@@ -4930,7 +4930,7 @@ Informations supplémentaires :
 <translation id="8449036207308062757">Gérer l'espace de stockage</translation>
 <translation id="8449155699563577224">17 x 24 pouces</translation>
 <translation id="8449836157089738489">Tout ouvrir dans un nouveau groupe d'onglets</translation>
-<translation id="8451518040456311377">Enregistrer et saisir les pièces d'identité</translation>
+<translation id="8451518040456311377">Enregistrer et préremplir les pièces d'identité</translation>
 <translation id="84561192812921051">Votre administrateur peut modifier à distance votre profil et votre navigateur, analyser les rapports d'informations sur le navigateur et effectuer d'autres tâches nécessaires. Il est aussi possible que l'activité sur cet appareil soit gérée en dehors de Chrome.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">La bottom sheet est fermée.</translation>
 <translation id="8456775115498700722">Vous pouvez désormais utiliser la saisie automatique pour vos cartes <ph name="CARD_ISSUER_NAME" />, car votre compte <ph name="CARD_ISSUER_NAME" /> est associé à Google Pay.</translation>

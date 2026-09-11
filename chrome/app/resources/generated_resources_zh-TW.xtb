@@ -1525,7 +1525,7 @@
 <translation id="2182419606502127232">包含我的伺服器記錄。</translation>
 <translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="2184515124301515068">讓 Chrome 自行判斷何時允許網站播放音訊 (建議使用)</translation>
-<translation id="2184754597051264978">Gemini 將無法再登入「<ph name="URL" />」</translation>
+<translation id="2184754597051264978">Gemini 將無法再替你登入「<ph name="URL" />」</translation>
 <translation id="2186206192313702726">Google 智慧鏡頭</translation>
 <translation id="2186539124645132614">與 Gemini 展開新對話</translation>
 <translation id="2186711480981247270">透過其他裝置分享的網頁</translation>
@@ -5146,7 +5146,7 @@
 <translation id="4940364377601827259">有 <ph name="PRINTER_COUNT" /> 台可供儲存的印表機。</translation>
 <translation id="4940448324259979830">這個帳戶是由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="4940845626435830013">預留磁碟大小</translation>
-<translation id="4941391011436448776">Gemini 可登入的網站</translation>
+<translation id="4941391011436448776">Gemini 可替你登入的網站</translation>
 <translation id="4941627891654116707">字型大小</translation>
 <translation id="4941963255146903244">查看手機上的相片、媒體和應用程式</translation>
 <translation id="494286511941020793">Proxy 設定說明</translation>

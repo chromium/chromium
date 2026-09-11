@@ -1550,7 +1550,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="719791532916917144">キーボード ショートカット</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> 個のタブを新しいバックグラウンドのタブとして復元します。</translation>
 <translation id="7217781228893594884">シークレット タブは Chrome を終了するときにロックされます</translation>
-<translation id="7221869452894271364">このページを再読み込みします</translation>
+<translation id="7221869452894271364">ページを再読み込み</translation>
 <translation id="722681077040152344"><ph name="COUNT" /> 件のサイトの登録を解除しました</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 件のダウンロードが保留中です}other{# 件のダウンロードが保留中です}}</translation>
 <translation id="7237724030342645845">Google パスワード マネージャーが動作を停止しました</translation>

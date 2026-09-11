@@ -363,7 +363,7 @@
 <translation id="2139867232736819575">搜索您复制的文字</translation>
 <translation id="2147127444698817042">仅适用于 iPhone</translation>
 <translation id="2148326276832455306">对话内容会经过审核，并用于改进 Google AI。您可以<ph name="BEGIN_LINK" />管理活动记录<ph name="END_LINK" />，包括您的位置信息。<ph name="BEGIN_LINK" />详细了解相关选项<ph name="END_LINK" />。</translation>
-<translation id="2148799636999124959">使用您已保存的密码快速登录网站和应用。</translation>
+<translation id="2148799636999124959">使用已保存的密码快速登录网站和应用。</translation>
 <translation id="2149968176347646218">连接不安全</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2155663190508912427">1 个月后删除</translation>
@@ -512,8 +512,7 @@
 <translation id="264215785133931186">刚刚检查过</translation>
 <translation id="2647434099613338025">添加语言</translation>
 <translation id="2648812801228676606">您已使用 <ph name="NAME_OR_EMAIL" /> 的身份登录</translation>
-<translation id="2649592894792404568">即将删除 Google 密码管理
-工具数据</translation>
+<translation id="2649592894792404568">即将删除 Google 密码管理工具数据</translation>
 <translation id="2652129567809778422">选择密码</translation>
 <translation id="2658056020748144467">无法打开文件</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />，<ph name="STATE" />，仅在该设备上，<ph name="URL" /></translation>
@@ -682,7 +681,7 @@
 <translation id="3240426699337459095">已复制链接</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">无法保存您的更改。</translation>
-<translation id="3254806613790954367">您在所有设备上最后使用的标签页。</translation>
+<translation id="3254806613790954367">您在各个已同步设备间最后使用的标签页</translation>
 <translation id="325717987950204592">点按“隐私与安全”</translation>
 <translation id="3259451381796379533">此账号无法使用 Gemini。请换个 Google 账号登录。</translation>
 <translation id="3265736395246760288">在任何已同步的设备上更快地登录。</translation>
@@ -1075,7 +1074,7 @@
 <translation id="4634124774493850572">使用密码</translation>
 <translation id="4634633632339959267">对话内容会接受审核，并用于改进 Google AI。<ph name="BEGIN_LINK" />了解您有哪些选择。<ph name="END_LINK" /><ph name="BEGIN_LINK" />与您所在位置有关的信息<ph name="END_LINK" />也会存储在活动记录中。</translation>
 <translation id="4636930964841734540">信息</translation>
-<translation id="4641425577292284174">了解您是否已使用最安全的设置，或是否需要检查任何内容</translation>
+<translation id="4641425577292284174">了解是否已使用最安全设置，或是否需要检查任何内容</translation>
 <translation id="4642472735733036929">已停止跟踪价格</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4647758699119474035">目前登录的用户名是<ph name="USER_NAME" />，账号是 <ph name="USER_EMAIL" />。Google 账号错误，打开账号菜单。</translation>

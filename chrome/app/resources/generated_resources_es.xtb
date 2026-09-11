@@ -2064,7 +2064,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2605668923777146443">Accede a <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" /> para ver las opciones de Better Together.</translation>
 <translation id="2606246518223360146">Vincular datos</translation>
 <translation id="2606890864830643943">Exportando datos de diagnóstico</translation>
-<translation id="2609533306502181883">Investiga sobre un tema</translation>
+<translation id="2609533306502181883">Investigar sobre un tema</translation>
 <translation id="2609896558069604090">Crear accesos directos...</translation>
 <translation id="2609980095400624569">No se ha podido establecer conexión</translation>
 <translation id="2610157865375787051">Suspensión</translation>
@@ -6560,7 +6560,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6077131872140550515">Quitar de las redes preferidas</translation>
 <translation id="6077476112742402730">Hablar para escribir</translation>
 <translation id="6078199831684941650">Se ha actualizado a la versión <ph name="VERSION" /></translation>
-<translation id="6078323886959318429">Acceso directo</translation>
+<translation id="6078323886959318429">Añadir acceso directo</translation>
 <translation id="6078752646384677957">Comprueba el volumen del micrófono y del audio.</translation>
 <translation id="608029822688206592">No se ha encontrado ninguna red. Inserta tu tarjeta SIM y vuelve a intentarlo.</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: parte de un grupo sin nombre</translation>
