@@ -32,7 +32,11 @@ class CORE_EXPORT ContextFeatureSettings final
   static ContextFeatureSettings* From(ExecutionContext*, CreationMode);
 
   // Protected memory values require initialization before they can be used.
-  // This method is used to perform that initialization.
+  // This method is used to perform that initialization. It initializes
+  // `mojo_js_allowed_` and also forces initialization of the protected
+  // RuntimeEnabledFeatures flags, so that no protected memory write window
+  // remains reachable once untrusted content is running. Must be called during
+  // process startup, before any content is loaded.
   static void InitializeMojoJSAllowedProtectedMemory();
 
   // Can be used to update the protected memory bool to indicate that MojoJS is

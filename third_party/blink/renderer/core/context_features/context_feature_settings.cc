@@ -37,8 +37,15 @@ ContextFeatureSettings* ContextFeatureSettings::From(
 
 // static
 void ContextFeatureSettings::InitializeMojoJSAllowedProtectedMemory() {
-  static base::ProtectedMemoryInitializer mojo_js_allowed_initializer(
-      mojo_js_allowed_, false);
+  [[maybe_unused]] static const bool initialized = [] {
+    base::ProtectedMemoryInitializer mojo_js_allowed_initializer(
+        mojo_js_allowed_, false);
+    return true;
+  }();
+
+  // Get the RuntimeEnabledFeatures MojoJSEnabled value. Calling forces an
+  // initialization on all protected memory feature flags.
+  RuntimeEnabledFeatures::MojoJSEnabled();
 }
 
 // static

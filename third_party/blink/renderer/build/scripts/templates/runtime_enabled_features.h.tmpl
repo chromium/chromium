@@ -59,8 +59,7 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
     {% endfor %}
   };
 
-  // Simple getter methods for protected memory values that ensure they are
-  // properly initialized before first access.
+  // Simple getter methods for protected memory values.
   {% for feature in features %}
   {% if feature.is_protected_feature %}
   static bool get_{{feature.data_member_name}}();
@@ -121,6 +120,13 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
 
   static void SetFeatureEnabledFromString(std::string_view name, bool enabled);
   static void UpdateStatusFromBaseFeatures();
+
+  // Initializes the backing storage for every is_protected_feature flag. All
+  // of the flags share a single read-only section, so they are initialized
+  // together and the section only has to be made writable once. This is
+  // invoked by the first read of any protected flag. Calling it more than once
+  // is a no-op.
+  static void InitializeProtectedMemoryFeatureFlags();
 
   {% for feature in features %}
   {% if feature.is_protected_feature %}
