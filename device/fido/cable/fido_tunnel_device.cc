@@ -21,7 +21,6 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/network_context_factory.h"
-#include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_types.h"
 #include "net/base/isolation_info.h"
@@ -57,11 +56,8 @@ enum class CableV2TunnelEvent {
 };
 
 uint32_t GetWebSocketOptions() {
-  uint32_t options = network::mojom::kWebSocketOptionBlockAllCookies;
-  if (base::FeatureList::IsEnabled(kWebAuthnSocketMaxPriorityMode)) {
-    options |= network::mojom::kWebSocketOptionMaximumPriority;
-  }
-  return options;
+  return network::mojom::kWebSocketOptionBlockAllCookies |
+         network::mojom::kWebSocketOptionMaximumPriority;
 }
 
 void RecordEvent(CableV2TunnelEvent event, tunnelserver::KnownDomainID domain) {

@@ -158,10 +158,6 @@ BASE_FEATURE(kWebAuthnGpmPinResetUsesAccountIndex,
 BASE_FEATURE(kWebAuthnWinPrfOnCreate, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-// Enabled by default in M150. Remove in or after M153.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_FEATURE(kWebAuthnSocketMaxPriorityMode, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disabled by default.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_FEATURE(kWebAuthnGpmPasskeyEmbeddedRecoveryUrl,

@@ -132,10 +132,6 @@ COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnWinPrfOnCreate);
 #endif  // BUILDFLAG(IS_WIN)
 
-// Enable max priority mode in WebAuthn websocket connections to cloud services.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnSocketMaxPriorityMode);
-
 // Enables appending Google account session index (authuser=[index]) to the
 // GPM PIN reset URL.
 COMPONENT_EXPORT(FIDO_PUBLIC)

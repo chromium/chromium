@@ -11,7 +11,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/to_array.h"
 #include "base/containers/to_vector.h"
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -31,7 +30,6 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/network_context_factory.h"
-#include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
@@ -234,10 +232,8 @@ class TunnelTransport : public Transport {
   void StartWebSocket() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    uint32_t options = network::mojom::kWebSocketOptionBlockAllCookies;
-    if (base::FeatureList::IsEnabled(kWebAuthnSocketMaxPriorityMode)) {
-      options |= network::mojom::kWebSocketOptionMaximumPriority;
-    }
+    const uint32_t options = network::mojom::kWebSocketOptionBlockAllCookies |
+                             network::mojom::kWebSocketOptionMaximumPriority;
     network_context_factory_.Run()->CreateWebSocket(
         target_, {device::kCableWebSocketProtocol},
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
