@@ -665,9 +665,9 @@ void SetTemporaryDirectory(const FilePath& temp_dir,
 #if BUILDFLAG(IS_WIN)
   environment->emplace(L"TMP", temp_dir.value());
 #elif BUILDFLAG(IS_APPLE)
-  environment->emplace(env_vars::kMacChromiumTmpDir, temp_dir.value());
+  environment->emplace("MAC_CHROMIUM_TMPDIR", temp_dir.value());
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  environment->emplace(env_vars::kTmpDir, temp_dir.value());
+  environment->emplace("TMPDIR", temp_dir.value());
 #endif
 }
 

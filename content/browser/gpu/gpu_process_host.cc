@@ -140,13 +140,6 @@
 
 namespace content {
 
-#if BUILDFLAG(IS_MAC)
-// If enabled, the macOS sandbox for the GPU process will use process-type-
-// specific subdirectories of the darwin user directories instead of the
-// non-process-isolated directories themselves.
-BASE_FEATURE(kMacGpuSandboxDarwinUserDirs, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 base::subtle::Atomic32 GpuProcessHost::gpu_crash_count_ = 0;
 bool GpuProcessHost::crashed_before_ = false;
 int GpuProcessHost::recent_crash_count_ = 0;
@@ -495,12 +488,6 @@ class GpuSandboxedProcessLauncherDelegate
     }
     return sandbox::mojom::Sandbox::kGpu;
   }
-
-#if BUILDFLAG(IS_MAC)
-  bool NeedsIsolatedDarwinUserDirs() override {
-    return base::FeatureList::IsEnabled(kMacGpuSandboxDarwinUserDirs);
-  }
-#endif
 
  private:
 #if BUILDFLAG(IS_WIN)

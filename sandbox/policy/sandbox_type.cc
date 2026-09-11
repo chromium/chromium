@@ -33,8 +33,6 @@ constexpr char kAudioSandbox[] = "audio";
 constexpr char kServiceSandbox[] = "service";
 constexpr char kServiceSandboxWithJit[] = "service_with_jit";
 constexpr char kSpeechRecognitionSandbox[] = "speech_recognition";
-constexpr char kRendererSandbox[] = "renderer";
-constexpr char kGpuSandbox[] = "gpu";
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -231,17 +229,6 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
   NOTREACHED()
       << "Command line does not provide a valid sandbox configuration: "
       << command_line.GetCommandLineString();
-}
-
-std::string StringFromSandboxType(Sandbox sandbox_type) {
-  switch (sandbox_type) {
-    case Sandbox::kGpu:
-      return kGpuSandbox;
-    case Sandbox::kRenderer:
-      return kRendererSandbox;
-    default:
-      return StringFromUtilitySandboxType(sandbox_type);
-  }
 }
 
 std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {

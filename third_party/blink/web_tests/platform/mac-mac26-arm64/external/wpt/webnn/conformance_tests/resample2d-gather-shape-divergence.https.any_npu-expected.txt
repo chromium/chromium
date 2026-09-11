@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] resample2d output shape (from scales) matches backend allocation at the 2^24 boundary
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model allocation error."
+Harness: the test ran to completion.
+

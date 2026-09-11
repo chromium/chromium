@@ -162,18 +162,6 @@ BASE_EXPORT bool PreventExecuteMappingUnchecked(
 BASE_EXPORT void SetExtraNoExecuteAllowedPath(int path_key);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC)
-enum class DarwinUserDirectory {
-  kUser,
-  kUserCache,
-  kUserTemp,
-};
-
-// Returns the canonicalized path of a Darwin user directory, or empty FilePath
-// on failure.
-BASE_EXPORT FilePath GetDarwinUserDirectory(DarwinUserDirectory directory);
-#endif  // BUILDFLAG(IS_MAC)
-
 // Moves the given path, whether it's a file or a directory.
 // If a simple rename is not possible, such as in the case where the paths are
 // on different volumes, this will attempt to copy and delete. Returns
