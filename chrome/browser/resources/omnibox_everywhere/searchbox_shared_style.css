@@ -192,16 +192,17 @@ help-bubble {
   z-index: var(--cr-composebox-context-menu-z-index, 1001);
 }
 
+#context::part(context-menu-entrypoint-icon),
+#contextEntrypoint::part(context-menu-entrypoint-icon),
 #context::part(entrypoint-button),
 #contextEntrypoint::part(entrypoint-button) {
-  --cr-icon-button-size: 32px;
-}
-
-#context::part(context-menu-entrypoint-icon),
-#contextEntrypoint::part(context-menu-entrypoint-icon) {
+  --cr-composebox-entrypoint-background-color: var(
+      --color-omnibox-composebox-context-entrypoint-background,
+      var(--color-sys-state-hover-on-subtle, rgba(0, 0, 0, 0.06)));
+  --cr-composebox-entrypoint-border-radius: 100px;
+  --cr-composebox-entrypoint-height: 32px;
+  --cr-composebox-entrypoint-width: 40px;
   --cr-icon-button-icon-size: 20px;
-  --cr-icon-button-margin-start: 0;
-  --cr-icon-button-size: 32px;
 }
 
 :host([is-context-menu-open]) #context::part(entrypoint-button),
