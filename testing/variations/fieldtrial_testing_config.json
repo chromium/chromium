@@ -13496,6 +13496,23 @@
             ]
         }
     ],
+    "MojoDirectSharedMemoryAllocation": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MojoDirectSharedMemoryAllocation"
+                    ]
+                }
+            ]
+        }
+    ],
     "MultipleSpareRPHs": [
         {
             "platforms": [

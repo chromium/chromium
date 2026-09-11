@@ -20,6 +20,7 @@ content_app_deps = [
   "//content/public/common:common_sources",
   "//crypto",
   "//mojo/core/embedder",
+  "//mojo/core/embedder:features",
   "//mojo/public/cpp/platform",
   "//services/tracing/public/cpp",
   "//ui/base",
