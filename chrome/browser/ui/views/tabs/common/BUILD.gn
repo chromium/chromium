@@ -169,6 +169,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "horizontal_tab_strip_view_layout_browsertest.cc",
     "split_tab_view_browsertest.cc",
     "tab_collection_node_browsertest.cc",
     "tab_group_view_browsertest.cc",

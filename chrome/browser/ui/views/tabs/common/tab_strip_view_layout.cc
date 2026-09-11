@@ -116,10 +116,31 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
                                      pinned_tabs_scroll_view->GetVisible(),
                                      pinned_bounds);
   const bool has_unpinned = unpinned_preferred_width > 0;
+  const bool is_pinned_overflowing = pinned_width < pinned_preferred_width;
+
+  const int min_unpinned_width =
+      unpinned_container ? unpinned_container->GetMinimumSize().width() : 0;
+  bool is_unpinned_overflowing = false;
+  if (has_unpinned && available_width.is_bounded()) {
+    const int available_unpinned_with_overlap = std::max(
+        0,
+        available_width.value() -
+            (pinned_width > 0 ? std::max(0, pinned_width - tab_overlap) : 0));
+    is_unpinned_overflowing =
+        available_unpinned_with_overlap < min_unpinned_width;
+  }
+
+  // To prevent the overflow indicators or scrolling tabs from drawing over the
+  // adjacent tab in the other container, do not overlap the containers whenever
+  // either container is overflowing.
+  const bool is_any_container_overflowing =
+      is_pinned_overflowing || is_unpinned_overflowing;
+  const int container_overlap =
+      (is_any_container_overflowing || !has_unpinned) ? 0 : tab_overlap;
 
   if (pinned_width > 0) {
-    // Unpinned container overlaps with the last pinned tab by tab_overlap.
-    x += has_unpinned ? std::max(0, pinned_width - tab_overlap) : pinned_width;
+    x += has_unpinned ? std::max(0, pinned_width - container_overlap)
+                      : pinned_width;
   }
 
   // The tabs separator isn't visible for the horizontal orientation.
@@ -154,6 +175,10 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
       if (unpinned_tabs_scroll_view) {
         unpinned_tabs_scroll_view->SetDrawOverflowIndicator(
             will_overflow_without_scroll_buttons);
+      }
+      if (pinned_tabs_scroll_view) {
+        pinned_tabs_scroll_view->SetDrawOverflowIndicator(
+            is_pinned_overflowing);
       }
     }
     unpinned_width = std::min(unpinned_width, available_unpinned_width);
