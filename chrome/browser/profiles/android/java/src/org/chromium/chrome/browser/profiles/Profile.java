@@ -29,8 +29,9 @@ public class Profile implements BrowserContextHandle {
 
     private boolean mDestroyNotified;
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    private Profile(long nativeProfile, @Nullable OtrProfileId otrProfileId) {
+    Profile(long nativeProfile, @Nullable OtrProfileId otrProfileId) {
         mNativeProfile = nativeProfile;
         mOtrProfileId = otrProfileId;
     }
