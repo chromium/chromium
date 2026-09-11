@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
+#include "fuchsia_web/webengine/browser/context_impl.h"
+#include "fuchsia_web/webengine/browser/fake_navigation_policy_provider.h"
+#include "fuchsia_web/webengine/browser/frame_impl.h"
 #include "fuchsia_web/webengine/browser/frame_impl_browser_test_base.h"
+#include "fuchsia_web/webengine/browser/navigation_policy_handler.h"
 
 namespace {
 
@@ -35,19 +39,26 @@ class TestPopupListener : public fuchsia::web::PopupFrameCreationListener {
   TestPopupListener(const TestPopupListener&) = delete;
   TestPopupListener& operator=(const TestPopupListener&) = delete;
 
-  void GetAndAckNextPopup(fuchsia::web::FramePtr* frame,
-                          fuchsia::web::PopupFrameCreationInfo* creation_info) {
-    if (!frame_) {
-      base::RunLoop run_loop;
-      received_popup_callback_ = run_loop.QuitClosure();
-      run_loop.Run();
-    }
+  void GetNextPopup(fuchsia::web::FramePtr* frame,
+                    fuchsia::web::PopupFrameCreationInfo* creation_info) {
+    ASSERT_TRUE(base::test::RunUntil([this] { return frame_.is_valid(); }));
 
     *frame = frame_.Bind();
     *creation_info = std::move(creation_info_);
+  }
 
-    popup_ack_callback_();
-    popup_ack_callback_ = {};
+  void AckPopup() {
+    EXPECT_TRUE(popup_ack_callback_);
+    if (popup_ack_callback_) {
+      popup_ack_callback_();
+      popup_ack_callback_ = {};
+    }
+  }
+
+  void GetAndAckNextPopup(fuchsia::web::FramePtr* frame,
+                          fuchsia::web::PopupFrameCreationInfo* creation_info) {
+    GetNextPopup(frame, creation_info);
+    AckPopup();
   }
 
  private:
@@ -56,16 +67,11 @@ class TestPopupListener : public fuchsia::web::PopupFrameCreationListener {
                            OnPopupFrameCreatedCallback callback) override {
     creation_info_ = std::move(creation_info);
     frame_ = std::move(frame);
-
     popup_ack_callback_ = std::move(callback);
-
-    if (received_popup_callback_)
-      std::move(received_popup_callback_).Run();
   }
 
   fidl::InterfaceHandle<fuchsia::web::Frame> frame_;
   fuchsia::web::PopupFrameCreationInfo creation_info_;
-  base::OnceClosure received_popup_callback_;
   OnPopupFrameCreatedCallback popup_ack_callback_;
 };
 
@@ -200,6 +206,117 @@ IN_PROC_BROWSER_TEST_F(PopupTest,
   // Verify that the child autoplays media.
   popup_nav_listener_.RunUntilUrlAndTitleEquals(popup_child_url,
                                                 kAutoPlaySuccessTitle);
+}
+
+class PopupDeferNavigationTest : public PopupTest {
+ public:
+  PopupDeferNavigationTest() : policy_provider_binding_(&policy_provider_) {}
+
+ protected:
+  // Creates a parent Frame, loads a page that opens a popup to
+  // `kPopupChildFile`, and receives the popup creation notification without
+  // acknowledging it.
+  FrameForTest CreateParentFrameAndReceivePopup() {
+    GURL popup_parent_url = GetParentPageTestServerUrl(kPopupChildFile);
+    GURL popup_child_url(embedded_test_server()->GetURL(kPopupRedirectPath));
+    auto frame = FrameForTest::Create(context(), {});
+
+    frame->SetPopupFrameCreationListener(popup_listener_binding_.NewBinding());
+
+    EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
+                                         popup_parent_url.spec()));
+
+    fuchsia::web::PopupFrameCreationInfo popup_info;
+    popup_listener_.GetNextPopup(&popup_frame_, &popup_info);
+    EXPECT_EQ(popup_info.initial_url(), popup_child_url);
+
+    popup_frame_->SetNavigationEventListener2(
+        popup_nav_listener_binding_.NewBinding(), /*flags=*/{});
+
+    return frame;
+  }
+
+  // Attaches `policy_provider_` to `popup_frame_` and waits for it to be
+  // connected.
+  void AttachNavigationPolicyProviderToPopup(bool should_abort) {
+    policy_provider_.set_should_abort_navigation(should_abort);
+    fuchsia::web::NavigationPolicyProviderParams params;
+    *params.mutable_main_frame_phases() = fuchsia::web::NavigationPhase::START;
+    popup_frame_->SetNavigationPolicyProvider(
+        std::move(params), policy_provider_binding_.NewBinding());
+
+    FrameImpl* popup_frame_impl =
+        context_impl()->GetFrameImplForTest(&popup_frame_);
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return popup_frame_impl->navigation_policy_handler()
+          ->is_provider_connected();
+    }));
+  }
+
+  FakeNavigationPolicyProvider policy_provider_;
+  fidl::Binding<fuchsia::web::NavigationPolicyProvider>
+      policy_provider_binding_;
+};
+
+IN_PROC_BROWSER_TEST_F(PopupDeferNavigationTest,
+                       DeferredUntilAck_PolicyProceeds) {
+  auto frame = CreateParentFrameAndReceivePopup();
+  AttachNavigationPolicyProviderToPopup(/*should_abort=*/false);
+  EXPECT_EQ(policy_provider_.num_evaluated_navigations(), 0);
+
+  popup_listener_.AckPopup();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return policy_provider_.num_evaluated_navigations() >= 1; }));
+  EXPECT_EQ(policy_provider_.requested_navigation()->url(),
+            embedded_test_server()->GetURL(kPopupRedirectPath).spec());
+
+  GURL title1_url(embedded_test_server()->GetURL(kPage1Path));
+  popup_nav_listener_.RunUntilUrlAndTitleEquals(title1_url, kPage1Title);
+  EXPECT_EQ(policy_provider_.num_evaluated_navigations(), 2);
+  EXPECT_EQ(policy_provider_.requested_navigation()->url(), title1_url.spec());
+}
+
+IN_PROC_BROWSER_TEST_F(PopupDeferNavigationTest,
+                       DeferredUntilAck_PolicyAborts) {
+  auto frame = CreateParentFrameAndReceivePopup();
+  AttachNavigationPolicyProviderToPopup(/*should_abort=*/true);
+  EXPECT_EQ(policy_provider_.num_evaluated_navigations(), 0);
+
+  popup_listener_.AckPopup();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return policy_provider_.num_evaluated_navigations() >= 1; }));
+
+  GURL popup_child_url(embedded_test_server()->GetURL(kPopupRedirectPath));
+  EXPECT_EQ(policy_provider_.requested_navigation()->url(),
+            popup_child_url.spec());
+
+  fuchsia::web::NavigationState state;
+  state.set_url(popup_child_url.spec());
+  popup_nav_listener_.RunUntilNavigationStateMatches(state);
+  EXPECT_FALSE(popup_nav_listener_.current_state()->is_main_document_loaded());
+}
+
+IN_PROC_BROWSER_TEST_F(PopupDeferNavigationTest,
+                       DestroyedBeforeAckDoesNotLoad) {
+  auto frame = CreateParentFrameAndReceivePopup();
+  base::WeakPtr<FrameImpl> popup_frame_impl =
+      context_impl()->GetFrameImplForTest(&popup_frame_)->GetWeakPtr();
+
+  popup_frame_ = nullptr;
+  popup_listener_.AckPopup();
+
+  ASSERT_TRUE(base::test::RunUntil([&] { return !popup_frame_impl; }));
+}
+
+IN_PROC_BROWSER_TEST_F(PopupDeferNavigationTest,
+                       LoadsWhenOpenerClosedBeforeAck) {
+  auto frame = CreateParentFrameAndReceivePopup();
+
+  frame = {};
+  popup_listener_.AckPopup();
+
+  popup_nav_listener_.RunUntilUrlAndTitleEquals(
+      embedded_test_server()->GetURL(kPage1Path), kPage1Title);
 }
 
 }  // namespace

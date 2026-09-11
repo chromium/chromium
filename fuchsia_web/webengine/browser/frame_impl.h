@@ -25,6 +25,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/chromecast_buildflags.h"
 #include "components/media_control/browser/media_blocker.h"
@@ -146,6 +147,8 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
     device_scale_factor_for_test_ = device_scale_factor;
   }
 
+  base::WeakPtr<FrameImpl> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, DelayedNavigationEventAck);
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, NavigationObserverDisconnected);
@@ -156,13 +159,13 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
 
   // Used for storing awaiting popup frames in |pending_popups_|
   struct PendingPopup {
-    PendingPopup(FrameImpl* frame_ptr,
+    PendingPopup(base::WeakPtr<FrameImpl> frame_ptr,
                  fidl::InterfaceHandle<fuchsia::web::Frame> handle,
                  fuchsia::web::PopupFrameCreationInfo creation_info);
     PendingPopup(PendingPopup&& other);
     ~PendingPopup();
 
-    FrameImpl* frame_ptr;
+    base::WeakPtr<FrameImpl> frame_ptr;
     fidl::InterfaceHandle<fuchsia::web::Frame> handle;
     fuchsia::web::PopupFrameCreationInfo creation_info;
   };
@@ -177,6 +180,9 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
 
   // Sends the next entry in |pending_popups_| to |popup_listener_|.
   void MaybeSendPopup();
+
+  // Resumes loading for a newly created popup window.
+  void ResumePopupLoading();
 
   void OnPopupListenerDisconnected(zx_status_t status);
 
@@ -303,6 +309,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
                               const std::u16string& message,
                               int32_t line_no,
                               const std::u16string& source_id) override;
+  bool ShouldResumeRequestsForCreatedWindow() override;
   bool IsWebContentsCreationOverridden(
       content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,

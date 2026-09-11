@@ -22,6 +22,7 @@
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
@@ -415,7 +416,7 @@ class AudioStreamBrokerFactory final
 }  // namespace
 
 FrameImpl::PendingPopup::PendingPopup(
-    FrameImpl* frame_ptr,
+    base::WeakPtr<FrameImpl> frame_ptr,
     fidl::InterfaceHandle<fuchsia::web::Frame> handle,
     fuchsia::web::PopupFrameCreationInfo creation_info)
     : frame_ptr(std::move(frame_ptr)),
@@ -593,6 +594,16 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
   }
 }
 
+bool FrameImpl::ShouldResumeRequestsForCreatedWindow() {
+  // Always return false here to defer loading the created window until after
+  // the embedder acknowledges the popup frame via PopupFrameCreationListener.
+  return false;
+}
+
+void FrameImpl::ResumePopupLoading() {
+  web_contents_->ResumeLoadingCreatedWebContents();
+}
+
 bool FrameImpl::IsWebContentsCreationOverridden(
     content::RenderFrameHost* opener,
     content::SiteInstance* source_site_instance,
@@ -660,13 +671,17 @@ content::WebContents* FrameImpl::AddNewContents(
       auto* popup_frame = context_->CreateFrameForWebContents(
           std::move(new_contents), std::move(params),
           frame_handle.NewRequest());
+      if (!popup_frame) {
+        return nullptr;
+      }
 
       fuchsia::web::ContentAreaSettings settings;
       status = content_area_settings_.Clone(&settings);
       ZX_DCHECK(status == ZX_OK, status);
       popup_frame->SetContentAreaSettings(std::move(settings));
 
-      pending_popups_.emplace_back(popup_frame, std::move(frame_handle),
+      pending_popups_.emplace_back(popup_frame->GetWeakPtr(),
+                                   std::move(frame_handle),
                                    std::move(popup_frame_creation_info));
       MaybeSendPopup();
       return nullptr;
@@ -708,11 +723,17 @@ void FrameImpl::MaybeSendPopup() {
   auto popup = std::move(pending_popups_.front());
   pending_popups_.pop_front();
 
-  popup_listener_->OnPopupFrameCreated(std::move(popup.handle),
-                                       std::move(popup.creation_info), [this] {
-                                         popup_ack_outstanding_ = false;
-                                         MaybeSendPopup();
-                                       });
+  popup_listener_->OnPopupFrameCreated(
+      std::move(popup.handle), std::move(popup.creation_info),
+      [weak_this = weak_factory_.GetWeakPtr(),
+       resume_popup = base::ScopedClosureRunner(base::BindOnce(
+           &FrameImpl::ResumePopupLoading, popup.frame_ptr))]() mutable {
+        resume_popup.RunAndReset();
+        if (weak_this) {
+          weak_this->popup_ack_outstanding_ = false;
+          weak_this->MaybeSendPopup();
+        }
+      });
   popup_ack_outstanding_ = true;
 }
 
@@ -746,6 +767,7 @@ void FrameImpl::OnPopupListenerDisconnected(zx_status_t status) {
   ZX_LOG_IF(WARNING, status != ZX_ERR_PEER_CLOSED, status)
       << "Popup listener disconnected.";
   pending_popups_.clear();
+  popup_ack_outstanding_ = false;
 }
 
 void FrameImpl::OnMediaPlayerDisconnect() {
@@ -1124,6 +1146,8 @@ void FrameImpl::SetPopupFrameCreationListener(
               "fuchsia.web/Frame.SetPopupFrameCreationListener",
               perfetto::Flow::FromPointer(this));
 
+  pending_popups_.clear();
+  popup_ack_outstanding_ = false;
   popup_listener_ = listener.Bind();
   popup_listener_.set_error_handler(
       fit::bind_member(this, &FrameImpl::OnPopupListenerDisconnected));
