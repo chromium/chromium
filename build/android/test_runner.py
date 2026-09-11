@@ -445,10 +445,11 @@ def AddDeviceOptions(parser):
 
     parser.add_argument(
         '--force-main-user',
-        action='store_true',
+        action=argparse.BooleanOptionalAction,
+        default=None,
         help='Force the applicable adb commands to run with "--user" param set '
-        'to the id of the main user on device. Only use when the main user is a '
-        'secondary user, e.g. Android Automotive OS.',
+        'to the id of the main user on device. Defaults to True on desktop '
+        'HSUM devices, False otherwise.',
     )
 
     parser.add_argument(

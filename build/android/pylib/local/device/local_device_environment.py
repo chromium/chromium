@@ -122,9 +122,7 @@ class LocalDeviceEnvironment(environment.Environment):
         self._trace_all = None
         if hasattr(args, 'trace_all'):
             self._trace_all = args.trace_all
-        self._force_main_user = False
-        if hasattr(args, 'force_main_user'):
-            self._force_main_user = args.force_main_user
+        self._force_main_user = getattr(args, 'force_main_user', None)
         self._skia_gold_consider_unsupported = False
         if hasattr(args, 'skia_gold_consider_unsupported'):
             self._skia_gold_consider_unsupported = (
@@ -190,8 +188,16 @@ class LocalDeviceEnvironment(environment.Environment):
         def prepare_device(d):
             d.WaitUntilFullyBooted()
 
-            if self._force_main_user:
-                # Ensure the current user is the main user (the first real human user).
+            force_main_user = self._force_main_user
+            if force_main_user is None:
+                # Default to forcing the main user on desktop HSUM devices.
+                force_main_user = d.is_desktop and d.GetProp(
+                    'ro.fw.mu.headless_system_user', cache=True
+                ) in ('true', '1')
+
+            if force_main_user:
+                # Ensure the current user is the main user (the first real
+                # human user).
                 main_user = d.GetMainUser()
                 if d.GetCurrentUser() != main_user:
                     logging.info(
@@ -200,9 +206,10 @@ class LocalDeviceEnvironment(environment.Environment):
                     d.SwitchUser(main_user)
                 d.target_user = main_user
             elif d.GetCurrentUser() != SYSTEM_USER_ID:
-                # TODO(b/293175593): Remove this after "force_main_user" works fine.
-                # Use system user to run tasks to avoid "/sdcard "accessing issue
-                # due to multiple-users. For details, see
+                # TODO(b/293175593): Remove this after "force_main_user"
+                # works fine.
+                # Use system user to run tasks to avoid "/sdcard "accessing
+                # issue due to multiple-users. For details, see
                 # https://source.android.com/docs/devices/admin/multi-user-testing
                 logging.info('Switching to user with id %s', SYSTEM_USER_ID)
                 d.SwitchUser(SYSTEM_USER_ID)
@@ -248,6 +255,13 @@ class LocalDeviceEnvironment(environment.Environment):
                         gboard_prefs.SetBoolean('pk_always_show_vk', True)
 
         self.parallel_devices.pMap(prepare_device)
+
+        if self._force_main_user is None:
+            self._force_main_user = any(
+                isinstance(getattr(d, 'target_user', None), int)
+                and d.target_user != SYSTEM_USER_ID
+                for d in self._devices
+            )
 
     @property
     def current_try(self):
@@ -297,7 +311,7 @@ class LocalDeviceEnvironment(environment.Environment):
 
     @property
     def force_main_user(self):
-        return self._force_main_user
+        return bool(self._force_main_user)
 
     @property
     def skia_gold_consider_unsupported(self):
