@@ -4,6 +4,7 @@
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import {BookmarksObserverReceiver, BookmarksService} from './bookmarks_api.mojom-webui.js';
 import type {BookmarkNodeChanged, BookmarkNodeCreated, BookmarkNodeMoved, BookmarkNodeRemoved, BookmarksEvent, BookmarksObserverInterface} from './bookmarks_api.mojom-webui.js';
@@ -69,7 +70,7 @@ export interface BookmarksApiProxy {
 
 export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   private receiver_: BookmarksObserverReceiver|null = null;
-  private rootNodePromise_: Promise<NodeMap>;
+  private rootNodeResolver_ = new PromiseResolver<NodeMap>();
 
   onCreated = new BookmarkEventForwarder<
       (parentId: string, index: number, node: BookmarkNode) => void>();
@@ -84,19 +85,22 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
       (id: string, reorderInfo: {childIds: string[]}) => void>();
 
   constructor() {
-    this.rootNodePromise_ =
-        BookmarksService.getRemote().getBookmarks().then(snapshot => {
-          // Bind observer.
-          const observer = new MojoObserver(this);
-          this.receiver_ = new BookmarksObserverReceiver(observer);
-          this.receiver_.$.bindHandle(snapshot.stream.handle);
+    BookmarksService.getRemote().getBookmarks().then(snapshot => {
+      const nodes = normalizeNodes(snapshot.root);
+      this.rootNodeResolver_.resolve(nodes);
 
-          return normalizeNodes(snapshot.root);
-        });
+      // Defer binding the observer to a subsequent microtask so that listeners
+      // on rootNodeResolver_ (such as Store initialization) have completed.
+      this.rootNodeResolver_.promise.then(() => {
+        const observer = new MojoObserver(this);
+        this.receiver_ = new BookmarksObserverReceiver(observer);
+        this.receiver_.$.bindHandle(snapshot.stream.handle);
+      });
+    });
   }
 
   getTree() {
-    return this.rootNodePromise_;
+    return this.rootNodeResolver_.promise;
   }
 
   update(id: string, changes: {title?: string, url?: string}) {
