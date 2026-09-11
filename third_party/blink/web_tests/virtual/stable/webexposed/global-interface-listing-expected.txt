@@ -9571,15 +9571,21 @@ interface Subscriber
     method error
     method next
 interface SubtleCrypto
+    static method supports
     attribute @@toStringTag
     method constructor
+    method decapsulateBits
+    method decapsulateKey
     method decrypt
     method deriveBits
     method deriveKey
     method digest
+    method encapsulateBits
+    method encapsulateKey
     method encrypt
     method exportKey
     method generateKey
+    method getPublicKey
     method importKey
     method sign
     method unwrapKey

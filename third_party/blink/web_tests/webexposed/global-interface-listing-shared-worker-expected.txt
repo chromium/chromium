@@ -1972,15 +1972,21 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method error
 [Worker]     method next
 [Worker] interface SubtleCrypto
+[Worker]     static method supports
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker]     method decapsulateBits
+[Worker]     method decapsulateKey
 [Worker]     method decrypt
 [Worker]     method deriveBits
 [Worker]     method deriveKey
 [Worker]     method digest
+[Worker]     method encapsulateBits
+[Worker]     method encapsulateKey
 [Worker]     method encrypt
 [Worker]     method exportKey
 [Worker]     method generateKey
+[Worker]     method getPublicKey
 [Worker]     method importKey
 [Worker]     method sign
 [Worker]     method unwrapKey
