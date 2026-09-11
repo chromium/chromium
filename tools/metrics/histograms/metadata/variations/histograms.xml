@@ -626,6 +626,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.SeedDateClockSkew" units="seconds"
+    expires_after="2027-09-01">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The absolute value of the difference (in seconds) between the local time in
+    the app and the time in SeedInfo.date provided by the variations server.
+    Recorded on Android WebView after successfully fetching a seed when
+    SeedInfo.date is non-zero.
+  </summary>
+</histogram>
+
+<histogram name="Variations.SeedDateMissing" enum="Boolean"
+    expires_after="2027-09-01">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records true if the Date header was not provided by the variations server
+    (i.e., SeedInfo.date is 0) when successfully fetching a seed, or false
+    otherwise. Recorded on Android WebView when a seed is successfully fetched.
+  </summary>
+</histogram>
+
 <histogram name="Variations.SeedFetchResponseOrErrorCode{ConnectionType}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-02-07">
   <owner>asvitkine@chromium.org</owner>

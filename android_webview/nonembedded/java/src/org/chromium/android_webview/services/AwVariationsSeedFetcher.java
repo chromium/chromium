@@ -23,6 +23,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
@@ -59,6 +60,12 @@ public class AwVariationsSeedFetcher extends JobService {
     // seed fetcher to determine if a regularly shceduled seed fetch request should be cancelled.
     @VisibleForTesting public static final String JOB_REQUEST_FAST_MODE = "RequestFastMode";
     @VisibleForTesting public static final String PERIODIC_FAST_MODE = "PeriodicFastMode";
+
+    @VisibleForTesting
+    public static final String SEED_DATE_MISSING_HISTOGRAM_NAME = "Variations.SeedDateMissing";
+
+    @VisibleForTesting
+    public static final String SEED_DATE_CLOCK_SKEW_HISTOGRAM_NAME = "Variations.SeedDateClockSkew";
 
     private static final String TAG = "AwVariationsSeedFet-";
     private static final int JOB_ID = TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID;
@@ -408,6 +415,7 @@ public class AwVariationsSeedFetcher extends JobService {
                 needsReschedule = (requestCount <= JOB_MAX_REQUEST_COUNT);
             }
             if (fetchInfo.seedInfo != null) {
+                recordSeedDateMetrics(fetchInfo.seedInfo);
                 VariationsSeedHolder.getInstance()
                         .updateSeed(
                                 fetchInfo.seedInfo,
@@ -504,6 +512,20 @@ public class AwVariationsSeedFetcher extends JobService {
     public static void setDateForTesting(Date date) {
         sDateForTesting = date;
         ResettersForTesting.register(() -> sDateForTesting = null);
+    }
+
+    public static void recordSeedDateMetrics(SeedInfo seedInfo) {
+        boolean isDateMissing = (seedInfo.date == 0);
+        RecordHistogram.recordBooleanHistogram(SEED_DATE_MISSING_HISTOGRAM_NAME, isDateMissing);
+        if (!isDateMissing) {
+            long diffMillis = Math.abs(currentTimeMillis() - seedInfo.date);
+            RecordHistogram.recordCustomCountHistogram(
+                    SEED_DATE_CLOCK_SKEW_HISTOGRAM_NAME,
+                    (int) Math.min(TimeUnit.MILLISECONDS.toSeconds(diffMillis), Integer.MAX_VALUE),
+                    /* min= */ 1,
+                    /* max= */ (int) TimeUnit.DAYS.toSeconds(30),
+                    /* numBuckets= */ 50);
+        }
     }
 
     /** Determines whether the currently scheduled job is in Fast Mode and periodic. */
