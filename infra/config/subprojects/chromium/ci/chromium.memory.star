@@ -345,7 +345,7 @@ linux_memory_builder(
                     "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
                 ],
                 swarming = targets.swarming(
-                    shards = 45,
+                    shards = 60,
                 ),
             ),
             "crashpad_tests": targets.remove(
