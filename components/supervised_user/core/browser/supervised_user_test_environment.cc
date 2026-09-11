@@ -305,24 +305,38 @@ void SupervisedUserTestEnvironment::Shutdown() {
 }
 
 void SupervisedUserTestEnvironment::EnableSupervisedAccount(
+    signin::IdentityManager* identity_manager) {
+  AccountInfo account = GetOrCreatePrimaryAccount(identity_manager);
+  UpdateSupervisionStatusForAccount(account, identity_manager,
+                                    /*is_subject_to_parental_controls=*/true);
+  UpdateFamilyInfoFetchStatusForAccount(account, identity_manager,
+                                        /*is_family_info_fetched=*/true);
+}
+
+void SupervisedUserTestEnvironment::EnableSupervisedAccount(
     signin::IdentityManager* identity_manager,
     network::TestURLLoaderFactory& test_url_loader_factory,
     PrefService& pref_service) {
   AccountInfo account = GetOrCreatePrimaryAccount(identity_manager);
-
-  bool is_subject_to_parental_controls = true;
-
   ConfigureEnvironmentForListFamilyMembersService(
       account, test_url_loader_factory, pref_service,
-      is_subject_to_parental_controls);
-  UpdateSupervisionStatusForAccount(account, identity_manager,
-                                    is_subject_to_parental_controls);
+      /*is_subject_to_parental_controls=*/true);
+  EnableSupervisedAccount(identity_manager);
 }
 
 void SupervisedUserTestEnvironment::EnableSupervisedAccount() {
   EnableSupervisedAccount(identity_test_env_.identity_manager(),
                           test_url_loader_factory_, *pref_service());
   CHECK(IsSubjectToParentalControls(*pref_store_environment_.pref_service()));
+}
+
+void SupervisedUserTestEnvironment::EnableRegularAccount(
+    signin::IdentityManager* identity_manager) {
+  AccountInfo account = GetOrCreatePrimaryAccount(identity_manager);
+  UpdateSupervisionStatusForAccount(account, identity_manager,
+                                    /*is_subject_to_parental_controls=*/false);
+  UpdateFamilyInfoFetchStatusForAccount(account, identity_manager,
+                                        /*is_family_info_fetched=*/false);
 }
 
 void SupervisedUserTestEnvironment::DisableSupervisedAccount() {

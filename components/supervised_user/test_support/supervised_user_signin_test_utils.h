@@ -19,6 +19,14 @@ void UpdateSupervisionStatusForAccount(
     AccountInfo& account,
     signin::IdentityManager* identity_manager,
     bool is_subject_to_parental_controls);
+
+// Modifies the family info fetch status for an AccountInfo and updates the
+// given IdentityManager, which should already have the account signed in.
+void UpdateFamilyInfoFetchStatusForAccount(
+    AccountInfo& account,
+    signin::IdentityManager* identity_manager,
+    bool is_family_info_fetched);
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_SUPERVISED_USER_SIGNIN_TEST_UTILS_H_

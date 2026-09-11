@@ -161,13 +161,27 @@ class SupervisedUserTestEnvironment {
   // Simulators of parental controls. Instance methods use services from this
   // test environment, while static methods are suitable for heavier testing
   // profile use.
+  // TODO(crbug.com/559195266): Consider renaming to indicate source or
+  // supervision type (to stop confusing Family Link vs local device
+  // supervision).
   void EnableSupervisedAccount();
+  // TODO(crbug.com/559196579): Extract all static methods to static-only
+  // library (eg. family_link_test_setup.h).
+  static void EnableSupervisedAccount(
+      signin::IdentityManager* identity_manager);
+  // Primes the test environment for a supervised account with supervised
+  // account information (such as family info).
   static void EnableSupervisedAccount(
       signin::IdentityManager* identity_manager,
       network::TestURLLoaderFactory& test_url_loader_factory,
       PrefService& pref_service);
 
+  // Simulates signing out the primary account, thereby ending supervision.
   void DisableSupervisedAccount();
+
+  // Simulates signing in as a regular (unsupervised) user, or disables
+  // supervision on the existing signed-in account.
+  static void EnableRegularAccount(signin::IdentityManager* identity_manager);
 
   // SetWebFilterType methods simulate the custodian modifying "Google Chrome
   // and Web" settings.

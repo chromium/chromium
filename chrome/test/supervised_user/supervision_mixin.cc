@@ -27,7 +27,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -118,29 +118,6 @@ void SupervisionMixin::SetUpIdentityTestEnvironment() {
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
 }
 
-void SupervisionMixin::ConfigureParentalControls(bool is_supervised_profile) {
-  if (is_supervised_profile) {
-    SetParentalControlsAccountCapability(true);
-    EnableParentalControls(*GetProfile()->GetPrefs());
-  } else {
-    DisableParentalControls(*GetProfile()->GetPrefs());
-  }
-}
-
-void SupervisionMixin::SetParentalControlsAccountCapability(
-    bool is_supervised_profile) {
-  auto* identity_manager = GetIdentityTestEnvironment()->identity_manager();
-  CoreAccountInfo account_info =
-      identity_manager->GetPrimaryAccountInfo(consent_level_);
-  CHECK_EQ(account_info.email, email_);
-  AccountInfo account = identity_manager->FindExtendedAccountInfo(account_info);
-
-  AccountCapabilitiesTestMutator mutator(&account);
-  mutator.set_is_subject_to_parental_controls(is_supervised_profile);
-  mutator.set_can_fetch_family_member_info(is_supervised_profile);
-  signin::UpdateAccountInfoForAccount(identity_manager, account);
-}
-
 void SupervisionMixin::SetPendingStateForPrimaryAccount() {
   CHECK_NE(sign_in_mode_, SignInMode::kSignedOut);
 
@@ -206,8 +183,14 @@ void SupervisionMixin::ConfigureIdentityTestEnvironment() {
 
   GetIdentityTestEnvironment()->SetAutomaticIssueOfAccessTokens(true);
   GetIdentityTestEnvironment()->SetFreshnessOfAccountsInGaiaCookie(true);
-  ConfigureParentalControls(
-      /*is_supervised_profile=*/sign_in_mode_ == SignInMode::kSupervised);
+
+  if (sign_in_mode_ == SignInMode::kSupervised) {
+    SupervisedUserTestEnvironment::EnableSupervisedAccount(
+        GetIdentityTestEnvironment()->identity_manager());
+  } else {
+    SupervisedUserTestEnvironment::EnableRegularAccount(
+        GetIdentityTestEnvironment()->identity_manager());
+  }
 }
 
 Profile* SupervisionMixin::GetProfile() const {

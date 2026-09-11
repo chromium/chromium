@@ -29,4 +29,14 @@ void UpdateSupervisionStatusForAccount(
   signin::UpdateAccountInfoForAccount(identity_manager, account);
 }
 
+void UpdateFamilyInfoFetchStatusForAccount(
+    AccountInfo& account,
+    signin::IdentityManager* identity_manager,
+    bool is_family_info_fetched) {
+  CHECK(identity_manager);
+  AccountCapabilitiesTestMutator mutator(&account);
+  mutator.set_can_fetch_family_member_info(is_family_info_fetched);
+  signin::UpdateAccountInfoForAccount(identity_manager, account);
+}
+
 }  // namespace supervised_user
