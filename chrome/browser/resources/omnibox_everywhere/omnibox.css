@@ -177,7 +177,6 @@ cr-searchbox-input::part(searchbox-input) {
   align-self: center;
 }
 
-
 :host([compose-button-enabled][searchbox-lens-search-enabled_]) {
   --cr-searchbox-voice-icon-offset: calc(
       16px + 2 * var(--cr-searchbox-icon-spacing) +
@@ -232,17 +231,10 @@ cr-searchbox-dropdown::part(dropdown-content) {
   padding-top: unset;
 }
 
-:host([is-fusebox-enabled])
-    cr-composebox-contextual-entrypoint-and-menu::part(
-        context-menu-entrypoint-icon) {
-  --cr-icon-button-icon-size: 24px;
-  --cr-icon-button-margin-start: 0;
-  --cr-icon-button-size: 36px;
-}
-
 .contextualEntrypointContainer,
 .context-menu-container,
-cr-composebox-contextual-entrypoint-and-menu {
+cr-composebox-contextual-entrypoint-and-menu,
+#context {
   position: relative;
   z-index: var(--cr-composebox-context-menu-z-index, 1001);
 }
@@ -251,12 +243,9 @@ cr-composebox-contextual-entrypoint-and-menu {
   padding-block: 0;
 }
 
-:host([is-fusebox-enabled]) cr-composebox-contextual-entrypoint-and-menu {
-  color: var(--color-searchbox-results-foreground);
-  padding-inline-end: 6px;
-  padding-inline-start: 0;
-  position: relative;
-  z-index: var(--cr-composebox-context-menu-z-index, 1001);
+:host([is-fusebox-enabled]) .contextualEntrypointContainerCompact {
+  box-shadow: none;
+  width: auto;
 }
 
 #inputContainer {
@@ -322,19 +311,29 @@ cr-composebox-contextual-entrypoint-and-menu {
   opacity: 0;
 }
 
-:host([is-fusebox-enabled]) .contextualEntrypointContainerCompact {
-  box-shadow: none;
-  width: auto;
+:host([is-fusebox-enabled]) #composeButton {
+  --cr-button-height: 28px;
+  margin-inline-end: 36px;
 }
 
-:host([is-fusebox-enabled]) #composeButton {
-  margin-inline-end: 58px;
-  top: var(--omnibox-everywhere-top-actions-top, 12px);
+:host([is-fusebox-enabled]) #composeButton::part(glow-container) {
+  height: 28px;
+  top: 10px;
+}
+
+:host([is-fusebox-enabled]) #composeButton::part(compose-button) {
+  font-size: 12px;
+}
+
+:host([is-fusebox-enabled]) #composeButton::part(compose-icon) {
+  height: 16px;
+  padding-top: 0;
+  width: 16px;
 }
 
 :host([is-fusebox-enabled]):has(#profileIcon[is-enterprise-profile])
     #composeButton {
-  margin-inline-end: 86px;
+  margin-inline-end: 64px;
 }
 
 #bottomControls {
@@ -383,4 +382,3 @@ cr-searchbox-input::part(icon),
 :host(:not([is-active])) #composeButton {
   -webkit-app-region: no-drag;
 }
-

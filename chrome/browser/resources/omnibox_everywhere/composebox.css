@@ -21,6 +21,8 @@
   box-sizing: border-box;
   font-size: var(--cr-searchbox-font-size, 16px);
   --cr-composebox-font-size: var(--cr-searchbox-font-size, 16px);
+  --cr-composebox-aim-icon-size: 18px;
+  --cr-composebox-match-icon-size: 16px;
   --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 10px);
   --cr-composebox-background-color: var(--color-searchbox-background);
   --input-bottom-spacing: 10px;
@@ -153,12 +155,14 @@ cr-composebox-submit::part(submit) {
   opacity: 1;
 }
 
-#bottomControls {
-  min-height: 48px;
-  position: relative;
+#bottomControls .context-menu-container {
+  padding-block: 0;
+  padding-inline-start: 0;
 }
 
 #bottomControls #contextEntrypoint {
+  --button-height: 32px;
+  margin-inline-start: 0.5px;
   padding-inline-start: 0;
 }
 

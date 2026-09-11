@@ -12,18 +12,19 @@
   pointer-events: auto;
   position: absolute;
   right: 16px;
-  top: var(--omnibox-everywhere-top-actions-top, 12px);
+  top: var(--omnibox-everywhere-top-actions-top, 16px);
   z-index: 100;
 }
 
 #profileContainer {
   align-items: center;
+  border-radius: 50%;
   box-sizing: border-box;
   display: flex;
-  height: 36px;
+  height: 28px;
   justify-content: center;
   pointer-events: auto;
-  width: 36px;
+  width: 28px;
 }
 
 #profileContainer.clickable {
@@ -45,7 +46,7 @@
   border-radius: 20px;
   gap: 4px;
   height: 28px;
-  margin-top: 4px;
+  margin-top: 0;
   padding-inline-end: 4px;
   padding-inline-start: 4px;
   width: auto;
