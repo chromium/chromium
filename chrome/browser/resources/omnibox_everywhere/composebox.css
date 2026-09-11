@@ -48,6 +48,11 @@
   --color-composebox-submit-button-background: var(
       --color-omnibox-composebox-submit-button-background,
       #1a73e8);
+  --cr-composebox-submit-border-radius: 100px;
+  --cr-composebox-submit-height: 32px;
+  --cr-composebox-submit-icon-offset: 0;
+  --cr-composebox-submit-icon-size: 14px;
+  --cr-composebox-submit-width: 40px;
 }
 
 #composebox {
