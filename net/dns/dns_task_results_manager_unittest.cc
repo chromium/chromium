@@ -36,10 +36,12 @@ class FakeDelegate : public DnsTaskResultsManager::Delegate {
   FakeDelegate() = default;
   ~FakeDelegate() override = default;
 
+  size_t update_count() const { return update_count_; }
+
  private:
-  void OnServiceEndpointsUpdated() override {
-    // Do nothing for now.
-  }
+  void OnServiceEndpointsUpdated() override { ++update_count_; }
+
+  size_t update_count_ = 0;
 };
 
 IPEndPoint MakeIPEndPoint(std::string_view ip_literal, uint16_t port = 0) {
@@ -69,13 +71,26 @@ std::unique_ptr<HostResolverInternalErrorResult> CreateNoData(
 
 std::unique_ptr<HostResolverInternalMetadataResult> CreateMetadata(
     std::string_view domain_name,
-    std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas) {
+    std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas,
+    HostResolverInternalMetadataResult::AddressHintsMap address_hints = {}) {
   return std::make_unique<HostResolverInternalMetadataResult>(
       std::string(domain_name), DnsQueryType::HTTPS,
       /*expiration=*/base::TimeTicks(), /*timed_expiration=*/base::Time(),
       HostResolverInternalResult::Source::kDns, std::move(metadatas),
-      /*address_hints=*/
-      HostResolverInternalMetadataResult::AddressHintsMap());
+      std::move(address_hints));
+}
+
+HostResolverInternalMetadataResult::AddressHints MakeAddressHints(
+    const std::vector<std::string_view>& ipv4_literals,
+    const std::vector<std::string_view>& ipv6_literals) {
+  HostResolverInternalMetadataResult::AddressHints hints;
+  for (std::string_view literal : ipv4_literals) {
+    hints.ipv4_hints.insert(*IPAddress::FromIPLiteral(literal));
+  }
+  for (std::string_view literal : ipv6_literals) {
+    hints.ipv6_hints.insert(*IPAddress::FromIPLiteral(literal));
+  }
+  return hints;
 }
 
 std::unique_ptr<HostResolverInternalAliasResult> CreateAlias(
@@ -153,6 +168,8 @@ class DnsTaskResultsManagerTest : public TestWithTaskEnvironment {
 
  protected:
   ManagerFactory factory() { return ManagerFactory(delegate_.get()); }
+
+  FakeDelegate* delegate() { return delegate_.get(); }
 
  private:
   std::unique_ptr<FakeDelegate> delegate_;
@@ -376,7 +393,7 @@ TEST_F(DnsTaskResultsManagerTest, MetadataFirst) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // HTTPS comes first. Service endpoints should not be available yet since
-  // Chrome doesn't support ipv{4,6}hint yet.
+  // the HTTPS response has no address hints.
   std::unique_ptr<HostResolverInternalResult> result1 =
       CreateMetadata(kHostName, kMetadatas);
   manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
@@ -474,9 +491,8 @@ TEST_F(DnsTaskResultsManagerTest, IPv6TimedoutAfterMetadata) {
   ASSERT_FALSE(manager->IsMetadataReady());
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
-  // HTTPS is responded. Service endpoints should not be available because
-  // the manager is waiting for the resolution delay and Chrome doesn't support
-  // ipv6hint yet.
+  // HTTPS is responded without address hints. Service endpoints should not be
+  // available because the manager is waiting for the resolution delay.
   std::unique_ptr<HostResolverInternalResult> result2 =
       CreateMetadata(kHostName, kMetadatas);
   manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result2.get()});
@@ -536,9 +552,8 @@ TEST_F(DnsTaskResultsManagerTest, MetadataAfterIpv6Timeout) {
 TEST_F(DnsTaskResultsManagerTest, IPv4NoDataIPv6TimedoutAfterMetadata) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
-  // HTTPS is responded. Service endpoints should not be available because
-  // the manager is waiting for the resolution delay and Chrome doesn't support
-  // address hints yet.
+  // HTTPS is responded without address hints. Service endpoints should not be
+  // available because the manager is waiting for the resolution delay.
   std::unique_ptr<HostResolverInternalResult> result1 =
       CreateMetadata(kHostName, kMetadatas);
   manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
@@ -719,6 +734,360 @@ TEST_F(DnsTaskResultsManagerTest,
                                    good_alias, "google.test"));
   EXPECT_TRUE(manager->GetAliases().find(std::string(bad_alias)) ==
               manager->GetAliases().end());
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsFirst) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS comes first with address hints. Service endpoints should be
+  // available immediately from the hints. Duplicated hints should be merged.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10", "192.0.2.10"}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result =
+      CreateMetadata(kHostName, kMetadatas, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result.get()});
+
+  ASSERT_TRUE(manager->IsMetadataReady());
+  EXPECT_THAT(
+      manager->GetCurrentEndpoints(),
+      ElementsAre(
+          ExpectServiceEndpoint(
+              ElementsAre(MakeIPEndPoint("192.0.2.10", 443)),
+              ElementsAre(MakeIPEndPoint("2001:db8::10", 443)), kMetadata1),
+          ExpectServiceEndpoint(
+              ElementsAre(MakeIPEndPoint("192.0.2.10", 443)),
+              ElementsAre(MakeIPEndPoint("2001:db8::10", 443)), kMetadata2)));
+  EXPECT_EQ(delegate()->update_count(), 1u);
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsSupersededByRealResponses) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS comes first with address hints.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
+
+  EXPECT_THAT(
+      manager->GetCurrentEndpoints(),
+      ElementsAre(ExpectServiceEndpoint(
+          ElementsAre(MakeIPEndPoint("192.0.2.10", 443)),
+          ElementsAre(MakeIPEndPoint("2001:db8::10", 443)), kMetadata1)));
+
+  // AAAA is responded. IPv6 hints should be superseded by real addresses.
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
+
+  EXPECT_THAT(
+      manager->GetCurrentEndpoints(),
+      ElementsAre(ExpectServiceEndpoint(
+          ElementsAre(MakeIPEndPoint("192.0.2.10", 443)),
+          ElementsAre(MakeIPEndPoint("2001:db8::1", 443)), kMetadata1)));
+
+  // A is responded. IPv4 hints should be superseded by real addresses.
+  std::unique_ptr<HostResolverInternalResult> result3 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result3.get()});
+
+  EXPECT_THAT(
+      manager->GetCurrentEndpoints(),
+      ElementsAre(ExpectServiceEndpoint(
+          ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+          ElementsAre(MakeIPEndPoint("2001:db8::1", 443)), kMetadata1)));
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv6NoData) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS comes first with address hints.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
+
+  EXPECT_THAT(
+      manager->GetCurrentEndpoints(),
+      ElementsAre(ExpectServiceEndpoint(
+          ElementsAre(MakeIPEndPoint("192.0.2.10", 443)),
+          ElementsAre(MakeIPEndPoint("2001:db8::10", 443)), kMetadata1)));
+
+  // AAAA is responded with no data. IPv6 hints should be dropped while IPv4
+  // hints are still usable.
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateNoData(kHostName, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
+
+  EXPECT_THAT(manager->GetCurrentEndpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.10", 443)), IsEmpty(),
+                  kMetadata1)));
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv4OnlyResolutionDelay) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS comes first with IPv4-only hints. Service endpoints creation should
+  // be delayed since AAAA is still outstanding.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, /*ipv6_literals=*/{});
+  std::unique_ptr<HostResolverInternalResult> result =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result.get()});
+
+  ASSERT_TRUE(manager->IsResolutionDelayTimerRunningForTest());
+  ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
+
+  // AAAA is timed out. IPv4 hints should be published.
+  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
+                base::Milliseconds(1));
+
+  EXPECT_THAT(manager->GetCurrentEndpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.10", 443)), IsEmpty(),
+                  kMetadata1)));
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv4OnlyThenIPv4Response) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS comes first with IPv4-only hints, starting the resolution delay
+  // timer.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, /*ipv6_literals=*/{});
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
+
+  ASSERT_TRUE(manager->IsResolutionDelayTimerRunningForTest());
+  ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
+
+  // A is responded while the timer is running. Service endpoints creation
+  // should still be delayed and the timer should keep running.
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result2.get()});
+
+  ASSERT_TRUE(manager->IsResolutionDelayTimerRunningForTest());
+  ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
+
+  // AAAA is timed out. Real IPv4 addresses should be published without IPv4
+  // hints since the A response has arrived.
+  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
+                base::Milliseconds(1));
+
+  EXPECT_THAT(manager->GetCurrentEndpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.1", 443)), IsEmpty(),
+                  kMetadata1)));
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv6WhileResolutionDelay) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // A comes first, starting the resolution delay timer.
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
+
+  ASSERT_TRUE(manager->IsResolutionDelayTimerRunningForTest());
+  ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
+
+  // HTTPS is responded with IPv6 hints. Service endpoints should be published
+  // without waiting for the AAAA response and the timer should stop.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints(/*ipv4_literals=*/{}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result2.get()});
+
+  ASSERT_FALSE(manager->IsResolutionDelayTimerRunningForTest());
+  EXPECT_THAT(
+      manager->GetCurrentEndpoints(),
+      ElementsAre(ExpectServiceEndpoint(
+          ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+          ElementsAre(MakeIPEndPoint("2001:db8::10", 443)), kMetadata1)));
+  EXPECT_EQ(delegate()->update_count(), 1u);
+
+  // The resolution delay passed. No extra notification should happen.
+  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
+                base::Milliseconds(1));
+
+  EXPECT_EQ(delegate()->update_count(), 1u);
+
+  // AAAA is responded. IPv6 hints should be superseded.
+  std::unique_ptr<HostResolverInternalResult> result3 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result3.get()});
+
+  ASSERT_FALSE(manager->IsResolutionDelayTimerRunningForTest());
+  EXPECT_THAT(
+      manager->GetCurrentEndpoints(),
+      ElementsAre(ExpectServiceEndpoint(
+          ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+          ElementsAre(MakeIPEndPoint("2001:db8::1", 443)), kMetadata1)));
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv4FlushedOnANoData) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS comes first with IPv4-only hints, which are published after the
+  // resolution delay.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, /*ipv6_literals=*/{});
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
+
+  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
+                base::Milliseconds(1));
+
+  EXPECT_THAT(manager->GetCurrentEndpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.10", 443)), IsEmpty(),
+                  kMetadata1)));
+  EXPECT_EQ(delegate()->update_count(), 1u);
+
+  // A is responded with no data. Superseded IPv4 hints should be flushed.
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateNoData(kHostName, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result2.get()});
+
+  EXPECT_TRUE(manager->GetCurrentEndpoints().empty());
+  EXPECT_EQ(delegate()->update_count(), 2u);
+}
+
+TEST_F(DnsTaskResultsManagerTest,
+       AddressHintsIPv4FlushedOnANoDataWhileResolutionDelay) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS comes first with IPv4-only hints, starting the resolution delay
+  // timer.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, /*ipv6_literals=*/{});
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
+
+  ASSERT_TRUE(manager->IsResolutionDelayTimerRunningForTest());
+  ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
+
+  // A is responded with no data while the timer is running. The resolution
+  // delay timer should stop immediately and superseded IPv4 hints should be
+  // flushed.
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateNoData(kHostName, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result2.get()});
+
+  EXPECT_FALSE(manager->IsResolutionDelayTimerRunningForTest());
+  EXPECT_TRUE(manager->GetCurrentEndpoints().empty());
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv6FlushedOnAaaaNoData) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS comes first with IPv6-only hints, which are published immediately.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints(/*ipv4_literals=*/{}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
+
+  EXPECT_THAT(manager->GetCurrentEndpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  IsEmpty(), ElementsAre(MakeIPEndPoint("2001:db8::10", 443)),
+                  kMetadata1)));
+  EXPECT_EQ(delegate()->update_count(), 1u);
+
+  // AAAA is responded with no data. Superseded IPv6 hints should be flushed.
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateNoData(kHostName, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
+
+  EXPECT_TRUE(manager->GetCurrentEndpoints().empty());
+  EXPECT_EQ(delegate()->update_count(), 2u);
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsDifferentTargetName) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS is responded with hints keyed to a target name different from QNAME.
+  // The hints should land on the target name's endpoint entry.
+  const ConnectionEndpointMetadata kMetadataDifferentTargetName(
+      /*supported_protocol_alpns=*/{"h3"},
+      /*ech_config_list=*/{},
+      /*target_name=*/"other.example.net.", {});
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints["other.example.net."] =
+      MakeAddressHints({"192.0.2.10"}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result = CreateMetadata(
+      kHostName, {{1, kMetadataDifferentTargetName}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result.get()});
+
+  EXPECT_THAT(manager->GetCurrentEndpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.10", 443)),
+                  ElementsAre(MakeIPEndPoint("2001:db8::10", 443)),
+                  kMetadataDifferentTargetName)));
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv6NotQueried) {
+  std::unique_ptr<DnsTaskResultsManager> manager =
+      factory().query_types({DnsQueryType::A, DnsQueryType::HTTPS}).Create();
+
+  // HTTPS is responded with IPv4 and IPv6 hints. IPv6 hints should not be
+  // published since AAAA is never queried.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result.get()});
+
+  EXPECT_THAT(manager->GetCurrentEndpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.10", 443)), IsEmpty(),
+                  kMetadata1)));
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsIgnoredAfterFamilyComplete) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // A is responded first.
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
+
+  // AAAA is responded with no data.
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateNoData(kHostName, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
+
+  // HTTPS comes after both A and AAAA transactions have completed. Hints for
+  // already-completed address families must be ignored per RFC 9460 §7.3.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result3 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result3.get()});
+
+  EXPECT_THAT(manager->GetCurrentEndpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.1", 443)), IsEmpty(),
+                  kMetadata1)));
 }
 
 }  // namespace net

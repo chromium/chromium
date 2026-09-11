@@ -19,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/dns/dns_alias_utility.h"
@@ -96,6 +97,11 @@ struct DnsTaskResultsManager::PerDomainResult {
   std::vector<IPEndPoint> ipv4_endpoints;
   std::vector<IPEndPoint> ipv6_endpoints;
 
+  // Endpoints from HTTPS record ipv4hint/ipv6hint. Used only until the
+  // corresponding address family's response arrives.
+  std::vector<IPEndPoint> ipv4_hint_endpoints;
+  std::vector<IPEndPoint> ipv6_hint_endpoints;
+
   std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas;
 };
 
@@ -124,6 +130,8 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
 
   bool should_update_endpoints = false;
   bool should_notify = false;
+  bool has_new_ipv4_hints = false;
+  bool has_new_ipv6_hints = false;
 
   if (query_type == DnsQueryType::HTTPS) {
     // Chrome does not yet support HTTPS follow-up queries so metadata is
@@ -133,11 +141,25 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
     should_notify = true;
   }
 
+  if (query_type == DnsQueryType::A) {
+    a_response_received_ = true;
+    if (HasIpv4HintEndpoints()) {
+      for (auto& [domain_name, per_domain_result] : per_domain_results_) {
+        per_domain_result->ipv4_hint_endpoints.clear();
+      }
+      should_update_endpoints = true;
+    }
+  }
+
   if (query_type == DnsQueryType::AAAA) {
     aaaa_response_received_ = true;
-    if (resolution_delay_timer_.IsRunning()) {
-      resolution_delay_timer_.Stop();
-      RecordResolutionDelayResult(/*timedout=*/false);
+    if (HasIpv6HintEndpoints()) {
+      for (auto& [domain_name, per_domain_result] : per_domain_results_) {
+        per_domain_result->ipv6_hint_endpoints.clear();
+      }
+      should_update_endpoints = true;
+    }
+    if (MaybeStopResolutionDelayTimer()) {
       // Need to update endpoints when there are IPv4 addresses.
       if (HasIpv4Addresses()) {
         should_update_endpoints = true;
@@ -149,8 +171,8 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
   bool aliases_updated = false;
 
   for (const auto& result : results) {
-    auto [unused_1_, updated_domain_name] =
-        aliases_.insert(result->domain_name());
+    const bool updated_domain_name =
+        aliases_.insert(result->domain_name()).second;
     aliases_updated |= updated_domain_name;
 
     switch (result->type()) {
@@ -159,8 +181,6 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
             GetOrCreatePerDomainResult(result->domain_name());
         for (const auto& ip_endpoint : result->AsData().endpoints()) {
           CHECK_EQ(ip_endpoint.port(), 0);
-          // TODO(crbug.com/41493696): This will eventually need to handle
-          // DnsQueryType::HTTPS to support getting ipv{4,6}hints.
           if (ip_endpoint.address().IsIPv4()) {
             per_domain_result.ipv4_endpoints.emplace_back(ip_endpoint.address(),
                                                           host_.GetPort());
@@ -185,20 +205,50 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
           per_domain_result.metadatas.emplace(priority, metadata);
         }
 
+        for (const auto& [target_name, hints] :
+             result->AsMetadata().address_hints()) {
+          PerDomainResult& per_domain_result =
+              GetOrCreatePerDomainResult(target_name);
+          if (Ipv4HintsUsable()) {
+            for (const IPAddress& address : hints.ipv4_hints) {
+              CHECK(address.IsIPv4());
+              IPEndPoint endpoint(address, host_.GetPort());
+              if (!std::ranges::contains(per_domain_result.ipv4_hint_endpoints,
+                                         endpoint)) {
+                per_domain_result.ipv4_hint_endpoints.push_back(
+                    std::move(endpoint));
+                has_new_ipv4_hints = true;
+              }
+            }
+          }
+          if (Ipv6HintsUsable()) {
+            for (const IPAddress& address : hints.ipv6_hints) {
+              CHECK(address.IsIPv6());
+              IPEndPoint endpoint(address, host_.GetPort());
+              if (!std::ranges::contains(per_domain_result.ipv6_hint_endpoints,
+                                         endpoint)) {
+                per_domain_result.ipv6_hint_endpoints.push_back(
+                    std::move(endpoint));
+                has_new_ipv6_hints = true;
+              }
+            }
+          }
+        }
+
         should_update_endpoints |= !result->AsMetadata().metadatas().empty();
 
         break;
       }
       case net::HostResolverInternalResult::Type::kAlias: {
-        auto [unused_2_, updated_alias] =
-            aliases_.insert(result->AsAlias().alias_target());
+        const bool updated_alias =
+            aliases_.insert(result->AsAlias().alias_target()).second;
         aliases_updated |= updated_alias;
 
         break;
       }
       case net::HostResolverInternalResult::Type::kError:
-        // Need to update endpoints when AAAA response is NODATA but A response
-        // has at least one valid address.
+        // Need to update endpoints when AAAA response is NODATA but there is
+        // at least one valid IPv4 address or usable IPv4 hint.
         // TODO(crbug.com/41493696): Revisit how to handle errors other than
         // NODATA. Currently we just ignore errors here and defer
         // HostResolverManager::Job to create an error result and notify the
@@ -206,12 +256,9 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
         // connection layer has already attempted a connection using an
         // intermediate endpoint, the error might not be treated as fatal. We
         // may want to have a different semantics.
-        PerDomainResult& per_domain_result =
-            GetOrCreatePerDomainResult(result->domain_name());
         if (query_type == DnsQueryType::AAAA &&
             result->AsError().error() == ERR_NAME_NOT_RESOLVED &&
-            !per_domain_result.ipv4_endpoints.empty()) {
-          CHECK(per_domain_result.ipv6_endpoints.empty());
+            HasIpv4Addresses()) {
           should_update_endpoints = true;
         }
 
@@ -224,13 +271,29 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
     aliases_ = dns_alias_utility::FixUpDnsAliases(aliases_);
   }
 
+  should_update_endpoints |= (has_new_ipv4_hints && Ipv4HintsUsable()) ||
+                             (has_new_ipv6_hints && Ipv6HintsUsable());
+
   const bool waiting_for_aaaa_response = query_types_.Has(DnsQueryType::AAAA) &&
                                          !aaaa_response_received_ &&
                                          !aaaa_resolution_delay_timed_out_;
   if (waiting_for_aaaa_response) {
-    if (query_type == DnsQueryType::A && should_update_endpoints) {
-      // A is responded, start the resolution delay timer.
-      CHECK(!resolution_delay_timer_.IsRunning());
+    // IPv6 hint endpoints cover the IPv6 side, so publish without waiting
+    // for the AAAA response.
+    if (should_update_endpoints && Ipv6HintsUsable() &&
+        HasIpv6HintEndpoints()) {
+      MaybeStopResolutionDelayTimer();
+      UpdateEndpoints();
+      return;
+    }
+
+    const bool has_new_ipv4_endpoints =
+        (query_type == DnsQueryType::A && should_update_endpoints &&
+         HasIpv4Addresses()) ||
+        (has_new_ipv4_hints && Ipv4HintsUsable());
+    if (has_new_ipv4_endpoints && !resolution_delay_timer_.IsRunning()) {
+      // IPv4 addresses are available but no IPv6 yet, start the resolution
+      // delay timer.
       resolution_delay_start_time_ = base::TimeTicks::Now();
       net_log_.BeginEvent(
           NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_RESOLUTION_DELAY);
@@ -239,6 +302,15 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
           FROM_HERE, GetResolutionDelay(),
           base::BindOnce(&DnsTaskResultsManager::OnAaaaResolutionTimedout,
                          base::Unretained(this)));
+    }
+
+    // If A completed without IPv4 addresses, stop holding back for Happy
+    // Eyeballs and immediately flush any superseded IPv4 hints.
+    if (query_type == DnsQueryType::A && !HasIpv4Addresses()) {
+      MaybeStopResolutionDelayTimer();
+      if (should_update_endpoints) {
+        UpdateEndpoints();
+      }
     }
 
     return;
@@ -295,22 +367,35 @@ void DnsTaskResultsManager::OnAaaaResolutionTimedout() {
 void DnsTaskResultsManager::UpdateEndpoints() {
   std::vector<ServiceEndpoint> new_endpoints;
 
+  const bool ipv4_hints_usable = Ipv4HintsUsable();
+  const bool ipv6_hints_usable = Ipv6HintsUsable();
+
   for (const auto& [domain_name, per_domain_result] : per_domain_results_) {
-    if (per_domain_result->ipv4_endpoints.empty() &&
-        per_domain_result->ipv6_endpoints.empty()) {
+    // Hint endpoints are used only until the corresponding address family's
+    // response arrives.
+    const std::vector<IPEndPoint>& ipv4_endpoints =
+        (ipv4_hints_usable && per_domain_result->ipv4_endpoints.empty())
+            ? per_domain_result->ipv4_hint_endpoints
+            : per_domain_result->ipv4_endpoints;
+    const std::vector<IPEndPoint>& ipv6_endpoints =
+        (ipv6_hints_usable && per_domain_result->ipv6_endpoints.empty())
+            ? per_domain_result->ipv6_hint_endpoints
+            : per_domain_result->ipv6_endpoints;
+
+    if (ipv4_endpoints.empty() && ipv6_endpoints.empty()) {
       continue;
     }
 
     if (per_domain_result->metadatas.empty()) {
       ServiceEndpoint endpoint;
-      endpoint.ipv4_endpoints = per_domain_result->ipv4_endpoints;
-      endpoint.ipv6_endpoints = per_domain_result->ipv6_endpoints;
+      endpoint.ipv4_endpoints = ipv4_endpoints;
+      endpoint.ipv6_endpoints = ipv6_endpoints;
       new_endpoints.emplace_back(std::move(endpoint));
     } else {
-      for (const auto& [unused_, metadata] : per_domain_result->metadatas) {
+      for (const auto& [priority, metadata] : per_domain_result->metadatas) {
         ServiceEndpoint endpoint;
-        endpoint.ipv4_endpoints = per_domain_result->ipv4_endpoints;
-        endpoint.ipv6_endpoints = per_domain_result->ipv6_endpoints;
+        endpoint.ipv4_endpoints = ipv4_endpoints;
+        endpoint.ipv6_endpoints = ipv6_endpoints;
         // TODO(crbug.com/41493696): Just adding per-domain metadata does not
         // work properly when the target name of HTTPS is an alias, e.g:
         //   example.com.     60 IN CNAME svc.example.com.
@@ -336,9 +421,10 @@ void DnsTaskResultsManager::UpdateEndpoints() {
   // Stable sort preserves metadata priorities.
   std::stable_sort(new_endpoints.begin(), new_endpoints.end(),
                    CompareServiceEndpoint);
+  const bool had_endpoints = !current_endpoints_.empty();
   current_endpoints_ = std::move(new_endpoints);
 
-  if (current_endpoints_.empty()) {
+  if (current_endpoints_.empty() && !had_endpoints) {
     return;
   }
 
@@ -356,13 +442,42 @@ void DnsTaskResultsManager::UpdateEndpoints() {
   delegate_->OnServiceEndpointsUpdated();
 }
 
-bool DnsTaskResultsManager::HasIpv4Addresses() {
-  for (const auto& [unused_, per_domain_result] : per_domain_results_) {
-    if (!per_domain_result->ipv4_endpoints.empty()) {
-      return true;
-    }
+bool DnsTaskResultsManager::MaybeStopResolutionDelayTimer() {
+  if (resolution_delay_timer_.IsRunning()) {
+    resolution_delay_timer_.Stop();
+    RecordResolutionDelayResult(/*timedout=*/false);
+    return true;
   }
   return false;
+}
+
+bool DnsTaskResultsManager::Ipv4HintsUsable() const {
+  return query_types_.Has(DnsQueryType::A) && !a_response_received_;
+}
+
+bool DnsTaskResultsManager::Ipv6HintsUsable() const {
+  return query_types_.Has(DnsQueryType::AAAA) && !aaaa_response_received_;
+}
+
+bool DnsTaskResultsManager::HasIpv4HintEndpoints() const {
+  return std::ranges::any_of(per_domain_results_, [](const auto& pair) {
+    return !pair.second->ipv4_hint_endpoints.empty();
+  });
+}
+
+bool DnsTaskResultsManager::HasIpv6HintEndpoints() const {
+  return std::ranges::any_of(per_domain_results_, [](const auto& pair) {
+    return !pair.second->ipv6_hint_endpoints.empty();
+  });
+}
+
+bool DnsTaskResultsManager::HasIpv4Addresses() const {
+  const bool ipv4_hints_usable = Ipv4HintsUsable();
+  return std::ranges::any_of(
+      per_domain_results_, [ipv4_hints_usable](const auto& pair) {
+        return !pair.second->ipv4_endpoints.empty() ||
+               (ipv4_hints_usable && !pair.second->ipv4_hint_endpoints.empty());
+      });
 }
 
 void DnsTaskResultsManager::RecordResolutionDelayResult(bool timedout) {

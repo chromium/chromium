@@ -35,6 +35,9 @@ namespace net {
 // If the A response comes before the AAAA response, delays service endpoints
 // creation/update until an AAAA response is received or the AAAA query is
 // timed out.
+//
+// Address hints from HTTPS records are published as provisional endpoints only
+// until the corresponding address family's response arrives.
 class NET_EXPORT_PRIVATE DnsTaskResultsManager {
  public:
   // Time to wait for a AAAA response after receiving an A response.
@@ -92,9 +95,23 @@ class NET_EXPORT_PRIVATE DnsTaskResultsManager {
 
   void UpdateEndpoints();
 
+  // Stops the resolution delay timer if running and records the NetLog event.
+  // Returns true if the timer was running.
+  bool MaybeStopResolutionDelayTimer();
+
+  // Address hints are usable only while the corresponding address family's
+  // query is expected and its response has not arrived yet.
+  bool Ipv4HintsUsable() const;
+  bool Ipv6HintsUsable() const;
+
+  // True when any per domain result has hint endpoints for the family,
+  // regardless of usability.
+  bool HasIpv4HintEndpoints() const;
+  bool HasIpv6HintEndpoints() const;
+
   // Checks all per domain results and return true when there is at least one
-  // valid address.
-  bool HasIpv4Addresses();
+  // valid address or usable IPv4 hint.
+  bool HasIpv4Addresses() const;
 
   void RecordResolutionDelayResult(bool timedout);
 
@@ -106,6 +123,10 @@ class NET_EXPORT_PRIVATE DnsTaskResultsManager {
   std::vector<ServiceEndpoint> current_endpoints_;
 
   bool is_metadata_ready_ = false;
+
+  // True when the A DNS transaction completes (including NODATA / empty
+  // results).
+  bool a_response_received_ = false;
 
   // True when the AAAA DNS transaction completes (including NODATA / empty
   // results).

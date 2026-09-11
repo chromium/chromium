@@ -1968,6 +1968,108 @@ TEST_F(HostResolverServiceEndpointRequestTest, ReentrantCancelDuringAbortAll) {
   proc_->SignalMultiple(2u);
 }
 
+class HostResolverServiceEndpointRequestAddressHintsTest
+    : public HostResolverServiceEndpointRequestTest {
+ public:
+  HostResolverServiceEndpointRequestAddressHintsTest() {
+    address_hints_feature_list_.InitAndEnableFeature(
+        features::kUseDnsHttpsSvcbAddressHints);
+  }
+
+ protected:
+  // Adds an HTTPS record carrying `ipv6_hint`, a non-delayed A record, and a
+  // delayed AAAA record, so that AAAA is the last transaction of the task.
+  void UseIpv6HintDelayedAaaaDnsRules(const std::string& host,
+                                      const IPAddress& ipv6_hint) {
+    MockDnsClientRuleList rules;
+    AddDnsRule(&rules, host, dns_protocol::kTypeA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+    AddDnsRule(&rules, host, dns_protocol::kTypeAAAA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+
+    std::string hint_value(ipv6_hint.bytes().begin(), ipv6_hint.bytes().end());
+    std::vector<DnsResourceRecord> records = {BuildTestHttpsServiceRecord(
+        host, /*priority=*/1, /*service_name=*/".",
+        /*params=*/
+        {{dns_protocol::kHttpsServiceParamKeyIpv6Hint,
+          std::move(hint_value)}})};
+    rules.emplace_back(host, dns_protocol::kTypeHttps,
+                       /*secure=*/false,
+                       MockDnsClientRule::Result(BuildTestDnsResponse(
+                           host, dns_protocol::kTypeHttps, records)),
+                       /*delay=*/false);
+    SetDnsRules(std::move(rules));
+  }
+
+ private:
+  base::test::ScopedFeatureList address_hints_feature_list_;
+};
+
+TEST_F(HostResolverServiceEndpointRequestAddressHintsTest,
+       Ipv6HintsNotPublishedWhenNoIpv6) {
+  set_ipv6_reachable(false);
+
+  const std::string kHost = "address_hints";
+  const IPAddress kIpv6Hint = *IPAddress::FromIPLiteral("2001:db8::10");
+  UseIpv6HintDelayedAaaaDnsRules(kHost, kIpv6Hint);
+
+  Requester requester = CreateRequester("https://address_hints");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return requester.request()->EndpointsCryptoReady(); }));
+
+  // Because IPv6 is disabled, IPv6 hints should NOT be published.
+  for (const auto& endpoint : requester.request()->GetEndpointResults()) {
+    EXPECT_THAT(endpoint.ipv6_endpoints, IsEmpty());
+  }
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return requester.finished_result().has_value(); }));
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+}
+
+TEST_F(HostResolverServiceEndpointRequestAddressHintsTest,
+       Ipv6HintsPublishedAndSuperseded) {
+  const std::string kHost = "address_hints";
+  const IPAddress kIpv6Hint = *IPAddress::FromIPLiteral("2001:db8::10");
+  UseIpv6HintDelayedAaaaDnsRules(kHost, kIpv6Hint);
+
+  Requester requester = CreateRequester("https://address_hints");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return requester.request()->EndpointsCryptoReady(); }));
+
+  const ConnectionEndpointMetadata expected_metadata(
+      /*supported_protocol_alpns=*/{"http/1.1"}, /*ech_config_list=*/{}, kHost,
+      {});
+
+  // IPv6 hints should be published while waiting for AAAA response.
+  ASSERT_FALSE(requester.finished_result().has_value());
+  EXPECT_THAT(requester.request()->GetEndpointResults(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                  ElementsAre(MakeIPEndPoint("2001:db8::10", 443)),
+                  expected_metadata)));
+
+  // Complete AAAA transaction, superseding IPv6 hints with real IPv6 addresses.
+  mock_dns_client_->CompleteDelayedTransactions();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return requester.finished_result().has_value(); }));
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+  EXPECT_THAT(
+      requester.finished_endpoints(),
+      ElementsAre(
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                                ElementsAre(MakeIPEndPoint("::1", 443)),
+                                expected_metadata),
+          // Non-SVCB endpoints.
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                                ElementsAre(MakeIPEndPoint("::1", 443)))));
+}
+
 class HostResolverServiceEndpointRequestIntermediateResultsOnlyTest
     : public HostResolverServiceEndpointRequestTest {
  public:
