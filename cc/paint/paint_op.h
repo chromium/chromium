@@ -23,6 +23,7 @@
 #include "base/debug/alias.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "cc/base/math_util.h"
 #include "cc/paint/element_id.h"
@@ -95,6 +96,7 @@ enum class PaintOpType : uint8_t {
   kDrawSkottie,
   kDrawSlug,
   kDrawTextBlob,
+  kDrawTextSlugs,
   kDrawVertices,
   kNoop,
   kRestore,
@@ -1057,8 +1059,6 @@ class CC_PAINT_EXPORT DrawTextBlobOp final
   HAS_SERIALIZATION_FUNCTIONS();
 
   sk_sp<SkTextBlob> blob;
-  mutable sk_sp<sktext::gpu::Slug> slug;
-  mutable std::vector<sk_sp<sktext::gpu::Slug>> extra_slugs;
   SkScalar x;
   SkScalar y;
   // This field isn't serialized.
@@ -1066,6 +1066,35 @@ class CC_PAINT_EXPORT DrawTextBlobOp final
 
  private:
   DrawTextBlobOp();
+};
+
+class CC_PAINT_EXPORT DrawTextSlugsOp final
+    : public PaintOpWithFlagsBaseInternal {
+  STACK_ALLOCATED();
+
+ public:
+  static constexpr PaintOpType kType = PaintOpType::kDrawTextSlugs;
+  static constexpr bool kIsDrawOp = true;
+  DrawTextSlugsOp() = delete;
+  explicit DrawTextSlugsOp(const DrawTextBlobOp& op);
+  ~DrawTextSlugsOp();
+  static void RasterWithFlags(const DrawTextSlugsOp* op,
+                              const PaintFlags* flags,
+                              SkCanvas* canvas,
+                              const PlaybackParams& params);
+  bool IsValid() const { return flags.IsValid(); }
+  bool HasDrawTextOps() const { return true; }
+  bool EqualsForTesting(const DrawTextSlugsOp& other) const;
+  HAS_SERIALIZATION_FUNCTIONS();
+
+  // These fields copied from the DrawTextBlobOp given to the constructor.
+  sk_sp<SkTextBlob> blob;
+  SkScalar x;
+  SkScalar y;
+  NodeId node_id = kInvalidNodeId;
+  // These fields used only during serialization.
+  mutable sk_sp<sktext::gpu::Slug> slug;
+  mutable std::vector<sk_sp<sktext::gpu::Slug>> extra_slugs;
 };
 
 class CC_PAINT_EXPORT NoopOp final : public PaintOpBaseInternal {

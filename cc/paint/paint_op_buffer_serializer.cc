@@ -402,12 +402,19 @@ bool PaintOpBufferSerializer::SerializeOp(SkCanvas* canvas,
   if (!valid_)
     return false;
 
+  std::optional<DrawTextSlugsOp> text_slugs_op;
+  if (op.GetType() == PaintOpType::kDrawTextBlob) {
+    text_slugs_op.emplace(static_cast<const DrawTextBlobOp&>(op));
+  }
+  const PaintOp& op_to_serialize = text_slugs_op ? *text_slugs_op : op;
+
   // Playback on analysis canvas first to make sure the canvas transform is set
   // correctly for analysis of records in filters.
-  PlaybackOnAnalysisCanvas(canvas, op, flags_to_serialize, params);
+  PlaybackOnAnalysisCanvas(canvas, op_to_serialize, flags_to_serialize, params);
 
-  size_t bytes = serialize_cb_(callback_data_, op, options_, flags_to_serialize,
-                               canvas->getLocalToDevice(), params.original_ctm);
+  size_t bytes = serialize_cb_(callback_data_, op_to_serialize, options_,
+                               flags_to_serialize, canvas->getLocalToDevice(),
+                               params.original_ctm);
   if (!bytes) {
     valid_ = false;
     return false;
@@ -428,10 +435,10 @@ void PaintOpBufferSerializer::PlaybackOnAnalysisCanvas(
   //    we need the correct ctm at which text and images will be rasterized, and
   //    the clip rect so we can skip sending data for ops which will not be
   //    rasterized.
-  // 2) kDrawtextblob ops since they need to be analyzed by the cache diff
-  // canvas
-  //    to serialize/lock the requisite glyphs for this op.
-  if (op.IsDrawOp() && op.GetType() != PaintOpType::kDrawTextBlob) {
+  // 2) kDrawTextSlugsOps since they need to be analyzed by the cache diff
+  //    canvas to serialize/lock the requisite glyphs for this op.
+  DCHECK(op.GetType() != PaintOpType::kDrawTextBlob);
+  if (op.IsDrawOp() && op.GetType() != PaintOpType::kDrawTextSlugs) {
     return;
   }
 

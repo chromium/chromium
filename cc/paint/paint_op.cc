@@ -166,6 +166,7 @@ PaintFlags::ScalingOperation MatrixToScalingOperation(SkMatrix m) {
   M(DrawSkottieOp)           \
   M(DrawSlugOp)              \
   M(DrawTextBlobOp)          \
+  M(DrawTextSlugsOp)         \
   M(DrawVerticesOp)          \
   M(NoopOp)                  \
   M(RestoreOp)               \
@@ -741,6 +742,13 @@ void DrawTextBlobOp::Serialize(PaintOpWriter& writer,
                                const PaintFlags* flags_to_serialize,
                                const SkM44& current_ctm,
                                const SkM44& original_ctm) const {
+  NOTREACHED();
+}
+
+void DrawTextSlugsOp::Serialize(PaintOpWriter& writer,
+                                const PaintFlags* flags_to_serialize,
+                                const SkM44& current_ctm,
+                                const SkM44& original_ctm) const {
   DrawSlugOp::SerializeSlugs(slug, extra_slugs, writer, flags_to_serialize,
                              current_ctm);
 }
@@ -1141,6 +1149,10 @@ PaintOp* DrawSlugOp::Deserialize(PaintOpReader& reader, void* output) {
 }
 
 PaintOp* DrawTextBlobOp::Deserialize(PaintOpReader& reader, void* output) {
+  NOTREACHED();
+}
+
+PaintOp* DrawTextSlugsOp::Deserialize(PaintOpReader& reader, void* output) {
   NOTREACHED();
 }
 
@@ -1753,30 +1765,43 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
                                      const PaintFlags* flags,
                                      SkCanvas* canvas,
                                      const PlaybackParams& params) {
-  if (op->node_id)
+  DCHECK(!params.is_analyzing);
+  if (op->node_id) {
     SkPDF::SetNodeId(canvas, op->node_id);
+  }
 
-  // The PaintOpBuffer could be rasterized with different global matrix. It is
-  // used for over scall on Android. So we cannot reuse slugs, they have to be
-  // recreated.
-  if (params.is_analyzing) {
-    op->slug.reset();
-    op->extra_slugs.clear();
+  flags->DrawToSk(canvas, [op](SkCanvas* c, const SkPaint& p) {
+    DCHECK(op->blob);
+    c->drawTextBlob(op->blob.get(), op->x, op->y, p);
+  });
+
+  if (op->node_id) {
+    SkPDF::SetNodeId(canvas, 0);
+  }
+}
+
+void DrawTextSlugsOp::RasterWithFlags(const DrawTextSlugsOp* op,
+                                      const PaintFlags* flags,
+                                      SkCanvas* canvas,
+                                      const PlaybackParams& params) {
+  DCHECK(params.is_analyzing);
+  DCHECK(!op->slug.get());
+  DCHECK(op->extra_slugs.empty());
+  if (op->node_id) {
+    SkPDF::SetNodeId(canvas, op->node_id);
   }
 
   // flags may contain DrawLooper for shadow effect, so we need to convert
   // SkTextBlob to slug for each run.
   size_t i = 0;
-  flags->DrawToSk(canvas, [op, &params, &i](SkCanvas* c, const SkPaint& p) {
+  flags->DrawToSk(canvas, [op, &i](SkCanvas* c, const SkPaint& p) {
     DCHECK(op->blob);
     c->drawTextBlob(op->blob.get(), op->x, op->y, p);
-    if (params.is_analyzing) {
-      auto s = sktext::gpu::Slug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
-      if (i == 0) {
-        op->slug = std::move(s);
-      } else {
-        op->extra_slugs.push_back(std::move(s));
-      }
+    auto s = sktext::gpu::Slug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
+    if (i == 0) {
+      op->slug = std::move(s);
+    } else {
+      op->extra_slugs.push_back(std::move(s));
     }
     i++;
   });
@@ -2037,6 +2062,11 @@ bool DrawTextBlobOp::EqualsForTesting(const DrawTextBlobOp& other) const {
          x == other.x && y == other.y && node_id == other.node_id;
 }
 
+bool DrawTextSlugsOp::EqualsForTesting(const DrawTextSlugsOp& other) const {
+  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
+         x == other.x && y == other.y && node_id == other.node_id;
+}
+
 bool DrawSlugOp::EqualsForTesting(const DrawSlugOp& other) const {
   return flags.EqualsForTesting(other.flags) &&  // IN-TEST
          !slug == !other.slug &&
@@ -2133,8 +2163,9 @@ size_t PaintOp::Serialize(base::span<uint8_t> memory,
   g_serialize_functions[type](*this, writer, flags_to_serialize, current_ctm,
                               original_ctm);
 
-  // Convert DrawTextBlobOp to DrawSlugOp.
-  if (GetType() == PaintOpType::kDrawTextBlob) {
+  // Convert DrawTextSlugsOp to DrawSlugOp.
+  DCHECK(GetType() != PaintOpType::kDrawTextBlob);
+  if (GetType() == PaintOpType::kDrawTextSlugs) {
     return writer.FinishOp(static_cast<uint8_t>(PaintOpType::kDrawSlug));
   }
   return writer.FinishOp(type);
@@ -2283,6 +2314,12 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
     case PaintOpType::kDrawTextBlob: {
       const auto& text_op = static_cast<const DrawTextBlobOp&>(op);
       *rect = text_op.blob->bounds().makeOffset(text_op.x, text_op.y);
+      rect->sort();
+      return true;
+    }
+    case PaintOpType::kDrawTextSlugs: {
+      const auto& slugs_op = static_cast<const DrawTextSlugsOp&>(op);
+      *rect = slugs_op.blob->bounds().makeOffset(slugs_op.x, slugs_op.y);
       rect->sort();
       return true;
     }
@@ -2714,6 +2751,15 @@ DrawTextBlobOp::DrawTextBlobOp(sk_sp<SkTextBlob> blob,
       node_id(node_id) {}
 
 DrawTextBlobOp::~DrawTextBlobOp() = default;
+
+DrawTextSlugsOp::DrawTextSlugsOp(const DrawTextBlobOp& op)
+    : PaintOpWithFlagsBaseInternal(kType, op.flags),
+      blob(op.blob),
+      x(op.x),
+      y(op.y),
+      node_id(op.node_id) {}
+
+DrawTextSlugsOp::~DrawTextSlugsOp() = default;
 
 DrawSlugOp::DrawSlugOp() : PaintOpWithFlagsBaseInternal(kType) {}
 

@@ -1979,6 +1979,8 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
         // TODO(crbug.com/40223786): fix the test for kDrawtextblobs
         // PushDrawTextBlobOps(&buffer_);
         break;
+      case PaintOpType::kDrawTextSlugs:
+        break;
       case PaintOpType::kDrawVertices:
         PushDrawVerticesOps(&buffer_);
         break;
@@ -2027,6 +2029,7 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
   bool IsTypeSupported() {
     // TODO(crbug.com/40223786): fix the test for kDrawTextBlobs
     if (GetParamType() == PaintOpType::kDrawTextBlob ||
+        GetParamType() == PaintOpType::kDrawTextSlugs ||
         GetParamType() == PaintOpType::kDrawSlug) {
       return false;
     }
@@ -2284,6 +2287,7 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
 
   // See https://crbug.com/1321150#c3.
   if (GetParamType() == PaintOpType::kDrawTextBlob ||
+      GetParamType() == PaintOpType::kDrawTextSlugs ||
       GetParamType() == PaintOpType::kDrawSlug) {
     return;
   }
@@ -2394,29 +2398,20 @@ TEST(PaintOpSerializationTest,
   size_t output_size = kSerializedBytesPerOp * buffer.size();
   auto output = AllocateSerializedBuffer(output_size);
   base::span<uint8_t> output_span = output.as_span();
-  SimpleSerializer serializer(output_span);
-
-  auto canvas =
-      serializer.options_provider()->strike_server()->makeAnalysisCanvas(
-          1024, 768, {}, nullptr, true);
-  PlaybackParams params(nullptr, canvas->getLocalToDevice());
-  params.is_analyzing = true;
-  buffer.Playback(canvas.get(), params);
-
-  std::vector<uint8_t> strike_data;
-  serializer.options_provider()->strike_server()->writeStrikeData(&strike_data);
-
-  if (!strike_data.empty()) {
-    serializer.options_provider()->strike_client()->readStrikeData(
-        strike_data.data(), strike_data.size());
-  }
-
+  TestOptionsProvider options_provider;
+  SimpleBufferSerializer serializer(output_span,
+                                    options_provider.serialize_options());
   serializer.Serialize(buffer);
 
+  std::vector<uint8_t> strike_data;
+  options_provider.strike_server()->writeStrikeData(&strike_data);
+  ASSERT_FALSE(strike_data.empty());
+  options_provider.strike_client()->readStrikeData(strike_data.data(),
+                                                   strike_data.size());
   size_t i = 0;
-  for (const PaintOp& base_written : DeserializerIterator(
-           output_span.first(serializer.TotalBytesWritten()),
-           serializer.options_provider()->deserialize_options())) {
+  for (const PaintOp& base_written :
+       DeserializerIterator(output_span.first(serializer.written()),
+                            options_provider.deserialize_options())) {
     ASSERT_TRUE(iter);
     EXPECT_EQ(PaintOpType::kDrawSlug, base_written.GetType());
     ++iter;

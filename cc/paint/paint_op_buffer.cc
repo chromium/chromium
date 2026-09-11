@@ -80,6 +80,9 @@ PaintOpBuffer::PaintOpBuffer(PaintOpBuffer&& other) {
 }
 
 PaintRecord PaintOpBuffer::DeepCopyAsRecord() const {
+  // TODO(paint-dev): This was added at a time when DrawTextBlobOp was racy, but
+  // it's not any more, so is this method still necessary, or can we safely
+  // share PaintOpBuffers across threads?
   auto result = sk_make_sp<PaintOpBuffer>();
   *result += *this;
   return PaintRecord(std::move(result));
@@ -224,6 +227,9 @@ void PaintOpBuffer::Append(
         const auto& o = static_cast<const DrawTextBlobOp&>(op);
         push<DrawTextBlobOp>(o.blob, o.x, o.y, o.node_id, o.flags);
       } break;
+      case PaintOpType::kDrawTextSlugs: {
+        NOTREACHED();
+      }
       case PaintOpType::kDrawVertices: {
         const auto& o = static_cast<const DrawVerticesOp&>(op);
         push<DrawVerticesOp>(o.vertices, o.uvs, o.indices, o.flags);

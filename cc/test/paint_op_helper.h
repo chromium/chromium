@@ -206,6 +206,12 @@ class PaintOpHelper {
             << ", y=" << ToString(op.y) << ", flags=" << ToString(op.flags);
         break;
       }
+      case PaintOpType::kDrawTextSlugs: {
+        const auto& op = static_cast<const DrawTextSlugsOp&>(base_op);
+        str << "blob=" << ToString(op.blob) << ", x=" << ToString(op.x)
+            << ", y=" << ToString(op.y) << ", flags=" << ToString(op.flags);
+        break;
+      }
       case PaintOpType::kDrawSlug: {
         const auto& op = static_cast<const DrawSlugOp&>(base_op);
         str << "flags=" << ToString(op.flags);
