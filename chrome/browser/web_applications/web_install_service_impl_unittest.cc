@@ -1118,5 +1118,28 @@ TEST_F(WebInstallServiceImplTest,
       1);
 }
 
+// Navigating away before the install completes aborts the install with
+// kAbortError and records kUnexpectedFailure.
+TEST_F(WebInstallServiceImplTest, CurrentDocument_PageNavigated_Aborts) {
+  base::HistogramTester histograms;
+  GURL custom_id("https://requesting-app.com/my_app_id");
+  auto manifest = CreateManifest(GURL(kDocumentUrl), custom_id);
+  SetupPageWithManifest(GURL(kDocumentUrl), std::move(manifest));
+
+  BindService();
+
+  // Navigate away so the bound RenderFrameHost / page is no longer primary.
+  NavigateAndCommit(GURL("https://different-site.com/"));
+
+  blink::mojom::WebInstallServiceResult result =
+      InstallFromApiCurrentDocument();
+
+  EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kAbortError);
+  histograms.ExpectBucketCount(kInstallApiResultUma,
+                               WebInstallServiceResult::kUnexpectedFailure, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kUnexpectedFailure, 1);
+}
+
 }  // namespace
 }  // namespace web_app

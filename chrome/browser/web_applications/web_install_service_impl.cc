@@ -409,11 +409,6 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
   }
   base::ScopedClosureRunner install_guard = ReserveInstallInProgress();
 
-  // Snapshot the Page for the install command, which can outlive the document
-  // service, and needs to detect if the page navigated away at any point.
-  initiating_page_ = render_frame_host().GetPage().GetWeakPtr();
-  initiating_page_changed_during_install_ = false;
-
   // Available regardless of fetch/parse, so it is recorded on every exit path.
   ukm::SourceId requesting_page_source_id =
       render_frame_host().GetPageUkmSourceId();
@@ -734,6 +729,15 @@ void WebInstallServiceImpl::OnDidCheckInstallabilityForCurrentDocumentInstall(
     return;
   }
 
+  // The initiating page changed during manifest check - this intentionally
+  // comes after the id checks above to preserve DataError behavior.
+  if (IsInitiatingPageGoneOrChanged()) {
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+
   // Manifest was successfully parsed and meets all web install requirements.
   // Check if web app installs are supported in this profile (fails for
   // Incognito/Guest). This check intentionally comes after manifest parse so
@@ -818,6 +822,13 @@ void WebInstallServiceImpl::RecheckInstalledAppMaybeLaunch(
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   CHECK(provider);
 
+  if (IsInitiatingPageGoneOrChanged()) {
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+
   // Now that we know the app is already installed, show the intent picker
   // scoped to the resolved app so nested-scope URLs don't reintroduce ambiguity
   // between the parent and child apps that both control the current document.
@@ -833,9 +844,9 @@ void WebInstallServiceImpl::OnIntentPickerMaybeLaunched(
     InstallFromManifestCallbackWithMetrics callback_with_metrics,
     webapps::AppId app_id,
     bool user_chose_to_open) {
-  // If the user chose to open the app in the intent picker, return success.
-  // Otherwise, return an abort error.
-  if (user_chose_to_open) {
+  // If the user chose to open the app in the intent picker and the page is
+  // still live, return success. Otherwise, return an abort error.
+  if (user_chose_to_open && !IsInitiatingPageGoneOrChanged()) {
     OnAppInstalledFromManifest(
         std::move(callback_with_metrics), app_id,
         webapps::InstallResultCode::kSuccessAlreadyInstalled);
@@ -1261,6 +1272,10 @@ bool WebInstallServiceImpl::IsInstallInProgress() const {
 
 base::ScopedClosureRunner WebInstallServiceImpl::ReserveInstallInProgress() {
   install_in_progress_ = true;
+  // Snapshot the Page for the install operation, which can outlive the document
+  // service or be BFCached, and needs to detect if the page navigated away.
+  initiating_page_ = render_frame_host().GetPage().GetWeakPtr();
+  initiating_page_changed_during_install_ = false;
   return base::ScopedClosureRunner(
       base::BindOnce(&WebInstallServiceImpl::ReleaseInstallInProgress,
                      weak_ptr_factory_.GetWeakPtr()));
