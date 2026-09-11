@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/atomicops.h"
 #include "base/base_switches.h"
 #include "base/byte_size.h"
 #include "base/clang_profiling_buildflags.h"
@@ -208,6 +209,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
+#include "third_party/blink/public/mojom/crash/crash_memory_metrics_reporter.mojom.h"
 #include "third_party/blink/public/mojom/disk_allocator.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom.h"
@@ -2013,6 +2015,7 @@ bool RenderProcessHostImpl::Init() {
   CreateMessageFilters();
   RegisterMojoInterfaces();
   CreateMetricsAllocator();
+  CreateCrashMemoryMetricsBuffer();
 
   // Calculate the CPU performance tier, allowing for overrides.
   content::cpu_performance::Tier cpu_tier;
@@ -4128,6 +4131,18 @@ RenderProcessHostImpl::GetUnresponsiveDocumentToken() const {
   return unresponsive_document_token_;
 }
 
+std::optional<blink::OomInterventionMetrics>
+RenderProcessHostImpl::GetCrashMemoryMetrics() const {
+  if (!crash_memory_metrics_mapping_.IsValid()) {
+    return std::nullopt;
+  }
+  blink::OomInterventionMetrics memory_metrics;
+  base::subtle::RelaxedAtomicWriteMemcpy(
+      base::byte_span_from_ref(memory_metrics),
+      crash_memory_metrics_mapping_.GetMemoryAsSpan<uint8_t>());
+  return memory_metrics;
+}
+
 void RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken(
     const std::string& untrusted_javascript_call_stack,
     const std::optional<blink::LocalFrameToken>& frame_token) {
@@ -5597,6 +5612,22 @@ void RenderProcessHostImpl::CreateMetricsAllocator() {
         MakeRefCounted<base::RefCountedData<base::UnsafeSharedMemoryRegion>>(
             std::move(shared_memory->region));
     metrics_allocator_ = std::move(shared_memory->allocator);
+  }
+}
+
+void RenderProcessHostImpl::CreateCrashMemoryMetricsBuffer() {
+  base::UnsafeSharedMemoryRegion shared_metrics_buffer =
+      base::UnsafeSharedMemoryRegion::Create(
+          sizeof(blink::OomInterventionMetrics));
+  if (shared_metrics_buffer.IsValid()) {
+    crash_memory_metrics_mapping_ = shared_metrics_buffer.Map();
+    if (crash_memory_metrics_mapping_.IsValid()) {
+      std::ranges::fill(
+          crash_memory_metrics_mapping_.GetMemoryAsSpan<uint8_t>(), 0);
+      mojo::Remote<blink::mojom::CrashMemoryMetricsReporter> reporter;
+      BindReceiver(reporter.BindNewPipeAndPassReceiver());
+      reporter->SetSharedMemory(shared_metrics_buffer.Duplicate());
+    }
   }
 }
 

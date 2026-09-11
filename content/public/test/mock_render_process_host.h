@@ -281,6 +281,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   const std::string& GetUnresponsiveDocumentJavascriptCallStack()
       const override;
   const blink::LocalFrameToken& GetUnresponsiveDocumentToken() const override;
+  std::optional<blink::OomInterventionMetrics> GetCrashMemoryMetrics()
+      const override;
   void SetUnresponsiveDocumentJSCallStackAndToken(
       std::string javascript_call_stack,
       blink::LocalFrameToken token);

@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/safe_ref.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/structured_shared_memory.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/observer_list.h"
@@ -398,6 +399,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   const std::string& GetUnresponsiveDocumentJavascriptCallStack()
       const override;
   const blink::LocalFrameToken& GetUnresponsiveDocumentToken() const override;
+  std::optional<blink::OomInterventionMetrics> GetCrashMemoryMetrics()
+      const override;
 
   void SetUnresponsiveDocumentJSCallStackAndToken(
       const std::string& untrusted_javascript_call_stack,
@@ -1188,6 +1191,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // process.
   void CreateMetricsAllocator();
 
+  // Creates shared memory for Blink's CrashMemoryMetricsReporter to record
+  // allocation failures / OOM metrics.
+  void CreateCrashMemoryMetricsBuffer();
+
   // Shares the histogram UnsafeSharedMemoryRegion, post launch, with the child
   // renderer process via IPC. This also serves to and notify the child to send
   // any early histograms it may have recorded before the shared memory region
@@ -1562,6 +1569,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // The destruction order of the host, launcher and child are indeterminate.
   scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
       metrics_memory_region_;
+
+  // Shared memory region for Blink's CrashMemoryMetricsReporter.
+  base::WritableSharedMemoryMapping crash_memory_metrics_mapping_;
 
   // The tracing config memory region. The memory region is allocated by the
   // process host (this object) but ownership is shared with the child process

@@ -7,12 +7,16 @@
 
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 #include "third_party/blink/public/mojom/crash/crash_memory_metrics_reporter.mojom-blink.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
+
+#if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/renderer/platform/timer.h"
+#endif
 
 namespace blink {
 
@@ -44,12 +48,16 @@ class CONTROLLER_EXPORT CrashMemoryMetricsReporterImpl
   FRIEND_TEST_ALL_PREFIXES(OomInterventionImplTest, CalculateProcessFootprint);
 
   void WriteIntoSharedMemory();
+#if BUILDFLAG(IS_ANDROID)
   void SampleMemoryState(TimerBase*);
+#endif
 
   OomInterventionMetrics last_reported_metrics_;
   base::WritableSharedMemoryMapping shared_metrics_mapping_;
   mojo::Receiver<mojom::blink::CrashMemoryMetricsReporter> receiver_{this};
+#if BUILDFLAG(IS_ANDROID)
   TaskRunnerTimer<CrashMemoryMetricsReporterImpl> timer_;
+#endif
 };
 }  // namespace blink
 

@@ -656,6 +656,11 @@ MockRenderProcessHost::GetUnresponsiveDocumentToken() const {
   return unresponsive_document_token_;
 }
 
+std::optional<blink::OomInterventionMetrics>
+MockRenderProcessHost::GetCrashMemoryMetrics() const {
+  return std::nullopt;
+}
+
 void MockRenderProcessHost::SetUnresponsiveDocumentJSCallStackAndToken(
     std::string javascript_call_stack,
     blink::LocalFrameToken token) {

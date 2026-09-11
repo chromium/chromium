@@ -50,6 +50,8 @@ component("controller") {
     "blink_leak_detector.h",
     "blink_shutdown.cc",
     "controller_export.h",
+    "crash_memory_metrics_reporter_impl.cc",
+    "crash_memory_metrics_reporter_impl.h",
     "dev_tools_frontend_impl.cc",
     "dev_tools_frontend_impl.h",
     "javascript_call_stack_collector.cc",
@@ -79,8 +81,6 @@ component("controller") {
   }
   if (is_android) {
     sources += [
-      "crash_memory_metrics_reporter_impl.cc",
-      "crash_memory_metrics_reporter_impl.h",
       "memory_usage_monitor_posix.cc",
       "memory_usage_monitor_posix.h",
       "oom_intervention_impl.cc",

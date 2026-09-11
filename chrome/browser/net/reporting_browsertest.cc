@@ -686,6 +686,7 @@ IN_PROC_BROWSER_TEST_P(
   upload_response()->WaitForRequest();
   base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
+  ASSERT_FALSE(response.empty());
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
@@ -727,6 +728,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
   upload_response()->WaitForRequest();
   base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
+  ASSERT_FALSE(response.empty());
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
@@ -771,12 +773,60 @@ IN_PROC_BROWSER_TEST_P(
   upload_response()->WaitForRequest();
   base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
+  ASSERT_FALSE(response.empty());
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify that the crash report was generated with reason: "oom" rather than
   // "unresponsive".
+  const base::DictValue& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::DictValue* body = report.FindDict("body");
+  ASSERT_NE(body, nullptr);
+  const std::string* reason = body->FindString("reason");
+
+  ASSERT_NE(type, nullptr);
+  EXPECT_EQ("crash", *type);
+
+  ASSERT_NE(url, nullptr);
+  EXPECT_EQ(*url, main_url.spec());
+
+  ASSERT_NE(reason, nullptr);
+  EXPECT_EQ("oom", *reason);
+}
+
+IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
+                       DISABLED_ON_ASAN(CrashReportMemoryExhaust)) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  content::RenderProcessHostWatcher crash_observer(
+      contents, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  contents->GetController().LoadURL(GURL(blink::kChromeUIMemoryExhaustURL),
+                                    content::Referrer(),
+                                    ui::PAGE_TRANSITION_TYPED, std::string());
+  crash_observer.Wait();
+
+  upload_response()->WaitForRequest();
+  base::ListValue response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  ASSERT_FALSE(response.empty());
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify that the crash report was generated with reason: "oom" from Blink's
+  // OOM callback.
   const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");

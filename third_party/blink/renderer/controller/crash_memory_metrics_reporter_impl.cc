@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
 #include "base/process/process_metrics.h"
+#include "build/build_config.h"
 #include "partition_alloc/oom_callback.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -37,12 +38,15 @@ CrashMemoryMetricsReporterImpl& CrashMemoryMetricsReporterImpl::Instance() {
 }
 
 CrashMemoryMetricsReporterImpl::CrashMemoryMetricsReporterImpl()
+#if BUILDFLAG(IS_ANDROID)
     : timer_(Thread::MainThread()
                  ->Scheduler()
                  ->ToMainThreadScheduler()
                  ->NonWakingTaskRunner(),
              this,
-             &CrashMemoryMetricsReporterImpl::SampleMemoryState) {
+             &CrashMemoryMetricsReporterImpl::SampleMemoryState)
+#endif
+{
   ::partition_alloc::SetPartitionAllocOomCallback(
       CrashMemoryMetricsReporterImpl::OnOOMCallback);
 }
@@ -54,7 +58,9 @@ void CrashMemoryMetricsReporterImpl::SetSharedMemory(
   // This method should be called only once per process.
   DCHECK(!shared_metrics_mapping_.IsValid());
   shared_metrics_mapping_ = shared_metrics_buffer.Map();
+#if BUILDFLAG(IS_ANDROID)
   timer_.StartRepeating(base::Seconds(1), FROM_HERE);
+#endif
 }
 
 void CrashMemoryMetricsReporterImpl::WriteIntoSharedMemory() {
@@ -66,6 +72,7 @@ void CrashMemoryMetricsReporterImpl::WriteIntoSharedMemory() {
       base::byte_span_from_ref(last_reported_metrics_));
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void CrashMemoryMetricsReporterImpl::SampleMemoryState(TimerBase*) {
   base::SystemMemoryInfo meminfo;
   base::GetSystemMemoryInfo(&meminfo);
@@ -75,6 +82,7 @@ void CrashMemoryMetricsReporterImpl::SampleMemoryState(TimerBase*) {
   last_reported_metrics_ = metrics;
   WriteIntoSharedMemory();
 }
+#endif
 
 void CrashMemoryMetricsReporterImpl::OnOOMCallback() {
   // TODO(yuzus: Support allocation failures on other threads as well.

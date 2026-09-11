@@ -17392,7 +17392,10 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   }
   CHECK(is_local_root());
 
+  auto metrics = GetProcess()->GetCrashMemoryMetrics();
+
   const bool is_oom =
+      (metrics && metrics->allocation_failed != 0) ||
 #if BUILDFLAG(IS_WIN)
       static_cast<DWORD>(exit_code) == base::win::kOomExceptionCode ||
       static_cast<DWORD>(exit_code) == base::win::kSandboxFatalMemoryExceeded ||
