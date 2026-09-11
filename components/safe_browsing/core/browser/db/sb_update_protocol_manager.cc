@@ -55,9 +55,7 @@ SBUpdateProtocolManager::SBUpdateProtocolManager(
           base::Seconds(base::RandIntInclusive(GetTimerStartIntervalSecMin(),
                                                GetTimerStartIntervalSecMax()))),
       config_(config),
-      url_loader_factory_(url_loader_factory),
-      update_error_count_(0),
-      update_back_off_mult_(1) {
+      url_loader_factory_(url_loader_factory) {
   // Do not auto-schedule updates. Let the owner (SBLocalDatabaseManager) do it
   // when it is ready to process updates.
 }

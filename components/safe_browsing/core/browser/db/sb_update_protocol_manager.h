@@ -144,12 +144,10 @@ class SBUpdateProtocolManager {
  private:
   // The number of HTTP response errors since the the last successful HTTP
   // response, used for request backoff timing.
-  // TODO(crbug.com/362791941): Initialize (feedback from crrev.com/c/7791276).
-  size_t update_error_count_;
+  size_t update_error_count_ = 0;
 
   // Multiplier for the backoff error after the second.
-  // TODO(crbug.com/362791941): Initialize (feedback from crrev.com/c/7791276).
-  size_t update_back_off_mult_;
+  size_t update_back_off_mult_ = 1;
 };
 
 }  // namespace safe_browsing

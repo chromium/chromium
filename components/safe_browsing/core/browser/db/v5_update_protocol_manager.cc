@@ -326,7 +326,6 @@ V5UpdateProtocolManager::ParseUpdateResponse(
     return base::unexpected(V5ParseResult::kMismatchedSizeError);
   }
   std::map<ListIdentifier, V5::HashList> parsed_response;
-  // TODO(crbug.com/362791941): consider non-optional + initialize to max time
   std::optional<base::TimeDelta> overall_minimum_wait_duration;
   for (int i = 0; i < server_response.hash_lists_size(); ++i) {
     V5::HashList& hash_list = *server_response.mutable_hash_lists(i);
