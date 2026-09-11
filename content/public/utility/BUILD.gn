@@ -29,13 +29,6 @@ source_set("utility_sources") {
     "//content:export",
     "//content/public/child:child_sources",
     "//content/public/common:common_sources",
-    "//content/utility",
     "//ipc",
-  ]
-
-  allow_circular_includes_from = [
-    # This target is a pair with content/browser. They always go together and
-    # include headers from each other.
-    "//content/utility",
   ]
 }

@@ -12,12 +12,9 @@ import("//services/accessibility/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 
 source_set("utility") {
-  # Only the public target should depend on this. All other targets (even
-  # internal content ones other than test) should depend on the public one.
   visibility = [
     ":for_content_tests",
     "//content/app:*",
-    "//content/public/utility:utility_sources",
   ]
 
   sources = [
@@ -48,6 +45,7 @@ source_set("utility") {
     "//content/public/child:child_sources",
     "//content/public/common:common_sources",
     "//content/public/common:content_descriptor_keys",
+    "//content/public/utility:utility_sources",
     "//content/services/devtools_media_encoding_service",
     "//content/utility/on_device_model:on_device_model_sandbox_init",
     "//content/utility/webnn:webnn_sandbox_init",
