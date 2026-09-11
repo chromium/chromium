@@ -1711,6 +1711,95 @@ suite('OmniboxEverywhereAppTest', () => {
 
         assertFalse(app.hasAttribute('show-voice-search-overlay_'));
       });
+
+  test(
+      'window focus event focuses searchbox input in searchbox mode',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        assertTrue(!!searchbox);
+
+        let focusCalled = false;
+        searchbox.focusInput = () => {
+          focusCalled = true;
+        };
+
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+
+        assertTrue(focusCalled);
+      });
+
+  test(
+      'window focus event focuses composebox input in composebox mode',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: '', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+
+        let focusCalled = false;
+        composebox.focusInput = () => {
+          focusCalled = true;
+        };
+
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+
+        assertTrue(focusCalled);
+      });
+
+  test(
+      'window focus event does not focus input when voice search dialog is ' +
+          'open',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent(
+            'open-voice-search', {bubbles: true, composed: true}));
+        await microtasksFinished();
+
+        let focusCalled = false;
+        searchbox.focusInput = () => {
+          focusCalled = true;
+        };
+
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+
+        assertFalse(focusCalled);
+      });
+
+  test(
+      'window focus event does not focus input when FRE intro modal is open',
+      async () => {
+        testProxy.page.setFreState({
+          stage: FreStage.kIntroModal,
+          currentHotkeyTokens: [],
+        });
+        await microtasksFinished();
+
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        let focusCalled = false;
+        searchbox.focusInput = () => {
+          focusCalled = true;
+        };
+
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+
+        assertFalse(focusCalled);
+      });
+
   test('addFileContext Mojo event updates composebox thumbnail', async () => {
     const omniboxElement =
         app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;

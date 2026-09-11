@@ -165,28 +165,15 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.isActive_ = document.hasFocus();
-    let wasInactive = false;
     this.eventTracker_.add(window, 'focus', () => {
       this.isActive_ = true;
+      this.focusActiveInput_();
     });
     this.eventTracker_.add(window, 'blur', () => {
       this.isActive_ = false;
     });
-    this.eventTracker_.add(this, 'pointerdown', () => {
-      if (!this.isActive_) {
-        wasInactive = true;
-        this.isActive_ = true;
-      }
-    });
-    this.eventTracker_.add(this, 'click', () => {
-      if (wasInactive) {
-        wasInactive = false;
-        (this.searchbox ?? this.composebox)?.focusInput();
-      }
-    });
     this.eventTracker_.add(
-        document.documentElement, 'visibilitychange',
-        this.onVisibilitychange_.bind(this));
+        document, 'visibilitychange', this.onVisibilitychange_.bind(this));
     this.setupListeners_();
     this.onVisibilitychange_();
   }
@@ -445,23 +432,35 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     this.composeboxState_ = null;
     this.setIsComposebox_(false);
     await this.updateComplete;
-    const searchbox =
-        this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
-            'omnibox-everywhere-omnibox');
-    if (searchbox) {
-      searchbox.focusInput();
-    }
+    this.focusActiveInput_();
   }
 
   protected async onComposeboxSubmit_() {
     this.composeboxState_ = null;
     this.isComposeboxMode_ = false;
     await this.updateComplete;
-    const searchbox =
-        this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
-            'omnibox-everywhere-omnibox');
-    if (searchbox) {
-      searchbox.focusInput();
+    this.focusActiveInput_();
+  }
+
+  private shouldAutoFocusInput_(): boolean {
+    if (this.isFreIntroModal_() || this.showVoiceSearchOverlay_) {
+      return false;
+    }
+    const openDialog = this.shadowRoot?.querySelector('dialog[open]');
+    if (openDialog) {
+      return false;
+    }
+    return true;
+  }
+
+  private focusActiveInput_() {
+    if (!this.shouldAutoFocusInput_()) {
+      return;
+    }
+    if (this.isComposeboxMode_) {
+      this.composebox?.focusInput();
+    } else {
+      this.searchbox?.focusInput();
     }
   }
 
@@ -471,21 +470,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     }
 
     await this.updateComplete;
-    if (this.isComposeboxMode_) {
-      const composebox =
-          this.shadowRoot?.querySelector<OmniboxEverywhereComposeboxElement>(
-              'omnibox-everywhere-composebox');
-      if (composebox) {
-        composebox.focusInput();
-      }
-    } else {
-      const searchbox =
-          this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
-              'omnibox-everywhere-omnibox');
-      if (searchbox) {
-        searchbox.focusInput();
-      }
-    }
+    this.focusActiveInput_();
   }
 
   // TODO(b/540973063): Extract common voice search lifecycle handling into
