@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -84,6 +85,8 @@
 - (base::UnguessableToken)createInputItemForWebState:(web::WebState*)webState
                                               source:(ComposeboxInputItemSource)
                                                          source;
+- (BOOL)isWebStateIDRemoved:(web::WebStateID)webStateID;
+- (void)removeDeselectedIDs:(std::set<web::WebStateID>)deselectedIDs;
 @end
 
 // Mock consumer for the mediator.
@@ -1203,6 +1206,187 @@ TEST_F(ComposeboxInputPlateMediatorTest, RemovesAttachedTabOnCloseInCobrowse) {
 
   // In cobrowse mode, the attached tab must be removed.
   EXPECT_EQ(consumer.items.count, 0U);
+}
+
+// Tests that removing an auto-added tab in Co-browse mode prevents it from
+// being automatically re-added when the omnibox is focused or re-focused.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       AutoAddedTabRemovedStaysRemovedOnRefocus) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:nullptr
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+  web::WebStateID web_state_id = active_web_state->GetUniqueIdentifier();
+
+  // Create an auto-added item for the active tab.
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* item = consumer.items.firstObject;
+  ASSERT_TRUE(item != nil);
+  item.isAutoAdded = YES;
+
+  EXPECT_FALSE([mediator isWebStateIDRemoved:web_state_id]);
+
+  // Explicitly remove the item.
+  [mediator removeItem:item];
+  EXPECT_EQ(consumer.items.count, 0U);
+  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+
+  // Refocusing the omnibox must not clear removed state or trigger
+  // auto-attachment.
+  [mediator setOmniboxFocused:NO];
+  [mediator setOmniboxFocused:YES];
+  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+
+  // Page load completion events must also not clear removed state.
+  web::FakeWebState* fake_web_state =
+      static_cast<web::FakeWebState*>(active_web_state);
+  fake_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+}
+
+// Tests that navigating to a new URL re-enables auto-attachment for the tab
+// even if it was previously removed.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       AutoAddedTabRemovedReaddedAfterCommittedNavigation) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:nullptr
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+  web::WebStateID web_state_id = active_web_state->GetUniqueIdentifier();
+
+  // Create an auto-added item for the active tab.
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* item = consumer.items.firstObject;
+  ASSERT_TRUE(item != nil);
+  item.isAutoAdded = YES;
+
+  // User explicitly removes the tab.
+  [mediator removeItem:item];
+  EXPECT_EQ(consumer.items.count, 0U);
+  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+
+  // Simulate navigating the web state to a same-document URL (should stay
+  // removed).
+  web::FakeWebState* fake_web_state =
+      static_cast<web::FakeWebState*>(active_web_state);
+  web::FakeNavigationContext same_doc_context;
+  same_doc_context.SetHasCommitted(true);
+  same_doc_context.SetIsSameDocument(true);
+  fake_web_state->OnNavigationFinished(&same_doc_context);
+  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+
+  // Simulate navigating the web state to a new document (committed).
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  fake_web_state->OnNavigationFinished(&context);
+
+  // The new page navigation clears the removed state, re-enabling
+  // auto-attachment.
+  EXPECT_FALSE([mediator isWebStateIDRemoved:web_state_id]);
+}
+
+// Tests that deselecting a tab in the tab picker prevents it from being
+// auto-added on subsequent focus in Co-browse mode.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       TabPickerDeselectedTabStaysRemovedOnFocus) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:nullptr
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+  web::WebStateID web_state_id = active_web_state->GetUniqueIdentifier();
+
+  // Create an item for the active tab.
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  EXPECT_FALSE([mediator isWebStateIDRemoved:web_state_id]);
+
+  // Deselect the tab via tab picker removal.
+  [mediator removeDeselectedIDs:{web_state_id}];
+  EXPECT_EQ(consumer.items.count, 0U);
+  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+
+  // Explicitly attaching the tab clears its removed status.
+  [mediator attachSelectedTabsWithWebStateIDs:{web_state_id}
+                            cachedWebStateIDs:{}];
+  EXPECT_FALSE([mediator isWebStateIDRemoved:web_state_id]);
 }
 
 }  // namespace
