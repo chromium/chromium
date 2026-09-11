@@ -1076,11 +1076,7 @@ BASE_FEATURE(kWebCodecsVideoEncoderFrameDrop,
 // Inform webrtc with correct video color space information whenever
 // possible.
 BASE_FEATURE(kWebRTCColorAccuracy,
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
 // A hardware video encoder is allowed to drop a frame in WebRTC.
