@@ -18,6 +18,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/input_monitor/raw_input_handler.h"
+#include "remoting/host/win/input_extra_info.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -51,8 +52,7 @@ KeyboardRawInputHandler::KeyboardRawInputHandler(
 KeyboardRawInputHandler::~KeyboardRawInputHandler() = default;
 
 void KeyboardRawInputHandler::OnInputEvent(const RAWINPUT& event) {
-  if (event.header.dwType == RIM_TYPEKEYBOARD &&
-      event.header.hDevice != nullptr) {
+  if (event.header.dwType == RIM_TYPEKEYBOARD && !IsCrdInjectedInput(event)) {
     std::uint16_t vkey = event.data.keyboard.VKey;
     std::uint32_t scancode = MapVirtualKey(vkey, MAPVK_VK_TO_VSC);
     std::uint32_t usb_keycode =

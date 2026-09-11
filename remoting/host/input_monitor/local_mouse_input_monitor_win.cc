@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/input_monitor/local_pointer_input_monitor.h"
 #include "remoting/host/input_monitor/raw_input_handler.h"
+#include "remoting/host/win/input_extra_info.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -54,8 +55,9 @@ MouseRawInputHandler::~MouseRawInputHandler() = default;
 
 void MouseRawInputHandler::OnInputEvent(const RAWINPUT& event) {
   // Notify the observer about mouse events generated locally. Remote (injected)
-  // mouse events do not specify a device handle (based on observed behavior).
-  if (event.header.dwType != RIM_TYPEMOUSE || event.header.hDevice == nullptr) {
+  // mouse events do not specify a device handle (based on observed behavior)
+  // and are stamped with kCrdInputExtraInfo.
+  if (event.header.dwType != RIM_TYPEMOUSE || IsCrdInjectedInput(event)) {
     return;
   }
 

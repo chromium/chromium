@@ -146,6 +146,7 @@ source_set("win") {
     "host_event_logger.h",
     "host_event_windows_event_logger.h",
     "host_service.h",
+    "input_extra_info.h",
     "launch_process_with_token.cc",
     "launch_process_with_token.h",
     "mouse_cursor_monitor_win.cc",

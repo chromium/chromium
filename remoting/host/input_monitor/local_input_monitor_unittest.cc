@@ -17,6 +17,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "remoting/host/win/input_extra_info.h"
+#endif
+
 namespace remoting {
 
 using testing::_;
@@ -97,5 +103,104 @@ TEST_F(LocalInputMonitorTest, BasicWithCallbacks) {
   task_runner_->PostTask(FROM_HERE, task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 }
+
+#if BUILDFLAG(IS_WIN)
+struct IsCrdInjectedInputTestCase {
+  const char* test_name;
+  DWORD dwType;
+  bool has_device_handle;
+  uint32_t extra_info;
+  bool expected_is_crd;
+};
+
+class LocalInputMonitorWinTest
+    : public testing::TestWithParam<IsCrdInjectedInputTestCase> {};
+
+TEST_P(LocalInputMonitorWinTest, DistinguishesCrdInjectedFromSoftwareInput) {
+  const auto& param = GetParam();
+  RAWINPUT event = {};
+  event.header.dwType = param.dwType;
+  if (param.has_device_handle) {
+    event.header.hDevice = reinterpret_cast<HANDLE>(0x1234);
+  }
+  if (param.dwType == RIM_TYPEMOUSE) {
+    event.data.mouse.ulExtraInformation = param.extra_info;
+  } else if (param.dwType == RIM_TYPEKEYBOARD) {
+    event.data.keyboard.ExtraInformation = param.extra_info;
+  }
+
+  EXPECT_EQ(IsCrdInjectedInput(event), param.expected_is_crd);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LocalInputMonitorWinTest,
+    testing::Values(
+        IsCrdInjectedInputTestCase{
+            .test_name = "HardwareMouseNoExtraInfo",
+            .dwType = RIM_TYPEMOUSE,
+            .has_device_handle = true,
+            .extra_info = 0,
+            .expected_is_crd = false,
+        },
+        IsCrdInjectedInputTestCase{
+            .test_name = "HardwareMouseWithCrdExtraInfo",
+            .dwType = RIM_TYPEMOUSE,
+            .has_device_handle = true,
+            .extra_info = kCrdInputExtraInfo,
+            .expected_is_crd = false,
+        },
+        IsCrdInjectedInputTestCase{
+            .test_name = "SoftwareMouseNoExtraInfo",
+            .dwType = RIM_TYPEMOUSE,
+            .has_device_handle = false,
+            .extra_info = 0,
+            .expected_is_crd = false,
+        },
+        IsCrdInjectedInputTestCase{
+            .test_name = "CrdInjectedMouse",
+            .dwType = RIM_TYPEMOUSE,
+            .has_device_handle = false,
+            .extra_info = kCrdInputExtraInfo,
+            .expected_is_crd = true,
+        },
+        IsCrdInjectedInputTestCase{
+            .test_name = "HardwareKeyboardNoExtraInfo",
+            .dwType = RIM_TYPEKEYBOARD,
+            .has_device_handle = true,
+            .extra_info = 0,
+            .expected_is_crd = false,
+        },
+        IsCrdInjectedInputTestCase{
+            .test_name = "HardwareKeyboardWithCrdExtraInfo",
+            .dwType = RIM_TYPEKEYBOARD,
+            .has_device_handle = true,
+            .extra_info = kCrdInputExtraInfo,
+            .expected_is_crd = false,
+        },
+        IsCrdInjectedInputTestCase{
+            .test_name = "SoftwareKeyboardNoExtraInfo",
+            .dwType = RIM_TYPEKEYBOARD,
+            .has_device_handle = false,
+            .extra_info = 0,
+            .expected_is_crd = false,
+        },
+        IsCrdInjectedInputTestCase{
+            .test_name = "CrdInjectedKeyboard",
+            .dwType = RIM_TYPEKEYBOARD,
+            .has_device_handle = false,
+            .extra_info = kCrdInputExtraInfo,
+            .expected_is_crd = true,
+        },
+        IsCrdInjectedInputTestCase{
+            .test_name = "NonMouseOrKeyboardEvent",
+            .dwType = RIM_TYPEHID,
+            .has_device_handle = false,
+            .extra_info = 0,
+            .expected_is_crd = false,
+        }),
+    [](const testing::TestParamInfo<LocalInputMonitorWinTest::ParamType>&
+           info) { return info.param.test_name; });
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace remoting

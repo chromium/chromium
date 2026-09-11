@@ -72,6 +72,7 @@ source_set("input_monitor") {
       "raw_input_handler.cc",
       "raw_input_handler.h",
     ]
+    deps += [ "//remoting/host/win" ]
   }
 
   if (is_chromeos) {

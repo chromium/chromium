@@ -26,6 +26,7 @@
 #include "remoting/base/util.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/host/touch_injector_win.h"
+#include "remoting/host/win/input_extra_info.h"
 #include "remoting/proto/event.pb.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -50,6 +51,7 @@ void SendKeyboardInput(uint32_t flags,
   input.ki.dwFlags = flags;
   input.ki.wScan = scancode;
   input.ki.wVk = virtual_key;
+  input.ki.dwExtraInfo = kCrdInputExtraInfo;
 
   if ((flags & KEYEVENTF_UNICODE) == 0) {
     // Windows scancodes are only 8-bit, so store the low-order byte into the
@@ -467,6 +469,10 @@ void InputInjectorWin::Core::HandleMouse(const MouseEvent& event) {
   ParseMouseMoveEvent(event, &inputs);
   ParseMouseClickEvent(event, &inputs);
   ParseMouseWheelEvent(event, &inputs);
+
+  for (auto& input : inputs) {
+    input.mi.dwExtraInfo = kCrdInputExtraInfo;
+  }
 
   if (!inputs.empty()) {
     if (SendInput(inputs.size(), inputs.data(), sizeof(INPUT)) !=
