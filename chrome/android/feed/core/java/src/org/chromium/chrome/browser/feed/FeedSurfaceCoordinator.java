@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
@@ -137,6 +138,7 @@ public class FeedSurfaceCoordinator
     // Used when Feed is enabled.
     private final Profile mProfile;
     private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
+    private @Nullable View mSigninPromoView;
     // Feed RecyclerView/xSurface fields.
     private FeedListContentManager mContentManager;
     private final RecyclerView mRecyclerView;
@@ -1076,6 +1078,7 @@ public class FeedSurfaceCoordinator
     private void setHeaders(List<View> headerViews) {
         // Build the list of headers we want, and then replace existing headers.
         List<FeedListContentManager.FeedContent> headerList = new ArrayList<>();
+        boolean hasSigninPromoView = false;
         for (View header : headerViews) {
             // Feed header view in multi does not need padding added.
             int lateralPaddingsPx = getLateralPaddingsPx();
@@ -1087,6 +1090,32 @@ public class FeedSurfaceCoordinator
                 if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
                     mHeaderView.setBackgroundColor(mDefaultBackgroundColor);
                 }
+            } else if (header == mSigninPromoView) {
+                hasSigninPromoView = true;
+                lateralPaddingsPx =
+                        mActivity
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        ChromeFeatureList.isEnabled(
+                                                        ChromeFeatureList.FEED_CONTAINMENT)
+                                                ? R.dimen
+                                                        .feed_containment_signin_promo_lateral_paddings
+                                                : R.dimen.signin_promo_lateral_paddings);
+                ((PersonalizedSigninPromoView) mSigninPromoView)
+                        .setCardBackgroundResource(
+                                ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)
+                                        ? R.drawable.home_surface_background_rounded
+                                        : R.drawable.home_surface_ui_background);
+
+                int topPadding =
+                        mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.feed_header_top_padding);
+                mSigninPromoView.setPadding(
+                        mSigninPromoView.getPaddingLeft(),
+                        topPadding,
+                        mSigninPromoView.getPaddingRight(),
+                        mSigninPromoView.getPaddingBottom());
             }
 
             FeedListContentManager.NativeViewContent content =
@@ -1098,12 +1127,13 @@ public class FeedSurfaceCoordinator
             mHeaderCount = headerList.size();
             mMediator.notifyHeadersChanged(mHeaderCount);
         }
-        // The section header is the last header to be added, save its index.
-        mHeaderIndex = headerViews.size() - 1;
+        // The section header is the last header to be added, excluding sign-in promo, save its
+        // index.
+        mHeaderIndex = headerViews.size() - (hasSigninPromoView ? 2 : 1);
     }
 
     /** Update header views in the Feed. */
-    void updateHeaderViews() {
+    void updateHeaderViews(@Nullable View signinPromoView) {
         if (!mMediator.hasStreams()) return;
 
         List<View> headers = new ArrayList<>();
@@ -1113,6 +1143,11 @@ public class FeedSurfaceCoordinator
 
         if (mMediator.isFeedEnabled()) {
             headers.add(mHeaderView);
+
+            if (signinPromoView != null) {
+                mSigninPromoView = signinPromoView;
+                headers.add(signinPromoView);
+            }
         }
 
         setHeaders(headers);

@@ -103,6 +103,8 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -227,7 +229,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     // Previous visibility states for metrics.
     private @TriState int mPreviousVoiceSearchButtonVisible;
     private @TriState int mPreviousLensButtonVisible;
-
     /**
      * The current runtime vertical scroll distance before the fake search box reaches the top
      * toolbar at which the transition animation into the omnibox begins.
@@ -236,9 +237,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * #getNtpSearchBoxTransitionStartOffset(boolean)}.
      */
     private int mCurrentNtpFakeSearchBoxTransitionStartOffset;
-
     private int mTopInset;
     private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
+    // TODO(crbug.com/451602301): remove @Nullable and all null checks once
+    // ENABLE_SEAMLESS_SIGNIN is removed after the experiment.
     private @Nullable NtpSigninPromoCoordinator mSigninPromoCoordinator;
 
     private @TriState int mIsWhiteBackgroundOnSearchBoxApplied;
@@ -445,7 +447,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         updateActionButtonVisibility();
         initializeLayoutChangeListener();
-        if (!OmniboxCapabilities.isDesktopPlatform()) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+                && !OmniboxCapabilities.isDesktopPlatform()) {
             initializeSigninPromoCoordinator();
         }
 

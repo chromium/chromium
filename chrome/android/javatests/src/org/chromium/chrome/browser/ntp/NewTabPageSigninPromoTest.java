@@ -23,12 +23,20 @@ import static org.junit.Assert.assertNull;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
 import android.text.format.DateUtils;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
+import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.action.GeneralLocation;
+import androidx.test.espresso.action.GeneralSwipeAction;
+import androidx.test.espresso.action.Press;
+import androidx.test.espresso.action.Swipe;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
@@ -54,6 +62,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -64,6 +73,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -112,6 +123,15 @@ public class NewTabPageSigninPromoTest {
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 isIdentityManagerMigrationEnabled);
     }
+
+    private static final int SIGNIN_PROMO_POSITION = 2;
+
+    // Espresso ViewAction that performs a swipe from center to left across the vertical center
+    // of the view. Used instead of ViewAction.swipeLeft which swipes from right edge to
+    // avoid conflict with gesture navigation UI which consumes the edge swipe.
+    private static final ViewAction SWIPE_LEFT =
+            new GeneralSwipeAction(
+                    Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.CENTER_LEFT, Press.FINGER);
 
     private final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -166,6 +186,22 @@ public class NewTabPageSigninPromoTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
+    // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
+    @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromo_AccountsNotReady_Legacy() {
+        try (var _ = mSigninTestRule.blockGetAccountsUpdate()) {
+            openNewTabPage();
+            // Check that the sign-in promo is not shown if accounts are not ready.
+            onView(withId(R.id.feed_stream_recycler_view))
+                    .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+            onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
     public void testSignInPromo_AccountsNotReady() {
         try (var _ = mSigninTestRule.blockGetAccountsUpdate()) {
             openNewTabPage();
@@ -179,10 +215,44 @@ public class NewTabPageSigninPromoTest {
     @Feature({"FeedNewTabPage"})
     // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
     @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromo_AccountsReady_Legacy() {
+        openNewTabPage();
+        // Check that the sign-in promo is displayed this time.
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        verifySigninPromoShown();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
+    @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
     public void testSignInPromo_AccountsReady() {
         openNewTabPage();
         // Check that the sign-in promo is displayed this time.
         verifySigninPromoShown();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
+    @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromo_NotShownAfterSignIn_Legacy() {
+        openNewTabPage();
+        // Check that the sign-in promo is displayed.
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        verifySigninPromoShown();
+
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
     }
 
     @Test
@@ -210,6 +280,23 @@ public class NewTabPageSigninPromoTest {
 
         openNewTabPage();
 
+        verifySigninPromoShown();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
+    @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromoDisplayedWithAADCMinorAccount_Legacy() {
+        mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
+
+        openNewTabPage();
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+
+        // Check that the sign-in promo is displayed.
         verifySigninPromoShown();
     }
 
@@ -379,6 +466,54 @@ public class NewTabPageSigninPromoTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
+    @DisabledTest(message = "https://crbug.com/40116614")
+    // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
+    @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromo_DismissBySwipe() {
+        openNewTabPage();
+        boolean dismissed =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
+        if (dismissed) {
+            ChromeSharedPreferences.getInstance()
+                    .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
+        }
+
+        // Verify that sign-in promo is displayed initially.
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        verifySigninPromoShown();
+
+        // Swipe away the sign-in promo.
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(
+                        RecyclerViewActions.actionOnItemAtPosition(
+                                SIGNIN_PROMO_POSITION, SWIPE_LEFT));
+
+        NewTabPage newTabPage = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
+        ViewGroup view = (ViewGroup) newTabPage.getCoordinatorForTesting().getRecyclerView();
+        waitForNoView(withId(R.id.signin_promo_view_container));
+        waitForView(view, allOf(withId(R.id.header_title), isDisplayed()));
+
+        // Verify that sign-in promo is gone, but new tab page layout and header are displayed.
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        onView(withId(R.id.header_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.ntp_content)).check(matches(isDisplayed()));
+
+        // Reset state.
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, dismissed);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
     // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
     @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
     public void testSignInPromo_shownIfTimeElapsedSinceFirstShownIsLessThanFirstShownLimit() {
@@ -399,6 +534,11 @@ public class NewTabPageSigninPromoTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
     // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
     @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
     public void
@@ -421,6 +561,11 @@ public class NewTabPageSigninPromoTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
     // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
     @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
     public void
