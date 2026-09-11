@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -52,7 +53,7 @@ struct DefaultImageInfo {
 // tools/metrics/histograms/enums.xml
 // When deprecating images, please also update kCurrentImageIndexes accordingly.
 // clang-format off
-constexpr DefaultImageInfo kDefaultImageInfo[] = {
+constexpr auto kDefaultImageInfo = std::to_array<DefaultImageInfo>({
     // No description for deprecated user image 0-18.
     {IDR_LOGIN_DEFAULT_USER, 0, Eligibility::kDeprecated, "legacy/avatar_anonymous.png"},
     // Default avatar image assets other than the stub avatar have been
@@ -161,7 +162,7 @@ constexpr DefaultImageInfo kDefaultImageInfo[] = {
     {0, IDS_LOGIN_DEFAULT_USER_DESC_95, Eligibility::kEligible, "material_design/avatar_biking.png"},
     {0, IDS_LOGIN_DEFAULT_USER_DESC_96, Eligibility::kEligible, "material_design/avatar_person_in_snow.png"},
     {0, IDS_LOGIN_DEFAULT_USER_DESC_97, Eligibility::kEligible, "material_design/avatar_person_with_megaphone.png"},
-};
+});
 // clang-format on
 
 // Indexes of the current set of default images in the order that will display
@@ -233,11 +234,10 @@ constexpr bool ValidateCurrentImageIndexes() {
   }
 
   for (const int index : kCurrentImageIndexes) {
-    if (UNSAFE_TODO(kDefaultImageInfo[index]).eligibility !=
-        Eligibility::kEligible) {
+    if (kDefaultImageInfo[index].eligibility != Eligibility::kEligible) {
       return false;
     }
-    if (UNSAFE_TODO(kDefaultImageInfo[index]).description_message_id == 0) {
+    if (kDefaultImageInfo[index].description_message_id == 0) {
       // All current and new images must have a description.
       return false;
     }
@@ -369,11 +369,11 @@ GURL GetDefaultImageUrl(
   auto scale_factor_prefix = GetUrlPrefixForScaleFactor(adjusted_scale_factor);
 
   return GURL(base::StrCat({kGstaticImagePrefix, scale_factor_prefix,
-                            UNSAFE_TODO(kDefaultImageInfo[index]).path}));
+                            kDefaultImageInfo[index].path}));
 }
 
 int GetDefaultImageResourceId(int index) {
-  return UNSAFE_TODO(kDefaultImageInfo[index]).resource_id;
+  return kDefaultImageInfo[index].resource_id;
 }
 
 const gfx::ImageSkia& GetStubDefaultImage() {
@@ -392,16 +392,14 @@ bool IsValidIndex(int index) {
 
 bool IsInCurrentImageSet(int index) {
   return IsValidIndex(index) &&
-         UNSAFE_TODO(kDefaultImageInfo[index]).eligibility ==
-             Eligibility::kEligible;
+         kDefaultImageInfo[index].eligibility == Eligibility::kEligible;
 }
 
 DefaultUserImage GetDefaultUserImage(
     int index,
     ui::ResourceScaleFactor scale_factor /*= ui::k200Percent*/) {
   DCHECK(IsValidIndex(index));
-  int description_message_id =
-      UNSAFE_TODO(kDefaultImageInfo[index]).description_message_id;
+  int description_message_id = kDefaultImageInfo[index].description_message_id;
   std::u16string title = description_message_id
                              ? l10n_util::GetStringUTF16(description_message_id)
                              : std::u16string();

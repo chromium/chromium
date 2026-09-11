@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -875,13 +876,13 @@ TEST_F(SearchControllerTest, ProviderIsFilteredWithSearchControl) {
   scoped_feature_list_.InitWithFeatures(
       {ash::features::kFeatureManagementLocalImageSearch}, {});
 
-  const Result result_categories[] = {
+  const std::array result_categories = {
       Result::kAnswerCard, Result::kDriveSearch,    Result::kAppShortcutV2,
       Result::kFileSearch, Result::kArcAppShortcut, Result::kImageSearch,
       Result::kGames,      Result::kAssistantText,  Result::kArcAppShortcut,
   };
 
-  const SearchCategory search_categories[] = {
+  const std::array search_categories = {
       SearchCategory::kTest /*always returns results*/,
       SearchCategory::kApps,
       SearchCategory::kAppShortcuts,
@@ -897,8 +898,7 @@ TEST_F(SearchControllerTest, ProviderIsFilteredWithSearchControl) {
   for (int i = 0; i < 9; ++i) {
     // The result type needs to be unique.
     auto provider = std::make_unique<TestSearchProvider>(
-        UNSAFE_TODO(result_categories[i]), base::Milliseconds(20),
-        UNSAFE_TODO(search_categories[i]));
+        result_categories[i], base::Milliseconds(20), search_categories[i]);
     provider_ptrs.push_back(provider.get());
     search_controller_->AddProvider(std::move(provider));
   }

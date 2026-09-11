@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 
+#include <array>
 #include <optional>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -161,15 +162,21 @@ TEST_F(FileResultTest, PenalizeScore) {
   query.emplace(u"somefile");
   base::Time now = base::Time::Now();
 
-  double expected_scores[] = {1.0, 0.9, 0.63};
-  int access_days_ago[] = {0, 10, 30};
+  struct TestCase {
+    int access_days_ago;
+    double expected_score;
+  };
+  static constexpr std::array kTestCases = {
+      TestCase{0, 1.0},
+      TestCase{10, 0.9},
+      TestCase{30, 0.63},
+  };
 
-  for (int i = 0; i < 3; ++i) {
-    base::Time last_accessed =
-        now - base::Days(UNSAFE_TODO(access_days_ago[i]));
+  for (const auto& test_case : kTestCases) {
+    base::Time last_accessed = now - base::Days(test_case.access_days_ago);
     double relevance =
         FileResult::CalculateRelevance(query, path, last_accessed);
-    UNSAFE_TODO(EXPECT_THAT(relevance, DoubleNear(expected_scores[i], 0.01)));
+    EXPECT_THAT(relevance, DoubleNear(test_case.expected_score, 0.01));
   }
 }
 

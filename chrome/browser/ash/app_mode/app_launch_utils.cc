@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 
+#include <array>
 #include <cstddef>
 #include <iterator>
 #include <optional>
@@ -29,9 +30,12 @@ namespace ash {
 namespace {
 
 // The list of prefs that are reset on the start of each kiosk session.
-const char* const kPrefsToReset[] = {"settings.accessibility",  // ChromeVox
-                                     "settings.a11y", "ash.docked_magnifier",
-                                     "settings.tts"};
+constexpr std::array kPrefsToReset = {
+    "settings.accessibility",  // ChromeVox
+    "settings.a11y",
+    "ash.docked_magnifier",
+    "settings.tts",
+};
 
 // This vector is used in tests when they want to replace `kPrefsToReset` with
 // their own list.
@@ -73,7 +77,7 @@ void ResetEphemeralKioskPreferences(PrefService* prefs) {
        pref_id++) {
     const std::string branch_path = test_prefs_to_reset
                                         ? (*test_prefs_to_reset)[pref_id]
-                                        : UNSAFE_TODO(kPrefsToReset[pref_id]);
+                                        : kPrefsToReset[pref_id];
     prefs->ClearPrefsWithPrefixSilently(branch_path);
   }
 }

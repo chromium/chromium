@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>
@@ -34,9 +35,10 @@ constexpr char kWindowLimitEntryEndsAt[] = "ends_at";
 constexpr char kWindowLimitEntryStartsAt[] = "starts_at";
 constexpr char kWindowLimitEntryTimeHour[] = "hour";
 constexpr char kWindowLimitEntryTimeMinute[] = "minute";
-constexpr const char* kTimeLimitWeekdays[] = {
-    "sunday",   "monday", "tuesday", "wednesday",
-    "thursday", "friday", "saturday"};
+constexpr std::array kTimeLimitWeekdays = {
+    "sunday",   "monday", "tuesday",  "wednesday",
+    "thursday", "friday", "saturday",
+};
 
 // Defaults to midnight.
 constexpr base::TimeDelta kDefaultUsageLimitResetTime;
@@ -1076,7 +1078,7 @@ base::TimeDelta DictToTimeDelta(const base::DictValue& policy_time) {
 Weekday GetWeekday(std::string weekday) {
   std::ranges::transform(weekday, weekday.begin(), ::tolower);
   for (int i = 0; i < static_cast<int>(Weekday::kCount); i++) {
-    if (weekday == UNSAFE_TODO(kTimeLimitWeekdays[i])) {
+    if (weekday == kTimeLimitWeekdays[i]) {
       return static_cast<Weekday>(i);
     }
   }
