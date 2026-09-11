@@ -52,7 +52,6 @@ import org.chromium.url.GURL;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Tests for the URL bar UI component.
@@ -90,51 +89,6 @@ public class UrlBarTest {
         mOmnibox.disableLiveAutocompletion();
         mOmnibox.requestFocus();
         mOmnibox.setText("");
-    }
-
-    private static class AutocompleteState {
-        public final boolean hasAutocomplete;
-        public final String textWithoutAutocomplete;
-        public final String textWithAutocomplete;
-        public final String additionalText;
-
-        public AutocompleteState(
-                boolean hasAutocomplete,
-                String textWithoutAutocomplete,
-                String textWithAutocomplete,
-                String additionalText) {
-            this.hasAutocomplete = hasAutocomplete;
-            this.textWithoutAutocomplete = textWithoutAutocomplete;
-            this.textWithAutocomplete = textWithAutocomplete;
-            this.additionalText = additionalText;
-        }
-    }
-
-    private AutocompleteState getAutocompleteState(final Runnable action) {
-        final AtomicBoolean hasAutocomplete = new AtomicBoolean();
-        final AtomicReference<String> textWithoutAutocomplete = new AtomicReference<>();
-        final AtomicReference<String> textWithAutocomplete = new AtomicReference<>();
-        final AtomicReference<String> additionalText = new AtomicReference<>();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    if (action != null) action.run();
-                    hasAutocomplete.set(mUrlBar.hasAutocomplete());
-                    textWithoutAutocomplete.set(mUrlBar.getTextWithoutAutocomplete());
-                    textWithAutocomplete.set(mUrlBar.getTextWithAutocomplete());
-                    String additionalTextStr = mUrlBar.getAdditionalText();
-                    additionalText.set(additionalTextStr != null ? additionalTextStr : "");
-                });
-
-        return new AutocompleteState(
-                hasAutocomplete.get(),
-                textWithoutAutocomplete.get(),
-                textWithAutocomplete.get(),
-                additionalText.get());
-    }
-
-    private AutocompleteState setSelection(final int selectionStart, final int selectionEnd) {
-        return getAutocompleteState(() -> mUrlBar.setSelection(selectionStart, selectionEnd));
     }
 
     private void setTextAndVerifyTextDirection(String text, int expectedDirection)
@@ -199,143 +153,6 @@ public class UrlBarTest {
                     mUrlBar.setText(mUrlBar.getText().replace(8, 10, "no"));
                 });
         mOmnibox.checkText(equalTo("test"), null);
-    }
-
-    private void verifySelectionState(
-            String text,
-            String inlineAutocomplete,
-            String additionalText,
-            int selectionStart,
-            int selectionEnd,
-            boolean expectedHasAutocomplete,
-            String expectedTextWithoutAutocomplete,
-            String expectedTextWithAutocomplete,
-            boolean expectedPreventInline,
-            String expectedRequestedAutocompleteText)
-            throws TimeoutException {
-        mOmnibox.setText(text);
-        mOmnibox.setAutocompleteText(inlineAutocomplete, additionalText);
-
-        final CallbackHelper autocompleteHelper = new CallbackHelper();
-        final AtomicReference<String> requestedAutocompleteText = new AtomicReference<>();
-        final AtomicBoolean didPreventInlineAutocomplete = new AtomicBoolean();
-        mUrlBar.setTextChangeListener(
-                (info) -> {
-                    autocompleteHelper.notifyCalled();
-                    requestedAutocompleteText.set(info);
-                    didPreventInlineAutocomplete.set(!mUrlBar.shouldAutocomplete());
-                    mUrlBar.setTextChangeListener(null);
-                });
-
-        AutocompleteState state = setSelection(selectionStart, selectionEnd);
-        Assert.assertEquals("Has autocomplete", expectedHasAutocomplete, state.hasAutocomplete);
-        Assert.assertEquals(
-                "Text w/o Autocomplete",
-                expectedTextWithoutAutocomplete,
-                state.textWithoutAutocomplete);
-        Assert.assertEquals(
-                "Text w/ Autocomplete", expectedTextWithAutocomplete, state.textWithAutocomplete);
-        Assert.assertEquals("Addition Text", additionalText, state.additionalText);
-
-        autocompleteHelper.waitForCallback(0);
-        Assert.assertEquals(
-                "Prevent inline autocomplete",
-                expectedPreventInline,
-                didPreventInlineAutocomplete.get());
-        Assert.assertEquals(
-                "Requested autocomplete text",
-                expectedRequestedAutocompleteText,
-                requestedAutocompleteText.get());
-    }
-
-    @Test
-    @SmallTest
-    public void testAutocompleteUpdatedOnSelection() throws TimeoutException {
-        // Verify that setting a selection before the autocomplete clears it.
-        verifySelectionState(
-                "test", "ing is fun", "foo.com", 1, 1, false, "test", "test", true, "test");
-
-        // Verify that setting a selection range before the autocomplete clears it.
-        verifySelectionState(
-                "test", "ing is fun", "foo.com", 0, 4, false, "test", "test", true, "test");
-
-        // Verify that setting a selection range that covers a portion of the non-autocomplete
-        // and autocomplete text does not delete the autocomplete text.
-        verifySelectionState(
-                "test",
-                "ing_is_fun",
-                "foo.com",
-                2,
-                5,
-                false,
-                "testing_is_fun",
-                "testing_is_fun",
-                true,
-                "testing_is_fun");
-
-        // Verify that setting a selection range that over the entire string does not delete
-        // the autocomplete text.
-        verifySelectionState(
-                "test",
-                "ing_is_fun",
-                "foo.com",
-                0,
-                14,
-                false,
-                "testing_is_fun",
-                "testing_is_fun",
-                true,
-                "testing_is_fun");
-
-        // Note: with new model touching the beginning of the autocomplete text is a no-op.
-        // Verify that setting a selection at the end of the text does not delete the
-        // autocomplete text.
-        verifySelectionState(
-                "test",
-                "ing_is_fun",
-                "foo.com",
-                14,
-                14,
-                false,
-                "testing_is_fun",
-                "testing_is_fun",
-                true,
-                "testing_is_fun");
-
-        // Verify that setting a selection in the middle of the autocomplete text does not delete
-        // the autocomplete text.
-        verifySelectionState(
-                "test",
-                "ing_is_fun",
-                "foo.com",
-                9,
-                9,
-                false,
-                "testing_is_fun",
-                "testing_is_fun",
-                true,
-                "testing_is_fun");
-
-        // Verify that setting a selection range in the middle of the autocomplete text does not
-        // delete the autocomplete text.
-        verifySelectionState(
-                "test",
-                "ing_is_fun",
-                "foo.com",
-                8,
-                11,
-                false,
-                "testing_is_fun",
-                "testing_is_fun",
-                true,
-                "testing_is_fun");
-
-        // Select autocomplete text. As we do not expect the suggestions to be refreshed, we test
-        // this slightly differently than the other cases.
-        mOmnibox.setText("test");
-        mOmnibox.setAutocompleteText("ing_is_fun", "www.bar.com");
-        ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setSelection(4, 14));
-        mOmnibox.checkText(equalTo("testing_is_fun"), null, equalTo("www.bar.com"));
     }
 
     /**

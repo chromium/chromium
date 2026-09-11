@@ -1975,6 +1975,44 @@ public class UrlBarUnitTest {
                 "testing_is_fun",
                 "testing_is_fun",
                 "foo.com");
+
+        // 6. Verify that setting a selection in the middle of the autocomplete text does not delete
+        // the autocomplete text.
+        verifySelectionState(
+                "test",
+                "ing_is_fun",
+                "foo.com",
+                /* selectionStart= */ 9,
+                /* selectionEnd= */ 9,
+                /* expectedHasAutocomplete= */ false,
+                "testing_is_fun",
+                "testing_is_fun",
+                "foo.com");
+
+        // 7. Verify that setting a selection range in the middle of the autocomplete text does not
+        // delete the autocomplete text.
+        verifySelectionState(
+                "test",
+                "ing_is_fun",
+                "foo.com",
+                /* selectionStart= */ 8,
+                /* selectionEnd= */ 11,
+                /* expectedHasAutocomplete= */ false,
+                "testing_is_fun",
+                "testing_is_fun",
+                "foo.com");
+
+        // 8. Select autocomplete text.
+        verifySelectionState(
+                "test",
+                "ing_is_fun",
+                "foo.com",
+                /* selectionStart= */ 4,
+                /* selectionEnd= */ 14,
+                /* expectedHasAutocomplete= */ false,
+                "testing_is_fun",
+                "testing_is_fun",
+                "foo.com");
     }
 
     @Test
