@@ -6,6 +6,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   visibility = [
+    "//chrome/browser/browser_actuator/internals:*",
     "//components/browser_actuator/*",
     "//components/sharing_message/proto:*",
   ]

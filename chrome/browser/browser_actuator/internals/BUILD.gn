@@ -14,8 +14,12 @@ source_set("internals") {
     "browser_actuator_internals_ui.cc",
     "browser_actuator_internals_ui_mojo_impl.cc",
     "browser_actuator_internals_ui_mojo_impl.h",
+    "session_stream_recorder.cc",
   ]
-  public = [ "browser_actuator_internals_ui.h" ]
+  public = [
+    "browser_actuator_internals_ui.h",
+    "session_stream_recorder.h",
+  ]
   friend = [ ":unit_tests" ]
   public_deps = [
     ":mojo_bindings",
@@ -25,20 +29,30 @@ source_set("internals") {
   deps = [
     "//base",
     "//chrome/browser/resources/browser_actuator_internals:resources",
+    "//components/browser_actuator/internal/proto",
+    "//components/browser_actuator/proto",
     "//components/browser_actuator/public",
+    "//content/public/common",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "browser_actuator_internals_ui_mojo_impl_unittest.cc" ]
+  sources = [
+    "browser_actuator_internals_ui_mojo_impl_unittest.cc",
+    "session_stream_recorder_unittest.cc",
+  ]
   deps = [
     ":internals",
     ":mojo_bindings",
     "//base",
     "//base/test:test_support",
+    "//components/browser_actuator/internal/proto",
+    "//components/browser_actuator/proto",
     "//components/browser_actuator/public",
     "//mojo/public/cpp/bindings",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
