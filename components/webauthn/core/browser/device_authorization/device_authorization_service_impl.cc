@@ -38,6 +38,7 @@ DeviceAuthorizationServiceImpl::~DeviceAuthorizationServiceImpl() {
 void DeviceAuthorizationServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_fetching_ = false;
+  weak_ptr_factory_.InvalidateWeakPtrs();
   if (pending_callback_) {
     std::move(pending_callback_).Run(std::nullopt);
   }
@@ -79,8 +80,15 @@ void DeviceAuthorizationServiceImpl::GetOrFetchKeys(
   is_fetching_ = true;
   pending_callback_ = std::move(callback);
 
-  // TODO(crbug.com/405036154): Build the request with the correct params.
-  sync_pb::GetDeviceAuthorizationKeyRequest request;
+  client_->CreateDeviceAuthorizationRequest(
+      base::BindOnce(&DeviceAuthorizationServiceImpl::OnRequestCreated,
+                     weak_ptr_factory_.GetWeakPtr(), gaia_id));
+}
+
+void DeviceAuthorizationServiceImpl::OnRequestCreated(
+    const GaiaId& gaia_id,
+    sync_pb::GetDeviceAuthorizationKeyRequest request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fetcher_->FetchDeviceAuthorizationKeys(
       request, url_loader_factory_, identity_manager_,
       base::BindOnce(&DeviceAuthorizationServiceImpl::OnFetchCompleted,

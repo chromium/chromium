@@ -26,6 +26,8 @@ class IOSDeviceAuthorizationClient
       const GaiaId& gaia_id) override;
   bool StoreKeys(const GaiaId& gaia_id,
                  const webauthn::DeviceAuthorizationKeys& keys) override;
+  void CreateDeviceAuthorizationRequest(
+      webauthn::CreateDeviceAuthRequestCallback callback) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBAUTHN_MODEL_IOS_DEVICE_AUTHORIZATION_CLIENT_H_

@@ -21,3 +21,8 @@ bool IOSDeviceAuthorizationClient::StoreKeys(
     const webauthn::DeviceAuthorizationKeys& keys) {
   return StoreDeviceAuthorizationKeys(gaia_id.ToString(), keys);
 }
+
+void IOSDeviceAuthorizationClient::CreateDeviceAuthorizationRequest(
+    webauthn::CreateDeviceAuthRequestCallback callback) {
+  // TODO(crbug.com/405036154): Implement.
+}

@@ -19,6 +19,8 @@ using DeviceAuthorizationKeys =
     sync_pb::GetDeviceAuthorizationKeyResponse::DeviceAuthorizationKeys;
 
 // Callback types for device authorization operations.
+using CreateDeviceAuthRequestCallback =
+    base::OnceCallback<void(sync_pb::GetDeviceAuthorizationKeyRequest)>;
 using FetchDeviceAuthKeysCallback =
     base::OnceCallback<void(std::optional<DeviceAuthorizationKeys>)>;
 

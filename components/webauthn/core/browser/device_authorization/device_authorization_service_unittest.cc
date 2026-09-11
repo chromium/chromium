@@ -20,18 +20,21 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webauthn {
 namespace {
 
+using ::base::test::TestFuture;
 using ::testing::SizeIs;
 
 constexpr char kTestEmail[] = "test@example.com";
 constexpr char kKeyBytes[] = "fake_device_auth_key";
 constexpr int32_t kKeyProtoVersion = 1;
 constexpr char kFakeWebFallbackUrl[] = "https://example.com/reauth";
+constexpr char kCustomRapt[] = "custom_rapt_token";
 
 sync_pb::GetDeviceAuthorizationKeyResponse CreateSuccessResponse() {
   sync_pb::GetDeviceAuthorizationKeyResponse response;
@@ -70,8 +73,19 @@ class TestDeviceAuthorizationClient : public DeviceAuthorizationClient {
     return true;
   }
 
+  void SetDeviceAuthorizationRequest(
+      sync_pb::GetDeviceAuthorizationKeyRequest request) {
+    request_ = std::move(request);
+  }
+
+  void CreateDeviceAuthorizationRequest(
+      CreateDeviceAuthRequestCallback callback) override {
+    std::move(callback).Run(request_);
+  }
+
  private:
   std::map<GaiaId, DeviceAuthorizationKeys> storage_;
+  sync_pb::GetDeviceAuthorizationKeyRequest request_;
 };
 
 }  // namespace
@@ -134,7 +148,7 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   key->set_key(kKeyBytes);
   client_->StoreKeys(gaia_id, cached_keys);
 
-  base::test::TestFuture<std::optional<DeviceAuthorizationKeys>> future;
+  TestFuture<std::optional<DeviceAuthorizationKeys>> future;
   service_->GetOrFetchKeys(future.GetCallback());
 
   ASSERT_TRUE(future.IsReady());
@@ -147,7 +161,7 @@ TEST_F(DeviceAuthorizationServiceImplTest,
 // Test that getting or fetching keys fails when no primary account is signed
 // in.
 TEST_F(DeviceAuthorizationServiceImplTest, TestNotSignedInFails) {
-  base::test::TestFuture<std::optional<DeviceAuthorizationKeys>> future;
+  TestFuture<std::optional<DeviceAuthorizationKeys>> future;
   service_->GetOrFetchKeys(future.GetCallback());
 
   ASSERT_TRUE(future.IsReady());
@@ -161,7 +175,7 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   GaiaId gaia_id = SignInPrimaryAccount();
   SetResponseForEndpoint(CreateSuccessResponse());
 
-  base::test::TestFuture<std::optional<DeviceAuthorizationKeys>> future;
+  TestFuture<std::optional<DeviceAuthorizationKeys>> future;
   service_->GetOrFetchKeys(future.GetCallback());
 
   const std::optional<DeviceAuthorizationKeys>& result = future.Get();
@@ -184,8 +198,8 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   SignInPrimaryAccount();
   SetResponseForEndpoint(CreateSuccessResponse());
 
-  base::test::TestFuture<std::optional<DeviceAuthorizationKeys>> future1;
-  base::test::TestFuture<std::optional<DeviceAuthorizationKeys>> future2;
+  TestFuture<std::optional<DeviceAuthorizationKeys>> future1;
+  TestFuture<std::optional<DeviceAuthorizationKeys>> future2;
 
   service_->GetOrFetchKeys(future1.GetCallback());
 
@@ -208,12 +222,41 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   GaiaId gaia_id = SignInPrimaryAccount();
   SetResponseForEndpoint(CreateReAuthResponse());
 
-  base::test::TestFuture<std::optional<DeviceAuthorizationKeys>> future;
+  TestFuture<std::optional<DeviceAuthorizationKeys>> future;
   service_->GetOrFetchKeys(future.GetCallback());
 
   const std::optional<DeviceAuthorizationKeys>& result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_FALSE(client_->GetCachedKeys(gaia_id).has_value());
+}
+
+// Test that GetOrFetchKeys invokes CreateDeviceAuthorizationRequest and
+// forwards the client-created request to the network fetcher.
+TEST_F(DeviceAuthorizationServiceImplTest,
+       TestGetOrFetchKeysSendsCreatedRequestWithCustomFields) {
+  SignInPrimaryAccount();
+  SetResponseForEndpoint(CreateSuccessResponse());
+
+  std::string intercepted_body;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        intercepted_body = network::GetUploadData(req);
+      }));
+
+  sync_pb::GetDeviceAuthorizationKeyRequest request;
+  request.set_reauth_proof_token(kCustomRapt);
+  client_->SetDeviceAuthorizationRequest(std::move(request));
+
+  TestFuture<std::optional<DeviceAuthorizationKeys>> future;
+  service_->GetOrFetchKeys(future.GetCallback());
+
+  const std::optional<DeviceAuthorizationKeys>& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+
+  ASSERT_EQ(test_url_loader_factory_.total_requests(), 1u);
+  sync_pb::GetDeviceAuthorizationKeyRequest sent_request;
+  ASSERT_TRUE(sent_request.ParseFromString(intercepted_body));
+  EXPECT_EQ(sent_request.reauth_proof_token(), kCustomRapt);
 }
 
 }  // namespace webauthn
