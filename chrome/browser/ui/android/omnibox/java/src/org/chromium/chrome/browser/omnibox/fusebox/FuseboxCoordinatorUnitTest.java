@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -130,6 +131,8 @@ public class FuseboxCoordinatorUnitTest {
             ObservableSuppliers.createNonNull(mTabModelSelector);
     private final SettableNonNullObservableSupplier<List<SuggestedTabInfo>> mSuggestedTabsSupplier =
             ObservableSuppliers.createNonNull(List.of());
+    private final SettableNonNullObservableSupplier<InputState> mInputStateSupplier =
+            ObservableSuppliers.createNonNull(new InputState.Builder().build());
     private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
             new OneshotSupplierImpl<>();
     private final Function<Tab, @Nullable Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
@@ -160,6 +163,7 @@ public class FuseboxCoordinatorUnitTest {
         lenient().doReturn(Collections.emptyIterator()).when(mTabModel).iterator();
         lenient().doReturn(true).when(mComposebox).isFuseboxEligible();
         lenient().doReturn(mSuggestedTabsSupplier).when(mComposebox).getSuggestedTabsSupplier();
+        lenient().doReturn(mInputStateSupplier).when(mComposebox).getInputStateSupplier();
 
         mAutocompleteInput =
                 new AutocompleteInput()

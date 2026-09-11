@@ -1359,6 +1359,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onSuggestionClicked_aimIsSentSuggestionText() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ false);
         String suggestionText = "test suggestion";
         AutocompleteMatch match =
                 new AutocompleteMatchBuilder().setDisplayText(suggestionText).build();
@@ -2135,6 +2136,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void loadTypedOmniboxText_aimUrl() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ false);
         var session = createEmptySession();
         var autocompleteInput = session.getAutocompleteInput();
         autocompleteInput
@@ -2173,6 +2175,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void loadTypedOmniboxText_emptyTextWithAttachments() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ false);
         FuseboxSessionState session = createEmptySession();
         AutocompleteInput autocompleteInput = session.getAutocompleteInput();
         autocompleteInput
@@ -2203,6 +2206,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void loadTypedOmniboxText_imageGenerationUrl() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ false);
         var session = createEmptySession();
         var autocompleteInput = session.getAutocompleteInput();
         autocompleteInput

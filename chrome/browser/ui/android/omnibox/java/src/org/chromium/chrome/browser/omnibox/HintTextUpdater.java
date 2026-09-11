@@ -266,7 +266,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
 
         ComposeboxQueryControllerBridge bridge =
                 fuseboxSessionState.getComposeboxQueryControllerBridge();
-        if (bridge == null) return null;
+        if (bridge == null || bridge.getInputStateSupplier() == null) return null;
 
         InputState inputState = bridge.getInputStateSupplier().get();
         if (inputState == null) return null;

@@ -178,7 +178,7 @@ public class OmniboxFeatures {
      * into the client when this param is enabled.
      */
     public static final BooleanCachedFeatureParam sShowModelPicker =
-            newBooleanParam(sOmniboxMultimodalInput, "show_model_picker", false);
+            newBooleanParam(sOmniboxMultimodalInput, "show_model_picker", true);
 
     /**
      * Whether the bottom sheet popup should be shown. This is private to ensure that callers use

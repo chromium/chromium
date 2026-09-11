@@ -201,6 +201,7 @@ public class FuseboxMediatorUnitTest {
     @Before
     public void setUp() {
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(/* overrideValue= */ true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ false);
         mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();

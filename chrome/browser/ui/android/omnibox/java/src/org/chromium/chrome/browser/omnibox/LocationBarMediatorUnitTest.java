@@ -638,6 +638,7 @@ public class LocationBarMediatorUnitTest {
 
         mMediator.destroy();
         assertFalse(mSessionState.isSessionActive());
+        mSessionState.destroy();
         assertFalse(input.getRequestTypeSupplier().hasObservers());
     }
 
