@@ -21,6 +21,7 @@ import '../privacy_icons.html.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 import './autofill_ai_add_or_edit_dialog.js';
+import './autofill_shared.css.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 

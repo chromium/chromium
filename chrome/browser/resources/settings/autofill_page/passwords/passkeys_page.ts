@@ -17,6 +17,8 @@ import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
 import '../../site_favicon.js';
 import '../../simple_confirmation_dialog.js';
+import '../autofill_shared.css.js';
+import './passwords_shared.css.js';
 // <if expr="is_macosx">
 import './passkey_edit_dialog.js';
 

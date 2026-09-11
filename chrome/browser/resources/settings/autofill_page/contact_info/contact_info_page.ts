@@ -25,7 +25,6 @@ import '../../site_favicon.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
 import './gmail_otp_disclaimer_dialog.js';
-import '../passwords/passwords_shared.css.js';
 import '../autofill_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
