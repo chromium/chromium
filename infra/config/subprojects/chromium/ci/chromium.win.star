@@ -425,6 +425,7 @@ ci.builder(
                 ),
             ),
             "browser_tests": targets.mixin(
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
                     # Move to faster machine types to reduce capacity impact.
                     # TODO(crbug.com/541675870): Can remove this if/when
