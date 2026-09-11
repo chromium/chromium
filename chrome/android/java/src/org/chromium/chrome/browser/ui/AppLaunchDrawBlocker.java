@@ -49,6 +49,7 @@ public class AppLaunchDrawBlocker {
     private final Supplier<Boolean> mIsTabletSupplier;
     private final Supplier<Boolean> mIsRecreatingSupplier;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
+    private final Supplier<Boolean> mShouldBlockDrawForTabLayoutSupplier;
     private final long mStartTime;
 
     /**
@@ -68,6 +69,9 @@ public class AppLaunchDrawBlocker {
 
     private boolean mBlockDrawForIncognitoRestore;
 
+    /** Whether View pre-draw is currently blocked until the tab layout is ready. */
+    private boolean mBlockDrawForTabLayout;
+
     /**
      * Constructor for AppLaunchDrawBlocker.
      *
@@ -81,6 +85,8 @@ public class AppLaunchDrawBlocker {
      * @param isRecreatingSupplier {@link Supplier<Boolean>} for whether the activity is recreating.
      * @param incognitoRestoreAppLaunchDrawBlockerFactory Factory to create {@link
      *     IncognitoRestoreAppLaunchDrawBlocker}.
+     * @param shouldBlockDrawForTabLayoutSupplier {@link Supplier<Boolean>} for whether draw should
+     *     be blocked for the tab layout.
      */
     public AppLaunchDrawBlocker(
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -90,8 +96,8 @@ public class AppLaunchDrawBlocker {
             Supplier<Boolean> isTabletSupplier,
             Supplier<Boolean> isRecreatingSupplier,
             MonotonicObservableSupplier<Profile> profileSupplier,
-            IncognitoRestoreAppLaunchDrawBlockerFactory
-                    incognitoRestoreAppLaunchDrawBlockerFactory) {
+            IncognitoRestoreAppLaunchDrawBlockerFactory incognitoRestoreAppLaunchDrawBlockerFactory,
+            Supplier<Boolean> shouldBlockDrawForTabLayoutSupplier) {
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mViewSupplier = viewSupplier;
         mInflationObserver =
@@ -101,9 +107,10 @@ public class AppLaunchDrawBlocker {
 
                     @Override
                     public void onPostInflationStartup() {
-                        maybeBlockDraw();
+                        maybeBlockDrawForInitialTab();
                         maybeBlockDrawForIncognitoRestore();
                         maybeBlockDrawForRecreation();
+                        maybeBlockDrawForTabLayout();
                     }
                 };
         mActivityLifecycleDispatcher.register(mInflationObserver);
@@ -123,6 +130,7 @@ public class AppLaunchDrawBlocker {
         mIsTabletSupplier = isTabletSupplier;
         mIsRecreatingSupplier = isRecreatingSupplier;
         mProfileSupplier = profileSupplier;
+        mShouldBlockDrawForTabLayoutSupplier = shouldBlockDrawForTabLayoutSupplier;
         mIncognitoRestoreAppLaunchDrawBlocker =
                 incognitoRestoreAppLaunchDrawBlockerFactory.create(
                         intentSupplier,
@@ -164,6 +172,11 @@ public class AppLaunchDrawBlocker {
         mBlockDrawForIncognitoRestore = false;
     }
 
+    /** Should be called when the tab layout UI (horizontal strip or vertical rail) is ready. */
+    public void onTabLayoutAvailable() {
+        mBlockDrawForTabLayout = false;
+    }
+
     private void writeSearchEngineHadLogoPref() {
         Profile profile = mProfileSupplier.get();
         if (profile == null) return;
@@ -195,8 +208,18 @@ public class AppLaunchDrawBlocker {
                 mViewSupplier.get(), () -> !mBlockDrawForRecreation);
     }
 
+    /** Conditionally blocks the draw until the tab layout UI is ready on cold start. */
+    // TOOD(crbugs.com/547979039): Add metrics on how long we're blocking draw for cold starts / new
+    // window creation.
+    private void maybeBlockDrawForTabLayout() {
+        if (!mShouldBlockDrawForTabLayoutSupplier.get()) return;
+        mBlockDrawForTabLayout = true;
+        View view = mViewSupplier.get();
+        ViewDrawBlocker.blockViewDrawUntilReady(view, () -> !mBlockDrawForTabLayout);
+    }
+
     /** Only block the draw if we believe the initial tab will be the NTP. */
-    private void maybeBlockDraw() {
+    private void maybeBlockDrawForInitialTab() {
         @ActiveTabState int tabState = TabPersistentStoreImpl.readLastKnownActiveTabStatePref();
         boolean singleUrlBarMode = NewTabPage.isInSingleUrlBarMode(mIsTabletSupplier.get());
 

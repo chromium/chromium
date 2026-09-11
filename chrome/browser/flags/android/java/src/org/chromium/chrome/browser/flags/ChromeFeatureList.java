@@ -1980,6 +1980,10 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_update_badge", true);
     // go/keep-sorted end
 
+    public static final BooleanCachedFeatureParam sAndroidVerticalTabsBlockDrawOnColdStart =
+            newBooleanCachedFeatureParam(
+                    ANDROID_VERTICAL_TABS, "block_draw_on_cold_start", /* defaultValue= */ true);
+
     public static final BooleanCachedFeatureParam sAndroidVerticalTabsEnableByDefault =
             newBooleanCachedFeatureParam(
                     ANDROID_VERTICAL_TABS, "enable_by_default", /* defaultValue= */ false);
@@ -2346,6 +2350,7 @@ public abstract class ChromeFeatureList {
                     sAndroidTipsNotificationsResetFeatureTipShown,
                     sAndroidTipsNotificationsV2CooldownDays,
                     sAndroidTipsNotificationsV2MaxShowCount,
+                    sAndroidVerticalTabsBlockDrawOnColdStart,
                     sAndroidVerticalTabsEnableByDefault,
                     sBackgroundThreadPoolFieldTrialConfig,
                     sCctAdaptiveButtonContextualOnly,

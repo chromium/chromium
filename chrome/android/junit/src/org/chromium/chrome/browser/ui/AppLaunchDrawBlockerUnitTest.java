@@ -70,6 +70,7 @@ public class AppLaunchDrawBlockerUnitTest {
     @Mock private Supplier<Boolean> mShouldIgnoreIntentSupplier;
     @Mock private Supplier<Boolean> mIsTabletSupplier;
     @Mock private Supplier<Boolean> mIsRecreatingSupplier;
+    @Mock private Supplier<Boolean> mShouldBlockDrawForTabLayoutSupplier;
 
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
@@ -103,6 +104,7 @@ public class AppLaunchDrawBlockerUnitTest {
         when(mShouldIgnoreIntentSupplier.get()).thenReturn(false);
         when(mIsTabletSupplier.get()).thenReturn(false);
         when(mIsRecreatingSupplier.get()).thenReturn(false);
+        when(mShouldBlockDrawForTabLayoutSupplier.get()).thenReturn(false);
         when(mIncognitoRestoreAppLaunchDrawBlockerFactoryMock.create(
                         eq(mIntentSupplier),
                         eq(mShouldIgnoreIntentSupplier),
@@ -118,7 +120,8 @@ public class AppLaunchDrawBlockerUnitTest {
                         mIsTabletSupplier,
                         mIsRecreatingSupplier,
                         mProfileSupplier,
-                        mIncognitoRestoreAppLaunchDrawBlockerFactoryMock);
+                        mIncognitoRestoreAppLaunchDrawBlockerFactoryMock,
+                        mShouldBlockDrawForTabLayoutSupplier);
         validateConstructorAndCaptureObservers();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME);
     }
@@ -387,6 +390,38 @@ public class AppLaunchDrawBlockerUnitTest {
         mAppLaunchDrawBlocker.onActiveTabAvailableForRecreation();
         assertTrue("Draw should no longer be blocked.", listener.onPreDraw());
         verify(mViewTreeObserver, times(1)).removeOnPreDrawListener(listener);
+    }
+
+    @Test
+    public void testBlockDrawForTabLayout() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.OTHER);
+        when(mShouldBlockDrawForTabLayoutSupplier.get()).thenReturn(true);
+        mInflationObserver.onPostInflationStartup();
+
+        verify(mViewTreeObserver, times(1))
+                .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
+        OnPreDrawListener listener = mOnPreDrawListenerArgumentCaptor.getValue();
+        assertFalse("Draw should be blocked for tab layout.", listener.onPreDraw());
+
+        // Tab layout is now ready.
+        mAppLaunchDrawBlocker.onTabLayoutAvailable();
+        assertTrue("Draw should no longer be blocked.", listener.onPreDraw());
+        verify(mViewTreeObserver, times(1)).removeOnPreDrawListener(listener);
+    }
+
+    @Test
+    public void testDoNotBlockDrawWhenTabLayoutDisabled() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.OTHER);
+        when(mShouldBlockDrawForTabLayoutSupplier.get()).thenReturn(false);
+        mInflationObserver.onPostInflationStartup();
+
+        verify(mViewTreeObserver, never()).addOnPreDrawListener(any());
     }
 
     private void validateConstructorAndCaptureObservers() {

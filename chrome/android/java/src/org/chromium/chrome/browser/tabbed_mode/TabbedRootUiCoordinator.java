@@ -423,6 +423,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable VerticalTabsSideUiCoordinator mVerticalTabsSideUiCoordinator;
     private @Nullable TabSearchOverlayCoordinator mTabSearchOverlayCoordinator;
     private final VerticalTabsActionDelegate mVerticalTabsActionDelegate;
+    private final Runnable mOnTabLayoutAvailable;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -600,6 +601,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param bottomBarHostManager Manager hosting and sizing the bottom bar container.
      * @param verticalTabsActionDelegate Delegate to handle actions from the vertical tabs UI.
      * @param urlBarVisibleSupplier Supplier indicating if the omnibox URL bar is visible.
+     * @param onTabLayoutAvailable Runnable to invoke when the tab layout UI is ready.
      */
     public TabbedRootUiCoordinator(
             AppCompatActivity activity,
@@ -657,7 +659,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             OneshotSupplier<ChromeInactivityTracker> inactivityTrackerSupplier,
             @Nullable BottomBarHostManager bottomBarHostManager,
             VerticalTabsActionDelegate verticalTabsActionDelegate,
-            Supplier<Boolean> urlBarVisibleSupplier) {
+            Supplier<Boolean> urlBarVisibleSupplier,
+            Runnable onTabLayoutAvailable) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -767,6 +770,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
         mInactivityTrackerSupplier = inactivityTrackerSupplier;
         mVerticalTabsActionDelegate = verticalTabsActionDelegate;
+        mOnTabLayoutAvailable = onTabLayoutAvailable;
 
         DataSharingTabGroupsDelegate dataSharingTabGroupsDelegate =
                 createDataSharingTabGroupsDelegate();
@@ -2479,7 +2483,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         mSideUiStateProviderSupplier.onAvailable(
-                provider -> maybeInitializeVerticalTabs(currentlySelectedProfile));
+                provider -> {
+                    maybeInitializeVerticalTabs(currentlySelectedProfile);
+                    mOnTabLayoutAvailable.run();
+                });
         mSideUiStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(
                         provider -> {

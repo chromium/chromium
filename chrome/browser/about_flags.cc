@@ -2593,6 +2593,7 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
 };
 
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_All[] = {
+    {"block_draw_on_cold_start", "true"},
     {"group_hover_card", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
     {"enable_by_default", "true"}};

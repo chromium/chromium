@@ -775,7 +775,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                 this::getSavedInstanceState,
                                 this::getPersistentInstanceState,
                                 getTabModelSelectorSupplier(),
-                                CipherLazyHolder.sCipherInstance));
+                                CipherLazyHolder.sCipherInstance),
+                        this::shouldBlockDrawForTabLayout);
     }
 
     @Override
@@ -3438,7 +3439,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mInactivityTrackerSupplier,
                 getBottomBarHostManager(),
                 createVerticalTabsActionDelegate(),
-                mUrlBarVisibleSupplier);
+                mUrlBarVisibleSupplier,
+                mAppLaunchDrawBlocker::onTabLayoutAvailable);
     }
 
     @Override
@@ -6068,5 +6070,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);
         }
         RecordUserAction.record("MobileMenuNtpCustomization");
+    }
+
+    private boolean shouldBlockDrawForTabLayout() {
+        if (!ChromeFeatureList.sAndroidVerticalTabsBlockDrawOnColdStart.getValue()) {
+            return false;
+        }
+        // Block draw when vertical tabs is active. Can be extended to horizontal tabs in the
+        // future.
+        return VerticalTabUtils.isVerticalTabsEnabled(this);
     }
 }
