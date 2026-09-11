@@ -14,6 +14,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -932,11 +933,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnNetworkMadeDefault(handles::NetworkHandle new_network);
 
   // Schedules a migration alarm to wait for a new network.
-  void OnNoNewNetwork();
+  void OnNoNewNetwork(MigrationCause migration_cause);
 
   // Called when migration alarm fires. If migration has not occurred
   // since alarm was set, closes session with error.
-  void OnMigrationTimeout(size_t num_sockets);
+  void OnMigrationTimeout(size_t num_sockets, MigrationCause migration_cause);
 
   // Populates network error details for this session.
   void PopulateNetErrorDetails(NetErrorDetails* details) const;
@@ -1274,12 +1275,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // connected to a migration attempt state, into a new manager-like entity for
   // migration attempts.
   bool send_packet_after_migration_ = false;
-  // True if migration is triggered, and there is no alternate network to
-  // migrate to.
+  // Cause of migration if migration is triggered, and there is no alternate
+  // network to migrate to.
   // TODO(crbug.com/558250723): Consider moving this, and every other field
   // connected to a migration attempt state, into a new manager-like entity for
   // migration attempts.
-  bool wait_for_new_network_ = false;
+  std::optional<MigrationCause> wait_for_new_network_cause_;
   // True if read errors should be ignored. Set when migration on write error is
   // posted and unset until the first packet is written after migration.
   // TODO(crbug.com/558250723): Consider moving this, and every other field

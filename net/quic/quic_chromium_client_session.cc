@@ -2414,7 +2414,7 @@ void QuicChromiumClientSession::MigrateSessionOnWriteError(
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_NO_ALTERNATE_NETWORK,
                                     connection_id(),
                                     "No alternate network found");
-    OnNoNewNetwork();
+    OnNoNewNetwork(ON_WRITE_ERROR);
     return;
   }
 
@@ -2466,9 +2466,9 @@ void QuicChromiumClientSession::FinishMigrateSessionOnWriteError(
   }
 }
 
-void QuicChromiumClientSession::OnNoNewNetwork() {
+void QuicChromiumClientSession::OnNoNewNetwork(MigrationCause migration_cause) {
   DCHECK(OneRttKeysAvailable());
-  wait_for_new_network_ = true;
+  wait_for_new_network_cause_ = migration_cause;
   net_log_.AddEvent(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_WAITING_FOR_NEW_NETWORK);
 
@@ -2482,7 +2482,8 @@ void QuicChromiumClientSession::OnNoNewNetwork() {
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&QuicChromiumClientSession::OnMigrationTimeout,
-                     weak_factory_.GetWeakPtr(), packet_readers_.size()),
+                     weak_factory_.GetWeakPtr(), packet_readers_.size(),
+                     migration_cause),
       base::Seconds(kWaitTimeForNewNetworkSecs));
 }
 
@@ -2498,7 +2499,9 @@ void QuicChromiumClientSession::WriteToNewSocket() {
       ->set_force_write_blocked(false);
 }
 
-void QuicChromiumClientSession::OnMigrationTimeout(size_t num_sockets) {
+void QuicChromiumClientSession::OnMigrationTimeout(
+    size_t num_sockets,
+    MigrationCause migration_cause) {
   // If number of sockets has changed, this migration task is stale.
   if (num_sockets != packet_readers_.size()) {
     return;
@@ -2507,7 +2510,7 @@ void QuicChromiumClientSession::OnMigrationTimeout(size_t num_sockets) {
   net_log_.AddEvent(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_WAITING_FOR_NETWORK);
 
-  int net_error = current_migration_cause_ == ON_NETWORK_DISCONNECTED
+  int net_error = migration_cause == ON_NETWORK_DISCONNECTED
                       ? ERR_INTERNET_DISCONNECTED
                       : ERR_NETWORK_CHANGED;
 
@@ -2733,7 +2736,8 @@ void QuicChromiumClientSession::OnNetworkConnected(
 
   // If there was no migration waiting for new network and the path is not
   // degrading, ignore this signal.
-  if (!wait_for_new_network_ && !connection()->IsPathDegrading()) {
+  if (!wait_for_new_network_cause_.has_value() &&
+      !connection()->IsPathDegrading()) {
     return;
   }
 
@@ -2745,20 +2749,19 @@ void QuicChromiumClientSession::OnNetworkConnected(
     current_migration_cause_ = NEW_NETWORK_CONNECTED_POST_PATH_DEGRADING;
   }
 
-  if (wait_for_new_network_) {
-    wait_for_new_network_ = false;
+  if (wait_for_new_network_cause_.has_value()) {
+    MigrationCause migration_cause = *wait_for_new_network_cause_;
+    wait_for_new_network_cause_.reset();
     net_log_.AddEventWithInt64Params(
         NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS_WAITING_FOR_NETWORK,
         "network", network);
-    if (current_migration_cause_ == ON_WRITE_ERROR) {
+    if (migration_cause == ON_WRITE_ERROR) {
       current_migrations_to_non_default_network_on_write_error_++;
     }
-    // `wait_for_new_network_` is true, there was no working network previously.
-    // `network` is now the only possible candidate, migrate immediately.
-    // TODO(crbug.com/557126867): Correctly retrieve and propagate the cause of
-    // the migration instead of relying on the mutable
-    // `current_migration_cause_`.
-    MigrateNetworkImmediately(current_migration_cause_, network);
+    // `wait_for_new_network_cause_` was set, there was no working network
+    // previously. `network` is now the only possible candidate, migrate
+    // immediately.
+    MigrateNetworkImmediately(migration_cause, network);
   } else {
     // The connection is path degrading.
     DCHECK(connection()->IsPathDegrading());
@@ -2828,7 +2831,7 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
       session_pool_->FindAlternateNetwork(disconnected_network);
 
   if (new_network == handles::kInvalidNetworkHandle) {
-    OnNoNewNetwork();
+    OnNoNewNetwork(ON_NETWORK_DISCONNECTED);
     return;
   }
 
