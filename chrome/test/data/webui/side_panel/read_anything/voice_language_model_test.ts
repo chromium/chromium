@@ -203,4 +203,46 @@ suite('VoiceLanguageModel', () => {
     assertFalse(voiceLanguageModel.hasLanguageForDownload(lang2));
     assertTrue(voiceLanguageModel.hasLanguageForDownload(lang3));
   });
+
+  test('addPendingLanguageRequest', () => {
+    const lang1 = 'de';
+    const lang2 = 'hi';
+
+    voiceLanguageModel.addPendingLanguageRequest(lang1);
+    voiceLanguageModel.addPendingLanguageRequest(lang2);
+
+    assertTrue(voiceLanguageModel.hasPendingLanguageRequest(lang1));
+    assertTrue(voiceLanguageModel.hasPendingLanguageRequest(lang2));
+    assertEquals(2, voiceLanguageModel.getPendingLanguageRequests().size);
+  });
+
+  test('removePendingLanguageRequest', () => {
+    const lang1 = 'de';
+    const lang2 = 'hi';
+
+    voiceLanguageModel.addPendingLanguageRequest(lang1);
+    voiceLanguageModel.addPendingLanguageRequest(lang2);
+    voiceLanguageModel.removePendingLanguageRequest(lang1);
+
+    assertFalse(voiceLanguageModel.hasPendingLanguageRequest(lang1));
+    assertTrue(voiceLanguageModel.hasPendingLanguageRequest(lang2));
+    assertEquals(1, voiceLanguageModel.getPendingLanguageRequests().size);
+
+    voiceLanguageModel.removePendingLanguageRequest(lang2);
+    assertFalse(voiceLanguageModel.hasPendingLanguageRequest(lang2));
+    assertEquals(0, voiceLanguageModel.getPendingLanguageRequests().size);
+  });
+
+  test('clearPendingLanguageRequests', () => {
+    const lang1 = 'de';
+    const lang2 = 'hi';
+
+    voiceLanguageModel.addPendingLanguageRequest(lang1);
+    voiceLanguageModel.addPendingLanguageRequest(lang2);
+    voiceLanguageModel.clearPendingLanguageRequests();
+
+    assertFalse(voiceLanguageModel.hasPendingLanguageRequest(lang1));
+    assertFalse(voiceLanguageModel.hasPendingLanguageRequest(lang2));
+    assertEquals(0, voiceLanguageModel.getPendingLanguageRequests().size);
+  });
 });

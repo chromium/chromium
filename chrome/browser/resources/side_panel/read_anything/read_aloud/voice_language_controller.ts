@@ -71,6 +71,10 @@ export class VoiceLanguageController {
     return this.model_.getPendingTargetLanguage();
   }
 
+  getPendingLanguageRequests(): Set<string> {
+    return this.model_.getPendingLanguageRequests();
+  }
+
   getCurrentVoice(): SpeechSynthesisVoice|null {
     return this.model_.getCurrentVoice();
   }
@@ -688,9 +692,9 @@ export class VoiceLanguageController {
   }
 
   updateLanguageStatus(lang: string, status: string) {
-    this.stopWaitingForSpeechExtension();
-    const newStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
     if (!lang.length) {
+      this.stopWaitingForSpeechExtension();
+      const newStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
       if (newStatus.code === VoicePackServerStatusErrorCode.NOT_REACHED) {
         this.notificationManager_.onNoEngineConnection();
       }
@@ -699,6 +703,14 @@ export class VoiceLanguageController {
     }
 
     const lowerLang = lang.toLowerCase();
+    this.model_.removePendingLanguageRequest(lowerLang);
+    this.model_.removePendingLanguageRequest(
+        getVoicePackConvertedLangIfExists(lowerLang));
+    if (this.model_.getPendingLanguageRequests().size === 0) {
+      this.stopWaitingForSpeechExtension();
+    }
+
+    const newStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
     this.setServerStatus(lowerLang, newStatus);
     this.updateApplicationState_(lowerLang, newStatus);
 
@@ -854,6 +866,10 @@ export class VoiceLanguageController {
     if (voicePackLang) {
       this.notificationManager_.onCancelDownload(voicePackLang);
       this.model_.removeLanguageForDownload(voicePackLang);
+      this.model_.removePendingLanguageRequest(voicePackLang);
+      if (this.model_.getPendingLanguageRequests().size === 0) {
+        this.stopWaitingForSpeechExtension();
+      }
       this.audioBrowserProxy_.sendUninstallVoiceRequest(voicePackLang);
     }
   }
@@ -863,6 +879,7 @@ export class VoiceLanguageController {
       clearTimeout(this.speechExtensionResponseCallbackHandle_);
       this.speechExtensionResponseCallbackHandle_ = undefined;
     }
+    this.model_.clearPendingLanguageRequests();
   }
 
   private installEnabledLangs_(
@@ -879,6 +896,7 @@ export class VoiceLanguageController {
     const langOrLocaleForPackManager =
         convertLangOrLocaleForVoicePackManager(langOrLocale);
     if (langOrLocaleForPackManager) {
+      this.model_.addPendingLanguageRequest(langOrLocaleForPackManager);
       this.setSpeechExtensionResponseTimeout_();
       this.audioBrowserProxy_.sendGetVoicePackInfoRequest(
           langOrLocaleForPackManager);
@@ -894,13 +912,15 @@ export class VoiceLanguageController {
   }
 
   // Schedules a timer that will notify the user if the speech extension is
-  // unresponsive. Only schedules a new timer if there is none pending.
+  // unresponsive. Restarts the timer each time a new language is requested.
   private setSpeechExtensionResponseTimeout_() {
-    if (this.speechExtensionResponseCallbackHandle_ === undefined) {
-      this.speechExtensionResponseCallbackHandle_ = setTimeout(
-          () => this.notificationManager_.onNoEngineConnection(),
-          EXTENSION_RESPONSE_TIMEOUT_MS);
+    if (this.speechExtensionResponseCallbackHandle_ !== undefined) {
+      clearTimeout(this.speechExtensionResponseCallbackHandle_);
     }
+    this.speechExtensionResponseCallbackHandle_ = setTimeout(() => {
+      this.stopWaitingForSpeechExtension();
+      this.notificationManager_.onNoEngineConnection();
+    }, EXTENSION_RESPONSE_TIMEOUT_MS);
   }
 
   private alignPreferencesWithEnabledLangs_(languagesInPref: string[]) {

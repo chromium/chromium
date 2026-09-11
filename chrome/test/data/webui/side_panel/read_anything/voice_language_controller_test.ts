@@ -718,6 +718,109 @@ suite('VoiceLanguageController', () => {
     assertEquals(null, notificationType);
   });
 
+  test(
+      'first language response does not cancel speech extension timeout for ' +
+          'remaining pending languages',
+      () => {
+        const lang1 = 'fi';
+        const lang2 = 'de';
+        voiceLanguageController.setServerStatus(
+            lang1, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+        voiceLanguageController.setServerStatus(
+            lang2, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+        const mockTimer = new MockTimer();
+        mockTimer.install();
+
+        voiceLanguageController.onVoicesChanged();
+        assertArrayEquals([lang1, lang2], audioBrowserProxy.requestInfoLangs);
+        assertTrue(
+            voiceLanguageController.getPendingLanguageRequests().has(lang1));
+        assertTrue(
+            voiceLanguageController.getPendingLanguageRequests().has(lang2));
+
+        // Resolving only the first language request should not cancel the
+        // timeout for the remaining pending language request.
+        voiceLanguageController.updateLanguageStatus(lang1, 'kInstalled');
+        assertFalse(
+            voiceLanguageController.getPendingLanguageRequests().has(lang1));
+        assertTrue(
+            voiceLanguageController.getPendingLanguageRequests().has(lang2));
+        notificationType = null;
+        mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
+        mockTimer.uninstall();
+
+        assertEquals(
+            NotificationType.GOOGLE_VOICES_UNAVAILABLE, notificationType);
+        assertEquals(
+            0, voiceLanguageController.getPendingLanguageRequests().size);
+      });
+
+  test('all language responses cancel speech extension timeout', () => {
+    const lang1 = 'fi';
+    const lang2 = 'de';
+    voiceLanguageController.setServerStatus(
+        lang1, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+    voiceLanguageController.setServerStatus(
+        lang2, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    voiceLanguageController.onVoicesChanged();
+    assertArrayEquals([lang1, lang2], audioBrowserProxy.requestInfoLangs);
+
+    // Resolving all pending language requests should cancel the timeout.
+    voiceLanguageController.updateLanguageStatus(lang1, 'kInstalled');
+    voiceLanguageController.updateLanguageStatus(lang2, 'kInstalled');
+    assertEquals(0, voiceLanguageController.getPendingLanguageRequests().size);
+    notificationType = null;
+    mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
+    mockTimer.uninstall();
+
+    assertEquals(null, notificationType);
+  });
+
+  test('new language request restarts speech extension timeout', () => {
+    const lang1 = 'es-es';
+    const lang2 = 'en-gb';
+    voiceLanguageController.setServerStatus(
+        lang1, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
+    voiceLanguageController.setServerStatus(
+        lang2, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
+
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    audioBrowserProxy.baseLanguageForSpeech = lang1;
+    voiceLanguageController.onPageLanguageChanged();
+    assertArrayEquals([lang1], audioBrowserProxy.requestInfoLangs);
+    assertTrue(voiceLanguageController.getPendingLanguageRequests().has(lang1));
+
+    // Advance time halfway through the timeout.
+    mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS / 2);
+    assertEquals(null, notificationType);
+
+    // Request another language; this should restart the timeout.
+    audioBrowserProxy.baseLanguageForSpeech = lang2;
+    voiceLanguageController.onPageLanguageChanged();
+    assertArrayEquals([lang1, lang2], audioBrowserProxy.requestInfoLangs);
+    assertTrue(voiceLanguageController.getPendingLanguageRequests().has(lang2));
+
+    // Advance time by another half of the timeout.
+    // Total elapsed time since the first request is
+    // EXTENSION_RESPONSE_TIMEOUT_MS, but the timeout should not fire yet
+    // because it was restarted by the second request.
+    mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS / 2);
+    assertEquals(null, notificationType);
+    assertEquals(2, voiceLanguageController.getPendingLanguageRequests().size);
+
+    // Advance the remaining time so the restarted timeout fires.
+    mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS / 2);
+    mockTimer.uninstall();
+
+    assertEquals(NotificationType.GOOGLE_VOICES_UNAVAILABLE, notificationType);
+    assertEquals(0, voiceLanguageController.getPendingLanguageRequests().size);
+  });
+
   test('onPageLanguageChanged updates current language', () => {
     const lang = 'el';
     audioBrowserProxy.baseLanguageForSpeech = lang;
