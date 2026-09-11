@@ -44,7 +44,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ContentJUnit4ClassRunner.class)
 @SuppressLint("VisibleForTests")
 @Batch(Batch.PER_CLASS)
-@MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @DisableFeatures(ContentFeatures.ACCESSIBILITY_REQUEST_SCOPED_CONTENT_CHANGED_EVENTS)
 @EnableFeatures(ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION)
@@ -170,17 +169,6 @@ public class WebContentsAccessibilityEventsTest {
 
         String actualResults = getTrackerResults();
         Assert.assertNotNull(RESULTS_NULL, actualResults);
-
-        // Strip initial page-load events before "=== END INITIAL PAGE LOAD ===" to prevent
-        // flakiness from OS-dependent initial window attachment and layout stabilization events.
-        int expIndex = expectedResults.indexOf("=== END INITIAL PAGE LOAD ===");
-        if (expIndex != -1) {
-            expectedResults = expectedResults.substring(expIndex).trim();
-        }
-        int actIndex = actualResults.indexOf("=== END INITIAL PAGE LOAD ===");
-        if (actIndex != -1) {
-            actualResults = actualResults.substring(actIndex).trim();
-        }
 
         Assert.assertEquals(
                 EVENTS_ERROR
@@ -357,28 +345,19 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaAtomicChanged() {
-        performTest(
-                "aria-atomic-changed.html",
-                "aria-atomic-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-atomic-changed.html", "aria-atomic-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaAtomicChanged2() {
-        performTest(
-                "aria-atomic-changed2.html",
-                "aria-atomic-changed2-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-atomic-changed2.html", "aria-atomic-changed2-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaBusyChanged() {
-        performTest(
-                "aria-busy-changed.html",
-                "aria-busy-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-busy-changed.html", "aria-busy-changed-expected-android.txt");
     }
 
     @Test
@@ -389,11 +368,9 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaCheckedChanged() {
-        performTest(
-                "aria-checked-changed.html",
-                "aria-checked-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-checked-changed.html", "aria-checked-changed-expected-android.txt");
     }
 
     @Test
@@ -446,55 +423,37 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaControlsChanged() {
-        performTest(
-                "aria-controls-changed.html",
-                "aria-controls-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-controls-changed.html", "aria-controls-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaCurrentChanged() {
-        performTest(
-                "aria-current-changed.html",
-                "aria-current-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-current-changed.html", "aria-current-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaDisabledChanged() {
-        performTest(
-                "aria-disabled-changed.html",
-                "aria-disabled-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-disabled-changed.html", "aria-disabled-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaFlowTo() {
-        performTest(
-                "aria-flow-to.html",
-                "aria-flow-to-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-flow-to.html", "aria-flow-to-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaHasPopupChanged() {
-        performTest(
-                "aria-haspopup-changed.html",
-                "aria-haspopup-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-haspopup-changed.html", "aria-haspopup-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaHiddenChanged() {
-        performTest(
-                "aria-hidden-changed.html",
-                "aria-hidden-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-hidden-changed.html", "aria-hidden-changed-expected-android.txt");
     }
 
     @Test
@@ -502,17 +461,13 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaHiddenDescendantsAlreadyIgnored() {
         performTest(
                 "aria-hidden-descendants-already-ignored.html",
-                "aria-hidden-descendants-already-ignored-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "aria-hidden-descendants-already-ignored-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaHiddenDescendants() {
-        performTest(
-                "aria-hidden-descendants.html",
-                "aria-hidden-descendants-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-hidden-descendants.html", "aria-hidden-descendants-expected-android.txt");
     }
 
     @Test
@@ -520,8 +475,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaHiddenDescendantDisplayNone() {
         performTest(
                 "aria-hidden-single-descendant-display-none.html",
-                "aria-hidden-single-descendant-display-none-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "aria-hidden-single-descendant-display-none-expected-android.txt");
     }
 
     @Test
@@ -529,8 +483,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaHiddenSingleDescendant() {
         performTest(
                 "aria-hidden-single-descendant.html",
-                "aria-hidden-single-descendant-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "aria-hidden-single-descendant-expected-android.txt");
     }
 
     @Test
@@ -546,26 +499,19 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaInvalidStatusChanged() {
         performTest(
                 "aria-invalid-status-changed.html",
-                "aria-invalid-status-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "aria-invalid-status-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaLevelChanged() {
-        performTest(
-                "aria-level-changed.html",
-                "aria-level-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-level-changed.html", "aria-level-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaLiveChanged() {
-        performTest(
-                "aria-live-changed.html",
-                "aria-live-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-live-changed.html", "aria-live-changed-expected-android.txt");
     }
 
     @Test
@@ -577,10 +523,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaMultilineChanged() {
-        performTest(
-                "aria-multiline-changed.html",
-                "aria-multiline-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-multiline-changed.html", "aria-multiline-changed-expected-android.txt");
     }
 
     @Test
@@ -595,30 +538,25 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaMultiselectableChanged() {
         performTest(
                 "aria-multiselectable-changed.html",
-                "aria-multiselectable-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "aria-multiselectable-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaPosinsetChanged() {
-        performTest(
-                "aria-posinset-changed.html",
-                "aria-posinset-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-posinset-changed.html", "aria-posinset-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaPressedChanged() {
-        performTest(
-                "aria-pressed-changed.html",
-                "aria-pressed-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-pressed-changed.html", "aria-pressed-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaPressedChangesButtonRole() {
         performTest(
                 "aria-pressed-changes-button-role.html",
@@ -628,46 +566,31 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaReadonlyChanged() {
-        performTest(
-                "aria-readonly-changed.html",
-                "aria-readonly-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-readonly-changed.html", "aria-readonly-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaRelevantChanged() {
-        performTest(
-                "aria-relevant-changed.html",
-                "aria-relevant-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-relevant-changed.html", "aria-relevant-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaRelevantChanged2() {
-        performTest(
-                "aria-relevant-changed2.html",
-                "aria-relevant-changed2-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-relevant-changed2.html", "aria-relevant-changed2-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaRequiredChanged() {
-        performTest(
-                "aria-required-changed.html",
-                "aria-required-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-required-changed.html", "aria-required-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaSelectedChanged() {
-        performTest(
-                "aria-selected-changed.html",
-                "aria-selected-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-selected-changed.html", "aria-selected-changed-expected-android.txt");
     }
 
     @Test
@@ -681,10 +604,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaSetsizeChanged() {
-        performTest(
-                "aria-setsize-changed.html",
-                "aria-setsize-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-setsize-changed.html", "aria-setsize-changed-expected-android.txt");
     }
 
     @Test
@@ -779,8 +699,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaTextboxChildrenChange() {
         performTest(
                 "aria-textbox-children-change.html",
-                "aria-textbox-children-change-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "aria-textbox-children-change-expected-android.txt");
     }
 
     @Test
@@ -788,8 +707,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaTextboxEditabilityChanges() {
         performTest(
                 "aria-textbox-editability-changes.html",
-                "aria-textbox-editability-changes-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "aria-textbox-editability-changes-expected-android.txt");
     }
 
     @Test
@@ -797,35 +715,25 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaTextboxWithFocusableChildren() {
         performTest(
                 "aria-textbox-with-focusable-children.html",
-                "aria-textbox-with-focusable-children-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "aria-textbox-with-focusable-children-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaTreeCollapse() {
-        performTest(
-                "aria-tree-collapse.html",
-                "aria-tree-collapse-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-tree-collapse.html", "aria-tree-collapse-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaTreeExpand() {
-        performTest(
-                "aria-tree-expand.html",
-                "aria-tree-expand-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-tree-expand.html", "aria-tree-expand-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaTreeItemFocus() {
-        performTest(
-                "aria-treeitem-focus.html",
-                "aria-treeitem-focus-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("aria-treeitem-focus.html", "aria-treeitem-focus-expected-android.txt");
     }
 
     @Test
@@ -893,19 +801,13 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_checkedMixedChanged() {
-        performTest(
-                "checked-mixed-changed.html",
-                "checked-mixed-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("checked-mixed-changed.html", "checked-mixed-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_checkedStateChanged() {
-        performTest(
-                "checked-state-changed.html",
-                "checked-state-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("checked-state-changed.html", "checked-state-changed-expected-android.txt");
     }
 
     @Test
@@ -913,8 +815,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_childrenChangedOnlyOnAncestor() {
         performTest(
                 "children-changed-only-on-ancestor.html",
-                "children-changed-only-on-ancestor-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "children-changed-only-on-ancestor-expected-android.txt");
     }
 
     @Test
@@ -1010,10 +911,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_disabledStateChanged() {
-        performTest(
-                "disabled-state-changed.html",
-                "disabled-state-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("disabled-state-changed.html", "disabled-state-changed-expected-android.txt");
     }
 
     @Test
@@ -1025,19 +923,14 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_expandedChanged() {
-        performTest(
-                "expanded-changed.html",
-                "expanded-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("expanded-changed.html", "expanded-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_popoverExpandedChanged() {
         performTest(
-                "popover-expanded-changed.html",
-                "popover-expanded-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "popover-expanded-changed.html", "popover-expanded-changed-expected-android.txt");
     }
 
     @Test
@@ -1056,19 +949,14 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_formDisabledChanged() {
-        performTest(
-                "form-disabled-changed.html",
-                "form-disabled-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("form-disabled-changed.html", "form-disabled-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_formRequiredChanged() {
-        performTest(
-                "form-required-changed.html",
-                "form-required-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("form-required-changed.html", "form-required-changed-expected-android.txt");
     }
 
     @Test
@@ -1425,8 +1313,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_multipleAriaPropertiesChanged() {
         performTest(
                 "multiple-aria-properties-changed.html",
-                "multiple-aria-properties-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "multiple-aria-properties-changed-expected-android.txt");
     }
 
     @Test
@@ -1454,10 +1341,7 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/549376305")
     public void test_pressedStateChanged() {
-        performTest(
-                "pressed-state-changed.html",
-                "pressed-state-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("pressed-state-changed.html", "pressed-state-changed-expected-android.txt");
     }
 
     @Test
@@ -1507,10 +1391,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_removeHiddenAttribute() {
-        performTest(
-                "remove-hidden-attribute.html",
-                "remove-hidden-attribute-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("remove-hidden-attribute.html", "remove-hidden-attribute-expected-android.txt");
     }
 
     @Test
@@ -1545,8 +1426,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_reportValidityInvalidField() {
         performTest(
                 "report-validity-invalid-field.html",
-                "report-validity-invalid-field-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "report-validity-invalid-field-expected-android.txt");
     }
 
     @Test
@@ -1559,8 +1439,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_reportValidityInvalidField_exp() {
         performTest(
                 "report-validity-invalid-field.html",
-                "report-validity-invalid-field-expected-android-exp.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "report-validity-invalid-field-expected-android-exp.txt");
     }
 
     @Test
