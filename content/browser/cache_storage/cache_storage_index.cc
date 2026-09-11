@@ -31,8 +31,9 @@ CacheStorageIndex& CacheStorageIndex::operator=(CacheStorageIndex&& rhs) {
 
 void CacheStorageIndex::Insert(const CacheMetadata& cache_metadata) {
   CHECK(!has_doomed_cache_, base::NotFatalUntil::M158);
-  CHECK(!cache_metadata_map_.contains(cache_metadata.name),
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/559142598): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!cache_metadata_map_.contains(cache_metadata.name));
   ordered_cache_metadata_.push_back(cache_metadata);
   cache_metadata_map_[cache_metadata.name] = --ordered_cache_metadata_.end();
   storage_size_ = CacheStorage::kSizeUnknown;
