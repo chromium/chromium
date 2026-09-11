@@ -1551,6 +1551,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
         NewTabPageLocationPolicyManager.getInstance().onFinishNativeInitialization(originalProfile);
 
+        // Must precede initializeSideUi(), which passes this controller to vertical tabs.
+        initUndoGroupSnackbarController();
+        initializeSideUi(currentlySelectedProfile);
+
+        // ContextualTasksBridge depends on the side panel framework set up by initializeSideUi().
         if (ContextualTasksUtils.isContextualTasksUiEnabled()) {
             if (mChromeAndroidTaskSupplier.get() != null) {
                 mContextualTasksBridge = new ContextualTasksBridge(originalProfile, mWindowAndroid);
@@ -1564,8 +1569,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 () -> mContextualTasksBridge);
             }
         }
-        initUndoGroupSnackbarController();
-        initializeSideUi(currentlySelectedProfile);
     }
 
     /** Creates an instance of {@link IncognitoReauthCoordinatorFactory} for tabbed activity. */
