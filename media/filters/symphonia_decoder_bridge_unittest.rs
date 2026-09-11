@@ -33,9 +33,10 @@ fn test_conversion<S, E, F>(
     audio_buf.plane_mut(0).unwrap().copy_from_slice(samples);
 
     let buffer_ref = to_ref(&audio_buf);
-    let sample_buffer = SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, codec).unwrap();
+    let sample_buffer =
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, codec, bytes_per_sample).unwrap();
 
-    let result = create_audio_buffer(buffer_ref, sample_buffer, bytes_per_sample).unwrap();
+    let result = create_audio_buffer(buffer_ref, sample_buffer).unwrap();
 
     expect_eq!(result.sample_rate, sample_rate);
     expect_eq!(result.num_frames, samples.len());
@@ -211,7 +212,7 @@ fn test_unsupported_buffer_type() {
     let audio_buf = AudioBuffer::<f64>::new(spec, 1);
     let buffer_ref = GenericAudioBufferRef::F64(&audio_buf);
     let result =
-        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown);
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown, 4);
     expect_true!(result.is_err());
 }
 
@@ -227,10 +228,10 @@ fn test_decoder_init_failure() {
         sample_rate: 44100,
     };
     let result = init_symphonia_decoder(&config);
-    // Even if it succeeds here (some decoders might be okay with empty extra data),
-    // we are testing the FFI result type.
-    // In practice, FLAC often requires some metadata or will fail on first packet.
-    // If it returns Ok, that's fine too, but we want to make sure it handles both.
+    // Even if it succeeds here (some decoders might be okay with empty extra
+    // data), we are testing the FFI result type. In practice, FLAC often
+    // requires some metadata or will fail on first packet. If it returns Ok,
+    // that's fine too, but we want to make sure it handles both.
     match result.status {
         ffi::SymphoniaInitStatus::Ok => {
             // If it succeeded, the decoder should be present.
@@ -370,9 +371,9 @@ fn test_stereo_interleaving() {
 
     let buffer_ref = GenericAudioBufferRef::F32(&audio_buf);
     let sample_buffer =
-        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown)
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown, 4)
             .unwrap();
-    let result = create_audio_buffer(buffer_ref, sample_buffer, 4).unwrap();
+    let result = create_audio_buffer(buffer_ref, sample_buffer).unwrap();
 
     // Expected interleaved: [0.5, -0.5, 0.1, -0.1]
     let expected: &[f32] = &[0.5, -0.5, 0.1, -0.1];
@@ -380,6 +381,69 @@ fn test_stereo_interleaving() {
         result.data.chunks_exact(4).map(|c| f32::from_ne_bytes(c.try_into().unwrap())).collect();
 
     expect_eq!(actual_f32, expected);
+}
+
+// Verify that stereo planar S24 data is properly interleaved and padded to
+// 32-bit.
+#[gtest(SymphoniaDecoderBridgeTest, StereoS24InterleavingAndPadding)]
+fn test_stereo_s24_interleaving_and_padding() {
+    use symphonia::core::audio::sample::i24;
+    const SAMPLE_RATE: u32 = 44100;
+    let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO);
+    let mut audio_buf = AudioBuffer::<i24>::new(spec, 2);
+    audio_buf.render_uninit(Some(2));
+
+    // Planar data: L[0x123456, 0x7FFFFF], R[-0x123456, -0x800000]
+    audio_buf.plane_mut(0).unwrap().copy_from_slice(&[i24(0x123456), i24(0x7FFFFF)]);
+    audio_buf.plane_mut(1).unwrap().copy_from_slice(&[i24(-0x123456), i24(-0x800000)]);
+
+    let buffer_ref = GenericAudioBufferRef::S24(&audio_buf);
+    let sample_buffer =
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown, 4)
+            .unwrap();
+    let result = create_audio_buffer(buffer_ref, sample_buffer).unwrap();
+
+    expect_eq!(result.sample_format, ffi::SymphoniaSampleFormat::S24);
+    expect_eq!(result.channel_count, 2);
+    expect_eq!(result.num_frames, 2);
+
+    // Expected interleaved S32: [L0, R0, L1, R1]
+    let expected: &[i32] = &[0x12345600, -0x12345600, 0x7FFFFF00, -0x80000000];
+    let actual_i32: Vec<i32> =
+        result.data.chunks_exact(4).map(|c| i32::from_ne_bytes(c.try_into().unwrap())).collect();
+
+    expect_eq!(actual_i32, expected);
+}
+
+// Verify that stereo planar S32 data is properly interleaved and downshifted to
+// S16.
+#[gtest(SymphoniaDecoderBridgeTest, StereoS32ToS16InterleavingAndDownshifting)]
+fn test_stereo_s32_to_s16_interleaving_and_downshifting() {
+    const SAMPLE_RATE: u32 = 44100;
+    let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO);
+    let mut audio_buf = AudioBuffer::<i32>::new(spec, 2);
+    audio_buf.render_uninit(Some(2));
+
+    // Planar data: L[0x12340000, 0x7FFF0000], R[-0x12340000, i32::MIN]
+    audio_buf.plane_mut(0).unwrap().copy_from_slice(&[0x12340000, 0x7FFF0000]);
+    audio_buf.plane_mut(1).unwrap().copy_from_slice(&[-0x12340000, i32::MIN]);
+
+    let buffer_ref = GenericAudioBufferRef::S32(&audio_buf);
+    let sample_buffer =
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown, 2)
+            .unwrap();
+    let result = create_audio_buffer(buffer_ref, sample_buffer).unwrap();
+
+    expect_eq!(result.sample_format, ffi::SymphoniaSampleFormat::S16);
+    expect_eq!(result.channel_count, 2);
+    expect_eq!(result.num_frames, 2);
+
+    // Expected interleaved S16: [L0, R0, L1, R1]
+    let expected: &[i16] = &[0x1234, -0x1234, 0x7FFF, i16::MIN];
+    let actual_i16: Vec<i16> =
+        result.data.chunks_exact(2).map(|c| i16::from_ne_bytes(c.try_into().unwrap())).collect();
+
+    expect_eq!(actual_i16, expected);
 }
 
 // Verify that Symphonia errors are correctly mapped to FFI statuses.
@@ -423,15 +487,16 @@ fn test_packet_conversion() {
 #[gtest(SymphoniaDecoderBridgeTest, ZeroFrames)]
 fn test_zero_frames() {
     const SAMPLE_RATE: u32 = 44100;
-    // Test 5.1 channels (6 channels) zero-length frame handling in Symphonia 0.6.
+    // Test 5.1 channels (6 channels) zero-length frame handling in
+    // Symphonia 0.6.
     let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_MPEG_5P1_D);
     let audio_buf = AudioBuffer::<f32>::new(spec, 0);
 
     let buffer_ref = GenericAudioBufferRef::F32(&audio_buf);
     let sample_buffer =
-        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown)
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown, 4)
             .unwrap();
-    let result = create_audio_buffer(buffer_ref, sample_buffer, 4).unwrap();
+    let result = create_audio_buffer(buffer_ref, sample_buffer).unwrap();
 
     expect_eq!(result.num_frames, 0);
     expect_true!(result.data.is_empty());
@@ -441,23 +506,23 @@ fn test_zero_frames() {
 fn test_detect_mpeg_audio_codec_id() {
     use symphonia::core::codecs::audio::well_known::*;
 
-    // MPEG-1 Layer 1 header: sync (11 bits) = 0x7FF, version = 11 (MPEG-1), layer =
-    // 11 (Layer 1) 0xFF, 0xFE, ...
+    // MPEG-1 Layer 1 header: sync (11 bits) = 0x7FF, version = 11 (MPEG-1),
+    // layer = 11 (Layer 1) 0xFF, 0xFE, ...
     let mp1_header = [0xFF, 0xFE, 0x90, 0x00];
     expect_eq!(detect_mpeg_audio_codec_id(&mp1_header), Some(CODEC_ID_MP1));
 
-    // MPEG-1 Layer 2 header: sync (11 bits) = 0x7FF, version = 11 (MPEG-1), layer =
-    // 10 (Layer 2) 0xFF, 0xFD, ...
+    // MPEG-1 Layer 2 header: sync (11 bits) = 0x7FF, version = 11 (MPEG-1),
+    // layer = 10 (Layer 2) 0xFF, 0xFD, ...
     let mp2_header = [0xFF, 0xFD, 0x90, 0x00];
     expect_eq!(detect_mpeg_audio_codec_id(&mp2_header), Some(CODEC_ID_MP2));
 
-    // MPEG-1 Layer 3 header: sync (11 bits) = 0x7FF, version = 11 (MPEG-1), layer =
-    // 01 (Layer 3) 0xFF, 0xFB, ...
+    // MPEG-1 Layer 3 header: sync (11 bits) = 0x7FF, version = 11 (MPEG-1),
+    // layer = 01 (Layer 3) 0xFF, 0xFB, ...
     let mp3_header = [0xFF, 0xFB, 0x90, 0x00];
     expect_eq!(detect_mpeg_audio_codec_id(&mp3_header), Some(CODEC_ID_MP3));
 
-    // MPEG-2 Layer 2 header: sync (11 bits) = 0x7FF, version = 10 (MPEG-2), layer =
-    // 10 (Layer 2) 0xFF, 0xF5, ...
+    // MPEG-2 Layer 2 header: sync (11 bits) = 0x7FF, version = 10 (MPEG-2),
+    // layer = 10 (Layer 2) 0xFF, 0xF5, ...
     let mpeg2_layer2_header = [0xFF, 0xF5, 0x90, 0x00];
     expect_eq!(detect_mpeg_audio_codec_id(&mpeg2_layer2_header), Some(CODEC_ID_MP2));
 
@@ -489,7 +554,8 @@ fn test_mp2_layer_switching() {
     let packet =
         ffi::SymphoniaPacket { timestamp_us: 0, duration_us: 26122, data: &mp2_packet_data };
 
-    // Calling decode should trigger maybe_update_mpeg_decoder and update to MP2.
+    // Calling decode should trigger maybe_update_mpeg_decoder and
+    // update to MP2.
     let decode_result = result.decoder.decode(&packet);
     expect_ne!(decode_result.status, ffi::SymphoniaDecodeStatus::InvalidDecoderState);
 }
