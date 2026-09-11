@@ -1,0 +1,132 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #include=sp-shared-style
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+#voiceSelectionDialog {
+  --cr-dialog-background-color: var(--color-side-panel-content-background);
+  --cr-dialog-button-container-padding-bottom: 20px;
+  --cr-dialog-button-container-padding-top: 12px;
+  --cr-dialog-width: min(320px, calc(100vw - 32px));
+}
+
+#voiceSelectionDialog::part(dialog) {
+  overflow-x: hidden;
+}
+
+#voiceSelectionDialog::part(body-container) {
+  max-height: min(400px, 65vh);
+}
+
+.voice-menu-body {
+  padding-block-end: 8px;
+}
+
+.lang-group-title {
+  font-size: 11px;
+  line-height: 16px;
+  padding-block: 12px 4px;
+  padding-inline: 0;
+  text-transform: uppercase;
+}
+
+.voice-row {
+  --cr-radio-button-label-spacing: 0;
+  --cr-radio-button-size: 18px;
+  align-items: center;
+  border-radius: 8px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  height: 48px;
+  margin: 0;
+  padding-block: 0;
+  padding-inline: 4px 12px;
+  transition: background-color 150ms ease;
+  width: 100%;
+}
+
+.voice-row:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.voice-row-content {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Left: Play Button & Adjacent Spinner */
+.preview-group {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.voice-preview-button {
+  --cr-icon-button-size: 40px;
+  --cr-icon-button-icon-size: 22px;
+  --cr-icon-button-fill-color:
+    var(--color-sys-primary, var(--cr-primary-text-color));
+  margin: 0;
+}
+
+.spinner-span {
+  align-items: center;
+  display: flex;
+  height: 20px;
+  justify-content: center;
+  width: 20px;
+}
+
+.spinner-span[hidden] {
+  visibility: hidden;
+}
+
+.spinner {
+  height: 16px;
+  width: 16px;
+}
+
+/* Middle column: Voice Name (min-width: 0 enables ellipsis truncation) */
+.voice-name {
+  color: var(--color-sys-on-surface, var(--cr-primary-text-color));
+  flex-grow: 1;
+  font-size: 13px;
+  min-width: 0;
+  overflow: hidden;
+  padding-inline: 8px;
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notification {
+  border-radius: 4px;
+  font-size: 12px;
+  margin: 8px 0;
+  padding: 8px 12px;
+}
+
+.error-message {
+  background-color: var(--color-sys-error-container, #fce8e6);
+  color: var(--color-sys-on-error-container, #c5221f);
+}
+
+.download-message {
+  background-color: var(--color-sys-surface-variant, #f1f3f4);
+  color: var(--color-sys-on-surface-variant, #444746);
+}

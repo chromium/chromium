@@ -91,6 +91,8 @@ build_webui("build") {
     "read_aloud/voice_language_model.ts",
     "read_aloud/voice_menu_display.ts",
     "read_aloud/voice_notification_manager.ts",
+    "read_aloud/voice_selection_dialog.html.ts",
+    "read_aloud/voice_selection_dialog.ts",
     "read_aloud/voice_selection_menu.html.ts",
     "read_aloud/voice_selection_menu.ts",
     "read_aloud/word_boundaries.ts",
@@ -112,6 +114,7 @@ build_webui("build") {
     "read_aloud/accent_menu.css",
     "read_aloud/language_menu.css",
     "read_aloud/language_toast.css",
+    "read_aloud/voice_selection_dialog.css",
     "read_aloud/voice_selection_menu.css",
   ]
   icons_html_files = [ "app/icons.html" ]

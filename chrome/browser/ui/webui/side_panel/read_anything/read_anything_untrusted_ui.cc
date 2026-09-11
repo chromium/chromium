@@ -219,6 +219,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"voiceLabel", IDS_READING_MODE_VOICE_LABEL},
       {"accentMenuLabel", IDS_READING_MODE_ACCENT_MENU_LABEL},
       {"accentMenuClose", IDS_READING_MODE_ACCENT_MENU_CLOSE},
+      {"cancel", IDS_CANCEL},
+      {"save", IDS_SAVE},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);

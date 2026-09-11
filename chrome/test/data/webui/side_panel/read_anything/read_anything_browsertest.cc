@@ -155,6 +155,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionMenu) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionDialog) {
+  RunSidePanelTest("side_panel/read_anything/voice_selection_dialog_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageUtil) {
   RunSidePanelTest(
       "side_panel/read_anything/voice_language_conversions_test.js",
