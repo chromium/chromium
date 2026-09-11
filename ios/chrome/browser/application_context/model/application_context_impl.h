@@ -31,6 +31,7 @@ class MemoryPressureListenerRegistry;
 }  // namespace base
 
 class ApplicationBreadcrumbsLogger;
+class DeviceIntegrityService;
 
 namespace network {
 class NetworkChangeManager;
@@ -111,6 +112,7 @@ class ApplicationContextImpl : public ApplicationContext {
   PushNotificationService* GetPushNotificationService() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
+  DeviceIntegrityService* GetDeviceIntegrityService() override;
   auto_deletion::AutoDeletionService* GetAutoDeletionService() override;
   supervised_user::DeviceParentalControls& GetDeviceParentalControls() override;
   optimization_guide::OptimizationGuideGlobalState*
@@ -198,6 +200,8 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
+
+  std::unique_ptr<DeviceIntegrityService> device_integrity_service_;
 
   std::unique_ptr<auto_deletion::AutoDeletionService> auto_deletion_service_;
 

@@ -4,5 +4,8 @@
 
 source_set("chromium_device_attestation") {
   sources = [ "chromium_device_attestation.mm" ]
-  deps = [ "//ios/public/provider/chrome/browser/device_attestation:device_attestation_api" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/device_attestation:device_attestation_api",
+  ]
 }

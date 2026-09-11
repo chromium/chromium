@@ -8,12 +8,16 @@
 #import <memory>
 
 #import "components/enterprise/device_attestation/ios/attestation_service_ios.h"
+#import "ios/public/provider/chrome/browser/device_attestation/device_integrity_service.h"
 
 namespace ios::provider {
 
 // Creates an instance of `AttestationServiceIOS`.
 std::unique_ptr<enterprise::AttestationServiceIOS>
 CreateAttestationServiceIOS();
+
+// Creates an instance of `DeviceIntegrityService`.
+std::unique_ptr<DeviceIntegrityService> CreateDeviceIntegrityService();
 
 }  // namespace ios::provider
 

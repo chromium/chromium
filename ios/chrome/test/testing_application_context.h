@@ -29,6 +29,7 @@ namespace supervised_user {
 class DeviceParentalControls;
 }  // namespace supervised_user
 
+class DeviceIntegrityService;
 class MockPromosManager;
 
 class TestingApplicationContext : public ApplicationContext {
@@ -125,6 +126,7 @@ class TestingApplicationContext : public ApplicationContext {
   PushNotificationService* GetPushNotificationService() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
+  DeviceIntegrityService* GetDeviceIntegrityService() override;
   auto_deletion::AutoDeletionService* GetAutoDeletionService() override;
   optimization_guide::OptimizationGuideGlobalState*
   GetOptimizationGuideGlobalState() override;
@@ -160,6 +162,7 @@ class TestingApplicationContext : public ApplicationContext {
       metrics_services_manager_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
+  std::unique_ptr<DeviceIntegrityService> device_integrity_service_;
   raw_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
   std::unique_ptr<auto_deletion::AutoDeletionService> auto_deletion_service_;
   std::unique_ptr<optimization_guide::OptimizationGuideGlobalState>

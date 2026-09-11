@@ -86,6 +86,7 @@ class AccountProfileMapper;
 class ApplicationContext;
 class ApplicationLocaleStorage;
 class BrowserPolicyConnectorIOS;
+class DeviceIntegrityService;
 class IncognitoSessionTracker;
 class IOSChromeIOThread;
 class PrefService;
@@ -241,6 +242,9 @@ class ApplicationContext {
   // Returns the application's AdditionalFeaturesController that manages some
   // features not declared by `BASE_DECLARE_FEATURE()`.
   virtual AdditionalFeaturesController* GetAdditionalFeaturesController() = 0;
+
+  // Returns the application's DeviceIntegrityService instance.
+  virtual DeviceIntegrityService* GetDeviceIntegrityService() = 0;
 
   // Returns the AutoDeletionService instance.
   virtual auto_deletion::AutoDeletionService* GetAutoDeletionService() = 0;
