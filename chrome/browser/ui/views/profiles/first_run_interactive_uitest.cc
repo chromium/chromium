@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -72,6 +74,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/mock_policy_service.h"
@@ -155,6 +158,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonEnabled);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonDisabled);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDialogOpened);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDialogClosed);
 
 enum class SyncButtonsFeatureConfig : int {
   // Deprecated: kDisabled = 0,
@@ -610,14 +615,50 @@ class FirstRunInteractiveUiBaseTest
     return GURL(chrome::kChromeUIFeatureShowcaseURL);
   }
 
-  GURL GetWelcomeURL() {
+  GURL GetWelcomeURL() const {
     return GURL(chrome::kChromeUIIntroURL)
         .Resolve(chrome::kChromeUIIntroWelcomeSubPage);
   }
 
-  const DeepQuery& GetWelcomeAcceptButtonQuery() {
+  const DeepQuery& GetWelcomeAcceptButtonQuery() const {
     static const base::NoDestructor<DeepQuery> kQuery(
         {"welcome-app", "#acceptButton"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetWelcomeFooterQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"welcome-app", "#footer"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetWelcomeMetricsManageLinkQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"welcome-app", "localized-link", "a"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetWelcomeMetricsDialogQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"welcome-app", "#dialog"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetWelcomeMetricsDialogActionButtonQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"welcome-app", "#dialogActionButton"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetWelcomeDefaultBrowserContainerQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"welcome-app", "#default-browser-container"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetWelcomeDefaultBrowserToggleQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"welcome-app", "#default-browser-toggle"});
     return *kQuery;
   }
 
@@ -722,6 +763,32 @@ class FirstRunInteractiveUiBaseTest
     button_disabled.type = StateChange::Type::kExistsAndConditionTrue;
     button_disabled.test_function = "(btn) => btn.disabled";
     return WaitForStateChange(web_contents_id, button_disabled);
+  }
+
+  auto WaitForDialogOpened(const ui::ElementIdentifier web_contents_id,
+                           const DeepQuery& dialog_query) {
+    StateChange dialog_opened;
+    dialog_opened.event = kDialogOpened;
+    dialog_opened.where = dialog_query;
+    dialog_opened.type = StateChange::Type::kExistsAndConditionTrue;
+    dialog_opened.test_function = "(dialog) => dialog.open";
+    return WaitForStateChange(web_contents_id, dialog_opened);
+  }
+
+  auto WaitForDialogClosed(const ui::ElementIdentifier web_contents_id,
+                           const DeepQuery& dialog_query) {
+    StateChange dialog_closed;
+    dialog_closed.event = kDialogClosed;
+    dialog_closed.where = dialog_query;
+    dialog_closed.type = StateChange::Type::kExistsAndConditionTrue;
+    dialog_closed.test_function = "(dialog) => !dialog.open";
+    return WaitForStateChange(web_contents_id, dialog_closed);
+  }
+
+  auto WaitForToggleUnchecked(const ui::ElementIdentifier web_contents_id,
+                              const DeepQuery& toggle_query) {
+    return WaitForJsResultAt(web_contents_id, toggle_query,
+                             "(el) => el.checked", false);
   }
 
   auto WaitForButtonVisible(const ui::ElementIdentifier web_contents_id,
@@ -3659,6 +3726,11 @@ class PreFirstRunRefreshInteractiveUiTest
   PreFirstRunRefreshInteractiveUiTest()
       : FirstRunInteractiveUiBaseTest(TestParam{
             .flow_version = FirstRunVersion::PreFirstRunRefreshed{}}) {}
+
+  void SetUpOnMainThread() override {
+    FirstRunInteractiveUiBaseTest::SetUpOnMainThread();
+    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PreFirstRunRefreshInteractiveUiTest,
@@ -3743,6 +3815,145 @@ IN_PROC_BROWSER_TEST_F(PreFirstRunRefreshInteractiveUiTest,
   run_loop.Run();
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(PreFirstRunRefreshInteractiveUiTest,
+                       MetricsOptInDefaultAccepted) {
+  g_browser_process->local_state()->SetBoolean(
+      metrics::prefs::kMetricsReportingEnabled, false);
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  OpenFirstRun();
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GetWelcomeURL()),
+      EnsurePresent(kWebContentsId, GetWelcomeFooterQuery()),
+      EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      PressJsButton(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GURL(chrome::kChromeUIIntroURL)),
+      PollUntil(
+          [] {
+            return g_browser_process->local_state()->GetBoolean(
+                metrics::prefs::kMetricsReportingEnabled);
+          },
+          "metrics reporting enabled"));
+}
+
+IN_PROC_BROWSER_TEST_F(PreFirstRunRefreshInteractiveUiTest,
+                       MetricsOptInTurnOff) {
+  g_browser_process->local_state()->SetBoolean(
+      metrics::prefs::kMetricsReportingEnabled, true);
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  OpenFirstRun();
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GetWelcomeURL()),
+      EnsurePresent(kWebContentsId, GetWelcomeMetricsManageLinkQuery()),
+      PressJsButton(kWebContentsId, GetWelcomeMetricsManageLinkQuery()),
+      WaitForDialogOpened(kWebContentsId, GetWelcomeMetricsDialogQuery()),
+      EnsurePresent(kWebContentsId, GetWelcomeMetricsDialogActionButtonQuery()),
+      PressJsButton(kWebContentsId, GetWelcomeMetricsDialogActionButtonQuery()),
+      WaitForDialogClosed(kWebContentsId, GetWelcomeMetricsDialogQuery()),
+      EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      PressJsButton(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GURL(chrome::kChromeUIIntroURL)),
+      PollUntil(
+          [] {
+            return !g_browser_process->local_state()->GetBoolean(
+                metrics::prefs::kMetricsReportingEnabled);
+          },
+          "metrics reporting disabled"));
+}
+#else   // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(PreFirstRunRefreshInteractiveUiTest,
+                       MetricsOptInHiddenWhenNotSupported) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  OpenFirstRun();
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GetWelcomeURL()),
+      EnsureNotPresent(kWebContentsId, GetWelcomeFooterQuery()),
+      EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      PressJsButton(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GURL(chrome::kChromeUIIntroURL)));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+IN_PROC_BROWSER_TEST_F(PreFirstRunRefreshInteractiveUiTest,
+                       DefaultBrowserToggleDefaultAccepted) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  OpenFirstRun();
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GetWelcomeURL()),
+      EnsurePresent(kWebContentsId, GetWelcomeDefaultBrowserToggleQuery()),
+      EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      PressJsButton(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GURL(chrome::kChromeUIIntroURL)));
+}
+
+IN_PROC_BROWSER_TEST_F(PreFirstRunRefreshInteractiveUiTest,
+                       DefaultBrowserToggleOff) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  OpenFirstRun();
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GetWelcomeURL()),
+      EnsurePresent(kWebContentsId, GetWelcomeDefaultBrowserToggleQuery()),
+      PressJsButton(kWebContentsId, GetWelcomeDefaultBrowserToggleQuery()),
+      WaitForToggleUnchecked(kWebContentsId,
+                             GetWelcomeDefaultBrowserToggleQuery()),
+      EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      PressJsButton(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GURL(chrome::kChromeUIIntroURL)));
+}
+#else   // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(
+    PreFirstRunRefreshInteractiveUiTest,
+    MetricsOptInAndDefaultBrowserToggleHiddenWhenNotSupported) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  OpenFirstRun();
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GetWelcomeURL()),
+      EnsureNotPresent(kWebContentsId, GetWelcomeFooterQuery()),
+      EnsureNotPresent(kWebContentsId,
+                       GetWelcomeDefaultBrowserContainerQuery()),
+      EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      PressJsButton(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GURL(chrome::kChromeUIIntroURL)));
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 namespace {
 
 struct PolicyTestParam {
@@ -3761,12 +3972,11 @@ const PolicyTestParam kPreFirstRunPolicyTestParams[] = {
 
 }  // namespace
 
-class PreFirstRunRefreshPolicyInteractiveUiTest
-    : public WithParamInterface<PolicyTestParam>,
-      public PreFirstRunRefreshInteractiveUiTest {
+class PreFirstRunRefreshPolicyInteractiveUiTestBase
+    : public PreFirstRunRefreshInteractiveUiTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
-    FirstRunInteractiveUiBaseTest::SetUpInProcessBrowserTestFixture();
+    PreFirstRunRefreshInteractiveUiTest::SetUpInProcessBrowserTestFixture();
     policy_provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
@@ -3775,8 +3985,7 @@ class PreFirstRunRefreshPolicyInteractiveUiTest
   }
 
   void SetPolicy(std::string_view key, std::string_view value) {
-    policy::PolicyMap policy;
-    policy.Set(
+    policy_map_.Set(
         std::string(key), policy::POLICY_LEVEL_MANDATORY,
         policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
         base::JSONReader::Read(value, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
@@ -3790,14 +3999,19 @@ class PreFirstRunRefreshPolicyInteractiveUiTest
     policy::PolicyService& policy_service =
         CHECK_DEREF(g_browser_process->policy_service());
     policy_service.AddObserver(policy::POLICY_DOMAIN_CHROME, &observer);
-    policy_provider_.UpdateChromePolicy(policy);
+    policy_provider_.UpdateChromePolicy(policy_map_);
     run_loop.Run();
     policy_service.RemoveObserver(policy::POLICY_DOMAIN_CHROME, &observer);
   }
 
  private:
+  policy::PolicyMap policy_map_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
+
+class PreFirstRunRefreshPolicyInteractiveUiTest
+    : public WithParamInterface<PolicyTestParam>,
+      public PreFirstRunRefreshPolicyInteractiveUiTestBase {};
 
 IN_PROC_BROWSER_TEST_P(PreFirstRunRefreshPolicyInteractiveUiTest,
                        SkipFlowEnforcedByPolicy) {
@@ -3850,6 +4064,35 @@ INSTANTIATE_TEST_SUITE_P(,
                            return base::StrCat(
                                {info.param.key, info.param.value});
                          });
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class PreFirstRunRefreshPolicyWelcomeInteractiveUiTest
+    : public PreFirstRunRefreshPolicyInteractiveUiTestBase {};
+
+IN_PROC_BROWSER_TEST_F(
+    PreFirstRunRefreshPolicyWelcomeInteractiveUiTest,
+    MetricsOptInAndDefaultBrowserToggleHiddenWhenPolicyManaged) {
+  SetPolicy(policy::key::kMetricsReportingEnabled, "false");
+  SetPolicy(policy::key::kDefaultBrowserSettingEnabled, "false");
+
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  OpenFirstRun();
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GetWelcomeURL()),
+      EnsureNotPresent(kWebContentsId, GetWelcomeFooterQuery()),
+      EnsureNotPresent(kWebContentsId,
+                       GetWelcomeDefaultBrowserContainerQuery()),
+      EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      PressJsButton(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GURL(chrome::kChromeUIIntroURL)));
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 class FirstRunFeatureShowcaseInteractiveUiTest
     : public FirstRunRevampInteractiveUiTest {
