@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.transit.AppMenuSubmenuFacility;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
+import org.chromium.chrome.test.transit.TabGroupsSubmenuFacility;
 import org.chromium.chrome.test.transit.bookmarks.BookmarksPhoneStation;
 import org.chromium.chrome.test.transit.bookmarks.BookmarksTabletStation;
 import org.chromium.chrome.test.transit.hub.TabGroupListBottomSheetFacility;
@@ -26,6 +27,7 @@ import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -143,6 +145,20 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
                 .enterFacility(
                         new TabGroupListBottomSheetFacility<>(
                                 new ArrayList<>(tabGroupIds), /* isNewTabGroupRowVisible= */ true));
+    }
+
+    /**
+     * Select "Add to group" from the app menu when submenus are enabled. This opens the Tab Groups
+     * Submenu popup.
+     */
+    public TabGroupsSubmenuFacility<HostPageStationT> openTabGroupsSubmenu(
+            List<String> expectedGroups, List<String> excludedGroups) {
+        assertNotNull(mAddToGroup);
+        assert TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mHostStation.getActivity());
+        return mAddToGroup
+                .scrollToAndSelectWithoutClosingTo()
+                .enterFacility(
+                        new TabGroupsSubmenuFacility<>(this, expectedGroups, excludedGroups));
     }
 
     private TabbedAppMenuPropertiesDelegate getTabbedAppMenuPropertiesDelegate() {

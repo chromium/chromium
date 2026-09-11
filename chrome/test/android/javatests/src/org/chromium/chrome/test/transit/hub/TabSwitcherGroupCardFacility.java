@@ -87,6 +87,11 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
                 .enterFacility(new TabSwitcherGroupCardAppMenuFacility<>(isIncognito, mTitle));
     }
 
+    /** Returns the title of the tab group card. */
+    public String getTitle() {
+        return mTitle;
+    }
+
     /**
      * Waits for the tab group card to have a specific color.
      *

@@ -155,7 +155,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
 
             @Override
             protected boolean matchesSafely(MVCListAdapter.ListItem listItem) {
-                return listItem.model.get(AppMenuItemProperties.MENU_ITEM_ID) == id;
+                return listItem.model.containsKeyEqualTo(AppMenuItemProperties.MENU_ITEM_ID, id);
             }
         };
     }
