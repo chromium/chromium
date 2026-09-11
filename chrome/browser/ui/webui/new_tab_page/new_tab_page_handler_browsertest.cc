@@ -173,20 +173,6 @@ class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
   }
 };
 
-class NewTabPageHandlerWithCustomizeChromePromoMaxTimesBrowserTest
-    : public NewTabPageHandlerWithCustomizeChromePromoBrowserTest {
- protected:
-  NewTabPageHandlerWithCustomizeChromePromoMaxTimesBrowserTest() {
-    scoped_feature_list_max_times_.InitAndEnableFeatureWithParameters(
-        ntp_features::kNtpCustomizeChromeAutoOpen,
-        {{"max_customize_chrome_auto_shown_count", "5"},
-         {"max_customize_chrome_auto_shown_session_count", "5"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_max_times_;
-};
-
 // TODO(crbug.com/519385225): Fix and re-enable the test.
 IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
                        DISABLED_DontOpenPanelWhenUserCustomizedChromeAlready) {
@@ -225,27 +211,6 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/519385225): Fix and re-enable the test.
-IN_PROC_BROWSER_TEST_F(
-    NewTabPageHandlerWithCustomizeChromePromoMaxTimesBrowserTest,
-    DISABLED_DontOpenPanelWhenPanelWasShowedMaxTimesBefore) {
-  for (int i = 0; i < ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get();
-       ++i) {
-    OpenNewTabPageInForegroundAndWaitForLoad();
-    EXPECT_TRUE(IsCustomizeChromeEntryShowing());
-  }
-
-  OpenNewTabPageInForegroundAndWaitForLoad();
-  EXPECT_FALSE(IsCustomizeChromeEntryShowing());
-
-  histogram_tester_.ExpectBucketCount(
-      "NewTabPage.CustomizeChromePromoEligibility",
-      NTPCustomizeChromePromoEligibility::kReachedTotalMaxCountAlready, 1);
-  histogram_tester_.ExpectBucketCount(
-      "SidePanel.OpenTrigger",
-      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome,
-      ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get());
-}
-
 IN_PROC_BROWSER_TEST_F(
     NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
     DISABLED_DontOpenPanelAgainWhenPanelWasExplicitlyCanceledBefore) {

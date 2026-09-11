@@ -4338,9 +4338,6 @@ const FeatureEntry::FeatureVariation
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-const FeatureEntry::FeatureParam kNtpCustomizeChromeAutoOpenOnEveryNTP[] = {
-    {"max_customize_chrome_auto_shown_count", "5"},
-    {"max_customize_chrome_auto_shown_session_count", "5"}};
 const FeatureEntry::FeatureParam kNtpCustomizeChromeAutoOpenOnFirstNTPOnly[] = {
     {"max_customize_chrome_auto_shown_count", "5"},
     {"max_customize_chrome_auto_shown_session_count", "1"}};
@@ -4348,7 +4345,6 @@ const FeatureEntry::FeatureParam kNtpCustomizeChromeAutoOpenIPHOnly[] = {
     {"max_customize_chrome_auto_shown_count", "0"},
     {"max_customize_chrome_auto_shown_session_count", "0"}};
 const FeatureEntry::FeatureVariation kNtpCustomizeChromeAutoOpenVariations[] = {
-    {"- On every NTP", kNtpCustomizeChromeAutoOpenOnEveryNTP, nullptr},
     {"- First NTP only", kNtpCustomizeChromeAutoOpenOnFirstNTPOnly, nullptr},
     {"- IPH only", kNtpCustomizeChromeAutoOpenIPHOnly, nullptr},
 };
