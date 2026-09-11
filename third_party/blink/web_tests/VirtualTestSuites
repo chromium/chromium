@@ -4833,6 +4833,7 @@
       "fast/xmlhttprequest/",
       "external/wpt/custom-elements/parser/parser-uses-create-an-element-for-a-token-svg.svg",
       "external/wpt/svg/painting",
+      "external/wpt/xml/onreadystatechange-crash-on-stop.xhtml",
       "http/tests/security/contentTypeOptions/xml-external-entity.xml"
     ],
     "args": [ "--enable-features=XMLParsingRust" ],

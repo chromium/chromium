@@ -507,6 +507,11 @@ void XMLDocumentParser::end() {
   if (IsParsing())
     PrepareToStopParsing();
   GetDocument()->SetReadyState(Document::kInteractive);
+  // SetReadyState can fire a readystatechange event which can run script and
+  // detach the document.
+  if (IsDetached()) {
+    return;
+  }
   ClearCurrentNodeStack();
   GetDocument()->FinishedParsing();
 }
