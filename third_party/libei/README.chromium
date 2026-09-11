@@ -1,7 +1,7 @@
 Name: libei
 URL: https://gitlab.freedesktop.org/libinput/libei
-Version: 1.4.0
-Revision: cae398c13266540ca67eaeb588cc8fa32e560bfe
+Version: 1.5.0
+Revision: bacd62cae0043e2c4f98cc5e728d8f458b20e8d8
 Update Mechanism: Manual
 License: MIT
 License File: LICENSE

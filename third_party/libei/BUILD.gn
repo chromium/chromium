@@ -145,6 +145,7 @@ static_library("libei") {
     "src/src/libei-scroll.c",
     "src/src/libei-seat.c",
     "src/src/libei-socket.c",
+    "src/src/libei-text.c",
     "src/src/libei-touchscreen.c",
     "src/src/libei.c",
   ]
@@ -184,6 +185,7 @@ static_library("libeis") {
     "src/src/libeis-scroll.c",
     "src/src/libeis-seat.c",
     "src/src/libeis-socket.c",
+    "src/src/libeis-text.c",
     "src/src/libeis-touchscreen.c",
     "src/src/libeis.c",
   ]

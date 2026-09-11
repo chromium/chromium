@@ -9,8 +9,8 @@
 
 #define _GNU_SOURCE 1
 
-#define EI_VERSION "1.4.0"
-#define EIS_VERSION "1.4.0"
+#define EI_VERSION "1.5.0"
+#define EIS_VERSION "1.5.0"
 
 #define HAVE_MEMFD_CREATE 1
 
