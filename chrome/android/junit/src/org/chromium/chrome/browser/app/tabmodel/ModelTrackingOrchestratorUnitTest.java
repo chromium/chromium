@@ -222,6 +222,32 @@ public class ModelTrackingOrchestratorUnitTest {
     }
 
     @Test
+    public void testShadowStoreCatchUpLifecycle_incognitoNullProfile() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
+
+        mOrchestrator.onAuthoritativeStateLoaded();
+        mOrchestrator.setLoadIncognitoTabsOnStart(true);
+
+        // Caught up Regular.
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+        ArgumentCaptor<Runnable> regularCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mRegularSynchronizer).fullSave(regularCallbackCaptor.capture());
+        regularCallbackCaptor.getValue().run();
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mMigrationManager, never()).onShadowStoreCaughtUp();
+
+        // Incognito model has null profile (e.g. EmptyTabModel in headless).
+        when(mIncognitoTabModel.getProfile()).thenReturn(null);
+
+        mOrchestrator.onRestoredForModel(/* incognito= */ true);
+
+        // Should mark incognito caught up immediately without calling fullSave.
+        verify(mIncognitoSynchronizer, never()).fullSave(any());
+        verify(mMigrationManager).onShadowStoreCaughtUp();
+    }
+
+    @Test
     public void testIncognitoLifecycle_OnModelCreated() {
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
 

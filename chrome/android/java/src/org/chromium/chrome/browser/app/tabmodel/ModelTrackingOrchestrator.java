@@ -450,7 +450,10 @@ public class ModelTrackingOrchestrator {
 
     private void fullSaveAndInitTracking(boolean incognito) {
         Profile profile = mTabModelSelector.getModel(incognito).getProfile();
-        if (profile == null) return;
+        if (profile == null) {
+            markModelCaughtUp(incognito);
+            return;
+        }
 
         try (ScopedStorageBatch ignored = createBatch(profile)) {
             var profileAndCollection = getProfileAndCollection(mTabModelSelector, incognito);

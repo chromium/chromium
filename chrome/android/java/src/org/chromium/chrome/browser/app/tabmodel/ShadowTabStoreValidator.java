@@ -32,11 +32,11 @@ public class ShadowTabStoreValidator {
     private final TabPersistentStore mShadowStore;
     private final RecordingTabCreator mAuthoritativeTabCreator;
     private final AccumulatingTabCreator mShadowTabCreator;
-    private final PersistentStoreMigrationManager mPersistentStoreMigrationManager;
     private final StoreMetricsObserver mAuthoritativeObserver;
     private final StoreMetricsObserver mShadowObserver;
     private final String mWindowTag;
     private final @TabOrchestratorType int mOrchestratorType;
+    private final boolean mIsShadowStoreCaughtUpAtStart;
 
     /**
      * @param profile The profile associated with this validator.
@@ -45,8 +45,7 @@ public class ShadowTabStoreValidator {
      * @param authoritativeTabCreator The {@link RecordingTabCreator} used by the authoritative
      *     store.
      * @param shadowTabCreator The {@link AccumulatingTabCreator} used by the shadow store.
-     * @param persistentStoreMigrationManager The {@link PersistentStoreMigrationManager} for
-     *     migration.
+     * @param persistentStoreMigrationManager Used to query the initial shadow store catch-up state.
      * @param windowTag The tag identifying the window.
      * @param orchestratorType The type of tab model orchestrator this validator is for.
      */
@@ -64,9 +63,9 @@ public class ShadowTabStoreValidator {
         mShadowStore = shadowStore;
         mAuthoritativeTabCreator = authoritativeTabCreator;
         mShadowTabCreator = shadowTabCreator;
-        mPersistentStoreMigrationManager = persistentStoreMigrationManager;
         mWindowTag = windowTag;
         mOrchestratorType = orchestratorType;
+        mIsShadowStoreCaughtUpAtStart = persistentStoreMigrationManager.isShadowStoreCaughtUp();
 
         mAuthoritativeObserver = new StoreMetricsObserver(this);
         mShadowObserver = new StoreMetricsObserver(this);
@@ -106,8 +105,11 @@ public class ShadowTabStoreValidator {
     }
 
     private void recordDiffMetrics() {
-        boolean isShadowStoreCaughtUp = mPersistentStoreMigrationManager.isShadowStoreCaughtUp();
-        if (!isShadowStoreCaughtUp || !isTabStateStoreShadowing()) return;
+        if (!mIsShadowStoreCaughtUpAtStart || !isTabStateStoreShadowing()) return;
+        if (mShadowStore instanceof TabStateStore tabStateStore
+                && tabStateStore.hasLoadWarnings()) {
+            return;
+        }
 
         List<TabCreationData> authoritativeFrozenData =
                 mAuthoritativeTabCreator.getFrozenTabCreationData();
@@ -122,7 +124,6 @@ public class ShadowTabStoreValidator {
                         authoritativeNewTabData,
                         mShadowTabCreator.createFrozenTabArgumentsList,
                         mShadowTabCreator.createNewTabArgumentsList,
-                        isShadowStoreCaughtUp,
                         mAuthoritativeTabCreator.getRegularFallbackTabs());
     }
 

@@ -36,7 +36,7 @@ public class ShadowTabStoreValidatorUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private TabPersistentStore mAuthoritativeStore;
-    @Mock private TabPersistentStore mShadowStore;
+    @Mock private TabStateStore mShadowStore;
     @Mock private PersistentStoreMigrationManager mPersistentStoreMigrationManager;
 
     @Captor private ArgumentCaptor<TabPersistentStoreObserver> mAuthoritativeObserverCaptor;
@@ -57,8 +57,8 @@ public class ShadowTabStoreValidatorUnitTest {
 
     @Test
     public void testRecordDiffMetrics_SuppressesMetrics_WhenShadowStoreNotCaughtUp() {
-        // Initially caught up at construction time.
-        when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(true);
+        // Not caught up at construction time.
+        when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(false);
 
         new ShadowTabStoreValidator(
                 mProfile,
@@ -72,10 +72,6 @@ public class ShadowTabStoreValidatorUnitTest {
 
         verify(mAuthoritativeStore).addObserver(mAuthoritativeObserverCaptor.capture());
         verify(mShadowStore).addObserver(mShadowObserverCaptor.capture());
-
-        // Simulate shadow store being razed during asynchronous loading,
-        // causing migration manager to report that the shadow store is no longer caught up.
-        when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(false);
 
         // Authoritative store has 1 tab, shadow store has 0 tabs.
         TabCreationData tabData =
@@ -98,8 +94,45 @@ public class ShadowTabStoreValidatorUnitTest {
     }
 
     @Test
+    public void testRecordDiffMetrics_SuppressesMetrics_WhenShadowStoreHasLoadWarnings() {
+        when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(true);
+        when(mShadowStore.hasLoadWarnings()).thenReturn(true);
+
+        new ShadowTabStoreValidator(
+                mProfile,
+                mAuthoritativeStore,
+                mShadowStore,
+                mAuthoritativeTabCreator,
+                mShadowTabCreator,
+                mPersistentStoreMigrationManager,
+                "window_1",
+                TabOrchestratorType.TABBED);
+
+        verify(mAuthoritativeStore).addObserver(mAuthoritativeObserverCaptor.capture());
+        verify(mShadowStore).addObserver(mShadowObserverCaptor.capture());
+
+        TabCreationData tabData =
+                new TabCreationData(1, "https://www.google.com", 1000L, false, null);
+        mAuthoritativeTabCreator.getFrozenTabCreationData().add(tabData);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher."
+                                        + TabStoreMetricsService.toHistogramTag(
+                                                TabOrchestratorType.TABBED))
+                        .build();
+
+        mAuthoritativeObserverCaptor.getValue().onStateLoaded();
+        mShadowObserverCaptor.getValue().onStateLoaded();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testRecordDiffMetrics_RecordsMetrics_WhenShadowStoreCaughtUp() {
         when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(true);
+        when(mShadowStore.hasLoadWarnings()).thenReturn(false);
 
         new ShadowTabStoreValidator(
                 mProfile,
