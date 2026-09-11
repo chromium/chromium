@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.os.Build;
 
 import org.junit.After;
 import org.junit.Test;
@@ -29,6 +30,7 @@ public class SettingsInTabTest {
     @After
     public void tearDown() {
         DeviceInfo.resetIsDesktopForTesting();
+        DeviceInfo.resetIsFoldableForTesting();
     }
 
     @Test
@@ -96,6 +98,22 @@ public class SettingsInTabTest {
         Activity activity =
                 Robolectric.buildActivity(Activity.class).create().start().resume().get();
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
+        assertTrue(SettingsInTab.isEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testIsEnabled_FoldableAndroid13_ReturnsFalse() {
+        DeviceInfo.setIsFoldableForTesting(true);
+        assertFalse(SettingsInTab.isEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testIsEnabled_FoldableAndroid14_ReturnsTrue() {
+        DeviceInfo.setIsFoldableForTesting(true);
         assertTrue(SettingsInTab.isEnabled());
     }
 }
