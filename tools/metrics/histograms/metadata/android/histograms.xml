@@ -8703,18 +8703,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Preconnect.SessionCreationTime.{Protocol}"
+<histogram name="Android.WebView.Preconnect.SessionCreationTime{Protocol}"
     units="ms" expires_after="2027-01-01">
   <owner>peconn@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records the setup latency of a {Protocol} preconnected session in WebView.
-    Logged when the connection is established.
+    Records the transport session creation latency (TCP/TLS handshake or QUIC
+    handshake) of a {Protocol} preconnected session in WebView. Timed from when
+    connection initialization begins in the network service to when the
+    connection is established. Excludes DNS resolution, proxy lookup, internal
+    queuing, and IPC overhead. Compare with
+    Android.WebView.Preconnect.SetupTime{Protocol} for the total end-to-end
+    latency. Logged when the connection is established.
   </summary>
   <token key="Protocol">
-    <variant name="HTTP2" summary="HTTP/2"/>
-    <variant name="Other" summary="Other protocol"/>
-    <variant name="QUIC" summary="QUIC"/>
+    <variant name="" summary="all"/>
+    <variant name=".HTTP2" summary="HTTP/2"/>
+    <variant name=".Other" summary="Other protocol"/>
+    <variant name=".QUIC" summary="QUIC"/>
+  </token>
+</histogram>
+
+<histogram name="Android.WebView.Preconnect.SetupTime{Protocol}" units="ms"
+    expires_after="2027-01-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the total end-to-end time taken between WebView Profile#preconnect
+    being called and the connection being established for a {Protocol}
+    preconnected session. Includes PreconnectManager queuing, proxy lookup, DNS
+    host resolution, IPC overhead between the browser and network service, and
+    transport/TLS handshake latency. Compare with
+    Android.WebView.Preconnect.SessionCreationTime{Protocol} which isolates the
+    transport handshake duration. Logged when the connection is established.
+  </summary>
+  <token key="Protocol">
+    <variant name="" summary="all"/>
+    <variant name=".HTTP2" summary="HTTP/2"/>
+    <variant name=".Other" summary="Other protocol"/>
+    <variant name=".QUIC" summary="QUIC"/>
   </token>
 </histogram>
 

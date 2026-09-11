@@ -184,8 +184,17 @@ void AwPreconnector::OnConnectionEstablished(
     const net::ConnectionChangeNotifier::EstablishedConnectionInfo& info) {
   PreconnectContext& context = receivers_.current_context();
   context.connection_info = info.connection_info;
+  base::TimeDelta setup_time = base::TimeTicks::Now() - context.start_time;
+
+  base::UmaHistogramMediumTimes("Android.WebView.Preconnect.SetupTime",
+                                setup_time);
+  base::UmaHistogramMediumTimes(
+      "Android.WebView.Preconnect.SessionCreationTime",
+      info.connection_setup_time);
 
   if (info.connection_info == net::NextProto::kProtoQUIC) {
+    base::UmaHistogramMediumTimes("Android.WebView.Preconnect.SetupTime.QUIC",
+                                  setup_time);
     base::UmaHistogramMediumTimes(
         "Android.WebView.Preconnect.SessionCreationTime.QUIC",
         info.connection_setup_time);
@@ -193,6 +202,8 @@ void AwPreconnector::OnConnectionEstablished(
         "Android.WebView.Preconnect.Event",
         AwPreconnectEvent::kConnectionEstablishedQuic);
   } else if (info.connection_info == net::NextProto::kProtoHTTP2) {
+    base::UmaHistogramMediumTimes("Android.WebView.Preconnect.SetupTime.HTTP2",
+                                  setup_time);
     base::UmaHistogramMediumTimes(
         "Android.WebView.Preconnect.SessionCreationTime.HTTP2",
         info.connection_setup_time);
@@ -200,6 +211,8 @@ void AwPreconnector::OnConnectionEstablished(
         "Android.WebView.Preconnect.Event",
         AwPreconnectEvent::kConnectionEstablishedHttp2);
   } else {
+    base::UmaHistogramMediumTimes("Android.WebView.Preconnect.SetupTime.Other",
+                                  setup_time);
     base::UmaHistogramMediumTimes(
         "Android.WebView.Preconnect.SessionCreationTime.Other",
         info.connection_setup_time);
