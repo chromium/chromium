@@ -157,6 +157,7 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
   }
 
   getSafetyHubEntryPointData() {
+    this.methodCalled('getSafetyHubEntryPointData');
     return Promise.resolve(this.entryPointData_);
   }
 

@@ -1,15 +1,10 @@
-<style include="cr-shared-style settings-shared">
-   #module {
-    padding: 8px 16px;
-  }
-</style>
-
 <settings-section page-title="$i18n{safetyHub}">
   <settings-safety-hub-module class="cr-row first" id="module"
-      header$="[[headerString_]]" subheader$="[[subheaderString_]]"
-      header-icon-color$="[[headerIconColor_]]" header-icon="cr:security">
-    <cr-button id="button" on-click="onClick_" slot="button-container"
-        class$="[[buttonClass_]]">
+      header="${this.headerString_}" subheader="${this.subheaderString_}"
+      header-icon-color="${this.computeHeaderIconColor_()}"
+      header-icon="cr:security">
+    <cr-button id="button" @click="${this.onClick_}" slot="button-container"
+        class="${this.computeButtonClass_()}">
       $i18n{safetyHubEntryPointButtonLabel}
     </cr-button>
   </settings-safety-hub-module>

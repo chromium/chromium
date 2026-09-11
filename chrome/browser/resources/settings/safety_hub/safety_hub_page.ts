@@ -8,7 +8,6 @@
  * state of Chrome.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 // <if expr="not is_chromeos">
 import '../relaunch_confirmation_dialog.js';
 // </if>
@@ -19,37 +18,40 @@ import './extensions_module.js';
 import './notification_permissions_module.js';
 import './unused_site_permissions_module.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/passwords/password_manager_proxy.js';
 import type {MetricsBrowserProxy, SafetyHubCardState} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, SafetyHubModuleType, SafetyHubSurfaces} from '../metrics_browser_proxy.js';
-import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
+import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
 import {routes} from '../route.js';
-import {RouteObserverMixin, Router} from '../router.js';
+import {Router} from '../router.js';
 import type {Route} from '../router.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
 import type {CardInfo, NotificationPermission, SafetyHubBrowserProxy, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
 import {CardState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from './safety_hub_browser_proxy.js';
+import type {SettingsSafetyHubCardElement} from './safety_hub_card.js';
 import type {SiteInfo} from './safety_hub_module.js';
-import {getTemplate} from './safety_hub_page.html.js';
+import {getCss} from './safety_hub_page.css.js';
+import {getHtml} from './safety_hub_page.html.js';
 
 export interface SettingsSafetyHubPageElement {
   $: {
-    passwords: HTMLElement,
-    safeBrowsing: HTMLElement,
-    version: HTMLElement,
+    passwords: SettingsSafetyHubCardElement,
+    safeBrowsing: SettingsSafetyHubCardElement,
+    version: SettingsSafetyHubCardElement,
   };
 }
 
 const SettingsSafetyHubPageElementBase =
-    RouteObserverMixin(SettingsViewMixin(RelaunchMixin(PrefServiceObserverMixin(
-        WebUiListenerMixin(I18nMixin(PolymerElement))))));
+    SettingsViewMixinLit(RelaunchMixinLit(PrefServiceObserverMixinLit(
+        WebUiListenerMixinLit(I18nMixinLit(CrLitElement)))));
 
 export class SettingsSafetyHubPageElement extends
     SettingsSafetyHubPageElementBase {
@@ -57,97 +59,74 @@ export class SettingsSafetyHubPageElement extends
     return 'settings-safety-hub-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       // The object that holds data of Password Check card.
-      passwordCardData_: Object,
+      passwordCardData_: {type: Object},
 
       // The object that holds data of Version Check card.
-      versionCardData_: Object,
+      versionCardData_: {type: Object},
 
       // The object that holds data of Safe Browsing card.
-      safeBrowsingCardData_: Object,
+      safeBrowsingCardData_: {type: Object},
 
       // Whether Notification Permissions module should be visible.
-      showNotificationPermissions_: {
-        type: Boolean,
-        value: false,
-      },
+      showNotificationPermissions_: {type: Boolean},
 
       // Whether Unused Site Permissions module should be visible.
-      showUnusedSitePermissions_: {
-        type: Boolean,
-        value: false,
-      },
+      showUnusedSitePermissions_: {type: Boolean},
 
       // Whether Extensions module should be visible.
-      showExtensions_: {
-        type: Boolean,
-        value: false,
-      },
+      showExtensions_: {type: Boolean},
 
-      showNoRecommendationsState_: {
-        type: Boolean,
-        computed:
-            'computeShowNoRecommendationsState_(showUnusedSitePermissions_.*, showExtensions_.*, showNotificationPermissions_.*)',
-      },
-
-      userEducationItemList_: Array,
+      userEducationItemList_: {type: Array},
 
       // Whether the data for notification permissions is ready.
-      hasDataForNotificationPermissions_: Boolean,
+      hasDataForNotificationPermissions_: {type: Boolean},
 
       // Whether the data for unused site permissions is ready.
-      hasDataForUnusedPermissions_: Boolean,
+      hasDataForUnusedPermissions_: {type: Boolean},
 
       // Whether the data for extensions is ready.
-      hasDataForExtensions_: Boolean,
+      hasDataForExtensions_: {type: Boolean},
 
-      // String that identifies version card's role announced by accessibility
-      // voiceover.
-      versionCardRole_: {
-        type: String,
-        computed: 'computeVersionCardRole_(versionCardData_)',
-      },
-
-      // String that identifies version card's description announced by
-      // accessibility voiceover.
-      versionCardAriaDescription_: {
-        type: String,
-        computed: 'computeVersionCardAriaDescription_(versionCardData_)',
-      },
-
-      safeBrowsingPref_: Object,
+      safeBrowsingPref_: {type: Object},
     };
   }
 
-  static get observers() {
-    return [
-      'onAllModulesLoaded_(passwordCardData_, versionCardData_, safeBrowsingCardData_, hasDataForUnusedPermissions_, hasDataForNotificationPermissions_, hasDataForExtensions_)',
-      'onSafeBrowsingPrefChanged_(safeBrowsingPref_)',
-    ];
-  }
-
-  declare private passwordCardData_: CardInfo;
-  declare private versionCardData_: CardInfo;
-  declare private safeBrowsingCardData_: CardInfo;
-  declare private showNotificationPermissions_: boolean;
-  declare private hasDataForNotificationPermissions_: boolean;
-  declare private showUnusedSitePermissions_: boolean;
-  declare private hasDataForUnusedPermissions_: boolean;
-  declare private showNoRecommendationsState_: boolean;
-  declare private showExtensions_: boolean;
-  declare private hasDataForExtensions_: boolean;
+  protected accessor passwordCardData_: CardInfo = {
+    header: '',
+    subheader: '',
+    state: CardState.INFO,
+  };
+  protected accessor versionCardData_: CardInfo = {
+    header: '',
+    subheader: '',
+    state: CardState.INFO,
+  };
+  protected accessor safeBrowsingCardData_: CardInfo = {
+    header: '',
+    subheader: '',
+    state: CardState.INFO,
+  };
+  protected accessor showNotificationPermissions_: boolean = false;
+  private accessor hasDataForNotificationPermissions_: boolean = false;
+  protected accessor showUnusedSitePermissions_: boolean = false;
+  private accessor hasDataForUnusedPermissions_: boolean = false;
+  protected accessor showExtensions_: boolean = false;
+  private accessor hasDataForExtensions_: boolean = false;
   private shouldRecordMetric_: boolean = false;
-  declare private userEducationItemList_: SiteInfo[];
-  declare private versionCardRole_: string;
-  declare private versionCardAriaDescription_: string;
-  declare private safeBrowsingPref_: chrome.settingsPrivate.PrefObject|
-      undefined;
+  protected accessor userEducationItemList_: SiteInfo[] = [];
+  private accessor safeBrowsingPref_: chrome.settingsPrivate.PrefObject|
+      undefined = undefined;
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -163,6 +142,30 @@ export class SettingsSafetyHubPageElement extends
     this.mirrorPrefs({
       'generated.safe_browsing': 'safeBrowsingPref_',
     });
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('passwordCardData_') ||
+        changedPrivateProperties.has('versionCardData_') ||
+        changedPrivateProperties.has('safeBrowsingCardData_') ||
+        changedPrivateProperties.has('hasDataForUnusedPermissions_') ||
+        changedPrivateProperties.has('hasDataForNotificationPermissions_') ||
+        changedPrivateProperties.has('hasDataForExtensions_')) {
+      this.onAllModulesLoaded_();
+    }
+
+    if (changedPrivateProperties.has('safeBrowsingPref_')) {
+      const oldPref = changedPrivateProperties.get('safeBrowsingPref_') as
+              chrome.settingsPrivate.PrefObject |
+          undefined;
+      if (oldPref?.value !== this.safeBrowsingPref_?.value) {
+        this.onSafeBrowsingPrefChanged_();
+      }
+    }
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
@@ -255,7 +258,7 @@ export class SettingsSafetyHubPageElement extends
     ];
   }
 
-  private onPasswordsClick_() {
+  protected onPasswordsClick_() {
     this.metricsBrowserProxy_.recordSafetyHubCardStateClicked(
         'Settings.SafetyHub.PasswordsCard.StatusOnClick',
         this.passwordCardData_.state as unknown as SafetyHubCardState);
@@ -265,14 +268,14 @@ export class SettingsSafetyHubPageElement extends
         PasswordManagerPage.CHECKUP);
   }
 
-  private onPasswordsKeyPress_(e: KeyboardEvent) {
+  protected onPasswordsKeydown_(e: KeyboardEvent) {
     e.stopPropagation();
     if (this.isEnterOrSpaceClicked_(e)) {
       this.onPasswordsClick_();
     }
   }
 
-  private onVersionClick_() {
+  protected onVersionClick_() {
     this.metricsBrowserProxy_.recordSafetyHubCardStateClicked(
         'Settings.SafetyHub.VersionCard.StatusOnClick',
         this.versionCardData_.state as unknown as SafetyHubCardState);
@@ -289,7 +292,7 @@ export class SettingsSafetyHubPageElement extends
     }
   }
 
-  private onEducationLinkClick_(event: CustomEvent<HTMLAnchorElement>) {
+  protected onShModuleItemLinkClick_(event: CustomEvent<HTMLAnchorElement>) {
     this.browserProxy_.recordSafetyHubInteraction();
     const headerString =
         event.detail.querySelector('.site-representation')!.textContent;
@@ -312,7 +315,7 @@ export class SettingsSafetyHubPageElement extends
     }
   }
 
-  private onVersionKeyPress_(e: KeyboardEvent) {
+  protected onVersionKeydown_(e: KeyboardEvent) {
     e.stopPropagation();
     if (this.isEnterOrSpaceClicked_(e)) {
       this.onVersionClick_();
@@ -328,7 +331,7 @@ export class SettingsSafetyHubPageElement extends
     });
   }
 
-  private onSafeBrowsingClick_() {
+  protected onSafeBrowsingClick_() {
     this.metricsBrowserProxy_.recordSafetyHubCardStateClicked(
         'Settings.SafetyHub.SafeBrowsingCard.StatusOnClick',
         this.safeBrowsingCardData_.state as unknown as SafetyHubCardState);
@@ -339,7 +342,7 @@ export class SettingsSafetyHubPageElement extends
         /* removeSearch= */ true);
   }
 
-  private onSafeBrowsingKeyPress_(e: KeyboardEvent) {
+  protected onSafeBrowsingKeydown_(e: KeyboardEvent) {
     e.stopPropagation();
     if (this.isEnterOrSpaceClicked_(e)) {
       this.onSafeBrowsingClick_();
@@ -364,7 +367,7 @@ export class SettingsSafetyHubPageElement extends
     this.hasDataForUnusedPermissions_ = true;
   }
 
-  private computeShowNoRecommendationsState_(): boolean {
+  protected shouldShowNoRecommendationsState_(): boolean {
     return !(
         this.showUnusedSitePermissions_ || this.showNotificationPermissions_ ||
         this.showExtensions_);
@@ -375,11 +378,12 @@ export class SettingsSafetyHubPageElement extends
     this.hasDataForExtensions_ = true;
   }
 
-  private computeVersionCardRole_(): string {
-    return this.versionCardData_.state === CardState.WARNING ? 'button' : 'link';
+  protected computeVersionCardRole_(): string {
+    return this.versionCardData_.state === CardState.WARNING ? 'button' :
+                                                               'link';
   }
 
-  private computeVersionCardAriaDescription_(): string {
+  protected computeVersionCardAriaDescription_(): string {
     return this.versionCardData_.state === CardState.WARNING ?
         this.i18n('safetyHubVersionRelaunchAriaLabel') :
         this.i18n('safetyHubVersionNavigationAriaLabel');
@@ -450,11 +454,13 @@ export class SettingsSafetyHubPageElement extends
     this.metricsBrowserProxy_.recordSafetyHubDashboardAnyWarning(hasAnyWarning);
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
+
+export type SafetyHubPageElement = SettingsSafetyHubPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

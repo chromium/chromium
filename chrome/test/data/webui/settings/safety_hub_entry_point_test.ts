@@ -9,7 +9,7 @@ import type {SettingsSafetyHubEntryPointElement} from 'chrome://settings/lazy_lo
 import {SafetyHubBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 
@@ -23,7 +23,8 @@ suite('SafetyHubEntryPoint', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-safety-hub-entry-point');
     document.body.appendChild(page);
-    await flushTasks();
+    await browserProxy.whenCalled('getSafetyHubEntryPointData');
+    await microtasksFinished();
   }
 
   setup(function() {
