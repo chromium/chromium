@@ -649,7 +649,7 @@ def BuildZStd(cc, cxx, cmake_sysroot, mac_deployment_target):
 
 
 def DownloadPinnedClang():
-  PINNED_CLANG_VERSION = 'llvmorg-21-init-5118-g52cd27e6-4'
+  PINNED_CLANG_VERSION = 'llvmorg-24-init-7747-g62397f8b-27'
   DownloadAndUnpackPackage(
     'clang', PINNED_CLANG_DIR, GetDefaultHostOs(), PINNED_CLANG_VERSION
   )
