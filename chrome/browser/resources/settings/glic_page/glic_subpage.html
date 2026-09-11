@@ -63,13 +63,13 @@
         restamp>
       <settings-toggle-button
           id="tabstripButtonToggle"
-          pref="{{prefs.glic.pinned_to_tabstrip}}"
+          pref-key="glic.pinned_to_tabstrip"
           label="$i18n{glicTabstripButtonToggle}"
           sub-label="$i18n{glicTabstripButtonToggleSublabel}"
           on-settings-boolean-control-change="onTabstripButtonToggleChange_">
       </settings-toggle-button>
       <settings-toggle-button class="hr"
-          id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
+          id="launcherToggle" pref-key="glic.launcher_enabled"
           label="$i18n{glicOsWidgetToggle}"
           sub-label="$i18n{glicOsWidgetToggleSublabel}"
           learn-more-url="$i18n{glicLauncherToggleLearnMoreUrl}"
@@ -77,7 +77,7 @@
           on-settings-boolean-control-change="onLauncherToggleChange_">
       </settings-toggle-button>
       <cr-collapse opened="[[computeMainShortcutOpened_(
-          prefs.glic.launcher_enabled.value,
+          launcherEnabledPref_.value,
           glicHotkeyLocalScopeEnabled_)]]">
         <div class="cr-row keyboard-shortcut-setting"
             id="mainShortcutSetting">
@@ -175,7 +175,7 @@
       <settings-toggle-button class="hr"
           id="closedCaptionsToggle"
           hidden="[[!closedCaptionsToggleEnabled_]]"
-          pref="{{prefs.glic.closed_captioning_enabled}}"
+          pref-key="glic.closed_captioning_enabled"
           label="$i18n{glicClosedCaptionsToggle}"
           sub-label="$i18n{glicClosedCaptionsToggleSublabel}"
           on-settings-boolean-control-change="onClosedCaptionsToggleChange_">
@@ -183,7 +183,7 @@
       <settings-toggle-button class="hr"
           id="keepSidepanelOpenOnNewTabsToggle"
           hidden="[[!showGlicKeepSidepanelOpenOnNewTabsSetting_]]"
-          pref="{{prefs.glic.keep_sidepanel_open_on_new_tabs_enabled}}"
+          pref-key="glic.keep_sidepanel_open_on_new_tabs_enabled"
           label="$i18n{glicKeepSidepanelOpenOnNewTabsToggle}"
           sub-label="$i18n{glicKeepSidepanelOpenOnNewTabsToggleSublabel}"
           on-settings-boolean-control-change=
@@ -192,7 +192,7 @@
       <settings-toggle-button class="hr"
           id="shakeTriggerToggle"
           hidden="[[!showGlicShakeTrigger_]]"
-          pref="{{prefs.glic.shake_trigger_enabled}}"
+          pref-key="glic.shake_trigger_enabled"
           label="$i18n{glicShakeTriggerToggle}"
           sub-label="$i18n{glicShakeTriggerToggleSublabel}"
           on-settings-boolean-control-change="onShakeTriggerToggleChange_">
@@ -237,7 +237,7 @@
     <!-- Glic Policy Enabled -->
     <template is="dom-if" if="[[!disallowedByAdmin_]]" restamp>
       <settings-toggle-button
-          id="geolocationToggle" pref="{{prefs.glic.geolocation_enabled}}"
+          id="geolocationToggle" pref-key="glic.geolocation_enabled"
           label="$i18n{glicLocationToggle}"
           sub-label="[[locationSubLabel_]]"
           learn-more-url="[[locationLearnMoreUrl_]]"
@@ -245,7 +245,7 @@
           on-settings-boolean-control-change="onGeolocationToggleChange_">
       </settings-toggle-button>
       <settings-toggle-button class="hr"
-          id="microphoneToggle" pref="{{prefs.glic.microphone_enabled}}"
+          id="microphoneToggle" pref-key="glic.microphone_enabled"
           label="$i18n{glicMicrophoneToggle}"
           sub-label="[[microphoneSubLabel_]]"
           hidden="[[!microphoneToggleEnabled_]]"
@@ -253,7 +253,7 @@
       </settings-toggle-button>
       <div hidden="[[showGlicDefaultTabContextSetting_]]">
       <settings-toggle-button class="hr"
-          id="tabAccessToggle" pref="{{prefs.glic.tab_context_enabled}}"
+          id="tabAccessToggle" pref-key="glic.tab_context_enabled"
           label="$i18n{glicTabAccessToggle}"
           sub-label="[[tabAccessSubLabel_]]"
           on-learn-more-clicked="onTabAccessToggleLearnMoreClick_"
@@ -322,7 +322,7 @@
       <div hidden="[[!showGlicDefaultTabContextSetting_]]">
         <settings-toggle-button class="hr"
             id="defaultTabAccessToggle"
-            pref="{{prefs.glic.default_tab_context_enabled}}"
+            pref-key="glic.default_tab_context_enabled"
             label="$i18n{glicDefaultTabAccessToggle}"
             sub-label-with-link="[[defaultTabAccessSubLabel_]]"
             on-sub-label-link-clicked="onDefaultTabAccessToggleLearnMoreClick_"
@@ -408,7 +408,7 @@
       <template is="dom-if" if="[[headlessCaptionsEnabled_]]" restamp>
         <settings-toggle-button class="hr"
             id="mediaUnderstandingToggle"
-            pref="{{prefs.glic.media_understanding_enabled}}"
+            pref-key="glic.media_understanding_enabled"
             label="$i18n{glicMediaUnderstandingToggle}"
             sub-label-with-link="[[i18nAdvanced('glicMediaUnderstandingToggleSublabel')]]"
             on-sub-label-link-clicked="onMediaUnderstandingToggleLearnMoreClick_">
@@ -416,7 +416,7 @@
       </template>
       <settings-toggle-button class="hr"
           id="shakeTriggerToggle"
-          pref="{{prefs.glic.shake_trigger_enabled}}"
+          pref-key="glic.shake_trigger_enabled"
           hidden="[[!showGlicShakeTrigger_]]"
           label="$i18n{glicShakeTriggerToggle}"
           sub-label="$i18n{glicShakeTriggerToggleSublabel}"

@@ -19,8 +19,8 @@ import '../internal/icons.html.js';
 
 // </if>
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrShortcutInputElement} from 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -71,8 +71,8 @@ interface GlicUserStatusPref {
   isEnterpriseAccountDataProtected?: boolean;
 }
 
-const SettingsGlicSubpageElementBase = SettingsViewMixin(
-    HelpBubbleMixin(I18nMixin(WebUiListenerMixin(PrefsMixin(PolymerElement)))));
+const SettingsGlicSubpageElementBase = SettingsViewMixin(HelpBubbleMixin(
+    I18nMixin(WebUiListenerMixin(PrefServiceObserverMixin(PolymerElement)))));
 
 export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   static get is() {
@@ -90,10 +90,22 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         value: false,
       },
 
+      userStatusPref_: {
+        type: Object,
+      },
+
+      launcherEnabledPref_: {
+        type: Object,
+      },
+
+      hotkeyGlobalScopeEnabledPref_: {
+        type: Object,
+      },
+
       selectedScope_: {
         type: String,
         computed: 'computeSelectedScope_(' +
-            'prefs.glic.hotkey_global_scope_enabled.value)',
+            'hotkeyGlobalScopeEnabledPref_.value)',
       },
 
       registeredShortcut_: {
@@ -208,20 +220,17 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
 
       locationSubLabel_: {
         type: String,
-        computed: `computeLocationSubLabel_(prefs.${
-            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+        computed: 'computeLocationSubLabel_(userStatusPref_.value)',
       },
 
       locationLearnMoreUrl_: {
         type: String,
-        computed: `computeLocationLearnMoreUrl_(prefs.${
-            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+        computed: 'computeLocationLearnMoreUrl_(userStatusPref_.value)',
       },
 
       microphoneSubLabel_: {
         type: String,
-        computed: `computeMicrophoneSubLabel_(prefs.${
-            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+        computed: 'computeMicrophoneSubLabel_(userStatusPref_.value)',
       },
 
       microphoneToggleEnabled_: {
@@ -233,14 +242,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
 
       tabAccessSubLabel_: {
         type: String,
-        computed: `computeTabAccessSubLabel_(prefs.${
-            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+        computed: 'computeTabAccessSubLabel_(userStatusPref_.value)',
       },
 
       tabAccessLearnMoreUrl_: {
         type: String,
-        computed: `computeTabAccessLearnMoreUrl_(prefs.${
-            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+        computed: 'computeTabAccessLearnMoreUrl_(userStatusPref_.value)',
       },
 
       defaultTabAccessToggleExpanded_: {
@@ -250,14 +257,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
 
       defaultTabAccessSubLabel_: {
         type: String,
-        computed: `computeDefaultTabAccessSubLabel_(prefs.${
-            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+        computed: 'computeDefaultTabAccessSubLabel_(userStatusPref_.value)',
       },
 
       defaultTabAccessLearnMoreUrl_: {
         type: String,
-        computed: `computeDefaultTabAccessLearnMoreUrl_(prefs.${
-            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+        computed: 'computeDefaultTabAccessLearnMoreUrl_(userStatusPref_.value)',
       },
 
       spark_: {
@@ -267,8 +272,8 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
 
       isEnterpriseAccountDataProtected_: {
         type: Boolean,
-        computed: `computeIsEnterpriseAccountDataProtected_(prefs.${
-            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+        computed:
+            'computeIsEnterpriseAccountDataProtected_(userStatusPref_.value)',
       },
 
       webActuationFeatureEnabled_: {
@@ -323,14 +328,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
 
       webActuationSubLabel_: {
         type: Object,
-        computed: `computeWebActuationSubLabel_(prefs.${
-            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+        computed: 'computeWebActuationSubLabel_(userStatusPref_.value)',
       },
 
       webActuationLearnMoreUrl_: {
         type: String,
-        computed: `computeWebActuationLearnMoreUrl_(prefs.${
-            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+        computed: 'computeWebActuationLearnMoreUrl_(userStatusPref_.value)',
       },
 
       actorLoginFederatedLoginSupportEnabled_: {
@@ -348,12 +351,6 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
 
   static get observers() {
     return [
-      'onTabContextEnabledChanged_(' +
-          `prefs.${SettingsGlicPageFeaturePrefName.TAB_CONTEXT_ENABLED}.value)`,
-      'onDefaultTabContextEnabledChanged_(' +
-          `prefs.${
-              SettingsGlicPageFeaturePrefName
-                  .DEFAULT_TAB_CONTEXT_ENABLED}.value)`,
       'onWebActuationEnabledChanged_(webActuationEnabledPref_.value)',
       'onExperimentalTriggeringEnabledChanged_(' +
           'experimentalTriggeringEnabledPref_.value)',
@@ -364,6 +361,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   private focusToggleShortcutInput_: string;
   private selectionShortcutInput_: string;
   private removedShortcut_: string|null = null;
+  declare private userStatusPref_:
+      chrome.settingsPrivate.PrefObject<GlicUserStatusPref>;
+  declare private launcherEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
+  declare private hotkeyGlobalScopeEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
   declare private disallowedByAdmin_: boolean;
   declare private selectedScope_: string;
   declare private registeredShortcut_: string;
@@ -413,8 +416,26 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private webActuationEnabledExpanded_: boolean;
   declare private actorLoginFederatedLoginSupportEnabled_: boolean;
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
+    this.mirrorPrefs({
+      [SettingsGlicPageFeaturePrefName.USER_STATUS]: 'userStatusPref_',
+      [SettingsGlicPageFeaturePrefName.LAUNCHER_ENABLED]:
+          'launcherEnabledPref_',
+      [SettingsGlicPageFeaturePrefName.HOTKEY_GLOBAL_SCOPE_ENABLED]:
+          'hotkeyGlobalScopeEnabledPref_',
+    });
+    this.addPrefObserver(
+        SettingsGlicPageFeaturePrefName.TAB_CONTEXT_ENABLED,
+        (pref: chrome.settingsPrivate.PrefObject<boolean>) => {
+          this.tabAccessToggleExpanded_ = pref.value;
+        });
+    this.addPrefObserver(
+        SettingsGlicPageFeaturePrefName.DEFAULT_TAB_CONTEXT_ENABLED,
+        (pref: chrome.settingsPrivate.PrefObject<boolean>) => {
+          this.defaultTabAccessToggleExpanded_ = pref.value;
+        });
+
     this.browserProxy_.getDisallowedByAdmin().then(
         this.disallowedByAdminChanged_.bind(this));
     this.addWebUiListener(
@@ -451,16 +472,19 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
           this.set('experimentalTriggeringEnabledPref_.value', enabled);
         });
 
-    this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
-    this.registeredFocusToggleShortcut_ =
-        await this.browserProxy_.getGlicFocusToggleShortcut();
-    this.registeredSelectionShortcut_ =
-        await this.browserProxy_.getGlicSelectionShortcut();
-    await CrSettingsPrefs.initialized;
+    this.browserProxy_.getGlicShortcut().then(shortcut => {
+      this.registeredShortcut_ = shortcut;
+    });
+    this.browserProxy_.getGlicFocusToggleShortcut().then(shortcut => {
+      this.registeredFocusToggleShortcut_ = shortcut;
+    });
+    this.browserProxy_.getGlicSelectionShortcut().then(shortcut => {
+      this.registeredSelectionShortcut_ = shortcut;
+    });
   }
 
   private async onEnabledTemplateDomChange_() {
-    await CrSettingsPrefs.initialized;
+    await PrefService.getInstance().whenInitialized();
     if (this.disallowedByAdmin_) {
       return;
     }
@@ -501,7 +525,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   private onScopeChanged_(event: Event) {
     const select = event.target as HTMLSelectElement;
     const isGlobal = select.value === 'GLOBAL';
-    this.setPrefValue(
+    PrefService.getInstance().setPrefValue(
         SettingsGlicPageFeaturePrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, isGlobal);
     this.metricsBrowserProxy_.recordAction(
         'Glic.Settings.HotkeyScope.' + (isGlobal ? 'Global' : 'Chrome'));
@@ -579,15 +603,6 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       this.recordShortcutEnablement();
       this.removedShortcut_ = null;
     }
-  }
-
-  // Update the tab access collapsible any time the tab access pref changes.
-  private onTabContextEnabledChanged_(enabled: boolean) {
-    this.tabAccessToggleExpanded_ = enabled;
-  }
-
-  private onDefaultTabContextEnabledChanged_(enabled: boolean) {
-    this.defaultTabAccessToggleExpanded_ = enabled;
   }
 
   private onTabAccessToggleChange_(event: CustomEvent) {

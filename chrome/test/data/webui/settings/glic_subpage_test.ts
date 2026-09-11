@@ -7,8 +7,8 @@ import 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AiPageActions} from 'chrome://settings/lazy_load.js';
 import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
-import type {SettingsGlicSubpageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefService, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import type {SettingsGlicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -23,7 +23,7 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // focus events to work so using this suite results in flaky tests.
 suite('GlicSubpage', function() {
   let page: SettingsGlicSubpageElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
   let glicBrowserProxy: TestGlicBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -44,7 +44,6 @@ suite('GlicSubpage', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     page = document.createElement('settings-glic-subpage');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
 
     // Wait for the component to initialize and render completely:
@@ -101,7 +100,6 @@ suite('GlicSubpage', function() {
   }
 
   suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
     loadTimeData.overrideValues({
       showAiPage: true,
       showGlicSettings: true,
@@ -111,7 +109,8 @@ suite('GlicSubpage', function() {
       showGlicShakeTrigger: false,
     });
     resetRouterForTesting();
-    return CrSettingsPrefs.initialized;
+    prefService = PrefService.getInstance();
+    return prefService.whenInitialized();
   });
 
   setup(function() {
@@ -120,34 +119,34 @@ suite('GlicSubpage', function() {
 
   suite('Default', () => {
     test('LauncherToggleEnabled', () => {
-      page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
-
+      prefService.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
       assertTrue($<SettingsToggleButtonElement>('launcherToggle')!.checked);
     });
 
     test('LauncherToggleDisabled', () => {
-      page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
-
+      prefService.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
       assertFalse($<SettingsToggleButtonElement>('launcherToggle')!.checked);
     });
 
     for (const clickType of [clickToggle, clickToggleRow]) {
       const clickTypeName = clickType.name.replace('click', '');
       test('Launcher' + clickTypeName + 'Change', async () => {
-        page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
+        prefService.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
 
         const launcherToggle =
             $<SettingsToggleButtonElement>('launcherToggle')!;
 
         await clickType();
-        assertTrue(page.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
+        assertTrue(
+            prefService.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
         assertTrue(launcherToggle.checked);
         assertEquals(
             1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
         glicBrowserProxy.reset();
 
         await clickType();
-        assertFalse(page.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
+        assertFalse(
+            prefService.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
         assertFalse(launcherToggle.checked);
         assertEquals(
             1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
@@ -162,27 +161,29 @@ suite('GlicSubpage', function() {
 
         // The pref starts off disabled, the keyboard shortcut row should be
         // hidden.
-        page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
+        prefService.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
         await flushTasks();
         assertFalse(isVisible($(mainShortcutSettingId)));
         assertFalse(isVisible($(selectionShortcutSettingId)));
 
         // Enable using the launcher toggle, the row should show.
         await clickType();
-        assertTrue(page.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
+        assertTrue(
+            prefService.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
         await flushTasks();
         assertTrue(isVisible($(mainShortcutSettingId)));
         assertTrue(isVisible($(selectionShortcutSettingId)));
 
         // Disable using the launcher toggle, the row should hide.
         await clickType();
-        assertFalse(page.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
+        assertFalse(
+            prefService.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
         await flushTasks();
         assertFalse(isVisible($(mainShortcutSettingId)));
         assertFalse(isVisible($(selectionShortcutSettingId)));
 
         // Enable via pref, the row should show.
-        page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
+        prefService.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
         await flushTasks();
         assertTrue(isVisible($(mainShortcutSettingId)));
         assertTrue(isVisible($(selectionShortcutSettingId)));
@@ -190,87 +191,93 @@ suite('GlicSubpage', function() {
     }
 
     test('GeolocationToggleEnabled', () => {
-      page.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);
+      prefService.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);
 
       assertTrue($<SettingsToggleButtonElement>('geolocationToggle')!.checked);
     });
 
     test('GeolocationToggleDisabled', () => {
-      page.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
+      prefService.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
 
       assertFalse($<SettingsToggleButtonElement>('geolocationToggle')!.checked);
     });
 
     test('GeolocationToggleChange', () => {
-      page.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
+      prefService.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
 
       const geolocationToggle =
           $<SettingsToggleButtonElement>('geolocationToggle')!;
       assertTrue(!!geolocationToggle);
 
       geolocationToggle.click();
-      assertTrue(page.getPref<boolean>(PrefName.GEOLOCATION_ENABLED).value);
+      assertTrue(
+          prefService.getPref<boolean>(PrefName.GEOLOCATION_ENABLED).value);
       assertTrue(geolocationToggle.checked);
 
       geolocationToggle.click();
-      assertFalse(page.getPref<boolean>(PrefName.GEOLOCATION_ENABLED).value);
+      assertFalse(
+          prefService.getPref<boolean>(PrefName.GEOLOCATION_ENABLED).value);
       assertFalse(geolocationToggle.checked);
     });
 
     test('MicrophoneToggleEnabled', () => {
-      page.setPrefValue(PrefName.MICROPHONE_ENABLED, true);
+      prefService.setPrefValue(PrefName.MICROPHONE_ENABLED, true);
 
       assertTrue($<SettingsToggleButtonElement>('microphoneToggle')!.checked);
     });
 
     test('MicrophoneToggleDisabled', () => {
-      page.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
+      prefService.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
 
       assertFalse($<SettingsToggleButtonElement>('microphoneToggle')!.checked);
     });
 
     test('MicrophoneToggleChange', () => {
-      page.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
+      prefService.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
 
       const microphoneToggle =
           $<SettingsToggleButtonElement>('microphoneToggle')!;
       assertTrue(!!microphoneToggle);
 
       microphoneToggle.click();
-      assertTrue(page.getPref<boolean>(PrefName.MICROPHONE_ENABLED).value);
+      assertTrue(
+          prefService.getPref<boolean>(PrefName.MICROPHONE_ENABLED).value);
       assertTrue(microphoneToggle.checked);
 
       microphoneToggle.click();
-      assertFalse(page.getPref<boolean>(PrefName.MICROPHONE_ENABLED).value);
+      assertFalse(
+          prefService.getPref<boolean>(PrefName.MICROPHONE_ENABLED).value);
       assertFalse(microphoneToggle.checked);
     });
 
     test('TabContextToggleEnabled', () => {
-      page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
+      prefService.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
 
       assertTrue($<SettingsToggleButtonElement>('tabAccessToggle')!.checked);
     });
 
     test('TabContextToggleDisabled', () => {
-      page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
+      prefService.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
 
       assertFalse($<SettingsToggleButtonElement>('tabAccessToggle')!.checked);
     });
 
     test('TabContextToggleChange', async () => {
-      page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
+      prefService.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
 
       const tabAccessToggle = $<SettingsToggleButtonElement>('tabAccessToggle');
       assertTrue(!!tabAccessToggle);
 
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertTrue(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertTrue(
+          prefService.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(tabAccessToggle.checked);
 
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertFalse(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertFalse(
+          prefService.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(tabAccessToggle.checked);
     });
 
@@ -286,24 +293,28 @@ suite('GlicSubpage', function() {
       tabAccessToggle.click();
       await flushTasks();
       assertTrue(infoCard.opened);
-      assertFalse(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertFalse(
+          prefService.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
 
       // Clicking the host element again collapses the info card.
       tabAccessToggle.click();
       await flushTasks();
       assertFalse(infoCard.opened);
-      assertFalse(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertFalse(
+          prefService.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
 
       // Toggling the setting to on opens the info card.
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertTrue(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertTrue(
+          prefService.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting off closes the info card.
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertFalse(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertFalse(
+          prefService.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(infoCard.opened);
 
       // Toggling the setting to on while the info card is open leaves it open.
@@ -312,7 +323,8 @@ suite('GlicSubpage', function() {
       assertTrue(infoCard.opened);
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertTrue(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertTrue(
+          prefService.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting to off while the info card is closed leaves it
@@ -322,18 +334,19 @@ suite('GlicSubpage', function() {
       assertFalse(infoCard.opened);
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertFalse(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertFalse(
+          prefService.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(infoCard.opened);
     });
 
     // Ensure the page reacts appropriately to the enterprise policy pref being
     // flipped off and back on.
     test('CanActOnWebFalse', async () => {
-      page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
-      page.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);
-      page.setPrefValue(PrefName.MICROPHONE_ENABLED, true);
-      page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
-      page.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, true);
+      prefService.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
+      prefService.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);
+      prefService.setPrefValue(PrefName.MICROPHONE_ENABLED, true);
+      prefService.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
+      prefService.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, true);
 
       const shortcutInputSelector = 'mainShortcutSetting .shortcut-input';
       const selectionShortcutInputSelector =
@@ -382,7 +395,7 @@ suite('GlicSubpage', function() {
     });
 
     test('ManageActivityRow', async () => {
-      page.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
+      prefService.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
 
       const activityButton = $<HTMLElement>('activityButton');
       assertTrue(!!activityButton);
@@ -398,9 +411,8 @@ suite('GlicSubpage', function() {
       // Clear and re-create a new page rather than using the one initialized in
       // setup().
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      await prefService.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
       page = document.createElement('settings-glic-subpage');
-      page.prefs = settingsPrefs.prefs!;
-      page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
       document.body.appendChild(page);
 
       await flushTasks();
@@ -412,9 +424,8 @@ suite('GlicSubpage', function() {
 
     test('InfoCollapseInitializiedClosed', async () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      await prefService.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
       page = document.createElement('settings-glic-subpage');
-      page.prefs = settingsPrefs.prefs!;
-      page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
       document.body.appendChild(page);
 
       await flushTasks();
@@ -431,39 +442,40 @@ suite('GlicSubpage', function() {
     });
 
     test('tabstripButtonToggleEnabled', () => {
-      page.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, true);
+      prefService.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, true);
 
       assertTrue(
           $<SettingsToggleButtonElement>('tabstripButtonToggle')!.checked);
     });
 
     test('tabstripButtonToggleDisabled', () => {
-      page.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, false);
+      prefService.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, false);
 
       assertFalse(
           $<SettingsToggleButtonElement>('tabstripButtonToggle')!.checked);
     });
 
     test('tabstripButtonToggleChanged', () => {
-      page.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, false);
+      prefService.setPrefValue(PrefName.TABSTRIP_BUTTON_ENABLED, false);
 
       const tabstripButtonToggle =
           $<SettingsToggleButtonElement>('tabstripButtonToggle');
       assertTrue(!!tabstripButtonToggle);
 
       tabstripButtonToggle.click();
-      assertTrue(page.getPref<boolean>(PrefName.TABSTRIP_BUTTON_ENABLED).value);
+      assertTrue(
+          prefService.getPref<boolean>(PrefName.TABSTRIP_BUTTON_ENABLED).value);
       assertTrue(tabstripButtonToggle.checked);
 
       tabstripButtonToggle.click();
       assertFalse(
-          page.getPref<boolean>(PrefName.TABSTRIP_BUTTON_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.TABSTRIP_BUTTON_ENABLED).value);
       assertFalse(tabstripButtonToggle.checked);
     });
 
     suite('Metrics', () => {
       test('GeolocationToggle', async () => {
-        page.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
+        prefService.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
 
         const geolocationToggle =
             $<SettingsToggleButtonElement>('geolocationToggle')!;
@@ -477,7 +489,7 @@ suite('GlicSubpage', function() {
       });
 
       test('TabContextToggle', async () => {
-        page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
+        prefService.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
 
         const tabAccessToggle =
             $<SettingsToggleButtonElement>('tabAccessToggle')!;
@@ -501,7 +513,6 @@ suite('GlicSubpage', function() {
       resetRouterForTesting();
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       page = document.createElement('settings-glic-subpage');
-      page.prefs = settingsPrefs.prefs!;
       document.body.appendChild(page);
       await flushTasks();
 
@@ -521,7 +532,6 @@ suite('GlicSubpage', function() {
       resetRouterForTesting();
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       page = document.createElement('settings-glic-subpage');
-      page.prefs = settingsPrefs.prefs!;
       document.body.appendChild(page);
       await flushTasks();
 
@@ -538,7 +548,7 @@ suite('GlicSubpage', function() {
 
   suite('LearnMoreEnabled', () => {
     test('keyboardShortcutLearnMoreShown', async () => {
-      page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
+      prefService.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
       await setDisallowedByAdminAndSimulateUpdate(false);
       assertTrue($<SettingsToggleButtonElement>('launcherToggle')!.checked);
 
@@ -596,34 +606,35 @@ suite('GlicSubpage', function() {
     });
 
     test('Enabled', () => {
-      page.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, true);
+      prefService.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, true);
 
       assertTrue(
           $<SettingsToggleButtonElement>('closedCaptionsToggle')!.checked);
     });
 
     test('Disabled', () => {
-      page.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, false);
+      prefService.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, false);
 
       assertFalse(
           $<SettingsToggleButtonElement>('closedCaptionsToggle')!.checked);
     });
 
     test('Changed', async () => {
-      page.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, false);
+      prefService.setPrefValue(PrefName.CLOSED_CAPTIONS_ENABLED, false);
 
       const closedCaptionsToggle =
           $<SettingsToggleButtonElement>('closedCaptionsToggle')!;
       assertTrue(!!closedCaptionsToggle);
 
       closedCaptionsToggle.click();
-      assertTrue(page.getPref<boolean>(PrefName.CLOSED_CAPTIONS_ENABLED).value);
+      assertTrue(
+          prefService.getPref<boolean>(PrefName.CLOSED_CAPTIONS_ENABLED).value);
       assertTrue(closedCaptionsToggle.checked);
       await verifyUserAction('Glic.Settings.ClosedCaptions.Enabled');
 
       closedCaptionsToggle.click();
       assertFalse(
-          page.getPref<boolean>(PrefName.CLOSED_CAPTIONS_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.CLOSED_CAPTIONS_ENABLED).value);
       assertFalse(closedCaptionsToggle.checked);
       await verifyUserAction('Glic.Settings.ClosedCaptions.Disabled');
     });
@@ -637,7 +648,8 @@ suite('GlicSubpage', function() {
     });
 
     test('KeepSidepanelOpenOnNewTabsToggleEnabled', () => {
-      page.setPrefValue(PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED, true);
+      prefService.setPrefValue(
+          PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED, true);
 
       assertTrue(
           $<SettingsToggleButtonElement>(
@@ -645,7 +657,7 @@ suite('GlicSubpage', function() {
     });
 
     test('KeepSidepanelOpenOnNewTabsToggleDisabled', () => {
-      page.setPrefValue(
+      prefService.setPrefValue(
           PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED, false);
 
       assertFalse(
@@ -654,7 +666,7 @@ suite('GlicSubpage', function() {
     });
 
     test('KeepSidepanelOpenOnNewTabsToggleChanged', async () => {
-      page.setPrefValue(
+      prefService.setPrefValue(
           PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED, false);
 
       const keepSidepanelOpenOnNewTabsToggle =
@@ -662,7 +674,8 @@ suite('GlicSubpage', function() {
       assertTrue(!!keepSidepanelOpenOnNewTabsToggle);
 
       keepSidepanelOpenOnNewTabsToggle.click();
-      assertTrue(page.getPref<boolean>(
+      assertTrue(prefService
+                     .getPref<boolean>(
                          PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED)
                      .value);
       assertTrue(keepSidepanelOpenOnNewTabsToggle.checked);
@@ -670,7 +683,8 @@ suite('GlicSubpage', function() {
           'Glic.Settings.KeepSidepanelOpenOnNewTabs.Enabled');
 
       keepSidepanelOpenOnNewTabsToggle.click();
-      assertFalse(page.getPref<boolean>(
+      assertFalse(prefService
+                      .getPref<boolean>(
                           PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED)
                       .value);
       assertFalse(keepSidepanelOpenOnNewTabsToggle.checked);
@@ -695,7 +709,7 @@ suite('GlicSubpage', function() {
     });
 
     test('ShakeTriggerToggleEnabled', () => {
-      page.setPrefValue(PrefName.SHAKE_TRIGGER_ENABLED, true);
+      prefService.setPrefValue(PrefName.SHAKE_TRIGGER_ENABLED, true);
 
       assertTrue(
           $<SettingsToggleButtonElement>(
@@ -703,8 +717,7 @@ suite('GlicSubpage', function() {
     });
 
     test('ShakeTriggerToggleDisabled', () => {
-      page.setPrefValue(
-          PrefName.SHAKE_TRIGGER_ENABLED, false);
+      prefService.setPrefValue(PrefName.SHAKE_TRIGGER_ENABLED, false);
 
       assertFalse(
           $<SettingsToggleButtonElement>(
@@ -712,25 +725,22 @@ suite('GlicSubpage', function() {
     });
 
     test('ShakeTriggerToggleChanged', async () => {
-      page.setPrefValue(
-          PrefName.SHAKE_TRIGGER_ENABLED, false);
+      prefService.setPrefValue(PrefName.SHAKE_TRIGGER_ENABLED, false);
 
       const shakeTriggerToggle =
           $<SettingsToggleButtonElement>('shakeTriggerToggle')!;
       assertTrue(!!shakeTriggerToggle);
 
       shakeTriggerToggle.click();
-      assertTrue(page.getPref<boolean>(
-                         PrefName.SHAKE_TRIGGER_ENABLED)
-                     .value);
+      assertTrue(
+          prefService.getPref<boolean>(PrefName.SHAKE_TRIGGER_ENABLED).value);
       assertTrue(shakeTriggerToggle.checked);
       await verifyUserAction(
           'Glic.Settings.ShakeTrigger.Enabled');
 
       shakeTriggerToggle.click();
-      assertFalse(page.getPref<boolean>(
-                          PrefName.SHAKE_TRIGGER_ENABLED)
-                      .value);
+      assertFalse(
+          prefService.getPref<boolean>(PrefName.SHAKE_TRIGGER_ENABLED).value);
       assertFalse(shakeTriggerToggle.checked);
       await verifyUserAction(
           'Glic.Settings.ShakeTrigger.Disabled');
@@ -759,14 +769,14 @@ suite('GlicSubpage', function() {
     });
 
     test('ToggleEnabled', () => {
-      page.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, true);
+      prefService.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, true);
 
       assertTrue(
           $<SettingsToggleButtonElement>('defaultTabAccessToggle')!.checked);
     });
 
     test('ToggleDisabled', () => {
-      page.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, false);
+      prefService.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, false);
 
       assertFalse(
           $<SettingsToggleButtonElement>('defaultTabAccessToggle')!.checked);
@@ -776,7 +786,7 @@ suite('GlicSubpage', function() {
       const defaultTabAccessToggle =
           $<SettingsToggleButtonElement>('defaultTabAccessToggle')!;
       const infoCard = $<CrCollapseElement>('defaultTabAccessInfoCollapse')!;
-      page.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, false);
+      prefService.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, false);
 
       assertFalse(infoCard.opened);
 
@@ -786,27 +796,31 @@ suite('GlicSubpage', function() {
       await flushTasks();
       assertTrue(infoCard.opened);
       assertFalse(
-          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED)
+              .value);
 
       // Clicking the host element again collapses the info card.
       defaultTabAccessToggle.click();
       await flushTasks();
       assertFalse(infoCard.opened);
       assertFalse(
-          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED)
+              .value);
 
       // Toggling the setting to on opens the info card.
       defaultTabAccessToggle.$.control.click();
       await flushTasks();
       assertTrue(
-          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED)
+              .value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting off closes the info card.
       defaultTabAccessToggle.$.control.click();
       await flushTasks();
       assertFalse(
-          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED)
+              .value);
       assertFalse(infoCard.opened);
 
       // Toggling the setting to on while the info card is open leaves it open.
@@ -816,7 +830,8 @@ suite('GlicSubpage', function() {
       defaultTabAccessToggle.$.control.click();
       await flushTasks();
       assertTrue(
-          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED)
+              .value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting to off while the info card is closed leaves it
@@ -827,7 +842,8 @@ suite('GlicSubpage', function() {
       defaultTabAccessToggle.$.control.click();
       await flushTasks();
       assertFalse(
-          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED)
+              .value);
       assertFalse(infoCard.opened);
     });
   });
@@ -980,7 +996,7 @@ suite('GlicSubpage', function() {
     });
 
     test('metrics', async () => {
-      page.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
+      prefService.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
 
       const microphoneToggle =
           $<SettingsToggleButtonElement>('microphoneToggle')!;
@@ -1157,7 +1173,7 @@ suite('GlicSubpage', function() {
 
   suite('DataProtection_UserStatusCheckEnabled', () => {
     test('DataProtectionStringsShownForEligibleUser', () => {
-      page.setPrefValue(
+      prefService.setPrefValue(
           PrefName.USER_STATUS, {isEnterpriseAccountDataProtected: true});
       const locationToggle =
           $<SettingsToggleButtonElement>('geolocationToggle')!;
@@ -1183,7 +1199,7 @@ suite('GlicSubpage', function() {
     });
 
     test('DataProtectionStringsNotShownForIneligibleUser', () => {
-      page.setPrefValue(
+      prefService.setPrefValue(
           PrefName.USER_STATUS, {isEnterpriseAccountDataProtected: false});
       const locationToggle =
           $<SettingsToggleButtonElement>('geolocationToggle')!;
@@ -1210,7 +1226,7 @@ suite('GlicSubpage', function() {
 
   suite('DataProtection_UserStatusCheckDisabled', () => {
     test('DataProtectionStringsNotShown', () => {
-      page.setPrefValue(
+      prefService.setPrefValue(
           PrefName.USER_STATUS, {isEnterpriseAccountDataProtected: true});
       const locationToggle =
           $<SettingsToggleButtonElement>('geolocationToggle')!;
@@ -1243,7 +1259,6 @@ suite('GlicSubpage', function() {
       resetRouterForTesting();
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       page = document.createElement('settings-glic-subpage');
-      page.prefs = settingsPrefs.prefs!;
       document.body.appendChild(page);
       await flushTasks();
     });
@@ -1256,7 +1271,7 @@ suite('GlicSubpage', function() {
     });
 
     test('Enabled', () => {
-      page.setPrefValue(PrefName.MEDIA_UNDERSTANDING_ENABLED, true);
+      prefService.setPrefValue(PrefName.MEDIA_UNDERSTANDING_ENABLED, true);
       const toggle =
           $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
       assertTrue(!!toggle);
@@ -1264,7 +1279,7 @@ suite('GlicSubpage', function() {
     });
 
     test('Disabled', () => {
-      page.setPrefValue(PrefName.MEDIA_UNDERSTANDING_ENABLED, false);
+      prefService.setPrefValue(PrefName.MEDIA_UNDERSTANDING_ENABLED, false);
       const toggle =
           $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
       assertTrue(!!toggle);
@@ -1272,19 +1287,21 @@ suite('GlicSubpage', function() {
     });
 
     test('Changed', () => {
-      page.setPrefValue(PrefName.MEDIA_UNDERSTANDING_ENABLED, false);
+      prefService.setPrefValue(PrefName.MEDIA_UNDERSTANDING_ENABLED, false);
       const toggle =
           $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
       assertTrue(!!toggle);
 
       toggle.click();
       assertTrue(
-          page.getPref<boolean>(PrefName.MEDIA_UNDERSTANDING_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.MEDIA_UNDERSTANDING_ENABLED)
+              .value);
       assertTrue(toggle.checked);
 
       toggle.click();
       assertFalse(
-          page.getPref<boolean>(PrefName.MEDIA_UNDERSTANDING_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.MEDIA_UNDERSTANDING_ENABLED)
+              .value);
       assertFalse(toggle.checked);
     });
 
@@ -1321,10 +1338,10 @@ suite('GlicSubpage', function() {
     test('DropdownSelectionReflectsPref', () => {
       const scopeSelector = $<HTMLSelectElement>('scopeSelector')!;
 
-      page.setPrefValue(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, true);
+      prefService.setPrefValue(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, true);
       assertEquals('GLOBAL', scopeSelector.value);
 
-      page.setPrefValue(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, false);
+      prefService.setPrefValue(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, false);
       assertEquals('CHROME', scopeSelector.value);
     });
 
@@ -1334,13 +1351,15 @@ suite('GlicSubpage', function() {
       scopeSelector.value = 'GLOBAL';
       scopeSelector.dispatchEvent(new Event('change'));
       assertTrue(
-          page.getPref<boolean>(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED)
+              .value);
       await verifyUserAction('Glic.Settings.HotkeyScope.Global');
 
       scopeSelector.value = 'CHROME';
       scopeSelector.dispatchEvent(new Event('change'));
       assertFalse(
-          page.getPref<boolean>(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED).value);
+          prefService.getPref<boolean>(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED)
+              .value);
       await verifyUserAction('Glic.Settings.HotkeyScope.Chrome');
     });
 
@@ -1350,7 +1369,7 @@ suite('GlicSubpage', function() {
 
       // Disable launcher, both shortcuts should still be visible because local
       // scope is enabled.
-      page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
+      prefService.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
       await flushTasks();
       assertTrue(isVisible($(mainShortcutSettingId)));
       assertTrue(isVisible($(selectionShortcutSettingId)));

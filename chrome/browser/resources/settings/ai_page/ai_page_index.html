@@ -22,11 +22,11 @@
   </template>
 
   <template is="dom-if" if="[[showGlicSettings_]]">
-    <settings-glic-page slot="view" id="glic" prefs="{{prefs}}">
+    <settings-glic-page slot="view" id="glic">
     </settings-glic-page>
 
     <settings-glic-subpage slot="view" id="gemini"
-        data-parent-view-id="glic" prefs="{{prefs}}"
+        data-parent-view-id="glic"
         route-path$="[[routes_.GEMINI.path]]">
     </settings-glic-subpage>
   </template>
@@ -35,7 +35,7 @@
         actorLoginFederatedLoginSupportEnabled_)]]">
     <settings-glic-login-permissions-page slot="view"
         id="geminiLoginPermissions"
-        data-parent-view-id="gemini" prefs="{{prefs}}"
+        data-parent-view-id="gemini"
         route-path$="[[routes_.GEMINI_LOGIN.path]]">
     </settings-glic-login-permissions-page>
   </template>

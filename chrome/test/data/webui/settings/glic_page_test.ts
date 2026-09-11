@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import {AiPageActions} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import type {SettingsGlicPageElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -16,7 +16,7 @@ suite('GlicPage', function() {
   let page: SettingsGlicPageElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       showAiPage: true,
@@ -28,14 +28,8 @@ suite('GlicPage', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    const settingsPrefs = document.createElement('settings-prefs');
-    document.body.appendChild(settingsPrefs);
-
-    await CrSettingsPrefs.initialized;
-
     Router.getInstance().navigateTo(routes.AI);
     page = document.createElement('settings-glic-page');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
   });
 
