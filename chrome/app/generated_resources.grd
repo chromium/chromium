@@ -7696,6 +7696,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_LOOMNIBOX_FRE_CLOSE_BUTTON_ARIA" desc="Accessibility label for the Close button on the FRE modal.">
         Close
       </message>
+      <message name="IDS_LOOMNIBOX_FRE_SELECT_KEYBOARD_SHORTCUT" desc="Accessibility label for the keyboard shortcut selection dropdown in the FRE chin.">
+        Select keyboard shortcut
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_SELECT_SHORTCUT" desc="Placeholder text inside the shortcut selection dropdown trigger in the FRE chin.">
+        Select shortcut
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_CHANGE_SHORTCUT_IN" desc="Text in the Stage 3 reminder FRE chin with a link to open settings to change the shortcut.">
+        Change shortcut in <ph name="BEGIN_LINK">&lt;a href="#" class="settings-link"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
       <message name="IDS_NTP_SEARCH_BOX_PLACEHOLDER_ASK_OR_TYPE" desc="A steady state placeholder text for the NTP searchbox">
         Ask Google or type a URL
       </message>

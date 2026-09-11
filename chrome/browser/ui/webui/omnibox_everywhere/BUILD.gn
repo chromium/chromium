@@ -7,15 +7,20 @@ assert(!is_android)
 if (is_win || is_mac) {
   source_set("unit_tests") {
     testonly = true
-    sources = [ "omnibox_everywhere_handler_unittest.cc" ]
+    sources = [
+      "omnibox_everywhere_handler_unittest.cc",
+      "omnibox_everywhere_hotkey_bubble_view_unittest.cc",
+    ]
     deps = [
       ":omnibox_everywhere",
       "//base/test:test_support",
+      "//chrome/app:generated_resources",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/bookmarks",
       "//chrome/browser/contextual_search",
       "//chrome/browser/ui/omnibox/omnibox_everywhere",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
+      "//chrome/test/views",
       "//components/bookmarks/browser",
       "//components/bookmarks/test",
       "//components/omnibox/browser",
@@ -26,6 +31,9 @@ if (is_win || is_mac) {
       "//testing/gmock",
       "//testing/gtest",
       "//ui/base",
+      "//ui/display",
+      "//ui/views",
+      "//ui/views:test_support",
       "//url",
     ]
   }
@@ -35,12 +43,14 @@ source_set("omnibox_everywhere") {
   sources = [
     "composebox_everywhere_handler.cc",
     "omnibox_everywhere_handler.cc",
+    "omnibox_everywhere_hotkey_bubble_view.cc",
     "omnibox_everywhere_page_handler.cc",
     "omnibox_everywhere_ui.cc",
   ]
   public = [
     "composebox_everywhere_handler.h",
     "omnibox_everywhere_handler.h",
+    "omnibox_everywhere_hotkey_bubble_view.h",
     "omnibox_everywhere_page_handler.h",
     "omnibox_everywhere_ui.h",
   ]
@@ -88,6 +98,7 @@ source_set("omnibox_everywhere") {
     "//components/user_education/webui",
     "//content/public/browser",
     "//ui/base",
+    "//ui/display",
     "//ui/strings:ui_strings",
     "//ui/views",
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",

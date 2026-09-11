@@ -3271,6 +3271,12 @@ Chromium is unable to recover your settings.
       <message name="IDS_LOOMNIBOX_FRE_LENS_SECONDARY" desc="Secondary description detailing Google Lens functionality in Loomnibox.">
         Ask about content outside of Chromium, like another app or file you have open
       </message>
+      <message name="IDS_LOOMNIBOX_FRE_TO_SEARCH_OR_CUSTOMIZE" desc="Text in the Stage 2 FRE chin following the shortcut dropdown indicating it searches with Chromium or customizes in settings.">
+        to search with Chromium or customize in <ph name="BEGIN_LINK">&lt;a href="#" class="settings-link"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_REMINDER_TO_SEARCH" desc="Label in the Stage 3 reminder FRE chin showing the active shortcut to search with Chromium.">
+        to search with Chromium.
+      </message>
       <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac) / system tray (on Windows and Linux)." formatter_data="android_java">
         Easy access to use Gemini in Chromium across your device, even if Chromium is minimized.
       </message>
