@@ -32,12 +32,22 @@ public class NtpBackgroundDataBase {
     @VisibleForTesting static final String FILE_ID_HASH_KEY = "fileIdHash";
 
     private final @PlatformType int mPlatformType;
+    private @Nullable String mContentDescription;
 
     /**
      * @param platformType The type of platform where this NTP background data comes from.
      */
     public NtpBackgroundDataBase(@PlatformType int platformType) {
         mPlatformType = platformType;
+    }
+
+    /**
+     * @param platformType The type of platform where this NTP background data comes from.
+     * @param contentDescription The content description string.
+     */
+    public NtpBackgroundDataBase(@PlatformType int platformType, String contentDescription) {
+        mPlatformType = platformType;
+        mContentDescription = contentDescription;
     }
 
     /** Returns the platform type. */
@@ -53,6 +63,16 @@ public class NtpBackgroundDataBase {
     /** Returns the image drawable of this background data. */
     public @Nullable Drawable getImageDrawable() {
         return null;
+    }
+
+    /** Sets the accessibility content description for this NTP background data. */
+    public void setContentDescription(@Nullable String contentDescription) {
+        mContentDescription = contentDescription;
+    }
+
+    /** Returns the accessibility content description for this NTP background data. */
+    public @Nullable String getContentDescription() {
+        return mContentDescription;
     }
 
     /**

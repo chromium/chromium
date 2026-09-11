@@ -141,7 +141,11 @@ public class NtpThemeSyncHistoryCoordinator {
 
     /** Initialize default options for users to choose. */
     private void initDefaultOptions(Context context) {
-        mDefaultOptions.add(new NtpBackgroundDataBase(PlatformType.ANDROID));
+        mDefaultOptions.add(
+                new NtpBackgroundDataBase(
+                        PlatformType.ANDROID,
+                        context.getString(
+                                R.string.ntp_customization_theme_bottom_sheet_default_option)));
         mDefaultOptions.add(
                 new NtpBackgroundDataColor(
                         context, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_ORANGE, false));
@@ -186,11 +190,12 @@ public class NtpThemeSyncHistoryCoordinator {
 
             count++;
             CustomBackgroundInfo info =
-                    new CustomBackgroundInfo(
+                    CustomBackgroundInfo.createCustomBackgroundInfo(
                             image.imageUrl,
                             image.collectionId,
                             /* isUploadedImage= */ false,
-                            /* isDailyRefreshEnabled= */ false);
+                            /* isDailyRefreshEnabled= */ false,
+                            image.attribution);
             if (mImageFetcher == null) {
                 mImageFetcher = NtpCustomizationUtils.createImageFetcher(mProfile);
             }

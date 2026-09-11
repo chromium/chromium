@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.json.JSONException;
@@ -92,5 +94,45 @@ public class NtpBackgroundDataColorUnitTest {
         assertEquals(NtpBackgroundType.CHROME_COLOR, restored.getBackgroundType());
         assertEquals(colorId, restored.getThemeColorId());
         assertEquals(isChromeColorDailyRefreshEnabled, restored.isChromeColorDailyRefreshEnabled());
+    }
+
+    @Test
+    public void testContentDescription_predefinedColor() {
+        testContentDescriptionImpl(
+                NtpThemeColorId.NTP_COLORS_AQUA,
+                mContext.getString(R.string.accessibility_ntp_aqua_color_theme));
+    }
+
+    @Test
+    public void testContentDescription_blueColor() {
+        testContentDescriptionImpl(
+                NtpThemeColorId.NTP_COLORS_BLUE,
+                mContext.getString(R.string.accessibility_ntp_blue_color_theme));
+    }
+
+    @Test
+    public void testContentDescription_defaultColor() {
+        testContentDescriptionImpl(NtpThemeColorId.DEFAULT, null);
+    }
+
+    private void testContentDescriptionImpl(
+            @NtpThemeColorId int colorId, @Nullable String expectedDescription) {
+        NtpBackgroundDataColor data =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID,
+                        colorId,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        assertEquals(expectedDescription, data.getContentDescription());
+    }
+
+    @Test
+    public void testSetContentDescription() {
+        NtpBackgroundDataBase baseData = new NtpBackgroundDataBase(PlatformType.ANDROID);
+        assertNull(baseData.getContentDescription());
+
+        String description = "Test Description";
+        baseData.setContentDescription(description);
+        assertEquals(description, baseData.getContentDescription());
     }
 }

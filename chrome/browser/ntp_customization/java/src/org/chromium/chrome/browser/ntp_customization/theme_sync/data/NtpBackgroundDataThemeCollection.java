@@ -31,6 +31,7 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
     @VisibleForTesting static final String COLLECTION_ID_KEY = "collectionId";
     @VisibleForTesting static final String IS_UPLOADED_IMAGE_KEY = "isUploadedImage";
     @VisibleForTesting static final String IS_DAILY_REFRESH_ENABLED_KEY = "isDailyRefreshEnabled";
+    @VisibleForTesting static final String ATTRIBUTION_KEY = "attribution";
 
     private final CustomBackgroundInfo mCustomBackgroundInfo;
 
@@ -55,6 +56,9 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
             @Nullable String fileIdHash) {
         super(platformType, backgroundImageInfo, bitmap, primaryColor, fileIdHash);
         mCustomBackgroundInfo = customBackgroundInfo;
+        if (customBackgroundInfo != null && customBackgroundInfo.attribution != null) {
+            setContentDescription(customBackgroundInfo.attribution);
+        }
     }
 
     /**
@@ -148,11 +152,13 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
         String urlSpec = json.optString(BACKGROUND_URL_KEY, null);
         GURL backgroundUrl =
                 (urlSpec == null || urlSpec.isEmpty()) ? GURL.emptyGURL() : new GURL(urlSpec);
+        String attribution = json.has(ATTRIBUTION_KEY) ? json.getString(ATTRIBUTION_KEY) : null;
         return new CustomBackgroundInfo(
                 backgroundUrl,
                 json.getString(COLLECTION_ID_KEY),
                 json.getBoolean(IS_UPLOADED_IMAGE_KEY),
-                json.getBoolean(IS_DAILY_REFRESH_ENABLED_KEY));
+                json.getBoolean(IS_DAILY_REFRESH_ENABLED_KEY),
+                attribution);
     }
 
     private JSONObject customBackgroundInfoToJson() throws JSONException {
@@ -165,6 +171,9 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
         json.put(COLLECTION_ID_KEY, mCustomBackgroundInfo.collectionId);
         json.put(IS_UPLOADED_IMAGE_KEY, mCustomBackgroundInfo.isUploadedImage);
         json.put(IS_DAILY_REFRESH_ENABLED_KEY, mCustomBackgroundInfo.isDailyRefreshEnabled);
+        if (mCustomBackgroundInfo.attribution != null) {
+            json.put(ATTRIBUTION_KEY, mCustomBackgroundInfo.attribution);
+        }
         return json;
     }
 }

@@ -68,6 +68,8 @@ public class NtpThemeColorInfo {
 
     public @StringRes int colorStringResId;
 
+    private final Context mContext;
+
     private static final float HIGHLIGHT_COLOR_ALPHA = 0.3f;
     private static final float BACKGROUND_COLOR_ALPHA = 0.15f;
 
@@ -79,6 +81,8 @@ public class NtpThemeColorInfo {
      */
     public NtpThemeColorInfo(Context context, @NtpThemeColorId int id) {
         this.id = id;
+        mContext = context;
+
         if (id == NtpThemeColorId.DEFAULT) {
             iconDrawable =
                     NtpThemeColorUtils.createColoredCircle(
@@ -110,11 +114,17 @@ public class NtpThemeColorInfo {
      */
     public NtpThemeColorInfo(
             Context context, @ColorInt int backgroundColor, @ColorInt int primaryColor) {
+        mContext = context;
         highlightColor = calculateHighlightColorForColorPalette(primaryColor);
 
         iconDrawable =
                 NtpThemeColorUtils.createColoredCircle(
                         context, backgroundColor, primaryColor, highlightColor);
+    }
+
+    /** Returns the activity context. */
+    public Context getContext() {
+        return mContext;
     }
 
     /**

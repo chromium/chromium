@@ -198,6 +198,11 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptor
                 View.OnClickListener onClickListener,
                 int selectedPosition,
                 int bindingAdaptorPosition) {
+            String contentDescription = backgroundData.getContentDescription();
+            if (contentDescription != null) {
+                itemView.setContentDescription(contentDescription);
+                itemView.setTooltipText(contentDescription);
+            }
             ImageView backgroundView = itemView.findViewById(R.id.background_view);
             Drawable image = backgroundData.getImageDrawable();
             if (backgroundData.getBackgroundType()
