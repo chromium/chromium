@@ -123,11 +123,19 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   bool HasSameInterlockingProperties(
       MediaStreamAudioSource* other_source) const;
 
+  // Returns the initial audio processing properties with which this source was
+  // created, before any dynamic runtime reconfiguration, or nullopt if this
+  // source does not have audio processing properties.
+  virtual std::optional<blink::AudioProcessingProperties>
+  GetInitialAudioProcessingProperties() const {
+    return std::nullopt;
+  }
+
   // Returns the audio processing properties associated to this source if any,
-  // or nullopt otherwise.
+  // or nullopt otherwise. Defaults to GetInitialAudioProcessingProperties().
   virtual std::optional<blink::AudioProcessingProperties>
   GetAudioProcessingProperties() const {
-    return std::nullopt;
+    return GetInitialAudioProcessingProperties();
   }
 
   virtual bool IsProcessedSource() const { return false; }
