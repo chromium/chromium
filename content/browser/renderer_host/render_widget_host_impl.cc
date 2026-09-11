@@ -379,6 +379,29 @@ bool ShouldProcessKeyEventForListeners(
   return false;
 }
 
+gfx::Rect ClampPopupBoundsToDisplay(const gfx::Rect& bounds,
+                                    RenderWidgetHostViewBase* view) {
+  display::Screen* screen = display::Screen::Get();
+  if (!screen) {
+    return bounds;
+  }
+
+  // The view does not exist yet when the popup is first shown, in which case
+  // fall back to whichever display the requested bounds land on.
+  const display::Display display =
+      view ? screen->GetDisplayNearestView(view->GetNativeView())
+           : screen->GetDisplayMatching(bounds);
+  const gfx::Rect work_area = display.work_area();
+  if (work_area.IsEmpty()) {
+    return bounds;
+  }
+
+  gfx::Rect clamped(bounds);
+  clamped.set_width(std::clamp(clamped.width(), 0, work_area.width()));
+  clamped.set_height(std::clamp(clamped.height(), 0, work_area.height()));
+  return clamped;
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2750,7 +2773,7 @@ void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
   // same time until it acked the changes. Otherwise, if they simultaneously
   // change bounds, browser's bounds can be clobbered.
   if (view_ && !waiting_for_screen_rects_ack_) {
-    view_->SetBounds(bounds);
+    view_->SetBounds(ClampPopupBoundsToDisplay(bounds, view_.get()));
   }
   std::move(callback).Run();
 }
@@ -2931,8 +2954,10 @@ void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
   // `delegate_` may be null since this message may be received from when
   // the delegate shutdown but this widget is not yet destroyed.
   if (delegate_) {
-    delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
-                                 initial_screen_rect, anchor_screen_rect);
+    delegate_->ShowCreatedWidget(
+        GetProcess()->GetID(), GetRoutingID(),
+        ClampPopupBoundsToDisplay(initial_screen_rect, view_.get()),
+        anchor_screen_rect);
   }
   std::move(callback).Run();
 }
