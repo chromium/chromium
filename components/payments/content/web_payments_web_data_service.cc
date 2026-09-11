@@ -28,18 +28,20 @@ WebPaymentsWebDataService::WebPaymentsWebDataService(
 WebPaymentsWebDataService::~WebPaymentsWebDataService() = default;
 
 void WebPaymentsWebDataService::AddPaymentWebAppManifest(
+    const std::string& payment_method,
     std::vector<WebAppManifestSection> manifest) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&WebPaymentsWebDataService::AddPaymentWebAppManifestImpl,
-                     this, std::move(manifest)));
+                     this, payment_method, std::move(manifest)));
 }
 
 WebDatabase::State WebPaymentsWebDataService::AddPaymentWebAppManifestImpl(
+    const std::string& payment_method,
     const std::vector<WebAppManifestSection>& manifest,
     WebDatabase* db) {
   if (WebAppManifestSectionTable::FromWebDatabase(db)->AddWebAppManifest(
-          manifest)) {
+          payment_method, manifest)) {
     return WebDatabase::COMMIT_NEEDED;
   }
 
@@ -68,24 +70,26 @@ WebDatabase::State WebPaymentsWebDataService::AddPaymentMethodManifestImpl(
 }
 
 WebDataServiceBase::Handle WebPaymentsWebDataService::GetPaymentWebAppManifest(
+    const std::string& payment_method,
     const std::string& web_app,
     WebDataServiceRequestCallback callback) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&WebPaymentsWebDataService::GetPaymentWebAppManifestImpl,
-                     this, web_app),
+                     this, payment_method, web_app),
       std::move(callback));
 }
 
 std::unique_ptr<WDTypedResult>
 WebPaymentsWebDataService::GetPaymentWebAppManifestImpl(
+    const std::string& payment_method,
     const std::string& web_app,
     WebDatabase* db) {
   RemoveExpiredData(db);
   return std::make_unique<WDResult<std::vector<WebAppManifestSection>>>(
       PAYMENT_WEB_APP_MANIFEST,
       WebAppManifestSectionTable::FromWebDatabase(db)->GetWebAppManifest(
-          web_app));
+          payment_method, web_app));
 }
 
 WebDataServiceBase::Handle WebPaymentsWebDataService::GetPaymentMethodManifest(

@@ -78,16 +78,18 @@ public class WebPaymentsWebDataService {
     /**
      * Gets the corresponding payment web app's manifest.
      *
+     * @param methodName The payment method name.
      * @param appPackageName The package name of the Android payment app.
      * @param callback The callback to invoke when finishing the request.
      * @return True if the result will be returned through callback.
      */
     public boolean getPaymentWebAppManifest(
-            String appPackageName, WebPaymentsWebDataServiceCallback callback) {
+            String methodName, String appPackageName, WebPaymentsWebDataServiceCallback callback) {
         if (mManifestWebDataServiceAndroid == 0) return false;
 
         return WebPaymentsWebDataServiceJni.get()
-                .getPaymentWebAppManifest(mManifestWebDataServiceAndroid, appPackageName, callback);
+                .getPaymentWebAppManifest(
+                        mManifestWebDataServiceAndroid, methodName, appPackageName, callback);
     }
 
     /**
@@ -108,13 +110,14 @@ public class WebPaymentsWebDataService {
     /**
      * Adds web app's manifest.
      *
+     * @param methodName The payment method name.
      * @param manifest The manifest.
      */
-    public void addPaymentWebAppManifest(WebAppManifestSection[] manifest) {
+    public void addPaymentWebAppManifest(String methodName, WebAppManifestSection[] manifest) {
         if (mManifestWebDataServiceAndroid == 0) return;
 
         WebPaymentsWebDataServiceJni.get()
-                .addPaymentWebAppManifest(mManifestWebDataServiceAndroid, manifest);
+                .addPaymentWebAppManifest(mManifestWebDataServiceAndroid, methodName, manifest);
     }
 
     @CalledByNative
@@ -169,6 +172,7 @@ public class WebPaymentsWebDataService {
 
         boolean getPaymentWebAppManifest(
                 long nativeWebPaymentsWebDataServiceAndroid,
+                String methodName,
                 String appPackageName,
                 WebPaymentsWebDataServiceCallback callback);
 
@@ -178,6 +182,8 @@ public class WebPaymentsWebDataService {
                 String[] appPackageNames);
 
         void addPaymentWebAppManifest(
-                long nativeWebPaymentsWebDataServiceAndroid, WebAppManifestSection[] manifest);
+                long nativeWebPaymentsWebDataServiceAndroid,
+                String methodName,
+                WebAppManifestSection[] manifest);
     }
 }

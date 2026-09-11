@@ -55,6 +55,7 @@ void WebPaymentsWebDataServiceAndroid::AddPaymentMethodManifest(
 
 void WebPaymentsWebDataServiceAndroid::AddPaymentWebAppManifest(
     JNIEnv* env,
+    const base::android::JavaRef<jstring>& jmethod_name,
     const base::android::JavaRef<JArray<JWebAppManifestSection>>&
         jmanifest_sections) {
   scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
@@ -86,7 +87,9 @@ void WebPaymentsWebDataServiceAndroid::AddPaymentWebAppManifest(
     manifest.emplace_back(std::move(section));
   }
 
-  web_data_service->AddPaymentWebAppManifest(std::move(manifest));
+  web_data_service->AddPaymentWebAppManifest(
+      base::android::ConvertJavaStringToUTF8(env, jmethod_name),
+      std::move(manifest));
 }
 
 bool WebPaymentsWebDataServiceAndroid::GetPaymentMethodManifest(
@@ -112,6 +115,7 @@ bool WebPaymentsWebDataServiceAndroid::GetPaymentMethodManifest(
 
 bool WebPaymentsWebDataServiceAndroid::GetPaymentWebAppManifest(
     JNIEnv* env,
+    const base::android::JavaRef<jstring>& jmethod_name,
     const base::android::JavaRef<jstring>& japp_package_name,
     const base::android::JavaRef<jobject>& jcallback) {
   DCHECK(jcallback);
@@ -122,6 +126,7 @@ bool WebPaymentsWebDataServiceAndroid::GetPaymentWebAppManifest(
   }
 
   web_data_service->GetPaymentWebAppManifest(
+      base::android::ConvertJavaStringToUTF8(env, jmethod_name),
       base::android::ConvertJavaStringToUTF8(env, japp_package_name),
       base::BindOnce(
           &WebPaymentsWebDataServiceAndroid::OnWebAppManifestRequestDone,

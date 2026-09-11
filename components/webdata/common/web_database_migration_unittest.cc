@@ -2081,4 +2081,28 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion153ToCurrent) {
   }
 }
 
+// Version 155 adds the method_name column to the web_app_manifest_section table
+// in components/payments/content. That table is not known to webdata_common (it
+// is registered via WebDataServiceWrapper in components/webdata_services), so
+// its migration is tested in
+// WebAppManifestSectionTableTest.MigrationVersion154ToCurrent.
+//
+// TODO(crbug.com/559592119): Refactor code locations to allow testing
+// //components/payments tables in the same place as other tables.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion154ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_154.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(154, VersionFromConnection(&connection));
+  }
+  DoMigration();
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+  }
+}
+
 }  // anonymous namespace

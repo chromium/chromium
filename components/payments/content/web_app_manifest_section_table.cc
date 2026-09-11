@@ -6,8 +6,10 @@
 
 #include <stdint.h>
 #include <time.h>
+
 #include <memory>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -82,6 +84,7 @@ bool WebAppManifestSectionTable::CreateTablesIfNecessary() {
   return db()->Execute(
       "CREATE TABLE IF NOT EXISTS web_app_manifest_section ( "
       "expire_date INTEGER NOT NULL DEFAULT 0, "
+      "method_name VARCHAR, "
       "id VARCHAR, "
       "min_version INTEGER NOT NULL DEFAULT 0, "
       "fingerprints BLOB) ");
@@ -90,7 +93,22 @@ bool WebAppManifestSectionTable::CreateTablesIfNecessary() {
 bool WebAppManifestSectionTable::MigrateToVersion(
     int version,
     bool* update_compatible_version) {
+  if (version == 155) {
+    return MigrateToVersion155AddMethodName();
+  }
   return true;
+}
+
+bool WebAppManifestSectionTable::MigrateToVersion155AddMethodName() {
+  if (!db()->DoesTableExist("web_app_manifest_section")) {
+    return true;
+  }
+  // Clear any existing ambiguous entries that lacked a method_name.
+  if (!db()->Execute("DELETE FROM web_app_manifest_section")) {
+    return false;
+  }
+  return db()->Execute(
+      "ALTER TABLE web_app_manifest_section ADD COLUMN method_name VARCHAR");
 }
 
 void WebAppManifestSectionTable::RemoveExpiredData() {
@@ -102,53 +120,58 @@ void WebAppManifestSectionTable::RemoveExpiredData() {
 }
 
 bool WebAppManifestSectionTable::AddWebAppManifest(
+    const std::string& payment_method,
     const std::vector<WebAppManifestSection>& manifest) {
-  DCHECK_LT(0U, manifest.size());
+  CHECK(!manifest.empty());
 
   sql::Transaction transaction(db());
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   sql::Statement s1(db()->GetUniqueStatement(
-      "DELETE FROM web_app_manifest_section WHERE id=? "));
-  for (const auto& section : manifest) {
-    s1.BindString(0, section.id);
-    if (!s1.Run())
-      return false;
-    s1.Reset(true);
+      "DELETE FROM web_app_manifest_section WHERE method_name=?"));
+  s1.BindString(0, payment_method);
+  if (!s1.Run()) {
+    return false;
   }
 
   sql::Statement s2(
       db()->GetUniqueStatement("INSERT INTO web_app_manifest_section "
-                               "(expire_date, id, min_version, fingerprints) "
-                               "VALUES (?, ?, ?, ?)"));
+                               "(expire_date, method_name, id, min_version, "
+                               "fingerprints) VALUES (?, ?, ?, ?, ?)"));
   const base::Time expire_date =
       base::Time::FromTimeT(base::Time::NowFromSystemTime().ToTimeT() +
                             WEB_APP_MANIFEST_VALID_TIME_IN_SECONDS);
   for (const auto& section : manifest) {
     int index = 0;
     s2.BindTime(index++, expire_date);
+    s2.BindString(index++, payment_method);
     s2.BindString(index++, section.id);
     s2.BindInt64(index++, section.min_version);
     s2.BindBlob(index, SerializeFingerPrints(section.fingerprints));
-    if (!s2.Run())
+    if (!s2.Run()) {
       return false;
+    }
     s2.Reset(true);
   }
 
-  if (!transaction.Commit())
+  if (!transaction.Commit()) {
     return false;
+  }
 
   return true;
 }
 
 std::vector<WebAppManifestSection>
-WebAppManifestSectionTable::GetWebAppManifest(const std::string& web_app) {
+WebAppManifestSectionTable::GetWebAppManifest(const std::string& payment_method,
+                                              const std::string& web_app) {
   sql::Statement s(
       db()->GetUniqueStatement("SELECT id, min_version, fingerprints "
                                "FROM web_app_manifest_section "
-                               "WHERE id=?"));
-  s.BindString(0, web_app);
+                               "WHERE method_name=? AND id=?"));
+  s.BindString(0, payment_method);
+  s.BindString(1, web_app);
 
   std::vector<WebAppManifestSection> manifest;
   while (s.Step()) {

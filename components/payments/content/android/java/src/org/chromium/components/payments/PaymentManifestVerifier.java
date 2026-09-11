@@ -332,7 +332,8 @@ public class PaymentManifestVerifier
 
         mPendingWebAppManifestsCount = mDefaultApplications.size();
         for (String matchingAppPackageName : mDefaultApplications.keySet()) {
-            if (!mCache.getPaymentWebAppManifest(matchingAppPackageName, this)) {
+            if (!mCache.getPaymentWebAppManifest(
+                    mMethodName.getSpec(), matchingAppPackageName, this)) {
                 mIsManifestCacheStaleOrUnusable = true;
                 mPendingWebAppManifestsCount = 0;
                 mDownloader.downloadPaymentMethodManifest(mMerchantOrigin, mMethodName, this);
@@ -465,8 +466,9 @@ public class PaymentManifestVerifier
                 mMethodName.getSpec(),
                 mAppIdentifiersToCache.toArray(new String[mAppIdentifiersToCache.size()]));
 
-        // Cache supported apps' parsed manifests.
-        mCache.addPaymentWebAppManifest(flattenListOfArrays(mWebAppManifestsToCache));
+        // Cache supported apps' parsed manifests across all default_applications for this method.
+        mCache.addPaymentWebAppManifest(
+                mMethodName.getSpec(), flattenListOfArrays(mWebAppManifestsToCache));
 
         mCallback.onFinishedUsingResources();
     }

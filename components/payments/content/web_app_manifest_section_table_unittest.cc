@@ -5,12 +5,14 @@
 #include "components/payments/content/web_app_manifest_section_table.h"
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/init_status.h"
+#include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments {
@@ -60,7 +62,8 @@ TEST_F(WebAppManifestSectionTableTest, GetNonExistManifest) {
   WebAppManifestSectionTable* web_app_manifest_section_table =
       WebAppManifestSectionTable::FromWebDatabase(db_.get());
   std::vector<WebAppManifestSection> retrieved_manifest =
-      web_app_manifest_section_table->GetWebAppManifest("https://bobpay.test");
+      web_app_manifest_section_table->GetWebAppManifest("https://bobpay.test",
+                                                        "com.bobpay");
   ASSERT_TRUE(retrieved_manifest.empty());
 }
 
@@ -80,11 +83,13 @@ TEST_F(WebAppManifestSectionTableTest, AddAndGetManifest) {
   // Adds the manifest to the table.
   WebAppManifestSectionTable* web_app_manifest_section_table =
       WebAppManifestSectionTable::FromWebDatabase(db_.get());
-  ASSERT_TRUE(web_app_manifest_section_table->AddWebAppManifest(manifest));
+  ASSERT_TRUE(web_app_manifest_section_table->AddWebAppManifest(
+      "https://bobpay.test", manifest));
 
   // Gets and verifys the manifest.
   std::vector<WebAppManifestSection> retrieved_manifest =
-      web_app_manifest_section_table->GetWebAppManifest("com.bobpay");
+      web_app_manifest_section_table->GetWebAppManifest("https://bobpay.test",
+                                                        "com.bobpay");
   ASSERT_EQ(retrieved_manifest.size(), 1U);
   ASSERT_EQ(retrieved_manifest[0].id, "com.bobpay");
   ASSERT_EQ(retrieved_manifest[0].min_version, 1);
@@ -113,7 +118,8 @@ TEST_F(WebAppManifestSectionTableTest, AddAndGetMultipleManifests) {
   manifest_1_section.fingerprints.push_back(fingerprint_one);
   manifest_1_section.fingerprints.push_back(fingerprint_two);
   manifest_1.emplace_back(std::move(manifest_1_section));
-  ASSERT_TRUE(web_app_manifest_section_table->AddWebAppManifest(manifest_1));
+  ASSERT_TRUE(web_app_manifest_section_table->AddWebAppManifest(
+      "https://bobpay.test", manifest_1));
 
   // Adds alicepay manifest to the table.
   std::vector<WebAppManifestSection> manifest_2;
@@ -124,11 +130,13 @@ TEST_F(WebAppManifestSectionTableTest, AddAndGetMultipleManifests) {
   manifest_2_section.fingerprints.push_back(fingerprint_three);
   manifest_2_section.fingerprints.push_back(fingerprint_four);
   manifest_2.emplace_back(std::move(manifest_2_section));
-  ASSERT_TRUE(web_app_manifest_section_table->AddWebAppManifest(manifest_2));
+  ASSERT_TRUE(web_app_manifest_section_table->AddWebAppManifest(
+      "https://alicepay.test", manifest_2));
 
   // Verifys bobpay manifest.
   std::vector<WebAppManifestSection> bobpay_manifest =
-      web_app_manifest_section_table->GetWebAppManifest("com.bobpay");
+      web_app_manifest_section_table->GetWebAppManifest("https://bobpay.test",
+                                                        "com.bobpay");
   ASSERT_EQ(bobpay_manifest.size(), 1U);
   ASSERT_EQ(bobpay_manifest[0].id, "com.bobpay");
   ASSERT_EQ(bobpay_manifest[0].min_version, 1);
@@ -138,7 +146,8 @@ TEST_F(WebAppManifestSectionTableTest, AddAndGetMultipleManifests) {
 
   // Verifys alicepay manifest.
   std::vector<WebAppManifestSection> alicepay_manifest =
-      web_app_manifest_section_table->GetWebAppManifest("com.alicepay");
+      web_app_manifest_section_table->GetWebAppManifest("https://alicepay.test",
+                                                        "com.alicepay");
   ASSERT_EQ(alicepay_manifest.size(), 1U);
   ASSERT_EQ(alicepay_manifest[0].id, "com.alicepay");
   ASSERT_EQ(alicepay_manifest[0].min_version, 2);
@@ -175,12 +184,14 @@ TEST_F(WebAppManifestSectionTableTest, AddAndGetSingleManifestWithTwoIds) {
     manifest_prod_section.fingerprints.push_back(fingerprint_prod);
     manifest.emplace_back(std::move(manifest_prod_section));
   }
-  ASSERT_TRUE(web_app_manifest_section_table->AddWebAppManifest(manifest));
+  ASSERT_TRUE(web_app_manifest_section_table->AddWebAppManifest(
+      "https://bobpay.test", manifest));
 
   {
     // Verify the dev manifest.
     std::vector<WebAppManifestSection> actual_manifest =
-        web_app_manifest_section_table->GetWebAppManifest("com.bobpay.dev");
+        web_app_manifest_section_table->GetWebAppManifest("https://bobpay.test",
+                                                          "com.bobpay.dev");
     ASSERT_EQ(actual_manifest.size(), 1U);
     EXPECT_EQ(actual_manifest[0].id, "com.bobpay.dev");
     EXPECT_EQ(actual_manifest[0].min_version, 2);
@@ -191,13 +202,125 @@ TEST_F(WebAppManifestSectionTableTest, AddAndGetSingleManifestWithTwoIds) {
   {
     // Verify the prod manifest.
     std::vector<WebAppManifestSection> actual_manifest =
-        web_app_manifest_section_table->GetWebAppManifest("com.bobpay.prod");
+        web_app_manifest_section_table->GetWebAppManifest("https://bobpay.test",
+                                                          "com.bobpay.prod");
     ASSERT_EQ(actual_manifest.size(), 1U);
     EXPECT_EQ(actual_manifest[0].id, "com.bobpay.prod");
     EXPECT_EQ(actual_manifest[0].min_version, 1);
     ASSERT_EQ(actual_manifest[0].fingerprints.size(), 1U);
     EXPECT_TRUE(actual_manifest[0].fingerprints[0] == fingerprint_prod);
   }
+}
+
+// Tests that when multiple payment methods reference the same Android package
+// name with different requirements (e.g. min_version and fingerprints), each
+// payment method's cached web app manifest section remains isolated without
+// cache collision or thrashing.
+TEST_F(WebAppManifestSectionTableTest,
+       MultiplePaymentMethodsSamePackageNameIsolation) {
+  std::vector<uint8_t> fingerprint_v1 = GenerateFingerprint(1);
+  std::vector<uint8_t> fingerprint_v2 = GenerateFingerprint(2);
+
+  WebAppManifestSectionTable* web_app_manifest_section_table =
+      WebAppManifestSectionTable::FromWebDatabase(db_.get());
+
+  const std::string method_a = "https://example.com/pay_v1";
+  const std::string method_b = "https://example.com/pay_v2";
+  const std::string package_name = "com.example.pay";
+
+  // Method A requires min_version = 1.
+  std::vector<WebAppManifestSection> manifest_a;
+  WebAppManifestSection section_a;
+  section_a.id = package_name;
+  section_a.min_version = 1;
+  section_a.fingerprints.push_back(fingerprint_v1);
+  manifest_a.emplace_back(std::move(section_a));
+
+  ASSERT_TRUE(
+      web_app_manifest_section_table->AddWebAppManifest(method_a, manifest_a));
+
+  // Verify Method A can be retrieved.
+  std::vector<WebAppManifestSection> retrieved_a =
+      web_app_manifest_section_table->GetWebAppManifest(method_a, package_name);
+  ASSERT_EQ(retrieved_a.size(), 1U);
+  EXPECT_EQ(retrieved_a[0].id, package_name);
+  EXPECT_EQ(retrieved_a[0].min_version, 1);
+  ASSERT_EQ(retrieved_a[0].fingerprints.size(), 1U);
+  EXPECT_TRUE(retrieved_a[0].fingerprints[0] == fingerprint_v1);
+
+  // Method B requires min_version = 500.
+  std::vector<WebAppManifestSection> manifest_b;
+  WebAppManifestSection section_b;
+  section_b.id = package_name;
+  section_b.min_version = 500;
+  section_b.fingerprints.push_back(fingerprint_v2);
+  manifest_b.emplace_back(std::move(section_b));
+
+  ASSERT_TRUE(
+      web_app_manifest_section_table->AddWebAppManifest(method_b, manifest_b));
+
+  // Verify Method B has min_version = 500.
+  std::vector<WebAppManifestSection> retrieved_b =
+      web_app_manifest_section_table->GetWebAppManifest(method_b, package_name);
+  ASSERT_EQ(retrieved_b.size(), 1U);
+  EXPECT_EQ(retrieved_b[0].id, package_name);
+  EXPECT_EQ(retrieved_b[0].min_version, 500);
+  ASSERT_EQ(retrieved_b[0].fingerprints.size(), 1U);
+  EXPECT_TRUE(retrieved_b[0].fingerprints[0] == fingerprint_v2);
+
+  // Verify Method A was not overwritten or affected by Method B.
+  retrieved_a =
+      web_app_manifest_section_table->GetWebAppManifest(method_a, package_name);
+  ASSERT_EQ(retrieved_a.size(), 1U);
+  EXPECT_EQ(retrieved_a[0].id, package_name);
+  EXPECT_EQ(retrieved_a[0].min_version, 1);
+  ASSERT_EQ(retrieved_a[0].fingerprints.size(), 1U);
+  EXPECT_TRUE(retrieved_a[0].fingerprints[0] == fingerprint_v1);
+}
+
+// Tests migration from version 154 (legacy table without method_name) to 155.
+TEST_F(WebAppManifestSectionTableTest, MigrationVersion154ToCurrent) {
+  // Reset and create legacy table without method_name column.
+  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
+      "DROP TABLE IF EXISTS web_app_manifest_section"));
+  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
+      "CREATE TABLE web_app_manifest_section ( "
+      "expire_date INTEGER NOT NULL DEFAULT 0, "
+      "id VARCHAR, "
+      "min_version INTEGER NOT NULL DEFAULT 0, "
+      "fingerprints BLOB) "));
+  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
+      "INSERT INTO web_app_manifest_section (expire_date, id, min_version, "
+      "fingerprints) VALUES (9999999, 'com.legacy', 1, X'0102')"));
+  ASSERT_FALSE(db_->GetSQLConnection()->DoesColumnExist(
+      "web_app_manifest_section", "method_name"));
+
+  bool update_compatible_version = false;
+  ASSERT_TRUE(table_->MigrateToVersion(155, &update_compatible_version));
+  EXPECT_TRUE(db_->GetSQLConnection()->DoesColumnExist(
+      "web_app_manifest_section", "method_name"));
+
+  // Verify legacy ambiguous entry was cleared during migration.
+  sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT COUNT(*) FROM web_app_manifest_section"));
+  ASSERT_TRUE(s.Step());
+  EXPECT_EQ(s.ColumnInt(0), 0);
+
+  // Verify table operations work post-migration.
+  std::vector<uint8_t> fingerprint = GenerateFingerprint(1);
+  std::vector<WebAppManifestSection> manifest;
+  WebAppManifestSection section;
+  section.id = "com.bobpay";
+  section.min_version = 1;
+  section.fingerprints.push_back(fingerprint);
+  manifest.emplace_back(std::move(section));
+
+  EXPECT_TRUE(table_->AddWebAppManifest("https://bobpay.test", manifest));
+  std::vector<WebAppManifestSection> retrieved =
+      table_->GetWebAppManifest("https://bobpay.test", "com.bobpay");
+  ASSERT_EQ(retrieved.size(), 1U);
+  EXPECT_EQ(retrieved[0].id, "com.bobpay");
+  EXPECT_EQ(retrieved[0].min_version, 1);
 }
 
 }  // namespace

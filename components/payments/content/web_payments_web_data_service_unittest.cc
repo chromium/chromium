@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/payments/content/web_app_manifest_section_table.h"
 #include "components/payments/content/web_payments_table.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
@@ -67,6 +68,8 @@ class WebPaymentsWebDataServiceTest : public ::testing::Test {
         /*ui_task_runner=*/task_runner,
         /*db_task_runner=*/task_runner);
     web_database_service_->AddTable(std::make_unique<WebPaymentsTable>());
+    web_database_service_->AddTable(
+        std::make_unique<WebAppManifestSectionTable>());
     web_database_service_->LoadDatabase(os_crypt_.get());
     web_payments_web_data_service_ =
         base::MakeRefCounted<WebPaymentsWebDataService>(web_database_service_,
@@ -324,6 +327,69 @@ TEST_F(WebPaymentsWebDataServiceTest, DeleteBrowserBoundKey) {
               testing::UnorderedElementsAre(EqualBrowserBoundKeyMetadata(
                   credential_id_2, relying_party_id_2, browser_bound_key_id_2,
                   base::Time())));
+}
+
+TEST_F(WebPaymentsWebDataServiceTest, AddAndGetPaymentWebAppManifest) {
+  const std::string method_a = "https://example.com/pay_v1";
+  const std::string method_b = "https://example.com/pay_v2";
+  const std::string package_name = "com.example.pay";
+  const std::vector<uint8_t> fingerprint_a(32, 0x01);
+  const std::vector<uint8_t> fingerprint_b(32, 0x02);
+
+  std::vector<WebAppManifestSection> manifest_a;
+  WebAppManifestSection section_a;
+  section_a.id = package_name;
+  section_a.min_version = 1;
+  section_a.fingerprints.push_back(fingerprint_a);
+  manifest_a.emplace_back(std::move(section_a));
+
+  std::vector<WebAppManifestSection> manifest_b;
+  WebAppManifestSection section_b;
+  section_b.id = package_name;
+  section_b.min_version = 500;
+  section_b.fingerprints.push_back(fingerprint_b);
+  manifest_b.emplace_back(std::move(section_b));
+
+  web_payments_web_data_service_->AddPaymentWebAppManifest(
+      method_a, std::move(manifest_a));
+  web_payments_web_data_service_->AddPaymentWebAppManifest(
+      method_b, std::move(manifest_b));
+
+  // Retrieve Method A's manifest and verify isolation.
+  std::unique_ptr<WDTypedResult> result_a =
+      RunAndWaitForCallback(base::BindLambdaForTesting(
+          [&](WebDataServiceRequestCallback request_callback) {
+            return web_payments_web_data_service_->GetPaymentWebAppManifest(
+                method_a, package_name, std::move(request_callback));
+          }));
+  ASSERT_TRUE(result_a);
+  ASSERT_EQ(result_a->GetType(), WDResultType::PAYMENT_WEB_APP_MANIFEST);
+  std::vector<WebAppManifestSection> actual_a =
+      static_cast<WDResult<std::vector<WebAppManifestSection>>*>(result_a.get())
+          ->GetValue();
+  ASSERT_EQ(actual_a.size(), 1U);
+  EXPECT_EQ(actual_a[0].id, package_name);
+  EXPECT_EQ(actual_a[0].min_version, 1);
+  ASSERT_EQ(actual_a[0].fingerprints.size(), 1U);
+  EXPECT_EQ(actual_a[0].fingerprints[0], fingerprint_a);
+
+  // Retrieve Method B's manifest and verify isolation.
+  std::unique_ptr<WDTypedResult> result_b =
+      RunAndWaitForCallback(base::BindLambdaForTesting(
+          [&](WebDataServiceRequestCallback request_callback) {
+            return web_payments_web_data_service_->GetPaymentWebAppManifest(
+                method_b, package_name, std::move(request_callback));
+          }));
+  ASSERT_TRUE(result_b);
+  ASSERT_EQ(result_b->GetType(), WDResultType::PAYMENT_WEB_APP_MANIFEST);
+  std::vector<WebAppManifestSection> actual_b =
+      static_cast<WDResult<std::vector<WebAppManifestSection>>*>(result_b.get())
+          ->GetValue();
+  ASSERT_EQ(actual_b.size(), 1U);
+  EXPECT_EQ(actual_b[0].id, package_name);
+  EXPECT_EQ(actual_b[0].min_version, 500);
+  ASSERT_EQ(actual_b[0].fingerprints.size(), 1U);
+  EXPECT_EQ(actual_b[0].fingerprints[0], fingerprint_b);
 }
 
 }  // namespace

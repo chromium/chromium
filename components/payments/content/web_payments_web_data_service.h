@@ -40,15 +40,18 @@ class WebPaymentsWebDataService : public WebDataServiceBase {
   WebPaymentsWebDataService& operator=(const WebPaymentsWebDataService&) =
       delete;
 
-  // Adds the web app `manifest`.
-  void AddPaymentWebAppManifest(std::vector<WebAppManifestSection> manifest);
+  // Adds the web app `manifest` for `payment_method`.
+  void AddPaymentWebAppManifest(const std::string& payment_method,
+                                std::vector<WebAppManifestSection> manifest);
 
   // Adds the `payment_method`'s manifest.
   void AddPaymentMethodManifest(const std::string& payment_method,
                                 std::vector<std::string> app_package_names);
 
-  // Gets the `web_app`'s manifest and  returns it to the `callback`.
+  // Gets the `web_app`'s manifest for `payment_method` and returns it to the
+  // `callback`.
   WebDataServiceBase::Handle GetPaymentWebAppManifest(
+      const std::string& payment_method,
       const std::string& web_app,
       WebDataServiceRequestCallback callback);
 
@@ -131,6 +134,7 @@ class WebPaymentsWebDataService : public WebDataServiceBase {
   void RemoveExpiredData(WebDatabase* db);
 
   WebDatabase::State AddPaymentWebAppManifestImpl(
+      const std::string& payment_method,
       const std::vector<WebAppManifestSection>& manifest,
       WebDatabase* db);
   WebDatabase::State AddPaymentMethodManifestImpl(
@@ -142,6 +146,7 @@ class WebPaymentsWebDataService : public WebDataServiceBase {
       WebDatabase* db);
 
   std::unique_ptr<WDTypedResult> GetPaymentWebAppManifestImpl(
+      const std::string& payment_method,
       const std::string& web_app,
       WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetPaymentMethodManifestImpl(

@@ -15,19 +15,21 @@ class WebDatabase;
 
 namespace payments {
 
-// This class manages web_app_manifest_section table in SQLite database. It
-// expects the following schema.
-// The interfaces should only be accessed on DB thread.
+// This class manages the `web_app_manifest_section` SQLite table.
+// The interfaces should only be accessed on the DB thread.
 //
-// web_app_manifest_section The table stores the contents in
-//                          WebAppManifestSection.
+// This table caches native Android app verification requirements (min_version,
+// certificate fingerprints) declared in the `related_applications` sections of
+// Web App Manifests referenced as `default_applications` by a Payment Method
+// Manifest (identified by `method_name`). For a given payment method, the table
+// stores all sections across all of its default applications.
 //
-//  expire_date             The data expire date in seconds from 1601-01-01
-//                          00:00:00 UTC.
-//  id                      The package name of the app.
-//  min_version             Minimum version number of the app.
-//  fingerprints            The result of SHA256(signing certificate bytes) for
-//                          each certificate in the app.
+//  expire_date    The data expiry date in seconds from 1601-01-01 00:00:00 UTC.
+//  method_name    The payment method identifier (acts as partition key).
+//  id             The package name of the Android app. Rows are queried by
+//                 the composite key (method_name, id).
+//  min_version    Minimum version number of the app.
+//  fingerprints   SHA256 fingerprints of signing certificate bytes.
 //
 class WebAppManifestSectionTable : public WebDatabaseTable {
  public:
@@ -50,14 +52,22 @@ class WebAppManifestSectionTable : public WebDatabaseTable {
   // Remove expired data.
   void RemoveExpiredData();
 
-  // Adds the web app |manifest|. Note that the previous web app manifest will
-  // be deleted.
-  bool AddWebAppManifest(const std::vector<WebAppManifestSection>& manifest);
+  // Adds (or replaces) the cached web app manifest sections for
+  // `payment_method` with `manifest`. Note that `manifest` should contain all
+  // sections across all `default_applications` referenced by that payment
+  // method; any previous sections for `payment_method` are deleted atomically.
+  // `manifest` must not be empty.
+  bool AddWebAppManifest(const std::string& payment_method,
+                         const std::vector<WebAppManifestSection>& manifest);
 
-  // Gets manifest of the |web_app|. Returns empty vector if no manifest exists
-  // for the |web_app|.
+  // Gets all cached verification sections for the Android package `web_app`
+  // under `payment_method`. Returns an empty vector if no match is found.
   std::vector<WebAppManifestSection> GetWebAppManifest(
+      const std::string& payment_method,
       const std::string& web_app);
+
+ private:
+  bool MigrateToVersion155AddMethodName();
 };
 
 }  // namespace payments
