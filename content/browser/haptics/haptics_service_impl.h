@@ -5,6 +5,9 @@
 #ifndef CONTENT_BROWSER_HAPTICS_HAPTICS_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_HAPTICS_HAPTICS_SERVICE_IMPL_H_
 
+#include <memory>
+
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -12,6 +15,7 @@
 
 namespace content {
 
+class HapticsManager;
 class RenderFrameHost;
 
 // Browser-side implementation for the Web Haptics API.
@@ -25,12 +29,22 @@ class RenderFrameHost;
 class CONTENT_EXPORT HapticsServiceImpl final
     : public DocumentService<blink::mojom::HapticsService> {
  public:
+  // Creates and binds a HapticsManager backend for a HapticsServiceImpl. Tests
+  // set this to inject a fake in place of the real platform backend; a null
+  // callback restores the default.
+  using HapticsManagerFactory =
+      base::RepeatingCallback<std::unique_ptr<HapticsManager>()>;
+
   static void Create(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::HapticsService> receiver);
 
+  static void SetHapticsManagerFactoryForTesting(HapticsManagerFactory factory);
+
   HapticsServiceImpl(const HapticsServiceImpl&) = delete;
   HapticsServiceImpl& operator=(const HapticsServiceImpl&) = delete;
+
+  ~HapticsServiceImpl() override;
 
   // blink::mojom::HapticsService:
   void PlayHaptics(blink::mojom::HapticEffect effect, double intensity) final;
@@ -39,6 +53,8 @@ class CONTENT_EXPORT HapticsServiceImpl final
   HapticsServiceImpl(
       RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::HapticsService> receiver);
+
+  std::unique_ptr<HapticsManager> haptics_manager_;
 };
 
 }  // namespace content

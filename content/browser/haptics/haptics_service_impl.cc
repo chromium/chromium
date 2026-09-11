@@ -5,13 +5,42 @@
 #include "content/browser/haptics/haptics_service_impl.h"
 
 #include <cmath>
+#include <utility>
 
+#include "base/functional/callback.h"
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/haptics/haptics_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "content/browser/haptics/haptics_manager_impl_win.h"
+#endif
+
 namespace content {
+
+namespace {
+
+HapticsServiceImpl::HapticsManagerFactory& GetTestFactory() {
+  static base::NoDestructor<HapticsServiceImpl::HapticsManagerFactory> factory;
+  return *factory;
+}
+
+std::unique_ptr<HapticsManager> CreateHapticsManager() {
+  if (GetTestFactory()) {
+    return GetTestFactory().Run();
+  }
+#if BUILDFLAG(IS_WIN)
+  return std::make_unique<HapticsManagerImplWin>();
+#else
+  return nullptr;
+#endif
+}
+
+}  // namespace
 
 // static
 void HapticsServiceImpl::Create(
@@ -39,10 +68,19 @@ void HapticsServiceImpl::Create(
   new HapticsServiceImpl(*render_frame_host, std::move(receiver));
 }
 
+// static
+void HapticsServiceImpl::SetHapticsManagerFactoryForTesting(
+    HapticsManagerFactory factory) {
+  GetTestFactory() = std::move(factory);
+}
+
 HapticsServiceImpl::HapticsServiceImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::HapticsService> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)) {}
+    : DocumentService(render_frame_host, std::move(receiver)),
+      haptics_manager_(CreateHapticsManager()) {}
+
+HapticsServiceImpl::~HapticsServiceImpl() = default;
 
 void HapticsServiceImpl::PlayHaptics(blink::mojom::HapticEffect effect,
                                      double intensity) {
@@ -62,9 +100,9 @@ void HapticsServiceImpl::PlayHaptics(blink::mojom::HapticEffect effect,
     return;
   }
 
-  // TODO(crbug.com/531787872): Forward to the platform backend. On Windows
-  // this is an in-process call into HapticsManagerImplWin. Until then this is a
-  // no-op.
+  if (haptics_manager_) {
+    haptics_manager_->PlayHaptics(effect, intensity);
+  }
 }
 
 }  // namespace content
