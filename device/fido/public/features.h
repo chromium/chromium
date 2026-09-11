@@ -141,10 +141,6 @@ BASE_DECLARE_FEATURE(kWebAuthnSocketMaxPriorityMode);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnGpmPinResetUsesAccountIndex);
 
-// Omit unused parameters when building requests to the cloud enclave.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnStripUnusedEnclaveParameters);
-
 // Enables the new embedded recovery URL for GPM keychain recovery.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnGpmPasskeyEmbeddedRecoveryUrl);
