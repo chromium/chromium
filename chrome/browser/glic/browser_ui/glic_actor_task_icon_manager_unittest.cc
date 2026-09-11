@@ -5,13 +5,18 @@
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -45,20 +50,30 @@ class GlicActorTaskIconManagerTest : public testing::Test,
                                      public testing::WithParamInterface<bool> {
  public:
   GlicActorTaskIconManagerTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  // testing::Test:
-  void SetUp() override {
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlicActor,
          {{features::kGlicActorPolicyControlExemption.name, "true"}}}};
     feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
                                                 {});
+  }
 
-    profile_ = std::make_unique<TestingProfile>();
-    actor_service_ = std::make_unique<ActorKeyedServiceFake>(profile_.get());
-    manager_ = std::make_unique<GlicActorTaskIconManager>(profile_.get(),
-                                                          actor_service_.get());
+  // testing::Test:
+  void SetUp() override {
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(
+        actor::ActorKeyedServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<ActorKeyedServiceFake>(
+              Profile::FromBrowserContext(context));
+        }));
+    profile_ = builder.Build();
+    display_service_tester_ =
+        std::make_unique<NotificationDisplayServiceTester>(profile_.get());
+    actor_service_ = static_cast<ActorKeyedServiceFake*>(
+        actor::ActorKeyedService::Get(profile_.get()));
+    manager_ = GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
 
     nudge_subscription_ = manager()->RegisterTaskNudgeStateChange(
         base::BindRepeating(&MockTaskNudgeStateChangeSubscriber::OnStateChanged,
@@ -70,26 +85,33 @@ class GlicActorTaskIconManagerTest : public testing::Test,
   }
 
   void TearDown() override {
-    manager_.reset();
-    actor_service_->Shutdown();
-    actor_service_.reset();
+    nudge_subscription_ = {};
+    bubble_subscription_ = {};
+    manager_ = nullptr;
+    actor_service_ = nullptr;
+    display_service_tester_.reset();
     profile_.reset();
     testing::Test::TearDown();
   }
 
-  ActorKeyedServiceFake* actor_service() { return actor_service_.get(); }
+  ActorKeyedServiceFake* actor_service() { return actor_service_; }
 
-  GlicActorTaskIconManager* manager() { return manager_.get(); }
+  GlicActorTaskIconManager* manager() { return manager_; }
 
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
 
+  NotificationDisplayServiceTester* display_service_tester() {
+    return display_service_tester_.get();
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<ActorKeyedServiceFake> actor_service_;
-  std::unique_ptr<GlicActorTaskIconManager> manager_;
+  std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
+  raw_ptr<ActorKeyedServiceFake> actor_service_;
+  raw_ptr<GlicActorTaskIconManager> manager_;
   base::CallbackListSubscription nudge_subscription_;
   base::CallbackListSubscription bubble_subscription_;
   MockTaskNudgeStateChangeSubscriber mock_nudge_subscriber_;
@@ -615,4 +637,163 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_TRUE(manager()->tasks_notified_of_start().contains(task_id_2));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+class GlicActorTaskIconManagerOsNotificationTest
+    : public GlicActorTaskIconManagerTest {
+ public:
+  GlicActorTaskIconManagerOsNotificationTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicExperimentalTriggeringOsNotification);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that an OS notification is displayed when an experimental triggering
+// task starts and no browser window is active.
+TEST_F(GlicActorTaskIconManagerOsNotificationTest,
+       ExperimentalTriggeringTask_NoActiveBrowser_ShowsNotification) {
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+  actor::ActorTask* task = actor_service()->GetTask(task_id);
+  task->SetState(actor::ActorTask::State::kActing);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+
+  manager()->UpdateTaskIconComponents(task_id);
+
+  std::string notification_id =
+      "actor_task_start_" + base::NumberToString(task_id.value());
+  auto notification =
+      display_service_tester()->GetNotification(notification_id);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->id(), notification_id);
+  EXPECT_EQ(display_service_tester()
+                ->GetDisplayedNotificationsForType(
+                    NotificationHandler::Type::GLIC_ACTOR_TASK)
+                .size(),
+            1u);
+}
+
+// Verifies that clicking the OS notification marks the task list row as
+// processed and dismisses the notification.
+TEST_F(GlicActorTaskIconManagerOsNotificationTest,
+       ExperimentalTriggeringTask_NotificationClicked_ProcessesRow) {
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+  actor::ActorTask* task = actor_service()->GetTask(task_id);
+  task->SetState(actor::ActorTask::State::kActing);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+
+  manager()->UpdateTaskIconComponents(task_id);
+
+  std::string notification_id =
+      "actor_task_start_" + base::NumberToString(task_id.value());
+  ASSERT_TRUE(
+      display_service_tester()->GetNotification(notification_id).has_value());
+  EXPECT_TRUE(manager()->actor_task_list_bubble_rows().at(task_id));
+
+  display_service_tester()->SimulateClick(
+      NotificationHandler::Type::GLIC_ACTOR_TASK, notification_id,
+      /*action_index=*/std::nullopt, /*reply=*/std::nullopt);
+
+  EXPECT_FALSE(manager()->actor_task_list_bubble_rows().at(task_id));
+  EXPECT_FALSE(
+      display_service_tester()->GetNotification(notification_id).has_value());
+}
+
+// Verifies that no OS notification is displayed when the feature flag is
+// disabled.
+TEST_F(GlicActorTaskIconManagerTest,
+       ExperimentalTriggeringTask_FeatureDisabled_DoesNotShowNotification) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringOsNotification);
+
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+  actor::ActorTask* task = actor_service()->GetTask(task_id);
+  task->SetState(actor::ActorTask::State::kActing);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+
+  manager()->UpdateTaskIconComponents(task_id);
+
+  std::string notification_id =
+      "actor_task_start_" + base::NumberToString(task_id.value());
+  EXPECT_FALSE(
+      display_service_tester()->GetNotification(notification_id).has_value());
+}
+
+// Verifies that non-experimental actor tasks do not trigger an OS notification.
+TEST_F(GlicActorTaskIconManagerOsNotificationTest,
+       NonExperimentalTask_DoesNotShowNotification) {
+  TaskId task_id = actor_service()->CreateTaskForTesting();
+  actor::ActorTask* task = actor_service()->GetTask(task_id);
+  task->SetState(actor::ActorTask::State::kActing);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+
+  manager()->UpdateTaskIconComponents(task_id);
+
+  std::string notification_id =
+      "actor_task_start_" + base::NumberToString(task_id.value());
+  EXPECT_FALSE(
+      display_service_tester()->GetNotification(notification_id).has_value());
+}
+
+// Verifies that completing an experimental triggering task automatically
+// dismisses its OS notification.
+TEST_F(GlicActorTaskIconManagerOsNotificationTest,
+       ExperimentalTriggeringTask_TaskComplete_ClosesNotification) {
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+  actor::ActorTask* task = actor_service()->GetTask(task_id);
+  task->SetState(actor::ActorTask::State::kActing);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+
+  manager()->UpdateTaskIconComponents(task_id);
+
+  std::string notification_id =
+      "actor_task_start_" + base::NumberToString(task_id.value());
+  ASSERT_TRUE(
+      display_service_tester()->GetNotification(notification_id).has_value());
+
+  actor_service()->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+  manager()->UpdateTaskIconComponents(task_id);
+
+  EXPECT_FALSE(
+      display_service_tester()->GetNotification(notification_id).has_value());
+}
+
+// Verifies that stopping/cancelling an experimental triggering task
+// automatically dismisses its OS notification.
+TEST_F(GlicActorTaskIconManagerOsNotificationTest,
+       ExperimentalTriggeringTask_TaskCancelled_ClosesNotification) {
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+  actor::ActorTask* task = actor_service()->GetTask(task_id);
+  task->SetState(actor::ActorTask::State::kActing);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+
+  manager()->UpdateTaskIconComponents(task_id);
+
+  std::string notification_id =
+      "actor_task_start_" + base::NumberToString(task_id.value());
+  ASSERT_TRUE(
+      display_service_tester()->GetNotification(notification_id).has_value());
+
+  actor_service()->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kStoppedByUser);
+  manager()->UpdateTaskIconComponents(task_id);
+
+  EXPECT_FALSE(
+      display_service_tester()->GetNotification(notification_id).has_value());
+}
+#endif
 }  // namespace glic

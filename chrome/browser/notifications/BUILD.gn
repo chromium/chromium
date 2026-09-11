@@ -83,11 +83,15 @@ source_set("notifications") {
 
   if (!is_android) {
     public += [
+      "glic_actor_task_notification_handler.h",
       "muted_notification_handler.h",
       "profile_notification.h",
     ]
 
-    public_deps += [ "//components/keep_alive_registry" ]
+    public_deps += [
+      "//components/actor/core:task_id",
+      "//components/keep_alive_registry",
+    ]
   }
 
   if (is_chromeos) {
@@ -251,6 +255,7 @@ source_set("impl") {
 
   if (!is_android) {
     sources += [
+      "glic_actor_task_notification_handler.cc",
       "muted_notification_handler.cc",
       "profile_notification.cc",
       "screen_capture_notification_blocker.cc",
@@ -258,13 +263,18 @@ source_set("impl") {
     ]
 
     deps += [
+      "//chrome/app:generated_resources",
+      "//chrome/browser/actor",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/sharing",
+      "//chrome/browser/tab_list",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/proto",
+      "//components/actor/core",
     ]
 
     if (!is_chromeos) {

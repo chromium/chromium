@@ -5838,6 +5838,14 @@
     "expiry_milestone": 156
   },
   {
+    "name": "glic-experimental-triggering-os-notification",
+    "owners": [
+      "sauski@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "glic-experimental-triggering-screenshot",
     "owners": [
       "weiguo@google.com",

@@ -521,3 +521,34 @@ TEST_F(ActorTaskListBubbleControllerTest,
             rows[2].feature_mode);
   EXPECT_TRUE(rows[2].has_tab);
 }
+
+class ActorTaskListBubbleControllerOsNotificationTest
+    : public ActorTaskListBubbleControllerTest {
+ public:
+  ActorTaskListBubbleControllerOsNotificationTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicExperimentalTriggeringOsNotification);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ActorTaskListBubbleControllerOsNotificationTest,
+       ShowBubble_InactiveBrowserWindow_DoesNotShowBubble) {
+  // If the browser window is inactive and
+  // kGlicExperimentalTriggeringOsNotification is enabled, ShowBubble should
+  // return early and NOT show the bubble.
+  EXPECT_CALL(*browser_window_interface_, IsActive())
+      .WillRepeatedly(testing::Return(false));
+
+  actor_task_list_bubble_controller_->ShowBubble(
+      /*is_start_notification=*/true);
+
+  // Fast forward for delayed show.
+  task_environment()->FastForwardBy(
+      base::Milliseconds(features::kGlicActorUiTaskListBubbleDelayMs.Get()));
+
+  // Bubble widget should not be created.
+  EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
+}

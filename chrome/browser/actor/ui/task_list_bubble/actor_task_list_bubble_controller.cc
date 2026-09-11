@@ -211,6 +211,13 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
   const bool is_active = browser_->IsActive();
 #endif
   if (!is_active) {
+    // When kGlicExperimentalTriggeringOsNotification is enabled, we avoid
+    // popping up the bubble on inactive windows entirely.
+    if (base::FeatureList::IsEnabled(
+            features::kGlicExperimentalTriggeringOsNotification)) {
+      return;
+    }
+
     auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
         browser_->GetProfile());
     if (!is_start_notification || !glic_service ||

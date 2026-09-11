@@ -105,6 +105,9 @@
   <message name="IDS_ACTOR_NOTIFICATION_TITLE_WORKING_ON_TASK" desc="Notification title when the actor is actively working on a task." formatter_data="android_java">
    Working on your task
   </message>
+  <message name="IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE" desc="Notification title when the actor is working on an experimental triggering task.">
+   Working on your task
+  </message>
   <message name="IDS_ACTOR_NOTIFICATION_TITLE_PREPARING_TO_START_TASK" desc="Notification title when the actor is preparing to start a task." formatter_data="android_java">
     Preparing to start your task…
   </message>
@@ -125,6 +128,12 @@
   </message>
   <message name="IDS_ACTOR_NOTIFICATION_BODY_WORKING" desc="Notification body text when the actor is working on a task." formatter_data="android_java">
     <ph name="TASK_TITLE">%s<ex>My Task</ex></ph>: Gemini is working on your task and will let you know if more action is needed
+  </message>
+  <message name="IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY" desc="Notification body text when the actor is working on an experimental triggering task.">
+    <ph name="TASK_TITLE">$1<ex>My Task</ex></ph>: Working on your Gemini App task in Chrome. Check Chrome for more updates
+  </message>
+  <message name="IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_FALLBACK" desc="Fallback notification body text when the actor is working on an experimental triggering task without a task title.">
+    Working on your Gemini App task in Chrome. Check Chrome for more updates
   </message>
   <message name="IDS_ACTOR_NOTIFICATION_BODY_WORKING_WITH_STEP_INFO" desc="Notification body text when the actor is working on a task with step progress." formatter_data="android_java">
     <ph name="TASK_TITLE">%1$s<ex>My Task</ex></ph>: <ph name="STEP_PROGRESS">%2$s<ex>Searching flights</ex></ph>
