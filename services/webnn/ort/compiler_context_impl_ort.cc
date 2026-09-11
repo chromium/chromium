@@ -44,11 +44,13 @@ struct CompilerContextImplOrt::CompilationResult {
 };
 
 CompilerContextImplOrt::CompilerContextImplOrt(
+    WebNNCompilerServiceImpl& service,
     const EpDeviceInfo& target_device,
     mojom::CreateContextOptionsPtr options,
     ContextProperties properties,
     mojo::PendingRemote<mojom::WebNNModelLoader> model_loader)
-    : properties_(std::move(properties)),
+    : service_(service),
+      properties_(std::move(properties)),
       options_(std::move(options)),
       model_loader_(std::move(model_loader)),
       // The environment is guaranteed to be initialized in PreSandboxInit().
@@ -61,6 +63,12 @@ CompilerContextImplOrt::CompilerContextImplOrt(
 }
 
 CompilerContextImplOrt::~CompilerContextImplOrt() = default;
+
+void CompilerContextImplOrt::SetId(
+    mojo::ReceiverId id,
+    base::PassKey<WebNNCompilerServiceImpl> /*pass_key*/) {
+  id_ = id;
+}
 
 const ContextProperties& CompilerContextImplOrt::properties() const {
   return properties_;
@@ -250,6 +258,13 @@ void CompilerContextImplOrt::OnModelLoaderDisconnected() {
   // Cancel any ongoing compilation tasks since the GPU process is no longer
   // available to load the compiled graphs.
   cancelable_task_tracker_.TryCancelAll();
+
+  // Destroy the context now instead of waiting for the WebNNCompilerContext
+  // receiver to disconnect: that end is held by the renderer, which may keep it
+  // open indefinitely while requesting replacement contexts (each replacing the
+  // GPU process's ModelLoader pipe), accumulating dead contexts in this
+  // process.
+  service_->RemoveCompilerContext(id_, base::PassKey<CompilerContextImplOrt>());
 }
 
 }  // namespace webnn::ort

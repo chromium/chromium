@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/timer/timer.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -16,6 +17,10 @@
 #include "services/webnn/public/mojom/webnn_compiler_service.mojom.h"
 
 namespace webnn {
+
+namespace ort {
+class CompilerContextImplOrt;
+}  // namespace ort
 
 // Maintains a set of WebNNCompilerContext instances. Runs in the WebNN Compiler
 // utility process.
@@ -31,6 +36,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNCompilerServiceImpl
   WebNNCompilerServiceImpl& operator=(const WebNNCompilerServiceImpl&) = delete;
 
   ~WebNNCompilerServiceImpl() override;
+
+  // Called by a compiler context to destroy itself.
+  void RemoveCompilerContext(
+      mojo::ReceiverId receiver_id,
+      base::PassKey<ort::CompilerContextImplOrt> pass_key);
 
  private:
   // mojom::WebNNCompilerService:

@@ -8,11 +8,14 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/graph_builder_context.h"
 #include "services/webnn/public/cpp/context_properties.h"
@@ -21,6 +24,7 @@
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/public/mojom/webnn_model_loader.mojom.h"
+#include "services/webnn/webnn_compiler_service_impl.h"
 
 namespace webnn {
 
@@ -39,6 +43,7 @@ class CompilerContextImplOrt final : public GraphBuilderContext,
                                      public mojom::WebNNCompilerContext {
  public:
   CompilerContextImplOrt(
+      WebNNCompilerServiceImpl& service,
       const EpDeviceInfo& target_device,
       mojom::CreateContextOptionsPtr options,
       ContextProperties properties,
@@ -48,6 +53,9 @@ class CompilerContextImplOrt final : public GraphBuilderContext,
   CompilerContextImplOrt& operator=(const CompilerContextImplOrt&) = delete;
 
   ~CompilerContextImplOrt() override;
+
+  void SetId(mojo::ReceiverId id,
+             base::PassKey<WebNNCompilerServiceImpl> pass_key);
 
   // mojom::WebNNCompilerContext:
   void CreateGraphBuilder(
@@ -84,11 +92,18 @@ class CompilerContextImplOrt final : public GraphBuilderContext,
   // Called when the model loader mojo pipe disconnects.
   void OnModelLoaderDisconnected();
 
+  // The `WebNNCompilerServiceImpl` which owns and will outlive this object.
+  const raw_ref<WebNNCompilerServiceImpl> service_;
+
   ContextProperties properties_;
   mojom::CreateContextOptionsPtr options_;
 
   // Reverse channel to GPU process for sending compiled graphs.
   mojo::Remote<mojom::WebNNModelLoader> model_loader_;
+
+  // Set by the owning `service_` so this context can identify itself when
+  // requesting to be destroyed.
+  mojo::ReceiverId id_;
 
   // ORT environment and session options for compilation.
   scoped_refptr<Environment> env_;
