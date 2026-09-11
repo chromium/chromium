@@ -42,6 +42,7 @@ class VisualGuidedSetterPageHandler
  private:
   void OnOpenSettingsResult(bool succeeded);
   void OnErrorStateChanged(bool has_error);
+  void OnDockedBoundsChanged(const gfx::Rect& bounds);
 
   raw_ptr<content::WebContents> web_contents_;
 

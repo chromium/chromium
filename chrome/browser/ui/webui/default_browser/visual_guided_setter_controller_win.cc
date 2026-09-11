@@ -69,6 +69,8 @@ void VisualGuidedSetterControllerWin::Start() {
   is_running_ = true;
   is_degraded_ = false;
   outcome_ = std::nullopt;
+  last_applied_settings_rect_.reset();
+  last_reported_docked_bounds_ = gfx::Rect();
 
   if (!overlay_) {
     overlay_ = std::make_unique<GuidedSetterOverlayWindowWin>(
@@ -109,6 +111,53 @@ void VisualGuidedSetterControllerWin::SetWebContents(
 void VisualGuidedSetterControllerWin::SetErrorCallback(ErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   error_callback_ = std::move(callback);
+}
+
+void VisualGuidedSetterControllerWin::SetDockedBoundsCallback(
+    DockedBoundsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  docked_bounds_callback_ = std::move(callback);
+}
+
+void VisualGuidedSetterControllerWin::ReportDockedSettingsBounds() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!last_applied_settings_rect_ || !web_contents() ||
+      !IsSettingsWindowValid()) {
+    return;
+  }
+
+  // The layout is applied with SWP_ASYNCWINDOWPOS, so the window can still be
+  // wherever Settings opened when this runs. Its origin is the tell: Windows
+  // honors that even when the app's minimum size clamps the requested size.
+  std::optional<gfx::Rect> window_rect = GetSettingsWindowScreenRect();
+  if (!window_rect ||
+      window_rect->origin() != last_applied_settings_rect_->origin()) {
+    return;
+  }
+
+  std::optional<gfx::Rect> client_rect = GetSettingsWindowClientScreenRect();
+  if (!client_rect) {
+    return;
+  }
+
+  // Back into the page's coordinate space: DIP, relative to the WebUI
+  // viewport, the inverse of GetAnchorRectScreenDip().
+  gfx::Rect bounds =
+      display::win::GetScreenWin()->ScreenToDIPRect(chrome_hwnd_, *client_rect);
+  bounds.Offset(-web_contents()->GetViewBounds().OffsetFromOrigin());
+  NotifyDockedSettingsBounds(bounds);
+}
+
+void VisualGuidedSetterControllerWin::NotifyDockedSettingsBounds(
+    const gfx::Rect& bounds) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (bounds == last_reported_docked_bounds_) {
+    return;
+  }
+  last_reported_docked_bounds_ = bounds;
+  if (docked_bounds_callback_) {
+    docked_bounds_callback_.Run(bounds);
+  }
 }
 
 void VisualGuidedSetterControllerWin::NotifyErrorState(bool is_error) {
@@ -399,7 +448,7 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
   }
   if (!IsSettingsWindowValid()) {
     // Reachable for a latched window that is not closed but is not showable
-    // either — minimized, or cloaked because the whole desktop is inactive.
+    // either minimized, or cloaked because the whole desktop is inactive.
     // Both are exempted from IsSettingsWindowClosed() above, so the flow stays
     // alive; only the arrow must not be left pointing at a hidden window.
     UpdateOverlay();
@@ -432,7 +481,9 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
   NotifyErrorState(false);
 
   ApplySettingsRectAndZOrder(settings_target, GetSettingsWindowInsertAfter());
+  last_applied_settings_rect_ = settings_target;
   UpdateOverlay();
+  ReportDockedSettingsBounds();
 }
 
 gfx::Rect VisualGuidedSetterControllerWin::ComputeDockedSettingsRect() const {
@@ -642,6 +693,27 @@ VisualGuidedSetterControllerWin::GetSettingsWindowScreenRect() const {
   return rect;
 }
 
+std::optional<gfx::Rect>
+VisualGuidedSetterControllerWin::GetSettingsWindowClientScreenRect() const {
+  RECT client_win;
+  if (!::GetClientRect(settings_hwnd_, &client_win)) {
+    return std::nullopt;
+  }
+
+  POINT origin = {client_win.left, client_win.top};
+  if (!::ClientToScreen(settings_hwnd_, &origin)) {
+    return std::nullopt;
+  }
+
+  gfx::Rect rect(origin.x, origin.y, client_win.right, client_win.bottom);
+
+  if (rect.IsEmpty()) {
+    return std::nullopt;
+  }
+
+  return rect;
+}
+
 void VisualGuidedSetterControllerWin::ShowOverlayArrow(const gfx::Point& start,
                                                        const gfx::Point& end) {
   if (overlay_) {
@@ -727,6 +799,7 @@ void VisualGuidedSetterControllerWin::TearDownInternal() {
 
   settings_hwnd_ = nullptr;
   settings_pid_ = 0;
+  last_applied_settings_rect_.reset();
 
   if (is_running_ && !is_degraded_) {
     base::UmaHistogramEnumeration(

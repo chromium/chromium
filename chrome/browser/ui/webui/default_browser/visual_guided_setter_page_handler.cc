@@ -59,6 +59,9 @@ void VisualGuidedSetterPageHandler::SetAnchorRect(const gfx::Rect& rect) {
     controller_->SetErrorCallback(
         base::BindRepeating(&VisualGuidedSetterPageHandler::OnErrorStateChanged,
                             weak_ptr_factory_.GetWeakPtr()));
+    controller_->SetDockedBoundsCallback(base::BindRepeating(
+        &VisualGuidedSetterPageHandler::OnDockedBoundsChanged,
+        weak_ptr_factory_.GetWeakPtr()));
 
     controller_->SetAnchorRectInWebUi(validated_rect);
     controller_->Start();
@@ -87,7 +90,10 @@ void VisualGuidedSetterPageHandler::OnOpenSettingsResult(bool succeeded) {
 }
 
 void VisualGuidedSetterPageHandler::OnErrorStateChanged(bool has_error) {
-  if (page_.is_bound()) {
     page_->SetErrorState(has_error);
-  }
+}
+
+void VisualGuidedSetterPageHandler::OnDockedBoundsChanged(
+    const gfx::Rect& bounds) {
+  page_->SetDockedSettingsBounds(bounds);
 }

@@ -26,10 +26,14 @@ constexpr int kMinAnchorWidthPx = 320;
 constexpr int kMinAnchorHeightPx = 160;
 
 // Layout constants in DIPs. These values were determined based on the visual
-// alignment with the native Windows Settings app to match the UX spec.
+// alignment with the native Windows Settings app to match the UX spec. The
+// WebUI draws the slot the window docks into from the same numbers, so the
+// slot's shadow frames the docked window.
+// LINT.IfChange(docked_settings_geometry)
 constexpr int kHorizontalInsetDip = 61;
 constexpr int kPreferredHeightDip = 220;
 constexpr int kMinHeightDip = 180;
+// LINT.ThenChange(//chrome/browser/resources/default_browser/visual_guided_setter/visual_guided_setter.css:docked_settings_slot)
 }  // namespace
 
 bool IsAnchorLargeEnoughForDocking(const gfx::Rect& anchor_rect) {

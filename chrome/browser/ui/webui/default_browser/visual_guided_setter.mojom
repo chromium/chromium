@@ -11,6 +11,13 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 interface Page {
   // Notifies the WebUI page whether docking is in an error or degraded state.
   SetErrorState(bool has_error);
+
+  // Reports where the docked Settings window's client area actually landed,
+  // in CSS pixels relative to the WebUI viewport (the coordinate space of
+  // PageHandler.SetAnchorRect). The Settings app enforces its own minimum
+  // window size, so this can be larger than the stage asked for. The page
+  // fits the slot it draws under the window to these bounds.
+  SetDockedSettingsBounds(gfx.mojom.Rect bounds);
 };
 
 // Implemented in the browser process. Drives the native Windows guided flow.

@@ -25,6 +25,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -213,7 +214,18 @@ class TestVisualGuidedSetterControllerWin
   }
   void HideOverlayArrow() override { ++hide_overlay_count_; }
   std::optional<gfx::Rect> GetSettingsWindowScreenRect() const override {
-    return gfx::Rect(1000, 300, 800, 600);
+    return settings_window_rect_;
+  }
+  std::optional<gfx::Rect> GetSettingsWindowClientScreenRect() const override {
+    return settings_client_rect_;
+  }
+  // Where the fake Settings window is; by default somewhere other than the
+  // docked rect, as a window the async layout has not yet moved.
+  void set_settings_window_rect(std::optional<gfx::Rect> rect) {
+    settings_window_rect_ = std::move(rect);
+  }
+  void set_settings_client_rect(std::optional<gfx::Rect> rect) {
+    settings_client_rect_ = std::move(rect);
   }
   int show_overlay_count() const { return show_overlay_count_; }
   int hide_overlay_count() const { return hide_overlay_count_; }
@@ -236,6 +248,9 @@ class TestVisualGuidedSetterControllerWin
   bool chrome_window_active_ = true;
   bool dpi_compatible_ = true;
   bool close_settings_window_called_ = false;
+  std::optional<gfx::Rect> settings_window_rect_ =
+      gfx::Rect(1000, 300, 800, 600);
+  std::optional<gfx::Rect> settings_client_rect_;
   std::vector<gfx::Rect> applied_rects_;
   std::vector<HWND> applied_z_orders_;
   base::OnceClosure run_loop_quit_closure_;
@@ -332,6 +347,15 @@ class VisualGuidedSetterControllerWinTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
+  // What the controller reports for a docked window whose client area is at
+  // `client_screen_px`: the page's coordinate space, which is DIP relative to
+  // the WebUI viewport.
+  gfx::Rect ExpectedDockedBounds(const gfx::Rect& client_screen_px) const {
+    gfx::Rect bounds = display::win::GetScreenWin()->ScreenToDIPRect(
+        nullptr, client_screen_px);
+    bounds.Offset(-web_contents_->GetViewBounds().OffsetFromOrigin());
+    return bounds;
+  }
   std::unique_ptr<WindowStateTestControllerWin> MakeWindowStateController() {
     auto controller =
         std::make_unique<WindowStateTestControllerWin>(widget_.get());
@@ -991,4 +1015,148 @@ TEST_F(VisualGuidedSetterControllerWinTest,
   EXPECT_TRUE(controller->settings_window_closed());
 
   controller->Stop();
+}
+
+// The Settings app enforces a minimum window size, so the window the layout
+// asks for and the window it gets can differ. The page fits its slot to the
+// client bounds the controller reports, once the window is where the layout
+// put it.
+TEST_F(VisualGuidedSetterControllerWinTest, DockedBoundsReportedOnceLanded) {
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+  std::vector<gfx::Rect> reported;
+  controller_->SetDockedBoundsCallback(base::BindLambdaForTesting(
+      [&](const gfx::Rect& bounds) { reported.push_back(bounds); }));
+
+  // Taller than kTestDockedRect asked for, at the origin it asked for.
+  const gfx::Rect landed_window(1200, 300, 600, 500);
+  const gfx::Rect landed_client(1200, 340, 600, 460);
+  controller_->set_settings_window_rect(landed_window);
+  controller_->set_settings_client_rect(landed_client);
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  // Reported once, not on every tick.
+  ASSERT_EQ(reported.size(), 1u);
+  EXPECT_EQ(reported.back(), ExpectedDockedBounds(landed_client));
+
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(reported.size(), 1u);
+
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, DockedBoundsWaitForWindowToLand) {
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+  std::vector<gfx::Rect> reported;
+  controller_->SetDockedBoundsCallback(base::BindLambdaForTesting(
+      [&](const gfx::Rect& bounds) { reported.push_back(bounds); }));
+
+  // The window is still where Settings opened it: not the docked origin.
+  controller_->set_settings_window_rect(gfx::Rect(1000, 300, 800, 600));
+  controller_->set_settings_client_rect(gfx::Rect(1000, 340, 800, 560));
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  // Nothing to fit the slot to yet: those bounds are not the docked window's.
+  EXPECT_TRUE(reported.empty());
+
+  // The async move lands and the location hook fires.
+  const gfx::Rect landed_client(1200, 340, 600, 460);
+  controller_->set_settings_window_rect(gfx::Rect(1200, 300, 600, 500));
+  controller_->set_settings_client_rect(landed_client);
+  controller_->test_finder()->TriggerResized();
+
+  ASSERT_EQ(reported.size(), 1u);
+  EXPECT_EQ(reported.back(), ExpectedDockedBounds(landed_client));
+
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, DockedBoundsKeptWhenFloating) {
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+  std::vector<gfx::Rect> reported;
+  controller_->SetDockedBoundsCallback(base::BindLambdaForTesting(
+      [&](const gfx::Rect& bounds) { reported.push_back(bounds); }));
+
+  controller_->set_settings_window_rect(gfx::Rect(1200, 300, 600, 500));
+  controller_->set_settings_client_rect(gfx::Rect(1200, 340, 600, 460));
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  ASSERT_EQ(reported.size(), 1u);
+  const gfx::Rect docked = reported.back();
+  ASSERT_FALSE(docked.IsEmpty());
+
+  // The user takes the window over: it is no longer in the slot.
+  controller_->test_finder()->TriggerMoveSize(/*in_progress=*/true);
+
+  ASSERT_EQ(reported.size(), 1u);
+  EXPECT_EQ(reported.back(), docked);
+
+  // Nor when the flow stops afterwards.
+  ASSERT_EQ(reported.size(), 1u);
+  EXPECT_EQ(reported.back(), docked);
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, DockedBoundsKeptOnStop) {
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+  std::vector<gfx::Rect> reported;
+  controller_->SetDockedBoundsCallback(base::BindLambdaForTesting(
+      [&](const gfx::Rect& bounds) { reported.push_back(bounds); }));
+
+  controller_->set_settings_window_rect(gfx::Rect(1200, 300, 600, 500));
+  controller_->set_settings_client_rect(gfx::Rect(1200, 340, 600, 460));
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  ASSERT_EQ(reported.size(), 1u);
+
+  const gfx::Rect docked = reported.back();
+  ASSERT_FALSE(docked.IsEmpty());
+
+  // Closing the Settings window tears the flow down. The slot stays fitted.
+  controller_->Stop();
+
+  ASSERT_EQ(reported.size(), 1u);
+  EXPECT_EQ(reported.back(), docked);
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, DockedBoundsResetOnRestart) {
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+  std::vector<gfx::Rect> reported;
+  controller_->SetDockedBoundsCallback(base::BindLambdaForTesting(
+      [&](const gfx::Rect& bounds) { reported.push_back(bounds); }));
+
+  controller_->set_settings_window_rect(gfx::Rect(1200, 300, 600, 500));
+  controller_->set_settings_client_rect(gfx::Rect(1200, 340, 600, 460));
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  ASSERT_EQ(reported.size(), 1u);
+  const gfx::Rect first = reported.back();
+  ASSERT_FALSE(first.IsEmpty());
+  controller_->Stop();
+  ASSERT_EQ(reported.size(), 1u);
+
+  // The next flow docks a shorter window. Nothing is reported until it does,
+  // and what is reported is the new window, not the old one.
+  controller_->set_settings_window_rect(gfx::Rect(1200, 300, 600, 400));
+  controller_->set_settings_client_rect(gfx::Rect(1200, 340, 600, 360));
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  ASSERT_EQ(reported.size(), 2u);
+  EXPECT_NE(reported.back(), first);
+  EXPECT_FALSE(reported.back().IsEmpty());
 }

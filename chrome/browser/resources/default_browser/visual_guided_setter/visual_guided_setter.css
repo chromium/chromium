@@ -93,22 +93,54 @@ h1 {
   width: 600px;
 }
 
+/* The slot the Windows Settings window docks into. Its box matches that
+ * window's client bounds exactly horizontally centered in the stage with
+ * the same insets the docking math applies, its top on the stage's top. So
+ * its shadow frames the docked window instead of drawing a larger box around
+ * it.
+ *
+ * That is the geometry the docking asks for. The Settings app enforces its own
+ * minimum size, so the window it gets can be taller: once it is docked the
+ * browser reports where its client area really landed and the page fits the
+ * slot to it inline, under `#illustration-container.docked`.
+ *
+ * The slot is always up: before the Settings window arrives, and in the
+ * degraded-floating flow where it never docks at all, the text inside it is
+ * what the user sees; once the window docks it covers the slot and only the
+ * shadow shows. `#illustration-container.error` marks the floating flow and
+ * no longer gates any of this; it is kept as the page's state hook.
+ *
+ * LINT.IfChange(docked_settings_slot) */
 #docking-placeholder {
-  display: none;
-}
-
-#illustration-container.error {
-  background-color: var(--color-sys-surface, #fff);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  padding: 32px;
-}
-
-#illustration-container.error #docking-placeholder {
   align-items: center;
+  border-radius: 8px;
+  border: 2px solid var(--color-sys-neutral-outline);
+  background: var(--color-sys-base-container-elevated);
+  box-shadow:
+      color-mix(in srgb, var(--color-sys-shadow) 30%, transparent) 0 8px 16px 0,
+      color-mix(in srgb, var(--color-sys-shadow) 15%, transparent) 0 0 2px 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: 220px;
+  inset-inline-end: 61px;
+  inset-inline-start: 61px;
+  justify-content: center;
+  min-width: 200px;
+  padding: 32px;
+  position: absolute;
   text-align: center;
+  top: 0;
+}
+/* LINT.ThenChange(//chrome/browser/ui/webui/default_browser/visual_guided_setter_layout_utils.cc:docked_settings_geometry) */
+
+#illustration-container:not(.error) #docking-placeholder > *  {
+  display: none;
+}
+
+#illustration-container.docked #docking-placeholder {
+  inset-inline-end: auto;
+  inset-inline-start: auto;
 }
 
 #resized-text {

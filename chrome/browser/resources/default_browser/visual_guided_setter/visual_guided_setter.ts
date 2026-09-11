@@ -6,6 +6,7 @@ import '/strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {Rect} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './visual_guided_setter.mojom-webui.js';
 import type {PageHandlerInterface} from './visual_guided_setter.mojom-webui.js';
@@ -31,6 +32,34 @@ function updateAnchorRect() {
     width: Math.round(Math.max(0, right - left)),
     height: Math.round(Math.max(0, bottom - top)),
   });
+}
+
+// Fits the slot under the docked Settings window to where that window really
+// is. `bounds` is its client area in CSS pixels relative to the viewport, or
+// empty when nothing is docked, which hands the slot back to its stylesheet
+// geometry: the size the docking asks for.
+function updateDockedSlot(bounds: Rect) {
+  const container = document.getElementById('illustration-container');
+  const slot = document.getElementById('docking-placeholder');
+  if (!container || !slot) {
+    return;
+  }
+
+  if (bounds.width <= 0 || bounds.height <= 0) {
+    container.classList.remove('docked');
+    slot.style.removeProperty('left');
+    slot.style.removeProperty('top');
+    slot.style.removeProperty('width');
+    slot.style.removeProperty('height');
+    return;
+  }
+
+  const containerRect = container.getBoundingClientRect();
+  slot.style.left = `${bounds.x - containerRect.left - 2}px`;
+  slot.style.top = `${bounds.y - containerRect.top - 1}px`;
+  slot.style.width = `${bounds.width + 3}px`;
+  slot.style.height = `${bounds.height + 3}px`;
+  container.classList.add('docked');
 }
 
 function initialize() {
@@ -61,6 +90,7 @@ function initialize() {
       container.classList.toggle('error', hasError);
     }
   });
+  callbackRouter.setDockedSettingsBounds.addListener(updateDockedSlot);
 
   const handlerRemote = new PageHandlerRemote();
   handler = handlerRemote;
