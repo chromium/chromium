@@ -66,7 +66,7 @@
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -284,7 +284,7 @@ void AshTestHelper::TearDown() {
   // session_manager_ is reset here, preserving production destruction order.
   // TODO(crbug.com/332481586): Revisit teardown ordering.
   session_manager_.reset();
-  test_user_session_manager_.reset();
+  user_session_test_environment_.reset();
   system_monitor_.reset();
   statistics_provider_.reset();
   command_line_.reset();
@@ -392,8 +392,8 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // completion.
   if (!user_manager::UserManager::IsInitialized() &&
       !session_manager::SessionManager::Get()) {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             init_params.local_state);
   } else if (!session_manager::SessionManager::Get()) {
     session_manager_ = std::make_unique<session_manager::SessionManager>(

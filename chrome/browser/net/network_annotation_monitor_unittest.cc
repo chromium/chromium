@@ -18,7 +18,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,10 +32,10 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
   constexpr int32_t kTestAllowedHashCode = 456;
   content::BrowserTaskEnvironment task_environment;
 
-  ash::test::TestUserSessionManager test_user_session_manager(
+  ash::test::UserSessionTestEnvironment user_session_test_environment(
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
-  ASSERT_TRUE(test_user_session_manager.AddRegularUser(kAccountId));
-  test_user_session_manager.LogIn(kAccountId);
+  ASSERT_TRUE(user_session_test_environment.AddRegularUser(kAccountId));
+  user_session_test_environment.LogIn(kAccountId);
 
   // Setup profile with the disabled hash code in blocklist pref.
   TestingProfileManager profile_manager_(TestingBrowserProcess::GetGlobal());

@@ -14,7 +14,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/account_id/account_id.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,23 +46,26 @@ class ReceiverHandlerDelegateImplIsAppEnabledTest
     : public testing::TestWithParam<IsAppEnabledTestCase> {
  protected:
   void SetUp() override {
-    user_session_manager_ = std::make_unique<ash::test::TestUserSessionManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
-    user_manager::User* user = user_session_manager_->AddKioskWebAppUser(
-        GenerateDeviceLocalAccountUserId(
-            /*account_id=*/"webkiosk",
-            policy::DeviceLocalAccountType::kWebKioskApp));
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+    user_manager::User* user =
+        user_session_test_environment_->AddKioskWebAppUser(
+            GenerateDeviceLocalAccountUserId(
+                /*account_id=*/"webkiosk",
+                policy::DeviceLocalAccountType::kWebKioskApp));
     ASSERT_TRUE(user);
     account_id_ = user->GetAccountId();
   }
 
-  void TearDown() override { user_session_manager_.reset(); }
+  void TearDown() override { user_session_test_environment_.reset(); }
 
-  void CreateSession() { user_session_manager_->LogIn(account_id_); }
+  void CreateSession() { user_session_test_environment_->LogIn(account_id_); }
 
   AccountId account_id_;
   MockKioskController kiosk_controller_;
-  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 };
 
 TEST_F(ReceiverHandlerDelegateImplIsAppEnabledTest, AppMissing) {

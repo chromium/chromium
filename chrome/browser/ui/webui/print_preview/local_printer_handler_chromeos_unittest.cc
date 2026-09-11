@@ -33,7 +33,7 @@
 #include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "printing/backend/print_backend.h"
@@ -169,15 +169,15 @@ class LocalPrinterHandlerChromeosWithAshTest : public testing::Test {
   ~LocalPrinterHandlerChromeosWithAshTest() override = default;
 
   void SetUp() override {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(kAccountId));
-    test_user_session_manager_->LogIn(kAccountId);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
 
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
     ash::AnnotatedAccountId::Set(profile_, kAccountId);
@@ -198,7 +198,7 @@ class LocalPrinterHandlerChromeosWithAshTest : public testing::Test {
     profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
   LocalPrinterHandlerChromeos* local_printer_handler() {
@@ -208,8 +208,8 @@ class LocalPrinterHandlerChromeosWithAshTest : public testing::Test {
   FakeIppClientInfoCalculator& ipp_client_info_calculator() {
     return *ipp_client_info_calculator_;
   }
-  ash::test::TestUserSessionManager* test_user_session_manager() {
-    return test_user_session_manager_.get();
+  ash::test::UserSessionTestEnvironment* user_session_test_environment() {
+    return user_session_test_environment_.get();
   }
 
   TestingProfile* profile() { return profile_; }
@@ -217,7 +217,8 @@ class LocalPrinterHandlerChromeosWithAshTest : public testing::Test {
  private:
   ash::FakeLocalPrinter local_printer_;
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<LocalPrinterHandlerChromeos> local_printer_handler_;
   raw_ptr<TestingProfile> profile_;

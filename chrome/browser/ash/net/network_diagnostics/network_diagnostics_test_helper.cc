@@ -19,8 +19,8 @@ NetworkDiagnosticsTestHelper::NetworkDiagnosticsTestHelper()
   // TODO(b/278643115) Remove LoginState dependency.
   LoginState::Initialize();
 
-  test_user_session_manager_ =
-      std::make_unique<ash::test::TestUserSessionManager>(
+  user_session_test_environment_ =
+      std::make_unique<ash::test::UserSessionTestEnvironment>(
           TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
 
   helper_ = std::make_unique<NetworkHandlerTestHelper>();
@@ -47,7 +47,7 @@ NetworkDiagnosticsTestHelper::NetworkDiagnosticsTestHelper()
 NetworkDiagnosticsTestHelper::~NetworkDiagnosticsTestHelper() {
   cros_network_config_.reset();
   helper_.reset();
-  test_user_session_manager_.reset();
+  user_session_test_environment_.reset();
   LoginState::Shutdown();
 }
 

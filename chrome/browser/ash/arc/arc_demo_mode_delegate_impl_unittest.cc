@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,8 +32,8 @@ class ArcDemoModeDelegateImplTest : public testing::Test {
     stub_install_attributes_ =
         std::make_unique<ash::ScopedStubInstallAttributes>(
             ash::StubInstallAttributes::CreateDemoMode());
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
 
     demo_helper_.emplace();
@@ -43,7 +43,7 @@ class ArcDemoModeDelegateImplTest : public testing::Test {
   void TearDown() override {
     delegate_.reset();
     demo_helper_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     stub_install_attributes_.reset();
   }
 
@@ -56,7 +56,8 @@ class ArcDemoModeDelegateImplTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
   std::unique_ptr<ash::ScopedStubInstallAttributes> stub_install_attributes_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::optional<ash::DemoModeTestHelper> demo_helper_;
   std::optional<ArcDemoModeDelegateImpl> delegate_;
 };

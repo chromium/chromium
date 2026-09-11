@@ -30,7 +30,7 @@
 #include "components/account_id/account_id.h"          // nogncheck
 #include "components/account_id/account_id_literal.h"  // nogncheck
 #include "components/prefs/testing_pref_service.h"     // nogncheck
-#include "components/session_manager/test/test_user_session_manager.h"  // nogncheck
+#include "components/session_manager/test/user_session_test_environment.h"  // nogncheck
 #include "components/user_manager/user_manager.h"  // nogncheck
 #include "components/user_manager/user_names.h"    // nogncheck
 #endif                                             // BUILDFLAG(IS_CHROMEOS)
@@ -57,8 +57,8 @@ class PdfExtensionUtilTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
 #if BUILDFLAG(IS_CHROMEOS)
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
@@ -66,11 +66,11 @@ class PdfExtensionUtilTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
   void TearDown() override {
     profile_manager_.DeleteAllTestingProfiles();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
-  ash::test::TestUserSessionManager* user_session_manager() {
-    return test_user_session_manager_.get();
+  ash::test::UserSessionTestEnvironment* user_session_test_environment() {
+    return user_session_test_environment_.get();
   }
 
   TestingProfile* CreateProfileForUser(const AccountId& account_id,
@@ -87,7 +87,8 @@ class PdfExtensionUtilTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
 #if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
@@ -95,11 +96,12 @@ class PdfExtensionUtilTest : public testing::Test {
 
 TEST_F(PdfExtensionUtilTest, IsPdfSaveToDriveEnabledRegularUsers) {
   // Add all users before any LogIn calls.
-  ASSERT_TRUE(user_session_manager()->AddRegularUser(kRegularAccountId));
-  ASSERT_TRUE(user_session_manager()->AddChildUser(kChildAccountId));
+  ASSERT_TRUE(
+      user_session_test_environment()->AddRegularUser(kRegularAccountId));
+  ASSERT_TRUE(user_session_test_environment()->AddChildUser(kChildAccountId));
 
   // Test regular user session.
-  user_session_manager()->LogIn(kRegularAccountId);
+  user_session_test_environment()->LogIn(kRegularAccountId);
   auto* regular_profile =
       CreateProfileForUser(kRegularAccountId, "regular_profile");
 
@@ -140,7 +142,7 @@ TEST_F(PdfExtensionUtilTest, IsPdfSaveToDriveEnabledRegularUsers) {
   }
 
   // Test child user session.
-  user_session_manager()->LogIn(kChildAccountId);
+  user_session_test_environment()->LogIn(kChildAccountId);
   auto* child_profile = CreateProfileForUser(kChildAccountId, "child_profile");
 
   {
@@ -181,29 +183,32 @@ TEST_F(PdfExtensionUtilTest, IsPdfSaveToDriveEnabledNonRegularUsers) {
   feature_list.InitAndEnableFeature(chrome_pdf::features::kPdfSaveToDrive);
 
   // Add all users before any LogIn calls.
-  ASSERT_TRUE(user_session_manager()->AddGuestUser());
+  ASSERT_TRUE(user_session_test_environment()->AddGuestUser());
   const AccountId guest_id = user_manager::GuestAccountId();
 
   std::string public_session_id = policy::GenerateDeviceLocalAccountUserId(
       "public_session", policy::DeviceLocalAccountType::kPublicSession);
-  ASSERT_TRUE(user_session_manager()->AddPublicAccountUser(public_session_id));
+  ASSERT_TRUE(
+      user_session_test_environment()->AddPublicAccountUser(public_session_id));
   const AccountId public_account_id =
       AccountId::FromUserEmail(public_session_id);
 
   std::string kiosk_chrome_id = policy::GenerateDeviceLocalAccountUserId(
       "kiosk_chrome", policy::DeviceLocalAccountType::kKioskApp);
-  ASSERT_TRUE(user_session_manager()->AddKioskChromeAppUser(kiosk_chrome_id));
+  ASSERT_TRUE(
+      user_session_test_environment()->AddKioskChromeAppUser(kiosk_chrome_id));
   const AccountId kiosk_chrome_account_id =
       AccountId::FromUserEmail(kiosk_chrome_id);
 
   std::string kiosk_web_id = policy::GenerateDeviceLocalAccountUserId(
       "kiosk_web", policy::DeviceLocalAccountType::kWebKioskApp);
-  ASSERT_TRUE(user_session_manager()->AddKioskWebAppUser(kiosk_web_id));
+  ASSERT_TRUE(
+      user_session_test_environment()->AddKioskWebAppUser(kiosk_web_id));
   const AccountId kiosk_web_account_id = AccountId::FromUserEmail(kiosk_web_id);
 
   std::string kiosk_iwa_id = policy::GenerateDeviceLocalAccountUserId(
       "kiosk_iwa", policy::DeviceLocalAccountType::kKioskIsolatedWebApp);
-  ASSERT_TRUE(user_session_manager()->AddKioskIwaUser(kiosk_iwa_id));
+  ASSERT_TRUE(user_session_test_environment()->AddKioskIwaUser(kiosk_iwa_id));
   const AccountId kiosk_iwa_account_id = AccountId::FromUserEmail(kiosk_iwa_id);
 
   content::TestWebContentsFactory factory;
@@ -215,30 +220,30 @@ TEST_F(PdfExtensionUtilTest, IsPdfSaveToDriveEnabledNonRegularUsers) {
   };
 
   // Guest user.
-  user_session_manager()->LogIn(guest_id);
+  user_session_test_environment()->LogIn(guest_id);
   auto* guest_profile = CreateProfileForUser(guest_id, "guest_profile");
   check_save_to_drive_disabled(guest_profile);
 
   // Public account (managed guest session).
-  user_session_manager()->LogIn(public_account_id);
+  user_session_test_environment()->LogIn(public_account_id);
   auto* public_profile =
       CreateProfileForUser(public_account_id, "public_profile");
   check_save_to_drive_disabled(public_profile);
 
   // Kiosk Chrome App.
-  user_session_manager()->LogIn(kiosk_chrome_account_id);
+  user_session_test_environment()->LogIn(kiosk_chrome_account_id);
   auto* kiosk_chrome_profile =
       CreateProfileForUser(kiosk_chrome_account_id, "kiosk_chrome_profile");
   check_save_to_drive_disabled(kiosk_chrome_profile);
 
   // Kiosk Web App.
-  user_session_manager()->LogIn(kiosk_web_account_id);
+  user_session_test_environment()->LogIn(kiosk_web_account_id);
   auto* kiosk_web_profile =
       CreateProfileForUser(kiosk_web_account_id, "kiosk_web_profile");
   check_save_to_drive_disabled(kiosk_web_profile);
 
   // Kiosk IWA.
-  user_session_manager()->LogIn(kiosk_iwa_account_id);
+  user_session_test_environment()->LogIn(kiosk_iwa_account_id);
   auto* kiosk_iwa_profile =
       CreateProfileForUser(kiosk_iwa_account_id, "kiosk_iwa_profile");
   check_save_to_drive_disabled(kiosk_iwa_profile);

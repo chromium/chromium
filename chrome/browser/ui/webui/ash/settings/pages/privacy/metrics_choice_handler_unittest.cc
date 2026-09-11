@@ -32,7 +32,7 @@
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/test_helper.h"
@@ -130,7 +130,7 @@ class MetricsChoiceHandlerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()->local_state(),
         &fake_session_manager_client_, owner_keys);
     owner = CreateUser(kOwner, owner_keys);
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
     user_manager::TestHelper::RegisterOwner(
         *TestingBrowserProcess::GetGlobal()->local_state(),
         account_id.GetUserEmail());
@@ -170,7 +170,7 @@ class MetricsChoiceHandlerTest : public testing::Test {
   }
 
   void LoginUser(const AccountId& account_id) {
-    test_user_session_manager_->LogIn(account_id);
+    user_session_test_environment_->LogIn(account_id);
   }
 
  protected:
@@ -188,8 +188,8 @@ class MetricsChoiceHandlerTest : public testing::Test {
 
     StatsReportingController::Initialize(&pref_service_);
 
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
     web_ui_ = std::make_unique<content::TestWebUI>();
 
@@ -211,7 +211,7 @@ class MetricsChoiceHandlerTest : public testing::Test {
 
   void TearDown() override {
     handler_->DisallowJavascript();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
   bool GetMetricsChoiceStateMessage(std::string* pref_name,
@@ -270,7 +270,8 @@ class MetricsChoiceHandlerTest : public testing::Test {
                                            RegisterPrefs(&pref_service_)};
 
   std::unique_ptr<TestMetricsChoiceHandler> handler_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<content::TestWebUI> web_ui_;
 
   // MetricsService.
@@ -335,7 +336,7 @@ TEST_F(MetricsChoiceHandlerTest, NonOwnerWithUserConsentCanToggle) {
   auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, GaiaId("1"));
   std::unique_ptr<TestingProfile> non_owner =
       CreateUser(kNonOwner, non_owner_keys);
-  ASSERT_TRUE(test_user_session_manager_->AddRegularUser(non_owner_id));
+  ASSERT_TRUE(user_session_test_environment_->AddRegularUser(non_owner_id));
 
   // User should use user choice pref.
   test_metrics_service_client_->SetShouldUseUserConsent(true);
@@ -376,7 +377,7 @@ TEST_F(MetricsChoiceHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
   auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, GaiaId("1"));
   std::unique_ptr<TestingProfile> non_owner =
       CreateUser(kNonOwner, non_owner_keys);
-  ASSERT_TRUE(test_user_session_manager_->AddRegularUser(non_owner_id));
+  ASSERT_TRUE(user_session_test_environment_->AddRegularUser(non_owner_id));
 
   // User cannot use user choice. This happens if the device is managed.
   test_metrics_service_client_->SetShouldUseUserConsent(false);
@@ -417,7 +418,7 @@ TEST_F(MetricsChoiceHandlerTest, ChildUserCannotToggleAsNonOwner) {
   auto child_id = AccountId::FromUserEmailGaiaId("child@user.com", GaiaId("3"));
   std::unique_ptr<TestingProfile> child =
       CreateUser("child@user.com", non_owner_keys);
-  ASSERT_TRUE(test_user_session_manager_->AddChildUser(child_id));
+  ASSERT_TRUE(user_session_test_environment_->AddChildUser(child_id));
 
   // User cannot use user choice. This happens if the device is managed.
   test_metrics_service_client_->SetShouldUseUserConsent(true);

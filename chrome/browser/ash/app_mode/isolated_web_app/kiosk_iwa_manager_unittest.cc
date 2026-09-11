@@ -25,7 +25,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -119,8 +119,8 @@ class MockKioskAppManagerObserver : public KioskAppManagerObserver {
 class KioskIwaManagerTest : public testing::Test {
  public:
   KioskIwaManagerTest()
-      : test_user_session_manager_(
-            std::make_unique<ash::test::TestUserSessionManager>(
+      : user_session_test_environment_(
+            std::make_unique<ash::test::UserSessionTestEnvironment>(
                 TestingBrowserProcess::GetGlobal()->local_state())),
         kiosk_cryptohome_remover_(
             TestingBrowserProcess::GetGlobal()->local_state()),
@@ -164,7 +164,8 @@ class KioskIwaManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 
   MockKioskAppManagerObserver observer_;
   KioskCryptohomeRemover kiosk_cryptohome_remover_;

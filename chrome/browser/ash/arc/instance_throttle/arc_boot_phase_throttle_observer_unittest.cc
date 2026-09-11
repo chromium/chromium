@@ -29,7 +29,7 @@
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_host.h"
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -52,12 +52,12 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
         base::CommandLine::ForCurrentProcess());
 
     // Setup and login user session before profile manager.
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         TestingProfile::kDefaultProfileUserName, GaiaId("1234567890")));
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -71,7 +71,7 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
             base::BindRepeating(FakeArcSession::Create)),
         arc_dlc_installer_.get());
 
-    test_user_session_manager_->LogIn(account_id);
+    user_session_test_environment_->LogIn(account_id);
 
     ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
                                             account_id);
@@ -100,7 +100,7 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
     testing_profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
 
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
@@ -150,7 +150,8 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   ArcServiceManager arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;

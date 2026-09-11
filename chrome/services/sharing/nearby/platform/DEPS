@@ -43,6 +43,6 @@ specific_include_rules = {
   "wifi_lan_medium_unittest\\.cc": [
     "+chrome/test/base/testing_browser_process.h",
     "+chromeos/ash/services/network_config/in_process_instance.h",
-    "+components/session_manager/test/test_user_session_manager.h",
+    "+components/session_manager/test/user_session_test_environment.h",
   ],
 }

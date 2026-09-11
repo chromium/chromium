@@ -29,7 +29,7 @@
 #include "components/reporting/util/test_support_callbacks.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -107,11 +107,11 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
   void SetUp() override {
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             g_browser_process->local_state());
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
-    test_user_session_manager_->LogIn(account_id);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
 
     network_handler_test_helper_.AddDefaultProfiles();
     network_handler_test_helper_.ResetDevicesAndServices();
@@ -121,7 +121,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
   }
 
@@ -199,7 +199,8 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
 };

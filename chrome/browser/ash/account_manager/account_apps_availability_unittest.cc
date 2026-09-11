@@ -19,7 +19,7 @@
 #include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -88,8 +88,8 @@ class AccountAppsAvailabilityTest : public testing::Test {
   ~AccountAppsAvailabilityTest() override = default;
 
   void SetUp() override {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
@@ -109,7 +109,7 @@ class AccountAppsAvailabilityTest : public testing::Test {
   void TearDown() override {
     account_manager_.reset();
     pref_service_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
   std::unique_ptr<AccountAppsAvailability> CreateAccountAppsAvailability() {
@@ -166,12 +166,13 @@ class AccountAppsAvailabilityTest : public testing::Test {
   void LoginUserSession() {
     auto account_id = AccountId::FromUserEmailGaiaId(
         primary_account_.GetEmail(), primary_account_.GetGaiaId());
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
-    test_user_session_manager_->LogIn(account_id);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<account_manager::AccountManager> account_manager_;

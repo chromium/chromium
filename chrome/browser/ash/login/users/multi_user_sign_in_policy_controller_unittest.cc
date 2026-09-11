@@ -31,7 +31,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user_manager.h"
@@ -139,11 +139,12 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    session_manager_ = std::make_unique<ash::test::TestUserSessionManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state());
 
     for (const auto& account_id : test_users_) {
-      ASSERT_TRUE(session_manager_->AddRegularUser(account_id));
+      ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
 
       // Note that user profiles are created after user login in reality.
       TestingProfile* user_profile =
@@ -170,14 +171,14 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
       user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
           account_id);
     }
-    session_manager_.reset();
+    user_session_test_environment_.reset();
     profile_manager_.reset();
     base::RunLoop().RunUntilIdle();
   }
 
   void LoginUser(size_t user_index) {
     ASSERT_LT(user_index, test_users_.size());
-    session_manager_->LogIn(test_users_[user_index], false);
+    user_session_test_environment_->LogIn(test_users_[user_index], false);
     user_manager::UserManager::Get()->OnUserProfileCreated(
         test_users_[user_index], user_profiles_[user_index]->GetPrefs());
   }
@@ -210,7 +211,8 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
   TestingProfile* profile(int index) { return user_profiles_[index]; }
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<user_manager::MultiUserSignInPolicyController> controller_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 

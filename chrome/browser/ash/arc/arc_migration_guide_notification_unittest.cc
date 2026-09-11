@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,18 +29,18 @@ class ArcMigrationGuideNotificationTest : public ::testing::Test {
  protected:
   void SetUp() override {
     message_center::MessageCenter::Initialize();
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
-    user_ = test_user_session_manager_->AddRegularUser(
+    user_ = user_session_test_environment_->AddRegularUser(
         user_manager::StubAccountId());
     ASSERT_TRUE(user_);
-    test_user_session_manager_->LogIn(user_->GetAccountId());
+    user_session_test_environment_->LogIn(user_->GetAccountId());
   }
 
   void TearDown() override {
     user_ = nullptr;
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     message_center::MessageCenter::Shutdown();
   }
 
@@ -51,7 +51,8 @@ class ArcMigrationGuideNotificationTest : public ::testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   raw_ptr<const user_manager::User> user_ = nullptr;
 };
 

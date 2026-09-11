@@ -16,7 +16,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui_data_source.h"
@@ -47,8 +47,8 @@ class PersonalizationSectionTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(test_profile_manager_.SetUp());
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
     task_environment_.RunUntilIdle();
 
@@ -61,23 +61,24 @@ class PersonalizationSectionTest : public testing::Test {
   void TearDown() override {
     section_.reset();
     profile_ = nullptr;
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     test_profile_manager_.DeleteAllTestingProfiles();
   }
 
   void LoginUser() {
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(kTestAccountId));
-    test_user_session_manager_->LogIn(kTestAccountId);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+    user_session_test_environment_->LogIn(kTestAccountId);
     AnnotatedAccountId::Set(profile_, kTestAccountId,
                             /*for_test=*/true);
     task_environment_.RunUntilIdle();
   }
 
   void LoginGuestUser() {
-    user_manager::User* guest_user = test_user_session_manager_->AddGuestUser();
+    user_manager::User* guest_user =
+        user_session_test_environment_->AddGuestUser();
     ASSERT_TRUE(guest_user);
     const AccountId account_id = guest_user->GetAccountId();
-    test_user_session_manager_->LogIn(account_id);
+    user_session_test_environment_->LogIn(account_id);
     AnnotatedAccountId::Set(profile_, account_id,
                             /*for_test=*/true);
     task_environment_.RunUntilIdle();
@@ -93,7 +94,8 @@ class PersonalizationSectionTest : public testing::Test {
   ash::settings::SearchTagRegistry search_tag_registry_;
   TestingPrefServiceSimple pref_service_;
   raw_ptr<Profile> profile_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   TestingProfileManager test_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
 };

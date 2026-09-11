@@ -53,7 +53,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
 #include "components/policy/policy_constants.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -225,17 +225,17 @@ class ArcPolicyBridgeTestBase {
         .Times(1);
 
     // Set up user profile for ReportCompliance() tests.
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId("1111111111")));
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
-    test_user_session_manager_->LogIn(account_id);
+    user_session_test_environment_->LogIn(account_id);
     user_manager::UserManager::Get()->SetUserPolicyStatus(
         account_id, /*is_managed=*/is_affiliated,
         /*is_affiliated=*/is_affiliated);
@@ -295,7 +295,7 @@ class ArcPolicyBridgeTestBase {
     ash::ConciergeClient::Shutdown();
     profile_ = nullptr;
     testing_profile_manager_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
@@ -373,7 +373,8 @@ class ArcPolicyBridgeTestBase {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   base::RunLoop run_loop_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;

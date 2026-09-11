@@ -9,7 +9,7 @@
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "components/account_id/account_id.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,26 +22,28 @@ class BluetoothLogControllerTest : public testing::Test {
 
   void SetUp() override {
     UpstartClient::InitializeFake();
-    user_session_manager_ = std::make_unique<ash::test::TestUserSessionManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state());
     controller_ = std::make_unique<BluetoothLogController>(
         user_manager::UserManager::Get());
   }
 
   void TearDown() override {
     controller_.reset();
-    user_session_manager_.reset();
+    user_session_test_environment_.reset();
     UpstartClient::Shutdown();
   }
 
-  ash::test::TestUserSessionManager& user_session_manager() {
-    return *user_session_manager_;
+  ash::test::UserSessionTestEnvironment& user_session_test_environment() {
+    return *user_session_test_environment_;
   }
   BluetoothLogController& controller() { return *controller_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<BluetoothLogController> controller_;
 };
 
@@ -49,10 +51,10 @@ TEST_F(BluetoothLogControllerTest, GoogleInternalUser) {
   auto* upstart_client = FakeUpstartClient::Get();
   upstart_client->StartRecordingUpstartOperations();
 
-  auto* user = user_session_manager().AddRegularUser(
+  auto* user = user_session_test_environment().AddRegularUser(
       AccountId::FromUserEmailGaiaId("test@google.com", GaiaId("fakegaia")));
   ASSERT_TRUE(user);
-  user_session_manager().LogIn(user->GetAccountId());
+  user_session_test_environment().LogIn(user->GetAccountId());
 
   auto upstart_operations =
       upstart_client->GetRecordedUpstartOperationsForJob("bluetoothlog");
@@ -65,10 +67,10 @@ TEST_F(BluetoothLogControllerTest, NonGoogleInternalUser) {
   auto* upstart_client = FakeUpstartClient::Get();
   upstart_client->StartRecordingUpstartOperations();
 
-  auto* user = user_session_manager().AddRegularUser(
+  auto* user = user_session_test_environment().AddRegularUser(
       AccountId::FromUserEmailGaiaId("test@test.org", GaiaId("fakegaia")));
   ASSERT_TRUE(user);
-  user_session_manager().LogIn(user->GetAccountId());
+  user_session_test_environment().LogIn(user->GetAccountId());
 
   auto upstart_operations =
       upstart_client->GetRecordedUpstartOperationsForJob("bluetoothlog");
@@ -79,10 +81,10 @@ TEST_F(BluetoothLogControllerTest, NonRegularUser) {
   auto* upstart_client = FakeUpstartClient::Get();
   upstart_client->StartRecordingUpstartOperations();
 
-  auto* user = user_session_manager().AddKioskChromeAppUser(
+  auto* user = user_session_test_environment().AddKioskChromeAppUser(
       "test@kiosk-apps.device-local.localhost");
   ASSERT_TRUE(user);
-  user_session_manager().LogIn(user->GetAccountId());
+  user_session_test_environment().LogIn(user->GetAccountId());
 
   auto upstart_operations =
       upstart_client->GetRecordedUpstartOperationsForJob("bluetoothlog");

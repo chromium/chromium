@@ -15,7 +15,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -43,21 +43,22 @@ class WifiSignalStrengthRssiFetcherTest : public ::testing::Test {
   void SetUp() override {
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             g_browser_process->local_state());
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
-    test_user_session_manager_->LogIn(account_id);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
 
     network_handler_test_helper_.AddDefaultProfiles();
     network_handler_test_helper_.ResetDevicesAndServices();
   }
 
-  void TearDown() override { test_user_session_manager_.reset(); }
+  void TearDown() override { user_session_test_environment_.reset(); }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 
   NetworkHandlerTestHelper network_handler_test_helper_;
 };

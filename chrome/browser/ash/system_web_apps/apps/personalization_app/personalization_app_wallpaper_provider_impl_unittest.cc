@@ -54,7 +54,7 @@
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -189,12 +189,13 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
         ash::DeviceSettingsService::Get(),
         TestingBrowserProcess::GetGlobal()->local_state());
 
-    user_session_manager_ = std::make_unique<ash::test::TestUserSessionManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state());
 
-    auto* user = user_session_manager_->AddRegularUser(kTestAccountId);
+    auto* user = user_session_test_environment_->AddRegularUser(kTestAccountId);
     ASSERT_TRUE(user);
-    user_session_manager_->LogIn(kTestAccountId);
+    user_session_test_environment_->LogIn(kTestAccountId);
 
     sea_pen_wallpaper_manager()->SetSessionDelegateForTesting(
         std::make_unique<TestSeaPenWallpaperManagerSessionDelegate>());
@@ -242,7 +243,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
         kTestAccountId);
     profile_ = nullptr;
     profile_manager_.DeleteAllTestingProfiles();
-    user_session_manager_.reset();
+    user_session_test_environment_.reset();
     cros_settings_holder_.reset();
   }
 
@@ -327,7 +328,8 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
   // Required for CrosSettings.
   ash::ScopedTestDeviceSettingsService scoped_device_settings_;
   std::unique_ptr<ash::CrosSettingsHolder> cros_settings_holder_;
-  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
   SeaPenWallpaperManager sea_pen_wallpaper_manager_;

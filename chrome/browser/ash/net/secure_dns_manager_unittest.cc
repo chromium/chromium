@@ -29,7 +29,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -198,15 +198,15 @@ class SecureDnsManagerTest : public testing::Test {
                                                  local_state());
     network_handler_test_helper_.AddDefaultProfiles();
 
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(local_state());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
 
     // Add a user for test.
-    user_ = test_user_session_manager_->AddRegularUser(kTestAccountId);
+    user_ = user_session_test_environment_->AddRegularUser(kTestAccountId);
     ASSERT_TRUE(user_);
 
     // Simulate login.
-    test_user_session_manager_->LogIn(kTestAccountId);
+    user_session_test_environment_->LogIn(kTestAccountId);
     user_manager::UserManager::Get()->OnUserProfileCreated(kTestAccountId,
                                                            &profile_prefs_);
 
@@ -235,7 +235,7 @@ class SecureDnsManagerTest : public testing::Test {
     user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
         kTestAccountId);
     user_ = nullptr;
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     NetworkHandler::Get()->ShutdownPrefServices();
   }
 
@@ -262,7 +262,8 @@ class SecureDnsManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<StubResolverConfigReader> stub_resolver_config_reader_;
   raw_ptr<user_manager::User> user_;
   TestingPrefServiceSimple profile_prefs_;

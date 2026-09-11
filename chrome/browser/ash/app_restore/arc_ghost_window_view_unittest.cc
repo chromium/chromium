@@ -18,7 +18,7 @@
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -54,8 +54,8 @@ class ArcGhostWindowViewTest : public testing::Test {
   ~ArcGhostWindowViewTest() override = default;
 
   void SetUp() override {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -69,8 +69,8 @@ class ArcGhostWindowViewTest : public testing::Test {
 
     const auto account_id =
         AccountId::FromUserEmailGaiaId(kTestProfileName, GaiaId("12345678"));
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
-    test_user_session_manager_->LogIn(account_id);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
 
     // Note that user profiles are created after user login in reality.
     profile_ = profile_manager_->CreateTestingProfile(
@@ -84,7 +84,7 @@ class ArcGhostWindowViewTest : public testing::Test {
     profile_ = nullptr;
     profile_manager_.reset();
     profile_user_manager_controller_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
   void InstallApp(const std::string& app_id) {
@@ -111,7 +111,8 @@ class ArcGhostWindowViewTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ash::ProfileUserManagerController>
       profile_user_manager_controller_;

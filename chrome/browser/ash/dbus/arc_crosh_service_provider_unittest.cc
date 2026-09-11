@@ -28,7 +28,7 @@
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
@@ -90,8 +90,8 @@ class ArcCroshServiceProviderTest : public testing::Test {
     command_line->InitFromArgv(
         {"", "--arc-availability=officially-supported", "--enable-arcvm"});
 
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -110,7 +110,7 @@ class ArcCroshServiceProviderTest : public testing::Test {
     const AccountId primary_user_account_id = AccountId::FromUserEmailGaiaId(
         kPrimaryUserProfileName, GaiaId("1111111111"));
     user_manager::User* primary_user =
-        test_user_session_manager_->AddRegularUser(primary_user_account_id);
+        user_session_test_environment_->AddRegularUser(primary_user_account_id);
     ASSERT_TRUE(primary_user);
     primary_username_hash_ =
         user_manager::TestHelper::GetFakeUsernameHash(primary_user_account_id);
@@ -118,12 +118,13 @@ class ArcCroshServiceProviderTest : public testing::Test {
     const AccountId secondary_user_account_id = AccountId::FromUserEmailGaiaId(
         kSecondaryUserProfileName, GaiaId("2222222222"));
     user_manager::User* secondary_user =
-        test_user_session_manager_->AddRegularUser(secondary_user_account_id);
+        user_session_test_environment_->AddRegularUser(
+            secondary_user_account_id);
     ASSERT_TRUE(secondary_user);
     secondary_username_hash_ = user_manager::TestHelper::GetFakeUsernameHash(
         secondary_user_account_id);
 
-    test_user_session_manager_->LogIn(primary_user_account_id);
+    user_session_test_environment_->LogIn(primary_user_account_id);
 
     Profile* primary_user_profile;
     {
@@ -166,7 +167,7 @@ class ArcCroshServiceProviderTest : public testing::Test {
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
     profile_manager_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::UpstartClient::Shutdown();
@@ -208,7 +209,8 @@ class ArcCroshServiceProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ServiceProviderTestHelper test_helper_;
   MockArcShellExecutionInstance mock_arc_shell_execution_instance_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;

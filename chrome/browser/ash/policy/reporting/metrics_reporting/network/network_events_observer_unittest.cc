@@ -27,7 +27,7 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -80,11 +80,11 @@ class NetworkEventsObserverTestHelper {
 
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             g_browser_process->local_state());
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
-    test_user_session_manager_->LogIn(account_id);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
 
     network_handler_test_helper_.AddDefaultProfiles();
     network_handler_test_helper_.ResetDevicesAndServices();
@@ -113,7 +113,7 @@ class NetworkEventsObserverTestHelper {
   }
 
   void TearDown() {
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     ash::DebugDaemonClient::Shutdown();
   }
 
@@ -123,7 +123,8 @@ class NetworkEventsObserverTestHelper {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;

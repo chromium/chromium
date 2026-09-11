@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 
 #include <memory>
 
@@ -17,7 +17,7 @@
 
 namespace ash::test {
 
-TestUserSessionManager::TestUserSessionManager(PrefService* local_state)
+UserSessionTestEnvironment::UserSessionTestEnvironment(PrefService* local_state)
     : user_manager_(std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
           local_state)),
@@ -26,60 +26,61 @@ TestUserSessionManager::TestUserSessionManager(PrefService* local_state)
   session_manager_->OnUserManagerCreated(user_manager_.Get());
 }
 
-TestUserSessionManager::~TestUserSessionManager() = default;
+UserSessionTestEnvironment::~UserSessionTestEnvironment() = default;
 
-void TestUserSessionManager::RegisterLocalStatePrefs(
+void UserSessionTestEnvironment::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   user_manager::UserManager::RegisterPrefs(registry);
   user_manager::MultiUserSignInPolicyController::RegisterPrefs(registry);
 }
 
-user_manager::User* TestUserSessionManager::AddRegularUser(
+user_manager::User* UserSessionTestEnvironment::AddRegularUser(
     const AccountId& account_id) {
   CHECK(session_manager_->sessions().empty());
   return user_manager::TestHelper(user_manager_.Get())
       .AddRegularUser(account_id);
 }
 
-user_manager::User* TestUserSessionManager::AddChildUser(
+user_manager::User* UserSessionTestEnvironment::AddChildUser(
     const AccountId& account_id) {
   CHECK(session_manager_->sessions().empty());
   return user_manager::TestHelper(user_manager_.Get()).AddChildUser(account_id);
 }
 
-user_manager::User* TestUserSessionManager::AddGuestUser() {
+user_manager::User* UserSessionTestEnvironment::AddGuestUser() {
   CHECK(session_manager_->sessions().empty());
   return user_manager::TestHelper(user_manager_.Get()).AddGuestUser();
 }
 
-user_manager::User* TestUserSessionManager::AddPublicAccountUser(
+user_manager::User* UserSessionTestEnvironment::AddPublicAccountUser(
     std::string_view user_id) {
   CHECK(session_manager_->sessions().empty());
   return user_manager::TestHelper(user_manager_.Get())
       .AddPublicAccountUser(user_id);
 }
 
-user_manager::User* TestUserSessionManager::AddKioskChromeAppUser(
+user_manager::User* UserSessionTestEnvironment::AddKioskChromeAppUser(
     std::string_view user_id) {
   CHECK(session_manager_->sessions().empty());
   return user_manager::TestHelper(user_manager_.Get())
       .AddKioskChromeAppUser(user_id);
 }
 
-user_manager::User* TestUserSessionManager::AddKioskWebAppUser(
+user_manager::User* UserSessionTestEnvironment::AddKioskWebAppUser(
     std::string_view user_id) {
   CHECK(session_manager_->sessions().empty());
   return user_manager::TestHelper(user_manager_.Get())
       .AddKioskWebAppUser(user_id);
 }
 
-user_manager::User* TestUserSessionManager::AddKioskIwaUser(
+user_manager::User* UserSessionTestEnvironment::AddKioskIwaUser(
     std::string_view user_id) {
   CHECK(session_manager_->sessions().empty());
   return user_manager::TestHelper(user_manager_.Get()).AddKioskIwaUser(user_id);
 }
 
-void TestUserSessionManager::LogIn(const AccountId& account_id, bool new_user) {
+void UserSessionTestEnvironment::LogIn(const AccountId& account_id,
+                                       bool new_user) {
   session_manager_->CreateSession(
       account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
       new_user,

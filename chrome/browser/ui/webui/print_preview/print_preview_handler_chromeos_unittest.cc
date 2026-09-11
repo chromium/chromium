@@ -38,7 +38,7 @@
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -231,8 +231,8 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   ~PrintPreviewHandlerChromeOSTest() override = default;
 
   void SetUp() override {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -240,8 +240,8 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 
     ash::LoginState::Initialize();
 
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(kAccountId));
-    test_user_session_manager_->LogIn(kAccountId);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
 
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
     ash::AnnotatedAccountId::Set(profile_, kAccountId);
@@ -303,7 +303,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
   void AssertWebUIEventFired(const content::TestWebUI::CallData& data,
@@ -341,7 +341,8 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<TestPrintServersManager> test_print_servers_manager_;
   std::unique_ptr<ash::FakeLocalPrinter> local_printer_;

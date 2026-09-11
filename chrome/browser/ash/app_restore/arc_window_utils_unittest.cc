@@ -10,7 +10,7 @@
 #include "components/app_restore/features.h"
 #include "components/exo/wm_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/test/test_screen.h"
@@ -46,13 +46,13 @@ class ArcWindowUtilsTest : public testing::Test {
     base::CommandLine::ForCurrentProcess()->InitFromArgv(
         {"", "--enable-arcvm"});
     wm_helper_ = std::make_unique<exo::WMHelper>();
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   void TearDown() override {
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     wm_helper_.reset();
     display::Screen::SetScreenInstance(nullptr);
   }
@@ -61,7 +61,8 @@ class ArcWindowUtilsTest : public testing::Test {
   display::test::TestScreen test_screen_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 };
 
 TEST_F(ArcWindowUtilsTest, ArcWindowInfoInvalidDisplayValidBoundsTest) {

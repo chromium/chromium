@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "components/account_id/account_id.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,17 +38,17 @@ class BluetoothPowerControllerImplTest : public testing::Test {
   void SetUp() override {
     BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
         local_state()->registry());
-    ash::test::TestUserSessionManager::RegisterLocalStatePrefs(
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
         local_state()->registry());
 
     BluetoothPowerControllerImpl::RegisterProfilePrefs(
         active_user_prefs()->registry());
 
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(&local_state_);
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
   }
 
-  void TearDown() override { test_user_session_manager_.reset(); }
+  void TearDown() override { user_session_test_environment_.reset(); }
 
   void Init() {
     bluetooth_power_controller_ =
@@ -64,11 +64,12 @@ class BluetoothPowerControllerImplTest : public testing::Test {
                       bool new_user = false) {
     const user_manager::User* user =
         is_user_kiosk
-            ? test_user_session_manager_->AddKioskChromeAppUser(display_email)
-            : test_user_session_manager_->AddRegularUser(
+            ? user_session_test_environment_->AddKioskChromeAppUser(
+                  display_email)
+            : user_session_test_environment_->AddRegularUser(
                   AccountId::FromUserEmailGaiaId(display_email, gaia_id));
 
-    test_user_session_manager_->LogIn(user->GetAccountId(), new_user);
+    user_session_test_environment_->LogIn(user->GetAccountId(), new_user);
     bluetooth_power_controller_->SetPrefs(&active_user_prefs_, local_state());
   }
 
@@ -103,7 +104,8 @@ class BluetoothPowerControllerImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable local_state_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 
   sync_preferences::TestingPrefServiceSyncable active_user_prefs_;
   FakeAdapterStateController fake_adapter_state_controller_;

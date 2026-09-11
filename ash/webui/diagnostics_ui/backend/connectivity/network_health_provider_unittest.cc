@@ -39,7 +39,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/user_manager.h"
 #include "dbus/object_path.h"
@@ -170,18 +170,18 @@ class NetworkHealthProviderTest : public AshTestBase {
     ui::ResourceBundle::CleanupSharedInstance();
     AshTestSuite::LoadTestResources();
 
-    user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(local_state());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
     user_manager::User* user =
-        user_session_manager_->AddRegularUser(account_id);
+        user_session_test_environment_->AddRegularUser(account_id);
     ASSERT_TRUE(user);
 
     SystemTokenCertDbStorage::Initialize();
 
     AshTestBase::SetUp();
-    user_session_manager_->LogIn(account_id);
+    user_session_test_environment_->LogIn(account_id);
 
     // NetworkHandler has pieces that depend on NetworkCertLoader so it's better
     // to initialize NetworkHandlerTestHelper after
@@ -236,7 +236,7 @@ class NetworkHealthProviderTest : public AshTestBase {
     NetworkCertLoader::Shutdown();
     AshTestBase::TearDown();
     SystemTokenCertDbStorage::Shutdown();
-    user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
@@ -551,7 +551,8 @@ class NetworkHealthProviderTest : public AshTestBase {
   }
 
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<network_config::CrosNetworkConfig> cros_network_config_;
   std::unique_ptr<NetworkHealthProvider> network_health_provider_;

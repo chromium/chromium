@@ -22,7 +22,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,18 +47,18 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
 
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
     const auto account_id =
         AccountId::FromUserEmailGaiaId(kTestProfileName, kTestGaiaId);
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    test_user_session_manager_->LogIn(account_id);
+    user_session_test_environment_->LogIn(account_id);
 
     ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
                                             account_id);
@@ -89,7 +89,7 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
     profile_manager_->DeleteTestingProfile(kTestProfileName);
     profile_ = nullptr;
     profile_manager_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     arc_service_manager_.reset();
     ash::DlcserviceClient::Shutdown();
   }
@@ -105,7 +105,8 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
  private:
   raw_ptr<ArcEnterpriseReportingService, DanglingUntriaged> service_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;

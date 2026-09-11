@@ -33,7 +33,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -130,8 +130,8 @@ class WifiLanMediumTest : public ::testing::Test {
     // TODO(b/278643115) Remove LoginState dependency.
     ash::LoginState::Initialize();
 
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
 
     switch (state) {
@@ -189,7 +189,7 @@ class WifiLanMediumTest : public ::testing::Test {
     ui_proxy_config_service_.reset();
     network_configuration_handler_.reset();
     network_profile_handler_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     found_service_info_.clear();
     lost_service_info_.clear();
     ash::LoginState::Shutdown();
@@ -395,7 +395,8 @@ class WifiLanMediumTest : public ::testing::Test {
 
   // Local IP fetching:
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ash::NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<ash::NetworkConfigurationHandler>
       network_configuration_handler_;

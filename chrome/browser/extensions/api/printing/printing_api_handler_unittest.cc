@@ -46,7 +46,7 @@
 #include "components/account_id/account_id_literal.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -401,16 +401,16 @@ class PrintingAPIHandlerUnittest : public testing::Test {
   }
 
   void SetUp() override {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     ash::LoginState::Initialize();
 
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(kAccountId));
-    test_user_session_manager_->LogIn(kAccountId);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
 
     testing_profile_ =
         profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
@@ -489,7 +489,7 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     print_job_manager_.reset();
     history_service_.reset();
     profile_manager_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
@@ -506,7 +506,8 @@ class PrintingAPIHandlerUnittest : public testing::Test {
   // Resets `disable_pdf_flattening_for_testing` back to false automatically
   // after the test is over.
   base::AutoReset<bool> disable_pdf_flattening_reset_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ash::TestCupsPrintJobManager> print_job_manager_;
   std::unique_ptr<ash::PrintJobHistoryServiceImpl> print_job_history_service_;

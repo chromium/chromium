@@ -25,7 +25,7 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -42,12 +42,14 @@ NetworkTestHelper::NetworkTestHelper()
   auto secondary_account_id =
       AccountId::FromUserEmailGaiaId("secondary@test.com", GaiaId("fakegaia2"));
 
-  ash::test::TestUserSessionManager::RegisterLocalStatePrefs(
+  ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
       local_state_.registry());
-  user_session_manager_ =
-      std::make_unique<ash::test::TestUserSessionManager>(&local_state_);
-  primary_user_ = user_session_manager_->AddRegularUser(primary_account_id);
-  secondary_user_ = user_session_manager_->AddRegularUser(secondary_account_id);
+  user_session_test_environment_ =
+      std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+  primary_user_ =
+      user_session_test_environment_->AddRegularUser(primary_account_id);
+  secondary_user_ =
+      user_session_test_environment_->AddRegularUser(secondary_account_id);
 
   network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
   network_configuration_handler_ =
@@ -95,7 +97,7 @@ NetworkTestHelper::~NetworkTestHelper() {
   managed_network_configuration_handler_.reset();
   ui_proxy_config_service_.reset();
   network_configuration_handler_.reset();
-  user_session_manager_.reset();
+  user_session_test_environment_.reset();
   LoginState::Shutdown();
 }
 
@@ -113,7 +115,7 @@ void NetworkTestHelper::SetUp() {
 void NetworkTestHelper::LoginUser(const user_manager::User* user) {
   auto* session_manager = session_manager::SessionManager::Get();
   if (!session_manager->HasSessionForAccountId(user->GetAccountId())) {
-    user_session_manager_->LogIn(user->GetAccountId());
+    user_session_test_environment_->LogIn(user->GetAccountId());
   }
   const auto* active_session = session_manager->GetActiveSession();
   if (!active_session || active_session->account_id() != user->GetAccountId()) {

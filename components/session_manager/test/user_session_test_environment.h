@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SESSION_MANAGER_TEST_TEST_USER_SESSION_MANAGER_H_
-#define COMPONENTS_SESSION_MANAGER_TEST_TEST_USER_SESSION_MANAGER_H_
+#ifndef COMPONENTS_SESSION_MANAGER_TEST_USER_SESSION_TEST_ENVIRONMENT_H_
+#define COMPONENTS_SESSION_MANAGER_TEST_USER_SESSION_TEST_ENVIRONMENT_H_
 
 #include <memory>
 #include <string_view>
@@ -26,13 +26,14 @@ namespace ash::test {
 
 // Maintains UserManager and SessionManager for testing.
 // It also provides several methods for the common testing operations.
-class TestUserSessionManager {
+class UserSessionTestEnvironment {
  public:
   // `local_state` must not be nullptr and must outlive this instance.
-  explicit TestUserSessionManager(PrefService* local_state);
-  TestUserSessionManager(const TestUserSessionManager&) = delete;
-  TestUserSessionManager& operator=(const TestUserSessionManager&) = delete;
-  ~TestUserSessionManager();
+  explicit UserSessionTestEnvironment(PrefService* local_state);
+  UserSessionTestEnvironment(const UserSessionTestEnvironment&) = delete;
+  UserSessionTestEnvironment& operator=(const UserSessionTestEnvironment&) =
+      delete;
+  ~UserSessionTestEnvironment();
 
   // Registers LocalState's prefs that this test utility uses.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -60,4 +61,4 @@ class TestUserSessionManager {
 
 }  // namespace ash::test
 
-#endif  // COMPONENTS_SESSION_MANAGER_TEST_TEST_USER_SESSION_MANAGER_H_
+#endif  // COMPONENTS_SESSION_MANAGER_TEST_USER_SESSION_TEST_ENVIRONMENT_H_

@@ -48,7 +48,7 @@
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -128,13 +128,13 @@ class StorageHandlerTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kEmail, GaiaId("1234567890"));
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
-    test_user_session_manager_->LogIn(account_id);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
 
     // Initialize storage handler.
@@ -187,7 +187,7 @@ class StorageHandlerTest : public testing::Test {
     drive_offline_size_test_api_.reset();
     crostini_size_test_api_.reset();
     other_users_size_test_api_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
@@ -311,7 +311,8 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<CrostiniSizeTestAPI> crostini_size_test_api_;
   std::unique_ptr<OtherUsersSizeTestAPI> other_users_size_test_api_;
   MockUserDataAuthClient userdataauth_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;

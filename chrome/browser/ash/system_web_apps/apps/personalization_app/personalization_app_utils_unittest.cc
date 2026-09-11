@@ -34,7 +34,7 @@
 #include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -116,8 +116,8 @@ class PersonalizationAppUtilsTest : public testing::Test {
         {features::kSeaPenDemoMode, features::kFeatureManagementSeaPen},
         {features::kGrowthCampaignsInDemoMode, features::kGrowthFramework});
 
-    user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(local_state());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -149,7 +149,7 @@ class PersonalizationAppUtilsTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
     test_variations_service_.reset();
     metrics_state_manager_.reset();
-    user_session_manager_.reset();
+    user_session_test_environment_.reset();
     profile_manager_.reset();
     browser_controller_.reset();
     testing::Test::TearDown();
@@ -166,17 +166,17 @@ class PersonalizationAppUtilsTest : public testing::Test {
     user_manager::User* user = nullptr;
     switch (user_type) {
       case user_manager::UserType::kRegular:
-        user = user_session_manager_->AddRegularUser(account_id);
+        user = user_session_test_environment_->AddRegularUser(account_id);
         break;
       case user_manager::UserType::kGuest:
         EXPECT_EQ(account_id, user_manager::GuestAccountId());
-        user = user_session_manager_->AddGuestUser();
+        user = user_session_test_environment_->AddGuestUser();
         break;
       case user_manager::UserType::kChild:
-        user = user_session_manager_->AddChildUser(account_id);
+        user = user_session_test_environment_->AddChildUser(account_id);
         break;
       case user_manager::UserType::kPublicAccount:
-        user = user_session_manager_->AddPublicAccountUser(
+        user = user_session_test_environment_->AddPublicAccountUser(
             account_id.GetUserEmail());
         break;
       default:
@@ -184,13 +184,14 @@ class PersonalizationAppUtilsTest : public testing::Test {
         return;
     }
     ASSERT_TRUE(user);
-    user_session_manager_->LogIn(user->GetAccountId());
+    user_session_test_environment_->LogIn(user->GetAccountId());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
-  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
       /*consent=*/false, /*enabled=*/false};

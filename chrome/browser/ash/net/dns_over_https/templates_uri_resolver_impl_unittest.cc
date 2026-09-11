@@ -29,7 +29,7 @@
 #include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -254,8 +254,8 @@ class TemplatesUriResolverImplTest : public testing::Test {
         std::make_unique<ash::NetworkHandlerTestHelper>();
     network_handler_test_helper_->AddDefaultProfiles();
 
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(local_state());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
 
     // Set up fake device attributes.
     std::unique_ptr<policy::FakeDeviceAttributes> device_attributes =
@@ -272,12 +272,12 @@ class TemplatesUriResolverImplTest : public testing::Test {
 
   void TearDown() override {
     doh_template_uri_resolver_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     network_handler_test_helper_.reset();
   }
 
   const user_manager::User* SetUpAffiliatedUser() {
-    auto* user = test_user_session_manager_->AddRegularUser(kTestAccountId);
+    auto* user = user_session_test_environment_->AddRegularUser(kTestAccountId);
     EXPECT_TRUE(user);
     // TODO(crbug.com/534323787): In production, policy status is updated after
     // log-in. Consider updating this helper to mirror production sequence.
@@ -287,7 +287,7 @@ class TemplatesUriResolverImplTest : public testing::Test {
   }
 
   const user_manager::User* SetUpUnaffiliatedUser() {
-    auto* user = test_user_session_manager_->AddRegularUser(kTestAccountId);
+    auto* user = user_session_test_environment_->AddRegularUser(kTestAccountId);
     EXPECT_TRUE(user);
     return user;
   }
@@ -329,7 +329,8 @@ class TemplatesUriResolverImplTest : public testing::Test {
   ScopedStubInstallAttributes test_install_attributes_{
       StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TemplatesUriResolverImpl> doh_template_uri_resolver_;
 };
 

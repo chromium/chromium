@@ -19,7 +19,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 
 namespace ash::test {
-class TestUserSessionManager;
+class UserSessionTestEnvironment;
 }  // namespace ash::test
 
 namespace user_manager {
@@ -69,7 +69,8 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
   TestingPrefServiceSimple local_state_;
 
   // 2. Objects depending on prefs
-  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
@@ -79,8 +80,8 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
   std::unique_ptr<BrowserContextHelper> browser_context_helper_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 
-  // 3. Pointers to objects owned by user_session_manager_ (must be destroyed
-  // before user_session_manager_)
+  // 3. Pointers to objects owned by user_session_test_environment_ (must be
+  // destroyed before user_session_test_environment_)
   raw_ptr<const user_manager::User> primary_user_;
   raw_ptr<const user_manager::User> secondary_user_;
 };

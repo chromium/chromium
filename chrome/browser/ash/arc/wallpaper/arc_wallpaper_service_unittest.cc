@@ -27,7 +27,7 @@
 #include "chromeos/ash/experiences/arc/test/fake_wallpaper_instance.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -69,14 +69,14 @@ class ArcWallpaperServiceTest : public testing::Test {
   ~ArcWallpaperServiceTest() override = default;
 
   void SetUp() override {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
     // User
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         user_manager::StubAccountId().GetUserEmail(), GaiaId("1234567890")));
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
-    test_user_session_manager_->LogIn(account_id);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
 
     // Wallpaper
     wallpaper_controller_client_ = std::make_unique<
@@ -110,7 +110,7 @@ class ArcWallpaperServiceTest : public testing::Test {
 
     ash::SystemSaltGetter::Shutdown();
     wallpaper_controller_client_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
@@ -121,7 +121,8 @@ class ArcWallpaperServiceTest : public testing::Test {
 
  private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   arc::ArcServiceManager arc_service_manager_;
   // testing_profile_ needs to be deleted before arc_service_manager_.
   TestingProfile testing_profile_;

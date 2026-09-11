@@ -64,7 +64,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/user_manager_impl.h"
 #include "net/base/ip_address.h"
@@ -289,10 +289,10 @@ class CrosNetworkConfigTest : public testing::Test {
     LoginState::Initialize();
     SystemTokenCertDbStorage::Initialize();
 
-    ash::test::TestUserSessionManager::RegisterLocalStatePrefs(
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
         local_state_.registry());
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(&local_state_);
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
 
     NetworkCertLoader::Initialize();
     helper_ = std::make_unique<NetworkHandlerTestHelper>();
@@ -319,7 +319,7 @@ class CrosNetworkConfigTest : public testing::Test {
       traffic_counters::TrafficCountersHandler::Shutdown();
     }
     NetworkCertLoader::Shutdown();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     SystemTokenCertDbStorage::Shutdown();
     LoginState::Shutdown();
   }
@@ -1292,7 +1292,8 @@ class CrosNetworkConfigTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> helper_;
   std::unique_ptr<CrosNetworkConfigTestHelper> cros_network_config_test_helper_;
   std::unique_ptr<CrosNetworkConfig> cros_network_config_;

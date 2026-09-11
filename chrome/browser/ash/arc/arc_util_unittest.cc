@@ -42,7 +42,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -100,8 +100,8 @@ class ChromeArcUtilTest : public testing::Test {
 
     // TODO(crbug.com/278643115): Rework user/profile set up.
     ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
 
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
@@ -119,15 +119,15 @@ class ChromeArcUtilTest : public testing::Test {
     profile_manager_->DeleteTestingProfile(kTestProfileName);
     profile_ = nullptr;
     profile_manager_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
     command_line_.reset();
   }
 
   TestingProfile* profile() { return profile_; }
 
-  ash::test::TestUserSessionManager* test_user_session_manager() const {
-    return test_user_session_manager_.get();
+  ash::test::UserSessionTestEnvironment* user_session_test_environment() const {
+    return user_session_test_environment_.get();
   }
 
  protected:
@@ -137,7 +137,8 @@ class ChromeArcUtilTest : public testing::Test {
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Owned by |profile_manager_|
   raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
@@ -149,8 +150,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile) {
       {"", "--arc-availability=officially-supported"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 
   // false for nullptr.
@@ -166,8 +167,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfileLegacy) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"", "--enable-arc"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 
   // false for nullptr.
@@ -183,8 +184,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_DisableArc) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({""});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -196,10 +197,10 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_NonPrimaryProfile) {
       AccountId::FromUserEmailGaiaId("user2@gmail.com", GaiaId("0123456789"));
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id2));
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id2);
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id2));
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id2);
+  user_session_test_environment()->LogIn(account_id);
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -213,9 +214,9 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_PublicAccount) {
       policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy,
       "public_user@gmail.com", /*kiosk_app_id=*/"",
       /*kiosk_app_update_url=*/"");
-  CHECK(test_user_session_manager()->AddPublicAccountUser(
+  CHECK(user_session_test_environment()->AddPublicAccountUser(
       device_local_account.user_id));
-  test_user_session_manager()->LogIn(
+  user_session_test_environment()->LogIn(
       AccountId::FromUserEmail(device_local_account.user_id));
   EXPECT_TRUE(IsArcAllowedForProfile(profile()));
 }
@@ -224,8 +225,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_GuestAccount) {
   // TODO(hidehiko): Fix profile and user login creation order.
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
-  CHECK(test_user_session_manager()->AddGuestUser());
-  test_user_session_manager()->LogIn(user_manager::GuestAccountId());
+  CHECK(user_session_test_environment()->AddGuestUser());
+  user_session_test_environment()->LogIn(user_manager::GuestAccountId());
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -246,8 +247,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_ManagedDeviceAccount_Reven) {
       {"", "--arc-availability=officially-supported", "--reven-branding"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   SetProfileIsManagedForTesting(profile());
   cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
       "example.com", "fake-device-id");
@@ -262,8 +263,8 @@ TEST_F(ChromeArcUtilTest, IsArcBlockedDueToIncompatibleFileSystem_RegularUser) {
 
   const AccountId user_id(AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId));
-  CHECK(test_user_session_manager()->AddRegularUser(user_id));
-  test_user_session_manager()->LogIn(user_id);
+  CHECK(user_session_test_environment()->AddRegularUser(user_id));
+  user_session_test_environment()->LogIn(user_id);
   EXPECT_TRUE(IsArcBlockedDueToIncompatibleFileSystem(profile()));
 }
 
@@ -279,9 +280,9 @@ TEST_F(ChromeArcUtilTest,
       policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy,
       "public_session", /*kiosk_app_id=*/"",
       /*kiosk_app_update_url=*/"");
-  CHECK(test_user_session_manager()->AddPublicAccountUser(
+  CHECK(user_session_test_environment()->AddPublicAccountUser(
       device_local_account.user_id));
-  test_user_session_manager()->LogIn(
+  user_session_test_environment()->LogIn(
       AccountId::FromUserEmail(device_local_account.user_id));
   EXPECT_FALSE(IsArcBlockedDueToIncompatibleFileSystem(profile()));
 }
@@ -293,8 +294,8 @@ TEST_F(ChromeArcUtilTest, IsArcCompatibleFileSystemUsedForProfile) {
 
   const AccountId id(AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId));
-  CHECK(test_user_session_manager()->AddRegularUser(id));
-  test_user_session_manager()->LogIn(id);
+  CHECK(user_session_test_environment()->AddRegularUser(id));
+  user_session_test_environment()->LogIn(id);
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(id);
 
@@ -325,8 +326,8 @@ TEST_F(ChromeArcUtilTest, ArcPlayStoreEnabledForProfile) {
   // Ensure IsAllowedForProfile() true.
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   ASSERT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 
   // By default, Google Play Store is disabled.
@@ -362,8 +363,8 @@ TEST_F(ChromeArcUtilTest, ArcPlayStoreEnabledForProfile_Managed) {
   // Ensure IsAllowedForProfile() true.
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   ASSERT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 
   // By default it is not managed.
@@ -518,8 +519,8 @@ TEST_F(ChromeArcUtilTest, TermsOfServiceNegotiationNeededForAlreadyAccepted) {
   DisableDBusForProfileManager();
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   EXPECT_TRUE(IsArcTermsOfServiceNegotiationNeeded(profile()));
   EXPECT_TRUE(IsArcTermsOfServiceOobeNegotiationNeeded());
   profile()->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted, true);
@@ -536,8 +537,8 @@ TEST_F(ChromeArcUtilTest, TermsOfServiceNegotiationNeededForManagedUser) {
   DisableDBusForProfileManager();
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
 
   EXPECT_TRUE(IsArcTermsOfServiceNegotiationNeeded(profile()));
 
@@ -560,8 +561,8 @@ TEST_F(ChromeArcUtilTest,
   DisableDBusForProfileManager();
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   EXPECT_FALSE(IsArcTermsOfServiceOobeNegotiationNeeded());
 }
 
@@ -573,8 +574,8 @@ TEST_F(ChromeArcUtilTest, TermsOfServiceOobeNegotiationNeededNoPlayStore) {
   DisableDBusForProfileManager();
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   EXPECT_FALSE(IsArcTermsOfServiceOobeNegotiationNeeded());
 }
 
@@ -584,8 +585,8 @@ TEST_F(ChromeArcUtilTest, IsArcStatsReportingEnabled) {
       {"", "--arc-availability=officially-supported"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   EXPECT_FALSE(IsArcStatsReportingEnabled());
 }
 
@@ -598,9 +599,9 @@ TEST_F(ChromeArcUtilTest, IsArcStatsReportingEnabled_PublicAccount) {
       policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy,
       "public_user@gmail.com", /*kiosk_app_id=*/"",
       /*kiosk_app_update_url=*/"");
-  CHECK(test_user_session_manager()->AddPublicAccountUser(
+  CHECK(user_session_test_environment()->AddPublicAccountUser(
       device_local_account.user_id));
-  test_user_session_manager()->LogIn(
+  user_session_test_environment()->LogIn(
       AccountId::FromUserEmail(device_local_account.user_id));
   EXPECT_FALSE(IsArcStatsReportingEnabled());
 }
@@ -620,9 +621,9 @@ TEST_F(ChromeArcUtilTest, ArcStartModeDefaultPublicSession) {
       policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy,
       "public_user@gmail.com", /*kiosk_app_id=*/"",
       /*kiosk_app_update_url=*/"");
-  CHECK(test_user_session_manager()->AddPublicAccountUser(
+  CHECK(user_session_test_environment()->AddPublicAccountUser(
       device_local_account.user_id));
-  test_user_session_manager()->LogIn(
+  user_session_test_environment()->LogIn(
       AccountId::FromUserEmail(device_local_account.user_id));
   EXPECT_FALSE(IsPlayStoreAvailable());
 }
@@ -637,9 +638,9 @@ TEST_F(ChromeArcUtilTest, ArcStartModeDefaultDemoMode) {
       policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy,
       "public_user@gmail.com", /*kiosk_app_id=*/"",
       /*kiosk_app_update_url=*/"");
-  CHECK(test_user_session_manager()->AddPublicAccountUser(
+  CHECK(user_session_test_environment()->AddPublicAccountUser(
       device_local_account.user_id));
-  test_user_session_manager()->LogIn(
+  user_session_test_environment()->LogIn(
       AccountId::FromUserEmail(device_local_account.user_id));
   EXPECT_TRUE(IsPlayStoreAvailable());
 }
@@ -732,8 +733,8 @@ TEST_P(ArcOobeTest, TermsOfServiceOobeNegotiationNeededForManagedUser) {
   DisableDBusForProfileManager();
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
 
   CreateLoginDisplayHost();
   EXPECT_TRUE(IsArcOobeOptInActive());
@@ -777,8 +778,8 @@ TEST_P(ArcOobeTest, ShouldStartArcSilentlyForManagedProfile) {
   DisableDBusForProfileManager();
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
 
   CreateLoginDisplayHost();
   EXPECT_TRUE(IsArcOobeOptInActive());
@@ -820,8 +821,8 @@ TEST_P(ArcOobeOptInActiveInTest, OobeOptInActive) {
   // Consolidated Consent screen is currently showing.
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   EXPECT_FALSE(IsArcOobeOptInActive());
   CreateLoginDisplayHost();
 
@@ -889,8 +890,8 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   user_manager::UserManager::Get()->SetUserPolicyStatus(
       account_id, /*is_managed=*/true, /*is_affiliated=*/true);
   SetProfileIsManagedForTesting(profile());
@@ -906,8 +907,8 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   SetProfileIsManagedForTesting(profile());
   profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed, true);
 
@@ -921,8 +922,8 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed, true);
 
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
@@ -935,8 +936,8 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   user_manager::UserManager::Get()->SetUserPolicyStatus(
       account_id, /*is_managed=*/true, /*is_affiliated=*/true);
   SetProfileIsManagedForTesting(profile());
@@ -953,8 +954,8 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   SetProfileIsManagedForTesting(profile());
   profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed,
                                     false);
@@ -969,8 +970,8 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed,
                                     false);
 
@@ -985,8 +986,8 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   user_manager::UserManager::Get()->SetUserPolicyStatus(
       account_id, /*is_managed=*/true, /*is_affiliated=*/true);
   SetProfileIsManagedForTesting(profile());
@@ -1007,8 +1008,8 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   SetProfileIsManagedForTesting(profile());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcEnabled, std::make_unique<base::Value>(true));
@@ -1027,8 +1028,8 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       prefs::kArcEnabled, std::make_unique<base::Value>(true));
   const auto account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
-  CHECK(test_user_session_manager()->AddRegularUser(account_id));
-  test_user_session_manager()->LogIn(account_id);
+  CHECK(user_session_test_environment()->AddRegularUser(account_id));
+  user_session_test_environment()->LogIn(account_id);
   SetProfileIsManagedForTesting(profile());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcEnabled, std::make_unique<base::Value>(true));

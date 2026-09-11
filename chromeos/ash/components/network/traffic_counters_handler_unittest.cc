@@ -27,7 +27,7 @@
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_profile_observer.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
@@ -77,10 +77,10 @@ class TrafficCountersHandlerTest : public ::testing::Test {
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(&local_state_);
-    EXPECT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
-    test_user_session_manager_->LogIn(account_id);
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+    EXPECT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
     const std::string user_hash =
         user_manager::UserManager::Get()->FindUser(account_id)->username_hash();
 
@@ -140,7 +140,7 @@ class TrafficCountersHandlerTest : public ::testing::Test {
   ~TrafficCountersHandlerTest() override {
     TrafficCountersHandler::Shutdown();
     helper_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
@@ -235,7 +235,8 @@ class TrafficCountersHandlerTest : public ::testing::Test {
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> helper_;
   std::string wifi_path_;
   std::string wifi_guid_;

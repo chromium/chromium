@@ -22,7 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
@@ -42,8 +42,8 @@ class AmbientClientImplTest : public testing::Test {
   ~AmbientClientImplTest() override = default;
 
   void SetUp() override {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -66,7 +66,7 @@ class AmbientClientImplTest : public testing::Test {
     profile_manager_.reset();
 
     profile_user_manager_controller_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
@@ -74,12 +74,12 @@ class AmbientClientImplTest : public testing::Test {
   TestingProfile* profile() { return profile_; }
 
   void AddAndLoginUser(const AccountId& account_id) {
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
     LogIn(account_id);
   }
 
   void LogIn(const AccountId& account_id) {
-    test_user_session_manager_->LogIn(account_id);
+    user_session_test_environment_->LogIn(account_id);
 
     CHECK(!profile_);
     profile_ = profile_manager_->CreateTestingProfile(
@@ -103,8 +103,8 @@ class AmbientClientImplTest : public testing::Test {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
-  ash::test::TestUserSessionManager& test_user_session_manager() {
-    return CHECK_DEREF(test_user_session_manager_.get());
+  ash::test::UserSessionTestEnvironment& user_session_test_environment() {
+    return CHECK_DEREF(user_session_test_environment_.get());
   }
 
  private:
@@ -112,7 +112,8 @@ class AmbientClientImplTest : public testing::Test {
 
   ash::ScopedStubInstallAttributes install_attributes_;
   ash::ScopedTestingCrosSettings testing_cros_settings_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ash::ProfileUserManagerController>
       profile_user_manager_controller_;
 
@@ -137,12 +138,13 @@ TEST_F(AmbientClientImplTest, DisallowedByNonPrimaryUser) {
       AccountId::FromUserEmailGaiaId("user2@gmail.com", GaiaId("987654321"));
   const auto account_id =
       AccountId::FromUserEmailGaiaId(kTestProfileName, kTestGaiaId);
-  ASSERT_TRUE(test_user_session_manager().AddRegularUser(primary_account_id));
-  ASSERT_TRUE(test_user_session_manager().AddRegularUser(account_id));
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(primary_account_id));
+  ASSERT_TRUE(user_session_test_environment().AddRegularUser(account_id));
 
   // Primary log-in first, followed by log-in for the target user including
   // its profile creation.
-  test_user_session_manager().LogIn(primary_account_id);
+  user_session_test_environment().LogIn(primary_account_id);
   ASSERT_EQ(
       session_manager::SessionManager::Get()->GetActiveSession()->account_id(),
       primary_account_id);

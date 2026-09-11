@@ -27,7 +27,7 @@
 #include "components/account_id/account_id_literal.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "printing/backend/print_backend.h"
@@ -153,15 +153,15 @@ class LocalPrinterImplTestBase : public testing::Test {
   ~LocalPrinterImplTestBase() override = default;
 
   void SetUp() override {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(kAccountId));
-    test_user_session_manager_->LogIn(kAccountId);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
 
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
     ash::AnnotatedAccountId::Set(profile_, kAccountId);
@@ -332,7 +332,8 @@ class LocalPrinterImplTestBase : public testing::Test {
   const bool enable_oauth_;
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   scoped_refptr<::printing::TestPrintBackend> sandboxed_test_backend_;
   scoped_refptr<::printing::TestPrintBackend> unsandboxed_test_backend_;

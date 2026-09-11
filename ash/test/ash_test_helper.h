@@ -77,7 +77,7 @@ class MockInputMethodManagerImpl;
 }  // namespace input_method
 
 namespace test {
-class TestUserSessionManager;
+class UserSessionTestEnvironment;
 }  // namespace test
 
 // A helper class that does common initialization required for Ash. Creates a
@@ -240,10 +240,12 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<system::ScopedFakeStatisticsProvider> statistics_provider_;
 
   // Set up both UserManager and SessionManager. If UserManager already exists
-  // but SessionManager does not yet, test_user_session_manager_ is not used
+  // but SessionManager does not yet, user_session_test_environment_ is not used
   // but session_manager_ is. This is for the workaround during the migration,
-  // and test_user_session_manager_ should be always used after the completion.
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  // and user_session_test_environment_ should be always used after the
+  // completion.
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   // TODO(crbug.com/278643115): Remove this after migration.
   std::unique_ptr<session_manager::SessionManager> session_manager_;
 

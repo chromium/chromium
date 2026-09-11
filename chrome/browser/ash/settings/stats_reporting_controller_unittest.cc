@@ -26,7 +26,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/device_settings_cache.h"
 #include "components/ownership/mock_owner_key_util.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -68,8 +68,8 @@ class StatsReportingControllerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(local_state());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
 
     device_policy_.Build();
     fake_session_manager_client_->set_device_policy(device_policy_.GetBlob());
@@ -98,7 +98,7 @@ class StatsReportingControllerTest : public testing::Test {
         AccountId::FromUserEmailGaiaId(username, GaiaId(username));
 
     if (!user_manager::UserManager::Get()->FindUser(account_id)) {
-      EXPECT_TRUE(user_session_manager_->AddRegularUser(account_id));
+      EXPECT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
     }
 
     ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
@@ -147,7 +147,7 @@ class StatsReportingControllerTest : public testing::Test {
     observer_subscription_ = {};
     StatsReportingController::Shutdown();
 
-    user_session_manager_.reset();
+    user_session_test_environment_.reset();
     profile_manager_.reset();
     cros_settings_holder_.reset();
     scoped_device_settings_.reset();
@@ -162,7 +162,8 @@ class StatsReportingControllerTest : public testing::Test {
   std::unique_ptr<ScopedTestDeviceSettingsService> scoped_device_settings_;
   std::unique_ptr<CrosSettingsHolder> cros_settings_holder_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   policy::DevicePolicyBuilder device_policy_;
 
   bool value_at_last_notification_{false};

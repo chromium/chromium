@@ -12,7 +12,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/exo/wm_helper.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
@@ -45,8 +45,8 @@ class ArcAppSingleRestoreHandlerTest : public testing::Test {
   ~ArcAppSingleRestoreHandlerTest() override = default;
 
   void SetUp() override {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -58,8 +58,8 @@ class ArcAppSingleRestoreHandlerTest : public testing::Test {
 
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestProfileName, GaiaId("12345678"));
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
-    test_user_session_manager_->LogIn(account_id);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
 
     profile_ = profile_manager_->CreateTestingProfile(kTestProfileName);
   }
@@ -69,7 +69,7 @@ class ArcAppSingleRestoreHandlerTest : public testing::Test {
     ghost_window_handler_.reset();
     wm_helper_.reset();
     profile_manager_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
   TestingProfile* profile() const { return profile_; }
@@ -81,7 +81,8 @@ class ArcAppSingleRestoreHandlerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
   // Initialize WMHelper to create ARC ghost window handler.

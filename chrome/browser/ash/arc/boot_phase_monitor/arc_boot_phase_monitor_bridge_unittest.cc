@@ -24,7 +24,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -40,8 +40,8 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     ash::DlcserviceClient::InitializeFake();
     ash::SessionManagerClient::InitializeFakeInMemory();
 
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
@@ -55,8 +55,8 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         TestingProfile::kDefaultProfileUserName, GaiaId("1234567890")));
-    CHECK(test_user_session_manager_->AddRegularUser(account_id));
-    test_user_session_manager_->LogIn(account_id);
+    CHECK(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
 
     testing_profile_ = std::make_unique<TestingProfile>();
   }
@@ -67,7 +67,7 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
 
   ~ArcBootPhaseMonitorBridgeTest() override {
     testing_profile_.reset();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
@@ -152,7 +152,8 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
   };
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;

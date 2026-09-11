@@ -206,9 +206,9 @@ specific_include_rules = {
   ],
   # oauth_http_fetcher_unittest.cc isn't an AshTestBase test, so unlike the
   # three above it can't reuse the UserManager/SessionManager pair that
-  # AshTestHelper sets up; it brings up its own via TestUserSessionManager.
+  # AshTestHelper sets up; it brings up its own via UserSessionTestEnvironment.
   "oauth_http_fetcher_unittest\\.cc": [
-    "+components/session_manager/test/test_user_session_manager.h",
+    "+components/session_manager/test/user_session_test_environment.h",
   ],
   "root_window_controller\\.(cc|h)": [
     "+ash/host"

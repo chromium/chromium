@@ -34,7 +34,7 @@
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -59,18 +59,18 @@ class DeviceWeeklyScheduledSuspendControllerTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kDeviceWeeklyScheduledSuspendMgs, IsEnabledInMgs());
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
 
     // Add all potential users before starting any session.
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(
         AccountId::FromUserEmailGaiaId("user@example.com",
                                        GaiaId("1234567890"))));
-    ASSERT_TRUE(test_user_session_manager_->AddPublicAccountUser(
+    ASSERT_TRUE(user_session_test_environment_->AddPublicAccountUser(
         policy::GenerateDeviceLocalAccountUserId(
             "mgs", policy::DeviceLocalAccountType::kPublicSession)));
-    ASSERT_TRUE(test_user_session_manager_->AddKioskWebAppUser(
+    ASSERT_TRUE(user_session_test_environment_->AddKioskWebAppUser(
         policy::GenerateDeviceLocalAccountUserId(
             "kiosk", policy::DeviceLocalAccountType::kWebKioskApp)));
 
@@ -100,7 +100,7 @@ class DeviceWeeklyScheduledSuspendControllerTest
     chromeos::FakePowerManagerClient::Get()->set_user_activity_callback(
         base::NullCallback());
     chromeos::PowerManagerClient::Shutdown();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
   void LoginUser(TestUserType user_type) {
@@ -131,7 +131,7 @@ class DeviceWeeklyScheduledSuspendControllerTest
     }
 
     ASSERT_FALSE(account_id.empty());
-    test_user_session_manager_->LogIn(account_id);
+    user_session_test_environment_->LogIn(account_id);
     if (!session_manager::SessionManager::Get()->GetActiveSession() ||
         session_manager::SessionManager::Get()
                 ->GetActiveSession()
@@ -215,7 +215,8 @@ class DeviceWeeklyScheduledSuspendControllerTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<DeviceWeeklyScheduledSuspendController>
       device_weekly_scheduled_suspend_controller_;
   int user_activity_calls_;

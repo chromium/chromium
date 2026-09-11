@@ -12,7 +12,7 @@
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -80,21 +80,21 @@ class OAuthHttpFetcherTest : public testing::Test {
 
     // OAuthHttpFetcher looks up the active session's AccountId to find an
     // IdentityManager (see TODO(crbug.com/546860700) on that lookup).
-    // ash::test::TestUserSessionManager owns the UserManager/SessionManager
+    // ash::test::UserSessionTestEnvironment owns the UserManager/SessionManager
     // pair that lookup goes through; both are standalone singletons
     // independent of ash::Shell, so this test doesn't need to bring up the
     // rest of Ash just to satisfy it.
-    ash::test::TestUserSessionManager::RegisterLocalStatePrefs(
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
         local_state_.registry());
-    user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(&local_state_);
-    CHECK(user_session_manager_->AddRegularUser(account_id_));
-    user_session_manager_->LogIn(account_id_);
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+    CHECK(user_session_test_environment_->AddRegularUser(account_id_));
+    user_session_test_environment_->LogIn(account_id_);
   }
 
   void TearDown() override {
     url_loader_factory_.ClearResponses();
-    user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
@@ -103,7 +103,8 @@ class OAuthHttpFetcherTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   // Declared after `local_state_` so it's destroyed first: it owns the
   // UserManager, which holds `local_state_`.
-  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<OAuthHttpFetcher> http_fetcher_;
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
   network::TestURLLoaderFactory url_loader_factory_;

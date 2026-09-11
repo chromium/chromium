@@ -19,7 +19,7 @@
 #include "chromeos/ash/experiences/arc/test/fake_cert_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -105,13 +105,13 @@ class ArcNetHostImplTest : public testing::Test {
     ash::PatchPanelClient::InitializeFake();
 
     // Set up UserManager to fake the login state using local state.
-    ash::test::TestUserSessionManager::RegisterLocalStatePrefs(
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
         local_state_.registry());
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(&local_state_);
-    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
 
     // Required for initializingFakeShillManagerClient.
     ash::shill_clients::InitializeFakes();
@@ -130,7 +130,7 @@ class ArcNetHostImplTest : public testing::Test {
                     /*network_configs_onc=*/base::ListValue(),
                     /*global_network_config=*/base::DictValue());
 
-    test_user_session_manager_->LogIn(account_id);
+    user_session_test_environment_->LogIn(account_id);
 
     const std::string userhash =
         user_manager::UserManager::Get()->FindUser(account_id)->username_hash();
@@ -153,7 +153,7 @@ class ArcNetHostImplTest : public testing::Test {
   void TearDown() override {
     helper_.reset();
     ash::shill_clients::Shutdown();
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
     ash::PatchPanelClient::Shutdown();
   }
 
@@ -167,7 +167,8 @@ class ArcNetHostImplTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<user_prefs::TestBrowserContextWithPrefs> context_;
   const raw_ptr<ArcNetHostImpl> service_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> helper_;
 };
 

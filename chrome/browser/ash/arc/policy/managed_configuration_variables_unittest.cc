@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
-#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -199,14 +199,14 @@ class ManagedConfigurationVariablesBase {
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     // Set up a fake user and capture its profile.
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId));
-    user_ = test_user_session_manager_->AddRegularUser(account_id);
+    user_ = user_session_test_environment_->AddRegularUser(account_id);
     ASSERT_TRUE(user_);
-    test_user_session_manager_->LogIn(account_id);
+    user_session_test_environment_->LogIn(account_id);
     user_manager::UserManager::Get()->SetUserPolicyStatus(
         account_id, /*is_managed=*/is_affiliated,
         /*is_affiliated=*/is_affiliated);
@@ -222,7 +222,7 @@ class ManagedConfigurationVariablesBase {
   void DoTearDown() {
     fake_device_attributes_.reset();
     user_ = nullptr;
-    test_user_session_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
   const user_manager::User& user() { return CHECK_DEREF(user_); }
@@ -233,7 +233,8 @@ class ManagedConfigurationVariablesBase {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   raw_ptr<user_manager::User> user_ = nullptr;
 
   ash::system::FakeStatisticsProvider statistics_provider_;
