@@ -62,6 +62,7 @@ import org.chromium.components.sync_preferences.cross_device_pref_tracker.Servic
 import org.chromium.components.sync_preferences.cross_device_pref_tracker.TimestampedPrefValue;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -163,6 +164,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                 public void onPageLoadFinished(Tab tab, GURL url) {
                     onTabChangeOrGainFocus(tab);
                 }
+
+                @Override
+                public void onDestroyed(Tab tab) {
+                    if (mObservedTab == tab) {
+                        mObservedTab.removeObserver(mTabObserver);
+                        mObservedTab = null;
+                    }
+                }
             };
 
     private @Nullable Tab mObservedTab;
@@ -171,6 +180,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private @Nullable CrossDevicePrefTrackerObserver mPrefTrackerObserver;
     private @Nullable CrossDeviceThemeTracker mThemeTrackerBeingObserved;
     private CrossDeviceThemeTracker.@Nullable Observer mThemeTrackerObserver;
+    private @Nullable ModalDialogManager mModalDialogManagerBeingObserved;
+    private @Nullable ModalDialogManagerObserver mModalDialogObserver;
 
     private final Callback<@Nullable Tab> mTabChangeCallback =
             (tab) -> {
@@ -234,6 +245,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
         mThemeTrackerObserver = null;
         mThemeTrackerBeingObserved = null;
+    }
+
+    private void stopObservingModalDialogManager() {
+        if (mModalDialogObserver != null && mModalDialogManagerBeingObserved != null) {
+            mModalDialogManagerBeingObserved.removeObserver(mModalDialogObserver);
+        }
+        mModalDialogObserver = null;
+        mModalDialogManagerBeingObserved = null;
     }
 
     /**
@@ -321,6 +340,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
                         Log.i(TAG, "Local state readiness observer was triggered");
                     }
+                    stopObservingLocalState();
                     onTabChangeOrGainFocus(
                             mActivityTabSupplier.get(), /* availableImmediately= */ false);
                 };
@@ -527,16 +547,23 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();
         if (snackbarManager == null) return;
 
+        stopObservingModalDialogManager();
+
         if (modalDialogManager.isShowing()) {
-            modalDialogManager.addObserver(
-                    new ModalDialogManager.ModalDialogManagerObserver() {
+            mModalDialogManagerBeingObserved = modalDialogManager;
+            mModalDialogObserver =
+                    new ModalDialogManagerObserver() {
                         @Override
                         public void onLastDialogDismissed() {
+                            modalDialogManager.removeObserver(this);
+                            mModalDialogObserver = null;
+                            mModalDialogManagerBeingObserved = null;
                             snackbarManager.showSnackbar(snackbar);
                             markCrossDeviceSettingImportComplete(
                                     nonNtp, CrossDeviceSettingImportOutcome.SNACKBAR_SHOWN);
                         }
-                    });
+                    };
+            modalDialogManager.addObserver(mModalDialogObserver);
         } else {
             snackbarManager.showSnackbar(snackbar);
             markCrossDeviceSettingImportComplete(
@@ -1148,5 +1175,6 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         stopObservingLocalState();
         stopObservingPrefTracker();
         stopObservingThemeTracker();
+        stopObservingModalDialogManager();
     }
 }
