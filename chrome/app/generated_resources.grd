@@ -13642,11 +13642,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
 
       <!-- Menus -->
-      <if expr="is_macosx">
-        <message name="IDS_MENU_EMPTY_SUBMENU" desc="Used when a submenu has no entries">
-          (empty)
-        </message>
-      </if>
+      <message name="IDS_MENU_EMPTY_SUBMENU" desc="Used when a submenu has no entries">
+        (empty)
+      </message>
 
       <!-- First-run dialog -->
       <message name="IDS_FR_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging">

@@ -12,10 +12,12 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -39,7 +41,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -356,7 +360,7 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
   views::MenuItemView* empty_item = nullptr;
   for (views::MenuItemView* item :
        empty_folder_item->GetSubmenu()->GetMenuItems()) {
-    if (item->title() == u"(empty)") {
+    if (item->title() == l10n_util::GetStringUTF16(IDS_MENU_EMPTY_SUBMENU)) {
       empty_item = item;
       break;
     }
@@ -392,6 +396,79 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
               OpenGURL(GURL("https://www.google.com"),
                        WindowOpenDisposition::NEW_WINDOW));
   menu.ExecuteCommand(google_item->GetCommand(), ui::EF_SHIFT_DOWN);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenuWithManagedFolder) {
+  BookmarkModelFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkModelFactory::GetDefaultFactory());
+  ManagedBookmarkServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), ManagedBookmarkServiceFactory::GetDefaultFactory());
+  BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile_.get());
+  ASSERT_TRUE(bookmark_model);
+  bookmark_model->LoadEmptyForTest();
+
+  BookmarkMergedSurfaceService* bookmark_service =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(bookmark_service);
+  bookmark_service->LoadForTesting({});
+
+  base::DictValue dict;
+  dict.Set("name", "Managed Link");
+  dict.Set("url", "https://managed.example.com");
+  base::ListValue list;
+  list.Append(std::move(dict));
+  profile_->GetPrefs()->Set(bookmarks::prefs::kManagedBookmarks,
+                            base::Value(std::move(list)));
+
+  BookmarkParentFolder managed_folder = BookmarkParentFolder::ManagedFolder();
+  ASSERT_GT(bookmark_service->GetChildrenCount(managed_folder), 0u);
+  std::vector<const bookmarks::BookmarkNode*> managed_nodes =
+      bookmark_service->GetUnderlyingNodes(managed_folder);
+  ASSERT_FALSE(managed_nodes.empty());
+  const std::u16string managed_title = managed_nodes[0]->GetTitle();
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* bookmarks_item =
+      root->GetMenuItemByID(kActionBookmarksSubmenu);
+  ASSERT_TRUE(bookmarks_item);
+  EXPECT_TRUE(bookmarks_item->HasSubmenu());
+
+  views::SubmenuView* bookmarks_submenu = bookmarks_item->GetSubmenu();
+  ASSERT_TRUE(bookmarks_submenu);
+
+  views::MenuItemView* managed_item = nullptr;
+  for (views::MenuItemView* item : bookmarks_submenu->GetMenuItems()) {
+    if (item->title() == managed_title) {
+      managed_item = item;
+      break;
+    }
+  }
+
+  ASSERT_NE(managed_item, nullptr);
+  EXPECT_TRUE(managed_item->HasSubmenu());
+  views::MenuItemView* managed_child_item = nullptr;
+  for (views::MenuItemView* item : managed_item->GetSubmenu()->GetMenuItems()) {
+    if (item->title() == u"Managed Link") {
+      managed_child_item = item;
+      break;
+    }
+  }
+  ASSERT_NE(managed_child_item, nullptr);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

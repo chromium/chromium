@@ -47,15 +47,23 @@ void BookmarksDynamicMenu::BuildBookmarksActions(
     return;
   }
 
-  BookmarkParentFolderChildren children =
-      service->GetChildren(BookmarkParentFolder::BookmarkBarFolder());
+  BookmarkParentFolder managed_folder = BookmarkParentFolder::ManagedFolder();
+  const bool has_managed = service->GetChildrenCount(managed_folder) > 0;
+  BookmarkParentFolder bookmark_bar_folder =
+      BookmarkParentFolder::BookmarkBarFolder();
+  BookmarkParentFolderChildren bookmark_bar_children =
+      service->GetChildren(bookmark_bar_folder);
 
-  if (children.size() > 0) {
+  if (bookmark_bar_children.size() > 0 || has_managed) {
     parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
     parent_item->AddChild(ActionAppMenuManager::CreateHeaderActionItem(
         l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE)));
 
-    for (const auto* node : children) {
+    if (has_managed) {
+      AddBookmarkFolderAction(parent_item, managed_folder, service);
+    }
+
+    for (const auto* node : bookmark_bar_children) {
       if (node) {
         AddBookmarkNodeAction(parent_item, node, service);
       }
@@ -143,17 +151,23 @@ void BookmarksDynamicMenu::AddBookmarkFolderAction(
     return;
   }
 
+  const chrome::BookmarkFolderIconType folder_icon_type =
+      (folder == BookmarkParentFolder::ManagedFolder())
+          ? chrome::BookmarkFolderIconType::kManaged
+          : chrome::BookmarkFolderIconType::kNormal;
+
   auto builder = actions::ActionItem::Builder();
   builder.SetText(underlying_nodes[0]->GetTitle())
-      .SetImage(chrome::GetBookmarkFolderIcon(
-          chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon))
+      .SetImage(
+          chrome::GetBookmarkFolderIcon(folder_icon_type, ui::kColorMenuIcon))
       .SetProperty(ActionAppMenuManager::kContainerColorKey,
                    ui::kColorMenuBackground);
   auto folder_action = std::move(builder).Build();
 
   if (children.size() == 0) {
     auto empty_builder = actions::ActionItem::Builder();
-    empty_builder.SetText(u"(empty)").SetEnabled(false);
+    empty_builder.SetText(l10n_util::GetStringUTF16(IDS_MENU_EMPTY_SUBMENU))
+        .SetEnabled(false);
     folder_action->AddChild(std::move(empty_builder).Build());
   } else {
     for (const auto* child : children) {

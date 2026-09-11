@@ -18,7 +18,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
@@ -140,19 +139,6 @@ bool IsRequestingTabletSite(BrowserWindowInterface* browser) {
 bool ArePromotionsEnabled() {
   PrefService* local_state = g_browser_process->local_state();
   return local_state && local_state->GetBoolean(prefs::kPromotionsEnabled);
-}
-
-bool CanBookmarkCurrentTab(BrowserWindowInterface* browser) {
-  if (!browser || !browser->GetProfile()) {
-    return false;
-  }
-  bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser->GetProfile());
-  return browser_defaults::bookmarks_enabled &&
-         browser->GetProfile()->GetPrefs()->GetBoolean(
-             bookmarks::prefs::kEditBookmarksEnabled) &&
-         model && model->loaded() &&
-         browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -506,11 +492,9 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
               base::BindRepeating(&BookmarksDynamicMenu::BuildBookmarksActions,
                                   bookmarks_menu_->GetWeakPtr()),
               [this](AppMenuBuilder& sub_builder) {
-                if (CanBookmarkCurrentTab(browser_window_interface_.get())) {
-                  sub_builder.AddAction(kActionBookmarkThisTab)
-                      .AddAction(kActionBookmarkAllTabs)
-                      .AddDivider();
-                }
+                sub_builder.AddAction(kActionBookmarkThisTab)
+                    .AddAction(kActionBookmarkAllTabs)
+                    .AddDivider();
 
                 if (base::FeatureList::IsEnabled(
                         ntp_features::kNtpSimplificationBookmarkBar)) {
