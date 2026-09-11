@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -296,6 +297,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnScreenshotDisclosureClosed(base::OnceClosure on_accepted,
                                     base::OnceClosure on_cancelled,
                                     views::Widget::ClosedReason reason);
+  void UpdateModalInteractionState();
 
 #if defined(USE_AURA)
   std::unique_ptr<OmniboxEverywhereEventHandlerAura> event_handler_;
@@ -313,6 +315,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   std::unique_ptr<OmniboxEverywhereRegionSelectOverlay> region_select_overlay_;
 
   std::unique_ptr<views::Widget> disclosure_dialog_widget_;
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_input_events_;
 
   bool is_file_chooser_open_ = false;
   bool is_drive_picker_open_ = false;

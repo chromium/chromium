@@ -325,13 +325,19 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
 TEST_F(OmniboxEverywhereUIManagerTest, FileChooserStateTracking) {
   auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->web_contents());
+
   EXPECT_FALSE(ui_manager->is_file_chooser_open_for_testing());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnFileChooserOpened();
   EXPECT_TRUE(ui_manager->is_file_chooser_open_for_testing());
+  EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnFileChooserClosed();
   EXPECT_FALSE(ui_manager->is_file_chooser_open_for_testing());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, DismissOnDeactivationInEphemeralMode) {
@@ -1059,13 +1065,19 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
 TEST_F(OmniboxEverywhereUIManagerTest, DrivePickerStateTracking) {
   auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->web_contents());
+
   EXPECT_FALSE(ui_manager->is_drive_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnDrivePickerOpened();
   EXPECT_TRUE(ui_manager->is_drive_picker_open_for_testing());
+  EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnDrivePickerClosed();
   EXPECT_FALSE(ui_manager->is_drive_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringDrivePicker) {
@@ -2033,13 +2045,19 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
 TEST_F(OmniboxEverywhereUIManagerTest, ScreensharePickerStateTracking) {
   auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->web_contents());
+
   EXPECT_FALSE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnScreensharePickerOpened();
   EXPECT_TRUE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnScreensharePickerClosed();
   EXPECT_FALSE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringScreensharePicker) {
@@ -2122,6 +2140,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_AcceptFlow) {
   ui_manager->ShowForProfile(&profile_, GetContext());
   views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
+  ASSERT_TRUE(ui_manager->web_contents());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   base::test::TestFuture<void> accepted_future;
   base::test::TestFuture<void> cancelled_future;
@@ -2131,6 +2151,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_AcceptFlow) {
   views::Widget* disclosure_widget =
       ui_manager->disclosure_dialog_widget_for_testing();
   ASSERT_TRUE(disclosure_widget);
+  EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
   views::DialogDelegate* delegate =
       disclosure_widget->widget_delegate()->AsDialogDelegate();
   ASSERT_TRUE(delegate);
@@ -2143,6 +2164,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_AcceptFlow) {
   EXPECT_FALSE(cancelled_future.IsReady());
   EXPECT_FALSE(ui_manager->is_screenshare_disclosure_open_for_testing());
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_CancelFlow) {
@@ -2150,6 +2172,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_CancelFlow) {
   ui_manager->ShowForProfile(&profile_, GetContext());
   views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
+  ASSERT_TRUE(ui_manager->web_contents());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   base::test::TestFuture<void> accepted_future;
   base::test::TestFuture<void> cancelled_future;
@@ -2161,6 +2185,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_CancelFlow) {
   ASSERT_TRUE(disclosure_widget);
   EXPECT_TRUE(ui_manager->is_screenshare_disclosure_open_for_testing());
   EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+  EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
   EXPECT_EQ(disclosure_widget->GetZOrderLevel(), widget->GetZOrderLevel());
   views::DialogDelegate* delegate =
       disclosure_widget->widget_delegate()->AsDialogDelegate();
@@ -2174,6 +2199,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_CancelFlow) {
   EXPECT_TRUE(cancelled_future.Wait());
   EXPECT_FALSE(ui_manager->is_screenshare_disclosure_open_for_testing());
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
@@ -2381,7 +2407,11 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 TEST_F(OmniboxEverywhereUIManagerTest, HasOpenModalDialog_RegionSelectOverlay) {
   using RegionCaptureSource = OmniboxEverywhereUIManager::RegionCaptureSource;
   auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->web_contents());
+
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(100, 100);
@@ -2391,12 +2421,14 @@ TEST_F(OmniboxEverywhereUIManagerTest, HasOpenModalDialog_RegionSelectOverlay) {
   ui_manager->ShowRegionSelectOverlay(
       bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback());
   EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+  EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->region_select_overlay_for_testing()
       ->GetActiveWidgetForTesting()
       ->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->Shutdown();
 }
@@ -2448,14 +2480,20 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
 TEST_F(OmniboxEverywhereUIManagerTest, PermissionPromptStateTracking) {
   auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->web_contents());
+
   EXPECT_FALSE(ui_manager->is_permission_prompt_open_for_testing());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnPermissionPromptChanged(/*is_showing=*/true,
                                         gfx::Size(100, 100));
   EXPECT_TRUE(ui_manager->is_permission_prompt_open_for_testing());
+  EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnPermissionPromptChanged(/*is_showing=*/false, gfx::Size());
   EXPECT_FALSE(ui_manager->is_permission_prompt_open_for_testing());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
