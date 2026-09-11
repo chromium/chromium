@@ -429,17 +429,23 @@ void RenderWidgetHostViewChildFrame::UpdateBackgroundColor() {
 
 std::optional<DisplayFeature>
 RenderWidgetHostViewChildFrame::GetDisplayFeature() {
-  NOTREACHED();
+  return display_feature_;
 }
 
 void RenderWidgetHostViewChildFrame::
     DisableDisplayFeatureOverrideForEmulation() {
-  NOTREACHED();
+  display_feature_ = std::nullopt;
+  host()->SynchronizeVisualProperties();
 }
 
 void RenderWidgetHostViewChildFrame::OverrideDisplayFeatureForEmulation(
-    const DisplayFeature*) {
-  NOTREACHED();
+    const DisplayFeature* display_feature) {
+  if (display_feature) {
+    display_feature_ = *display_feature;
+  } else {
+    display_feature_ = std::nullopt;
+  }
+  host()->SynchronizeVisualProperties();
 }
 
 void RenderWidgetHostViewChildFrame::NotifyHostAndDelegateOnWasShown(
