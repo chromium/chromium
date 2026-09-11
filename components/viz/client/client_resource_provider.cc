@@ -256,13 +256,15 @@ void ClientResourceProvider::PrepareSendToParent(
 
     shared_image_interface->VerifySyncTokens(imports, get_sync_token);
   } else {
-    static auto check_is_verified =
+    static auto check_is_empty_or_verified =
         [](const ImportedResource* imported_resource) {
           CHECK(imported_resource);
-          return !imported_resource->resource.sync_token().verified_flush();
+          return !imported_resource->resource.sync_token().HasData() ||
+                 imported_resource->resource.sync_token().verified_flush();
         };
 
-    DCHECK(std::none_of(imports.begin(), imports.end(), check_is_verified));
+    DCHECK(std::all_of(imports.begin(), imports.end(),
+                       check_is_empty_or_verified));
   }
 
   list->reserve(list->size() + imports.size());
