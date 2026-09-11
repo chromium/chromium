@@ -6,6 +6,8 @@
 
 #include <jni.h>
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 
@@ -16,10 +18,11 @@ namespace autofill::features {
 
 namespace {
 
-const base::Feature* const kFeaturesExposedToJava[] = {
+constexpr std::array kFeaturesExposedToJava = {
     &kAndroidAutofillLazyFrameworkWrapper,
     &kAndroidAutofillImprovedVisibilityDetection,
-    &kAndroidAutofillFieldsUpdatedOnSelect};
+    &kAndroidAutofillFieldsUpdatedOnSelect,
+};
 
 }  // namespace
 
@@ -48,8 +51,7 @@ BASE_FEATURE(kAndroidAutofillFieldsUpdatedOnSelect,
 
 static int64_t JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env,
                                                       int32_t ordinal) {
-  return reinterpret_cast<int64_t>(
-      UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
+  return reinterpret_cast<int64_t>(kFeaturesExposedToJava[ordinal]);
 }
 
 }  // namespace autofill::features

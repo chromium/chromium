@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/android/jni_string.h"
@@ -22,8 +23,9 @@ namespace embedder_support::features {
 namespace {
 
 // Array of features exposed through the Java EmbedderSupportFeatures API.
-const base::Feature* const kFeaturesExposedToJava[] = {
-    &kAndroidChromeSchemeNavigationKillSwitch};
+constexpr std::array kFeaturesExposedToJava = {
+    &kAndroidChromeSchemeNavigationKillSwitch,
+};
 }  // namespace
 
 BASE_FEATURE(kAndroidChromeSchemeNavigationKillSwitch,
@@ -31,8 +33,7 @@ BASE_FEATURE(kAndroidChromeSchemeNavigationKillSwitch,
 
 static int64_t JNI_EmbedderSupportFeatures_GetFeature(JNIEnv* env,
                                                       int32_t ordinal) {
-  return reinterpret_cast<int64_t>(
-      UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
+  return reinterpret_cast<int64_t>(kFeaturesExposedToJava[ordinal]);
 }
 
 BASE_FEATURE(kInputStreamOptimizations, base::FEATURE_ENABLED_BY_DEFAULT);

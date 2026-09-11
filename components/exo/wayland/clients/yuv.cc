@@ -7,6 +7,8 @@
 #include <gbm.h>
 #include <sys/mman.h>
 
+#include <array>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -108,11 +110,12 @@ void YuvClient::Run(const ClientBase::InitParams& params) {
       LOG(ERROR) << "Can't find free buffer";
       return;
     }
-    const SkColor kColors[] = {SK_ColorBLUE,   SK_ColorGREEN, SK_ColorRED,
-                               SK_ColorYELLOW, SK_ColorCYAN,  SK_ColorMAGENTA};
-    if (!WriteSolidColor(
-            buffer->bo.get(),
-            UNSAFE_TODO(kColors[frame_number % buffers_.size()]))) {
+    constexpr std::array kColors = {
+        SK_ColorBLUE,   SK_ColorGREEN, SK_ColorRED,
+        SK_ColorYELLOW, SK_ColorCYAN,  SK_ColorMAGENTA,
+    };
+    if (!WriteSolidColor(buffer->bo.get(),
+                         kColors[frame_number % buffers_.size()])) {
       return;
     }
 

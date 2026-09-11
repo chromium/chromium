@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -574,10 +575,11 @@ void CrashAnalyzer::ReadAllocationInfo(
     return;
   }
 
-  uintptr_t unpacked_stack_trace[AllocatorState::kMaxPackedTraceLength];
-  size_t unpacked_len =
-      Unpack(UNSAFE_TODO(stack_trace + stack_trace_offset), slot_info.trace_len,
-             unpacked_stack_trace, AllocatorState::kMaxPackedTraceLength);
+  std::array<uintptr_t, AllocatorState::kMaxPackedTraceLength>
+      unpacked_stack_trace;
+  size_t unpacked_len = Unpack(UNSAFE_TODO(stack_trace + stack_trace_offset),
+                               slot_info.trace_len, unpacked_stack_trace.data(),
+                               unpacked_stack_trace.size());
   if (!unpacked_len) {
     DLOG(ERROR) << "Failed to unpack stack trace.";
     return;
