@@ -5,27 +5,11 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scroll_view"
     android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    android:orientation="vertical">
-
-    <!-- Drag handlebar -->
-    <ImageView
-        android:id="@+id/drag_handler"
-        android:importantForAccessibility="no"
-        android:layout_gravity="center_horizontal"
-        android:layout_height="@dimen/autofill_bottom_sheet_drag_handlebar_height"
-        android:layout_marginVertical="@dimen/autofill_bottom_sheet_spacing_extra_small"
-        android:layout_width="@dimen/autofill_bottom_sheet_drag_handlebar_width"
-        android:src="@drawable/drag_handlebar"
-        app:tint="@macro/drag_handle_color" />
-
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+    android:layout_width="match_parent">
 
         <LinearLayout
             android:layout_height="wrap_content"
@@ -192,4 +176,3 @@ found in the LICENSE file.
             </FrameLayout>
         </LinearLayout>
     </ScrollView>
-</LinearLayout>

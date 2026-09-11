@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.AutofillSheetUiControllerFactory;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.LoadingView;
 
@@ -24,9 +23,6 @@ import org.chromium.ui.widget.LoadingView;
 /*package*/ class AutofillVcnEnrollBottomSheetView {
     /** The view that contains all other views. */
     final ViewGroup mContentView;
-
-    /** The drag handler of the bottom sheet. */
-    final ImageView mDragHandler;
 
     /** The view that optionally scrolls the contents on smaller screens. */
     final ScrollView mScrollView;
@@ -78,16 +74,16 @@ import org.chromium.ui.widget.LoadingView;
      * @param context The context for inflating the UI layout XML file.
      */
     AutofillVcnEnrollBottomSheetView(Context context) {
-        mContentView =
-                (ViewGroup)
+        mScrollView =
+                (ScrollView)
                         LayoutInflater.from(context)
-                                .inflate(R.layout.autofill_vcn_enroll_bottom_sheet_content, null);
+                                .inflate(
+                                        R.layout.autofill_vcn_enroll_bottom_sheet_content, null);
+        mContentView = mScrollView;
         mContentView.setLayoutDirection(
                 LocalizationUtils.isLayoutRtl()
                         ? View.LAYOUT_DIRECTION_RTL
                         : View.LAYOUT_DIRECTION_LTR);
-        mDragHandler = mContentView.findViewById(R.id.drag_handler);
-        mScrollView = mContentView.findViewById(R.id.scroll_view);
         mDialogTitle = mContentView.findViewById(R.id.dialog_title);
         mVirtualCardDescription = mContentView.findViewById(R.id.virtual_card_description);
         mCardContainer = mContentView.findViewById(R.id.card_container);
@@ -101,10 +97,5 @@ import org.chromium.ui.widget.LoadingView;
         mCancelButton = mContentView.findViewById(R.id.cancel_button);
         mLoadingViewContainer = mContentView.findViewById(R.id.loading_view_container);
         mLoadingView = mContentView.findViewById(R.id.loading_view);
-
-        // Drag handler is not useful when shown as a dialog.
-        if (AutofillSheetUiControllerFactory.shouldUseNonBlockingDialog(context)) {
-            mDragHandler.setVisibility(View.GONE);
-        }
     }
 }

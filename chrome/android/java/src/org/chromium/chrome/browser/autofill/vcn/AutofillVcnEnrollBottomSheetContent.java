@@ -85,6 +85,11 @@ import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public String getSheetContentDescription(Context context) {
         return context.getString(R.string.autofill_virtual_card_enroll_content_description);
     }

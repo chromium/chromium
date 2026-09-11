@@ -108,6 +108,11 @@ public final class AutofillVcnEnrollBottomSheetContentTest {
     }
 
     @Test
+    public void testShowHandlebar() {
+        assertTrue(mContent.showHandlebar());
+    }
+
+    @Test
     public void testBottomSheetAccessibilityContentDescription() {
         assertThat(
                 mContent.getSheetContentDescription(mActivity),
