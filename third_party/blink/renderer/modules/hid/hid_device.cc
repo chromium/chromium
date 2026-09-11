@@ -299,6 +299,7 @@ ScriptPromise<IDLUndefined> HIDDevice::close(ScriptState* script_state) {
 
   connection_.reset();
   receiver_.reset();
+  feature_handle_for_scheduler_.reset();
   resolver->Resolve();
   return promise;
 }
@@ -420,6 +421,7 @@ ScriptPromise<NotShared<DOMDataView>> HIDDevice::receiveFeatureReport(
 
 void HIDDevice::ContextDestroyed() {
   device_requests_.clear();
+  feature_handle_for_scheduler_.reset();
 }
 
 bool HIDDevice::HasPendingActivity() const {
@@ -494,6 +496,10 @@ void HIDDevice::FinishOpen(
         GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
     connection_.set_disconnect_handler(BindOnce(
         &HIDDevice::OnServiceConnectionError, WrapWeakPersistent(this)));
+    feature_handle_for_scheduler_ =
+        GetExecutionContext()->GetScheduler()->RegisterFeature(
+            SchedulingPolicy::Feature::kWebHID,
+            SchedulingPolicy{SchedulingPolicy::DisableAggressiveThrottling()});
     resolver->Resolve();
   } else {
     // If the connection or the context is null, the open failed.
@@ -508,10 +514,12 @@ void HIDDevice::FinishForget(ScriptPromiseResolver<IDLUndefined>* resolver) {
   device_is_forgotten_ = true;
   connection_.reset();
   receiver_.reset();
+  feature_handle_for_scheduler_.reset();
   resolver->Resolve();
 }
 
 void HIDDevice::OnServiceConnectionError() {
+  feature_handle_for_scheduler_.reset();
   for (auto& resolver : device_requests_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, kUnexpectedClose));
