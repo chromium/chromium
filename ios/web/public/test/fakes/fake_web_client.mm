@@ -11,7 +11,6 @@
 #import "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/error_test_util.h"
-#import "ios/web/public/test/fakes/crw_fake_find_session.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/test/test_url_constants.h"
 #import "ui/base/resource/resource_bundle.h"
@@ -51,10 +50,6 @@ scoped_refptr<base::RefCountedMemory> FakeWebClient::GetDataResourceBytes(
 std::vector<JavaScriptFeature*> FakeWebClient::GetJavaScriptFeatures(
     BrowserState* browser_state) const {
   return java_script_features_;
-}
-
-void FakeWebClient::SetPluginNotSupportedText(const std::u16string& text) {
-  plugin_not_supported_text_ = text;
 }
 
 void FakeWebClient::SetJavaScriptFeatures(
