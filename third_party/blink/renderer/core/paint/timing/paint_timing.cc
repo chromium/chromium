@@ -86,7 +86,7 @@ const char* ScrollTypeToString(mojom::blink::ScrollType scroll_type) {
 }  // namespace
 
 BASE_FEATURE(kPaintTimingWaitForPresentationFrameIndex,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class RecodingTimeAfterBackForwardCacheRestoreFrameCallback
     : public FrameCallback {
