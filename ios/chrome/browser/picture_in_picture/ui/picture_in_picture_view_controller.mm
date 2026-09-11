@@ -13,6 +13,7 @@
 #import "base/strings/strcat.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/picture_in_picture/ui/picture_in_picture_mutator.h"
@@ -43,6 +44,10 @@ constexpr CGFloat kPlayPauseButtonPointSize = 25.0;
 NSString* accessibilityLabel(PictureInPictureFeature feature) {
   switch (feature) {
     case PictureInPictureFeature::kDefaultBrowser:
+      if (IsDefaultBrowserPipTextVideoEnabled()) {
+        return l10n_util::GetNSString(
+            IDS_IOS_DEFAULT_BROWSER_PIP_TEXT_VIDEO_ACCESSIBILITY_DESCRIPTION);
+      }
       return l10n_util::GetNSString(
           IDS_IOS_DEFAULT_BROWSER_PIP_ACCESSIBILITY_ANNOUNCEMENT);
   }
