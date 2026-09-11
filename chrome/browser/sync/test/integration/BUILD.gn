@@ -421,8 +421,6 @@ source_set("sync_integration_test_support") {
     "fake_sync_gcm_driver_for_instance_id.h",
     "history_helper.cc",
     "history_helper.h",
-    "invalidations/fake_server_sync_invalidation_sender.cc",
-    "invalidations/fake_server_sync_invalidation_sender.h",
     "invalidations/invalidations_status_checker.cc",
     "invalidations/invalidations_status_checker.h",
     "multi_client_status_change_checker.cc",
