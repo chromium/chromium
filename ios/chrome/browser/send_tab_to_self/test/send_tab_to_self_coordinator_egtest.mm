@@ -956,6 +956,17 @@ void TapSendTabToSelfInActivitySheet() {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
+- (void)setupHistogramTester {
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+  [self addTeardownBlock:^{
+    [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                  @"Cannot reset histogram tester.");
+  }];
+}
+
 // Tests that when kSendTabToSelfAutoOpen is enabled, receiving a shared tab
 // while active in the foreground automatically opens it as a background tab
 // and presents a snackbar banner.
@@ -966,6 +977,8 @@ void TapSendTabToSelfInActivitySheet() {
   // Load a starting page so there is an active, visible WebState.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  [self setupHistogramTester];
 
   NSUInteger initialTabCount = [ChromeEarlGrey mainTabCount];
 
@@ -985,6 +998,13 @@ void TapSendTabToSelfInActivitySheet() {
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       AutoOpenInfobarBannerLabelsStack()];
 
+  // Verify that the activation metric has NOT been logged yet.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"Sharing.SendTabToSelf.ActivatedEntryPoint"],
+      @"Sharing.SendTabToSelf.ActivatedEntryPoint logged prematurely.");
+
   // Tap "Open" on the banner and verify that the received tab is opened
   // directly in the foreground.
   NSString* buttonText =
@@ -996,6 +1016,18 @@ void TapSendTabToSelfInActivitySheet() {
 
   [ChromeEarlGrey
       waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(kExampleURL))];
+
+  // Verify that the activation metric was logged with
+  // ShareActivatedEntryPoint::kMobileMessageBanner (bucket 8).
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:
+                                8  // ShareActivatedEntryPoint::kMobileMessageBanner
+                                   // is 8
+                         forHistogram:
+                             @"Sharing.SendTabToSelf.ActivatedEntryPoint"],
+      @"Sharing.SendTabToSelf.ActivatedEntryPoint histogram not logged.");
 }
 
 // Tests that when kSendTabToSelfAutoOpen is enabled and a shared tab is
@@ -1201,14 +1233,7 @@ void TapSendTabToSelfInActivitySheet() {
 
   // Setup the histogram tester AFTER relaunch, since relaunching wipes the
   // previous app-side histogram tester.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
-  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
-  [self addTeardownBlock:^{
-    [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                  @"Cannot reset histogram tester.");
-  }];
+  [self setupHistogramTester];
 
   // Enter the Tab Grid (this triggers lazy recreation of the card label and
   // re-attaches the tracker).

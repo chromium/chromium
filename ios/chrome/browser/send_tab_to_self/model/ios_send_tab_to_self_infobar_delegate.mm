@@ -163,8 +163,16 @@ bool IOSSendTabToSelfInfoBarDelegate::Accept() {
     return true;
   }
 
-  int received_tab_index = GetMostRecentReceivedWebStateIndex(web_state_list_);
+  const int received_tab_index =
+      GetMostRecentReceivedWebStateIndex(web_state_list_);
   if (received_tab_index != WebStateList::kInvalidIndex) {
+    // Remove the label data before activation so that `WasShown` does not log
+    // `ShareActivatedEntryPoint::kTabStrip`.
+    SendTabToSelfTabCardLabelData::RemoveFromWebState(
+        web_state_list_->GetWebStateAt(received_tab_index));
+    model_->MarkEntryActivated(
+        guid_,
+        send_tab_to_self::ShareActivatedEntryPoint::kMobileMessageBanner);
     // Directly activate the most recently received tab in the foreground.
     web_state_list_->ActivateWebStateAt(received_tab_index);
   } else {

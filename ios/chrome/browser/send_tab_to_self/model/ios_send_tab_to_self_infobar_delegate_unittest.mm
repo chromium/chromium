@@ -319,6 +319,11 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, AcceptWithSingleTabReceived) {
   // (index 1) in the foreground without opening the Tab Grid.
   EXPECT_EQ(1, web_state_list_->active_index());
   EXPECT_EQ(received_tab_ptr, web_state_list_->GetActiveWebState());
+  EXPECT_EQ(model_.last_activated_guid(), entry->GetGUID());
+  EXPECT_EQ(model_.last_activated_entry_point(),
+            send_tab_to_self::ShareActivatedEntryPoint::kMobileMessageBanner);
+  EXPECT_EQ(nullptr,
+            SendTabToSelfTabCardLabelData::FromWebState(received_tab_ptr));
 }
 
 // Tests that Accept() activates the latest received tab directly without
@@ -355,6 +360,13 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, AcceptWithMultipleTabsReceived) {
   // inserted at the highest index (index 2) is activated directly.
   EXPECT_EQ(2, web_state_list_->active_index());
   EXPECT_EQ(tab2_ptr, web_state_list_->GetActiveWebState());
+  EXPECT_EQ(model_.last_activated_guid(), entry2->GetGUID());
+  EXPECT_EQ(model_.last_activated_entry_point(),
+            send_tab_to_self::ShareActivatedEntryPoint::kMobileMessageBanner);
+  EXPECT_EQ(nullptr, SendTabToSelfTabCardLabelData::FromWebState(tab2_ptr));
+  // Verify that unselected background tabs retain their label data.
+  EXPECT_NE(nullptr, SendTabToSelfTabCardLabelData::FromWebState(
+                         web_state_list_->GetWebStateAt(1)));
 }
 
 // Tests that Accept() ignores older previously received tabs and treats a
@@ -397,6 +409,10 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest,
   // timestamp (index 2), activating it directly without opening Tab Grid.
   EXPECT_EQ(2, web_state_list_->active_index());
   EXPECT_EQ(new_tab_ptr, web_state_list_->GetActiveWebState());
+  EXPECT_EQ(model_.last_activated_guid(), new_entry->GetGUID());
+  EXPECT_EQ(model_.last_activated_entry_point(),
+            send_tab_to_self::ShareActivatedEntryPoint::kMobileMessageBanner);
+  EXPECT_EQ(nullptr, SendTabToSelfTabCardLabelData::FromWebState(new_tab_ptr));
 }
 
 }  // namespace
