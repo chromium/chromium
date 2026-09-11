@@ -793,6 +793,8 @@ void Window::ConvertPointToTarget(const Window* source,
     CHECK(target->layer());
     const ui::Layer* source_layer = source->layer();
     const ui::Layer* target_layer = target->layer();
+
+#if !BUILDFLAG(IS_WIN)
     auto chain_name = [](const aura::Window* window) {
       std::ostringstream out;
       out << "[";
@@ -808,7 +810,12 @@ void Window::ConvertPointToTarget(const Window* source,
         << "Root layer in source and target window are different. "
            "source chain="
         << chain_name(source) << ", target chain=" << chain_name(target);
-
+#else
+    // TODO(crbug.com/550457201): Investigate why this is hitting on Windows.
+    if (GetRootLayer(source_layer) != GetRootLayer(target_layer)) {
+      return;
+    }
+#endif
     ui::Layer::ConvertPointToLayer(source_layer, target_layer,
                                    /*use_target_transform=*/true, point);
   }
