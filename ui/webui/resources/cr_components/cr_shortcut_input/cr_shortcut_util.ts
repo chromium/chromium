@@ -192,5 +192,13 @@ export function hasValidModifiers(e: KeyboardEvent): boolean {
 }
 
 export function formatShortcutText(text: string): string {
-  return text.split('+').join(' + ');
+  const tokens = text.split('+');
+  // <if expr="is_macosx">
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i] === 'Alt') {
+      tokens[i] = 'Option';
+    }
+  }
+  // </if>
+  return tokens.join(' + ');
 }

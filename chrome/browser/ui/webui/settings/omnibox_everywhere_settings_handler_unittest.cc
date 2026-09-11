@@ -52,16 +52,16 @@ class OmniboxEverywhereSettingsHandlerTest : public testing::Test {
 
   void TearDown() override { handler_.reset(); }
 
+  TestingOmniboxEverywhereSettingsHandler* handler() { return handler_.get(); }
   TestingProfile* profile() { return profile_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
-  TestingOmniboxEverywhereSettingsHandler* handler() { return handler_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
-  raw_ptr<TestingProfile> profile_ = nullptr;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestingOmniboxEverywhereSettingsHandler> handler_;
 };
@@ -107,7 +107,7 @@ TEST_F(OmniboxEverywhereSettingsHandlerTest, SetAndGetCustomValidShortcut) {
   EXPECT_EQ("cr.webUIResponse", get_call_data.function_name());
   EXPECT_EQ("callback-2", get_call_data.arg1()->GetString());
   EXPECT_TRUE(get_call_data.arg2()->GetBool());
-  EXPECT_FALSE(get_call_data.arg3()->GetString().empty());
+  EXPECT_EQ(custom_shortcut, get_call_data.arg3()->GetString());
 }
 
 TEST_F(OmniboxEverywhereSettingsHandlerTest, SetInvalidShortcutRejected) {

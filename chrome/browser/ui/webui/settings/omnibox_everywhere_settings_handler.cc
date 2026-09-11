@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/webui/settings/omnibox_everywhere_settings_handler.h"
 
 #include "base/functional/bind.h"
-#include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
@@ -63,14 +61,8 @@ void OmniboxEverywhereSettingsHandler::HandleGetOmniboxEverywhereShortcut(
   const ui::Accelerator shortcut =
       omnibox_everywhere::prefs::GetOmniboxEverywhereHotkey(local_state);
 
-  // Return the serialized accelerator text (e.g. "Alt+Space" or
-  // "Ctrl+Shift+Space") matching what cr-shortcut-input expects.
-  const std::string serialized = ui::Command::AcceleratorToString(shortcut);
   ResolveJavascriptCallback(
-      callback_id,
-      base::Value(serialized.empty()
-                      ? base::UTF16ToUTF8(shortcut.GetShortcutText())
-                      : serialized));
+      callback_id, base::Value(ui::Command::AcceleratorToString(shortcut)));
 }
 
 void OmniboxEverywhereSettingsHandler::HandleSetOmniboxEverywhereShortcut(
