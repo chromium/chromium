@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -47,6 +50,7 @@ public class FindToolbarManager {
      * @param anchorView The {@link View} below which the find toolbar and result bar are
      *     positioned.
      * @param browserControlsStateProvider Provider for browser controls state.
+     * @param sideUiStateProviderSupplier Supplier for {@link SideUiStateProvider}.
      */
     public FindToolbarManager(
             ViewStub findToolbarStub,
@@ -56,7 +60,8 @@ public class FindToolbarManager {
             BackPressManager backPressManager,
             FrameLayout secondaryUiContainer,
             @Nullable View anchorView,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            @Nullable OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
         mFindToolbarStub = findToolbarStub;
         mTabModelSelector = tabModelSelector;
         mWindowAndroid = windowAndroid;
@@ -66,6 +71,9 @@ public class FindToolbarManager {
         mAnchorView = anchorView;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mObservers = new ObserverList<>();
+        if (sideUiStateProviderSupplier != null) {
+            sideUiStateProviderSupplier.runSyncOrOnAvailable(this::setSideUiStateProvider);
+        }
     }
 
     /**
@@ -136,7 +144,8 @@ public class FindToolbarManager {
      *
      * @param sideUiStateProvider The {@link SideUiStateProvider} object.
      */
-    public void setSideUiStateProvider(@Nullable SideUiStateProvider sideUiStateProvider) {
+    @VisibleForTesting
+    void setSideUiStateProvider(@Nullable SideUiStateProvider sideUiStateProvider) {
         mSideUiStateProvider = sideUiStateProvider;
         if (mFindToolbar != null) {
             mFindToolbar.setSideUiStateProvider(mSideUiStateProvider);
@@ -147,7 +156,9 @@ public class FindToolbarManager {
     public void destroy() {
         if (mFindToolbar != null) {
             mFindToolbar.destroy();
+            mFindToolbar = null;
         }
+        mSideUiStateProvider = null;
     }
 
     /** Sets the find query text string. */

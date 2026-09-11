@@ -1127,7 +1127,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mOmniboxChipManager = new OmniboxChipManager(omniboxChipContainer, locationBarEmbedder);
         }
 
-        assert mFindToolbarManager != null;
         super.initializeToolbar();
         if (mControlContainer != null) {
             mControlContainer.setIsVerticalTabsActiveSupplier(mIsVerticalTabsActiveSupplier);
@@ -2497,8 +2496,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 mHistoryNavigationCoordinator.setSideUiStateProvider(provider);
                             }
                         }));
-        mSideUiStateProviderSupplier.onAvailable(
-                provider -> assumeNonNull(mFindToolbarManager).setSideUiStateProvider(provider));
         mSideUiStateProviderSupplier.onAvailable(
                 provider -> mRootUiTabObserver.setSideUiStateProvider(provider));
         mSideUiStateProviderSupplier.set(mSideUiCoordinator);

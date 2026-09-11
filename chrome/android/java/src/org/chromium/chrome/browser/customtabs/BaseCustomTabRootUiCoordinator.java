@@ -468,7 +468,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         mActivityLifecycleDispatcher,
                         mActivityTabProvider);
 
-        assert mFindToolbarManager != null;
         super.initializeToolbar();
 
         mToolbarManager.setOptionalButtonDelegate(mToolbarButtonsCoordinator);

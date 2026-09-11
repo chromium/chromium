@@ -44,6 +44,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -298,6 +300,7 @@ public class ToolbarManagerUnitTest {
 
     private List<ButtonDataProvider> mButtonDataProviders;
     private ActivityController<TestActivity> mActivityController;
+    private ToolbarControlContainer mControlContainer;
     private ToolbarManager mToolbarManager;
     private TopToolbarSceneLayer mTopToolbarSceneLayerInstance;
     private ActivityTabProvider mActivityTabProvider;
@@ -359,14 +362,6 @@ public class ToolbarManagerUnitTest {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         SubscriptionEligibilityServiceFactory.setForTesting(mSubscriptionEligibilityService);
 
-        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
-        AppCompatActivity activity = mActivityController.get();
-        activity.setContentView(R.layout.main);
-        ViewStub controlStub = activity.findViewById(R.id.control_container_stub);
-        controlStub.setLayoutResource(R.layout.control_container);
-        ToolbarControlContainer controlContainer = (ToolbarControlContainer) controlStub.inflate();
-        controlContainer.initWithToolbar(R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
-
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         BrowserStateBrowserControlsVisibilityDelegate browserVisibilityDelegate =
                 new BrowserStateBrowserControlsVisibilityDelegate(
@@ -377,8 +372,6 @@ public class ToolbarManagerUnitTest {
         when(mCompositorViewHolder.getInMotionSupplier()).thenReturn(compositorInMotionSupplier);
         when(mDisplayAndroid.getDisplayHeight()).thenReturn(1000);
         when(mWindowAndroid.getDisplay()).thenReturn(mDisplayAndroid);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(activity));
 
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
         when(mTab.getProfile()).thenReturn(mProfile);
@@ -404,11 +397,6 @@ public class ToolbarManagerUnitTest {
         when(mLayoutManager.createCompositorMCPWithExclusions(any(), any(), any(), any()))
                 .thenReturn(mCompositorModelChangeProcessor);
 
-        UnownedUserDataHost unownedUserDataHost = new UnownedUserDataHost();
-        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(unownedUserDataHost);
-        SettableMonotonicObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier =
-                ObservableSuppliers.createMonotonic();
-        ManualFillingComponentSupplier.attach(unownedUserDataHost, manualFillingComponentSupplier);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
         KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
         when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
@@ -417,6 +405,47 @@ public class ToolbarManagerUnitTest {
 
         when(mActionRegistry.get(ActionId.NEW_TAB))
                 .thenReturn(ObservableSuppliers.createNullable(mActionPropertyModel));
+
+        mActivityTabProvider = new ActivityTabProvider();
+        mActivityTabProvider.setForTesting(mTab);
+
+        mButtonDataProviders = List.of(mIdentityDiscProvider, mAdaptiveButtonProvider);
+
+        mToolbarManager = createToolbarManager(LazyOneshotSupplier.fromValue(mFindToolbarManager));
+
+        verify(mIdentityDiscProvider).addObserver(mIdentityDiscObserverCaptor.capture());
+        verify(mAdaptiveButtonProvider).addObserver(mAdaptiveButtonObserverCaptor.capture());
+
+        RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    @After
+    public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
+        mToolbarManager.destroy();
+        mActivityController.close();
+    }
+
+    private ToolbarManager createToolbarManager(
+            LazyOneshotSupplier<FindToolbarManager> findToolbarManagerSupplier) {
+        if (mActivityController != null) {
+            mActivityController.close();
+        }
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        AppCompatActivity activity = mActivityController.get();
+        activity.setContentView(R.layout.main);
+        ViewStub controlStub = activity.findViewById(R.id.control_container_stub);
+        controlStub.setLayoutResource(R.layout.control_container);
+        mControlContainer = (ToolbarControlContainer) controlStub.inflate();
+        mControlContainer.initWithToolbar(R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
+
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(activity));
+        UnownedUserDataHost unownedUserDataHost = new UnownedUserDataHost();
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(unownedUserDataHost);
+        SettableMonotonicObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier =
+                ObservableSuppliers.createMonotonic();
+        ManualFillingComponentSupplier.attach(unownedUserDataHost, manualFillingComponentSupplier);
 
         SettableMonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier =
                 ObservableSuppliers.createMonotonic();
@@ -454,19 +483,14 @@ public class ToolbarManagerUnitTest {
         SettableNonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier =
                 ObservableSuppliers.createNonNull(false);
 
-        mActivityTabProvider = new ActivityTabProvider();
-        mActivityTabProvider.setForTesting(mTab);
-
-        mButtonDataProviders = List.of(mIdentityDiscProvider, mAdaptiveButtonProvider);
-
-        mToolbarManager =
+        ToolbarManager toolbarManager =
                 new ToolbarManager(
                         activity,
                         mBottomControlsStacker,
                         mControlsSizer,
                         mFullscreenManager,
                         edgeToEdgeControllerSupplier,
-                        controlContainer,
+                        mControlContainer,
                         mCompositorViewHolder,
                         mUrlFocusChangedCallback,
                         mToolbarThemeColorProvider,
@@ -479,7 +503,7 @@ public class ToolbarManagerUnitTest {
                         mActivityTabProvider,
                         mScrimManager,
                         mToolbarActionModeCallback,
-                        mFindToolbarManager,
+                        findToolbarManagerSupplier,
                         profileSupplier,
                         bookmarkModelSupplier,
                         mLayoutStateProviderSupplier,
@@ -525,12 +549,9 @@ public class ToolbarManagerUnitTest {
                         /* suppressTabStripAtStart= */ false,
                         mHubManagerSupplier);
 
-        verify(mIdentityDiscProvider).addObserver(mIdentityDiscObserverCaptor.capture());
-        verify(mAdaptiveButtonProvider).addObserver(mAdaptiveButtonObserverCaptor.capture());
-
         NonNullObservableSupplier<TabModelDotInfo> dotSupplier =
                 ObservableSuppliers.createNonNull(mTabModelDotInfo);
-        mToolbarManager.initializeWithNative(
+        toolbarManager.initializeWithNative(
                 mLayoutManager,
                 /* stripLayoutHelperManager= */ null,
                 mOpenGridTabSwitcherHandler,
@@ -542,14 +563,7 @@ public class ToolbarManagerUnitTest {
                 /* contextMenuPopulatorFactory= */ null,
                 /* selectionDropdownMenuDelegate= */ null);
 
-        RobolectricUtil.runAllBackgroundAndUi();
-    }
-
-    @After
-    public void tearDown() {
-        DeviceInfo.resetIsDesktopForTesting();
-        mToolbarManager.destroy();
-        mActivityController.close();
+        return toolbarManager;
     }
 
     private Tab mockTab(boolean isNtp) {
@@ -1490,5 +1504,44 @@ public class ToolbarManagerUnitTest {
         } else {
             verify(ntp, never()).setUrlFocusAnimationsDisabled(anyBoolean());
         }
+    }
+
+    @Test
+    public void testFindToolbarManagerLazySupplier() {
+        mToolbarManager.destroy();
+
+        FindToolbarManager findToolbarManager = mock(FindToolbarManager.class);
+        LazyOneshotSupplierImpl<FindToolbarManager> supplier =
+                new LazyOneshotSupplierImpl<>() {
+                    @Override
+                    public void doSet() {}
+                };
+
+        mToolbarManager = createToolbarManager(supplier);
+
+        verify(findToolbarManager, never()).addObserver(any());
+
+        supplier.set(findToolbarManager);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(findToolbarManager).addObserver(any());
+    }
+
+    @Test
+    public void testFindToolbarManagerLazySupplier_destroyedBeforeAvailable() {
+        mToolbarManager.destroy();
+
+        FindToolbarManager findToolbarManager = mock(FindToolbarManager.class);
+        LazyOneshotSupplierImpl<FindToolbarManager> supplier =
+                new LazyOneshotSupplierImpl<>() {
+                    @Override
+                    public void doSet() {}
+                };
+
+        mToolbarManager = createToolbarManager(supplier);
+        mToolbarManager.destroy();
+
+        supplier.set(findToolbarManager);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(findToolbarManager, never()).addObserver(any());
     }
 }

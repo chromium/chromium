@@ -49,6 +49,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -383,7 +384,7 @@ public class ToolbarManager
     private final OneshotSupplierImpl<OmniboxStub> mOmniboxStubSupplier =
             new OneshotSupplierImpl<>();
     private final Supplier<LocationBar> mLocationBarSupplier = () -> mLocationBar;
-    private FindToolbarManager mFindToolbarManager;
+    private @Nullable FindToolbarManager mFindToolbarManager;
 
     private @MonotonicNonNull LayoutManagerImpl mLayoutManager;
 
@@ -746,7 +747,7 @@ public class ToolbarManager
      * @param scrimManager A means of showing the scrim.
      * @param toolbarActionModeCallback Callback that communicates changes in the conceptual mode of
      *     toolbar interaction.
-     * @param findToolbarManager The manager for the find in page function.
+     * @param findToolbarManagerSupplier Supplier of the manager for the find in page function.
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
      *     TODO(crbug.com/40131776): Use OneShotSupplier once it is ready.
@@ -808,7 +809,7 @@ public class ToolbarManager
             ActivityTabProvider tabProvider,
             ScrimManager scrimManager,
             ToolbarActionModeCallback toolbarActionModeCallback,
-            FindToolbarManager findToolbarManager,
+            LazyOneshotSupplier<FindToolbarManager> findToolbarManagerSupplier,
             MonotonicObservableSupplier<Profile> profileSupplier,
             NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
@@ -1832,8 +1833,12 @@ public class ToolbarManager
                     }
                 };
 
-        mFindToolbarManager = findToolbarManager;
-        mFindToolbarManager.addObserver(mFindToolbarObserver);
+        findToolbarManagerSupplier.onAvailable(
+                mCallbackController.makeCancelable(
+                        findToolbarManager -> {
+                            mFindToolbarManager = findToolbarManager;
+                            mFindToolbarManager.addObserver(mFindToolbarObserver);
+                        }));
 
         Callback<@Nullable Profile> profileObserver =
                 new Callback<@Nullable Profile>() {
@@ -1891,6 +1896,23 @@ public class ToolbarManager
                         });
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
+    }
+
+    /**
+     * Sets the {@link FindToolbarManager} and attaches the observer.
+     *
+     * @param findToolbarManager The {@link FindToolbarManager} to set.
+     */
+    public void setFindToolbarManager(FindToolbarManager findToolbarManager) {
+        if (mIsDestroyed || mFindToolbarManager == findToolbarManager) {
+            return;
+        }
+
+        if (mFindToolbarManager != null) {
+            mFindToolbarManager.removeObserver(mFindToolbarObserver);
+        }
+        mFindToolbarManager = findToolbarManager;
+        mFindToolbarManager.addObserver(mFindToolbarObserver);
     }
 
     /**
@@ -2969,9 +2991,6 @@ public class ToolbarManager
         }
         mLocationBar.removeOmniboxSuggestionsDropdownScrollListener(mStatusBarColorController);
 
-        if (mInitializedWithNative) {
-            mFindToolbarManager.removeObserver(mFindToolbarObserver);
-        }
         if (mTabModelSelectorSupplier != null) {
             mTabModelSelectorSupplier = null;
         }

@@ -18,7 +18,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -56,7 +58,8 @@ public class FindToolbarManagerTest {
                         /* backPressManager= */ null,
                         mSecondaryUiContainer,
                         mAnchorView,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        /* sideUiStateProviderSupplier= */ null);
     }
 
     @Test
@@ -126,6 +129,66 @@ public class FindToolbarManagerTest {
     public void testSetAnchorView() {
         mFindToolbarManager.showToolbar();
         Mockito.verify(mFindToolbar).setAnchorView(mAnchorView);
+    }
+
+    @Test
+    public void testSideUiStateProviderSupplier_resolvedBeforeShow() {
+        OneshotSupplierImpl<SideUiStateProvider> supplier = new OneshotSupplierImpl<>();
+        FindToolbarManager manager =
+                new FindToolbarManager(
+                        mViewStub,
+                        mTabModelSelector,
+                        mWindowAndroid,
+                        /* callback= */ null,
+                        /* backPressManager= */ null,
+                        mSecondaryUiContainer,
+                        mAnchorView,
+                        mBrowserControlsStateProvider,
+                        supplier);
+        supplier.set(mSideUiStateProvider);
+        ShadowLooper.idleMainLooper();
+        manager.showToolbar();
+        Mockito.verify(mFindToolbar).setSideUiStateProvider(mSideUiStateProvider);
+    }
+
+    @Test
+    public void testSideUiStateProviderSupplier_resolvedAfterShow() {
+        OneshotSupplierImpl<SideUiStateProvider> supplier = new OneshotSupplierImpl<>();
+        FindToolbarManager manager =
+                new FindToolbarManager(
+                        mViewStub,
+                        mTabModelSelector,
+                        mWindowAndroid,
+                        /* callback= */ null,
+                        /* backPressManager= */ null,
+                        mSecondaryUiContainer,
+                        mAnchorView,
+                        mBrowserControlsStateProvider,
+                        supplier);
+        manager.showToolbar();
+        supplier.set(mSideUiStateProvider);
+        ShadowLooper.idleMainLooper();
+        Mockito.verify(mFindToolbar).setSideUiStateProvider(mSideUiStateProvider);
+    }
+
+    @Test
+    public void testSideUiStateProviderSupplier_preResolved() {
+        OneshotSupplierImpl<SideUiStateProvider> supplier = new OneshotSupplierImpl<>();
+        supplier.set(mSideUiStateProvider);
+        ShadowLooper.idleMainLooper();
+        FindToolbarManager manager =
+                new FindToolbarManager(
+                        mViewStub,
+                        mTabModelSelector,
+                        mWindowAndroid,
+                        /* callback= */ null,
+                        /* backPressManager= */ null,
+                        mSecondaryUiContainer,
+                        mAnchorView,
+                        mBrowserControlsStateProvider,
+                        supplier);
+        manager.showToolbar();
+        Mockito.verify(mFindToolbar).setSideUiStateProvider(mSideUiStateProvider);
     }
 
     @Test
