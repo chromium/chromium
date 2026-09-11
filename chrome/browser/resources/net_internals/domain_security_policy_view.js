@@ -16,8 +16,6 @@ let instance = null;
  * security policies. These policies include:
  * - HSTS: HTTPS Strict Transport Security. A way for sites to elect to always
  *   use HTTPS. See https://www.chromium.org/hsts
- * - PKP. A way for sites to pin to specific certification authorities. Only
- * available via manual preloading.
  */
 
 export class DomainSecurityPolicyView extends DivView {
@@ -99,10 +97,6 @@ export class DomainSecurityPolicyView extends DivView {
         'static_upgrade_mode',
         'static_sts_include_subdomains',
         'static_sts_observed',
-        'static_pkp_domain',
-        'static_pkp_include_subdomains',
-        'static_pkp_observed',
-        'static_spki_hashes',
         'dynamic_sts_domain',
         'dynamic_upgrade_mode',
         'dynamic_sts_include_subdomains',
@@ -110,40 +104,17 @@ export class DomainSecurityPolicyView extends DivView {
         'dynamic_sts_expiry',
       ];
 
-      const kStaticHashKeys =
-          ['public_key_hashes', 'preloaded_spki_hashes', 'static_spki_hashes'];
+      for (const key of keys) {
+        const value = result[key];
+        addTextNode(this.queryStsOutputDiv_, ' ' + key + ': ');
 
-      const staticHashes = [];
-      for (let i = 0; i < kStaticHashKeys.length; ++i) {
-        const staticHashValue = result[kStaticHashKeys[i]];
-        if (staticHashValue !== undefined && staticHashValue !== '') {
-          staticHashes.push(staticHashValue);
+        if (key.indexOf('_upgrade_mode') >= 0) {
+          addNodeWithText(this.queryStsOutputDiv_, 'tt', modeToString(value));
+        } else {
+          addNodeWithText(
+              this.queryStsOutputDiv_, 'tt', value === undefined ? '' : value);
         }
-
-        for (let i = 0; i < keys.length; ++i) {
-          const key = keys[i];
-          const value = result[key];
-          addTextNode(this.queryStsOutputDiv_, ' ' + key + ': ');
-
-          // If there are no static_hashes, do not make it seem like there is a
-          // static PKP policy in place.
-          if (staticHashes.length === 0 && key.startsWith('static_pkp_')) {
-            addNode(this.queryStsOutputDiv_, 'br');
-            continue;
-          }
-
-          if (key === 'static_spki_hashes') {
-            addNodeWithText(
-                this.queryStsOutputDiv_, 'tt', staticHashes.join(','));
-          } else if (key.indexOf('_upgrade_mode') >= 0) {
-            addNodeWithText(this.queryStsOutputDiv_, 'tt', modeToString(value));
-          } else {
-            addNodeWithText(
-                this.queryStsOutputDiv_, 'tt',
-                value === undefined ? '' : value);
-          }
-          addNode(this.queryStsOutputDiv_, 'br');
-        }
+        addNode(this.queryStsOutputDiv_, 'br');
       }
     }
 
@@ -199,7 +170,6 @@ DomainSecurityPolicyView.DELETE_SUBMIT_ID =
 // HSTS form elements
 DomainSecurityPolicyView.ADD_HSTS_INPUT_ID = 'hsts-view-add-input';
 DomainSecurityPolicyView.ADD_STS_CHECK_ID = 'hsts-view-check-sts-input';
-DomainSecurityPolicyView.ADD_PINS_ID = 'hsts-view-add-pins';
 DomainSecurityPolicyView.ADD_HSTS_FORM_ID = 'hsts-view-add-form';
 DomainSecurityPolicyView.ADD_HSTS_SUBMIT_ID = 'hsts-view-add-submit';
 DomainSecurityPolicyView.QUERY_HSTS_INPUT_ID = 'hsts-view-query-input';

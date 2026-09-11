@@ -66,16 +66,15 @@ found in the LICENSE file.
 
       <div id="domain-security-policy-view-tab-content" class="content-box">
         <!-- This UI allows a user to query and update the browser's list of
-             HSTS/PKP domains. -->
+             HSTS domains. -->
 
-        <h3>HSTS/PKP</h3>
+        <h3>HSTS</h3>
 
         <div class="deindent-header">
           HSTS is HTTP Strict Transport Security: a way for sites to elect to
           always use HTTPS. See
           <a href="https://www.chromium.org/hsts" target="_blank">
-          https://www.chromium.org/hsts</a>. PKP is Public Key Pinning: Chrome
-          "pins" certain public keys for certain sites in official builds.</div>
+          https://www.chromium.org/hsts</a>.</div>
 
         <h4>Add HSTS domain</h4>
 
@@ -89,9 +88,9 @@ found in the LICENSE file.
           <input type="submit" value="Add" id="hsts-view-add-submit">
         </form>
 
-        <h4>Query HSTS/PKP domain</h4>
+        <h4>Query HSTS domain</h4>
 
-        <p>Input a domain name to query the current HSTS/PKP set:</p>
+        <p>Input a domain name to query the current HSTS set:</p>
         <form id="hsts-view-query-form">
           Domain: <input type="text" id="hsts-view-query-input" type="url"
                    placeholder="example.com">
