@@ -121,7 +121,10 @@ customElements.define(TestSearchboxMixinElement.is, TestSearchboxMixinElement);
 function simulateUserTextInput(
     inputElement: SearchboxInputElement, value: string): Promise<void> {
   inputElement.inputElement.value = value;
-  inputElement.inputElement.dispatchEvent(new InputEvent('input'));
+  inputElement.inputElement.dispatchEvent(new InputEvent('input', {
+    inputType: 'insertText',
+    data: value ? value.slice(-1) : '',
+  }));
   return microtasksFinished();
 }
 
@@ -3161,7 +3164,8 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         mockInput.inputElement.value = 'youtube.com query';
         mockInput.inputElement.selectionStart = 12;
         mockInput.inputElement.selectionEnd = 12;
-        mockInput.inputElement.dispatchEvent(new InputEvent('input'));
+        mockInput.inputElement.dispatchEvent(
+            new InputEvent('input', {inputType: 'insertText', data: ' '}));
         await microtasksFinished();
 
         assertTrue(element.keywordModeManager.isInKeywordMode);
@@ -3201,7 +3205,8 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         mockInput.inputElement.value = 'YOUTUBE.COM query';
         mockInput.inputElement.selectionStart = 12;
         mockInput.inputElement.selectionEnd = 12;
-        mockInput.inputElement.dispatchEvent(new InputEvent('input'));
+        mockInput.inputElement.dispatchEvent(
+            new InputEvent('input', {inputType: 'insertText', data: ' '}));
         await microtasksFinished();
 
         assertTrue(element.keywordModeManager.isInKeywordMode);
@@ -3216,4 +3221,84 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals(0, args.cursorPosition);
         assertTrue(args.preventInlineAutocomplete);
       });
+
+  test(
+      'starter pack keyword followed by space enters keyword mode',
+      async () => {
+        testProxy.callbackRouterRemote.setAvailableKeywordModels([{
+          type: KeywordType.kInstant,
+          keyword: '@history',
+          displayText: 'History',
+        }]);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+
+        const mockInput = element.getInputElement();
+        testProxy.handler.reset();
+
+        await simulateUserTextInput(mockInput, '@history ');
+
+        assertTrue(element.keywordModeManager.isInKeywordMode);
+        assertEquals('@history', element.keywordModeManager.activeKeyword);
+        assertEquals('', mockInput.inputElement.value);
+
+        const args = await testProxy.handler.whenCalled('queryAutocomplete');
+        assertEquals('', args.input);
+        assertEquals('@history', args.keyword);
+      });
+
+  test(
+      'available keyword followed by space enters keyword mode without chip',
+      async () => {
+        testProxy.callbackRouterRemote.setAvailableKeywordModels([{
+          type: KeywordType.kChip,
+          keyword: 'google.com',
+          displayText: 'Google',
+        }]);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+
+        const mockInput = element.getInputElement();
+        testProxy.handler.reset();
+
+        await simulateUserTextInput(mockInput, 'google.com ');
+
+        assertTrue(element.keywordModeManager.isInKeywordMode);
+        assertEquals('google.com', element.keywordModeManager.activeKeyword);
+        assertEquals('', mockInput.inputElement.value);
+
+        const args = await testProxy.handler.whenCalled('queryAutocomplete');
+        assertEquals('', args.input);
+        assertEquals('google.com', args.keyword);
+      });
+
+  test('deleting trailing space does not enter keyword mode', async () => {
+    testProxy.callbackRouterRemote.setAvailableKeywordModels([{
+      type: KeywordType.kInstant,
+      keyword: '@history',
+      displayText: 'History',
+    }]);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+
+    const mockInput = element.getInputElement();
+    await simulateUserTextInput(mockInput, '@history  ');
+    assertFalse(element.keywordModeManager.isInKeywordMode);
+
+    testProxy.handler.reset();
+
+    // Backspace to delete the second trailing space -> '@history '
+    mockInput.inputElement.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Backspace'}));
+    mockInput.inputElement.value = '@history ';
+    mockInput.inputElement.selectionStart = 9;
+    mockInput.inputElement.selectionEnd = 9;
+    mockInput.inputElement.dispatchEvent(
+        new InputEvent('input', {inputType: 'deleteContentBackward'}));
+    await microtasksFinished();
+
+    assertFalse(element.keywordModeManager.isInKeywordMode);
+    assertEquals('@history ', mockInput.inputElement.value);
+
+    const args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals('@history ', args.input);
+    assertEquals('', args.keyword);
+  });
 });

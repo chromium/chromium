@@ -52,7 +52,6 @@ export class KeywordModeManager {
   private inputKeywordModel_: InputKeywordModel|null = null;
   private entryMethod_: KeywordModeEntryMethod = KeywordModeEntryMethod.NONE;
   private delegate_: KeywordModeManagerDelegate;
-  private lastInput_: string = '';
 
   constructor(delegate: KeywordModeManagerDelegate) {
     this.delegate_ = delegate;
@@ -69,10 +68,6 @@ export class KeywordModeManager {
   set availableKeywordModels(models: InputKeywordModel[]) {
     this.availableKeywordModels_ =
         new Map(models.map(model => [model.keyword.toLowerCase(), model]));
-  }
-
-  get lastInput(): string {
-    return this.lastInput_;
   }
 
   get inputKeywordModel(): InputKeywordModel|null {
@@ -189,60 +184,29 @@ export class KeywordModeManager {
    * keyword mode (e.g. space after instant keyword, or leading '?').
    * If triggered, enters keyword mode and returns true.
    */
-  acceptInputTrigger(input: string, cursorPosition: number|null): boolean {
+  acceptInputTrigger(
+      input: string, cursorPosition: number|null, event: Event|null): boolean {
     if (cursorPosition === null) {
-      this.lastInput_ = input;
       return false;
     }
-    const triggered = this.acceptSpaceAtEnd_(input, cursorPosition) ||
-        this.acceptSpaceInMiddle_(input, cursorPosition) ||
+    return this.acceptSpaceAtEnd_(input, cursorPosition, event) ||
+        this.acceptSpaceInMiddle_(input, cursorPosition, event) ||
         this.acceptQuestionMark_(input, cursorPosition);
-    this.lastInput_ = input;
-    return triggered;
   }
 
-  private acceptSpaceAtEnd_(input: string, cursorPosition: number): boolean {
-    // Cursor must be at end.
-    if (cursorPosition !== input.length) {
-      return false;
+  private isSpaceEvent_(event: Event|null): boolean {
+    if (event instanceof KeyboardEvent) {
+      return event.key === ' ' || event.key === '\u3000';
     }
-
-    // Input must end in space.
-    if (!input.endsWith(' ') && !input.endsWith('　')) {
-      return false;
+    if (event instanceof InputEvent) {
+      return (event.data === ' ' || event.data === '\u3000') &&
+          event.inputType !== 'insertFromPaste';
     }
-
-    // Chip must be shown.
-    if (this.inputKeywordModel_?.type !== KeywordType.kChip) {
-      return false;
-    }
-
-    // Input must match keyword.
-    const keyword = this.inputKeywordModel_.keyword;
-    if (!keyword ||
-        input.slice(0, -1).toLowerCase() !== keyword.toLowerCase()) {
-      return false;
-    }
-
-    // Space must have been typed, not backspaced to a space. E.g. 'keyword
-    // q<backspace>' should not accept keyword mode.
-    // TODO(b/504669216): this isn't handled yet.
-
-    // Space must have been typed, not pasted.
-    // TODO(b/504669216): webUI doesn't track paste state yet.
-
-    // Space triggering must be enabled.
-    if (!this.keywordSpaceTriggeringEnabled) {
-      return false;
-    }
-
-    this.enter(
-        keyword, this.inputKeywordModel_.displayText,
-        KeywordModeEntryMethod.SPACE_AT_END);
-    return true;
+    return false;
   }
 
-  private acceptSpaceInMiddle_(input: string, cursorPosition: number): boolean {
+  private acceptSpaceAtEnd_(
+      input: string, cursorPosition: number, event: Event|null): boolean {
     // Space triggering must be enabled.
     if (!this.keywordSpaceTriggeringEnabled) {
       return false;
@@ -250,6 +214,61 @@ export class KeywordModeManager {
 
     // Must not already be in keyword mode.
     if (this.isInKeywordMode) {
+      return false;
+    }
+
+    // Space must have been typed, not backspaced to a space or pasted.
+    if (!this.isSpaceEvent_(event)) {
+      return false;
+    }
+
+    // Cursor must be at end.
+    if (cursorPosition !== input.length) {
+      return false;
+    }
+
+    // Input must end in space.
+    if (!input.endsWith(' ') && !input.endsWith('\u3000')) {
+      return false;
+    }
+
+    // Keyword candidate is the single word preceding the space.
+    const candidate = input.slice(0, -1);
+    if (!candidate || candidate.includes(' ') || candidate.includes('\u3000')) {
+      return false;
+    }
+
+    // Must match an available keyword.
+    const lowerCandidate = candidate.toLowerCase();
+    const model = this.availableKeywordModels_.get(lowerCandidate) ||
+        (this.inputKeywordModel_?.keyword.toLowerCase() === lowerCandidate ?
+             this.inputKeywordModel_ :
+             null);
+    if (!model) {
+      return false;
+    }
+
+    const keyword = model.keyword;
+    const displayText = model.displayText || keyword;
+
+    this.enter(keyword, displayText, KeywordModeEntryMethod.SPACE_AT_END);
+    return true;
+  }
+
+  private acceptSpaceInMiddle_(
+      input: string, cursorPosition: number, event: Event|null): boolean {
+    // Space triggering must be enabled.
+    if (!this.keywordSpaceTriggeringEnabled) {
+      return false;
+    }
+
+    // Must not already be in keyword mode.
+    if (this.isInKeywordMode) {
+      return false;
+    }
+
+    // Space must have been typed, not backspaced to a space or pasted.
+    if (!this.isSpaceEvent_(event)) {
       return false;
     }
 
@@ -262,19 +281,19 @@ export class KeywordModeManager {
 
     // Character at spacePosition must be a space.
     const spaceChar = input[spacePosition];
-    if (spaceChar !== ' ' && spaceChar !== '　') {
+    if (spaceChar !== ' ' && spaceChar !== '\u3000') {
       return false;
     }
 
     // Character preceding the space must not be whitespace.
     const charBeforeSpace = input[spacePosition - 1];
-    if (charBeforeSpace === ' ' || charBeforeSpace === '　') {
+    if (charBeforeSpace === ' ' || charBeforeSpace === '\u3000') {
       return false;
     }
 
     // Keyword candidate is the single word preceding the space.
     const candidate = input.slice(0, spacePosition);
-    if (candidate.includes(' ') || candidate.includes('　')) {
+    if (candidate.includes(' ') || candidate.includes('\u3000')) {
       return false;
     }
 
@@ -291,14 +310,7 @@ export class KeywordModeManager {
     // Text after the space must not be empty or start with whitespace.
     const textAfter = input.slice(cursorPosition);
     if (!textAfter.trim() || textAfter.startsWith(' ') ||
-        textAfter.startsWith('　')) {
-      return false;
-    }
-
-    // Space must have been typed in the middle between the keyword and text
-    // after the space, meaning the previous input was `candidate + textAfter`.
-    if (this.lastInput_.toLowerCase() !==
-        (candidate + textAfter).toLowerCase()) {
+        textAfter.startsWith('\u3000')) {
       return false;
     }
 

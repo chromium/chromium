@@ -17,6 +17,13 @@ suite('KeywordModeManagerTest', () => {
   let lastKeywordCleared: KeywordClearedEvent|null;
   let keywordEnteredCount: number;
 
+  const spaceEvent = new KeyboardEvent('keydown', {key: ' '});
+  const ideographicSpaceEvent = new KeyboardEvent('keydown', {key: '\u3000'});
+  const backspaceEvent = new KeyboardEvent('keydown', {key: 'Backspace'});
+  const questionMarkEvent = new KeyboardEvent('keydown', {key: '?'});
+  const spaceInputEvent =
+      new InputEvent('input', {inputType: 'insertText', data: ' '});
+
   setup(() => {
     modelChangedCount = 0;
     lastKeywordCleared = null;
@@ -64,10 +71,10 @@ suite('KeywordModeManagerTest', () => {
 
   test('acceptInputTrigger for space at end', () => {
     // Null cursor position -> false.
-    assertFalse(manager.acceptInputTrigger('google.com ', null));
+    assertFalse(manager.acceptInputTrigger('google.com ', null, spaceEvent));
 
     // No keyword model -> false.
-    assertFalse(manager.acceptInputTrigger('google.com ', 11));
+    assertFalse(manager.acceptInputTrigger('google.com ', 11, spaceEvent));
 
     // Keyword chip shown.
     manager.inputKeywordModel = {
@@ -77,13 +84,13 @@ suite('KeywordModeManagerTest', () => {
     };
 
     // Cursor not at end -> false.
-    assertFalse(manager.acceptInputTrigger('google.com ', 5));
+    assertFalse(manager.acceptInputTrigger('google.com ', 5, spaceEvent));
 
     // Input does not end with space -> false.
-    assertFalse(manager.acceptInputTrigger('google.com', 10));
+    assertFalse(manager.acceptInputTrigger('google.com', 10, spaceEvent));
 
     // Input does not match keyword -> false.
-    assertFalse(manager.acceptInputTrigger('yahoo.com ', 10));
+    assertFalse(manager.acceptInputTrigger('yahoo.com ', 10, spaceEvent));
 
     // Already in keyword mode (kInKeyword) -> false.
     manager.inputKeywordModel = {
@@ -91,7 +98,7 @@ suite('KeywordModeManagerTest', () => {
       keyword: 'google.com',
       displayText: 'Search Google',
     };
-    assertFalse(manager.acceptInputTrigger('google.com ', 11));
+    assertFalse(manager.acceptInputTrigger('google.com ', 11, spaceEvent));
 
     // Correct input and cursor at end -> true and automatically enters keyword
     // mode with SPACE_AT_END entry method.
@@ -100,7 +107,7 @@ suite('KeywordModeManagerTest', () => {
       keyword: 'google.com',
       displayText: 'Search Google',
     };
-    assertTrue(manager.acceptInputTrigger('google.com ', 11));
+    assertTrue(manager.acceptInputTrigger('google.com ', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('google.com', manager.activeKeyword);
 
@@ -110,7 +117,8 @@ suite('KeywordModeManagerTest', () => {
       keyword: 'google.com',
       displayText: 'Search Google',
     };
-    assertTrue(manager.acceptInputTrigger('google.com　', 11));
+    assertTrue(manager.acceptInputTrigger(
+        'google.com\u3000', 11, ideographicSpaceEvent));
     assertTrue(manager.isInKeywordMode);
 
     // Case-insensitive match at end -> true.
@@ -120,9 +128,105 @@ suite('KeywordModeManagerTest', () => {
       keyword: 'google.com',
       displayText: 'Search Google',
     };
-    assertTrue(manager.acceptInputTrigger('GOOGLE.COM ', 11));
+    assertTrue(manager.acceptInputTrigger('GOOGLE.COM ', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('google.com', manager.activeKeyword);
+
+    // Starter pack keyword in availableKeywordModels -> true on space at end.
+    manager.exit();
+    manager.availableKeywordModels = [
+      {
+        type: KeywordType.kInstant,
+        keyword: '@history',
+        displayText: '@history',
+      },
+      {
+        type: KeywordType.kChip,
+        keyword: 'google.com',
+        displayText: 'Search Google',
+      },
+    ];
+    assertTrue(manager.acceptInputTrigger('@history ', 9, spaceEvent));
+    assertTrue(manager.isInKeywordMode);
+    assertEquals('@history', manager.activeKeyword);
+    assertEquals('@history', manager.inputKeywordModel?.displayText);
+    assertEquals(KeywordModeEntryMethod.SPACE_AT_END, manager.entryMethod);
+    manager.exit();
+
+    // Starter pack keyword case-insensitive -> true.
+    assertTrue(manager.acceptInputTrigger('@HISTORY ', 9, spaceEvent));
+    assertTrue(manager.isInKeywordMode);
+    assertEquals('@history', manager.activeKeyword);
+    manager.exit();
+
+    // Starter pack keyword with ideographic space -> true.
+    assertTrue(
+        manager.acceptInputTrigger('@history\u3000', 9, ideographicSpaceEvent));
+    assertTrue(manager.isInKeywordMode);
+    assertEquals('@history', manager.activeKeyword);
+    manager.exit();
+
+    // Starter pack keyword in inputKeywordModel -> true.
+    manager.availableKeywordModels = [];
+    manager.inputKeywordModel = {
+      type: KeywordType.kInstant,
+      keyword: '@bookmarks',
+      displayText: '@bookmarks',
+    };
+    assertTrue(manager.acceptInputTrigger('@bookmarks ', 11, spaceEvent));
+    assertTrue(manager.isInKeywordMode);
+    assertEquals('@bookmarks', manager.activeKeyword);
+    manager.exit();
+
+    // Available keyword in availableKeywordModels without chip shown -> true.
+    manager.availableKeywordModels = [{
+      type: KeywordType.kChip,
+      keyword: 'google.com',
+      displayText: 'Search Google',
+    }];
+    assertTrue(manager.acceptInputTrigger('google.com ', 11, spaceEvent));
+    assertTrue(manager.isInKeywordMode);
+    assertEquals('google.com', manager.activeKeyword);
+    assertEquals('Search Google', manager.inputKeywordModel?.displayText);
+    assertEquals(KeywordModeEntryMethod.SPACE_AT_END, manager.entryMethod);
+    manager.exit();
+
+    // Keyword not in availableKeywordModels without chip shown -> false.
+    assertFalse(manager.acceptInputTrigger('yahoo.com ', 10, spaceEvent));
+    assertFalse(manager.isInKeywordMode);
+
+    // Space was not typed (e.g. deleting trailing space from "@history  ") ->
+    // false.
+    manager.availableKeywordModels = [{
+      type: KeywordType.kInstant,
+      keyword: '@history',
+      displayText: '@history',
+    }];
+    assertFalse(manager.acceptInputTrigger('@history ', 9, backspaceEvent));
+    assertFalse(manager.isInKeywordMode);
+
+    const backspaceInputEvent =
+        new InputEvent('input', {inputType: 'deleteContentBackward'});
+    assertFalse(
+        manager.acceptInputTrigger('@history ', 9, backspaceInputEvent));
+    assertFalse(manager.isInKeywordMode);
+
+    const pasteInputEvent =
+        new InputEvent('input', {inputType: 'insertFromPaste', data: ' '});
+    assertFalse(manager.acceptInputTrigger('@history ', 9, pasteInputEvent));
+    assertFalse(manager.isInKeywordMode);
+
+    // Starter pack keyword when keywordSpaceTriggeringEnabled is false ->
+    // false.
+    manager.availableKeywordModels = [{
+      type: KeywordType.kInstant,
+      keyword: '@history',
+      displayText: '@history',
+    }];
+    manager.keywordSpaceTriggeringEnabled = false;
+    assertFalse(manager.acceptInputTrigger('@history ', 9, spaceEvent));
+    assertFalse(manager.isInKeywordMode);
+    manager.keywordSpaceTriggeringEnabled = true;
 
     // When keywordSpaceTriggeringEnabled is false -> false.
     manager.exit();
@@ -132,7 +236,7 @@ suite('KeywordModeManagerTest', () => {
       keyword: 'google.com',
       displayText: 'Search Google',
     };
-    assertFalse(manager.acceptInputTrigger('google.com ', 11));
+    assertFalse(manager.acceptInputTrigger('google.com ', 11, spaceEvent));
     assertFalse(manager.isInKeywordMode);
 
     // Reset keywordSpaceTriggeringEnabled.
@@ -150,14 +254,12 @@ suite('KeywordModeManagerTest', () => {
   });
 
   test('acceptInputTrigger for space in middle', () => {
-    // Null cursor position -> false, saves lastInput.
-    assertFalse(manager.acceptInputTrigger('google.com query', null));
-    assertEquals('google.com query', manager.lastInput);
+    // Null cursor position -> false.
+    assertFalse(
+        manager.acceptInputTrigger('google.com query', null, spaceEvent));
 
     // Non-keyword (no keyword model / not in availableKeywordModels) -> false.
-    manager.acceptInputTrigger('catdog', 6);
-    assertEquals('catdog', manager.lastInput);
-    assertFalse(manager.acceptInputTrigger('cat dog', 4));
+    assertFalse(manager.acceptInputTrigger('cat dog', 4, spaceEvent));
     assertFalse(manager.isInKeywordMode);
 
     // Provide available keyword models.
@@ -175,24 +277,31 @@ suite('KeywordModeManagerTest', () => {
     ];
 
     // Keyword in availableKeywordModels -> true.
-    manager.acceptInputTrigger('google.comquery', 15);
-    assertTrue(manager.acceptInputTrigger('google.com query', 11));
+    assertTrue(manager.acceptInputTrigger('google.com query', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('google.com', manager.activeKeyword);
     assertEquals('Search Google', manager.inputKeywordModel?.displayText);
     manager.exit();
 
+    // InputEvent also works.
+    assertTrue(
+        manager.acceptInputTrigger('google.com query', 11, spaceInputEvent));
+    manager.exit();
+
     // Starter pack / instant keyword in availableKeywordModels -> true.
-    manager.acceptInputTrigger('@historyquery', 13);
-    assertTrue(manager.acceptInputTrigger('@history query', 9));
+    assertTrue(manager.acceptInputTrigger('@history query', 9, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('@history', manager.activeKeyword);
     assertEquals('@history', manager.inputKeywordModel?.displayText);
     manager.exit();
 
+    // Space was not typed (e.g. backspace) -> false.
+    assertFalse(
+        manager.acceptInputTrigger('google.com query', 11, backspaceEvent));
+    assertFalse(manager.isInKeywordMode);
+
     // Non-keyword (not in availableKeywordModels) -> false.
-    manager.acceptInputTrigger('yahoo.comquery', 14);
-    assertFalse(manager.acceptInputTrigger('yahoo.com query', 10));
+    assertFalse(manager.acceptInputTrigger('yahoo.com query', 10, spaceEvent));
     assertFalse(manager.isInKeywordMode);
 
     // When keyword is removed from availableKeywordModels -> false.
@@ -201,8 +310,7 @@ suite('KeywordModeManagerTest', () => {
       keyword: '@history',
       displayText: '@history',
     }];
-    manager.acceptInputTrigger('google.comquery', 15);
-    assertFalse(manager.acceptInputTrigger('google.com query', 11));
+    assertFalse(manager.acceptInputTrigger('google.com query', 11, spaceEvent));
     assertFalse(manager.isInKeywordMode);
 
     // Restore google.com to availableKeywordModels.
@@ -219,50 +327,36 @@ suite('KeywordModeManagerTest', () => {
       },
     ];
 
-    // No prior input matching keyword + textAfter -> false.
-    manager.acceptInputTrigger('unrelated input', 15);
-    assertFalse(manager.acceptInputTrigger('google.com query', 11));
-
     // Cursor position not immediately after space -> false.
-    manager.acceptInputTrigger('google.comquery', 15);
-    assertFalse(manager.acceptInputTrigger('google.com query', 10));
-    manager.acceptInputTrigger('google.comquery', 15);
-    assertFalse(manager.acceptInputTrigger('google.com query', 16));
+    assertFalse(manager.acceptInputTrigger('google.com query', 10, spaceEvent));
+    assertFalse(manager.acceptInputTrigger('google.com query', 16, spaceEvent));
 
     // Character after keyword is not space -> false.
-    manager.acceptInputTrigger('google.comquery', 15);
-    assertFalse(manager.acceptInputTrigger('google.com-query', 11));
+    assertFalse(manager.acceptInputTrigger('google.com-query', 11, spaceEvent));
 
     // Text after space starts with another space -> false.
-    manager.acceptInputTrigger('google.com query', 16);
-    assertFalse(manager.acceptInputTrigger('google.com  query', 11));
-
-    // Backspace from 2 spaces to 1 space (space was not typed) -> false.
-    manager.acceptInputTrigger('google.com  query', 12);
-    assertFalse(manager.acceptInputTrigger('google.com query', 11));
+    assertFalse(
+        manager.acceptInputTrigger('google.com  query', 11, spaceEvent));
 
     // Already in keyword mode (kInKeyword) -> false.
     manager.enter('google.com', 'Search Google', KeywordModeEntryMethod.TAB);
-    manager.acceptInputTrigger('google.comquery', 15);
-    assertFalse(manager.acceptInputTrigger('google.com query', 11));
+    assertFalse(manager.acceptInputTrigger('google.com query', 11, spaceEvent));
     manager.exit();
 
     // Ideographic space in middle -> true.
-    manager.acceptInputTrigger('google.comquery', 15);
-    assertTrue(manager.acceptInputTrigger('google.com　query', 11));
+    assertTrue(manager.acceptInputTrigger(
+        'google.com\u3000query', 11, ideographicSpaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('google.com', manager.activeKeyword);
     manager.exit();
 
     // Case-insensitive space in middle -> true.
-    manager.acceptInputTrigger('GOOGLE.COMquery', 15);
-    assertTrue(manager.acceptInputTrigger('GOOGLE.COM query', 11));
+    assertTrue(manager.acceptInputTrigger('GOOGLE.COM query', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('google.com', manager.activeKeyword);
     manager.exit();
 
-    manager.acceptInputTrigger('Google.comquery', 15);
-    assertTrue(manager.acceptInputTrigger('Google.com query', 11));
+    assertTrue(manager.acceptInputTrigger('Google.com query', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('google.com', manager.activeKeyword);
     manager.exit();
@@ -275,45 +369,42 @@ suite('KeywordModeManagerTest', () => {
         displayText: 'Search YouTube',
       },
     ];
-    manager.acceptInputTrigger('youtube.comquery', 16);
-    assertTrue(manager.acceptInputTrigger('youtube.com query', 12));
+    assertTrue(manager.acceptInputTrigger('youtube.com query', 12, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('YouTube.com', manager.activeKeyword);
     manager.exit();
 
-    manager.acceptInputTrigger('YOUTUBE.COMquery', 16);
-    assertTrue(manager.acceptInputTrigger('YOUTUBE.COM query', 12));
+    assertTrue(manager.acceptInputTrigger('YOUTUBE.COM query', 12, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('YouTube.com', manager.activeKeyword);
     manager.exit();
 
     // When keywordSpaceTriggeringEnabled is false -> false.
     manager.keywordSpaceTriggeringEnabled = false;
-    manager.acceptInputTrigger('google.comquery', 15);
-    assertFalse(manager.acceptInputTrigger('google.com query', 11));
+    assertFalse(manager.acceptInputTrigger('google.com query', 11, spaceEvent));
     assertFalse(manager.isInKeywordMode);
     manager.keywordSpaceTriggeringEnabled = true;
   });
 
   test('acceptInputTrigger for question mark', () => {
     // Null cursor position -> false.
-    assertFalse(manager.acceptInputTrigger('?', null));
+    assertFalse(manager.acceptInputTrigger('?', null, questionMarkEvent));
 
     // Input not '?' -> false.
-    assertFalse(manager.acceptInputTrigger('?a', 2));
-    assertFalse(manager.acceptInputTrigger('hello', 5));
+    assertFalse(manager.acceptInputTrigger('?a', 2, questionMarkEvent));
+    assertFalse(manager.acceptInputTrigger('hello', 5, questionMarkEvent));
 
     // Cursor not at 1 -> false.
-    assertFalse(manager.acceptInputTrigger('?', 0));
+    assertFalse(manager.acceptInputTrigger('?', 0, questionMarkEvent));
 
     // Already in keyword mode -> false.
     manager.enter('google.com', 'Search Google', KeywordModeEntryMethod.TAB);
-    assertFalse(manager.acceptInputTrigger('?', 1));
+    assertFalse(manager.acceptInputTrigger('?', 1, questionMarkEvent));
 
     // Input '?' with cursor at 1 -> true and automatically enters question mark
     // keyword mode with QUESTION_MARK entry method.
     manager.exit();
-    assertTrue(manager.acceptInputTrigger('?', 1));
+    assertTrue(manager.acceptInputTrigger('?', 1, questionMarkEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('?', manager.activeKeyword);
     assertEquals('', manager.inputKeywordModel?.displayText);
@@ -381,7 +472,7 @@ suite('KeywordModeManagerTest', () => {
           keyword: 'youtube.com',
           displayText: 'Search YouTube',
         };
-        assertTrue(manager.acceptInputTrigger('youtube.com ', 12));
+        assertTrue(manager.acceptInputTrigger('youtube.com ', 12, spaceEvent));
 
         assertTrue(manager.handleBackspace({
           value: '',
@@ -403,8 +494,10 @@ suite('KeywordModeManagerTest', () => {
           keyword: 'youtube.com',
           displayText: 'Search YouTube',
         }];
-        assertFalse(manager.acceptInputTrigger('youtube.comquery', 16));
-        assertTrue(manager.acceptInputTrigger('youtube.com query', 12));
+        assertFalse(
+            manager.acceptInputTrigger('youtube.comquery', 16, spaceEvent));
+        assertTrue(
+            manager.acceptInputTrigger('youtube.com query', 12, spaceEvent));
 
         assertTrue(manager.handleBackspace({
           value: 'query',
@@ -437,7 +530,7 @@ suite('KeywordModeManagerTest', () => {
       'handleBackspace question mark entry restores question mark prefix',
       () => {
         // Case 4: '?f<left arrow><backspace>' -> restore '?f'
-        assertTrue(manager.acceptInputTrigger('?', 1));
+        assertTrue(manager.acceptInputTrigger('?', 1, questionMarkEvent));
 
         assertTrue(manager.handleBackspace({
           value: 'f',
@@ -449,7 +542,7 @@ suite('KeywordModeManagerTest', () => {
         assertEquals(1, lastKeywordCleared?.cursorPosition);
 
         // Immediate backspace: '?<backspace>' -> restore '?'
-        assertTrue(manager.acceptInputTrigger('?', 1));
+        assertTrue(manager.acceptInputTrigger('?', 1, questionMarkEvent));
         assertTrue(manager.handleBackspace({
           value: '',
           selectionStart: 0,

@@ -222,6 +222,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
         this.fire('searchbox-input-text-updated', {
           value: '',
           isComposing: false,
+          event: e,
         });
       }
     }
@@ -248,6 +249,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     this.fire('searchbox-input-text-updated', {
       value: inputValue,
       isComposing: e.isComposing,
+      event: e,
     });
 
     // If a character has been typed, mark 'CharTyped'. Otherwise clear it. If
@@ -297,6 +299,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
       this.fire('searchbox-input-text-updated', {
         value: this.lastInput_.text,
         isComposing: false,
+        event: e,
       });
 
       // If 'CharTyped' mark already exists, there's a pending typed character

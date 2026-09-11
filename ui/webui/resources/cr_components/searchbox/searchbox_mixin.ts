@@ -463,13 +463,18 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           input, /*preventInlineAutocomplete=*/ false, isOnFocus);
     }
 
-    onSearchboxInputTextUpdated(
-        e: CustomEvent<{value: string, isComposing: boolean}>) {
+    onSearchboxInputTextUpdated(e: CustomEvent<{
+      value: string,
+      isComposing: boolean,
+      event?: Event,
+    }>) {
       const input = e.detail.value;
       const cursorPosition =
           this.getInputElement().inputElement?.selectionStart ?? null;
+      const event = e.detail.event ?? null;
 
-      if (this.keywordModeManager_.acceptInputTrigger(input, cursorPosition)) {
+      if (this.keywordModeManager_.acceptInputTrigger(
+              input, cursorPosition, event)) {
         const isSpaceInMiddle = this.keywordModeManager_.entryMethod ===
             KeywordModeEntryMethod.SPACE_IN_MIDDLE;
         const remainingText = isSpaceInMiddle ?
@@ -1086,8 +1091,11 @@ export interface SearchboxMixinInterface extends
   onKeywordClick(e: Event): void;
   openContextMenu(): void;
   openCtrlEnterMatch(matchIndex: number): void;
-  onSearchboxInputTextUpdated(
-      e: CustomEvent<{value: string, isComposing: boolean}>): void;
+  onSearchboxInputTextUpdated(e: CustomEvent<{
+    value: string,
+    isComposing: boolean,
+    event?: Event,
+  }>): void;
   onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
   pageHandler(): PageHandlerInterface;
   queryAutocomplete(
