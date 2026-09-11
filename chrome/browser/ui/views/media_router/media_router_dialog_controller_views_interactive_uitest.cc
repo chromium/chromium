@@ -205,6 +205,52 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
   ASSERT_EQ(initiator_, browser()->GetTabStripModel()->GetActiveWebContents());
 }
 
+IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
+                       FullscreenExitedOnGMCDialogOpen) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple_page.html")));
+  CreateDialogController();
+
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
+
+  // Enter tab fullscreen.
+  ui_test_utils::FullscreenWaiter enter_waiter(browser(),
+                                               {.tab_fullscreen = true});
+  EXPECT_TRUE(content::ExecJs(initiator_,
+                              "document.documentElement.requestFullscreen()"));
+  enter_waiter.Wait();
+  EXPECT_TRUE(fullscreen_controller->IsTabFullscreen());
+
+  // Show GMC dialog for presentation.
+  ShowDialogForPresentation();
+
+  // Dialog should be showing and tab fullscreen should be exited.
+  EXPECT_TRUE(MediaDialogView::IsShowing());
+  EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
+
+  // While the dialog is showing, tab fullscreen cannot be entered.
+  EXPECT_FALSE(content::ExecJs(initiator_,
+                               "document.documentElement.requestFullscreen()"));
+  EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
+
+  // Close the dialog.
+  views::Widget* widget =
+      MediaDialogView::GetDialogViewForTesting()->GetWidget();
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  MediaDialogView::HideDialog();
+  waiter.Wait();
+  EXPECT_FALSE(MediaDialogView::IsShowing());
+
+  // Now we should be able to enter tab fullscreen again.
+  ui_test_utils::FullscreenWaiter reenter_waiter(browser(),
+                                                 {.tab_fullscreen = true});
+  EXPECT_TRUE(content::ExecJs(initiator_,
+                              "document.documentElement.requestFullscreen()"));
+  reenter_waiter.Wait();
+  EXPECT_TRUE(fullscreen_controller->IsTabFullscreen());
+}
+
 #endif
 
 }  // namespace media_router
