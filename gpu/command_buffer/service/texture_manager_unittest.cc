@@ -668,6 +668,17 @@ TEST_F(TextureTest, CanRenderTo) {
   manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, 1,
                          0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect());
   EXPECT_TRUE(texture_ref_->texture()->CanRenderTo(feature_info.get(), 0));
+
+  // Verify that rendering to a level < base_level is not allowed.
+  EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 1))
+      .Times(1)
+      .RetiresOnSaturation();
+  manager_->SetParameteri("", error_state_.get(), texture_ref_.get(),
+                          GL_TEXTURE_BASE_LEVEL, 1);
+  manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 1, GL_RGBA, 0, 0, 1,
+                         0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect());
+  EXPECT_FALSE(texture_ref_->texture()->CanRenderTo(feature_info.get(), 0));
+  EXPECT_TRUE(texture_ref_->texture()->CanRenderTo(feature_info.get(), 1));
 }
 
 TEST_F(TextureTest, CanNotRenderTo) {
