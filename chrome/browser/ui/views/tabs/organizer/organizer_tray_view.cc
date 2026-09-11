@@ -199,9 +199,11 @@ void OrganizerTrayView::SetPanelView(std::unique_ptr<views::View> panel_view) {
 std::unique_ptr<views::View> OrganizerTrayView::TakePanelView() {
   CHECK(panel_view_);
   panel_view_->SetProperty(views::kViewIgnoredByLayoutKey, false);
-  auto result = RemoveChildViewT(panel_view_);
-  panel_view_ = nullptr;
-  return result;
+  return RemoveChildViewT(std::exchange(panel_view_, nullptr));
+}
+
+bool OrganizerTrayView::HasPanelView() const {
+  return panel_view_;
 }
 
 // ----------------

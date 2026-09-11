@@ -1009,13 +1009,12 @@ BrowserView::BrowserView(BrowserWindowInterface* browser)
     horizontal_tab_strip_region_view_->InitializeTabStrip();
   }
 
-  auto* const organizer_panel_controller =
-      OrganizerPanelController::From(browser_);
-  if (organizer_panel_controller) {
-    auto organizer_panel = OrganizerPanelView::Create(*browser_);
+  if (auto* const organizer_panel_controller =
+          OrganizerPanelController::From(browser_)) {
     organizer_tray_ =
         AddChildView(std::make_unique<OrganizerTrayView>(*browser_, this));
-    organizer_tray_->SetPanelView(std::move(organizer_panel));
+    organizer_panel_controller->SetPanelView(
+        base::PassKey<BrowserView>(), OrganizerPanelView::Create(*browser_));
   }
 
   // Create do-nothing view for the sake of controlling the z-order of the find

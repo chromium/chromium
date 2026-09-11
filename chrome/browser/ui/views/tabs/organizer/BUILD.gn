@@ -8,6 +8,7 @@ source_set("organizer") {
   sources = [
     "layout_constants.h",
     "organizer_panel_controls_view.h",
+    "organizer_panel_host.h",
     "organizer_panel_utils.h",
     "organizer_panel_view.h",
     "organizer_tray_view.h",
@@ -32,6 +33,7 @@ source_set("organizer") {
 source_set("impl") {
   sources = [
     "organizer_panel_controls_view.cc",
+    "organizer_panel_host.cc",
     "organizer_panel_utils.cc",
     "organizer_panel_view.cc",
     "organizer_tray_view.cc",
@@ -48,6 +50,7 @@ source_set("impl") {
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_group",
@@ -56,6 +59,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/animations",
     "//chrome/browser/ui/views/frame:custom_corners_background",
     "//chrome/browser/ui/views/frame:shadow",
+    "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/tabs/vertical",
     "//chrome/browser/ui/views/toolbar",

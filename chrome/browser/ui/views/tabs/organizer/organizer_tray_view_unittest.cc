@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views_impl.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -131,13 +132,16 @@ class OrganizerTrayViewTest
     browser_view_ =
         widget_->SetContentsView(std::make_unique<FakeBrowserView>(browser_));
     browser_elements_->Init(browser_view_);
+    widget_->SetBounds(gfx::Rect(0, 0, 800, 600));
+    widget_->Show();
+
+    // Correct approach is to set this through the controller. It does not need
+    // to be reset later as it will be torn down with its parent view.
     auto panel = std::make_unique<views::View>();
     panel_ = panel.get();
     panel_->SetProperty(views::kElementIdentifierKey,
                         kOrganizerPanelViewElementId);
-    browser_view_->tray_view()->SetPanelView(std::move(panel));
-    widget_->SetBounds(gfx::Rect(0, 0, 800, 600));
-    widget_->Show();
+    state_controller_->SetPanelViewForTesting(std::move(panel));
 
     SetContextWidget(widget_.get());
   }

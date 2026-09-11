@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/focus/focus_manager.h"
@@ -27,7 +28,8 @@ class ShadowFrameView;
 // hosting the organizer panel when the panel is not hosted in some other UI
 // (such as the vertical tab strip).
 class OrganizerTrayView : public views::FlexLayoutView,
-                          public views::FocusTraversable {
+                          public views::FocusTraversable,
+                          public OrganizerPanelHost {
   METADATA_HEADER(OrganizerTrayView, views::View)
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTrayElementId);
@@ -46,11 +48,6 @@ class OrganizerTrayView : public views::FlexLayoutView,
   void SetTargetWidth(int target_width);
   int target_width() const { return target_width_; }
 
-  // Sets or takes the panel view.
-  void SetPanelView(std::unique_ptr<views::View> panel_view);
-  std::unique_ptr<views::View> TakePanelView();
-  bool has_panel_view() const { return panel_view_ != nullptr; }
-
   // Used to enable dragging.
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
@@ -66,6 +63,11 @@ class OrganizerTrayView : public views::FlexLayoutView,
   // ----------------
 
  protected:
+  // OrganizerPanelHost:
+  void SetPanelView(std::unique_ptr<views::View> panel_view) override;
+  std::unique_ptr<views::View> TakePanelView() override;
+  bool HasPanelView() const override;
+
   // views::View:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void AddedToWidget() override;

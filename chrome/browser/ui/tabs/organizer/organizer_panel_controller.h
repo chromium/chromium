@@ -18,12 +18,19 @@
 #include "extensions/common/extension_id.h"
 #endif
 
+class BrowserView;
 class BrowserWindowInterface;
 
 namespace actions {
 class ActionItem;
 }  // namespace actions
 
+namespace views {
+class View;
+}
+
+// Manages the Organizer Panel, its animations, its placement in the browser,
+// etc.
 class OrganizerPanelController {
  public:
   DECLARE_USER_DATA(OrganizerPanelController);
@@ -55,6 +62,13 @@ class OrganizerPanelController {
   base::CallbackListSubscription RegisterOnStateChanged(
       StateChangedCallback callback);
 
+  // Sets the panel view and returns the old one, if any.
+  std::unique_ptr<views::View> SetPanelView(
+      base::PassKey<BrowserView>,
+      std::unique_ptr<views::View> panel_view);
+  std::unique_ptr<views::View> SetPanelViewForTesting(
+      std::unique_ptr<views::View> panel_view);
+
  private:
   // Notifies subscribers when the is_visible_ state of the Organizer Panel
   // changes.
@@ -73,6 +87,9 @@ class OrganizerPanelController {
 
   const raw_ref<BrowserWindowInterface> browser_window_;
   const raw_ptr<actions::ActionItem> root_action_item_;
+
+  class PanelViewManager;
+  std::unique_ptr<PanelViewManager> panel_view_manager_;
 
   // Records the last time the panel was opened. Used for recording how long the
   // panel was open.
