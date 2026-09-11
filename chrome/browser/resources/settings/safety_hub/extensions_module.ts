@@ -7,14 +7,15 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../i18n_setup.js';
 import './safety_hub_module.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
-import {getTemplate} from './extensions_module.html.js';
+import {getCss} from './extensions_module.css.js';
+import {getHtml} from './extensions_module.html.js';
 import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from './safety_hub_browser_proxy.js';
 
 /**
@@ -30,7 +31,7 @@ export interface SettingsSafetyHubExtensionsModuleElement {
 }
 
 const SettingsSafetyHubExtensionsModuleElementBase =
-    WebUiListenerMixin(PolymerElement);
+    WebUiListenerMixinLit(CrLitElement);
 
 export class SettingsSafetyHubExtensionsModuleElement extends
     SettingsSafetyHubExtensionsModuleElementBase {
@@ -38,17 +39,21 @@ export class SettingsSafetyHubExtensionsModuleElement extends
     return 'settings-safety-hub-extensions-module';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      headerString_: String,
+      headerString_: {type: String},
     };
   }
 
-  declare private headerString_: string;
+  protected accessor headerString_: string = '';
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -68,12 +73,14 @@ export class SettingsSafetyHubExtensionsModuleElement extends
             'safetyHubExtensionsReviewLabel', numExtensions);
   }
 
-  private onButtonClick_() {
+  protected onReviewButtonClick_() {
     MetricsBrowserProxyImpl.getInstance().recordAction(
         'Settings.SafetyCheck.ReviewExtensionsThroughSafetyCheck');
     OpenWindowProxyImpl.getInstance().openUrl('chrome://extensions');
   }
 }
+
+export type ExtensionsModuleElement = SettingsSafetyHubExtensionsModuleElement;
 
 declare global {
   interface HTMLElementTagNameMap {

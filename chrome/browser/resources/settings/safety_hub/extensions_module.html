@@ -1,22 +1,6 @@
-<style include="cr-shared-style settings-shared">
-  :host {
-    display: block;
-  }
-  .icon-blue {
-    fill: var(--google-blue-600);
-  }
-
-  /* dark mode */
-  @media (prefers-color-scheme: dark) {
-    .icon-blue {
-      fill: var(--google-blue-300);
-    }
-  }
-</style>
-
-<settings-safety-hub-module header="[[headerString_]]">
+<settings-safety-hub-module header="${this.headerString_}">
   <div slot="button-container">
-    <cr-button id="reviewButton" on-click="onButtonClick_">
+    <cr-button id="reviewButton" @click="${this.onReviewButtonClick_}">
       $i18n{safetyHubReview}
       <cr-icon icon="cr:open-in-new" class="icon-blue" slot="suffix-icon">
       </cr-icon>

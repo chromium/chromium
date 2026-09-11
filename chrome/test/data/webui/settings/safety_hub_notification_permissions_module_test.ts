@@ -6,14 +6,13 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSafetyHubNotificationPermissionsModuleElement} from 'chrome://settings/lazy_load.js';
 import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCheckNotificationsModuleInteractions as Interactions, PluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
@@ -98,7 +97,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     // Wait until the element has asked for the list of revoked permissions
     // that will be shown for review.
     await browserProxy.whenCalled('getNotificationPermissionReview');
-    flush();
+    await microtasksFinished();
   }
 
   /**
@@ -108,7 +107,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
   function clickButton(button: HTMLElement|null) {
     assertTrue(!!button);
     button.click();
-    flush();
+    return microtasksFinished();
   }
 
   /**
@@ -116,13 +115,13 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
    * @param index The index of the child element (which site) to open the action
    *     menu for. The default value is 0.
    */
-  function openActionMenu(index?: number) {
+  async function openActionMenu(index?: number) {
     if (!index) {
       index = 0;
     }
     assertFalse(isVisible(testElement.$.actionMenu.getDialog()));
 
-    clickButton(getEntries()[index]!.querySelector('#moreActionButton'));
+    await clickButton(getEntries()[index]!.querySelector('#moreActionButton'));
 
     assertTrue(isVisible(testElement.$.actionMenu.getDialog()));
   }
@@ -256,7 +255,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
   test('Block Click', async function() {
     // User clicks don't allow.
     const entry = getEntries()[0]!;
-    clickButton(entry.querySelector('#mainButton'));
+    await clickButton(entry.querySelector('#mainButton'));
 
     // Ensure the correctness of the browser proxy call and the undo toast.
     await assertBrowserCall('blockNotificationPermissionForOrigins');
@@ -276,8 +275,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
    */
   test('Ignore Click', async function() {
     // User clicks ignore.
-    openActionMenu();
-    clickButton(testElement.shadowRoot!.querySelector('#ignore'));
+    await openActionMenu();
+    await clickButton(testElement.shadowRoot.querySelector('#ignore'));
 
     // Ensure the browser proxy call is done, undo toast with a correct text is
     // shown and action menu is closed.
@@ -299,7 +298,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
    */
   test('Reset Click', async function() {
     // User clicks reset.
-    openActionMenu();
+    await openActionMenu();
     testElement.$.reset.click();
 
     // Ensure the browser proxy call is done, undo toast with a correct text is
@@ -322,7 +321,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
    */
   test('Undo Block Click', async function() {
     // User blocks the site and then clicks on undo toast.
-    clickButton(getEntries()[0]!.querySelector('#mainButton'));
+    await clickButton(getEntries()[0]!.querySelector('#mainButton'));
     metricsBrowserProxy.reset();
     testElement.$.toastUndoButton.click();
 
@@ -341,7 +340,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
    */
   test('Undo Ignore Click', async function() {
     // User ignores notifications for the site and then clicks on undo toast.
-    openActionMenu();
+    await openActionMenu();
     testElement.$.ignore.click();
     metricsBrowserProxy.reset();
     testElement.$.toastUndoButton.click();
@@ -361,7 +360,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
    */
   test('Undo Reset Click', async function() {
     // User resets permissions for the site and then clicks on undo toast.
-    openActionMenu();
+    await openActionMenu();
     testElement.$.reset.click();
     metricsBrowserProxy.reset();
     testElement.$.toastUndoButton.click();
@@ -431,7 +430,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
   test('Undo Block via Ctrl+Z', async function() {
     // User clicks don't allow.
     const entry = getEntries()[0]!;
-    clickButton(entry.querySelector('#mainButton'));
+    await clickButton(entry.querySelector('#mainButton'));
     metricsBrowserProxy.reset();
 
     // User presses Ctrl+Z to undo.
@@ -457,7 +456,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
 
     // User clicks Block.
     const entry = getEntries()[0]!;
-    clickButton(entry.querySelector('#mainButton'));
+    await clickButton(entry.querySelector('#mainButton'));
 
     // Ensure the browser proxy call is done and no undo toast is shown.
     await assertBrowserCall('blockNotificationPermissionForOrigins');
@@ -488,8 +487,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await setupSingleEntry();
 
     // User clicks ignore.
-    openActionMenu();
-    clickButton(testElement.shadowRoot!.querySelector('#ignore'));
+    await openActionMenu();
+    await clickButton(testElement.shadowRoot.querySelector('#ignore'));
 
     // Ensure the browser proxy call is done and no undo toast is shown.
     await assertBrowserCall('ignoreNotificationPermissionForOrigins');
@@ -521,7 +520,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await setupSingleEntry();
 
     // User clicks reset.
-    openActionMenu();
+    await openActionMenu();
     testElement.$.reset.click();
 
     // Ensure the browser proxy call is done and no undo toast is shown.
@@ -610,7 +609,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
 
     // Check the header string for a completion case after Block action.
     await setupSingleEntry();
-    clickButton(getEntries()[0]!.querySelector('#mainButton'));
+    await clickButton(getEntries()[0]!.querySelector('#mainButton'));
     await assertCompletionHeaderString(
         'safetyHubNotificationPermissionReviewBlockedToastLabel');
     testElement.$.bulkUndoButton.click();
@@ -618,8 +617,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await setupSingleEntry();
 
     // Check the header string for a completion case after Ignore action.
-    openActionMenu();
-    clickButton(testElement.shadowRoot!.querySelector('#ignore'));
+    await openActionMenu();
+    await clickButton(testElement.shadowRoot.querySelector('#ignore'));
     await assertCompletionHeaderString(
         'safetyHubNotificationPermissionReviewIgnoredToastLabel');
     testElement.$.bulkUndoButton.click();
@@ -627,8 +626,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await setupSingleEntry();
 
     // Check the header string for a completion case after Reset action.
-    openActionMenu();
-    clickButton(testElement.shadowRoot!.querySelector('#reset'));
+    await openActionMenu();
+    await clickButton(testElement.shadowRoot.querySelector('#reset'));
     await assertCompletionHeaderString(
         'safetyHubNotificationPermissionReviewResetToastLabel');
   });
@@ -641,10 +640,11 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     assertFalse(isVisible(testElement.$.headerActionMenu.getDialog()));
 
     // The action menu should be visible after clicking the button.
-    clickButton(testElement.shadowRoot!.querySelector('#moreActionButton'));
+    await clickButton(
+        testElement.shadowRoot.querySelector('#moreActionButton'));
     assertTrue(isVisible(testElement.$.headerActionMenu.getDialog()));
 
-    clickButton(testElement.shadowRoot!.querySelector('#goToSettings'));
+    await clickButton(testElement.shadowRoot.querySelector('#goToSettings'));
     // The action menu should be gone after clicking the button.
     assertFalse(isVisible(testElement.$.headerActionMenu.getDialog()));
     // Ensure the site settings page is shown.
@@ -660,7 +660,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
    * Tests that previously shown undo tast does not affect the next action's
    * undo toast.
    */
-  test('Undo Toast Behavior', function() {
+  test('Undo Toast Behavior', async function() {
     mockData.push({
       origin: 'https://www.example3.com:443',
       notificationInfoString: 'About 3 notifications a day',
@@ -669,14 +669,14 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
 
     // Click Always Allow for the first item in review. This triggers an undo
     // toast to appear.
-    openActionMenu();
-    clickButton(testElement.shadowRoot!.querySelector('#ignore'));
+    await openActionMenu();
+    await clickButton(testElement.shadowRoot.querySelector('#ignore'));
     assertUndoToast(
         true, 'safetyHubNotificationPermissionReviewIgnoredToastLabel');
 
     // Click Don't Allow for the second item. This hides the existing undo toast
     // and shows a new one.
-    clickButton(getEntries()[1]!.querySelector('#mainButton'));
+    await clickButton(getEntries()[1]!.querySelector('#mainButton'));
     assertUndoToast(
         true, 'safetyHubNotificationPermissionReviewBlockedToastLabel', 1);
 
