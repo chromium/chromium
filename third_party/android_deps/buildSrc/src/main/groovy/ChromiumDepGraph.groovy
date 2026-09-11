@@ -235,9 +235,9 @@ class ChromiumDepGraph {
             org_robolectric_nativeruntime: new PropertyOverride(
                     licenseName: 'Apache-2.0, MIT',
                     licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+            // Managed by //third_party/robolectric.
             org_robolectric_nativeruntime_dist_compat: new PropertyOverride(
-                    licenseName: 'Apache-2.0, MIT',
-                    licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
+                    exclude: true),
             org_robolectric_pluginapi: new PropertyOverride(
                     licenseName: 'Apache-2.0, MIT',
                     licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
