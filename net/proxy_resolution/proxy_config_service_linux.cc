@@ -9,6 +9,7 @@
 #include <sys/inotify.h>
 #include <unistd.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -875,15 +876,15 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       at_least_one_kioslaverc_opened = true;
       bool in_proxy_settings = false;
       bool line_too_long = false;
-      char line[BUFFER_SIZE];
+      std::array<char, BUFFER_SIZE> line;
       // fgets() will return NULL on EOF or error.
-      while (UNSAFE_TODO(fgets(line, sizeof(line), input.get()))) {
+      while (UNSAFE_TODO(fgets(line.data(), line.size(), input.get()))) {
         // fgets() guarantees the line will be properly terminated.
-        size_t length = strlen(line);
+        size_t length = strlen(line.data());
         if (!length)
           continue;
         // This should be true even with CRLF endings.
-        if (UNSAFE_TODO(line[length - 1]) != '\n') {
+        if (line[length - 1] != '\n') {
           line_too_long = true;
           continue;
         }
@@ -895,25 +896,25 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
           continue;
         }
         // Remove the LF at the end, and the CR if there is one.
-        UNSAFE_TODO(line[--length]) = '\0';
-        if (length && UNSAFE_TODO(line[length - 1]) == '\r') {
-          UNSAFE_TODO(line[--length]) = '\0';
+        line[--length] = '\0';
+        if (length && line[length - 1] == '\r') {
+          line[--length] = '\0';
         }
         // Now parse the line.
         if (line[0] == '[') {
           // Switching sections. All we care about is whether this is
           // the (a?) proxy settings section, for both KDE3 and KDE4.
           in_proxy_settings =
-              !UNSAFE_TODO(strncmp(line, "[Proxy Settings]", 16));
+              !UNSAFE_TODO(strncmp(line.data(), "[Proxy Settings]", 16));
         } else if (in_proxy_settings) {
           // A regular line, in the (a?) proxy settings section.
-          char* split = UNSAFE_TODO(strchr(line, '='));
+          char* split = UNSAFE_TODO(strchr(line.data(), '='));
           // Skip this line if it does not contain an = sign.
           if (!split)
             continue;
           // Split the line on the = and advance |split|.
           *(UNSAFE_TODO(split++)) = 0;
-          std::string key = line;
+          std::string key = line.data();
           std::string value = split;
           base::TrimWhitespaceASCII(key, base::TRIM_ALL, &key);
           base::TrimWhitespaceASCII(value, base::TRIM_ALL, &value);
