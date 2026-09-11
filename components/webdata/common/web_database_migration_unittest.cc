@@ -33,6 +33,7 @@
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/signin/public/webdata/token_service_table.h"
+#include "components/sync/base/data_type.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -2102,6 +2103,100 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion154ToCurrent) {
     ASSERT_TRUE(connection.Open(GetDatabasePath()));
     EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
               VersionFromConnection(&connection));
+  }
+}
+
+// Tests that version 156 clears AUTOFILL_WALLET_OFFER sync metadata and legacy
+// offer tables.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion155ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_155.sql")));
+  const int offer_model_type =
+      syncer::DataTypeToStableIdentifier(syncer::AUTOFILL_WALLET_OFFER);
+  const int card_model_type =
+      syncer::DataTypeToStableIdentifier(syncer::AUTOFILL_WALLET_DATA);
+
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(155, VersionFromConnection(&connection));
+
+    // Insert sync metadata and model type state for offers and cards.
+    ASSERT_TRUE(connection.ExecuteScriptForTesting(base::StrCat({
+        "INSERT INTO autofill_sync_metadata (model_type, storage_key, value) "
+        "VALUES (",
+        base::NumberToString(offer_model_type),
+        ", 'offer_1', X'1234');",
+        "INSERT INTO autofill_sync_metadata (model_type, storage_key, value) "
+        "VALUES (",
+        base::NumberToString(card_model_type),
+        ", 'card_1', X'5678');",
+        "INSERT INTO autofill_model_type_state (model_type, value) VALUES (",
+        base::NumberToString(offer_model_type),
+        ", X'1234');",
+        "INSERT INTO autofill_model_type_state (model_type, value) VALUES (",
+        base::NumberToString(card_model_type),
+        ", X'5678');",
+        "INSERT INTO offer_data (offer_id) VALUES (123);",
+        "INSERT INTO offer_eligible_instrument (offer_id, instrument_id) "
+        "VALUES (123, 456);",
+        "INSERT INTO offer_merchant_domain (offer_id, merchant_domain) VALUES "
+        "(123, 'https://example.com');",
+    })));
+  }
+
+  DoMigration();
+
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+
+    // Offer sync metadata and state should be deleted.
+    sql::Statement offer_metadata_stmt(connection.GetUniqueStatement(
+        base::StrCat({"SELECT COUNT(*) FROM autofill_sync_metadata WHERE "
+                      "model_type = ",
+                      base::NumberToString(offer_model_type)})));
+    ASSERT_TRUE(offer_metadata_stmt.Step());
+    EXPECT_EQ(0, offer_metadata_stmt.ColumnInt(0));
+
+    sql::Statement offer_state_stmt(connection.GetUniqueStatement(
+        base::StrCat({"SELECT COUNT(*) FROM autofill_model_type_state WHERE "
+                      "model_type = ",
+                      base::NumberToString(offer_model_type)})));
+    ASSERT_TRUE(offer_state_stmt.Step());
+    EXPECT_EQ(0, offer_state_stmt.ColumnInt(0));
+
+    // Card sync metadata and state should be preserved.
+    sql::Statement card_metadata_stmt(connection.GetUniqueStatement(
+        base::StrCat({"SELECT COUNT(*) FROM autofill_sync_metadata WHERE "
+                      "model_type = ",
+                      base::NumberToString(card_model_type)})));
+    ASSERT_TRUE(card_metadata_stmt.Step());
+    EXPECT_EQ(1, card_metadata_stmt.ColumnInt(0));
+
+    sql::Statement card_state_stmt(connection.GetUniqueStatement(
+        base::StrCat({"SELECT COUNT(*) FROM autofill_model_type_state WHERE "
+                      "model_type = ",
+                      base::NumberToString(card_model_type)})));
+    ASSERT_TRUE(card_state_stmt.Step());
+    EXPECT_EQ(1, card_state_stmt.ColumnInt(0));
+
+    // Offer tables should be empty.
+    sql::Statement offer_data_stmt(
+        connection.GetUniqueStatement("SELECT COUNT(*) FROM offer_data"));
+    ASSERT_TRUE(offer_data_stmt.Step());
+    EXPECT_EQ(0, offer_data_stmt.ColumnInt(0));
+
+    sql::Statement eligible_stmt(connection.GetUniqueStatement(
+        "SELECT COUNT(*) FROM offer_eligible_instrument"));
+    ASSERT_TRUE(eligible_stmt.Step());
+    EXPECT_EQ(0, eligible_stmt.ColumnInt(0));
+
+    sql::Statement domain_stmt(connection.GetUniqueStatement(
+        "SELECT COUNT(*) FROM offer_merchant_domain"));
+    ASSERT_TRUE(domain_stmt.Step());
+    EXPECT_EQ(0, domain_stmt.ColumnInt(0));
   }
 }
 

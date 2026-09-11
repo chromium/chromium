@@ -11,5 +11,6 @@ specific_include_rules = {
     "+components/search_engines/keyword_table.h",
     "+components/search_engines/template_url_data.h",
     "+components/signin/public/webdata",
+    "+components/sync/base",
   ],
 }

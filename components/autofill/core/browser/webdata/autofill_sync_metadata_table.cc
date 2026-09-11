@@ -87,7 +87,23 @@ bool AutofillSyncMetadataTable::MigrateToVersion(
   if (!db()->is_open()) {
     return false;
   }
+  switch (version) {
+    case 156:
+      *update_compatible_version = false;
+      return MigrateToVersion156ClearAutofillWalletOfferSyncMetadata();
+  }
   return true;
+}
+
+bool AutofillSyncMetadataTable::
+    MigrateToVersion156ClearAutofillWalletOfferSyncMetadata() {
+  sql::Transaction transaction(db());
+  return transaction.Begin() &&
+         (!db()->DoesTableExist(kAutofillSyncMetadataTable) ||
+          DeleteAllSyncMetadata(syncer::AUTOFILL_WALLET_OFFER)) &&
+         (!db()->DoesTableExist(kAutofillDataTypeStateTable) ||
+          ClearDataTypeState(syncer::AUTOFILL_WALLET_OFFER)) &&
+         transaction.Commit();
 }
 
 bool AutofillSyncMetadataTable::GetAllSyncMetadata(

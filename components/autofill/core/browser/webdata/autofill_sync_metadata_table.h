@@ -94,6 +94,8 @@ class AutofillSyncMetadataTable : public WebDatabaseTable,
 
   bool InitAutofillSyncMetadataTable();
   bool InitDataTypeStateTable();
+
+  bool MigrateToVersion156ClearAutofillWalletOfferSyncMetadata();
 };
 
 }  // namespace autofill

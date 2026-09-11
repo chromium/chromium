@@ -602,6 +602,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion141AddCardBenefitSourceColumn();
   bool MigrateToVersion144AddCardCreationSourceColumn();
   bool MigrateToVersion153ReplaceOriginWithIsUserConfirmed();
+  bool MigrateToVersion156ClearLegacyOffers();
 
  private:
   // Adds to `masked_credit_cards` and updates `server_card_metadata`.

@@ -589,6 +589,9 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 153:
       *update_compatible_version = true;
       return MigrateToVersion153ReplaceOriginWithIsUserConfirmed();
+    case 156:
+      *update_compatible_version = false;
+      return MigrateToVersion156ClearLegacyOffers();
   }
   return true;
 }
@@ -2229,6 +2232,20 @@ bool PaymentsAutofillTable::
     return false;
   }
 
+  return transaction.Commit();
+}
+
+bool PaymentsAutofillTable::MigrateToVersion156ClearLegacyOffers() {
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return false;
+  }
+  for (std::string_view table : {kOfferDataTable, kOfferEligibleInstrumentTable,
+                                 kOfferMerchantDomainTable}) {
+    if (db()->DoesTableExist(table) && !sql::DeleteAllRows(*db(), table)) {
+      return false;
+    }
+  }
   return transaction.Commit();
 }
 
