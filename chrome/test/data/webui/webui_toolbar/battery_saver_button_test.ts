@@ -5,177 +5,19 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {BrowserProxyImpl, ContextMenuType} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BatterySaverButtonElement} from 'chrome://webui-toolbar.top-chrome/app.js';
-import {INVALID_FOCUS_REQUEST_HANDLE, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {BrowserProxy} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
-import type {BrowserControlsServiceInterface} from 'chrome://webui-toolbar.top-chrome/shared/browser_controls_api.mojom-webui.js';
-import type {ToolbarUIServiceInterface} from 'chrome://webui-toolbar.top-chrome/shared/toolbar_ui_api.mojom-webui.js';
 
-// TODO: Centralize the stubs used across tests in this directory.
-class TestToolbarUiHandler extends TestBrowserProxy implements
-    ToolbarUIServiceInterface {
-  constructor() {
-    super(['showContextMenu']);
-  }
-
-  bind() {
-    return new Promise<never>(() => {});
-  }
-  showContextMenu(
-      menuType: number, bounds: any, source: number,
-      showMenuToken: number|null = null) {
-    this.methodCalled(
-        'showContextMenu', {menuType, bounds, source, showMenuToken});
-  }
-  showOverflowMenu() {
-    return Promise.resolve({result: {}});
-  }
-  onOmniboxAction() {
-    return new Promise<never>(() => {});
-  }
-  onPageInitialized() {}
-  onContentSettingImagePointerDown() {}
-  showContentSettingsBubble() {
-    return new Promise<never>(() => {});
-  }
-  onContentSettingImageAnimationEnded() {}
-  onPageActionPointerDown() {}
-  onPageActionClick() {
-    return new Promise<never>(() => {});
-  }
-  onPageActionChipShowingChanged() {
-    return new Promise<never>(() => {});
-  }
-  invokePinnedToolbarAction() {}
-  movePinnedToolbarAction() {}
-  movePinnedToolbarActionBy() {}
-  moveExtensionAction() {}
-  moveExtensionActionBy() {}
-  onHomeButtonDropUrl() {}
-  onHomeButtonDropFile() {}
-  onToolbarDropFile() {}
-  showAvatarMenu() {
-    return new Promise<never>(() => {});
-  }
-  setAvatarButtonHovered(_hovered: boolean) {
-    return new Promise<never>(() => {});
-  }
-  setAvatarButtonFocused(_focused: boolean) {
-    return new Promise<never>(() => {});
-  }
-  setAvatarButtonIphPromoShowing(_showing: boolean) {
-    return new Promise<never>(() => {});
-  }
-  onAppMenuFocusChanged() {}
-  executeExtensionAction() {}
-  onExtensionActionPointerDown() {}
-  showExtensionContextMenu() {}
-  onPerformanceInterventionButtonClicked() {}
-  onPerformanceInterventionButtonMousePressed() {}
-  onMediaButtonClicked(_isMouseInteraction: boolean) {}
-  onMediaButtonMousePressed() {}
-  onLocationBarFocusWithinChanged() {}
-  onLhsChipMousePressed() {}
-  onLhsChipClicked() {}
-  onLhsChipCollapseAnimationEnded() {}
-  onLhsChipExpandAnimationEnded() {}
-  onLhsChipPointerEntered() {}
-  onLhsChipPointerExited() {}
-  onLhsChipDrag() {}
-  adjustOmniboxTextForCopy() {
-    return Promise.resolve({
-      adjustedText: '',
-      adjustedUrl: null,
-      pageTitle: null,
-    });
-  }
-}
-
-class TestBrowserControlsHandler extends TestBrowserProxy implements
-    BrowserControlsServiceInterface {
-  constructor() {
-    super([]);
-  }
-  stopLoad() {
-    return new Promise<never>(() => {});
-  }
-  reloadFromClick() {
-    return new Promise<never>(() => {});
-  }
-  splitActiveTab() {
-    return new Promise<never>(() => {});
-  }
-  back() {
-    return new Promise<never>(() => {});
-  }
-  forward() {
-    return new Promise<never>(() => {});
-  }
-  backButtonHovered() {
-    return new Promise<never>(() => {});
-  }
-  navigateHome() {
-    return new Promise<never>(() => {});
-  }
-  navigate() {
-    return new Promise<never>(() => {});
-  }
-  navigateText() {
-    return new Promise<never>(() => {});
-  }
-}
-
-class TestBatterySaverBrowserProxy extends TestBrowserProxy implements
-    BrowserProxy {
-  toolbarUIHandler: TestToolbarUiHandler;
-  browserControlsHandler: TestBrowserControlsHandler;
-
-  constructor() {
-    super([]);
-    this.toolbarUIHandler = new TestToolbarUiHandler();
-    this.browserControlsHandler = new TestBrowserControlsHandler();
-  }
-
-  // BrowserProxy
-  recordInHistogram() {}
-  addNavigationStateListener() {
-    return INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE;
-  }
-  addFocusRequestListener() {
-    return INVALID_FOCUS_REQUEST_HANDLE;
-  }
-  addShowSplitTabsContextMenuListener() {
-    return INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE;
-  }
-  removeNavigationStateListener() {}
-  removeFocusRequestListener() {}
-  removeShowSplitTabsContextMenuListener() {}
-
-  onChipClicked() {}
-  onChipPointerEntered() {}
-  onChipPointerExited() {}
-  onChipMousePressed() {}
-  onChipExpandAnimationEnded() {}
-  onChipCollapseAnimationEnded() {}
-
-  showContextMenu(
-      menuType: number, bounds: any, source: number,
-      showMenuToken: number|null = null) {
-    this.methodCalled(
-        'showContextMenu', {menuType, bounds, source, showMenuToken});
-  }
-}
+import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
 
 suite('BatterySaverButton', function() {
   let button: BatterySaverButtonElement;
-  let browserProxy: TestBatterySaverBrowserProxy;
+  let browserProxy: TestToolbarBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    browserProxy = new TestBatterySaverBrowserProxy();
-    BrowserProxyImpl.setInstance(browserProxy as BrowserProxy);
+    browserProxy = new TestToolbarBrowserProxy();
+    BrowserProxyImpl.setInstance(browserProxy);
 
     button = document.createElement('battery-saver-button');
     document.body.appendChild(button);
@@ -191,11 +33,11 @@ suite('BatterySaverButton', function() {
     // Simulate click
     crIconButton.click();
 
-    const args =
+    const [menuType] =
         await browserProxy.toolbarUIHandler.whenCalled('showContextMenu');
     assertEquals(
         1, browserProxy.toolbarUIHandler.getCallCount('showContextMenu'));
-    assertEquals(ContextMenuType.kBatterySaver, args.menuType);
+    assertEquals(ContextMenuType.kBatterySaver, menuType);
   });
 
   test('ShowsTooltip', () => {

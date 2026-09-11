@@ -32,7 +32,7 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl, EventDispositionFlag, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE} from './browser_proxy.js';
-import type {BrowserProxy, IconUpdate, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
+import type {BrowserProxy, FocusRequestHandle, FocusRequestListener, IconUpdate, NavigationControlsState, NavigationControlsStateListener, NavigationControlsStateListenerHandle, ShowSplitTabsContextMenuHandle, ShowSplitTabsContextMenuListener} from './browser_proxy.js';
 import type {OverflowButtonElement} from './overflow_button.js';
 import type {ResponsiveControl} from './responsive_control.js';
 import {setHasHelpBubble} from './toolbar_button.js';
@@ -41,6 +41,7 @@ import {setHasHelpBubble} from './toolbar_button.js';
 // Helper so tests can find what they needed when optimization is on.
 // Exporting from this file, the rollup file, ensures that we test the
 // same code that we ship in optimized builds.
+import type {BrowserControlsServiceInterface} from '/shared/browser_controls_api.mojom-webui.js';
 import type {IconFromTableElement} from '/shared/icon_from_table.js';
 import {
   AppMenuIconType,
@@ -57,11 +58,12 @@ import {
   PermissionAction,
   PermissionChipTheme,
   PermissionPromptStyle,
+  PinnedToolbarAction,
   SplitTabActiveLocation,
 } from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {IconType} from '/shared/icon_handle.mojom-webui.js';
 import type {OmniboxAction, LocationBarState, PageActionState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
+import type {AdjustOmniboxTextForCopyResult, InitialState, OverflowMenuItem, ToolbarUIServiceInterface} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {PermissionChipElement} from '/shared/permission_chip.js';
 import type {PermissionDashboardElement} from '/shared/permission_dashboard.js';
 
@@ -102,6 +104,7 @@ export {
   AppMenuButtonElement,
   AppMenuIconType,
   AppMenuSeverity,
+  AvatarToolbarButtonState,
   BatterySaverButtonElement,
   BrowserProxyImpl,
   ContextMenuType,
@@ -124,7 +127,6 @@ export {
   INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE,
   INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE,
   LhsChipIdentifier,
-  SecurityChipRole,
   LocationBarElement,
   LocationIconElement,
   OmniboxTextColor,
@@ -136,21 +138,31 @@ export {
   PermissionChipElement,
   PermissionChipTheme,
   PermissionPromptStyle,
+  PinnedToolbarAction,
   PointerProxyImpl,
   PressHandler,
   ReadonlyOmniboxElement,
   resetInitialStateForTesting,
   OverflowableToolbarActionContainerMixin,
+  SecurityChipRole,
   ToolbarActionContainerMixin,
   ToolbarActionMixin,
   ToolbarChipButtonElement,
   TrackedElementManager,
 };
 export type {
+  AdjustOmniboxTextForCopyResult,
+  BrowserControlsServiceInterface,
+  BrowserProxy,
   ExtensionsElement,
+  FocusRequestHandle,
+  FocusRequestListener,
   IconFromTableElement,
+  InitialState,
   KeyedActionState,
   LocationBarState,
+  NavigationControlsStateListener,
+  NavigationControlsStateListenerHandle,
   OmniboxAction,
   OverflowableToolbarAction,
   OverflowableToolbarActionContainer,
@@ -161,9 +173,12 @@ export type {
   PinnedToolbarActionElement,
   PinnedToolbarActionsElement,
   PointerProxy,
+  ShowSplitTabsContextMenuHandle,
+  ShowSplitTabsContextMenuListener,
   ToolbarActionContainerMixinInterface,
   ToolbarActionMixinInterface,
   ToolbarFlatStateSchema,
+  ToolbarUIServiceInterface,
 };
 export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 // clang-format on
