@@ -104,9 +104,8 @@ template("copy_exe") {
     # TODO(danakj): The fuzzer_test() template sometimes doesn't generate
     # anything, but we can't tell from here whether it did or not. We can only
     # depend on the target when it will build something. It should provide some
-    # way to know if it builds. For now we know that the fuzzer_test in this
-    # file is not built with `high_end_fuzzer_targets`.
-    if ((!use_libfuzzer && !use_centipede) || high_end_fuzzer_targets) {
+    # way to know if it builds.
+    if (!use_libfuzzer && !use_centipede) {
       _build = false
     }
   }

@@ -30,8 +30,6 @@ import("//testing/test.gni")
 # - seed_corpus_deps - dependencies for generating the seed corpus.
 # - grammar_options - defines a grammar used by a grammar based mutator.
 # - exclude_main - if you're going to provide your own 'main' function
-# - high_end_job_required - whether the fuzzer requires bigger machines to run.
-#   Optional argument.
 # - is_fuzzilli_compatible - whether the fuzzer is compatible with fuzzilli.
 # - is_fuzztest_compatible - whether the fuzzer is compatible with the fuzztest
 #   wrapper when building with centipede. Defaults to true.
@@ -69,25 +67,8 @@ template("fuzzer_test") {
                         [ "//testing/libfuzzer:no_clusterfuzz" ]) != [] ||
              filter_exclude([ target_name ], [ "*_fuzzer" ]) == [],
          "$target_name name must be suffixed by `_fuzzer`")
-  _high_end_job_required = false
-  if (defined(invoker.high_end_job_required) && invoker.high_end_job_required) {
-    # Target should run in pure release mode, i.e. no debug and no dchecks.
-    _high_end_job_required = !is_debug && !dcheck_always_on
-  }
-  if (defined(invoker.high_end_debug_job_required) &&
-      invoker.high_end_debug_job_required) {
-    # Target should run in debug'ish mode, i.e. with debug or dchecks.
-    _high_end_job_required =
-        _high_end_job_required || is_debug || dcheck_always_on
-  }
 
-  # If the job is a high_end job and that we are currently building a high_end
-  # target, we should compile this fuzzer_test in. Otherwise, for now, we just
-  # compile everything in.
-  # TODO(crbug.com/333831251): Once CF supports high end jobs, do not compile
-  # high end targets except for high end jobs.
-  _should_build = (_high_end_job_required || !high_end_fuzzer_targets) &&
-                  !disable_libfuzzer && use_fuzzing_engine &&
+  _should_build = !disable_libfuzzer && use_fuzzing_engine &&
                   ((defined(invoker.is_fuzzilli_compatible) &&
                     invoker.is_fuzzilli_compatible) || !use_chromium_fuzzilli)
   if (_should_build) {

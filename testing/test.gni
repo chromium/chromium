@@ -156,59 +156,45 @@ template("mixed_test") {
       defined(invoker.fuzztests) && use_fuzzing_engine &&
       (is_linux || is_mac || is_win)
 
-  # Fuzz tests are small fuzzers that do not require particularly-powerful
-  # machines to run, so we do not build them when `high_end_fuzzer_targets`
-  # is true and we are building fuzztests in fuzzing mode.
-  if (_building_fuzztest_fuzzer && high_end_fuzzer_targets) {
-    not_needed(invoker, "*")
-    not_needed("*")
-
-    # We still want a reachable target, so make it a no-op empty group. This
-    # will let the fuzzer builders crawl the build graph and invoke ninja in
-    # the same way regardless of GN args.
-    group(target_name) {
+  target(invoker.target_type, target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + _rs_vars + [
+                                 "fuzztests",
+                                 "fuzztest_additional_args",
+                                 "libfuzzer_options",
+                                 "centipede_options",
+                                 "asan_options",
+                                 "msan_options",
+                                 "ubsan_options",
+                                 "environment_variables",
+                                 "grammar_options",
+                               ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    sources = _cc_sources
+    if (!defined(deps)) {
+      deps = []
     }
-  } else {
-    target(invoker.target_type, target_name) {
-      forward_variables_from(invoker,
-                             "*",
-                             TESTONLY_AND_VISIBILITY + _rs_vars + [
-                                   "fuzztests",
-                                   "fuzztest_additional_args",
-                                   "libfuzzer_options",
-                                   "centipede_options",
-                                   "asan_options",
-                                   "msan_options",
-                                   "ubsan_options",
-                                   "environment_variables",
-                                   "grammar_options",
-                                 ])
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      sources = _cc_sources
-      if (!defined(deps)) {
-        deps = []
-      }
-      if (!defined(ldflags)) {
-        ldflags = []
-      }
+    if (!defined(ldflags)) {
+      ldflags = []
+    }
 
-      if (_rs_sources != []) {
-        deps += [ ":${_rust_target_name}" ]
-      }
-      if (defined(invoker.fuzztests)) {
-        deps += [
-          "//third_party/fuzztest",
+    if (_rs_sources != []) {
+      deps += [ ":${_rust_target_name}" ]
+    }
+    if (defined(invoker.fuzztests)) {
+      deps += [
+        "//third_party/fuzztest",
 
-          # The following target contains a static initializer which
-          # will ensure that the code in base/test:test_support
-          # ends up calling through to fuzztest::InitFuzzTest.
-          "//testing/libfuzzer:confirm_fuzztest_init",
-        ]
-      }
+        # The following target contains a static initializer which
+        # will ensure that the code in base/test:test_support
+        # ends up calling through to fuzztest::InitFuzzTest.
+        "//testing/libfuzzer:confirm_fuzztest_init",
+      ]
     }
   }
 
-  if (_building_fuzztest_fuzzer && !high_end_fuzzer_targets) {
+  if (_building_fuzztest_fuzzer) {
     # This test contains fuzztests. We want to package them up in a way
     # which ClusterFuzz knows how to extract. We need to:
     # 1) make an executable for each individual fuzz test;
