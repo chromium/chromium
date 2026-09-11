@@ -10,6 +10,8 @@
 
 #include "base/check.h"
 #include "components/autofill/core/browser/data_model/data_model_util.h"
+#include "components/autofill/core/browser/field_type_util.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 
 namespace autofill {
@@ -50,6 +52,22 @@ bool AutofillFormatString::IsValid(std::u16string_view value,
       return true;
   }
   // Graceful catch-all because the `type` may come from the server.
+  return false;
+}
+
+// static
+bool AutofillFormatString::IsTypeCompatible(FormatString_Type format_type,
+                                            FieldType field_type) {
+  switch (format_type) {
+    case FormatString_Type_DATE:
+    case FormatString_Type_ICU_DATE:
+      return IsDateFieldType(field_type);
+    case FormatString_Type_AFFIX:
+      return IsAffixFormatStringEnabledForType(field_type);
+    case FormatString_Type_FLIGHT_NUMBER:
+      return field_type == FLIGHT_RESERVATION_FLIGHT_NUMBER;
+  }
+  // Graceful catch-all because the `field_type` may come from the server.
   return false;
 }
 

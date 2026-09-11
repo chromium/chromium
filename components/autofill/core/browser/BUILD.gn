@@ -1988,6 +1988,7 @@ source_set("unit_tests") {
     "autofill_ai_form_rationalization_unittest.cc",
     "autofill_feedback_data_unittest.cc",
     "autofill_field_unittest.cc",
+    "autofill_format_string_unittest.cc",
     "autofill_merge_unittest.cc",
     "autofill_server_prediction_unittest.cc",
     "autofill_type_unittest.cc",

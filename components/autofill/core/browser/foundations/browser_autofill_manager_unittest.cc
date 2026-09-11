@@ -6360,6 +6360,48 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel, CacheResultUsed) {
             AutofillFormatStringSource::kModelResult);
 }
 
+// Tests that invalid format strings from cache results are not applied to
+// fields.
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel,
+       CacheResultInvalidFormatStringIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiServerModel,
+      {{"autofill_ai_model_use_cache_results", "true"}});
+
+  const FormData form = passport_form();
+  const FieldSignature field_signature =
+      CalculateFieldSignatureForField(form.fields()[3]);
+  const FormSignature form_signature = CalculateFormSignature(form);
+
+  AutofillFormatString invalid_format_string;
+  invalid_format_string.value = u"invalid_format";
+  invalid_format_string.type = FormatString_Type_DATE;
+
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
+  auto predictions =
+      base::flat_map<FieldIdentifier, ModelFieldPrediction>({std::pair{
+          FieldIdentifier{.signature = field_signature},
+          ModelFieldPrediction({PASSPORT_ISSUE_DATE}, invalid_format_string)}});
+
+  EXPECT_CALL(cache(), Contains(form_signature)).WillOnce(Return(true));
+  EXPECT_CALL(cache(), GetFieldPredictions(form_signature))
+      .WillOnce(Return(predictions));
+  EXPECT_CALL(executor(), GetPredictions).Times(0);
+  const FormGlobalId form_id =
+      SeeForm(/*may_run_model=*/true, /*add_autofill_ai_predictions=*/false);
+
+  const FormStructure* const fs =
+      autofill_manager().FindCachedFormById(form_id);
+  ASSERT_TRUE(fs);
+  EXPECT_THAT(fs->field(3)->Type().GetAutofillAiTypes(),
+              ElementsAre(PASSPORT_ISSUE_DATE));
+  EXPECT_FALSE(fs->field(3)->format_string().has_value());
+  EXPECT_EQ(fs->field(3)->format_string_source(),
+            AutofillFormatStringSource::kUnset);
+}
+
 // Tests that if the form has at least one existing AutofillAI prediction, then
 // the cache is not used for populating predictions.
 TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel,

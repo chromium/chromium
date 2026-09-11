@@ -37,6 +37,19 @@ TEST(DateInfo, SetDateOrReset) {
   EXPECT_EQ(info.GetDate(u""), u"");
 }
 
+// Tests that GetDate() returns an empty string for invalid date formats.
+TEST(DateInfo, InvalidDateFormatReturnsEmpty) {
+  DateInfo info;
+  info.SetDate(u"16/12/2022", u"DD/MM/YYYY");
+  EXPECT_EQ(info.GetDate(u"YYYY-MM-DD"), u"2022-12-16");
+
+  EXPECT_EQ(info.GetDate(u""), u"");
+  EXPECT_EQ(info.GetDate(u"-4"), u"");
+  EXPECT_EQ(info.GetDate(u"N"), u"");
+  EXPECT_EQ(info.GetDate(u"invalid"), u"");
+  EXPECT_EQ(info.GetDate(u"YYYY/MM-DD"), u"");
+}
+
 // Tests that GetIcuDate() returns an empty string if the date is not fully
 // set.
 TEST(DateInfo, GetIcuDate_IncrementalSet) {

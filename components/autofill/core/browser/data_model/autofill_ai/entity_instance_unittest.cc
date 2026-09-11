@@ -219,6 +219,12 @@ TEST_F(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
   auto from_affix = [](std::u16string fs) {
     return AutofillFormatString(std::move(fs), FormatString_Type_AFFIX);
   };
+  auto from_date = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_DATE);
+  };
+  auto from_flight_number = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_FLIGHT_NUMBER);
+  };
 
   {
     AttributeInstance passport_number((AttributeType(kPassportNumber)));
@@ -235,6 +241,13 @@ TEST_F(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
     EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
                       {.format_string = from_affix(u"-4")}),
               u"3456");
+    // Incompatible format strings must be ignored.
+    EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
+                      {.format_string = from_date(u"DD/MM/YYYY")}),
+              u"LR0123456");
+    EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
+                      {.format_string = from_flight_number(u"N")}),
+              u"LR0123456");
   }
 
   {
@@ -258,6 +271,15 @@ TEST_F(AutofillEntityInstanceTest, Attributes_Date) {
   auto from_date = [](std::u16string fs) {
     return AutofillFormatString(std::move(fs), FormatString_Type_DATE);
   };
+  auto from_affix = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_AFFIX);
+  };
+  auto from_flight_number = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_FLIGHT_NUMBER);
+  };
+  auto from_icu_date = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_ICU_DATE);
+  };
 
   AttributeInstance passport_name((AttributeType(kPassportIssueDate)));
   passport_name.SetInfo(PASSPORT_ISSUE_DATE, u"2001-02-03",
@@ -268,12 +290,29 @@ TEST_F(AutofillEntityInstanceTest, Attributes_Date) {
   EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE,
                     {.format_string = from_date(u"DD/MM/YYYY")}),
             u"03/02/2001");
+  EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE,
+                    {.app_locale = "en_US",
+                     .format_string = from_icu_date(u"MMM d")}),
+            u"Feb 3");
+  // Incompatible format strings must be ignored and fall back to YYYY-MM-DD.
+  EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE,
+                    {.format_string = from_affix(u"-4")}),
+            u"2001-02-03");
+  EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE,
+                    {.format_string = from_flight_number(u"N")}),
+            u"2001-02-03");
 }
 
 // Tests that formatting flight numbers works correctly.
 TEST_F(AutofillEntityInstanceTest, AttributesFlightFormat) {
   auto from_flight_number = [](std::u16string fs) {
     return AutofillFormatString(std::move(fs), FormatString_Type_FLIGHT_NUMBER);
+  };
+  auto from_affix = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_AFFIX);
+  };
+  auto from_date = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_DATE);
   };
 
   {
@@ -292,6 +331,13 @@ TEST_F(AutofillEntityInstanceTest, AttributesFlightFormat) {
               u"89");
     EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
                       {.format_string = from_flight_number(u"F")}),
+              u"LH89");
+    // Incompatible format strings must be ignored.
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+                      {.format_string = from_affix(u"-4")}),
+              u"LH89");
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+                      {.format_string = from_date(u"DD/MM/YYYY")}),
               u"LH89");
   }
 

@@ -421,6 +421,11 @@ class AutofillField : public FormFieldData {
     }
   }
 
+  void ClearFormatString() {
+    format_string_ = {};
+    format_string_source_ = AutofillFormatStringSource::kUnset;
+  }
+
   void set_field_log_events(const std::vector<FieldLogEventType>& events) {
     field_log_events_ = events;
   }

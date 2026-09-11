@@ -650,6 +650,7 @@ BASE_FEATURE(kAutofillDisallowMoreHyphenLikeLabels,
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 BASE_FEATURE(kAutofillEnableAblationStudy, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The following parameters are only effective if the study is enabled.
 // If "enabled_for_addresses" is true this means that the ablation study is
 // enabled for addresses meaning that autofill may be disabled on some forms.
@@ -804,6 +805,11 @@ BASE_FEATURE(kAutofillEnableWalletDisclosureNoticePublicPass,
 // non-private (public) pass.
 BASE_FEATURE(kAutofillEnableWalletReminderNoticePublicPass,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether Autofill clears format strings assigned to a field where
+// none of the assigned field types are compatible with it.
+BASE_FEATURE(kAutofillEnforceFormatStringCompatibility,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables extended zip code validation.
 // TODO(crbug.com/434140055): Clean up when launched.

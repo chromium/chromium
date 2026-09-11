@@ -22,6 +22,7 @@
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
@@ -734,13 +735,39 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
     begin = end;
   }
 }
-
-void FormStructureRationalizer::RationalizeDateFormatStrings(
+void FormStructureRationalizer::RationalizeFormatStrings(
     LogManager* log_manager) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     return;
   }
 
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
+    if (!field->format_string()) {
+      continue;
+    }
+    const bool is_format_string_compatible = std::ranges::any_of(
+        field->Type().GetTypes(), [&](FieldType field_type) {
+          return AutofillFormatString::IsTypeCompatible(
+              field->format_string()->type, field_type);
+        });
+    base::UmaHistogramBoolean("Autofill.FormatString.IsCompatible",
+                              is_format_string_compatible);
+    if (!is_format_string_compatible &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnforceFormatStringCompatibility)) {
+      LOG_AF(log_manager) << LoggingScope::kRationalization
+                          << LogMessage::kRationalization
+                          << "Cleared incompatible format string of "
+                          << field->global_id();
+      field->ClearFormatString();
+    }
+  }
+
+  RationalizeDateFormatStrings(log_manager);
+}
+
+void FormStructureRationalizer::RationalizeDateFormatStrings(
+    LogManager* log_manager) {
   auto set_format = [&](AutofillField& field, std::u16string format_string) {
     LOG_AF(log_manager) << LoggingScope::kRationalization
                         << LogMessage::kRationalization
@@ -1108,7 +1135,7 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeMultiOriginCreditCardFields(main_origin, log_manager);
   RationalizeCreditCardNumberOffsets(log_manager);
-  RationalizeDateFormatStrings(log_manager);
+  RationalizeFormatStrings(log_manager);
   RationalizeRepeatedStreetAddressFields(log_manager);
   if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
     RationalizeRepeatedZipCodeFields(log_manager);

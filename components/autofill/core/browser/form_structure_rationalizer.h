@@ -94,8 +94,10 @@ class FormStructureRationalizer {
   // respectively, block of four digits.
   void RationalizeCreditCardNumberOffsets(LogManager* log_manager);
 
-  // Sets the format strings. For now, only date format strings such as
-  // "YYYY-MM-DD" are supported.
+  // Sets the format strings.
+  void RationalizeFormatStrings(LogManager* log_manager);
+
+  // Sets the date format string such as "YYYY-MM-DD".
   void RationalizeDateFormatStrings(LogManager* log_manager);
 
   // Rewrites two or three (not necessarily consecutive)

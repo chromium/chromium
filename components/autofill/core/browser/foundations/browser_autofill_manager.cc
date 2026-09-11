@@ -2586,7 +2586,9 @@ void BrowserAutofillManager::AddCachedAutofillAiPredictions(
       server_prediction.set_source(ServerPrediction::SOURCE_AUTOFILL_AI);
       field->MaybeAddServerPrediction(std::move(server_prediction));
     }
-    if (prediction.format_string) {
+    if (prediction.format_string &&
+        AutofillFormatString::IsValid(prediction.format_string->value,
+                                      prediction.format_string->type)) {
       field->set_format_string_unless_overruled(
           *prediction.format_string, AutofillFormatStringSource::kModelResult);
     }

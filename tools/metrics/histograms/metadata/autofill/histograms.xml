@@ -4880,6 +4880,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.FormatString.IsCompatible" enum="Boolean"
+    expires_after="2026-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the format string assigned to a field is compatible with any
+    of the types assigned to that same field. Emitted for every field on each
+    rationalization operation.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.CreditCard.Benefits"
     enum="CardBenefitFormEvent" expires_after="2027-04-30">
   <owner>ferny@google.com</owner>

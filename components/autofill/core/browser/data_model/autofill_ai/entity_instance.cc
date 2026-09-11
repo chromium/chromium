@@ -207,24 +207,32 @@ std::u16string AttributeInstance::GetInfo(
     std::string_view app_locale,
     base::optional_ref<const AutofillFormatString> format_string) const {
   FieldType field_type = GetNormalizedFieldType(unnormalized_field_type);
+  std::optional<AutofillFormatString> compatible_format_string =
+      format_string && AutofillFormatString::IsTypeCompatible(
+                           format_string->type, field_type)
+          ? format_string.CopyAsOptional()
+          : std::nullopt;
+
   return std::visit(
       absl::Overload{[&](const CountryInfo& country) {
                        return country.GetCountryName(app_locale);
                      },
                      [&](const DateInfo& date) {
-                       if (format_string &&
-                           format_string->type == FormatString_Type_ICU_DATE) {
-                         return date.GetIcuDate(format_string->value,
+                       if (compatible_format_string &&
+                           compatible_format_string->type ==
+                               FormatString_Type_ICU_DATE) {
+                         return date.GetIcuDate(compatible_format_string->value,
                                                 app_locale);
                        }
-                       return date.GetDate(format_string ? format_string->value
-                                                         : u"YYYY-MM-DD");
+                       return date.GetDate(compatible_format_string
+                                               ? compatible_format_string->value
+                                               : u"YYYY-MM-DD");
                      },
                      [&](const NameInfo&) { return GetRawInfo(field_type); },
                      [&](const StateInfo&) { return GetRawInfo(field_type); },
                      [&](const std::u16string&) {
                        return Format(GetRawInfo(field_type), field_type,
-                                     format_string);
+                                     compatible_format_string);
                      }},
       info_);
 }

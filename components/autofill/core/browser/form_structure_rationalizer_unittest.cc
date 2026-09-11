@@ -53,6 +53,9 @@ struct FieldTemplate {
   std::optional<FormGlobalId> host_form;
   bool server_type_is_override = false;
   FieldType heuristic_type = UNKNOWN_TYPE;
+  std::optional<AutofillFormatString> format_string = std::nullopt;
+  AutofillFormatStringSource format_string_source =
+      AutofillFormatStringSource::kServer;
 };
 
 FormData CreateFormData(std::vector<FieldTemplate> fields) {
@@ -95,6 +98,10 @@ std::unique_ptr<FormStructure> BuildFormStructure(
                               field_template.heuristic_type);
     field->set_server_predictions({test::CreateFieldPrediction(
         field_template.server_type, field_template.server_type_is_override)});
+    if (field_template.format_string) {
+      field->set_format_string_unless_overruled(
+          *field_template.format_string, field_template.format_string_source);
+    }
     if (!field_template.section.empty()) {
       field->set_section(Section::FromAutocomplete(
           {.section = std::string(field_template.section)}));
@@ -1154,6 +1161,30 @@ TEST_F(RationalizeDateFormatTest, DoesNotOverruleTheServer) {
       AutofillFormatStringSource::kServer);
   EXPECT_THAT(GetDateFormatStrings(*form_structure),
               ElementsAre("DD/MM/YYYY", "YYYY-MM-DD"));
+}
+
+// Tests that an incompatible format string from the server or model result
+// (e.g. AFFIX or FLIGHT_NUMBER) is cleared and overruled by heuristics if
+// available, or left cleared.
+TEST_F(RationalizeDateFormatTest, ClearsIncompatibleServerFormatString) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {{.server_type = PASSPORT_EXPIRATION_DATE,
+        .placeholder = "DD/MM/YYYY",
+        .format_string = AutofillFormatString(u"-4", FormatString_Type_AFFIX),
+        .format_string_source = AutofillFormatStringSource::kServer},
+       {.server_type = PASSPORT_EXPIRATION_DATE,
+        .format_string =
+            AutofillFormatString(u"N", FormatString_Type_FLIGHT_NUMBER),
+        .format_string_source = AutofillFormatStringSource::kModelResult}});
+  EXPECT_THAT(GetDateFormatStrings(*form_structure),
+              ElementsAre("DD/MM/YYYY", std::nullopt));
+  EXPECT_EQ(form_structure->fields()[0]->format_string(),
+            AutofillFormatString(u"DD/MM/YYYY", FormatString_Type_DATE));
+  EXPECT_EQ(form_structure->fields()[0]->format_string_source(),
+            AutofillFormatStringSource::kHeuristics);
+  EXPECT_EQ(form_structure->fields()[1]->format_string(), std::nullopt);
+  EXPECT_EQ(form_structure->fields()[1]->format_string_source(),
+            AutofillFormatStringSource::kUnset);
 }
 
 // Tests that a date format in the placeholder is assignde to the field.
