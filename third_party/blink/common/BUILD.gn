@@ -254,6 +254,7 @@ source_set("common") {
     "safe_url_pattern_mojom_traits.cc",
     "scheduler/web_scheduler_tracked_feature.cc",
     "scheme_registry.cc",
+    "script_tools/script_tool_utils.cc",
     "security/address_space_feature.cc",
     "service_worker/service_worker_loader_helpers.cc",
     "service_worker/service_worker_router_rule.cc",

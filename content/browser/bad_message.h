@@ -418,6 +418,7 @@ enum BadMessageReason {
   RFHI_BEGIN_NAVIGATION_INVALID_INITIATOR_TOKENS = 390,
   RFHI_BEGIN_NAVIGATION_INVALID_INITIATOR_PROCESS = 391,
   RFHI_INVALID_INITIATOR_STATE_TOKEN_UPDATE = 392,
+  RFHI_WEBMCP_INVALID_TOOL_NAME = 393,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

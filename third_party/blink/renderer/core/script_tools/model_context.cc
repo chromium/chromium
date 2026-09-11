@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/script_tools/script_tool_utils.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_script_tool_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
@@ -110,20 +111,6 @@ String ValidateAndStringifyValue(ScriptState* script_state,
   }
 
   return result;
-}
-
-bool IsValidToolName(const String& name) {
-  if (name.empty() || name.length() > 128) {
-    return false;
-  }
-  for (wtf_size_t i = 0; i < name.length(); ++i) {
-    UChar c = name[i];
-    if (!IsAsciiAlphanumeric(c) && c != '_' && c != '-' && c != '.') {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 ScriptObject JSONStringToScriptObject(ScriptState* script_state,
@@ -387,7 +374,7 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
                                            "Duplicate tool name"));
   }
 
-  if (!IsValidToolName(tool->name())) {
+  if (!IsValidScriptToolName(tool->name().Utf8())) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
@@ -838,6 +825,9 @@ void ModelContext::RegisterDeclarativeTool(
 
   // TODO(https://crbug.com/509983792): Surface an error if the tool's name is
   // not valid.
+  if (!IsValidScriptToolName(declarative_tool->ToolName().Utf8())) {
+    return;
+  }
   UseCounter::Count(document_,
                     WebFeature::kModelContextRegisterDeclarativeTool);
 

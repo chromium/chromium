@@ -566,6 +566,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/script_tools/script_tool_utils.cc',
+        ],
+        'allowed': [
+            'base::IsAsciiAlphaNumeric',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/common/shared_storage/module_script_downloader.cc',
         ],
         'allowed': [

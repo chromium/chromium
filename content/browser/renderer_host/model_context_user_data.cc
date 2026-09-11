@@ -14,6 +14,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/script_tools/script_tool_utils.h"
 #include "url/origin.h"
 
 namespace content {
@@ -98,6 +99,15 @@ void ModelContextUserData::RegisterScriptTool(
   if (!IsWebMCPEnabled(render_frame_host())) {
     bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
                                     bad_message::RFHI_WEBMCP_NOT_ENABLED);
+    std::move(callback).Run();
+    return;
+  }
+
+  // Kill the renderer if it tries to register a tool with an invalid name,
+  // because the renderer should prevent this.
+  if (!blink::IsValidScriptToolName(tool->name)) {
+    bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
+                                    bad_message::RFHI_WEBMCP_INVALID_TOOL_NAME);
     std::move(callback).Run();
     return;
   }

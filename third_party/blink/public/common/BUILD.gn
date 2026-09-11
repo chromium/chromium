@@ -271,6 +271,7 @@ source_set("headers") {
     "scheduler/task_attribution_id.h",
     "scheduler/web_scheduler_tracked_feature.h",
     "scheme_registry.h",
+    "script_tools/script_tool_utils.h",
     "security/address_space_feature.h",
     "security/protocol_handler_security_level.h",
     "security/security_style.h",
