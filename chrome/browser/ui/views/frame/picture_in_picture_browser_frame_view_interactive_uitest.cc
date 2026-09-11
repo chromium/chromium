@@ -24,12 +24,12 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
-#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_interface.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/chrome_features.h"
@@ -1816,11 +1816,14 @@ IN_PROC_BROWSER_TEST_F(PiPIndicatorsBrowsertest, TestMediaBlockedIndicators) {
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view);
-  ASSERT_TRUE(browser_view->GetLocationBarView());
-  PermissionDashboardView* permission_dashboard_view =
-      browser_view->GetLocationBarView()->permission_dashboard_view();
-
-  ASSERT_TRUE(permission_dashboard_view);
+  LocationBar* location_bar = browser_view->GetLocationBar();
+  ASSERT_TRUE(location_bar);
+  PermissionDashboardController* permission_dashboard_controller =
+      location_bar->GetPermissionDashboardController();
+  ASSERT_TRUE(permission_dashboard_controller);
+  PermissionDashboardInterface* permission_dashboard =
+      permission_dashboard_controller->permission_dashboard();
+  ASSERT_TRUE(permission_dashboard);
 
   permissions::PermissionRequestManager::FromWebContents(pip_web_contents)
       ->set_auto_response_for_test(
@@ -1829,7 +1832,7 @@ IN_PROC_BROWSER_TEST_F(PiPIndicatorsBrowsertest, TestMediaBlockedIndicators) {
   // Request microphone permission and wait for the mic indicator to expand.
   {
     ChipAnimationObserver chip_animation_observer(
-        permission_dashboard_view->GetIndicatorChip());
+        permission_dashboard->GetIndicatorChip());
     chip_animation_observer.quit_on_event =
         ChipAnimationObserver::QuitOnEvent::kExpand;
 
@@ -1854,7 +1857,7 @@ resolve('denied')
   }
 
   // Blocked LHS indicator should be visible.
-  EXPECT_TRUE(permission_dashboard_view->GetVisible());
+  EXPECT_TRUE(permission_dashboard->GetVisible());
   // Blocked media indicator is not supported by PiP window, hence it should not
   // be shown.
   EXPECT_FALSE(pip_frame_view()->HasAnyVisibleContentSettingViews());
@@ -1862,7 +1865,7 @@ resolve('denied')
   // Wait for the LHS indicator to disappear.
   {
     ChipAnimationObserver chip_animation_observer(
-        permission_dashboard_view->GetIndicatorChip());
+        permission_dashboard->GetIndicatorChip());
     chip_animation_observer.quit_on_event =
         ChipAnimationObserver::QuitOnEvent::kVisibilityFalse;
 
@@ -1871,7 +1874,7 @@ resolve('denied')
   }
 
   // Blocked LHS indicator is hidden.
-  EXPECT_FALSE(permission_dashboard_view->GetVisible());
+  EXPECT_FALSE(permission_dashboard->GetVisible());
   // The indicator should not be visible in PiP window because it is not
   // supported.
   EXPECT_FALSE(pip_frame_view()->HasAnyVisibleContentSettingViews());
