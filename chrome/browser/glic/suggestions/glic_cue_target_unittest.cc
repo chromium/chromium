@@ -553,6 +553,47 @@ TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheMiss_AnnotationArrives) {
   EXPECT_TRUE(eligible);
 }
 
+TEST_F(GlicCueTargetAsyncTest,
+       CheckEligibility_AnnotationUrlDiffersInQueryParams) {
+  const GURL committed_url("https://example.com/pending?query=1");
+  const GURL annotated_url("https://example.com/pending?query=2");
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(committed_url);
+
+  bool eligible = false;
+  bool callback_ran = false;
+  target_->CheckEligibility(
+      web_contents_->GetWeakPtr(), contextual_cueing::CueIntrusiveness::kLoud,
+      base::BindOnce(
+          [](bool* out_eligible, bool* out_ran, bool eligible,
+             contextual_cueing::CueTarget::ContentGenerator) {
+            *out_eligible = eligible;
+            *out_ran = true;
+          },
+          &eligible, &callback_ran));
+
+  // Callback should not have fired synchronously.
+  EXPECT_FALSE(callback_ran);
+
+  // An annotation for a different path should not resolve the check.
+  const GURL mismatched_url("https://example.com/other?query=1");
+  cue_tab_state_->OnPageContentAnnotated(CreateVisit(mismatched_url),
+                                         CreateEligibleResult());
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_FALSE(callback_ran);
+
+  // Simulate annotation arriving with a URL that differs only in query params.
+  cue_tab_state_->OnPageContentAnnotated(CreateVisit(annotated_url),
+                                         CreateEligibleResult());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return callback_ran; }));
+
+  EXPECT_TRUE(callback_ran);
+  EXPECT_TRUE(eligible);
+}
+
 TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheMiss_Timeout) {
   const GURL url("https://example.com/timeout");
   content::WebContentsTester::For(web_contents_.get())->NavigateAndCommit(url);

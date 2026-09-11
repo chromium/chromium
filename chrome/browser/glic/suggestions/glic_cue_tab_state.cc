@@ -24,6 +24,16 @@
 #include "content/public/browser/web_contents.h"
 
 namespace glic {
+namespace {
+
+GURL UrlWithoutQueryAndRef(const GURL& url) {
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  return url.ReplaceComponents(replacements);
+}
+
+}  // namespace
 
 DEFINE_USER_DATA(GlicCueTabState);
 
@@ -77,7 +87,8 @@ void GlicCueTabState::DidFinishNavigation(
 void GlicCueTabState::OnPageContentAnnotated(
     const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
-  if (visit.url != last_committed_url_) {
+  if (UrlWithoutQueryAndRef(visit.url) !=
+      UrlWithoutQueryAndRef(last_committed_url_)) {
     CUEING_LOG(base::StringPrintf(
         "GlicCueTabState::OnPageContentAnnotated URL mismatch: %s vs %s",
         visit.url.spec(), last_committed_url_.spec()));
@@ -145,6 +156,9 @@ void GlicCueTabState::CancelPendingCheck() {
 
 void GlicCueTabState::ResolvePendingCheck() {
   if (!pending_check_.has_value() || !cached_result_.has_value()) {
+    CUEING_LOG(
+        "GlicCueTabState::ResolvePendingCheck: no pending check or "
+        "cached result.");
     return;
   }
 
