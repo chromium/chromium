@@ -541,6 +541,45 @@ TEST_F(ProtobufHttpClientTest,
 }
 
 TEST_F(ProtobufHttpClientTest,
+       SimpleRequest_ServerReturnsHttpInternalServerError_RetriesRequest) {
+  base::RunLoop run_loop;
+
+  ExpectCallWithTokenSuccess();
+
+  MockEchoResponseCallback response_callback;
+
+  auto request_config = CreateDefaultRequestConfig();
+  request_config->UseSimpleRetryPolicy();
+  auto request = CreateDefaultTestRequest(std::move(request_config));
+  request->SetResponseCallback(response_callback.Get());
+  client_.ExecuteRequest(std::move(request));
+
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  test_url_loader_factory_.AddResponse(
+      kTestFullUrl, "", net::HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR);
+
+  // Clear responses so that the requests don't get automatically responded.
+  test_url_loader_factory_.ClearResponses();
+
+  // The request will be retried after fast forwarding.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+
+  EXPECT_CALL(response_callback,
+              Run(HasErrorCode(HttpStatus::Code::OK), IsDefaultResponseText()))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  test_url_loader_factory_.AddResponse(kTestFullUrl,
+                                       CreateSerializedEchoResponse());
+
+  run_loop.Run();
+  ASSERT_FALSE(client_.HasPendingRequests());
+}
+
+TEST_F(ProtobufHttpClientTest,
        SimpleRequest_MaximumNumberOfRetriesReached_RunsCallbackWithError) {
   base::RunLoop run_loop;
 

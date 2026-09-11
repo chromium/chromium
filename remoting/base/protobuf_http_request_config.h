@@ -41,8 +41,8 @@ struct ProtobufHttpRequestConfig {
 
     // The list of error codes that trigger a retry.
     base::flat_set<HttpStatus::Code> retriable_error_codes = {
-        HttpStatus::Code::ABORTED, HttpStatus::Code::UNAVAILABLE,
-        HttpStatus::Code::NETWORK_ERROR};
+        HttpStatus::Code::ABORTED, HttpStatus::Code::INTERNAL,
+        HttpStatus::Code::UNAVAILABLE, HttpStatus::Code::NETWORK_ERROR};
 
    private:
     friend class base::RefCountedThreadSafe<RetryPolicy>;
