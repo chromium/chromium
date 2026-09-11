@@ -234,7 +234,9 @@ std::unique_ptr<ui::DialogModel> FileSelectHelper::CreateConfirmationDialog(
       .SetCloseActionCallback(
           base::BindOnce(std::move(cancel_callbacks.second),
                          std::vector<FileChooserFileInfoPtr>()))
-      .SetInitiallyFocusedField(kCancelButtonId);
+      .SetInitiallyFocusedField(kCancelButtonId)
+      .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
+      .SetEnableInputProtection(true);
   return dialog_builder.Build();
 }
 

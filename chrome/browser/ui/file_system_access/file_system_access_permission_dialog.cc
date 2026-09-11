@@ -167,6 +167,7 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessPermissionDialog(
                                GetCancelButtonLabel(file_request_data))))
       .SetCloseActionCallback(std::move(cancel_callbacks.second))
       .SetInitiallyFocusedField(kCancelButtonId)
+      .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
       .SetEnableInputProtection(true);
   return dialog_builder.Build();
 }
