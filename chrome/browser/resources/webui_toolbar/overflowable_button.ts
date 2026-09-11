@@ -14,46 +14,63 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {ResponsiveControl} from './responsive_control.js';
 import {getContextMenuPosition} from './toolbar_button.js';
 
+/**
+ * Common fields of the state object that the OverflowableButtonMixin makes use
+ * of, if available.
+ */
 export interface OverflowableButtonState {
+  /**
+   * True if the button is pinned / should be shown if there's space for it, and
+   * on the overflow menu if not. Classes are responsible for hiding themselves
+   * if false.
+   */
   shouldBeShown: boolean;
+
+  /**
+   * When present and true, the button will not be hidden due to overflow,
+   * though if `shouldBeShown` is false, it's assumed to take priority.
+   */
   isContextMenuVisible?: boolean;
+
+  /**
+   * Ignored if `isContextMenuVisible` is not present. If this field is present,
+   * invoking OverflowableButtonMixin.showContextMenuAndPreventOverflow() will
+   * cause the class to keep `state.isContextMenuVisible` set to true until the
+   * browser process has echoed back the `menuOpenToken` value the
+   * OverflowableButtonMixin most recently sent to the browser when its
+   * showContextMenuAndPreventOverflow() method was invoked. The
+   * OverflowableButtonMixin is expected to be the sole class to manage
+   * `menuOpenToken` for a button that uses it.
+   */
   menuOpenToken?: number;
 }
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export interface OverflowableButton {
+export interface OverflowableButton extends ResponsiveControl {
   state: OverflowableButtonState;
-  shouldBeShown(): boolean;
-  setToMinWidth(): void;
-  expandUpToPreferredWidth(): void;
-  setToPreferredWidth(): void;
-  controlsToAddToOverflowMenu(): OverflowMenuItem[];
+
+  /**
+   * Called by subclasses when should show a left-click menu or bubble. Invokes
+   * showContextMenu() on the BrowserProxy, but also adds a `menuOpenToken`, and
+   * keeps the OverflowableButton visible until it has been echoed back in an
+   * update of `state`.
+   */
   showContextMenuAndPreventOverflow(
       menuType: ContextMenuType, sourceType: MenuSourceType): void;
 }
 
 /**
- * A mixin for buttons and controls that should be set to "display: none" and
- * added to the overflow menu if they don't fit on the toolbar.
+ * A mixin for buttons and controls that, when they do not fit on the toolbar,
+ * should have the "overflow-display-none" class added, and should be added to
+ * the overflow menu.
  *
- * This mixin requires the subclassing button's properties to have a state
- * field which has a `shouldBeShown` value that is true when the button is
- * pinned, and false when it is not and thus should always be hidden. The
- * value is used as an optimization to indicate whether the button should
- * take part in layout at all. It does not handle hiding the button if
- * `shouldBeShown` is false - that's currently expected to be done by the
- * child class.
- *
- * It also has support for buttons with context menus. When
- * `state.isContextMenuVisible` is true, the button will not be hidden due to
- * overflow (though if `shouldBeShown` is false, the button is still assumed to
- * be hidden by the child button class's logic). If a control has
- * a `state.menuOpenToken` field, invoking
- * `this.showContextMenuAndPreventOverflow` method will cause the class to keep
- * `state.isContextMenuVisible` set to true until the browser process has echoed
- * back the `menuOpenToken` value. This mixin is expected to be the sole class
- * to manage `menuOpenToken` for a button that uses it.
+ * Implements all methods of ResponsiveControl, so classes using the mixin only
+ * need to provide a `state` field and call showContextMenuAndPreventOverflow()
+ * when appropriate. See `OverflowableButtonState` above for more details.
+ * Subclasses also need to bubble up a `request-layout` event to the app-toolbar
+ * if their preferred or minimum size changes, except when `state.shouldBeShown`
+ * changes, indicating they've been removed or added to the toolbar.
  *
  * This class is primarily designed to be used in combination with
  * cr-icon-buttons. It expects the CrLitElement to be the ancestor of an
@@ -62,9 +79,9 @@ export interface OverflowableButton {
  */
 export const OverflowableButtonMixin =
     <T extends Constructor<CrLitElement>>(superClass: T): T&
-    Constructor<ResponsiveControl>&Constructor<OverflowableButton> => {
+    Constructor<OverflowableButton> => {
       class OverflowableButtonMixin extends superClass implements
-          ResponsiveControl {
+          OverflowableButton {
         static get properties() {
           return {
             state: {type: Object},
@@ -72,8 +89,6 @@ export const OverflowableButtonMixin =
         }
 
         accessor state: OverflowableButtonState = {
-          // True if the button is pinned / should be shown if there's space for
-          // it. See class docs for more details.
           shouldBeShown: false,
         };
 
@@ -85,8 +100,9 @@ export const OverflowableButtonMixin =
           return this.state.shouldBeShown;
         }
 
-        // The minimum width hides the button using `overflow-display-none`.
         setToMinWidth() {
+          // The minimum width hides the button using `overflow-display-none`.
+
           // If context menu is visible, leave at full width.
           if (this.state.isContextMenuVisible) {
             return;
@@ -94,13 +110,14 @@ export const OverflowableButtonMixin =
           this.classList.add('overflow-display-none');
         }
 
-        // For a button, the preferred width has the button displayed, so
-        // removes the "overflow-display-none" class, checks if the parent
-        // element fits in the window, and if not, adds back the
-        // "overflow-display-none" class. Expects only to be called after an
-        // initial setToMinWidth() call, and only if shouldBeShown() returns
-        // true.
         expandUpToPreferredWidth() {
+          // For a button, the preferred width has the button displayed, so
+          // removes the "overflow-display-none" class, checks if the parent
+          // element fits in the window, and if not, adds back the
+          // "overflow-display-none" class. Expects only to be called after an
+          // initial setToMinWidth() call, and only if shouldBeShown() returns
+          // true.
+
           // If context menu is visible, should already be at preferred width,
           // so do nothing.
           if (this.state.isContextMenuVisible) {
@@ -115,11 +132,11 @@ export const OverflowableButtonMixin =
           }
         }
 
-        // Unconditionally sets width to preferred width without considering
-        // window sizing or other control state. Note that this only sets the
-        // button not to be hidden due to overflow; it does not affect
-        // `shouldBeShown()`.
         setToPreferredWidth() {
+          // Unconditionally sets width to preferred width without considering
+          // window sizing or other control state. Note that this only sets the
+          // button not to be hidden due to overflow; it does not affect
+          // `shouldBeShown()`.
           this.classList.remove('overflow-display-none');
         }
 
@@ -133,12 +150,7 @@ export const OverflowableButtonMixin =
 
           // Otherwise, return information about this button. Even disabled
           // buttons should be shown on the menu, if they've overflowed.
-          //
-          // Check the button element contained within this, if there is one.
-          // Fall back to `this` if no such element exists. Shouldn't happen,
-          // but makes the TypeScript compiler happy.
-          const innerControl =
-              this.shadowRoot?.querySelector('#button') || this;
+          const innerControl = this.$['button']!;
           const id = TrackedElementManager.getElementId(this);
           assert(
               id, `No TrackedElementIdentifier found for element ${this.id}`);
@@ -195,10 +207,12 @@ export const OverflowableButtonMixin =
           }
         }
 
-        // Shows the context menu with the provided parameters, and makes the
-        // button not overflow until the browser process has echoed back the
-        // updated `menuOpenToken_` value. May only be used when the button's
-        // State has `menuOpenToken` and `isContextMenuVisible` fields.
+        /**
+         * Shows the context menu with the provided parameters, and makes the
+         * button not overflow until the browser process has echoed back the
+         * updated `menuOpenToken_` value. May only be used when the button's
+         * State has `menuOpenToken` and `isContextMenuVisible` fields.
+         */
         showContextMenuAndPreventOverflow(
             menuType: ContextMenuType, sourceType: MenuSourceType) {
           // This is only supported if `state` has both `menuOpenToken` and
@@ -234,6 +248,5 @@ export const OverflowableButtonMixin =
         }
       }
 
-      return OverflowableButtonMixin as T & Constructor<ResponsiveControl>&
-          Constructor<OverflowableButton>;
+      return OverflowableButtonMixin as T & Constructor<OverflowableButton>;
     };
