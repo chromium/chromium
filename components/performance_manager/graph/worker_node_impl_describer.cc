@@ -16,7 +16,7 @@ namespace performance_manager {
 
 namespace {
 
-const char kDescriberName[] = "WorkerNode";
+const char kDescriberName[] = "WorkerNodeImpl";
 
 const char* WorkerTypeToString(WorkerNode::WorkerType state) {
   switch (state) {

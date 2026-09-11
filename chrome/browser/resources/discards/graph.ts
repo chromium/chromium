@@ -45,38 +45,31 @@ const kHighYStrength: number = 0.9;
 // some influence but can be easily overridden.
 const kWeakYStrength: number = 0.1;
 
-/**
- * Helper function to return a DOM class attribute for a given tooltip object
- * index. All rows in a tooltip that are part of the same describer object will
- * have the same class so that they can be toggled together.
- */
-function tooltipClassForIndex(objectIndex: number): string {
-  return `object${objectIndex}`;
+
+interface ToolTipHeadingRowData {
+  rowClass: 'heading';
+  describerName: string;
+  itemCount: number;
 }
 
-/**
- * Helper function to toggle the visibility of a set of rows in the tooltip
- * table.
- */
-function toggleTooltipRows(clickedRow: HTMLElement, objectIndex: number) {
-  // Toggle visibility of only the value rows with the same index in the same
-  // tooltip.
-  const valueClasses = `tr.value.${tooltipClassForIndex(objectIndex)}`;
-  const tooltip = d3.select(clickedRow.parentElement);
-  const isCollapsed = tooltip.select(valueClasses).classed('collapsed');
-  tooltip.selectAll(valueClasses).classed('collapsed', !isCollapsed);
+interface ToolTipValueRowData {
+  rowClass: 'value';
+  describerName: string;
+  key: string;
+  value: string;
+  fullValue?: string;
 }
 
-interface ToolTipRowData {
-  // The contents of each cell in the row.
-  contents: [string, string];
-
-  // Class to apply to the <tr> element.
-  rowClass: 'heading'|'value';
-
-  // Index used to group rows in the same object.
-  objectIndex: number;
+interface ToolTipLoadingRowData {
+  rowClass: 'loading';
 }
+
+interface ToolTipEmptyRowData {
+  rowClass: 'empty';
+}
+
+type ToolTipRowData = ToolTipHeadingRowData|ToolTipValueRowData|
+    ToolTipLoadingRowData|ToolTipEmptyRowData;
 
 class ToolTip {
   floating: boolean = true;
@@ -85,7 +78,9 @@ class ToolTip {
   node: GraphNode;
   private graph_: Graph;
   private div_: d3.Selection<HTMLDivElement, unknown, null, undefined>;
-  private descriptionJson_: string = '';
+  private titleSpan_: d3.Selection<HTMLSpanElement, unknown, null, undefined>;
+  private descriptionJson_: string|null = null;
+  private collapsedSections_: Map<string, boolean> = new Map();
 
   constructor(div: Element, node: GraphNode, graph: Graph) {
     this.x = node.x;
@@ -99,17 +94,46 @@ class ToolTip {
                     .style('opacity', 0)
                     .style('left', `${this.x}px`)
                     .style('top', `${this.y}px`);
-    this.div_.append('table').append('tbody');
+
+    const header = this.div_.append('div').attr('class', 'tooltip-header');
+    const title = this.node.title || 'Node';
+    this.titleSpan_ = header.append('span')
+                          .attr('class', 'tooltip-title')
+                          .attr('title', title)
+                          .text(title);
+
+    header.append('button')
+        .attr('class', 'tooltip-close-button')
+        .attr('title', 'Close')
+        .attr('aria-label', 'Close')
+        .text('✕')
+        .on('click', (event: MouseEvent) => {
+          event.stopPropagation();
+          this.graph_.closeToolTip(this.node);
+        });
+
+    const content = this.div_.append('div').attr('class', 'tooltip-content');
+    const tbody = content.append('table').append('tbody');
+    tbody.append('tr')
+        .datum<ToolTipRowData>({rowClass: 'loading'})
+        .attr('class', 'loading')
+        .append('td')
+        .attr('colspan', 2)
+        .text('Loading...');
     this.div_.transition().duration(200).style('opacity', .9);
 
-    // Set up a drag behavior for this object's div.
+    // Set up a drag behavior for this object's div, filtering to the header.
     const drag = d3.drag().subject(() => this) as unknown as
         d3.DragBehavior<HTMLDivElement, unknown, unknown>;
+    drag.filter((event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      return !event.ctrlKey && !event.button &&
+          !!target?.closest('.tooltip-header') &&
+          !target?.closest('.tooltip-close-button');
+    });
     drag.on('start', this.onDragStart_.bind(this));
     drag.on('drag', this.onDrag_.bind(this));
     this.div_.call(drag);
-
-    this.onDescription(JSON.stringify({}));
   }
 
   nodeMoved() {
@@ -135,184 +159,245 @@ class ToolTip {
     this.div_.transition().duration(200).style('opacity', 0).remove();
   }
 
+  private isSectionCollapsed_(describerName: string): boolean {
+    if (this.collapsedSections_.has(describerName)) {
+      return this.collapsedSections_.get(describerName)!;
+    }
+    // Default describer starts expanded, all decorator describers start
+    // collapsed.
+    return describerName !== this.node.defaultDescriberName;
+  }
+
+  private toggleSection_(describerName: string) {
+    const nextState = !this.isSectionCollapsed_(describerName);
+    this.collapsedSections_.set(describerName, nextState);
+    this.updateRowVisibility_();
+    this.graph_.updateToolTipLinks();
+  }
+
+  private updateRowVisibility_() {
+    this.div_.selectAll<HTMLTableRowElement, ToolTipRowData>('tbody tr')
+        .each((d, i, nodes) => {
+          const el = nodes[i];
+          if (!d || !el) {
+            return;
+          }
+          if (d.rowClass === 'heading') {
+            const isEmpty = d.itemCount === 0;
+            const isCollapsed = this.isSectionCollapsed_(d.describerName);
+            const icon = isEmpty ? '' : `${isCollapsed ? '▸' : '▾'} `;
+            const countStr = isEmpty ? ' (empty)' : ` (${d.itemCount})`;
+            const text = `${icon}${d.describerName}${countStr}`;
+            const td = el.querySelector('td');
+            if (td) {
+              let button = td.querySelector<HTMLButtonElement>('button');
+              if (isEmpty) {
+                if (button) {
+                  button.remove();
+                }
+                if (td.textContent !== text) {
+                  td.textContent = text;
+                }
+              } else {
+                if (!button) {
+                  td.textContent = '';
+                  button = document.createElement('button');
+                  button.className = 'section-toggle';
+                  button.addEventListener('click', () => {
+                    this.toggleSection_(d.describerName);
+                  });
+                  td.appendChild(button);
+                }
+                if (button.textContent !== text) {
+                  button.textContent = text;
+                }
+                button.setAttribute('aria-expanded', String(!isCollapsed));
+              }
+            }
+            el.classList.toggle('empty', isEmpty);
+          } else if (d.rowClass === 'value') {
+            el.classList.toggle(
+                'collapsed', this.isSectionCollapsed_(d.describerName));
+          }
+        });
+  }
+
+  private flattenObjectRec_(
+      visited: Set<object>, flattened: ToolTipRowData[], describerName: string,
+      prefix: string, object: object) {
+    if (!object || typeof object !== 'object' || visited.has(object)) {
+      return;
+    }
+    visited.add(object);
+
+    const sortedEntries =
+        Object.entries(object).sort(([a], [b]) => a.localeCompare(b));
+
+    for (const [key, value] of sortedEntries) {
+      const fullKey = prefix ? `${prefix}.${key}` : key;
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        this.flattenObjectRec_(
+            visited, flattened, describerName, fullKey, value);
+      } else {
+        const rawString = Array.isArray(value) ?
+            (value.length === 0 ? '[]' : value.join(', ')) :
+            String(value);
+
+        let displayValue = rawString;
+        let fullValue: string|undefined;
+        if (rawString.length > 50) {
+          displayValue = `${rawString.substring(0, 47)}...`;
+          fullValue = rawString;
+        }
+
+        flattened.push({
+          rowClass: 'value',
+          describerName,
+          key: fullKey,
+          value: displayValue,
+          ...(fullValue ? {fullValue} : {}),
+        });
+      }
+    }
+  }
+
+  private flattenDescription_(object: Record<string, object>):
+      ToolTipRowData[] {
+    const flattened: ToolTipRowData[] = [];
+    const visited = new Set<object>();
+    const defaultDescriber = this.node.defaultDescriberName;
+
+    // Sort top-level entries so the default describer is first, followed by
+    // decorators alphabetically.
+    const describerNames = Object.keys(object).sort((a, b) => {
+      if (a === b) {
+        return 0;
+      }
+      if (a === defaultDescriber) {
+        return -1;
+      }
+      if (b === defaultDescriber) {
+        return 1;
+      }
+      return a.localeCompare(b);
+    });
+
+    for (const describerName of describerNames) {
+      const value = object[describerName];
+      if (value && typeof value === 'object') {
+        const headingIndex = flattened.length;
+        const heading: ToolTipHeadingRowData = {
+          rowClass: 'heading',
+          describerName,
+          itemCount: 0,
+        };
+        flattened.push(heading);
+
+        this.flattenObjectRec_(visited, flattened, describerName, '', value);
+
+        heading.itemCount = flattened.length - headingIndex - 1;
+      }
+    }
+    return flattened;
+  }
+
   /**
    * Updates the description displayed.
    */
   onDescription(descriptionJson: string) {
+    const title = this.node.title || 'Node';
+    if (this.titleSpan_.text() !== title) {
+      this.titleSpan_.text(title);
+      this.titleSpan_.attr('title', title);
+    }
+
     if (this.descriptionJson_ === descriptionJson) {
       return;
     }
 
-    /**
-     * Helper for recursively flattening an Object.
-     *
-     * @param visited The set of visited objects, excluding
-     *          {@code object}.
-     * @param flattened The flattened object being built.
-     * @param path The current flattened path.
-     * @param objectIndex An index used to identify this object in expanding
-     *                    table rows.
-     * @param object The nested dict to be flattened.
-     * @returns The last index used by any sub-object of this object.
-     */
-    function flattenObjectRec(
-        visited: Set<object>, flattened: ToolTipRowData[], path: string,
-        objectIndex: number, object: object): number {
-      if (typeof object !== 'object' || visited.has(object)) {
-        return objectIndex;
+    this.descriptionJson_ = descriptionJson;
+    let data: Record<string, object> = {};
+    try {
+      const parsed = JSON.parse(descriptionJson);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        data = parsed;
       }
-      visited.add(object);
-      objectIndex++;
+    } catch {
+      // Ignore parse errors.
+    }
 
-      // When entering a nested object, add a header row.
-      if (path) {
-        flattened.push({
-          contents: [path, ''],
-          rowClass: 'heading',
-          objectIndex: objectIndex,
-        });
-      }
+    const flattenedDescription = this.flattenDescription_(data);
+    if (flattenedDescription.length === 0) {
+      flattenedDescription.push({rowClass: 'empty'});
+    }
 
-      const subObjects: Array<[string, object]> = [];
-      for (const [key, value] of Object.entries(object)) {
-        // Save non-null objects for recursion at bottom of list.
-        if (!!value && typeof value === 'object') {
-          subObjects.push([key, value]);
-        } else {
-          // Everything else is considered a leaf value.
-          let strValue = String(value);
-          if (strValue.length > 50) {
-            strValue = `${strValue.substring(0, 47)}...`;
+    const tbody = this.div_.select<HTMLTableSectionElement>('tbody');
+    const tbodyNode = tbody.node()!;
+    const existingRows =
+        Array.from(tbodyNode.children) as HTMLTableRowElement[];
+
+    const canUpdateInPlace =
+        existingRows.length === flattenedDescription.length &&
+        flattenedDescription.every((rowData, i) => {
+          const tr = existingRows[i]!;
+          const currentData =
+              d3.select(tr).datum() as ToolTipRowData | undefined;
+          if (!currentData || currentData.rowClass !== rowData.rowClass) {
+            return false;
           }
-          flattened.push({
-            contents: [key, strValue],
-            rowClass: 'value',
-            objectIndex: objectIndex,
-          });
+          if (rowData.rowClass === 'heading' &&
+              currentData.rowClass === 'heading') {
+            return currentData.describerName === rowData.describerName;
+          }
+          if (rowData.rowClass === 'value' &&
+              currentData.rowClass === 'value') {
+            return currentData.key === rowData.key;
+          }
+          return true;
+        });
+
+    if (canUpdateInPlace) {
+      for (let i = 0; i < flattenedDescription.length; ++i) {
+        const rowData = flattenedDescription[i]!;
+        const tr = existingRows[i]!;
+        d3.select(tr).datum(rowData);
+        if (rowData.rowClass === 'value') {
+          const valTd = tr.children[1] as HTMLElement | undefined;
+          if (valTd) {
+            if (valTd.textContent !== rowData.value) {
+              valTd.textContent = rowData.value;
+            }
+            const expectedTitle = rowData.fullValue || '';
+            if (valTd.title !== expectedTitle) {
+              valTd.title = expectedTitle;
+            }
+          }
         }
       }
-      // Now recurse into sub-objects.
-      for (const [key, value] of subObjects) {
-        const fullPath = path ? `${path} > ${key}` : key;
-        objectIndex =
-            flattenObjectRec(visited, flattened, fullPath, objectIndex, value);
+    } else {
+      tbody.selectAll('*').remove();
+      for (const rowData of flattenedDescription) {
+        const tr =
+            tbody.append('tr').datum(rowData).attr('class', rowData.rowClass);
+
+        if (rowData.rowClass === 'heading') {
+          tr.append('td').attr('colspan', 2);
+        } else if (rowData.rowClass === 'loading') {
+          tr.append('td').attr('colspan', 2).text('Loading...');
+        } else if (rowData.rowClass === 'empty') {
+          tr.append('td').attr('colspan', 2).text('No data');
+        } else {
+          tr.append('td').text(rowData.key);
+          const valTd = tr.append('td').text(rowData.value);
+          if (rowData.fullValue) {
+            valTd.attr('title', rowData.fullValue);
+          }
+        }
       }
-      return objectIndex;
     }
 
-    /**
-     * Recursively flattens an Object of key/value pairs. Nested objects will be
-     * flattened to a list with a subheader row showing the nested key. Each
-     * list element includes metadata that will be used to format a table row.
-     *
-     * Nested objects are always sorted to the end. If there are circular
-     * dependencies, they will not be expanded.
-     *
-     * For example, converting:
-     *
-     * 'describer': {
-     *   'foo': 'hello',
-     *   'bar': 1,
-     *   'baz': {
-     *     'x': 43.5,
-     *     'y': 'fox',
-     *     'z': [1, 2],
-     *     'a': 0,
-     *   },
-     *   'monkey': 3,
-     *   'self': (reference to self)
-     * }
-     *
-     * will yield:
-     *
-     * [
-     *   {contents: ['describer', ''], rowClass: 'header', objectIndex: 1},
-     *   {contents: ['foo', 'hello'], rowClass: 'value', objectIndex: 1},
-     *   {contents: ['bar', '1'], rowClass: 'value', objectIndex: 1},
-     *   {contents: ['monkey', '3]', rowClass: 'value', objectIndex: 1},
-     *   {contents: ['describer > baz', ''], rowClass: 'header',
-     *    objectIndex: 2},
-     *   {contents: ['x', '43.5'], rowClass: 'value', objectIndex: 2},
-     *   {contents: ['y', 'fox'], rowClass: 'value', objectIndex: 2},
-     *   {contents: ['a', '0'], rowClass: 'value', objectIndex: 2},
-     *   {contents: ['describer > baz > z', ''], rowClass: 'header',
-     *    objectIndex: 3},
-     *   {contents: ['0', '1'], rowClass: 'value', objectIndex: 3},
-     *   {contents: ['1', '2'], rowClass: 'value', objectIndex: 3},
-     * ]
-     */
-    function flattenObject(object: object): ToolTipRowData[] {
-      const flattened: ToolTipRowData[] = [];
-      flattenObjectRec(new Set(), flattened, '', 0, object);
-      return flattened;
-    }
-
-    // The JSON is a dictionary of data describer name to their data. Assuming a
-    // convention that describers emit a dictionary from string->string, this is
-    // flattened to an array. Each top-level dictionary entry is flattened to a
-    // 'heading' with [`the describer's name`, ''], followed by some number of
-    // entries with a two-element list, each representing a key/value pair.
-    this.descriptionJson_ = descriptionJson;
-    const flattenedDescription: ToolTipRowData[] =
-        flattenObject(JSON.parse(descriptionJson));
-    if (flattenedDescription.length === 0) {
-      flattenedDescription.push(
-          {contents: ['No Data', ''], rowClass: 'heading', objectIndex: 0});
-    }
-
-    // Attach each TooltipRowData element to a table row as data.
-    let tr =
-        this.div_.selectAll('tbody').selectAll('tr').data(flattenedDescription);
-
-    // Create <tr> and <td> elements for each row that's new in this update.
-    tr.enter()
-        .append('tr')
-        .selectAll('td')
-        .data((d: unknown) => (d as ToolTipRowData).contents)
-        .enter()
-        .append('td');
-
-    // Delete the <tr> elements for each row that's disappeared in this update.
-    tr.exit().remove();
-
-    // Update the selection to match the elements that were added or removed.
-    tr = this.div_.selectAll('tr');
-
-    // Apply style and content to all <tr> and <td> elements. Elements that
-    // already existed in the last update will already have settings so each
-    // change must be idempotent.
-
-    // Make the first cell of each header row 2 columns wide.
-    tr.select('td').attr(
-        'colspan', (_d: unknown, i: number, nodes: ArrayLike<unknown>) => {
-          const parent = d3.select((nodes[i] as HTMLElement).parentElement);
-          const parentData = parent.datum() as ToolTipRowData;
-          return parentData.rowClass === 'heading' ? 2 : null;
-        });
-
-    // Set the text of each cell.
-    tr.selectAll('td')
-        // Assign the <tr>'s full row of data to the selection.
-        .data((d: unknown) => (d as ToolTipRowData).contents)
-        // Assign the elements of the row array to the <td>'s in the selection.
-        .text((d: unknown) => d as string);
-
-    // Make each row clickable.
-    tr.on('click',
-          (event: MouseEvent, d: ToolTipRowData) => {
-            toggleTooltipRows(
-                event.currentTarget as HTMLElement, d.objectIndex);
-          })
-        // And add classes to them.
-        .each((d: unknown, i: number, nodes: ArrayLike<unknown>) => {
-          const el = nodes[i] as HTMLElement;
-          const rowData = d as ToolTipRowData;
-
-          // Add the row's fixed classes if they're not already present. This
-          // won't overwrite the "collapsed" class if it's there.
-          el.classList.add(
-              rowData.rowClass, tooltipClassForIndex(rowData.objectIndex));
-        });
+    this.updateRowVisibility_();
+    this.graph_.updateToolTipLinks();
   }
 
   private onDragStart_() {
@@ -352,6 +437,10 @@ class GraphNode implements d3.SimulationNodeDatum {
   }
 
   get title(): string {
+    return '';
+  }
+
+  get defaultDescriberName(): string {
     return '';
   }
 
@@ -448,6 +537,10 @@ class PageNode extends GraphNode {
     return this.page.mainFrameUrl.length > 0 ? this.page.mainFrameUrl : 'Page';
   }
 
+  override get defaultDescriberName() {
+    return 'PageNodeImpl';
+  }
+
   override get targetYPositionStrength() {
     // Gravitate strongly towards the top of the graph. Can be overridden by
     // the bounding force which uses kMaxBoundaryStrength.
@@ -494,6 +587,10 @@ class FrameNode extends GraphNode {
     return this.frame.url.length > 0 ? this.frame.url : 'Frame';
   }
 
+  override get defaultDescriberName() {
+    return 'FrameNodeImpl';
+  }
+
   override targetPositionY(_graphHeight: number) {
     return kFrameNodesTargetY;
   }
@@ -523,6 +620,10 @@ class ProcessNode extends GraphNode {
 
   override get title() {
     return `PID: ${this.process.pid.pid}`;
+  }
+
+  override get defaultDescriberName() {
+    return 'ProcessNodeImpl';
   }
 
   override get targetYPositionStrength() {
@@ -559,6 +660,10 @@ class WorkerNode extends GraphNode {
 
   override get title() {
     return this.worker.url.length > 0 ? this.worker.url : 'Worker';
+  }
+
+  override get defaultDescriberName() {
+    return 'WorkerNodeImpl';
   }
 
   override get targetYPositionStrength() {
@@ -796,6 +901,10 @@ export class Graph implements GraphChangeStreamInterface {
   nodeDeleted(nodeId: bigint) {
     const node = this.nodes_.get(nodeId)!;
 
+    if (node.tooltip) {
+      this.closeToolTip(node);
+    }
+
     // Remove any links, and then the node itself.
     this.removeNodeLinks_(node);
     this.removeDashedNodeLinks_(node);
@@ -893,10 +1002,18 @@ export class Graph implements GraphChangeStreamInterface {
     }
   }
 
-  private onGraphNodeClick_(_event: MouseEvent, node: GraphNode) {
+  closeToolTip(node: GraphNode) {
     if (node.tooltip) {
       node.tooltip.goAway();
       node.tooltip = null;
+      this.updateToolTipLinks();
+      this.pollForNodeDescriptions_();
+    }
+  }
+
+  private onGraphNodeClick_(_event: MouseEvent, node: GraphNode) {
+    if (node.tooltip) {
+      this.closeToolTip(node);
     } else {
       node.tooltip = new ToolTip(this.div_, node, this);
 

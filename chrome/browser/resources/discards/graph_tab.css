@@ -48,14 +48,151 @@ div.tooltip {
   background: lightsteelblue;
   border: 0;
   border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  max-width: 450px;
+  min-width: 180px;
   padding: 2px;
   position: absolute;
+}
+
+div.tooltip-header {
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 4px 4px 4px;
+  user-select: none;
+}
+
+.tooltip-title {
+  flex: 1;
+  font: 11px sans-serif;
+  font-weight: bold;
+  margin-right: 8px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+button.tooltip-close-button {
+  background: none;
+  border: none;
+  border-radius: 4px;
+  color: inherit;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px 4px;
+}
+
+button.tooltip-close-button:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+div.tooltip-content {
+  max-height: min(400px, 50vh);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+div.tooltip-content table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+tr {
+  font: 10px sans-serif;
+}
+
+tr.heading {
+  user-select: none;
+}
+
+button.section-toggle {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: bold;
+  padding: 3px 4px;
+  text-align: start;
+  user-select: none;
+  width: 100%;
+}
+
+button.section-toggle:hover,
+button.section-toggle:focus-visible {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+tr.heading.empty {
+  cursor: default;
+}
+
+tr.heading > td {
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  font-weight: bold;
+  padding: 0;
+  text-align: start;
+}
+
+tr.heading.empty > td {
+  padding: 3px 4px;
+}
+
+tbody tr:first-child > td {
+  border-top: none;
+}
+
+tr.loading > td,
+tr.empty > td {
+  font-style: italic;
+  padding: 3px 4px;
   text-align: center;
+}
+
+tr.value:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+tr.value > td {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+tr.value > td:nth-child(1) {
+  padding-left: 6px;
+  padding-right: 8px;
+  text-align: start;
+  white-space: nowrap;
+  width: 1%;
+}
+
+tr.value > td:nth-child(2) {
+  padding-right: 6px;
+  text-align: start;
+  word-break: break-word;
+}
+
+tr.collapsed {
+  display: none;
 }
 
 @media (prefers-color-scheme: dark) {
   div.tooltip {
     background: dimgray;
+  }
+
+  div.tooltip-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  button.tooltip-close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
 
   .separator {
@@ -65,25 +202,21 @@ div.tooltip {
   .separators line {
     stroke: var(--cr-secondary-text-color);
   }
-}
 
-tr {
-  font: 10px sans-serif;
-}
+  button.section-toggle:hover,
+  button.section-toggle:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+  }
 
-tr.heading > td {
-  font-weight: bold;
-  text-align: center;
-}
+  tr.heading > td {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
 
-tr.value > td:nth-child(1) {
-  text-align: end;
-}
+  tr.value > td {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
 
-tr.value > td:nth-child(2) {
-  text-align: start;
-}
-
-tr.value.collapsed {
-  display: none;
+  tr.value:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
 }
