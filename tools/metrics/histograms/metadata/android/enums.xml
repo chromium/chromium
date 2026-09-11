@@ -3143,6 +3143,10 @@ chromium-metrics-reviews@google.com.
   <int value="142" label="profileGetHttpCacheManager"/>
   <int value="143" label="profileSetCrossOriginIsolatedAllowList"/>
   <int value="144" label="profileGetCrossOriginIsolatedAllowList"/>
+  <int value="145" label="webViewInstanceAddDocumentStartJavaScript"/>
+  <int value="146" label="webViewInstanceAddJavaScriptOnEvent"/>
+  <int value="147" label="webViewInstanceGetJavaScriptWorld"/>
+  <int value="148" label="webViewInstanceGetProfile"/>
 </enum>
 
 <!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup,//android_webview/java/src/org/chromium/android_webview/StartupCallSite.java:StartupCallSite) -->

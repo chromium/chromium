@@ -163,6 +163,10 @@ import java.lang.annotation.RetentionPolicy;
     StartupCallSite.PROFILE_GET_HTTP_CACHE_MANAGER,
     StartupCallSite.PROFILE_SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
     StartupCallSite.PROFILE_GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
+    StartupCallSite.WEBVIEW_INSTANCE_ADD_DOCUMENT_START_JAVASCRIPT,
+    StartupCallSite.WEBVIEW_INSTANCE_ADD_JAVASCRIPT_ON_EVENT,
+    StartupCallSite.WEBVIEW_INSTANCE_GET_JAVASCRIPT_WORLD,
+    StartupCallSite.WEBVIEW_INSTANCE_GET_PROFILE,
     StartupCallSite.COUNT,
 })
 public @interface StartupCallSite {
@@ -310,7 +314,11 @@ public @interface StartupCallSite {
     int PROFILE_GET_HTTP_CACHE_MANAGER = 142;
     int PROFILE_SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 143;
     int PROFILE_GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 144;
+    int WEBVIEW_INSTANCE_ADD_DOCUMENT_START_JAVASCRIPT = 145;
+    int WEBVIEW_INSTANCE_ADD_JAVASCRIPT_ON_EVENT = 146;
+    int WEBVIEW_INSTANCE_GET_JAVASCRIPT_WORLD = 147;
+    int WEBVIEW_INSTANCE_GET_PROFILE = 148;
     // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
-    int COUNT = 145;
+    int COUNT = 149;
 }
 // LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup,//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)

@@ -201,6 +201,8 @@ public class SharedWebViewChromium {
 
     public ScriptHandler addDocumentStartJavaScript(
             final String script, final String[] allowedOriginRules) {
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.WEBVIEW_INSTANCE_ADD_DOCUMENT_START_JAVASCRIPT);
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(
                     () -> addDocumentStartJavaScript(script, allowedOriginRules));
@@ -213,6 +215,8 @@ public class SharedWebViewChromium {
             final @DocumentInjectionTime.EnumType int event,
             final String[] allowedOriginRules,
             final String world) {
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.WEBVIEW_INSTANCE_ADD_JAVASCRIPT_ON_EVENT);
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(
                     () -> addJavaScriptOnEvent(script, event, allowedOriginRules, world));
@@ -221,6 +225,8 @@ public class SharedWebViewChromium {
     }
 
     public int getJavaScriptWorld(final String name) {
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.WEBVIEW_INSTANCE_GET_JAVASCRIPT_WORLD);
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(() -> getJavaScriptWorld(name));
         }
@@ -267,6 +273,8 @@ public class SharedWebViewChromium {
     }
 
     public Profile getProfile() {
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.WEBVIEW_INSTANCE_GET_PROFILE);
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(this::getProfile);
         }
@@ -292,6 +300,8 @@ public class SharedWebViewChromium {
     }
 
     public void saveState(Bundle outState, int maxSize, boolean includeForwardState) {
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.WEBVIEW_INSTANCE_SAVE_STATE);
         if (checkNeedsPost()) {
             mRunQueue.runVoidTaskOnUiThreadBlocking(() -> {
                 saveState(outState, maxSize, includeForwardState);
