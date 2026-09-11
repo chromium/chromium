@@ -20,8 +20,13 @@ include_rules = [
   "+chrome/browser/device_identity",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/policy",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/common/extensions",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+chrome/browser/prefs",
+  ],
+}

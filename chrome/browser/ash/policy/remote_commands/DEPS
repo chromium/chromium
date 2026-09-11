@@ -34,7 +34,6 @@ include_rules = [
   "+chrome/browser/enterprise/remote_commands/extension_update_check_job.h",
   "+chrome/browser/policy/messaging_layer/proto/synced",
   "+chrome/browser/policy/messaging_layer/public",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/support_tool",
   "+chrome/browser/ui/ash/login",
@@ -42,3 +41,9 @@ include_rules = [
 
   "+ui/message_center/message_center.h",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+chrome/browser/prefs",
+  ],
+}

@@ -38,7 +38,6 @@ include_rules = [
   "+chrome/browser/chromeos/reporting",
   "+chrome/browser/extensions/browsertest_util.h",
   "+chrome/browser/policy",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/sessions",
   # TODO: b/335799773 - We can remove this dependency once support tool files
@@ -61,5 +60,6 @@ specific_include_rules = {
   ],
   ".*unittest\\.cc": [
     "+chrome/browser/global_features.h",
+    "+chrome/browser/prefs",
   ],
 }

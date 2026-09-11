@@ -24,8 +24,13 @@ include_rules = [
   "+chrome/browser/enterprise/util",
   "+chrome/browser/net",
   "+chrome/browser/policy",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+chrome/browser/prefs",
+  ],
+}
