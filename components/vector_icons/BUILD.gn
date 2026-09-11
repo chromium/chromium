@@ -562,6 +562,7 @@ if (current_toolchain == default_toolchain) {
         "google_chrome/google_wallet.icon",
         "google_chrome/google_wallet_monochrome.icon",
         "google_chrome/gshield.icon",
+        "google_chrome/mic_detect_auto.icon",
         "google_chrome/page_insights.icon",
         "google_chrome/page_insights_color.icon",
         "google_chrome/pen_spark.icon",
