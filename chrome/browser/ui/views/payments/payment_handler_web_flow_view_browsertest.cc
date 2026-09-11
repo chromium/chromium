@@ -1824,6 +1824,341 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    PaymentHandlerWebFlowViewCameraUxTest,
+    BlockedCameraIndicator_DismissalLifecycleAndRepeatDismissal) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+
+  PermissionPromptWaiter prompt_waiter(manager);
+
+  // Request camera via getUserMedia, triggering permission prompt.
+  content::ExecuteScriptAsync(payment_handler_contents, R"(
+    navigator.mediaDevices.getUserMedia({video: true}).catch(() => {});
+  )");
+  prompt_waiter.WaitUntilPromptAdded();
+
+  auto* dashboard = test_api(web_flow_controller).permission_dashboard_view();
+  ASSERT_NE(nullptr, dashboard);
+  EXPECT_TRUE(dashboard->GetVisible());
+  EXPECT_TRUE(dashboard->GetRequestChip()->GetVisible());
+
+  PermissionChipView* const indicator_chip = dashboard->GetIndicatorChip();
+  ChipAnimationWaiter animation_waiter(indicator_chip);
+
+  // User dismisses prompt (e.g. clicking prompt close button).
+  manager->Dismiss(std::monostate());
+
+  // Prompt chip is reset, and blocked indicator chip is shown and expands.
+  EXPECT_FALSE(dashboard->GetRequestChip()->GetVisible());
+  EXPECT_TRUE(dashboard->GetVisible());
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_EQ(PermissionChipTheme::kBlockedActivityIndicator,
+            indicator_chip->GetThemeForTesting());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CAMERA_NOT_ALLOWED),
+            indicator_chip->GetTextForTesting());
+  EXPECT_FALSE(
+      test_api(web_flow_controller).location_icon_view()->GetVisible());
+
+  // Wait for expand animation to end.
+  animation_waiter.WaitForExpandAnimation();
+  EXPECT_EQ(24, indicator_chip->GetPreferredSize().height());
+
+  // Expanded dwell timer (4s) starts.
+  EXPECT_TRUE(
+      test_api(web_flow_controller).is_indicator_chip_collapse_timer_running());
+
+  // Fire expanded dwell timer; indicator collapses to 24px circular icon.
+  test_api(web_flow_controller).fire_indicator_chip_collapse_timer();
+  EXPECT_FALSE(
+      test_api(web_flow_controller).is_indicator_chip_collapse_timer_running());
+  animation_waiter.WaitForCollapseAnimation();
+
+  EXPECT_EQ(24, indicator_chip->GetPreferredSize().width());
+  EXPECT_EQ(24, indicator_chip->GetPreferredSize().height());
+  EXPECT_EQ(24, dashboard->GetPreferredSize().width());
+  EXPECT_EQ(24, dashboard->GetPreferredSize().height());
+
+  // Compact dwell timer (4s) starts.
+  EXPECT_TRUE(
+      test_api(web_flow_controller).is_indicator_dismiss_timer_running());
+
+  // Second camera request while compact dismiss timer is active.
+  PermissionPromptWaiter second_prompt_waiter(manager);
+  content::ExecuteScriptAsync(payment_handler_contents, R"(
+    navigator.mediaDevices.getUserMedia({video: true}).catch(() => {});
+  )");
+  second_prompt_waiter.WaitUntilPromptAdded();
+
+  // Dismiss second prompt; blocked indicator remains in compact mode and
+  // resets dismiss timer.
+  manager->Dismiss(std::monostate());
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_EQ(24, indicator_chip->GetPreferredSize().width());
+  EXPECT_EQ(24, indicator_chip->GetPreferredSize().height());
+  EXPECT_TRUE(
+      test_api(web_flow_controller).is_indicator_dismiss_timer_running());
+
+  // Fire reset compact dwell timer; indicator hides and LocationIconView is
+  // restored.
+  test_api(web_flow_controller).fire_indicator_dismiss_timer();
+  EXPECT_FALSE(
+      test_api(web_flow_controller).is_indicator_dismiss_timer_running());
+  EXPECT_FALSE(indicator_chip->GetVisible());
+  EXPECT_FALSE(dashboard->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+
+  // Verify committed navigation immediately hides an active blocked indicator.
+  PermissionPromptWaiter nav_prompt_waiter(manager);
+  content::ExecuteScriptAsync(payment_handler_contents, R"(
+    navigator.mediaDevices.getUserMedia({video: true}).catch(() => {});
+  )");
+  nav_prompt_waiter.WaitUntilPromptAdded();
+  manager->Dismiss(std::monostate());
+  EXPECT_TRUE(indicator_chip->GetVisible());
+
+  ASSERT_TRUE(content::NavigateToURL(
+      payment_handler_contents,
+      https_server()->GetURL("a.com", "/payment_handler.html")));
+  EXPECT_FALSE(indicator_chip->GetVisible());
+  EXPECT_FALSE(dashboard->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PaymentHandlerWebFlowViewCameraUxTest,
+    BlockedCameraIndicator_PreBlockedCamera_ClickWhileExpandingOpensPageInfoAndHidesOnClose) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  // Pre-block camera for payment app origin.
+  GURL app_url = payment_handler_contents->GetLastCommittedURL();
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(app_url, app_url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_BLOCK);
+
+  auto* dashboard = test_api(web_flow_controller).permission_dashboard_view();
+  ASSERT_NE(nullptr, dashboard);
+  PermissionChipView* const indicator_chip = dashboard->GetIndicatorChip();
+
+  ChipAnimationWaiter animation_waiter(indicator_chip);
+
+  // Request camera via getUserMedia; pre-blocked origin is denied by
+  // controller.
+  ASSERT_EQ("NotAllowedError", content::EvalJs(payment_handler_contents, R"(
+              navigator.mediaDevices.getUserMedia({video: true})
+                .then(() => 'unexpected')
+                .catch(err => err.name);
+            )"));
+
+  // Verify blocked indicator is shown and expands.
+  EXPECT_TRUE(dashboard->GetVisible());
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_EQ(PermissionChipTheme::kBlockedActivityIndicator,
+            indicator_chip->GetThemeForTesting());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CAMERA_NOT_ALLOWED),
+            indicator_chip->GetTextForTesting());
+  EXPECT_FALSE(
+      test_api(web_flow_controller).location_icon_view()->GetVisible());
+
+  // Click indicator chip immediately while it is still expanding.
+  views::test::ButtonTestApi(indicator_chip)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks::Now(),
+                                  ui::EF_LEFT_MOUSE_BUTTON, 0));
+
+  views::BubbleDialogDelegateView* page_info =
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  ASSERT_NE(nullptr, page_info);
+  page_info->set_close_on_deactivate(false);
+
+  views::Widget* page_info_widget = page_info->GetWidget();
+  ASSERT_NE(nullptr, page_info_widget);
+  views::test::WidgetDestroyedWaiter bubble_destroyed_waiter(page_info_widget);
+
+  // Wait for expand animation to finish while PageInfo is open.
+  animation_waiter.WaitForExpandAnimation();
+
+  // Verify collapse timer is NOT started by OnExpandAnimationEnded while
+  // PageInfo is open.
+  EXPECT_FALSE(
+      test_api(web_flow_controller).is_indicator_chip_collapse_timer_running());
+
+  // Close PageInfo bubble.
+  page_info_widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  bubble_destroyed_waiter.Wait();
+
+  // Closing PageInfo dismisses the blocked indicator and restores
+  // location_icon_view.
+  EXPECT_FALSE(indicator_chip->GetVisible());
+  EXPECT_FALSE(dashboard->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PaymentHandlerWebFlowViewCameraUxTest,
+    BlockedCameraIndicator_ToInUseCapture_ResetsThemeAndIcon) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+
+  PermissionPromptWaiter prompt_waiter(manager);
+
+  // Request camera via getUserMedia, triggering permission prompt.
+  content::ExecuteScriptAsync(payment_handler_contents, R"(
+    navigator.mediaDevices.getUserMedia({video: true}).catch(() => {});
+  )");
+  prompt_waiter.WaitUntilPromptAdded();
+
+  auto* dashboard = test_api(web_flow_controller).permission_dashboard_view();
+  ASSERT_NE(nullptr, dashboard);
+  PermissionChipView* const indicator_chip = dashboard->GetIndicatorChip();
+
+  ChipAnimationWaiter expand_waiter(indicator_chip);
+
+  // Explicitly deny prompt to trigger blocked indicator.
+  manager->Deny(std::monostate());
+  expand_waiter.WaitForExpandAnimation();
+
+  EXPECT_EQ(PermissionChipTheme::kBlockedActivityIndicator,
+            indicator_chip->GetThemeForTesting());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CAMERA_NOT_ALLOWED),
+            indicator_chip->GetTextForTesting());
+  EXPECT_TRUE(
+      test_api(web_flow_controller).is_indicator_chip_collapse_timer_running());
+
+  // Allow camera permission so getUserMedia can start capture.
+  GURL payment_app_url = payment_handler_contents->GetLastCommittedURL();
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(payment_app_url, payment_app_url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_ALLOW);
+
+  // Start active video capture.
+  VideoCaptureWaiter video_waiter(payment_handler_contents);
+  ChipAnimationWaiter in_use_expand_waiter(indicator_chip);
+  ASSERT_EQ("success", content::EvalJs(payment_handler_contents, R"(
+              navigator.mediaDevices.getUserMedia({video: true})
+                .then(stream => {
+                  window.activeStream = stream;
+                  return 'success';
+                })
+                .catch(err => err.name);
+            )"));
+  video_waiter.WaitForCaptureState(true);
+
+  // Blocked timers should be stopped, and theme/icon reset to in-use.
+  EXPECT_FALSE(
+      test_api(web_flow_controller).is_indicator_chip_collapse_timer_running());
+  EXPECT_FALSE(
+      test_api(web_flow_controller).is_indicator_dismiss_timer_running());
+  EXPECT_EQ(PermissionChipTheme::kInUseActivityIndicator,
+            indicator_chip->GetThemeForTesting());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE),
+            indicator_chip->GetTextForTesting());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE),
+            indicator_chip->GetTooltipText());
+
+  in_use_expand_waiter.WaitForExpandAnimation();
+
+  // Indicator collapse timer should run for in-use capture.
+  EXPECT_TRUE(
+      test_api(web_flow_controller).is_indicator_chip_collapse_timer_running());
+  EXPECT_EQ(PaymentHandlerWebFlowViewController::IndicatorType::kInUse,
+            test_api(web_flow_controller).indicator_type());
+
+  // Stop video capture and verify clean state restoration.
+  ASSERT_EQ("stopped", content::EvalJs(payment_handler_contents, R"(
+              window.activeStream.getVideoTracks().forEach(t => t.stop());
+              'stopped';
+            )"));
+  video_waiter.WaitForCaptureState(false);
+  EXPECT_FALSE(
+      test_api(web_flow_controller).is_indicator_chip_collapse_timer_running());
+  EXPECT_FALSE(dashboard->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     PaymentHandlerWebFlowViewCameraTest,

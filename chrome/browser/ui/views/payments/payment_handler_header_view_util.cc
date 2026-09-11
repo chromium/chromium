@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/payments/content/icon/icon_size.h"
 #include "components/payments/core/features.h"
@@ -48,9 +50,10 @@ constexpr int kVerticalInset = 8;
 constexpr int kHeaderHorizontalInset = 16;
 constexpr int kHeaderIconWidth = 32;
 constexpr int kCloseButtonWidth = 32;
+constexpr int kPermissionsIndicatorChipHeight = 24;
 // TODO(crbug.com/549694583): Make header column sizing dynamic instead of using
 // a fixed width for the permission indicator chip.
-constexpr int kHeaderLeadingWidthWithCameraAccessUx = 144;
+constexpr int kHeaderLeadingWidthWithCameraAccessUx = 176;
 
 // Returns a Google color closest to light_mode_color or dark_mode_color based
 // on whether background_color is considered dark mode, with a minimum
@@ -294,6 +297,17 @@ std::unique_ptr<LocationIconView> CreatePaymentHandlerLocationIconView(
       views::kElementIdentifierKey,
       PaymentHandlerWebFlowViewController::kAppIconElementId);
   return icon_view;
+}
+
+std::unique_ptr<PermissionDashboardView>
+CreatePaymentHandlerPermissionDashboardView() {
+  auto dashboard = std::make_unique<PermissionDashboardView>();
+  PermissionChipView* const indicator_chip = dashboard->GetIndicatorChip();
+  indicator_chip->SetCustomPadding(
+      gfx::Insets(GetLayoutConstant(LayoutConstant::kLocationBarChipPadding)));
+  indicator_chip->SetMinSize(gfx::Size(0, kPermissionsIndicatorChipHeight));
+  indicator_chip->SetMaxSize(gfx::Size(0, kPermissionsIndicatorChipHeight));
+  return dashboard;
 }
 
 PaymentHandlerHeaderViews PopulatePaymentHandlerHeaderView(

@@ -68,6 +68,30 @@ class PaymentHandlerWebFlowViewController
       public permissions::PermissionRequestManager::Observer {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAppIconElementId);
+
+  // Semantic activity type represented by the permission indicator chip.
+  enum class IndicatorType {
+    // No indicator is showing. Paired with `IndicatorDisplayPhase::kHidden`.
+    kNone,
+    // Active media capture (camera stream is running).
+    kInUse,
+    // Media access was denied or dismissed.
+    kBlocked,
+  };
+
+  // Display and animation lifecycle phase of the indicator chip.
+  enum class IndicatorDisplayPhase {
+    // Chip is hidden; LocationIconView is restored.
+    kHidden,
+    // AnimateExpand transition in progress.
+    kExpanding,
+    // Fully expanded pill with message text.
+    kExpanded,
+    // AnimateCollapse transition in progress.
+    kCollapsing,
+    // Collapsed circular icon.
+    kCompact,
+  };
   // This ctor forwards its first 3 args to PaymentRequestSheetController's
   // ctor.
   // |payment_request_web_contents| is the page that initiated the
@@ -171,6 +195,7 @@ class PaymentHandlerWebFlowViewController
 
   // PermissionChipInterface::Observer:
   void OnExpandAnimationEnded() override;
+  void OnCollapseAnimationEnded() override;
 
   // permissions::PermissionRequestManager::Observer:
   void OnPromptAdded() override;
@@ -180,6 +205,8 @@ class PaymentHandlerWebFlowViewController
   void OnPermissionRequestManagerDestructed() override;
 
   void CollapseIndicatorChip();
+  void HideIndicatorChip();
+  void ShowBlockedCameraIndicator();
   void ResetRequestChip();
   void OnRequestChipPressed();
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
@@ -194,6 +221,7 @@ class PaymentHandlerWebFlowViewController
   std::unique_ptr<LocationBarModel> location_bar_model_;
   views::ViewTracker location_icon_view_tracker_;
   views::ViewTracker permission_dashboard_view_tracker_;
+  views::ViewTracker page_info_view_tracker_;
   base::ScopedObservation<MediaStreamCaptureIndicator,
                           MediaStreamCaptureIndicator::Observer>
       indicator_observation_{this};
@@ -203,7 +231,10 @@ class PaymentHandlerWebFlowViewController
   base::ScopedObservation<permissions::PermissionRequestManager,
                           permissions::PermissionRequestManager::Observer>
       permission_request_manager_observation_{this};
+  IndicatorType indicator_type_ = IndicatorType::kNone;
+  IndicatorDisplayPhase indicator_phase_ = IndicatorDisplayPhase::kHidden;
   base::OneShotTimer indicator_chip_collapse_timer_;
+  base::OneShotTimer indicator_dismiss_timer_;
   std::unique_ptr<PermissionPromptChipModel> chip_model_;
   base::WeakPtr<PaymentHandlerProgressBar> progress_bar_;
   base::WeakPtr<PaymentHandlerOriginLabel> origin_label_;

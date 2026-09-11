@@ -20,6 +20,7 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view.h"
 
+class PermissionDashboardView;
 class SkBitmap;
 
 namespace payments {
@@ -99,15 +100,18 @@ struct PaymentHandlerHeaderViews {
   base::WeakPtr<PaymentHandlerCloseButton> close_button;
 };
 
-// Creates a disabled PageInfo icon for the splash screen when
-// kPaymentHandlerCameraAccessUx is enabled.
+// Creates a disabled PageInfo icon for the splash screen.
 std::unique_ptr<views::View> CreatePaymentHandlerLoadingIconView();
 
-// Creates a LocationIconView for the live payment handler web flow when
-// kPaymentHandlerCameraAccessUx is enabled.
+// Creates a LocationIconView for the live payment handler web flow.
 std::unique_ptr<LocationIconView> CreatePaymentHandlerLocationIconView(
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
     LocationIconView::Delegate* location_icon_delegate);
+
+// Creates and configures a PermissionDashboardView for the camera access
+// indicator and permission prompt in the live payment handler web flow.
+std::unique_ptr<PermissionDashboardView>
+CreatePaymentHandlerPermissionDashboardView();
 
 // Populates a header view containing the icon (icon_view if provided, or app
 // icon bitmap if available), origin text, and the close button.

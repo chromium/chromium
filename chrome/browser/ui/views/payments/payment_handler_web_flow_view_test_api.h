@@ -41,6 +41,23 @@ class PaymentHandlerWebFlowViewTestApi {
     controller_->indicator_chip_collapse_timer_.FireNow();
   }
 
+  bool is_indicator_dismiss_timer_running() const {
+    return controller_->indicator_dismiss_timer_.IsRunning();
+  }
+
+  void fire_indicator_dismiss_timer() {
+    controller_->indicator_dismiss_timer_.FireNow();
+  }
+
+  PaymentHandlerWebFlowViewController::IndicatorType indicator_type() const {
+    return controller_->indicator_type_;
+  }
+
+  PaymentHandlerWebFlowViewController::IndicatorDisplayPhase indicator_phase()
+      const {
+    return controller_->indicator_phase_;
+  }
+
  private:
   const raw_ref<PaymentHandlerWebFlowViewController> controller_;
 };
