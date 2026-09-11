@@ -31,7 +31,6 @@ MagnifierE2ETest = class extends E2ETestBase {
     super.testGenCppIncludes();
     GEN(`
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
-#include "ui/accessibility/accessibility_features.h"
     `);
   }
 
@@ -45,15 +44,6 @@ MagnifierE2ETest = class extends E2ETestBase {
             true);
       `);
     super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kAccessibilityMagnifierFollowsChromeVox',
-      ],
-    };
   }
 };
 

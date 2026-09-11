@@ -1517,11 +1517,9 @@ void AccessibilityController::RegisterProfilePrefs(
       kDefaultFaceGazePrecisionClickSpeedFactor,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  if (::features::IsAccessibilityMagnifierFollowsChromeVoxEnabled()) {
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityMagnifierFollowsChromeVox, true,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  }
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityMagnifierFollowsChromeVox, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   registry->RegisterBooleanPref(
       prefs::kAccessibilityMagnifierFollowsSts, true,

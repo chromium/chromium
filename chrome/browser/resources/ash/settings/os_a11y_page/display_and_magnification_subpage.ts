@@ -85,18 +85,6 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
         },
       },
 
-      /**
-       * Whether the magnifier following ChromeVox focus feature is
-       * enabled.
-       */
-      isAccessibilityMagnifierFollowsChromeVoxEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityMagnifierFollowsChromeVoxEnabled');
-        },
-      },
-
       colorVisionDeficiencyTypeOptions_: {
         readOnly: true,
         type: Array,
@@ -148,7 +136,6 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
       {[key: string]: number};
   declare private screenMagnifierZoomOptions_:
       Array<{value: number, name: string}>;
-  declare private isAccessibilityMagnifierFollowsChromeVoxEnabled_: boolean;
 
   constructor() {
     super();

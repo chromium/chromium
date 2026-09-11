@@ -607,10 +607,6 @@ int GetDisplayAndMangificationLinkDescriptionResourceId() {
   return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION;
 }
 
-bool IsAccessibilityMagnifierFollowsChromeVoxEnabled() {
-  return ::features::IsAccessibilityMagnifierFollowsChromeVoxEnabled();
-}
-
 bool IsAccessibilityMouseKeysEnabled() {
   return ::features::IsAccessibilityMouseKeysEnabled();
 }
@@ -1581,9 +1577,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          ash::external_urls::kTabletModeGesturesLearnMoreURL);
 
-  html_source->AddBoolean("isAccessibilityMagnifierFollowsChromeVoxEnabled",
-                          IsAccessibilityMagnifierFollowsChromeVoxEnabled());
-
   html_source->AddString("faceGazeLearnMoreUrl",
                          ash::external_urls::kFaceGazeLearnMoreURL);
 
@@ -2037,13 +2030,8 @@ void AccessibilitySection::UpdateSearchTags() {
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
   }
 
-  if (IsAccessibilityMagnifierFollowsChromeVoxEnabled()) {
-    updater.AddSearchTags(
-        GetA11yMagnifierChromeVoxFocusFollowingSearchConcepts());
-  } else {
-    updater.RemoveSearchTags(
-        GetA11yMagnifierChromeVoxFocusFollowingSearchConcepts());
-  }
+  updater.AddSearchTags(
+      GetA11yMagnifierChromeVoxFocusFollowingSearchConcepts());
 
   updater.AddSearchTags(
       GetA11yFullscreenMagnifierSelectToSpeakFocusFollowingSearchConcepts());

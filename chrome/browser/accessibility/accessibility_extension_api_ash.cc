@@ -894,10 +894,6 @@ AccessibilityPrivateSetChromeVoxFocusFunction::Run() {
       accessibility_private::SetChromeVoxFocus::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (!features::IsAccessibilityMagnifierFollowsChromeVoxEnabled()) {
-    return RespondNow(NoArguments());
-  }
-
   if (!ash::AccessibilityController::Get()->fullscreen_magnifier().enabled() &&
       !ash::AccessibilityController::Get()->docked_magnifier().enabled()) {
     return RespondNow(NoArguments());

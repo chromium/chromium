@@ -2991,12 +2991,6 @@ class SpokenFeedbackWithMagnifierTest : public SpokenFeedbackTest {
  protected:
   SpokenFeedbackWithMagnifierTest() = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SpokenFeedbackTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityMagnifierFollowsChromeVox);
-  }
-
   void SetUpOnMainThread() override {
     SpokenFeedbackTest::SetUpOnMainThread();
 
@@ -3074,7 +3068,6 @@ class SpokenFeedbackWithMagnifierTest : public SpokenFeedbackTest {
 
  private:
   std::unique_ptr<AutomationTestUtils> test_utils_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

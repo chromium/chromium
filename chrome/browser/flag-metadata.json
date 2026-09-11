@@ -3189,11 +3189,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "enable-accessibility-magnifier-follows-chromevox",
-    "owners": [ "aldietz@google.com", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 146
-  },
-  {
     "name": "enable-accessibility-manage-broadcast-recevier-on-background",
     "owners": ["elabadysayed@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 145
