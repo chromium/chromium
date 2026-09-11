@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -438,6 +439,16 @@ TEST_F(ModelExecutionFetcherImplTest,
                 last_execute_response_->value().response_metadata())
                 ->test());
   EXPECT_TRUE(last_server_timeout_header_.empty());
+}
+
+TEST_F(ModelExecutionFetcherImplTest, DevHttpUrlAllowedWithSwitch) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kOptimizationGuideServiceModelExecutionURLSwitch, "http://1.2.3.4:8080/");
+
+  auto fetcher = std::make_unique<ModelExecutionFetcherImpl>(
+      shared_url_loader_factory_, /*optimization_guide_logger=*/nullptr);
+  EXPECT_TRUE(fetcher);
 }
 
 }  // namespace optimization_guide

@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/access_token_helper.h"
@@ -48,9 +49,10 @@ ModelExecutionFetcherImpl::ModelExecutionFetcherImpl(
     : optimization_guide_service_url_(GetModelExecutionServiceURL()),
       url_loader_factory_(url_loader_factory),
       optimization_guide_logger_(optimization_guide_logger) {
-  if (!net::IsLocalhost(optimization_guide_service_url_)) {
-    CHECK(optimization_guide_service_url_.SchemeIs(url::kHttpsScheme));
-  }
+  CHECK(optimization_guide_service_url_.SchemeIs(url::kHttpsScheme) ||
+        (base::CommandLine::ForCurrentProcess()->HasSwitch(
+             kOptimizationGuideServiceModelExecutionURLSwitch) &&
+         optimization_guide_service_url_.SchemeIsHTTPOrHTTPS()));
 }
 
 ModelExecutionFetcherImpl::~ModelExecutionFetcherImpl() {
