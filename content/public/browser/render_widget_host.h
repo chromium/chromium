@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -381,6 +382,13 @@ class CONTENT_EXPORT RenderWidgetHost {
   // temporarily change focus and does not use IME code paths.
   virtual void PasteIntoNode(const std::u16string& text,
                              const GlobalDOMNodeId& target_dom_node_id) = 0;
+
+  // Returns the text in the target node preceding the current selection or
+  // caret. Returns std::nullopt if the text is unavailable or if the selection
+  // is not in the given target. The returned string view is valid only until
+  // the text input state changes.
+  virtual std::optional<std::u16string_view> GetTextPrecedingSelection(
+      const GlobalDOMNodeId& target_dom_node_id) = 0;
 
   // Roundtrips through the renderer and compositor pipeline to ensure that any
   // changes to the contents resulting from operations executed prior to this

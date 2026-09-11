@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -258,6 +259,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       base::OnceClosure on_complete) override;
   void PasteIntoNode(const std::u16string& text,
                      const GlobalDOMNodeId& target_dom_node_id) override;
+  std::optional<std::u16string_view> GetTextPrecedingSelection(
+      const GlobalDOMNodeId& target_dom_node_id) override;
   void Focus() override;
   void Blur() override;
   void FlushForTesting() override;

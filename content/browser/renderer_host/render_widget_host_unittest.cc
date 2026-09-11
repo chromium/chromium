@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -41,6 +42,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/storage_partition_impl.h"
@@ -473,6 +475,10 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
 
   void set_is_fullscreen(bool enabled) { is_fullscreen_ = enabled; }
 
+  TextInputManager* GetTextInputManager() override {
+    return &text_input_manager_;
+  }
+
   MOCK_METHOD(bool,
               IsWaitingForPointerLockPrompt,
               (RenderWidgetHostImpl * host),
@@ -562,6 +568,8 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
       viz::VerticalScrollDirection::kNull;
 
   bool is_fullscreen_ = false;
+
+  TextInputManager text_input_manager_;
 
   VisibleTimeRequestTrigger visible_time_request_trigger_;
 };
@@ -3001,6 +3009,63 @@ TEST_F(RenderWidgetHostTest, PasteIntoNode) {
     ASSERT_EQ(1u, dispatched_messages.size());
     EXPECT_EQ("PasteIntoNode", dispatched_messages[0]->name());
   }
+}
+
+TEST_F(RenderWidgetHostTest, GetTextPrecedingSelection) {
+  TextInputManager* text_input_manager = delegate_->GetTextInputManager();
+  ASSERT_TRUE(text_input_manager);
+
+  // Register the view with TextInputManager.
+  view_->GetTextInputManager();
+
+  ui::mojom::TextInputState state;
+  state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  state.value = u"Hello world! How are you?";
+  state.selection = gfx::Range(12, 12);  // Caret after "Hello world!"
+  state.node_id = 42;
+
+  text_input_manager->UpdateTextInputState(view_.get(), state);
+
+  GlobalDOMNodeId matching_node_id;
+  matching_node_id.target_element_dom_id = blink::DOMNodeIdType(42);
+
+  // Retrieve text preceding selection.
+  std::optional<std::u16string_view> text =
+      host_->GetTextPrecedingSelection(matching_node_id);
+  ASSERT_TRUE(text.has_value());
+  EXPECT_EQ(text.value(), u"Hello world!");
+
+  // Caret at start of text.
+  state.selection = gfx::Range(0, 0);
+  text_input_manager->UpdateTextInputState(view_.get(), state);
+  text = host_->GetTextPrecedingSelection(matching_node_id);
+  ASSERT_TRUE(text.has_value());
+  EXPECT_EQ(text.value(), u"");
+
+  // Non-empty selection range (selection from index 6 to 11 for "world").
+  // Should return text preceding the selection start (index 6, which is "Hello
+  // ").
+  state.selection = gfx::Range(6, 11);
+  text_input_manager->UpdateTextInputState(view_.get(), state);
+  text = host_->GetTextPrecedingSelection(matching_node_id);
+  ASSERT_TRUE(text.has_value());
+  EXPECT_EQ(text.value(), u"Hello ");
+
+  // Target element node ID mismatch.
+  GlobalDOMNodeId different_node_id;
+  different_node_id.target_element_dom_id = blink::DOMNodeIdType(999);
+  EXPECT_EQ(host_->GetTextPrecedingSelection(different_node_id), std::nullopt);
+
+  // Null DOM node ID allows retrieving active state text.
+  GlobalDOMNodeId null_node_id;
+  text = host_->GetTextPrecedingSelection(null_node_id);
+  ASSERT_TRUE(text.has_value());
+  EXPECT_EQ(text.value(), u"Hello ");
+
+  // No text value.
+  state.value = std::nullopt;
+  text_input_manager->UpdateTextInputState(view_.get(), state);
+  EXPECT_EQ(host_->GetTextPrecedingSelection(matching_node_id), std::nullopt);
 }
 
 // Tests that vertical scroll direction changes are propagated to the delegate.
