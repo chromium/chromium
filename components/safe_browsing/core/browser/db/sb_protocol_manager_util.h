@@ -5,9 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_PROTOCOL_MANAGER_UTIL_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_PROTOCOL_MANAGER_UTIL_H_
 
-// A class that implements the stateless methods used by the GetHashUpdate and
-// GetFullHash stubby calls made by Chrome using the SafeBrowsing V4 protocol.
-// TODO(crbug.com/362791941): Update v4-specific comments in this file.
+// Stateless methods and helper types used by calls made by Chrome using the
+// Safe Browsing protocols (v4 and v5).
 
 #include <functional>
 #include <initializer_list>
@@ -44,7 +43,7 @@ const PrefixSize kMinHashPrefixLength = 4;
 // length of a SHA256 hash.
 const PrefixSize kMaxHashPrefixLength = 32;
 
-// A hash prefix sent by the SafeBrowsing PVer4 service.
+// A hash prefix sent by the Safe Browsing service.
 using HashPrefixStr = std::string;
 
 // A full SHA256 hash.
@@ -206,10 +205,12 @@ inline SBThreatTypeSet CreateSBThreatTypeSet(
 
 // The information required to uniquely identify each list the client is
 // interested in maintaining and downloading from the SafeBrowsing servers.
-// For example for v4, for digests of Malware binaries on Windows:
+// For v4: an example for digests of Malware binaries on Windows:
 // platform_type = WINDOWS,
 // threat_entry_type = EXECUTABLE,
 // threat_type = MALWARE
+// For v5: lists are identified by an SBThreatType (e.g.
+// SB_THREAT_TYPE_URL_MALWARE).
 class ListIdentifier {
  public:
   // For v4:
@@ -414,14 +415,17 @@ enum V4OperationResult {
   OPERATION_RESULT_MAX = 9
 };
 
-// A class that provides static methods related to the Pver4 protocol.
+// A class that provides static methods related to Safe Browsing protocols.
 class SBProtocolManagerUtil {
  public:
   SBProtocolManagerUtil(const SBProtocolManagerUtil&) = delete;
   SBProtocolManagerUtil& operator=(const SBProtocolManagerUtil&) = delete;
 
   // Canonicalizes url as per Google Safe Browsing Specification.
-  // See: https://developers.google.com/safe-browsing/v4/urls-hashing
+  // For v4, see: https://developers.google.com/safe-browsing/v4/urls-hashing
+  // For v5, see:
+  // https://developers.google.com/safe-browsing/reference/URLs.and.Hashing
+  // TODO(crbug.com/372395685): Remove v4 references in this file.
   static void CanonicalizeUrl(const GURL& url,
                               std::string* canonicalized_hostname,
                               std::string* canonicalized_path,
@@ -438,8 +442,10 @@ class SBProtocolManagerUtil {
                                           std::vector<std::string>* hosts);
 
   // This method returns the path prefix combinations from the path in the
-  // URL, as described here:
+  // URL, as described here for v4:
   // https://developers.google.com/safe-browsing/v4/urls-hashing
+  // And here for v5:
+  // https://developers.google.com/safe-browsing/reference/URLs.and.Hashing
   static void GeneratePathVariantsToCheck(const std::string& path,
                                           const std::string& query,
                                           std::vector<std::string>* paths);
@@ -459,6 +465,7 @@ class SBProtocolManagerUtil {
   // `config` is an instance of V4ProtocolConfig that stores the client config,
   // `gurl` is set to the value of the PVer4 request URL,
   // `headers` is populated with the appropriate header values.
+  // TODO(crbug.com/372395685): Deprecate with v4.
   static void GetRequestUrlAndHeaders(const std::string& request_base64,
                                       const std::string& method_name,
                                       const V4ProtocolConfig& config,
@@ -532,6 +539,7 @@ class SBProtocolManagerUtil {
                                 const std::string& key_param);
 
   // Sets the HTTP headers expected by a standard PVer4 request.
+  // TODO(crbug.com/372395685): Deprecate with v4.
   static void UpdateHeaders(net::HttpRequestHeaders* headers);
 
   // Given a URL, returns all the hosts we need to check.  They are returned
