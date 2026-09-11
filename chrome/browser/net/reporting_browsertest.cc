@@ -582,42 +582,12 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 
 // These tests intentionally crash a render process, and so fail ASan tests.
 #if defined(ADDRESS_SANITIZER)
-#define MAYBE_CrashReport DISABLED_CrashReport
-#define MAYBE_CrashReportOOM DISABLED_CrashReportOOM
-#define MAYBE_CrashReportOOMTakesPriorityOverUnresponsive \
-  DISABLED_CrashReportOOMTakesPriorityOverUnresponsive
-#define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
-#define MAYBE_CrashReportUnresponsiveCrossOriginIframe \
-  DISABLED_CrashReportUnresponsiveCrossOriginIframe
-#define MAYBE_CrashReportUnresponsiveWithoutHungExitCode \
-  DISABLED_CrashReportUnresponsiveWithoutHungExitCode
-#define MAYBE_MainPageOptedIn DISABLED_MainPageOptedIn
-#define MAYBE_MainPageNotOptedIn DISABLED_MainPageNotOptedIn
-#define MAYBE_IframeUnresponsiveWithJSCallStackOptedIn \
-  DISABLED_IframeUnresponsiveWithJSCallStackOptedIn
-#define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
-  DISABLED_IframeUnresponsiveWithJSCallStackNotOptedIn
-#define MAYBE_SpecifyCrashEndpoint DISABLED_SpecifyCrashEndpoint
+#define DISABLED_ON_ASAN(x) DISABLED_##x
 #else
-#define MAYBE_CrashReport CrashReport
-#define MAYBE_CrashReportOOM CrashReportOOM
-#define MAYBE_CrashReportOOMTakesPriorityOverUnresponsive \
-  CrashReportOOMTakesPriorityOverUnresponsive
-#define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
-#define MAYBE_CrashReportUnresponsiveCrossOriginIframe \
-  CrashReportUnresponsiveCrossOriginIframe
-#define MAYBE_CrashReportUnresponsiveWithoutHungExitCode \
-  CrashReportUnresponsiveWithoutHungExitCode
-#define MAYBE_MainPageOptedIn MainPageOptedIn
-#define MAYBE_MainPageNotOptedIn MainPageNotOptedIn
-#define MAYBE_IframeUnresponsiveWithJSCallStackOptedIn \
-  IframeUnresponsiveWithJSCallStackOptedIn
-#define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
-  IframeUnresponsiveWithJSCallStackNotOptedIn
-#define MAYBE_SpecifyCrashEndpoint SpecifyCrashEndpoint
+#define DISABLED_ON_ASAN(x) x
 #endif  // defined(ADDRESS_SANITIZER)
 
-IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, DISABLED_ON_ASAN(CrashReport)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -649,7 +619,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
   EXPECT_EQ(*url, main_url.spec());
 }
 
-IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
+                       DISABLED_ON_ASAN(CrashReportUnresponsive)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -681,8 +652,9 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
   EXPECT_EQ("unresponsive", *reason);
 }
 
-IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
-                       MAYBE_CrashReportUnresponsiveWithoutHungExitCode) {
+IN_PROC_BROWSER_TEST_P(
+    CrashReportingBrowserTest,
+    DISABLED_ON_ASAN(CrashReportUnresponsiveWithoutHungExitCode)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -738,7 +710,8 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
   EXPECT_EQ("unresponsive", *reason);
 }
 
-IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest, MAYBE_CrashReportOOM) {
+IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
+                       DISABLED_ON_ASAN(CrashReportOOM)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -776,8 +749,9 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest, MAYBE_CrashReportOOM) {
   EXPECT_EQ("oom", *reason);
 }
 
-IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
-                       MAYBE_CrashReportOOMTakesPriorityOverUnresponsive) {
+IN_PROC_BROWSER_TEST_P(
+    CrashReportingBrowserTest,
+    DISABLED_ON_ASAN(CrashReportOOMTakesPriorityOverUnresponsive)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1076,8 +1050,9 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
-                       MAYBE_CrashReportUnresponsiveCrossOriginIframe) {
+IN_PROC_BROWSER_TEST_P(
+    ReportingBrowserTestMoreContextData,
+    DISABLED_ON_ASAN(CrashReportUnresponsiveCrossOriginIframe)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1124,7 +1099,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
 }
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTestSpecifyCrashEndpoint,
-                       MAYBE_SpecifyCrashEndpoint) {
+                       DISABLED_ON_ASAN(SpecifyCrashEndpoint)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1156,7 +1131,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestSpecifyCrashEndpoint,
   EXPECT_EQ(*url, main_url.spec());
 }
 
-IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest, MAYBE_MainPageOptedIn) {
+IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
+                       DISABLED_ON_ASAN(MainPageOptedIn)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1203,7 +1179,7 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest, MAYBE_MainPageOptedIn) {
 }
 
 IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
-                       MAYBE_MainPageNotOptedIn) {
+                       DISABLED_ON_ASAN(MainPageNotOptedIn)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1250,8 +1226,9 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
-                       MAYBE_IframeUnresponsiveWithJSCallStackOptedIn) {
+IN_PROC_BROWSER_TEST_P(
+    JSCallStackReportingBrowserTest,
+    DISABLED_ON_ASAN(IframeUnresponsiveWithJSCallStackOptedIn)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1303,8 +1280,9 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
-                       MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn) {
+IN_PROC_BROWSER_TEST_P(
+    JSCallStackReportingBrowserTest,
+    DISABLED_ON_ASAN(IframeUnresponsiveWithJSCallStackNotOptedIn)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
