@@ -11,16 +11,18 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/supports_user_data.h"
+#include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "gin/converter.h"
-#include "gin/per_isolate_data.h"
-#include "gin/public/wrappable_pointer_tags.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "v8/include/v8-context.h"
 #include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-persistent-handle.h"
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-template.h"
 
@@ -53,9 +55,33 @@ void BoundLogMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   AddMessage(script_context, level, message);
 }
 
-gin::WrapperInfo kWrapperInfo = {
-    {gin::kEmbedderNativeGin},
-    static_cast<gin::WrappablePointerTag>(v8::CppHeapPointerTag::kNullTag)};
+struct ConsolePerContextData : public base::SupportsUserData::Data {
+  static constexpr char kPerContextDataKey[] = "extension_console";
+  v8::Global<v8::ObjectTemplate> templ;
+};
+
+constexpr char ConsolePerContextData::kPerContextDataKey[];
+
+v8::Local<v8::ObjectTemplate> CreateConsoleTemplate(v8::Isolate* isolate) {
+  v8::Local<v8::ObjectTemplate> templ = v8::ObjectTemplate::New(isolate);
+  static const struct {
+    const char* name;
+    blink::mojom::ConsoleMessageLevel level;
+  } methods[] = {
+      {"debug", blink::mojom::ConsoleMessageLevel::kVerbose},
+      {"log", blink::mojom::ConsoleMessageLevel::kInfo},
+      {"warn", blink::mojom::ConsoleMessageLevel::kWarning},
+      {"error", blink::mojom::ConsoleMessageLevel::kError},
+  };
+  for (const auto& method : methods) {
+    v8::Local<v8::FunctionTemplate> function = v8::FunctionTemplate::New(
+        isolate, BoundLogMethodCallback,
+        v8::Integer::New(isolate, static_cast<int>(method.level)),
+        v8::Local<v8::Signature>(), 0, v8::ConstructorBehavior::kThrow);
+    templ->Set(gin::StringToSymbol(isolate, method.name), function);
+  }
+  return templ;
+}
 
 }  // namespace
 
@@ -87,30 +113,25 @@ void AddMessage(ScriptContext* script_context,
 
 v8::Local<v8::Object> AsV8Object(v8::Isolate* isolate) {
   v8::EscapableHandleScope handle_scope(isolate);
-  gin::PerIsolateData* data = gin::PerIsolateData::From(isolate);
-  v8::Local<v8::ObjectTemplate> templ = data->GetObjectTemplate(&kWrapperInfo);
-  if (templ.IsEmpty()) {
-    templ = v8::ObjectTemplate::New(isolate);
-    static const struct {
-      const char* name;
-      blink::mojom::ConsoleMessageLevel level;
-    } methods[] = {
-        {"debug", blink::mojom::ConsoleMessageLevel::kVerbose},
-        {"log", blink::mojom::ConsoleMessageLevel::kInfo},
-        {"warn", blink::mojom::ConsoleMessageLevel::kWarning},
-        {"error", blink::mojom::ConsoleMessageLevel::kError},
-    };
-    for (const auto& method : methods) {
-      v8::Local<v8::FunctionTemplate> function = v8::FunctionTemplate::New(
-          isolate, BoundLogMethodCallback,
-          v8::Integer::New(isolate, static_cast<int>(method.level)),
-          v8::Local<v8::Signature>(), 0, v8::ConstructorBehavior::kThrow);
-      templ->Set(gin::StringToSymbol(isolate, method.name), function);
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  ConsolePerContextData* data = GetPerContextData<ConsolePerContextData>(
+      context, CreatePerContextData::kCreateIfMissing);
+
+  v8::Local<v8::ObjectTemplate> templ;
+  if (data) {
+    if (data->templ.IsEmpty()) {
+      templ = CreateConsoleTemplate(isolate);
+      data->templ.Reset(isolate, templ);
+    } else {
+      templ = data->templ.Get(isolate);
     }
-    data->SetObjectTemplate(&kWrapperInfo, templ);
+  } else {
+    templ = CreateConsoleTemplate(isolate);
   }
+
   return handle_scope.Escape(
-      templ->NewInstance(isolate->GetCurrentContext()).ToLocalChecked());
+      templ->NewInstance(context).ToLocalChecked());
 }
 
 }  // namespace console
