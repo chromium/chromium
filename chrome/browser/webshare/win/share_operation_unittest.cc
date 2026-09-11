@@ -466,4 +466,34 @@ TEST_F(ShareOperationUnitTest, FilesTotallingLargerThanSizeLimit) {
             kMaxSharedFileBytesForTest + 1);
 }
 
+TEST_F(ShareOperationUnitTest, TestHiddenWebContentsBlocked) {
+  web_contents()->WasHidden();
+
+  base::RunLoop run_loop;
+  std::vector<blink::mojom::SharedFilePtr> files;
+  ShareOperation operation{"", "", GURL(), web_contents()};
+  operation.Run(
+      std::move(files),
+      base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
+        ASSERT_EQ(error, blink::mojom::ShareError::PERMISSION_DENIED);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShareOperationUnitTest, TestOccludedWebContentsBlocked) {
+  web_contents()->WasOccluded();
+
+  base::RunLoop run_loop;
+  std::vector<blink::mojom::SharedFilePtr> files;
+  ShareOperation operation{"", "", GURL(), web_contents()};
+  operation.Run(
+      std::move(files),
+      base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
+        ASSERT_EQ(error, blink::mojom::ShareError::PERMISSION_DENIED);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 }  // namespace webshare

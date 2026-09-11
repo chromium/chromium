@@ -30,7 +30,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/visibility_timer/visibility_timer_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -147,10 +146,8 @@ void SharesheetClient::Share(
     return;
   }
 
-  // If the tab is no longer active, return permission denied.
-  tabs::TabInterface* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (tab_interface && !tab_interface->IsActivated()) {
+  // If the tab is no longer active or visible, return permission denied.
+  if (!ShareServiceImpl::IsWebContentsForegroundAndVisible(web_contents())) {
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
@@ -255,8 +252,14 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
   if (!current_share_.has_value())
     return;
 
-  if (!web_contents() || error != blink::mojom::ShareError::OK) {
-    std::move(current_share_->callback).Run(error);
+  // Re-check here rather than aborting immediately on visibility changes so
+  // transient tab switches or occlusions do not cancel in-flight shares.
+  if (!web_contents() || error != blink::mojom::ShareError::OK ||
+      !ShareServiceImpl::IsWebContentsForegroundAndVisible(web_contents())) {
+    std::move(current_share_->callback)
+        .Run(error != blink::mojom::ShareError::OK
+                 ? error
+                 : blink::mojom::ShareError::PERMISSION_DENIED);
     ScheduleSharedFileDirectoryDeletion(std::move(current_share_->file_paths),
                                         base::Minutes(0));
     current_share_ = std::nullopt;

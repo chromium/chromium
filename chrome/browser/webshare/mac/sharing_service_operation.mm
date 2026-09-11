@@ -21,7 +21,6 @@
 #include "chrome/browser/webshare/prepare_subdirectory_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/browser/webshare/store_files_task.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/visibility_timer/visibility_timer_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -90,10 +89,9 @@ void SharingServiceOperation::Share(
     return;
   }
 
-  // If the tab is no longer active, return permission denied.
-  tabs::TabInterface* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents_.get());
-  if (tab_interface && !tab_interface->IsActivated()) {
+  // If the tab is no longer active or visible, return permission denied.
+  if (!ShareServiceImpl::IsWebContentsForegroundAndVisible(
+          web_contents_.get())) {
     std::move(callback_).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
@@ -166,10 +164,16 @@ void SharingServiceOperation::OnPrepareSubDirectory(
 }
 
 void SharingServiceOperation::OnStoreFiles(blink::mojom::ShareError error) {
-  if (!web_contents_ || error != blink::mojom::ShareError::OK) {
+  // Re-check here rather than aborting immediately on visibility changes so
+  // transient tab switches or occlusions do not cancel in-flight shares.
+  if (!web_contents_ || error != blink::mojom::ShareError::OK ||
+      !ShareServiceImpl::IsWebContentsForegroundAndVisible(
+          web_contents_.get())) {
     PrepareDirectoryTask::ScheduleSharedFileDeletion(std::move(file_paths_),
                                                      base::Minutes(0));
-    std::move(callback_).Run(error);
+    std::move(callback_).Run(error != blink::mojom::ShareError::OK
+                                 ? error
+                                 : blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
 

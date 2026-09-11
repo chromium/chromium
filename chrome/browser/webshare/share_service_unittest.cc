@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -240,6 +241,24 @@ TEST_F(ShareServiceUnitTest, ShareInvalidURLScheme) {
 
 TEST_F(ShareServiceUnitTest, PortableDocumentFormat) {
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".pdf", "application/pdf"));
+}
+
+TEST_F(ShareServiceUnitTest, HiddenWebContentsBlocked) {
+  web_contents()->WasHidden();
+  EXPECT_EQ(ShareError::PERMISSION_DENIED,
+            ShareGeneratedFileData(".txt", "text/plain"));
+
+  web_contents()->WasShown();
+  EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".txt", "text/plain"));
+}
+
+TEST_F(ShareServiceUnitTest, OccludedWebContentsBlocked) {
+  web_contents()->WasOccluded();
+  EXPECT_EQ(ShareError::PERMISSION_DENIED,
+            ShareGeneratedFileData(".txt", "text/plain"));
+
+  web_contents()->WasShown();
+  EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".txt", "text/plain"));
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webshare/mac/sharing_service_operation.h"
 
+#include "base/files/safe_base_name.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -104,6 +105,110 @@ TEST_F(SharingServiceOperationUnitTest, TestIncognitoWithoutFiles) {
 
   run_loop.Run();
   EXPECT_EQ(error, blink::mojom::ShareError::OK);
+}
+
+TEST_F(SharingServiceOperationUnitTest, TestHiddenWebContentsBlocked) {
+  web_contents()->WasHidden();
+
+  const std::string title = "Title";
+  const std::string text = "Text";
+  const GURL url("https://example.com");
+  std::vector<blink::mojom::SharedFilePtr> files;
+
+  SharingServiceOperation sharing_service_operation(
+      title, text, url, std::move(files), web_contents());
+
+  base::RunLoop run_loop;
+  blink::mojom::ShareError error = blink::mojom::ShareError::INTERNAL_ERROR;
+
+  sharing_service_operation.Share(base::BindLambdaForTesting(
+      [&run_loop, &error](blink::mojom::ShareError in_error) {
+        error = in_error;
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+  EXPECT_EQ(error, blink::mojom::ShareError::PERMISSION_DENIED);
+}
+
+TEST_F(SharingServiceOperationUnitTest, TestHiddenDuringStoreFilesBlocked) {
+  const std::string title = "Title";
+  const std::string text = "Text";
+  const GURL url("https://example.com");
+  std::vector<blink::mojom::SharedFilePtr> files;
+  files.push_back(blink::mojom::SharedFile::New(
+      *base::SafeBaseName::Create(base::FilePath::FromASCII("test.txt")),
+      blink::mojom::SerializedBlob::New()));
+
+  SharingServiceOperation sharing_service_operation(
+      title, text, url, std::move(files), web_contents());
+
+  base::RunLoop run_loop;
+  blink::mojom::ShareError error = blink::mojom::ShareError::INTERNAL_ERROR;
+
+  sharing_service_operation.Share(base::BindLambdaForTesting(
+      [&run_loop, &error](blink::mojom::ShareError in_error) {
+        error = in_error;
+        run_loop.Quit();
+      }));
+
+  // Hide the WebContents while file storage tasks are in flight.
+  web_contents()->WasHidden();
+
+  run_loop.Run();
+  EXPECT_EQ(error, blink::mojom::ShareError::PERMISSION_DENIED);
+}
+
+TEST_F(SharingServiceOperationUnitTest, TestOccludedWebContentsBlocked) {
+  web_contents()->WasOccluded();
+
+  const std::string title = "Title";
+  const std::string text = "Text";
+  const GURL url("https://example.com");
+  std::vector<blink::mojom::SharedFilePtr> files;
+
+  SharingServiceOperation sharing_service_operation(
+      title, text, url, std::move(files), web_contents());
+
+  base::RunLoop run_loop;
+  blink::mojom::ShareError error = blink::mojom::ShareError::INTERNAL_ERROR;
+
+  sharing_service_operation.Share(base::BindLambdaForTesting(
+      [&run_loop, &error](blink::mojom::ShareError in_error) {
+        error = in_error;
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+  EXPECT_EQ(error, blink::mojom::ShareError::PERMISSION_DENIED);
+}
+
+TEST_F(SharingServiceOperationUnitTest, TestOccludedDuringStoreFilesBlocked) {
+  const std::string title = "Title";
+  const std::string text = "Text";
+  const GURL url("https://example.com");
+  std::vector<blink::mojom::SharedFilePtr> files;
+  files.push_back(blink::mojom::SharedFile::New(
+      *base::SafeBaseName::Create(base::FilePath::FromASCII("test.txt")),
+      blink::mojom::SerializedBlob::New()));
+
+  SharingServiceOperation sharing_service_operation(
+      title, text, url, std::move(files), web_contents());
+
+  base::RunLoop run_loop;
+  blink::mojom::ShareError error = blink::mojom::ShareError::INTERNAL_ERROR;
+
+  sharing_service_operation.Share(base::BindLambdaForTesting(
+      [&run_loop, &error](blink::mojom::ShareError in_error) {
+        error = in_error;
+        run_loop.Quit();
+      }));
+
+  // Occlude the WebContents while file storage tasks are in flight.
+  web_contents()->WasOccluded();
+
+  run_loop.Run();
+  EXPECT_EQ(error, blink::mojom::ShareError::PERMISSION_DENIED);
 }
 
 }  // namespace webshare

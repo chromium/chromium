@@ -29,6 +29,7 @@ class GURL;
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }
 
 enum class WebShareMethod { kShare = 0, kMaxValue = kShare };
@@ -51,6 +52,11 @@ class ShareServiceImpl
 
   static bool IsDangerousFilename(const base::FilePath& path);
   static bool IsDangerousMimeType(std::string_view content_type);
+
+  // Returns true if `web_contents` is visible and, if it is a tab, the tab is
+  // active in its window.
+  static bool IsWebContentsForegroundAndVisible(
+      content::WebContents* web_contents);
 
   // blink::mojom::ShareService:
   void Share(const std::string& title,

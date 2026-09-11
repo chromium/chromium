@@ -19,6 +19,8 @@
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -173,6 +175,23 @@ bool ShareServiceImpl::IsDangerousMimeType(std::string_view content_type) {
   return true;
 }
 
+// static
+bool ShareServiceImpl::IsWebContentsForegroundAndVisible(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  if (web_contents->GetVisibility() != content::Visibility::VISIBLE) {
+    return false;
+  }
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (tab_interface && !tab_interface->IsActivated()) {
+    return false;
+  }
+  return true;
+}
+
 void ShareServiceImpl::Share(const std::string& title,
                              const std::string& text,
                              const GURL& share_url,
@@ -196,8 +215,8 @@ void ShareServiceImpl::Share(const std::string& title,
 
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
-  if (!web_contents) {
-    VLOG(1) << "Cannot share after navigating away";
+  if (!web_contents || !IsWebContentsForegroundAndVisible(web_contents)) {
+    VLOG(1) << "Cannot share if tab is not active and visible";
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
@@ -280,8 +299,8 @@ void ShareServiceImpl::RunShareOperation(
 
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
-  if (!web_contents) {
-    VLOG(1) << "Cannot share after navigating away";
+  if (!web_contents || !IsWebContentsForegroundAndVisible(web_contents)) {
+    VLOG(1) << "Cannot share if tab is not active and visible";
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
