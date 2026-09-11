@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,12 +15,14 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
@@ -51,7 +55,20 @@ BASE_FEATURE(kTestFeatureExpired, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
-class ChromeLabsButtonTest : public InProcessBrowserTest {
+class ChromeLabsButtonTestBase : public InProcessBrowserTest {
+ public:
+  ChromeLabsButtonTestBase() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kWebUIPinnedToolbarActions,
+                               features::kWebUIToolbar});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class ChromeLabsButtonTest : public ChromeLabsButtonTestBase {
  public:
   ChromeLabsButtonTest()
       :
@@ -198,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(ChromeLabsButtonTestSafeMode, ButtonShouldNotShowTest) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-class ChromeLabsButtonNoExperimentsAvailableTest : public InProcessBrowserTest {
+class ChromeLabsButtonNoExperimentsAvailableTest
+    : public ChromeLabsButtonTestBase {
  public:
   ChromeLabsButtonNoExperimentsAvailableTest()
       :
@@ -237,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(ChromeLabsButtonNoExperimentsAvailableTest,
 }
 
 class ChromeLabsButtonOnlyExpiredFeaturesAvailableTest
-    : public InProcessBrowserTest {
+    : public ChromeLabsButtonTestBase {
  public:
   ChromeLabsButtonOnlyExpiredFeaturesAvailableTest()
       :

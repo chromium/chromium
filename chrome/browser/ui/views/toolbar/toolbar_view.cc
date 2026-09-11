@@ -1285,7 +1285,8 @@ void ToolbarView::RecordHitTestMetrics(bool is_caption_area) {
 }
 
 views::Button* ToolbarView::GetChromeLabsButton() const {
-  return ChromeLabsCoordinator::From(browser_)->GetChromeLabsButton();
+  ChromeLabsCoordinator* coordinator = ChromeLabsCoordinator::From(browser_);
+  return coordinator ? coordinator->GetChromeLabsButton() : nullptr;
 }
 
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
