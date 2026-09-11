@@ -23,7 +23,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/task_id.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

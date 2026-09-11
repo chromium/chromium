@@ -16,6 +16,7 @@
 #include "components/webrtc/media_stream_device_enumerator_impl.h"
 #include "content/public/browser/media_observer.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -23,10 +24,6 @@ class BrowserWindowInterface;
 class DesktopCaptureAccessHandler;
 class MediaAccessHandler;
 class MediaStreamCaptureIndicator;
-
-namespace content {
-class WebContents;
-}
 
 namespace extensions {
 class Extension;
