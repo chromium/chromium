@@ -279,9 +279,13 @@ void AutofillDriverIOS::ApplyFieldAction(
     mojom::ActionPersistence action_persistence,
     const FieldGlobalId& field_id,
     const std::u16string& value) {
-  auto callback = [](AutofillDriver& driver, mojom::FieldActionType action_type,
-                     mojom::ActionPersistence action_persistence,
-                     FieldRendererId field, const std::u16string& value) {
+  bool handled = false;
+  auto callback = [&handled](AutofillDriver& driver,
+                             mojom::FieldActionType action_type,
+                             mojom::ActionPersistence action_persistence,
+                             FieldRendererId field,
+                             const std::u16string& value) {
+    handled = true;
     // For now, only support filling.
     switch (action_persistence) {
       case mojom::ActionPersistence::kFill: {
@@ -298,6 +302,22 @@ void AutofillDriverIOS::ApplyFieldAction(
   };
   router_->ApplyFieldAction(callback, action_type, action_persistence, field_id,
                             value);
+  // If the frame was not registered in `FormForest` (e.g. for standalone
+  // contenteditable elements without standard HTML forms), find the matching
+  // driver and apply the action directly.
+  if (!handled &&
+      action_type == mojom::FieldActionType::kReplaceSelectionForAtMemory &&
+      base::FeatureList::IsEnabled(kAutofillSupportContentEditableIos)) {
+    if (field_id.frame_token == GetFrameToken()) {
+      callback(*this, action_type, action_persistence, field_id.renderer_id,
+               value);
+    } else if (AutofillDriverIOS* driver =
+                   AutofillDriverIOS::FromWebStateAndLocalFrameToken(
+                       web_state_, field_id.frame_token)) {
+      callback(*driver, action_type, action_persistence, field_id.renderer_id,
+               value);
+    }
+  }
 }
 
 void AutofillDriverIOS::ExtractFormWithField(
