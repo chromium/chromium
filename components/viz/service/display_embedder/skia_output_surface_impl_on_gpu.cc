@@ -2040,11 +2040,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
   if (dependency_->IsOffscreen()) {
     DCHECK(!gl_surface_);
   } else if (gl_surface_) {
-    // OnScreen GLSurfaces are never Surfaceless except on windows where a bit
-    // of work needed to make it use Presenter.
-#if !BUILDFLAG(IS_WIN)
+    // OnScreen GLSurfaces are never Surfaceless.
     DCHECK(!gl_surface_->IsSurfaceless());
-#endif
   } else {
     // If there is no gl_surface there must be presenter.
     DCHECK(presenter_);
@@ -2224,20 +2221,14 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 }
 
 bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {
-  // Windows still uses gl_surface for DComp presentation. Once that's switched
-  // over to presenter, these DCHECKs will be actual on all platforms and code
-  // can be simplified.
-#if !BUILDFLAG(IS_WIN)
   if (gl_surface_) {
     DCHECK(context_state_->GrContextIsGL());
-    DCHECK(!gl_surface_->IsSurfaceless() || gl_surface_->IsOffscreen());
   }
-#endif
 
-  // If GL is not being used or GLSurface is not surfaceless, we can ignore
-  // making current the GLSurface for better performance.
-  bool need_fbo0 = need_framebuffer && context_state_->GrContextIsGL() &&
-                   gl_surface_ && !gl_surface_->IsSurfaceless();
+  // If GL is not being used, we can ignore making current the GLSurface for
+  // better performance.
+  bool need_fbo0 =
+      need_framebuffer && context_state_->GrContextIsGL() && gl_surface_;
 
   // need_fbo0 implies need_gl too.
   bool need_gl = need_fbo0;

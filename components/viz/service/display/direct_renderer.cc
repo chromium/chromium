@@ -378,8 +378,9 @@ void DirectRenderer::DrawFrame(
     // For Mac, all render passes will be promoted to CALayer, the redraw full
     // frame is for the main surface only.
     // TODO(penghuang): verify this logic with SkiaRenderer.
-    if (!output_surface_->capabilities().supports_surfaceless)
+    if (!output_surface_->capabilities().renderer_allocates_images) {
       needs_full_frame_redraw = true;
+    }
 #elif BUILDFLAG(IS_WIN)
     // If compositing is delegated, then there will be no output_surface_plane,
     // and we should not trigger a redraw of the root render pass.

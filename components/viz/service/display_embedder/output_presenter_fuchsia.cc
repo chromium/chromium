@@ -56,7 +56,6 @@ void OutputPresenterFuchsia::InitializeCapabilities(
   // We expect origin of buffers is at top left.
   capabilities->output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities->supports_post_sub_buffer = false;
-  capabilities->supports_surfaceless = true;
 
   capabilities->sk_color_type_map[SinglePlaneFormat::kRGBA_8888] =
       kRGBA_8888_SkColorType;

@@ -114,13 +114,6 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   }
   capabilities_.pending_swap_params.max_pending_swaps =
       gl_surface_->GetBufferCount() - 1;
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(weiliangc): This capability is used to check whether we should do
-  // overlay. Since currently none of the other overlay system is implemented,
-  // only update this for Android.
-  // This output device is never offscreen.
-  capabilities_.supports_surfaceless = gl_surface_->IsSurfaceless();
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // If Chrome OS is run on Linux for development purposes, we need to

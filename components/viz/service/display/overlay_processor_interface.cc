@@ -112,7 +112,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     return std::make_unique<OverlayProcessorStub>();
 
 #if BUILDFLAG(IS_APPLE)
-  DCHECK(capabilities.supports_surfaceless);
+  DCHECK(capabilities.renderer_allocates_images);
   return std::make_unique<OverlayProcessorMac>();
 #elif BUILDFLAG(IS_WIN)
   if (capabilities.dc_support_level == OutputSurface::DCSupportLevel::kNone) {
@@ -135,10 +135,11 @@ OverlayProcessorInterface::CreateOverlayProcessor(
 
 #elif BUILDFLAG(IS_OZONE)
 #if !BUILDFLAG(IS_CASTOS)
-  // In tests and Ozone/X11, we do not expect surfaceless surface support.
-  // For CastOS, we always need OverlayProcessorOzone.
-  if (!capabilities.supports_surfaceless)
+  // In tests and Ozone/X11, we do not expect a buffer queue for the root
+  // render pass. For CastOS, we always need OverlayProcessorOzone.
+  if (!capabilities.renderer_allocates_images) {
     return std::make_unique<OverlayProcessorStub>();
+  }
 #endif  // #if !BUILDFLAG(IS_CASTOS)
 
   std::unique_ptr<OverlayProcessorOzone::PixmapProvider> pixmap_provider;
@@ -161,7 +162,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
 #elif BUILDFLAG(IS_ANDROID)
   DCHECK(display_controller);
 
-  if (capabilities.supports_surfaceless) {
+  if (capabilities.renderer_allocates_images) {
     // This is for Android SurfaceControl case.
     return std::make_unique<OverlayProcessorSurfaceControl>();
   } else {

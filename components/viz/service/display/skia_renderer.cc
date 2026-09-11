@@ -2977,7 +2977,7 @@ void SkiaRenderer::ScheduleOverlays() {
   std::vector<gpu::SyncToken> sync_tokens;
 
 #if !BUILDFLAG(IS_WIN)
-  DCHECK(output_surface_->capabilities().supports_surfaceless);
+  DCHECK(output_surface_->capabilities().renderer_allocates_images);
 #endif
 
   bool has_primary_plane_overlay = false;

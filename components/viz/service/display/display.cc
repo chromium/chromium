@@ -1441,7 +1441,7 @@ void Display::SetNeedsOneBeginFrame(const BeginFrameArgs& args) {
 #if BUILDFLAG(IS_ANDROID)
 bool Display::OutputSurfaceSupportsSetFrameRate() {
   return output_surface_ &&
-         output_surface_->capabilities().supports_surfaceless &&
+         output_surface_->capabilities().renderer_allocates_images &&
          gfx::SurfaceControl::SupportsSetFrameRate();
 }
 

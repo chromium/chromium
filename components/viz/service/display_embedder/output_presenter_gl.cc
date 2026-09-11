@@ -54,8 +54,6 @@ void OutputPresenterGL::InitializeCapabilities(
   capabilities->supports_post_sub_buffer = true;
   capabilities->supports_viewporter = presenter_->SupportsViewporter();
 
-  // Set supports_surfaceless to enable overlays.
-  capabilities->supports_surfaceless = true;
   // We expect origin of buffers is at top left.
   capabilities->output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   // Set resize_based_on_root_surface to omit platform proposed size.
