@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '/shared/settings/prefs/prefs.js';
@@ -23,6 +24,7 @@ import '../../simple_confirmation_dialog.js';
 import '../../site_favicon.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
+import './gmail_otp_disclaimer_dialog.js';
 import '../passwords/passwords_shared.css.js';
 import '../autofill_shared.css.js';
 
@@ -35,7 +37,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {loadTimeData} from '../../i18n_setup.js';
@@ -62,6 +64,14 @@ export enum AutofillAddressOptInChange {
   COUNT = 2,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAddressOptInChange)
+
+// LINT.IfChange(AutofillGmailOtpFillingPref)
+export const AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF =
+    'autofill.gmail_otp_filling.enabled';
+// LINT.ThenChange(//components/autofill/core/common/autofill_prefs.h:AutofillGmailOtpFillingPref)
+
+export const AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC =
+    'Autofill.GmailOtpOptIn.SettingsChange';
 
 declare global {
   interface HTMLElementEventMap {
@@ -100,6 +110,10 @@ export class SettingsContactInfoPageElement extends
       `updateProfileEnabledSyntheticPref_(
           prefs.autofill.profile_enabled.*,
           prefs.autofill.types_blocked.*)`,
+      `onGmailOtpFillingPrefOrAccountChange_(
+          showGmailOtpFillingToggle_,
+          accountInfo_,
+          prefs.autofill.gmail_otp_filling.enabled.*)`,
     ];
   }
   static get properties() {
@@ -120,6 +134,7 @@ export class SettingsContactInfoPageElement extends
       showAddressDialog_: Boolean,
       showAddressRemoveConfirmationDialog_: Boolean,
       showEmailRemoveConfirmationDialog_: Boolean,
+      showGmailOtpDisclaimerDialog_: Boolean,
       activeEmailIssuer_: String,
 
       isGoogleProfileAddress: {
@@ -151,6 +166,24 @@ export class SettingsContactInfoPageElement extends
       profileEnabledSyntheticPref_: {
         type: Object,
       },
+
+      isOtpConsentLoading_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * A fake preference object that reflects the UI state of the Gmail OTP
+       * filling toggle based on both the backend preference and the iUDP/gUDP
+       * consent status.
+       */
+      otpFillingTogglePref_: {
+        type: Object,
+        value: () => ({
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        }),
+      },
     };
   }
 
@@ -161,6 +194,7 @@ export class SettingsContactInfoPageElement extends
   declare private showAddressDialog_: boolean;
   declare private showAddressRemoveConfirmationDialog_: boolean;
   declare private showEmailRemoveConfirmationDialog_: boolean;
+  declare private showGmailOtpDisclaimerDialog_: boolean;
   declare private activeEmailIssuer_: string;
   declare private isGoogleProfileAddress: boolean;
   declare private isEmailVerificationProtocolEnabled_: boolean;
@@ -168,6 +202,11 @@ export class SettingsContactInfoPageElement extends
   declare private showGmailOtpFillingToggle_: boolean;
   declare private profileEnabledSyntheticPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
+  declare private isOtpConsentLoading_: boolean;
+  declare private otpFillingTogglePref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
+  private lastCheckedAccountEmail_: string|null = null;
+  minOtpConsentSpinnerDurationMs: number = 200;
   private emailSharedMenuModel_: string = '';
 
   /**
@@ -407,9 +446,9 @@ export class SettingsContactInfoPageElement extends
         this.isAccountNameEmailAddress_(address);
   }
 
-  private computeEmailVerificationAddresses_(state: Record<string, unknown>):
+  private computeEmailVerificationAddresses_(state?: Record<string, unknown>):
       string[] {
-    return Object.keys(state);
+    return state ? Object.keys(state) : [];
   }
 
   private onAccountHomeAddressClick_() {
@@ -569,9 +608,9 @@ export class SettingsContactInfoPageElement extends
     return this.i18n(messageKey, fullLabel);
   }
 
-  private computeShowGmailOtpFillingToggle_(): boolean {
-    const isSignedIn = !!this.accountInfo_;
-    return isSignedIn &&
+  private computeShowGmailOtpFillingToggle_(
+      accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
+    return !!accountInfo &&
         loadTimeData.getBoolean('autofillGmailOtpFillingEnabled');
   }
 
@@ -608,16 +647,221 @@ export class SettingsContactInfoPageElement extends
         'Autofill.ProfileDeleted.Any.' + suffix, wasDeletionConfirmed);
   }
 
+  private fetchConsentWithMinDuration_():
+      Promise<chrome.autofillPrivate.UserDataProcessingConsentStates> {
+    const delayPromise = new Promise(
+        resolve => setTimeout(resolve, this.minOtpConsentSpinnerDurationMs));
 
-  private onGmailOtpFillingLinkClick_() {
+    // Wait at least minOtpConsentSpinnerDurationMs before resolving to prevent
+    // UI flickering.
+    return this.autofillManager_.fetchUserDataProcessingConsent().finally(
+        () => delayPromise);
+  }
+
+  fetchConsentWithMinDurationForTesting():
+      Promise<chrome.autofillPrivate.UserDataProcessingConsentStates> {
+    return this.fetchConsentWithMinDuration_();
+  }
+
+  private getGmailOtpFillingDescription_(): TrustedHTML {
+    return this.i18nAdvanced('enableGmailOtpFillingDescription', {
+      attrs: [
+        'aria-description',
+        'aria-hidden',
+        'aria-label',
+        'aria-labelledby',
+        'tabindex',
+      ],
+    });
+  }
+
+  private setOtpFillingToggleChecked_(checked: boolean) {
+    this.set('otpFillingTogglePref_.value', checked);
+  }
+
+  private resetOtpFillingState_() {
+    this.lastCheckedAccountEmail_ = null;
+    this.isOtpConsentLoading_ = false;
+    this.setOtpFillingToggleChecked_(false);
+  }
+
+  private enableOtpFilling_(email?: string) {
+    if (email) {
+      this.lastCheckedAccountEmail_ = email;
+    }
+    this.setOtpFillingToggleChecked_(true);
+    this.setPrefValue(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF, true);
+    chrome.metricsPrivate.recordBoolean(
+        AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true);
+  }
+
+  private focusOtpFillingToggle_() {
+    if (!this.isConnected) {
+      return;
+    }
+    flush();
+    const toggle = this.shadowRoot?.querySelector<SettingsToggleButtonElement>(
+        '#autofillOtpFillingToggle');
+    if (toggle) {
+      focusWithoutInk(toggle);
+    }
+  }
+
+  private onGmailOtpFillingPrefOrAccountChange_(
+      showToggle: boolean,
+      accountInfo: chrome.autofillPrivate.AccountInfo|null) {
+    const currentEmail = (showToggle && accountInfo) ? accountInfo.email : null;
+
+    if (!showToggle || !currentEmail) {
+      this.resetOtpFillingState_();
+      return;
+    }
+
+    if (!this.get(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF, this.prefs)) {
+      return;
+    }
+
+    const pref = this.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF);
+    if (!pref.value) {
+      this.resetOtpFillingState_();
+      return;
+    }
+
+    // Guard against re-running the initial consent check and showing an
+    // unexpected spinner on subsequent pref changes or user interactions during
+    // the session if the account has not changed.
+    if (currentEmail === this.lastCheckedAccountEmail_) {
+      this.setOtpFillingToggleChecked_(pref.value);
+      return;
+    }
+
+    this.lastCheckedAccountEmail_ = currentEmail;
+    this.isOtpConsentLoading_ = true;
+
+    const fetchEmail = currentEmail;
+    this.fetchConsentWithMinDuration_()
+        .then(consent => {
+          // Check whether the page is still connected to the DOM and the
+          // account has not changed or state reset in case the user navigated
+          // away, switched accounts, or turned off the pref during the RPC.
+          if (!this.isConnected ||
+              this.lastCheckedAccountEmail_ !== fetchEmail) {
+            return;
+          }
+          if (consent?.commsApps ===
+                  chrome.autofillPrivate.UserDataProcessingConsentState
+                      .ENABLED &&
+              consent?.googleApps ===
+                  chrome.autofillPrivate.UserDataProcessingConsentState
+                      .ENABLED) {
+            this.setOtpFillingToggleChecked_(true);
+          } else {
+            // We explicitly don't align the preference value with the
+            // current UI state, since an `UNKNOWN` value could be a temporary
+            // result from the service. Furthermore, the user could re-consent
+            // and then the original preference value is preserved in this way.
+            this.setOtpFillingToggleChecked_(false);
+          }
+        })
+        .catch(() => {
+          // Check whether the page is still connected to the DOM and the
+          // account has not changed or state reset in case the user navigated
+          // away, switched accounts, or turned off the pref during the RPC.
+          if (!this.isConnected ||
+              this.lastCheckedAccountEmail_ !== fetchEmail) {
+            return;
+          }
+          this.setOtpFillingToggleChecked_(
+              this.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
+                  .value);
+        })
+        .finally(() => {
+          if (!this.isConnected ||
+              this.lastCheckedAccountEmail_ !== fetchEmail) {
+            return;
+          }
+          this.isOtpConsentLoading_ = false;
+        });
+  }
+
+  /**
+   * Handles click events for the "Learn more" link inside the description.
+   * This implements standard WebUI event delegation and navigation handling:
+   * 1. Filtering plain text clicks: Because the HTML with the anchor tag is
+   *    injected dynamically and the listener is attached to the parent
+   *    container, `target.tagName !== 'A'` ensures clicks on surrounding text
+   *    are ignored.
+   * 2. Allowing synthetic events: CustomEvents dispatched programmatically
+   *    (e.g., keyboard activation on custom elements) bypass the tagName check.
+   * 3. Preventing native navigation: `preventDefault()` prevents navigating the
+   *    privileged chrome:// settings tab. URL opening is delegated to
+   *    `OpenWindowProxyImpl`.
+   * 4. Stopping bubbling: `stopPropagation()` prevents parent rows or toggles
+   *    from triggering when the link is clicked.
+   */
+  private onGmailOtpFillingLinkClick_(e?: Event) {
+    if (e && !(e instanceof CustomEvent)) {
+      const target = e.target as HTMLElement;
+      if (target.tagName !== 'A') {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+    }
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('gmailOtpFillingLearnMoreUrl'));
   }
 
-  private onAutofillOtpFillingToggleChanged_(event: Event) {
+  private async onAutofillOtpFillingToggleChanged_(event: Event) {
     const toggle = event.target as SettingsToggleButtonElement;
-    chrome.metricsPrivate.recordBoolean(
-        'Autofill.GmailOtpOptIn.SettingsChange', toggle.checked);
+    if (!toggle.checked) {
+      this.resetOtpFillingState_();
+      this.setPrefValue(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF, false);
+      chrome.metricsPrivate.recordBoolean(
+          AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, false);
+      return;
+    }
+
+    this.isOtpConsentLoading_ = true;
+    const currentEmail = this.accountInfo_?.email;
+
+    try {
+      const consent = await this.fetchConsentWithMinDuration_();
+      if (!this.isConnected || this.accountInfo_?.email !== currentEmail) {
+        return;
+      }
+      if (consent?.commsApps ===
+              chrome.autofillPrivate.UserDataProcessingConsentState.ENABLED &&
+          consent?.googleApps ===
+              chrome.autofillPrivate.UserDataProcessingConsentState.ENABLED) {
+        this.enableOtpFilling_(currentEmail);
+      } else {
+        this.setOtpFillingToggleChecked_(false);
+        this.showGmailOtpDisclaimerDialog_ = true;
+      }
+    } catch {
+      if (!this.isConnected || this.accountInfo_?.email !== currentEmail) {
+        return;
+      }
+      // If fetching consent fails (e.g., due to a network error or API
+      // timeout), fall back to enabling the feature to avoid blocking users and
+      // rely on backend enforcement when autofill is performed.
+      this.enableOtpFilling_(currentEmail);
+    } finally {
+      this.isOtpConsentLoading_ = false;
+      // Restore focus to the toggle once it is restamped if no disclaimer
+      // dialog was displayed.
+      if (this.isConnected && this.accountInfo_?.email === currentEmail &&
+          !this.showGmailOtpDisclaimerDialog_) {
+        this.focusOtpFillingToggle_();
+      }
+    }
+  }
+
+  private onGmailOtpDisclaimerDialogClose_() {
+    this.showGmailOtpDisclaimerDialog_ = false;
+    this.setOtpFillingToggleChecked_(false);
+    this.focusOtpFillingToggle_();
   }
 
   // SettingsViewMixin implementation.

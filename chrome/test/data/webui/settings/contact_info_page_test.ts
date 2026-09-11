@@ -707,17 +707,23 @@ suite('ContactInfoPageUiTest', function() {
     assertFalse(
         page.getPref<boolean>('autofill.gmail_otp_filling.enabled').value);
 
+    page.minOtpConsentSpinnerDurationMs = 0;
     toggle.click();
+    await flushTasks();
 
-    assertTrue(isVisible(toggle));
-    assertTrue(toggle.checked);
+    const updatedToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#autofillOtpFillingToggle');
+    assertTrue(!!updatedToggle);
+    assertTrue(isVisible(updatedToggle));
+    assertTrue(updatedToggle.checked);
     assertTrue(
         page.getPref<boolean>('autofill.gmail_otp_filling.enabled').value);
     assertEquals(
         1, metricsTracker.count('Autofill.GmailOtpOptIn.SettingsChange', true));
 
-    toggle.click();
-    assertFalse(toggle.checked);
+    updatedToggle.click();
+    assertFalse(updatedToggle.checked);
     assertEquals(
         1,
         metricsTracker.count('Autofill.GmailOtpOptIn.SettingsChange', false));

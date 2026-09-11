@@ -35,12 +35,8 @@ export class SettingsGmailOtpDisclaimerDialogElement extends PolymerElement {
     return getTemplate();
   }
 
-  close() {
-    this.$.dialog.close();
-  }
-
   private onConfirmButtonClick_() {
-    this.close();
+    this.$.dialog.close();
   }
 }
 

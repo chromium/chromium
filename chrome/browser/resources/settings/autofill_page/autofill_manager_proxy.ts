@@ -41,6 +41,12 @@ export interface AutofillManagerProxy {
 
   /** @param guid The guid of the address to remove.  */
   removeAddress(guid: string): void;
+
+  /**
+   * Fetches user data processing consent states.
+   */
+  fetchUserDataProcessingConsent():
+      Promise<chrome.autofillPrivate.UserDataProcessingConsentStates>;
 }
 
 /**
@@ -69,6 +75,10 @@ export class AutofillManagerImpl implements AutofillManagerProxy {
 
   removeAddress(guid: string) {
     chrome.autofillPrivate.removeAddress(guid);
+  }
+
+  fetchUserDataProcessingConsent() {
+    return chrome.autofillPrivate.fetchUserDataProcessingConsent();
   }
 
   static getInstance(): AutofillManagerProxy {

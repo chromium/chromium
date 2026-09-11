@@ -1,5 +1,5 @@
   <style include="cr-shared-style settings-shared passwords-shared
-      autofill-shared">
+      autofill-shared cr-spinner-style">
     #addressList .start {
       display: flex;
       overflow: hidden;
@@ -35,6 +35,23 @@
       margin-inline-start: 20px;
       margin-inline-end: 16px;
     }
+
+    #otpFillingLoadingRow {
+      align-items: center;
+      display: flex;
+      min-height: var(--cr-section-two-line-min-height);
+      padding: 0 var(--cr-section-padding);
+    }
+
+    #otpFillingLoadingLabelWrapper {
+      flex: 1;
+      padding: var(--cr-section-vertical-padding) 0;
+      margin-inline-end: 20px;
+    }
+
+    #otpFillingLoadingSubLabel a {
+      color: var(--cr-link-color);
+    }
   </style>
   <settings-subpage page-title="$i18n{contactInfoTitle}"
       learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}"
@@ -47,13 +64,33 @@
           on-settings-boolean-control-change="onAutofillProfileToggleChange_">
       </settings-toggle-button>
       <template is="dom-if" if="[[showGmailOtpFillingToggle_]]" restamp>
-        <settings-toggle-button id="autofillOtpFillingToggle"
-            label="$i18n{enableGmailOtpFillingTitle}"
-            sub-label-with-link="$i18n{enableGmailOtpFillingDescription}"
-            on-sub-label-link-clicked="onGmailOtpFillingLinkClick_"
-            on-change="onAutofillOtpFillingToggleChanged_"
-            pref="{{prefs.autofill.gmail_otp_filling.enabled}}">
-        </settings-toggle-button>
+        <template is="dom-if" if="[[isOtpConsentLoading_]]" restamp>
+          <div id="otpFillingLoadingRow" class="cr-row hr cr-padded-text"
+              aria-live="polite" aria-busy="true">
+            <div class="flex" id="otpFillingLoadingLabelWrapper">
+              <div class="label">$i18n{enableGmailOtpFillingTitle}</div>
+              <div class="cr-secondary-text label"
+                  id="otpFillingLoadingSubLabel">
+                <div id="otpFillingLoadingSubLabelWithLink"
+                    inner-h-t-m-l="[[getGmailOtpFillingDescription_()]]"
+                    on-click="onGmailOtpFillingLinkClick_">
+                </div>
+              </div>
+            </div>
+            <div id="otpFillingLoadingSpinner" class="spinner"></div>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!isOtpConsentLoading_]]" restamp>
+          <settings-toggle-button id="autofillOtpFillingToggle" class="hr"
+              label="$i18n{enableGmailOtpFillingTitle}"
+              sub-label-with-link="$i18n{enableGmailOtpFillingDescription}"
+              on-sub-label-link-clicked="onGmailOtpFillingLinkClick_"
+              on-settings-boolean-control-change=
+                  "onAutofillOtpFillingToggleChanged_"
+              pref="{{otpFillingTogglePref_}}"
+              no-set-pref>
+          </settings-toggle-button>
+        </template>
       </template>
       <template is="dom-if"
           if="[[prefs.autofill.profile_enabled.extensionId]]">
@@ -151,6 +188,11 @@
             address="[[activeAddress]]" account-info="[[accountInfo_]]"
             on-close="onAddressRemoveConfirmationDialogClose_">
         </settings-address-remove-confirmation-dialog>
+      </template>
+      <template is="dom-if" if="[[showGmailOtpDisclaimerDialog_]]" restamp>
+        <settings-gmail-otp-disclaimer-dialog
+            on-close="onGmailOtpDisclaimerDialogClose_">
+        </settings-gmail-otp-disclaimer-dialog>
       </template>
       <template is="dom-if" if="[[showEmailRemoveConfirmationDialog_]]"
           restamp>

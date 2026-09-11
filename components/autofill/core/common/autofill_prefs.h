@@ -127,8 +127,10 @@ inline constexpr char kAutofillLastVersionDeduped[] =
 
 // Boolean that is true if the user enabled fetching OTPs from the signed in
 // Gmail account.
+// LINT.IfChange(AutofillGmailOtpFillingPref)
 inline constexpr char kAutofillGmailOtpFillingEnabled[] =
     "autofill.gmail_otp_filling.enabled";
+// LINT.ThenChange(//chrome/browser/resources/settings/autofill_page/contact_info/contact_info_page.ts:AutofillGmailOtpFillingPref)
 // Timestamp the user dismissed the activation dialog to enable fetching Gmail
 // OTPs the last time.
 inline constexpr char kAutofillGmailOtpFillingActivationDismissalTimestamp[] =

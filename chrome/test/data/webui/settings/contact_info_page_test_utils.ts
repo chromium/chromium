@@ -37,15 +37,16 @@ export function expectEvent(
 export async function createContactInfoPage(
     addresses: chrome.autofillPrivate.AddressEntry[],
     prefValues: Record<string, unknown>,
-    accountInfo?: chrome.autofillPrivate.AccountInfo|
-    null): Promise<SettingsContactInfoPageElement> {
+    accountInfo?: chrome.autofillPrivate.AccountInfo|null,
+    autofillManager?: TestAutofillManager):
+    Promise<SettingsContactInfoPageElement> {
   // Override the AutofillManagerImpl for testing.
-  const autofillManager = new TestAutofillManager();
-  autofillManager.data.addresses = addresses;
+  const manager = autofillManager || new TestAutofillManager();
+  manager.data.addresses = addresses;
   if (accountInfo !== undefined) {
-    autofillManager.data.accountInfo = accountInfo ?? undefined;
+    manager.data.accountInfo = accountInfo ?? undefined;
   }
-  AutofillManagerImpl.setInstance(autofillManager);
+  AutofillManagerImpl.setInstance(manager);
 
   const page = document.createElement('settings-contact-info-page');
   page.prefs = {
@@ -62,11 +63,17 @@ export async function createContactInfoPage(
         type: chrome.settingsPrivate.PrefType.LIST,
         value: [],
       },
+      gmail_otp_filling: {
+        enabled: {
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        },
+      },
       ...prefValues,
     },
   };
   document.body.appendChild(page);
-  await autofillManager.whenCalled('getAddressList');
+  await manager.whenCalled('getAddressList');
 
   return page;
 }

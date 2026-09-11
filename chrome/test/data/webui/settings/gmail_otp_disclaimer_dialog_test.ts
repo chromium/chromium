@@ -78,4 +78,12 @@ suite('GmailOtpDisclaimerDialogTest', function() {
     await closePromise;
     assertFalse(dialog.$.dialog.open);
   });
+
+  test('Canceling dialog closes dialog', async function() {
+    assertTrue(dialog.$.dialog.open);
+    const closePromise = eventToPromise('close', dialog);
+    dialog.$.dialog.cancel();
+    await closePromise;
+    assertFalse(dialog.$.dialog.open);
+  });
 });

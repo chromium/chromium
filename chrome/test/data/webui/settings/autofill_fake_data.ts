@@ -216,6 +216,7 @@ export class AutofillManagerExpectations {
   requestedAddresses: number = 0;
   listeningAddresses: number = 0;
   removeAddress: number = 0;
+  fetchedUserDataProcessingConsent: number = 0;
 }
 
 /**
@@ -226,6 +227,8 @@ export class TestAutofillManager extends TestBrowserProxy implements
   data: {
     addresses: chrome.autofillPrivate.AddressEntry[],
     accountInfo?: chrome.autofillPrivate.AccountInfo,
+    userDataProcessingConsent?: chrome.autofillPrivate
+                                 .UserDataProcessingConsentStates,
   };
 
   lastCallback:
@@ -233,6 +236,7 @@ export class TestAutofillManager extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'fetchUserDataProcessingConsent',
       'getAccountInfo',
       'getAddressList',
       'removeAddress',
@@ -247,6 +251,12 @@ export class TestAutofillManager extends TestBrowserProxy implements
         email: 'stub-user@example.com',
         isSyncEnabledForAutofillProfiles: true,
         isEligibleForAddressAccountStorage: false,
+      },
+      userDataProcessingConsent: {
+        commsApps:
+            chrome.autofillPrivate.UserDataProcessingConsentState.ENABLED,
+        googleApps:
+            chrome.autofillPrivate.UserDataProcessingConsentState.ENABLED,
       },
     };
 
@@ -281,6 +291,19 @@ export class TestAutofillManager extends TestBrowserProxy implements
     this.methodCalled('removeAddress');
   }
 
+  fetchUserDataProcessingConsent() {
+    this.methodCalled('fetchUserDataProcessingConsent');
+    return Promise.resolve(this.data.userDataProcessingConsent || {
+      commsApps: chrome.autofillPrivate.UserDataProcessingConsentState.UNKNOWN,
+      googleApps: chrome.autofillPrivate.UserDataProcessingConsentState.UNKNOWN,
+    });
+  }
+
+  setUserDataProcessingConsent(
+      consent: chrome.autofillPrivate.UserDataProcessingConsentStates) {
+    this.data.userDataProcessingConsent = consent;
+  }
+
   /**
    * Verifies expectations.
    */
@@ -292,6 +315,9 @@ export class TestAutofillManager extends TestBrowserProxy implements
         this.getCallCount('setPersonalDataManagerListener') -
             this.getCallCount('removePersonalDataManagerListener'));
     assertEquals(expected.removeAddress, this.getCallCount('removeAddress'));
+    assertEquals(
+        expected.fetchedUserDataProcessingConsent,
+        this.getCallCount('fetchUserDataProcessingConsent'));
   }
 }
 
