@@ -47,5 +47,5 @@ ReduceAcceptLanguageFactory::BuildServiceInstanceForBrowserContext(
   PrefService* prefs = profile->GetPrefs();
   return std::make_unique<reduce_accept_language::ReduceAcceptLanguageService>(
       HostContentSettingsMapFactory::GetForProfile(context), prefs,
-      profile->IsIncognitoProfile());
+      profile->IsPrimaryOTRProfileWithRegularParent());
 }
