@@ -265,12 +265,69 @@ TEST_F(OmniboxEverywherePrefsTest,
   // Enable a hotkey while in Stage 2.
   local_state_.SetBoolean(kHotkeyEnabled, true);
   EXPECT_TRUE(HasOmniboxEverywhereHotkey(&local_state_));
+  // Does not immediately switch to Stage 3 before dismissal or impression cap.
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutSetupChin);
 
   // When hotkey is enabled, dismissing Stage 2 transitions to Stage 3.
   OnFreStageDismissed(&profile_, FreStage::kShortcutSetupChin, &local_state_);
   EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
             FreStage::kShortcutReminderChin);
   EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kFreDismissed));
+}
+
+TEST_F(OmniboxEverywherePrefsTest,
+       FreStagesProgression_SetupHotkeyImpressionTransitionsToReminder) {
+  // Start with hotkey disabled so that Stage 2 (ShortcutSetupChin) is reached.
+  local_state_.SetBoolean(kHotkeyEnabled, false);
+  EXPECT_FALSE(HasOmniboxEverywhereHotkey(&local_state_));
+
+  // Dismiss Stage 1 to transition to Stage 2.
+  OnFreStageDismissed(&profile_, FreStage::kIntroModal, &local_state_);
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutSetupChin);
+
+  // While no hotkey is selected, impressions are not capped.
+  for (int i = 0; i < 5; ++i) {
+    IncrementFreImpression(&profile_, &local_state_);
+    EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+              FreStage::kShortcutSetupChin);
+  }
+  EXPECT_EQ(profile_.GetPrefs()->GetInteger(kFreShortcutSetupImpressionCount),
+            0);
+
+  // Set a hotkey while in Stage 2.
+  SetOmniboxEverywhereHotkey(&local_state_, "Command+Shift+Space");
+  EXPECT_TRUE(HasOmniboxEverywhereHotkey(&local_state_));
+
+  // Does not immediately switch to Stage 3 during current open.
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutSetupChin);
+
+  // Increment impression 1
+  IncrementFreImpression(&profile_, &local_state_);
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutSetupChin);
+
+  // Increment impression 2
+  IncrementFreImpression(&profile_, &local_state_);
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutSetupChin);
+
+  // Increment impression 3 -> hits 3 impressions, advances to Stage 3.
+  IncrementFreImpression(&profile_, &local_state_);
+  EXPECT_EQ(GetCurrentFreStage(&profile_, &local_state_),
+            FreStage::kShortcutReminderChin);
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(kFreDismissed));
+}
+
+TEST_F(OmniboxEverywherePrefsTest, SetOmniboxEverywhereHotkeyEnablesHotkey) {
+  local_state_.SetBoolean(kHotkeyEnabled, false);
+  EXPECT_FALSE(HasOmniboxEverywhereHotkey(&local_state_));
+
+  SetOmniboxEverywhereHotkey(&local_state_, "Command+Shift+Space");
+  EXPECT_TRUE(local_state_.GetBoolean(kHotkeyEnabled));
+  EXPECT_TRUE(HasOmniboxEverywhereHotkey(&local_state_));
 }
 
 TEST_F(OmniboxEverywherePrefsTest,

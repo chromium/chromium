@@ -128,14 +128,15 @@ FreStage GetCurrentFreStage(Profile* profile, PrefService* local_state) {
     return FreStage::kIntroModal;
   }
 
-  // Stage 2: Shortcut Setup Chin (max 3 impressions or until dismissed/set).
-  // If a hotkey is already set, skip Stage 2 setup chin and go directly to
-  // Stage 3 reminder chin.
-  if (!HasOmniboxEverywhereHotkey(resolved_local_state) &&
-      !prefs->GetBoolean(kFreShortcutSetupDismissed) &&
-      prefs->GetInteger(kFreShortcutSetupImpressionCount) <
-          kMaxFreShortcutSetupImpressions) {
-    return FreStage::kShortcutSetupChin;
+  // Stage 2: Shortcut Setup Chin.
+  // Stays active until dismissed via 'X' or until a hotkey is selected and
+  // the impression threshold is reached (on the next open).
+  if (!prefs->GetBoolean(kFreShortcutSetupDismissed)) {
+    const bool has_hotkey = HasOmniboxEverywhereHotkey(resolved_local_state);
+    if (!has_hotkey || prefs->GetInteger(kFreShortcutSetupImpressionCount) <
+                           kMaxFreShortcutSetupImpressions) {
+      return FreStage::kShortcutSetupChin;
+    }
   }
 
   // Stage 3: Shortcut Reminder Chin (max 3 impressions or until dismissed)
@@ -161,6 +162,11 @@ void IncrementFreImpression(Profile* profile, PrefService* local_state) {
     case FreStage::kIntroModal:
       prefs->SetInteger(kFreIntroImpressionCount,
                         prefs->GetInteger(kFreIntroImpressionCount) + 1);
+      if (prefs->GetInteger(kFreIntroImpressionCount) >=
+              kMaxFreIntroImpressions &&
+          HasOmniboxEverywhereHotkey(resolved_local_state)) {
+        prefs->SetBoolean(kFreShortcutSetupDismissed, true);
+      }
       break;
     case FreStage::kShortcutSetupChin: {
       // If a hotkey isn't set, impressions are not capped so the setup chin
@@ -201,6 +207,9 @@ void OnFreStageDismissed(Profile* profile,
   switch (stage) {
     case FreStage::kIntroModal:
       prefs->SetBoolean(kFreIntroDismissed, true);
+      if (HasOmniboxEverywhereHotkey(resolved_local_state)) {
+        prefs->SetBoolean(kFreShortcutSetupDismissed, true);
+      }
       break;
     case FreStage::kShortcutSetupChin: {
       prefs->SetBoolean(kFreShortcutSetupDismissed, true);
@@ -253,6 +262,7 @@ void SetOmniboxEverywhereHotkey(PrefService* local_state,
     return;
   }
   local_state->SetString(kOmniboxEverywhereHotkey, hotkey_str);
+  local_state->SetBoolean(kHotkeyEnabled, true);
 }
 
 std::vector<std::string> GetOmniboxEverywhereHotkeyTokens(
