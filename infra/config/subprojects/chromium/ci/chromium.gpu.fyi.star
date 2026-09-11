@@ -663,12 +663,11 @@ ci.thin_tester(
         os_type = targets.os_type.ANDROID,
         use_android_merge_script_by_default = False,
     ),
-    gardener_rotations = args.ignore_default(None),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Android|arm64|IMG",
-    #     short_name = "P11e",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|arm64|IMG",
+        short_name = "P11e",
+    ),
     list_view = "chromium.gpu.experimental",
     execution_timeout = 12 * time.hour,
 )
