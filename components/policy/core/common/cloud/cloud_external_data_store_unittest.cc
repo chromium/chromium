@@ -11,9 +11,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -53,8 +54,10 @@ class CloudExternalDataStoreTest : public testing::Test {
 };
 
 CloudExternalDataStoreTest::CloudExternalDataStoreTest()
-    : kData1Hash(crypto::SHA256HashString(kData1)),
-      kData2Hash(crypto::SHA256HashString(kData2)),
+    : kData1Hash(
+          std::string(base::as_string_view(crypto::hash::Sha256(kData1)))),
+      kData2Hash(
+          std::string(base::as_string_view(crypto::hash::Sha256(kData2)))),
       task_runner_(new base::TestSimpleTaskRunner) {}
 
 void CloudExternalDataStoreTest::SetUp() {

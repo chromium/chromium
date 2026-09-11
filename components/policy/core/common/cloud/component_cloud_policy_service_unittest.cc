@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
@@ -34,8 +35,8 @@
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/hash.h"
 #include "crypto/keypair.h"
-#include "crypto/sha2.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -125,7 +126,8 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
         dm_protocol::kChromeExtensionPolicyType);
     builder_.policy_data().set_settings_entity_id(kTestExtension);
     builder_.payload().set_download_url(kTestDownload);
-    builder_.payload().set_secure_hash(crypto::SHA256HashString(kTestPolicy));
+    builder_.payload().set_secure_hash(
+        std::string(base::as_string_view(crypto::hash::Sha256(kTestPolicy))));
 
     public_key_ = builder_.GetPublicSigningKeyAsString();
 
@@ -391,8 +393,8 @@ TEST_F(ComponentCloudPolicyServiceTest, ComponentPolicyMapIsSetAndObserved) {
 
   // Start observing and check that the observer is called on policy change.
   service_->AddObserver(&observer);
-  builder_.payload().set_secure_hash(
-      crypto::SHA256HashString(kInvalidTestPolicy));
+  builder_.payload().set_secure_hash(std::string(
+      base::as_string_view(crypto::hash::Sha256(kInvalidTestPolicy))));
   client_->SetPolicy(dm_protocol::kChromeExtensionPolicyType, kTestExtension,
                      *CreateResponse());
   service_->OnPolicyFetched(client_);
@@ -408,7 +410,8 @@ TEST_F(ComponentCloudPolicyServiceTest, ComponentPolicyMapIsSetAndObserved) {
   // change.
   observer.observed_component_policy = ComponentPolicyMap();
   service_->RemoveObserver(&observer);
-  builder_.payload().set_secure_hash(crypto::SHA256HashString(kTestPolicy));
+  builder_.payload().set_secure_hash(
+      std::string(base::as_string_view(crypto::hash::Sha256(kTestPolicy))));
   client_->SetPolicy(dm_protocol::kChromeExtensionPolicyType, kTestExtension,
                      *CreateResponse());
   service_->OnPolicyFetched(client_);
@@ -609,8 +612,8 @@ TEST_F(ComponentCloudPolicyServiceTest, SignOut) {
 TEST_F(ComponentCloudPolicyServiceTest, LoadInvalidPolicyFromCache) {
   // Put the invalid test policy in the cache. One of its policies will be
   // loaded, the other should be filtered out by the schema.
-  builder_.payload().set_secure_hash(
-      crypto::SHA256HashString(kInvalidTestPolicy));
+  builder_.payload().set_secure_hash(std::string(base::as_string_view(
+      crypto::hash::Sha256(std::string_view(kInvalidTestPolicy)))));
   EXPECT_FALSE(cache_
                    ->Store("extension-policy", kTestExtension,
                            CreateSerializedResponse())

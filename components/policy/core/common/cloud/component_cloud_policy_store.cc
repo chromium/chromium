@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -27,7 +28,7 @@
 #include "components/policy/core/common/policy_proto_decoders.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "url/gurl.h"
 
@@ -402,7 +403,8 @@ bool ComponentCloudPolicyStore::ValidateData(const std::string& data,
                                              const std::string& secure_hash,
                                              PolicyMap* policy,
                                              std::string* error) {
-  if (crypto::SHA256HashString(data) != secure_hash) {
+  if (std::string(base::as_string_view(crypto::hash::Sha256(data))) !=
+      secure_hash) {
     *error = "The received data doesn't match the expected hash.";
     return false;
   }

@@ -15,12 +15,13 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_pending_task.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -130,7 +131,8 @@ ExternalPolicyDataUpdater::Request
     ExternalPolicyDataUpdaterTest::CreateRequest(const std::string& url) const {
   return ExternalPolicyDataUpdater::Request(
       url,
-      crypto::SHA256HashString(kExternalPolicyDataPayload),
+      std::string(base::as_string_view(
+          crypto::hash::Sha256(kExternalPolicyDataPayload))),
       kExternalPolicyDataMaxSize);
 }
 

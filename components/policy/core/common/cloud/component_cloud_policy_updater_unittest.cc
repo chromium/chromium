@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -28,7 +29,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -101,7 +102,8 @@ ComponentCloudPolicyUpdaterTest::ComponentCloudPolicyUpdaterTest()
       dm_protocol::kChromeExtensionPolicyType);
   builder_.policy_data().set_settings_entity_id(kTestExtension);
   builder_.payload().set_download_url(kTestDownload);
-  builder_.payload().set_secure_hash(crypto::SHA256HashString(kTestPolicy));
+  builder_.payload().set_secure_hash(
+      std::string(base::as_string_view(crypto::hash::Sha256(kTestPolicy))));
 
   public_key_ = builder_.GetPublicSigningKeyAsString();
 
@@ -309,9 +311,10 @@ TEST_F(ComponentCloudPolicyUpdaterTest, AlreadyCached) {
   // Cache policy for an extension.
   builder_.Build();
   EXPECT_CALL(store_delegate_, OnComponentCloudPolicyStoreUpdated());
-  EXPECT_TRUE(
-      store_->Store(kTestPolicyNS, builder_.GetBlob(), &builder_.policy_data(),
-                    crypto::SHA256HashString(kTestPolicy), kTestPolicy));
+  EXPECT_TRUE(store_->Store(
+      kTestPolicyNS, builder_.GetBlob(), &builder_.policy_data(),
+      std::string(base::as_string_view(crypto::hash::Sha256(kTestPolicy))),
+      kTestPolicy));
   Mock::VerifyAndClearExpectations(&store_delegate_);
 
   // Submit a policy fetch response whose extension ID and hash match the
@@ -473,7 +476,8 @@ TEST_F(ComponentCloudPolicyUpdaterTest, RetryAfterDataTooLarge) {
 TEST_F(ComponentCloudPolicyUpdaterTest, RetryAfterDataValidationFails) {
   // Submit a policy fetch response that is calculated for an empty (that is,
   // invalid) JSON.
-  builder_.payload().set_secure_hash(crypto::SHA256HashString(std::string()));
+  builder_.payload().set_secure_hash(
+      std::string(base::as_string_view(crypto::hash::Sha256(std::string()))));
   updater_->UpdateExternalPolicy(kTestPolicyNS, CreateResponse());
   task_env_.RunUntilIdle();
 
@@ -502,7 +506,8 @@ TEST_F(ComponentCloudPolicyUpdaterTest, RetryAfterDataValidationFails) {
   loader_factory_.ClearResponses();
 
   // Submit a policy fetch response that is calculated for the correct JSON.
-  builder_.payload().set_secure_hash(crypto::SHA256HashString(kTestPolicy));
+  builder_.payload().set_secure_hash(
+      std::string(base::as_string_view(crypto::hash::Sha256(kTestPolicy))));
   updater_->UpdateExternalPolicy(kTestPolicyNS, CreateResponse());
   task_env_.RunUntilIdle();
 
