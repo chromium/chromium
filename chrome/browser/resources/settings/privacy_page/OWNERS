@@ -4,5 +4,3 @@ tommasin@chromium.org
 
 # Happiness Tracking Surveys (HaTS)
 per-file hats_browser_proxy.ts=file://chrome/browser/ui/hats/OWNERS
-
-per-file cookies_page*=fmacintosh@google.com
