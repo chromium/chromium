@@ -642,6 +642,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//components/permissions/android:core_java",
+      "//url/mojom:url_mojom_origin_java",
     ]
   }
 
