@@ -10,14 +10,18 @@ import type {CrRadioButtonElement} from '//resources/cr_elements/cr_radio_button
 import type {CrRadioGroupElement} from '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {VoiceSelectionDialogElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {stringToHtmlTestId, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, ReadAloudSettingsChange, spinnerDebounceTimeout, stringToHtmlTestId, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('VoiceSelectionDialog', () => {
   let dialog: VoiceSelectionDialogElement;
+  let metrics: TestMetricsBrowserProxy;
 
   const googleNaturalVoice = createSpeechSynthesisVoice(
       {name: 'Google US English (Natural)', lang: 'en-US'});
@@ -61,14 +65,25 @@ suite('VoiceSelectionDialog', () => {
   }
 
   setup(async () => {
-    setupTestEnvironment();
+    const result = setupTestEnvironment();
+    metrics = result.metrics;
+
+    const audioBrowserProxy =
+        AudioBrowserProxyImpl.getInstance() as TestAudioBrowserProxy;
+    audioBrowserProxy.localeToDisplayName = {
+      'it': 'Italian',
+      'it-it': 'Italian',
+      'en-us': 'English (United States)',
+    };
+
     loadTimeData.overrideValues({
       cancel: 'Cancel',
       save: 'Save',
       voiceSelectionLabel: 'Voice Selection',
       previewTooltip: 'Preview voice',
       stopLabel: 'Stop preview',
-      readingModeLanguageMenuItemLabel: 'Select {0}',
+      readingModeLanguageMenuItemLabel: 'Select $1',
+      readingModeVoiceMenuDownloading: 'Downloading $1',
     });
 
     dialog = document.createElement('voice-selection-dialog');
@@ -143,6 +158,24 @@ suite('VoiceSelectionDialog', () => {
 
         assertTrue(selectedItem.checked);
         assertFalse(unselectedItem.checked);
+      });
+
+  test(
+      'preview button roving tabindex sets 0 on candidate voice and -1 on' +
+          ' others',
+      async () => {
+        await drawDialog();
+
+        const selectedItem = getDropdownItemForVoice(googleNaturalVoice);
+        const unselectedItem = getDropdownItemForVoice(googleStandardVoice);
+
+        const selectedPreview =
+            selectedItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+        const unselectedPreview =
+            unselectedItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+
+        assertEquals('0', selectedPreview.getAttribute('tabindex'));
+        assertEquals('-1', unselectedPreview.getAttribute('tabindex'));
       });
 
   test(
@@ -225,6 +258,7 @@ suite('VoiceSelectionDialog', () => {
     await microtasksFinished();
 
     assertFalse(voiceFired);
+    assertEquals(0, metrics.getCallCount('recordSpeechSettingsChange'));
   });
 
   test('clicking Cancel discards staged voice and closes dialog', async () => {
@@ -247,6 +281,7 @@ suite('VoiceSelectionDialog', () => {
 
     assertFalse(voiceFired);
     assertFalse(dialog.$.voiceSelectionDialog.open);
+    assertEquals(0, metrics.getCallCount('recordSpeechSettingsChange'));
   });
 
   test('escape key cancels dialog and rolls back candidate state', async () => {
@@ -307,5 +342,159 @@ suite('VoiceSelectionDialog', () => {
             standardItem.querySelector<CrIconButtonElement>('#preview-icon')!;
 
         assertEquals('-1', standardPreview.getAttribute('tabindex'));
+      });
+
+  test(
+      'arrow keys navigate and stage candidate voices via cr-radio-group',
+      async () => {
+        await drawDialog();
+
+        const naturalItem = getDropdownItemForVoice(googleNaturalVoice);
+
+        assertTrue(naturalItem.checked);
+        assertEquals(googleNaturalVoice.name, getRadioGroup().selected);
+
+        naturalItem.dispatchEvent(new KeyboardEvent(
+            'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+        await microtasksFinished();
+        const standardItem = getDropdownItemForVoice(googleStandardVoice);
+
+        assertTrue(standardItem.checked);
+        assertFalse(naturalItem.checked);
+        assertEquals(googleStandardVoice.name, getRadioGroup().selected);
+
+        standardItem.dispatchEvent(new KeyboardEvent(
+            'keydown', {key: 'ArrowUp', bubbles: true, composed: true}));
+        await microtasksFinished();
+
+        assertTrue(naturalItem.checked);
+        assertFalse(standardItem.checked);
+        assertEquals(googleNaturalVoice.name, getRadioGroup().selected);
+      });
+
+  test(
+      'clicking preview button schedules preview and toggles to stop icon',
+      async () => {
+        await drawDialog();
+
+        const playPreviewPromise = eventToPromise<
+            CustomEvent<{previewVoice: SpeechSynthesisVoice | null}>>(
+            ToolbarEvent.PLAY_PREVIEW, dialog);
+        const standardItem = getDropdownItemForVoice(googleStandardVoice);
+        const previewBtn =
+            standardItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+        const mockTimer = new MockTimer();
+        mockTimer.install();
+        previewBtn.click();
+        const event = await playPreviewPromise;
+
+        assertEquals(googleStandardVoice.name, event.detail.previewVoice!.name);
+
+        mockTimer.tick(spinnerDebounceTimeout);
+        mockTimer.uninstall();
+        await microtasksFinished();
+
+        const updatedPreviewBtn =
+            standardItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+
+        assertEquals(
+            'read-anything-20:stop-circle', updatedPreviewBtn.ironIcon);
+      });
+
+  test(
+      'clicking preview button while pending debounce cancels preview',
+      async () => {
+        await drawDialog();
+
+        const playPreviewPayloads: Array<SpeechSynthesisVoice|null> = [];
+        dialog.addEventListener(ToolbarEvent.PLAY_PREVIEW, (event: Event) => {
+          const e =
+              event as CustomEvent<{previewVoice: SpeechSynthesisVoice | null}>;
+          playPreviewPayloads.push(e.detail.previewVoice);
+        });
+
+        const standardItem = getDropdownItemForVoice(googleStandardVoice);
+        const previewBtn =
+            standardItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+
+        const mockTimer = new MockTimer();
+        mockTimer.install();
+
+        // First click: initiates preview request
+        previewBtn.click();
+
+        assertEquals(1, playPreviewPayloads.length);
+        assertEquals(googleStandardVoice.name, playPreviewPayloads[0]!.name);
+
+        // Second click before debounce expires: cancels preview
+        previewBtn.click();
+
+        assertEquals(2, playPreviewPayloads.length);
+        assertEquals(null, playPreviewPayloads[1]);
+
+        mockTimer.tick(spinnerDebounceTimeout);
+        mockTimer.uninstall();
+        await microtasksFinished();
+
+        // Verify stop icon never rendered because debounce was cancelled
+        assertEquals('read-anything-20:play-circle', previewBtn.ironIcon);
+      });
+
+  test('closing dialog stops active preview', async () => {
+    await drawDialog();
+
+    const standardItem = getDropdownItemForVoice(googleStandardVoice);
+    const previewBtn =
+        standardItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+    previewBtn.click();
+    mockTimer.tick(spinnerDebounceTimeout);
+    mockTimer.uninstall();
+    await microtasksFinished();
+
+    const stopPreviewPromise = eventToPromise<
+        CustomEvent<{previewVoice: SpeechSynthesisVoice | null}>>(
+        ToolbarEvent.PLAY_PREVIEW, dialog);
+
+    dialog.close();
+    const event = await stopPreviewPromise;
+
+    assertEquals(null, event.detail.previewVoice);
+  });
+
+  test('clicking Save logs UMA speech settings change metric', async () => {
+    await drawDialog();
+
+    const standardVoiceItem = getDropdownItemForVoice(googleStandardVoice);
+    standardVoiceItem.click();
+    await microtasksFinished();
+
+    const saveBtn =
+        dialog.$.voiceSelectionDialog.querySelector<CrButtonElement>(
+            '#saveButton')!;
+    saveBtn.click();
+    await microtasksFinished();
+
+    assertEquals(
+        ReadAloudSettingsChange.VOICE_NAME_CHANGE,
+        await metrics.whenCalled('recordSpeechSettingsChange'));
+  });
+
+  test(
+      'displays download notifications from notification manager', async () => {
+        await drawDialog();
+
+        VoiceNotificationManager.getInstance().onVoiceStatusChange(
+            'it', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+            [googleItalianVoice], true);
+        await microtasksFinished();
+
+        const downloadMessage =
+            dialog.$.voiceSelectionDialog.querySelector<HTMLElement>(
+                '.download-message')!;
+
+        assertTrue(downloadMessage.textContent.includes('Italian'));
       });
 });

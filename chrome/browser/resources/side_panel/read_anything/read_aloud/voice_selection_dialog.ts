@@ -16,10 +16,18 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ToolbarEvent} from '../content/read_anything_types.js';
+import {spinnerDebounceTimeout} from '../shared/common.js';
+import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
+import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
+import type {AudioBrowserProxy} from './audio_browser_proxy.js';
+import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import {areVoicesEqual} from './voice_language_conversions.js';
+import type {NotificationType} from './voice_language_conversions.js';
 import type {VoiceDropdownGroup, VoiceDropdownItem} from './voice_menu_display.js';
-import {computeVoiceDropdown, isVoicePreviewSpinning} from './voice_menu_display.js';
+import {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, isVoicePreviewSpinning} from './voice_menu_display.js';
+import type {VoiceNotificationListener} from './voice_notification_manager.js';
+import {VoiceNotificationManager} from './voice_notification_manager.js';
 import {getCss} from './voice_selection_dialog.css.js';
 import {getHtml} from './voice_selection_dialog.html.js';
 
@@ -30,7 +38,8 @@ export interface VoiceSelectionDialogElement {
   };
 }
 
-export class VoiceSelectionDialogElement extends CrLitElement {
+export class VoiceSelectionDialogElement extends CrLitElement implements
+    VoiceNotificationListener {
   static get is() {
     return 'voice-selection-dialog';
   }
@@ -48,7 +57,10 @@ export class VoiceSelectionDialogElement extends CrLitElement {
       selectedVoice: {type: Object},
       availableVoices: {type: Array},
       enabledLangs: {type: Array},
+      previewVoicePlaying: {type: Object},
       candidateVoice_: {type: Object},
+      previewVoiceInitiated_: {type: Object},
+      currentNotifications_: {type: Object},
       localeToDisplayName: {type: Object},
     };
   }
@@ -57,17 +69,38 @@ export class VoiceSelectionDialogElement extends CrLitElement {
   accessor localeToDisplayName: {[lang: string]: string} = {};
   accessor enabledLangs: string[] = [];
   accessor availableVoices: SpeechSynthesisVoice[] = [];
+  accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
 
   protected accessor candidateVoice_: SpeechSynthesisVoice|null = null;
+  protected accessor previewVoiceInitiated_: SpeechSynthesisVoice|null = null;
+  protected accessor currentNotifications_:
+      {[language: string]: NotificationType} = {};
+
   protected errorMessages_: string[] = [];
   protected downloadingMessages_: string[] = [];
   protected voiceGroups_: VoiceDropdownGroup[] = [];
 
+  private audioBrowserProxy_: AudioBrowserProxy =
+      AudioBrowserProxyImpl.getInstance();
+  private notificationManager_: VoiceNotificationManager =
+      VoiceNotificationManager.getInstance();
+  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
+
+  private previewTimer_: number|null = null;
+  private previewRequestId_: number = 0;
+  private previewPendingVoice_: SpeechSynthesisVoice|null = null;
   private hasSelectedVoice_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
     this.candidateVoice_ = this.selectedVoice;
+    this.notificationManager_.addListener(this);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.stopActivePreview_();
+    this.notificationManager_.removeListener(this);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -77,16 +110,41 @@ export class VoiceSelectionDialogElement extends CrLitElement {
       this.candidateVoice_ = this.selectedVoice;
     }
 
+    if (changedProperties.has('previewVoicePlaying') &&
+        (this.previewVoicePlaying !== this.previewVoiceInitiated_)) {
+      if (this.previewVoicePlaying) {
+        this.clearPreviewTimeout_();
+      }
+      this.previewVoiceInitiated_ = this.previewVoicePlaying;
+    }
+
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('currentNotifications_')) {
+      this.errorMessages_ = this.computeErrorMessages_();
+      this.downloadingMessages_ = this.computeDownloadingMessages_();
+    }
 
     if (changedProperties.has('selectedVoice') ||
         changedPrivateProperties.has('candidateVoice_') ||
         changedProperties.has('availableVoices') ||
         changedProperties.has('enabledLangs') ||
-        changedProperties.has('localeToDisplayName')) {
+        changedProperties.has('localeToDisplayName') ||
+        changedProperties.has('previewVoicePlaying') ||
+        changedPrivateProperties.has('previewVoiceInitiated_')) {
       this.voiceGroups_ = this.computeVoiceDropdown_();
     }
+  }
+
+  notify(type: NotificationType, language?: string) {
+    if (!language) {
+      return;
+    }
+    this.currentNotifications_ = {
+      ...this.currentNotifications_,
+      [language]: type,
+    };
   }
 
   close() {
@@ -99,10 +157,12 @@ export class VoiceSelectionDialogElement extends CrLitElement {
 
   protected onDialogCancel_() {
     this.candidateVoice_ = this.selectedVoice;
+    this.stopActivePreview_();
   }
 
   protected onDialogClose_() {
     this.onDialogCancel_();
+    this.currentNotifications_ = {};
     this.fire('close');
   }
 
@@ -111,10 +171,22 @@ export class VoiceSelectionDialogElement extends CrLitElement {
       availableVoices: this.availableVoices,
       enabledLangs: this.enabledLangs,
       selectedVoice: this.candidateVoice_,
+      previewVoicePlaying: this.previewVoicePlaying,
+      previewVoiceInitiated: this.previewVoiceInitiated_,
       localeToDisplayName: this.localeToDisplayName,
     });
     this.hasSelectedVoice_ = hasSelectedVoice;
     return groups;
+  }
+
+  private computeErrorMessages_(): string[] {
+    return computeErrorMessages(
+        this.currentNotifications_, this.audioBrowserProxy_);
+  }
+
+  private computeDownloadingMessages_(): string[] {
+    return computeDownloadingMessages(
+        this.currentNotifications_, this.audioBrowserProxy_);
   }
 
   protected previewButtonTabIndex_(
@@ -142,11 +214,61 @@ export class VoiceSelectionDialogElement extends CrLitElement {
 
   protected onVoicePreviewClick_(e: Event) {
     e.stopImmediatePropagation();
+
+    const currentTarget = e.currentTarget as HTMLElement;
+    const groupIndex = Number(currentTarget.dataset['groupIndex']);
+    const voiceIndex = Number(currentTarget.dataset['voiceIndex']);
+    const voiceItem = this.voiceGroups_[groupIndex]?.voices[voiceIndex];
+    if (!voiceItem) {
+      return;
+    }
+
+    const clickedVoice = voiceItem.voice;
+    const isPlaying = voiceItem.previewActuallyPlaying;
+    const isInitiated = voiceItem.previewInitiated;
+    const isPending = this.previewTimer_ !== null &&
+        areVoicesEqual(this.previewPendingVoice_, clickedVoice);
+
+    this.clearPreviewTimeout_();
+
+    if (isPlaying || isInitiated || isPending) {
+      this.stopActivePreview_();
+      return;
+    }
+
+    this.previewPendingVoice_ = clickedVoice;
+    const requestId = ++this.previewRequestId_;
+    this.previewTimer_ = window.setTimeout(() => {
+      if (this.previewRequestId_ === requestId) {
+        this.previewVoiceInitiated_ = clickedVoice;
+        this.previewTimer_ = null;
+        this.previewPendingVoice_ = null;
+      }
+    }, spinnerDebounceTimeout);
+
+    this.fire(ToolbarEvent.PLAY_PREVIEW, {previewVoice: clickedVoice});
+  }
+
+  private clearPreviewTimeout_() {
+    if (this.previewTimer_ !== null) {
+      window.clearTimeout(this.previewTimer_);
+      this.previewTimer_ = null;
+      this.previewPendingVoice_ = null;
+    }
+  }
+
+  private stopActivePreview_() {
+    this.clearPreviewTimeout_();
+    this.previewRequestId_++;
+    this.previewVoiceInitiated_ = null;
+    this.fire(ToolbarEvent.PLAY_PREVIEW, {previewVoice: null});
   }
 
   protected onSaveClick_() {
     if (this.candidateVoice_ &&
         !areVoicesEqual(this.candidateVoice_, this.selectedVoice)) {
+      this.logger_.logSpeechSettingsChange(
+          ReadAloudSettingsChange.VOICE_NAME_CHANGE);
       this.fire(ToolbarEvent.VOICE, {selectedVoice: this.candidateVoice_});
       this.selectedVoice = this.candidateVoice_;
     }
