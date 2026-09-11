@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit.hub;
 
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.ViewElement;
@@ -85,5 +87,23 @@ public class TabGroupListBottomSheetFacility<
                 .exitFacilityAnd()
                 .enterFacilityAnd(softKeyboard)
                 .enterFacility(newTabGroupDialog);
+    }
+
+    /**
+     * Clicks the tab group row with the given title in the recycler view to add the tab to the
+     * group and exit the bottom sheet.
+     *
+     * <p>Note: This will throw a {@link androidx.test.espresso.PerformException} if there are
+     * multiple rows in the list with this title, as {@link RecyclerViewActions#actionOnItem}
+     * enforces that exactly one item matches.
+     *
+     * @param groupTitle The title of the tab group to click.
+     */
+    public void clickTabGroup(String groupTitle) {
+        recyclerViewElement
+                .performViewActionTo(
+                        RecyclerViewActions.actionOnItem(
+                                hasDescendant(withText(groupTitle)), click()))
+                .exitFacility();
     }
 }

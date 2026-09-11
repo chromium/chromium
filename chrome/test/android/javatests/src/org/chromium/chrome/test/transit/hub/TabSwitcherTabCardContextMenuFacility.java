@@ -25,6 +25,7 @@ import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabsPinnedStatusCondition;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
@@ -91,9 +92,10 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
             boolean isNewTabGroupRowVisible) {
         checkItemsAbsent(addTabToNewGroup, moveTabToGroup);
 
+        TabModel tabModel = mHostStation.tabModelElement.value();
         List<Token> allTabGroupIds =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> new ArrayList<>(mHostStation.getTabModel().getAllTabGroupIds()));
+                        () -> new ArrayList<>(tabModel.getAllTabGroupIds()));
         return addTabToGroup
                 .scrollToAndSelectTo()
                 .enterFacility(

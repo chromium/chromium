@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -26,6 +27,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -282,5 +284,36 @@ public class TabGroupListBottomSheetTest {
     private static void assertCurrentTabIsNotInGroup(CtaPageStation pageStation) {
         Tab currentTab = pageStation.getTab();
         assertNull(currentTab.getTabGroupId());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    @RequiresRestart("Multi-window state cannot be cleanly reset for batched tests")
+    public void testMoveTabToOtherWindowGroup_viaGtsContextMenu() {
+        WebPageStation page1InFirstWindow = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation pageInSecondWindow =
+                page1InFirstWindow.openRegularTabAppMenu().openNewWindow();
+        Tab tab1 = page1InFirstWindow.getTab();
+
+        // Window 2: prepare 2 tabs and merge to group via Public Transit.
+        WebPageStation window2Page =
+                Journeys.prepareTabs(
+                        pageInSecondWindow, 2, 0, "about:blank", WebPageStation::newBuilder);
+        RegularTabSwitcherStation tabSwitcher2 = window2Page.openRegularTabSwitcher();
+        TabSwitcherGroupCardFacility groupCardWindow2 =
+                Journeys.mergeAllTabsToNewGroup(tabSwitcher2);
+
+        // Window 1: enter Tab Switcher, open context menu on tab card, open bottom sheet, and click
+        // group.
+        RegularTabSwitcherStation tabSwitcher1 = page1InFirstWindow.openRegularTabSwitcher();
+        tabSwitcher1
+                .expectTabCard(tab1.getId(), tab1.getTitle())
+                .showContextMenu()
+                .clickAddTabToGroup(/* isNewTabGroupRowVisible= */ true)
+                .clickTabGroup(groupCardWindow2.getTitle());
+
+        TransitAsserts.assertFinalDestinations(tabSwitcher1, tabSwitcher2);
     }
 }
