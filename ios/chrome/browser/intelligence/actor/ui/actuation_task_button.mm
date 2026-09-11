@@ -156,7 +156,7 @@ const NSTimeInterval kHighlightAnimationDuration = 0.1;
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.numberOfLines = 1;
   _titleLabel.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightBold);
+      PreferredFontForTextStyle(UIFontTextStyleSubheadline, UIFontWeightBold);
   _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
 

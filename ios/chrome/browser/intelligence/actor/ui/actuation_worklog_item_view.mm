@@ -348,9 +348,9 @@ const NSTimeInterval kAnimationDuration = 0.25;
 - (void)updateFontsAndColors {
   BOOL simpleStyle = (_item.style == ActuationWorklogItemStyle::kSimple);
   _titleLabel.font =
-      simpleStyle
-          ? [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
-          : CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightBold);
+      simpleStyle ? [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+                  : PreferredFontForTextStyle(UIFontTextStyleSubheadline,
+                                              UIFontWeightBold);
   _titleLabel.textColor = simpleStyle ? [UIColor colorNamed:kTextSecondaryColor]
                                       : [UIColor colorNamed:kTextPrimaryColor];
 }

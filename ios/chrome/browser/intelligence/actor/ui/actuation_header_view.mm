@@ -144,7 +144,7 @@ UIImage* DefaultGeminiLogo() {
 
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightBold);
+      PreferredFontForTextStyle(UIFontTextStyleSubheadline, UIFontWeightBold);
   _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
   _subtitleLabel = [[UILabel alloc] init];
