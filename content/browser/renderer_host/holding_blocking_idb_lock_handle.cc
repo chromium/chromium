@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/holding_blocking_idb_lock_handle.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
@@ -14,10 +16,14 @@ HoldingBlockingIDBLockHandle::HoldingBlockingIDBLockHandle() = default;
 HoldingBlockingIDBLockHandle::HoldingBlockingIDBLockHandle(
     HoldingBlockingIDBLockHandle&& other) = default;
 
-// TODO(thestig): The default implementation is wrong and fails to invoke
-// OnStopHoldingBlockingIDBLock().
 HoldingBlockingIDBLockHandle& HoldingBlockingIDBLockHandle::operator=(
-    HoldingBlockingIDBLockHandle&& other) = default;
+    HoldingBlockingIDBLockHandle&& other) {
+  if (this != &other) {
+    Reset();
+    render_frame_host_ = std::move(other.render_frame_host_);
+  }
+  return *this;
+}
 
 HoldingBlockingIDBLockHandle::HoldingBlockingIDBLockHandle(
     RenderFrameHostImpl* render_frame_host)

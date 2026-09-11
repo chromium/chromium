@@ -140,6 +140,7 @@ TEST_F(HoldingBlockingIDBLockHandleTest, MoveConstructor) {
       rfh->RegisterHoldingBlockingIDBLockHandle();
   EXPECT_TRUE(handle1.IsValid());
 
+  // NOLINTBEGIN(bugprone-use-after-move)
   HoldingBlockingIDBLockHandle handle2(std::move(handle1));
   EXPECT_FALSE(handle1.IsValid());
   EXPECT_TRUE(handle2.IsValid());
@@ -147,6 +148,7 @@ TEST_F(HoldingBlockingIDBLockHandleTest, MoveConstructor) {
   // Resetting the moved-from `handle1` should not affect `handle2` or `rfh`.
   handle1.Reset();
   EXPECT_TRUE(handle2.IsValid());
+  // NOLINTEND(bugprone-use-after-move)
 
   handle2.Reset();
   EXPECT_FALSE(handle2.IsValid());
@@ -170,8 +172,10 @@ TEST_F(HoldingBlockingIDBLockHandleTest, MoveAssignmentToEmptyHandle) {
   HoldingBlockingIDBLockHandle handle2;
   EXPECT_FALSE(handle2.IsValid());
 
+  // NOLINTBEGIN(bugprone-use-after-move)
   handle2 = std::move(handle1);
   EXPECT_FALSE(handle1.IsValid());
+  // NOLINTEND(bugprone-use-after-move)
   EXPECT_TRUE(handle2.IsValid());
 
   handle2.Reset();
@@ -197,32 +201,52 @@ TEST_F(HoldingBlockingIDBLockHandleTest, MoveAssignmentToActiveHandle) {
   EXPECT_TRUE(handle2.IsValid());
 
   // Move-assign `handle2` into `handle1` while `handle1` already holds an
-  // active handle.
+  // active handle. `handle1` calls `Reset()` first, releasing its existing
+  // lock, then takes ownership of `handle2`.
+  // NOLINTBEGIN(bugprone-use-after-move)
   handle1 = std::move(handle2);
   EXPECT_FALSE(handle2.IsValid());
+  // NOLINTEND(bugprone-use-after-move)
   EXPECT_TRUE(handle1.IsValid());
 
-  // TODO(thestig): Defaulting the move-assignment operator causes a resource
-  // leak if `this` already holds an active handle. Because `= default` does not
-  // call `Reset()`, any previously held lock registration on
-  // `render_frame_host_` is overwritten without calling
-  // `OnStopHoldingBlockingIDBLock()`, permanently leaking the lock count on
-  // the frame and preventing it from being notified as stopped.
-  //
-  // `operator=` should call `Reset()` before taking ownership of `other`'s
-  // members (after checking `this != &other`).
-  //
-  // Currently, the lock was leaked on `rfh`. Even after `handle1.Reset()` is
-  // called, `OnStopUsing()` is not called because the count never returns to 0.
-  // Once the bug is fixed, `OnStopUsing()` should be called once here.
+  // Resetting `handle1` releases the remaining lock, transitioning the count
+  // to 0 and triggering `OnStopUsing()`.
   EXPECT_CALL(
       feature_observer_client(),
       OnStopUsing(rfh_id,
-                  blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock))
-      .Times(0);
-
+                  blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock));
   handle1.Reset();
   EXPECT_FALSE(handle1.IsValid());
+}
+
+TEST_F(HoldingBlockingIDBLockHandleTest, SelfMoveAssignment) {
+  RenderFrameHostImpl* rfh = main_rfh_impl();
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+
+  EXPECT_CALL(
+      feature_observer_client(),
+      OnStartUsing(rfh_id,
+                   blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock));
+  EXPECT_CALL(
+      feature_observer_client(),
+      OnStopUsing(rfh_id,
+                  blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock));
+
+  HoldingBlockingIDBLockHandle handle =
+      rfh->RegisterHoldingBlockingIDBLockHandle();
+  EXPECT_TRUE(handle.IsValid());
+
+  // NOLINTBEGIN(bugprone-use-after-move)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wself-move"
+  handle = std::move(handle);
+#pragma clang diagnostic pop
+
+  EXPECT_TRUE(handle.IsValid());
+
+  handle.Reset();
+  // NOLINTEND(bugprone-use-after-move)
+  EXPECT_FALSE(handle.IsValid());
 }
 
 }  // namespace content
