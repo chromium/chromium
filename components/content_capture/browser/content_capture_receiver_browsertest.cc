@@ -105,8 +105,9 @@ class ContentCaptureBrowserTestNoTestingConfig
   }
 };
 
+// TODO(crbug.com/559859557): Disabled because of flakiness.
 IN_PROC_BROWSER_TEST_F(ContentCaptureBrowserTestNoTestingConfig,
-                       FencedFrameDidCaptureContent) {
+                       DISABLED_FencedFrameDidCaptureContent) {
   // 2 frames - main & fenced
   EXPECT_EQ(2u, provider()->GetFrameMapSizeForTesting());
 
