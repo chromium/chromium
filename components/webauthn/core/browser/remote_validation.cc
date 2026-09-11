@@ -24,6 +24,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace webauthn {
 
@@ -209,6 +210,11 @@ void RemoteValidation::OnFetchComplete(std::optional<std::string> body) {
     return;
   }
 
+  if (!loader_->GetFinalURL().SchemeIs(url::kHttpsScheme)) {
+    std::move(callback_).Run(ValidationStatus::kInvalidProtocol);
+    return;
+  }
+
   if (loader_->ResponseInfo()->mime_type != "application/json") {
     std::move(callback_).Run(ValidationStatus::kWrongContentType);
     return;
@@ -222,6 +228,12 @@ void RemoteValidation::OnRedirect(
     const net::RedirectInfo& redirect_info,
     const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* removed_headers) {
+  if (!redirect_info.new_url.SchemeIs(url::kHttpsScheme)) {
+    loader_.reset();
+    auto callback = std::move(callback_);
+    std::move(callback).Run(ValidationStatus::kInvalidProtocol);
+    return;
+  }
   CheckCsp(redirect_info.new_url, /*has_followed_redirect=*/true);
 }
 
