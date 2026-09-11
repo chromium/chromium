@@ -19,7 +19,6 @@
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
-#include "chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/test_support/mock_handoff_button_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -116,10 +115,6 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<MockImmersiveModeController>(user_data_host_);
     ON_CALL(*immersive_mode_controller(), IsEnabled())
         .WillByDefault(Return(false));
-
-    std::unique_ptr<MockActorUiStateManager> ausm =
-        std::make_unique<MockActorUiStateManager>();
-    actor_keyed_service()->SetActorUiStateManagerForTesting(std::move(ausm));
 
     window_controller_ = std::make_unique<ActorUiWindowController>(
         &mock_browser_window_interface_,

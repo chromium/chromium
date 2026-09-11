@@ -12,7 +12,6 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -30,16 +29,6 @@ namespace {
 
 using ::testing::_;
 
-std::unique_ptr<ui::ActorUiStateManagerInterface> BuildUiStateManagerMock() {
-  std::unique_ptr<ui::MockActorUiStateManager> ui_state_manager =
-      std::make_unique<ui::MockActorUiStateManager>();
-  ON_CALL(*ui_state_manager, OnUiEvent(_, _))
-      .WillByDefault([](ui::AsyncUiEvent, ui::UiCompleteCallback callback) {
-        std::move(callback).Run(MakeOkResult());
-      });
-  return ui_state_manager;
-}
-
 class ActorActionsRunnerTest : public testing::Test {
  public:
   ActorActionsRunnerTest()
@@ -53,9 +42,6 @@ class ActorActionsRunnerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     profile_ = testing_profile_manager()->CreateTestingProfile("profile");
-    auto* actor_service = ActorKeyedService::Get(profile());
-    ASSERT_TRUE(actor_service);
-    actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
   }
 
   TestingProfileManager* testing_profile_manager() {

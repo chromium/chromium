@@ -69,11 +69,6 @@ class ActorKeyedService : public KeyedService,
   // Convenience method, may return nullptr.
   static ActorKeyedService* Get(content::BrowserContext* context);
 
-  // TODO(crbug.com/428014205): Create a mock ActorKeyedService for testing so
-  // we can remove this function.
-  void SetActorUiStateManagerForTesting(
-      std::unique_ptr<ui::ActorUiStateManagerInterface> ausm);
-
   const std::map<TaskId, const ActorTask*> GetActiveTasks() const;
 
   size_t GetActiveTasksCount() const;

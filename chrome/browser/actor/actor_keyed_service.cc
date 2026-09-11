@@ -222,12 +222,6 @@ ActorKeyedService* ActorKeyedService::Get(content::BrowserContext* context) {
   return ActorKeyedServiceFactory::GetActorKeyedService(context);
 }
 
-void ActorKeyedService::SetActorUiStateManagerForTesting(
-    std::unique_ptr<ui::ActorUiStateManagerInterface> ausm) {
-  CHECK(ausm);
-  actor_ui_state_manager_ = std::move(ausm);
-}
-
 const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
     content::WebContents* web_contents) {
   if (auto* tab_interface =
