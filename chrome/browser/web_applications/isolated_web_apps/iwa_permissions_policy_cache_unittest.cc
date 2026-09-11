@@ -74,7 +74,8 @@ TEST_F(IwaPermissionsPolicyCacheTest, ParseManifestAndSetPolicy_Complex) {
       "fullscreen": [],
       "midi": ["self"],
       "usb": ["https://a.com", "https://b.com", "https://c.com", "https://d.com", "https://e.com"],
-      "hid": ["none", "https://example.com"]
+      "hid": ["none", "https://example.com"],
+      "speaker-selection": ["self"]
     }
   })";
 
@@ -102,7 +103,10 @@ TEST_F(IwaPermissionsPolicyCacheTest, ParseManifestAndSetPolicy_Complex) {
                                                "https://e.com"})),
           IsolatedAppPermissionPolicyEntryIs(
               "hid",
-              std::vector<std::string>({"'none'", "https://example.com"}))));
+              std::vector<std::string>({"'none'", "https://example.com"})),
+          IsolatedAppPermissionPolicyEntryIs(
+              "speaker-selection",
+              std::vector<std::string>({"'self'"}))));
 }
 
 TEST_F(IwaPermissionsPolicyCacheTest, ParseManifestAndSetPolicy_Valid) {

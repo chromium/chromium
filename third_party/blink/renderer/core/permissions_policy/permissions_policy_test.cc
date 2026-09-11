@@ -1583,6 +1583,8 @@ TEST_F(PermissionsPolicyParserTest, ParseIsolatedAppPermissionsPolicy) {
       {"fullscreen", {"*"}},
       // 3. Manifest: 'none', Header: none -> Result: 'none'
       {"payment", {"'none'"}},
+      // 4. Manifest: 'self', Header: none -> Result: 'self'
+      {"speaker-selection", {"'self'"}},
   };
 
   network::ParsedPermissionsPolicy result =
@@ -1608,7 +1610,13 @@ TEST_F(PermissionsPolicyParserTest, ParseIsolatedAppPermissionsPolicy) {
                      /*allowed_origins=*/{},
                      /*self_if_matches=*/std::nullopt,
                      /*matches_all_origins=*/false,
-                     /*matches_opaque_src=*/false)));
+                     /*matches_opaque_src=*/false),
+          PolicyItem(
+              network::mojom::PermissionsPolicyFeature::kSpeakerSelection,
+              /*allowed_origins=*/{},
+              /*self_if_matches=*/origin_a_->ToUrlOrigin(),
+              /*matches_all_origins=*/false,
+              /*matches_opaque_src=*/false)));
 }
 
 TEST_F(PermissionsPolicyParserTest,

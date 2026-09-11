@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sink_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextlatencycategory_double.h"
@@ -3002,6 +3004,67 @@ TEST_F(AudioContextTest, TestPromiseWhenSuspendAndResume) {
         }
       }
     }
+  }
+}
+
+TEST_F(AudioContextTest, SetSinkIdPermissionsPolicy) {
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  SecurityContext& security_context = execution_context->GetSecurityContext();
+  security_context.SetSecurityOriginForTesting(nullptr);
+  security_context.SetSecurityOrigin(
+      SecurityOrigin::CreateFromString(kSecurityOrigin));
+
+  // 'speaker-selection' should be enabled by default for self without needing
+  // experimental runtime flags.
+  EXPECT_TRUE(execution_context->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kSpeakerSelection));
+
+  AudioContext* context = AudioContext::Create(
+      execution_context, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+
+  // With policy enabled, setSinkId to default device should not be rejected
+  // with NotAllowedError.
+  {
+    auto promise = context->setSinkId(
+        script_state,
+        MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(""),
+        ASSERT_NO_EXCEPTION);
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+  }
+
+  // When policy explicitly disables speaker-selection, setSinkId should
+  // reject with NotAllowedError.
+  {
+    network::ParsedPermissionsPolicy policy;
+    policy.emplace_back(
+        network::mojom::PermissionsPolicyFeature::kSpeakerSelection,
+        /*allowed_origins=*/
+        std::vector<network::OriginWithPossibleWildcards>(),
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false);
+    security_context.SetPermissionsPolicy(
+        network::PermissionsPolicy::CreateFromParsedPolicy(
+            policy, security_context.GetSecurityOrigin()->ToUrlOrigin()));
+    EXPECT_FALSE(execution_context->IsFeatureEnabled(
+        network::mojom::PermissionsPolicyFeature::kSpeakerSelection));
+
+    auto promise = context->setSinkId(
+        script_state,
+        MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(""),
+        ASSERT_NO_EXCEPTION);
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+    auto* dom_exception = V8DOMException::ToWrappable(
+        script_state->GetIsolate(), tester.Value().V8Value());
+    ASSERT_TRUE(dom_exception);
+    EXPECT_EQ(dom_exception->name(), "NotAllowedError");
   }
 }
 

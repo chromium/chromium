@@ -534,7 +534,6 @@
     {
       name: "SpeakerSelection",
       permissions_policy_name: "speaker-selection",
-      depends_on: ["SpeakerSelection"],
     },
     {
       name: "StorageAccessAPI",
