@@ -1409,6 +1409,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.VoiceIsolation.StartupDuration.{Status}"
+    units="ms" expires_after="2027-03-01">
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Duration of asynchronous voice isolation component startup dispatched to the
+    ThreadPool. Logged when startup completes with {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Failure" summary="failure"/>
+    <variant name="Success" summary="success"/>
+  </token>
+</histogram>
+
+<histogram name="Media.Audio.Capture.VoiceIsolation.StartupResult"
+    enum="VoiceIsolationStartupResult" expires_after="2027-03-01">
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Outcome of asynchronous voice isolation startup. Logged when startup
+    succeeds or fails, or as Aborted if VoiceIsolationHandler is destroyed while
+    startup is still in flight.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.AbsTimestampDiffMs" units="ms"
     expires_after="2027-02-01">
   <owner>henrika@chromium.org</owner>

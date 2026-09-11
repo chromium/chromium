@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
@@ -93,6 +94,13 @@ class AudioProcessorHandlerTest : public ::testing::Test {
 namespace {
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+// Matches VoiceIsolationStartupResult in enums.xml.
+enum class VoiceIsolationStartupResult {
+  kSuccess = 0,
+  kFailed = 1,
+  kAborted = 2,
+};
+
 class FakeMlModelHandle : public media::MlModelHandle {
  public:
   explicit FakeMlModelHandle(
@@ -614,6 +622,59 @@ TEST_F(AudioProcessorHandlerTest,
 
   handler.reset();
   run_loop.Run();
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerAsyncStartupSuccessMetrics) {
+  base::HistogramTester histogram_tester;
+  MockMlModelManager model_manager;
+  EXPECT_CALL(model_manager,
+              GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+      .WillOnce([&]() { return base::MakeRefCounted<FakeMlModelHandle>(); });
+  auto handler = VoiceIsolationHandler::MaybeCreate(
+      model_manager, output_params_, deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+  EXPECT_FALSE(handler->IsInitializedForTesting());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler->IsInitializedForTesting(); }));
+
+  // Metrics are logged when startup_metrics_logger_ is destroyed in
+  // OnComponentCreated().
+  histogram_tester.ExpectUniqueSample(
+      "Media.Audio.Capture.VoiceIsolation.StartupResult",
+      VoiceIsolationStartupResult::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.StartupDuration.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.StartupDuration.Failure", 0);
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerAsyncStartupAbortedMetrics) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  MockMlModelManager model_manager;
+  EXPECT_CALL(model_manager,
+              GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+      .WillOnce([&]() {
+        return base::MakeRefCounted<FakeMlModelHandle>(run_loop.QuitClosure());
+      });
+  auto handler = VoiceIsolationHandler::MaybeCreate(
+      model_manager, output_params_, deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+  EXPECT_FALSE(handler->IsInitializedForTesting());
+
+  handler.reset();
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Media.Audio.Capture.VoiceIsolation.StartupResult",
+      VoiceIsolationStartupResult::kAborted, 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.StartupDuration.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.StartupDuration.Failure", 0);
 }
 
 TEST_F(AudioProcessorHandlerTest, VoiceIsolationHandlerHasProcessingThread) {

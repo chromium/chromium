@@ -2844,6 +2844,16 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="2592x1944"/>
 </enum>
 
+<!-- LINT.IfChange(VoiceIsolationStartupResult) -->
+
+<enum name="VoiceIsolationStartupResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Aborted"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/audio/voice_isolation_handler.cc:VoiceIsolationStartupResult) -->
+
 </enums>
 
 </histogram-configuration>

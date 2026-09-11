@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -25,6 +26,18 @@ namespace audio {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(VoiceIsolationStartupResult)
+enum class StartupResult {
+  kSuccess = 0,
+  kFailed = 1,
+  kAborted = 2,
+  kMaxValue = kAborted,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VoiceIsolationStartupResult)
+
 std::unique_ptr<media::VoiceIsolationComponent> CreateVoiceIsolationComponent(
     scoped_refptr<media::MlModelHandle> model_handle) {
   TRACE_EVENT("audio", "VoiceIsolationHandler::CreateVoiceIsolationComponent");
@@ -36,6 +49,38 @@ std::unique_ptr<media::VoiceIsolationComponent> CreateVoiceIsolationComponent(
 
 }  // namespace
 
+class VoiceIsolationHandler::StartupMetricsLogger {
+ public:
+  StartupMetricsLogger() : start_time_(base::TimeTicks::Now()) {}
+  StartupMetricsLogger(const StartupMetricsLogger&) = delete;
+  StartupMetricsLogger& operator=(const StartupMetricsLogger&) = delete;
+  ~StartupMetricsLogger() {
+    base::UmaHistogramEnumeration(
+        "Media.Audio.Capture.VoiceIsolation.StartupResult", result_);
+    const base::TimeDelta duration = base::TimeTicks::Now() - start_time_;
+    switch (result_) {
+      case StartupResult::kSuccess:
+        base::UmaHistogramTimes(
+            "Media.Audio.Capture.VoiceIsolation.StartupDuration.Success",
+            duration);
+        break;
+      case StartupResult::kFailed:
+        base::UmaHistogramTimes(
+            "Media.Audio.Capture.VoiceIsolation.StartupDuration.Failure",
+            duration);
+        break;
+      case StartupResult::kAborted:
+        break;
+    }
+  }
+
+  void SetResult(StartupResult result) { result_ = result; }
+
+ private:
+  const base::TimeTicks start_time_;
+  StartupResult result_{StartupResult::kAborted};
+};
+
 VoiceIsolationHandler::VoiceIsolationHandler(
     scoped_refptr<media::MlModelHandle> model_handle,
     const media::AudioParameters& output_params,
@@ -45,7 +90,8 @@ VoiceIsolationHandler::VoiceIsolationHandler(
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
       output_bus_(media::AudioBus::Create(output_params)),
-      bypass_voice_isolation_(true) {
+      bypass_voice_isolation_(true),
+      startup_metrics_logger_(std::make_unique<StartupMetricsLogger>()) {
   CHECK(!deliver_processed_audio_callback_.is_null());
   CHECK(output_bus_);
   CHECK(model_handle_);
@@ -89,6 +135,11 @@ void VoiceIsolationHandler::OnComponentCreated(
     std::unique_ptr<media::VoiceIsolationComponent> component) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT("audio", "VoiceIsolationHandler::OnComponentCreated");
+  CHECK(startup_metrics_logger_);
+  startup_metrics_logger_->SetResult(component ? StartupResult::kSuccess
+                                               : StartupResult::kFailed);
+  startup_metrics_logger_.reset();
+
   if (!component) {
     LOG(ERROR) << "Failed to create VoiceIsolationComponent.";
     return;

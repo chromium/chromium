@@ -117,6 +117,11 @@ class VoiceIsolationHandler {
   // sequence and the real-time audio thread.
   std::atomic<bool> bypass_voice_isolation_{true};
 
+  class StartupMetricsLogger;
+
+  // Emits metrics for async startup. Non-null only while startup is in flight.
+  std::unique_ptr<StartupMetricsLogger> startup_metrics_logger_;
+
   base::WeakPtrFactory<VoiceIsolationHandler> weak_factory_{this};
 };
 
