@@ -357,6 +357,12 @@ const IDNTestCase kIdnCases[] = {
     {"xn--j1an.com", u"\u0441\u043a.com", kUnsafe},
     // теѕт.com is a whole-script-confusable.
     {"xn--e1azb9e.com", u"\u0442\u0435\u0455\u0442.com", kUnsafe},
+    // мехс.com (Cyrillic whole-script confusable with U+043C)
+    {"xn--e1anqp.com", u"\u043c\u0435\u0445\u0441.com", kUnsafe},
+    // мехс.ru (Cyrillic whole-script confusable allowed in .ru TLD)
+    {"xn--e1anqp.ru", u"\u043c\u0435\u0445\u0441.ru", kSafe},
+    // мехс.рф (Cyrillic whole-script confusable allowed in Cyrillic IDN TLD)
+    {"xn--e1anqp.xn--p1ai", u"\u043c\u0435\u0445\u0441.\u0440\u0444", kSafe},
 
     // The same as above three, but in IDN TLD (рф).
     // 1) ѕсоре.рф with ѕсоре in Cyrillic.

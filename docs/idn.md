@@ -120,7 +120,7 @@ and if the hostname doesn't have a corresponding
 for that script, show punycode.
 **Example for Cyrillic:**
 The first label in hostname `аррӏе.com` (`xn--80ak6aa92e.com`) is all [Cyrillic
-letters that look like Latin letters](http://unicode.org/cldr/utility/list-unicodeset.jsp?a=%5B%D0%B0%D1%81%D4%81%D0%B5%D2%BB%D1%96%D1%98%D3%8F%D0%BE%D1%80%D4%9B%D1%95%D4%9D%D1%85%D1%83%D1%8A%D0%AC%D2%BD%D0%BF%D0%B3%D1%B5%D1%A1%5D&g=gc&i=)
+letters that look like Latin letters](https://unicode.org/cldr/utility/list-unicodeset.jsp?a=%5B%D0%B0%D1%8B%D1%81%D4%81%D0%B5%D4%8D%D2%BB%D1%96%D1%8E%D0%BA%D1%98%D3%8F%D0%BC%D0%BE%D1%80%D4%97%D4%9B%D1%95%D1%82%D4%9D%D1%85%D1%83%D1%8A%D1%8C%D2%BD%D0%BF%D0%B3%D1%B5%D1%A1%5D&g=gc&i=)
 **AND** the TLD (`com`) is not Cyrillic **AND** the TLD is not one of the TLDs
 known to host a large number of Cyrillic domains (e.g. `ru`, `su`, `pyc`, `ua`).
 Show it in punycode.
