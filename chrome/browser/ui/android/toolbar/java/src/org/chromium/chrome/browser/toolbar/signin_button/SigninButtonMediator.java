@@ -401,9 +401,9 @@ final class SigninButtonMediator
                 mAccountMenuCoordinator =
                         new AccountMenuCoordinator(
                                 mContext,
+                                mProfile,
                                 mWindowAndroid,
-                                assumeNonNull(mProfile),
-                                () -> mSigninCoordinator,
+                                mSigninCoordinator,
                                 mSigninAndHistorySyncActivityLauncher);
             }
             mAccountMenuCoordinator.show((ListMenuButton) view);

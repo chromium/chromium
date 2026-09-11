@@ -116,10 +116,10 @@ public class AccountMenuMediatorTest {
         mMediator =
                 new AccountMenuMediator(
                         mContext,
-                        mModelList,
-                        mWindowAndroid,
                         mProfile,
-                        () -> mSigninCoordinator,
+                        mWindowAndroid,
+                        mModelList,
+                        mSigninCoordinator,
                         mSigninLauncher,
                         mDismissCallback);
     }
@@ -215,6 +215,32 @@ public class AccountMenuMediatorTest {
 
     @Test
     @SmallTest
+    public void testAccountSettingsItemClick_dismissesAndOpensAccountSettings() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        mMediator.updateMenuItems();
+
+        assertEquals(5, mModelList.size());
+        ListItem item = mModelList.get(2);
+        assertEquals(ItemType.MENU_ITEM, item.type);
+
+        PropertyModel model = item.model;
+        assertEquals(
+                R.string.profile_menu_account_settings_button,
+                model.get(MenuItemProperties.TITLE_ID));
+        assertEquals(R.drawable.settings_cog, model.get(MenuItemProperties.START_ICON_ID));
+
+        OnClickListener clickListener = model.get(MenuItemProperties.CLICK_LISTENER);
+        assertNotNull(clickListener);
+
+        clickListener.onClick(null);
+
+        verify(mDismissCallback).run();
+        verify(mSettingsNavigation).startSettings(mContext, SettingsFragment.MAIN);
+    }
+
+    @Test
+    @SmallTest
     public void testOpenIncognitoItemClick_dismissesAndOpensNewIncognitoWindow() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         mMediator.updateMenuItems();
@@ -285,7 +311,7 @@ public class AccountMenuMediatorTest {
 
         mMediator.updateMenuItems();
 
-        assertEquals(4, mModelList.size());
+        assertEquals(5, mModelList.size());
         ListItem item = mModelList.get(0);
         assertEquals(ItemType.IDENTITY_CARD, item.type);
         DisplayableProfileData profileData = item.model.get(IdentityCardProperties.PROFILE_DATA);
@@ -342,7 +368,7 @@ public class AccountMenuMediatorTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
         mMediator.onSignedIn();
-        assertEquals(4, mModelList.size());
+        assertEquals(5, mModelList.size());
         assertEquals(ItemType.IDENTITY_CARD, mModelList.get(0).type);
 
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(null);
@@ -354,18 +380,5 @@ public class AccountMenuMediatorTest {
         mMediator.onSignInAllowedChanged();
         assertEquals(3, mModelList.size());
         assertEquals(ItemType.MENU_ITEM, mModelList.get(0).type);
-    }
-
-    @Test
-    @SmallTest
-    public void testOffTheRecordProfile_omitsHeader() {
-        doReturn(true).when(mProfile).isOffTheRecord();
-        mMediator.updateMenuItems();
-
-        assertEquals(3, mModelList.size());
-        assertEquals(ItemType.MENU_ITEM, mModelList.get(0).type);
-        assertEquals(
-                R.string.menu_passwords_and_autofill,
-                mModelList.get(0).model.get(MenuItemProperties.TITLE_ID));
     }
 }

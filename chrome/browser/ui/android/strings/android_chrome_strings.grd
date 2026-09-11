@@ -4262,6 +4262,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_NEW_WINDOW" desc="Menu item for opening a new window. [CHAR_LIMIT=27]">
         New window
       </message>
+      <message name="IDS_PROFILE_MENU_ACCOUNT_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome account settings. [CHAR_LIMIT=30]">
+        Your account in Chrome
+      </message>
       <message name="IDS_MENU_NEW_INCOGNITO_WINDOW" desc="Menu item for opening a new incognito window. [CHAR_LIMIT=27]">
         New Incognito window
       </message>

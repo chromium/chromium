@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.account_menu;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -47,18 +49,15 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.function.Supplier;
-
 /** Mediator managing business logic and menu items for the Account Menu popup. */
 @NullMarked
 public class AccountMenuMediator
         implements SigninManager.SignInStateObserver, ProfileDataCache.Observer {
     private final Context mContext;
-    private final ModelList mModelList;
-    private final WindowAndroid mWindowAndroid;
     private final Profile mProfile;
-    private final Supplier<@Nullable BottomSheetSigninAndHistorySyncCoordinator>
-            mSigninCoordinatorSupplier;
+    private final WindowAndroid mWindowAndroid;
+    private final ModelList mModelList;
+    private final @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
     private final Runnable mDismissCallback;
     private @Nullable ProfileDataCache mProfileDataCache;
@@ -66,18 +65,17 @@ public class AccountMenuMediator
 
     public AccountMenuMediator(
             Context context,
-            ModelList modelList,
-            WindowAndroid windowAndroid,
             Profile profile,
-            Supplier<@Nullable BottomSheetSigninAndHistorySyncCoordinator>
-                    signinCoordinatorSupplier,
+            WindowAndroid windowAndroid,
+            ModelList modelList,
+            @Nullable BottomSheetSigninAndHistorySyncCoordinator signinCoordinator,
             SigninAndHistorySyncActivityLauncher signinLauncher,
             Runnable dismissCallback) {
         mContext = context;
-        mModelList = modelList;
-        mWindowAndroid = windowAndroid;
         mProfile = profile;
-        mSigninCoordinatorSupplier = signinCoordinatorSupplier;
+        mWindowAndroid = windowAndroid;
+        mModelList = modelList;
+        mSigninCoordinator = signinCoordinator;
         mSigninLauncher = signinLauncher;
         mDismissCallback = dismissCallback;
 
@@ -124,6 +122,21 @@ public class AccountMenuMediator
                                     openAutofillSettings();
                                 })));
 
+        IdentityManager identityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
+        if (identityManager.hasPrimaryAccount()) {
+            mModelList.add(
+                    new ListItem(
+                            ItemType.MENU_ITEM,
+                            MenuItemProperties.createModel(
+                                    R.string.profile_menu_account_settings_button,
+                                    R.drawable.settings_cog,
+                                    v -> {
+                                        mDismissCallback.run();
+                                        openAccountSettings();
+                                    })));
+        }
+
         if (IncognitoUtils.isIncognitoModeEnabled(mProfile)) {
             mModelList.add(new ListItem(ItemType.DIVIDER, new PropertyModel()));
             int titleRes =
@@ -157,9 +170,6 @@ public class AccountMenuMediator
 
     @Override
     public void onProfileDataUpdated(DisplayableProfileData profileData) {
-        if (mProfile.isOffTheRecord()) {
-            return;
-        }
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         AccountInfo primaryAccount =
@@ -177,10 +187,6 @@ public class AccountMenuMediator
     }
 
     private void maybeAddHeader() {
-        if (mProfile.isOffTheRecord()) {
-            return;
-        }
-
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         if (identityManager != null) {
@@ -220,10 +226,6 @@ public class AccountMenuMediator
     }
 
     private void startSigninFlow() {
-        if (mProfile.isOffTheRecord()) {
-            return;
-        }
-
         if (mSigninManager == null || !mSigninManager.isSigninAllowed()) {
             return;
         }
@@ -248,11 +250,7 @@ public class AccountMenuMediator
                         .build();
 
         if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
-            BottomSheetSigninAndHistorySyncCoordinator signinCoordinator =
-                    mSigninCoordinatorSupplier.get();
-            if (signinCoordinator != null) {
-                signinCoordinator.startSigninFlow(config);
-            }
+            assumeNonNull(mSigninCoordinator).startSigninFlow(config);
         } else {
             @Nullable Intent intent =
                     mSigninLauncher.createBottomSheetSigninIntentOrShowError(
@@ -270,6 +268,12 @@ public class AccountMenuMediator
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(mContext, SettingsFragment.AUTOFILL_AND_PASSWORDS);
+    }
+
+    private void openAccountSettings() {
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(mContext, SettingsFragment.MAIN);
     }
 
     /** Opens a new Incognito window if supported, or a new Incognito tab otherwise. */
