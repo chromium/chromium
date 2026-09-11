@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import android.content.Context;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -52,6 +54,14 @@ public interface AccessibilitySettingsDelegate {
      * @return SettingsNavigation for navigating between Settings pages.
      */
     SettingsNavigation getSiteSettingsNavigation();
+
+    /**
+     * @param context Android context used for scoping settings navigation in tab mode.
+     * @return SettingsNavigation for navigating between Settings pages.
+     */
+    default SettingsNavigation getSiteSettingsNavigation(Context context) {
+        return getSiteSettingsNavigation();
+    }
 
     /**
      * @return the InterPreferenceDelegate instance that should be used for reading and setting the

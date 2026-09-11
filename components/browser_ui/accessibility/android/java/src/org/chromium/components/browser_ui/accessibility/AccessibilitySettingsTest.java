@@ -116,6 +116,7 @@ public class AccessibilitySettingsTest {
                 .thenReturn(mBoolPrefMock);
         when(mDelegate.getTextSizeContrastAccessibilityDelegate()).thenReturn(mIntegerPrefMock);
         when(mDelegate.getSiteSettingsNavigation()).thenReturn(mSettingsNavigationMock);
+        when(mDelegate.getSiteSettingsNavigation(any())).thenReturn(mSettingsNavigationMock);
         when(mDelegate.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefsMock);
 
         // Enable screen reader to display all settings options.

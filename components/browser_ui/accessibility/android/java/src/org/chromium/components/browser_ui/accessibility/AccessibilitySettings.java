@@ -195,7 +195,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                             AllSiteSettings.EXTRA_TITLE,
                             getString(R.string.zoom_info_preference_title));
                     assumeNonNull(mDelegate)
-                            .getSiteSettingsNavigation()
+                            .getSiteSettingsNavigation(requireContext())
                             .startSettings(
                                     requireContext(),
                                     AllSiteSettings.class,

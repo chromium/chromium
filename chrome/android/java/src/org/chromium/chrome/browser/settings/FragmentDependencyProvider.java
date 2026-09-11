@@ -115,7 +115,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             FragmentSettingsNavigation fragmentSettingsNavigation =
                     (FragmentSettingsNavigation) fragment;
             fragmentSettingsNavigation.setSettingsNavigation(
-                    SettingsNavigationFactory.createSettingsNavigation());
+                    SettingsNavigationFactory.createSettingsNavigation(mActivity));
         }
         if (fragment instanceof SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) {
             ((SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) fragment)
@@ -196,7 +196,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         }
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)
-                    .setDelegate(new ChromeAccessibilitySettingsDelegate(mProfile));
+                    .setDelegate(new ChromeAccessibilitySettingsDelegate(mActivity, mProfile));
         }
         if (fragment instanceof AutofillOptionsFragment) {
             AutofillOptionsCoordinator.createFor(

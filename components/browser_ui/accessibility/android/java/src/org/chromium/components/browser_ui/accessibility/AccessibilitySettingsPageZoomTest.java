@@ -10,6 +10,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
@@ -101,6 +102,7 @@ public class AccessibilitySettingsPageZoomTest {
                 .thenReturn(mBoolPrefMock);
         when(mDelegate.getTextSizeContrastAccessibilityDelegate()).thenReturn(mIntegerPrefMock);
         when(mDelegate.getSiteSettingsNavigation()).thenReturn(mSettingsNavigationMock);
+        when(mDelegate.getSiteSettingsNavigation(any())).thenReturn(mSettingsNavigationMock);
         when(mDelegate.shouldUseSlider()).thenReturn(mUseSlider);
 
         // Enable screen reader to display all settings options.
