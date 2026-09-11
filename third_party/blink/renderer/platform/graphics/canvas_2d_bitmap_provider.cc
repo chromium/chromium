@@ -102,10 +102,6 @@ size_t Canvas2DBitmapProvider::GetSize() const {
   return info.computeByteSize(info.minRowBytes());
 }
 
-void Canvas2DBitmapProvider::RecordingCleared() {
-  clear_frame_ = true;
-}
-
 void Canvas2DBitmapProvider::OnContextDestroyed() {
   skia_canvas_.reset();
   canvas_image_provider_ = nullptr;

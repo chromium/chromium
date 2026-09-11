@@ -146,7 +146,6 @@ class TestRenderingContext2D final
       RestoreMatrixClipStack(canvas);
     }
   }
-  void RecordingCleared() override {}
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override {
     return recorder_.ReleaseMainRecording();

@@ -101,11 +101,8 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
 
   size_t max_recorded_op_bytes() const { return max_recorded_op_bytes_; }
   size_t max_pinned_image_bytes() const { return max_pinned_image_bytes_; }
-  bool clear_frame() const { return clear_frame_; }
-  void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }
 
   void RestoreBackBuffer(const cc::PaintImage&);
-  void RecordingCleared();
 
  private:
   friend class CanvasRenderingContext2D;
@@ -153,8 +150,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;
   uint32_t snapshot_sk_image_id_ = 0u;
-
-  bool clear_frame_ = true;
 
   // Even though this is a bitmap provider, it may be called upon to rasterize a
   // texture-backed resource, and that resource must be bound to a gpu context

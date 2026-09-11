@@ -729,6 +729,10 @@ void BaseRenderingContext2D::InitializeForRecording(
   RestoreMatrixClipStack(canvas);
 }
 
+void BaseRenderingContext2D::RecordingCleared() {
+  clear_frame_ = true;
+}
+
 void BaseRenderingContext2D::Reset() {
   ResetInternal();
 }
@@ -743,19 +747,17 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
   }
 
   cc::PaintRecord recording = recorder->ReleaseMainRecording();
+  DidFlushRecording(recording, clear_frame_, reason);
+  clear_frame_ = false;
   if (shared_image_provider) {
     ScopedRasterTimer timer(shared_image_provider->IsAccelerated()
                                 ? shared_image_provider->RasterInterface()
                                 : nullptr,
                             *shared_image_provider);
-    DidFlushRecording(recording, shared_image_provider->clear_frame(), reason);
-    shared_image_provider->set_clear_frame(false);
     shared_image_provider->RasterRecord(recording);
     shared_image_provider->ReleaseImageProviderImages();
   } else if (bitmap_provider) {
     ScopedRasterTimer timer(nullptr, *bitmap_provider);
-    DidFlushRecording(recording, bitmap_provider->clear_frame(), reason);
-    bitmap_provider->set_clear_frame(false);
     bitmap_provider->RasterRecord(recording);
     bitmap_provider->ReleaseImageProviderImages();
   }
