@@ -140,6 +140,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   // views::BubbleDialogDelegateView overrides:
   void OnWidgetDestroying(views::Widget* widget) override;
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
 
   // Called when the app at |index| is selected in the app list. If
   // |accepted| is true, the dialog should be immediately accepted with that app

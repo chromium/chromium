@@ -676,6 +676,41 @@ TEST_P(IntentPickerBubbleViewGridLayoutTest, MAYBE_OpenWithReturnKey) {
   GetButtonAtIndex(0)->RequestFocus();
   EXPECT_TRUE(GetButtonAtIndex(0)->HasFocus());
 
+  bubble()->ResetViewShownTimeStampForTesting();
+
+  event_generator().PressKey(ui::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_EQ(last_close_reason(), apps::IntentPickerCloseReason::OPEN_APP);
+}
+
+// TODO(crbug.com/40843230): Fix flakiness on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OpenWithReturnKeyBlockedByInputProtection \
+  DISABLED_OpenWithReturnKeyBlockedByInputProtection
+#else
+#define MAYBE_OpenWithReturnKeyBlockedByInputProtection \
+  OpenWithReturnKeyBlockedByInputProtection
+#endif
+TEST_P(IntentPickerBubbleViewGridLayoutTest,
+       MAYBE_OpenWithReturnKeyBlockedByInputProtection) {
+  AddDefaultApps();
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
+
+  GetButtonAtIndex(0)->RequestFocus();
+  EXPECT_TRUE(GetButtonAtIndex(0)->HasFocus());
+
+  // Without resetting the input protection timestamp, the key event should be
+  // blocked by input protection and the bubble remains open.
+  event_generator().PressKey(ui::VKEY_RETURN, ui::EF_NONE);
+  EXPECT_FALSE(bubble_widget->IsClosed());
+  EXPECT_TRUE(last_selected_launch_name().empty());
+
+  // Resetting the timestamp disables the input protection window, allowing
+  // subsequent input to accept the dialog.
+  bubble()->ResetViewShownTimeStampForTesting();
   event_generator().PressKey(ui::VKEY_RETURN, ui::EF_NONE);
 
   EXPECT_EQ(last_close_reason(), apps::IntentPickerCloseReason::OPEN_APP);

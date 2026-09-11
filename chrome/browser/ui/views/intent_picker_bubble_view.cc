@@ -688,6 +688,10 @@ void IntentPickerBubbleView::OnWidgetDestroying(views::Widget* widget) {
                             false);
 }
 
+bool IntentPickerBubbleView::ShouldAllowKeyEventsDuringInputProtection() const {
+  return false;
+}
+
 void IntentPickerBubbleView::OnAppSelected(std::optional<size_t> index,
                                            bool accepted,
                                            const ui::Event* event) {
