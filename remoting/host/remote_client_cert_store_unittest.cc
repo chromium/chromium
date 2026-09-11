@@ -13,6 +13,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
@@ -22,6 +25,7 @@
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/remote_ssl_private_key.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,6 +50,57 @@ class FakeSSLPrivateKey : public network::mojom::SSLPrivateKey {
   }
 };
 
+class FakeCertificateBroker : public mojom::CertificateBroker {
+ public:
+  FakeCertificateBroker() = default;
+  ~FakeCertificateBroker() override = default;
+
+  mojo::PendingAssociatedRemote<mojom::CertificateBroker> BindNewEndpoint() {
+    receiver_.reset();
+    mojo::AssociatedRemote<mojom::CertificateBroker> remote;
+    receiver_.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
+    return remote.Unbind();
+  }
+
+  void GetCertificates(GetCertificatesCallback callback) override {
+    get_certificates_called_ = true;
+    std::vector<mojom::ClientCertificateDetailsPtr> certs;
+    for (const auto& info : cert_infos_) {
+      auto details = mojom::ClientCertificateDetails::New();
+      details->certificate = info.cert;
+      details->provider_name = info.provider_name;
+      details->algorithm_preferences = info.algorithm_preferences;
+      auto fake_key = std::make_unique<FakeSSLPrivateKey>();
+      mojo::PendingRemote<network::mojom::SSLPrivateKey> key_remote;
+      mojo::MakeSelfOwnedReceiver(std::move(fake_key),
+                                  key_remote.InitWithNewPipeAndPassReceiver());
+      details->private_key = std::move(key_remote);
+      certs.push_back(std::move(details));
+    }
+    std::move(callback).Run(std::move(certs));
+  }
+
+  void AddCertificate(scoped_refptr<net::X509Certificate> cert,
+                      const std::string& provider_name,
+                      const std::vector<uint16_t>& algorithm_preferences) {
+    cert_infos_.push_back(
+        {std::move(cert), provider_name, algorithm_preferences});
+  }
+
+  bool get_certificates_called() const { return get_certificates_called_; }
+
+ private:
+  struct CertInfo {
+    scoped_refptr<net::X509Certificate> cert;
+    std::string provider_name;
+    std::vector<uint16_t> algorithm_preferences;
+  };
+
+  mojo::AssociatedReceiver<mojom::CertificateBroker> receiver_{this};
+  std::vector<CertInfo> cert_infos_;
+  bool get_certificates_called_ = false;
+};
+
 }  // namespace
 
 class RemoteClientCertStoreTest : public testing::Test {
@@ -62,47 +117,35 @@ class RemoteClientCertStoreTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<net::X509Certificate> test_cert_;
+  FakeCertificateBroker broker_;
 };
 
-TEST_F(RemoteClientCertStoreTest, DefaultConstructorReturnsEmpty) {
-  RemoteClientCertStore store;
+TEST_F(RemoteClientCertStoreTest, GetClientCertsSuccess) {
+  broker_.AddCertificate(test_cert_, "TestProvider", {kTestAlgorithm});
+
+  RemoteClientCertStore store(broker_.BindNewEndpoint());
+
   base::test::TestFuture<net::ClientCertIdentityList> future;
   store.GetClientCerts(base::MakeRefCounted<net::SSLCertRequestInfo>(),
                        future.GetCallback());
-  EXPECT_TRUE(future.Get().empty());
+
+  net::ClientCertIdentityList result_certs = future.Take();
+  EXPECT_TRUE(broker_.get_certificates_called());
+  ASSERT_EQ(result_certs.size(), 1u);
+  EXPECT_TRUE(
+      result_certs[0]->certificate()->EqualsExcludingChain(test_cert_.get()));
 }
 
-TEST_F(RemoteClientCertStoreTest, GetClientCertsSuccessAndAcquireKey) {
-  auto fake_key = std::make_unique<FakeSSLPrivateKey>();
-  mojo::PendingRemote<network::mojom::SSLPrivateKey> key_remote;
-  mojo::MakeSelfOwnedReceiver(std::move(fake_key),
-                              key_remote.InitWithNewPipeAndPassReceiver());
+TEST_F(RemoteClientCertStoreTest, AcquirePrivateKeyAndSign) {
+  broker_.AddCertificate(test_cert_, "TestProvider", {kTestAlgorithm});
 
-  RemoteClientCertStore::CertDetails details;
-  details.certificate = test_cert_;
-  details.provider_name = "TestProvider";
-  details.algorithm_preferences = {kTestAlgorithm};
-  details.private_key = std::move(key_remote);
-
-  std::vector<RemoteClientCertStore::CertDetails> certs;
-  certs.push_back(std::move(details));
-
-  RemoteClientCertStore store(base::BindRepeating(
-      [](std::vector<RemoteClientCertStore::CertDetails>* certs,
-         base::OnceCallback<void(
-             std::vector<RemoteClientCertStore::CertDetails>)> callback) {
-        std::move(callback).Run(std::move(*certs));
-      },
-      base::Unretained(&certs)));
+  RemoteClientCertStore store(broker_.BindNewEndpoint());
 
   base::test::TestFuture<net::ClientCertIdentityList> certs_future;
   store.GetClientCerts(base::MakeRefCounted<net::SSLCertRequestInfo>(),
                        certs_future.GetCallback());
-
   net::ClientCertIdentityList result_certs = certs_future.Take();
   ASSERT_EQ(result_certs.size(), 1u);
-  EXPECT_TRUE(
-      result_certs[0]->certificate()->EqualsExcludingChain(test_cert_.get()));
 
   base::test::TestFuture<scoped_refptr<net::SSLPrivateKey>> key_future;
   net::ClientCertIdentity::SelfOwningAcquirePrivateKey(
@@ -122,55 +165,51 @@ TEST_F(RemoteClientCertStoreTest, GetClientCertsSuccessAndAcquireKey) {
   EXPECT_EQ(sign_future.Get<1>(), kTestSignature);
 }
 
+TEST_F(RemoteClientCertStoreTest, DisconnectedBrokerReturnsEmpty) {
+  mojo::AssociatedRemote<mojom::CertificateBroker> remote;
+  auto receiver = remote.BindNewEndpointAndPassDedicatedReceiver();
+  // Intentionally drop the receiver so it's disconnected/closed.
+  receiver.reset();
+
+  RemoteClientCertStore store(remote.Unbind());
+
+  base::test::TestFuture<net::ClientCertIdentityList> future;
+  store.GetClientCerts(base::MakeRefCounted<net::SSLCertRequestInfo>(),
+                       future.GetCallback());
+
+  EXPECT_TRUE(future.Get().empty());
+}
+
 TEST_F(RemoteClientCertStoreTest, AuthorityFiltering) {
-  auto fake_key = std::make_unique<FakeSSLPrivateKey>();
-  mojo::PendingRemote<network::mojom::SSLPrivateKey> key_remote;
-  mojo::MakeSelfOwnedReceiver(std::move(fake_key),
-                              key_remote.InitWithNewPipeAndPassReceiver());
+  broker_.AddCertificate(test_cert_, "TestProvider", {kTestAlgorithm});
 
-  RemoteClientCertStore::CertDetails details;
-  details.certificate = test_cert_;
-  details.provider_name = "TestProvider";
-  details.algorithm_preferences = {kTestAlgorithm};
-  details.private_key = std::move(key_remote);
+  RemoteClientCertStore store(broker_.BindNewEndpoint());
 
-  std::vector<RemoteClientCertStore::CertDetails> certs;
-  certs.push_back(std::move(details));
-
-  RemoteClientCertStore store(base::BindRepeating(
-      [](std::vector<RemoteClientCertStore::CertDetails>* certs,
-         base::OnceCallback<void(
-             std::vector<RemoteClientCertStore::CertDetails>)> callback) {
-        std::move(callback).Run(std::move(*certs));
-      },
-      base::Unretained(&certs)));
-
+  // Request with non-matching authority.
   auto cert_request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
   cert_request_info->cert_authorities = {"non_matching_authority"};
 
-  base::test::TestFuture<net::ClientCertIdentityList> certs_future;
-  store.GetClientCerts(cert_request_info, certs_future.GetCallback());
+  base::test::TestFuture<net::ClientCertIdentityList> future;
+  store.GetClientCerts(cert_request_info, future.GetCallback());
 
-  EXPECT_TRUE(certs_future.Get().empty());
+  EXPECT_TRUE(future.Get().empty());
 }
 
-TEST_F(RemoteClientCertStoreTest, ConcurrentGetClientCertsFetchesSequentially) {
-  int fetch_count = 0;
-  base::OnceCallback<void(std::vector<RemoteClientCertStore::CertDetails>)>
-      saved_callback;
+TEST_F(RemoteClientCertStoreTest, InvalidBrokerReturnsEmpty) {
+  mojo::PendingAssociatedRemote<mojom::CertificateBroker> invalid_broker;
+  RemoteClientCertStore store(std::move(invalid_broker));
 
-  auto get_certs_cb = base::BindRepeating(
-      [](int* count,
-         base::OnceCallback<void(
-             std::vector<RemoteClientCertStore::CertDetails>)>* saved_cb,
-         base::OnceCallback<void(
-             std::vector<RemoteClientCertStore::CertDetails>)> callback) {
-        (*count)++;
-        *saved_cb = std::move(callback);
-      },
-      base::Unretained(&fetch_count), base::Unretained(&saved_callback));
+  base::test::TestFuture<net::ClientCertIdentityList> future;
+  store.GetClientCerts(base::MakeRefCounted<net::SSLCertRequestInfo>(),
+                       future.GetCallback());
 
-  RemoteClientCertStore store(std::move(get_certs_cb));
+  EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(RemoteClientCertStoreTest, ConcurrentRequests) {
+  broker_.AddCertificate(test_cert_, "TestProvider", {kTestAlgorithm});
+
+  RemoteClientCertStore store(broker_.BindNewEndpoint());
 
   base::test::TestFuture<net::ClientCertIdentityList> future1;
   base::test::TestFuture<net::ClientCertIdentityList> future2;
@@ -180,172 +219,31 @@ TEST_F(RemoteClientCertStoreTest, ConcurrentGetClientCertsFetchesSequentially) {
   store.GetClientCerts(base::MakeRefCounted<net::SSLCertRequestInfo>(),
                        future2.GetCallback());
 
-  EXPECT_EQ(fetch_count, 1);
-  EXPECT_FALSE(future1.IsReady());
-  EXPECT_FALSE(future2.IsReady());
-  EXPECT_TRUE(saved_callback);
-
-  // Fulfill the first request.
-  auto fake_key1 = std::make_unique<FakeSSLPrivateKey>();
-  mojo::PendingRemote<network::mojom::SSLPrivateKey> key_remote1;
-  mojo::MakeSelfOwnedReceiver(std::move(fake_key1),
-                              key_remote1.InitWithNewPipeAndPassReceiver());
-
-  RemoteClientCertStore::CertDetails details1;
-  details1.certificate = test_cert_;
-  details1.provider_name = "TestProvider";
-  details1.algorithm_preferences = {kTestAlgorithm};
-  details1.private_key = std::move(key_remote1);
-
-  std::vector<RemoteClientCertStore::CertDetails> certs1;
-  certs1.push_back(std::move(details1));
-
-  std::move(saved_callback).Run(std::move(certs1));
-
   net::ClientCertIdentityList result_certs1 = future1.Take();
+  net::ClientCertIdentityList result_certs2 = future2.Take();
+
   ASSERT_EQ(result_certs1.size(), 1u);
+  ASSERT_EQ(result_certs2.size(), 1u);
   EXPECT_EQ(result_certs1[0]->certificate()->serial_number(),
             test_cert_->serial_number());
-
-  // The second request should have triggered a second fetch.
-  EXPECT_EQ(fetch_count, 2);
-  EXPECT_FALSE(future2.IsReady());
-  EXPECT_TRUE(saved_callback);
-
-  // Fulfill the second request.
-  auto fake_key2 = std::make_unique<FakeSSLPrivateKey>();
-  mojo::PendingRemote<network::mojom::SSLPrivateKey> key_remote2;
-  mojo::MakeSelfOwnedReceiver(std::move(fake_key2),
-                              key_remote2.InitWithNewPipeAndPassReceiver());
-
-  RemoteClientCertStore::CertDetails details2;
-  details2.certificate = test_cert_;
-  details2.provider_name = "TestProvider";
-  details2.algorithm_preferences = {kTestAlgorithm};
-  details2.private_key = std::move(key_remote2);
-
-  std::vector<RemoteClientCertStore::CertDetails> certs2;
-  certs2.push_back(std::move(details2));
-
-  std::move(saved_callback).Run(std::move(certs2));
-
-  net::ClientCertIdentityList result_certs2 = future2.Take();
-  ASSERT_EQ(result_certs2.size(), 1u);
   EXPECT_EQ(result_certs2[0]->certificate()->serial_number(),
             test_cert_->serial_number());
 }
 
-TEST_F(RemoteClientCertStoreTest,
-       DeleteStoreInCallbackWithPendingRequestsDoesNotCrash) {
-  base::OnceCallback<void(std::vector<RemoteClientCertStore::CertDetails>)>
-      saved_callback;
+TEST_F(RemoteClientCertStoreTest, DeleteStoreWhileRequestInFlightDoesNotCrash) {
+  broker_.AddCertificate(test_cert_, "TestProvider", {kTestAlgorithm});
 
-  auto get_certs_cb = base::BindRepeating(
-      [](base::OnceCallback<void(
-             std::vector<RemoteClientCertStore::CertDetails>)>* saved_cb,
-         base::OnceCallback<void(
-             std::vector<RemoteClientCertStore::CertDetails>)> callback) {
-        *saved_cb = std::move(callback);
-      },
-      base::Unretained(&saved_callback));
+  auto store =
+      std::make_unique<RemoteClientCertStore>(broker_.BindNewEndpoint());
 
-  auto store = std::make_unique<RemoteClientCertStore>(std::move(get_certs_cb));
-
-  base::test::TestFuture<net::ClientCertIdentityList> future1;
-  base::test::TestFuture<net::ClientCertIdentityList> future2;
-
-  store->GetClientCerts(
-      base::MakeRefCounted<net::SSLCertRequestInfo>(),
-      base::BindOnce(
-          [](std::unique_ptr<RemoteClientCertStore>* store_ptr,
-             base::OnceCallback<void(net::ClientCertIdentityList)> callback,
-             net::ClientCertIdentityList certs) {
-            store_ptr->reset();
-            std::move(callback).Run(std::move(certs));
-          },
-          base::Unretained(&store), future1.GetCallback()));
-
+  base::test::TestFuture<net::ClientCertIdentityList> future;
   store->GetClientCerts(base::MakeRefCounted<net::SSLCertRequestInfo>(),
-                        future2.GetCallback());
+                        future.GetCallback());
 
-  EXPECT_TRUE(saved_callback);
-
-  auto fake_key = std::make_unique<FakeSSLPrivateKey>();
-  mojo::PendingRemote<network::mojom::SSLPrivateKey> key_remote;
-  mojo::MakeSelfOwnedReceiver(std::move(fake_key),
-                              key_remote.InitWithNewPipeAndPassReceiver());
-
-  RemoteClientCertStore::CertDetails details;
-  details.certificate = test_cert_;
-  details.provider_name = "TestProvider";
-  details.algorithm_preferences = {kTestAlgorithm};
-  details.private_key = std::move(key_remote);
-
-  std::vector<RemoteClientCertStore::CertDetails> certs;
-  certs.push_back(std::move(details));
-
-  // Running the callback deletes the store during future1's callback.
-  std::move(saved_callback).Run(std::move(certs));
-
-  EXPECT_EQ(store, nullptr);
-  net::ClientCertIdentityList result_certs1 = future1.Take();
-  ASSERT_EQ(result_certs1.size(), 1u);
-}
-
-TEST_F(RemoteClientCertStoreTest,
-       DeleteStoreInSynchronousSubsequentCallbackDoesNotCrash) {
-  base::OnceCallback<void(std::vector<RemoteClientCertStore::CertDetails>)>
-      saved_first_callback;
-  bool is_first_fetch = true;
-
-  auto get_certs_cb = base::BindRepeating(
-      [](bool* first_fetch,
-         base::OnceCallback<void(
-             std::vector<RemoteClientCertStore::CertDetails>)>* saved_cb,
-         base::OnceCallback<void(
-             std::vector<RemoteClientCertStore::CertDetails>)> callback) {
-        if (*first_fetch) {
-          *first_fetch = false;
-          *saved_cb = std::move(callback);
-        } else {
-          // Synchronously fulfill subsequent requests.
-          std::move(callback).Run({});
-        }
-      },
-      base::Unretained(&is_first_fetch),
-      base::Unretained(&saved_first_callback));
-
-  auto store = std::make_unique<RemoteClientCertStore>(std::move(get_certs_cb));
-
-  base::test::TestFuture<net::ClientCertIdentityList> future1;
-  base::test::TestFuture<net::ClientCertIdentityList> future2;
-  base::test::TestFuture<net::ClientCertIdentityList> future3;
-
-  store->GetClientCerts(base::MakeRefCounted<net::SSLCertRequestInfo>(),
-                        future1.GetCallback());
-  store->GetClientCerts(
-      base::MakeRefCounted<net::SSLCertRequestInfo>(),
-      base::BindOnce(
-          [](std::unique_ptr<RemoteClientCertStore>* store_ptr,
-             base::OnceCallback<void(net::ClientCertIdentityList)> callback,
-             net::ClientCertIdentityList certs) {
-            // Delete store synchronously during future2.
-            store_ptr->reset();
-            std::move(callback).Run(std::move(certs));
-          },
-          base::Unretained(&store), future2.GetCallback()));
-  store->GetClientCerts(base::MakeRefCounted<net::SSLCertRequestInfo>(),
-                        future3.GetCallback());
-
-  EXPECT_TRUE(saved_first_callback);
-
-  // Complete first request asynchronously.
-  std::move(saved_first_callback).Run({});
-
-  EXPECT_EQ(store, nullptr);
-  EXPECT_TRUE(future1.Take().empty());
-  EXPECT_TRUE(future2.Take().empty());
-  EXPECT_FALSE(future3.IsReady());
+  // Deleting the store while the Mojo response is in flight destroys the
+  // AssociatedRemote and cancels the pending response callback cleanly.
+  store.reset();
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  // namespace remoting

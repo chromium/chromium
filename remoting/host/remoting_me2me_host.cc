@@ -109,6 +109,9 @@
 #endif
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate.h"
+#if BUILDFLAG(IS_WIN)
+#include "remoting/host/remote_client_cert_store.h"
+#endif
 #include "remoting/host/peer_session_impl.h"
 #include "remoting/host/pin_hash.h"
 #include "remoting/host/policy_watcher.h"
@@ -515,6 +518,10 @@ class HostProcess : public ConfigWatcher::Delegate,
   void SetRequiredUsernameOnDaemonProcess();
 #endif
 
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<net::ClientCertStore> CreateRemoteClientCertStore();
+#endif
+
   std::unique_ptr<ChromotingHostContext> context_;
 
 #if BUILDFLAG(IS_MAC)
@@ -761,6 +768,10 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
             cmd_line->GetSwitchValueASCII(kMojoPipeToken)),
         IPC::Channel::MODE_CLIENT, this, context_->network_task_runner(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
+#if BUILDFLAG(IS_WIN)
+    context_->set_create_client_cert_store_callback(base::BindRepeating(
+        &HostProcess::CreateRemoteClientCertStore, base::Unretained(this)));
+#endif
   } else {  // Single-process
     if (cmd_line->HasSwitch(kHostConfigSwitchName)) {
       host_config_path_ = cmd_line->GetSwitchValuePath(kHostConfigSwitchName);
@@ -2390,6 +2401,24 @@ void HostProcess::CrashProcess(const std::string& function_name,
                                int line_number) {
   // The daemon requested us to crash the process.
   ::remoting::CrashProcess(function_name, file_name, line_number);
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+std::unique_ptr<net::ClientCertStore>
+HostProcess::CreateRemoteClientCertStore() {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  mojo::PendingAssociatedRemote<mojom::CertificateBroker> broker_remote;
+  // `daemon_channel_` is initialized in multi-process mode on the UI thread and
+  // accessed on the network thread (IPC::ChannelProxy is thread-safe). It will
+  // be null in single-process mode or if the host is shutting down. In that
+  // case, `broker_remote` remains invalid and RemoteClientCertStore will
+  // return an empty list of certificates.
+  if (daemon_channel_) {
+    daemon_channel_->GetRemoteAssociatedInterface(
+        broker_remote.InitWithNewEndpointAndPassReceiver());
+  }
+  return std::make_unique<RemoteClientCertStore>(std::move(broker_remote));
 }
 #endif
 

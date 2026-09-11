@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -62,33 +62,11 @@ class RemoteClientCertIdentity : public net::ClientCertIdentity {
 
 }  // namespace
 
-RemoteClientCertStore::CertDetails::CertDetails() = default;
-RemoteClientCertStore::CertDetails::CertDetails(CertDetails&& other) = default;
-RemoteClientCertStore::CertDetails&
-RemoteClientCertStore::CertDetails::operator=(CertDetails&& other) = default;
-RemoteClientCertStore::CertDetails::~CertDetails() = default;
-
-RemoteClientCertStore::PendingCertRequest::PendingCertRequest(
-    scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
-    ClientCertListCallback callback)
-    : cert_request_info(std::move(cert_request_info)),
-      callback(std::move(callback)) {}
-
-RemoteClientCertStore::PendingCertRequest::PendingCertRequest(
-    PendingCertRequest&& other) = default;
-
-RemoteClientCertStore::PendingCertRequest&
-RemoteClientCertStore::PendingCertRequest::operator=(
-    PendingCertRequest&& other) = default;
-
-RemoteClientCertStore::PendingCertRequest::~PendingCertRequest() = default;
-
-RemoteClientCertStore::RemoteClientCertStore() = default;
-
 RemoteClientCertStore::RemoteClientCertStore(
-    GetCertificatesCallback get_certificates_callback)
-    : get_certificates_callback_(std::move(get_certificates_callback)) {
-  DCHECK(get_certificates_callback_);
+    mojo::PendingAssociatedRemote<mojom::CertificateBroker> broker_remote) {
+  if (broker_remote.is_valid()) {
+    broker_.Bind(std::move(broker_remote));
+  }
 }
 
 RemoteClientCertStore::~RemoteClientCertStore() = default;
@@ -96,69 +74,46 @@ RemoteClientCertStore::~RemoteClientCertStore() = default;
 void RemoteClientCertStore::GetClientCerts(
     scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
     ClientCertListCallback callback) {
-  if (!get_certificates_callback_) {
+  if (!broker_.is_bound()) {
     std::move(callback).Run({});
     return;
   }
 
-  if (fetch_pending_) {
-    pending_requests_.emplace_back(std::move(cert_request_info),
-                                   std::move(callback));
-    return;
-  }
-
-  fetch_pending_ = true;
-  get_certificates_callback_.Run(base::BindOnce(
-      [](base::WeakPtr<RemoteClientCertStore> self,
-         scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
-         ClientCertListCallback callback, std::vector<CertDetails> certs) {
-        if (!self) {
-          std::move(callback).Run({});
-          return;
-        }
-        self->fetch_pending_ = false;
-        std::vector<PendingCertRequest> pending =
-            std::move(self->pending_requests_);
-        self->OnCertificatesReceived(std::move(cert_request_info),
-                                     std::move(callback), std::move(certs));
-        if (!self) {
-          return;
-        }
-        for (auto& request : pending) {
-          if (!self) {
-            break;
-          }
-          self->GetClientCerts(std::move(request.cert_request_info),
-                               std::move(request.callback));
-        }
-      },
-      weak_factory_.GetWeakPtr(), std::move(cert_request_info),
-      std::move(callback)));
+  // Wrap the callback to return an empty list if the Mojo pipe disconnects
+  // while the store is alive. If `this` is destroyed, `weak_factory_`
+  // invalidates the WeakPtr so the callback is discarded without running,
+  // matching net::ClientCertStore's cancellation contract.
+  broker_->GetCertificates(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      base::BindOnce(&RemoteClientCertStore::OnCertificatesReceived,
+                     weak_factory_.GetWeakPtr(), std::move(cert_request_info),
+                     std::move(callback)),
+      std::vector<mojom::ClientCertificateDetailsPtr>()));
 }
 
 void RemoteClientCertStore::OnCertificatesReceived(
     scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
     ClientCertListCallback callback,
-    std::vector<CertDetails> certs) {
+    std::vector<mojom::ClientCertificateDetailsPtr> certs) {
   net::ClientCertIdentityList identities;
   for (auto& cert_details : certs) {
-    if (!cert_details.certificate || !cert_details.private_key.is_valid()) {
+    if (!cert_details || !cert_details->certificate ||
+        !cert_details->private_key.is_valid()) {
       continue;
     }
 
     // Filter by cert_authorities if provided.
     if (cert_request_info && !cert_request_info->cert_authorities.empty()) {
-      if (!cert_details.certificate->IsIssuedByEncoded(
+      if (!cert_details->certificate->IsIssuedByEncoded(
               cert_request_info->cert_authorities)) {
         continue;
       }
     }
 
     identities.push_back(std::make_unique<RemoteClientCertIdentity>(
-        std::move(cert_details.certificate),
-        std::move(cert_details.provider_name),
-        std::move(cert_details.algorithm_preferences),
-        std::move(cert_details.private_key)));
+        std::move(cert_details->certificate),
+        std::move(cert_details->provider_name),
+        std::move(cert_details->algorithm_preferences),
+        std::move(cert_details->private_key)));
   }
 
   std::sort(identities.begin(), identities.end(),

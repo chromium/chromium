@@ -32,6 +32,8 @@ mojom("mojom") {
   deps = [
     "//mojo/public/mojom/base",
     "//services/network/public/mojom:mojom_ip_address",
+    "//services/network/public/mojom:mojom_network_param",
+    "//services/network/public/mojom:url_loader_base",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]

@@ -8,6 +8,8 @@ import "mojo/public/mojom/base/values.mojom";
 import "remoting/host/mojom/chromoting_host_services.mojom";
 import "remoting/host/mojom/common.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
+import "services/network/public/mojom/url_loader_network_service_observer.mojom";
+import "services/network/public/mojom/x509_certificate.mojom";
 
 // Provides a set of methods to allow the Daemon process to initialize and
 // control the network (a.k.a. host) process.
@@ -76,3 +78,25 @@ interface HostStatusObserver {
   // Called when the host shuts down.
   OnHostShutdown();
 };
+
+// Contains client certificate details and an SSLPrivateKey remote bound in the
+// elevated daemon process.
+[EnableIf=is_win]
+struct ClientCertificateDetails {
+  network.mojom.X509Certificate certificate;
+  string provider_name;
+  // The TLS 1.2+ signature algorithms (SSL_SIGN_* constants defined by
+  // BoringSSL) supported by the private key, in decreasing order of preference.
+  array<uint16> algorithm_preferences;
+  pending_remote<network.mojom.SSLPrivateKey> private_key;
+};
+
+// Provides an interface for the unprivileged network process to query client
+// certificates and private key signing from the elevated daemon process.
+[EnableIf=is_win]
+interface CertificateBroker {
+  // Returns all matching client certificates and bound SSLPrivateKey remotes
+  // from the elevated certificate store.
+  GetCertificates() => (array<ClientCertificateDetails> certs);
+};
+

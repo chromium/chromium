@@ -37,6 +37,10 @@
 #include "remoting/host/peer_connection_process_handler.h"
 #include "remoting/protocol/transport.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "remoting/host/certificate_broker_impl.h"
+#endif
+
 namespace remoting {
 
 namespace {
@@ -95,6 +99,9 @@ void DaemonProcess::OnWorkerProcessStopped() {
   desktop_session_manager_.reset();
   peer_session_manager_.reset();
   host_status_observer_.reset();
+#if BUILDFLAG(IS_WIN)
+  certificate_broker_->reset();
+#endif
   // Reset our IPC remote so it's ready to re-init if the network process is
   // re-launched.
   remoting_host_control_.reset();
@@ -145,6 +152,17 @@ void DaemonProcess::OnAssociatedInterfaceRequest(
     mojo::PendingAssociatedReceiver<mojom::HostStatusObserver> pending_receiver(
         std::move(handle));
     host_status_observer_.Bind(std::move(pending_receiver));
+#if BUILDFLAG(IS_WIN)
+  } else if (interface_name == mojom::CertificateBroker::Name_) {
+    LOG_IF(WARNING, certificate_broker_->is_bound())
+        << "Associated interface requested "
+        << "while |certificate_broker_| was still bound.";
+
+    certificate_broker_->reset();
+    mojo::PendingAssociatedReceiver<mojom::CertificateBroker> pending_receiver(
+        std::move(handle));
+    certificate_broker_->Bind(std::move(pending_receiver));
+#endif
   } else {
     LOG(ERROR) << "Received unexpected associated interface request: "
                << interface_name;
@@ -260,6 +278,13 @@ DaemonProcess::DaemonProcess(
   if (!base::ThreadPoolInstance::Get()) {
     base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Daemon");
   }
+
+#if BUILDFLAG(IS_WIN)
+  certificate_broker_impl_ = std::make_unique<CertificateBrokerImpl>();
+  certificate_broker_ =
+      std::make_unique<mojo::AssociatedReceiver<mojom::CertificateBroker>>(
+          certificate_broker_impl_.get());
+#endif
 }
 
 void DaemonProcess::GetDesktopSession(
