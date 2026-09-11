@@ -171,6 +171,17 @@ class OmniboxEverywhereController
   // flag and preference settings.
   void UpdateHotkeyRegistration();
 
+  // Asynchronously loads the profile at `profile_path` and runs `on_loaded` on
+  // success while holding a startup ScopedKeepAlive. `on_loaded` is always
+  // invoked asynchronously.
+  // Returns true if profile exists and loading/invocation was initiated.
+  bool LoadProfileAsync(const base::FilePath& profile_path,
+                        base::OnceCallback<void(Profile*)> on_loaded);
+
+  // Asynchronously loads the persisted target profile when in background mode
+  // and no target profile is currently loaded.
+  void MaybeLoadPersistedTargetProfile();
+
   BooleanPrefMember enabled_pref_member_;
   BooleanPrefMember hotkey_pref_member_;
   StringPrefMember hotkey_string_pref_member_;
