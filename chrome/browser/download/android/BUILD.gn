@@ -200,6 +200,7 @@ robolectric_library("junit_tests") {
     "java/src/org/chromium/chrome/browser/download/DownloadLocationDialogMetricsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDialogUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialogTest.java",
+    "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceDialogUnitTest.java",
   ]
 
   deps = [
@@ -216,6 +217,7 @@ robolectric_library("junit_tests") {
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//net/android:net_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
@@ -242,6 +244,7 @@ android_resources("java_resources") {
   ]
 
   deps = [
+    "//chrome/browser/settings:java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/modaldialog/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
