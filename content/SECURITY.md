@@ -160,9 +160,11 @@ functional bugs (unless a broader boundary is broken):
   is revoked, the renderer should be cut-off from the protected resource without
   requiring a page navigation. The Storage Access API (SAA) is an exception to
   this as downgrading the storage access of a page between navigations is not
-  supported. Thus, if a site successfully obtains SAA access and then loses it,
-  the site may retain access to unpartitioned storage and third-party cookies
-  via JavaScript, but future requests must reflect the revoked permission.
+  supported. Thus, if a document successfully obtains SAA access and then loses
+  it, the document (and workers that descend from that document) may retain
+  access to unpartitioned storage and third-party cookies via JavaScript, but
+  network requests from the document (or workers) must reflect the revoked
+  permission.
 
 
 ## Mitigating Factors
