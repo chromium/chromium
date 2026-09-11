@@ -5,3 +5,6 @@
 # this crate (with an expectation that they can check and enforce
 # `third_party/rust/OWNERS-review-checklist.md`).
 per-file Cargo.*=file://third_party/harfbuzz/OWNERS
+# for jxl-rs updates to allow faster iteration while the library is actively
+# developed and being integrated into Chromium
+per-file Cargo.*=veluca@chromium.org
