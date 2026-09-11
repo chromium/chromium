@@ -69,6 +69,10 @@ class AudioProcessorHandlerTest : public ::testing::Test {
     return handler.voice_isolation_handler_ != nullptr;
   }
 
+  bool HasProcessingFifo(const AudioProcessorHandler& handler) {
+    return handler.processing_fifo_ != nullptr;
+  }
+
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   static std::unique_ptr<VoiceIsolationHandler>
   CreateVoiceIsolationHandlerWithMock(
@@ -351,14 +355,13 @@ TEST_F(AudioProcessorHandlerTest, NoVolumeAdjustmentOnSilence) {
   // adjustment. Since the input is silent, the AGC recommends no change,
   // and we expect std::nullopt.
   EXPECT_CALL(deliver_callback_, Run(_, _, Eq(std::nullopt), _))
-      .WillOnce([&](const media::AudioBus& processed_bus,
-                    base::TimeTicks capture_time, std::optional<double> volume,
-                    const media::AudioGlitchInfo& glitch_info) {
-        run_loop.Quit();
-      });
+      .WillOnce(
+          [&](const media::AudioBus& processed_bus,
+              base::TimeTicks capture_time, std::optional<double> volume,
+              const media::AudioGlitchInfo& glitch_info) { run_loop.Quit(); });
 
-  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
-                                volume, media::AudioGlitchInfo());
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), volume,
+                                media::AudioGlitchInfo());
   run_loop.Run();
 
   handler->StopProcessing();
@@ -522,6 +525,86 @@ TEST_F(AudioProcessorHandlerTest, VoiceIsolationHandlerMaybeCreateSuccess) {
   auto handler = VoiceIsolationHandler::MaybeCreate(
       model_manager, output_params_, deliver_callback_.Get());
   EXPECT_TRUE(handler);
+}
+
+TEST_F(AudioProcessorHandlerTest, VoiceIsolationHandlerHasProcessingThread) {
+  auto mock_voice_isolation = std::make_unique<media::MockVoiceIsolation>();
+  auto handler = CreateVoiceIsolationHandlerWithMock(
+      std::move(mock_voice_isolation), output_params_, deliver_callback_.Get());
+  EXPECT_FALSE(handler->HasProcessingThread());
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       FifoCreatedWhenVoiceIsolationActiveWithoutPlayoutReference) {
+  media::AudioProcessingSettings settings;
+  settings.echo_cancellation = false;
+  settings.voice_isolation = true;
+  mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
+  auto mock_voice_isolation = std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* voice_isolation_mock_ptr =
+      mock_voice_isolation.get();
+
+  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _))
+      .WillOnce([](const media::AudioBus& input, media::AudioBus& output) {
+        input.CopyTo(&output);
+      });
+
+  auto audio_processor_handler = std::make_unique<AudioProcessorHandler>(
+      settings, input_params_, output_params_, log_callback_.Get(),
+      base::NullCallback(), error_callback_.Get(),
+      controls_remote.InitWithNewPipeAndPassReceiver(),
+      /*aecdump_recording_manager=*/nullptr,
+      /*ml_model_manager=*/nullptr,
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          output_params_,
+                                          deliver_callback_.Get()));
+
+  EXPECT_FALSE(audio_processor_handler->needs_playout_reference());
+  EXPECT_TRUE(HasVoiceIsolationHandler(*audio_processor_handler));
+  // VoiceIsolationHandler does not have its own processing thread in this CL,
+  // so AudioProcessorHandler must create a ProcessingAudioFifo to offload voice
+  // isolation from the capture device thread even though echo cancellation is
+  // disabled.
+  EXPECT_TRUE(HasProcessingFifo(*audio_processor_handler));
+
+  audio_processor_handler->StartProcessing();
+
+  auto input_bus = media::AudioBus::Create(input_params_);
+  input_bus->Zero();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+      .WillOnce([&](const media::AudioBus& processed_bus,
+                    base::TimeTicks capture_time, std::optional<double> volume,
+                    const media::AudioGlitchInfo& glitch_info) {
+        EXPECT_EQ(processed_bus.channels(), output_params_.channels());
+        EXPECT_EQ(processed_bus.frames(), output_params_.frames_per_buffer());
+        run_loop.Quit();
+      });
+
+  audio_processor_handler->ProcessCapturedAudio(
+      *input_bus, base::TimeTicks::Now(), 1.0, media::AudioGlitchInfo());
+  run_loop.Run();
+
+  audio_processor_handler->StopProcessing();
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       NoFifoWithoutPlayoutReferenceOrVoiceIsolation) {
+  media::AudioProcessingSettings settings;
+  settings.echo_cancellation = false;
+  mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
+  auto audio_processor_handler = std::make_unique<AudioProcessorHandler>(
+      settings, input_params_, output_params_, log_callback_.Get(),
+      deliver_callback_.Get(), error_callback_.Get(),
+      controls_remote.InitWithNewPipeAndPassReceiver(),
+      /*aecdump_recording_manager=*/nullptr,
+      /*ml_model_manager=*/nullptr,
+      /*voice_isolation_handler=*/nullptr);
+
+  EXPECT_FALSE(audio_processor_handler->needs_playout_reference());
+  EXPECT_FALSE(HasVoiceIsolationHandler(*audio_processor_handler));
+  EXPECT_FALSE(HasProcessingFifo(*audio_processor_handler));
 }
 #endif
 

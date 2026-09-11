@@ -78,6 +78,10 @@ bool VoiceIsolationHandler::IsVoiceIsolationBypassed() const {
   return bypass_voice_isolation_.load(std::memory_order_acquire);
 }
 
+bool VoiceIsolationHandler::HasProcessingThread() const {
+  return false;
+}
+
 std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::MaybeCreate(
     MlModelManager& ml_model_manager,
     const media::AudioParameters& output_params,

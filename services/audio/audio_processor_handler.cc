@@ -89,8 +89,11 @@ AudioProcessorHandler::AudioProcessorHandler(
   }
 
   // We need to offload work to another thread for heavy processing, ex: echo
-  // cancellation.
-  if (needs_playout_reference()) {
+  // cancellation or voice isolation.
+  const bool needs_fifo = needs_playout_reference() ||
+                          (voice_isolation_handler_ &&
+                           !voice_isolation_handler_->HasProcessingThread());
+  if (needs_fifo) {
     processing_fifo_ = std::make_unique<ProcessingAudioFifo>(
         input_format, kProcessingFifoSize,
         base::BindRepeating(

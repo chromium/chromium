@@ -62,6 +62,11 @@ class VoiceIsolationHandler {
   // Dynamic toggle for voice isolation. Thread-safe.
   void SetVoiceIsolation(bool enabled);
 
+  // Returns true if voice isolation has its own processing thread (via an
+  // internal FIFO). If false, ProcessCapturedAudio() executes synchronously on
+  // the caller's thread.
+  bool HasProcessingThread() const;
+
  private:
   VoiceIsolationHandler(
       scoped_refptr<media::MlModelHandle> model_handle,
