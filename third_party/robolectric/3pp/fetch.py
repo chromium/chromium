@@ -47,9 +47,11 @@ _ROBO_URL_FILES = {
 
 
 def do_latest():
-  # Make the version change every time this file changes.
+  # Make the version change every time any file in this directory changes.
   md5 = hashlib.md5()
-  md5.update(pathlib.Path(__file__).read_bytes())
+  for p in sorted(pathlib.Path(__file__).parent.glob('*')):
+    if p.is_file() and p.suffix in ('.py', '.pb', '.sh'):
+      md5.update(p.read_bytes())
   file_hash = md5.hexdigest()[:10]
   # Prefix with the first version from the dict, which should be the
   # non-instrumented .jar, to make the version string not entirely random.

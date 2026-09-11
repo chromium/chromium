@@ -3,13 +3,16 @@
 # found in the LICENSE file.
 
 create {
+  platform_re: "linux-amd64|mac-arm64"
   source {
     script { name: "fetch.py" }
     subdir: "lib"
+  }
+  build {
+    install: "install.py"
   }
 }
 
 upload {
   pkg_prefix: "chromium/third_party"
-  universal: true
 }
