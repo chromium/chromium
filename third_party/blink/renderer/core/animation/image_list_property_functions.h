@@ -37,9 +37,13 @@ class ImageListPropertyFunctions {
     }
 
     result->clear();
-    while (fill_layer) {
+    // Interpolation is defined on computed values, so this walks the layers the
+    // computed value reports - see FillLayer::NextForComputedValue().
+    while (fill_layer &&
+           fill_layer->IsPropertySet(FillLayer::Property::kImage)) {
       result->push_back(fill_layer->GetImage());
-      fill_layer = fill_layer->Next();
+      fill_layer =
+          fill_layer->NextForComputedValue(FillLayer::Property::kImage);
     }
   }
 

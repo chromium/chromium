@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property background-repeat value 'repeat-x, repeat-y, repeat'
-  assert_equals: expected "repeat-x, repeat-y, repeat" but got "repeat-x"
-[FAIL] Property background-repeat value 'repeat-x' multiple base values
-  assert_equals: expected "repeat-x" but got "repeat-x, repeat-x"
-[FAIL] Property background-repeat value 'repeat-x, repeat-y, repeat' multiple base values
-  assert_equals: expected "repeat-x, repeat-y, repeat" but got "repeat-x, repeat-y"
-Harness: the test ran to completion.
-

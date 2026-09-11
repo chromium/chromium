@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property background-position value '12px 13px, 50% 6px, 30px -10px'
-  assert_equals: expected "12px 13px, 50% 6px, 30px -10px" but got "12px 13px"
-[FAIL] Property background-position value 'center' multiple base values
-  assert_equals: expected "50% 50%" but got "50% 50%, 50% 50%"
-[FAIL] Property background-position value 'center, left, bottom' multiple base values
-  assert_equals: expected "50% 50%, 0% 50%, 50% 100%" but got "50% 50%, 0% 50%"
-Harness: the test ran to completion.
-

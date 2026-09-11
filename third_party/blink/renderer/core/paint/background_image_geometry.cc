@@ -94,7 +94,8 @@ bool NeedsFullSizeDestination(const FillLayer& fill_layer) {
   // correctly mask the entire area it is meant to. This is unnecessary on the
   // last layer, so the normal background path is taken for efficiency when
   // creating the paint shader later on.
-  return fill_layer.GetType() == EFillLayerType::kMask && fill_layer.Next() &&
+  return fill_layer.GetType() == EFillLayerType::kMask &&
+         fill_layer.NextForUsedValue() &&
          fill_layer.Composite() != kCompositeSourceOver;
 }
 

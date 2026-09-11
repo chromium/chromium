@@ -19,7 +19,7 @@ namespace {
 
 bool HasSingleInvalidSVGMaskLayer(const LayoutObject& object,
                                   const FillLayer& first_layer) {
-  if (first_layer.Next()) {
+  if (first_layer.NextForUsedValue()) {
     return false;
   }
   const StyleImage* image = first_layer.GetImage();

@@ -257,7 +257,7 @@ bool LayoutSVGResourceContainer::FindCycleInResources(
     }
   }
   for (const FillLayer* layer = &layout_object.StyleRef().MaskLayers(); layer;
-       layer = layer->Next()) {
+       layer = layer->NextForUsedValue()) {
     const auto* mask_source =
         DynamicTo<StyleMaskSourceImage>(layer->GetImage());
     if (!mask_source) {

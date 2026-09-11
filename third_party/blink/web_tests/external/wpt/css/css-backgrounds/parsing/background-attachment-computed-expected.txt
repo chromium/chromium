@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property background-attachment value 'scroll, fixed, local'
-  assert_equals: expected "scroll, fixed, local" but got "scroll"
-[FAIL] Property background-attachment value 'scroll' multiple base values
-  assert_equals: expected "scroll" but got "scroll, scroll"
-[FAIL] Property background-attachment value 'scroll, fixed, local' multiple base values
-  assert_equals: expected "scroll, fixed, local" but got "scroll, fixed"
-Harness: the test ran to completion.
-

@@ -3044,7 +3044,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   FillLayer& AccessBackgroundLayers() { return MutableBackgroundInternal(); }
   void AdjustBackgroundLayers() {
     if (BackgroundInternal().Next()) {
-      AccessBackgroundLayers().CullEmptyLayers();
+      AccessBackgroundLayers().CullUnusedLayers();
       AccessBackgroundLayers().FillUnsetProperties();
     }
   }
@@ -3384,7 +3384,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   FillLayer& AccessMaskLayers() { return MutableMaskInternal(); }
   void AdjustMaskLayers() {
     if (MaskInternal().Next()) {
-      AccessMaskLayers().CullEmptyLayers();
+      AccessMaskLayers().CullUnusedLayers();
       AccessMaskLayers().FillUnsetProperties();
     }
   }

@@ -3,19 +3,7 @@ This is a testharness.js-based test.
   assert_true: 'x-start' is a supported value for background-position-x. expected true got false
 [FAIL] Property background-position-x value 'x-end'
   assert_true: 'x-end' is a supported value for background-position-x. expected true got false
-[FAIL] Property background-position-x value '-20%, 10px'
-  assert_equals: expected "-20%, 10px" but got "-20%"
-[FAIL] Property background-position-x value 'center, left, right'
-  assert_equals: expected "50%, 0%, 100%" but got "50%"
 [FAIL] Property background-position-x value '0.5em, x-start, x-end'
   assert_true: '0.5em, x-start, x-end' is a supported value for background-position-x. expected true got false
-[FAIL] Property background-position-x value 'calc(10px - 0.5em), -20%, 10px'
-  assert_equals: expected "-10px, -20%, 10px" but got "-10px"
-[FAIL] Property background-position-x value 'calc(10px - 0.5em), left -20%, right 10px'
-  assert_equals: expected "-10px, -20%, calc(100% - 10px)" but got "-10px"
-[FAIL] Property background-position-x value 'center' multiple base values
-  assert_equals: expected "50%" but got "50%, 50%"
-[FAIL] Property background-position-x value 'center, left, right' multiple base values
-  assert_equals: expected "50%, 0%, 100%" but got "50%, 0%"
 Harness: the test ran to completion.
 

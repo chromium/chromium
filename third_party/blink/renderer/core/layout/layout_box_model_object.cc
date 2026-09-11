@@ -480,7 +480,7 @@ void LayoutBoxModelObject::ImageChanged(WrappedImagePtr image,
                                         CanDeferInvalidation) {
   NOT_DESTROYED();
   for (const FillLayer* layer = &StyleRef().MaskLayers(); layer;
-       layer = layer->Next()) {
+       layer = layer->NextForUsedValue()) {
     if (layer->GetImage() && image == layer->GetImage()->Data()) {
       // Since an invalid <mask> reference does not yield a paint property
       // (see CSSMaskPainter), we need to update paint properties when such a

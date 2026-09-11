@@ -496,9 +496,9 @@ void InlineBoxFragmentPainterBase::PaintFillLayers(
     bool object_has_multiple_boxes) {
   // FIXME: This should be a for loop or similar. It's a little non-trivial to
   // do so, however, since the layers need to be painted in reverse order.
-  if (layer.Next()) {
-    PaintFillLayers(box_painter, info, c, *layer.Next(), rect, bg_paint_context,
-                    object_has_multiple_boxes);
+  if (layer.NextForUsedValue()) {
+    PaintFillLayers(box_painter, info, c, *layer.NextForUsedValue(), rect,
+                    bg_paint_context, object_has_multiple_boxes);
   }
   PaintFillLayer(box_painter, info, c, layer, rect, bg_paint_context,
                  object_has_multiple_boxes);

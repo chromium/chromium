@@ -51,7 +51,11 @@
     const expectedValues = [
       // [time, element-id, property, expected-value, tolerance]
       [0.5, 'box', 'background-position', "40px 40px, 40px 40px", 2],
-      [0.5, 'box2', 'background-position', "40px 40px", 2],
+      // Mismatched lengths interpolate as repeatable lists, repeated to their
+      // lowest common multiple, and the computed value keeps that length: box2
+      // goes from two positions to one, so the one is repeated to two. box3
+      // below is the mirror case and has always expected the same form.
+      [0.5, 'box2', 'background-position', "40px 40px, 40px 80px", 2],
       [0.5, 'box3', 'background-position',  "40px 40px, 40px 80px", 2],
     ];
   

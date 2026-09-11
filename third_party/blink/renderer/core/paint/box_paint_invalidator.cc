@@ -31,8 +31,9 @@ bool BoxPaintInvalidator::HasEffectiveBackground() {
 static bool ShouldFullyInvalidateFillLayersOnWidthChange(
     const FillLayer& layer) {
   // Nobody will use multiple layers without wanting fancy positioning.
-  if (layer.Next())
+  if (layer.NextForUsedValue()) {
     return true;
+  }
 
   // The layer properties checked below apply only when there is a valid image.
   const StyleImage* image = layer.GetImage();
@@ -76,8 +77,9 @@ static bool ShouldFullyInvalidateFillLayersOnWidthChange(
 static bool ShouldFullyInvalidateFillLayersOnHeightChange(
     const FillLayer& layer) {
   // Nobody will use multiple layers without wanting fancy positioning.
-  if (layer.Next())
+  if (layer.NextForUsedValue()) {
     return true;
+  }
 
   // The layer properties checked below apply only when there is a valid image.
   const StyleImage* image = layer.GetImage();

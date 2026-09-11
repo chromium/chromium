@@ -248,7 +248,8 @@ const CSSValue* ComputedStyleUtils::BackgroundImageOrMaskImage(
     CSSValuePhase value_phase) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   const FillLayer* curr_layer = &fill_layer;
-  for (; curr_layer; curr_layer = curr_layer->Next()) {
+  for (; curr_layer; curr_layer = curr_layer->NextForComputedValue(
+                         FillLayer::Property::kImage)) {
     if (curr_layer->GetImage()) {
       list->Append(*curr_layer->GetImage()->ComputedCSSValue(
           style, allow_visited_style, value_phase));
@@ -289,7 +290,8 @@ const CSSValue* ComputedStyleUtils::BackgroundSizeOrMaskSize(
     const FillLayer& fill_layer) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   const FillLayer* curr_layer = &fill_layer;
-  for (; curr_layer; curr_layer = curr_layer->Next()) {
+  for (; curr_layer; curr_layer = curr_layer->NextForComputedValue(
+                         FillLayer::Property::kSize)) {
     list->Append(*ValueForFillSize(curr_layer->Size(), style));
   }
   return list;
@@ -335,7 +337,8 @@ const CSSValue* ComputedStyleUtils::ValueForFillRepeat(
 const CSSValue* ComputedStyleUtils::RepeatStyle(const FillLayer* curr_layer) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
 
-  for (; curr_layer; curr_layer = curr_layer->Next()) {
+  for (; curr_layer; curr_layer = curr_layer->NextForComputedValue(
+                         FillLayer::Property::kRepeat)) {
     list->Append(*ValueForFillRepeat(curr_layer));
   }
 
@@ -530,7 +533,8 @@ const CSSValue* ComputedStyleUtils::BackgroundPositionOrMaskPosition(
     const ComputedStyle& style,
     const FillLayer* curr_layer) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (; curr_layer; curr_layer = curr_layer->Next()) {
+  for (; curr_layer; curr_layer = curr_layer->NextForComputedValue(
+                         FillLayer::Property::kPosition)) {
     list->Append(
         *CreatePositionListForLayer(resolved_property, *curr_layer, style));
   }
@@ -541,7 +545,8 @@ const CSSValue* ComputedStyleUtils::BackgroundPositionXOrWebkitMaskPositionX(
     const ComputedStyle& style,
     const FillLayer* curr_layer) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (; curr_layer; curr_layer = curr_layer->Next()) {
+  for (; curr_layer; curr_layer = curr_layer->NextForComputedValue(
+                         FillLayer::Property::kPositionX)) {
     const Length& from_edge = curr_layer->PositionX();
     if (curr_layer->BackgroundXOrigin() == BackgroundEdgeOrigin::kRight) {
       list->Append(*ZoomAdjustedPixelValueForLength(
@@ -557,7 +562,8 @@ const CSSValue* ComputedStyleUtils::BackgroundPositionYOrWebkitMaskPositionY(
     const ComputedStyle& style,
     const FillLayer* curr_layer) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (; curr_layer; curr_layer = curr_layer->Next()) {
+  for (; curr_layer; curr_layer = curr_layer->NextForComputedValue(
+                         FillLayer::Property::kPositionY)) {
     const Length& from_edge = curr_layer->PositionY();
     if (curr_layer->BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom) {
       list->Append(*ZoomAdjustedPixelValueForLength(

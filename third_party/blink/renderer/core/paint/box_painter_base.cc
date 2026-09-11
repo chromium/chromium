@@ -580,7 +580,7 @@ std::pair<bool, const FillLayer*> BoxPainterBase::AnalyzeFillLayersForPainting(
     const FillLayer& fill_layer) {
   bool is_non_associative = false;
   const FillLayer* current_layer = &fill_layer;
-  for (; current_layer; current_layer = current_layer->Next()) {
+  for (; current_layer; current_layer = current_layer->NextForUsedValue()) {
     // Stop traversal when an opaque layer is encountered.
     // FIXME : It would be possible for the following occlusion culling test to
     // be more aggressive on layers with no repeat by testing whether the image
@@ -621,7 +621,7 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
       color(bg_color),
       respect_image_orientation(style.ImageOrientation()),
       sides_to_include(sides_to_include),
-      is_bottom_layer(!layer.Next()),
+      is_bottom_layer(!layer.NextForUsedValue()),
       is_border_fill(layer.Clip() == EFillBox::kStrokeBox ||
                      layer.Clip() == EFillBox::kViewBox ||
                      layer.Clip() == EFillBox::kBorder),

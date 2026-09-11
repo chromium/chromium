@@ -144,7 +144,7 @@ void LayoutSVGModelObject::ImageChanged(WrappedImagePtr image,
                                         CanDeferInvalidation defer) {
   NOT_DESTROYED();
   for (const FillLayer* layer = &StyleRef().MaskLayers(); layer;
-       layer = layer->Next()) {
+       layer = layer->NextForUsedValue()) {
     const StyleImage* style_image = layer->GetImage();
     if (style_image && image == style_image->Data()) {
       SetShouldDoFullPaintInvalidationWithoutLayoutChange(

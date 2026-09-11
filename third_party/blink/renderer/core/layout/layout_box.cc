@@ -2125,7 +2125,7 @@ void LayoutBox::ImageChanged(WrappedImagePtr image,
 
   if (!BackgroundTransfersToView()) {
     for (const FillLayer* layer = &StyleRef().BackgroundLayers(); layer;
-         layer = layer->Next()) {
+         layer = layer->NextForUsedValue()) {
       if (layer->GetImage() && image == layer->GetImage()->Data()) {
         bool maybe_animated =
             layer->GetImage()->CachedImage() &&
@@ -4109,14 +4109,14 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocation(
   Color background_color = ResolveColor(GetCSSPropertyBackgroundColor());
 
   const FillLayer* layer = &(StyleRef().BackgroundLayers());
-  for (; layer; layer = layer->Next()) {
+  for (; layer; layer = layer->NextForUsedValue()) {
     if (layer->Attachment() == EFillAttachment::kLocal)
       continue;
 
     // The background color is either the only background or it's the
     // bottommost value from the background property (see final-bg-layer in
     // https://drafts.csswg.org/css-backgrounds/#the-background).
-    if (!layer->GetImage() && !layer->Next() &&
+    if (!layer->GetImage() && !layer->NextForUsedValue() &&
         !background_color.IsFullyTransparent() &&
         StyleRef().IsScrollbarGutterAuto()) {
       // Solid color layers with an effective background clip of the padding box

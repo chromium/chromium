@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/style/style_mask_source_image.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -206,6 +207,52 @@ bool FillLayer::VisuallyEqual(const FillLayer& o) const {
   return next_ == o.next_;
 }
 
+const FillLayer* FillLayer::NextForUsedValue() const {
+  const FillLayer* next = Next();
+  return next && next->IsImageSet() ? next : nullptr;
+}
+
+bool FillLayer::IsAnyPropertySet() const {
+  return image_set_ || pos_x_set_ || pos_y_set_ || size_set_ || repeat_set_ ||
+         attachment_set_ || origin_set_ || clip_set_ || blend_mode_set_ ||
+         mask_mode_set_ || compositing_operator_set_;
+}
+
+const FillLayer* FillLayer::NextForComputedValue(Property property) const {
+  const FillLayer* next = Next();
+  if (GetType() != EFillLayerType::kBackground ||
+      !RuntimeEnabledFeatures::CSSBackgroundLayerCountIndependenceEnabled()) {
+    return next;
+  }
+  return next && next->IsPropertySet(property) ? next : nullptr;
+}
+
+bool FillLayer::IsPropertySet(Property property) const {
+  switch (property) {
+    case Property::kImage:
+      return IsImageSet();
+    case Property::kPositionX:
+      return IsPositionXSet();
+    case Property::kPositionY:
+      return IsPositionYSet();
+    case Property::kPosition:
+      return IsPositionXSet() || IsPositionYSet();
+    case Property::kSize:
+      return IsSizeSet();
+    case Property::kRepeat:
+      return IsRepeatSet();
+    case Property::kAttachment:
+      return IsAttachmentSet();
+    case Property::kOrigin:
+      return IsOriginSet();
+    case Property::kClip:
+      return IsClipSet();
+    case Property::kBlendMode:
+      return IsBlendModeSet();
+  }
+  NOTREACHED();
+}
+
 void FillLayer::FillUnsetProperties() {
   FillLayer* curr;
   for (curr = this; curr && curr->IsPositionXSet(); curr = curr->Next()) {
@@ -353,11 +400,27 @@ void FillLayer::FillUnsetProperties() {
   }
 }
 
-void FillLayer::CullEmptyLayers() {
+bool FillLayer::NeedsLayer() const {
+  // TODO(crbug.com/40855581): extend this to the mask properties, which still
+  // keep only the layers that paint.
+  if (GetType() == EFillLayerType::kBackground &&
+      RuntimeEnabledFeatures::CSSBackgroundLayerCountIndependenceEnabled()) {
+    return IsAnyPropertySet();
+  }
+  return IsImageSet();
+}
+
+// Remove excessive layers not in use. We may end up having excessive layers
+// when properties are applied on top of a cloned ComputedStyle for animations
+// or incremental style attribute updates (see CreateNewClonedStyle in
+// StyleResolver::ApplyBaseStyle()). Existing FillLayers are reused, and the
+// applied properties have fewer layers than the properties originally set on
+// the cloned ComputedStyle.
+void FillLayer::CullUnusedLayers() {
   FillLayer* next;
   for (FillLayer* p = this; p; p = next) {
     next = p->Next();
-    if (next && !next->IsImageSet()) {
+    if (next && !next->NeedsLayer()) {
       p->next_ = nullptr;
       break;
     }
@@ -396,7 +459,7 @@ void FillLayer::ComputeCachedProperties() const {
        To<StyleGeneratedImage>(image_.Get())->IsUsingCurrentColor());
   cached_properties_computed_ = true;
 
-  if (auto* next = Next()) {
+  if (auto* next = NextForUsedValue()) {
     next->ComputeCachedPropertiesIfNeeded();
     layers_clip_max_ = static_cast<unsigned>(
         EnclosingFillBox(LayersClipMax(), next->LayersClipMax()));
@@ -467,7 +530,8 @@ bool FillLayer::AllImagesAreInvalid() const {
   // A layer only counts as valid if its image is renderable and fully
   // loaded, so still-loading images are treated as invalid here.
   bool has_any_image = false;
-  for (const FillLayer* layer = this; layer; layer = layer->Next()) {
+  for (const FillLayer* layer = this; layer;
+       layer = layer->NextForUsedValue()) {
     if (StyleImage* image = layer->GetImage()) {
       has_any_image = true;
       if (image->CanRender() && image->IsLoaded()) {
@@ -479,7 +543,8 @@ bool FillLayer::AllImagesAreInvalid() const {
 }
 
 bool FillLayer::AnyImageIsLoading() const {
-  for (const FillLayer* layer = this; layer; layer = layer->Next()) {
+  for (const FillLayer* layer = this; layer;
+       layer = layer->NextForUsedValue()) {
     StyleImage* image = layer->GetImage();
     if (!image) {
       continue;
@@ -502,7 +567,8 @@ static inline bool LayerImagesIdentical(const FillLayer& layer1,
 
 bool FillLayer::ImagesIdentical(const FillLayer* layer1,
                                 const FillLayer* layer2) {
-  for (; layer1 && layer2; layer1 = layer1->Next(), layer2 = layer2->Next()) {
+  for (; layer1 && layer2; layer1 = layer1->NextForUsedValue(),
+                           layer2 = layer2->NextForUsedValue()) {
     if (!LayerImagesIdentical(*layer1, *layer2)) {
       return false;
     }

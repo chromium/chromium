@@ -58,34 +58,38 @@ assertInterpolation({
   {at: 1.25, is:  '25px 25px, 50px 50px, 75px 75px, 125px 125px'},
 ]);
 
-// Single size value repeated over background images.
+// A single size value is repeated over the background images for the used
+// value, but the computed value keeps the one value that was specified.
+// https://github.com/w3c/csswg-drafts/issues/7164
 assertInterpolation({
   property: '-webkit-background-size',
   from: '0px 0px',
   to: '80px 80px',
 }, [
-  {at: -0.25, is: '  0px   0px,   0px   0px,   0px   0px,   0px   0px'},
-  {at: 0, is:     '  0px   0px,   0px   0px,   0px   0px,   0px   0px'},
-  {at: 0.25, is:  ' 20px  20px,  20px  20px,  20px  20px,  20px  20px'},
-  {at: 0.5, is:   ' 40px  40px,  40px  40px,  40px  40px,  40px  40px'},
-  {at: 0.75, is:  ' 60px  60px,  60px  60px,  60px  60px,  60px  60px'},
-  {at: 1, is:     ' 80px  80px,  80px  80px,  80px  80px,  80px  80px'},
-  {at: 1.25, is:  '100px 100px, 100px 100px, 100px 100px, 100px 100px'},
+  {at: -0.25, is: '  0px   0px'},
+  {at: 0, is:     '  0px   0px'},
+  {at: 0.25, is:  ' 20px  20px'},
+  {at: 0.5, is:   ' 40px  40px'},
+  {at: 0.75, is:  ' 60px  60px'},
+  {at: 1, is:     ' 80px  80px'},
+  {at: 1.25, is:  '100px 100px'},
 ]);
 
-// Mismatched numbers of size values.
+// Mismatched numbers of size values: both lists are repeated to their lowest
+// common multiple, and the computed value keeps all of those values even though
+// only the first four are used, one per background image.
 assertInterpolation({
   property: '-webkit-background-size',
   from: '0px 0px, 80px 0px',
   to: '40px 40px, 80px 80px, 0px 80px',
 }, [
-  {at: -0.25, is: ' 0px  0px, 80px   0px, 0px   0px, 90px  0px'},
-  {at: 0, is:     ' 0px  0px, 80px   0px, 0px   0px, 80px  0px'},
-  {at: 0.25, is:  '10px 10px, 80px  20px, 0px  20px, 70px 10px'},
-  {at: 0.5, is:   '20px 20px, 80px  40px, 0px  40px, 60px 20px'},
-  {at: 0.75, is:  '30px 30px, 80px  60px, 0px  60px, 50px 30px'},
-  {at: 1, is:     '40px 40px, 80px  80px, 0px  80px, 40px 40px'},
-  {at: 1.25, is:  '50px 50px, 80px 100px, 0px 100px, 30px 50px'},
+  {at: -0.25, is: ' 0px  0px, 80px   0px, 0px   0px, 90px  0px,   0px   0px, 100px   0px'},
+  {at: 0, is:     ' 0px  0px, 80px   0px, 0px   0px, 80px  0px,   0px   0px,  80px   0px'},
+  {at: 0.25, is:  '10px 10px, 80px  20px, 0px  20px, 70px 10px,  20px  20px,  60px  20px'},
+  {at: 0.5, is:   '20px 20px, 80px  40px, 0px  40px, 60px 20px,  40px  40px,  40px  40px'},
+  {at: 0.75, is:  '30px 30px, 80px  60px, 0px  60px, 50px 30px,  60px  60px,  20px  60px'},
+  {at: 1, is:     '40px 40px, 80px  80px, 0px  80px, 40px 40px,  80px  80px,   0px  80px'},
+  {at: 1.25, is:  '50px 50px, 80px 100px, 0px 100px, 30px 50px, 100px 100px,   0px 100px'},
 ]);
 </script>
 </body>

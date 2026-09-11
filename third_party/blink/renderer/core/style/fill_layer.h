@@ -60,6 +60,49 @@ struct FillRepeat {
 
 class FillLayerWrapper;
 
+// FillLayer represents both the computed and the used value for layered image
+// properties such as background-image and mask-image along with their per-layer
+// property values for background-origin, background-size, etc.
+//
+// The number of FillLayers is determined by the maximum number of per-layer
+// values for the property with the most values. For these declarations we will
+// have five FillLayers:
+//
+// #bg {
+//   background-image: url(img1.png), url(img2.png);
+//   background-origin: padding-box, padding-box, border-box, border-box;
+// }
+//
+// For the case above, the third and fourth background-origin is not relevant
+// used value time since they have no effect when there is no image for the
+// layer. However, we still need them as computed values.
+//
+// When a property has fewer layered values than the number of images, the
+// computed values for that property is repeated as necessary for all images.
+// That is, the used value for background-origin below is 'padding-box,
+// border-box, padding-box':
+//
+// #bg {
+//   background-image: url(img1.png), url(img2.png), url(img3.png);
+//   background-origin: padding-box, border-box;
+// }
+//
+// The FillLayers are populated with the used values as necessary for properties
+// which have fewer layered values than the number of FillLayers.
+//
+// ### Note about the CSSBackgroundLayerCountIndependence runtime feature ###
+//
+// Without this feature enabled, the number of FillLayers is determined by the
+// number of background-images, and any layered value properties with more
+// values are truncated.
+//
+// That is, getComputedStyle() incorrectly returns 'border-box' for:
+//
+// #bg {
+//   background-image: url(img1.png);
+//   background-origin: border-box, padding-box;
+// }
+//
 class CORE_EXPORT FillLayer {
   DISALLOW_NEW();
 
@@ -103,6 +146,10 @@ class CORE_EXPORT FillLayer {
   FillLayer* Next();
   FillLayer* EnsureNext();
 
+  // Returns the next painted FillLayer. Returns a nullptr if the next layer
+  // does not have a background-image.
+  const FillLayer* NextForUsedValue() const;
+
   bool IsImageSet() const { return image_set_; }
   bool IsPositionXSet() const { return pos_x_set_; }
   bool IsPositionYSet() const { return pos_y_set_; }
@@ -116,6 +163,33 @@ class CORE_EXPORT FillLayer {
   bool IsCompositingOperatorSet() const { return compositing_operator_set_; }
   bool IsBlendModeSet() const { return blend_mode_set_; }
   bool IsSizeSet() const { return size_set_; }
+
+  // The properties a fill layer holds, for the property-generic lookups below.
+  enum class Property {
+    kImage,
+    kPositionX,
+    kPositionY,
+    // Either axis, for the background-position shorthand.
+    kPosition,
+    kSize,
+    kRepeat,
+    kAttachment,
+    kOrigin,
+    kClip,
+    kBlendMode,
+  };
+
+  // Whether the author specified |property| on this layer, as opposed to it
+  // being filled in by FillUnsetProperties() or left at its initial value.
+  bool IsPropertySet(Property property) const;
+
+  // Whether the author specified anything at all on this layer.
+  bool IsAnyPropertySet() const;
+
+  // Returns the next FillLayer if the given property had a value specified for
+  // that layer. Returns nullptr if the next layer simply extended the value by
+  // repeating the computed value.
+  const FillLayer* NextForComputedValue(Property property) const;
 
   void SetImage(StyleImage* i) {
     image_ = i;
@@ -217,7 +291,7 @@ class CORE_EXPORT FillLayer {
   EFillLayerType GetType() const { return static_cast<EFillLayerType>(type_); }
 
   void FillUnsetProperties();
-  void CullEmptyLayers();
+  void CullUnusedLayers();
 
   static bool ImagesIdentical(const FillLayer*, const FillLayer*);
 
@@ -302,7 +376,7 @@ class CORE_EXPORT FillLayer {
                                               const FillLayer* end,
                                               Callback callback) {
     if (start != end) {
-      IterateFillLayersInReverseOrder(start->Next(), end, callback);
+      IterateFillLayersInReverseOrder(start->NextForUsedValue(), end, callback);
     }
     if (start) {
       callback(*start);
@@ -323,6 +397,8 @@ class CORE_EXPORT FillLayer {
     }
   }
   void ComputeCachedProperties() const;
+
+  bool NeedsLayer() const;
 
   Member<FillLayerWrapper> next_;
   Member<StyleImage> image_;

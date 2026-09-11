@@ -1547,6 +1547,19 @@
       name: "CSSBackgroundClipBorderArea",
       status: "stable",
     },
+    {
+      // Makes the computed value of the background-* longhands keep the number
+      // of comma-separated values the author specified, instead of repeating or
+      // truncating it to the background-image layer count. Repeating and
+      // truncating are used-value behaviour: "The computed values of the
+      // coordinating list properties are not affected by such truncation or
+      // repetition."
+      // https://drafts.csswg.org/css-values-4/ Appendix A
+      // https://drafts.csswg.org/css-backgrounds/#layering
+      // https://github.com/w3c/csswg-drafts/issues/7164
+      name: "CSSBackgroundLayerCountIndependence",
+      status: "test",
+    },
     // https://chromestatus.com/feature/5459864205393920
     {
       // https://chromestatus.com/feature/5125388091260928
