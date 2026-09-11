@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.contextual_search.InputState;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -159,17 +158,7 @@ public class ComposeboxQueryControllerBridge {
                 .addTabContextFromCache(mNativeInstance, tabId, isSuggestedTab);
     }
 
-    public void getAimUrl(GURL url, Callback<GURL> callback) {
-        ComposeboxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, url, callback);
-    }
-
-    public void getImageGenerationUrl(GURL url, Callback<GURL> callback) {
-        ComposeboxQueryControllerBridgeJni.get()
-                .getImageGenerationUrl(mNativeInstance, url, callback);
-    }
-
     public void getAimUrlFromInputState(GURL url, Callback<GURL> callback) {
-        assert OmniboxFeatures.sShowModelPicker.getValue();
         ComposeboxQueryControllerBridgeJni.get()
                 .getAimUrlFromInputState(mNativeInstance, url, callback);
     }
@@ -283,16 +272,6 @@ public class ComposeboxQueryControllerBridge {
         @JniType("std::string")
         @Nullable String addTabContextFromCache(
                 long nativeComposeboxQueryControllerBridge, long tabId, boolean isSuggestedTab);
-
-        void getAimUrl(
-                long nativeComposeboxQueryControllerBridge,
-                @JniType("GURL") GURL url,
-                @JniType("base::OnceCallback<void(GURL)>&&") Callback<GURL> callback);
-
-        void getImageGenerationUrl(
-                long nativeComposeboxQueryControllerBridge,
-                @JniType("GURL") GURL url,
-                @JniType("base::OnceCallback<void(GURL)>&&") Callback<GURL> callback);
 
         void getAimUrlFromInputState(
                 long nativeComposeboxQueryControllerBridge,

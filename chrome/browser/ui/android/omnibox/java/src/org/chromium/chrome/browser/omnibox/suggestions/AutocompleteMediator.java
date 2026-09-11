@@ -1706,8 +1706,8 @@ class AutocompleteMediator
     }
 
     /**
-     * Potentially adjust the given URL based on the current request type (e.g. AIM mode, Image
-     * Generation) and model picker flag, and invoke the callback with that URL.
+     * Potentially adjust the given URL based on the input state, and invoke the callback with that
+     * URL.
      *
      * @param url The base {@link GURL} to potentially be adjusted.
      * @param callback The callback to be invoked with the potentially adjusted URL.
@@ -1728,16 +1728,7 @@ class AutocompleteMediator
             return;
         }
 
-        if (OmniboxFeatures.sShowModelPicker.getValue()) {
-            bridge.getAimUrlFromInputState(url, callback);
-        } else {
-            switch (requestType) {
-                case AutocompleteRequestType.AI_MODE -> bridge.getAimUrl(url, callback);
-                case AutocompleteRequestType.IMAGE_GENERATION ->
-                        bridge.getImageGenerationUrl(url, callback);
-                default -> callback.onResult(url);
-            }
-        }
+        bridge.getAimUrlFromInputState(url, callback);
     }
 
     private void finishLoadUrlForOmniboxMatch(

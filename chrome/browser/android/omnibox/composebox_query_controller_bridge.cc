@@ -398,22 +398,6 @@ void ComposeboxQueryControllerBridge::ContextualizeAndCreateSearchUrl(
   query_contextualizer_->Contextualize(std::move(params));
 }
 
-void ComposeboxQueryControllerBridge::GetAimUrl(
-    GURL url,
-    base::OnceCallback<void(GURL)> callback) {
-  ContextualizeAndCreateSearchUrl(
-      CreateSearchUrlRequestInfoFromUrl(std::move(url)), std::move(callback));
-}
-
-void ComposeboxQueryControllerBridge::GetImageGenerationUrl(
-    GURL url,
-    base::OnceCallback<void(GURL)> callback) {
-  auto search_url_request_info =
-      CreateSearchUrlRequestInfoFromUrl(std::move(url));
-  search_url_request_info->additional_params["imgn"] = "1";
-  ContextualizeAndCreateSearchUrl(std::move(search_url_request_info),
-                                  std::move(callback));
-}
 
 void ComposeboxQueryControllerBridge::GetAimUrlFromInputState(
     GURL url,

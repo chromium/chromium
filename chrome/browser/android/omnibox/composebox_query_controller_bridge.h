@@ -52,8 +52,6 @@ class ComposeboxQueryControllerBridge
   std::string AddTabContext(content::WebContents* web_contents,
                             bool is_suggested_tab);
   std::string AddTabContextFromCache(int64_t tab_id, bool is_suggested_tab);
-  void GetAimUrl(GURL url, base::OnceCallback<void(GURL)> callback);
-  void GetImageGenerationUrl(GURL url, base::OnceCallback<void(GURL)> callback);
 
   // Builds the URL to use for a navigation, supplementing the passed in URL
   // with additional parameters. This will do things such as include the current
