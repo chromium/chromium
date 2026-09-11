@@ -64,8 +64,7 @@ const base::FeatureParam<EnergyEffectVariant> kEnergyEffectVariantParam{
     EnergyEffectVariant::kEnergyEffectOriginal, &kEnergyEffectVariantOptions};
 
 // If enabled, the EnergyEffect animation for Realbox will be shown.
-BASE_FEATURE(kEnergyEffectAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
-
+BASE_FEATURE(kEnergyEffectAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, NTP "realbox" will be themed for CR23. Includes realbox
 // matching omnibox theme and increased realbox shadow.
