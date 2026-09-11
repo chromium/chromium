@@ -247,6 +247,7 @@ group("omnibox_deps") {
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui",
     "//ios/chrome/browser/omnibox/ui:omnibox_internal",
+    "//ios/chrome/browser/omnibox/ui/popup:popup_util",
   ]
 }
 

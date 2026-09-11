@@ -65,6 +65,9 @@ class GURL;
 - (void)processContextLibraryWebpageSignalWithURL:(const GURL&)url
                                             title:(NSString*)title;
 
+// Updates the theme of the input plate.
+- (void)updateTheme:(ComposeboxTheme*)theme;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_INPUT_PLATE_COORDINATOR_H_

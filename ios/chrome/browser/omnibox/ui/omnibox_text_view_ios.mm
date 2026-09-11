@@ -1204,8 +1204,7 @@ const CGFloat kVerticalOffset = 1;
 }
 
 - (void)updateTextContainerInset {
-  BOOL isComposeboxIpad =
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE;
+  BOOL isComposeboxIpad = IsRegularXRegularSizeClass(self.traitCollection);
   CGFloat minVerticalInset =
       isComposeboxIpad ? kOmniboxTextViewMinVerticalInsetIPadComposebox
                        : kOmniboxTextViewMinVerticalInset;

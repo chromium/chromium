@@ -374,6 +374,11 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   [_mediator processContextLibraryWebpageSignalWithURL:url title:title];
 }
 
+- (void)updateTheme:(ComposeboxTheme*)theme {
+  _theme = theme;
+  [_viewController updateTheme:theme];
+}
+
 #pragma mark - ComposeboxInputPlateViewControllerDelegate
 
 - (void)composeboxViewController:

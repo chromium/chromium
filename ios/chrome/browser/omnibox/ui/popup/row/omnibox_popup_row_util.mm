@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
-#import "ui/base/device_form_factor.h"
 
 namespace {
 // Multiplier values for supported content sizes.
@@ -23,11 +22,6 @@ const double kContentSizeMultiplier3XL = 1.8;
 // higher than the 3XL zoom avoid visually breaking the UI.
 const double kContentSizeMultiplierAccesibility = 2.0;
 }  // namespace
-
-BOOL ShouldApplyOmniboxPopoutLayout(UITraitCollection* traitCollection) {
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-         IsRegularXRegularSizeClass(traitCollection);
-}
 
 CGFloat OmniboxPopupRowContentSizeMultiplierForCategory(
     UIContentSizeCategory category) {

@@ -7,8 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-/// Returns whether the omnibox popout layout should be applied.
-BOOL ShouldApplyOmniboxPopoutLayout(UITraitCollection* traitCollection);
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_util.h"
 
 /// Returns the content size multiplier for the given category.
 CGFloat OmniboxPopupRowContentSizeMultiplierForCategory(

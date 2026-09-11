@@ -2,11 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("popup_util") {
+  sources = [
+    "omnibox_popup_util.h",
+    "omnibox_popup_util.mm",
+  ]
+  deps = [ "//ios/chrome/common/ui/util" ]
+}
+
 source_set("popup") {
   sources = [
     "omnibox_popup_presenter.h",
     "omnibox_popup_presenter.mm",
   ]
+  public_deps = [ ":popup_util" ]
   deps = [
     ":popup_ui",
     ":popup_ui_protocols",
@@ -31,6 +40,7 @@ source_set("popup_ui") {
   ]
   deps = [
     ":popup_ui_protocols",
+    ":popup_util",
     "//base",
     "//components/favicon/core",
     "//components/omnibox/common",

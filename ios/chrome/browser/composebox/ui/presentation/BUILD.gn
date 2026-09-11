@@ -14,6 +14,7 @@ source_set("presentation") {
     "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/shared/ui:ui_constants",
     "//ios/chrome/browser/omnibox/public:constants",
+    "//ios/chrome/browser/omnibox/ui/popup:popup_util",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",

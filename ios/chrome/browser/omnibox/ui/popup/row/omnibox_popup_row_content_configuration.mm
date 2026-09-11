@@ -23,7 +23,6 @@
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -189,8 +188,7 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   // Update margins for popout omnibox. Popout omnibox is only available on
   // regular size class.
   configuration.isPopoutOmnibox =
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-      IsRegularXRegularSizeClass(state.traitCollection);
+      ShouldApplyOmniboxPopoutLayout(state.traitCollection);
 
   return configuration;
 }

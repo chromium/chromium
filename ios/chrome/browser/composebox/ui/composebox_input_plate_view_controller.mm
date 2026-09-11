@@ -520,6 +520,27 @@ UIImage* SendButtonImage(BOOL highlighted,
   [_plusButton.contextMenuInteraction dismissMenu];
 }
 
+- (void)updateTheme:(ComposeboxTheme*)theme {
+  _theme = theme;
+  _inputPlateContainerView.backgroundColor = _theme.inputPlateBackgroundColor;
+  CGFloat cornerRadius =
+      _theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad
+          ? kInputPlateIpadCornerRadius
+          : kInputPlateCornerRadius;
+  _inputPlateContainerView.layer.cornerRadius = cornerRadius;
+  _inputPlateInternalContainerView.layer.cornerRadius = cornerRadius;
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    _editView.minimumHeight = kOmniboxCobrowseMinHeight;
+  } else if (_theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad) {
+    _editView.minimumHeight = kOmniboxIPadMinHeight;
+  } else {
+    _editView.minimumHeight = kOmniboxMinHeight;
+  }
+  [self updateInputPlateStackViewPadding];
+  [self updateDepthShadowAppearance];
+  [self updateAIMButtonAppearance];
+}
+
 #pragma mark - ComposeboxInputItemCellDelegate
 
 - (void)composeboxInputItemCellDidTapCloseButton:

@@ -62,6 +62,9 @@
 /// Dismisses the context menu.
 - (void)dismissContextMenu;
 
+// Updates the theme and re-applies appearance properties.
+- (void)updateTheme:(ComposeboxTheme*)theme;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_VIEW_CONTROLLER_H_

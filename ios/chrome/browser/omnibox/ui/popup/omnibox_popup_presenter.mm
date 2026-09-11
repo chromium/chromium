@@ -6,6 +6,7 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_util.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_view_controller.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -15,7 +16,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
-#import "ui/base/device_form_factor.h"
 
 namespace {
 const CGFloat kVerticalOffset = 6;
@@ -103,9 +103,9 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
             respondsToSelector:@selector(popupDidInitializePresenter:)]) {
       [self.delegate popupDidInitializePresenter:self];
     }
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-        _popupContainerView.backgroundColor =
-            [UIColor colorNamed:kPrimaryBackgroundColor];
+    if (ShouldApplyOmniboxPopoutLayout(_popupContainerView.traitCollection)) {
+      _popupContainerView.backgroundColor =
+          [UIColor colorNamed:kPrimaryBackgroundColor];
     } else {
       _popupContainerView.backgroundColor =
           [self.delegate popupBackgroundColorForPresenter:self];
@@ -114,7 +114,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     _popupContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (ShouldApplyOmniboxPopoutLayout(_popupContainerView.traitCollection)) {
       self.viewController.view.layer.masksToBounds = YES;
 
       AddSameConstraints(viewController.view, _popupContainerView);
@@ -136,7 +136,8 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   if (!popupHasContent && popupIsOnscreen) {
     // If intrinsic size is 0 and popup is onscreen, we want to remove the
     // popup view.
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (!ShouldApplyOmniboxPopoutLayout(
+            self.popupContainerView.traitCollection)) {
       self.bottomConstraintPhone.active = NO;
     }
 
@@ -189,19 +190,19 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 }
 
 - (void)updatePopupConstraints {
-    BOOL showRegularLayout =
-        IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
-    if (_presentationContext == OmniboxPresentationContext::kComposebox) {
-      self.bottomConstraintComposeboxRegular.active = showRegularLayout;
+  BOOL showRegularLayout =
+      ShouldApplyOmniboxPopoutLayout(self.popupContainerView.traitCollection);
+  if (_presentationContext == OmniboxPresentationContext::kComposebox) {
+    self.bottomConstraintComposeboxRegular.active = showRegularLayout;
+    self.bottomConstraintPhone.active = !showRegularLayout;
+  } else {
+    if (showRegularLayout) {
       self.bottomConstraintPhone.active = !showRegularLayout;
+      self.heightConstraintTablet.active = showRegularLayout;
     } else {
-      if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-        self.bottomConstraintPhone.active = !showRegularLayout;
-        self.heightConstraintTablet.active = showRegularLayout;
-      } else {
-        self.bottomConstraintPhone.active = YES;
-      }
+      self.bottomConstraintPhone.active = YES;
     }
+  }
 }
 
 // Sets the additional vertical content inset for the suggestion list.
@@ -262,21 +263,28 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
 // Updates the popup's view layer.
 - (void)updatePopupLayer {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
-  _popupContainerView.layer.masksToBounds = NO;
-
   BOOL showRegularLayout =
-      IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
+      ShouldApplyOmniboxPopoutLayout(self.popupContainerView.traitCollection);
 
+  _popupContainerView.layer.masksToBounds = !showRegularLayout;
   _popupContainerView.layer.cornerRadius = showRegularLayout ? 16 : 0;
-  _popupContainerView.layer.shadowColor = UIColor.blackColor.CGColor;
-  _popupContainerView.layer.shadowRadius = 60;
-  _popupContainerView.layer.shadowOffset = CGSizeMake(0, 10);
-  _popupContainerView.layer.shadowOpacity = 0.2;
   self.viewController.view.layer.cornerRadius = showRegularLayout ? 16 : 0;
+
+  if (showRegularLayout) {
+    _popupContainerView.layer.shadowColor = UIColor.blackColor.CGColor;
+    _popupContainerView.layer.shadowRadius = 60;
+    _popupContainerView.layer.shadowOffset = CGSizeMake(0, 10);
+    _popupContainerView.layer.shadowOpacity = 0.2;
+    _popupContainerView.backgroundColor =
+        [UIColor colorNamed:kPrimaryBackgroundColor];
+  } else {
+    _popupContainerView.layer.shadowColor = nil;
+    _popupContainerView.layer.shadowRadius = 0;
+    _popupContainerView.layer.shadowOffset = CGSizeZero;
+    _popupContainerView.layer.shadowOpacity = 0;
+    _popupContainerView.backgroundColor =
+        [self.delegate popupBackgroundColorForPresenter:self];
+  }
 }
 
 // Updates and activates the constraints based on the popup's current view state
@@ -304,11 +312,11 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
         [popup.bottomAnchor constraintEqualToAnchor:popup.superview.bottomAnchor
                                            constant:-offset];
   } else {
-    BOOL tabletFormFactor =
-        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+    BOOL showPopoutLayout =
+        ShouldApplyOmniboxPopoutLayout(self.popupContainerView.traitCollection);
 
     // Bottom constraints.
-    if (tabletFormFactor) {
+    if (showPopoutLayout) {
       BOOL paddingAmmount =
           _presentationContext == OmniboxPresentationContext::kLensOverlay
               ? 0
@@ -352,9 +360,9 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
       [NSMutableArray arrayWithObject:_popupContainerTopConstraint];
 
-  BOOL regularXRegularSizeClass =
-      IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
-  if (regularXRegularSizeClass && self.topOmniboxGuide) {
+  BOOL showPopoutLayout =
+      ShouldApplyOmniboxPopoutLayout(self.popupContainerView.traitCollection);
+  if (showPopoutLayout && self.topOmniboxGuide) {
     NSLayoutConstraint* leadingConstraint = [popup.leadingAnchor
         constraintEqualToAnchor:self.topOmniboxGuide.leadingAnchor
                        constant:-16];

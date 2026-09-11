@@ -56,6 +56,9 @@
 // view to remain hidden.
 - (void)setExpectsClipboardSuggestion:(BOOL)expectsClipboardSuggestion;
 
+// Updates the theme and re-applies layout and appearance constraints.
+- (void)updateTheme:(ComposeboxTheme*)theme;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_VIEW_CONTROLLER_H_

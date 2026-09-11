@@ -14,12 +14,12 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_util.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
-#import "ui/base/device_form_factor.h"
 
 namespace {
 /// The padding for the close button.
@@ -183,7 +183,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
                   withHandler:^(id<UITraitEnvironment> traitEnvironment,
                                 UITraitCollection* previousCollection) {
-                    [weakSelf setupConstraints];
                     if (traitEnvironment.traitCollection.horizontalSizeClass !=
                         previousCollection.horizontalSizeClass) {
                       [weakSelf
@@ -360,6 +359,11 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   [_closeButton removeFromSuperview];
 
   [self.view insertSubview:_closeButton belowSubview:_inputViewController.view];
+  _closeButton.hidden = NO;
+  if (!ShouldApplyOmniboxPopoutLayout(self)) {
+    self.view.layer.cornerRadius = 0;
+    self.view.clipsToBounds = NO;
+  }
   switch ([self currentInputPlatePosition]) {
     case ComposeboxInputPlatePosition::kBottom: {
       _progressiveBlurEffect = [self
@@ -485,7 +489,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                                 LayoutSides::kHorizontal);
 
       CGFloat leadingMargin = kInputPlateIpadMargin;
-      if (!IsRegularXRegularSizeClass(self.traitCollection)) {
+      if (!ShouldApplyOmniboxPopoutLayout(self)) {
         BOOL isRTL = [self.view effectiveUserInterfaceLayoutDirection] ==
                      UIUserInterfaceLayoutDirectionRightToLeft;
         if (isRTL) {
@@ -505,7 +509,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kInputPlateIpadMargin],
       ]];
-      if (IsRegularXRegularSizeClass(self.traitCollection)) {
+      if (ShouldApplyOmniboxPopoutLayout(self)) {
         // Constraints for when the close button is hidden.
         [closeButtonConstraints addObjectsFromArray:@[
           [_inputViewController.view.trailingAnchor
@@ -648,6 +652,19 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   _incognitoView.hidden = expectsClipboardSuggestion;
 }
 
+- (void)updateTheme:(ComposeboxTheme*)theme {
+  _theme = theme;
+  self.view.backgroundColor = _theme.composeboxBackgroundColor;
+  UIButtonConfiguration* config = _closeButton.configuration;
+  config.image = CloseButtonImage(_theme.closeButtonBackgroundColor, NO);
+  _closeButton.configuration = config;
+  [_presenter setPreferredOmniboxPosition:_theme.isTopInputPlate
+                                              ? ToolbarType::kPrimary
+                                              : ToolbarType::kSecondary];
+  [self updateBlurVisibility];
+  [self setupConstraints];
+}
+
 - (ComposeboxInputPlatePosition)currentInputPlatePosition {
   return _inputViewController.view ? _theme.inputPlatePosition
                                    : ComposeboxInputPlatePosition::kMissing;
@@ -658,7 +675,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 - (void)preferredContentSizeDidChangeForChildContentContainer:
     (id<UIContentContainer>)container {
   [super preferredContentSizeDidChangeForChildContentContainer:container];
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ShouldApplyOmniboxPopoutLayout(self)) {
     [self updatePreferredContentSize:container];
   }
 }
