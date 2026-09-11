@@ -2,18 +2,18 @@
     settings-columned-section cr-icons">
 </style>
 
-<settings-subpage page-title="$i18n{personalContextAutofillSettingsTitle}"
+<settings-subpage page-title="$i18n{autofillPersonalContextSettingsTitle}"
     class="multi-card">
   <div class="card">
     <settings-toggle-button id="suggestionsFromGeminiToggle"
         pref="{{prefs.generated.find_and_fill_with_gemini}}"
-        label="$i18n{personalContextAutofillSettingsSwitchTitle}"
-        sub-label="$i18n{personalContextAutofillSettingsSwitchSummary}"
+        label="$i18n{autofillPersonalContextSettingsToggleTitle}"
+        sub-label="$i18n{autofillPersonalContextSettingsToggleSummary}"
         on-settings-boolean-control-change="onToggleChange_">
     </settings-toggle-button>
     <cr-link-row id="manageConnectedAppsLinkRow"
-        label="$i18n{personalContextAutofillSettingsManageConnectedAppsTitle}"
-        sub-label="$i18n{personalContextAutofillSettingsManageConnectedAppsSummary}"
+        label="$i18n{autofillPersonalContextSettingsManageConnectedAppsTitle}"
+        sub-label="$i18n{autofillPersonalContextSettingsManageConnectedAppsSummary}"
         on-click="onManageConnectedAppsClick_"
         external>
     </cr-link-row>
