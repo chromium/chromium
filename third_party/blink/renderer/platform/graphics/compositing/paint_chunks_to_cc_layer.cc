@@ -1067,17 +1067,29 @@ ConversionContext<cc::DisplayItemList>::ComputeScrollTranslationAction(
     return {};
   }
 
-  if (current_scroll_translation_ ==
-      target_scroll_translation.ParentScrollTranslationNode()) {
-    // We need to enter a new level of scroll translation. If a PaintChunk
-    // enters multiple levels of scroll translations at once, this function
-    // will be called for each level of overflow clip before it's called for
-    // the scrolling contents, so we only need to check one level of scroll
-    // translation here.
-    return {ScrollTranslationAction::kStart, &target_scroll_translation};
+  const auto* node = &target_scroll_translation;
+  const auto* child_of_current = node;
+  while (node && node != current_scroll_translation_) {
+    child_of_current = node;
+    node = node->ParentScrollTranslationNode();
   }
 
-  CHECK(target_scroll_translation.IsAncestorOf(*current_scroll_translation_));
+  if (node == current_scroll_translation_) {
+    // If we reach here, it means `current_scroll_translation_` is an ancestor
+    // of `target_scroll_translation`. We need to start a new level of scroll
+    // translation to `child_of_current`.
+    return {ScrollTranslationAction::kStart, child_of_current};
+  }
+
+  if (!outer_state_stack_) {
+    // TODO(crbug.com/40558824): This can happen when we encounter a clip
+    // hierarchy issue. We have to continue.
+    return {};
+  }
+
+  // If we reach here, it means `current_scroll_translation_` is not an ancestor
+  // of `target_scroll_translation`. We need to end the current level of scroll
+  // translation.
   return {ScrollTranslationAction::kEnd};
 }
 
@@ -1155,13 +1167,9 @@ void ConversionContext<Result>::Convert(PaintChunkIterator& chunk_it,
       continue;
     }
     if (action.type == ScrollTranslationAction::kEnd) {
-      if (outer_state_stack_) {
-        // Return to the calling EmitDrawScrollingContentsOp().
-        return;
-      } else {
-        // TODO(crbug.com/40558824): This can happen when we encounter a
-        // clip hierarchy issue. We have to continue.
-      }
+      CHECK(outer_state_stack_);
+      // Return to the calling EmitDrawScrollingContentsOp().
+      return;
     }
 
     for (const auto& item : chunk_it.DisplayItems()) {

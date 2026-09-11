@@ -1323,6 +1323,125 @@ TEST_P(PaintChunksToCcLayerTest,
   }
 }
 
+TEST_P(PaintChunksToCcLayerTest,
+       NestedScrollingContentsWithoutOverflowClipIntoDisplayItemList) {
+  auto* scroll_translation = CreateScrollTranslation(
+      t0(), *t0().ScrollNode(), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200), /*overflow_clip=*/nullptr);
+  auto* nested_scroll_translation = CreateScrollTranslation(
+      *scroll_translation, *scroll_translation->ScrollNode(), -6, -5,
+      gfx::Rect(5, 5, 20, 30), gfx::Size(100, 200), /*overflow_clip=*/nullptr);
+  PropertyTreeState nested_scroll_state(*nested_scroll_translation, c0(), e0());
+
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0());
+  chunks.AddChunk(nested_scroll_state);
+  chunks.AddChunk(t0(), c0(), e0());
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_THAT(cc_list->paint_op_buffer(),
+                ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                            PaintOpIs<cc::DrawScrollingContentsOp>(),
+                            PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+    EXPECT_EQ(
+        InfiniteIntRect(),
+        cc_list->raster_inducing_scrolls()
+            .at(scroll_translation->ScrollNode()->GetCompositorElementId())
+            .visual_rect);
+    const auto& scrolling_contents_op =
+        static_cast<const cc::DrawScrollingContentsOp&>(
+            cc_list->paint_op_buffer().GetOpAtForTesting(1));
+    ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+              scrolling_contents_op.GetType());
+    const auto& scrolling_contents_op_buffer =
+        scrolling_contents_op.display_item_list->paint_op_buffer();
+    EXPECT_THAT(scrolling_contents_op_buffer,
+                ElementsAre(PaintOpIs<cc::DrawScrollingContentsOp>()));
+    const auto& nested_scrolling_contents_op =
+        static_cast<const cc::DrawScrollingContentsOp&>(
+            scrolling_contents_op_buffer.GetOpAtForTesting(0));
+    ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+              nested_scrolling_contents_op.GetType());
+    EXPECT_THAT(
+        nested_scrolling_contents_op.display_item_list->paint_op_buffer(),
+        ElementsAre(PaintOpIs<cc::DrawRecordOp>()));
+  } else {
+    EXPECT_THAT(
+        cc_list->paint_op_buffer(),
+        ElementsAre(
+            PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::TranslateOp>(-56,
+                                       -65),  // <combined-scroll-translation>
+            PaintOpIs<cc::DrawRecordOp>(),    // chunk 1
+            PaintOpIs<cc::RestoreOp>(),       // </combined-scroll-translation>
+            PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+  }
+}
+
+TEST_P(PaintChunksToCcLayerTest,
+       SiblingScrollingContentsWithoutOverflowClipIntoDisplayItemList) {
+  auto* scroll_translation_a = CreateScrollTranslation(
+      t0(), *t0().ScrollNode(), -10, -10, gfx::Rect(0, 0, 100, 100),
+      gfx::Size(200, 200), /*overflow_clip=*/nullptr);
+  PropertyTreeState scroll_state_a(*scroll_translation_a, c0(), e0());
+  auto* scroll_translation_b = CreateScrollTranslation(
+      t0(), *t0().ScrollNode(), -30, -30, gfx::Rect(0, 0, 100, 100),
+      gfx::Size(200, 200), /*overflow_clip=*/nullptr);
+  PropertyTreeState scroll_state_b(*scroll_translation_b, c0(), e0());
+
+  TestChunks chunks;
+  PropertyTreeState layer_state = PropertyTreeState::Root();
+  chunks.AddChunk(layer_state);     // chunk 0
+  chunks.AddChunk(scroll_state_a);  // chunk 1: scroller branch a
+  chunks.AddChunk(scroll_state_b);  // chunk 2: scroller branch b
+  chunks.AddChunk(layer_state);     // chunk 3
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  // Unwinds from Branch A back to Root (LCA) and enters Branch B without
+  // crashing.
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), layer_state,
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_THAT(cc_list->paint_op_buffer(),
+                ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                            PaintOpIs<cc::DrawScrollingContentsOp>(),  // a
+                            PaintOpIs<cc::DrawScrollingContentsOp>(),  // b
+                            PaintOpIs<cc::DrawRecordOp>()));  // chunk 3
+
+    const auto& scroller_a_op = static_cast<const cc::DrawScrollingContentsOp&>(
+        cc_list->paint_op_buffer().GetOpAtForTesting(1));
+    ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents, scroller_a_op.GetType());
+    EXPECT_THAT(scroller_a_op.display_item_list->paint_op_buffer(),
+                ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 1
+
+    const auto& scroller_b_op = static_cast<const cc::DrawScrollingContentsOp&>(
+        cc_list->paint_op_buffer().GetOpAtForTesting(2));
+    ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents, scroller_b_op.GetType());
+    EXPECT_THAT(scroller_b_op.display_item_list->paint_op_buffer(),
+                ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+  } else {
+    EXPECT_THAT(
+        cc_list->paint_op_buffer(),
+        ElementsAre(
+            PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::TranslateOp>(-10, -10),  // <scroll-translation-a>
+            PaintOpIs<cc::DrawRecordOp>(),         // chunk 1
+            PaintOpIs<cc::RestoreOp>(),            // </scroll-translation-a>
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::TranslateOp>(-30, -30),  // <scroll-translation-b>
+            PaintOpIs<cc::DrawRecordOp>(),         // chunk 2
+            PaintOpIs<cc::RestoreOp>(),            // </scroll-translation-b>
+            PaintOpIs<cc::DrawRecordOp>()));       // chunk 3
+  }
+}
+
 // Test for https://crbug.com/413078309.
 TEST_P(PaintChunksToCcLayerTest, VeryTallScrollingContentsIntoDisplayItemList) {
   // A value larger than InfiniteIntRect can represent.
