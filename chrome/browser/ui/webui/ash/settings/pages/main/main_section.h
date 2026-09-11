@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_MAIN_MAIN_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_MAIN_MAIN_SECTION_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 
@@ -14,6 +15,10 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
+
 namespace ash::settings {
 
 // Provides UI strings for the main settings page, including the toolbar, search
@@ -21,8 +26,10 @@ namespace ash::settings {
 // since they only apply to specific pages/settings.
 class MainSection : public OsSettingsSection {
  public:
-  MainSection(Profile* profile,
-              ash::settings::SearchTagRegistry* search_tag_registry);
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  MainSection(policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+              Profile* profile,
+              SearchTagRegistry* search_tag_registry);
   ~MainSection() override;
 
   // OsSettingsSection:
@@ -39,6 +46,9 @@ class MainSection : public OsSettingsSection {
  private:
   void AddChromeOSUserStrings(content::WebUIDataSource* html_source);
   std::unique_ptr<PluralStringHandler> CreatePluralStringHandler();
+
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 };
 
 }  // namespace ash::settings

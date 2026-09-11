@@ -18,8 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/main/os_settings_hats_handler.h"
@@ -32,6 +30,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -69,12 +68,12 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
                          personalization_app::kAmbientSubpageRelativeUrl);
 }
 
-void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
+void AddUpdateRequiredEolStrings(policy::BrowserPolicyConnectorAsh& connector,
+                                 content::WebUIDataSource* html_source) {
   policy::MinimumVersionPolicyHandler* handler =
-      connector->GetMinimumVersionPolicyHandler();
-  bool device_managed = connector->IsDeviceEnterpriseManaged();
+      connector.GetMinimumVersionPolicyHandler();
+  const bool device_managed =
+      ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
   // |eol_return_banner_text| contains the update required end of life banner
   // text which is left empty when the banner should not be shown.
@@ -88,7 +87,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
       // deadline.
       int days_remaining = days.value() ? days.value() : 1;
       std::u16string domain_name =
-          base::UTF8ToUTF16(connector->GetEnterpriseDomainManager());
+          base::UTF8ToUTF16(connector.GetEnterpriseDomainManager());
       std::u16string link_url = ash::chrome_urls::kChromeUIManagementURL16;
       if (days_remaining == 7) {
         eol_return_banner_text = l10n_util::GetStringFUTF16(
@@ -100,7 +99,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
                 l10n_util::GetStringUTF16(
                     IDS_SETTINGS_UPDATE_REQUIRED_EOL_BANNER_DAYS),
                 days_remaining,
-                base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()),
+                base::UTF8ToUTF16(connector.GetEnterpriseDomainManager()),
                 ui::GetChromeOSDeviceName(),
                 std::u16string(ash::chrome_urls::kChromeUIManagementURL16));
       }
@@ -111,9 +110,13 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
 
 }  // namespace
 
-MainSection::MainSection(Profile* profile,
-                         SearchTagRegistry* search_tag_registry)
-    : OsSettingsSection(profile, search_tag_registry) {}
+MainSection::MainSection(
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    Profile* profile,
+    SearchTagRegistry* search_tag_registry)
+    : OsSettingsSection(profile, search_tag_registry),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)) {
+}
 
 MainSection::~MainSection() = default;
 
@@ -194,7 +197,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   AddSearchInSettingsStrings(html_source);
   AddChromeOSUserStrings(html_source);
-  AddUpdateRequiredEolStrings(html_source);
+  AddUpdateRequiredEolStrings(browser_policy_connector_ash_.get(), html_source);
 
   policy_indicator::AddLocalizedStrings(html_source);
 }

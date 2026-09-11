@@ -51,8 +51,8 @@ OsSettingsSections::OsSettingsSections(
   auto* prefs = profile->GetPrefs();
 
   // Special case: Main section does not have an associated enum value.
-  sections_.push_back(
-      std::make_unique<MainSection>(profile, search_tag_registry));
+  sections_.push_back(std::make_unique<MainSection>(
+      browser_policy_connector_ash, profile, search_tag_registry));
 
   AddSection(mojom::Section::kNetwork,
              std::make_unique<InternetSection>(profile, search_tag_registry));
