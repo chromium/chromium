@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "url/gurl.h"
 
 namespace signin_ui_util {
 
@@ -60,6 +61,7 @@ void SigninUiDelegateImplDice::ShowReauthUI(
 
 void SigninUiDelegateImplDice::ShowCrossDeviceSigninQrBubble(
     BrowserWindowInterface* browser,
+    GURL qr_code_url,
     base::OnceClosure closing_callback) {
   if (!browser) {
     if (closing_callback) {
@@ -68,7 +70,7 @@ void SigninUiDelegateImplDice::ShowCrossDeviceSigninQrBubble(
     return;
   }
   SigninViewController::From(browser)->ShowCrossDeviceSigninQrBubble(
-      std::move(closing_callback));
+      std::move(qr_code_url), std::move(closing_callback));
 }
 
 }  // namespace signin_ui_util

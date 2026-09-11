@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -162,6 +163,7 @@ class CrossDeviceSigninQrWebView : public views::WebView,
 
 std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
     BrowserWindowInterface* browser,
+    GURL qr_code_url,
     base::OnceClosure closing_callback) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
 
@@ -207,6 +209,14 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
   auto web_view =
       std::make_unique<CrossDeviceSigninQrWebView>(browser->GetProfile());
   web_view->LoadInitialURL(GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL));
+  CrossDeviceSigninQrBubbleUI* qr_bubble_ui =
+      web_view->GetWebContents()
+          ->GetWebUI()
+          ->GetController()
+          ->GetAs<CrossDeviceSigninQrBubbleUI>();
+  if (qr_bubble_ui) {
+    qr_bubble_ui->Initialize(std::move(qr_code_url));
+  }
   // An initial non-zero height is required on macOS to ensure WebContents
   // allocates a valid initial viewport for rendering before auto-resize.
   constexpr int kPlaceholderHeight = 200;

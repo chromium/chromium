@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "url/gurl.h"
 
 class BrowserWindowInterface;
 
@@ -21,6 +22,7 @@ class BubbleDialogDelegate;
 
 std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
     BrowserWindowInterface* browser,
+    GURL qr_code_url,
     base::OnceClosure closing_callback);
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_CROSS_DEVICE_SIGNIN_QR_BUBBLE_H_

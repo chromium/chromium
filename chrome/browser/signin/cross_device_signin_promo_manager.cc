@@ -13,7 +13,9 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -31,8 +34,22 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "net/base/url_util.h"
+#include "url/gurl.h"
 
 namespace {
+
+// These query parameter names are used to track installs on iOS and Android.
+constexpr std::string_view kCrossDevicePromoIOSCampaignQueryParam =
+    "ios-campaign";
+constexpr std::string_view kCrossDevicePromoAndroidCampaignQueryParam =
+    "android-campaign";
+
+// Campaign values for cross-device sign-in QR code bubble entry points.
+constexpr std::string_view kCrossDeviceProfileMenuCampaign =
+    "XDeviceProfileMenu";
+constexpr std::string_view kCrossDeviceHistoryPageCampaign =
+    "XDeviceHistoryPage";
 
 // Sub-dictionary serialization keys to be used per data type, defined in
 // `GetEntryPointPrefKey()` below.
@@ -216,6 +233,30 @@ bool IsHistorySyncEnabled(Profile* profile) {
       syncer::UserSelectableType::kHistory);
 }
 
+std::string_view GetCrossDevicePromoCampaign(
+    CrossDeviceSigninPromoEntryPoint entry_point) {
+  switch (entry_point) {
+    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+      return kCrossDeviceProfileMenuCampaign;
+    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+      return kCrossDeviceHistoryPageCampaign;
+  }
+}
+
+GURL GetCrossDeviceSigninQrCodeUrl(CrossDeviceSigninPromoEntryPoint entry_point,
+                                   const std::string& email) {
+  std::string_view campaign = GetCrossDevicePromoCampaign(entry_point);
+  std::string base_url_str = switches::kCrossDeviceSigninFromDesktopUrl.Get();
+  std::string url_str = base::ReplaceStringPlaceholders(
+      base_url_str, {base::EscapeQueryParamValue(email, true)}, nullptr);
+  GURL url(url_str);
+  url = net::AppendOrReplaceQueryParameter(
+      url, kCrossDevicePromoIOSCampaignQueryParam, campaign);
+  url = net::AppendOrReplaceQueryParameter(
+      url, kCrossDevicePromoAndroidCampaignQueryParam, campaign);
+  return url;
+}
+
 }  // namespace
 
 bool ShouldShowCrossDeviceSigninPromo(
@@ -308,8 +349,28 @@ void OpenSigninToPhoneQrCodeBubble(BrowserWindowInterface* browser_window,
                                    CrossDeviceSigninPromoEntryPoint entry_point,
                                    base::OnceClosure closing_callback) {
   CHECK(base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop));
+  if (!browser_window) {
+    return;
+  }
+  Profile* profile = browser_window->GetProfile();
+  if (!profile) {
+    return;
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return;
+  }
+  CoreAccountInfo primary_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (primary_account_info.IsEmpty() || primary_account_info.email.empty()) {
+    return;
+  }
+
   base::UmaHistogramEnumeration(
       "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble", entry_point);
-  signin_ui_util::ShowCrossDeviceSigninQrBubble(browser_window,
-                                                std::move(closing_callback));
+  GURL qr_code_url =
+      GetCrossDeviceSigninQrCodeUrl(entry_point, primary_account_info.email);
+  signin_ui_util::ShowCrossDeviceSigninQrBubble(
+      browser_window, std::move(qr_code_url), std::move(closing_callback));
 }

@@ -51,8 +51,11 @@ class CrossDeviceSigninQrBubbleHandler
  public:
   CrossDeviceSigninQrBubbleHandler(
       mojo::PendingReceiver<cross_device_signin::mojom::PageHandler> receiver,
-      Profile* profile)
-      : receiver_(this, std::move(receiver)), profile_(profile) {}
+      Profile* profile,
+      GURL qr_code_url)
+      : receiver_(this, std::move(receiver)),
+        profile_(profile),
+        qr_code_url_(std::move(qr_code_url)) {}
 
   ~CrossDeviceSigninQrBubbleHandler() override = default;
 
@@ -82,10 +85,6 @@ class CrossDeviceSigninQrBubbleHandler
         identity_manager->FindExtendedAccountInfo(core_info);
     data->full_name = std::string(account_info.GetFullName().value_or(""));
 
-    std::string qr_code_url = base::ReplaceStringPlaceholders(
-        switches::kCrossDeviceSigninFromDesktopUrl.Get(),
-        {base::EscapeQueryParamValue(data->email, true)}, nullptr);
-
     std::optional<gfx::Image> avatar_image =
         account_info.IsEmpty() ? std::nullopt : account_info.GetAvatarImage();
     base::expected<gfx::ImageSkia, qr_code_generator::Error> qr_image;
@@ -94,13 +93,13 @@ class CrossDeviceSigninQrBubbleHandler
           avatar_image.value(), avatar_image->Width(), avatar_image->Height(),
           profiles::SHAPE_CIRCLE);
       qr_image = qr_code_generator::GenerateImage(
-          base::as_byte_span(qr_code_url),
+          base::as_byte_span(qr_code_url_.spec()),
           qr_code_generator::ModuleStyle::kCircles,
           qr_code_generator::LocatorStyle::kRounded, round_avatar.AsImageSkia(),
           qr_code_generator::QuietZone::kWillBeAddedByClient);
     } else {
       qr_image = qr_code_generator::GenerateImage(
-          base::as_byte_span(qr_code_url),
+          base::as_byte_span(qr_code_url_.spec()),
           qr_code_generator::ModuleStyle::kCircles,
           qr_code_generator::LocatorStyle::kRounded,
           qr_code_generator::CenterImage::kProductLogo,
@@ -118,6 +117,7 @@ class CrossDeviceSigninQrBubbleHandler
  private:
   mojo::Receiver<cross_device_signin::mojom::PageHandler> receiver_;
   raw_ptr<Profile> profile_;
+  GURL qr_code_url_;
 };
 
 }  // namespace
@@ -147,6 +147,10 @@ CrossDeviceSigninQrBubbleUI::~CrossDeviceSigninQrBubbleUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CrossDeviceSigninQrBubbleUI)
 
+void CrossDeviceSigninQrBubbleUI::Initialize(GURL qr_code_url) {
+  qr_code_url_ = std::move(qr_code_url);
+}
+
 void CrossDeviceSigninQrBubbleUI::BindInterface(
     mojo::PendingReceiver<cross_device_signin::mojom::PageHandlerFactory>
         receiver) {
@@ -157,5 +161,5 @@ void CrossDeviceSigninQrBubbleUI::BindInterface(
 void CrossDeviceSigninQrBubbleUI::CreateCrossDeviceSigninQrBubbleHandler(
     mojo::PendingReceiver<cross_device_signin::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<CrossDeviceSigninQrBubbleHandler>(
-      std::move(receiver), Profile::FromWebUI(web_ui()));
+      std::move(receiver), Profile::FromWebUI(web_ui()), qr_code_url_);
 }

@@ -168,7 +168,8 @@ class SigninViewController {
   // Shows the cross-device sign-in QR code bubble. The bubble is anchored to
   // the profile menu button if available, or centered on the browser window
   // otherwise.
-  void ShowCrossDeviceSigninQrBubble(base::OnceClosure closing_callback);
+  void ShowCrossDeviceSigninQrBubble(GURL qr_code_url,
+                                     base::OnceClosure closing_callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top

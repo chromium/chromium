@@ -60,6 +60,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -153,9 +154,10 @@ SigninUiDelegate* GetSigninUiDelegate() {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ShowCrossDeviceSigninQrBubble(BrowserWindowInterface* browser,
+                                   GURL qr_code_url,
                                    base::OnceClosure closing_callback) {
   GetSigninUiDelegate()->ShowCrossDeviceSigninQrBubble(
-      browser, std::move(closing_callback));
+      browser, std::move(qr_code_url), std::move(closing_callback));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

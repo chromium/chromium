@@ -25,6 +25,7 @@ class SigninUiDelegateImplDice : public SigninUiDelegate {
                     signin_metrics::PromoAction promo_action) override;
   void ShowCrossDeviceSigninQrBubble(
       BrowserWindowInterface* browser,
+      GURL qr_code_url,
       base::OnceClosure closing_callback) override;
 };
 

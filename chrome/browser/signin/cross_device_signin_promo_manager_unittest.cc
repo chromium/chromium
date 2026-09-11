@@ -12,8 +12,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/signin/signin_ui_delegate.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -27,7 +30,38 @@
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_device_info/test_device_info_builder.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/url_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+namespace {
+
+class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
+ public:
+  MOCK_METHOD(void,
+              ShowSigninUI,
+              (Profile*,
+               bool,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction,
+               const std::string&),
+              (override));
+  MOCK_METHOD(void,
+              ShowReauthUI,
+              (Profile*,
+               const std::string&,
+               bool,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction),
+              (override));
+  MOCK_METHOD(void,
+              ShowCrossDeviceSigninQrBubble,
+              (BrowserWindowInterface*, GURL, base::OnceClosure),
+              (override));
+};
+
+}  // namespace
 
 class CrossDeviceSigninPromoManagerTest : public testing::Test {
  public:
@@ -386,20 +420,137 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
 }
 
 TEST_F(CrossDeviceSigninPromoManagerTest,
-       OpenSigninToPhoneQrCodeBubbleRecordsOpenedMetric) {
+       OpenSigninToPhoneQrCodeBubble_NoAccountOrWindowDropsBubble) {
   base::HistogramTester histogram_tester;
 
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+  EXPECT_CALL(mock_delegate, ShowCrossDeviceSigninQrBubble).Times(0);
+
+  // Null window drops bubble.
   OpenSigninToPhoneQrCodeBubble(nullptr,
+                                CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+                                base::DoNothing());
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble", 0);
+
+  // Signed out drops bubble even if window is present.
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+                                base::DoNothing());
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble", 0);
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       OpenSigninToPhoneQrCodeBubbleRecordsOpenedMetricAndGeneratesCorrectUrl) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kCrossDeviceSigninFromDesktop);
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user+test@gmail.com", signin::ConsentLevel::kSignin);
+
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+
+  // Test ProfileMenu entry point.
+  GURL captured_url;
+  EXPECT_CALL(mock_delegate, ShowCrossDeviceSigninQrBubble(
+                                 &browser_window, testing::_, testing::_))
+      .WillOnce(testing::SaveArg<1>(&captured_url));
+
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+                                base::DoNothing());
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble",
+      CrossDeviceSigninPromoEntryPoint::kProfileMenu, 1);
+
+  std::string campaign_val;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(captured_url, "ios-campaign", &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceProfileMenu");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "android-campaign",
+                                         &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceProfileMenu");
+  std::string email_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "email", &email_val));
+  EXPECT_EQ(email_val, "user+test@gmail.com");
+  std::string entry_point_id_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "entry_point_id",
+                                         &entry_point_id_val));
+  EXPECT_EQ(entry_point_id_val, "1");
+
+  // Test HistoryPage entry point.
+  EXPECT_CALL(mock_delegate, ShowCrossDeviceSigninQrBubble(
+                                 &browser_window, testing::_, testing::_))
+      .WillOnce(testing::SaveArg<1>(&captured_url));
+
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
                                 CrossDeviceSigninPromoEntryPoint::kHistoryPage,
                                 base::DoNothing());
   histogram_tester.ExpectBucketCount(
       "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble",
       CrossDeviceSigninPromoEntryPoint::kHistoryPage, 1);
 
-  OpenSigninToPhoneQrCodeBubble(nullptr,
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(captured_url, "ios-campaign", &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceHistoryPage");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "android-campaign",
+                                         &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceHistoryPage");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "email", &email_val));
+  EXPECT_EQ(email_val, "user+test@gmail.com");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "entry_point_id",
+                                         &entry_point_id_val));
+  EXPECT_EQ(entry_point_id_val, "1");
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       OpenSigninToPhoneQrCodeBubble_ReplacesExistingCampaignParams) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      switches::kCrossDeviceSigninFromDesktop,
+      {{"url",
+        "https://www.google.com/"
+        "chrome/go-mobile?ios-campaign=old&android-campaign=old"}});
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+
+  GURL captured_url;
+  EXPECT_CALL(mock_delegate, ShowCrossDeviceSigninQrBubble(
+                                 &browser_window, testing::_, testing::_))
+      .WillOnce(testing::SaveArg<1>(&captured_url));
+
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
                                 CrossDeviceSigninPromoEntryPoint::kProfileMenu,
                                 base::DoNothing());
-  histogram_tester.ExpectBucketCount(
-      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble",
-      CrossDeviceSigninPromoEntryPoint::kProfileMenu, 1);
+
+  std::string campaign_val;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(captured_url, "ios-campaign", &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceProfileMenu");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "android-campaign",
+                                         &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceProfileMenu");
 }

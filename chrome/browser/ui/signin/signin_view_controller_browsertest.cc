@@ -1127,7 +1127,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   EXPECT_FALSE(avatar_button->HasExplicitButtonState());
 
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
-      closing_callback.Get());
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get());
 
   views::Widget* bubble_widget = widget_future.Get();
   ASSERT_TRUE(bubble_widget);
@@ -1193,7 +1193,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   base::MockCallback<base::OnceClosure> closing_callback;
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
-      closing_callback.Get());
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get());
   views::Widget* bubble_widget = widget_future.Get();
 
   ASSERT_TRUE(bubble_widget);
@@ -1214,7 +1214,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   base::MockCallback<base::OnceClosure> closing_callback;
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
-      closing_callback.Get());
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get());
   views::Widget* bubble_widget = widget_future.Get();
 
   ASSERT_TRUE(bubble_widget);
@@ -1235,7 +1235,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   base::MockCallback<base::OnceClosure> closing_callback;
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
-      closing_callback.Get());
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get());
   views::Widget* bubble_widget = widget_future.Get();
 
   ASSERT_TRUE(bubble_widget);

@@ -47,6 +47,7 @@ source_set("signin") {
     "//components/signin/core/browser",
     "//ui/base",
     "//ui/base/interaction",
+    "//url",
   ]
 
   if (enable_dice_support) {
@@ -294,6 +295,7 @@ source_set("impl") {
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//google_apis",
+      "//net",
       "//ui/base",
     ]
     if (!is_android) {

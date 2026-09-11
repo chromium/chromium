@@ -186,7 +186,7 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
               (override));
   MOCK_METHOD(void,
               ShowCrossDeviceSigninQrBubble,
-              (BrowserWindowInterface*, base::OnceClosure),
+              (BrowserWindowInterface*, GURL, base::OnceClosure),
               (override));
 };
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

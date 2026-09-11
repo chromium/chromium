@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "url/gurl.h"
 
 class CrossDeviceSigninQrBubbleUI;
 
@@ -36,6 +37,10 @@ class CrossDeviceSigninQrBubbleUI
   CrossDeviceSigninQrBubbleUI& operator=(const CrossDeviceSigninQrBubbleUI&) =
       delete;
 
+  void Initialize(GURL qr_code_url);
+
+  const GURL& qr_code_url() const { return qr_code_url_; }
+
   void BindInterface(
       mojo::PendingReceiver<cross_device_signin::mojom::PageHandlerFactory>
           receiver);
@@ -46,6 +51,7 @@ class CrossDeviceSigninQrBubbleUI
       mojo::PendingReceiver<cross_device_signin::mojom::PageHandler> receiver)
       override;
 
+  GURL qr_code_url_;
   std::unique_ptr<cross_device_signin::mojom::PageHandler> page_handler_;
 
   mojo::Receiver<cross_device_signin::mojom::PageHandlerFactory>

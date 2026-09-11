@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
@@ -75,6 +76,7 @@ class SigninUiDelegate {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   virtual void ShowCrossDeviceSigninQrBubble(
       BrowserWindowInterface* browser,
+      GURL qr_code_url,
       base::OnceClosure closing_callback) = 0;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
