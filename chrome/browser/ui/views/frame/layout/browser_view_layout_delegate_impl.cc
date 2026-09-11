@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
-#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/common/buildflags.h"
@@ -278,10 +277,6 @@ int BrowserViewLayoutDelegateImpl::GetExtraInfobarOffset() const {
   }
 #endif
   return 0;
-}
-
-bool BrowserViewLayoutDelegateImpl::IsOrganizerPanelVisible() const {
-  return organizer_panel::IsOrganizerPanelFeatureEnabled();
 }
 
 const BrowserFrameView* BrowserViewLayoutDelegateImpl::GetFrameView() const {

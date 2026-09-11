@@ -64,7 +64,6 @@ class BrowserViewLayoutDelegate {
       const gfx::Rect& available_titlebar_area) = 0;
   virtual bool ShouldLayoutTabStrip() const = 0;
   virtual int GetExtraInfobarOffset() const = 0;
-  virtual bool IsOrganizerPanelVisible() const = 0;
   virtual base::CallbackListSubscription AddOnGlassModeChangedCallback(
       base::RepeatingCallback<void(bool)> callback,
       bool* current_state_out) = 0;

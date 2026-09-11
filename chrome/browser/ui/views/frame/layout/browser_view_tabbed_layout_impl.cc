@@ -1571,12 +1571,13 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     // When the organizer panel is animating open or closed and does not appear
     // elevated, the background of vertical tabs should fade to match the
     // background color of the panel.
-    if (delegate().IsOrganizerPanelVisible()) {
+    if (IsParentedTo(views().organizer_tray, views().browser_view)) {
       CustomFloatingCorner* const vertical_tabs_top_corner =
           views().vertical_tab_strip_top_corner;
       CustomFloatingCorner* const vertical_tabs_bottom_corner =
           views().vertical_tab_strip_bottom_corner;
-      if (!views().organizer_tray->is_elevated()) {
+      if (views().organizer_tray->GetVisible() &&
+          !views().organizer_tray->is_elevated()) {
         const double organizer_panel_reveal_amount =
             delegate()
                 .GetAnimationController()
