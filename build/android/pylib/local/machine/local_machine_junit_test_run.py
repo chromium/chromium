@@ -133,6 +133,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
             '--add-opens=java.base/java.lang=ALL-UNNAMED',
             '--add-opens=java.base/java.util=ALL-UNNAMED',
             '--add-opens=java.base/jdk.internal.access=ALL-UNNAMED',
+            # JEP 472 (JDK 24+) requires native access to be explicitly enabled to
+            # avoid warnings on restricted methods like System.load.
+            '--enable-native-access=ALL-UNNAMED',
             # Disable warning about mockito/bytebuddy dynamically adding an
             # agent.
             '-XX:+EnableDynamicAgentLoading',
