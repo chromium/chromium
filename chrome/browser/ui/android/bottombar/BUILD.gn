@@ -135,6 +135,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarPromoDialogCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarViewBinderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarViewUnitTest.java",
   ]
   deps = [
     ":config_java",

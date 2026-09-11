@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.ui.bottombar;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -53,6 +55,16 @@ public class BottomBarView extends LinearLayout {
 
     public BottomBarView(Context context, @Nullable AttributeSet attributeSet) {
         super(context, attributeSet);
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent event) {
+        // Consume touches in padding/empty space so they don't fall through to WebContents
+        // and trigger Contextual Search or click interactions (crbug.com/558675943).
+        // Done via onTouchEvent instead of clickable="true" so TalkBack doesn't announce the
+        // entire bottom bar layout as a button.
+        return true;
     }
 
     @Override
