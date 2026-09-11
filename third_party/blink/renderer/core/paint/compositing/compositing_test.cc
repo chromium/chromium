@@ -1257,6 +1257,53 @@ TEST_P(CompositingTest, MergeStickyLayersWithCullRectBothAxesScrollRange) {
   EXPECT_TRUE(CcLayerByDOMElementId("d5"));
 }
 
+TEST_P(CompositingTest, DontMergeStickyLayersAcrossNon2dTranslationTransform) {
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <style>
+      .scroller {
+        width: 200px;
+        height: 200px;
+        overflow: scroll;
+        position: relative;
+      }
+      .wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100px;
+        height: 400px;
+        visibility: hidden;
+      }
+      .sticky {
+        position: sticky;
+        top: 0;
+        width: 100px;
+        height: 100px;
+        visibility: visible;
+      }
+    </style>
+    <div class="scroller">
+      <div style="height: 400px"></div>
+      <div class="wrapper">
+        <div id="a" class="sticky"></div>
+      </div>
+      <div class="wrapper" style="transform: rotate(1deg)">
+        <div id="b" class="sticky"></div>
+      </div>
+    </div>
+  )HTML");
+
+  // The two sticky elements have matching sticky constraints, but `b` is under
+  // a non-2d-translation transform. They should not be merged because the
+  // compositor sticky offset applied to a merged layer would not correctly
+  // account for the transform above `b`.
+  cc::Layer* a = CcLayerByDOMElementId("a");
+  ASSERT_TRUE(a);
+  cc::Layer* b = CcLayerByDOMElementId("b");
+  ASSERT_TRUE(b);
+  EXPECT_NE(a->transform_tree_index(), b->transform_tree_index());
+}
+
 TEST_P(CompositingTest, DontCompositeStickyAlongNonScrollableAxis) {
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <style>

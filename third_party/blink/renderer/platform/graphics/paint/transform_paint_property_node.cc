@@ -184,7 +184,8 @@ TransformPaintPropertyNode::CanMergeForStickyPosition(
       UnaliasedParent()->NearestDirectlyCompositedAncestor() !=
           other.UnaliasedParent()->NearestDirectlyCompositedAncestor() ||
       &NearestScrollTranslationNode() !=
-          &other.NearestScrollTranslationNode()) {
+          &other.NearestScrollTranslationNode() ||
+      RootOf2dTranslation() != other.RootOf2dTranslation()) {
     return cc::StickyPositionConstraint::CanMergeResult::kCannotMerge;
   }
 
