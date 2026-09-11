@@ -517,9 +517,6 @@ void ExtensionTabUtil::ScrubTabForExtension(
       tab->title.reset();
       tab->fav_icon_url.reset();
       break;
-    case kScrubTabUrlToOrigin:
-      tab->url = GURL(*tab->url).DeprecatedGetOriginAsURL().spec();
-      break;
     case kDontScrubTab:
       break;
   }
@@ -529,10 +526,6 @@ void ExtensionTabUtil::ScrubTabForExtension(
     switch (scrub_tab_behavior.pending_info) {
       case kScrubTabFully:
         tab->pending_url.reset();
-        break;
-      case kScrubTabUrlToOrigin:
-        tab->pending_url =
-            GURL(*tab->pending_url).DeprecatedGetOriginAsURL().spec();
         break;
       case kDontScrubTab:
         break;

@@ -81,7 +81,6 @@ class ExtensionTabUtil {
 
   enum ScrubTabBehaviorType {
     kScrubTabFully,
-    kScrubTabUrlToOrigin,
     kDontScrubTab,
   };
 
