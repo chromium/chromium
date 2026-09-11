@@ -4,6 +4,7 @@
 
 #include "partition_alloc/pointers/raw_ptr.h"
 
+#include <array>
 #include <climits>
 #include <cstddef>
 #include <cstdint>
@@ -1111,15 +1112,23 @@ TEST_F(RawPtrTest, MinusOperator) {
 }
 
 TEST_F(RawPtrTest, MinusDeltaOperator) {
-  int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptrs[] = {
-      PA_UNSAFE_TODO(&foo[0]), PA_UNSAFE_TODO(&foo[1]), PA_UNSAFE_TODO(&foo[2]),
-      PA_UNSAFE_TODO(&foo[3]), PA_UNSAFE_TODO(&foo[4])};
+  // This test ensures that when subtracting two raw_ptrs from each other the
+  // resulting ptrdiff_t is the same distance from each other as what you'd get
+  // if you subtracted just regular std::array (or int*) pointers. We also want
+  // to test the "end()" address to ensure old C style arrays would work. But to
+  // avoid indexing out of bounds we use base::to_address(foo.end()) to get
+  // the address.
+
+  auto foo = std::to_array<int>({42, 43, 44, 45});
+  auto ptrs = std::to_array<CountingRawPtr<int>>(
+      {&foo[0], &foo[1], &foo[2], &foo[3], base::to_address(foo.end())});
   for (int i = 0; i <= 4; ++i) {
     for (int j = 0; j <= 4; ++j) {
-      ASSERT_EQ(PA_UNSAFE_TODO(ptrs[i] - ptrs[j]), i - j);
-      ASSERT_EQ(PA_UNSAFE_TODO(ptrs[i] - &foo[j]), i - j);
-      ASSERT_EQ(PA_UNSAFE_TODO(&foo[i] - ptrs[j]), i - j);
+      int* foo_i = i == foo.size() ? base::to_address(foo.end()) : &foo[i];
+      int* foo_j = j == foo.size() ? base::to_address(foo.end()) : &foo[j];
+      ASSERT_EQ(ptrs[i] - ptrs[j], i - j);
+      ASSERT_EQ(ptrs[i] - foo_j, i - j);
+      ASSERT_EQ(foo_i - ptrs[j], i - j);
     }
   }
   EXPECT_THAT((CountingRawPtrExpectations{
