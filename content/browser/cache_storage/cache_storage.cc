@@ -628,10 +628,6 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     }
 
     if (!index.has_storage_key()) {
-      // TODO(crbug.com/556636148): CHECK-exclusion: Convert to a CHECK once we
-      // are confident it won't be triggered.
-      DCHECK(bucket_locator.storage_key.origin().GetURL().spec() ==
-             index.origin());
       index.set_storage_key(bucket_locator.storage_key.Serialize());
       index_modified = true;
     }
