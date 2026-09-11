@@ -4,6 +4,8 @@
 
 #ifndef COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_SERVICE_IMPL_H_
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_SERVICE_IMPL_H_
+#include <optional>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -89,7 +91,30 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
 
   ExpiringSubscription gmail_subscription_;
 
-  ExpiringCache<OneTimeToken, decltype(&OneTimeToken::on_device_arrival_time)>
+  // Keys used by `cache_` to identify and deduplicate tokens. Unlike a direct
+  // comparison of `OneTimeToken` objects (which was removed because different
+  // callers have different equality requirements), this key explicitly captures
+  // the identity of a token for caching purposes: `type`, `value`, and
+  // `sender_address`, while intentionally ignoring arrival time.
+  struct CacheKey {
+    OneTimeTokenType type;
+    std::string_view value;
+    std::optional<std::string_view> sender_address;
+    bool operator==(const CacheKey&) const = default;
+  };
+
+  // Projection functor used by `ExpiringCache` to project a `OneTimeToken` to
+  // its `CacheKey`. This allows the cache to detect duplicates without
+  // requiring `OneTimeToken` to define a global `operator==`.
+  struct CacheProjection {
+    CacheKey operator()(const OneTimeToken& token) const {
+      return {token.type(), token.value(), token.sender_address()};
+    }
+  };
+
+  ExpiringCache<OneTimeToken,
+                decltype(&OneTimeToken::on_device_arrival_time),
+                CacheProjection>
       cache_;
 
   OneTimeTokenLogSink log_sink_;

@@ -43,13 +43,6 @@ class OneTimeToken {
     return sender_address_;
   }
 
-  // Performs a comparison of `OneTimeToken`s, ignoring the
-  // `on_device_arrival_time_`.
-  // TODO(crbug.com/532094982): Remove == and != operators since different
-  // use cases might require different comparison logic.
-  bool operator==(const OneTimeToken& other) const;
-  bool operator!=(const OneTimeToken& other) const;
-
  private:
   OneTimeTokenType type_;
   std::string value_;

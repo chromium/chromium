@@ -27,17 +27,6 @@ TEST(OneTimeToken, GmailOtpConstructor) {
   EXPECT_EQ(token.sender_address(), "no_reply@example.com");
 }
 
-TEST(OneTimeToken, Equality) {
-  base::TimeTicks now = base::TimeTicks::Now();
-  OneTimeToken token1(OneTimeTokenType::kGmail, "value", now, "example.com");
-  OneTimeToken token2(OneTimeTokenType::kGmail, "value", now, "example.com");
-  OneTimeToken token3(OneTimeTokenType::kGmail, "value", now, "other.com");
-  OneTimeToken token4(OneTimeTokenType::kSmsOtp, "value", now, std::nullopt);
-  EXPECT_EQ(token1, token2);
-  EXPECT_NE(token1, token3);
-  EXPECT_NE(token1, token4);
-}
-
 TEST(OneTimeToken, IsPotentialOtp) {
   EXPECT_TRUE(OneTimeToken::IsPotentialOtp(u"1234"));
   EXPECT_TRUE(OneTimeToken::IsPotentialOtp(u"12345"));

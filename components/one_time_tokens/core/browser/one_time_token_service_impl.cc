@@ -26,7 +26,8 @@ OneTimeTokenServiceImpl::OneTimeTokenServiceImpl(
     : sms_{.has_pending_request = false, .backend = sms_otp_backend},
       gmail_{.backend = gmail_otp_backend},
       cache_(kCacheDurationForOldTokens,
-             &OneTimeToken::on_device_arrival_time) {
+             &OneTimeToken::on_device_arrival_time,
+             CacheProjection()) {
   if (gmail_.backend) {
     gmail_.backend->SetLogSink(&log_sink_);
   }
