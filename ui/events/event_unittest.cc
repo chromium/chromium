@@ -903,23 +903,23 @@ class AltGraphEventTest
       : msg_({nullptr, message_type(),
               static_cast<WPARAM>(test_case().key_code)}) {
     // Save the current keyboard layout and state, to restore later.
-    CHECK(GetKeyboardState(original_keyboard_state_));
+    CHECK(GetKeyboardState(original_keyboard_state_.data()));
     original_keyboard_layout_ = GetKeyboardLayout(0);
 
     // Configure specified layout, and update keyboard state for specified
     // modifier keys.
     CHECK(ActivateKeyboardLayout(GetPlatformKeyboardLayout(test_case().layout),
                                  0));
-    BYTE test_keyboard_state[256] = {};
+    std::array<BYTE, 256> test_keyboard_state = {};
     for (const auto& key_code : test_case().modifier_key_codes)
-      UNSAFE_TODO(test_keyboard_state[key_code]) = 0x80;
-    CHECK(SetKeyboardState(test_keyboard_state));
+      test_keyboard_state[key_code] = 0x80;
+    CHECK(SetKeyboardState(test_keyboard_state.data()));
   }
 
   ~AltGraphEventTest() {
     // Restore the original keyboard layout & key states.
     CHECK(ActivateKeyboardLayout(original_keyboard_layout_, 0));
-    CHECK(SetKeyboardState(original_keyboard_state_));
+    CHECK(SetKeyboardState(original_keyboard_state_.data()));
   }
 
  protected:
@@ -929,7 +929,7 @@ class AltGraphEventTest
   }
 
   const CHROME_MSG msg_;
-  BYTE original_keyboard_state_[256] = {};
+  std::array<BYTE, 256> original_keyboard_state_ = {};
   HKL original_keyboard_layout_ = nullptr;
 };
 

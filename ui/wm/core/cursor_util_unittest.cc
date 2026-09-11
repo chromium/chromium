@@ -83,21 +83,29 @@ TEST_P(CursorUtilTest, ScaleAndRotate) {
 INSTANTIATE_TEST_SUITE_P(All, CursorUtilTest, testing::Bool());
 
 TEST(CursorUtil, GetCursorData) {
-  // Data from `kNormalCursorResourceData` and `kLargeCursorResourceData`.
-  constexpr struct {
+  struct TestCase {
     CursorType cursor;
     std::array<gfx::Size, 2> size;  // indexed by cursor size.
-    gfx::Point hotspot[2][2];  // indexed by cursor size and scale.
-  } kCursorTestCases[] = {
-      {CursorType::kPointer,
-       {gfx::Size(25, 25), gfx::Size(25, 25)},
-       {{gfx::Point(6, 4), gfx::Point(12, 8)},
-        {gfx::Point(6, 4), gfx::Point(12, 8)}}},
-      {CursorType::kWait,
-       {gfx::Size(25, 25), gfx::Size(25, 25)},
-       {{gfx::Point(12, 12), gfx::Point(24, 24)},
-        {gfx::Point(12, 12), gfx::Point(24, 24)}}},
-
+    std::array<std::array<gfx::Point, 2>, 2>
+        hotspot;  // indexed by cursor size and scale.
+  };
+  constexpr std::array kCursorTestCases = {
+      TestCase{
+          CursorType::kPointer,
+          {gfx::Size(25, 25), gfx::Size(25, 25)},
+          {{
+              {gfx::Point(6, 4), gfx::Point(12, 8)},
+              {gfx::Point(6, 4), gfx::Point(12, 8)},
+          }},
+      },
+      TestCase{
+          CursorType::kWait,
+          {gfx::Size(25, 25), gfx::Size(25, 25)},
+          {{
+              {gfx::Point(12, 12), gfx::Point(24, 24)},
+              {gfx::Point(12, 12), gfx::Point(24, 24)},
+          }},
+      },
   };
 
   for (const float scale : {0.8f, 1.0f, 1.3f, 1.5f, 2.0f, 2.5f}) {
@@ -117,12 +125,11 @@ TEST(CursorUtil, GetCursorData) {
                       test.size[base::checked_cast<int>(size)], scale));
         const float resource_scale = ui::GetScaleForResourceScaleFactor(
             ui::GetSupportedResourceScaleFactorForRescale(scale));
-        UNSAFE_TODO(EXPECT_EQ(
-            pointer_data->hotspot,
-            gfx::ScaleToFlooredPoint(
-                test.hotspot[base::checked_cast<int>(size)]
-                            [base::checked_cast<int>(resource_scale) - 1],
-                scale / resource_scale)));
+        EXPECT_EQ(pointer_data->hotspot,
+                  gfx::ScaleToFlooredPoint(
+                      test.hotspot[base::checked_cast<int>(size)]
+                                  [base::checked_cast<int>(resource_scale) - 1],
+                      scale / resource_scale));
       }
     }
   }
