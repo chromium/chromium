@@ -32,8 +32,6 @@ crbug.com/547931317 [ win ] external/wpt/ai/language-model/prompt/context/overfl
 crbug.com/513585708 external/wpt/ai/language-model/language-model-append.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/language-model/language-model-clone.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/language-model/prompt/context/usage-initial-prompt.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/prompt/empty-inputs/null-input.tentative.https.window.html [ Failure Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/prompt/empty-inputs/undefined-input.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/language-model/prompt/prompt-simple-question.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/empty-object-input.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/empty-sequence-input.tentative.https.window.html [ Failure Timeout Pass ]

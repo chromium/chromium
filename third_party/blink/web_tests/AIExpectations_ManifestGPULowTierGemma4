@@ -39,6 +39,3 @@ crbug.com/543441359 [ win arm64 ] external/wpt/ai/* [ Skip ]
 
 # Gemma 4 hits early EOS on natural story termination under exact-length regex constraint.
 crbug.com/546202331 external/wpt/ai/language-model/response-constraint/regex/exact-length.tentative.https.window.html [ Failure ]
-
-# Generative conversational LLM output variation does not always include literal substring "/undefined/".
-external/wpt/ai/language-model/prompt/empty-inputs/undefined-input.tentative.https.window.html [ Failure Pass ]
