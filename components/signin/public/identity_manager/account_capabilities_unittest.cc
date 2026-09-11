@@ -134,8 +134,6 @@ TEST_F(AccountCapabilitiesTest, CanSubmitFeedback) {
 
 #if BUILDFLAG(IS_IOS)
 TEST_F(AccountCapabilitiesTest, CanSignInToChrome) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kEnforceCanSignInToChromeCapability};
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_sign_in_to_chrome(), signin::Tribool::kUnknown);
 

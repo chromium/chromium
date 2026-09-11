@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -137,17 +136,14 @@ signin::Tribool AccountCapabilities::can_run_chrome_privacy_sandbox_trials()
 signin::Tribool AccountCapabilities::
     can_show_history_sync_opt_ins_without_minor_mode_restrictions() const {
 #if BUILDFLAG(IS_IOS)
-  // If the flag is enabled, read the contextual capability. If the contextual
-  // capability is unknown, fall back to the non-contextual capability - this
-  // is because when the flag is first enabled the new capability may not yet
-  // have been fetched.
+  // If the contextual capability is unknown, fall back to the non-contextual
+  // capability - this is because the new capability may not yet have been
+  // fetched.
   // TODO(crbug.com/481654422): Remove the unknown fallback once contextual
   // capabilities are fully rolled out.
-  if (base::FeatureList::IsEnabled(
-          switches::kReadContextualAccountCapabilities) &&
-      GetCapabilityByName(
+  if (GetCapabilityByName(
           kCanContextuallyShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) !=
-          signin::Tribool::kUnknown) {
+      signin::Tribool::kUnknown) {
     return GetCapabilityByName(
         kCanContextuallyShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName);
   }
@@ -196,16 +192,13 @@ signin::Tribool AccountCapabilities::can_use_edu_features() const {
 
 signin::Tribool AccountCapabilities::can_use_gemini_in_chrome() const {
 #if BUILDFLAG(IS_IOS)
-  // If the flag is enabled, read the contextual capability. If the contextual
-  // capability is unknown, fall back to the non-contextual capability - this
-  // is because when the flag is first enabled the new capability may not yet
-  // have been fetched.
+  // If the contextual capability is unknown, fall back to the non-contextual
+  // capability - this is because the new capability may not yet have been
+  // fetched.
   // TODO(crbug.com/489360851): Remove the unknown fallback once contextual
   // capabilities are fully rolled out.
-  if (base::FeatureList::IsEnabled(
-          switches::kReadContextualAccountCapabilities) &&
-      GetCapabilityByName(kCanContextuallyUseGeminiInChromeCapabilityName) !=
-          signin::Tribool::kUnknown) {
+  if (GetCapabilityByName(kCanContextuallyUseGeminiInChromeCapabilityName) !=
+      signin::Tribool::kUnknown) {
     return GetCapabilityByName(kCanContextuallyUseGeminiInChromeCapabilityName);
   }
 #endif
@@ -232,16 +225,13 @@ signin::Tribool AccountCapabilities::can_use_manta_service() const {
 
 signin::Tribool AccountCapabilities::can_use_model_execution_features() const {
 #if BUILDFLAG(IS_IOS)
-  // If the flag is enabled, read the contextual capability. If the contextual
-  // capability is unknown, fall back to the non-contextual capability - this
-  // is because when the flag is first enabled the new capability may not yet
-  // have been fetched.
+  // If the contextual capability is unknown, fall back to the non-contextual
+  // capability - this is because the new capability may not yet have been
+  // fetched.
   // TODO(crbug.com/481654422): Remove the unknown fallback once contextual
   // capabilities are fully rolled out.
-  if (base::FeatureList::IsEnabled(
-          switches::kReadContextualAccountCapabilities) &&
-      GetCapabilityByName(kCanContextuallyUseModelExecutionFeaturesName) !=
-          signin::Tribool::kUnknown) {
+  if (GetCapabilityByName(kCanContextuallyUseModelExecutionFeaturesName) !=
+      signin::Tribool::kUnknown) {
     return GetCapabilityByName(kCanContextuallyUseModelExecutionFeaturesName);
   }
 #endif

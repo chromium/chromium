@@ -7,10 +7,8 @@
 #import "base/run_loop.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/signin/public/base/consent_level.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
@@ -51,11 +49,6 @@ class AgeMismatchCapabilitiesFetcherTest
     : public PlatformTest,
       public ::testing::WithParamInterface<signin::Tribool> {
  public:
-  AgeMismatchCapabilitiesFetcherTest() {
-    feature_list_.InitAndEnableFeature(
-        switches::kEnforceCanSignInToChromeCapability);
-  }
-
   signin::Tribool ExpectedCapabilityValue() const { return GetParam(); }
 
   void SetUp() override {
@@ -99,7 +92,6 @@ class AgeMismatchCapabilitiesFetcherTest
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestProfileIOS> profile_;
   AgeMismatchCapabilitiesFetcher* fetcher_ = nil;

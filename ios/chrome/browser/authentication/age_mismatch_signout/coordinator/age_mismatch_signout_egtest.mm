@@ -62,8 +62,6 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
   config.features_enabled_and_params.push_back(
       {switches::kBuildExternalPrivacyContext,
        {{"AgeMismatchLearnMoreUrl", "about:blank"}}});
-  config.features_enabled.push_back(
-      switches::kEnforceCanSignInToChromeCapability);
   return config;
 }
 
@@ -75,8 +73,6 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
   AppLaunchConfiguration initConfig;
   initConfig.features_disabled.push_back(
       switches::kBuildExternalPrivacyContext);
-  initConfig.features_enabled.push_back(
-      switches::kEnforceCanSignInToChromeCapability);
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithConfiguration:initConfig];
 
@@ -97,8 +93,6 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
   config.features_enabled_and_params.push_back(
       {switches::kBuildExternalPrivacyContext,
        {{"AgeMismatchLearnMoreUrl", "about:blank"}}});
-  config.features_enabled.push_back(
-      switches::kEnforceCanSignInToChromeCapability);
   config.relaunch_policy = ForceRelaunchByKilling;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -190,8 +184,6 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
   config.features_enabled_and_params.push_back(
       {switches::kBuildExternalPrivacyContext,
        {{"AgeMismatchLearnMoreUrl", "about:blank"}}});
-  config.features_enabled.push_back(
-      switches::kEnforceCanSignInToChromeCapability);
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

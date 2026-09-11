@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 AccountCapabilitiesTestMutator::AccountCapabilitiesTestMutator(
@@ -71,16 +70,9 @@ void AccountCapabilitiesTestMutator::
     set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
         bool value) {
 #if BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          switches::kReadContextualAccountCapabilities)) {
-    capabilities_->capabilities_map_
-        [kCanContextuallyShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName] =
-        value;
-  } else {
-    capabilities_->capabilities_map_
-        [kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName] =
-        value;
-  }
+  capabilities_->capabilities_map_
+      [kCanContextuallyShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName] =
+      value;
 #else
   capabilities_->capabilities_map_
       [kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName] =
@@ -132,15 +124,9 @@ void AccountCapabilitiesTestMutator::set_can_use_edu_features(bool value) {
 
 void AccountCapabilitiesTestMutator::set_can_use_gemini_in_chrome(bool value) {
 #if BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          switches::kReadContextualAccountCapabilities)) {
-    capabilities_
-        ->capabilities_map_[kCanContextuallyUseGeminiInChromeCapabilityName] =
-        value;
-  } else {
-    capabilities_->capabilities_map_[kCanUseGeminiInChromeCapabilityName] =
-        value;
-  }
+  capabilities_
+      ->capabilities_map_[kCanContextuallyUseGeminiInChromeCapabilityName] =
+      value;
 #else
   capabilities_->capabilities_map_[kCanUseGeminiInChromeCapabilityName] = value;
 #endif
@@ -167,14 +153,9 @@ void AccountCapabilitiesTestMutator::set_can_use_manta_service(bool value) {
 void AccountCapabilitiesTestMutator::set_can_use_model_execution_features(
     bool value) {
 #if BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          switches::kReadContextualAccountCapabilities)) {
-    capabilities_
-        ->capabilities_map_[kCanContextuallyUseModelExecutionFeaturesName] =
-        value;
-  } else {
-    capabilities_->capabilities_map_[kCanUseModelExecutionFeaturesName] = value;
-  }
+  capabilities_
+      ->capabilities_map_[kCanContextuallyUseModelExecutionFeaturesName] =
+      value;
 #else
   capabilities_->capabilities_map_[kCanUseModelExecutionFeaturesName] = value;
 #endif

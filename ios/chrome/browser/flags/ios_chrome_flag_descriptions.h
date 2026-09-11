@@ -382,8 +382,7 @@ inline constexpr char kBuildExternalPrivacyContextName[] =
 inline constexpr char kBuildExternalPrivacyContextDescription[] =
     "When enabled, checks if the account can be signed in on the device "
     "according to the capabilities. This needs `can_sign_in_to_chrome` "
-    "capability to be fetched (controlled by "
-    "kEnforceCanSignInToChromeCapability flag).";
+    "capability to be fetched.";
 
 inline constexpr char kChromeNextIaName[] = "ChromeNextIa";
 inline constexpr char kChromeNextIaDescription[] =
@@ -800,11 +799,6 @@ inline constexpr char kEnableTraitCollectionRegistrationName[] =
 inline constexpr char kEnableTraitCollectionRegistrationDescription[] =
     "When enabled, UI elements will only observe and respond to the UITraits "
     "to which they have been registered.";
-
-inline constexpr char kEnforceCanSignInToChromeCapabilityName[] =
-    "Fetch can_sign_in_to_chrome capability";
-inline constexpr char kEnforceCanSignInToChromeCapabilityDescription[] =
-    "When enabled, can_sign_in_to_chrome is fetched.";
 
 inline constexpr char kEnhancedCalendarName[] =
     "Enable Enhanced Calendar integration";
