@@ -524,6 +524,18 @@ TEST(ExtensionCSPValidator, IsSandboxed) {
                                                Manifest::Type::kExtension));
   EXPECT_FALSE(ContentSecurityPolicyIsSandboxed("sandbox allow-top-navigation",
                                                 Manifest::Type::kPlatformApp));
+  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed(
+      "sandbox allow-top-navigation-by-user-activation",
+      Manifest::Type::kExtension));
+  EXPECT_FALSE(ContentSecurityPolicyIsSandboxed(
+      "sandbox allow-top-navigation-by-user-activation",
+      Manifest::Type::kPlatformApp));
+  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed(
+      "sandbox allow-top-navigation-to-custom-protocols",
+      Manifest::Type::kExtension));
+  EXPECT_FALSE(ContentSecurityPolicyIsSandboxed(
+      "sandbox allow-top-navigation-to-custom-protocols",
+      Manifest::Type::kPlatformApp));
 
   // Popups are OK.
   EXPECT_TRUE(ContentSecurityPolicyIsSandboxed("sandbox allow-popups",
