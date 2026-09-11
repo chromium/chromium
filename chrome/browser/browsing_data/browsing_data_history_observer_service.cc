@@ -10,11 +10,14 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/navigation_entry_remover.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/common/buildflags.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h"
 #include "components/search_engines/template_url_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -159,6 +162,46 @@ void BrowsingDataHistoryObserverService::OnHistoryDeletions(
     }
   }
 
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  if (host_content_settings_map) {
+    safe_browsing::SuspiciousSiteWarningAllowlist allowlist(
+        host_content_settings_map);
+    if (deletion_info.IsAllHistory()) {
+      allowlist.Clear(base::Time(), base::Time::Max());
+    } else {
+      ContentSettingsForOneType allowlist_entries =
+          host_content_settings_map->GetSettingsForOneType(
+              ContentSettingsType::SUSPICIOUS_SITE_WARNING_DATA);
+      for (const auto& entry : allowlist_entries) {
+        if (entry.IsExpired() || !entry.setting_value.is_dict()) {
+          continue;
+        }
+        const std::string& host = entry.primary_pattern.GetHost();
+        if (host.empty()) {
+          continue;
+        }
+
+        bool host_was_deleted = false;
+        bool has_remaining_visits = false;
+        for (const auto& [origin_gurl, count_and_time] :
+             deletion_info.deleted_urls_origin_map()) {
+          if (origin_gurl.host() == host) {
+            host_was_deleted = true;
+            if (count_and_time.first > 0) {
+              has_remaining_visits = true;
+              break;
+            }
+          }
+        }
+
+        if (host_was_deleted && !has_remaining_visits) {
+          allowlist.RevokeUserAllowException(host);
+        }
+      }
+    }
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile_);
@@ -187,6 +230,7 @@ BrowsingDataHistoryObserverService::Factory::Factory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(TabRestoreServiceFactory::GetInstance());
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   DependsOn(SessionServiceFactory::GetInstance());
