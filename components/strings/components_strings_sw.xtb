@@ -1136,7 +1136,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2931453528659195355">Dhibiti maelezo ya ununuzi</translation>
 <translation id="2933624813161016821">Ubamba wa Kutunishwa</translation>
 <translation id="2935726091208500473">jinsi ya kuruhusu vichupo vyako vifikiwe</translation>
-<translation id="2936698630976431647">Chagua sehemu ya msimbo wa ofa ili ujaze kiotomatiki ofa kutoka kwenye Pochi ya Google</translation>
 <translation id="293796669683825859">Maoni</translation>
 <translation id="2938225289965773019">Kufungua viungo vya <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Ili uonyeshe kiteuzi chako, badilisha programu, pakia upya ukurasa au urudi nyuma</translation>
@@ -1597,6 +1596,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="3712004750972384495">Inahifadhi maudhui yaliyonaswa kwenye skrini</translation>
 <translation id="3712006010833051684">Bahasha ya ukubwa wa #10</translation>
 <translation id="3712624925041724820">Leseni zimekwisha</translation>
+<translation id="371302509916403935">Piga mstari chini</translation>
 <translation id="3713277100229669269">Sasa unaweza kuona manufaa ya kadi kabla ya kulipa</translation>
 <translation id="3714633008798122362">kalenda ya wavuti</translation>
 <translation id="3714780639079136834">Kuwasha data ya simu au Wi-Fi</translation>
@@ -4213,7 +4213,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="815036624016370447">Maelezo kutoka kwenye Akaunti yako ya Google <ph name="ACCOUNT" /> yanaweza kukusaidia kujaza fomu kwa haraka katika Chrome</translation>
 <translation id="8150722005171944719">Faili katika <ph name="URL" /> haisomeki. Huenda imeondolewa, kusogezwa, au idhini za faili huenda zinazuia ufikiaji.</translation>
 <translation id="8151185429379586178">Zana za wasanidi programu</translation>
-<translation id="8152194419479742504">Andika @@ kwenye fomu yoyote ili utafute na ujaze maelezo bila kubadili vichupo</translation>
 <translation id="8153865548451212769">{0,plural, =1{Sera ya msimamizi haipendekezi kupakua faili hii kwenye <ph name="DESTINATION_NAME" />}other{Sera ya msimamizi haipendekezi kupakua faili hizi kwenye <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Vichupo ulivyofungua mwisho</translation>
 <translation id="815805690561372740">Chrome ina vipengele vya usalama vilivyojumuishwa ili kukulinda unapovinjari — kama vile Kipengele cha Kuvinjari Salama na Google, ambacho <ph name="BEGIN_LINK" />hivi majuzi kiligundua programu hasidi<ph name="END_LINK" /> kwenye tovuti uliyojaribu kutembelea.</translation>
@@ -4277,6 +4276,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8269242089528251720">Hati zilizotenganishwa/Nakala zilizopangwa</translation>
 <translation id="8269703227894255363">{0,plural, =1{Faili imezuiwa ili isifunguliwe}other{Faili <ph name="FILE_COUNT" /> zimezuiwa ili zisifunguliwe}}</translation>
 <translation id="8270242299912238708">Hati za PDF</translation>
+<translation id="8270320981823560179">Hifadhi</translation>
 <translation id="8277900682056760511">Laha la kidhibiti cha malipo limefunguliwa</translation>
 <translation id="827820107214076967">Onyesha upya Kumbukumbu</translation>
 <translation id="8279611986089885641">Ni lazima uwashe arifa za Chrome. Unaweza kuwasha arifa kwenye <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

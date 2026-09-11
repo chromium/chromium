@@ -1095,6 +1095,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2859806420264540918">Ez a webhely tolakodó vagy félrevezető hirdetéseket jelenít meg.</translation>
 <translation id="2873317327342476681">Dinós játék. Koppintson a dinóra, vagy nyomja le a szóközt a játékhoz.</translation>
 <translation id="287387905105155974">Súgóbuborék</translation>
+<translation id="2875109558992200904">Amikor a Chrome biztonsági eseményeket észlel, a böngésző elküldi az eseménnyel kapcsolatos releváns adatokat a rendszergazdának. Az ilyen adatok közé tartozhatnak a Chrome-ban felkeresett oldalak URL-jei és címei, az olyan oldalak URL-jei, ahonnan Ön adatokat másolt, a fájlnevek és metaadatok, az IP-címek, a böngésző vagy a lapok összeomlásai, valamint a webalapú alkalmazásokba, az eszközre és a Chrome-ba való bejelentkezéshez használt felhasználónév.</translation>
 <translation id="2876489322757410363">Az inkognitó mód elhagyása külső alkalmazással történő fizetéshez. Folytatja?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a Biztonságos Böngészés és más funkciók Chrome-beállítások közötti kezeléséhez.</translation>
 <translation id="2878197950673342043">Kereszthajtás</translation>
@@ -1135,7 +1136,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2931453528659195355">Vásárlási információk kezelése</translation>
 <translation id="2933624813161016821">Dombornyomó fólia</translation>
 <translation id="2935726091208500473">a lapok megosztásánál</translation>
-<translation id="2936698630976431647">Válassza ki a promóciós kód mezőt a Google Walletből származó ajánlatok automatikus kitöltéséhez</translation>
 <translation id="293796669683825859">Megjegyzések</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> linkek megnyitása</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – A kurzor megjelenítéséhez, az alkalmazások közötti váltáshoz, az oldal újratöltéséhez vagy a visszalépéshez</translation>
@@ -1594,6 +1594,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3712004750972384495">Képernyőrögzítés mentése…</translation>
 <translation id="3712006010833051684">10. boríték</translation>
 <translation id="3712624925041724820">Az engedélyek elfogytak</translation>
+<translation id="371302509916403935">Aláhúzott</translation>
 <translation id="3713277100229669269">Mostantól láthatja a kártyák előnyeit fizetés előtt</translation>
 <translation id="3714633008798122362">internetes naptár</translation>
 <translation id="3714780639079136834">A mobiladatok vagy a Wi-Fi bekapcsolása</translation>
@@ -1940,6 +1941,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4265635050210404830">Az Ön hűségkártyái</translation>
 <translation id="4265872034478892965">A rendszergazda engedélyezte</translation>
 <translation id="4267590181863312380">Ha a többi eszközén lévő előzményeihez is szeretne hozzáférni, jelentkezzen be, majd szinkronizálja az előzményeit. Egyebek mellett a jelszavaihoz is hozzáférhet bármely eszközén. A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
+<translation id="4267837382000002014">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja a felkeresett oldalak URL-jeit és címeit, és előfordulhat, hogy az Ön rendszergazdája is láthatja őket. Az elemzés során például nem biztonságos webhelyek kereshetők, illetve szűrhetők a webhelyek a rendszergazda által beállított szabályok alapján.</translation>
 <translation id="4268025649754414643">Kulcstitkosítás</translation>
 <translation id="4269599248168651462">A szervertanúsítvány nem egyedi névre van kiállítva.</translation>
 <translation id="4270541775497538019">6. kötegelő</translation>
@@ -4210,7 +4212,6 @@ További részletek:
 <translation id="815036624016370447">A(z) <ph name="ACCOUNT" /> Google-fiókból származó adatok segíthetnek az űrlapok gyorsabb kitöltésében a Chrome-ban</translation>
 <translation id="8150722005171944719">A fájl (<ph name="URL" />) nem olvasható. Lehet, hogy eltávolították, áthelyezték, vagy a fájlengedélyek megakadályozzák a hozzáférést.</translation>
 <translation id="8151185429379586178">Fejlesztői eszközök</translation>
-<translation id="8152194419479742504">Írja be a @@ karaktereket bármely űrlapba az adatok lapváltás nélkül való megkereséséhez és kitöltéséhez</translation>
 <translation id="8153865548451212769">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a letöltését a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a letöltését a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Legutóbb megnyitott lapok</translation>
 <translation id="815805690561372740">A Chrome beépített biztonsági funkciókkal védi Önt böngészés közben – ilyen például a Google Biztonságos Böngészés, amely <ph name="BEGIN_LINK" />nemrég rosszindulatú programot talált<ph name="END_LINK" /> az Ön által felkeresni kívánt webhelyen.</translation>
@@ -4274,6 +4275,7 @@ További részletek:
 <translation id="8269242089528251720">Különálló dokumentumok/Szétválogatott másolatok</translation>
 <translation id="8269703227894255363">{0,plural, =1{A fájl megnyitása le van tiltva}other{<ph name="FILE_COUNT" /> fájl megnyitása le van tiltva}}</translation>
 <translation id="8270242299912238708">PDF-dokumentumok</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">A fizetési információk munkalapja meg van nyitva</translation>
 <translation id="827820107214076967">Naplók frissítése</translation>
 <translation id="8279611986089885641">Be kell kapcsolni a Chrome-értesítéseket. Itt kapcsolhatja be őket: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

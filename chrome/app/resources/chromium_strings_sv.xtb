@@ -39,7 +39,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1330562121671411446">Identifiera språk</translation>
 <translation id="1342274909142618978">Radera även data från Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Fäst! Du kan komma åt Bildsökning igen från den nya knappen i verktygsfältet</translation>
-<translation id="1356661055722410047">Nyhet! Du kan översätta både text och bilder på skärmen</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1388276868779258475">Använd Chromium-appen för att fortsätta surfa var du än är</translation>
 <translation id="141901961143729572">Dela dina tankar</translation>
@@ -738,7 +737,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="856656450041460113">Sök efter språklista</translation>
 <translation id="8576826849825683917">Flera organisationer hanterar Chromium</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
-<translation id="8601359445272098721">Nyhet! Du kan översätta både text och bilder på skärmen genom att välja knappen Översätt skärm</translation>
 <translation id="8619360774459241877">Chromium startas …</translation>
 <translation id="8624541899164515475">Inställningar, öppnas på en ny flik.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing kan inte användas som standardwebbläsare.</translation>

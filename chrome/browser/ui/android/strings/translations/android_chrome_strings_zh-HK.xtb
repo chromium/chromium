@@ -1517,7 +1517,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 由於你最近沒有瀏覽過此網站，因此 Chrome 已移除有關權限</translation>
 <translation id="6923291640965724312">沉浸式格式</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 個分頁}other{<ph name="NUMBER_OF_TABS" /> 個分頁}}</translation>
-<translation id="6929224077895306814">系統將刪除已儲存在裝置上和 Google 帳戶中的所有安全碼</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />，揀咗播緊音訊嘅固定分頁</translation>
 <translation id="6937524809504266803">個人化和連結</translation>
 <translation id="6937876069006524083">暱稱 (選填)</translation>

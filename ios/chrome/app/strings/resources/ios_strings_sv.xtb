@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS-klient</translation>
 <translation id="1508263560970797965">Fortsätt i inkognitoläget</translation>
 <translation id="1509486075633541495">Logga in på webbplats</translation>
+<translation id="1509922846321012406">Utforska fler sätt att öka din integritet och säkerhet</translation>
 <translation id="1513858653616922153">Radera lösenord</translation>
 <translation id="1517166097004694782">Dölj Fortsätt med den här fliken</translation>
 <translation id="1520027731907768768">Få aviseringar om prissänkningar för produkter du bevakar.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Standardwebbläsare</translation>
 <translation id="2893791155497534382">Lösenord och annan aktivitet kan raderas i hanteringsinställningarna</translation>
 <translation id="2894757982205307093">Ny flik i grupp</translation>
+<translation id="2897858638449756400">Utforska fler sätt att söka</translation>
 <translation id="2902312830803030883">Fler åtgärder</translation>
 <translation id="2904788871580817212">Prissänkning på den öppna fliken, från <ph name="PREVIOUS_PRICE" /> till <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> återanvända lösenord som kan innebära en säkerhetsrisk.</translation>
@@ -1051,7 +1053,7 @@
 <translation id="4442550905108052454">Öppna <ph name="BEGIN_BOLD" />Inställningar<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Fler alternativ för <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Du kan gå framåt eller bakåt genom att svepa längs kanten.</translation>
-<translation id="4460014764210899310">Ta bort gruppering</translation>
+<translation id="4460014764210899310">Ta bort grupp</translation>
 <translation id="446314443268698477">Köp, översätt och identifiera det du ser med kameran eller foton.</translation>
 <translation id="4469324811108161144">Ledtrådar kan innehålla upp till <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="4471472356135655769">Det gick inte att exportera lösenord</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Detta raderar adresser som har sparats på den här enheten. Adresser som har sparats i Google-kontot <ph name="USER_EMAIL" /> raderas också.</translation>
 <translation id="5056446788882570708">Problem hittades för <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Skapa bild</translation>
+<translation id="5058813911021873087">Utforska fler sätt att organisera och spara tid</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Ta surfandet till nästa nivå</translation>
 <translation id="5062321486222145940">Installera Google Drive</translation>
@@ -1881,6 +1884,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="6987201788018524855">Utforska användbara funktioner som du har missat</translation>
 <translation id="6989636517316575338">Fråga om valfri sida</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Alla uppgifter</translation>
 <translation id="6998251471716094661">Bevaka priser på produkter och få aviseringar när priset sänks på en webbplats</translation>
 <translation id="7004032350256606903">Organisationen kräver att du surfar privat.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>

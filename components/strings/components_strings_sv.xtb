@@ -1095,6 +1095,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2859806420264540918">Påträngande eller vilseledande annonser visas på den här webbplatsen.</translation>
 <translation id="2873317327342476681">Dino-spelet: Tryck på dinosaurien eller på blanksteg för att spela</translation>
 <translation id="287387905105155974">Hjälpbubbla</translation>
+<translation id="2875109558992200904">När säkerhetshändelser flaggas av Chrome skickas relevant data om händelserna till administratören. Exempel på sådan data är webbadresser och titlar på sidor du besöker i Chrome, webbadresser till sidor du har kopierat data från, filnamn eller metadata, IP-adresser, webbläsar- eller flikkrascher och användarnamnet du loggar in med i webbaserade appar, på dina enheter och i Chrome.</translation>
 <translation id="2876489322757410363">Om du betalar i ett externt program sker inte det i inkognitoläge. Vill du fortsätta?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera Säker webbsökning med mera i inställningarna för Chrome</translation>
 <translation id="2878197950673342043">Korsfalsning</translation>
@@ -1135,7 +1136,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2931453528659195355">Hantera shoppinginformation</translation>
 <translation id="2933624813161016821">Präglingsfolie</translation>
 <translation id="2935726091208500473">dela dina flikar</translation>
-<translation id="2936698630976431647">Välj fältet för kampanjkod för att autofylla erbjudanden från Google Wallet</translation>
 <translation id="293796669683825859">Kommentarer</translation>
 <translation id="2938225289965773019">Öppna <ph name="PROTOCOL" />-länkar</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Visa markören genom att byta app, läsa in sidan igen eller gå tillbaka</translation>
@@ -1596,6 +1596,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3712004750972384495">Sparar skärminspelningen</translation>
 <translation id="3712006010833051684">Kuvert nr 10</translation>
 <translation id="3712624925041724820">Licenserna har tagit slut</translation>
+<translation id="371302509916403935">Understruken</translation>
 <translation id="3713277100229669269">Nu kan du se kortförmåner innan du betalar</translation>
 <translation id="3714633008798122362">webbkalender</translation>
 <translation id="3714780639079136834">aktivera mobildata eller wifi</translation>
@@ -1943,6 +1944,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4265635050210404830">Dina stamkundskort</translation>
 <translation id="4265872034478892965">Beviljades av administratören</translation>
 <translation id="4267590181863312380">Logga in och synkronisera historiken om du vill ha din historik tillgänglig på alla enheter. Du får även dina lösenord med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
+<translation id="4267837382000002014">Webbadresser till och titlar på sidor som du besöker skickas till Google Cloud eller tredje part för analys och kan vara synliga för administratören. De kan till exempel genomsökas i syfte att upptäcka osäkra webbplatser eller filtrera webbplatser utifrån regler som har angetts av administratören.</translation>
 <translation id="4268025649754414643">Nyckelchiffrering</translation>
 <translation id="4269599248168651462">Servercertifikatet har utfärdats till ett icke-unikt namn.</translation>
 <translation id="4270541775497538019">Utmatningsfack 6</translation>
@@ -4213,7 +4215,6 @@ Mer information.
 <translation id="815036624016370447">Du kan fylla i formulär i Chrome snabbare med uppgifter från ditt Google-konto <ph name="ACCOUNT" /></translation>
 <translation id="8150722005171944719">Det går inte att läsa filen på <ph name="URL" />. Den kan ha tagits bort eller flyttats, eller så krävs behörighet för att få åtkomst till den.</translation>
 <translation id="8151185429379586178">Verktyg för utvecklare</translation>
-<translation id="8152194419479742504">Skriv @@ i valfritt formulär för att hitta och fylla i information utan att byta flik</translation>
 <translation id="8153865548451212769">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att ladda ned den här filen till <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att ladda ned dessa filer till <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Senast öppnade flikar</translation>
 <translation id="815805690561372740">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning, som <ph name="BEGIN_LINK" />nyligen hittade skadlig kod<ph name="END_LINK" /> på webbplatsen du försökte besöka.</translation>
@@ -4277,6 +4278,7 @@ Mer information.
 <translation id="8269242089528251720">Separata dokument/kopior sorterade i sidordning</translation>
 <translation id="8269703227894255363">{0,plural, =1{Filen har blockerats från att öppnas}other{<ph name="FILE_COUNT" /> filer har blockerats från att öppnas}}</translation>
 <translation id="8270242299912238708">PDF-dokument</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Arbetsbladet för betalningshantering har öppnats</translation>
 <translation id="827820107214076967">Uppdatera loggar</translation>
 <translation id="8279611986089885641">Chrome-aviseringar måste vara aktiverade. Du kan aktivera dem i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

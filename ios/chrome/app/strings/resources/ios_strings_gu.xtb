@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS ક્લાયન્ટ</translation>
 <translation id="1508263560970797965">છૂપા મોડમાં ચાલુ રાખો</translation>
 <translation id="1509486075633541495">વેબસાઇટમાં સાઇન ઇન કરો</translation>
+<translation id="1509922846321012406">તમારી પ્રાઇવસી અને સલામતી વધારવાની વધુ રીતો વિશે શોધખોળ કરો</translation>
 <translation id="1513858653616922153">પાસવર્ડ ડિલીટ કરો</translation>
 <translation id="1517166097004694782">"આ ટૅબ સાથે ચાલુ રાખો" છુપાવો</translation>
 <translation id="1520027731907768768">તમે ટ્રૅક કરો છો તે પ્રોડક્ટની કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવો.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">ડિફૉલ્ટ બ્રાઉઝર</translation>
 <translation id="2893791155497534382">પાસવર્ડ અને અન્ય ઍક્ટિવિટીને તેના મેનેજમેન્ટ સેટિંગમાં જઈને ડિલીટ કરી શકાય છે</translation>
 <translation id="2894757982205307093">ગ્રૂપમાં નવું ટૅબ</translation>
+<translation id="2897858638449756400">શોધવાની વધુ રીતો વિશે શોધખોળ કરો</translation>
 <translation id="2902312830803030883">વધુ ક્રિયાઓ</translation>
 <translation id="2904788871580817212">તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો, <ph name="PREVIOUS_PRICE" />માંથી <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">તમારી પાસે <ph name="NUMBER_OF_PASSWORDS" /> એવા પાસવર્ડ છે જેનો તમે વારંવાર ઉપયોગ કરો છો, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">આનાથી આ ડિવાઇસ પર સાચવેલા સરનામા ડિલીટ કરવામાં આવે છે. તે તમારા <ph name="USER_EMAIL" /> Google એકાઉન્ટમાં સાચવેલા સરનામા પણ ડિલીટ કરે છે.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> સમસ્યાઓ મળી.</translation>
 <translation id="5056587122125565772">છબી બનાવો</translation>
+<translation id="5058813911021873087">સુવ્યવસ્થિત રહેવાની અને સમય બચાવવાની વધુ રીતો વિશે શોધખોળ કરો</translation>
 <translation id="5059136629401106827">ઓકે</translation>
 <translation id="5061202435354361813">તમારા બ્રાઉઝિંગને એક લેવલ ઉપર લઈ જાઓ</translation>
 <translation id="5062321486222145940">Google ડ્રાઇવ ઇન્સ્ટોલ કરો</translation>
@@ -1881,6 +1884,7 @@
 <translation id="6987201788018524855">તમે ચૂકી ગયાં છો તે મદદરૂપ સુવિધાઓની શોધખોળ કરો</translation>
 <translation id="6989636517316575338">કોઈપણ પેજ વિશે પૂછો</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">બધા ટાસ્ક</translation>
 <translation id="6998251471716094661">પ્રોડક્ટની કિંમતો ટ્રૅક કરો અને કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટ મેળવો</translation>
 <translation id="7004032350256606903">તમારી સંસ્થા માટે જરૂરી છે કે તમે ખાનગી રીતે બ્રાઉઝ કરો.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>

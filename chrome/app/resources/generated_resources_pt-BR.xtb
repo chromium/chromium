@@ -2083,7 +2083,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2605668923777146443">Acesse <ph name="LINK_BEGIN" />Configurações<ph name="LINK_END" /> para ver suas opções do Better Together.</translation>
 <translation id="2606246518223360146">Vincular dados</translation>
 <translation id="2606890864830643943">Como exportar dados de diagnóstico</translation>
-<translation id="2609533306502181883">Pesquise um tema</translation>
+<translation id="2609533306502181883">Pesquise um assunto</translation>
 <translation id="2609896558069604090">Criar atalhos...</translation>
 <translation id="2609980095400624569">Não foi possível estabelecer a conexão</translation>
 <translation id="2610157865375787051">Suspender</translation>
@@ -2543,6 +2543,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2939908794993783865">Outros sites inativos</translation>
 <translation id="2939938020978911855">Mostrar dispositivos Bluetooth disponíveis</translation>
 <translation id="2941112035454246133">Baixa</translation>
+<translation id="2942228903502008519">Mostrar guias (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">Aguardando...</translation>
 <translation id="2942581856830209953">Personalizar esta página</translation>
 <translation id="2942707801577151363">Abra, edite e salve arquivos do Word, Excel e PowerPoint. Uma assinatura pode ser necessária para usar alguns recursos.</translation>
@@ -2569,7 +2570,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2960950037335552881">Leia o QR code com seu celular e acesse seus favoritos, senhas e muito mais em qualquer lugar</translation>
 <translation id="2961040541145689181">Nova conversa</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extensão fornecida)</translation>
-<translation id="2961695502793809356">Clique para avançar, pressione para ver o histórico</translation>
+<translation id="2961695502793809356">Clique para avançar, segure para ver o histórico</translation>
 <translation id="29618148602069201">Tema</translation>
 <translation id="2963151496262057773">Este plug-in não responde: <ph name="PLUGIN_NAME" />. Quer interrompê-lo?</translation>
 <translation id="2964193600955408481">Desativar Wi-Fi</translation>
@@ -2628,7 +2629,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3001144475369593262">Contas de crianças</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Nenhuma tecla personalizada}=1{1 tecla personalizada}one{{COUNT} tecla personalizada}other{{COUNT} teclas personalizadas}}</translation>
-<translation id="3002745665522516995">Selecione qualquer coisa na página para pesquisar</translation>
 <translation id="3002864108328203174">Página inferior do Gemini na metade do tamanho.</translation>
 <translation id="3003144360685731741">Redes preferidas</translation>
 <translation id="3003253259757197230">Os URLs que você acessa são enviados ao Google para prever quais sites você pode visitar em seguida e para mostrar mais informações sobre a página atual</translation>
@@ -3003,7 +3003,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3285329711156774325">Pesquisar habilidades</translation>
 <translation id="3285500645985761267">Permitir que sites relacionados vejam sua atividade no grupo</translation>
 <translation id="328571385944182268">Salvar senhas?</translation>
-<translation id="3285969135399641759">Aprenda um novo recurso</translation>
+<translation id="3285969135399641759">Aprenda a fazer algo novo</translation>
 <translation id="3289668031376215426">Capitalização automática</translation>
 <translation id="3289856944988573801">Para verificar se há atualizações, utilize Ethernet ou Wi-Fi.</translation>
 <translation id="3290249595466894471">Envia também uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças</translation>
@@ -3478,6 +3478,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3641456520301071208">Os sites podem solicitar sua localização</translation>
 <translation id="3642070413432681490">Circular cursor</translation>
 <translation id="3643962751030964445">Este dispositivo é gerenciado por <ph name="DEVICE_MANAGER" />. Um novo perfil foi solicitado por <ph name="DEVICE_MANAGER" /> para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="3644128856494356630">Memória do CppGC</translation>
 <translation id="3645372836428131288">Mova o dedo levemente para capturar outra parte da impressão digital.</translation>
 <translation id="3645951915068244649">Um grupo de guias já foi criado com esta pasta de favoritos. Quer criar um novo grupo ou substituir o atual?</translation>
 <translation id="3646789916214779970">Redefinir para o tema padrão</translation>
@@ -4594,7 +4595,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4495002167047709180">Permitir essa extensão em <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Não mostrar esta página</translation>
 <translation id="4500055235123625757">O Gemini pode responder a perguntas sobre o vídeo ou áudio que você ouviu em <ph name="LINK_BEGIN" />alguns sites<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433">O plug-in <ph name="PLUGIN_NAME" /> falhou</translation>
 <translation id="4500647907053779331">&amp;Traduzir seleção para o <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">Confirmar remoção</translation>
 <translation id="4502423230170890588">Remover deste dispositivo</translation>
@@ -5119,6 +5119,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="488785315393301722">Mostrar detalhes</translation>
 <translation id="488862352499217187">Criar pasta</translation>
 <translation id="4888715715847020167">acesse as configurações</translation>
+<translation id="4888899258150891194">Memória do CppGC</translation>
 <translation id="4890292359366636311">Ativa o modo picture-in-picture automaticamente para que ele possa ser usado sobre outras guias e janelas.</translation>
 <translation id="4890399733764921729">Não é possível conectar. Bloqueada por outra operadora de rede móvel.</translation>
 <translation id="4890585766056792498">Tenha proteção contra sites perigosos</translation>
@@ -5465,6 +5466,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5155299520372681119">O upload do arquivo expirou e foi removido.</translation>
 <translation id="5156638757840305347">O cursor é destacado quando aparece ou se move.</translation>
 <translation id="5157250307065481244">Mostrar detalhes do site</translation>
+<translation id="5157258206078001821">Fechar Guias (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">Configurar o Crostini</translation>
 <translation id="5159236862360390997">Será mostrada uma série de balões de tutorial com instruções.
           Pressione <ph name="ACCELERATOR" /> para focar em um balão e mais uma vez para focar no elemento relacionado a ele.</translation>
@@ -5483,7 +5485,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5173668317844998239">Adicionar e excluir as impressões digitais salvas na chave de segurança</translation>
 <translation id="5174169235862638850">Senha copiada para a área de transferência</translation>
 <translation id="517488401359338823">Desbloquear dispositivo de segurança</translation>
-<translation id="5176671554021050278">Use o Google Lens para saber mais sobre as imagens ou textos específicos de uma página.</translation>
 <translation id="5177479852722101802">Continuar bloqueando acesso à câmera e ao microfone</translation>
 <translation id="5178667623289523808">Localizar anterior</translation>
 <translation id="5179428098696668914">Desativar a reprodução com IA</translation>
@@ -5724,7 +5725,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5375517140689139594">Modo de leitura (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">Os sites podem ajudar a verificar que você é uma pessoa real</translation>
 <translation id="5376094717770783089">Pedidos de acesso</translation>
-<translation id="5376169624176189338">Clique para voltar, pressione para ver o histórico</translation>
+<translation id="5376169624176189338">Clique para voltar, segure para ver o histórico</translation>
 <translation id="5376931455988532197">Arquivo muito grande</translation>
 <translation id="5377367976106153749">Permitir o acesso à câmera?</translation>
 <translation id="5379140238605961210">Continuar bloqueando o acesso ao microfone</translation>
@@ -6685,6 +6686,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6136637346277431354">Adicione guias e muito mais</translation>
 <translation id="6140948187512243695">Mostrar detalhes</translation>
 <translation id="6141988275892716286">Confirmar download</translation>
+<translation id="6142784636114866877">Mostrar Guias (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">Receber ajuda</translation>
 <translation id="6143366292569327983">Escolha o idioma da página que você gostaria de traduzir</translation>
 <translation id="6144938890088808325">Ajude a melhorar os Chromebooks</translation>
@@ -9704,7 +9706,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8460448946170646641">Revise os principais controles de privacidade e segurança</translation>
 <translation id="8460490661223303637">Para economizar memória, o Chrome removeu parte do conteúdo</translation>
 <translation id="8460932807646981183">Gerenciar mecanismos de pesquisa e pesquisas em sites</translation>
-<translation id="8461572080432076264">Ouvir Esta Página</translation>
+<translation id="8461572080432076264">Ouvir esta página</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8461973047386722744">Nenhuma senha encontrada</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{Caixa de listagem com 1 item}one{Caixa de listagem com {NUM_TABS} item}other{Caixa de listagem com {NUM_TABS} itens}}</translation>
@@ -10008,6 +10010,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8692107307702113268">A senha tem mais de 1.000 caracteres</translation>
 <translation id="8693862390730570097">Não permitir que o recurso "Me ajude a escrever" seja aberto automaticamente</translation>
 <translation id="8694596275649352090">Bloquear ao entrar em suspensão ou quando a tampa for fechada</translation>
+<translation id="8695214265159551349">Fechar guias (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">Abrir &amp;local...</translation>
 <translation id="869884720829132584">Menu Aplicativos</translation>
 <translation id="869891660844655955">Validade</translation>

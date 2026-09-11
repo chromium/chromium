@@ -664,6 +664,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">Keluar daripada main balik benaman</translation>
+<translation id="3662595332590803433">Sentiasa buka tab tersuai dalam Chrome</translation>
 <translation id="3674208116086565128">Akses Laman Utama Apl Google</translation>
 <translation id="368329460027487650">Dilog keluar. Membuka pilihan untuk log masuk.</translation>
 <translation id="3684540848053703310">Helaian bawah cerapan harga ditutup</translation>
@@ -1517,7 +1518,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome telah mengalih keluar kebenaran ini kerana anda belum melawati laman web ini baru-baru ini</translation>
 <translation id="6923291640965724312">Format benaman</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tab}}</translation>
-<translation id="6929224077895306814">Semua kod keselamatan yang disimpan pada peranti anda dan dalam Google Account akan dipadamkan</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, Tab Boleh Dengar Yang Tersemat Dan Dipilih</translation>
 <translation id="6937524809504266803">Pemeribadian &amp; Pemautan</translation>
 <translation id="6937876069006524083">Nama panggilan (pilihan)</translation>
@@ -1628,6 +1628,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7335766481146072567">Tekan teruskan</translation>
 <translation id="7336259382292148213">Pemberitahuan nampak baik</translation>
 <translation id="7339898014177206373">Tetingkap baharu</translation>
+<translation id="7349983576451251297">Buka halaman web dalam penyemak imbas Chrome</translation>
 <translation id="7352339641508007922">Seret untuk mengambil tangkapan skrin panjang</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Kongsi 1 item yang dipilih}other{Kongsi # item yang dipilih}}</translation>
@@ -1718,6 +1719,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7690596512217303514">Peranti anda tidak dapat membuka Chrome. Untuk menyelesaikan masalah ini, muat turun kemaskinian Chrome terkini daripada gedung apl anda.</translation>
 <translation id="7692761875510935111">Buka penyemak imbas dengan pantas. Untuk mengedit pintasan ini, sentuh dan tahan butang.</translation>
 <translation id="7695270712963178084">Penemuan Chrome</translation>
+<translation id="7695610746377249436">Laman, termasuk Google, menggunakan budi bicara apabila memberikan balasan kepada permintaan ini.</translation>
 <translation id="7697383401610880082">Pemegang seret</translation>
 <translation id="7698359219371678927">Buat e-mel dalam <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Helaian bawah aktiviti baru-baru ini dibuka pada ketinggian penuh</translation>

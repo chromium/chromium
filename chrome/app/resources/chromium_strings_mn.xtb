@@ -39,7 +39,6 @@
 <translation id="1330562121671411446">Хэл илрүүлэх</translation>
 <translation id="1342274909142618978">Мөн Chromium-с өгөгдөл устгах (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Бэхэлсэн! Та Зурган хайлтад самбар дээрх шинэ товчоос дахин хандах боломжтой</translation>
-<translation id="1356661055722410047">Шинэ! Та дэлгэц дээрх текст, зургийн аль алиныг орчуулах боломжтой</translation>
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1388276868779258475">Явж байх зуураа үргэлжлүүлэн үзэхийн тулд Chromium аппыг ашиглаарай</translation>
 <translation id="141901961143729572">Бодол санаагаа хуваалц</translation>
@@ -732,7 +731,6 @@
 <translation id="856656450041460113">Хэлний жагсаалтаас хайх</translation>
 <translation id="8576826849825683917">Олон байгууллага Chromium-г удирддаг</translation>
 <translation id="8586442755830160949">Chromium-ийн зохиогчийн эрх <ph name="YEAR" />. Бүх эрхийг хуулиар хамгаалсан.</translation>
-<translation id="8601359445272098721">Шинэ! Та "дэлгэцийг орчуулах" товчийг сонгож дэлгэц дээрх текст, зургийн аль алиныг орчуулах боломжтой</translation>
 <translation id="8619360774459241877">Chromium-г эхлүүлж байна...</translation>
 <translation id="8624541899164515475">Тохиргоо, шинэ табд нээгдэнэ.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing-г өгөгдмөл хөтчөө болгох боломжгүй.</translation>

@@ -1517,7 +1517,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome har fjernet disse tilladelser, fordi du ikke har besøgt websitet for nylig</translation>
 <translation id="6923291640965724312">Maksimalformat</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 fane}one{<ph name="NUMBER_OF_TABS" /> fane}other{<ph name="NUMBER_OF_TABS" /> faner}}</translation>
-<translation id="6929224077895306814">Alle sikkerhedskoder, der er gemt på din enhed og på din Google-konto, slettes</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, valgt fane, der er fastgjort og afspiller lyd</translation>
 <translation id="6937524809504266803">Personlig tilpasning og tilknytning</translation>
 <translation id="6937876069006524083">Kaldenavn (valgfrit)</translation>

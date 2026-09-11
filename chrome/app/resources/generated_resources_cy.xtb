@@ -2544,6 +2544,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2939908794993783865">Gwefannau anweithredol ychwanegol</translation>
 <translation id="2939938020978911855">Dangos dyfeisiau Bluetooth sydd ar gael</translation>
 <translation id="2941112035454246133">Isel</translation>
+<translation id="2942228903502008519">Ehangu tabiau (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">Wrthi'n aros...</translation>
 <translation id="2942581856830209953">Personoleiddio'r dudalen hon</translation>
 <translation id="2942707801577151363">Agor, golygu, ac arbed ffeiliau Word, Excel a PowerPoint. Mae'n bosib y bydd angen tanysgrifiad ar gyfer rhai nodweddion.</translation>
@@ -2629,7 +2630,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3000461861112256445">Un sain</translation>
 <translation id="3001144475369593262">Cyfrifon plant</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Dim bysellau wedi'u haddasu}=1{Mae 1 fysell wedi'i haddasu}two{Mae {COUNT} fysell wedi'u haddasu}few{Mae {COUNT} bysell wedi'u haddasu}many{Mae {COUNT} bysell wedi'u haddasu}other{Mae {COUNT} bysell wedi'u haddasu}}</translation>
-<translation id="3002745665522516995">Dewiswch unrhyw beth ar y dudalen i'w chwilio</translation>
 <translation id="3002864108328203174">Dalen Waelod Gemini ar hanner uchder.</translation>
 <translation id="3003144360685731741">Rhwydweithiau a ffefrir</translation>
 <translation id="3003253259757197230">Anfonir cyfeiriadau URL rydych yn ymweld â nhw at Google i ragweld pa wefannau y gallech ymweld â hwy nesaf ac i ddangos gwybodaeth ychwanegol i chi am y dudalen rydych yn ymweld â hi</translation>
@@ -4595,7 +4595,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4495002167047709180">Caniatewch yr estyniad hwn ar <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Peidio â dangos ar y dudalen hon</translation>
 <translation id="4500055235123625757">Gall Gemini ateb cwestiynau am y fideo neu'r sain rydych chi wedi'u chwarae ar <ph name="LINK_BEGIN" />rai gwefannau<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433">Mae <ph name="PLUGIN_NAME" /> wedi torri</translation>
 <translation id="4500647907053779331">&amp;Cyfieithu dewisiad i <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">Cadarnhau eich bod am ei ddadosod</translation>
 <translation id="4502423230170890588">Tynnu o'r ddyfais hon</translation>
@@ -5467,6 +5466,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5155299520372681119">Mae'r broses uwchlwytho ffeil wedi dod i ben ac wedi'i thynnu.</translation>
 <translation id="5156638757840305347">Amlygir cyrchwr pan fydd yn ymddangos neu'n symud</translation>
 <translation id="5157250307065481244">Gweld manylion y wefan</translation>
+<translation id="5157258206078001821">Crebachu Tabiau (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">Gosod Crostini</translation>
 <translation id="5159236862360390997">Bydd cyfres o swigod tiwtorial gyda chyfarwyddiadau yn cael eu harddangos.
           Pwyswch <ph name="ACCELERATOR" /> i ffocysu swigen a phwyswch eto i ffocysu'r elfen y mae'n pwyntio ati.</translation>
@@ -5485,7 +5485,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5173668317844998239">Ychwanegu a dileu olion bysedd sydd wedi'u cadw ar eich allwedd ddiogelwch</translation>
 <translation id="5174169235862638850">Copïwyd y cyfrinair i'r clipfwrdd</translation>
 <translation id="517488401359338823">Datgloi Dyfais Diogelwch</translation>
-<translation id="5176671554021050278">Defnyddiwch Google Lens i ddysgu rhagor am luniau neu destun penodol ar dudalen.</translation>
 <translation id="5177479852722101802">Parhau i rwystro mynediad at y camera a'r meicroffon</translation>
 <translation id="5178667623289523808">Dod o Hyd i'r Eitem Flaenorol</translation>
 <translation id="5179428098696668914">Diffodd Chwarae AI</translation>
@@ -6686,6 +6685,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6136637346277431354">Ychwanegu tabiau a rhagor</translation>
 <translation id="6140948187512243695">Dangos y manylion</translation>
 <translation id="6141988275892716286">Cadarnhau lawrlwytho</translation>
+<translation id="6142784636114866877">Ehangu Tabiau (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">Cael Help</translation>
 <translation id="6143366292569327983">Dewiswch iaith y dudalen i gyfieithu ohoni</translation>
 <translation id="6144938890088808325">Helpwch ni i wella Chromebooks</translation>
@@ -10014,6 +10014,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8692107307702113268">Mae'r cyfrinair yn fwy na 1000 nod</translation>
 <translation id="8693862390730570097">Peidiwch â chaniatáu i "Helpu fi i ysgrifennu" agor yn awtomatig</translation>
 <translation id="8694596275649352090">Cloi wrth gysgu neu pan fydd y caead ar gau</translation>
+<translation id="8695214265159551349">Crebachu tabiau (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">Agor y &amp;Lleoliad...</translation>
 <translation id="869884720829132584">Dewislen apiau</translation>
 <translation id="869891660844655955">Dyddiad darfod</translation>

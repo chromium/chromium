@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">Přístup ke kterýmkoliv z těchto zařízení USB</translation>
 <translation id="1038462104119736705">Pro Linux je doporučeno alespoň <ph name="INSTALL_SIZE" /> místa. Místo uvolníte smazáním souborů ze zařízení.</translation>
 <translation id="1038643060055067718">Řádky:</translation>
+<translation id="1039216421321079051">Rozšíření bylo zakázáno jiným rozšířením</translation>
 <translation id="1039337018183941703">Neplatný nebo poškozený soubor</translation>
 <translation id="1040761927998636252">Záložka bez názvu pro <ph name="URL" /></translation>
 <translation id="1041175011127912238">Tato stránka nereaguje</translation>
@@ -2615,7 +2616,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3001144475369593262">Dětské účty</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Žádné přizpůsobené klávesy}=1{1 přizpůsobená klávesa}few{{COUNT} přizpůsobené klávesy}many{{COUNT} přizpůsobené klávesy}other{{COUNT} přizpůsobených kláves}}</translation>
-<translation id="3002745665522516995">Vyberte cokoli na stránce, co chcete vyhledat</translation>
 <translation id="3002864108328203174">Spodní panel Gemini je otevřený na polovinu výšky.</translation>
 <translation id="3003144360685731741">Preferované sítě</translation>
 <translation id="3003253259757197230">Navštívené adresy URL se odesílají do Googlu, aby mohl předvídat, které weby byste mohli navštívit jako další, a mohl vám také zobrazit další informace o stránce, kterou si právě prohlížíte</translation>
@@ -3462,6 +3462,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3641456520301071208">Weby se mohou dotázat na vaši polohu</translation>
 <translation id="3642070413432681490">Kruhový kurzor</translation>
 <translation id="3643962751030964445">Toto zařízení je spravováno organizací <ph name="DEVICE_MANAGER" />. Organizace <ph name="DEVICE_MANAGER" /> vyžaduje nový profil pro účet <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="3644128856494356630">Paměť CppGC</translation>
 <translation id="3645372836428131288">Lehce prst natočte, aby se zaznamenala jiná část otisku.</translation>
 <translation id="3645951915068244649">Pomocí této složky záložek už byla skupina karet vytvořena. Chcete vytvořit novou skupinu karet, nebo tu existující nahradit?</translation>
 <translation id="3646789916214779970">Obnovit výchozí motiv</translation>
@@ -4233,6 +4234,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4226303886821889519">Verze aktualizačního programu: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Toto rozšíření není povoleno}few{Některá rozšíření nejsou povolena}many{Některá rozšíření nejsou povolena}other{Některá rozšíření nejsou povolena}}</translation>
 <translation id="4229538146709970028">Pokud chcete provést ověření hostitele <ph name="HOST_NAME" /> pomocí svého certifikátu, odemkněte zařízení <ph name="TOKEN_NAME" />.</translation>
+<translation id="4230659518013393045">Název stránky, adresa URL a obsah aktuální karty se sdílejí s Googlem, aby odpovědi byly relevantnější. Při procházení můžete karty přidávat a odebírat.</translation>
 <translation id="4232375817808480934">Nakonfigurovat Kerberos</translation>
 <translation id="4232376164796433044">Hesla a automatické vyplňování</translation>
 <translation id="4233739489690259993">Váš Chromebook již nedostává aktualizace zabezpečení a softwaru. Pokud chcete mít nejnovější zabezpečení a nové funkce, upgradujte na nové zařízení. Platí podmínky nabídky.</translation>
@@ -4576,7 +4578,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4495002167047709180">Povolit toto rozšíření na webu <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Nezobrazovat na této stránce</translation>
 <translation id="4500055235123625757">Gemini dokáže odpovědět na otázky ohledně videí nebo zvuku, které jste přehráli na <ph name="LINK_BEGIN" />některých webech<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433">Plugin <ph name="PLUGIN_NAME" /> selhal</translation>
 <translation id="4500647907053779331">&amp;Přeložit výběr do jazyka <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">Potvrdit odstranění</translation>
 <translation id="4502423230170890588">Odstranit z tohoto zařízení</translation>
@@ -5100,6 +5101,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="488785315393301722">Zobrazit podrobnosti</translation>
 <translation id="488862352499217187">Vytvořit novou složku</translation>
 <translation id="4888715715847020167">přejděte do nastavení</translation>
+<translation id="4888899258150891194">Paměť CppGC</translation>
 <translation id="4890292359366636311">Automaticky aktivovat režim obrazu v obraze, abyste ho mohli používat nad ostatními kartami a okny.</translation>
 <translation id="4890399733764921729">Nelze se připojit. Uzamknuto jiným mobilním operátorem.</translation>
 <translation id="4890585766056792498">Získejte ochranu před nebezpečnými weby</translation>
@@ -5464,7 +5466,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5173668317844998239">Přidat nebo vymazat otisky prstů uložené na bezpečnostním klíči</translation>
 <translation id="5174169235862638850">Heslo bylo zkopírováno do schránky</translation>
 <translation id="517488401359338823">Odemknutí bezpečnostního zařízení</translation>
-<translation id="5176671554021050278">Pomocí Google Lens se můžete dozvědět víc o konkrétních obrázcích nebo textu na stránce</translation>
 <translation id="5177479852722101802">Blokovat přístup k webové kameře a mikrofonu i nadále</translation>
 <translation id="5178667623289523808">Najít předchozí</translation>
 <translation id="5179428098696668914">Vypnout audio od AI</translation>
@@ -5786,6 +5787,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5436510242972373446">Vyhledat <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Okno <ph name="WINDOW_SIDE" /> má šířku <ph name="WINDOW_SIZE_PERCENT" />, panel <ph name="PANE_SIDE" /> má šířku <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Najít &amp;rozšíření</translation>
+<translation id="5440240650630588012">Čtecí řádek nebo okno vám pomůžou lépe se soustředit. Stiskněte ⌥L nebo přejděte do Nastavení.</translation>
 <translation id="5440425659852470030">Zavřít boční panel</translation>
 <translation id="544083962418256601">Vytvořit zástupce…</translation>
 <translation id="5441133529460183413">Webová aplikace nainstalovaná z prohlížeče Chrome</translation>
@@ -5972,6 +5974,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5576472948015790634">Teď můžete skupiny karet a chaty s Gemini na jednom místě spravovat. Tlačítko můžete kdykoli odepnout.</translation>
 <translation id="5578059481725149024">Automatické přihlášení</translation>
 <translation id="5578387000057347457">Zadáním vlastního promptu nebo zvýrazněním textu vytvořit obrázek</translation>
+<translation id="557893471177655572">Vyzkoušejte označování řádků</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 položka je uložena jen na tomto zařízení. Pokud ji chcete používat na jiných zařízeních, <ph name="BEGIN_LINK" />uložte ji do svého účtu Google<ph name="END_LINK" />.}few{{ITEM_COUNT} položky jsou uložené jen na tomhle zařízení. Pokud je chcete používat i na jiných zařízeních, <ph name="BEGIN_LINK" />uložte je do svého účtu Google<ph name="END_LINK" />.}many{{ITEM_COUNT} položky je uloženo jen na tomhle zařízení. Pokud je chcete používat i na jiných zařízeních, <ph name="BEGIN_LINK" />uložte je do svého účtu Google<ph name="END_LINK" />.}other{{ITEM_COUNT} položek je uloženo jen na tomhle zařízení. Pokud je chcete používat i na jiných zařízeních, <ph name="BEGIN_LINK" />uložte je do svého účtu Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Odebrat web <ph name="SITE" /> ze seznamu <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">Rozdělené zobrazení</translation>
@@ -9988,6 +9991,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="869891660844655955">Datum konce platnosti</translation>
 <translation id="8699296325072357994">Obsah ze stránek s hesly a související informace se odesílají do Googlu a kontrolují je lidé. Vaše heslo je zašifrováno a nikdo ho neuvidí. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">spouštěč + backspace</translation>
+<translation id="8701058912406466818">Čtecí řádek nebo okno vám pomůžou lépe se soustředit. Stiskněte Alt+L nebo přejděte do Nastavení.</translation>
 <translation id="8702278591052316269">Nabídka obsahuje skryté skupiny uložených karet</translation>
 <translation id="8703346390800944767">Přeskočit reklamu</translation>
 <translation id="8703372953981978786">Tento odkaz nefunguje</translation>
@@ -10749,6 +10753,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="983192555821071799">Zavřít všechny karty</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – zaznamenávání kamery a mikrofonu</translation>
 <translation id="984705303330760860">Přidání jazyků kontroly pravopisu</translation>
+<translation id="986994187171579118">Rozšíření bylo zakázáno rozšířením <ph name="EXTENSION_NAME" /></translation>
 <translation id="987264212798334818">Všeobecné</translation>
 <translation id="987574372967138078">Web <ph name="WEBSITE_ORIGIN" /> chce získat informace z vašeho mobilního zařízení</translation>
 <translation id="988320949174893488">Občasné zadrhávání</translation>

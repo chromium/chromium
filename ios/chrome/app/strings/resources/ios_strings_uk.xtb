@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Клієнт RCS MLS</translation>
 <translation id="1508263560970797965">Продовжити в анонімному режимі</translation>
 <translation id="1509486075633541495">Увійдіть в обліковий запис на веб-сайті</translation>
+<translation id="1509922846321012406">Дізнайтесь, як іще можна посилити конфіденційність і безпеку</translation>
 <translation id="1513858653616922153">Видалити пароль</translation>
 <translation id="1517166097004694782">Сховати опцію "Продовжити на цій вкладці"</translation>
 <translation id="1520027731907768768">Отримуйте сповіщення про зниження цін на товари, які відстежуєте.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Веб-переглядач за умовчанням</translation>
 <translation id="2893791155497534382">Ви можете видаляти паролі й дані про інші дії у відповідних розділах налаштувань</translation>
 <translation id="2894757982205307093">Нова вкладка в групі</translation>
+<translation id="2897858638449756400">Дізнайтеся про інші способи пошуку</translation>
 <translation id="2902312830803030883">Додаткові дії</translation>
 <translation id="2904788871580817212">Зниження ціни на відкритій вкладці з <ph name="PREVIOUS_PRICE" /> до <ph name="PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN" />)</translation>
 <translation id="2905479111267140204">У вас є повторно використані паролі (<ph name="NUMBER_OF_PASSWORDS" />), які можуть загрожувати вашій безпеці.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Буде видалено адреси, збережені на цьому пристрої, а також у вашому обліковому записі Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Проблеми виявлено <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Створення зображень</translation>
+<translation id="5058813911021873087">Дізнайтеся про інші способи впорядковувати роботу й заощаджувати час</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Ефективніше користуйтеся вебпереглядачем</translation>
 <translation id="5062321486222145940">Установити Google Диск</translation>
@@ -1881,6 +1884,7 @@
 <translation id="6987201788018524855">Дізнайтеся про корисні функції, які ви могли не помітити</translation>
 <translation id="6989636517316575338">Запитайте про будь-яку сторінку</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Усі завдання</translation>
 <translation id="6998251471716094661">Відстежуйте ціни на товари й отримуйте сповіщення, коли на якомусь сайті знизиться ціна</translation>
 <translation id="7004032350256606903">Адміністратор вашої організації вимагає, щоб ви переглядали веб-сторінки конфіденційно.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>

@@ -1517,7 +1517,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 由于您近期未访问过此网站，Chrome 已移除这一权限</translation>
 <translation id="6923291640965724312">沉浸式格式</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 个标签页}other{<ph name="NUMBER_OF_TABS" /> 个标签页}}</translation>
-<translation id="6929224077895306814">您的设备和 Google 账号中保存的所有安全码都将删除</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />，已选择的固定标签页，正在播放音频</translation>
 <translation id="6937524809504266803">个性化和关联</translation>
 <translation id="6937876069006524083">昵称（可选）</translation>

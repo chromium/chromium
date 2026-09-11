@@ -36,7 +36,6 @@
 <translation id="1333654552732143316">Chromeni ishga tushirish</translation>
 <translation id="1341711321000856656">Profilni almashtirib, boshqa Chrome profili parollarini koʻrish mumkin</translation>
 <translation id="1343830902827845050">Chrome hisobiga kirish</translation>
-<translation id="1356661055722410047">Yangi! Ekrandagi matn va rasmlarni tarjima qilish mumkin</translation>
 <translation id="1361351916482714918">Google Lens bilan internetni yanada oqilona kezing</translation>
 <translation id="1363996462118479832">Hisobga kirishdagi xatolik sababli ChromeOS maʼlumotlarni sinxronlay olmadi.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -97,6 +96,7 @@
 <translation id="1873233029667955273">Google Chrome hozir birlamchi brauzeringiz emas</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome versiyasi eskirdi</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromega shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, kengaytmalar va boshqa maʼlumotlardan barcha qurilmalarda foydalana olasiz.</translation>
 <translation id="1880677175115548835">Matnni belgilash</translation>
 <translation id="1896602904211344018">Chrome ilovasini yuklab olish</translation>
 <translation id="1919130412786645364">Chrome hisobiga kirishga ruxsat berish</translation>
@@ -546,6 +546,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6334815226785304306">Chromeni birlamchi brauzer etib tayinlash va vazifalar paneliga mahkamlash</translation>
 <translation id="63540178978900677">Chrome endi birlamchi brauzeringiz emas. Chrome asosiy brauzer etib tayinlansinmi?</translation>
 <translation id="6360449101159168105">Bu varaq nofaol boʻlganida Chrome tezroq ishlashi uchun xotira boʻshatiladi. Bu saytni har doim nofaol boʻlmasligini tanlash mumkin.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromega shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, saqlangan sahifalar va boshqa maʼlumotlardan barcha qurilmalarda foydalana olasiz.</translation>
 <translation id="6388799252195623474">bunda yordam kerak</translation>
 <translation id="6412673304250309937">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Chrome 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}other{Chrome # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}}</translation>
@@ -706,6 +707,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7845233973568007926">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin kompyuterni qayta ishga tushirishingiz lozim.</translation>
 <translation id="7847170235260850604">Windows ishga tushirilganda Chrome ishga tushadi</translation>
 <translation id="7849037457735762883">Ishni kelgan joyidan davom ettiring: Chrome har safar qayta ishga tushganda oxirgi varaqlarni tiklashi mumkin. Yoqish uchun bu yerga kiring:</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromega shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, <ph name="DEVICE" /> qurilmasidagi kengaytmalar va boshqa maʼlumotlardan foydalana olasiz.</translation>
 <translation id="7869620795354551924">Saqlangan parollardan foydalanish uchun QR kodni kiriting, iOS uchun Chrome ilovasini yuklab oling va Google hisobingizga kiring</translation>
 <translation id="7872446069773932638">Yuklab olinmoqda... <ph name="SECONDS" /> soniya qoldi.</translation>
 <translation id="7886087451482920026">Google Lens yordamida matn belgilang</translation>
@@ -792,7 +794,6 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="8575047640889685742">Google hisobingizdagi barcha Chrome maʼlumotlarini <ph name="BEGIN_LINK" />shaxsiy kodli ibora<ph name="END_LINK" /> yordamida shifrlang. Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.</translation>
 <translation id="8590782867495422699">Google Qidiruvning AI rejimini qayta ochish</translation>
 <translation id="8598779894319572882">Asboblar panelidagi “AI rejimidagi Google Qidiruv” tugmasi orqali internetni kezish davomida savollar berish uchun Google Qidiruvdagi AI rejimini istalgan vaqtda qayta ochishingiz mumkin</translation>
-<translation id="8601359445272098721">Yangi! “Ekrandan tarjima qilish” tugmasini bosib, ekrandagi matn va rasmlarni tarjima qilish mumkin</translation>
 <translation id="8614913330719544658">Google Chrome javob bermayapti. Qaytadan ishga tushirilsinmi?</translation>
 <translation id="8623450603356630491">Telefonda Chrome hisobiga kiring</translation>
 <translation id="8624541899164515475">Sozlamalar yangi varaqda ochiladi.</translation>
@@ -804,6 +805,7 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="8679801911857917785">Bundan tashqari, kengaytma Chrome bosh sahifasini o‘zgarib qo‘ydi.</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8712767363896337380">Deyarli yangilandi! Yangilash tugashi uchun Chrome brauzerini qayta ishga tushiring.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromega shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, <ph name="DEVICE" /> qurilmasidagi saqlangan sahifalar va boshqa maʼlumotlardan foydalana olasiz.</translation>
 <translation id="8718062187489036808">Chrome hisobidan chiqish</translation>
 <translation id="873133009373065397">Google Chrome asosiy brauzerni aniqlay olmadi yoki tayinlay olmadi</translation>
 <translation id="8747073452963259673">qidiruv hududining pastki chap burchagi: chap <ph name="LEFT" />%, past <ph name="BOTTOM" />%</translation>

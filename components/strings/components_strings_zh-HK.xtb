@@ -1095,6 +1095,7 @@
 <translation id="2859806420264540918">此網站顯示滋擾性或誤導廣告。</translation>
 <translation id="2873317327342476681">恐龍遊戲，㩒一下恐龍或者空白鍵就可以開始玩</translation>
 <translation id="287387905105155974">說明對話氣泡</translation>
+<translation id="2875109558992200904">當 Chrome 標示安全性事件時，系統會向你的管理員發送事件的相關資料。這可能包括你在 Chrome 瀏覽的網址和網頁標題、複製資料的來源網址、檔案名稱或元數據、IP 位址、瀏覽器或分頁當機資料，以及用於登入網頁應用程式、裝置和 Chrome 的使用者名稱。</translation>
 <translation id="2876489322757410363">即將退出無痕模式，改用外部應用程式付款。要繼續嗎？</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理安全瀏覽之類嘅功能</translation>
 <translation id="2878197950673342043">十字摺</translation>
@@ -1135,7 +1136,6 @@
 <translation id="2931453528659195355">管理購物資料</translation>
 <translation id="2933624813161016821">燙金浮雕壓印</translation>
 <translation id="2935726091208500473">分享分頁</translation>
-<translation id="2936698630976431647">揀宣傳代碼欄位，自動填入「Google 錢包」入面嘅優惠</translation>
 <translation id="293796669683825859">留言</translation>
 <translation id="2938225289965773019">開放<ph name="PROTOCOL" />連結</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />：如要顯示游標，請切換應用程式、重新載入頁面或返回</translation>
@@ -1595,6 +1595,7 @@
 <translation id="3712004750972384495">正在儲存螢幕錄影畫面</translation>
 <translation id="3712006010833051684">10 信封</translation>
 <translation id="3712624925041724820">授權已用盡</translation>
+<translation id="371302509916403935">底線</translation>
 <translation id="3713277100229669269">宜家你可以喺俾錢之前睇到信用卡優惠</translation>
 <translation id="3714633008798122362">網絡日曆</translation>
 <translation id="3714780639079136834">開啟流動數據或 Wi-Fi</translation>
@@ -1942,6 +1943,7 @@
 <translation id="4265635050210404830">你的會員卡</translation>
 <translation id="4265872034478892965">根據管理員的設定允許</translation>
 <translation id="4267590181863312380">如要查看其他裝置上的記錄，請登入並同步記錄。你也可在你的所有裝置上取得密碼和其他資料。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
+<translation id="4267837382000002014">你瀏覽的網頁網址和標題會傳送至 Google Cloud 或第三方作分析，並可能會向管理員顯示。例如，Google Cloud 或第三方會掃瞄網址，偵測是否為不安全的網站或根據管理員設定的規則篩選網站。</translation>
 <translation id="4268025649754414643">金鑰編密</translation>
 <translation id="4269599248168651462">伺服器憑證的核發名稱重複。</translation>
 <translation id="4270541775497538019">堆疊器 6</translation>
@@ -4212,7 +4214,6 @@
 <translation id="815036624016370447">Google 帳戶 <ph name="ACCOUNT" /> 的資料有助你加快在 Chrome 填表的速度</translation>
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已被移除或移動位置，或者檔案權限為禁止存取。</translation>
 <translation id="8151185429379586178">開發人員工具</translation>
-<translation id="8152194419479742504">在任何表格中輸入 @@ 即可尋找並填入資料，無需切換分頁</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理員政策不建議下載此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議下載這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">最近開啟的分頁</translation>
 <translation id="815805690561372740">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能最近曾在你嘗試瀏覽的網站上<ph name="BEGIN_LINK" />發現有害軟件<ph name="END_LINK" />。</translation>
@@ -4276,6 +4277,7 @@
 <translation id="8269242089528251720">個別文件/已自動分頁的副本</translation>
 <translation id="8269703227894255363">{0,plural, =1{禁止開啟檔案}other{禁止開啟 <ph name="FILE_COUNT" /> 個檔案}}</translation>
 <translation id="8270242299912238708">PDF 文件</translation>
+<translation id="8270320981823560179">雲端硬碟</translation>
 <translation id="8277900682056760511">付款處理常式工作表開咗</translation>
 <translation id="827820107214076967">重新整理記錄</translation>
 <translation id="8279611986089885641">必須開啟 Chrome 通知。您可在<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />開啟</translation>

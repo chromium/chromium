@@ -1095,6 +1095,7 @@
 <translation id="2859806420264540918">ይህ ጣቢያ ረባሽ ወይም አሳሳች ማስታወቂያዎችን ያሳያል።</translation>
 <translation id="2873317327342476681">የዳይኖ ጨዋታ፣ ለመጫወት ዳይኖውን መታ ያድርጉ ወይም ክፍተትን ይጫኑ</translation>
 <translation id="287387905105155974">የእገዛ ዓረፋ</translation>
+<translation id="2875109558992200904">የደኅንነት ክስተቶች በChrome ሲጠቆሙ ስለ ክስተቶቹ አግባብነት ያለው ውሂብ ለአስተዳዳሪዎ ይላካል። ይህ በChrome ውስጥ የሚጎበኙትን ገጾች ዩአርኤልዎች፣ ውሂብ የቀዱባቸውን ገጾች ዩአርኤልዎች፣ የፋይል ስሞች ወይም ዲበ ውሂብ፣ አይፒ አድራሻዎች፣ የአሳሽ ወይም የትር ብልሽቶች እና ድር ላይ ወደተመሠረቱ መተግበሪያዎች በመለያ ለመግባት የሚጠቀሙበት የተጠቃሚ ስም፣ የእርስዎን መሣሪያ እና Chrome ማካተት ይችላል።</translation>
 <translation id="2876489322757410363">በውጫዊ ማከማቻ በኩል ለማጫወት ማንነት ከማያሳውቅ ሁነታ በመውጣት ላይ። ይቀጥል?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ቅንብሮች ውስጥ የጥንቃቄ አሰሳዎን እና ተጨማሪ ነገሮችን ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="2878197950673342043">የፖስተር እጥፋት</translation>
@@ -1135,7 +1136,6 @@
 <translation id="2931453528659195355">የሸመታ መረጃን አስተዳድር</translation>
 <translation id="2933624813161016821">ፎይልን መቅረጽ</translation>
 <translation id="2935726091208500473">ትሮችዎን ማጋራት</translation>
-<translation id="2936698630976431647">ከGoogle Wallet ቅናሾችን በራስ-ሰር ለመሙላት የማስተዋወቂያ ኮድ መስኩን ይምረጡ</translation>
 <translation id="293796669683825859">አስተያየቶች</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> አገናኞችን ክፈት</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – ጠቋሚዎን ለማሳየት መተግበሪያዎችን ይቀያይሩ፣ ገፁን እንደገና ይጫኑ ወይም ይመለሱ</translation>
@@ -1595,6 +1595,7 @@
 <translation id="3712004750972384495">የማያ ቀረጻን ማስቀመጥ</translation>
 <translation id="3712006010833051684">#10 ፖስታ</translation>
 <translation id="3712624925041724820">ሁሉም ፍቃዶች ተሞክረዋል</translation>
+<translation id="371302509916403935">ከግርጌ አስምር</translation>
 <translation id="3713277100229669269">አሁን ከመክፈልዎ በፊት የካርድ ጥቅማጥቅሞችን ማየት ይችላሉ።</translation>
 <translation id="3714633008798122362">የድር ቀን መቁጠሪያ</translation>
 <translation id="3714780639079136834">የሞባይል ውሂብ ወይም Wi-Fi ማብራት</translation>
@@ -1942,6 +1943,7 @@
 <translation id="4265635050210404830">የእርስዎ የታማኝነት ካርዶች</translation>
 <translation id="4265872034478892965">በእርስዎ አስተዳዳሪ የተፈቀደ</translation>
 <translation id="4267590181863312380">ታሪክዎን ከሌሎች መሣሪያዎችዎ ለማግኘት ይግቡ እና ታሪክን ያሥምሩ። እንዲሁም የይለፍ ቃላትዎን እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ያገኛሉ። ቅንብሮች ውስጥ በማንኛውም ጊዜ ማሥመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመሥረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊ ሊያደርግ ይችላል።</translation>
+<translation id="4267837382000002014">የሚጎበኟቸው ገጾች ዩአርኤልዎች እና ርዕሶች ወደ Google ደመና ወይም ሦስተኛ ወገኖች ለትንታኔ ይላካሉ እና ለአስተዳዳሪዎ ሊታዩ ይችላሉ። ለምሳሌ በአስተዳዳሪው በተቀናበሩ ደንቦች ላይ በመመሥረት ደኅንነታቸው ያልተጠበቁ ድር ጣቢያዎችን ወይም ማጣሪያ ድር ጣቢያዎችን ለመለየት ሊቃኙ ይችላሉ።</translation>
 <translation id="4268025649754414643">የቀልፍ ሚስጥራዊነት</translation>
 <translation id="4269599248168651462">የአገልጋይ የዕውቅና ማረጋገጫው የተሰጠው ልዩ ላልሆነ ስም ነው።</translation>
 <translation id="4270541775497538019">ቁልል 6</translation>
@@ -4212,7 +4214,6 @@
 <translation id="815036624016370447">ከGoogle መለያዎ <ph name="ACCOUNT" /> የመጣ መረጃ Chrome ውስጥ ቅጾችን ይበልጥ በፍጥነት ለመሙላት ሊያግዝዎት ይችላል</translation>
 <translation id="8150722005171944719"><ph name="URL" /> ላይ ያለው ፋይል የሚነበብ አይደለም።  ተወግዶ፣ ተወስዶ ወይም የፋይል ፍቃዶቹ መዳረሻ እየከለከሉ ሊሆኑ ይችላሉ።</translation>
 <translation id="8151185429379586178">የገንቢ መሳሪያዎች</translation>
-<translation id="8152194419479742504">ትሮችን ሳይቀይሩ መረጃን ለማግኘት እና ለመሙላት በማንኛውም ቅጽ ውስጥ @@ ይትይቡ</translation>
 <translation id="8153865548451212769">{0,plural, =1{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> ማውረድ አይመክርም}one{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> ማውረድ አይመክርም}other{የአስተዳዳሪ መመሪያ እነዚህን ፋይሎች ወደ <ph name="DESTINATION_NAME" /> ማውረድ አይመክርም}}</translation>
 <translation id="8155253549374198915">መጨረሻ የተከፈቱ ትሮች</translation>
 <translation id="815805690561372740">Chrome እያሰሱ ሳለ እርስዎን ለመጠበቅ ለመጎብኘት በሞከሩበት ጣቢያ ላይ እንደ የGoogle ጥንቃቄ አሰሳ ያሉ — <ph name="BEGIN_LINK" />በቅርብ ጊዜ ተንኮል አዘል ዌር ያገኙ<ph name="END_LINK" /> ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አሉት።</translation>
@@ -4276,6 +4277,7 @@
 <translation id="8269242089528251720">የተለዩ ሰነዶች/የተጣመሩ ቅጂዎች</translation>
 <translation id="8269703227894255363">{0,plural, =1{ፋይል ከመክፈት ትግዷል}one{<ph name="FILE_COUNT" /> ፋይል ከመክፈት ታግዷል}other{<ph name="FILE_COUNT" /> ፋይሎች ከመክፈት ታግደዋል}}</translation>
 <translation id="8270242299912238708">የፒዲኤፍ ሰነዶች</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">የክፍያ ቁጥጥር ሉህ ተከፍቷል</translation>
 <translation id="827820107214076967">የእድሳት ምዝግብ ማስታወሻዎች</translation>
 <translation id="8279611986089885641">የChrome ማሳወቂያዎች መብራት አለባቸው። በ<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> ውስጥ እነሱን ማብራት ይችላሉ።</translation>

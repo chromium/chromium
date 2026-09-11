@@ -1517,7 +1517,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Акыркы убакта сайтка кирбегениңизден улам, Chrome бул уруксаттарды өчүрдү</translation>
 <translation id="6923291640965724312">Сүңгүтүүчү формат</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 өтмөк}other{<ph name="NUMBER_OF_TABS" /> өтмөк}}</translation>
-<translation id="6929224077895306814">Түзмөгүңүздө жана Google аккаунтуңузда сакталган бардык коопсуздук коддору өчүрүлөт</translation>
 <translation id="6933180670536678127">Кадалган <ph name="TAB_TITLE" /> өтмөгү тандалып, анда үн иштетилген</translation>
 <translation id="6937524809504266803">Жекелештирүү жана байланыштыруу</translation>
 <translation id="6937876069006524083">Ылакап ат (милдеттүү эмес)</translation>

@@ -1095,6 +1095,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2859806420264540918">Nagpapakita ang site na ito ng mga nakakasagabal o nakakapanlinlang na ad.</translation>
 <translation id="2873317327342476681">Dino game, i-tap ang dino o pindutin ang space para maglaro</translation>
 <translation id="287387905105155974">Bubble ng tulong</translation>
+<translation id="2875109558992200904">Kapag na-flag ng Chrome ang mga event tungkol sa seguridad, ipapadala sa iyong administrator ang nauugnay na data tungkol sa mga event. Puwedeng kabilang dito ang mga URL at pamagat ng mga page na binibisita mo sa Chrome, URL ng mga page kung saan ka kumopya ng data, pangalan ng file o metadata, IP address, pag-crash ng browser o tab, at ang username na ginagamit mo para mag-sign in sa mga web-based na application, sa iyong device, at sa Chrome.</translation>
 <translation id="2876489322757410363">Aalis sa Incognito mode upang magbayad sa pamamagitan ng external na application. Magpatuloy?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para pamahalaan ang iyong Ligtas na Pag-browse at higit pa sa mga setting ng Chrome</translation>
 <translation id="2878197950673342043">Poster fold</translation>
@@ -1135,7 +1136,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2931453528659195355">Pamahalaan ang impormasyon sa pamimili</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2935726091208500473">pag-share ng iyong mga tab</translation>
-<translation id="2936698630976431647">Piliin ang field ng promo code para i-autofill ang mga alok mula sa Google Wallet</translation>
 <translation id="293796669683825859">Mga Komento</translation>
 <translation id="2938225289965773019">Buksan ang mga link ng <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Para ipakita ang iyong cursor, lumipat ng app, i-reload ang page, o bumalik</translation>
@@ -1596,6 +1596,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3712004750972384495">Sine-save ang pag-record ng screen</translation>
 <translation id="3712006010833051684">Envelope #10</translation>
 <translation id="3712624925041724820">Naubos na ang mga lisensya</translation>
+<translation id="371302509916403935">Salungguhit</translation>
 <translation id="3713277100229669269">Puwede mo na ngayong makita ang mga benepisyo ng card bago ka magbayad</translation>
 <translation id="3714633008798122362">kalendaryo ng web</translation>
 <translation id="3714780639079136834">I-on ang mobile data o Wi-Fi</translation>
@@ -1943,6 +1944,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4265635050210404830">Ang mga loyalty card mo</translation>
 <translation id="4265872034478892965">Pinayagan ng iyong administrator</translation>
 <translation id="4267590181863312380">Para makuha ang iyong history mula sa iba mo pang device, mag-sign in at i-sync ang history. Makukuha mo rin ang iyong mga password at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
+<translation id="4267837382000002014">Ipinapadala sa Google Cloud o mga third party ang mga URL at pamagat ng mga page na binibisita mo para sa pagsusuri, at posibleng nakikita ito ng iyong administrator. Halimbawa, posibleng i-scan ang mga ito para ma-detect ang mga hindi ligtas na website o ma-filter ang mga website batay sa mga panuntunang itinakda ng administrator.</translation>
 <translation id="4268025649754414643">Pag-encipher ng Key</translation>
 <translation id="4269599248168651462">Ibinibigay ang certificate ng server sa isang non-unique na pangalan.</translation>
 <translation id="4270541775497538019">Stacker 6</translation>
@@ -4213,7 +4215,6 @@ Mga karagdagang detalye:
 <translation id="815036624016370447">Ang impormasyong mula sa Google Account mong <ph name="ACCOUNT" /> ay makakatulong sa iyong mas mabilis na punan ang mga form sa Chrome</translation>
 <translation id="8150722005171944719">Hindi nababasa ang file sa <ph name="URL" />. Maaaring ito ay naalis, nalipat, o maaaring pinipigilan ng mga pagpapahintulot ng file ang access.</translation>
 <translation id="8151185429379586178">Mga tool ng developer</translation>
-<translation id="8152194419479742504">I-type ang @@ sa anumang form para maghanap at mapunan ng impormasyon nang hindi lumilipat ng tab</translation>
 <translation id="8153865548451212769">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na i-download ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na i-download ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na i-download ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Mga huling nakabukas na tab</translation>
 <translation id="815805690561372740">May mga built-in na pangkaligtasang feature ang Chrome para maprotektahan ka habang nagba-browse ka — tulad ng Ligtas na Pag-browse sa Google, na <ph name="BEGIN_LINK" />nakakita kamakailan ng malware<ph name="END_LINK" /> sa site na sinubukan mong bisitahin.</translation>
@@ -4277,6 +4278,7 @@ Mga karagdagang detalye:
 <translation id="8269242089528251720">Mga hiwalay na dokumento/Mga naka-collate na kopya</translation>
 <translation id="8269703227894255363">{0,plural, =1{Na-block ang file para hindi mabuksan}one{<ph name="FILE_COUNT" /> file ang na-block para hindi mabuksan}other{<ph name="FILE_COUNT" /> na file ang na-block para hindi mabuksan}}</translation>
 <translation id="8270242299912238708">Mga dokumentong PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Nakabukas ang sheet ng tagapangasiwa ng pagbabayad</translation>
 <translation id="827820107214076967">I-refresh ang mga Log</translation>
 <translation id="8279611986089885641">Dapat naka-on ang mga notification sa Chrome. Puwede mong i-on ang mga ito sa <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

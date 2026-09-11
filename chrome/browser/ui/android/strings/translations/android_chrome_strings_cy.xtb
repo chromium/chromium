@@ -665,6 +665,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">Gadael chwarae ymdrochol</translation>
+<translation id="3662595332590803433">Agor tabiau personol bob amser yn Chrome</translation>
 <translation id="3674208116086565128">Mynd i Google App Home</translation>
 <translation id="368329460027487650">Rydych wedi'ch allgofnodi. Yn agor opsiynau i fewngofnodi.</translation>
 <translation id="3684540848053703310">Dalen waelod mewnwelediadau pris ar gau</translation>
@@ -1518,7 +1519,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Tynnodd Chrome y caniatadau hyn oherwydd nad ydych chi wedi ymweld â nhw yn ddiweddar</translation>
 <translation id="6923291640965724312">Fformat ymdrochol</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}zero{<ph name="NUMBER_OF_TABS" /> tab}two{<ph name="NUMBER_OF_TABS" /> dab}few{<ph name="NUMBER_OF_TABS" /> thab}many{<ph name="NUMBER_OF_TABS" /> thab}other{<ph name="NUMBER_OF_TABS" /> tab}}</translation>
-<translation id="6929224077895306814">Bydd yr holl godau diogelwch sy'n cael eu cadw ar eich dyfais a'ch Cyfrif Google yn cael eu dileu</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, Tab Clywadwy wedi'i Binio a Ddewisir</translation>
 <translation id="6937524809504266803">Personoleiddio a Chysylltu</translation>
 <translation id="6937876069006524083">Llysenw (dewisol)</translation>
@@ -1629,6 +1629,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7335766481146072567">Pwyswch parhau</translation>
 <translation id="7336259382292148213">Mae hysbysiadau'n edrych yn dda</translation>
 <translation id="7339898014177206373">Ffenestr newydd</translation>
+<translation id="7349983576451251297">Agor tudalennau gwe ym mhorwr Chrome yn lle tabiau personol</translation>
 <translation id="7352339641508007922">Llusgwch i dynnu sgrinlun</translation>
 <translation id="7352651011704765696">Aeth rhywbeth o'i le</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Rhannu 1 eitem a ddewisir}zero{Rhannu # eitem a ddewisir}two{Rhannu # eitem a ddewisir}few{Rhannu # eitem a ddewisir}many{Rhannu # eitem a ddewisir}other{Rhannu # eitem a ddewisir}}</translation>
@@ -1719,6 +1720,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7690596512217303514">Ni allai eich dyfais agor Chrome. I ddatrys y broblem, lawrlwythwch y diweddariad Chrome diweddaraf o'ch siop apiau.</translation>
 <translation id="7692761875510935111">Agor yn gyflym yn y porwr. I olygu'r llwybr byr hwn, cyffwrddwch a daliwch.</translation>
 <translation id="7695270712963178084">Mae Chrome yn dod o hyd i</translation>
+<translation id="7695610746377249436">Mae gwefannau, gan gynnwys Google, yn defnyddio eu disgresiwn wrth ymateb i'r cais hwn.</translation>
 <translation id="7697383401610880082">Bachyn llusgo</translation>
 <translation id="7698359219371678927">Crëwch e-bost yn <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Taflen waelod gweithgaredd diweddar wedi'i hagor ar uchder llawn</translation>

@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">Достъп до всяко от тези USB устройства</translation>
 <translation id="1038462104119736705">За Linux е препоръчително да разполагате с поне <ph name="INSTALL_SIZE" /> свободно място. За да увеличите свободното място, изтрийте файлове от устройството.</translation>
 <translation id="1038643060055067718">Редове:</translation>
+<translation id="1039216421321079051">Разширението е деактивирано от друго разширение</translation>
 <translation id="1039337018183941703">Невалиден или повреден файл</translation>
 <translation id="1040761927998636252">Отметка без име за <ph name="URL" /></translation>
 <translation id="1041175011127912238">Страницата не реагира</translation>
@@ -2542,6 +2543,7 @@
 <translation id="2939908794993783865">Още неактивни сайтове</translation>
 <translation id="2939938020978911855">Показване на наличните устройства с Bluetooth</translation>
 <translation id="2941112035454246133">Нисък</translation>
+<translation id="2942228903502008519">Разгъване на разделите (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">Изчаква се...</translation>
 <translation id="2942581856830209953">Персонализиране на тази страница</translation>
 <translation id="2942707801577151363">Отваряйте, редактирайте и запазвайте файлове на Word, Excel и PowerPoint. За някои функции може да се изисква абонамент.</translation>
@@ -2627,7 +2629,6 @@
 <translation id="3000461861112256445">Монозвук</translation>
 <translation id="3001144475369593262">Профили на деца</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Няма персонализирани клавиши}=1{1 персонализиран клавиш}other{{COUNT} персонализирани клавиша}}</translation>
-<translation id="3002745665522516995">Изберете каквото и да е на страницата, за да извършите търсене</translation>
 <translation id="3002864108328203174">Долният лист за Gemini е отворен на половината височина.</translation>
 <translation id="3003144360685731741">Предпочитани мрежи</translation>
 <translation id="3003253259757197230">Посещаваните от вас URL адреси се изпращат до Google с цел предвиждане на следващите сайтове, които е възможно да посетите, и показване на допълнителна информация за посещаваната страница</translation>
@@ -4249,6 +4250,7 @@
 <translation id="4226303886821889519">Версия на програмата за актуализиране: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Това разширение не е разрешено}other{Някои разширения не са разрешени}}</translation>
 <translation id="4229538146709970028">Моля, отключете <ph name="TOKEN_NAME" />, за да удостоверите самоличността си пред <ph name="HOST_NAME" /> със сертификата си.</translation>
+<translation id="4230659518013393045">Заглавието на страницата, URL адресът и съдържанието на текущия ви раздел се споделят с Google, за да получавате по-уместни отговори. Можете да добавяте или премахвате раздели, докато сърфирате.</translation>
 <translation id="4232375817808480934">Конфигуриране на Kerberos</translation>
 <translation id="4232376164796433044">Пароли и автоматично попълване</translation>
 <translation id="4233739489690259993">Вашият Chromebook вече не получава актуализации за сигурност и софтуерни актуализации. Надстройте устройството си за достъп до най-новите функции за сигурност и софтуер. В сила са условията за офертата.</translation>
@@ -4592,7 +4594,6 @@
 <translation id="4495002167047709180">Да се разреши ли това разширение на <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Да не се показва на тази страница</translation>
 <translation id="4500055235123625757">Gemini може да отговаря на въпроси за видеоклиповете или аудиозаписите, които сте възпроизвели в <ph name="LINK_BEGIN" />някои уебсайтове<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> претърпя срив</translation>
 <translation id="4500647907053779331">&amp;Превод на избраното на <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">Потвърждаване на премахването</translation>
 <translation id="4502423230170890588">Премахване от това устройство</translation>
@@ -5464,6 +5465,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5155299520372681119">Качването на файла е изтекло и той е премахнат.</translation>
 <translation id="5156638757840305347">Курсорът е откроен, когато се показва или се движи</translation>
 <translation id="5157250307065481244">Преглед на подробностите за сайта</translation>
+<translation id="5157258206078001821">Свиване на разделите (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">Настройване на Crostini</translation>
 <translation id="5159236862360390997">Ще бъде показана поредица от балончета с инструкции.
           Натиснете <ph name="ACCELERATOR" />, за да поставите фокуса върху балонче, след което го натиснете отново, за да поставите фокуса върху елемента, към който сочи то.</translation>
@@ -5482,7 +5484,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5173668317844998239">Добавяне и изтриване на отпечатъци, запазени в ключа ви за сигурност</translation>
 <translation id="5174169235862638850">Паролата е копирана в буферната памет</translation>
 <translation id="517488401359338823">Отключване на устройството за сигурност</translation>
-<translation id="5176671554021050278">Използвайте Google Обектив, за да научите повече за конкретни изображения или текст на дадена страница.</translation>
 <translation id="5177479852722101802">Достъпът до камерата и микрофона да продължи да се блокира</translation>
 <translation id="5178667623289523808">Търсене на предишното</translation>
 <translation id="5179428098696668914">Изключване на възпроизвеждането от AI</translation>
@@ -5805,6 +5806,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5436510242972373446">Търсене с <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> прозорец вече е с широчина <ph name="WINDOW_SIZE_PERCENT" />, а <ph name="PANE_SIDE" /> панел вече е с широчина <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Намиране и разширения</translation>
+<translation id="5440240650630588012">Приложете линия или прозорец за четене, за да се фокусирате по-лесно. Натиснете ⌥L или отворете настройките.</translation>
 <translation id="5440425659852470030">Затваряне на страничния панел</translation>
 <translation id="544083962418256601">Създаване на преки пътища...</translation>
 <translation id="5441133529460183413">Уеб приложение, инсталирано от браузъра Chrome</translation>
@@ -5991,6 +5993,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5576472948015790634">Вече можете да управлявате групите си раздели и разговорите си с Gemini от едно място. Можете да освободите по всяко време.</translation>
 <translation id="5578059481725149024">Автоматичен вход</translation>
 <translation id="5578387000057347457">Въведете персонализирана подкана или маркирайте текст, за да създадете изображение</translation>
+<translation id="557893471177655572">Изпробвайте функцията за фокус на ниво ред</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 елемент е запазен само на това устройство. За да го използвате на другите си устройства, <ph name="BEGIN_LINK" />запазете го в профила си в Google<ph name="END_LINK" />.}other{{ITEM_COUNT} елемента са запазени само на това устройство. За да ги използвате на другите си устройства, <ph name="BEGIN_LINK" />запазете ги в профила си в Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Премахване на <ph name="SITE" /> от списъка „<ph name="SECTION_HEADER" />“</translation>
 <translation id="5581031802689147441">Разделен изглед</translation>
@@ -6682,6 +6685,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6136637346277431354">Добавяне на раздели и др.</translation>
 <translation id="6140948187512243695">Показване на подробностите</translation>
 <translation id="6141988275892716286">Потвърждаване на изтеглянето</translation>
+<translation id="6142784636114866877">Разгъване на разделите (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">Получаване на помощ</translation>
 <translation id="6143366292569327983">Изберете езика на страницата, от който искате да превеждате</translation>
 <translation id="6144938890088808325">Помогнете ни да подобрим Chromebook</translation>
@@ -10003,11 +10007,13 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8692107307702113268">Паролата съдържа повече от 1000 знака</translation>
 <translation id="8693862390730570097">Забраняване функцията „Помощ при писане“ да се отваря автоматично</translation>
 <translation id="8694596275649352090">Заключване при преминаване в спящ режим или затваряне на капака</translation>
+<translation id="8695214265159551349">Свиване на разделите (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">Отваряне на &amp;местоположение...</translation>
 <translation id="869884720829132584">Меню „Applications“</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699296325072357994">Съдържанието от страниците с пароли и свързаната информация се изпращат до Google и се преглеждат от хора. Паролата ви е шифрована и никой никога не я вижда. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">клавиша „стартов панел“ + Backspace</translation>
+<translation id="8701058912406466818">Приложете линия или прозорец за четене, за да се фокусирате по-лесно. Натиснете Alt + L или отворете настройките.</translation>
 <translation id="8702278591052316269">Меню със скритите запазени раздели</translation>
 <translation id="8703346390800944767">Пропускане на рекламата</translation>
 <translation id="8703372953981978786">Тази връзка не работи</translation>
@@ -10770,6 +10776,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="983192555821071799">Затваряне на всички раздели</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – записва чрез камерата и микрофона</translation>
 <translation id="984705303330760860">Добавяне на езици за проверка на правописа</translation>
+<translation id="986994187171579118">Разширението е деактивирано от <ph name="EXTENSION_NAME" /></translation>
 <translation id="987264212798334818">Общи</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> иска да получи информация от мобилното ви устройство</translation>
 <translation id="988320949174893488">Накъсване от време на време</translation>

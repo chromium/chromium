@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Cliente MLS de RCS</translation>
 <translation id="1508263560970797965">Continuar en Incógnito</translation>
 <translation id="1509486075633541495">Inicia sesión en el sitio web</translation>
+<translation id="1509922846321012406">Explora más formas de reforzar tu privacidad y seguridad</translation>
 <translation id="1513858653616922153">Eliminar contraseña</translation>
 <translation id="1517166097004694782">Ocultar Continuar en esta pestaña</translation>
 <translation id="1520027731907768768">Recibe alertas si los productos que sigues bajan de precio.</translation>
@@ -512,7 +513,7 @@
 <translation id="2584994295315085351">Abrir una pestaña nueva cuando vuelvas a Chrome después de 4 horas</translation>
 <translation id="2593272815202181319">Monoespaciada</translation>
 <translation id="2601778637777010194">Sigue las bajadas de precio de productos</translation>
-<translation id="2602372807870028932">Se eliminará la información seleccionada que se ha guardado en este dispositivo</translation>
+<translation id="2602372807870028932">Se eliminará la información seleccionada guardada en este dispositivo</translation>
 <translation id="260378315836159338">En la parte superior de la pantalla, toca +</translation>
 <translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="261305050785128654">Permite que los sitios web sepan los idiomas que hablas. Si es posible, mostrarán contenido en esos idiomas.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2893791155497534382">Las contraseñas y otras actividades se pueden eliminar en sus ajustes de gestión</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
+<translation id="2897858638449756400">Explora más formas de buscar</translation>
 <translation id="2902312830803030883">Más acciones</translation>
 <translation id="2904788871580817212">Bajada de precio en tu pestaña abierta, de <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Tienes <ph name="NUMBER_OF_PASSWORDS" /> contraseñas reutilizadas que podrían poner en riesgo tu seguridad.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Se eliminarán las direcciones guardadas en este dispositivo. También se eliminan las direcciones guardadas en tu cuenta de Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problemas detectados <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Crear imagen</translation>
+<translation id="5058813911021873087">Explora más formas de organizarte y ahorrar tiempo</translation>
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5061202435354361813">Mejora tu experiencia de navegación</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
@@ -1881,6 +1884,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="6987201788018524855">Descubre funciones útiles que te has perdido</translation>
 <translation id="6989636517316575338">Pregunta sobre cualquier página</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Todas las tareas</translation>
 <translation id="6998251471716094661">Sigue los precios de los productos y recibe alertas cuando el precio baje en cualquier sitio</translation>
 <translation id="7004032350256606903">Tu organización requiere que navegues de forma privada.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

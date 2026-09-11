@@ -88,7 +88,7 @@
 <translation id="3600566671520689681">{DAYS,plural, =1{1 jour restant}one{# jour restant}other{# jours restants}}</translation>
 <translation id="3600969208114796418">Fichier <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
 <translation id="3608915363409716668">+ de <ph name="MAXIMUM_VALUE" /></translation>
-<translation id="3618849550573277856">Rechercher "<ph name="LOOKUP_STRING" />"</translation>
+<translation id="3618849550573277856">Effectuer une recherche sur "<ph name="LOOKUP_STRING" />"</translation>
 <translation id="3622035490309591977">Historique du presse-papiers</translation>
 <translation id="364720409959344976">Sélectionner le dossier d'importation</translation>
 <translation id="3660179305079774227">Haut</translation>

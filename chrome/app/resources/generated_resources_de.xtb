@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">Auf alle diese USB-Geräte zugreifen</translation>
 <translation id="1038462104119736705">Für Linux sind mindestens <ph name="INSTALL_SIZE" /> freier Speicherplatz erforderlich. Lösche Dateien von deinem Gerät, um Speicherplatz freizugeben.</translation>
 <translation id="1038643060055067718">Zeilen:</translation>
+<translation id="1039216421321079051">Erweiterung von einer anderen Erweiterung deaktiviert</translation>
 <translation id="1039337018183941703">Ungültige oder beschädigte Datei</translation>
 <translation id="1040761927998636252">Unbenanntes Lesezeichen für <ph name="URL" /></translation>
 <translation id="1041175011127912238">Diese Seite reagiert nicht</translation>
@@ -1149,7 +1150,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1885066963699478692">XML-Dateien, die zum Festlegen der Richtlinien verwendet werden.</translation>
 <translation id="1885089541024391265">Google Kalender</translation>
 <translation id="1885106732301550621">Speicherplatz</translation>
-<translation id="188537499764410817">Hier werden Websites angezeigt, auf denen Gemini dich anmelden kann</translation>
+<translation id="188537499764410817">Hier werden die Websites angezeigt, auf denen Gemini dich anmelden kann</translation>
 <translation id="1886996562706621347">Registrierung von Websites als Standard-Handler für Protokolle zulassen (empfohlen)</translation>
 <translation id="1887210448491286312">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ beenden</translation>
 <translation id="1887442540531652736">Fehler bei der Anmeldung</translation>
@@ -2556,7 +2557,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2960950037335552881">Scanne diesen QR-Code mit deinem Smartphone, um unterwegs auf deine Lesezeichen, Passwörter und andere Daten zuzugreifen</translation>
 <translation id="2961040541145689181">Neuer Chat</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (Verlängerung gewährt)</translation>
-<translation id="2961695502793809356">Klicken, um weiterzugehen. Gedrückt halten, um den Verlauf aufzurufen</translation>
+<translation id="2961695502793809356">Klicken, um weiterzugehen. Gedrückt halten, um den Verlauf aufzurufen.</translation>
 <translation id="29618148602069201">Motiv</translation>
 <translation id="2963151496262057773">Das folgende Plug-in reagiert nicht: <ph name="PLUGIN_NAME" />. Möchtest du es anhalten?</translation>
 <translation id="2964193600955408481">WLAN deaktivieren</translation>
@@ -2615,7 +2616,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3000461861112256445">Mono-Audio</translation>
 <translation id="3001144475369593262">Kinderkonten</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Keine benutzerdefinierten Tasten}=1{1 benutzerdefinierte Taste}other{{COUNT} benutzerdefinierte Tasten}}</translation>
-<translation id="3002745665522516995">Wähle ein beliebiges Element der Seite für die Suche aus</translation>
 <translation id="3002864108328203174">Gemini-Ansicht am unteren Rand ist halb geöffnet.</translation>
 <translation id="3003144360685731741">Bevorzugte Netzwerke</translation>
 <translation id="3003253259757197230">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du möglicherweise als Nächstes besuchen wirst, und um dir zusätzliche Informationen über die Seite anzuzeigen, auf der du gerade bist</translation>
@@ -3462,6 +3462,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3641456520301071208">Websites dürfen nach meinem Standort fragen</translation>
 <translation id="3642070413432681490">Cursor einkreisen</translation>
 <translation id="3643962751030964445">Dieses Gerät wird von <ph name="DEVICE_MANAGER" /> verwaltet. <ph name="DEVICE_MANAGER" /> hat festgelegt, dass für das Konto <ph name="USER_EMAIL_ADDRESS" /> ein neues Profil erforderlich ist</translation>
+<translation id="3644128856494356630">CppGC-Speicher</translation>
 <translation id="3645372836428131288">Bewege deinen Finger etwas, um einen anderen Teil des Fingerabdrucks zu erfassen.</translation>
 <translation id="3645951915068244649">Mit diesem Lesezeichenordner wurde bereits eine Tabgruppe erstellt. Möchtest du eine neue Tabgruppe erstellen oder die vorhandene ersetzen?</translation>
 <translation id="3646789916214779970">Auf Standarddesign zurücksetzen</translation>
@@ -4234,6 +4235,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4226303886821889519">Updater-Version: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung ist nicht zulässig}other{Einige Erweiterungen sind nicht zulässig}}</translation>
 <translation id="4229538146709970028">Entsperre <ph name="TOKEN_NAME" />, damit du mit deinem Zertifikat bei <ph name="HOST_NAME" /> authentifiziert werden kannst.</translation>
+<translation id="4230659518013393045">Der Seitentitel, die URL und der Inhalt deines aktuellen Tabs werden mit Google geteilt, um dir relevantere Antworten zu bieten. Du kannst beim Surfen Tabs hinzufügen oder entfernen.</translation>
 <translation id="4232375817808480934">Kerberos konfigurieren</translation>
 <translation id="4232376164796433044">Passwörter und Autofill</translation>
 <translation id="4233739489690259993">Dein Chromebook erhält keine Sicherheits- und Softwareupdates mehr. Aktualisiere dein Gerät, um die neuesten Sicherheitsupdates und Funktionen zu erhalten. Es gelten die Angebotsbedingungen.</translation>
@@ -4577,7 +4579,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4495002167047709180">Diese Erweiterung auf <ph name="SITE" /> erlauben?</translation>
 <translation id="4495419450179050807">Nicht auf dieser Seite anzeigen</translation>
 <translation id="4500055235123625757">Gemini kann Fragen zu Videos oder Audioinhalten beantworten, die du auf <ph name="LINK_BEGIN" />bestimmten Websites<ph name="LINK_END" /> abgespielt hast.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ist abgestürzt</translation>
 <translation id="4500647907053779331">Auswahl auf <ph name="LANGUAGE" /> überse&amp;tzen</translation>
 <translation id="4501530680793980440">Entfernen bestätigen</translation>
 <translation id="4502423230170890588">Von diesem Gerät entfernen</translation>
@@ -5101,6 +5102,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="488785315393301722">Details ansehen</translation>
 <translation id="488862352499217187">Neuen Ordner erstellen</translation>
 <translation id="4888715715847020167">rufe die Einstellungen auf</translation>
+<translation id="4888899258150891194">CppGC-Speicher</translation>
 <translation id="4890292359366636311">Modus „Bild im Bild“ automatisch aktivieren, damit du dir Videos ansehen kannst, wenn du in anderen Tabs oder Fenstern bist.</translation>
 <translation id="4890399733764921729">Verbindung nicht möglich. An anderen Mobilfunkanbieter gebunden.</translation>
 <translation id="4890585766056792498">Du wirst dann vor gefährlichen Websites geschützt</translation>
@@ -5465,7 +5467,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5173668317844998239">Auf deinem Sicherheitsschlüssel gespeicherte Fingerabdrücke hinzufügen oder löschen</translation>
 <translation id="5174169235862638850">Passwort in Zwischenablage kopiert</translation>
 <translation id="517488401359338823">Sicherheitsgerät entsperren</translation>
-<translation id="5176671554021050278">Mit Google Lens erfährst du mehr über bestimmte Bilder oder Texte auf einer Seite.</translation>
 <translation id="5177479852722101802">Zugriff auf Kamera und Mikrofon weiter blockieren</translation>
 <translation id="5178667623289523808">Weitersuchen (rückwärts)</translation>
 <translation id="5179428098696668914">KI-Wiedergabe deaktivieren</translation>
@@ -5705,7 +5706,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5375517140689139594">Lesemodus (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">Websites können bestätigen, dass du kein Bot bist.</translation>
 <translation id="5376094717770783089">Fordert Zugriff an</translation>
-<translation id="5376169624176189338">Klicken, um zurückzugehen. Gedrückt halten, um den Verlauf aufzurufen</translation>
+<translation id="5376169624176189338">Klicken, um zurückzugehen. Gedrückt halten, um den Verlauf aufzurufen.</translation>
 <translation id="5376931455988532197">Datei zu groß</translation>
 <translation id="5377367976106153749">Kamerazugriff aktivieren?</translation>
 <translation id="5379140238605961210">Zugriff auf das Mikrofon weiter blockieren</translation>
@@ -5787,6 +5788,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> durchsuchen:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" />-Fenster jetzt <ph name="WINDOW_SIZE_PERCENT" /> breit, <ph name="PANE_SIDE" />-Bereich jetzt <ph name="PANE_SIZE_PERCENT" /> breit.</translation>
 <translation id="5438060324827306856">&amp;Erweiterungen finden</translation>
+<translation id="5440240650630588012">Du kannst eine Leselinie oder ein Lesefenster einblenden, um dich besser zu konzentrieren. Drücke ⌥L oder rufe die Einstellungen auf.</translation>
 <translation id="5440425659852470030">Seitenleiste schließen</translation>
 <translation id="544083962418256601">Verknüpfungen erstellen...</translation>
 <translation id="5441133529460183413">Web-App wurde über Chrome installiert</translation>
@@ -5973,6 +5975,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5576472948015790634">Du kannst jetzt deine Tabgruppen und Gemini-Chats an einem Ort verwalten. Diese Option lässt sich jederzeit loslösen.</translation>
 <translation id="5578059481725149024">Automatisch anmelden</translation>
 <translation id="5578387000057347457">Gib einen benutzerdefinierten Prompt ein oder markiere Text, um ein Bild zu erstellen</translation>
+<translation id="557893471177655572">Zeilenfokus ausprobieren</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 Element wird nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, <ph name="BEGIN_LINK" />speichere es in deinem Google-Konto<ph name="END_LINK" />.}other{{ITEM_COUNT} Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, <ph name="BEGIN_LINK" />speichere sie in deinem Google-Konto<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560"><ph name="SITE" /> aus der Liste „<ph name="SECTION_HEADER" />“ entfernen</translation>
 <translation id="5581031802689147441">Geteilte Ansicht</translation>
@@ -9986,6 +9989,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8699296325072357994">Inhalte aus Passwortseiten und zugehörige Informationen werden an Google gesendet und von Prüfern angesehen. Dein Passwort ist verschlüsselt und wird von niemandem gesehen. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">Launcher-Taste + Rücktaste</translation>
+<translation id="8701058912406466818">Du kannst eine Leselinie oder ein Lesefenster einblenden, um dich besser zu konzentrieren. Drücke Alt + L oder rufe die Einstellungen auf.</translation>
 <translation id="8702278591052316269">Menü mit ausgeblendeten gespeicherten Tabgruppen</translation>
 <translation id="8703346390800944767">Werbung überspringen</translation>
 <translation id="8703372953981978786">Dieser Link funktioniert nicht</translation>
@@ -10748,6 +10752,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="983192555821071799">Alle Tabs schließen</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kamera und Mikrofon zeichnen auf</translation>
 <translation id="984705303330760860">Sprachen für die Rechtschreibprüfung hinzufügen</translation>
+<translation id="986994187171579118">Erweiterung von <ph name="EXTENSION_NAME" /> deaktiviert</translation>
 <translation id="987264212798334818">Allgemein</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> möchte Informationen von deinem Mobilgerät abrufen</translation>
 <translation id="988320949174893488">Gelegentliches Stocken</translation>

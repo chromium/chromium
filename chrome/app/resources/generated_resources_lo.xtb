@@ -2628,7 +2628,6 @@
 <translation id="3000461861112256445">ສຽງໂມໂນ</translation>
 <translation id="3001144475369593262">ບັນຊີເດັກ</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{ບໍ່ມີປຸ່ມທີ່ປັບແຕ່ງ}=1{ມີປຸ່ມທີ່ປັບແຕ່ງ 1 ລາຍການ}other{ມີປຸ່ມທີ່ປັບແຕ່ງ {COUNT} ລາຍການ}}</translation>
-<translation id="3002745665522516995">ເລືອກສິ່ງທີ່ຕ້ອງການໃນໜ້າເພື່ອຊອກຫາ</translation>
 <translation id="3002864108328203174">ຊີດລຸ່ມສຸດຂອງ Gemini ແບບເຄິ່ງໜ້າຈໍ.</translation>
 <translation id="3003144360685731741">ເຄືອ​ຂ່າຍ​ທີ່ມັກ</translation>
 <translation id="3003253259757197230">ລະບົບຈະສົ່ງ URL ທີ່ທ່ານໄດ້ເຂົ້າເບິ່ງໄປຫາ Google ເພື່ອຄາດເດົາເວັບໄຊຕໍ່ໄປທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງ ແລະ ສະແດງຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບໜ້າທີ່ທ່ານກຳລັງເຂົ້າເບິ່ງ</translation>
@@ -4594,7 +4593,6 @@
 <translation id="4495002167047709180">ອະນຸຍາດສ່ວນຂະຫຍາຍນີ້ຢູ່ <ph name="SITE" /> ບໍ?</translation>
 <translation id="4495419450179050807">ຢ່າສະແດງຢູ່ໃນໜ້ານີ້ອີກ</translation>
 <translation id="4500055235123625757">Gemini ສາມາດຕອບຄຳຖາມກ່ຽວກັບວິດີໂອ ຫຼື ສຽງທີ່ທ່ານຫຼິ້ນຢູ່ <ph name="LINK_BEGIN" />ເວັບໄຊບາງບ່ອນ<ph name="LINK_END" /> ໄດ້.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ເກີດຂັດຂ້ອງ</translation>
 <translation id="4500647907053779331">&amp;ແປການເລືອກເປັນ <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">ຢືນ​ຢັນ​ການ​ເອົາອອກ</translation>
 <translation id="4502423230170890588">ລຶບອອກຈາກອຸປະກອນນີ້</translation>
@@ -5484,7 +5482,6 @@
 <translation id="5173668317844998239">ເພີ່ມ ແລະ ລຶບລາຍນິ້ວມືທີ່ບັນທຶກໄວ້ໃນກະແຈຄວາມປອດໄພຂອງທ່ານ</translation>
 <translation id="5174169235862638850">ສຳເນົາລະຫັດຜ່ານໄປໃສ່ຄລິບບອດແລ້ວ</translation>
 <translation id="517488401359338823">ປົດລັອກອຸປະກອນຮັກສາຄວາມປອດໄພ</translation>
-<translation id="5176671554021050278">ໃຊ້ Google Lens ເພື່ອສຶກສາເພີ່ມເຕີມກ່ຽວກັບຮູບພາບ ຫຼື ຂໍ້ຄວາມທີ່ສະເພາະເຈາະຈົງໃນໜ້າ.</translation>
 <translation id="5177479852722101802">ສືບ​ຕໍ່ບລັອກການເຂົ້າ​ຫາກ້ອງ​ຖ່າຍ​ຮູບ​ ແລະໄມໂຄຣໂຟນ</translation>
 <translation id="5178667623289523808">ຊອກ​ຫາ​ຜ່ານ​ມາ</translation>
 <translation id="5179428098696668914">ປິດການຫຼິ້ນດ້ວຍ AI</translation>

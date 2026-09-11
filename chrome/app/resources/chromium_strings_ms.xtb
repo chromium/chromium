@@ -37,7 +37,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="1330562121671411446">Kesan bahasa</translation>
 <translation id="1342274909142618978">Padamkan juga data daripada Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Disematkan! Anda boleh mengakses Carian Imej lagi daripada butang baharu pada bar alat</translation>
-<translation id="1356661055722410047">Baharu! Anda boleh menterjemahkan teks dan imej pada skrin anda</translation>
 <translation id="1383876407941801731">Carian</translation>
 <translation id="1388276868779258475">Gunakan apl Chromium untuk terus menyemak imbas semasa dalam perjalanan</translation>
 <translation id="141901961143729572">Kongsi pendapat anda</translation>
@@ -69,6 +68,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="1793486931176048546">Klik <ph name="BEGIN_BOLD" />Ya<ph name="END_BOLD" /> dalam pemberitahuan Windows untuk menyematkan Chromium pada bar tugas anda untuk akses pantas.</translation>
 <translation id="1808667845054772817">Pasang semula Chromium</translation>
 <translation id="1820835682567584003">Chromium cuba <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> sudah log masuk. Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chromium dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapat sambungan anda dan pelbagai lagi daripada <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Apabila anda membuka Chromium pada <ph name="DEVICE_TYPE" /> anda selepas ini, anda akan melihat gesaan untuk menggunakan Google Password Manager.</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
 <translation id="18552579716432081">Untuk memadamkan data semakan imbas daripada peranti ini dan menyimpan data semakan imbas tersebut dalam Google Account anda, <ph name="BEGIN_LINK" />log keluar dari Chromium<ph name="END_LINK" />.</translation>
@@ -191,6 +191,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3038232873781883849">Menunggu untuk memasang...</translation>
 <translation id="3045032126857188731">Bahasa terjemahan: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Tutup dialog maklum balas</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> sudah log masuk. Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chromium dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapat senarai bacaan anda dan pelbagai lagi daripada <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Profil Chromium lain</translation>
 <translation id="3068290154869370196">Sambungan ialah alat tambah yang membolehkan anda menyesuaikan Chromium. Daripada kekal teratur kepada memudahkan tugasan harian, sambungan memberi Chromium anda sentuhan tersendiri.</translation>
 <translation id="3068515742935458733">Bantu jadikan Chromium lebih baik dengan menghantar laporan ranap dan <ph name="UMA_LINK" /> kepada Google.</translation>
@@ -292,6 +293,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4147856324248078748">Sesuaikan Chromium anda</translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Log Masuk Rangkaian - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> sudah log masuk. Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chromium dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapat senarai bacaan anda dan pelbagai lagi pada semua peranti anda.</translation>
 <translation id="421369550622382712">Temui apl, permainan, sambungan dan tema yang hebat untuk Chromium.</translation>
 <translation id="4217080900579554343">Untuk mendapatkan sambungan ini dan pelbagai lagi pada semua komputer anda, log masuk ke Chromium</translation>
 <translation id="4217972271355023382">Untuk kekal lebih selamat dalam talian dengan pilihan ibu/bapa anda, beralih kepada profil Chromium anda yang sudah digunakan untuk log masuk sebagai <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -392,6 +394,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="5382964351116519680">Buka carian dengan Chromium</translation>
 <translation id="5383439451358640070">Ketahui sebab Chromium menyekat sesetengah fail</translation>
 <translation id="5386450000063123300">Mengemas kini Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> sudah log masuk. Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chromium dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapat sambungan anda dan pelbagai lagi pada semua peranti anda.</translation>
 <translation id="538767207339317086">Benarkan log masuk Chromium</translation>
 <translation id="5405650547142096840">Alih keluar daripada Chromium</translation>
 <translation id="5424544524441439284">Mengurangkan prestasi tetapi menjadikan Chromium lebih tahan kepada serangan</translation>
@@ -736,7 +739,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="856656450041460113">Cari senarai bahasa</translation>
 <translation id="8576826849825683917">Berbilang organisasi mengurus Chromium</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
-<translation id="8601359445272098721">Baharu! Anda boleh menterjemahkan teks dan imej pada skrin anda dengan memilih butang "terjemahkan skrin"</translation>
 <translation id="8619360774459241877">Melancarkan Chromium...</translation>
 <translation id="8624541899164515475">Tetapan, dibuka dalam tab baharu.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing tidak boleh dijadikan penyemak imbas lalai anda.</translation>

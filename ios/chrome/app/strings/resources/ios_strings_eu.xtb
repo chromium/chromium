@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS Client</translation>
 <translation id="1508263560970797965">Egin aurrera ezkutuko moduan</translation>
 <translation id="1509486075633541495">Hasi saioa webgunean</translation>
+<translation id="1509922846321012406">Arakatu pribatutasuna eta segurtasuna areagotzeko modu gehiago</translation>
 <translation id="1513858653616922153">Ezabatu pasahitza</translation>
 <translation id="1517166097004694782">Ezkutatu "Egin aurrera fitxa honekin"</translation>
 <translation id="1520027731907768768">Jaso alertak jarraitzen diezun produktuen prezioak jaisten direnean.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Arakatzaile lehenetsia</translation>
 <translation id="2893791155497534382">Pasahitzak eta bestelako jarduerak haiek kudeatzeko ezarpenetan ezaba daitezke</translation>
 <translation id="2894757982205307093">Gehitu fitxa bat taldean</translation>
+<translation id="2897858638449756400">Arakatu bilatzeko modu gehiago</translation>
 <translation id="2902312830803030883">Ekintza gehiago</translation>
 <translation id="2904788871580817212">Prezio-jaitsiera irekitako fitxan. Lehen <ph name="PREVIOUS_PRICE" />, orain <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" />.</translation>
 <translation id="2905479111267140204">Beste nonbait erabilitako <ph name="NUMBER_OF_PASSWORDS" /> pasahitz dauzkazu, eta baliteke horrek segurtasunari eragitea.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Gailuan gordetako helbideak ezabatuko dira. Halaber, Google-ko <ph name="USER_EMAIL" /> kontuan gordetako helbideak ezabatuko dira.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> arazo aurkitu dira.</translation>
 <translation id="5056587122125565772">Sortu irudi bat</translation>
+<translation id="5058813911021873087">Arakatu antolatzeko eta denbora aurrezteko modu gehiago</translation>
 <translation id="5059136629401106827">Ados</translation>
 <translation id="5061202435354361813">Arakatu sarea are hobeto</translation>
 <translation id="5062321486222145940">Instalatu Google Drive</translation>
@@ -1881,6 +1884,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="6987201788018524855">Arakatu agian ikusi ez dituzun eginbide lagungarriak</translation>
 <translation id="6989636517316575338">Egin edozein orriri buruzko galderak</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Zeregin guztiak</translation>
 <translation id="6998251471716094661">Egin produktuen prezioen jarraipena eta jaso alertak edozein webgunetan prezioa jaisten denean</translation>
 <translation id="7004032350256606903">Modu pribatuan arakatzeko eskatzen dizu zure erakundeak.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>

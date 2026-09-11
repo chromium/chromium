@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7665680517722058469">Prøv et annet søk</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elementer er lagt i papirkurven</translation>
-<translation id="7693909743393669729">Når du formaterer stasjoner, slettes alle data som er lagret på dem, og alle eksisterende partisjoner fjernes, inkludert partisjoner som kanskje ikke er synlige. Denne handlingen kan ikke angres.</translation>
 <translation id="7695430100978772476">Kunne ikke formatere <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Kunne ikke tømme papirkurven.</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> er kopiert.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">USA – Workman internasjonal</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Beklager, men minst én partisjon på den eksterne lagringsenheten din kunne ikke tilkobles.</translation>
-<translation id="7908793776359722643">Formatering av partisjonen sletter alle data som er lagret på den. Denne handlingen kan ikke angres.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Filene dine i Min disk synkroniseres automatisk med Chromebooken, slik at du har tilgang til dem uten internettilkobling.</translation>
 <translation id="7925247922861151263">AAA-kontroll mislyktes</translation>

@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">‏גישה לכל אחד מהתקני ה-USB האלה</translation>
 <translation id="1038462104119736705">‏מומלץ ששטח האחסון הפנוי יהיה <ph name="INSTALL_SIZE" /> לפחות כדי להשתמש ב-Linux. כדי לפנות שטח אחסון, יש למחוק קבצים מהמכשיר.</translation>
 <translation id="1038643060055067718">שורות:</translation>
+<translation id="1039216421321079051">התוסף הושבת על ידי תוסף אחר</translation>
 <translation id="1039337018183941703">הקובץ לא חוקי, או שהוא פגום</translation>
 <translation id="1040761927998636252">סימנייה של <ph name="URL" /> ללא שם</translation>
 <translation id="1041175011127912238">הדף לא מגיב</translation>
@@ -1322,6 +1323,7 @@
 <translation id="2006638907958895361">פתיחת הקישור ב-<ph name="APP" /></translation>
 <translation id="2007404777272201486">דיווח על בעיה...</translation>
 <translation id="200781997903833896">כדי להשתמש בתכונה 'הקראה', צריך לפנות מקום במכשיר</translation>
+<translation id="2009047848105043829">ניהול המכשירים שלך</translation>
 <translation id="2010501376126504057">מכשירים תואמים</translation>
 <translation id="2010636492623189611">נבחר.</translation>
 <translation id="2012935757369720523">מחיקת הקובץ</translation>
@@ -2626,7 +2628,6 @@
 <translation id="3000461861112256445">אודיו במונו</translation>
 <translation id="3001144475369593262">חשבונות לילדים</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{אין מקשים שהותאמו אישית}=1{מקש אחד שהותאם אישית}one{{COUNT} מקשים שהותאמו אישית}two{{COUNT} מקשים שהותאמו אישית}other{{COUNT} מקשים שהותאמו אישית}}</translation>
-<translation id="3002745665522516995">כדי לחפש, צריך לבחור משהו בדף</translation>
 <translation id="3002864108328203174">‏הגיליון התחתון של Gemini נפתח בחצי מגובה המסך.</translation>
 <translation id="3003144360685731741">רשתות מועדפות</translation>
 <translation id="3003253259757197230">‏במהלך הגלישה, כתובת ה-URL שמבקרים בהן יישלחו אל Google כדי לחזות את האתרים הבאים שעשויים להיפתח וכדי להציג לך מידע נוסף על הדף הנוכחי</translation>
@@ -3475,6 +3476,7 @@
 <translation id="3641456520301071208">אתרים יכולים לבקש הרשאת גישה למיקומך</translation>
 <translation id="3642070413432681490">סמן בצורת עיגול</translation>
 <translation id="3643962751030964445">המכשיר הזה מנוהל על ידי <ph name="DEVICE_MANAGER" />. יצירת פרופיל חדש לחשבון <ph name="USER_EMAIL_ADDRESS" /> נדרשת על ידי <ph name="DEVICE_MANAGER" />.</translation>
+<translation id="3644128856494356630">‏זיכרון CppGC</translation>
 <translation id="3645372836428131288">יש להזיז קצת את האצבע כדי לסרוק חלק אחר של טביעת האצבע.</translation>
 <translation id="3645951915068244649">כבר נוצרה קבוצת כרטיסיות עם תיקיית הסימניות הזו. רוצה ליצור קבוצת כרטיסיות חדשה או להחליף את הקבוצה הקיימת?</translation>
 <translation id="3646789916214779970">איפוס לנושא ברירת המחדל</translation>
@@ -4247,6 +4249,7 @@
 <translation id="4226303886821889519">גרסת הכלי לעדכון: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{אסור להתקין את התוסף הזה}one{אסור להתקין את חלק מהתוספים האלה}two{אסור להתקין את חלק מהתוספים האלה}other{אסור להתקין את חלק מהתוספים האלה}}</translation>
 <translation id="4229538146709970028">כדי לבצע אימות מול <ph name="HOST_NAME" /> באמצעות האישור, צריך לבטל את הנעילה של <ph name="TOKEN_NAME" />.</translation>
+<translation id="4230659518013393045">‏כדי לתת לך תשובות רלוונטיות יותר, כותרת הדף, כתובת ה-URL והתוכן של הכרטיסייה הנוכחית משותפים עם Google. אפשר להוסיף או להסיר כרטיסיות במהלך הגלישה.</translation>
 <translation id="4232375817808480934">‏הגדרת Kerberos</translation>
 <translation id="4232376164796433044">סיסמאות ומילוי אוטומטי</translation>
 <translation id="4233739489690259993">‏לא יתקבלו יותר עדכוני אבטחה ותוכנה במכשיר Chromebook שלך. צריך לשדרג את המכשיר כדי לקבל את עדכוני האבטחה האחרונים והתכונות החדשות. בכפוף לתנאי המבצע.</translation>
@@ -4591,7 +4594,6 @@
 <translation id="4495002167047709180">לאשר את התוסף הזה באתר <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">לא להציג בדף זה</translation>
 <translation id="4500055235123625757">‏‫Gemini יכול לענות על שאלות לגבי הסרטון או האודיו שהפעלת <ph name="LINK_BEGIN" />באתרים מסוימים<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> קרס</translation>
 <translation id="4500647907053779331">&amp;תרגום הטקסט שנבחר ל<ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">אישור הסרה</translation>
 <translation id="4502423230170890588">הסרה מהמכשיר הזה</translation>
@@ -5116,6 +5118,7 @@
 <translation id="488785315393301722">הצגת פרטים</translation>
 <translation id="488862352499217187">יצירת תיקייה חדשה</translation>
 <translation id="4888715715847020167">מעבר להגדרות</translation>
+<translation id="4888899258150891194">‏זיכרון CppGC</translation>
 <translation id="4890292359366636311">מעבר למצב 'תמונה בתוך תמונה' באופן אוטומטי כדי שניתן יהיה להשתמש בו מעל כרטיסיות וחלונות אחרים.</translation>
 <translation id="4890399733764921729">לא ניתן להתחבר. ננעל על ידי ספק סלולר אחר.</translation>
 <translation id="4890585766056792498">הגנה מפני אתרים מסוכנים</translation>
@@ -5480,7 +5483,6 @@
 <translation id="5173668317844998239">הוספה ומחיקה של טביעות אצבע שנשמרו במפתח האבטחה</translation>
 <translation id="5174169235862638850">הסיסמה הועתקה ללוח</translation>
 <translation id="517488401359338823">פתיחת הנעילה של מכשיר האבטחה</translation>
-<translation id="5176671554021050278">‏עם Google Lens אפשר לקבל מידע נוסף על תמונות או טקסטים בדף.</translation>
 <translation id="5177479852722101802">להמשיך לחסום גישה אל המצלמה והמיקרופון</translation>
 <translation id="5178667623289523808">חיפוש הקודם</translation>
 <translation id="5179428098696668914">‏השבתה של השמעת AI</translation>
@@ -5803,6 +5805,7 @@
 <translation id="5436510242972373446">חיפוש ב-<ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">עכשיו החלון בצד <ph name="WINDOW_SIDE" /> ברוחב <ph name="WINDOW_SIZE_PERCENT" />, והחלונית בצד <ph name="PANE_SIDE" /> ברוחב <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">חיפוש תוספים</translation>
+<translation id="5440240650630588012">‏כדי להתמקד בטקסט, אפשר להוסיף קו או חלון קריאה. צריך ללחוץ על ⌥L או לעבור להגדרות.</translation>
 <translation id="5440425659852470030">סגירת החלונית הצדדית</translation>
 <translation id="544083962418256601">יצירת קיצורי דרך...</translation>
 <translation id="5441133529460183413">‏אפליקציית האינטרנט הותקנה דרך דפדפן Chrome</translation>
@@ -5989,6 +5992,7 @@
 <translation id="5576472948015790634">‏מעכשיו אפשר לשלוט בקבוצות הכרטיסיות ובשיחות עם Gemini במקום אחד. אפשר לבטל את ההצמדה בכל שלב.</translation>
 <translation id="5578059481725149024">כניסה אוטומטית</translation>
 <translation id="5578387000057347457">כותבים פרומפט מותאם אישית או מדגישים טקסט כדי ליצור תמונה</translation>
+<translation id="557893471177655572">כדאי לנסות את התכונה "התמקדות בשורה"</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{‏פריט אחד שמור רק במכשיר הזה. כדי להשתמש בו במכשירים אחרים, <ph name="BEGIN_LINK" />צריך לשמור אותו בחשבון Google<ph name="END_LINK" />.}one{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, <ph name="BEGIN_LINK" />צריך לשמור אותם בחשבון Google<ph name="END_LINK" />.}two{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, <ph name="BEGIN_LINK" />צריך לשמור אותם בחשבון Google<ph name="END_LINK" />.}other{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, <ph name="BEGIN_LINK" />צריך לשמור אותם בחשבון Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">הסרה של <ph name="SITE" /> מהרשימה <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">תצוגה מפוצלת</translation>
@@ -6106,6 +6110,7 @@
 <translation id="5678955352098267522">קריאת הנתונים שלך באתר <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">להסיר את "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5681586175480958839">הקובץ כבר נפתח</translation>
+<translation id="5682120590308014005">‏כדי להוסיף בקלות קבצים מ-Drive לשרשורים במצב AI, עליך להיכנס לחשבון. אחרי הכניסה, הסיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="5684110242705861346">התוסף <ph name="NAME" /> נוסף על ידי המדיניות של הארגון שלך והוא קובע את ההגדרה הזו. <ph name="BEGIN_LINK" />לפרטים<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">‏פרטי Wi-Fi</translation>
 <translation id="5687340364605915800">לכל אתר יש דרך ושיקולים משלו בתגובה לבקשה הזו</translation>
@@ -6661,6 +6666,7 @@
 <translation id="6126601353087978360">יש להזין את המשוב שלך כאן:</translation>
 <translation id="6127292407256937949">השמע פעיל. כיבוי השמע.</translation>
 <translation id="6127598727646973981">חיבורים מאובטחים</translation>
+<translation id="6129686474468159207">אפשר לראות מאילו אתרים מתבצעות שיחות ומתי נעשה שימוש במצלמה או במיקרופון</translation>
 <translation id="6129691635767514872">‏הנתונים שבחרת הוסרו מ-Chrome ומהמכשירים המסונכרנים. ייתכן שבכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> עדיין יתאפשר לך לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google, כמו חיפושים ופעילות משירותים אחרים של Google.</translation>
 <translation id="6129938384427316298">‏הערה לאישור Netscape</translation>
 <translation id="6129953537138746214">רווח</translation>
@@ -8188,6 +8194,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">מונפש</translation>
 <translation id="7301812050652048720">מפתח הגישה נמחק</translation>
+<translation id="7303246449496241344">‏כדי להוסיף בקלות קבצים מ-Drive לשרשורים במצב AI, עליך לאמת את הזהות שלך. אחרי האימות, הסיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="7303485269821975179">הגדרת סיסמה ל-<ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">האתר הזה לא יכול לגשת אל טקסט ותמונות שהועתקו ללוח העריכה</translation>
 <translation id="7304030187361489308">גבוה</translation>
@@ -9251,7 +9258,7 @@
 <translation id="8106114112474206597">‏משתמשים במקש I כדי ללחוץ על כפתור העכבר</translation>
 <translation id="810728361871746125">רזולוציית מסך</translation>
 <translation id="8108161424633979910">‫<ph name="NUM" /> חברים</translation>
-<translation id="8108853197309181986">הגלישה במצב חלון מבודד</translation>
+<translation id="8108853197309181986">זהו חלון גלישה מבודד</translation>
 <translation id="8109109153262930486">אווטאר ברירת מחדל</translation>
 <translation id="8109991406044913868">‏עיצוב שנוצר באמצעות AI</translation>
 <translation id="8110393529211831722">המינוי מותקן רק במכשיר הזה ולא מסונכרן עם מכשירים אחרים שרשומים בחשבון שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -10006,6 +10013,7 @@
 <translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8699296325072357994">‏תוכן מדפי סיסמאות ומידע קשור נשלחים אל Google ועוברים בדיקה אנושית. הסיסמה שלך מוצפנת ואף אחד לא יכול לראות אותה <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">‏מרכז האפליקציות + מקש Backspace</translation>
+<translation id="8701058912406466818">‏כדי להתמקד בטקסט, אפשר להוסיף קו או חלון קריאה. צריך ללחוץ על Alt+L או לעבור להגדרות.</translation>
 <translation id="8702278591052316269">התפריט מכיל קבוצות של כרטיסיות שמורות שהוסתרו</translation>
 <translation id="8703346390800944767">דילוג על המודעה</translation>
 <translation id="8703372953981978786">הקישור הזה לא עובד</translation>
@@ -10768,6 +10776,7 @@
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – המצלמה והמיקרופון מקליטים</translation>
 <translation id="984705303330760860">הוספת שפות לבדיקת האיות</translation>
+<translation id="986994187171579118">התוסף הושבת על ידי <ph name="EXTENSION_NAME" /></translation>
 <translation id="987264212798334818">כללי</translation>
 <translation id="987574372967138078">האתר <ph name="WEBSITE_ORIGIN" /> רוצה לקבל מידע מהמכשיר הנייד שלך</translation>
 <translation id="988320949174893488">לא יציב</translation>

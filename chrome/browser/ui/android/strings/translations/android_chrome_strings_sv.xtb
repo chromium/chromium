@@ -1518,7 +1518,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter eftersom du inte har besökt webbplatsen nyligen</translation>
 <translation id="6923291640965724312">Immersivt format</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 flik}other{<ph name="NUMBER_OF_TABS" /> flikar}}</translation>
-<translation id="6929224077895306814">Alla säkerhetskoder som sparas på enheten och i Google-kontot raderas</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, vald fäst flik med ljud</translation>
 <translation id="6937524809504266803">Anpassning och länkning</translation>
 <translation id="6937876069006524083">Namn (valfritt)</translation>
@@ -1601,7 +1600,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7203150201908454328">Utökat</translation>
 <translation id="7207760545532569765">Återställ <ph name="TAB_COUNT" /> flikar som nya flikar i bakgrunden.</translation>
 <translation id="7217781228893594884">Inkognitoflikar låses när du lämnar Chrome</translation>
-<translation id="7221869452894271364">Hämta sidan igen</translation>
+<translation id="7221869452894271364">Läs in sidan igen</translation>
 <translation id="722681077040152344">Prenumerationen har sagts upp för <ph name="COUNT" /> webbplatser</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedladdning väntar}other{# nedladdningar väntar}}</translation>
 <translation id="7237724030342645845">Google Lösenordshantering har slutat fungera</translation>

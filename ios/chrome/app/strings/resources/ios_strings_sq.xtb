@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Klienti MLS i RCS-së</translation>
 <translation id="1508263560970797965">Vazhdo në "I fshehtë"</translation>
 <translation id="1509486075633541495">Identifikohu në sajtin e uebit</translation>
+<translation id="1509922846321012406">Eksploro më shumë mënyra për të rritur privatësinë dhe sigurinë tënde</translation>
 <translation id="1513858653616922153">Fshi fjalëkalimin</translation>
 <translation id="1517166097004694782">Fshih "Vazhdo me këtë skedë"</translation>
 <translation id="1520027731907768768">Merr sinjalizime për uljet e çmimeve për produktet që monitoron.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Shfletuesi i parazgjedhur</translation>
 <translation id="2893791155497534382">Fjalëkalimet dhe aktiviteti tjetër mund të fshihen te cilësimet e tyre të menaxhimit</translation>
 <translation id="2894757982205307093">Skedë e re në grup</translation>
+<translation id="2897858638449756400">Eksploro më shumë mënyra për të kërkuar</translation>
 <translation id="2902312830803030883">Më shumë veprime</translation>
 <translation id="2904788871580817212">Ulje çmimi në skedën tënde të hapur, nga <ph name="PREVIOUS_PRICE" /> në <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Ke <ph name="NUMBER_OF_PASSWORDS" /> fjalëkalime të ripërdorura që mund ta rrezikojnë sigurinë tënde.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Kjo fshin adresat e ruajtura në këtë pajisje. Ajo fshin gjithashtu adresat e ruajtura në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">U gjetën probleme: <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Krijo një imazh</translation>
+<translation id="5058813911021873087">Eksploro më shumë mënyra për t'u organizuar dhe për të kursyer kohë</translation>
 <translation id="5059136629401106827">Në rregull</translation>
 <translation id="5061202435354361813">Përmirëso shfletimin tënd</translation>
 <translation id="5062321486222145940">Instalo "Diskun e Google"</translation>
@@ -1881,6 +1884,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="6987201788018524855">Eksploro veçoritë e dobishme që ke humbur</translation>
 <translation id="6989636517316575338">Pyet rreth çdo faqeje</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Të gjitha detyrat</translation>
 <translation id="6998251471716094661">Monitoro çmimet e produkteve dhe merr sinjalizime kur ulet çmimi në ndonjë sajt</translation>
 <translation id="7004032350256606903">Organizata jote kërkon që të shfletosh në mënyrë private.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>

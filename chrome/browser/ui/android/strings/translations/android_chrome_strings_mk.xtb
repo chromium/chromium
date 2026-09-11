@@ -1517,7 +1517,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ги отстрани дозволиве бидејќи не сте го отвориле сајтот неодамна</translation>
 <translation id="6923291640965724312">Имерзивен формат</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 картичка}one{<ph name="NUMBER_OF_TABS" /> картичка}other{<ph name="NUMBER_OF_TABS" /> картички}}</translation>
-<translation id="6929224077895306814">Ќе се избришат сите безбедносни кодови што се зачувани на уредот и во сметката на Google</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, избрана прикачена картичка со пуштен звук</translation>
 <translation id="6937524809504266803">Персонализација и поврзување</translation>
 <translation id="6937876069006524083">Прекар (незадолжително)</translation>

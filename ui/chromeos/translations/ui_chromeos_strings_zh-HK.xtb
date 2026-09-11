@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">印度文</translation>
 <translation id="7665680517722058469">嘗試搜尋其他字詞</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> 個項目已移至垃圾桶</translation>
-<translation id="7693909743393669729">將硬碟格式化會清除其中儲存的所有資料，並移除所有的現有分割區，包括隱藏的分割區。此操作無法復原。</translation>
 <translation id="7695430100978772476">無法格式化「<ph name="DRIVE_NAME" />」</translation>
 <translation id="76959938259365003">無法清空垃圾桶。</translation>
 <translation id="7705251383879779343">已複製 <ph name="FILE_NAME" />。</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">美式 Workman 國際</translation>
 <translation id="7903984238293908205">片假名</translation>
 <translation id="7908378463497120834">很抱歉，您的外部儲存裝置上至少有一個分區無法掛載。</translation>
-<translation id="7908793776359722643">格式化分割將清除其中儲存的所有資料。此操作無法復原。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣您便可在離線的情況下存取檔案。</translation>
 <translation id="7925247922861151263">AAA 檢查失敗</translation>

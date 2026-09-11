@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7665680517722058469">Prueba con otra búsqueda</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elementos enviados a la papelera</translation>
-<translation id="7693909743393669729">Al formatear una unidad, se borrarán todos los datos almacenados en ella y se quitarán todas las particiones que contenga, incluidas las no visibles. Esta acción no se puede deshacer.</translation>
 <translation id="7695430100978772476">No se ha podido formatear <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">No se ha podido vaciar la papelera.</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copiado.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">Internacional estilo Workman (EE. UU.)</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Lo sentimos, pero al menos una partición del dispositivo de almacenamiento externo no se ha podido montar.</translation>
-<translation id="7908793776359722643">Al formatear una partición, se borrarán todos los datos almacenados en ella. Esta acción no se puede deshacer.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Tus archivos de Mi unidad se sincronizarán automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet.</translation>
 <translation id="7925247922861151263">Error de comprobación de AAA</translation>

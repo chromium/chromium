@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS 用戶端</translation>
 <translation id="1508263560970797965">繼續使用無痕模式</translation>
 <translation id="1509486075633541495">登入網站</translation>
+<translation id="1509922846321012406">探索更多提升隱私和安全性的方法</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
 <translation id="1517166097004694782">隱藏「繼續使用這個分頁」</translation>
 <translation id="1520027731907768768">接收追蹤產品的降價快訊。</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">預設瀏覽器</translation>
 <translation id="2893791155497534382">前往相關管理設定即可刪除密碼和其他活動記錄</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
+<translation id="2897858638449756400">探索更多搜尋方式</translation>
 <translation id="2902312830803030883">更多動作</translation>
 <translation id="2904788871580817212">開啟的分頁中有產品降價，原價為 <ph name="PREVIOUS_PRICE" />，現價為 <ph name="PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">你有 <ph name="NUMBER_OF_PASSWORDS" /> 組密碼重複使用，可能導致安全性風險。</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">這樣會刪除這部裝置上儲存的地址，Google 帳戶 <ph name="USER_EMAIL" /> 中儲存的地址也將一併刪除。</translation>
 <translation id="5056446788882570708"><ph name="TIME" />發現問題。</translation>
 <translation id="5056587122125565772">生成圖像</translation>
+<translation id="5058813911021873087">探索更多方法，讓生活井井有條並節省時間</translation>
 <translation id="5059136629401106827">確定</translation>
 <translation id="5061202435354361813">瀏覽體驗再升級</translation>
 <translation id="5062321486222145940">安裝 Google 雲端硬碟</translation>
@@ -1881,6 +1884,7 @@
 <translation id="6987201788018524855">瀏覽你可能沒注意到的實用功能</translation>
 <translation id="6989636517316575338">詢問頁面相關問題</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">所有任務</translation>
 <translation id="6998251471716094661">追蹤商品價格，並在任何網站降價時透過快訊通知你</translation>
 <translation id="7004032350256606903">貴機構要求你使用私密瀏覽模式。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>

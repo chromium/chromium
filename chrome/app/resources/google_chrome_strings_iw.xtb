@@ -36,7 +36,6 @@
 <translation id="1333654552732143316">‏התחל את Chrome</translation>
 <translation id="1341711321000856656">‏אפשר לעבור כדי לראות סיסמאות מפרופיל Chrome אחר</translation>
 <translation id="1343830902827845050">‏כניסה ל-Chrome</translation>
-<translation id="1356661055722410047">חדש! אפשר לתרגם טקסט ותמונות במסך</translation>
 <translation id="1361351916482714918">‏הגלישה חכמה יותר עם Google Lens</translation>
 <translation id="1363996462118479832">‏לא בוצע סנכרון של הנתונים ב-ChromeOS בגלל שגיאה בתהליך הכניסה.</translation>
 <translation id="137466361146087520">‏גרסת הבטא של Google Chrome</translation>
@@ -74,7 +73,7 @@
 <translation id="1640672724030957280">מוריד...</translation>
 <translation id="1651617469580841801">‏כשמשתמשים ב-Google Lens, כותרת הדף, כתובת ה-URL והתוכן, כולל קובצי PDF, נשלחים אל Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">‏מידע על ChromeOS Flex</translation>
-<translation id="1664094661346151467">‏לבצע חיפוש ולשאול שאלות מכל מקום במכשיר, גם אם Chrome ממוזער</translation>
+<translation id="1664094661346151467">‏הקלדת חיפושים ושאלות מכל מקום במכשיר, גם אם Chrome ממוזער</translation>
 <translation id="1674870198290878346">‏פתיחת הקישור בחלון &amp;אנונימי של Chrome</translation>
 <translation id="1682634494516646069">‏Google Chrome אינו יכול לקרוא ולכתוב בספריית הנתונים שלו: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chrome שולח את הטקסט הזה לכלי החיפוש, הבינה המלאכותית והסוכנים של הארגון כדי לקבל הצעות.</translation>
@@ -788,7 +787,6 @@
 <translation id="8575047640889685742">‏שימוש ב<ph name="BEGIN_LINK" />ביטוי סיסמה משלך<ph name="END_LINK" /> כדי להצפין את כל נתוני Chrome בחשבון Google. אמצעי תשלום וכתובות שנשמרו ב-Google Pay לא יוצפנו. היסטוריית הגלישה ב-Chrome לא תסונכרן.</translation>
 <translation id="8590782867495422699">‏פתיחה מחדש של מצב AI בחיפוש Google</translation>
 <translation id="8598779894319572882">‏כדי לשאול שאלות תוך כדי גלישה, אפשר ללחוץ על הכפתור מצב AI בחיפוש Google שבסרגל הכלים ולפתוח את החלונית מחדש</translation>
-<translation id="8601359445272098721">חדש! אפשר לתרגם טקסט ותמונות במסך באמצעות לחיצה על הכפתור "תרגום המסך"</translation>
 <translation id="8614913330719544658">‏Google Chrome אינו מגיב. להפעיל מחדש עכשיו?</translation>
 <translation id="8623450603356630491">‏כניסה ל-Chrome בטלפון</translation>
 <translation id="8624541899164515475">הגדרות, ייפתחו בכרטיסייה חדשה.</translation>

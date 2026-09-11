@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Hintçe</translation>
 <translation id="7665680517722058469">Başka bir arama yapmayı deneyin</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> öğe çöp kutusuna taşındı</translation>
-<translation id="7693909743393669729">Bir sürücünün biçimlendirilmesi sürücüde depolanan tüm verileri siler ve görünür olmayan bölümler de dahil olmak üzere tüm mevcut bölümleri kaldırır. Bu işlem geri alınamaz.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> biçimlendirilemedi</translation>
 <translation id="76959938259365003">Çöp kutusu boşaltılamadı.</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> dosyası kopyalandı.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">ABD Workman uluslararası</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Maalesef, harici depolama cihazınızdaki en az bir bölüm eklenemedi.</translation>
-<translation id="7908793776359722643">Bir bölümün biçimlendirilmesi o bölümde depolanan tüm verileri siler. Bu işlem geri alınamaz.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Drive'ım bölümündeki dosyalarınız Chromebook'unuzla otomatik olarak senkronize edildiği için bu dosyalara internet bağlantısı olmadan erişebilirsiniz.</translation>
 <translation id="7925247922861151263">AAA kontrolü başarısız oldu</translation>

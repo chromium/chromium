@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS クライアント</translation>
 <translation id="1508263560970797965">シークレット モードを続行</translation>
 <translation id="1509486075633541495">ウェブサイトにログイン</translation>
+<translation id="1509922846321012406">プライバシーと安全性を高めるその他の方法を試す</translation>
 <translation id="1513858653616922153">パスワードを削除</translation>
 <translation id="1517166097004694782">[このタブを続行] を非表示にする</translation>
 <translation id="1520027731907768768">追跡している商品の値下げアラートを受け取ります。</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">既定のブラウザ</translation>
 <translation id="2893791155497534382">パスワードとその他のアクティビティは管理設定で削除できます</translation>
 <translation id="2894757982205307093">グループにタブを追加</translation>
+<translation id="2897858638449756400">その他の検索方法を試す</translation>
 <translation id="2902312830803030883">その他の操作</translation>
 <translation id="2904788871580817212">開いているタブの値下げ情報、<ph name="PREVIOUS_PRICE" /> から <ph name="PRICE" />、<ph name="PRODUCT_NAME" />、<ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">使い回しのパスワード <ph name="NUMBER_OF_PASSWORDS" /> 件: セキュリティが危険にさらされる可能性があります。</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">このデバイスに保存されている住所が削除されます。Google アカウント（<ph name="USER_EMAIL" />）に保存されている住所も削除されます。</translation>
 <translation id="5056446788882570708"><ph name="TIME" />に問題が見つかりました。</translation>
 <translation id="5056587122125565772">画像を作成</translation>
+<translation id="5058813911021873087">整理整頓して時間を節約するその他の方法を試す</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">ブラウジングをレベルアップ</translation>
 <translation id="5062321486222145940">ドライブをインストール</translation>
@@ -1881,6 +1884,7 @@
 <translation id="6987201788018524855">最近追加された便利な機能をご確認ください</translation>
 <translation id="6989636517316575338">ページについて質問</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">すべてのタスク</translation>
 <translation id="6998251471716094661">商品の価格をトラッキングし、値下げしたサイトがある場合に通知を受け取ります</translation>
 <translation id="7004032350256606903">組織がシークレット モードで閲覧するよう求めています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>

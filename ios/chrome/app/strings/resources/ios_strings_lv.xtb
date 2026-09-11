@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS klients</translation>
 <translation id="1508263560970797965">Turpināt inkognito režīmā</translation>
 <translation id="1509486075633541495">Pierakstieties tīmekļa vietnē</translation>
+<translation id="1509922846321012406">Izpētiet citus veidus, kā uzlabot konfidencialitāti un drošību</translation>
 <translation id="1513858653616922153">Dzēst paroli</translation>
 <translation id="1517166097004694782">Paslēpt vienumu “Turpināt šajā cilnē”</translation>
 <translation id="1520027731907768768">Saņemiet paziņojumus par izsekoto produktu cenu kritumu.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Noklusējuma pārlūks</translation>
 <translation id="2893791155497534382">Paroles un citas darbības var dzēst to pārvaldības iestatījumos.</translation>
 <translation id="2894757982205307093">Jauna cilne grupā</translation>
+<translation id="2897858638449756400">Izpētiet citus meklēšanas veidus</translation>
 <translation id="2902312830803030883">Citas darbības</translation>
 <translation id="2904788871580817212">Cenas kritums atvērtajā cilnē no <ph name="PREVIOUS_PRICE" /> uz <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Jums ir <ph name="NUMBER_OF_PASSWORDS" /> atkārtoti izmantotas paroles, kas var apdraudēt jūsu drošību.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Tādējādi tiks dzēstas šajā ierīcē saglabātās adreses. Tiks dzēstas arī jūsu Google kontā (<ph name="USER_EMAIL" />) saglabātās adreses.</translation>
 <translation id="5056446788882570708">Problēmas tika atrastas <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Izveidot attēlu</translation>
+<translation id="5058813911021873087">Izpētiet citus veidus, kā ieviest kārtību un ietaupīt laiku</translation>
 <translation id="5059136629401106827">Labi</translation>
 <translation id="5061202435354361813">Uzlabojiet pārlūkošanu</translation>
 <translation id="5062321486222145940">Instalēt Google disku</translation>
@@ -1881,6 +1884,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="6987201788018524855">Izpētiet noderīgas funkcijas, kuras neesat pamanījis</translation>
 <translation id="6989636517316575338">Uzdodiet jautājumus par jebkuru lapu</translation>
 <translation id="6990519590575500580">Sāciet FaceTime zvanu</translation>
+<translation id="6998236305642926573">Visi uzdevumi</translation>
 <translation id="6998251471716094661">Izsekojiet produktu cenām un saņemiet brīdinājumus, kad jebkurā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="7004032350256606903">Saskaņā ar jūsu organizācijas politiku tīmeklis ir jāpārlūko privāti.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>

@@ -1136,7 +1136,6 @@
 <translation id="2931453528659195355">Сауда-саттық туралы ақпаратты басқару</translation>
 <translation id="2933624813161016821">Бедерлі фольга</translation>
 <translation id="2935726091208500473">қойындыларды бөлісу</translation>
-<translation id="2936698630976431647">Google Wallet-тегі ұсыныстарды автоматты түрде толтыру үшін промокод өрісін таңдаңыз.</translation>
 <translation id="293796669683825859">Пікірлер</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> сілтемелерін ашу</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: курсорды көрсету үшін қолданбаларды ауыстырыңыз, бетті қайта жүктеңіз немесе артқа оралыңыз.</translation>
@@ -1596,6 +1595,7 @@
 <translation id="3712004750972384495">Экран жазбасы сақталып жатыр</translation>
 <translation id="3712006010833051684">#10 хатқалта</translation>
 <translation id="3712624925041724820">Лицензиялар аяқталды</translation>
+<translation id="371302509916403935">Асты сызылған</translation>
 <translation id="3713277100229669269">Енді төлемей тұрып, карта бонустарын қарай аласыз.</translation>
 <translation id="3714633008798122362">веб-күнтізбе</translation>
 <translation id="3714780639079136834">Мобильдік интернетті немесе Wi-Fi желісін қосу</translation>
@@ -4213,7 +4213,6 @@
 <translation id="815036624016370447">Google аккаунтындағы (<ph name="ACCOUNT" />) ақпарат Chrome-да үлгілерді жылдам толтыруға мүмкіндік береді.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> сілтемесіндегі файл оқылмайды. Ол жойылған, көшірілген болуы немесе файл рұқсаттары кедергі болуы мүмкін.</translation>
 <translation id="8151185429379586178">Әзірлеуші құралдары</translation>
-<translation id="8152194419479742504">Кез келген үлгіде @@ деп теріп, қойындыларды ауыстырмай-ақ ақпаратты тауып, толтырыңыз</translation>
 <translation id="8153865548451212769">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> қалтасына жүктеп алу ұсынылмайды.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> қалтасына жүктеп алу ұсынылмайды.}}</translation>
 <translation id="8155253549374198915">Соңғы ашылған қойындылар</translation>
 <translation id="815805690561372740">Chrome-ның браузерді пайдалану кезінде қорғайтын ендірілген қауіпсіздік мүмкіндіктері бар. Солардың бірі — Google Safe Browsing. Ол сіз кіргіңіз келген сайтта <ph name="BEGIN_LINK" />жақында бір зиянды бағдарламаны анықтады<ph name="END_LINK" />.</translation>
@@ -4277,6 +4276,7 @@
 <translation id="8269242089528251720">Бөлек құжаттар/реттелген көшірмелер</translation>
 <translation id="8269703227894255363">{0,plural, =1{Файлды ашуға блок қойылған}other{<ph name="FILE_COUNT" /> файлды ашуға блок қойылған}}</translation>
 <translation id="8270242299912238708">PDF форматындағы құжаттар</translation>
+<translation id="8270320981823560179">Диск</translation>
 <translation id="8277900682056760511">Төлем өңдегіш парағы ашық.</translation>
 <translation id="827820107214076967">Журналдарды жаңарту</translation>
 <translation id="8279611986089885641">Chrome хабарландырулары қосулы болуы керек. Оларды <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> бөлімінен қосуға болады.</translation>

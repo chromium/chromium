@@ -37,7 +37,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1330562121671411446">Détecter la langue</translation>
 <translation id="1342274909142618978">Supprimer également les données de Chromium (<ph name="URL" />) ?</translation>
 <translation id="1345251407431278948">Recherche dans des images épinglée ! Vous pouvez de nouveau y accéder à l'aide du nouveau bouton de la barre d'outils.</translation>
-<translation id="1356661055722410047">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1388276868779258475">Utilisez l'appli Chromium pour continuer à naviguer où que vous soyez</translation>
 <translation id="141901961143729572">Donnez-nous votre avis</translation>
@@ -473,7 +472,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6241367896540709610">Pour télécharger des fichiers, Chromium a besoin de l'autorisation d'accéder à l'espace de stockage</translation>
 <translation id="6245734527075554892">Les URL sont vérifiées d'après une liste de sites dangereux stockée dans Chromium</translation>
 <translation id="6248213926982192922">Définir Chromium en tant que navigateur par défaut</translation>
-<translation id="6248988683584659830">Paramètres de recherche</translation>
+<translation id="6248988683584659830">Rechercher dans les paramètres</translation>
 <translation id="6261803579884938625">Profitez des meilleures fonctionnalités de sécurité de Google où que vous soyez avec l'appli Chromium sur votre téléphone</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium ?</translation>
 <translation id="6270547683008298381">Ces onglets utilisent des ressources supplémentaires. Pour améliorer les performances, autorisez Chromium à les désactiver.</translation>
@@ -736,7 +735,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="856656450041460113">Rechercher dans la liste des langues</translation>
 <translation id="8576826849825683917">Plusieurs organisations gèrent Chromium</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
-<translation id="8601359445272098721">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran en sélectionnant le bouton "Traduire l'écran".</translation>
 <translation id="8619360774459241877">Lancement de Chromium…</translation>
 <translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>
 <translation id="8648201657708811153">Impossible de définir Google Chrome for Testing comme navigateur par défaut.</translation>

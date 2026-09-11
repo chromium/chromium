@@ -1095,6 +1095,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2859806420264540918">Este sitio web muestra anuncios invasivos o engañosos.</translation>
 <translation id="2873317327342476681">Juego del dinosaurio, toca el dinosaurio o pulsa la barra espaciadora para jugar</translation>
 <translation id="287387905105155974">Cuadro de ayuda</translation>
+<translation id="2875109558992200904">Cuando Chrome detecte actividades relacionadas con la seguridad, tu administrador recibirá los datos pertinentes. Esto puede incluir las URLs y los títulos de páginas que visites en Chrome, las URLs de páginas de las que hayas copiado datos, los nombres o metadatos de archivos, las direcciones IP, los fallos del navegador o de las pestañas y el nombre de usuario que utilices para iniciar sesión en aplicaciones web, en tu dispositivo y en Chrome.</translation>
 <translation id="2876489322757410363">Saldrás del modo Incógnito para pagar en una aplicación externa. ¿Quieres continuar?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para gestionar Navegación segura y otras opciones en la configuración de Chrome</translation>
 <translation id="2878197950673342043">Plegado en cruz</translation>
@@ -1135,7 +1136,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2931453528659195355">Gestionar información de compra</translation>
 <translation id="2933624813161016821">Papel de aluminio gofrado</translation>
 <translation id="2935726091208500473">compartir tus pestañas</translation>
-<translation id="2936698630976431647">Selecciona el campo del código promocional para autocompletar ofertas de Google Wallet</translation>
 <translation id="293796669683825859">Comentarios</translation>
 <translation id="2938225289965773019">Abrir enlaces de <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: para mostrar el cursor, cambia de app, vuelve a cargar la página o vuelve atrás</translation>
@@ -1596,6 +1596,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3712004750972384495">Guardando grabación de pantalla</translation>
 <translation id="3712006010833051684">Sobre n.º 10</translation>
 <translation id="3712624925041724820">Licencias agotadas</translation>
+<translation id="371302509916403935">Subrayado</translation>
 <translation id="3713277100229669269">Ahora puedes ver las ventajas de la tarjeta antes de pagar</translation>
 <translation id="3714633008798122362">calendario web</translation>
 <translation id="3714780639079136834">Activar los datos móviles o la conexión Wi-Fi</translation>
@@ -1943,6 +1944,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4265635050210404830">Tus tarjetas de fidelización</translation>
 <translation id="4265872034478892965">Permitido por el administrador</translation>
 <translation id="4267590181863312380">Para ver el historial de tus otros dispositivos, inicia sesión y sincronízalo. También tendrás tus contraseñas y otra información en todos tus dispositivos. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
+<translation id="4267837382000002014">Las URLs y los títulos de las páginas que visites se enviarán a Google Cloud o a terceros para analizarlos, y tu administrador podrá verlos. Por ejemplo, puede que se analicen para detectar sitios web que no son seguros o para filtrar sitios web de acuerdo con las reglas que haya definido el administrador.</translation>
 <translation id="4268025649754414643">Cifrado de clave</translation>
 <translation id="4269599248168651462">El certificado de servidor se emite a un nombre que no es único.</translation>
 <translation id="4270541775497538019">Apilador 6</translation>
@@ -2799,7 +2801,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5716325061445053985">Toca para abrir la pestaña en tu teléfono</translation>
 <translation id="5717281954932320486">Rellena la información de la tarjeta automáticamente al formalizar una compra online. Las tarjetas se guardan de forma segura en Google Wallet.</translation>
 <translation id="5718326209176373202">Añadir anotaciones de texto</translation>
-<translation id="5718601519531438273">Incluye información como pasaportes y carnés de conducir</translation>
+<translation id="5718601519531438273">Incluye información como la de pasaportes y carnés de conducir</translation>
 <translation id="5720705177508910913">Usuario actual</translation>
 <translation id="5721147290164931316">Escanea para iniciar sesión con tu teléfono</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1} y {website_2}}=3{{website_1}, {website_2} y 1 más}other{{website_1}, {website_2} y {more_count} más}}</translation>
@@ -4213,7 +4215,6 @@ Más información:
 <translation id="815036624016370447">La información de tu cuenta de Google <ph name="ACCOUNT" /> puede ayudarte a rellenar formularios más rápido en Chrome</translation>
 <translation id="8150722005171944719">El archivo que se encuentra en <ph name="URL" /> no se puede leer. Puede que se haya eliminado o movido o que los permisos del archivo impidan acceder a él.</translation>
 <translation id="8151185429379586178">DevTools</translation>
-<translation id="8152194419479742504">Escribe @@ en cualquier formulario para encontrar y rellenar información sin cambiar de pestaña</translation>
 <translation id="8153865548451212769">{0,plural, =1{La política del administrador recomienda no descargar este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador recomienda no descargar estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Últimas pestañas abiertas</translation>
 <translation id="815805690561372740">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas (como Navegación segura de Google, que <ph name="BEGIN_LINK" />recientemente ha detectado malware<ph name="END_LINK" /> en el sitio que has intentado visitar).</translation>
@@ -4277,6 +4278,7 @@ Más información:
 <translation id="8269242089528251720">Documentos separados/Copias intercaladas</translation>
 <translation id="8269703227894255363">{0,plural, =1{No se ha podido abrir el archivo}other{No se han podido abrir <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="8270242299912238708">Documentos PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">La hoja del controlador de pagos está abierta</translation>
 <translation id="827820107214076967">Actualizar registros</translation>
 <translation id="8279611986089885641">Las notificaciones de Chrome deben estar activadas. Puedes activarlas en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

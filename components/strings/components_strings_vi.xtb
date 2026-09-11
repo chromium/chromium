@@ -119,7 +119,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1194278116501666615">Thông tin cập nhật về tiến trình tải trước ArcVm</translation>
 <translation id="1195073053842921378">Địa chỉ này sẽ bị xoá khỏi thiết bị này</translation>
 <translation id="1195558154361252544">Đã tự động chặn thông báo đối với mọi trang web, ngoại trừ những trang web bạn cho phép</translation>
-<translation id="1197088940767939838">Màu cam</translation>
+<translation id="1197088940767939838">Cam</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> đã xoá thẻ "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1201895884277373915">Thêm từ trang web này</translation>
@@ -1095,6 +1095,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2859806420264540918">Trang web này hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm.</translation>
 <translation id="2873317327342476681">Trò chơi khủng long, nhấn vào hình khủng long hoặc nhấn phím cách để chơi</translation>
 <translation id="287387905105155974">Bong bóng trợ giúp</translation>
+<translation id="2875109558992200904">Khi Chrome gắn cờ cho các sự kiện bảo mật, quản trị viên của bạn sẽ nhận được dữ liệu liên quan đến các sự kiện đó. Dữ liệu này có thể bao gồm URL và tiêu đề của các trang bạn truy cập trong Chrome, URL của các trang bạn đã sao chép dữ liệu, tên tệp hoặc siêu dữ liệu, địa chỉ IP, sự cố của trình duyệt hoặc thẻ, cũng như tên người dùng mà bạn sử dụng để đăng nhập vào các ứng dụng chạy trên nền tảng web, thiết bị của bạn và Chrome.</translation>
 <translation id="2876489322757410363">Đang thoát khỏi chế độ Ẩn danh để thanh toán qua một ứng dụng bên ngoài. Bạn muốn tiếp tục?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để quản lý tính năng Duyệt web an toàn và nhiều tính năng khác trong phần Cài đặt của Chrome</translation>
 <translation id="2878197950673342043">Gấp kiểu áp phích</translation>
@@ -1135,7 +1136,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2931453528659195355">Quản lý thông tin mua sắm</translation>
 <translation id="2933624813161016821">Nhũ nổi</translation>
 <translation id="2935726091208500473">chia sẻ các thẻ của bạn</translation>
-<translation id="2936698630976431647">Chọn trường mã khuyến mãi để tự động điền ưu đãi từ Google Wallet</translation>
 <translation id="293796669683825859">Nhận xét</translation>
 <translation id="2938225289965773019">Mở đường liên kết <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Để hiện con trỏ, hãy chuyển ứng dụng, tải lại trang hoặc quay lại</translation>
@@ -1596,6 +1596,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3712004750972384495">Đang lưu bản ghi màn hình</translation>
 <translation id="3712006010833051684">Phong bì số 10</translation>
 <translation id="3712624925041724820">Giấy phép không đủ</translation>
+<translation id="371302509916403935">Gạch dưới</translation>
 <translation id="3713277100229669269">Giờ đây, bạn sẽ thấy được các lợi ích của thẻ trước khi thanh toán</translation>
 <translation id="3714633008798122362">lịch trên web</translation>
 <translation id="3714780639079136834">Bật dữ liệu di dộng hoặc Wi-Fi</translation>
@@ -1943,6 +1944,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4265635050210404830">Các thẻ khách hàng thân thiết của bạn</translation>
 <translation id="4265872034478892965">Được quản trị viên cho phép</translation>
 <translation id="4267590181863312380">Để truy cập vào nhật ký của bạn trên những thiết bị khác, hãy đăng nhập và đồng bộ hoá nhật ký. Bạn cũng có thể truy cập mật khẩu và nhiều dữ liệu khác trên mọi thiết bị của mình. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
+<translation id="4267837382000002014">Hệ thống sẽ gửi URL và tiêu đề của các trang mà bạn truy cập cho Google Cloud hoặc bên thứ ba để phân tích và quản trị viên của bạn có thể thấy các URL và tiêu đề này. Ví dụ: những trang này có thể được quét để phát hiện trang web không an toàn hoặc lọc trang web dựa trên quy tắc do quản trị viên đặt ra.</translation>
 <translation id="4268025649754414643">Mã hóa Khóa</translation>
 <translation id="4269599248168651462">Chứng chỉ máy chủ này được cấp cho một tên không phải là duy nhất.</translation>
 <translation id="4270541775497538019">Khay xếp chồng 6</translation>
@@ -2604,7 +2606,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5397794290049113714">Bạn</translation>
 <translation id="5398461103557553443">Để tự động điền số IBAN này cho lần tới, hãy lưu số này vào Google Wallet</translation>
 <translation id="5398772614898833570">Đã chặn quảng cáo</translation>
-<translation id="5400836586163650660">Màu xám</translation>
+<translation id="5400836586163650660">Xám</translation>
 <translation id="5402715318763077894">Cho phép truy cập vào mạng cục bộ?</translation>
 <translation id="540949333488055151">Nhựa (Có màu)</translation>
 <translation id="540969355065856584">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này không hợp lệ tại thời điểm này. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
@@ -4213,7 +4215,6 @@ Thông tin chi tiết bổ sung:
 <translation id="815036624016370447">Thông tin từ Tài khoản Google <ph name="ACCOUNT" /> có thể giúp bạn điền nhanh hơn vào biểu mẫu trong Chrome</translation>
 <translation id="8150722005171944719">Không thể đọc được tệp tại <ph name="URL" />.  Tệp này có thể đã bị xóa, di chuyển hoặc quyền tệp có thể đang chặn truy cập.</translation>
 <translation id="8151185429379586178">Công cụ dành cho nhà phát triển</translation>
-<translation id="8152194419479742504">Nhập @@ vào biểu mẫu bất kỳ để lấy và điền thông tin mà không cần chuyển đổi thẻ</translation>
 <translation id="8153865548451212769">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên tải tệp này xuống <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên tải các tệp này xuống <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Thẻ mở gần đây nhất</translation>
 <translation id="815805690561372740">Chrome tích hợp sẵn các tính năng an toàn nhằm bảo vệ bạn khi bạn duyệt web, chẳng hạn như Duyệt web An toàn của Google – tính năng <ph name="BEGIN_LINK" />vừa phát hiện thấy phần mềm độc hại<ph name="END_LINK" /> trên trang web bạn đã cố truy cập.</translation>
@@ -4277,6 +4278,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8269242089528251720">Tài liệu riêng biệt/Bản sao đã đối chiếu</translation>
 <translation id="8269703227894255363">{0,plural, =1{Tệp đã bị chặn không cho mở}other{<ph name="FILE_COUNT" /> tệp đã bị chặn không cho mở}}</translation>
 <translation id="8270242299912238708">Tài liệu PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Trang tính trình xử lý thanh toán đang mở</translation>
 <translation id="827820107214076967">Làm mới nhật ký</translation>
 <translation id="8279611986089885641">Bạn phải bật thông báo của Chrome. Bạn có thể bật các thông báo này trong <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
@@ -4874,7 +4876,7 @@ Thông tin chi tiết bổ sung:
 <translation id="992110854164447044">Thẻ ảo giúp bạn ẩn thẻ thực, bảo vệ bạn trước nguy cơ bị lừa đảo.
 <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
-<translation id="992256792861109788">Màu hồng</translation>
+<translation id="992256792861109788">Hồng</translation>
 <translation id="992432478773561401">"<ph name="SOFTWARE_NAME" />" đã được cài đặt không đúng trên máy tính hoặc mạng của bạn:
     &lt;ul&gt;
     &lt;li&gt;Hãy thử gỡ cài đặt hoặc vô hiệu hóa "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;

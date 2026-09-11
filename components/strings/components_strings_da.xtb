@@ -1095,6 +1095,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2859806420264540918">Dette website viser påtrængende eller vildledende annoncer.</translation>
 <translation id="2873317327342476681">Dinospillet – tryk på dinoen, eller tryk på mellemrumstasten for at spille</translation>
 <translation id="287387905105155974">Hjælpeboble</translation>
+<translation id="2875109558992200904">Når sikkerhedshændelser rapporteres af Chrome, sendes der relevante data om hændelserne til din administrator. Disse data kan omfatte webadresserne og titlerne på de sider, du besøger i Chrome, webadresserne på de sider, du har kopieret data fra, filnavne eller metadata, IP-adresser, browser- eller fanenedbrud samt det brugernavn, du bruger til at logge ind med i webbaserede apps, på din enhed og i Chrome.</translation>
 <translation id="2876489322757410363">Du forlader inkognitotilstand for at betale via en ekstern app. Vil du fortsætte?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at administrere Beskyttet browsing m.m. i Chrome-indstillingerne</translation>
 <translation id="2878197950673342043">Plakatfals</translation>
@@ -1135,7 +1136,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2931453528659195355">Administrer shoppingoplysninger</translation>
 <translation id="2933624813161016821">Prægefolie</translation>
 <translation id="2935726091208500473">deling af dine faner</translation>
-<translation id="2936698630976431647">Vælg feltet til promoveringskode for at udfylde tilbud fra Google Wallet automatisk</translation>
 <translation id="293796669683825859">Kommentarer</translation>
 <translation id="2938225289965773019">Åbne <ph name="PROTOCOL" />-links</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Hvis du vil have vist markøren, skal du skifte app, genindlæse siden eller gå tilbage</translation>
@@ -1596,6 +1596,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3712004750972384495">Skærmoptagelsen gemmes</translation>
 <translation id="3712006010833051684">Konvolut nr. 10</translation>
 <translation id="3712624925041724820">Licenserne er opbrugt</translation>
+<translation id="371302509916403935">Understreget</translation>
 <translation id="3713277100229669269">Nu kan du se kortfordele, før du betaler</translation>
 <translation id="3714633008798122362">webkalender</translation>
 <translation id="3714780639079136834">Tænde for mobildata eller Wi-Fi</translation>
@@ -1943,6 +1944,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4265635050210404830">Dine loyalitetskort</translation>
 <translation id="4265872034478892965">Tilladt af din administrator</translation>
 <translation id="4267590181863312380">Log ind, og synkroniser historikken for at få adgang til din historik fra dine andre enheder. Du kan også se dine adgangskoder m.m. på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
+<translation id="4267837382000002014">Webadresserne og titlerne på de sider, du besøger, sendes til analyse hos Google Cloud eller tredjeparter og kan muligvis ses af din administrator. De kan f.eks. undersøge, om nogen af de tilhørende websites er usikre, eller filtrere websites baseret på de regler, som administratoren har angivet.</translation>
 <translation id="4268025649754414643">Omsætning af nøgle til kode</translation>
 <translation id="4269599248168651462">Servercertifikatet er givet til et navn, der ikke er unikt.</translation>
 <translation id="4270541775497538019">Stabler 6</translation>
@@ -4213,7 +4215,6 @@ Yderligere oplysninger:
 <translation id="815036624016370447">Oplysninger fra din Google-konto <ph name="ACCOUNT" /> kan hjælpe dig med at udfylde formularer hurtigere i Chrome</translation>
 <translation id="8150722005171944719">Filen i <ph name="URL" /> kan ikke læses. Den kan være blevet fjernet, flyttet, eller også forhindrer filtilladelser muligvis adgangen.</translation>
 <translation id="8151185429379586178">Udviklerværktøjer</translation>
-<translation id="8152194419479742504">Angiv @@ i en formular for at finde og udfylde oplysninger uden at skifte fane</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administratorpolitikken fraråder at downloade denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at download denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at download disse filer til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Seneste åbne faner</translation>
 <translation id="815805690561372740">Chrome har indbyggede sikkerhedsfunktioner, der beskytter dig, når du browser, f.eks. Google Beskyttet browsing. Denne funktion har <ph name="BEGIN_LINK" />for nylig fundet malware<ph name="END_LINK" /> på det website, du har forsøgt at besøge.</translation>
@@ -4277,6 +4278,7 @@ Yderligere oplysninger:
 <translation id="8269242089528251720">Individuelle dokumenter/samlede kopier</translation>
 <translation id="8269703227894255363">{0,plural, =1{FIlen er blokeret, så den ikke kan åbnes}one{<ph name="FILE_COUNT" /> fil er blokeret, så den ikke kan åbnes}other{<ph name="FILE_COUNT" /> filer er blokeret, så de ikke kan åbnes}}</translation>
 <translation id="8270242299912238708">PDF-dokumenter</translation>
+<translation id="8270320981823560179">Drev</translation>
 <translation id="8277900682056760511">Regnearket for betalinghandler er åbnet</translation>
 <translation id="827820107214076967">Opdater logs</translation>
 <translation id="8279611986089885641">Chrome-notifikationer skal være aktiveret. Du kan aktivere dem i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS Client</translation>
 <translation id="1508263560970797965">ดำเนินการต่อในโหมดไม่ระบุตัวตน</translation>
 <translation id="1509486075633541495">ลงชื่อเข้าใช้เว็บไซต์</translation>
+<translation id="1509922846321012406">สำรวจวิธีอื่นๆ ในการเพิ่มความเป็นส่วนตัวและความปลอดภัย</translation>
 <translation id="1513858653616922153">ลบรหัสผ่าน</translation>
 <translation id="1517166097004694782">ซ่อน "ดำเนินการต่อโดยใช้แท็บนี้"</translation>
 <translation id="1520027731907768768">รับการแจ้งเตือนเมื่อราคาสินค้าที่ติดตามลดลง</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">เบราว์เซอร์เริ่มต้น</translation>
 <translation id="2893791155497534382">คุณลบรหัสผ่านและกิจกรรมอื่นๆ ได้ในการตั้งค่าการจัดการ</translation>
 <translation id="2894757982205307093">แท็บใหม่ในกลุ่ม</translation>
+<translation id="2897858638449756400">สำรวจวิธีอื่นๆ ในการค้นหา</translation>
 <translation id="2902312830803030883">การทำงานเพิ่มเติม</translation>
 <translation id="2904788871580817212">ราคาต่ำลงในแท็บที่เปิดอยู่ จาก <ph name="PREVIOUS_PRICE" /> เป็น <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">คุณมี <ph name="NUMBER_OF_PASSWORDS" /> รหัสผ่านที่ใช้ซ้ำที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">การดำเนินการนี้จะลบที่อยู่ที่บันทึกไว้ในอุปกรณ์นี้ นอกจากนี้ยังจะลบที่อยู่ที่บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /> ด้วย</translation>
 <translation id="5056446788882570708">พบปัญหาเมื่อ <ph name="TIME" /></translation>
 <translation id="5056587122125565772">สร้างรูปภาพ</translation>
+<translation id="5058813911021873087">สำรวจวิธีอื่นๆ ในการจัดระเบียบและประหยัดเวลา</translation>
 <translation id="5059136629401106827">ตกลง</translation>
 <translation id="5061202435354361813">ยกระดับประสบการณ์การท่องเว็บของคุณ</translation>
 <translation id="5062321486222145940">ติดตั้ง Google ไดรฟ์</translation>
@@ -1881,6 +1884,7 @@
 <translation id="6987201788018524855">สำรวจฟีเจอร์ที่มีประโยชน์ที่คุณพลาดไป</translation>
 <translation id="6989636517316575338">ถามเกี่ยวกับหน้าใดก็ได้</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">งานทั้งหมด</translation>
 <translation id="6998251471716094661">ติดตามราคาของผลิตภัณฑ์และรับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="7004032350256606903">องค์กรกำหนดให้คุณท่องเว็บแบบส่วนตัว
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>

@@ -1095,6 +1095,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2859806420264540918">Aquest lloc web mostra anuncis intrusius o enganyosos.</translation>
 <translation id="2873317327342476681">Joc del dinosaure. Toca el dinosaure o prem la barra espaiadora per jugar.</translation>
 <translation id="287387905105155974">Quadre d'ajuda</translation>
+<translation id="2875109558992200904">Quan Chrome marca esdeveniments de seguretat, se n'envien les dades rellevants a l'administrador. Per exemple, URL i títols de pàgines que visites a Chrome, URL de pàgines de les quals has copiat dades, noms o metadades de fitxers, adreces IP, bloquejos de navegadors o de pestanyes, i el nom d'usuari que fas servir per iniciar la sessió en aplicacions web, al dispositiu i a Chrome.</translation>
 <translation id="2876489322757410363">Per pagar amb una aplicació externa, sortiràs del mode d'incògnit. Vols continuar?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar Navegació segura i altres opcions de la configuració de Chrome</translation>
 <translation id="2878197950673342043">Plegat en pòster</translation>
@@ -1135,7 +1136,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2931453528659195355">Gestiona la informació de compra</translation>
 <translation id="2933624813161016821">Làmina de degoteig gofrada</translation>
 <translation id="2935726091208500473">com es poden compartir les pestanyes.</translation>
-<translation id="2936698630976431647">Selecciona el camp del codi promocional per emplenar automàticament les ofertes de Google Wallet</translation>
 <translation id="293796669683825859">Comentaris</translation>
 <translation id="2938225289965773019">Obrir els enllaços del protocol <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />. Per mostrar el cursor, canvia d'aplicació, torna a carregar la pàgina o torna enrere.</translation>
@@ -1596,6 +1596,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3712004750972384495">S'està desant la gravació de pantalla</translation>
 <translation id="3712006010833051684">Sobre número 10</translation>
 <translation id="3712624925041724820">Llicències exhaurides</translation>
+<translation id="371302509916403935">Subratllat</translation>
 <translation id="3713277100229669269">Ara pots veure els avantatges de la targeta abans de pagar</translation>
 <translation id="3714633008798122362">calendari web</translation>
 <translation id="3714780639079136834">Activa les dades mòbils o la Wi-Fi.</translation>
@@ -1943,6 +1944,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4265635050210404830">Les teves targetes de fidelització</translation>
 <translation id="4265872034478892965">Permès per l'administrador</translation>
 <translation id="4267590181863312380">Per accedir a l'historial dels teus altres dispositius, inicia la sessió i sincronitza l'historial. També obtindràs les contrasenyes i altres dades en tots els teus dispositius. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
+<translation id="4267837382000002014">Els URL i els títols de les pàgines que visites s'envien a Google Cloud o a tercers perquè s'analitzin i és possible que l'administrador els vegi. Per exemple, pot ser que s'analitzin per detectar llocs web no segurs o que filtrin els llocs web en funció de les regles que hagi establert l'administrador.</translation>
 <translation id="4268025649754414643">Encriptació de claus</translation>
 <translation id="4269599248168651462">El certificat de servidor s'emet a un nom que no és únic.</translation>
 <translation id="4270541775497538019">Apiladora 6</translation>
@@ -3842,6 +3844,7 @@ Detalls addicionals:
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">S'ha permès la RV aquesta vegada</translation>
+<translation id="7517198908921983825">Suggerit per Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">No s'ha trobat cap pàgina web per a l'adreça: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4213,7 +4216,6 @@ Detalls addicionals:
 <translation id="815036624016370447">La informació del teu Compte de Google <ph name="ACCOUNT" /> et pot ajudar a emplenar formularis més ràpidament a Chrome</translation>
 <translation id="8150722005171944719">El fitxer de <ph name="URL" /> no es pot llegir. Pot ser que s'hagi eliminat, que s'hagi traslladat o que els permisos del fitxer n'impedeixin l'accés.</translation>
 <translation id="8151185429379586178">Eines per a desenvolupadors</translation>
-<translation id="8152194419479742504">Escriu @@ en qualsevol formulari per trobar i emplenar informació sense canviar de pestanya</translation>
 <translation id="8153865548451212769">{0,plural, =1{La política de l'administrador no recomana baixar aquest fitxer a <ph name="DESTINATION_NAME" />}other{La política de l'administrador no recomana baixar aquests fitxers a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Darreres pestanyes obertes</translation>
 <translation id="815805690561372740">Per protegir-te mentre navegues, Chrome té funcions de seguretat integrades, com ara Navegació segura de Google, que <ph name="BEGIN_LINK" />recentment ha detectat programari maliciós<ph name="END_LINK" /> al lloc web que has provat de visitar.</translation>
@@ -4277,6 +4279,7 @@ Detalls addicionals:
 <translation id="8269242089528251720">Documents independents / Còpies recopilades</translation>
 <translation id="8269703227894255363">{0,plural, =1{S'ha bloquejat el fitxer perquè no es pugui obrir}other{S'han bloquejat <ph name="FILE_COUNT" /> fitxers perquè no es puguin obrir}}</translation>
 <translation id="8270242299912238708">Documents PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">El full del gestor de pagaments està obert</translation>
 <translation id="827820107214076967">Actualitza els registres</translation>
 <translation id="8279611986089885641">Les notificacions de Chrome han d'estar activades. Pots activar-les a la <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

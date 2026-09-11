@@ -1095,6 +1095,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2859806420264540918">Tällä sivustolla on häiritseviä tai harhaanjohtavia mainoksia.</translation>
 <translation id="2873317327342476681">Dino-peli, pelaa napauttamalla dinosaurusta tai painamalla välilyöntiä</translation>
 <translation id="287387905105155974">Ohjekupla</translation>
+<translation id="2875109558992200904">Kun Chrome merkitsee tietoturvatapahtuman, tapahtumasta lähetetään olennaista dataa järjestelmänvalvojallesi. Data voi sisältää Chromessa avaamiesi sivujen URL-osoitteita ja nimiä, niiden sivujen URL-osoitteet, joista kopioit dataa, tiedostonimiä, metadataa, IP-osoitteita, selaimen tai välilehden kaatumisia ja käyttäjätunnuksen, jolla kirjaudut sisään verkkopohjaisiin sovelluksiin, laitteellesi ja Chromeen.</translation>
 <translation id="2876489322757410363">Poistutaan incognito-tilasta, jotta ulkoisessa sovelluksessa maksaminen onnistuu. Haluatko jatkaa?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ylläpidä selaussuojaa ja muita ominaisuuksia Chromen asetuksista painamalla sarkainta ja sitten Enter</translation>
 <translation id="2878197950673342043">Julistetaitos</translation>
@@ -1135,7 +1136,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2931453528659195355">Ylläpidä ostostietoja</translation>
 <translation id="2933624813161016821">Kohokuviointifolio</translation>
 <translation id="2935726091208500473">välilehtien jakamisesta</translation>
-<translation id="2936698630976431647">Valitse tarjouskoodikenttä, niin voit täyttää tarjoukset automaattisesti Google Walletista</translation>
 <translation id="293796669683825859">Kommentit</translation>
 <translation id="2938225289965773019">Avata <ph name="PROTOCOL" />-linkit.</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Näytä kohdistin, vaihda sovellusta, päivitä sivu tai palaa takaisin</translation>
@@ -1597,6 +1597,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3712004750972384495">Tallennetaan näyttöä</translation>
 <translation id="3712006010833051684">Kirjekuori #10</translation>
 <translation id="3712624925041724820">Käyttöluvat ovat lopussa</translation>
+<translation id="371302509916403935">Alleviivaa</translation>
 <translation id="3713277100229669269">Voit nyt nähdä kortin edut ennen maksamista</translation>
 <translation id="3714633008798122362">verkkokalenteri</translation>
 <translation id="3714780639079136834">Ota mobiilidata tai Wi-Fi käyttöön.</translation>
@@ -1944,6 +1945,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4265635050210404830">Kanta-asiakaskorttisi</translation>
 <translation id="4265872034478892965">Järjestelmänvalvojan sallima</translation>
 <translation id="4267590181863312380">Jos haluat käyttää historiaa muilta laitteilta, kirjaudu sisään ja synkronoi historia. Voit myös käyttää salasanojasi ja muita tietoja kaikilla laitteillasi. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
+<translation id="4267837382000002014">Avaamiesi sivujen URL-osoitteet ja nimet lähetetään Google Cloudiin tai kolmansille osapuolille analysoitaviksi ja ne voivat näkyä järjestelmänvalvojalle. Ne voidaan esimerkiksi skannata riskialttiiden verkkosivustojen varalta tai sivustojen suodattamiseksi järjestelmänvalvojan asettamien sääntöjen perusteella.</translation>
 <translation id="4268025649754414643">Avaimen salakoodaus</translation>
 <translation id="4269599248168651462">Palvelimen varmenne myönnetään ei-yksilölliselle nimelle.</translation>
 <translation id="4270541775497538019">Pinoaja 6</translation>
@@ -4214,7 +4216,6 @@ Lisätietoja:
 <translation id="815036624016370447">Google-tilisi (<ph name="ACCOUNT" />) tiedot voivat auttaa sinua täyttämään lomakkeita nopeammin Chromessa</translation>
 <translation id="8150722005171944719">Tiedosto osoitteessa <ph name="URL" /> ei ole luettavissa. Se on voitu poistaa tai siirtää, tai tiedoston käyttöluvat voivat estää sen käytön.</translation>
 <translation id="8151185429379586178">Kehittäjän työkalut</translation>
-<translation id="8152194419479742504">Kirjoita mihin tahansa lomakkeeseen @@, niin voit hakea ja täyttää tietoja vaihtamatta välilehtiä</translation>
 <translation id="8153865548451212769">{0,plural, =1{Järjestelmänvalvojakäytännössä ei suositella tämän tiedoston lataamista tänne: <ph name="DESTINATION_NAME" />}other{Järjestelmänvalvojakäytännössä ei suositella näiden tiedostojen lataamista tänne: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Viimeksi avoinna olleet välilehdet</translation>
 <translation id="815805690561372740">Chromessa on sisäänrakennettuja turvallisuusominaisuuksia, jotka suojaavat sinua selaamisen aikana. Yksi niistä on Googlen selaussuoja. Se <ph name="BEGIN_LINK" />löysi äskettäin haittaohjelmia<ph name="END_LINK" /> sivustolta, jolle yritit siirtyä.</translation>
@@ -4278,6 +4279,7 @@ Lisätietoja:
 <translation id="8269242089528251720">Erilliset dokumentit / Kootut kopiot</translation>
 <translation id="8269703227894255363">{0,plural, =1{Tiedoston avaaminen estetty}other{<ph name="FILE_COUNT" /> tiedoston avaaminen estetty}}</translation>
 <translation id="8270242299912238708">PDF-dokumentit</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Maksujenkäsittelytaulukko on avattu</translation>
 <translation id="827820107214076967">Päivitä lokit</translation>
 <translation id="8279611986089885641">Chrome-ilmoitusten on oltava päällä. Voit laittaa ne päälle valitsemalla <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

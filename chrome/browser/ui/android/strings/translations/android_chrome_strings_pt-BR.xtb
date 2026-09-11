@@ -407,7 +407,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2569733278091928697">Você vai poder gerenciar com facilidade controles de mídia, sessões de navegação anônima, downloads e muito mais</translation>
 <translation id="257088987046510401">Temas</translation>
 <translation id="2571711316400087311">Oferecer enviar páginas em outros idiomas ao Google Tradutor</translation>
-<translation id="2571834852878229351">Criar minha própria senha</translation>
+<translation id="2571834852878229351">Criar senha</translation>
 <translation id="2574249610672786438">Para acessar suas guias em qualquer lugar onde você usar o Chrome, faça login em todos os seus dispositivos</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e não poderá mais interagir com você nos Serviços do Google.</translation>
 <translation id="2581165646603367611">Essa ação vai apagar os cookies, cache e outros dados de sites que o Chrome não acredita serem importantes.</translation>
@@ -664,6 +664,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">Sair da reprodução imersiva</translation>
+<translation id="3662595332590803433">Abrir guias personalizadas no Chrome</translation>
 <translation id="3674208116086565128">Acessar a página inicial do Google app</translation>
 <translation id="368329460027487650">Conta desconectada. Abre as opções para fazer login.</translation>
 <translation id="3684540848053703310">A página inferior de insights de preço foi fechada</translation>
@@ -1518,7 +1519,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> O Chrome removeu essas permissões porque você não acessou o site recentemente</translation>
 <translation id="6923291640965724312">Formato imersivo</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 guia}one{<ph name="NUMBER_OF_TABS" /> guia}other{<ph name="NUMBER_OF_TABS" /> guias}}</translation>
-<translation id="6929224077895306814">Todos os códigos de segurança salvos no seu dispositivo e na sua Conta do Google serão excluídos</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, guia com áudio fixada e selecionada</translation>
 <translation id="6937524809504266803">Personalização e vinculação</translation>
 <translation id="6937876069006524083">Apelido (opcional)</translation>
@@ -1629,6 +1629,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7335766481146072567">Pressione Continuar.</translation>
 <translation id="7336259382292148213">Tudo certo com as notificações</translation>
 <translation id="7339898014177206373">Nova janela</translation>
+<translation id="7349983576451251297">Abrir páginas no Chrome em vez de guias personalizadas</translation>
 <translation id="7352339641508007922">Arraste para fazer uma captura de tela longa</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Compartilhar 1 item selecionado}one{Compartilhar # item selecionado}other{Compartilhar # itens selecionados}}</translation>
@@ -1719,6 +1720,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7690596512217303514">Não foi possível abrir o Chrome no dispositivo. Para corrigir o problema, faça o download da atualização mais recente desse navegador na app store.</translation>
 <translation id="7692761875510935111">Abra rapidamente no navegador. Para editar este atalho, toque e pressione.</translation>
 <translation id="7695270712963178084">Descobertas do Chrome</translation>
+<translation id="7695610746377249436">Os sites, incluindo o Google, usam os próprios critérios ao responder a essa solicitação.</translation>
 <translation id="7697383401610880082">Alça de arrastar</translation>
 <translation id="7698359219371678927">Criar e-mail no <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">A página inferior de atividade recente está aberta no tamanho máximo</translation>

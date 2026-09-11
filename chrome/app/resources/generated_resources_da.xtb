@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">Få adgang til alle disse USB-enheder</translation>
 <translation id="1038462104119736705">Du bør have mindst <ph name="INSTALL_SIZE" /> ledig plads for at installere Linux. Du kan frigøre plads ved at slette filer fra enheden.</translation>
 <translation id="1038643060055067718">Linjer:</translation>
+<translation id="1039216421321079051">Udvidelsen er deaktiveret af en anden udvidelse</translation>
 <translation id="1039337018183941703">Ugyldig eller beskadiget fil</translation>
 <translation id="1040761927998636252">Unavngivet bogmærke for <ph name="URL" /></translation>
 <translation id="1041175011127912238">Denne side svarer ikke</translation>
@@ -2629,7 +2630,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3000461861112256445">Monolyd</translation>
 <translation id="3001144475369593262">Børnekonti</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Ingen nøgler er tilpasset}=1{1 tilpasset nøgle}one{{COUNT} tilpasset nøgle}other{{COUNT} tilpassede nøgler}}</translation>
-<translation id="3002745665522516995">Vælg hvad som helst på siden for at søge</translation>
 <translation id="3002864108328203174">Gemini-feltet i bunden er åbent i halv højde.</translation>
 <translation id="3003144360685731741">Favoritter netværk</translation>
 <translation id="3003253259757197230">De webadresser, du besøger, sendes til Google for at forudsige, hvilke websites du kunne have lyst til at besøge som det næste, og for at vise dig oplysninger om den side, du besøger</translation>
@@ -3478,6 +3478,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3641456520301071208">Websites kan anmode om adgang til din lokation</translation>
 <translation id="3642070413432681490">Cirkelmarkør</translation>
 <translation id="3643962751030964445">Denne enhed administreres af <ph name="DEVICE_MANAGER" />. En ny profil for kontoen <ph name="USER_EMAIL_ADDRESS" /> er påkrævet af <ph name="DEVICE_MANAGER" /></translation>
+<translation id="3644128856494356630">CppGC-hukommelse</translation>
 <translation id="3645372836428131288">Flyt fingeren en smule for at registrere en anden del af fingeraftrykket.</translation>
 <translation id="3645951915068244649">Der er allerede oprettet en fanegruppe med denne bogmærkemappe. Vil du oprette en ny fanegruppe eller erstatte den eksisterende?</translation>
 <translation id="3646789916214779970">Nulstil til standardtema</translation>
@@ -4250,6 +4251,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4226303886821889519">Opdateringsversion: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Denne udvidelse er ikke tilladt}one{Denne udvidelse er ikke tilladt}other{Nogle udvidelser er ikke tilladt}}</translation>
 <translation id="4229538146709970028">Lås <ph name="TOKEN_NAME" /> op for at godkende over for <ph name="HOST_NAME" /> med dit certifikat.</translation>
+<translation id="4230659518013393045">Sidetitlen, webadressen og indholdet på din aktuelle fane deles med Google for at give dig mere relevante svar. Du kan tilføje eller fjerne faner, mens du browser.</translation>
 <translation id="4232375817808480934">Konfigurer Kerberos</translation>
 <translation id="4232376164796433044">Adgangskoder og autofyld</translation>
 <translation id="4233739489690259993">Din Chromebook modtager ikke længere sikkerheds- og softwareopdateringer. Opgrader din enhed for at få de nyeste sikkerhedsfunktioner og nye funktioner. Vilkårene for tilbuddet er gældende.</translation>
@@ -4593,7 +4595,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4495002167047709180">Vil du anvende denne udvidelse på <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Vis ikke på denne side</translation>
 <translation id="4500055235123625757">Gemini kan besvare spørgsmål om den video eller lyd, du har afspillet på <ph name="LINK_BEGIN" />visse websites<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> er gået ned</translation>
 <translation id="4500647907053779331">&amp;Oversæt markeret tekst til <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">Bekræft fjernelse</translation>
 <translation id="4502423230170890588">Fjern fra denne enhed</translation>
@@ -5118,6 +5119,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="488785315393301722">Se oplysninger</translation>
 <translation id="488862352499217187">Opret ny mappe</translation>
 <translation id="4888715715847020167">Gå til Indstillinger</translation>
+<translation id="4888899258150891194">CppGC-hukommelse</translation>
 <translation id="4890292359366636311">Åbn integreret billede automatisk, så du kan bruge det oven på andre faner og vinduer.</translation>
 <translation id="4890399733764921729">Der kan ikke oprettes forbindelse. Låst af et andet mobilselskab.</translation>
 <translation id="4890585766056792498">Bliv beskyttet mod farlige websites</translation>
@@ -5482,7 +5484,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5173668317844998239">Tilføj eller slet de fingeraftryk, der er gemt på din sikkerhedsnøgle</translation>
 <translation id="5174169235862638850">Adgangskoden er kopieret til udklipsholderen</translation>
 <translation id="517488401359338823">Lås sikkerhedsenheden op</translation>
-<translation id="5176671554021050278">Brug Google Lens til at få flere oplysninger om bestemte billeder eller tekst på en side.</translation>
 <translation id="5177479852722101802">Fortsæt blokering af adgang til kamera og mikrofon</translation>
 <translation id="5178667623289523808">Find forrige</translation>
 <translation id="5179428098696668914">Deaktiver AI-afspilning</translation>
@@ -5805,6 +5806,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5436510242972373446">Søg på <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Vinduet i <ph name="WINDOW_SIDE" /> side er nu <ph name="WINDOW_SIZE_PERCENT" /> i bredden, og ruden i <ph name="PANE_SIDE" /> side er nu <ph name="PANE_SIZE_PERCENT" /> i bredden.</translation>
 <translation id="5438060324827306856">Find udvid&amp;elser</translation>
+<translation id="5440240650630588012">Anvend en læselinje eller et -vindue for at hjælpe med at fokusere. Tryk på ⌥L, eller gå til Indstillinger.</translation>
 <translation id="5440425659852470030">Luk sidepanelet</translation>
 <translation id="544083962418256601">Opret genveje...</translation>
 <translation id="5441133529460183413">Webapp installeret via Chrome-browseren</translation>
@@ -5991,6 +5993,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5576472948015790634">Nu kan du administrere dine fanegrupper og Gemini-chats ét sted. Du kan til enhver tid frigøre dette.</translation>
 <translation id="5578059481725149024">Automatisk login</translation>
 <translation id="5578387000057347457">Angiv en tilpasset prompt, eller fremhæv tekst, for at oprette et billede</translation>
+<translation id="557893471177655572">Prøv linjefokus</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 element gemmes kun på denne enhed. Hvis du vil bruge det på dine andre enheder, skal du <ph name="BEGIN_LINK" />gemme det på din Google-konto<ph name="END_LINK" />.}one{{ITEM_COUNT} element gemmes kun på denne enhed. Hvis du vil bruge det på dine andre enheder, skal du <ph name="BEGIN_LINK" />gemme det på din Google-konto<ph name="END_LINK" />.}other{{ITEM_COUNT} elementer gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du <ph name="BEGIN_LINK" />gemme dem på din Google-konto<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Fjern <ph name="SITE" /> fra listen <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">Opdelt visning</translation>
@@ -10009,6 +10012,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699296325072357994">Indhold fra adgangskodesider og relaterede oplysninger sendes til Google og gennemgås af menneskelige kontrollanter. Din adgangskode er krypteret og kan ikke ses af nogen. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">appliste + Backspace</translation>
+<translation id="8701058912406466818">Anvend en læselinje eller et -vindue for at hjælpe med at fokusere. Tryk på Alt+L, eller gå til Indstillinger.</translation>
 <translation id="8702278591052316269">Menu med gemte fanegrupper, der er skjult</translation>
 <translation id="8703346390800944767">Spring annonce over</translation>
 <translation id="8703372953981978786">Dette link fungerer ikke</translation>
@@ -10772,6 +10776,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="983192555821071799">Luk alle faner</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – kamera- og mikrofonoptagelse</translation>
 <translation id="984705303330760860">Tilføj sprog for stavekontrollen</translation>
+<translation id="986994187171579118">Udvidelsen er deaktiveret af <ph name="EXTENSION_NAME" /></translation>
 <translation id="987264212798334818">Generelt</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> anmoder om at hente oplysninger fra din mobilenhed</translation>
 <translation id="988320949174893488">Hakker af og til</translation>

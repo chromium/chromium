@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Кліент RCS MLS</translation>
 <translation id="1508263560970797965">Працягнуць у рэжыме інкогніта</translation>
 <translation id="1509486075633541495">Уваход на вэб-сайт</translation>
+<translation id="1509922846321012406">Даведайцеся пра іншыя спосабы павысіць узровень прыватнасці і бяспекі</translation>
 <translation id="1513858653616922153">Выдаліць пароль</translation>
 <translation id="1517166097004694782">Схаваць параметр "Працягнуць працу з гэтай укладкай"</translation>
 <translation id="1520027731907768768">Атрымліваць абвесткі пра скідкі на тавары, якія вы адсочваеце.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Стандартны браўзер</translation>
 <translation id="2893791155497534382">Паролі і дзеянні можна выдаліць у наладах кіравання імі</translation>
 <translation id="2894757982205307093">Стварыць у групе новую ўкладку</translation>
+<translation id="2897858638449756400">Паспрабуйце іншыя спосабы пошуку</translation>
 <translation id="2902312830803030883">Іншыя дзеянні</translation>
 <translation id="2904788871580817212">На адкрытай укладцы цана знізілася з <ph name="PREVIOUS_PRICE" /> да <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">У вас ёсць ужытыя раней паролі (<ph name="NUMBER_OF_PASSWORDS" />), што можа паставіць пад пагрозу бяспеку.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Будуць выдалены адрасы, захаваныя на гэтай прыладзе. Таксама будуць выдалены адрасы, захаваныя ў вашым Уліковым запісы Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Праблемы знойдзены <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Стварыць відарыс</translation>
+<translation id="5058813911021873087">Даведайцеся пра іншыя спосабы ўпарадкавання даных і эканоміі часу</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Карыстайцеся браўзерам больш эфектыўна</translation>
 <translation id="5062321486222145940">Усталяваць Google Дыск</translation>
@@ -1881,6 +1884,7 @@
 <translation id="6987201788018524855">Азнаёмцеся з карыснымі функцыямі, якія вы маглі прапусціць</translation>
 <translation id="6989636517316575338">Задавайце пытанні на любых старонках</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Усе задачы</translation>
 <translation id="6998251471716094661">Адсочвайце цэны на тавары і атрымлівайце абвесткі пры зніжэнні цаны на любым сайце</translation>
 <translation id="7004032350256606903">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў рэжыме інкогніта.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>

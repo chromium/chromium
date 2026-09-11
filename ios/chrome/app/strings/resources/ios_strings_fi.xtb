@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS ‑asiakassovellus</translation>
 <translation id="1508263560970797965">Jatka incognito-tilassa</translation>
 <translation id="1509486075633541495">Kirjaudu sisään verkkosivustolle</translation>
+<translation id="1509922846321012406">Tutustu muihin tapoihin parantaa yksityisyyttä ja turvallisuutta</translation>
 <translation id="1513858653616922153">Poista salasana</translation>
 <translation id="1517166097004694782">Piilota "Jatka tällä välilehdellä"</translation>
 <translation id="1520027731907768768">Tilaa hinnanlaskuilmoitukset seuraamistasi tuotteista.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Oletusselain</translation>
 <translation id="2893791155497534382">Salasanat ja muu toiminta voidaan poistaa niiden ylläpitoasetuksista</translation>
 <translation id="2894757982205307093">Uusi välilehti ryhmässä</translation>
+<translation id="2897858638449756400">Tutustu muihin hakutapoihin</translation>
 <translation id="2902312830803030883">Lisää toimintoja</translation>
 <translation id="2904788871580817212">Hinnanlasku avoimella välilehdellä, vanha hinta <ph name="PREVIOUS_PRICE" />, nyt <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Sinulla on <ph name="NUMBER_OF_PASSWORDS" /> uudelleenkäytettyä salasanaa, jotka voivat vaarantaa turvallisuutesi.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Tämä poistaa tälle laitteelle tallennetut osoitteet. Se poistaa myös Google-tilille (<ph name="USER_EMAIL" />) tallennetut osoitteet.</translation>
 <translation id="5056446788882570708">Ongelmia havaittiin <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Luo kuva</translation>
+<translation id="5058813911021873087">Tutustu muihin tapoihin pitää asiat järjestyksessä ja säästää aikaa</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Nosta selaaminen uudelle tasolle</translation>
 <translation id="5062321486222145940">Asenna Google Drive</translation>
@@ -1881,6 +1884,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="6987201788018524855">Tutustu hyödyllisiin ominaisuuksiin, jotka ovat jääneet huomaamatta</translation>
 <translation id="6989636517316575338">Kysy mistä tahansa sivusta</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Kaikki tehtävät</translation>
 <translation id="6998251471716094661">Seuraa tuotteiden hintoja, niin saat ilmoituksia, kun hinta laskee millä tahansa sivustolla</translation>
 <translation id="7004032350256606903">Organisaatiosi edellyttää, että selaat yksityisesti.
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>

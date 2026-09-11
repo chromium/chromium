@@ -2544,6 +2544,7 @@
 <translation id="2939908794993783865">अतिरिक्त इनॲक्टिव्ह साइट</translation>
 <translation id="2939938020978911855">उपलब्ध असलेले ब्लूटूथ डिव्हाइस दर्शवा</translation>
 <translation id="2941112035454246133">निम्न</translation>
+<translation id="2942228903502008519">टॅबचा विस्तार करा (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">वाट पाहत आहे…</translation>
 <translation id="2942581856830209953">हे पेज कस्टमाइझ करा</translation>
 <translation id="2942707801577151363">Word, Excel आणि PowerPoint फाइल उघडा, संपादित करा आणि सेव्ह करा. काही वैशिष्ट्यांसाठी सदस्यत्व आवश्यक असू शकते.</translation>
@@ -2629,7 +2630,6 @@
 <translation id="3000461861112256445">मोनो ऑडिओ</translation>
 <translation id="3001144475369593262">लहान मुलाची खाती</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{No keys customized}=1{कस्टमाइझ केलेली १ की}other{कस्टमाइझ केलेल्या {COUNT} की}}</translation>
-<translation id="3002745665522516995">शोधण्यासाठी पेजवरील कोणताही भाग निवडा</translation>
 <translation id="3002864108328203174">Gemini च्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली.</translation>
 <translation id="3003144360685731741">प्राधान्यीकृत नेटवर्क</translation>
 <translation id="3003253259757197230">तुम्ही भेट देता त्या URLs तुम्ही पुढे कोणत्या साइटला भेट देऊ शकता याचा अंदाज घेण्यासाठी आणि तुम्ही भेट देत असलेल्या पेजबद्दल तुम्हाला अतिरिक्त माहिती दाखवण्यासाठी Google ला पाठवल्या जातात</translation>
@@ -4593,7 +4593,6 @@
 <translation id="4495002167047709180">या एक्स्टेंशनला <ph name="SITE" /> वर अनुमती द्यायची आहे का?</translation>
 <translation id="4495419450179050807">या पेजवर दर्शवू नका</translation>
 <translation id="4500055235123625757">तुम्ही <ph name="LINK_BEGIN" />काही वेबसाइट<ph name="LINK_END" /> वर प्ले केलेल्या व्हिडिओ किंवा ऑडिओबद्दल प्रश्नांची उत्तरे Gemini देऊ शकते.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> क्रॅश झाले आहे</translation>
 <translation id="4500647907053779331">&amp;निवडीचे <ph name="LANGUAGE" /> मध्ये भाषांतर करा</translation>
 <translation id="4501530680793980440">काढून टाकण्याची पुष्टी करा</translation>
 <translation id="4502423230170890588">या डिव्हाइसवरून काढून टाका</translation>
@@ -5465,6 +5464,7 @@
 <translation id="5155299520372681119">फाइल अपलोड करणे एक्स्पायर झाले आणि ते काढून टाकण्यात आले आहे.</translation>
 <translation id="5156638757840305347">तो दिसतो किंवा हलतो तेव्हा कर्सर हायलाइट केला जातो</translation>
 <translation id="5157250307065481244">साइटचे तपशील पहा</translation>
+<translation id="5157258206078001821">टॅब कोलॅप्स करा (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">Crostini सेट करा</translation>
 <translation id="5159236862360390997">सूचनांसह ट्यूटोरियल बबलची सिरीझ प्रदर्शित केली जाईल.
           बबलवर फोकस करण्यासाठी <ph name="ACCELERATOR" /> दाबा, त्यानंतर तो ज्या घटकाकडे निर्देश करत आहे त्यावर फोकस करण्याकरिता ते पुन्हा दाबा.</translation>
@@ -5483,7 +5483,6 @@
 <translation id="5173668317844998239">तुमच्या सिक्युरिटी कीमध्ये सेव्ह केलेली फिंगरप्रिंट जोडा आणि हटवा</translation>
 <translation id="5174169235862638850">पासवर्ड क्लिपबोर्डवर कॉपी केला आहे</translation>
 <translation id="517488401359338823">सुरक्षा डिव्हाइस अनलॉक करा</translation>
-<translation id="5176671554021050278">पेजवरील विशिष्ट इमेज किंवा मजकुराबद्दल अधिक जाणून घेण्यासाठी Google Lens वापरा.</translation>
 <translation id="5177479852722101802">कॅमेरा ब्लॉक करणे आणि मायक्रोफोन ॲक्सेस करणे सुरू ठेवा</translation>
 <translation id="5178667623289523808">मागील शोधा</translation>
 <translation id="5179428098696668914">AI प्लेबॅक बंद करा</translation>
@@ -6686,6 +6685,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6136637346277431354">टॅब जोडा आणि आणखी बरेच काही</translation>
 <translation id="6140948187512243695">तपशील दर्शवा</translation>
 <translation id="6141988275892716286">डाउनलोड करण्याचे निश्चित करा</translation>
+<translation id="6142784636114866877">टॅबचा विस्तार करा (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">मदत मिळवा</translation>
 <translation id="6143366292569327983">ज्यातून भाषांतर करायचे आहे ती पेज भाषा निवडा</translation>
 <translation id="6144938890088808325">Chromebooks सुधारण्यात आम्हाला मदत करा</translation>
@@ -10007,6 +10007,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8692107307702113268">पासवर्डमध्ये १००० पेक्षा जास्त वर्ण आहेत</translation>
 <translation id="8693862390730570097">"मला लिहिण्यात मदत करा" ला अपोआप उघडण्याची अनुमती देऊ नका</translation>
 <translation id="8694596275649352090">स्लीप मोडमध्ये किंवा लिड बंद केलेली असताना लॉक करा</translation>
+<translation id="8695214265159551349">टॅब कोलॅप्स करा (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">&amp;स्थान उघडा...</translation>
 <translation id="869884720829132584">ॲप्लिकेशन मेनू</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>

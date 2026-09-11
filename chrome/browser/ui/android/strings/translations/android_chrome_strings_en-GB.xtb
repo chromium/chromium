@@ -1517,7 +1517,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome removed these permissions because you haven't visited recently</translation>
 <translation id="6923291640965724312">Immersive format</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tabs}}</translation>
-<translation id="6929224077895306814">All security codes saved on your device and in your Google Account will be deleted</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, selected pinned audible tab</translation>
 <translation id="6937524809504266803">Personalisation and linking</translation>
 <translation id="6937876069006524083">Nickname (optional)</translation>

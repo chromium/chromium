@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">‏دسترسی به هر یک از این دستگاه‌های USB</translation>
 <translation id="1038462104119736705">‏توصیه می‌شود حداقل <ph name="INSTALL_SIZE" /> فضا برای Linux داشته باشید. برای افزایش فضای آزاد، فایل‌ها را از دستگاه حذف کنید.</translation>
 <translation id="1038643060055067718">خطوط:</translation>
+<translation id="1039216421321079051">افزونه توسط افزونه دیگری غیرفعال شده است</translation>
 <translation id="1039337018183941703">فایل نامعتبر یا خراب است</translation>
 <translation id="1040761927998636252">نشانک بدون نام برای <ph name="URL" /></translation>
 <translation id="1041175011127912238">این صفحه پاسخ نمی‌دهد</translation>
@@ -2627,7 +2628,6 @@
 <translation id="3000461861112256445">صدای مونو</translation>
 <translation id="3001144475369593262">حساب‌های کودک</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{کلیدی سفارشی‌سازی نشده است}=1{یک کلید سفارشی‌سازی شده است}one{{COUNT} کلید سفارشی‌سازی شده است}other{{COUNT} کلید سفارشی‌سازی شده است}}</translation>
-<translation id="3002745665522516995">هر چیزی را در صفحه انتخاب کنید تا آن را جستجو کنید.</translation>
 <translation id="3002864108328203174">‏برگ زیرین Gemini در ارتفاع نیمه.</translation>
 <translation id="3003144360685731741">شبکه‌های برگزیده</translation>
 <translation id="3003253259757197230">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید و همچنین اطلاعات بیشتری درباره صفحه‌ای که بازدید می‌کنید به شما نشان داده می‌شود</translation>
@@ -3476,6 +3476,7 @@
 <translation id="3641456520301071208">اجازه داشتن سایت‌ها برای خواستن مکان شما</translation>
 <translation id="3642070413432681490">مکان‌نمای دایره‌ای</translation>
 <translation id="3643962751030964445">این دستگاه را <ph name="DEVICE_MANAGER" /> مدیریت می‌کند. <ph name="DEVICE_MANAGER" /> برای حساب <ph name="USER_EMAIL_ADDRESS" /> به نمایه جدیدی نیاز دارد</translation>
+<translation id="3644128856494356630">‏حافظه CppGC</translation>
 <translation id="3645372836428131288">انگشتتان را کمی حرکت دهید تا بخش دیگری از اثرانگشت ثبت شود.</translation>
 <translation id="3645951915068244649">گروه زبانه‌ای قبلاً با این پوشه نشانک ایجاد شده است. می‌خواهید گروه زبانه جدیدی ایجاد کنید یا گروه موجود را جایگزین کنید؟</translation>
 <translation id="3646789916214779970">بازنشانی به زمینه پیش‌فرض</translation>
@@ -4248,6 +4249,7 @@
 <translation id="4226303886821889519">نسخه به‌روزرسان: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{این افزونه مجاز نیست}one{برخی افزونه‌ها مجاز نیستند}other{برخی افزونه‌ها مجاز نیستند}}</translation>
 <translation id="4229538146709970028">لطفاً قفل <ph name="TOKEN_NAME" /> را باز کنید تا بتوانید با گواهی خود در <ph name="HOST_NAME" /> اصالت‌سنجی کنید.</translation>
+<translation id="4230659518013393045">‏عنوان صفحه، نشانی وب و محتوای زبانه فعلی شما برای ارائه پاسخ‌های مربوط‌تر با Google هم‌رسانی می‌شود. می‌توانید درحین مرور، زبانه‌ها را اضافه کنید یا بردارید.</translation>
 <translation id="4232375817808480934">‏پیکربندی Kerberos</translation>
 <translation id="4232376164796433044">گذرواژه‌ها و تکمیل خودکار</translation>
 <translation id="4233739489690259993">‏Chromebook شما دیگر به‌روزرسانی‌های امنیتی و نرم‌افزاری را دریافت نمی‌کند. برای دریافت آخرین نسخه امنیتی و ویژگی‌های جدید، دستگاهتان را ارتقا دهید. شرایط پیشنهاد اعمال می‌شود.</translation>
@@ -4591,7 +4593,6 @@
 <translation id="4495002167047709180">این افزونه در <ph name="SITE" /> مجاز شود؟</translation>
 <translation id="4495419450179050807">در این صفحه نشان داده نشود</translation>
 <translation id="4500055235123625757">‏‫Gemini می‌تواند به سؤالات مربوط به ویدیو یا صدایی که در <ph name="LINK_BEGIN" />برخی‌از وب‌سایت‌ها<ph name="LINK_END" /> پخش کرده‌اید پاسخ دهد.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> خراب شده است</translation>
 <translation id="4500647907053779331">ترجمه ناحیه انتخاب‌شده به <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">تأیید حذف</translation>
 <translation id="4502423230170890588">حذف از این دستگاه</translation>
@@ -5116,6 +5117,7 @@
 <translation id="488785315393301722">نمایش جزئیات</translation>
 <translation id="488862352499217187">ایجاد پوشه جدید</translation>
 <translation id="4888715715847020167">رفتن به «تنظیمات»</translation>
+<translation id="4888899258150891194">‏حافظه CppGC</translation>
 <translation id="4890292359366636311">به‌طور خودکار وارد تصویردرتصویر شوید تا بتوانید از آن در بالای دیگر زبانه‌ها و پنجره‌ها استفاده کنید.</translation>
 <translation id="4890399733764921729">اتصال برقرار نشد. توسط شرکت مخابرات سیار دیگری قفل شده است.</translation>
 <translation id="4890585766056792498">از خودتان دربرابر سایت‌های خطرناک محافظت کنید</translation>
@@ -5480,7 +5482,6 @@
 <translation id="5173668317844998239">اثرانگشت به کلید امنیتی اضافه کنید یا اثرهای انگشت ذخیره‌شده در آن را حذف کنید</translation>
 <translation id="5174169235862638850">گذرواژه در بریده‌دان کپی شد</translation>
 <translation id="517488401359338823">باز کردن قفل دستگاه امنیتی</translation>
-<translation id="5176671554021050278">‏از لنز Google برای یادگیری بیشتر درباره تصاویر یا متن‌های خاص در یک صفحه استفاده کنید.</translation>
 <translation id="5177479852722101802">ادامه مسدود کردن دسترسی به دوربین و میکروفن</translation>
 <translation id="5178667623289523808">یافتن قبلی</translation>
 <translation id="5179428098696668914">خاموش کردن «بازپخش هوشواره‌ای»</translation>
@@ -5803,6 +5804,7 @@
 <translation id="5436510242972373446">جستجوی <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">عرض پنجره <ph name="WINDOW_SIDE" /> اکنون <ph name="WINDOW_SIZE_PERCENT" /> است، عرض قاب <ph name="PANE_SIDE" /> اکنون <ph name="PANE_SIZE_PERCENT" /> است.</translation>
 <translation id="5438060324827306856">یافتن افزونه‌ها</translation>
+<translation id="5440240650630588012">‏برای کمک به کانونی کردن، خط یا پنجره خواندن اعمال کنید. کلیدهای ‎⌥L را فشار دهید یا به «تنظیمات» بروید.</translation>
 <translation id="5440425659852470030">بستن پانل کناری</translation>
 <translation id="544083962418256601">ایجاد میان‌برها...</translation>
 <translation id="5441133529460183413">‏«برنامه وب» از مرورگر Chrome نصب شد</translation>
@@ -5989,6 +5991,7 @@
 <translation id="5576472948015790634">‏اکنون می‌توانید گروه‌های زبانه و گپ‌های Gemini را در یک‌جا مدیریت کنید. هرزمان بخواهید می‌توانید سنجاق این بردارید.</translation>
 <translation id="5578059481725149024">ورود به سیستم خودکار</translation>
 <translation id="5578387000057347457">برای ایجاد تصویر، پیام‌واره‌ای سفارشی وارد کنید یا نوشتار را برجسته کنید</translation>
+<translation id="557893471177655572">امتحان کردن کانونی کردن خط</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{‏‫۱ مورد فقط در این دستگاه ذخیره شده است. برای استفاده از آن در سایر دستگاه‌هایتان، <ph name="BEGIN_LINK" />آن را در «حساب Google» خود ذخیره کنید<ph name="END_LINK" />.}one{‏‫{ITEM_COUNT} مورد فقط در این دستگاه ذخیره شده است. برای استفاده از آن در سایر دستگاه‌هایتان، <ph name="BEGIN_LINK" />آن را در «حساب Google» خود ذخیره کنید<ph name="END_LINK" />.}other{‏‫{ITEM_COUNT} مورد فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، <ph name="BEGIN_LINK" />آن‌ها را در «حساب Google» خود ذخیره کنید<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">برداشتن <ph name="SITE" /> از فهرست <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">نمای دونیمه</translation>
@@ -10007,6 +10010,7 @@
 <translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8699296325072357994">‏محتوای صفحه‌های گذرواژه و اطلاعات مرتبط به Google ارسال می‌شود و افرادی آن‌ها را بازبینی می‌کنند. گذرواژه شما رمزگذاری شده است و برای هیچ‌کس قابل‌مشاهده نیست. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">راه‌انداز + پس‌بَر</translation>
+<translation id="8701058912406466818">‏برای کمک به کانونی کردن، خط یا پنجره خواندن اعمال کنید. کلیدهای Alt+L را فشار دهید یا به «تنظیمات» بروید.</translation>
 <translation id="8702278591052316269">منویی که حاوی گروه‌های زبانه ذخیره‌شده پنهان است</translation>
 <translation id="8703346390800944767">رد شدن از آگهی</translation>
 <translation id="8703372953981978786">این پیوند کار نمی‌کند</translation>
@@ -10769,6 +10773,7 @@
 <translation id="983192555821071799">بستن همه زبانه‌ها</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - دوربین و میکروفون درحال ضبط هستند</translation>
 <translation id="984705303330760860">افزودن زبان‌های غلط‌گیر املایی</translation>
+<translation id="986994187171579118">افزونه توسط <ph name="EXTENSION_NAME" /> غیرفعال شده است</translation>
 <translation id="987264212798334818">عمومی</translation>
 <translation id="987574372967138078">‫<ph name="WEBSITE_ORIGIN" /> می‌خواهد اطلاعات را از دستگاه همراهتان دریافت کند</translation>
 <translation id="988320949174893488">گیر کردن اتفاقی</translation>

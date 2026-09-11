@@ -12397,11 +12397,6 @@ Dit is handig als de beheerder weet dat de gebruikers van het apparaat een funct
 <translation id="8865404058177794289">De standaardinstelling gebruiken voor controle van het RSA-sleutelgebruik</translation>
 <translation id="8866430022832109569">Rapportage van app-voorraad</translation>
 <translation id="886645881209114007">Gebruikers toestaan een <ph name="PLUGIN_VM_NAME" /> te gebruiken op <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="8867894831390233044">Bepaalt of gebruikers foutopsporing op afstand mogen toevoegen.
-
-      Als dit beleid aanstaat of niet is ingesteld, kunnen gebruikers foutopsporing op afstand gebruiken door de opdrachtregelschakelaars --remote-debugging-port en --remote-debugging-pipe op te geven.
-
-      Als dit beleid uitstaat, mogen gebruikers geen foutopsporing op afstand gebruiken.</translation>
 <translation id="8870995142109792885">Plug-inzoeker aanzetten</translation>
 <translation id="8871974300055371298">Instellingen voor content</translation>
 <translation id="8872029059067980702">Het Gemini-introductiescherm niet tonen tijdens het inloggen</translation>

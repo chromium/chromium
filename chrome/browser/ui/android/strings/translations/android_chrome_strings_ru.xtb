@@ -664,6 +664,7 @@
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" />, <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="3662363748131724714">Выйти из режима виртуальной реальности</translation>
+<translation id="3662595332590803433">Всегда открывать спец. вкладки в Chrome</translation>
 <translation id="3674208116086565128">Открыть главную страницу приложения Google</translation>
 <translation id="368329460027487650">Выполнен выход. Открывает окно с вариантами входа.</translation>
 <translation id="3684540848053703310">Нижний экран с информацией о ценах закрыт</translation>
@@ -1517,7 +1518,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome отозвал эти разрешения у сайта, так как вы давно его не посещали</translation>
 <translation id="6923291640965724312">Формат видео</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 вкладка}one{<ph name="NUMBER_OF_TABS" /> вкладка}few{<ph name="NUMBER_OF_TABS" /> вкладки}many{<ph name="NUMBER_OF_TABS" /> вкладок}other{<ph name="NUMBER_OF_TABS" /> вкладки}}</translation>
-<translation id="6929224077895306814">Все защитные коды, сохраненные на вашем устройстве и в аккаунте Google, будут удалены.</translation>
 <translation id="6933180670536678127">Выбранная и закрепленная вкладка "<ph name="TAB_TITLE" />" с включенным звуком</translation>
 <translation id="6937524809504266803">Персонализация и связывание</translation>
 <translation id="6937876069006524083">Название (необязательно)</translation>
@@ -1628,6 +1628,7 @@
 <translation id="7335766481146072567">Нажмите "Продолжить".</translation>
 <translation id="7336259382292148213">С уведомлениями все в порядке</translation>
 <translation id="7339898014177206373">Новое окно</translation>
+<translation id="7349983576451251297">Открывать веб-страницы в Chrome, а не в специальных вкладках</translation>
 <translation id="7352339641508007922">Перетащите, чтобы сделать длинный скриншот.</translation>
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Поделиться 1 выбранным объектом}one{Поделиться # выбранным объектом}few{Поделиться # выбранными объектами}many{Поделиться # выбранными объектами}other{Поделиться # выбранного объекта}}</translation>
@@ -1718,6 +1719,7 @@
 <translation id="7690596512217303514">Не удалось запустить Chrome. Чтобы устранить неполадку, установите последнее обновление браузера из магазина приложений.</translation>
 <translation id="7692761875510935111">Открыть в браузере. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
 <translation id="7695270712963178084">Рекомендации Chrome</translation>
+<translation id="7695610746377249436">Сайты, в том числе Google, сами определяют, как реагировать на этот запрос</translation>
 <translation id="7697383401610880082">Маркер перемещения</translation>
 <translation id="7698359219371678927">Написать письмо в приложении "<ph name="APP_NAME" />"</translation>
 <translation id="7702420606070050505">Нижний экран недавних действий открыт полностью</translation>

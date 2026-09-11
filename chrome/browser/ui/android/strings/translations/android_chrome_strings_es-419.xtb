@@ -1517,7 +1517,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome quitó estos permisos porque no visitaste el sitio recientemente</translation>
 <translation id="6923291640965724312">Formato envolvente</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestaña}other{<ph name="NUMBER_OF_TABS" /> pestañas}}</translation>
-<translation id="6929224077895306814">Se borrarán todos los códigos de seguridad guardados en tu dispositivo y en tu Cuenta de Google</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, pestaña con audio fijada y seleccionada</translation>
 <translation id="6937524809504266803">Personalización y vinculación</translation>
 <translation id="6937876069006524083">Sobrenombre (opcional)</translation>

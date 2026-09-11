@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS Client</translation>
 <translation id="1508263560970797965">Нууцлалтай горимд үргэлжлүүлэх</translation>
 <translation id="1509486075633541495">Веб сайтад нэвтрэх</translation>
+<translation id="1509922846321012406">Нууцлал, аюулгүй байдлаа сайжруулах бусад аргатай танилцах</translation>
 <translation id="1513858653616922153">Нууц үг устгах</translation>
 <translation id="1517166097004694782">"Энэ табаар үргэлжлүүлэх"-ийг нуух</translation>
 <translation id="1520027731907768768">Мөшгөдөг бүтээгдэхүүнүүдийнхээ үнэ буурсан талаарх дохиог хүлээн авна уу.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Стандарт веб хөтөч</translation>
 <translation id="2893791155497534382">Нууц үг болон бусад үйл ажиллагааг удирдлагын тохиргооноос нь устгах боломжтой</translation>
 <translation id="2894757982205307093">Бүлэг доторх шинэ таб</translation>
+<translation id="2897858638449756400">Хайх бусад аргыг судлах</translation>
 <translation id="2902312830803030883">Бусад үйлдэл</translation>
 <translation id="2904788871580817212">Таны нээлттэй таб дээрх үнийн бууралт, <ph name="PREVIOUS_PRICE" />-с <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Танд аюулгүй байдлыг тань эрсдэлд оруулж болох дахин ашигласан <ph name="NUMBER_OF_PASSWORDS" /> нууц үг танд байна.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Энэ нь уг төхөөрөмж дээр хадгалсан хаягийг устгана. Энэ нь мөн таны <ph name="USER_EMAIL" /> Google Бүртгэлд хадгалсан хаягийг устгана.</translation>
 <translation id="5056446788882570708">Асуудлыг <ph name="TIME" />-д олсон</translation>
 <translation id="5056587122125565772">Зураг үүсгэх</translation>
+<translation id="5058813911021873087">Ажлаа цэгцэлж, цаг хэмнэх бусад аргатай танилцах</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Үзэлтээ түвшин ахиулаарай</translation>
 <translation id="5062321486222145940">Google Drive суулгах</translation>
@@ -1881,6 +1884,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6987201788018524855">Алдсан тустай онцлогуудаа судлаарай</translation>
 <translation id="6989636517316575338">Дурын хуудасны талаар асуугаарай</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Бүх даалгавар</translation>
 <translation id="6998251471716094661">Бүтээгдэхүүнүүдийн үнийг хянаж, аливаа сайт дээр үнэ буурахад дохио аваарай</translation>
 <translation id="7004032350256606903">Танай байгууллага танаас нууцлалтайгаар үзэхийг шаардаж байна.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>

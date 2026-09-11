@@ -34,7 +34,7 @@
 <translation id="1189258430971676908">Khu vực thực hành: Danh sách thả xuống</translation>
 <translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{nội dung con cấp {$$COUNT}}}</translation>
 <translation id="1195238899008218998">Lời bạt</translation>
-<translation id="1197088940767939838">Màu cam</translation>
+<translation id="1197088940767939838">Cam</translation>
 <translation id="1198865190323699001">Cử chỉ chạm</translation>
 <translation id="1202112913213080585">huỷ</translation>
 <translation id="1206619573307042055">bảng chữ chạy</translation>
@@ -693,7 +693,7 @@
 <translation id="5368000168321181111">Âm báo đang tắt</translation>
 <translation id="5368505757342402527">Đã tải <ph name="FILE_NAME" /> được <ph name="PROGRESS" />%. Còn khoảng <ph name="TIME" /> <ph name="UNITS" /> nữa.</translation>
 <translation id="5381388086899614489">nhấp và giữ</translation>
-<translation id="5400836586163650660">Màu xám</translation>
+<translation id="5400836586163650660">Xám</translation>
 <translation id="5402367795255837559">Chữ nổi</translation>
 <translation id="5402791055281059602">Thông báo theo thể thức</translation>
 <translation id="5406272775687194041">Bắt đầu thao tác kéo và thả</translation>
@@ -1240,5 +1240,5 @@
 <translation id="966588271015727539">Chọn màn hình chữ nổi Bluetooth</translation>
 <translation id="973955474346881951">Bật/tắt chế độ phím dính</translation>
 <translation id="985654871861528815">Chuyển xuống một dòng</translation>
-<translation id="992256792861109788">Màu hồng</translation>
+<translation id="992256792861109788">Hồng</translation>
 </translationbundle>

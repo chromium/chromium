@@ -664,6 +664,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">Išeiti iš įtraukiančiojo atkūrimo režimo</translation>
+<translation id="3662595332590803433">Visada atidaryti tinkintus skirtukus naršyklėje „Chrome“</translation>
 <translation id="3674208116086565128">Eiti į „Google“ programos pagrindinį skirtuką</translation>
 <translation id="368329460027487650">Atsijungta. Atidaromos prisijungimo parinktys.</translation>
 <translation id="3684540848053703310">Kainų įžvalgų apatinis lapas uždarytas</translation>
@@ -1517,7 +1518,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> „Chrome“ pašalino šiuos leidimus, nes pastaruoju metu nesilankėte</translation>
 <translation id="6923291640965724312">Įtraukiantysis formatas</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{Vienas skirtukas}one{<ph name="NUMBER_OF_TABS" /> skirtukas}few{<ph name="NUMBER_OF_TABS" /> skirtukai}many{<ph name="NUMBER_OF_TABS" /> skirtuko}other{<ph name="NUMBER_OF_TABS" /> skirtukų}}</translation>
-<translation id="6929224077895306814">Visi įrenginyje ir „Google“ paskyroje išsaugoti saugos kodai bus ištrinti</translation>
 <translation id="6933180670536678127">„<ph name="TAB_TITLE" />“, pasirinktas prisegtas skirtukas su garsu</translation>
 <translation id="6937524809504266803">Suasmeninimas ir susiejimas</translation>
 <translation id="6937876069006524083">Slapyvardis (nebūtinas)</translation>
@@ -1628,6 +1628,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7335766481146072567">Paspauskite „Tęsti“</translation>
 <translation id="7336259382292148213">Pranešimai atrodo gerai</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
+<translation id="7349983576451251297">Atidarykite tinklalapius naršyklėje „Chrome“, o ne tinkintuose skirtukuose</translation>
 <translation id="7352339641508007922">Vilkite, kad užfiksuotumėte ilgą ekrano kopiją</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Bendrinti 1 pasirinktą elementą}one{Bendrinti # pasirinktą elementą}few{Bendrinti # pasirinktus elementus}many{Bendrinti # pasirinkto elemento}other{Bendrinti # pasirinktų elementų}}</translation>
@@ -1718,6 +1719,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7690596512217303514">Įrenginyje nepavyko atidaryti „Chrome“. Norėdami išspręsti problemą, iš programų parduotuvės atsisiųskite naujausią „Chrome“ naujinį.</translation>
 <translation id="7692761875510935111">Greitai atidarykite naršyklėje. Jei norite redaguoti šį spartųjį klavišą, palieskite ir palaikykite.</translation>
 <translation id="7695270712963178084">„Chrome“ radiniai</translation>
+<translation id="7695610746377249436">Svetainės, įskaitant „Google“, savo nuožiūra atsako į šią užklausą.</translation>
 <translation id="7697383401610880082">Vilkimo rankenėlė</translation>
 <translation id="7698359219371678927">Kurti el. laišką naudojant „<ph name="APP_NAME" />“</translation>
 <translation id="7702420606070050505">Naujausios veiklos apatinis lapas atidarytas per visą aukštį</translation>

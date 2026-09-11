@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Гінді</translation>
 <translation id="7665680517722058469">Введіть інший пошуковий запит</translation>
 <translation id="7689532716264131859">Об’єкти (<ph name="NUMBER_OF_ITEMS" />) переміщено в кошик</translation>
-<translation id="7693909743393669729">Якщо відформатувати диск, усі наявні на ньому дані та розділи (зокрема, невидимі) буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7695430100978772476">Не вдалося відформатувати диск "<ph name="DRIVE_NAME" />"</translation>
 <translation id="76959938259365003">Не вдалось очистити кошик.</translation>
 <translation id="7705251383879779343">Файл "<ph name="FILE_NAME" />" скопійовано.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">Workman (США, міжнародна)</translation>
 <translation id="7903984238293908205">Катакана</translation>
 <translation id="7908378463497120834">На жаль, підключити принаймні один розділ пристрою зовнішньої пам’яті неможливо.</translation>
-<translation id="7908793776359722643">Якщо відформатувати розділ, усі збережені в ньому дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Файли з папки "Мій диск" синхронізуються з Chromebook автоматично, щоб ви могли відкривати їх без інтернет-з’єднання.</translation>
 <translation id="7925247922861151263">Помилка перевірки AAA</translation>

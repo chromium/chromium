@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">힌디어</translation>
 <translation id="7665680517722058469">다른 검색어를 사용해 보세요.</translation>
 <translation id="7689532716264131859">항목 <ph name="NUMBER_OF_ITEMS" />개를 휴지통으로 이동함</translation>
-<translation id="7693909743393669729">드라이브를 포맷하면 저장된 모든 데이터가 삭제되고 숨김 상태에 있는 파티션을 포함 기존 파티션이 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" />을(를) 포맷할 수 없습니다.</translation>
 <translation id="76959938259365003">휴지통을 비울 수 없습니다.</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> 항목을 복사했습니다.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">영어(미국) 워크맨 국제</translation>
 <translation id="7903984238293908205">가타카나</translation>
 <translation id="7908378463497120834">죄송합니다. 외부 저장장치에 있는 하나 이상의 파티션을 마운트하지 못했습니다.</translation>
-<translation id="7908793776359722643">파티션을 포맷하면 파티션에 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">내 드라이브에 있는 파일이 Chromebook과 자동으로 동기화되므로 인터넷에 연결되지 않은 상태에서도 파일에 액세스할 수 있습니다.</translation>
 <translation id="7925247922861151263">AAA 확인 실패</translation>

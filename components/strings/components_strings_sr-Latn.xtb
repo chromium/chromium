@@ -1095,6 +1095,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2859806420264540918">Ovaj sajt prikazuje oglase koji ometaju aktivnosti ili obmanjujuće oglase.</translation>
 <translation id="2873317327342476681">Igra sa dinosaurusom, dodirnite dinosaurusa ili pritisnite taster za razmak da biste igrali</translation>
 <translation id="287387905105155974">Oblačić za pomoć</translation>
+<translation id="2875109558992200904">Kada Chrome obeleži bezbednosne događaje, relevantni podaci o događajima se šalju administratoru. To može da obuhvata URL-ove i naslove stranica koje posećujete u Chrome-u, URL-ove stranica sa kojih ste kopirali podatke, nazive ili metapodatke fajlova, IP adrese, otkazivanja pregledača ili kartica i korisničko ime koje koristite za prijavljivanje u aplikacije na vebu, na uređaj i u Chrome.</translation>
 <translation id="2876489322757410363">Napustićete režim bez arhiviranja da biste platili u spoljnoj aplikaciji. Želite li da nastavite?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali Bezbednim pregledanjem i drugim sadržajem u podešavanjima Chrome-a</translation>
 <translation id="2878197950673342043">Presavijanje u obliku postera</translation>
@@ -1135,7 +1136,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2931453528659195355">Upravljaj informacijama o kupovini</translation>
 <translation id="2933624813161016821">Reljefna folija</translation>
 <translation id="2935726091208500473">deljenje kartica</translation>
-<translation id="2936698630976431647">Izaberite polje za promotivni kôd da biste automatski popunjavali ponude iz Google novčanika</translation>
 <translation id="293796669683825859">Komentari</translation>
 <translation id="2938225289965773019">otvori linkove za <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Da bi se prikazao kursor, promenite aplikaciju, ponovo učitajte stranicu ili se vratite</translation>
@@ -1596,6 +1596,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3712004750972384495">Čuva se snimak ekrana</translation>
 <translation id="3712006010833051684">Koverta br. 10</translation>
 <translation id="3712624925041724820">Nema više licenci</translation>
+<translation id="371302509916403935">Podvučeno</translation>
 <translation id="3713277100229669269">Sada možete da vidite prednosti kartica pre plaćanja</translation>
 <translation id="3714633008798122362">veb kalendar</translation>
 <translation id="3714780639079136834">da uključite podatke za mobilne uređaje ili WiFi</translation>
@@ -1943,6 +1944,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4265635050210404830">Kartice lojalnosti</translation>
 <translation id="4265872034478892965">Dozvoljava administrator</translation>
 <translation id="4267590181863312380">Da biste preuzeli istoriju sa drugih uređaja, prijavite se i sinhronizujte istoriju. Moći ćete da pristupate i svojim lozinkama i drugom sadržaju na svim uređajima. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
+<translation id="4267837382000002014">URL-ovi i naslovi stranica koje posećujete šalju se u Google Cloud ili trećim stranama na analizu i mogu da budu vidljivi administratoru. Na primer, možda ćemo ih skenirati da bismo otkrili nebezbedne veb-sajtove ili filtrirali veb-sajtove na osnovu pravila koja je podesio administrator.</translation>
 <translation id="4268025649754414643">Šifrovanje ključa</translation>
 <translation id="4269599248168651462">Sertifikat servera se izdaje sa nazivom koji nije jedinstven.</translation>
 <translation id="4270541775497538019">6. pregrada za slaganje</translation>
@@ -4212,7 +4214,6 @@ Dodatni detalji:
 <translation id="815036624016370447">Informacije sa Google naloga <ph name="ACCOUNT" /> mogu da vam pomognu da brže popunjavate obrasce u Chrome-u</translation>
 <translation id="8150722005171944719">Datoteka na adresi <ph name="URL" /> ne može da se čita. Možda je uklonjena ili premeštena ili dozvole za datoteke sprečavaju pristup.</translation>
 <translation id="8151185429379586178">Alatke za programere</translation>
-<translation id="8152194419479742504">Unesite @@ u bilo koji obrazac da biste pronašli i popunili informacije bez prelaska na drugu karticu</translation>
 <translation id="8153865548451212769">{0,plural, =1{Smernice administratora ne preporučuju preuzimanje ovog fajla na <ph name="DESTINATION_NAME" />}one{Smernice administratora ne preporučuju preuzimanje ovih fajlova na <ph name="DESTINATION_NAME" />}few{Smernice administratora ne preporučuju preuzimanje ovih fajlova na <ph name="DESTINATION_NAME" />}other{Smernice administratora ne preporučuju preuzimanje ovih fajlova na <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Poslednje otvorene kartice</translation>
 <translation id="815805690561372740">Chrome ima ugrađene bezbednosne funkcije koje vas štite tokom pregledanja – kao što je Google bezbedno pregledanje, koje je <ph name="BEGIN_LINK" />nedavno pronašlo malver<ph name="END_LINK" /> na sajtu koji ste probali da posetite.</translation>
@@ -4276,6 +4277,7 @@ Dodatni detalji:
 <translation id="8269242089528251720">Odvojeni dokumenti/sređene kopije</translation>
 <translation id="8269703227894255363">{0,plural, =1{Otvaranje fajla je blokirano}one{Otvaranje <ph name="FILE_COUNT" /> fajla je blokirano}few{Otvaranje <ph name="FILE_COUNT" /> fajla je blokirano}other{Otvaranje <ph name="FILE_COUNT" /> fajlova je blokirano}}</translation>
 <translation id="8270242299912238708">PDF dokumenti</translation>
+<translation id="8270320981823560179">Disk</translation>
 <translation id="8277900682056760511">Stranica obrađivača plaćanja je otvorena</translation>
 <translation id="827820107214076967">Osveži evidencije</translation>
 <translation id="8279611986089885641">Chrome obaveštenja moraju da budu uključena. Možete da ih uključite u odeljku <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

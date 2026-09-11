@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7665680517722058469">Versuch es mit einer anderen Suchanfrage</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> Elemente in Papierkorb verschoben</translation>
-<translation id="7693909743393669729">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht und alle vorhandenen Partitionen entfernt. Dies schließt ggf. auch Partitionen ein, die nicht sichtbar sind. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="7695430100978772476">"<ph name="DRIVE_NAME" />" konnte nicht formatiert werden</translation>
 <translation id="76959938259365003">Der Papierkorb konnte nicht geleert werden.</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> kopiert.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">USA – Workman international</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Mindestens eine Partition auf deinem externen Speichergerät konnte nicht bereitgestellt werden.</translation>
-<translation id="7908793776359722643">Durch die Formatierung einer Partition werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Die Dateien in „Meine Ablage“ werden automatisch mit deinem Chromebook synchronisiert, sodass du auch ohne Internetverbindung darauf zugreifen kannst.</translation>
 <translation id="7925247922861151263">AAA-Prüfung fehlgeschlagen</translation>

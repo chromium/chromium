@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">Acceder a cualquiera de estos dispositivos USB</translation>
 <translation id="1038462104119736705">Se recomienda tener al menos <ph name="INSTALL_SIZE" /> de espacio para Linux. Si necesitas liberar espacio, borra archivos del dispositivo.</translation>
 <translation id="1038643060055067718">Líneas:</translation>
+<translation id="1039216421321079051">Extensión inhabilitada por otra extensión</translation>
 <translation id="1039337018183941703">Archivo no válido o dañado</translation>
 <translation id="1040761927998636252">Favorito sin nombre para <ph name="URL" /></translation>
 <translation id="1041175011127912238">Esta página no responde</translation>
@@ -2615,7 +2616,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001144475369593262">Cuentas de niños</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{No hay teclas personalizadas}=1{1 tecla personalizada}other{{COUNT} teclas personalizadas}}</translation>
-<translation id="3002745665522516995">Selecciona cualquier elemento de la página para realizar la búsqueda</translation>
 <translation id="3002864108328203174">Hoja inferior de Gemini a media altura.</translation>
 <translation id="3003144360685731741">Redes preferidas</translation>
 <translation id="3003253259757197230">Se enviarán a Google las URLs que visites para predecir los sitios que posiblemente vayas a visitar y mostrarte información adicional sobre la página que estés visitando</translation>
@@ -3464,6 +3464,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3641456520301071208">Los sitios pueden solicitar tu ubicación</translation>
 <translation id="3642070413432681490">Marcar con un círculo el cursor</translation>
 <translation id="3643962751030964445">Este dispositivo está administrado por <ph name="DEVICE_MANAGER" />; <ph name="DEVICE_MANAGER" /> solicita un nuevo perfil para la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="3644128856494356630">Memoria de CppGC</translation>
 <translation id="3645372836428131288">Mueve el dedo ligeramente para capturar otra parte de la huella dactilar.</translation>
 <translation id="3645951915068244649">Ya se creó un grupo de pestañas con esta carpeta de favoritos. ¿Quieres crear un grupo de pestañas nuevo o reemplazar el existente?</translation>
 <translation id="3646789916214779970">Restablecer el tema predeterminado</translation>
@@ -4236,6 +4237,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4226303886821889519">Versión del actualizador: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{No se permite esta extensión}other{No se permiten algunas extensiones}}</translation>
 <translation id="4229538146709970028">Desbloquea <ph name="TOKEN_NAME" /> para autenticarte en <ph name="HOST_NAME" /> con tu certificado.</translation>
+<translation id="4230659518013393045">El título de la página, la URL y el contenido de la pestaña actual se comparten con Google para brindarte respuestas más pertinentes. Puedes agregar o quitar pestañas mientras navegas.</translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
 <translation id="4232376164796433044">Contraseñas y Autocompletar</translation>
 <translation id="4233739489690259993">Tu Chromebook ya no recibe actualizaciones de seguridad ni de software. Cambia tu dispositivo por uno nuevo para obtener funciones nuevas y la seguridad más reciente. Se aplican las condiciones de la oferta.</translation>
@@ -4469,7 +4471,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4401912261345737180">Conéctate con un código para transmitir</translation>
 <translation id="4403012369005671154">Voz a texto</translation>
 <translation id="4403775189117163360">Elegir otra carpeta</translation>
-<translation id="440411460180511551">Si Chromium encuentra una de tus contraseñas en una violación de la seguridad de los datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
+<translation id="440411460180511551">Si Chromium encuentra una de tus contraseñas en una violación de seguridad de datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
 <translation id="4404843640767531781">Tu padre o madre bloquearon <ph name="APP_NAME" />. Si quieres usar esa app, pídeles permiso.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mover a…</translation>
@@ -4579,7 +4581,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4495002167047709180">¿Deseas permitir esta extensión en <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">No mostrar en esta página</translation>
 <translation id="4500055235123625757">Gemini puede responder preguntas sobre el video o el audio que reprodujiste en <ph name="LINK_BEGIN" />algunos sitios web<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> se bloqueó</translation>
 <translation id="4500647907053779331">Traducir selección a <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">Confirmar eliminación</translation>
 <translation id="4502423230170890588">Quitar de este dispositivo</translation>
@@ -5104,6 +5105,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="488785315393301722">Mostrar detalles</translation>
 <translation id="488862352499217187">Crear carpeta nueva</translation>
 <translation id="4888715715847020167">ve a Configuración</translation>
+<translation id="4888899258150891194">Memoria de CppGC</translation>
 <translation id="4890292359366636311">Ingresa a la función pantalla en pantalla automáticamente para que puedas usarla encima de otras pestañas y ventanas.</translation>
 <translation id="4890399733764921729">No se pudo establecer conexión. Otro proveedor de telefonía celular la bloqueó.</translation>
 <translation id="4890585766056792498">Obtén protección contra sitios peligrosos</translation>
@@ -5468,7 +5470,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5173668317844998239">Agrega huellas dactilares y borra las que están guardadas en tu llave de seguridad</translation>
 <translation id="5174169235862638850">Se copió la contraseña al portapapeles</translation>
 <translation id="517488401359338823">Desbloquear dispositivo de seguridad</translation>
-<translation id="5176671554021050278">Usa Google Lens para obtener más información sobre imágenes o texto específicos en una página.</translation>
 <translation id="5177479852722101802">Continuar el bloqueo del acceso a la cámara y al micrófono</translation>
 <translation id="5178667623289523808">Buscar anterior</translation>
 <translation id="5179428098696668914">Desactivar la reproducción de IA</translation>
@@ -5791,6 +5792,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5436510242972373446">Buscar <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">La ventana de la <ph name="WINDOW_SIDE" /> ahora tiene un ancho del <ph name="WINDOW_SIZE_PERCENT" /> y el panel de la <ph name="PANE_SIDE" /> ahora tiene un ancho del <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Extensiones y búsqueda</translation>
+<translation id="5440240650630588012">Aplica una línea o ventana de lectura para ayudar a enfocarte. Presiona ⌥L o ve a Configuración.</translation>
 <translation id="5440425659852470030">Cerrar el panel lateral</translation>
 <translation id="544083962418256601">Crear accesos directos...</translation>
 <translation id="5441133529460183413">Se instaló la aplicación web desde el navegador Chrome</translation>
@@ -5977,6 +5979,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5576472948015790634">Ahora puedes administrar tus grupos de pestañas y chats de Gemini en un solo lugar. Puedes dejar de fijar esto en cualquier momento.</translation>
 <translation id="5578059481725149024">Acceso automático</translation>
 <translation id="5578387000057347457">Ingresa una instrucción personalizada o destaca texto para crear una imagen</translation>
+<translation id="557893471177655572">Probar el enfoque de línea</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 elemento se guarda solo en este dispositivo. Para usarlo en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdalo en tu Cuenta de Google<ph name="END_LINK" />.}other{{ITEM_COUNT} elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdalos en tu Cuenta de Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Quitar <ph name="SITE" /> de la lista <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">Vista dividida</translation>
@@ -6617,7 +6620,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6099766472403716061">Permitir siempre que <ph name="HOST" /> controle y reprograme tus dispositivos MIDI</translation>
 <translation id="6100736666660498114">Menú Inicio</translation>
 <translation id="6100737823178787570">Aumenta el tamaño de la ventana para reanudar la tarea</translation>
-<translation id="6101170451607354234">Si Chrome encuentra una de tus contraseñas en una violación de la seguridad de los datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
+<translation id="6101170451607354234">Si Chrome encuentra una de tus contraseñas en una violación de seguridad de datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
 <translation id="6101226222197207147">Se agregó una aplicación nueva (<ph name="EXTENSION_NAME" />).</translation>
 <translation id="6102043788063419338">La "Protección avanzada" bloqueó este archivo.</translation>
 <translation id="6103681770816982672">Advertencia: vas a cambiar al canal de programadores</translation>
@@ -9993,6 +9996,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="869891660844655955">Fecha de vencimiento</translation>
 <translation id="8699296325072357994">El contenido de las páginas de contraseñas y la información relacionada se envían a Google y los revisan personas. Tu contraseña está encriptada y nadie puede verla. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">Selector + retroceso</translation>
+<translation id="8701058912406466818">Aplica una línea o ventana de lectura para ayudar a enfocarte. Presiona Alt + L o ve a Configuración.</translation>
 <translation id="8702278591052316269">El menú contiene grupos de pestañas que guardaste ocultos</translation>
 <translation id="8703346390800944767">Omitir anuncio</translation>
 <translation id="8703372953981978786">Este vínculo no funciona</translation>
@@ -10755,6 +10759,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - La cámara y el micrófono están grabando</translation>
 <translation id="984705303330760860">Agregar idiomas al corrector ortográfico</translation>
+<translation id="986994187171579118">Extensión inhabilitada por <ph name="EXTENSION_NAME" /></translation>
 <translation id="987264212798334818">General</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> quiere obtener información de tu dispositivo móvil</translation>
 <translation id="988320949174893488">Inestable por momentos</translation>

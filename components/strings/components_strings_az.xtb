@@ -1095,6 +1095,7 @@
 <translation id="2859806420264540918">Bu sayt inadçı və ya aldadıcı reklamlar göstərir.</translation>
 <translation id="2873317327342476681">Dinozavr oyunu, oynamaq üçün dinozavra toxunun və ya boşluq düyməsinə basın</translation>
 <translation id="287387905105155974">Yardım qabarcığı</translation>
+<translation id="2875109558992200904">Chrome tərəfindən təhlükəsizliklə bağlı hadisələr qeyd edildikdə hadisə haqqında uyğun data administratorunuza göndərilir. Buraya Chrome-da daxil olduğunuz səhifələrin URL-ləri və başlıqları, datanı kopiyaladığınız səhifələrin URL-ləri, fayl adları və ya metadata, IP ünvanları, brauzer və ya tab xətaları, habelə veb əsaslı tətbiqlərə, cihaza və Chrome-a daxil olmaq üçün istifadə etdiyiniz istifadəçi adı daxil ola bilər.</translation>
 <translation id="2876489322757410363">Xarici tətbiqlə ödəniş etmək üçün Anonim rejimdən çıxırsınız. Davam edilsin?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında Təhlükəsiz Baxış və daha çoxunu idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
 <translation id="2878197950673342043">Poster formasında qatlayın</translation>
@@ -1135,7 +1136,6 @@
 <translation id="2931453528659195355">Alış-veriş məlumatlarını idarə edin</translation>
 <translation id="2933624813161016821">Qabarıq folqa</translation>
 <translation id="2935726091208500473">tablarınızı paylaşmaq</translation>
-<translation id="2936698630976431647">Google Pulqabı təkliflərini avtomatik doldurmaq üçün promokod sahəsini seçin</translation>
 <translation id="293796669683825859">Şərhlər</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> linklərini açın</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Kursoru göstərmək üçün tətbiqləri dəyişin, səhifəni yenidən yükləyin və ya geri qayıdın</translation>
@@ -1592,6 +1592,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3712004750972384495">Ekran qeydi yadda saxlanılır</translation>
 <translation id="3712006010833051684">Zərf #10</translation>
 <translation id="3712624925041724820">Lisenziyalar bitib</translation>
+<translation id="371302509916403935">Altdan xətt</translation>
 <translation id="3713277100229669269">Ödəməzdən öncə kart imtiyazlarını görə bilərsiniz</translation>
 <translation id="3714633008798122362">veb təqvimi</translation>
 <translation id="3714780639079136834">Mobil data və ya Wi-Fi aktiv edilir</translation>
@@ -1939,6 +1940,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4265635050210404830">Loyallıq kartlarınız</translation>
 <translation id="4265872034478892965">Administrator tərəfindən icazə verildi</translation>
 <translation id="4267590181863312380">Digər cihazlarınızdakı tarixçələrə giriş əldə etmək üçün hesabınıza daxil olun və tarixçəni sinxronlaşdırın. Həmçinin bütün cihazlarınızda parollarınızı və daha çoxunu əldə edəcəksiniz. Ayarlarda sinxronlaşdırmanı istənilən vaxt dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
+<translation id="4267837382000002014">Daxil olduğunuz səhifələrin URL-ləri və başlıqları təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir və administratorunuza görünə bilər. Məsələn, administrator tərəfindən müəyyən edilmiş qaydalara əsasən təhlükəli saytları aşkar etmək və ya saytları filtrləmək üçün skan edilə bilər.</translation>
 <translation id="4268025649754414643">Kodlaşdırma Açarı</translation>
 <translation id="4269599248168651462">Server sertifikatı unikal olmayan ada təyin edilib.</translation>
 <translation id="4270541775497538019">Yığıcı 6</translation>
@@ -4208,7 +4210,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="815036624016370447">Google Hesabınızdakı (<ph name="ACCOUNT" />) məlumatlar Chrome-da formaları daha sürətli doldurmağa kömək edə bilər</translation>
 <translation id="8150722005171944719"><ph name="URL" /> linkində olan fayl oxunmur. O, silinmiş, köçürülmüş ola bilər və ya fayl icazələri girişin qarşısını alıb.</translation>
 <translation id="8151185429379586178">Developer alətləri</translation>
-<translation id="8152194419479742504">Tabları dəyişmədən məlumatları tapmaq və doldurmaq üçün istənilən formaya @@ yazın</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrator siyasəti bu faylı <ph name="DESTINATION_NAME" /> bölməsinə endirməyi tövsiyə etmir}other{Administrator siyasəti bu faylları <ph name="DESTINATION_NAME" /> bölməsinə endirməyi tövsiyə etmir}}</translation>
 <translation id="8155253549374198915">Son açıq tablar</translation>
 <translation id="815805690561372740">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olmağa cəhd etdiyiniz saytda <ph name="BEGIN_LINK" />bu yaxınlarda zərərli proqram tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır.</translation>
@@ -4272,6 +4273,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8269242089528251720">Ayrıca sənədlər/Sıralanmış nüsxələr</translation>
 <translation id="8269703227894255363">{0,plural, =1{Faylın açılması bloklandı}other{<ph name="FILE_COUNT" /> faylın açılması bloklandı}}</translation>
 <translation id="8270242299912238708">PDF sənədləri</translation>
+<translation id="8270320981823560179">Disk</translation>
 <translation id="8277900682056760511">Ödəniş səhifəsi açıqdır</translation>
 <translation id="827820107214076967">Qeydləri Yeniləyin</translation>
 <translation id="8279611986089885641">Chrome bildirişləri aktiv olmalıdır. Onları <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> bölməsində aktiv edə bilərsiniz.</translation>

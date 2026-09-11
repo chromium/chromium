@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS క్లయింట్</translation>
 <translation id="1508263560970797965">అజ్ఞాత మోడ్‌లో కొనసాగించండి</translation>
 <translation id="1509486075633541495">వెబ్‌సైట్‌కు సైన్ ఇన్ చేయండి</translation>
+<translation id="1509922846321012406">మీ గోప్యతను, భద్రతను పెంచుకోవడానికి మరికొన్ని మార్గాలను అన్వేషించండి</translation>
 <translation id="1513858653616922153">పాస్‌వర్డ్‌ను తొలగించండి</translation>
 <translation id="1517166097004694782">"ఈ ట్యాబ్‌తో కొనసాగించండి"ని దాచండి</translation>
 <translation id="1520027731907768768">మీరు ట్రాక్ చేసే ప్రోడక్ట్‌ల కోసం ధర తగ్గుదల అలర్ట్‌లను స్వీకరించండి.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">ఆటోమేటిక్ బ్రౌజర్</translation>
 <translation id="2893791155497534382">పాస్‌వర్డ్‌లను, ఇతర యాక్టివిటీని వాటి మేనేజ్‌మెంట్ సెట్టింగ్‌లలో తొలగించవచ్చు</translation>
 <translation id="2894757982205307093">గ్రూప్‌లో కొత్త ట్యాబ్</translation>
+<translation id="2897858638449756400">సెర్చ్ చేయడానికి మరికొన్ని మార్గాలను అన్వేషించండి</translation>
 <translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
 <translation id="2904788871580817212"><ph name="DOMAIN" />‌కు చెందిన <ph name="PRODUCT_NAME" /> ధర <ph name="PREVIOUS_PRICE" /> నుండి <ph name="PRICE" />‌కు తగ్గింది, ఆ ధర తెరిచిన మీ ట్యాబ్‌లో చూపబడింది</translation>
 <translation id="2905479111267140204">మీ సెక్యూరిటీని ప్రమాదంలో ఉంచే <ph name="NUMBER_OF_PASSWORDS" /> వేరే చోట వాడిన పాస్‌వర్డ్‌లు మీ వద్ద ఉన్నాయి.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">ఇది ఈ డివైజ్‌లో సేవ్ చేసిన అడ్రస్‌లను తొలగిస్తుంది. ఇది మీ Google ఖాతాకు చెందిన <ph name="USER_EMAIL" />‌ లో సేవ్ చేసిన అడ్రస్‌లను కూడా తొలగిస్తుంది.</translation>
 <translation id="5056446788882570708">సమస్యలు కనుగొనబడింది: <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">ఇమేజ్‌ను క్రియేట్ చేయండి</translation>
+<translation id="5058813911021873087">ఆర్గనైజ్ చేయడానికి, సమయాన్ని ఆదా చేయడానికి మరికొన్ని మార్గాలను అన్వేషించండి</translation>
 <translation id="5059136629401106827">సరే</translation>
 <translation id="5061202435354361813">మీ బ్రౌజింగ్‌ను మెరుగుపరుచుకోండి</translation>
 <translation id="5062321486222145940">ఇన్‌స్టాల్ Google Drive‌</translation>
@@ -1881,6 +1884,7 @@
 <translation id="6987201788018524855">మీరు మిస్ అయిన ఉపయోగకరమైన ఫీచర్‌లను అన్వేషించండి</translation>
 <translation id="6989636517316575338">ఏ పేజీ గురించి అయినా అడగండి</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">అన్ని టాస్క్‌లు</translation>
 <translation id="6998251471716094661">ప్రోడక్ట్‌లకు సంబంధించిన ధరలను ట్రాక్ చేయండి, ఏదైనా సైట్‌లో ధర తగ్గినప్పుడు అలర్ట్‌లను పొందండి</translation>
 <translation id="7004032350256606903">మీరు ప్రైవేట్‌గా బ్రౌజ్ చేయాల్సిందిగా మీ సంస్థ కోరుతోంది.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>

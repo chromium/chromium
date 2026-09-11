@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS 客户端</translation>
 <translation id="1508263560970797965">继续使用无痕模式</translation>
 <translation id="1509486075633541495">登录网站</translation>
+<translation id="1509922846321012406">探索更多方法，加强隐私保护与安全保障</translation>
 <translation id="1513858653616922153">删除密码</translation>
 <translation id="1517166097004694782">隐藏“继续使用此标签页”</translation>
 <translation id="1520027731907768768">接收所跟踪商品的降价提醒。</translation>
@@ -375,7 +376,7 @@
 <translation id="2139867232736819575">搜索您复制的文字</translation>
 <translation id="2147127444698817042">仅适用于 iPhone</translation>
 <translation id="2148326276832455306">对话内容会经过审核，并用于改进 Google AI。您可以<ph name="BEGIN_LINK" />管理活动记录<ph name="END_LINK" />，包括您的位置信息。<ph name="BEGIN_LINK" />详细了解相关选项<ph name="END_LINK" />。</translation>
-<translation id="2148799636999124959">使用您已保存的密码快速登录网站和应用。</translation>
+<translation id="2148799636999124959">使用已保存的密码快速登录网站和应用。</translation>
 <translation id="2149968176347646218">连接不安全</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2155663190508912427">1 个月后删除</translation>
@@ -528,8 +529,7 @@
 <translation id="264215785133931186">刚刚检查过</translation>
 <translation id="2647434099613338025">添加语言</translation>
 <translation id="2648812801228676606">您已使用 <ph name="NAME_OR_EMAIL" /> 的身份登录</translation>
-<translation id="2649592894792404568">即将删除 Google 密码管理
-工具数据</translation>
+<translation id="2649592894792404568">即将删除 Google 密码管理工具数据</translation>
 <translation id="2652129567809778422">选择密码</translation>
 <translation id="2658056020748144467">无法打开文件</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />，<ph name="STATE" />，仅在该设备上，<ph name="URL" /></translation>
@@ -606,6 +606,7 @@
 <translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2893791155497534382">密码和其他活动记录可在相应管理设置中删除</translation>
 <translation id="2894757982205307093">在分组内添加新标签页</translation>
+<translation id="2897858638449756400">探索更多搜索方式</translation>
 <translation id="2902312830803030883">更多操作</translation>
 <translation id="2904788871580817212">您打开的标签页中有降价，原价为 <ph name="PREVIOUS_PRICE" />，现价为 <ph name="PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个密码重复使用，可能会导致安全风险。</translation>
@@ -702,7 +703,7 @@
 <translation id="3240426699337459095">已复制链接</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">无法保存您的更改。</translation>
-<translation id="3254806613790954367">您在所有设备上最后使用的标签页。</translation>
+<translation id="3254806613790954367">您在各个已同步设备间最后使用的标签页</translation>
 <translation id="325717987950204592">点按“隐私与安全”</translation>
 <translation id="3259451381796379533">此账号无法使用 Gemini。请换个 Google 账号登录。</translation>
 <translation id="3265736395246760288">在任何已同步的设备上更快地登录。</translation>
@@ -1108,7 +1109,7 @@
 <translation id="4634124774493850572">使用密码</translation>
 <translation id="4634633632339959267">对话内容会接受审核，并用于改进 Google AI。<ph name="BEGIN_LINK" />了解您有哪些选择。<ph name="END_LINK" /><ph name="BEGIN_LINK" />与您所在位置有关的信息<ph name="END_LINK" />也会存储在活动记录中。</translation>
 <translation id="4636930964841734540">信息</translation>
-<translation id="4641425577292284174">了解您是否已使用最安全的设置，或是否需要检查任何内容</translation>
+<translation id="4641425577292284174">了解是否已使用最安全设置，或是否需要检查任何内容</translation>
 <translation id="4642472735733036929">已停止跟踪价格</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4647758699119474035">目前登录的用户名是<ph name="USER_NAME" />，账号是 <ph name="USER_EMAIL" />。Google 账号错误，打开账号菜单。</translation>
@@ -1250,6 +1251,7 @@
 <translation id="5055551113846164633">此操作会删除保存在此设备上的地址，还会删除 Google 账号 <ph name="USER_EMAIL" /> 中保存的地址。</translation>
 <translation id="5056446788882570708"><ph name="TIME" />发现了问题。</translation>
 <translation id="5056587122125565772">创建图片</translation>
+<translation id="5058813911021873087">探索更多方法，让一切井井有条，省时省力</translation>
 <translation id="5059136629401106827">知道了</translation>
 <translation id="5061202435354361813">升级浏览体验</translation>
 <translation id="5062321486222145940">安装Google云端硬盘</translation>
@@ -1882,6 +1884,7 @@
 <translation id="6987201788018524855">探索您错过的实用功能</translation>
 <translation id="6989636517316575338">就任意网页提问</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">所有任务</translation>
 <translation id="6998251471716094661">跟踪商品价格，并在有网站降价时收到提醒</translation>
 <translation id="7004032350256606903">贵单位要求您进行无痕浏览。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>

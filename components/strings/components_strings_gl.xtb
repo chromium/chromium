@@ -1095,6 +1095,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2859806420264540918">Este sitio mostra anuncios intrusivos ou enganosos.</translation>
 <translation id="2873317327342476681">Xogo do dinosauro; toca o dinosauro ou preme Espazo para xogar</translation>
 <translation id="287387905105155974">Globo de axuda</translation>
+<translation id="2875109558992200904">Cando Chrome marca un evento de seguranza, envíanselle datos relevantes sobre este a quen se encarga da administración. Os datos poden incluír os URL e os títulos das páxinas que visites en Chrome, os URL das páxinas das que copies datos, metadatos ou nomes de ficheiros, enderezos IP, información sobre fallos do navegador ou das pestanas, e o nome de usuario que utilices para iniciar sesión nas aplicacións baseadas na Web, no teu dispositivo e en Chrome.</translation>
 <translation id="2876489322757410363">Sairás do modo de incógnito para pagar a través dunha aplicación externa. Queres continuar?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar na configuración de Chrome a Navegación segura e outras opcións, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="2878197950673342043">Dobrez de póster</translation>
@@ -1135,7 +1136,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2931453528659195355">Xestionar a información de compra</translation>
 <translation id="2933624813161016821">Lámina en relevo</translation>
 <translation id="2935726091208500473">compartindo as túas pestanas</translation>
-<translation id="2936698630976431647">Selecciona o campo do código promocional para autocompletar as ofertas de Google Wallet</translation>
 <translation id="293796669683825859">Comentarios</translation>
 <translation id="2938225289965773019">Abrir <ph name="PROTOCOL" /> ligazóns</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: Para mostrar o cursor, cambia de aplicación, volve cargar a páxina ou vai atrás</translation>
@@ -1596,6 +1596,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3712004750972384495">Gardando gravación de pantalla</translation>
 <translation id="3712006010833051684">Sobre n.º 10</translation>
 <translation id="3712624925041724820">Licenzas esgotadas</translation>
+<translation id="371302509916403935">Subliñado</translation>
 <translation id="3713277100229669269">Agora podes ver os beneficios das tarxetas antes de pagar</translation>
 <translation id="3714633008798122362">calendario web</translation>
 <translation id="3714780639079136834">Activar os datos móbiles ou a wifi</translation>
@@ -1943,6 +1944,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4265635050210404830">As túas tarxetas de fidelidade</translation>
 <translation id="4265872034478892965">Permitido polo administrador</translation>
 <translation id="4267590181863312380">Para acceder ao teu historial doutros dispositivos, inicia sesión e sincronízao. Tamén poderás desfrutar dos teus contrasinais e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
+<translation id="4267837382000002014">Os URL e os títulos das páxinas que visites envíanse a Google Cloud ou a terceiros para analizalos. É posible que a persoa encargada da administración poida velos. Por exemplo, poderíanse analizar co obxectivo de detectar sitios que non sexan seguros ou para filtrar os sitios web en función das normas establecidas pola administración.</translation>
 <translation id="4268025649754414643">Cifrado de clave</translation>
 <translation id="4269599248168651462">O certificado do servidor emítese para un nome que non é exclusivo.</translation>
 <translation id="4270541775497538019">Amontoador 6</translation>
@@ -4212,7 +4214,6 @@ Detalles adicionais:
 <translation id="815036624016370447">A información da túa Conta de Google (<ph name="ACCOUNT" />) pode axudarche a completar formularios máis rápido en Chrome</translation>
 <translation id="8150722005171944719">Non se pode ler o ficheiro que se encontra en <ph name="URL" />. É posible que se eliminase, movese ou que os permisos do ficheiro estean impedindo o acceso.</translation>
 <translation id="8151185429379586178">Ferramentas para programadores</translation>
-<translation id="8152194419479742504">Escribe @@ nun formulario para recuperar e completar información sen cambiar de pestana</translation>
 <translation id="8153865548451212769">{0,plural, =1{A política do administrador non recomenda descargar este ficheiro no destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda descargar estes ficheiros no destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Últimas pestanas abertas</translation>
 <translation id="815805690561372740">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google, que <ph name="BEGIN_LINK" />detectou hai pouco software malicioso<ph name="END_LINK" /> no sitio ao que tentaches acceder.</translation>
@@ -4276,6 +4277,7 @@ Detalles adicionais:
 <translation id="8269242089528251720">Documentos independentes/copias intercaladas</translation>
 <translation id="8269703227894255363">{0,plural, =1{Bloqueouse a apertura do ficheiro}other{Bloqueouse a apertura de <ph name="FILE_COUNT" /> ficheiros}}</translation>
 <translation id="8270242299912238708">Documentos PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">A folla do controlador de pagos está aberta</translation>
 <translation id="827820107214076967">Actualizar rexistros</translation>
 <translation id="8279611986089885641">As notificacións de Chrome deben estar activadas. Podes activalas en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

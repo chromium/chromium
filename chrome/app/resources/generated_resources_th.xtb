@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">เข้าถึงอุปกรณ์ USB ใดๆ ก็ได้เหล่านี้</translation>
 <translation id="1038462104119736705">ขอแนะนำให้เตรียมพื้นที่ว่างอย่างน้อย <ph name="INSTALL_SIZE" /> สำหรับ Linux หากต้องการเพิ่มพื้นที่ว่าง ให้ลบไฟล์ออกจากอุปกรณ์</translation>
 <translation id="1038643060055067718">จำนวนบรรทัด:</translation>
+<translation id="1039216421321079051">ส่วนขยายถูกปิดใช้โดยส่วนขยายอื่น</translation>
 <translation id="1039337018183941703">ไฟล์ไม่ถูกต้องหรือเสียหาย</translation>
 <translation id="1040761927998636252">บุ๊กมาร์กที่ไม่มีชื่อสําหรับ <ph name="URL" /></translation>
 <translation id="1041175011127912238">หน้านี้ไม่ตอบสนอง</translation>
@@ -2615,7 +2616,6 @@
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
 <translation id="3001144475369593262">บัญชีของบุตรหลาน</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{ไม่มีแป้นที่กำหนดเอง}=1{มีแป้นที่กำหนดเอง 1 แป้น}other{มีแป้นที่กำหนดเอง {COUNT} แป้น}}</translation>
-<translation id="3002745665522516995">เลือกสิ่งที่ต้องการในหน้าเพื่อค้นหา</translation>
 <translation id="3002864108328203174">Bottom Sheet ของ Gemini แบบครึ่งหน้า</translation>
 <translation id="3003144360685731741">เครือข่ายที่ต้องการ</translation>
 <translation id="3003253259757197230">ระบบจะส่ง URL ที่ได้เข้าชมไปยัง Google เพื่อคาดคะเนเว็บไซต์ต่อไปที่คุณอาจเข้าชมและแสดงข้อมูลเพิ่มเติมเกี่ยวกับหน้าที่กำลังเข้าชม</translation>
@@ -3462,6 +3462,7 @@
 <translation id="3641456520301071208">เว็บไซต์ขอตำแหน่งของคุณได้</translation>
 <translation id="3642070413432681490">เคอร์เซอร์แบบวงกลม</translation>
 <translation id="3643962751030964445">อุปกรณ์นี้จัดการโดย <ph name="DEVICE_MANAGER" /> <ph name="DEVICE_MANAGER" /> ต้องใช้โปรไฟล์ใหม่สำหรับบัญชี <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="3644128856494356630">หน่วยความจำ CppGC</translation>
 <translation id="3645372836428131288">เลื่อนนิ้วเล็กน้อยเพื่อจับภาพส่วนต่างๆ ของลายนิ้วมือ</translation>
 <translation id="3645951915068244649">สร้างกลุ่มแท็บด้วยโฟลเดอร์บุ๊กมาร์กนี้แล้ว คุณต้องการสร้างกลุ่มแท็บใหม่หรือแทนที่กลุ่มแท็บที่มีอยู่ไหม</translation>
 <translation id="3646789916214779970">รีเซ็ตเป็นธีมค่าเริ่มต้น</translation>
@@ -4234,6 +4235,7 @@
 <translation id="4226303886821889519">เวอร์ชันโปรแกรมอัปเดต: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ไม่อนุญาตส่วนขยายนี้}other{ไม่อนุญาตส่วนขยายบางรายการ}}</translation>
 <translation id="4229538146709970028">โปรดปลดล็อก <ph name="TOKEN_NAME" /> เพื่อตรวจสอบสิทธิ์กับ <ph name="HOST_NAME" /> ด้วยใบรับรองของคุณ</translation>
+<translation id="4230659518013393045">ระบบจะแชร์ชื่อหน้า, URL และเนื้อหาของแท็บปัจจุบันกับ Google เพื่อให้คำตอบที่เกี่ยวข้องมากขึ้น คุณสามารถเพิ่มหรือนำแท็บออกได้ขณะท่องเว็บ</translation>
 <translation id="4232375817808480934">กำหนดค่า Kerberos</translation>
 <translation id="4232376164796433044">รหัสผ่านและป้อนข้อความอัตโนมัติ</translation>
 <translation id="4233739489690259993">Chromebook ของคุณจะไม่ได้รับการอัปเดตความปลอดภัยและซอฟต์แวร์อีกต่อไป อัปเกรดอุปกรณ์เพื่อรับการรักษาความปลอดภัยและฟีเจอร์ใหม่ล่าสุด เป็นไปตามข้อกำหนดของข้อเสนอ</translation>
@@ -4577,7 +4579,6 @@
 <translation id="4495002167047709180">อนุญาตให้ใช้ส่วนขยายนี้ใน <ph name="SITE" /> ไหม</translation>
 <translation id="4495419450179050807">ไม่แสดงในหน้านี้อีก</translation>
 <translation id="4500055235123625757">Gemini สามารถตอบคำถามเกี่ยวกับวิดีโอหรือเสียงที่คุณเล่นใน<ph name="LINK_BEGIN" />บางเว็บไซต์<ph name="LINK_END" /></translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ขัดข้อง</translation>
 <translation id="4500647907053779331">แปลรายการที่เลือกเป็นภาษา<ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">ยืนยันการนำออก</translation>
 <translation id="4502423230170890588">นำออกจากอุปกรณ์นี้</translation>
@@ -5101,6 +5102,7 @@
 <translation id="488785315393301722">แสดงรายละเอียด</translation>
 <translation id="488862352499217187">สร้างโฟลเดอร์ใหม่</translation>
 <translation id="4888715715847020167">ไปที่การตั้งค่า</translation>
+<translation id="4888899258150891194">หน่วยความจำ CppGC</translation>
 <translation id="4890292359366636311">เข้าสู่การแสดงภาพซ้อนภาพโดยอัตโนมัติเพื่อให้คุณใช้งานบนแท็บและหน้าต่างอื่นๆ ได้</translation>
 <translation id="4890399733764921729">เชื่อมต่อไม่ได้ ล็อกโดยผู้ให้บริการมือถือรายอื่น</translation>
 <translation id="4890585766056792498">รับการปกป้องจากเว็บไซต์ที่เป็นอันตราย</translation>
@@ -5465,7 +5467,6 @@
 <translation id="5173668317844998239">เพิ่มและลบลายนิ้วมือที่บันทึกในคีย์ความปลอดภัย</translation>
 <translation id="5174169235862638850">คัดลอกรหัสผ่านไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="517488401359338823">ปลดล็อกอุปกรณ์รักษาความปลอดภัย</translation>
-<translation id="5176671554021050278">ใช้ Google Lens เพื่อดูข้อมูลเพิ่มเติมเกี่ยวกับรูปภาพหรือข้อความที่เฉพาะเจาะจงในหน้า</translation>
 <translation id="5177479852722101802">บล็อกการเข้าถึงกล้องถ่ายรูปและไมโครโฟนต่อไป</translation>
 <translation id="5178667623289523808">ค้นหาก่อนหน้านี้</translation>
 <translation id="5179428098696668914">ปิดการเล่นโดย AI</translation>
@@ -5787,6 +5788,7 @@
 <translation id="5436510242972373446">ค้นหา <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">ตอนนี้หน้าต่าง<ph name="WINDOW_SIDE" />กว้าง <ph name="WINDOW_SIZE_PERCENT" /> และแผง<ph name="PANE_SIDE" />กว้าง <ph name="PANE_SIZE_PERCENT" /></translation>
 <translation id="5438060324827306856">ส่วนขยายการค้นหา</translation>
+<translation id="5440240650630588012">ใช้บรรทัดหรือหน้าต่างการอ่านเพื่อช่วยในการโฟกัส กด ⌥L หรือไปที่การตั้งค่า</translation>
 <translation id="5440425659852470030">ปิดแผงด้านข้าง</translation>
 <translation id="544083962418256601">สร้างทางลัด...</translation>
 <translation id="5441133529460183413">ติดตั้งเว็บแอปจากเบราว์เซอร์ Chrome แล้ว</translation>
@@ -5973,6 +5975,7 @@
 <translation id="5576472948015790634">ตอนนี้คุณจัดการกลุ่มแท็บและแชท Gemini ในที่เดียวได้แล้ว เลิกปักหมุดได้ทุกเมื่อ</translation>
 <translation id="5578059481725149024">ลงชื่อเข้าใช้อัตโนมัติ</translation>
 <translation id="5578387000057347457">ป้อนพรอมต์ที่กำหนดเองหรือไฮไลต์ข้อความเพื่อสร้างรูปภาพ</translation>
+<translation id="557893471177655572">ลองใช้โฟกัสบรรทัด</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{ระบบบันทึกข้อมูล 1 รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้<ph name="BEGIN_LINK" />บันทึกไว้ในบัญชี Google<ph name="END_LINK" />}other{ระบบบันทึกข้อมูล {ITEM_COUNT} รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้<ph name="BEGIN_LINK" />บันทึกไว้ในบัญชี Google<ph name="END_LINK" />}}</translation>
 <translation id="5579225964082017560">นำ <ph name="SITE" /> ออกจากรายการ <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">มุมมองแบบแยก</translation>
@@ -9985,6 +9988,7 @@
 <translation id="869891660844655955">วันที่หมดอายุ</translation>
 <translation id="8699296325072357994">ระบบจะส่งเนื้อหาจากหน้าที่มีรหัสผ่านและข้อมูลที่เกี่ยวข้องไปยัง Google แล้วเจ้าหน้าที่ตรวจสอบจะตรวจสอบเนื้อหาดังกล่าว รหัสผ่านของคุณได้รับการเข้ารหัสและจะไม่มีใครเห็นรหัสผ่านของคุณ <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">Launcher + Backspace</translation>
+<translation id="8701058912406466818">ใช้บรรทัดหรือหน้าต่างการอ่านเพื่อช่วยในการโฟกัส กด Alt+L หรือไปที่การตั้งค่า</translation>
 <translation id="8702278591052316269">เมนูมีกลุ่มแท็บที่บันทึกไว้ซึ่งซ่อนอยู่</translation>
 <translation id="8703346390800944767">ข้ามโฆษณา</translation>
 <translation id="8703372953981978786">ลิงก์นี้ใช้ไม่ได้</translation>
@@ -10747,6 +10751,7 @@
 <translation id="983192555821071799">ปิดแท็บทั้งหมด</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - กำลังบันทึกกล้องและไมโครโฟน</translation>
 <translation id="984705303330760860">เพิ่มภาษาที่ใช้การตรวจตัวสะกดได้</translation>
+<translation id="986994187171579118">ส่วนขยายถูกปิดใช้โดย <ph name="EXTENSION_NAME" /></translation>
 <translation id="987264212798334818">ทั่วไป</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> ต้องการรับข้อมูลจากมือถือของคุณ</translation>
 <translation id="988320949174893488">กระตุกเป็นบางครั้ง</translation>

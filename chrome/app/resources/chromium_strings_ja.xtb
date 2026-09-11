@@ -36,7 +36,6 @@
 <translation id="1330562121671411446">検出言語</translation>
 <translation id="1342274909142618978">Chromium（<ph name="URL" />）からもデータを削除する</translation>
 <translation id="1345251407431278948">固定しました。ツールバーの新しいボタンから、画像検索にアクセスできます</translation>
-<translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1388276868779258475">Chromium アプリで、ブラウジングを外出先でも続けられます</translation>
 <translation id="141901961143729572">ご意見をお聞かせください</translation>
@@ -733,7 +732,6 @@
 <translation id="856656450041460113">言語リストを検索</translation>
 <translation id="8576826849825683917">Chromium は複数の組織によって管理されています</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
-<translation id="8601359445272098721">New! [画面を翻訳] ボタンを選択して、画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="8619360774459241877">Chromium を起動しています...</translation>
 <translation id="8624541899164515475">設定、新しいタブで開きます。</translation>
 <translation id="8648201657708811153">Google Chrome for Testing は、既定のブラウザには設定できません。</translation>

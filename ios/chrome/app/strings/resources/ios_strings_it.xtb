@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Client MLS RCS</translation>
 <translation id="1508263560970797965">Continua in incognito</translation>
 <translation id="1509486075633541495">Accedi al sito web</translation>
+<translation id="1509922846321012406">Scopri altri modi per migliorare la tua privacy e la tua sicurezza</translation>
 <translation id="1513858653616922153">Elimina la password</translation>
 <translation id="1517166097004694782">Nascondi "Continua con questa scheda"</translation>
 <translation id="1520027731907768768">Ricevi avvisi relativi ai cali di prezzo per i prodotti che monitori.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Browser predefinito</translation>
 <translation id="2893791155497534382">Le password e altre attività possono essere eliminate nelle relative impostazioni di gestione</translation>
 <translation id="2894757982205307093">Nuova scheda nel gruppo</translation>
+<translation id="2897858638449756400">Scopri altri modi per fare ricerche</translation>
 <translation id="2902312830803030883">Altre azioni</translation>
 <translation id="2904788871580817212">Calo di prezzo nella scheda aperta, da <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Hai <ph name="NUMBER_OF_PASSWORDS" /> password riutilizzate che potrebbero mettere a rischio la tua sicurezza.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Questa azione elimina gli indirizzi salvati su questo dispositivo. Vengono eliminati anche gli indirizzi salvati nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Sono stati riscontrati problemi <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Crea immagine</translation>
+<translation id="5058813911021873087">Scopri altri modi per organizzarti e risparmiare tempo</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Migliora la tua navigazione</translation>
 <translation id="5062321486222145940">Installa Google Drive</translation>
@@ -1881,6 +1884,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="6987201788018524855">Esplora le funzionalità utili che potresti aver perso</translation>
 <translation id="6989636517316575338">Chiedi informazioni su una pagina</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Tutte le attività</translation>
 <translation id="6998251471716094661">Monitora i prezzi dei prodotti e ricevi avvisi quando il prezzo cala su qualsiasi sito</translation>
 <translation id="7004032350256606903">La tua organizzazione ti richiede di navigare in privato.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>

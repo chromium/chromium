@@ -1136,7 +1136,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2931453528659195355">Urus maklumat beli-belah</translation>
 <translation id="2933624813161016821">Kerajang Timbul</translation>
 <translation id="2935726091208500473">berkongsi tab anda</translation>
-<translation id="2936698630976431647">Pilih medan kod promosi untuk membuat autolengkap tawaran daripada Google Wallet</translation>
 <translation id="293796669683825859">Ulasan</translation>
 <translation id="2938225289965773019">Buka pautan <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Untuk memaparkan kursor anda, menukar apl, memuatkan semula halaman atau kembali kepada halaman sebelumnya</translation>
@@ -1598,6 +1597,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3712004750972384495">Menyimpan rakaman skrin</translation>
 <translation id="3712006010833051684">Sampul #10</translation>
 <translation id="3712624925041724820">Kehabisan lesen</translation>
+<translation id="371302509916403935">Garis bawah</translation>
 <translation id="3713277100229669269">Kini anda boleh melihat manfaat kad sebelum anda membayar</translation>
 <translation id="3714633008798122362">kalendar web</translation>
 <translation id="3714780639079136834">Menghidupkan data mudah alih atau Wi-Fi</translation>
@@ -2221,6 +2221,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4750917950439032686">Maklumat anda (contohnya, kata laluan atau nombor kad kredit) adalah berciri peribadi apabila dihantar ke tapak ini.</translation>
 <translation id="4754461935447132332">Tidak dibenarkan untuk laman yang tidak selamat</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Pilih medan kod promosi untuk melihat dan mengisi tawaran anda yang disimpan</translation>
 <translation id="4757740693289347881">Kod tidak sah</translation>
 <translation id="4757993714154412917">Anda baru sahaja memasukkan kata laluan pada laman yang menipu. Untuk melindungi akaun anda, Chromium mengesyorkan agar anda menyemak kata laluan anda yang disimpan.</translation>
 <translation id="4758311279753947758">Tambahkan maklumat hubungan</translation>
@@ -3845,6 +3846,7 @@ Butiran tambahan:
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR dibenarkan pada masa ini</translation>
+<translation id="7517198908921983825">Dicadangkan oleh Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Sampul C10</translation>
 <translation id="7518003948725431193">Tiada halaman web dijumpai untuk alamat web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4216,7 +4218,6 @@ Butiran tambahan:
 <translation id="815036624016370447">Maklumat daripada Google Account <ph name="ACCOUNT" /> anda boleh membantu anda mengisi borang dengan lebih pantas dalam Chrome</translation>
 <translation id="8150722005171944719">Fail di <ph name="URL" /> tidak boleh dibaca.  Fail mungkin telah dialih keluar, dipindahkan atau kebenaran fail mungkin menghalang akses.</translation>
 <translation id="8151185429379586178">Alat pembangun</translation>
-<translation id="8152194419479742504">Taip @@ dalam mana-mana borang untuk menemukan dan mengisi maklumat tanpa menukar tab</translation>
 <translation id="8153865548451212769">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda memuat turun fail ini ke <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda memuat turun fail ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Tab terakhir yang dibuka</translation>
 <translation id="815805690561372740">Chrome mengandungi ciri keselamatan terbina dalam untuk melindungi anda semasa menyemak imbas – seperti Penyemakan Imbas Selamat Google yang <ph name="BEGIN_LINK" />baru-baru ini menemukan perisian hasad<ph name="END_LINK" /> pada laman yang cuba anda lawati.</translation>
@@ -4280,6 +4281,7 @@ Butiran tambahan:
 <translation id="8269242089528251720">Dokumen berasingan/Salinan dikumpul semak</translation>
 <translation id="8269703227894255363">{0,plural, =1{Fail disekat daripada dibuka}other{<ph name="FILE_COUNT" /> fail disekat daripada dibuka}}</translation>
 <translation id="8270242299912238708">Dokumen PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Helaian pengendali pembayaran dibuka</translation>
 <translation id="827820107214076967">Segar Semula Log</translation>
 <translation id="8279611986089885641">Pemberitahuan Chrome mesti dihidupkan. Anda boleh menghidupkan tetapan ini dalam <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

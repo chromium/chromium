@@ -1517,7 +1517,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome นำสิทธิ์เหล่านี้ออกเนื่องจากคุณไม่ได้เข้าชมเมื่อเร็วๆ นี้</translation>
 <translation id="6923291640965724312">รูปแบบใหญ่พิเศษ</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 แท็บ}other{<ph name="NUMBER_OF_TABS" /> แท็บ}}</translation>
-<translation id="6929224077895306814">จะมีการลบรหัสความปลอดภัยทั้งหมดที่บันทึกไว้ในอุปกรณ์และในบัญชี Google ของคุณ</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, แท็บที่เลือกที่ปักหมุดซึ่งมีเสียง</translation>
 <translation id="6937524809504266803">การปรับเปลี่ยนในแบบของคุณและการลิงก์</translation>
 <translation id="6937876069006524083">ชื่อเล่น (ไม่บังคับ)</translation>

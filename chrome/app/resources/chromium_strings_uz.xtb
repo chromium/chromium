@@ -36,7 +36,6 @@
 <translation id="1330562121671411446">Tilni aniqlash</translation>
 <translation id="1342274909142618978">Chromium maʼlumotlari ham oʻchirilsin (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Mahkamlandi! Endi Rasmlar orqali qidiruvni asboblar panelidagi yangi tugma orqali ochish mumkin</translation>
-<translation id="1356661055722410047">Yangi! Ekrandagi matn va rasmlarni tarjima qilish mumkin</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1388276868779258475">Chromium ilovasi bilan internetda kezishni istalgan joyda davom ettiring</translation>
 <translation id="141901961143729572">Fikr-mulohaza qoldiring</translation>
@@ -68,6 +67,7 @@
 <translation id="1793486931176048546">Tezkor kirish uchun Chromiumni vazifalar paneliga mahkamlash uchun Windows bildirishnomasida <ph name="BEGIN_BOLD" />Ha<ph name="END_BOLD" /> tugmasini bosing</translation>
 <translation id="1808667845054772817">Chromium brauzerini qayta o‘rnatish</translation>
 <translation id="1820835682567584003">Chromium buni bajarmoqchi: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromiumga shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, <ph name="DEVICE" /> qurilmasidagi kengaytmalar va boshqa maʼlumotlardan foydalana olasiz.</translation>
 <translation id="183031085822326697">Keyingi safar <ph name="DEVICE_TYPE" /> qurilmangizda Chromium ilovasini ochganingizda Google Parollar menejeridan foydalanish taklifi chiqadi.</translation>
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
 <translation id="18552579716432081">Brauzer maʼlumotlarini faqat shu qurilmadan oʻchirish va Google hisobingizda saqlash uchun <ph name="BEGIN_LINK" />Chromium hisobingizdan chiqing<ph name="END_LINK" />.</translation>
@@ -190,6 +190,7 @@
 <translation id="3038232873781883849">Oʻrnatish kutilmoqda…</translation>
 <translation id="3045032126857188731">Tarjima qilingan tili: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Fikr-mulohaza yuborish oynasini yopish</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromiumga shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, <ph name="DEVICE" /> qurilmasidagi saqlangan sahifalar va boshqa maʼlumotlardan foydalana olasiz.</translation>
 <translation id="3068187312562070417">Boshqa Chromium profillari</translation>
 <translation id="3068290154869370196">Kengaytmalar – bu Chromium brauzerini moslash imkonini beruvchi plaginlardir. Tartiblashdan tortib, kundalik vazifalarni oson qilishgacha, kengaytmalar Chromiumni oʻzingizga moslashga yordam beradi.</translation>
 <translation id="3068515742935458733">Google‘ga ishdan chiqishlar hisoboti va <ph name="UMA_LINK" />‘ni jo‘natib Chromium yaxshilanishiga yordam berish.</translation>
@@ -289,6 +290,7 @@
 <translation id="4147856324248078748">C&amp;hromiumni oʻzingizga moslang</translation>
 <translation id="4148957013307229264">O‘rnatilmoqda..</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromiumga shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, saqlangan sahifalar va boshqa maʼlumotlardan barcha qurilmalarda foydalana olasiz.</translation>
 <translation id="421369550622382712">Chromium uchun zo‘r ilovalar, o‘yinlar va kengaytmalar bilan tanishing.</translation>
 <translation id="4217080900579554343">Bu va boshqa kengaytmalardan barcha kompyuterlarda foydalanish uchun Chromiumga kiring</translation>
 <translation id="4217972271355023382">Ota-onangiz belgilagan sozlamalar asosida internetni xavfsiz kezishingiz uchun <ph name="USER_EMAIL_ADDRESS" /> hisobiga kirilgan Chromium profilingizga almashing</translation>
@@ -389,6 +391,7 @@
 <translation id="5382964351116519680">Chromium orqali qidiruvni ochish</translation>
 <translation id="5383439451358640070">Chromium ayrim fayllarni nega bloklashi haqida</translation>
 <translation id="5386450000063123300">Chromium yangilanmoqda (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromiumga shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, kengaytmalar va boshqa maʼlumotlardan barcha qurilmalarda foydalana olasiz.</translation>
 <translation id="538767207339317086">Chromium hisobiga kirishga ruxsat berish</translation>
 <translation id="5405650547142096840">Chromiumdan oʻchirish</translation>
 <translation id="5424544524441439284">Unumdorlik pasayadi, ammo Chrimium hujumlarga yaxshiroq qarshilik qiladi</translation>
@@ -733,7 +736,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="856656450041460113">Tillar roʻyxatidan qidirish</translation>
 <translation id="8576826849825683917">Chromium bir nechta tashkilot boshqaruvida</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" />. Barcha huquqlar himoyalangan.</translation>
-<translation id="8601359445272098721">Yangi! “Ekrandan tarjima qilish” tugmasini bosib, ekrandagi matn va rasmlarni tarjima qilish mumkin</translation>
 <translation id="8619360774459241877">Chromium ishga tushmoqda...</translation>
 <translation id="8624541899164515475">Sozlamalar yangi varaqda ochiladi.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing asosiy brauzer boʻla olmaydi.</translation>

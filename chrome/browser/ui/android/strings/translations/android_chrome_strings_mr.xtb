@@ -664,6 +664,7 @@
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">इमर्सिव्ह प्लेबॅकमधून बाहेर पडा</translation>
+<translation id="3662595332590803433">Chrome मध्ये नेहमी कस्टम टॅब उघडा</translation>
 <translation id="3674208116086565128">Google अ‍ॅप होम वर जा</translation>
 <translation id="368329460027487650">साइन आउट केले आहे. साइन इन करण्यासाठी पर्याय उघडते.</translation>
 <translation id="3684540848053703310">किमतीच्या इनसाइटची तळाशी असलेली शीट बंद केली</translation>
@@ -1517,7 +1518,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> तुम्ही अलीकडे भेट न दिल्यामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>
 <translation id="6923291640965724312">इमर्सिव्ह फॉरमॅट</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{१ टॅब}other{<ph name="NUMBER_OF_TABS" /> टॅब}}</translation>
-<translation id="6929224077895306814">तुमच्या डिव्हाइसवर आणि तुमच्या Google खाते मध्ये सेव्ह केलेले सर्व सुरक्षा कोड हटवले जातील</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, निवडलेला पिन केलेला ऐकू येणारा टॅब</translation>
 <translation id="6937524809504266803">पर्सनलायझेशन आणि लिंक करणे</translation>
 <translation id="6937876069006524083">टोपणनाव (पर्यायी)</translation>
@@ -1628,6 +1628,7 @@
 <translation id="7335766481146072567">पुढे सुरू ठेवा प्रेस करा</translation>
 <translation id="7336259382292148213">नोटिफिकेशनशी संबंधित कोणतीही समस्या नाही</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
+<translation id="7349983576451251297">कस्टम टॅबऐवजी Chrome ब्राउझरमध्ये वेब पेज उघडा</translation>
 <translation id="7352339641508007922">मोठा स्क्रीनशॉट काढण्यासाठी ड्रॅग करा</translation>
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 निवडलेला आयटम शेअर करा}other{# निवडलेले आयटम शेअर करा}}</translation>
@@ -1718,6 +1719,7 @@
 <translation id="7690596512217303514">तुमच्या डिव्हाइसला Chrome उघडता आले नाही. समस्येचे निराकरण करण्यासाठी, तुमच्या अ‍ॅप स्टोअरवरून नवीनतम Chrome अपडेट डाउनलोड करा.</translation>
 <translation id="7692761875510935111">ब्राउझरमध्ये झटपट उघडा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करून धरून ठेवा.</translation>
 <translation id="7695270712963178084">Chrome Finds</translation>
+<translation id="7695610746377249436">या विनंतीला प्रतिसाद देताना Google सह साइट त्यांची विवेकबुद्धी वापरतात.</translation>
 <translation id="7697383401610880082">ड्रॅग हॅंडल</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> मध्ये ईमेल तयार करा</translation>
 <translation id="7702420606070050505">अलीकडील अ‍ॅक्टिव्हिटीची तळाशी असलेली शीट पूर्णपणे उघडली आहे</translation>

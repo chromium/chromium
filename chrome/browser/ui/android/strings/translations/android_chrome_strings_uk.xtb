@@ -1517,7 +1517,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome скасував ці дозволи, оскільки останнім часом ви не відвідували сайт</translation>
 <translation id="6923291640965724312">Формат реалістичного режиму</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 вкладка}one{<ph name="NUMBER_OF_TABS" /> вкладка}few{<ph name="NUMBER_OF_TABS" /> вкладки}many{<ph name="NUMBER_OF_TABS" /> вкладок}other{<ph name="NUMBER_OF_TABS" /> вкладки}}</translation>
-<translation id="6929224077895306814">Усі коди безпеки, збережені на вашому пристрої і в обліковому записі Google, буде видалено</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" /> (вибрана закріплена вкладка, на якій увімкнено звук)</translation>
 <translation id="6937524809504266803">Персоналізація і зв’язування</translation>
 <translation id="6937876069006524083">Псевдонім (необов’язково)</translation>

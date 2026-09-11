@@ -12694,11 +12694,6 @@ Yöneticinin, DLC'nin mevcut olması gereken özelliklerin, cihaz kullanıcılar
 <translation id="8865404058177794289">RSA anahtarı kullanma kontrolü için varsayılan ayarı kullan</translation>
 <translation id="8866430022832109569">Uygulama envanteri ile ilgili raporlama</translation>
 <translation id="886645881209114007">Kullanıcıların <ph name="PRODUCT_OS_NAME" /> üzerinde bir <ph name="PLUGIN_VM_NAME" /> kullanmasına izin verir</translation>
-<translation id="8867894831390233044">Kullanıcıların uzaktan hata ayıklama kullanıp kullanamayacaklarını kontrol eder.
-
-      Bu politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar, --remote-debugging-port ve --remote-debugging-pipe komut satırı anahtarlarını belirterek uzaktan hata ayıklama kullanabilirler.
-
-      Bu politika Devre dışı değerine ayarlanırsa kullanıcılar, uzaktan hata ayıklama kullanamazlar.</translation>
 <translation id="8870995142109792885">Eklenti bulucuyu etkinleştir</translation>
 <translation id="8871974300055371298">İçerik ayarları</translation>
 <translation id="8872029059067980702">Oturum açma sırasında Gemini giriş ekranını gösterme</translation>

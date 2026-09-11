@@ -1136,7 +1136,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2931453528659195355">Gerenciar informações de compras</translation>
 <translation id="2933624813161016821">Laminado em relevo</translation>
 <translation id="2935726091208500473">compartilhando suas guias</translation>
-<translation id="2936698630976431647">Selecione o campo de código promocional para preencher automaticamente as ofertas da Carteira do Google</translation>
 <translation id="293796669683825859">Comentários</translation>
 <translation id="2938225289965773019">Abrir links de <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Para mostrar o cursor, troque de app, recarregue a página ou volte</translation>
@@ -1597,6 +1596,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3712004750972384495">Salvando a gravação de tela</translation>
 <translation id="3712006010833051684">Envelope 10</translation>
 <translation id="3712624925041724820">Licenças esgotadas</translation>
+<translation id="371302509916403935">Sublinhado</translation>
 <translation id="3713277100229669269">Você já pode conferir os benefícios do cartão antes de fazer o pagamento</translation>
 <translation id="3714633008798122362">agenda na web</translation>
 <translation id="3714780639079136834">Ativar os dados móveis ou o Wi-Fi</translation>
@@ -3844,6 +3844,7 @@ Mais detalhes:
 <translation id="7514365320538308">Baixar</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">RV permitida apenas desta vez</translation>
+<translation id="7517198908921983825">Sugerido pelo Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Nenhuma página da web foi encontrada para o endereço da Web:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4215,7 +4216,6 @@ Mais detalhes:
 <translation id="815036624016370447">As informações da sua Conta do Google <ph name="ACCOUNT" /> podem te ajudar a preencher formulários mais rápido no Chrome</translation>
 <translation id="8150722005171944719">O arquivo em <ph name="URL" /> não está legível. Ele pode ter sido removido ou movido, ou as permissões do arquivo podem estar impedindo o acesso.</translation>
 <translation id="8151185429379586178">Ferramentas para desenvolvedores</translation>
-<translation id="8152194419479742504">Digite @@ em qualquer formulário para encontrar e preencher informações sem trocar de guia</translation>
 <translation id="8153865548451212769">{0,plural, =1{A política do administrador não recomenda o download do arquivo para este local: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda o download do arquivo para este local: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda o download desses arquivos para este local: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Últimas guias abertas</translation>
 <translation id="815805690561372740">O Chrome tem recursos de segurança integrados para proteger você, como a Navegação segura do Google, que <ph name="BEGIN_LINK" />encontrou malware recentemente<ph name="END_LINK" /> no site que você tentou acessar.</translation>
@@ -4279,6 +4279,7 @@ Mais detalhes:
 <translation id="8269242089528251720">Documentos separados/Cópias reunidas</translation>
 <translation id="8269703227894255363">{0,plural, =1{A abertura do arquivo está bloqueada}one{A abertura de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A abertura de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
 <translation id="8270242299912238708">Documentos em PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">A página do gerenciador de pagamento está aberta</translation>
 <translation id="827820107214076967">Atualizar registros</translation>
 <translation id="8279611986089885641">As notificações do Chrome precisam estar ativadas. Faça isso nas <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

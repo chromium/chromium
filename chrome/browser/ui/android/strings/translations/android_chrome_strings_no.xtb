@@ -1517,7 +1517,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome har fjernet disse tillatelsene fordi du ikke har besøkt nettstedet i det siste</translation>
 <translation id="6923291640965724312">Oppslukende format</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 fane}other{<ph name="NUMBER_OF_TABS" /> faner}}</translation>
-<translation id="6929224077895306814">Alle sikkerhetskoder som er lagret på enheten og i Google-kontoen din, blir slettet</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, valgt festet fane med lyd</translation>
 <translation id="6937524809504266803">Personlig tilpasning og tilknytning</translation>
 <translation id="6937876069006524083">Kallenavn (valgfritt)</translation>

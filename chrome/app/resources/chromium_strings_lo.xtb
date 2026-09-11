@@ -39,7 +39,6 @@
 <translation id="1330562121671411446">ກວດຫາພາສາ</translation>
 <translation id="1342274909142618978">ລຶບຂໍ້ມູນອອກຈາກ Chromium (<ph name="URL" />) ນຳ</translation>
 <translation id="1345251407431278948">ປັກໝຸດແລ້ວ! ທ່ານສາມາດເຂົ້າເຖິງການຊອກຫາຮູບໄດ້ອີກຄັ້ງຈາກປຸ່ມໃໝ່ໃນແຖບເຄື່ອງມື</translation>
-<translation id="1356661055722410047">ໃໝ່! ທ່ານສາມາດແປໄດ້ທັງຂໍ້ຄວາມ ແລະ ຮູບພາບຢູ່ໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1388276868779258475">ໃຊ້ແອັບ Chromium ເພື່ອທ່ອງເວັບໄດ້ທຸກບ່ອນທຸກເວລາ</translation>
 <translation id="141901961143729572">ແບ່ງປັນຄວາມຄິດຂອງທ່ານ</translation>
@@ -738,7 +737,6 @@ Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອ�
 <translation id="856656450041460113">ຊອກຫາລາຍການພາສາ</translation>
 <translation id="8576826849825683917">ຫຼາຍອົງການຈັດການ Chromium</translation>
 <translation id="8586442755830160949">ລິຂະສິດ <ph name="YEAR" /> ຜູ້ຂຽນ Chromium. ສະຫງວນສິດທັງໝົດ.</translation>
-<translation id="8601359445272098721">ໃໝ່! ທ່ານສາມາດແປໄດ້ທັງຂໍ້ຄວາມ ແລະ ຮູບພາບຢູ່ໜ້າຈໍຂອງທ່ານໂດຍເລືອກປຸ່ມ "ແປໜ້າຈໍ"</translation>
 <translation id="8619360774459241877">ກຳລັງເປີດໃຊ້ Chromium...</translation>
 <translation id="8624541899164515475">ການຕັ້ງຄ່າ, ເປີດໃນແຖບໃໝ່.</translation>
 <translation id="8648201657708811153">ບໍ່ສາມາດຕັ້ງ Google Chrome ສຳລັບການທົດສອບເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານໄດ້.</translation>

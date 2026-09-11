@@ -664,6 +664,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">Izlaz iz fokusirane reprodukcije</translation>
+<translation id="3662595332590803433">Uvijek otvaraj prilagođene kartice u Chromeu</translation>
 <translation id="3674208116086565128">Odlazak na početnu stranicu u aplikaciji Google</translation>
 <translation id="368329460027487650">Odjavljeni ste. Otvara opcije za prijavu.</translation>
 <translation id="3684540848053703310">Donja tabela uvida u cijene je zatvorena</translation>
@@ -1517,7 +1518,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome je uklonio odobrenja jer web lokaciju u posljednje vrijeme niste posjetili</translation>
 <translation id="6923291640965724312">Fokusirani format</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 kartica}one{<ph name="NUMBER_OF_TABS" /> kartica}few{<ph name="NUMBER_OF_TABS" /> kartice}other{<ph name="NUMBER_OF_TABS" /> kartica}}</translation>
-<translation id="6929224077895306814">Svi sigurnosni kodovi sačuvani na vašem uređaju i Google računu će se izbrisati</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, odabrana zakačena kartica sa zvukom</translation>
 <translation id="6937524809504266803">Personalizacija i povezivanje</translation>
 <translation id="6937876069006524083">Nadimak (nije obavezno)</translation>
@@ -1628,6 +1628,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7335766481146072567">Pritisnite Nastavi</translation>
 <translation id="7336259382292148213">Nema obavještenja za pregled</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
+<translation id="7349983576451251297">Web-stranice se otvaraju u pregledniku Chrome umjesto na prilagođenim karticama</translation>
 <translation id="7352339641508007922">Prevucite da kreirate dugi snimak ekrana</translation>
 <translation id="7352651011704765696">Nešto nije uredu</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Dijelite 1 odabranu stavku}one{Dijelite # odabranu stavku}few{Dijelite # odabrane stavke}other{Dijelite # odabranih stavki}}</translation>
@@ -1718,6 +1719,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7690596512217303514">Otvaranje Chromea na uređaju nije uspjelo. Da riješite problem, preuzmite najnovije ažuriranje Chromea iz trgovine aplikacija.</translation>
 <translation id="7692761875510935111">Brzo otvorite u pregledniku. Dodirnite i zadržite da uredite ovu prečicu.</translation>
 <translation id="7695270712963178084">Chromeovi pronalasci</translation>
+<translation id="7695610746377249436">Web-lokacije, uključujući Google, odgovaraju na ovaj zahtjev prema vlastitom nahođenju.</translation>
 <translation id="7697383401610880082">Ručica za prevlačenje</translation>
 <translation id="7698359219371678927">Kreirajte e-poruku u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Donja tabela nedavne aktivnosti je otvorena u punoj visini</translation>

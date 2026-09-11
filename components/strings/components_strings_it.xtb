@@ -846,7 +846,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2400263725572336749">Aggiungi passaporto</translation>
 <translation id="2400271059665846158">Gestisci le tue carte fedeltà in Google Wallet</translation>
 <translation id="2400600116338235695">Può chiedere di connettersi alle porte seriali</translation>
-<translation id="2403474027143565107">Esatta</translation>
+<translation id="2403474027143565107">Precisa</translation>
 <translation id="240450251994300576">Logo intestazione secondario</translation>
 <translation id="2404715426538856682">Carte di credito e di debito · IBAN · Carte fedeltà</translation>
 <translation id="2404884497378469141">Prova a copiare di nuovo i file</translation>
@@ -1095,6 +1095,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2859806420264540918">Questo sito mostra annunci invasivi o fuorvianti.</translation>
 <translation id="2873317327342476681">Gioco del dinosauro, tocca il dinosauro o premi la barra spaziatrice per giocare</translation>
 <translation id="287387905105155974">Fumetto della guida</translation>
+<translation id="2875109558992200904">Quando Chrome segnala eventi di sicurezza, i relativi dati pertinenti vengono inviati al tuo amministratore. Questi dati possono includere URL e titoli delle pagine visitate in Chrome o da cui hai copiato dei dati, metadati o nomi dei file, indirizzi IP, arresti anomali del browser o delle schede e il nome utente che usi per accedere alle applicazioni basate sul web, al tuo dispositivo e a Chrome.</translation>
 <translation id="2876489322757410363">Per procedere al pagamento tramite un'applicazione esterna, uscirai dalla modalità Incognito. Continuare?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire la funzionalità Navigazione sicura e altre opzioni nelle impostazioni di Chrome</translation>
 <translation id="2878197950673342043">Piegatura a mappa</translation>
@@ -1135,7 +1136,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2931453528659195355">Gestisci informazioni sugli acquisti</translation>
 <translation id="2933624813161016821">Alluminio goffrato</translation>
 <translation id="2935726091208500473">condivisione delle schede</translation>
-<translation id="2936698630976431647">Seleziona il campo del codice promozionale per compilare automaticamente le offerte di Google Wallet</translation>
 <translation id="293796669683825859">Commenti</translation>
 <translation id="2938225289965773019">Aprire i link <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: per mostrare il cursore, cambia app, ricarica la pagina o torna indietro</translation>
@@ -1593,6 +1593,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3712004750972384495">Salvataggio registrazione dello schermo in corso…</translation>
 <translation id="3712006010833051684">Busta #10</translation>
 <translation id="3712624925041724820">Licenze esaurite</translation>
+<translation id="371302509916403935">Sottolineato</translation>
 <translation id="3713277100229669269">Ora puoi vedere i vantaggi della carta prima di pagare</translation>
 <translation id="3714633008798122362">Calendario web</translation>
 <translation id="3714780639079136834">Attivare la rete dati mobile o Wi-Fi</translation>
@@ -1940,6 +1941,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4265635050210404830">Le tue carte fedeltà</translation>
 <translation id="4265872034478892965">Consentita dall'amministratore</translation>
 <translation id="4267590181863312380">Accedi e sincronizza la cronologia per recuperare la cronologia dagli altri tuoi dispositivi. Potrai anche usare le password e altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
+<translation id="4267837382000002014">Gli URL e i titoli delle pagine che visiti vengono inviati a Google Cloud o a terze parti a scopo di analisi e potrebbero essere visibili all'amministratore. Ad esempio, potrebbero essere analizzati per rilevare siti web non sicuri o per filtrare i siti web in base alle regole stabilite dall'amministratore.</translation>
 <translation id="4268025649754414643">Crittografia chiave</translation>
 <translation id="4269599248168651462">Il certificato del server viene emesso con un nome non univoco.</translation>
 <translation id="4270541775497538019">Fascicolatore 6</translation>
@@ -4209,7 +4211,6 @@ Ulteriori dettagli:
 <translation id="815036624016370447">Le informazioni del tuo Account Google <ph name="ACCOUNT" /> possono aiutarti a compilare i moduli più velocemente in Chrome</translation>
 <translation id="8150722005171944719">Il file all'indirizzo <ph name="URL" /> non è leggibile. Potrebbe essere stato rimosso, spostato oppure delle autorizzazioni del file potrebbero impedire l'accesso.</translation>
 <translation id="8151185429379586178">Strumenti per sviluppatori</translation>
-<translation id="8152194419479742504">Digita @@ in qualsiasi modulo per trovare e inserire informazioni senza cambiare scheda</translation>
 <translation id="8153865548451212769">{0,plural, =1{La policy dell'amministratore sconsiglia di scaricare questo file su <ph name="DESTINATION_NAME" />}other{La policy dell'amministratore sconsiglia di scaricare questi file su <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Ultime schede aperte</translation>
 <translation id="815805690561372740">Chrome è dotato di funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura, che <ph name="BEGIN_LINK" />di recente ha rilevato malware<ph name="END_LINK" /> sul sito che hai cercato di visitare.</translation>
@@ -4273,6 +4274,7 @@ Ulteriori dettagli:
 <translation id="8269242089528251720">Documenti separati/Copie fascicolate</translation>
 <translation id="8269703227894255363">{0,plural, =1{Apertura del file bloccata}other{Apertura di <ph name="FILE_COUNT" /> file bloccata}}</translation>
 <translation id="8270242299912238708">Documenti PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Il foglio per la gestione dei pagamenti è aperto</translation>
 <translation id="827820107214076967">Aggiorna log</translation>
 <translation id="8279611986089885641">Le notifiche di Chrome devono essere attive. Puoi attivarle nelle <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

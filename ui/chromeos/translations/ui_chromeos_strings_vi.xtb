@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Tiếng Hindi</translation>
 <translation id="7665680517722058469">Thử nhập cụm từ tìm kiếm khác</translation>
 <translation id="7689532716264131859">Đã chuyển <ph name="NUMBER_OF_ITEMS" /> mục vào thùng rác</translation>
-<translation id="7693909743393669729">Thao tác định dạng ổ đĩa sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đĩa đó, đồng thời xóa tất cả phân vùng hiện có, bao gồm cả những phân vùng có thể không hiển thị. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
 <translation id="7695430100978772476">Không định dạng được <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Không dọn sạch được thùng rác.</translation>
 <translation id="7705251383879779343">Đã sao chép <ph name="FILE_NAME" />.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">Bàn phím quốc tế Workman tiêu chuẩn Hoa Kỳ</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Rất tiếc, ít nhất một phân vùng trên thiết bị lưu trữ bên ngoài của bạn không thể kết nối được.</translation>
-<translation id="7908793776359722643">Thao tác định dạng một phân vùng sẽ xóa toàn bộ dữ liệu lưu trữ trên phân vùng đó. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Các tệp trong Drive của tôi sẽ tự động đồng bộ hoá với Chromebook để bạn có thể truy cập các tệp này mà không cần kết nối Internet.</translation>
 <translation id="7925247922861151263">Không thể kiểm tra AAA</translation>

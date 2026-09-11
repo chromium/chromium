@@ -1095,6 +1095,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2859806420264540918">Na tej stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy.</translation>
 <translation id="2873317327342476681">Gra z dinozaurem. Aby zagrać, kliknij dinozaura lub naciśnij spację</translation>
 <translation id="287387905105155974">Dymek pomocy</translation>
+<translation id="2875109558992200904">Gdy Chrome oznacza zdarzenia związane z bezpieczeństwem, odpowiednie dane o nich są wysyłane do administratora. Mogą one obejmować adresy URL i tytuły stron odwiedzanych w Chrome, adresy URL stron, z których skopiowano dane, nazwy plików lub metadane, adresy IP, awarie przeglądarki lub kart oraz nazwę użytkownika, pod którą logujesz się w aplikacjach internetowych, na danym urządzeniu i w Chrome.</translation>
 <translation id="2876489322757410363">Opuszczasz tryb incognito, aby zapłacić w aplikacji zewnętrznej. Czy chcesz kontynuować?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać Bezpiecznym przeglądaniem i innymi opcjami w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="2878197950673342043">Składanie krzyżowe</translation>
@@ -1135,7 +1136,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2931453528659195355">Zarządzaj informacjami o zakupach</translation>
 <translation id="2933624813161016821">Folia do wytłaczania</translation>
 <translation id="2935726091208500473">udostępnianiu kart</translation>
-<translation id="2936698630976431647">Wybierz pole kodu promocyjnego, aby automatycznie uzupełniać oferty z Portfela Google</translation>
 <translation id="293796669683825859">Komentarze</translation>
 <translation id="2938225289965773019">Otwieranie linków protokołu <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – aby wyświetlić kursor, przełącz aplikacje, odśwież stronę lub wróć do poprzedniej</translation>
@@ -1596,6 +1596,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3712004750972384495">Zapisuję nagranie ekranu</translation>
 <translation id="3712006010833051684">Koperta nr 10</translation>
 <translation id="3712624925041724820">Brak wolnych licencji</translation>
+<translation id="371302509916403935">Podkreślenie</translation>
 <translation id="3713277100229669269">Teraz możesz zobaczyć korzyści z karty, zanim zapłacisz</translation>
 <translation id="3714633008798122362">kalendarz sieciowy</translation>
 <translation id="3714780639079136834">Włącz komórkową transmisję danych lub Wi-Fi</translation>
@@ -1943,6 +1944,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4265635050210404830">Twoje karty lojalnościowe</translation>
 <translation id="4265872034478892965">Dozwolone przez administratora</translation>
 <translation id="4267590181863312380">Aby zobaczyć historię z innych urządzeń, zaloguj się i zsynchronizuj ją. Będziesz też mieć dostęp do haseł i innych danych na wszystkich swoich urządzeniach. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
+<translation id="4267837382000002014">Adresy URL i tytuły odwiedzanych stron są wysyłane do Google Cloud lub innych firm w celu przeanalizowania, a administrator może je widzieć. Na przykład mogą zostać przeskanowane w poszukiwaniu niebezpiecznych stron lub odfiltrowane na podstawie zasad określonych przez administratora.</translation>
 <translation id="4268025649754414643">Szyfrowanie klucza</translation>
 <translation id="4269599248168651462">Certyfikat serwera jest wystawiany dla nazwy, która nie jest unikalna.</translation>
 <translation id="4270541775497538019">Układarka 6</translation>
@@ -4213,7 +4215,6 @@ Dodatkowe informacje:
 <translation id="815036624016370447">Informacje z Twojego konta Google <ph name="ACCOUNT" /> mogą pomóc Ci szybciej wypełniać formularze w Chrome</translation>
 <translation id="8150722005171944719">Nie można odczytać pliku <ph name="URL" />. Być może został usunięty lub uprawnienia dostępu uniemożliwiają jego odczyt.</translation>
 <translation id="8151185429379586178">Narzędzia dla deweloperów</translation>
-<translation id="8152194419479742504">Wpisz @@ w dowolnym formularzu, aby przywołać i wypełnić informacje bez przełączania kart</translation>
 <translation id="8153865548451212769">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się pobierania tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się pobierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się pobierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się pobierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Ostatnio otwarte karty</translation>
 <translation id="815805690561372740">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Niedawno ta funkcja <ph name="BEGIN_LINK" />wykryła złośliwe oprogramowanie<ph name="END_LINK" /> na stronie, którą chcesz odwiedzić.</translation>
@@ -4277,6 +4278,7 @@ Dodatkowe informacje:
 <translation id="8269242089528251720">Oddzielne dokumenty / Kopie sortowane</translation>
 <translation id="8269703227894255363">{0,plural, =1{Otwieranie pliku zostało zablokowane}few{Otwieranie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Otwieranie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Otwieranie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="8270242299912238708">Dokumenty PDF</translation>
+<translation id="8270320981823560179">Dysk</translation>
 <translation id="8277900682056760511">Arkusz modułu do obsługi płatności jest otwarty</translation>
 <translation id="827820107214076967">Odśwież logi</translation>
 <translation id="8279611986089885641">Powiadomienia w Chrome muszą być włączone. Aby je włączyć, otwórz <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

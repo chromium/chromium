@@ -1095,6 +1095,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2859806420264540918">Diese Website zeigt aufdringliche oder irreführende Werbung an.</translation>
 <translation id="2873317327342476681">Dino-Spiel – tippe auf den Dino oder drücke die Leertaste, um das Spiel zu starten</translation>
 <translation id="287387905105155974">Infofeld</translation>
+<translation id="2875109558992200904">Wenn Chrome Sicherheitshinweise meldet, werden relevante Informationen an deinen Administrator gesendet. Dazu gehören z. B. URLs und Titel der von dir in Chrome besuchten Seiten, URLs von Seiten, von denen du Daten kopiert hast, Dateinamen oder Metadaten, IP-Adressen, Browser- oder Tab-Abstürze sowie der Nutzername, den du zum Anmelden in Webanwendungen, auf deinem Gerät und in Chrome verwendest.</translation>
 <translation id="2876489322757410363">Der Inkognitomodus wird deaktiviert, um über eine externe Anwendung zu zahlen. Möchtest du fortfahren?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um beispielsweise Safe Browsing in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="2878197950673342043">Posterfaltung</translation>
@@ -1135,7 +1136,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2931453528659195355">Shopping-Informationen verwalten</translation>
 <translation id="2933624813161016821">Prägefolie</translation>
 <translation id="2935726091208500473">Teilen deiner Tabs</translation>
-<translation id="2936698630976431647">Wähle das Feld für den Gutscheincode aus, um Angebote aus Google Wallet automatisch ausfüllen zu lassen</translation>
 <translation id="293796669683825859">Kommentare</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" />-Links öffnen</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – zum Einblenden des Cursors: zu einer anderen App wechseln, die Seite aktualisieren oder zurückgehen</translation>
@@ -1594,6 +1594,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3712004750972384495">Bildschirmaufzeichnung wird gespeichert</translation>
 <translation id="3712006010833051684">Umschlag Nr. 10</translation>
 <translation id="3712624925041724820">Lizenzen aufgebraucht</translation>
+<translation id="371302509916403935">Unterstreichen</translation>
 <translation id="3713277100229669269">Du kannst jetzt schon vor dem Bezahlen Kartenvorteile sehen</translation>
 <translation id="3714633008798122362">Web-Kalender</translation>
 <translation id="3714780639079136834">Mobile Daten oder WLAN aktivieren</translation>
@@ -1941,6 +1942,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4265635050210404830">Meine Kundenkarten</translation>
 <translation id="4265872034478892965">Von deinem Administrator zugelassen</translation>
 <translation id="4267590181863312380">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
+<translation id="4267837382000002014">URLs und Titel von Seiten, die du besuchst, werden zur Analyse an Google Cloud oder Dritte gesendet und können für deinen Administrator sichtbar sein. Sie werden beispielsweise gescannt, um unsichere Websites zu identifizieren oder Websites auf Grundlage von Regeln zu filtern, die vom Administrator eingerichtet wurden.</translation>
 <translation id="4268025649754414643">Schlüsselverschlüsselung</translation>
 <translation id="4269599248168651462">Das Serverzertifikat wird für einen nicht eindeutigen Namen ausgestellt.</translation>
 <translation id="4270541775497538019">Stapelfach 6</translation>
@@ -4211,7 +4213,6 @@ Weitere Details:
 <translation id="815036624016370447">Mit den Informationen aus deinem Google-Konto <ph name="ACCOUNT" /> kannst du Formulare in Chrome schneller ausfüllen</translation>
 <translation id="8150722005171944719">Die Datei unter <ph name="URL" /> kann nicht gelesen werden. Sie wurde möglicherweise entfernt oder verschoben oder die Dateiberechtigungen verhindern den Zugriff.</translation>
 <translation id="8151185429379586178">Entwicklertools</translation>
-<translation id="8152194419479742504">Gib in einem beliebigen Formular „@@“ ein, um Informationen abzurufen und einzufügen, ohne den Tab zu wechseln</translation>
 <translation id="8153865548451212769">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei auf „<ph name="DESTINATION_NAME" />“ herunterzuladen}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien auf „<ph name="DESTINATION_NAME" />“ herunterzuladen}}</translation>
 <translation id="8155253549374198915">Zuletzt geöffnete Tabs</translation>
 <translation id="815805690561372740">Chrome verfügt über integrierte Sicherheitsfunktionen, die dich beim Surfen schützen. Eine dieser Funktionen, Google Safe Browsing, hat auf dieser Website kürzlich <ph name="BEGIN_LINK" />Malware gefunden<ph name="END_LINK" />.</translation>
@@ -4275,6 +4276,7 @@ Weitere Details:
 <translation id="8269242089528251720">Getrennte Dokumente/sortierte Kopien</translation>
 <translation id="8269703227894255363">{0,plural, =1{Datei kann nicht geöffnet werden}other{<ph name="FILE_COUNT" /> Dateien können nicht geöffnet werden}}</translation>
 <translation id="8270242299912238708">PDF-Dokumente</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Das Dokument zur Zahlungsabwicklung ist geöffnet</translation>
 <translation id="827820107214076967">Protokolle aktualisieren</translation>
 <translation id="8279611986089885641">Du musst Chrome-Benachrichtigungen aktivieren. Rufe dazu einfach die <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> auf.</translation>

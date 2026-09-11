@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS client</translation>
 <translation id="1508263560970797965">Continue in Incognito</translation>
 <translation id="1509486075633541495">Sign in to website</translation>
+<translation id="1509922846321012406">Explore more ways to boost your privacy and safety</translation>
 <translation id="1513858653616922153">Delete password</translation>
 <translation id="1517166097004694782">Hide 'Continue with this tab'</translation>
 <translation id="1520027731907768768">Receive price drop alerts for products that you track.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Default browser</translation>
 <translation id="2893791155497534382">Passwords and other activity can be deleted in their management settings</translation>
 <translation id="2894757982205307093">New tab in group</translation>
+<translation id="2897858638449756400">Explore more ways to search</translation>
 <translation id="2902312830803030883">More actions</translation>
 <translation id="2904788871580817212">Price drop on your open tab, from <ph name="PREVIOUS_PRICE" /> to <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">You have <ph name="NUMBER_OF_PASSWORDS" /> reused passwords that could put your security at risk.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">This deletes addresses saved on this device. It also deletes addresses saved in your Google Account <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Issues found <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Create image</translation>
+<translation id="5058813911021873087">Explore more ways to get organised and save time</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Level up your browsing</translation>
 <translation id="5062321486222145940">Install Google Drive</translation>
@@ -1881,6 +1884,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="6987201788018524855">Explore helpful features that you've missed</translation>
 <translation id="6989636517316575338">Ask about any page</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">All tasks</translation>
 <translation id="6998251471716094661">Track prices of products and get alerts when the price drops on any site</translation>
 <translation id="7004032350256606903">Your organisation requires you to browse privately.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -2199,7 +2203,7 @@ You can restart at any time.</translation>
 <translation id="8032569120109842252">Following</translation>
 <translation id="8035133914807600019">New folder…</translation>
 <translation id="8035412398498507358">Photos</translation>
-<translation id="8037713009824540257">Add Site</translation>
+<translation id="8037713009824540257">Add site</translation>
 <translation id="8038078082340255234">Market report</translation>
 <translation id="8040407350301524547">For route options, tap 'Get directions'.</translation>
 <translation id="804427445359061970">You'll find your tabs from other devices here</translation>

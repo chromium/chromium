@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7665680517722058469">Sumubok ng ibang paghahanap</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> (na) item ang inilipat sa trash</translation>
-<translation id="7693909743393669729">Kapag nag-format ng drive, mabubura ang lahat ng data na naka-store dito at maaalis ang lahat ng kasalukuyang partition, kasama ang mga partition na posibleng hindi nakikita. Hindi maa-undo ang pagkilos na ito.</translation>
 <translation id="7695430100978772476">Hindi ma-format ang <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Hindi naalis ang laman ng trash.</translation>
 <translation id="7705251383879779343">Nakopya ang <ph name="FILE_NAME" />.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">US Workman international</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Paumanhin, hindi mai-mount ang hindi bababa sa isang bahagi ng iyong device sa storage.</translation>
-<translation id="7908793776359722643">Kapag nag-format ng partition, mabubura ang lahat ng data na naka-store dito. Hindi maa-undo ang pagkilos na ito.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Awtomatikong masi-sync sa iyong Chromebook ang mga file mo sa Aking Drive para ma-access mo ang mga ito nang walang koneksyon sa internet.</translation>
 <translation id="7925247922861151263">Nabigo ang pagsusuri sa AAA</translation>

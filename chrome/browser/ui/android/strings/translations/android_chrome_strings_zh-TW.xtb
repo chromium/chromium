@@ -1345,7 +1345,7 @@
 <translation id="634208815998129842">工作管理員</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
 <translation id="6345878117466430440">標示為已讀取</translation>
-<translation id="63490081267265251">你造訪的網站 (包括 Google) 會自行決定如何回應這項要求。視所在地區的法律而定，網站可能會限制出售及分享你的資料，或限制將資料用於個人化廣告。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="63490081267265251">你造訪的網站 (包括 Google) 會自行決定如何回應這項要求。視所在地區的法律而定，網站可能會限制出售、分享或將你的資料用於個人化廣告的方式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">管理你的裝置</translation>
 <translation id="6356893102071098867">請確認所選的帳戶是否正確</translation>
 <translation id="6364438453358674297">從歷史記錄中移除建議項目？</translation>
@@ -1517,7 +1517,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 你最近未造訪這個網站，因此 Chrome 已移除這項權限</translation>
 <translation id="6923291640965724312">沉浸模式格式</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 個分頁}other{<ph name="NUMBER_OF_TABS" /> 個分頁}}</translation>
-<translation id="6929224077895306814">儲存在裝置和 Google 帳戶中的所有安全碼都會刪除</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />，選取的固定分頁，正在播放音訊</translation>
 <translation id="6937524809504266803">個人化與連結</translation>
 <translation id="6937876069006524083">暱稱 (選填)</translation>
@@ -1739,7 +1738,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}}</translation>
 <translation id="777637629667389858">當你登入帳戶後，保護你在各項 Google 服務中的安全。</translation>
 <translation id="7778840695157240389">請稍後再返回查看是否有新的報導</translation>
-<translation id="7780992949171378848">向網站傳送「選擇停用」要求，限制其使用你的資料</translation>
+<translation id="7780992949171378848">針對使用你資料的方式，向網站傳送「選擇停用」要求</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7792388396321542707">停止分享</translation>
 <translation id="780287761701992588">無論使用任何裝置，都能存取書籤、密碼和其他設定</translation>

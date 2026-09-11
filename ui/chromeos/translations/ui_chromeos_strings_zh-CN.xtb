@@ -864,7 +864,6 @@
 <translation id="7663224033570512922">印地语</translation>
 <translation id="7665680517722058469">请尝试换个字词进行搜索</translation>
 <translation id="7689532716264131859">已将 <ph name="NUMBER_OF_ITEMS" /> 项内容移至回收站</translation>
-<translation id="7693909743393669729">将 U 盘格式化会清空其中存储的所有数据，并会移除所有现有分区（包括未必可见的分区）。此操作无法撤消。</translation>
 <translation id="7695430100978772476">无法将“<ph name="DRIVE_NAME" />”格式化</translation>
 <translation id="76959938259365003">未能清空回收站。</translation>
 <translation id="7705251383879779343">已复制 <ph name="FILE_NAME" />。</translation>
@@ -908,7 +907,6 @@
 <translation id="7901567919203965902">美式 Workman 国际</translation>
 <translation id="7903984238293908205">片假名</translation>
 <translation id="7908378463497120834">抱歉，您的外部存储设备上至少有一个分区无法加载。</translation>
-<translation id="7908793776359722643">将分区格式化会清空其中存储的所有数据。此操作无法撤消。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">您在“我的云端硬盘”中保存的文件会自动同步到 Chromebook，以供您在未联网的情况下访问。</translation>
 <translation id="7925247922861151263">AAA 检查失败</translation>

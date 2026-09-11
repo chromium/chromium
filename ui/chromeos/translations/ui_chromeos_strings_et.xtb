@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">hindi</translation>
 <translation id="7665680517722058469">Proovige muud otsingut</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> üksust teisaldati prügikasti</translation>
-<translation id="7693909743393669729">Ketta vormindamisel kustutatakse kõik sellel olevad andmed ja eemaldatakse kõik olemasolevad partitsioonid (sh nähtamatud partitsioonid). Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="7695430100978772476">Ei saanud ketast <ph name="DRIVE_NAME" /> vormindada</translation>
 <translation id="76959938259365003">Prügikasti tühjendamine ebaõnnestus.</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> on kopeeritud.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">USA Workmani rahvusvaheline klaviatuur</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Kahjuks ei õnnestunud teie välisel mäluseadmel vähemalt ühe kettapartitsiooni ühendamine.</translation>
-<translation id="7908793776359722643">Partitsiooni vormindamisel kustutatakse kõik sellesse salvestatud andmed. Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Teie failid jaotises Minu ketas sünkroonitakse automaatselt teie Chromebookiga, nii et pääsete neile juurde ilma internetiühenduseta.</translation>
 <translation id="7925247922861151263">AAA kontrollimine nurjus</translation>

@@ -12944,11 +12944,6 @@ Isso é útil quando o administrador sabe que um recurso que exige a presença d
 <translation id="8865404058177794289">Aplicar a configuração padrão para a verificação de uso da Chave RSA</translation>
 <translation id="8866430022832109569">Relatórios de inventário do app</translation>
 <translation id="886645881209114007">Permitir que os usuários usem um <ph name="PLUGIN_VM_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="8867894831390233044">Controla se os usuários podem usar a depuração remota.
-
-      Se esta política for definida como "Ativada" ou não for definida, os usuários poderão usar a depuração remota especificando as chaves da linha de comando --remote-debugging-port e --remote-debugging-pipe.
-
-      Se esta política for definida como "Desativada", os usuários não poderão usar a depuração remota.</translation>
 <translation id="8870995142109792885">Ativar o localizador de plug-ins</translation>
 <translation id="8871974300055371298">Configurações de conteúdo</translation>
 <translation id="8872029059067980702">Não mostrar a tela inicial do Gemini durante o login</translation>

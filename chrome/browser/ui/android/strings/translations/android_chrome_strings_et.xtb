@@ -1517,7 +1517,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> – Chrome eemaldas need load, kuna te pole hiljuti külastanud</translation>
 <translation id="6923291640965724312">Kaasahaarav vorming</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 vaheleht}other{<ph name="NUMBER_OF_TABS" /> vahelehte}}</translation>
-<translation id="6929224077895306814">Kõik teie seadmesse ja Google’i kontole salvestatud turvakoodid kustutatakse</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, valitud kinnitatud kuuldav vaheleht</translation>
 <translation id="6937524809504266803">Isikupärastamine ja linkimine</translation>
 <translation id="6937876069006524083">Hüüdnimi (valikuline)</translation>

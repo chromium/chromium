@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS klient s MLS</translation>
 <translation id="1508263560970797965">Pokračovat v anonymním režimu</translation>
 <translation id="1509486075633541495">Přihlásit se k webu</translation>
+<translation id="1509922846321012406">Prozkoumejte další způsoby, jak si lépe chránit soukromí a bezpečí</translation>
 <translation id="1513858653616922153">Vymazat heslo</translation>
 <translation id="1517166097004694782">Skrýt možnost Pokračovat s touto kartou</translation>
 <translation id="1520027731907768768">Odebírat upozornění na pokles cen u produktů, které sledujete.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Výchozí prohlížeč</translation>
 <translation id="2893791155497534382">Hesla a další aktivitu lze smazat v nastavení jejich správy</translation>
 <translation id="2894757982205307093">Nová karta ve skupině</translation>
+<translation id="2897858638449756400">Prozkoumejte další způsoby vyhledávání</translation>
 <translation id="2902312830803030883">Další akce</translation>
 <translation id="2904788871580817212">Pokles ceny na otevřené kartě z <ph name="PREVIOUS_PRICE" /> na <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Máte několik (<ph name="NUMBER_OF_PASSWORDS" />) opakovaně použitých hesel, která by mohla ohrozit vaši bezpečnost.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Tímto smažete adresy uložené na tomto zařízení. Smažou se i adresy uložené ve vašem účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Byly zjištěny problémy (<ph name="TIME" />).</translation>
 <translation id="5056587122125565772">Vytvořit obrázek</translation>
+<translation id="5058813911021873087">Prozkoumejte další způsoby, jak si udělat pořádek a ušetřit čas</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Posuňte své prohlížení na vyšší úroveň</translation>
 <translation id="5062321486222145940">Instalace Disku Google</translation>
@@ -1881,6 +1884,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="6987201788018524855">Objevte užitečné funkce, které vám chyběly</translation>
 <translation id="6989636517316575338">Zeptejte se na kteroukoli stránku</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Všechny úkoly</translation>
 <translation id="6998251471716094661">Sledujte ceny produktů a získejte upozornění, když na kterémkoli webu klesne cena</translation>
 <translation id="7004032350256606903">Vaše organizace vyžaduje, abyste si obsah prohlíželi anonymně.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>

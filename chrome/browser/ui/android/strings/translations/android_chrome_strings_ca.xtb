@@ -664,6 +664,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">Surt de la reproducció immersiva</translation>
+<translation id="3662595332590803433">Obre sempre les pestanyes personalitzades a Chrome</translation>
 <translation id="3674208116086565128">Ves a l'inici de l'aplicació Google</translation>
 <translation id="368329460027487650">Has tancat la sessió. Obre les opcions per iniciar la sessió.</translation>
 <translation id="3684540848053703310">Full inferior d'estadístiques de preus tancat</translation>
@@ -1517,7 +1518,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ha suprimit aquests permisos perquè no has visitat aquest lloc web recentment</translation>
 <translation id="6923291640965724312">Format immersiu</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestanya}other{<ph name="NUMBER_OF_TABS" /> pestanyes}}</translation>
-<translation id="6929224077895306814">Se suprimiran tots els codis de seguretat desats al teu dispositiu i al teu Compte de Google</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, pestanya audible i fixada seleccionada</translation>
 <translation id="6937524809504266803">Personalització i enllaçaments</translation>
 <translation id="6937876069006524083">Àlies (opcional)</translation>
@@ -1628,6 +1628,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7335766481146072567">Prem Continua</translation>
 <translation id="7336259382292148213">Les notificacions estan bé</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
+<translation id="7349983576451251297">Obre les pàgines web al navegador Chrome en lloc de pestanyes personalitzades</translation>
 <translation id="7352339641508007922">Arrossega per fer una captura llarga</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Comparteix 1 element seleccionat}other{Comparteix # elements seleccionats}}</translation>
@@ -1718,6 +1719,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7690596512217303514">El dispositiu no ha pogut obrir Chrome. Per resoldre el problema, baixa l'actualització més recent de Chrome de la botiga d'aplicacions.</translation>
 <translation id="7692761875510935111">Obre ràpidament al navegador. Mantén premuda aquesta drecera per editar-la.</translation>
 <translation id="7695270712963178084">Chrome Finds</translation>
+<translation id="7695610746377249436">Els llocs web, inclòs Google, faran servir el seu propi criteri a l'hora de respondre a aquesta sol·licitud.</translation>
 <translation id="7697383401610880082">Ansa de posicionament</translation>
 <translation id="7698359219371678927">Crea una adreça electrònica a <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Full inferior de l'activitat recent obert a alçada completa</translation>

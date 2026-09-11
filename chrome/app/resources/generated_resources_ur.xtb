@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">‏ان میں سے کسی بھی USB آلات تک رسائی حاصل کریں</translation>
 <translation id="1038462104119736705">‏کم از کم <ph name="INSTALL_SIZE" /> جگہ Linux کے لیے تجویز کی جاتی ہے۔ خالی جگہ میں اضافہ کرنے کے لیے، اپنے آلہ سے فائلز حذف کریں۔</translation>
 <translation id="1038643060055067718">لکیریں:</translation>
+<translation id="1039216421321079051">ایکسٹینشن کو دوسری ایکسٹینشن نے غیر فعال کر دیا ہے</translation>
 <translation id="1039337018183941703">غلط یا خراب فائل</translation>
 <translation id="1040761927998636252"><ph name="URL" /> کے لیے بے نام بُک مارک</translation>
 <translation id="1041175011127912238">یہ صفحہ نہیں کھل رہا ہے</translation>
@@ -2615,7 +2616,6 @@
 <translation id="3000461861112256445">مونو آڈیو</translation>
 <translation id="3001144475369593262">بچوں کے اکاؤنٹس</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{کوئی حسب ضرورت بنائی گئی کلید نہیں}=1{1 حسب ضرورت بنائی گئی کلید}other{{COUNT} حسب ضرورت بنائی گئی کلیدیں}}</translation>
-<translation id="3002745665522516995">تلاش کرنے کے لیے صفحہ پر کچھ بھی منتخب کریں</translation>
 <translation id="3002864108328203174">‏Gemini کی نیچے کی شیٹ آدھی کھلی ہے۔</translation>
 <translation id="3003144360685731741">ترجیحی نیٹ ورکس</translation>
 <translation id="3003253259757197230">‏آپ کے ملاحظہ کردہ URLs آپ اگلی بار کون سی سائٹس ملاحظہ کر سکتے ہیں اس بات کی پیشنگوئی کرنے کے لیے اور آپ کو آپ کے ملاحظہ کئے جانے والے صفحے کے بارے میں اضافی معلومات دکھانے کے لیے Google کو بھیجے جاتے ہیں</translation>
@@ -3462,6 +3462,7 @@
 <translation id="3641456520301071208">سائٹس آپ کے مقام کیلئے پوچھ سکتی ہیں</translation>
 <translation id="3642070413432681490">کرسر پر چکر لگائیں</translation>
 <translation id="3643962751030964445">یہ آلہ <ph name="DEVICE_MANAGER" /> کے زیر انتظام ہے۔ <ph name="DEVICE_MANAGER" /> کو اکاؤنٹ <ph name="USER_EMAIL_ADDRESS" /> کے لیے ایک نئی پروفائل درکار ہے</translation>
+<translation id="3644128856494356630">‏‫CppGC میموری</translation>
 <translation id="3645372836428131288">فنگر پرنٹ کے مختلف حصے کو کیپچر کرنے کیلئے تھوڑی سی حرکت دیں</translation>
 <translation id="3645951915068244649">اس بُک مارک فولڈر کے ساتھ پہلے ہی ایک ٹیب گروپ تخلیق کیا گیا تھا۔ کیا آپ نیا ٹیب گروپ بنانا چاہتے ہیں یا موجودہ کو تبدیل کرنا چاہتے ہیں؟</translation>
 <translation id="3646789916214779970">ڈیفالٹ تھیم پر دوبارہ ترتیب دیں</translation>
@@ -4234,6 +4235,7 @@
 <translation id="4226303886821889519">اپ ڈیٹ کنندہ ورژن: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{اس ایکسٹینشن کی اجازت نہیں ہے}other{کچھ ایکسٹینشنز کی اجازت نہیں ہے}}</translation>
 <translation id="4229538146709970028">براہ کرم اپنے سرٹیفکیٹ کے ساتھ <ph name="HOST_NAME" /> کی توثیق کرنے کے لیے <ph name="TOKEN_NAME" /> کو غیر مقفل کریں۔</translation>
+<translation id="4230659518013393045">‏آپ کے موجودہ ٹیب کے صفحہ کے عنوان، URL اور مواد کا اشتراک Google کے ساتھ آپ کو مزید متعلقہ جوابات دینے کے لیے کیا جاتا ہے۔ آپ براؤز کرتے وقت ٹیبز شامل کر سکتے ہیں یا ہٹا سکتے ہیں۔</translation>
 <translation id="4232375817808480934">‏Kerberos کنفیگر کریں</translation>
 <translation id="4232376164796433044">پاس ورڈز اور آٹو فل</translation>
 <translation id="4233739489690259993">‏اب آپ کے Chromebook کو سیکیورٹی اور سافٹ ویئر اپ ڈیٹس موصول نہیں ہو رہی ہیں۔ تازہ ترین سیکیورٹی اور نئی خصوصیات کے لیے اپنے آلے کو اپ گریڈ کریں۔ پیشکش کی شرائط لاگو ہوتی ہیں۔</translation>
@@ -4577,7 +4579,6 @@
 <translation id="4495002167047709180">اس ایکسٹینشن کو <ph name="SITE" /> پر اجازت دیں؟</translation>
 <translation id="4495419450179050807">اس صفحہ پر نہ دکھائیں</translation>
 <translation id="4500055235123625757">‏‫Gemini اس ویڈیو یا آڈیو کے بارے میں سوالات کے جوابات دے سکتا ہے جسے آپ نے <ph name="LINK_BEGIN" />کچھ ویب سائٹس<ph name="LINK_END" /> پر چلایا ہے۔</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ناکام ہو گیا ہے</translation>
 <translation id="4500647907053779331"><ph name="LANGUAGE" /> میں انتخاب کا &amp;ترجمہ کریں</translation>
 <translation id="4501530680793980440">ہٹانے کی توثیق کریں</translation>
 <translation id="4502423230170890588">اس آلہ سے ہٹائيں</translation>
@@ -5101,6 +5102,7 @@
 <translation id="488785315393301722">تفصیلات دکھائیں</translation>
 <translation id="488862352499217187">نیا فولڈر بنائیں</translation>
 <translation id="4888715715847020167">ترتیبات پر جائیں</translation>
+<translation id="4888899258150891194">‏‫CppGC میموری</translation>
 <translation id="4890292359366636311">خودکار طور پر تصویر میں تصویر درج کریں تاکہ آپ اسے دوسرے ٹیبز اور ونڈوز کے اوپر استعمال کر سکیں۔</translation>
 <translation id="4890399733764921729">رابطہ نہیں ہو سکتا۔ دوسرے موبائل فراہم کنندہ کے ذریعہ مقفل ہے۔</translation>
 <translation id="4890585766056792498">خطرناک سائٹس سے تحفظ حاصل کریں</translation>
@@ -5465,7 +5467,6 @@
 <translation id="5173668317844998239">اپنی سیکیورٹی کلید میں محفوظ کردہ فنگر پرنٹس کو شامل اور حذف کریں</translation>
 <translation id="5174169235862638850">پاس ورڈ کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="517488401359338823">سیکیورٹی آلہ کو غیر مقفل کریں</translation>
-<translation id="5176671554021050278">‏صفحہ پر مخصوص تصاویر یا ٹیکسٹ کے بارے میں مزید جاننے کے لیے Google لینز کا استعمال کریں۔</translation>
 <translation id="5177479852722101802">کیمرا اور مائیکروفون رسائی کو مسدود کرنا جاری رکھیں</translation>
 <translation id="5178667623289523808">پچھلا تلاش کریں</translation>
 <translation id="5179428098696668914">‏‫AI پلے بیک کو آف کریں</translation>
@@ -5786,6 +5787,7 @@
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> کو تلاش کریں:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> ونڈو اب <ph name="WINDOW_SIZE_PERCENT" /> چوڑا ہے <ph name="PANE_SIDE" /> پین اب <ph name="PANE_SIZE_PERCENT" /> چوڑا ہے۔</translation>
 <translation id="5438060324827306856">ایکسٹینشنز تلاش کریں</translation>
+<translation id="5440240650630588012">‏فوکس میں مدد کے لیے ریڈنگ لائن یا ونڈو کا اطلاق کریں۔ ‫⌥L دبائیں یا ترتیبات پر جائیں۔</translation>
 <translation id="5440425659852470030">سائیڈ پینل بند کریں</translation>
 <translation id="544083962418256601">شارٹ کٹس بنائیں…</translation>
 <translation id="5441133529460183413">‏Chrome براؤزر سے ویب ایپ انسٹال کی گئی</translation>
@@ -5972,6 +5974,7 @@
 <translation id="5576472948015790634">‏اب آپ اپنے ٹیب گروپس اور Gemini چیٹس کا ایک ہی جگہ پر نظم کر سکتے ہیں۔ کسی بھی وقت اس کا پن ہٹائيں۔</translation>
 <translation id="5578059481725149024">خودکار سائن ان</translation>
 <translation id="5578387000057347457">تصویر بنانے کے لیے حسب ضرورت پرامپٹ درج کریں یا ٹیکسٹ کو ہائی لائٹ کریں</translation>
+<translation id="557893471177655572">لائن فوکس آزمائیں</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{‏‫1 آئٹم صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، <ph name="BEGIN_LINK" />اسے اپنے Google اکاؤنٹ میں محفوظ کریں<ph name="END_LINK" />۔}other{‏‫{ITEM_COUNT} آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، <ph name="BEGIN_LINK" />انہیں اپنے Google اکاؤنٹ میں محفوظ کریں<ph name="END_LINK" />۔}}</translation>
 <translation id="5579225964082017560">‫<ph name="SECTION_HEADER" /> فہرست سے <ph name="SITE" /> ہٹائیں</translation>
 <translation id="5581031802689147441">منقسم منظر</translation>
@@ -9987,6 +9990,7 @@
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699296325072357994">‏پاس ورڈ کے صفحات اور متعلقہ معلومات سے مواد Google کو بھیجا جاتا ہے اور انسانوں کے ذریعے اس کا جائزہ لیا جاتا ہے۔ آپ کا پاس ورڈ مرموز کردہ ہے اور کسی نے کبھی نہیں دیکھا۔ <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">launcher + backspace</translation>
+<translation id="8701058912406466818">‏فوکس میں مدد کے لیے ریڈنگ لائن یا ونڈو کا اطلاق کریں۔ ‫Alt+L دبائیں یا ترتیبات پر جائیں۔</translation>
 <translation id="8702278591052316269">پوشیدہ محفوظ کردہ ٹیب گروپس پر مشتمل مینیو</translation>
 <translation id="8703346390800944767">اشتہار کو نظر انداز کریں</translation>
 <translation id="8703372953981978786">یہ لنک کام نہیں کرتا</translation>
@@ -10749,6 +10753,7 @@
 <translation id="983192555821071799">سبھی ٹیبز بند کریں</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - کیمرا اور مائیکروفون سے ریکارڈنگ کی جا رہی ہے</translation>
 <translation id="984705303330760860">املے کی جانچ کے لیے زبانیں شامل کریں</translation>
+<translation id="986994187171579118">ایکسٹینشن کو <ph name="EXTENSION_NAME" /> نے غیر فعال کر دیا</translation>
 <translation id="987264212798334818">عمومی</translation>
 <translation id="987574372967138078">‫<ph name="WEBSITE_ORIGIN" /> آپ کے موبائل آلہ سے معلومات حاصل کرنا چاہتا ہے</translation>
 <translation id="988320949174893488">کبھی کبھار رکتی ہے</translation>

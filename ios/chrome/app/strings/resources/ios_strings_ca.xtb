@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Client MLS d'RCS</translation>
 <translation id="1508263560970797965">Continua en mode d'incògnit</translation>
 <translation id="1509486075633541495">Inicia la sessió al lloc web</translation>
+<translation id="1509922846321012406">Explora més maneres de millorar la teva privadesa i seguretat</translation>
 <translation id="1513858653616922153">Suprimeix la contrasenya</translation>
 <translation id="1517166097004694782">Amaga l'opció Continua navegant des d'aquesta pestanya</translation>
 <translation id="1520027731907768768">Rep alertes de baixada de preu de productes que segueixes.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Navegador predeterminat</translation>
 <translation id="2893791155497534382">Les contrasenyes i altres activitats es poden suprimir a la configuració de gestió corresponent</translation>
 <translation id="2894757982205307093">Pestanya nova al grup</translation>
+<translation id="2897858638449756400">Explora més maneres de fer cerques</translation>
 <translation id="2902312830803030883">Més accions</translation>
 <translation id="2904788871580817212">Baixada de preu a la pestanya oberta, de <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Tens <ph name="NUMBER_OF_PASSWORDS" /> contrasenyes reutilitzades que podrien posar en perill la teva seguretat.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Se suprimiran les adreces desades en aquest dispositiu. També se suprimiran les adreces desades al teu Compte de Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">S'han trobat errors <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Crea una imatge</translation>
+<translation id="5058813911021873087">Explora més maneres d'organitzar-te i estalviar temps</translation>
 <translation id="5059136629401106827">D'acord</translation>
 <translation id="5061202435354361813">Millora la teva navegació</translation>
 <translation id="5062321486222145940">Instal. de Google Drive</translation>
@@ -1881,6 +1884,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="6987201788018524855">Explora funcions útils que t'has perdut</translation>
 <translation id="6989636517316575338">Pregunta sobre qualsevol pàgina</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Totes les tasques</translation>
 <translation id="6998251471716094661">Fes un seguiment dels preus dels productes i rep alertes quan el preu baixi en qualsevol lloc web</translation>
 <translation id="7004032350256606903">La teva organització requereix que naveguis de manera privada.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>

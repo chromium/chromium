@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Client RCS MLS</translation>
 <translation id="1508263560970797965">Continuer en mode Navigation privée</translation>
 <translation id="1509486075633541495">Connexion au site Web</translation>
+<translation id="1509922846321012406">Découvrir d'autres façons de renforcer votre confidentialité et votre sécurité</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
 <translation id="1517166097004694782">Masquez « Continuer avec cet onglet »</translation>
 <translation id="1520027731907768768">Recevez des alertes de réduction de prix pour les produits que vous suivez.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Navigateur par défaut</translation>
 <translation id="2893791155497534382">Les mots de passe et d'autres activités peuvent être supprimés dans leurs paramètres de gestion</translation>
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
+<translation id="2897858638449756400">Explorer d'autres façons de rechercher</translation>
 <translation id="2902312830803030883">Autres actions</translation>
 <translation id="2904788871580817212">Baisse de prix sur votre onglet ouvert, de <ph name="PREVIOUS_PRICE" /> à <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe réutilisés, ce qui pourrait compromettre votre sécurité.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Cette action supprime les adresses enregistrées sur cet appareil. Elle supprime également les adresses enregistrées dans votre compte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> problèmes trouvés.</translation>
 <translation id="5056587122125565772">Créer une image</translation>
+<translation id="5058813911021873087">Découvrir d'autres façons de vous organiser et de gagner du temps</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Améliorez votre navigation</translation>
 <translation id="5062321486222145940">Installer Google Disque</translation>
@@ -1881,6 +1884,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="6987201788018524855">Découvrez des fonctionnalités utiles que vous avez manquées</translation>
 <translation id="6989636517316575338">Posez une question à propos de n'importe quelle page</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Toutes les tâches</translation>
 <translation id="6998251471716094661">Suivez les prix des produits et recevez des alertes lorsque le prix baisse sur n'importe quel site</translation>
 <translation id="7004032350256606903">Votre organisation vous demande de naviguer en mode privé.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

@@ -1517,7 +1517,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ դուք վերջին ժամանակահատվածում չեք այցելել այս կայք</translation>
 <translation id="6923291640965724312">Վիրտուալ իրականություն</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ներդիր}one{<ph name="NUMBER_OF_TABS" /> ներդիր}other{<ph name="NUMBER_OF_TABS" /> ներդիր}}</translation>
-<translation id="6929224077895306814">Անվտանգության բոլոր կոդերը, որոնք պահված են ձեր սարքում և Google հաշվում, կջնջվեն</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, ընտրված ներդիր, որն ամրացված է, և որում ձայն է նվագարկվում</translation>
 <translation id="6937524809504266803">Անհատականացում և կապում</translation>
 <translation id="6937876069006524083">Կեղծանուն (պարտադիր չէ)</translation>

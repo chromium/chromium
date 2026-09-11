@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS klientas</translation>
 <translation id="1508263560970797965">Tęsti inkognito režimu</translation>
 <translation id="1509486075633541495">Prisijungti prie svetainės</translation>
+<translation id="1509922846321012406">Sužinokite daugiau būdų, kaip padidinti privatumą ir saugą</translation>
 <translation id="1513858653616922153">Ištrinti slaptažodį</translation>
 <translation id="1517166097004694782">Slėpti parinktį „Tęsti naudojant šį skirtuką“</translation>
 <translation id="1520027731907768768">Gaukite įspėjimus apie sumažintas stebimų produktų kainas.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Numatytoji naršyklė</translation>
 <translation id="2893791155497534382">Slaptažodžius ir kitą veiklą galima ištrinti jų tvarkymo nustatymuose</translation>
 <translation id="2894757982205307093">Naujas skirtukas grupėje</translation>
+<translation id="2897858638449756400">Atraskite daugiau paieškos būdų</translation>
 <translation id="2902312830803030883">Daugiau veiksmų</translation>
 <translation id="2904788871580817212">Sumažinta kaina atidarytame skirtuke: iš <ph name="PREVIOUS_PRICE" /> į <ph name="PRICE" />, „<ph name="PRODUCT_NAME" />“, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Turite pakartotinai naudojamų slaptažodžių (iš viso: <ph name="NUMBER_OF_PASSWORDS" />), dėl kurių gali kilti saugos pavojus.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Bus ištrinti šiame įrenginyje išsaugoti adresai. Taip pat ištrinami adresai, išsaugoti „Google“ paskyroje <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problemos rastos <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Sukurti vaizdą</translation>
+<translation id="5058813911021873087">Sužinokite daugiau būdų, kaip tvarkyti ir sutaupyti laiko</translation>
 <translation id="5059136629401106827">Gerai</translation>
 <translation id="5061202435354361813">Pagerinkite naršymą</translation>
 <translation id="5062321486222145940">Įdiegti „Google“ diską</translation>
@@ -1881,6 +1884,7 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="6987201788018524855">Peržiūrėkite naudingas funkcijas, kurias praleidote</translation>
 <translation id="6989636517316575338">Klauskite apie bet kurį puslapį</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Visos užduotys</translation>
 <translation id="6998251471716094661">Stebėkite produktų kainas ir gaukite įspėjimus, kai kaina sumažės bet kurioje svetainėje</translation>
 <translation id="7004032350256606903">Jūsų organizacija reikalauja, kad naršytumėte privačiai.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>

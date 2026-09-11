@@ -1095,6 +1095,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2859806420264540918">This site shows intrusive or misleading ads.</translation>
 <translation id="2873317327342476681">Dino game, tap the dino or press space to play</translation>
 <translation id="287387905105155974">Help bubble</translation>
+<translation id="2875109558992200904">When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs and titles of pages that you visit in Chrome, URLs of pages that you copied data from, file names or metadata, IP addresses, browser or tab crashes, and the username that you use to sign in to web-based applications, your device and Chrome.</translation>
 <translation id="2876489322757410363">Leaving Incognito mode to pay via an external application. Continue?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to manage your Safe Browsing and more in Chrome settings</translation>
 <translation id="2878197950673342043">Poster fold</translation>
@@ -1135,7 +1136,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2931453528659195355">Manage shopping info</translation>
 <translation id="2933624813161016821">Embossing foil</translation>
 <translation id="2935726091208500473">sharing your tabs</translation>
-<translation id="2936698630976431647">Select the promo code field to autofill offers from Google Wallet</translation>
 <translation id="293796669683825859">Comments</translation>
 <translation id="2938225289965773019">Open <ph name="PROTOCOL" /> links</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – to show your cursor, switch apps, reload the page or go back</translation>
@@ -1596,6 +1596,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3712004750972384495">Saving screen recording</translation>
 <translation id="3712006010833051684">Envelope no.10</translation>
 <translation id="3712624925041724820">Licenses exhausted</translation>
+<translation id="371302509916403935">Underline</translation>
 <translation id="3713277100229669269">Now you can see card benefits before you pay</translation>
 <translation id="3714633008798122362">web calendar</translation>
 <translation id="3714780639079136834">Turning on mobile data or Wi-Fi</translation>
@@ -1943,6 +1944,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4265635050210404830">Your loyalty cards</translation>
 <translation id="4265872034478892965">Allowed by your administrator</translation>
 <translation id="4267590181863312380">To get your history from your other devices, sign in and sync history. You'll also get your passwords and more on all your devices. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
+<translation id="4267837382000002014">URLs and titles of pages that you visit are sent to Google Cloud or third parties for analysis, and may be visible to your administrator. For example, they might be scanned to detect unsafe websites or filter websites based on rules set by the administrator.</translation>
 <translation id="4268025649754414643">Key Encipherment</translation>
 <translation id="4269599248168651462">The server certificate is issued to a non-unique name.</translation>
 <translation id="4270541775497538019">Stacker 6</translation>
@@ -4213,7 +4215,6 @@ Additional details:
 <translation id="815036624016370447">Info from your Google Account <ph name="ACCOUNT" /> can help you fill in forms faster in Chrome</translation>
 <translation id="8150722005171944719">The file at <ph name="URL" /> is not readable.  It may have been removed, moved or file permissions may be preventing access.</translation>
 <translation id="8151185429379586178">Developer tools</translation>
-<translation id="8152194419479742504">Type @@ in any form to find and fill info without switching tabs</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrator policy doesn’t recommend downloading this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend downloading these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Last open tabs</translation>
 <translation id="815805690561372740">Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing, which <ph name="BEGIN_LINK" />recently found malware<ph name="END_LINK" /> on the site that you tried visiting.</translation>
@@ -4277,6 +4278,7 @@ Additional details:
 <translation id="8269242089528251720">Separate documents/Collated copies</translation>
 <translation id="8269703227894255363">{0,plural, =1{File blocked from opening}other{<ph name="FILE_COUNT" /> files blocked from opening}}</translation>
 <translation id="8270242299912238708">PDF documents</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Payment handler sheet is opened</translation>
 <translation id="827820107214076967">Refresh logs</translation>
 <translation id="8279611986089885641">Chrome notifications must be on. You can turn them on in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

@@ -36,7 +36,6 @@
 <translation id="1333654552732143316">Mulakan Chrome</translation>
 <translation id="1341711321000856656">Anda boleh menukar profil untuk melihat kata laluan daripada profil Chrome yang lain</translation>
 <translation id="1343830902827845050">Log masuk ke Chrome</translation>
-<translation id="1356661055722410047">Baharu! Anda boleh menterjemahkan teks dan imej pada skrin anda</translation>
 <translation id="1361351916482714918">Semak imbas dengan lebih bijak menggunakan Google Lens</translation>
 <translation id="1363996462118479832">Chrome OS tidak dapat menyegerakkan data anda disebabkan oleh ralat melog masuk.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -96,6 +95,7 @@
 <translation id="1873233029667955273">Google Chrome bukan penyemak imbas lalai anda</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome sudah usang</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> sudah log masuk. Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chrome dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapat sambungan anda dan pelbagai lagi pada semua peranti anda.</translation>
 <translation id="1880677175115548835">Pilih teks</translation>
 <translation id="1896602904211344018">Dapatkan apl Chrome</translation>
 <translation id="1919130412786645364">Benarkan log masuk Chrome</translation>
@@ -542,6 +542,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6334815226785304306">Jadikan Google Chrome penyemak imbas lalai dan sematkan pada Bar Tugas</translation>
 <translation id="63540178978900677">Chrome bukan penyemak imbas lalai anda lagi. Jadikan Chrome penyemak imbas lalai?</translation>
 <translation id="6360449101159168105">Semasa tab ini tidak aktif, memori dikosongkan untuk mengekalkan kepantasan Chrome. Anda boleh memilih untuk sentiasa mengecualikan laman ini daripada menjadi tidak aktif.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> sudah log masuk. Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chrome dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapat senarai bacaan anda dan pelbagai lagi pada semua peranti anda.</translation>
 <translation id="6388799252195623474">bantu saya dengan kandungan ini</translation>
 <translation id="6412673304250309937">Semak URL melalui perbandingan dengan senarai tapak tidak selamat yang disimpan dalam Chrome. Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
@@ -702,6 +703,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="7845233973568007926">Terima kasih kerana memasang. Anda perlu memulakan semula komputer anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Lancarkan Chrome apabila Windows dimulakan</translation>
 <translation id="7849037457735762883">Teruskan dari tempat anda berhenti: Chrome boleh memulihkan tab anda setiap kali anda memulakan semula apl. Untuk menghidupkan ciri ini, akses</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> sudah log masuk. Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chrome dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapat sambungan anda dan pelbagai lagi daripada <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Untuk menggunakan kata laluan anda yang disimpan, ikut kod QR, muat turun Chrome untuk iOS dan log masuk ke Google Account anda</translation>
 <translation id="7872446069773932638">Memuat turun... <ph name="SECONDS" /> saat lagi</translation>
 <translation id="7886087451482920026">Pilih teks dengan Google Lens</translation>
@@ -788,7 +790,6 @@ Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memad
 <translation id="8575047640889685742">Gunakan <ph name="BEGIN_LINK" />ungkapan laluan<ph name="END_LINK" /> anda sendiri untuk menyulitkan data Chrome dalam Google Account anda. Kaedah pembayaran dan alamat daripada Google Pay tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.</translation>
 <translation id="8590782867495422699">Buka semula AI Mode Google Search</translation>
 <translation id="8598779894319572882">Daripada butang "AI Mode Google Search" pada bar alat, anda boleh membuka semula AI Mode Google Search untuk mengemukakan pertanyaan semasa anda menyemak imbas</translation>
-<translation id="8601359445272098721">Baharu! Anda boleh menterjemahkan teks dan imej pada skrin anda dengan memilih butang "terjemahkan skrin"</translation>
 <translation id="8614913330719544658">Google Chrome tidak responsif. Lancarkan semula sekarang?</translation>
 <translation id="8623450603356630491">Log masuk ke Chrome pada telefon anda</translation>
 <translation id="8624541899164515475">Tetapan, dibuka dalam tab baharu.</translation>
@@ -800,6 +801,7 @@ Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memad
 <translation id="8679801911857917785">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chrome.</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8712767363896337380">Kemas kini hampir selesai! Lancarkan semula Chrome untuk menyelesaikan kemas kini.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> sudah log masuk. Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chrome dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapat senarai bacaan anda dan pelbagai lagi daripada <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Log Keluar daripada Chrome</translation>
 <translation id="873133009373065397">Google Chrome tidak dapat menentukan atau menetapkan penyemak imbas lalai</translation>
 <translation id="8747073452963259673">penjuru bawah sebelah kiri kawasan carian: kiri <ph name="LEFT" />%, bawah <ph name="BOTTOM" />%</translation>

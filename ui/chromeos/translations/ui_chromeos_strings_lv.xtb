@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7665680517722058469">Izmēģiniet citu meklēšanas vaicājumu</translation>
 <translation id="7689532716264131859">Vienumi (<ph name="NUMBER_OF_ITEMS" />) ir pārvietoti uz atkritni.</translation>
-<translation id="7693909743393669729">Formatējot disku, tiks dzēsti visi tajā glabātie dati un tiks noņemti visi esošie nodalījumi, tostarp tie, kas nav redzami. Šo darbību nevar atsaukt.</translation>
 <translation id="7695430100978772476">Nevarēja formatēt disku “<ph name="DRIVE_NAME" />”.</translation>
 <translation id="76959938259365003">Neizdevās iztukšot atkritni.</translation>
 <translation id="7705251383879779343">Nokopēts vienums: <ph name="FILE_NAME" />.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">Workman (ASV starptautiskā)</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Diemžēl vismaz vienu ārējās atmiņas ierīces nodalījumu nevarēja uzstādīt.</translation>
-<translation id="7908793776359722643">Formatējot nodalījumu, tiks izdzēsti visi tajā glabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Jūsu mapē Mans disks esošie faili tiks automātiski sinhronizēti ar jūsu Chromebook datoru, lai jūs varētu tiem piekļūt bez interneta savienojuma.</translation>
 <translation id="7925247922861151263">AAA pārbaude neizdevās</translation>

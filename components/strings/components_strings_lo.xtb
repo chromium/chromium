@@ -1136,7 +1136,6 @@
 <translation id="2931453528659195355">ຈັດການຂໍ້ມູນການຊື້ເຄື່ອງ</translation>
 <translation id="2933624813161016821">ຟອຍລ໌ລາຍນູນ</translation>
 <translation id="2935726091208500473">ກຳລັງແບ່ງປັນແຖບຂອງທ່ານ</translation>
-<translation id="2936698630976431647">ເລືອກຊ່ອງຂໍ້ມູນລະຫັດໂປຣໂມຊັນເພື່ອຕື່ມຂໍ້ມູນຂໍ້ສະເໜີຈາກ Google Wallet ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="293796669683825859">ຄຳເຫັນ</translation>
 <translation id="2938225289965773019">ເປີດ​ລິ້ງ <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – ເພື່ອສະແດງເຄີເຊີຂອງທ່ານ, ໃຫ້ສະຫຼັບແອັບ, ໂຫຼດໜ້າເວັບໃໝ່ ຫຼື ກັບຄືນ</translation>
@@ -1597,6 +1596,7 @@
 <translation id="3712004750972384495">ກໍາລັງບັນທຶກການບັນທຶກໜ້າຈໍ</translation>
 <translation id="3712006010833051684">Envelope #10</translation>
 <translation id="3712624925041724820">ການອະ​ນຸ​ຍາດ​ໃຊ້ໝົດແລ້ວ</translation>
+<translation id="371302509916403935">ຂີດກ້ອງ</translation>
 <translation id="3713277100229669269">ຕອນນີ້ທ່ານສາມາດເບິ່ງສິດທິປະໂຫຍດຂອງບັດກ່ອນທີ່ທ່ານຈະຈ່າຍເງິນໄດ້ແລ້ວ</translation>
 <translation id="3714633008798122362">ປະ​ຕິ​ທິນ​ເວັບ​</translation>
 <translation id="3714780639079136834">ກຳລັງເປີດຂໍ້ມູນເຄືອຂ່າຍມືຖື ຫຼື Wi-Fi</translation>
@@ -4214,7 +4214,6 @@
 <translation id="815036624016370447">ຂໍ້ມູນຈາກບັນຊີ Google <ph name="ACCOUNT" /> ຂອງທ່ານສາມາດຊ່ວຍໃຫ້ທ່ານຕື່ມຂໍ້ມູນແບບຟອມໃນ Chrome ໄດ້ໄວຂຶ້ນ</translation>
 <translation id="8150722005171944719">ໄຟລ໌ຢູ່ທີ່ <ph name="URL" /> ບໍ່ສາມາດອ່ານໄດ້. ມັນອາດຈະຖືກເອົາອອກໄປ, ຍ້າຍໜີ,​ຫຼື ການອະນຸຍາດໄຟລ໌ອາດຈະກໍາລັງ​ປ້ອງ​ກັນການການເຂົ້າຫາ.</translation>
 <translation id="8151185429379586178">ເຄື່ອງ​ມື​ຜູ້ພັດ​ທະ​ນາ</translation>
-<translation id="8152194419479742504">ພິມ @@ ໃນແບບຟອມໃດກໍໄດ້ເພື່ອຊອກຫາ ແລະ ຕື່ມຂໍ້ມູນໂດຍບໍ່ຕ້ອງສະຫຼັບແຖບ</translation>
 <translation id="8153865548451212769">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ດາວໂຫຼດໄຟລ໌ນີ້ໃສ່ໃນ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ດາວໂຫຼດໄຟລ໌ເຫຼົ່ານີ້ໃສ່ໃນ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">ແຖບທີ່ເປີດຫຼ້າສຸດ</translation>
 <translation id="815805690561372740">Chrome ມີຄຸນສົມບັດຄວາມປອດໄພໃນຕົວເພື່ອປົກປ້ອງທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ — ເຊັ່ນ: Google Safe Browsing, ເຊິ່ງ <ph name="BEGIN_LINK" />ພົບເມົາແວເມື່ອບໍ່ດົນມານີ້<ph name="END_LINK" /> ຢູ່ເວັບໄຊທີ່ທ່ານພະຍາຍາມເຂົ້າເບິ່ງ.</translation>
@@ -4278,6 +4277,7 @@
 <translation id="8269242089528251720">ເອກະສານແຍກກັນ/ຈັດຊຸດສຳເນົາ</translation>
 <translation id="8269703227894255363">{0,plural, =1{ໄຟລ໌ຖືກບລັອກບໍ່ໃຫ້ເປີດ}other{<ph name="FILE_COUNT" /> ໄຟລ໌ຖືກບລັອກບໍ່ໃຫ້ເປີດ}}</translation>
 <translation id="8270242299912238708">ເອກະສານ PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">ແຜ່ນວຽກຂອງເຄື່ອງຈັດການການຈ່າຍເງິນເປີດຢູ່</translation>
 <translation id="827820107214076967">ໂຫຼດບັນທຶກຄືນໃໝ່</translation>
 <translation id="8279611986089885641">ຕ້ອງເປີດການແຈ້ງເຕືອນ Chrome. ທ່ານສາມາດເປີດໃຊ້ພວກມັນໄດ້ໃນ <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

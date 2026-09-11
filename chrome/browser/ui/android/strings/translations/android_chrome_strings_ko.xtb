@@ -1517,7 +1517,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 최근에 방문하지 않아 Chrome에서 이러한 권한을 삭제했습니다.</translation>
 <translation id="6923291640965724312">몰입형 형식</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{탭 1개}other{탭 <ph name="NUMBER_OF_TABS" />개}}</translation>
-<translation id="6929224077895306814">기기 및 Google 계정에 저장된 모든 보안 코드가 삭제됩니다.</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, 선택되고 고정되고 청취 가능한 탭</translation>
 <translation id="6937524809504266803">맞춤설정 및 연결</translation>
 <translation id="6937876069006524083">닉네임(선택사항)</translation>

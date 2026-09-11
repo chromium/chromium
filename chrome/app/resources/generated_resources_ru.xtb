@@ -1944,7 +1944,7 @@
 <translation id="2498539833203011245">Свернуть</translation>
 <translation id="2498765460639677199">Огромный</translation>
 <translation id="2500471369733289700">Заблокировано в целях безопасности</translation>
-<translation id="2500915336169200382">Спросить Gemini об этом: <ph name="SELECTION" /></translation>
+<translation id="2500915336169200382">Спросить Gemini о "<ph name="SELECTION" />"</translation>
 <translation id="2501173422421700905">Cертификат приостановлен</translation>
 <translation id="2501797496290880632">Укажите быстрые клавиши</translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
@@ -2531,6 +2531,7 @@
 <translation id="2939908794993783865">Другие неактивные сайты</translation>
 <translation id="2939938020978911855">Показать доступные устройства Bluetooth</translation>
 <translation id="2941112035454246133">Низкий</translation>
+<translation id="2942228903502008519">Развернуть вкладки (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">Ожидание...</translation>
 <translation id="2942581856830209953">Настроить эту страницу</translation>
 <translation id="2942707801577151363">Вы сможете открывать, редактировать и сохранять файлы Word, Excel и PowerPoint. Для некоторых функций может требоваться подписка.</translation>
@@ -2616,7 +2617,6 @@
 <translation id="3000461861112256445">Монофо­нический звук</translation>
 <translation id="3001144475369593262">Детские аккаунты</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Нет настроенных клавиш}=1{1 настроенная клавиша}one{{COUNT} настроенная клавиша}few{{COUNT} настроенные клавиши}many{{COUNT} настроенных клавиш}other{{COUNT} настроенной клавиши}}</translation>
-<translation id="3002745665522516995">Выберите интересующий вас элемент на странице</translation>
 <translation id="3002864108328203174">Нижний экран Gemini открыт наполовину.</translation>
 <translation id="3003144360685731741">Предпочитаемые сети</translation>
 <translation id="3003253259757197230">Чтобы предсказывать ваши дальнейшие запросы и показывать дополнительную информацию о просматриваемых страницах, URL посещенных вами сайтов отправляются в Google.</translation>
@@ -3465,6 +3465,7 @@
 <translation id="3641456520301071208">Разрешить сайтам запрашивать ваше местоположение</translation>
 <translation id="3642070413432681490">Обводка указателя</translation>
 <translation id="3643962751030964445">Этим устройством управляет <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> требует создать новый профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="3644128856494356630">Память CppGC</translation>
 <translation id="3645372836428131288">Немного перемещайте палец, чтобы отсканировать его полностью.</translation>
 <translation id="3645951915068244649">Группа вкладок с этой папкой закладок уже есть. Создать новую группу или заменить существующую?</translation>
 <translation id="3646789916214779970">Восстановить тему по умолчанию</translation>
@@ -4581,7 +4582,6 @@
 <translation id="4495002167047709180">Разрешить это расширение на сайте <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Не показывать на этой странице</translation>
 <translation id="4500055235123625757">Gemini сможет отвечать на вопросы о видео или аудио, которые вы воспроизводили на <ph name="LINK_BEGIN" />некоторых сайтах<ph name="LINK_END" /></translation>
-<translation id="4500114933761911433">Сбой в плагине <ph name="PLUGIN_NAME" /></translation>
 <translation id="4500647907053779331">Перевести выделенный текст на <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">Подтверждение удаления</translation>
 <translation id="4502423230170890588">Удалить с устройства</translation>
@@ -5105,6 +5105,7 @@
 <translation id="488785315393301722">Показать сведения</translation>
 <translation id="488862352499217187">Создать папку</translation>
 <translation id="4888715715847020167">в настройках</translation>
+<translation id="4888899258150891194">Память CppGC</translation>
 <translation id="4890292359366636311">Разрешите автоматически включать режим "картинка в картинке", чтобы вы могли смотреть видео поверх других вкладок и окон.</translation>
 <translation id="4890399733764921729">Ошибка подключения. Оно заблокировано другим мобильным оператором.</translation>
 <translation id="4890585766056792498">Защитите себя от опасных сайтов.</translation>
@@ -5451,6 +5452,7 @@
 <translation id="5155299520372681119">Время загрузки истекло. Файл удален.</translation>
 <translation id="5156638757840305347">Выделять текстовый курсор, когда он движется или появляется</translation>
 <translation id="5157250307065481244">Просмотр данных о сайте</translation>
+<translation id="5157258206078001821">Свернуть вкладки (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">Настроить Crostini</translation>
 <translation id="5159236862360390997">Вы увидите несколько всплывающих подсказок с инструкциями.
           Чтобы перейти к всплывающей подсказке, нажмите <ph name="ACCELERATOR" />. Повторное нажатие позволит перейти к элементу, на который указывает подсказка.</translation>
@@ -5469,7 +5471,6 @@
 <translation id="5173668317844998239">Добавить или удалить отпечатки пальцев, сохраненные на электронном ключе</translation>
 <translation id="5174169235862638850">Пароль скопирован в буфер обмена</translation>
 <translation id="517488401359338823">Разблокируйте устройство безопасности</translation>
-<translation id="5176671554021050278">С помощью Google Объектива можно находить сведения об изображениях или тексте на странице.</translation>
 <translation id="5177479852722101802">Всегда блокировать доступ к веб-камере и микрофону</translation>
 <translation id="5178667623289523808">Найти пред.</translation>
 <translation id="5179428098696668914">Отключить аудиопересказ</translation>
@@ -6670,6 +6671,7 @@
 <translation id="6136637346277431354">Добавьте вкладки и другое</translation>
 <translation id="6140948187512243695">Показать подробности</translation>
 <translation id="6141988275892716286">Подтвердите скачивание</translation>
+<translation id="6142784636114866877">Развернуть вкладки (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">Справка</translation>
 <translation id="6143366292569327983">Выберите исходный язык страницы</translation>
 <translation id="6144938890088808325">Помогите нам улучшить Chromebook</translation>
@@ -9996,6 +9998,7 @@
 <translation id="8692107307702113268">В пароле более 1000 символов.</translation>
 <translation id="8693862390730570097">Генератору текстов запрещено открываться автоматически</translation>
 <translation id="8694596275649352090">Блокировать при переходе в спящий режим или закрытии крышки</translation>
+<translation id="8695214265159551349">Свернуть вкладки (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">Открыть &amp;адрес...</translation>
 <translation id="869884720829132584">Меню приложений</translation>
 <translation id="869891660844655955">Срок действия</translation>
@@ -10492,7 +10495,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Узнать о том, какие данные собирает Google и как их использует, можно на странице <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />.</translation>
-<translation id="9066782832737749352">Озвучивание текста</translation>
+<translation id="9066782832737749352">Преобразование текста в речь</translation>
 <translation id="9068598199622656904">Если нужно сочетание клавиш, можно нажимать их по одной, а не одновременно</translation>
 <translation id="9068878141610261315">Файлы такого типа не поддерживаются.</translation>
 <translation id="9069417381769492963">По вашему запросу нет закладок.</translation>

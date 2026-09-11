@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS кардары</translation>
 <translation id="1508263560970797965">Жашыруун режимде улантуу</translation>
 <translation id="1509486075633541495">Вебсайтка кирүү</translation>
+<translation id="1509922846321012406">Купуялыгыңызды жана коопсуздугуңузду жогорулатуунун башка жолдорун изилдеңиз</translation>
 <translation id="1513858653616922153">Сырсөздү жок кылуу</translation>
 <translation id="1517166097004694782">"Бул өтмөк менен улантуу" параметрин жашырыңыз</translation>
 <translation id="1520027731907768768">Көз салынган товарлардын баасынын төмөндөшү тууралуу билип турасыз.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Демейки серепчи</translation>
 <translation id="2893791155497534382">Сырсөздөрдү жана башка аракеттерди алардын параметрлеринен өчүрсөңүз болот</translation>
 <translation id="2894757982205307093">Топтогу жаңы өтмөк</translation>
+<translation id="2897858638449756400">Издөөнүн башка жолдорун изилдеңиз</translation>
 <translation id="2902312830803030883">Көбүрөөк аракеттер</translation>
 <translation id="2904788871580817212">Ачылган өтмөктө баа арзандады. <ph name="PRODUCT_NAME" /> баасы <ph name="PREVIOUS_PRICE" /> ордуна <ph name="PRICE" /> болуп калды, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Коопсуздугуңузду тобокелге салуучу <ph name="NUMBER_OF_PASSWORDS" /> кайра колдонулган сырсөзүңүз бар.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Бул түзмөктө сакталган даректер өчүрүлөт. Google аккаунтуңузда (<ph name="USER_EMAIL" />) сакталган даректер да өчүрүлөт.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> маселелер табылды.</translation>
 <translation id="5056587122125565772">Сүрөт түзүү</translation>
+<translation id="5058813911021873087">Иреттүү болуп, убакыт үнөмдөөнүн башка жолдорун карап чыгыңыз</translation>
 <translation id="5059136629401106827">Жарайт</translation>
 <translation id="5061202435354361813">Издөөңүздү жакшыртыңыз</translation>
 <translation id="5062321486222145940">Google Drive'ды орнотуу</translation>
@@ -1881,6 +1884,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6987201788018524855">Өткөрүп жиберген пайдалуу функцияларды карап чыгыңыз</translation>
 <translation id="6989636517316575338">Барактар тууралуу суроо бериңиз</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Бардык тапшырмалар</translation>
 <translation id="6998251471716094661">Товарлардын баасын көзөмөлдөп, каалаган сайтта баа төмөндөгөндө эскертүүлөрдү алыңыз</translation>
 <translation id="7004032350256606903">Уюмуңуз жекече серептөөнү талап кылат.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>

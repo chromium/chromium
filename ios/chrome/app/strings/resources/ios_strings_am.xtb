@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS ደንበኛ</translation>
 <translation id="1508263560970797965">በማንነት የማያሳውቅ ይቀጥሉ</translation>
 <translation id="1509486075633541495">ወደ የድር ጣቢያ በመለያ ይግቡ</translation>
+<translation id="1509922846321012406">የእርስዎን ግላዊነት እና ደኅንነት የሚያሳድጉበትን ተጨማሪ መንገዶች ያስሱ</translation>
 <translation id="1513858653616922153">የይለፍ ቃል ሰርዝ</translation>
 <translation id="1517166097004694782">«በዚህ ትር ቀጥል» የሚለውን ደብቅ</translation>
 <translation id="1520027731907768768">ለሚከታተሏቸው ምርቶች የዋጋ ቅናሽ ማንቂያዎችን ይቀበሉ።</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">ነባሪ አሳሽ</translation>
 <translation id="2893791155497534382">የይለፍ ቃላት እና ሌሎች እንቅስቃሴዎች በአስተዳደር ቅንብሮቻቸው ውስጥ መሰረዝ ይችላሉ</translation>
 <translation id="2894757982205307093">በቡድን ውስጥ አዲስ ትር</translation>
+<translation id="2897858638449756400">ለፍለጋ ተጨማሪ መንገዶችን ያስሱ</translation>
 <translation id="2902312830803030883">ተጨማሪ እርምጃዎች</translation>
 <translation id="2904788871580817212">ክፍት በሆነ ትርዎ ላይ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="PRICE" /> የዋጋ ቅነሳ፣ <ph name="PRODUCT_NAME" />፣ <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገቡ የሚችሉ <ph name="NUMBER_OF_PASSWORDS" /> ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላት አሉዎት።</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">ይህ በዚህ መሣሪያ ላይ የተቀመጡ አድራሻዎችን ይሰርዛል። እንዲሁም በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ የተቀመጡ አድራሻዎችን ይሰርዛል።</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> ችግሮች ተገኝተዋል።</translation>
 <translation id="5056587122125565772">ምስል ፍጠር</translation>
+<translation id="5058813911021873087">ለመደራጀት እና ጊዜ ለመቆጠብ ተጨማሪ መንገዶችን ያስሱ</translation>
 <translation id="5059136629401106827">እሺ</translation>
 <translation id="5061202435354361813">የአሰሳዎን ደረጃ ከፍ ያድርጉ</translation>
 <translation id="5062321486222145940">Google Driveን ጫን</translation>
@@ -1881,6 +1884,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6987201788018524855">ያመለጡዎትን አጋዥ ባህሪያት ያስሱ</translation>
 <translation id="6989636517316575338">ስለማንኛውም ገፅ ይጠይቁ</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">ሁሉም ተግባራት</translation>
 <translation id="6998251471716094661">የምርቶችን ዋጋዎች ይከታተሉ እና በማንኛውም ጣቢያ ላይ ዋጋ ሲቀንስ ማንቂያዎች ያግኙ</translation>
 <translation id="7004032350256606903">ድርጅትዎ በግል እንዲያሰሱ ይፈልግብዎታል።
 <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>

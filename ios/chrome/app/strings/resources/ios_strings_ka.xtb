@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS კლიენტი</translation>
 <translation id="1508263560970797965">ინკოგნიტო რეჟიმში გაგრძელება</translation>
 <translation id="1509486075633541495">ვებსაიტში შესვლა</translation>
+<translation id="1509922846321012406">გაეცანით თქვენი კონფიდენციალურობისა და უსაფრთხოების გაძლიერების სხვა გზებს</translation>
 <translation id="1513858653616922153">პაროლის წაშლა</translation>
 <translation id="1517166097004694782">„ამ ჩანართით გაგრძელების“ დამალვა</translation>
 <translation id="1520027731907768768">მიიღეთ გაფრთხილებები იმ პროდუქტების ფასების კლების შესახებ, რომლებსაც თვალს ადევნებთ.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">ნაგულისხმევი ბრაუზერი</translation>
 <translation id="2893791155497534382">პაროლებისა და სხვა აქტივობის წაშლა შესაძლებელია მათი მართვის პარამეტრებიდან</translation>
 <translation id="2894757982205307093">ახალი ჩანართი ჯგუფში</translation>
+<translation id="2897858638449756400">გაეცანით ძიების სხვა გზებს</translation>
 <translation id="2902312830803030883">სხვა ქმედებები</translation>
 <translation id="2904788871580817212">ფასის დაწევა თქვენს გახსნილ ჩანართში, <ph name="PREVIOUS_PRICE" />-დან <ph name="PRICE" />-მდე, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204"><ph name="NUMBER_OF_PASSWORDS" /> ხელახლა გამოყენებული პაროლი გაქვთ, რაც უსაფრთხოებისთვის რისკის შემცველია.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">ამ მოქმედებით წაიშლება ამ მოწყობილობაში შენახული მისამართები. წაიშლება თქვენს Google ანგარიშში (<ph name="USER_EMAIL" />) შენახული მისამართებიც.</translation>
 <translation id="5056446788882570708">პრობლემები ნაპოვნია: <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">სურათის შექმნა</translation>
+<translation id="5058813911021873087">გაეცანით ორგანიზებულობისა და დროის დაზოგვის სხვა გზებს</translation>
 <translation id="5059136629401106827">კარგი</translation>
 <translation id="5061202435354361813">გააუმჯობესეთ დათვალიერების გამოცდილება</translation>
 <translation id="5062321486222145940">Google Drive-ის ინსტალაცია</translation>
@@ -1881,6 +1884,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6987201788018524855">გაეცანით სასარგებლო ფუნქციებს, რომლებიც გამოგრჩათ</translation>
 <translation id="6989636517316575338">იკითხეთ ნებისმიერი გვერდის შესახებ</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">ყველა ამოცანა</translation>
 <translation id="6998251471716094661">თვალყური მიადევნეთ პროდუქტების ფასებს და მიიღეთ გაფრთხილებები, როცა რომელიმე საიტზე ფასი დაიკლებს</translation>
 <translation id="7004032350256606903">თქვენი ორგანიზაცია მოითხოვს, რომ ვები კონფიდენციალურ რეჟიმში დაათვალიეროთ.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>

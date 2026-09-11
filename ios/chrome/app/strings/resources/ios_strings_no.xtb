@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS-klient</translation>
 <translation id="1508263560970797965">Fortsett i Inkognito</translation>
 <translation id="1509486075633541495">Logg på nettstedet</translation>
+<translation id="1509922846321012406">Utforsk flere måter å styrke personvernet og sikkerheten på</translation>
 <translation id="1513858653616922153">Slett passordet</translation>
 <translation id="1517166097004694782">Skjul «Fortsett med denne fanen»</translation>
 <translation id="1520027731907768768">Få varsler om avslag for produkter du sporer.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Standardnettleser</translation>
 <translation id="2893791155497534382">Passord og annen aktivitet kan slettes i innstillingene for administrering</translation>
 <translation id="2894757982205307093">Ny fane i gruppen</translation>
+<translation id="2897858638449756400">Utforsk flere måter å søke på</translation>
 <translation id="2902312830803030883">Flere handlinger</translation>
 <translation id="2904788871580817212">Avslag på den åpne fanen din, fra <ph name="PREVIOUS_PRICE" /> til <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> gjenbrukte passord som kan utgjøre en sikkerhetsrisiko.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Dette sletter adresser som er lagret på denne enheten. Den sletter også adresser som er lagret i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Fant problemer <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Lag bilde</translation>
+<translation id="5058813911021873087">Utforsk flere måter å organisere og spare tid på</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Ta nettlesingen til neste nivå</translation>
 <translation id="5062321486222145940">Installer Google Disk</translation>
@@ -1881,6 +1884,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="6987201788018524855">Utforsk nyttige funksjoner du har gått glipp av</translation>
 <translation id="6989636517316575338">Spør om hvilken som helst side</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Alle oppgaver</translation>
 <translation id="6998251471716094661">Spor priser på produkter, og få varsler når prisen går ned på et nettsted</translation>
 <translation id="7004032350256606903">Organisasjonen din krever at du surfer privat.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>

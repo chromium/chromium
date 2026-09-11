@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Iklayenti le-RCS MLS</translation>
 <translation id="1508263560970797965">Qhubeka ku-Incognito</translation>
 <translation id="1509486075633541495">Ngena ngemvume kuwebhusayithi</translation>
+<translation id="1509922846321012406">Hlola izindlela ezengeziwe zokuthuthukisa ubumfihlo bakho nokuphepha</translation>
 <translation id="1513858653616922153">Susa iphasiwedi</translation>
 <translation id="1517166097004694782">Fihla okuthi "Qhubeka nale thebhu"</translation>
 <translation id="1520027731907768768">Thola izixwayiso zokwehla kwentengo yemikhiqizo oyilandelelayo.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Isiphequluli esizenzakalelayo</translation>
 <translation id="2893791155497534382">Amaphasiwedi nomunye umsebenzi kungasulwa kumasethingi awo okulawula</translation>
 <translation id="2894757982205307093">Ithebhu entsha kuqembu</translation>
+<translation id="2897858638449756400">Hlola izindlela ezengeziwe zokusesha</translation>
 <translation id="2902312830803030883">Izenzo eziningi</translation>
 <translation id="2904788871580817212">Ukwehliswa kwentengo kwethebhu yakho evuliwe, kusukela ku-<ph name="PREVIOUS_PRICE" /> kuya ku-<ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Unamaphasiwedi angu-<ph name="NUMBER_OF_PASSWORDS" /> asetshenziswe kabusha angabeka ukuvikeleka kwakho engozini.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Lokhu kusula amakheli alondolozwe kule divayisi. Iphinde isule amakheli alondolozwe kuGoogle Account yakho ethi <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Izinkinga ezitholwe ngo-<ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Sungula isithombe</translation>
+<translation id="5058813911021873087">Hlola izindlela ezengeziwe zokuhleleka futhi wonge isikhathi</translation>
 <translation id="5059136629401106827">KULUNGILE</translation>
 <translation id="5061202435354361813">Khuphula izinga lokubhrawuza kwakho</translation>
 <translation id="5062321486222145940">Faka ku-Google Drayivu</translation>
@@ -1881,6 +1884,7 @@ Ukuze uqhubeke kukhompyutha yakho, shintshela ku-<ph name="OTHER_EMAIL" />. Uzot
 <translation id="6987201788018524855">Hlola izakhi eziwusizo ozigejile</translation>
 <translation id="6989636517316575338">Buza nganoma yiliphi ikhasi</translation>
 <translation id="6990519590575500580">I-Facetime</translation>
+<translation id="6998236305642926573">Yonke Imisebenzi</translation>
 <translation id="6998251471716094661">Threkha intengo yemikhiqizo futhi uthole izaziso lapho intengo yehla kunoma iyiphi isayithi</translation>
 <translation id="7004032350256606903">Inhlangano yakho idinga ukuthi uphequlule ngobumfihlo.
 <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>

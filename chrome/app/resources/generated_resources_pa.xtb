@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">ਇਹਨਾਂ ਵਿੱਚੋਂ ਕਿਸੇ ਵੀ USB ਡਿਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1038462104119736705">Linux ਲਈ ਘੱਟੋ-ਘੱਟ <ph name="INSTALL_SIZE" /> ਜਗ੍ਹਾ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਖਾਲੀ ਜਗ੍ਹਾ ਨੂੰ ਵਧਾਉਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚੋਂ ਫ਼ਾਈਲਾਂ ਮਿਟਾਓ।</translation>
 <translation id="1038643060055067718">ਲਾਈਨਾਂ:</translation>
+<translation id="1039216421321079051">ਕਿਸੇ ਹੋਰ ਐਕਸਟੈਂਸ਼ਨ ਨੇ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬੰਦ ਕੀਤਾ</translation>
 <translation id="1039337018183941703">ਅਵੈਧ ਜਾਂ ਖਰਾਬ ਫ਼ਾਈਲ</translation>
 <translation id="1040761927998636252"><ph name="URL" /> ਦੇ ਲਈ ਬੇਨਾਮ ਬੁੱਕਮਾਰਕ</translation>
 <translation id="1041175011127912238">ਇਹ ਪੰਨਾ ਪ੍ਰਤਿਕਿਰਿਆ ਨਹੀਂ ਦੇ ਰਿਹਾ ਹੈ</translation>
@@ -2629,7 +2630,6 @@
 <translation id="3000461861112256445">ਮੋਨੋ ਆਡੀਓ</translation>
 <translation id="3001144475369593262">ਬੱਚਿਆਂ ਦੇ ਖਾਤੇ</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{ਕੋਈ ਵੀ ਕੁੰਜੀ ਵਿਉਂਤਬੱਧ ਨਹੀਂ ਕੀਤੀ ਗਈ}=1{1 ਵਿਉਂਤਬੱਧ ਕੁੰਜੀ}other{{COUNT} ਵਿਉਂਤਬੱਧ ਕੁੰਜੀਆਂ}}</translation>
-<translation id="3002745665522516995">ਖੋਜਣ ਲਈ ਪੰਨੇ 'ਤੇ ਕੁਝ ਵੀ ਚੁਣੋ</translation>
 <translation id="3002864108328203174">Gemini ਦੀ ਹੇਠਲੀ ਸ਼ੀਟ ਅੱਧੀ ਉਚਾਈ 'ਤੇ ਹੈ।</translation>
 <translation id="3003144360685731741">ਤਰਜੀਹੀ ਨੈੱਟਵਰਕ</translation>
 <translation id="3003253259757197230">ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੇ ਜਾਣ ਵਾਲੇ URL, Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ ਤਾਂ ਕਿ ਇਹ ਅੰਦਾਜ਼ਾ ਲਗਾਇਆ ਜਾ ਸਕੇ ਕਿ ਤੁਸੀਂ ਅੱਗੇ ਕਿਹੜੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ ਅਤੇ ਨਾਲ ਹੀ ਤੁਹਾਨੂੰ ਉਸ ਪੰਨੇ ਬਾਰੇ ਵਧੀਕ ਜਾਣਕਾਰੀ ਵੀ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ ਜਿਸ 'ਤੇ ਤੁਸੀਂ ਜਾ ਰਹੇ ਹੋ</translation>
@@ -3478,6 +3478,7 @@
 <translation id="3641456520301071208">ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਬਾਰੇ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="3642070413432681490">ਗੋਲ ਕਰਸਰ</translation>
 <translation id="3643962751030964445">ਇਸ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DEVICE_MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। <ph name="DEVICE_MANAGER" /> ਨੂੰ <ph name="USER_EMAIL_ADDRESS" /> ਖਾਤੇ ਲਈ ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="3644128856494356630">CppGC ਮੈਮੋਰੀ</translation>
 <translation id="3645372836428131288">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੇ ਇੱਕ ਵੱਖਰੇ ਹਿੱਸੇ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਉਂਗਲ ਨੂੰ ਥੋੜ੍ਹਾ ਜਿਹਾ ਹਿਲਾਓ।</translation>
 <translation id="3645951915068244649">ਇਸ ਬੁੱਕਮਾਰਕ ਫੋਲਡਰ ਨਾਲ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਇੱਕ ਟੈਬ ਗਰੁੱਪ ਬਣਾਇਆ ਗਿਆ ਸੀ। ਕੀ ਤੁਸੀਂ ਨਵਾਂ ਟੈਬ ਗਰੁੱਪ ਬਣਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ ਜਾਂ ਮੌਜੂਦਾ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="3646789916214779970">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਥੀਮ 'ਤੇ ਰੀਸੈੱਟ ਕਰੋ</translation>
@@ -4250,6 +4251,7 @@
 <translation id="4226303886821889519">ਅੱਪਡੇਟਰ ਵਰਜਨ: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ}one{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ}other{ਕੁਝ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ}}</translation>
 <translation id="4229538146709970028">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸਰਟੀਫ਼ਿਕੇਟ ਨਾਲ <ph name="HOST_NAME" /> ਨੂੰ ਪ੍ਰਮਾਣਿਤ ਕਰਨ ਲਈ <ph name="TOKEN_NAME" /> ਨੂੰ ਅਣਲਾਕ ਕਰੋ।</translation>
+<translation id="4230659518013393045">ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਜਵਾਬ ਦੇਣ ਲਈ, ਤੁਹਾਡੀ ਮੌਜੂਦਾ ਟੈਬ ਦੇ ਪੰਨੇ ਦਾ ਸਿਰਲੇਖ, URL ਅਤੇ ਸਮੱਗਰੀ ਨੂੰ Google ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਜਿਵੇਂ ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਦੇ ਹੋ, ਤੁਸੀਂ ਟੈਬਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਹਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4232375817808480934">Kerberos ਦਾ ਸੰਰੂਪਣ ਕਰੋ</translation>
 <translation id="4232376164796433044">ਪਾਸਵਰਡ ਅਤੇ ਆਟੋਫਿਲ</translation>
 <translation id="4233739489690259993">ਤੁਹਾਡੀ Chromebook ਹੁਣ ਸੁਰੱਖਿਆ ਅਤੇ ਸਾਫ਼ਟਵੇਅਰ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਰਹੀ ਹੈ। ਨਵੀਨਤਮ ਸੁਰੱਖਿਆ ਅਤੇ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰੋ। ਪੇਸ਼ਕਸ਼ ਸੰਬੰਧੀ ਨਿਯਮ ਲਾਗੂ ਹੁੰਦੇ ਹਨ।</translation>
@@ -4593,7 +4595,6 @@
 <translation id="4495002167047709180">ਕੀ <ph name="SITE" /> 'ਤੇ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="4495419450179050807">ਇਸ ਸਫ਼ੇ ਤੇ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="4500055235123625757">Gemini ਤੁਹਾਡੇ ਵੱਲੋਂ <ph name="LINK_BEGIN" />ਕੁਝ ਵੈੱਬਸਾਈਟਾਂ<ph name="LINK_END" /> 'ਤੇ ਚਲਾਏ ਗਏ ਵੀਡੀਓ ਜਾਂ ਆਡੀਓ ਬਾਰੇ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦੇ ਸਕਦਾ ਹੈ।</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ਕ੍ਰੈਸ਼ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="4500647907053779331">&amp;ਚੁਣੀ ਹੋਈ ਲਿਖਤ ਦਾ <ph name="LANGUAGE" /> ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="4501530680793980440">ਰਿਮੂਵਲ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4502423230170890588">ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾਓ</translation>
@@ -5117,6 +5118,7 @@
 <translation id="488785315393301722">ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="488862352499217187">ਨਵਾਂ ਫੋਲਡਰ ਬਣਾਓ</translation>
 <translation id="4888715715847020167">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
+<translation id="4888899258150891194">CppGC ਮੈਮੋਰੀ</translation>
 <translation id="4890292359366636311">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਵਿਸ਼ੇਸ਼ਤਾ ਵਿੱਚ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਦਾਖਲ ਹੋਵੋ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਇਸਨੂੰ ਹੋਰ ਟੈਬਾਂ ਅਤੇ ਵਿੰਡੋਆਂ ਦੇ ਉੱਤੇ ਵਰਤ ਸਕੋ।</translation>
 <translation id="4890399733764921729">ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਕਿਸੇ ਹੋਰ ਮੋਬਾਈਲ ਸੇਵਾ ਪ੍ਰਦਾਨਕ ਵੱਲੋਂ ਲਾਕ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="4890585766056792498">ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਪ੍ਰਤੀ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -5481,7 +5483,6 @@
 <translation id="5173668317844998239">ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਿੱਚ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰੋ ਅਤੇ ਸਟੋਰ ਕੀਤੇ ਫਿੰਗਰਪ੍ਰਿੰਟਾਂ ਨੂੰ ਮਿਟਾਓ</translation>
 <translation id="5174169235862638850">ਪਾਸਵਰਡ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="517488401359338823">ਸੁਰੱਖਿਆ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
-<translation id="5176671554021050278">ਪੰਨੇ 'ਤੇ ਖਾਸ ਚਿੱਤਰਾਂ ਜਾਂ ਲਿਖਤ ਬਾਰੇ ਹੋਰ ਜਾਣਨ ਲਈ Google Lens ਵਰਤੋ।</translation>
 <translation id="5177479852722101802">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫੋਨ ਤੇ ਪਹੁੰਚ ਨੂੰ ਬਲੌਕ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="5178667623289523808">ਪਿਛਲਾ ਲੱਭੋ</translation>
 <translation id="5179428098696668914">AI ਪਲੇਬੈਕ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
@@ -5804,6 +5805,7 @@
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> ਖੋਜੋ:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> ਵਿੰਡੋ ਹੁਣ <ph name="WINDOW_SIZE_PERCENT" /> ਚੌੜੀ, <ph name="PANE_SIDE" /> ਪੇਨ ਹੁਣ <ph name="PANE_SIZE_PERCENT" /> ਚੌੜਾ।</translation>
 <translation id="5438060324827306856">ਐਕਸਟੈਂਸ਼ਨਾਂ ਲੱਭੋ</translation>
+<translation id="5440240650630588012">ਫੋਕਸ ਕਰਨ ਵਿੱਚ ਮਦਦ ਲਈ ਪੜ੍ਹਨ ਵਾਲੀ ਲਾਈਨ ਜਾਂ ਵਿੰਡੋ ਲਾਗੂ ਕਰੋ। ⌥L ਦਬਾਓ ਜਾਂ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="5440425659852470030">ਸਾਈਡ ਪੈਨਲ ਬੰਦ ਕਰੋ</translation>
 <translation id="544083962418256601">ਸ਼ੌਰਟਕਟਸ ਬਣਾਓ...</translation>
 <translation id="5441133529460183413">Chrome ਬ੍ਰਾਊਜ਼ਰ ਤੋਂ ਵੈੱਬ ਐਪ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
@@ -5990,6 +5992,7 @@
 <translation id="5576472948015790634">ਤੁਸੀਂ ਹੁਣ ਇੱਕੋ ਥਾਂ 'ਤੇ ਆਪਣੇ ਟੈਬ ਗਰੁੱਪਾਂ ਅਤੇ Gemini ਚੈਟਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ। ਇਸਨੂੰ ਕਿਸੇ ਵੀ ਵੇਲੇ ਅਣਪਿੰਨ ਕਰੋ।</translation>
 <translation id="5578059481725149024">ਸਵੈਚਲਿਤ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="5578387000057347457">ਚਿੱਤਰ ਬਣਾਉਣ ਲਈ ਵਿਉਂਤਿਆ ਪ੍ਰੋਂਪਟ ਦਾਖਲ ਕਰੋ ਜਾਂ ਲਿਖਤ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
+<translation id="557893471177655572">ਲਾਈਨ ਫੋਕਸ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 ਆਈਟਮ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਇਸਨੂੰ ਆਪਣੇ ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, <ph name="BEGIN_LINK" />ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ<ph name="END_LINK" />।}one{{ITEM_COUNT} ਆਈਟਮ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਇਸਨੂੰ ਆਪਣੇ ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, <ph name="BEGIN_LINK" />ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ<ph name="END_LINK" />।}other{{ITEM_COUNT} ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, <ph name="BEGIN_LINK" />ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ<ph name="END_LINK" />।}}</translation>
 <translation id="5579225964082017560"><ph name="SECTION_HEADER" /> ਸੂਚੀ ਤੋਂ <ph name="SITE" /> ਹਟਾਓ</translation>
 <translation id="5581031802689147441">ਸਪਲਿਟ ਵਿਊ</translation>
@@ -10007,6 +10010,7 @@
 <translation id="869891660844655955">ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="8699296325072357994">ਪਾਸਵਰਡ ਪੰਨਿਆਂ ਦੀ ਸਮੱਗਰੀ ਅਤੇ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ Google ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਉਸਦੀ ਮਨੁੱਖਾਂ ਵੱਲੋਂ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਇਨਕ੍ਰਿਪਟਡ ਹੈ ਅਤੇ ਕਦੇ ਵੀ ਕਿਸੇ ਵੱਲੋਂ ਦੇਖਿਆ ਨਹੀਂ ਜਾਵੇਗਾ। <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">ਲਾਂਚਰ + ਬੈਕਸਪੇਸ</translation>
+<translation id="8701058912406466818">ਫੋਕਸ ਕਰਨ ਵਿੱਚ ਮਦਦ ਲਈ ਪੜ੍ਹਨ ਵਾਲੀ ਲਾਈਨ ਜਾਂ ਵਿੰਡੋ ਲਾਗੂ ਕਰੋ। Alt+L ਦਬਾਓ ਜਾਂ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="8702278591052316269">ਲੁਕੇ ਹੋਏ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਟੈਬ ਗਰੁੱਪਾਂ ਵਾਲਾ ਮੀਨੂ</translation>
 <translation id="8703346390800944767">ਵਿਗਿਆਪਨ ਛੱਡੋ</translation>
 <translation id="8703372953981978786">ਇਹ ਲਿੰਕ ਕੰਮ ਨਹੀਂ ਕਰਦਾ</translation>
@@ -10769,6 +10773,7 @@
 <translation id="983192555821071799">ਸਾਰੀਆਂ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡਿੰਗ</translation>
 <translation id="984705303330760860">ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਵਾਲੀਆਂ ਭਾਸ਼ਾਵਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="986994187171579118"><ph name="EXTENSION_NAME" /> ਨੇ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬੰਦ ਕੀਤਾ</translation>
 <translation id="987264212798334818">ਸਧਾਰਨ</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> ਤੁਹਾਡੇ ਮੋਬਾਈਲ ਡੀਵਾਈਸ ਤੋਂ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="988320949174893488">ਕਦੇ-ਕਦਾਈਂ ਰੁਕ ਕੇ ਚੱਲਣਾ</translation>

@@ -141,7 +141,7 @@
 <translation id="2390272837142897736">Aumenta lo zoom</translation>
 <translation id="2397689164757137845">Consentita • Esatta</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
-<translation id="2403474027143565107">Esatta</translation>
+<translation id="2403474027143565107">Precisa</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="2404857459073803936">Accesso alla posizione per questo sito</translation>
 <translation id="2410940059315936967">Un sito visitato può incorporare contenuti di altri siti, ad esempio immagini, annunci e testo. I cookie impostati da questi altri siti vengono chiamati cookie di terze parti.</translation>

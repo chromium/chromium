@@ -869,7 +869,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7663224033570512922">Hind</translation>
 <translation id="7665680517722058469">Qaytadan qidiring</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ta fayl chiqitdonga tashlandi</translation>
-<translation id="7693909743393669729">Disk formatlansa, undagi barcha maʼlumotlar oʻchib ketadi va undagi barcha mavjud boʻlimlar, jumladan yashirinlari ham olib tashlanadi. Bu amal bekor qilinmaydi.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> formatlanmadi</translation>
 <translation id="76959938259365003">Chiqitdon boʻshatilmadi.</translation>
 <translation id="7705251383879779343">Nusxa olindi: <ph name="FILE_NAME" />.</translation>
@@ -913,7 +912,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7901567919203965902">AQSH (Workman, xalqaro)</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Tashqi xotira qurilmasining bir yoki bir nechta bo‘limini ulab bo‘lmadi.</translation>
-<translation id="7908793776359722643">Disk boʻlimi formatlansa, undagi barcha axborotlar tozlanaladi. Bu amal bekor qilinmaydi.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">My Drive jildidagi fayllar Chromebook qurilmangizga avtomatik sinxronlanadi va ularni internetsiz ham ochish mumkin.</translation>
 <translation id="7925247922861151263">AAA tekshirilmadi</translation>

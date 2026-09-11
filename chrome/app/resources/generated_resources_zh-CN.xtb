@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">访问其中的任意 USB 设备</translation>
 <translation id="1038462104119736705">建议为 Linux 留出至少 <ph name="INSTALL_SIZE" /> 的空间。如需增加可用空间，请从您的设备中删除文件。</translation>
 <translation id="1038643060055067718">行数：</translation>
+<translation id="1039216421321079051">该扩展程序已被其他扩展程序停用</translation>
 <translation id="1039337018183941703">文件无效或已损坏</translation>
 <translation id="1040761927998636252"><ph name="URL" /> 的未命名书签</translation>
 <translation id="1041175011127912238">该页面未响应</translation>
@@ -1149,7 +1150,7 @@
 <translation id="1885066963699478692">正被用来设置政策的 XML 文件。</translation>
 <translation id="1885089541024391265">Google 日历</translation>
 <translation id="1885106732301550621">磁盘空间</translation>
-<translation id="188537499764410817">Gemini 可以为您自动登录的网站将显示在此处</translation>
+<translation id="188537499764410817">Gemini 可为您自动登录的网站会显示在此处</translation>
 <translation id="1886996562706621347">允许网站要求成为协议的默认处理程序（推荐）</translation>
 <translation id="1887210448491286312">停止将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1887442540531652736">登录错误</translation>
@@ -2107,7 +2108,7 @@
 <translation id="2628874386573004005">发起与 Gemini 的新对话</translation>
 <translation id="2629058811622993283">同时分享应用音频（含该应用所有窗口及关联应用的音频）</translation>
 <translation id="2629227353894235473">开发 Android 应用</translation>
-<translation id="2630703150574465936">您已允许 Gemini 使用您的账号自动登录这些网站和应用</translation>
+<translation id="2630703150574465936">您已允许 Gemini 使用您的账号自动登录以下网站和应用</translation>
 <translation id="2631498379019108537">在任务栏中显示输入法选项</translation>
 <translation id="2632176111713971407">网站可以请求滚动和缩放分享的标签页</translation>
 <translation id="2633212996805280240">要删除“<ph name="EXTENSION_NAME" />”吗？</translation>
@@ -2556,7 +2557,7 @@
 <translation id="2960950037335552881">使用手机扫描此二维码，即可随时随地获取您的书签、密码等信息</translation>
 <translation id="2961040541145689181">新对话</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" />（已提供扩展功能）</translation>
-<translation id="2961695502793809356">点击可前进，按住可查看历史记录</translation>
+<translation id="2961695502793809356">点击前进，长按查看历史记录</translation>
 <translation id="29618148602069201">主题</translation>
 <translation id="2963151496262057773">以下插件没有响应：<ph name="PLUGIN_NAME" />。是否要停止使用该插件？</translation>
 <translation id="2964193600955408481">停用 Wi-Fi</translation>
@@ -2615,7 +2616,6 @@
 <translation id="3000461861112256445">单声道音频</translation>
 <translation id="3001144475369593262">儿童账号</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{未自定义任何键}=1{1 个自定义键}other{{COUNT} 个自定义键}}</translation>
-<translation id="3002745665522516995">选择页面上的任何内容即可搜索</translation>
 <translation id="3002864108328203174">Gemini 底部动作条已以一半高度打开。</translation>
 <translation id="3003144360685731741">首选网络</translation>
 <translation id="3003253259757197230">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站，并向您显示有关当前所访问网页的更多信息</translation>
@@ -3462,6 +3462,7 @@
 <translation id="3641456520301071208">网站可以请求获取您的位置信息</translation>
 <translation id="3642070413432681490">圆圈光标</translation>
 <translation id="3643962751030964445">此设备由 <ph name="DEVICE_MANAGER" /> 管理。<ph name="DEVICE_MANAGER" /> 要求您为账号 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的个人资料</translation>
+<translation id="3644128856494356630">CppGC 内存占用</translation>
 <translation id="3645372836428131288">请稍微移动一下手指，以便系统记录您指纹的不同部分。</translation>
 <translation id="3645951915068244649">已使用此书签文件夹创建标签页分组。您要创建新的标签页分组，还是替换现有的标签页分组？</translation>
 <translation id="3646789916214779970">重置为默认主题背景</translation>
@@ -4233,6 +4234,7 @@
 <translation id="4226303886821889519">更新程序版本：<ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
 <translation id="4229538146709970028">请解锁“<ph name="TOKEN_NAME" />”，使用证书向 <ph name="HOST_NAME" /> 验证身份。</translation>
+<translation id="4230659518013393045">系统会与 Google 分享当前标签页的网页标题、网址和内容，以便为您提供更贴合需求的回答。您可以在浏览过程中随时添加或移除标签页。</translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
 <translation id="4232376164796433044">密码和自动填充</translation>
 <translation id="4233739489690259993">您的 Chromebook 将不会再收到安全更新和软件更新。要想获得最新安全功能和新功能，请升级您的设备。须遵守相关优惠条款。</translation>
@@ -4576,7 +4578,6 @@
 <translation id="4495002167047709180">允许此扩展程序在 <ph name="SITE" /> 上运行？</translation>
 <translation id="4495419450179050807">不要在本页上显示</translation>
 <translation id="4500055235123625757">针对您在<ph name="LINK_BEGIN" />某些网站<ph name="LINK_END" />上播放的视频或音频，Gemini 可以回答您提出的相关问题。</translation>
-<translation id="4500114933761911433">“<ph name="PLUGIN_NAME" />”崩溃了</translation>
 <translation id="4500647907053779331">将所选内容翻译为<ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">确认删除</translation>
 <translation id="4502423230170890588">从此设备中移除</translation>
@@ -4816,7 +4817,7 @@
 <translation id="4681453295291708042">停用“附近分享”功能</translation>
 <translation id="4681512854288453141">来源政策</translation>
 <translation id="4681930562518940301">在新标签页中打开原始图片(&amp;I)</translation>
-<translation id="4682003508123230705">辅导学习</translation>
+<translation id="4682003508123230705">帮我学习</translation>
 <translation id="4682481611456523884">此网站上的嵌入式内容无法使用它们保存的与您相关的信息</translation>
 <translation id="4682807230647698604">当您使用这些功能时，系统会将相关数据发送给 Google，以便打造 AI 体验</translation>
 <translation id="4683143253481759090">Chrome 已更新</translation>
@@ -5100,6 +5101,7 @@
 <translation id="488785315393301722">显示详细信息</translation>
 <translation id="488862352499217187">新建文件夹</translation>
 <translation id="4888715715847020167">前往“设置”</translation>
+<translation id="4888899258150891194">CppGC 内存占用</translation>
 <translation id="4890292359366636311">自动进入画中画模式，以便您在其他标签页和窗口之上使用该模式。</translation>
 <translation id="4890399733764921729">无法连接。已被其他移动服务商锁定。</translation>
 <translation id="4890585766056792498">保护您免受危险网站的侵害</translation>
@@ -5169,7 +5171,7 @@
 <translation id="4940364377601827259">有 <ph name="PRINTER_COUNT" /> 台可保存的打印机。</translation>
 <translation id="4940448324259979830">这个账号由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="4940845626435830013">预留磁盘空间大小</translation>
-<translation id="4941391011436448776">Gemini 可以为您自动登录的网站</translation>
+<translation id="4941391011436448776">Gemini 可为您自动登录的网站</translation>
 <translation id="4941627891654116707">字号</translation>
 <translation id="4941963255146903244">查看您手机上的照片、媒体内容和应用</translation>
 <translation id="494286511941020793">代理配置帮助</translation>
@@ -5464,7 +5466,6 @@
 <translation id="5173668317844998239">向您的安全密钥中添加指纹和删除其中保存的指纹</translation>
 <translation id="5174169235862638850">已将密码复制到剪贴板</translation>
 <translation id="517488401359338823">解锁安全设备</translation>
-<translation id="5176671554021050278">使用 Google 智能镜头可详细了解网页上的特定图片或文字。</translation>
 <translation id="5177479852722101802">仍然禁止访问摄像头和麦克风</translation>
 <translation id="5178667623289523808">查找上一个</translation>
 <translation id="5179428098696668914">关闭 AI 播放功能</translation>
@@ -5704,7 +5705,7 @@
 <translation id="5375517140689139594">阅读模式 (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">网站可帮助验证您不是机器人</translation>
 <translation id="5376094717770783089">请求访问权限</translation>
-<translation id="5376169624176189338">点击可后退，按住可查看历史记录</translation>
+<translation id="5376169624176189338">点击后退，长按查看历史记录</translation>
 <translation id="5376931455988532197">文件过大</translation>
 <translation id="5377367976106153749">开启摄像头使用权限？</translation>
 <translation id="5379140238605961210">继续禁止使用麦克风</translation>
@@ -5786,6 +5787,7 @@
 <translation id="5436510242972373446">用 <ph name="SITE_NAME" /> 搜索：</translation>
 <translation id="5438014818441491616">现在，<ph name="WINDOW_SIDE" />窗口占 <ph name="WINDOW_SIZE_PERCENT" /> 宽度，<ph name="PANE_SIDE" />窗格占 <ph name="PANE_SIZE_PERCENT" /> 宽度。</translation>
 <translation id="5438060324827306856">查找扩展程序(&amp;E)</translation>
+<translation id="5440240650630588012">应用阅读行或阅读窗口，帮助您集中注意力。按 ⌥L 或前往“设置”。</translation>
 <translation id="5440425659852470030">关闭侧边栏</translation>
 <translation id="544083962418256601">创建快捷方式...</translation>
 <translation id="5441133529460183413">从 Chrome 浏览器安装的 Web 应用</translation>
@@ -5972,6 +5974,7 @@
 <translation id="5576472948015790634">现在，您可以在一个位置集中管理标签页分组和 Gemini 对话。随时都可取消固定此入口。</translation>
 <translation id="5578059481725149024">自动登录</translation>
 <translation id="5578387000057347457">输入自定义提示或突出显示文本，以创建图片</translation>
+<translation id="557893471177655572">试用行聚焦</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{有 1 项内容只保存到此设备上。若要在其他设备上使用它，请<ph name="BEGIN_LINK" />将它保存到 Google 账号中<ph name="END_LINK" />。}other{有 {ITEM_COUNT} 项内容只保存到此设备上。若要在其他设备上使用它们，请<ph name="BEGIN_LINK" />将它们保存到 Google 账号中<ph name="END_LINK" />。}}</translation>
 <translation id="5579225964082017560">从“<ph name="SECTION_HEADER" />”列表中移除 <ph name="SITE" /></translation>
 <translation id="5581031802689147441">拆分视图</translation>
@@ -9676,7 +9679,7 @@
 <translation id="8460448946170646641">检查重要的隐私控制设置和安全控件</translation>
 <translation id="8460490661223303637">为节省内存，Chrome 移除了部分内容</translation>
 <translation id="8460932807646981183">管理搜索引擎和网站搜索</translation>
-<translation id="8461572080432076264">读出此网页的内容</translation>
+<translation id="8461572080432076264">朗读此网页的内容</translation>
 <translation id="8461914792118322307">代理</translation>
 <translation id="8461973047386722744">找不到任何密码</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{包含 1 项内容的列表框}other{包含 {NUM_TABS} 项内容的列表框}}</translation>
@@ -9985,6 +9988,7 @@
 <translation id="869891660844655955">失效日期</translation>
 <translation id="8699296325072357994">密码页面中的内容和相关信息会发送给 Google，并由人工审核员审核。您的密码已加密，不会向任何人显示。<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">启动器键 + 退格键</translation>
+<translation id="8701058912406466818">应用阅读行或阅读窗口，帮助您集中注意力。按 Alt+L 或前往“设置”。</translation>
 <translation id="8702278591052316269">包含隐藏的已存标签页分组的菜单</translation>
 <translation id="8703346390800944767">跳过广告</translation>
 <translation id="8703372953981978786">此链接无效</translation>
@@ -10747,6 +10751,7 @@
 <translation id="983192555821071799">关闭所有标签页</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 摄像头正在录像且麦克风正在录音</translation>
 <translation id="984705303330760860">添加拼写检查语言</translation>
+<translation id="986994187171579118">该扩展程序已被“<ph name="EXTENSION_NAME" />”停用</translation>
 <translation id="987264212798334818">常规</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> 想从您的移动设备获取信息</translation>
 <translation id="988320949174893488">偶尔不流畅</translation>

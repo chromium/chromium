@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Klient RCS MLS</translation>
 <translation id="1508263560970797965">Pokračovať v režime inkognito</translation>
 <translation id="1509486075633541495">Prihláste sa na webe</translation>
+<translation id="1509922846321012406">Preskúmajte ďalšie spôsoby, ako zlepšiť ochranu svojho súkromia a bezpečnosť</translation>
 <translation id="1513858653616922153">Odstrániť heslo</translation>
 <translation id="1517166097004694782">Skryť možnosť Pokračovať s touto kartou</translation>
 <translation id="1520027731907768768">Dostávajte upozornenia na pokles cien produktov, ktoré sledujete.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Predvolený prehliadač</translation>
 <translation id="2893791155497534382">Heslá a ďalšiu aktivitu možno odstrániť v nastaveniach ich správy</translation>
 <translation id="2894757982205307093">Nová karta v skupine</translation>
+<translation id="2897858638449756400">Preskúmajte ďalšie spôsoby vyhľadávania</translation>
 <translation id="2902312830803030883">Ďalšie akcie</translation>
 <translation id="2904788871580817212">Pokles ceny na vašej otvorenej karte z <ph name="PREVIOUS_PRICE" /> na <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Máte niekoľko (<ph name="NUMBER_OF_PASSWORDS" />) recyklovaných hesiel, ktoré môžu ohroziť vaše zabezpečenie.</translation>
@@ -687,7 +689,7 @@
 <translation id="3190558889382726167">Heslo bolo uložené</translation>
 <translation id="3190736958609431397">Prestať sledovať</translation>
 <translation id="3208260410153224535">Vaša organizácia vypla prihlasovanie. Nové záložky, heslá a ďalšie položky sa budú ukladať iba do tohto zariadenia.</translation>
-<translation id="3211969308836412674">Odopni web</translation>
+<translation id="3211969308836412674">Odopnúť web</translation>
 <translation id="3213807041830307252">Nakupujte, prekladajte a identifikujte, čo vidíte, pomocou kamery a fotogalérie.</translation>
 <translation id="3214379938835224220">V rámci resetovania iPadu vás systém odhlásil. Ak sa chcete prihlásiť, klepnite na Pokračovať nižšie.</translation>
 <translation id="3218296450292600703">Ak sa prihlásite spravovaným účtom, budete môcť prehliadanie súvisiace s vašou organizáciou (vrátane kariet, histórie a hesiel) ponechať oddelené od ostatného prehliadania</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Týmto odstránite adresy uložené v tomto zariadení. Odstránia sa aj tie, ktoré máte uložené v účte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problémy boli nájdené o <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Vytvoriť obrázok</translation>
+<translation id="5058813911021873087">Preskúmajte ďalšie spôsoby, ako si urobiť poriadok a ušetriť čas</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Prejdite na vyššiu úroveň prehliadania</translation>
 <translation id="5062321486222145940">Nainštalovať Disk Google</translation>
@@ -1563,7 +1566,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6066301408025741299">Sťahovanie zrušíte klepnutím.</translation>
 <translation id="6074656473835429958">Dostávajte upozornenia</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) sa nepodarilo nahrať</translation>
-<translation id="6076618233738284461">Pripni web</translation>
+<translation id="6076618233738284461">Pripnúť web</translation>
 <translation id="6077126322656614846">Prístup ku kamere je povolený</translation>
 <translation id="6078236141387574983">Znova upraviť výšku hárka</translation>
 <translation id="6084848228346514841">Výber kariet</translation>
@@ -1881,6 +1884,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="6987201788018524855">Preskúmajte užitočné funkcie, ktoré ste prehliadli</translation>
 <translation id="6989636517316575338">Spýtajte sa na ľubovoľnú stránku</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Všetky úlohy</translation>
 <translation id="6998251471716094661">Sledujte ceny výrobkov a dostávajte upozornenia v prípade ich poklesov na niektorom webe</translation>
 <translation id="7004032350256606903">Vaša organizácia vyžaduje, aby ste prehliadali v režime inkognito.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>

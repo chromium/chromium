@@ -1095,6 +1095,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2859806420264540918">Hierdie werf wys indringerige of misleidende advertensies.</translation>
 <translation id="2873317327342476681">Dino-speletjie, tik op die dinosourus of druk spasiebalk om te speel</translation>
 <translation id="287387905105155974">Hulpborrel</translation>
+<translation id="2875109558992200904">Wanneer sekuriteitsgevalle deur Chrome gevlag word, word relevante data oor die gevalle aan jou admin gestuur. Dit kan insluit: URL’e en titels van bladsye wat jy in Chrome besoek, URL’e van bladsye waaruit jy data gekopieer het, lêername of metadata, IP-adresse, blaaier- of oortjie-omvalle, en die gebruikernaam wat jy gebruik om by webgegronde apps, jou toestel en Chrome aan te meld.</translation>
 <translation id="2876489322757410363">Verlaat tans Incognitomodus om deur 'n eksterne app te betaal. Gaan voort?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou Veiligblaai en meer in Chrome-instellings te bestuur</translation>
 <translation id="2878197950673342043">Plakkaatvou</translation>
@@ -1135,7 +1136,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2931453528659195355">Bestuur inkopie-inligting</translation>
 <translation id="2933624813161016821">Reliëffoelie</translation>
 <translation id="2935726091208500473">deel tans jou oortjies</translation>
-<translation id="2936698630976431647">Kies die promosiekodeveld om aanbiedings van Google Wallet af te outovul</translation>
 <translation id="293796669683825859">Opmerkings</translation>
 <translation id="2938225289965773019">Maak <ph name="PROTOCOL" />-skakels oop</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Wissel apps, herlaai die bladsy of gaan terug om jou skermpyltjie te wys</translation>
@@ -1596,6 +1596,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3712004750972384495">Stoor tans skermopname</translation>
 <translation id="3712006010833051684">Koevert #10</translation>
 <translation id="3712624925041724820">Lisensies is op</translation>
+<translation id="371302509916403935">Onderstreep</translation>
 <translation id="3713277100229669269">Jy kan nou kaartvoordele sien voordat jy betaal</translation>
 <translation id="3714633008798122362">webkalender</translation>
 <translation id="3714780639079136834">Mobiele data of Wi-Fi aanskakel</translation>
@@ -1943,6 +1944,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4265635050210404830">Jou lojaliteitskaarte</translation>
 <translation id="4265872034478892965">Toegelaat deur jou administrateur</translation>
 <translation id="4267590181863312380">Meld aan en sinkroniseer geskiedenis om jou geskiedenis vanaf jou ander toestelle te kry. Jy sal ook jou wagwoorde en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
+<translation id="4267837382000002014">URL’e en titels van bladsye wat jy besoek word vir ontleding na Google Cloud of derde partye toe gestuur, en dit kan vir jou admin sigbaar wees. Hulle kan byvoorbeeld geskandeer word om onveilige webwerwe te bespeur of webwerwe filtreer op grond van reëls wat deur die admin gestel is.</translation>
 <translation id="4268025649754414643">Sleutelenkodering</translation>
 <translation id="4269599248168651462">Die bedienersertifikaat is aan ’n nie-unieke naam uitgereik.</translation>
 <translation id="4270541775497538019">Stapelaar 6</translation>
@@ -4212,7 +4214,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="815036624016370447">Inligting van jou Google-rekening <ph name="ACCOUNT" /> af kan jou help om vorms vinniger in Chrome in te vul</translation>
 <translation id="8150722005171944719">Die lêer by <ph name="URL" /> is nie leesbaar nie. Dit is dalk verwyder, geskuif of lêertoestemmings kan dalk toegang verhinder.</translation>
 <translation id="8151185429379586178">Ontwikkelaarnutsgoed</translation>
-<translation id="8152194419479742504">Tik @@ in enige vorm om inligting te vind en in te vul sonder om oortjies te wissel</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrateursbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe aflaai nie}other{Administrateursbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe aflaai nie}}</translation>
 <translation id="8155253549374198915">Laaste oop oortjies</translation>
 <translation id="815805690561372740">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai – soos Google Veiligblaai, wat <ph name="BEGIN_LINK" />onlangs wanware gevind het<ph name="END_LINK" /> op die werf wat jy probeer besoek het.</translation>
@@ -4276,6 +4277,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8269242089528251720">Afsonderlike dokumente/Ingesorteerde kopieë</translation>
 <translation id="8269703227894255363">{0,plural, =1{Lêer kan weens blokkering nie oopgemaak word nie}other{<ph name="FILE_COUNT" /> lêers kan weens blokkering nie oopgemaak word nie}}</translation>
 <translation id="8270242299912238708">PDF-dokumente</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Betalinghanteerdersigblad is oop</translation>
 <translation id="827820107214076967">Herlaai loglêers</translation>
 <translation id="8279611986089885641">Chrome-kennisgewings moet aan wees. Jy kan hulle in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> aanskakel.</translation>

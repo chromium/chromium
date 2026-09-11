@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Client MLS RCS</translation>
 <translation id="1508263560970797965">Continuer en navigation privée</translation>
 <translation id="1509486075633541495">Connectez-vous au site Web</translation>
+<translation id="1509922846321012406">Découvrez d'autres façons de renforcer votre sécurité et votre confidentialité</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
 <translation id="1517166097004694782">Masquer "Continuer avec cet onglet"</translation>
 <translation id="1520027731907768768">Recevez des alertes en cas de baisse de prix des produits que vous suivez.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Navigateur par défaut</translation>
 <translation id="2893791155497534382">Les mots de passe et d'autres activités peuvent être supprimés dans leurs paramètres de gestion</translation>
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
+<translation id="2897858638449756400">Découvrez d'autres façons de faire des recherches</translation>
 <translation id="2902312830803030883">Autres actions</translation>
 <translation id="2904788871580817212">Baisse de prix dans votre onglet ouvert, de <ph name="PREVIOUS_PRICE" /> à <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe réutilisés qui peuvent compromettre votre sécurité.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Cela supprime les adresses enregistrées sur cet appareil ainsi que celles qui sont enregistrées dans votre compte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problèmes identifiés <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Créer une image</translation>
+<translation id="5058813911021873087">Découvrez d'autres façons de vous organiser et de gagner du temps</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Améliorez votre navigation</translation>
 <translation id="5062321486222145940">Installer Google Drive</translation>
@@ -1881,6 +1884,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="6987201788018524855">Découvrez des fonctionnalités utiles que vous avez manquées</translation>
 <translation id="6989636517316575338">Posez une question à propos de n'importe quelle page</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Toutes les tâches</translation>
 <translation id="6998251471716094661">Suivez les prix de produits et recevez des alertes en cas de baisse de prix sur un site</translation>
 <translation id="7004032350256606903">Votre organisation exige que vous utilisiez le mode navigation privée.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

@@ -1095,6 +1095,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2859806420264540918">Dette nettstedet viser forstyrrende eller villedende annonser.</translation>
 <translation id="2873317327342476681">Dino-spillet – trykk på dinosauren eller på mellomrom for å spille</translation>
 <translation id="287387905105155974">Hjelpeboble</translation>
+<translation id="2875109558992200904">Når Chrome flagger sikkerhetshendelser, sendes relevante data om hendelsen til administratoren din. Dette kan omfatte nettadressene til og titlene på sider du besøker i Chrome, nettadressene til sider du har kopiert data fra, filnavn eller metadata, IP-adresser, nettleser- eller fanekrasj og brukernavnet du bruker for å logge på nettbaserte apper, enheten din og Chrome.</translation>
 <translation id="2876489322757410363">Går ut av Inkognitomodus for å betale via en ekstern app. Vil du fortsette?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere Safe Browsing med mer i Chrome-innstillingene</translation>
 <translation id="2878197950673342043">Kryssfals</translation>
@@ -1135,7 +1136,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2931453528659195355">Administrer shoppinginformasjon</translation>
 <translation id="2933624813161016821">Pregfolie</translation>
 <translation id="2935726091208500473">deling av faner</translation>
-<translation id="2936698630976431647">Velg feltet for promoteringskode for å fylle ut tilbud fra Google Wallet automatisk</translation>
 <translation id="293796669683825859">Kommentarer</translation>
 <translation id="2938225289965773019">åpne linker til <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – For å vise markøren, bytt app, last inn siden på nytt eller gå tilbake</translation>
@@ -1596,6 +1596,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3712004750972384495">Lagrer skjermopptaket</translation>
 <translation id="3712006010833051684">Konvolutt nr. 10</translation>
 <translation id="3712624925041724820">Lisensene er oppbrukt</translation>
+<translation id="371302509916403935">Understreket</translation>
 <translation id="3713277100229669269">Nå kan du se kortfordelene før du betaler</translation>
 <translation id="3714633008798122362">nettkalender</translation>
 <translation id="3714780639079136834">Slå på mobildata eller wifi</translation>
@@ -1943,6 +1944,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4265635050210404830">Stamkundekortene dine</translation>
 <translation id="4265872034478892965">Tillatt av administratoren din</translation>
 <translation id="4267590181863312380">For å få loggen fra de andre enhetene dine, logg på og synkroniser loggen. Du får også passordene dine med mer på alle enhetene dine. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
+<translation id="4267837382000002014">Nettadressene og titlene til sidene du besøker, blir sendt til Google Cloud eller tredjeparter for analyse og kan være synlige for administratoren din. De kan for eksempel bli skannet for å oppdage usikre nettsteder, eller nettsteder kan filtreres basert på regler som er angitt av administratoren.</translation>
 <translation id="4268025649754414643">Nøkkelchiffrering</translation>
 <translation id="4269599248168651462">Tjenersertifikatet er utstedt til et ikke-unikt navn.</translation>
 <translation id="4270541775497538019">Hylle 6</translation>
@@ -4212,7 +4214,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="815036624016370447">Informasjon fra Google-kontoen din <ph name="ACCOUNT" /> kan hjelpe deg med å fylle ut skjemaer raskere i Chrome</translation>
 <translation id="8150722005171944719">Kunne ikke lese filen på <ph name="URL" /> Den kan ha blitt fjernet eller flyttet. Det kan også være filtillatelser som forhindrer tilgang.</translation>
 <translation id="8151185429379586178">Utviklerverktøy</translation>
-<translation id="8152194419479742504">Skriv @@ i et skjema for å finne og fylle ut informasjon uten å bytte fane</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administratorreglene anbefaler ikke at du laster ned denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du laster ned disse filene til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Sist åpne faner</translation>
 <translation id="815805690561372740">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg når du surfer – for eksempel Google Safe Browsing, som <ph name="BEGIN_LINK" />nylig har funnet skadelig programvare<ph name="END_LINK" /> på nettstedet du prøvde å besøke.</translation>
@@ -4276,6 +4277,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8269242089528251720">Separate dokumenter / kollaterte eksemplarer</translation>
 <translation id="8269703227894255363">{0,plural, =1{Filen er blokkert for åpning}other{<ph name="FILE_COUNT" /> filer er blokkert for åpning}}</translation>
 <translation id="8270242299912238708">PDF-dokumenter</translation>
+<translation id="8270320981823560179">Disk</translation>
 <translation id="8277900682056760511">Arket for betalingsbehandling er åpnet</translation>
 <translation id="827820107214076967">Last inn logger på nytt</translation>
 <translation id="8279611986089885641">Chrome-varsler må være på. Du kan slå dem på i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

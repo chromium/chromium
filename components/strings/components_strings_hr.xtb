@@ -1136,7 +1136,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2931453528659195355">Upravljanje podacima o kupnji</translation>
 <translation id="2933624813161016821">Reljefna folija</translation>
 <translation id="2935726091208500473">dijeljenju kartica</translation>
-<translation id="2936698630976431647">Odaberite polje promotivnog koda da biste automatski ispunili ponude iz Google Walleta</translation>
 <translation id="293796669683825859">Komentari</translation>
 <translation id="2938225289965773019">otvoriti veze za <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – da bi se prikazao pokazivač, prebacite se na drugu aplikaciju, ponovno učitajte stranicu ili se vratite</translation>
@@ -1596,6 +1595,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3712004750972384495">Spremanje snimanja zaslona</translation>
 <translation id="3712006010833051684">Omotnica br. 10</translation>
 <translation id="3712624925041724820">Licence su potrošene</translation>
+<translation id="371302509916403935">Podcrtavanje</translation>
 <translation id="3713277100229669269">Sad možete pregledati pogodnosti kartice prije plaćanja</translation>
 <translation id="3714633008798122362">web-kalendar</translation>
 <translation id="3714780639079136834">uključite mobilne podatke ili Wi-Fi</translation>
@@ -3843,6 +3843,7 @@ Dodatne pojedinosti:
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Virtualna stvarnost dopuštena je ovaj put</translation>
+<translation id="7517198908921983825">Predlaže Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Omotnica C10</translation>
 <translation id="7518003948725431193">Za web-adresu nije pronađena web-stranica:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4214,7 +4215,6 @@ Dodatne pojedinosti:
 <translation id="815036624016370447">Pomoću podataka sa svog Google računa <ph name="ACCOUNT" /> možete brže ispuniti obrasce u Chromeu</translation>
 <translation id="8150722005171944719">Datoteka na adresi <ph name="URL" /> nije čitljiva. Možda je uklonjena ili premještena ili dozvole datoteka sprječavaju pristup.</translation>
 <translation id="8151185429379586178">Alati za razvojne programere</translation>
-<translation id="8152194419479742504">Upišite @@ u bilo koji obrazac da biste pronašli podatke i popunili ih bez prelaska s jedne kartice na drugu</translation>
 <translation id="8153865548451212769">{0,plural, =1{Prema pravilima administratora ne preporučuje se preuzimanje te datoteke na: <ph name="DESTINATION_NAME" />}one{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}few{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}other{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Posljednje otvorene kartice</translation>
 <translation id="815805690561372740">Chrome ima integrirane sigurnosne značajke koje vas štite dok pregledavate, na primjer Google sigurno pregledavanje koje je <ph name="BEGIN_LINK" />nedavno pronašlo zlonamjerni softver<ph name="END_LINK" /> na web-lokaciji koju ste pokušali posjetiti.</translation>
@@ -4278,6 +4278,7 @@ Dodatne pojedinosti:
 <translation id="8269242089528251720">Zasebni dokumenti/razvrstani primjerci</translation>
 <translation id="8269703227894255363">{0,plural, =1{Blokirano je otvaranje datoteke}one{Blokirano je otvaranje <ph name="FILE_COUNT" /> datoteke}few{Blokirano je otvaranje <ph name="FILE_COUNT" /> datoteke}other{Blokirano je otvaranje <ph name="FILE_COUNT" /> datoteka}}</translation>
 <translation id="8270242299912238708">PDF dokumenti</translation>
+<translation id="8270320981823560179">Disk</translation>
 <translation id="8277900682056760511">List rukovatelja plaćanjima otvara se na cijelom zaslonu</translation>
 <translation id="827820107214076967">Osvježi zapisnike</translation>
 <translation id="8279611986089885641">Obavijesti u Chromeu moraju biti uključene. Možete ih uključiti u odjeljku <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

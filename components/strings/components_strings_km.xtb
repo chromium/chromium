@@ -1139,7 +1139,6 @@
 <translation id="2931453528659195355">គ្រប់គ្រងព័ត៌មានអំពីការទិញទំនិញ</translation>
 <translation id="2933624813161016821">សន្លឹកអាលុយមីញ៉ូមសម្រាប់ការបោះពុម្ពផុស</translation>
 <translation id="2935726091208500473">ការចែករំលែក​ផ្ទាំង​របស់អ្នក</translation>
-<translation id="2936698630976431647">ជ្រើសរើសកន្លែងបញ្ចូលកូដផ្ដល់ជូនពិសេស ដើម្បីបំពេញការផ្ដល់ជូនពី Google Wallet ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="293796669683825859">មតិ</translation>
 <translation id="2938225289965773019">បើកតំណ <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – ដើម្បី​បង្ហាញ​ទស្សន៍ទ្រនិច​របស់អ្នក សូមប្ដូរ​កម្មវិធី ផ្ទុក​ទំព័រ​ឡើងវិញ ឬ​ថយក្រោយ</translation>
@@ -1600,6 +1599,7 @@
 <translation id="3712004750972384495">កំពុង​រក្សាទុក​វីដេអូ​អេក្រង់</translation>
 <translation id="3712006010833051684">ស្រោមសំបុត្រ #10</translation>
 <translation id="3712624925041724820">អស់អាជ្ញាប័ណ្ណ</translation>
+<translation id="371302509916403935">គូសពីក្រោម</translation>
 <translation id="3713277100229669269">ឥឡូវនេះ អ្នកអាចមើលឃើញអត្ថប្រយោជន៍កាត មុនពេលអ្នកបង់ប្រាក់</translation>
 <translation id="3714633008798122362">ប្រតិទិនគេហទំព័រ</translation>
 <translation id="3714780639079136834">បើកទិន្នន័យចល័ត ឬ Wi-Fi</translation>
@@ -3847,6 +3847,7 @@
 <translation id="7514365320538308">ទាញយក</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">បាន​អនុញ្ញាត​ឱ្យប្រើ VR នៅពេលនេះ</translation>
+<translation id="7517198908921983825">បានណែនាំដោយ Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">ស្រោមសំបុត្រ C10</translation>
 <translation id="7518003948725431193">គ្មានគេហទំព័រត្រូវបានរកឃើញសម្រាប់អាសយដ្ឋាននេះទេ៖ <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4220,7 +4221,6 @@
 <translation id="815036624016370447">ព័ត៌មាន​ពីគណនី Google របស់អ្នក <ph name="ACCOUNT" /> អាចជួយ​អ្នកឱ្យ​បំពេញ​ទម្រង់បែបបទ​បានកាន់តែ​លឿន​នៅក្នុង Chrome</translation>
 <translation id="8150722005171944719">ឯកសារនៅ <ph name="URL" /> មិនអាចអានបានទេ។  អ្នកត្រូវបានយកចេញ ឬផ្លាស់ទី ឬការអនុញ្ញាតឯកសារអាចបង្ការការពីការចូលប្រើ។</translation>
 <translation id="8151185429379586178">ឧបករណ៍អ្នកអភិវឌ្ឍន៍</translation>
-<translation id="8152194419479742504">វាយបញ្ចូល @@ នៅក្នុង​ទម្រង់បែបបទ​ណាមួយ ដើម្បី​ស្វែងរក និង​បំពេញ​ព័ត៌មាន​ដោយ​មិនបាច់​ប្ដូរផ្ទាំង</translation>
 <translation id="8153865548451212769">{0,plural, =1{គោលការណ៍អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​ទាញយក​ឯកសារ​នេះ​ទុក​ក្នុង <ph name="DESTINATION_NAME" /> ទេ}other{គោលការណ៍អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​ទាញយក​ឯកសារ​ទាំង​នេះ​ទុក​ក្នុង <ph name="DESTINATION_NAME" /> ទេ}}</translation>
 <translation id="8155253549374198915">ផ្ទាំងដែលបើកចុងក្រោយ</translation>
 <translation id="815805690561372740">Chrome មាន​មុខងារ​សុវត្ថិភាព​ដែលភ្ជាប់មក​ជាមួយស្រាប់ ដើម្បី​ការពារអ្នក នៅពេល​អ្នករុករក ដូចជាការរុករកដោយសុវត្ថិភាព​នៅលើ Google ដែល<ph name="BEGIN_LINK" />បានរកឃើញកម្មវិធីគ្រោះថ្នាក់នាពេលថ្មីៗនេះ<ph name="END_LINK" />នៅលើគេហទំព័រដែលអ្នកបានសាកល្បងចូលមើល។</translation>
@@ -4284,6 +4284,7 @@
 <translation id="8269242089528251720">ឯកសារ​ដាច់ដោយឡែក/ច្បាប់ចម្លង​តាមលំដាប់លំដោយ</translation>
 <translation id="8269703227894255363">{0,plural, =1{បានទប់ស្កាត់​មិនឱ្យបើក​ឯកសារ}other{បានទប់ស្កាត់​មិនឱ្យបើក​ឯកសារ <ph name="FILE_COUNT" />}}</translation>
 <translation id="8270242299912238708">ឯកសារ PDF</translation>
+<translation id="8270320981823560179">ថាស</translation>
 <translation id="8277900682056760511">សន្លឹកកម្មវិធីគ្រប់គ្រង​ការបង់ប្រាក់បានបើក</translation>
 <translation id="827820107214076967">ផ្ទុកកំណត់ហេតុឡើងវិញ</translation>
 <translation id="8279611986089885641">ត្រូវតែបើកការជូនដំណឹងនៅលើ Chrome។ អ្នកអាចបើកការជូនដំណឹងទាំងនេះនៅក្នុង<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />។</translation>

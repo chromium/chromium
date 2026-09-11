@@ -2544,6 +2544,7 @@
 <translation id="2939908794993783865">គេហទំព័រអសកម្មបន្ថែម</translation>
 <translation id="2939938020978911855">បង្ហាញ​ឧបករណ៍ប៊្លូធូស​ដែល​មាន</translation>
 <translation id="2941112035454246133">ទាប</translation>
+<translation id="2942228903502008519">ពង្រីកផ្ទាំង (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">កំពុង​រង់ចាំ...</translation>
 <translation id="2942581856830209953">ប្ដូរ​ទំព័រនេះ​តាម​បំណង</translation>
 <translation id="2942707801577151363">បើក កែ និង​រក្សាទុក​ឯកសារ Word, Excel និង PowerPoint។ អាច​តម្រូវឱ្យមាន​ការជាវ​សម្រាប់​មុខងារ​មួយចំនួន។</translation>
@@ -2629,7 +2630,6 @@
 <translation id="3000461861112256445">សំឡេង​ម៉ូណូ</translation>
 <translation id="3001144475369593262">គណនី​កូន</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{មិនបាន​ប្ដូរគ្រាប់ចុច​តាមបំណងទេ}=1{បាន​ប្ដូរគ្រាប់ចុច 1 តាមបំណង}other{បាន​ប្ដូរគ្រាប់ចុច {COUNT} តាមបំណង}}</translation>
-<translation id="3002745665522516995">ជ្រើសរើសអ្វីក៏បាននៅលើទំព័រ ដើម្បីស្វែងរក</translation>
 <translation id="3002864108328203174">សន្លឹក​ខាងក្រោម Gemini ពាក់កណ្ដាល​អេក្រង់។</translation>
 <translation id="3003144360685731741">បណ្តាញដែលចូលចិត្ត</translation>
 <translation id="3003253259757197230">URL ដែលអ្នកចូលមើលត្រូវបានផ្ញើទៅ Google ដើម្បីព្យាករ​គេហទំព័រដែលអ្នក​ប្រហែលជា​ចូលមើលបន្ទាប់ និងដើម្បីបង្ហាញដល់អ្នកនូវព័ត៌មានបន្ថែមអំពីទំព័រដែលអ្នកកំពុងចូលមើល</translation>
@@ -4593,7 +4593,6 @@
 <translation id="4495002167047709180">អនុញ្ញាត​កម្មវិធី​បន្ថែម​នេះ​នៅលើ <ph name="SITE" /> ឬ?</translation>
 <translation id="4495419450179050807">កុំបង្ហាញនៅលើទំព័រនេះ</translation>
 <translation id="4500055235123625757">Gemini អាចឆ្លើយសំណួរអំពីវីដេអូ ឬសំឡេងដែលអ្នកបានចាក់នៅលើ<ph name="LINK_BEGIN" />គេហទំព័រមួយចំនួន<ph name="LINK_END" />។</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> បានគាំង</translation>
 <translation id="4500647907053779331">&amp;បកប្រែការជ្រើសរើសទៅជាភាសា<ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">អះអាងការដកចេញ</translation>
 <translation id="4502423230170890588">លុបចេញ​ពីឧបករណ៍​នេះ</translation>
@@ -5464,6 +5463,7 @@
 <translation id="5155299520372681119">ការបង្ហោះ​ឯកសារ​បានផុត​កំណត់ និង​ត្រូវបាន​ដកចេញ​ហើយ។</translation>
 <translation id="5156638757840305347">ទស្សន៍ទ្រនិច​ត្រូវបាន​រំលេច​នៅពេល​វា​បង្ហាញ ឬ​ផ្លាស់ទី</translation>
 <translation id="5157250307065481244">មើល​ព័ត៌មានលម្អិតអំពី​គេហទំព័រ</translation>
+<translation id="5157258206078001821">បង្រួម​ផ្ទាំង (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">រៀបចំ Crostini</translation>
 <translation id="5159236862360390997">នឹងបង្ហាញ​បណ្ដុំផ្ទាំងមេរៀនអណ្ដែត​ជាមួយការណែនាំ។
           ចុច <ph name="ACCELERATOR" /> ដើម្បី​ផ្ដោតលើ​ផ្ទាំងអណ្ដែត រួចចុច​ម្ដងទៀត ដើម្បី​ផ្ដោតលើធាតុ​ដែលវាកំពុង​ចង្អុល។</translation>
@@ -5482,7 +5482,6 @@
 <translation id="5173668317844998239">បញ្ចូល និង​លុប​ស្នាមម្រាមដៃ​ដែលបាន​រក្សាទុក​នៅលើ​សោសុវត្ថិភាព​របស់អ្នក</translation>
 <translation id="5174169235862638850">បានចម្លង​ពាក្យសម្ងាត់​ទៅឃ្លីបបត</translation>
 <translation id="517488401359338823">ដោះសោ​ឧបករណ៍​សុវត្ថិភាព</translation>
-<translation id="5176671554021050278">ប្រើ Google Lens ដើម្បីស្វែងយល់បន្ថែមអំពីរូបភាព ឬអក្សរជាក់លាក់នៅលើទំព័រ។</translation>
 <translation id="5177479852722101802">បន្តរារាំងការចូលប្រើកាមេរ៉ា និងម៉ៃក្រូហ្វូន</translation>
 <translation id="5178667623289523808">ស្វែងរកពីមុន</translation>
 <translation id="5179428098696668914">បិទការចាក់សំឡេង AI</translation>
@@ -6683,6 +6682,7 @@
 <translation id="6136637346277431354">បញ្ចូល​ផ្ទាំង និងអ្វីៗជា​ច្រើនទៀត</translation>
 <translation id="6140948187512243695">បង្ហាញ​ព័ត៌មាន​លម្អិត</translation>
 <translation id="6141988275892716286">បញ្ជាក់​ការទាញយក</translation>
+<translation id="6142784636114866877">ពង្រីកផ្ទាំង (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">ទទួលយកជំនួយ</translation>
 <translation id="6143366292569327983">ជ្រើសរើសភាសាទំព័រ ដើម្បីបកប្រែ</translation>
 <translation id="6144938890088808325">ជួយពួកយើងក្នុងការកែលម្អ Chromebooks</translation>
@@ -10004,6 +10004,7 @@
 <translation id="8692107307702113268">ពាក្យសម្ងាត់មាន​តួអក្សរច្រើនជាង 1000 តួ</translation>
 <translation id="8693862390730570097">កុំអនុញ្ញាត "ជួយខ្ញុំក្នុងការសរសេរ" ឱ្យបើកដោយស្វ័យប្រវត្តិ</translation>
 <translation id="8694596275649352090">ចាក់សោ​នៅពេល​ដេក ឬ​បិទ​គម្រប</translation>
+<translation id="8695214265159551349">បង្រួម​ផ្ទាំង (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">បើកទីតាំង...</translation>
 <translation id="869884720829132584">ម៉ឺនុយកម្មវិធី</translation>
 <translation id="869891660844655955">កាលបរិច្ឆេទការផុតកំណត់</translation>

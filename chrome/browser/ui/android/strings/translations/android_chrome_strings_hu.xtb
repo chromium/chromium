@@ -1517,7 +1517,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> A Chrome eltávolította ezeket az engedélyeket, mert Ön az utóbbi időben nem kereste fel ezt a webhelyet</translation>
 <translation id="6923291640965724312">Immerszív formátum</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 lap}other{<ph name="NUMBER_OF_TABS" /> lap}}</translation>
-<translation id="6929224077895306814">Az eszközére és a Google-fiókjába mentett biztonsági kódok is törlődnek</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, kiválasztott rögzített, hangot lejátszó lap</translation>
 <translation id="6937524809504266803">Személyre szabás és összekapcsolás</translation>
 <translation id="6937876069006524083">Becenév (nem kötelező)</translation>

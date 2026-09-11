@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">‏الدخول إلى أي من أجهزة USB هذه</translation>
 <translation id="1038462104119736705">‏يُنصَح بتوفير <ph name="INSTALL_SIZE" /> على الأقل من المساحة لنظام التشغيل Linux. ولزيادة المساحة الخالية، يجب حذف ملفات من جهازك.</translation>
 <translation id="1038643060055067718">الأسطر:</translation>
+<translation id="1039216421321079051">تم إيقاف الإضافة من خلال إضافة أخرى</translation>
 <translation id="1039337018183941703">ملف تالف أو غير صالح</translation>
 <translation id="1040761927998636252">إشارة مرجعية بدون اسم للموقع الإلكتروني <ph name="URL" /></translation>
 <translation id="1041175011127912238">الصفحة لا تستجيب.</translation>
@@ -2533,6 +2534,7 @@
 <translation id="2939908794993783865">المزيد من المواقع الإلكترونية غير النشطة</translation>
 <translation id="2939938020978911855">عرض أجهزة بلوتوث المُتاحة</translation>
 <translation id="2941112035454246133">منخفضة</translation>
+<translation id="2942228903502008519">توسيع علامات التبويب (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">جارٍ الانتظار...</translation>
 <translation id="2942581856830209953">تخصيص هذه الصفحة</translation>
 <translation id="2942707801577151363">‏بإمكانك فتح ملفات Word وExcel وPowerPoint وتعديلها وحفظها. قد يكون عليك الاشتراك للاستفادة من بعض الميزات.</translation>
@@ -2618,7 +2620,6 @@
 <translation id="3000461861112256445">صوت أحادي</translation>
 <translation id="3001144475369593262">حسابات الطفل</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{لم يتم تخصيص أي مفاتيح.}=1{تم تخصيص مفتاح واحد.}two{تم تخصيص مفتاحين ({COUNT}).}few{تم تخصيص {COUNT} مفاتيح.}many{تم تخصيص {COUNT} مفتاحًا.}other{تم تخصيص {COUNT} مفتاح.}}</translation>
-<translation id="3002745665522516995">يمكنك تحديد أي محتوى على الصفحة للبحث عنه</translation>
 <translation id="3002864108328203174">‏تم فتح بطاقة Gemini السفلية في نصف الشاشة.</translation>
 <translation id="3003144360685731741">الشبكات المُفضلة</translation>
 <translation id="3003253259757197230">‏يتم إرسال عناوين URL التي تزورها إلى Google لتوقُّع المواقع الإلكترونية التي ستزورها بعد ذلك ولعرض معلومات إضافية عن الصفحة الحالية التي تزورها.</translation>
@@ -3467,6 +3468,7 @@
 <translation id="3641456520301071208">السماح للمواقع الإلكترونية بطلب معرفة موقعك الجغرافي</translation>
 <translation id="3642070413432681490">وضع دائرة حول مؤشر الماوس</translation>
 <translation id="3643962751030964445">تتم إدارة هذا الجهاز من قِبَل <ph name="DEVICE_MANAGER" />. وهناك طلب من <ph name="DEVICE_MANAGER" /> لإنشاء ملف شخصي جديد لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="3644128856494356630">‏ذاكرة CppGC</translation>
 <translation id="3645372836428131288">حرّك إصبعك قليلاً لالتقاط جزء مختلف من بصمة الإصبع.</translation>
 <translation id="3645951915068244649">لقد سبق أن تم إنشاء مجموعة علامات تبويب باستخدام مجلد الإشارات المرجعية هذا. هل المُراد إنشاء مجموعة علامات تبويب جديدة أو استبدال المجموعة الحالية؟</translation>
 <translation id="3646789916214779970">إعادة ضبط إلى المظهر التلقائي</translation>
@@ -4237,6 +4239,7 @@
 <translation id="4226303886821889519">إصدار أداة التحديث: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{هذه الإضافة غير مسموح بها}zero{هذه الإضافات غير مسموح بها}two{هاتان الإضافتان غير مسموح بهما}few{بعض الإضافات غير مسموح بها}many{بعض الإضافات غير مسموح بها}other{بعض الإضافات غير مسموح بها}}</translation>
 <translation id="4229538146709970028">يُرجى فتح قفل "<ph name="TOKEN_NAME" />" للمصادقة على <ph name="HOST_NAME" /> باستخدام شهادتك.</translation>
+<translation id="4230659518013393045">‏تتم مشاركة عنوان الصفحة وعنوان URL ومحتوى علامة التبويب الحالية مع Google لتقديم ردود أكثر ملاءمة. ويمكنك إضافة علامات تبويب أو إزالتها أثناء التصفّح.</translation>
 <translation id="4232375817808480934">‏ضبط Kerberos</translation>
 <translation id="4232376164796433044">كلمات المرور والملء التلقائي</translation>
 <translation id="4233739489690259993">‏لم تعُد تحديثات الأمان والبرامج متوفّرة لجهازك. عليك ترقية جهاز Chromebook للحصول على تحديثات الأمان والميزات الجديدة. تنطبق شروط العرض.</translation>
@@ -4580,7 +4583,6 @@
 <translation id="4495002167047709180">هل تريد السماح بتشغيل هذه الإضافة على الموقع الإلكتروني <ph name="SITE" />؟</translation>
 <translation id="4495419450179050807">عدم الظهور في هذه الصفحة</translation>
 <translation id="4500055235123625757">‏بإمكان Gemini الإجابة عن أسئلة حول الوسائط، سواء فيديوهات أو محتوى صوتي، التي شغّلتها على <ph name="LINK_BEGIN" />بعض المواقع الإلكترونية<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433">تعطّل <ph name="PLUGIN_NAME" />.</translation>
 <translation id="4500647907053779331">ترجمة النص المُحدَّد إلى اللغة <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">تأكيد الإزالة</translation>
 <translation id="4502423230170890588">إزالة من هذا الجهاز</translation>
@@ -5105,6 +5107,7 @@
 <translation id="488785315393301722">عرض التفاصيل</translation>
 <translation id="488862352499217187">إنشاء مجلد جديد</translation>
 <translation id="4888715715847020167">الانتقال إلى الإعدادات</translation>
+<translation id="4888899258150891194">‏ذاكرة CppGC</translation>
 <translation id="4890292359366636311">افتَح النوافذ في وضع "نافذة ضمن النافذة" تلقائيًا لكي تتمكّن من استخدامها فوق علامات التبويب والنوافذ الأخرى.</translation>
 <translation id="4890399733764921729">يتعذّر الاتصال بالشبكة، إذ تم قفلها بواسطة مُقدِّم آخر لخدمات شبكة الجوّال.</translation>
 <translation id="4890585766056792498">يمكنك حماية متصفّحك من المواقع الإلكترونية الخطيرة</translation>
@@ -5451,6 +5454,7 @@
 <translation id="5155299520372681119">انتهت صلاحية تحميل الملف وتمت إزالته.</translation>
 <translation id="5156638757840305347">يتم تمييز المؤشر عند ظهوره أو تحريكه.</translation>
 <translation id="5157250307065481244">عرض تفاصيل الموقع الإلكتروني</translation>
+<translation id="5157258206078001821">تصغير علامات التبويب (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">‏إعداد نظام التشغيل Crostini</translation>
 <translation id="5159236862360390997">سيتم عرض سلسلة من فقاعات المساعدة التي تتضمّن تعليمات.
           ويمكنك الضغط على <ph name="ACCELERATOR" /> للتركيز على فقاعة مساعدة، وإذا ضغطت مرة أخرى، سيتم التركيز على العنصر الذي تشير إليه الفقاعة.</translation>
@@ -5469,7 +5473,6 @@
 <translation id="5173668317844998239">يمكنك إضافة بصمات الأصابع المحفوظة على مفتاح الأمان وحذفها.</translation>
 <translation id="5174169235862638850">تم نسخ كلمة المرور إلى الحافظة.</translation>
 <translation id="517488401359338823">فتح قفل جهاز الأمان</translation>
-<translation id="5176671554021050278">‏بإمكانك استخدام "عدسة Google" لتلقّي المزيد من المعلومات عن صور أو نصوص معيّنة على أي صفحة.</translation>
 <translation id="5177479852722101802">متابعة حظر الدخول إلى الكاميرا والميكروفون</translation>
 <translation id="5178667623289523808">البحث عن السابق</translation>
 <translation id="5179428098696668914">إيقاف ميزة "التشغيل باستخدام الذكاء الاصطناعي"</translation>
@@ -5792,6 +5795,7 @@
 <translation id="5436510242972373446">البحث في الموقع <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">‏النافذة <ph name="WINDOW_SIDE" /> أصبحت الآن بعرض ‎<ph name="WINDOW_SIZE_PERCENT" /> من الشاشة، واللوحة <ph name="PANE_SIDE" /> أصبحت الآن بعرض ‎<ph name="PANE_SIZE_PERCENT" /> من الشاشة.</translation>
 <translation id="5438060324827306856">البحث عن &amp;الإضافات</translation>
+<translation id="5440240650630588012">‏يمكنك استخدام سطر أو نافذة قراءة لمساعدتك على التركيز عن طريق الضغط على ‎⌥L أو الانتقال إلى "الإعدادات".</translation>
 <translation id="5440425659852470030">إغلاق اللوحة الجانبية</translation>
 <translation id="544083962418256601">إنشاء اختصارات...</translation>
 <translation id="5441133529460183413">‏تطبيقات الويب المثبَّتة من متصفّح Chrome</translation>
@@ -5978,6 +5982,7 @@
 <translation id="5576472948015790634">‏يمكنك الآن إدارة مجموعات علامات التبويب ومحادثات Gemini في مكان واحد. ويمكنك إزالة تثبيت هذا الرمز في أي وقت.</translation>
 <translation id="5578059481725149024">تسجيل الدخول تلقائيًا</translation>
 <translation id="5578387000057347457">لإنشاء صورة، يُرجى إدخال طلب مخصَّص أو تمييز نص</translation>
+<translation id="557893471177655572">تجربة ميزة "التركيز على السطر"</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{‏تم حفظ عنصر واحد على هذا الجهاز فقط. ولاستخدامه على أجهزتك الأخرى، عليك <ph name="BEGIN_LINK" />حفظه في حسابك على Google<ph name="END_LINK" />.}zero{‏تم حفظ {ITEM_COUNT} عنصر على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، عليك <ph name="BEGIN_LINK" />حفظها في حسابك على Google<ph name="END_LINK" />.}two{‏تم حفظ عنصرَين ({ITEM_COUNT}) على هذا الجهاز فقط. ولاستخدامهما على أجهزتك الأخرى، عليك <ph name="BEGIN_LINK" />حفظهما في حسابك على Google<ph name="END_LINK" />.}few{‏تم حفظ {ITEM_COUNT} عناصر على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، عليك <ph name="BEGIN_LINK" />حفظها في حسابك على Google<ph name="END_LINK" />.}many{‏تم حفظ {ITEM_COUNT} عنصرًا على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، عليك <ph name="BEGIN_LINK" />حفظها في حسابك على Google<ph name="END_LINK" />.}other{‏تم حفظ {ITEM_COUNT} عنصر على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، عليك <ph name="BEGIN_LINK" />حفظها في حسابك على Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">إزالة <ph name="SITE" /> من قائمة "<ph name="SECTION_HEADER" />"</translation>
 <translation id="5581031802689147441">تقسيم العرض</translation>
@@ -6668,6 +6673,7 @@
 <translation id="6136637346277431354">إضافة علامات تبويب والمزيد</translation>
 <translation id="6140948187512243695">عرض التفاصيل</translation>
 <translation id="6141988275892716286">تأكيد التنزيل</translation>
+<translation id="6142784636114866877">توسيع علامات التبويب (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">الحصول على مساعدة</translation>
 <translation id="6143366292569327983">اختَر صفحة اللغة التي تريد ترجمتها.</translation>
 <translation id="6144938890088808325">‏ساعدنا في تحسين أجهزة Chromebook</translation>
@@ -9998,11 +10004,13 @@
 <translation id="8692107307702113268">عدد أحرف كلمة المرور يزيد عن 1,000 حرف.</translation>
 <translation id="8693862390730570097">عدم السماح بفتح ميزة "ساعدني في الكتابة" تلقائيًا</translation>
 <translation id="8694596275649352090">قفل الجهاز عند دخوله وضع السكون أو عند إغلاق غطائه</translation>
+<translation id="8695214265159551349">تصغير علامات التبويب (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">فتح ال&amp;موقع...</translation>
 <translation id="869884720829132584">قائمة التطبيقات</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8699296325072357994">‏يتم إرسال محتوى صفحات كلمات المرور والمعلومات ذات الصلة إلى Google، ويراجعه فريق لدينا. يُرجى العلم أنّ كلمة المرور مشفَّرة ولا يمكن لأي شخص الاطّلاع عليها. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">‏مفتاح مشغِّل التطبيقات + مفتاح Backspace</translation>
+<translation id="8701058912406466818">‏يمكنك استخدام سطر أو نافذة قراءة لمساعدتك على التركيز عن طريق الضغط على Alt+L أو الانتقال إلى "الإعدادات".</translation>
 <translation id="8702278591052316269">قائمة تحتوي على مجموعات علامات التبويب المحفوظة المخفية</translation>
 <translation id="8703346390800944767">تخطّي الإعلان</translation>
 <translation id="8703372953981978786">هذا الرابط لا يعمل</translation>
@@ -10765,6 +10773,7 @@
 <translation id="983192555821071799">إغلاق جميع علامات التبويب</translation>
 <translation id="983531994960412650">‫<ph name="WINDOW_TITLE" /> - يتم التسجيل من الكاميرا والميكروفون.</translation>
 <translation id="984705303330760860">إضافة لغات إلى ميزة التدقيق الإملائي</translation>
+<translation id="986994187171579118">تم إيقاف الإضافة من خلال "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="987264212798334818">عام</translation>
 <translation id="987574372967138078">يريد "<ph name="WEBSITE_ORIGIN" />" الحصول على معلومات من جهازك الجوّال</translation>
 <translation id="988320949174893488">يتقطّع من حين لآخر</translation>

@@ -1517,7 +1517,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome a retiré ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
 <translation id="6923291640965724312">Format immersif</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 onglet}one{<ph name="NUMBER_OF_TABS" /> onglet}other{<ph name="NUMBER_OF_TABS" /> onglets}}</translation>
-<translation id="6929224077895306814">Tous les codes de sécurité enregistrés sur votre appareil et dans votre compte Google seront supprimés</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, onglet épinglé et sélectionné avec son</translation>
 <translation id="6937524809504266803">Personnalisation, association</translation>
 <translation id="6937876069006524083">Pseudo (facultatif)</translation>

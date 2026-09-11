@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS-i klient</translation>
 <translation id="1508263560970797965">Jätka inkognitos</translation>
 <translation id="1509486075633541495">Logi veebisaidile sisse</translation>
+<translation id="1509922846321012406">Avastage rohkem viise oma privaatsuse ja turvalisuse suurendamiseks</translation>
 <translation id="1513858653616922153">Kustuta parool</translation>
 <translation id="1517166097004694782">Peida valik „Jätka selle vahelehega“</translation>
 <translation id="1520027731907768768">Saate jälgitavate toodete hinnalanguse hoiatusi.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Vaikebrauser</translation>
 <translation id="2893791155497534382">Paroole ja muid tegevusi saab kustutada nende haldamise seadetes.</translation>
 <translation id="2894757982205307093">Uus vaheleht grupis</translation>
+<translation id="2897858638449756400">Avastage rohkem otsimisviise</translation>
 <translation id="2902312830803030883">Veel toiminguid</translation>
 <translation id="2904788871580817212">Hinnalangus avatud vahelehel, hinnalt <ph name="PREVIOUS_PRICE" /> hinnale <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Teil on <ph name="NUMBER_OF_PASSWORDS" /> korduvalt kasutatud parooli, mis võivad teie turvalisuse ohtu seada.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">See kustutab sellesse seadmesse salvestatud aadressid. See kustutab ka teie Google'i kontole <ph name="USER_EMAIL" /> salvestatud aadressid.</translation>
 <translation id="5056446788882570708">Probleemid leiti <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Loo pilt</translation>
+<translation id="5058813911021873087">Avastage rohkem võimalusi asjade korrastamiseks ja aja säästmiseks</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Viige sirvimine uuele tasemele</translation>
 <translation id="5062321486222145940">Installi Google Drive</translation>
@@ -1881,6 +1884,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="6987201788018524855">Avastage kasulikke funktsioone, mida te pole märganud</translation>
 <translation id="6989636517316575338">Küsige mis tahes lehe kohta</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Kõik ülesanded</translation>
 <translation id="6998251471716094661">Jälgige toodete hindu ja saage märguandeid, kui hind mõnel saidil langeb</translation>
 <translation id="7004032350256606903">Teie organisatsioon nõuab, et sirviksite privaatselt.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>

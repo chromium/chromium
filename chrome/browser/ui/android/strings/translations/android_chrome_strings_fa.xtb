@@ -1517,7 +1517,6 @@
 <translation id="6922812712751566567">‏<ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome این اجازه‌ها را برداشت زیرا اخیراً بازدیدی نداشته‌اید</translation>
 <translation id="6923291640965724312">قالب فراگیر</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{‫۱ زبانه}one{‫<ph name="NUMBER_OF_TABS" /> زبانه}other{‫<ph name="NUMBER_OF_TABS" /> زبانه}}</translation>
-<translation id="6929224077895306814">‏همه کدهای امنیتی ذخیره‌شده در «حساب Google» و دستگاهتان حذف خواهد شد</translation>
 <translation id="6933180670536678127">‫<ph name="TAB_TITLE" />، زبانه شنیداری سنجاق‌شده انتخابی</translation>
 <translation id="6937524809504266803">شخصی‌سازی و پیونددهی</translation>
 <translation id="6937876069006524083">نام مستعار (اختیاری)</translation>

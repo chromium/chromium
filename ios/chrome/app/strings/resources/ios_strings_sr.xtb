@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS клијент</translation>
 <translation id="1508263560970797965">Настави у режиму без архивирања</translation>
 <translation id="1509486075633541495">Пријавите се на веб-сајт</translation>
+<translation id="1509922846321012406">Истражите још начина да побољшате приватност и безбедност</translation>
 <translation id="1513858653616922153">Избриши лозинку</translation>
 <translation id="1517166097004694782">Сакриј опцију Настави да користиш ову картицу</translation>
 <translation id="1520027731907768768">Добијајте обавештења о снижењима за производе које пратите.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Подразумевани прегледач</translation>
 <translation id="2893791155497534382">Лозинке и друге активности могу да се бришу у одговарајућим подешавањима управљања</translation>
 <translation id="2894757982205307093">Нова картица у групи</translation>
+<translation id="2897858638449756400">Истражите још начина за претрагу</translation>
 <translation id="2902312830803030883">Још радњи</translation>
 <translation id="2904788871580817212">Пад цене на отвореној картици, са <ph name="PREVIOUS_PRICE" /> на <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Број лозинки које користите више пута и које могу да угрозе безбедност је<ph name="NUMBER_OF_PASSWORDS" />.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Овим се бришу адресе сачуване на овом уређају. Бришу се и адресе сачуване на Google налогу <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Проблеми су пронађени <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Направи слику</translation>
+<translation id="5058813911021873087">Истражите још начина да се организујете и уштедите време</translation>
 <translation id="5059136629401106827">Потврди</translation>
 <translation id="5061202435354361813">Подигните прегледање на виши ниво</translation>
 <translation id="5062321486222145940">Инсталирај Google диск</translation>
@@ -1881,6 +1884,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6987201788018524855">Истражите корисне функције које сте пропустили</translation>
 <translation id="6989636517316575338">Питајте о било којој страници</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Сви задаци</translation>
 <translation id="6998251471716094661">Пратите цене производа и добијајте обавештења када цена падне на било ком сајту</translation>
 <translation id="7004032350256606903">Организација захтева да прегледате приватно.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>

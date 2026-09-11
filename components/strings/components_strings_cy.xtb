@@ -1136,7 +1136,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2931453528659195355">Rheoli gwybodaeth siopa</translation>
 <translation id="2933624813161016821">Ffoil Boglynnu</translation>
 <translation id="2935726091208500473">wrthi'n rhannu eich tabiau</translation>
-<translation id="2936698630976431647">Dewiswch y maes cod hyrwyddo i awtolenwi cynigion o Google Wallet</translation>
 <translation id="293796669683825859">Sylwadau</translation>
 <translation id="2938225289965773019">Agor dolenni <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – I ddangos eich cyrchwr, newidiwch apiau, ail-lwythwch y dudalen, neu ewch yn ôl</translation>
@@ -1597,6 +1596,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3712004750972384495">Wrthi'n cadw'r recordiad sgrin</translation>
 <translation id="3712006010833051684">Amlen #10</translation>
 <translation id="3712624925041724820">Mae'r holl drwyddedau wedi'u defnyddio</translation>
+<translation id="371302509916403935">Tanlinellu</translation>
 <translation id="3713277100229669269">Gallwch bellach weld buddion cerdyn cyn i chi dalu</translation>
 <translation id="3714633008798122362">calendr gwe</translation>
 <translation id="3714780639079136834">Wrthi'n troi data symudol neu Wi-Fi ymlaen</translation>
@@ -3843,6 +3843,7 @@ Manylion ychwanegol:
 <translation id="7514365320538308">Lawrlwytho</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Caniateir VR y tro hwn</translation>
+<translation id="7517198908921983825">Awgrymwyd gan Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Amlen C10</translation>
 <translation id="7518003948725431193">Ni chanfuwyd tudalen we ar gyfer y cyfeiriad gwe: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4214,7 +4215,6 @@ Manylion ychwanegol:
 <translation id="815036624016370447">Gall gwybodaeth o'ch Cyfrif Google <ph name="ACCOUNT" /> eich helpu i lenwi ffurflenni'n gyflymach yn Chrome</translation>
 <translation id="8150722005171944719">Nid oes modd darllen y ffeil yn <ph name="URL" />.  Mae'n bosib ei bod wedi cael ei thynnu, ei symud neu gallai caniatadau ffeil rwystro mynediad iddi.</translation>
 <translation id="8151185429379586178">Offer datblygwyr</translation>
-<translation id="8152194419479742504">Teipiwch @@ yn unrhyw ffurflen i ddod o hyd i wybodaeth a'i llenwi heb newid tabiau</translation>
 <translation id="8153865548451212769">{0,plural, =1{Nid yw'r polisi gweinyddwr yn argymell lawrlwytho'r ffeil hon i <ph name="DESTINATION_NAME" />}zero{Nid yw'r polisi gweinyddwr yn argymell lawrlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}two{Nid yw'r polisi gweinyddwr yn argymell lawrlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}few{Nid yw'r polisi gweinyddwr yn argymell lawrlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}many{Nid yw'r polisi gweinyddwr yn argymell lawrlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}other{Nid yw'r polisi gweinyddwr yn argymell lawrlwytho'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Tabiau a agorwyd ddiwethaf</translation>
 <translation id="815805690561372740">Mae gan Chrome nodweddion diogelwch integredig i'ch amddiffyn wrth bori - megis Pori'n Ddiogel gyda Google, a <ph name="BEGIN_LINK" />ddaeth o hyd i ddrwgwedd yn ddiweddar<ph name="END_LINK" /> ar y wefan y gwnaethoch geisio ymweld â hi.</translation>
@@ -4278,6 +4278,7 @@ Manylion ychwanegol:
 <translation id="8269242089528251720">Dogfennau ar wahân/Copïau sydd wedi'u coladu</translation>
 <translation id="8269703227894255363">{0,plural, =1{Ffeil wedi'i rhwystro rhag cael ei hagor}zero{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu hagor}two{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu hagor}few{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu hagor}many{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu hagor}other{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu hagor}}</translation>
 <translation id="8270242299912238708">Dogfennau PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Mae'r daenlen trinydd talu wedi'i hagor</translation>
 <translation id="827820107214076967">Ail-lwytho Logiau</translation>
 <translation id="8279611986089885641">Rhaid i hysbysiadau Chrome fod ymlaen. Gallwch eu troi ymlaen yn <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

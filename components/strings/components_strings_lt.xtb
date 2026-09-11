@@ -1095,6 +1095,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2859806420264540918">Šioje svetainėje rodomi nepageidaujami arba klaidinantys skelbimai.</translation>
 <translation id="2873317327342476681">Dinozauro žaidimas, palieskite dinozaurą arba paspauskite tarpo klavišą, jei norite žaisti</translation>
 <translation id="287387905105155974">Pagalbos debesėlis</translation>
+<translation id="2875109558992200904">Kai saugos įvykius pažymi „Chrome“, atitinkami įvykių duomenys išsiunčiami administratoriui. Tai gali būti naršyklėje „Chrome“ lankomų puslapių URL ir pavadinimai, puslapių, iš kurių nukopijavote duomenis, URL, failų pavadinimai ar metaduomenys, IP adresai, naršyklės ar skirtukų strigtys ir naudotojo vardas, kuriuo prisijungiate prie žiniatinklio programų, įrenginio ir „Chrome“.</translation>
 <translation id="2876489322757410363">Išjungiate inkognito režimą, kad galėtumėte sumokėti naudodami išorinę programą. Tęsti?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti Saugaus naršymo ir kitus duomenis „Chrome“ nustatymuose</translation>
 <translation id="2878197950673342043">Perlenkimas į keturias dalis</translation>
@@ -1135,7 +1136,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2931453528659195355">Tvarkyti apsipirkimo informaciją</translation>
 <translation id="2933624813161016821">Įspausta folija</translation>
 <translation id="2935726091208500473">skirtukų bendrinimą</translation>
-<translation id="2936698630976431647">Pasirinkite akcijos kodo lauką, kad automatiškai užpildytumėte „Google Wallet“ pasiūlymus</translation>
 <translation id="293796669683825859">Komentarai</translation>
 <translation id="2938225289965773019">Atidaryti „<ph name="PROTOCOL" />“ nuorodas</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – jei norite rodyti žymeklį, perjunkite programas, įkelkite puslapį iš naujo arba grįžkite</translation>
@@ -1597,6 +1597,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3712004750972384495">Išsaugomas ekrano vaizdo įrašas</translation>
 <translation id="3712006010833051684">Nr. 10 vokas</translation>
 <translation id="3712624925041724820">Licencijos baigėsi</translation>
+<translation id="371302509916403935">Pabrauktas</translation>
 <translation id="3713277100229669269">Dabar prieš mokėdami galite peržiūrėti kortelės privilegijas</translation>
 <translation id="3714633008798122362">žiniatinklio kalendorius</translation>
 <translation id="3714780639079136834">Įjungti mobiliojo ryšio duomenis arba „Wi-Fi“</translation>
@@ -1944,6 +1945,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4265635050210404830">Lojalumo kortelės</translation>
 <translation id="4265872034478892965">Leidžia jūsų administratorius</translation>
 <translation id="4267590181863312380">Jei norite gauti istoriją iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją. Be to, slaptažodžius ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
+<translation id="4267837382000002014">Puslapių, kuriuose lankotės, URL ir pavadinimai siunčiami „Google Cloud“ arba trečiosioms šalims, kad būtų atlikta analizė, ir gali būti matomi administratoriui. Pavyzdžiui, jie gali būti nuskaityti, siekiant aptikti nesaugias svetaines arba filtruoti svetaines pagal administratoriaus nustatytas taisykles.</translation>
 <translation id="4268025649754414643">Rakto kodavimas</translation>
 <translation id="4269599248168651462">Serverio sertifikatas išduodamas neunikaliam pavadinimui.</translation>
 <translation id="4270541775497538019">6 dėtuvė</translation>
@@ -3843,6 +3845,7 @@ Papildoma išsami informacija:
 <translation id="7514365320538308">Atsisiųsti</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR leidžiama šį kartą</translation>
+<translation id="7517198908921983825">Siūlo „Gemini“ · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 vokas</translation>
 <translation id="7518003948725431193">Nerasta nė vieno tinklalapio šiuo žiniatinklio adresu: <ph name="URL" /></translation>
 <translation id="7521387064766892559">„JavaScript“</translation>
@@ -4214,7 +4217,6 @@ Papildoma išsami informacija:
 <translation id="815036624016370447">Informacija iš „Google“ paskyros <ph name="ACCOUNT" /> gali padėti greičiau užpildyti formas naršyklėje „Chrome“</translation>
 <translation id="8150722005171944719"><ph name="URL" /> nurodyto failo negalima skaityti. Gali būti, kad jis pašalintas, perkeltas arba neleidžiama prieiga prie jo dėl failo leidimų.</translation>
 <translation id="8151185429379586178">Kūrėjo įrankiai</translation>
-<translation id="8152194419479742504">Įveskite @@ bet kurioje formoje, kad rastumėte ir užpildytumėte informaciją neperjungdamas skirtukų</translation>
 <translation id="8153865548451212769">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šio failo į „<ph name="DESTINATION_NAME" />“}one{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}few{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}many{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}other{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}}</translation>
 <translation id="8155253549374198915">Paskutiniai atidaryti skirtukai</translation>
 <translation id="815805690561372740">„Chrome“ integruotos saugos funkcijos, skirtos apsaugoti jus, kai naršote, pvz., „Google“ saugaus naršymo funkcija, kurią naudojant <ph name="BEGIN_LINK" />neseniai buvo rasta kenkėjiška programa<ph name="END_LINK" /> svetainėje, kurioje bandėte apsilankyti.</translation>
@@ -4278,6 +4280,7 @@ Papildoma išsami informacija:
 <translation id="8269242089528251720">Atskiras dokumentas / sugretintos kopijos</translation>
 <translation id="8269703227894255363">{0,plural, =1{Failas užblokuotas, kad nebūtų galima atidaryti}one{<ph name="FILE_COUNT" /> failas užblokuotas, kad nebūtų galima atidaryti}few{<ph name="FILE_COUNT" /> failai užblokuoti, kad nebūtų galima atidaryti}many{<ph name="FILE_COUNT" /> failo užblokuota, kad nebūtų galima atidaryti}other{<ph name="FILE_COUNT" /> failų užblokuota, kad nebūtų galima atidaryti}}</translation>
 <translation id="8270242299912238708">PDF dokumentai</translation>
+<translation id="8270320981823560179">Diskas</translation>
 <translation id="8277900682056760511">Mokėjimo doroklės lapas atidarytas</translation>
 <translation id="827820107214076967">Atnaujinti žurnalus</translation>
 <translation id="8279611986089885641">„Chrome“ pranešimai turi būti įjungti. Juos galite įjungti skiltyje <ph name="BEGIN_LINK" />„<ph name="NOTIFICATION_SETTINGS" />“<ph name="END_LINK" />.</translation>

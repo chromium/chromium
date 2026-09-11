@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Клиентска програма за MLS за RCS</translation>
 <translation id="1508263560970797965">Продължаване в режим „инкогнито“</translation>
 <translation id="1509486075633541495">Вход в уебсайта</translation>
+<translation id="1509922846321012406">Разгледайте още начини за подобряване на поверителността и безопасността ви</translation>
 <translation id="1513858653616922153">Изтриване на паролата</translation>
 <translation id="1517166097004694782">Скриване на „Продължаване с този раздел“</translation>
 <translation id="1520027731907768768">Получавайте сигнали за понижение на цената за продукти, които следите.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Браузър по подразбиране</translation>
 <translation id="2893791155497534382">Паролите и друга активност могат да бъдат изтрити от съответните настройки за управление</translation>
 <translation id="2894757982205307093">Нов раздел в групата</translation>
+<translation id="2897858638449756400">Разгледайте още начини за търсене</translation>
 <translation id="2902312830803030883">Още действия</translation>
 <translation id="2904788871580817212">Цената на <ph name="PRODUCT_NAME" /> в отворения раздел е понижена от <ph name="PREVIOUS_PRICE" /> на <ph name="PRICE" /> в сайта <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Имате <ph name="NUMBER_OF_PASSWORDS" /> повторно използвани пароли, които могат да представляват риск за сигурността ви.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Така ще се изтрият адресите, запазени на това устройство. Ще се изтрият и адресите, запазени в профила ви в Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Бяха намерени проблеми <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Създаване на изображение</translation>
+<translation id="5058813911021873087">Разгледайте още начини за организиране и пестене на време</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Подобрете сърфирането си</translation>
 <translation id="5062321486222145940">Инсталиране на Google Диск</translation>
@@ -1881,6 +1884,7 @@
 <translation id="6987201788018524855">Разгледайте полезните функции, които сте пропуснали</translation>
 <translation id="6989636517316575338">Задайте въпрос за дадена страница</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Всички задачи</translation>
 <translation id="6998251471716094661">Проследявайте цените на продукти и получавайте сигнали при понижение на цената в даден сайт</translation>
 <translation id="7004032350256606903">Организацията ви изисква да сърфирате частно.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>

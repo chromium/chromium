@@ -1517,7 +1517,6 @@ Google налог можда има друге облике историје п�
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome је уклонио дозволе за ове сајтове јер их нисте недавно посећивали</translation>
 <translation id="6923291640965724312">Имерзивни формат</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 картица}one{<ph name="NUMBER_OF_TABS" /> картица}few{<ph name="NUMBER_OF_TABS" /> картице}other{<ph name="NUMBER_OF_TABS" /> картица}}</translation>
-<translation id="6929224077895306814">Сви безбедносни кодови сачувани на уређају и Google налогу ће бити избрисани</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, изабрана закачена картица са звуком</translation>
 <translation id="6937524809504266803">Персонализација и повезивање</translation>
 <translation id="6937876069006524083">Надимак (опционално)</translation>

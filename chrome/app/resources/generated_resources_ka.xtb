@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">წვდომა ამ რომელიმე USB მოწყობილობაზე</translation>
 <translation id="1038462104119736705">Linux-ის გამოსაყენებლად რეკომენდებულია მინიმუმ <ph name="INSTALL_SIZE" />. მეხსიერების გათავისუფლება შეგიძლიათ მოწყობილობიდან ფაილების წაშლით.</translation>
 <translation id="1038643060055067718">ხაზები:</translation>
+<translation id="1039216421321079051">გაფართოება გათიშა სხვა გაფართოებამ</translation>
 <translation id="1039337018183941703">ფაილი არასწორი ან დაზიანებულია</translation>
 <translation id="1040761927998636252">უსახელო სანიშნე <ph name="URL" />-ისთვის</translation>
 <translation id="1041175011127912238">ეს გვერდი არ რეაგირებს</translation>
@@ -2530,6 +2531,7 @@
 <translation id="2939908794993783865">დამატებითი უმოქმედო საიტები</translation>
 <translation id="2939938020978911855">ხელმისაწვდომი Bluetooth მოწყობილობების ჩვენება</translation>
 <translation id="2941112035454246133">დაბალი</translation>
+<translation id="2942228903502008519">ჩანართების გაშლა (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">მოლოდინში…</translation>
 <translation id="2942581856830209953">ამ გვერდის მორგება</translation>
 <translation id="2942707801577151363">Word, Excel და PowerPoint ფაილების გახსნა, რედაქტირება და შენახვა. გარკვეული ფუნქციებისთვის, შესაძლოა, საჭირო იყოს გამოწერა.</translation>
@@ -2615,7 +2617,6 @@
 <translation id="3000461861112256445">მონო აუდიო</translation>
 <translation id="3001144475369593262">ბავშვების ანგარიშები</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{მორგებული კლავიშები არ არის}=1{1 მორგებული კლავიში}other{{COUNT} მორგებული კლავიში}}</translation>
-<translation id="3002745665522516995">ძიებისთვის აირჩიეთ გვერდზე არსებული ნებისმიერი რამ</translation>
 <translation id="3002864108328203174">Gemini-ს ქვედა ფურცელი ნახევარ სიმაღლეზე.</translation>
 <translation id="3003144360685731741">სასურველი ქსელები</translation>
 <translation id="3003253259757197230">თქვენ მიერ მონახულებული URL-ები ეგზავნება Google-ს იმის პროგნოზირებისთვის, თუ რომელი საიტების მონახულებას მოისურვებთ შემდგომში, ასევე, თქვენ მიერ მონახულებული გვერდის შესახებ დამატებითი ინფორმაციის საჩვენებლად</translation>
@@ -4237,6 +4238,7 @@
 <translation id="4226303886821889519">განმაახლებლის ვერსია: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ამ გაფართოების გამოყენება დაუშვებელია}other{ზოგიერთი გაფართოების გამოყენება დაუშვებელია}}</translation>
 <translation id="4229538146709970028">გთხოვთ, განბლოკოთ <ph name="TOKEN_NAME" />, რათა მოახდინოთ <ph name="HOST_NAME" />-ის ავტორიზაცია თქვენი სერტიფიკატით.</translation>
+<translation id="4230659518013393045">უფრო რელევანტური პასუხების მისაღებად თქვენი მიმდინარე ჩანართის გვერდის სათაური, URL და კონტენტი ზიარდება Google-თან. დათვალიერებისას შეგიძლიათ დაამატოთ ან ამოშალოთ ჩანართები.</translation>
 <translation id="4232375817808480934">Kerberos-ის კონფიგურაცია</translation>
 <translation id="4232376164796433044">პაროლები და ავტომატური შევსება</translation>
 <translation id="4233739489690259993">თქვენი Chromebook აღარ იღებს უსაფრთხოებისა და პროგრამული უზრუნველყოფის განახლებებს. უსაფრთხოებისა და სხვა ტიპის უახლესი ფუნქციებით რომ ისარგებლოთ, გამოცვალეთ თქვენი მოწყობილობა. მოქმედებს შემოთავაზების პირობები.</translation>
@@ -4580,7 +4582,6 @@
 <translation id="4495002167047709180">გსურთ, დაუშვათ ამ გაფართოების გამოყენება <ph name="SITE" />-ზე?</translation>
 <translation id="4495419450179050807">არ აჩვენო ამ გვერდზე</translation>
 <translation id="4500055235123625757">Gemini-ს შეუძლია უპასუხოს შეკითხვებს ვიდეოს ან აუდიოს შესახებ, რომელიც დაუკარით <ph name="LINK_BEGIN" />გარკვეულ ვებსაიტებზე<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ავარიულად გაითიშა</translation>
 <translation id="4500647907053779331">არჩეულის <ph name="LANGUAGE" /> ვერსიაზე თა&amp;რგმნა</translation>
 <translation id="4501530680793980440">დაადასტურეთ წაშლა</translation>
 <translation id="4502423230170890588">ამ მოწყობილობიდან ამოშლა</translation>
@@ -5452,6 +5453,7 @@
 <translation id="5155299520372681119">ფაილის ატვირთვის ვადა ამოიწურა და ის ამოიშალა.</translation>
 <translation id="5156638757840305347">კურსორის გამოჩენისას ან გადაადგილებისას მისი გამოყოფა მოხდება</translation>
 <translation id="5157250307065481244">საიტის დეტალების ნახვა</translation>
+<translation id="5157258206078001821">ჩანართების ჩაკეცვა (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">Crostini-ს დაყენება</translation>
 <translation id="5159236862360390997">ნაჩვენები იქნება ინსტრუქციის შემცველი ბუშტების სერია სახელმძღვანელოდან.
           დააჭირეთ <ph name="ACCELERATOR" />-ს, ბუშტი ფოკუსში რომ მოაქციოთ, შემდეგ კი დააჭირეთ ხელახლა, ფოკუსში ის ელემენტი რომ მოაქციოთ, რომელსაც ის მიემართება.</translation>
@@ -5470,7 +5472,6 @@
 <translation id="5173668317844998239">თქვენს უსაფრთხოების გასაღებზე შენახული თითის ანაბეჭდების დამატება და წაშლა</translation>
 <translation id="5174169235862638850">პაროლი დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="517488401359338823">უსაფრთხოების მოწყობილობის განბლოკვა</translation>
-<translation id="5176671554021050278">გამოიყენეთ Google Lens, რომ შეიტყოთ მეტი კონკრეტული სურათების ან ტექსტის შესახებ გვერდზე.</translation>
 <translation id="5177479852722101802">გაგრძელება კამერისა და მიკროფონზე წვდომის დაბლოკვით</translation>
 <translation id="5178667623289523808">წინა ელემენტის ძებნა</translation>
 <translation id="5179428098696668914">AI დაკვრის გამორთვა</translation>
@@ -5793,6 +5794,7 @@
 <translation id="5436510242972373446"><ph name="SITE_NAME" />-ის ძებნა:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> ფანჯარა ახლა <ph name="WINDOW_SIZE_PERCENT" />-ით ფართოა, <ph name="PANE_SIDE" /> პანელი ახლა <ph name="PANE_SIZE_PERCENT" />-ით ფართოა.</translation>
 <translation id="5438060324827306856">&amp;გაფართოებების ძიება</translation>
+<translation id="5440240650630588012">ყურადღების კონცენტრაციისთვის გამოიყენეთ საკითხავი ხაზი ან ფანჯარა. დააჭირეთ „⌥L“-ს ან გადადით პარამეტრებში.</translation>
 <translation id="5440425659852470030">გვერდითი პანელის დახურვა</translation>
 <translation id="544083962418256601">მალსახმობების შექმნა…</translation>
 <translation id="5441133529460183413">Chrome ბრაუზერიდან დაინსტალირებული ვებ-აპი</translation>
@@ -5979,6 +5981,7 @@
 <translation id="5576472948015790634">ამიერიდან შეგიძლიათ ჩანართების ჯგუფებისა და Gemini ჩეთების მართვა ერთი ადგილიდან. ამ ამოცანის ჩამაგრების მოხსნა ნებისმიერ დროს შეგიძლიათ.</translation>
 <translation id="5578059481725149024">ავტომატური შესვლა</translation>
 <translation id="5578387000057347457">შეიყვანეთ მორგებული მოთხოვნა ან გამოყავით ტექსტი, რომ შექმნათ სურათი</translation>
+<translation id="557893471177655572">ცადეთ ხაზის ფოკუსი</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 ერთეული შენახულია მხოლოდ ამ მოწყობილობაში. თქვენს სხვა მოწყობილობებში მის გამოსაყენებლად <ph name="BEGIN_LINK" />შეინახეთ ის თქვენს Google ანგარიშში<ph name="END_LINK" />.}other{{ITEM_COUNT} ერთეული შენახულია მხოლოდ ამ მოწყობილობაში. სხვა მოწყობილობებში მათ გამოსაყენებლად <ph name="BEGIN_LINK" />შეინახეთ ისინი თქვენს Google ანგარიშში<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">საიტის <ph name="SITE" /> ამოშლა სიიდან „<ph name="SECTION_HEADER" />“</translation>
 <translation id="5581031802689147441">გაყოფილი ხედი</translation>
@@ -6669,6 +6672,7 @@
 <translation id="6136637346277431354">ჩანართებისა და სხვ. დამატება</translation>
 <translation id="6140948187512243695">დეტალების ჩვენება</translation>
 <translation id="6141988275892716286">დაადასტურეთ ჩამოტვირთვა</translation>
+<translation id="6142784636114866877">ჩანართების გაშლა (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">დახმარების მიღება</translation>
 <translation id="6143366292569327983">აირჩიეთ, რომელი ენიდან ითარგმნოს გვერდი</translation>
 <translation id="6144938890088808325">დაგვეხმარეთ Chromebook-ების გაუმჯობესებაში</translation>
@@ -9988,11 +9992,13 @@
 <translation id="8692107307702113268">პაროლის სიგრძე აღემატება 1000 სიმბოლოს</translation>
 <translation id="8693862390730570097">ტექსტის შემქმნელი არ გაიხსნას ავტომატურად</translation>
 <translation id="8694596275649352090">ჩაკეტვა ძილის დროს ან თავსახურის დახურვისას</translation>
+<translation id="8695214265159551349">ჩანართების ჩაკეცვა (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">&amp;მდებარეობის გახსნა…</translation>
 <translation id="869884720829132584">პროგრამის მენიუ</translation>
 <translation id="869891660844655955">ვადის გასვლის თარიღი</translation>
 <translation id="8699296325072357994">პაროლის გვერდებიდან და დაკავშრებული ინფორმაციიდან კონტენტი იგზავნება Google-ში და მას მიმოიხილავენ ადამიანები. თქვენი პაროლი დაშიფრულია და მას ვერავინ ნახავს. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">launcher + backspace</translation>
+<translation id="8701058912406466818">ყურადღების კონცენტრაციისთვის გამოიყენეთ საკითხავი ხაზი ან ფანჯარა. დააჭირეთ „Alt+L“-ს ან გადადით პარამეტრებში.</translation>
 <translation id="8702278591052316269">დამალული შენახული ჩანართების ჯგუფების შემცველი მენიუ</translation>
 <translation id="8703346390800944767">რეკლამის გამოტოვება</translation>
 <translation id="8703372953981978786">ეს ბმული არ მუშაობს</translation>
@@ -10755,6 +10761,7 @@
 <translation id="983192555821071799">ყველა ჩანართის დახურვა</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> — კამერა და მიკროფონი იწერს</translation>
 <translation id="984705303330760860">დაამატეთ ენები მართლწერის შემოწმებისთვის</translation>
+<translation id="986994187171579118">გაფართოება გათიშა <ph name="EXTENSION_NAME" />-მ(ა)</translation>
 <translation id="987264212798334818">ზოგადი</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" />-ს სურს თქვენი მობილური მოწყობილობიდან ინფორმაციის მიღება</translation>
 <translation id="988320949174893488">პერიოდულად იჭედება</translation>

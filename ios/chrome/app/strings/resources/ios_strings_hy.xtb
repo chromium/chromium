@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS սպասառու</translation>
 <translation id="1508263560970797965">Շարունակել ինկոգնիտո ռեժիմում</translation>
 <translation id="1509486075633541495">Մտեք հաշիվ</translation>
+<translation id="1509922846321012406">Իմացեք, թե ինչպես բարձրացնել ձեր գաղտնիության և անվտանգության մակարդակը</translation>
 <translation id="1513858653616922153">Ջնջել գաղտնաբառը</translation>
 <translation id="1517166097004694782">Թաքցնել «Շարունակել այս ներդիրի դիտումը» գործողությունը</translation>
 <translation id="1520027731907768768">Ստանալ այն ապրանքների գների իջեցման մասին ծանուցումները, որոնք հետագծում եք։</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Կանխադրված դիտարկիչ</translation>
 <translation id="2893791155497534382">Գաղտնաբառերը և մյուս գործողությունները կարող եք ջնջել կարգավորումների համապատասխան բաժիններում</translation>
 <translation id="2894757982205307093">Նոր ներդիր խմբում</translation>
+<translation id="2897858638449756400">Փորձեք որոնման նոր եղանակներ</translation>
 <translation id="2902312830803030883">Այլ գործողություններ</translation>
 <translation id="2904788871580817212">Գնի իջեցում բացված ներդիրում, գինը <ph name="PREVIOUS_PRICE" />-ից դարձել է <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Դուք ունեք <ph name="NUMBER_OF_PASSWORDS" /> կրկնվող գաղտնաբառ, որոնք վտանգում են ձեր անվտանգությունը։</translation>
@@ -852,7 +854,7 @@
 <translation id="3803696231112616155">Առաջարկել այս կայքի թագմանությունը</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
 <translation id="381219490185664296">Ապախմբավորե՞լ ներդիրների խումբը</translation>
-<translation id="3812308602011798782">Կարծիքներ</translation>
+<translation id="3812308602011798782">Կարծիք­ներ</translation>
 <translation id="3813175908845379029">Օգտակար առաջարկներ, որոնք լավացնում և հեշտացնում են դիտարկումը</translation>
 <translation id="3818293389945649617">Գտնել հաջորդը</translation>
 <translation id="3819183753496523827">Կապ չկա։ Ստուգեք կապը և նորից փորձեք։</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Այս սարքում պահված հասցեները կջնջվեն։ Ինչպես նաև կջնջվեն ձեր <ph name="USER_EMAIL" /> Google հաշվում պահված հասցեները։</translation>
 <translation id="5056446788882570708">Խնդիրները հայտնաբերվել են <ph name="TIME" />։</translation>
 <translation id="5056587122125565772">Ստեղծել պատկեր</translation>
+<translation id="5058813911021873087">Իմացեք, թե ինչպես կազմակերպել աշխատանքը և ժամանակ խնայել</translation>
 <translation id="5059136629401106827">Եղավ</translation>
 <translation id="5061202435354361813">Ավելի արդյունավետ կերպով օգտագործեք դիտարկիչը</translation>
 <translation id="5062321486222145940">Տեղադրել Google Drive-ը</translation>
@@ -1881,6 +1884,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6987201788018524855">Իմացեք նոր օգտակար գործառույթների մասին</translation>
 <translation id="6989636517316575338">Հարցրեք ցանկացած էջի մասին</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Բոլոր առաջադրանքները</translation>
 <translation id="6998251471716094661">Հետևեք ապրանքների գներին և ստանցեք ծանուցումներ, եթե գինն իջնի որևէ կայքում</translation>
 <translation id="7004032350256606903">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>

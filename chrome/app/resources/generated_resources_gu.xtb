@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">આ USB ઉપકરણોમાંથી કોઈપણ ઍક્સેસ કરો</translation>
 <translation id="1038462104119736705">Linux માટે ઓછામાં ઓછી <ph name="INSTALL_SIZE" /> સ્પેસનો સુઝાવ આપવામાં આવે છે. ખાલી સ્પેસ વધારવા માટે, તમારા ડિવાઇસમાંથી ફાઇલો ડિલીટ કરો.</translation>
 <translation id="1038643060055067718">લાઇનો:</translation>
+<translation id="1039216421321079051">અન્ય એક્સ્ટેન્શન દ્વારા એક્સ્ટેન્શન બંધ કરવામાં આવ્યું</translation>
 <translation id="1039337018183941703">અમાન્ય અથવા દૂષિત ફાઇલ</translation>
 <translation id="1040761927998636252"><ph name="URL" /> માટે અનામાંકિત બુકમાર્ક</translation>
 <translation id="1041175011127912238">આ પેજ પ્રતિભાવ આપી રહ્યું નથી</translation>
@@ -2616,7 +2617,6 @@
 <translation id="3000461861112256445">મૉનો ઑડિઓ</translation>
 <translation id="3001144475369593262">બાળકના એકાઉન્ટ</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{કસ્ટમાઇઝ કરેલી કોઈ કી નથી}=1{1 કસ્ટમાઇઝ કરેલી કી}one{{COUNT} કસ્ટમાઇઝ કરેલી કી}other{{COUNT} કસ્ટમાઇઝ કરેલી કી}}</translation>
-<translation id="3002745665522516995">શોધવા માટે પેજ પર કંઈપણ પસંદ કરો</translation>
 <translation id="3002864108328203174">Gemini બોટમ શીટ અડધી ઊંચાઈએ ખોલી.</translation>
 <translation id="3003144360685731741">પસંદગીના નેટવર્ક્સ</translation>
 <translation id="3003253259757197230">તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે તેમજ તમે જેની મુલાકાત લઈ રહ્યાં હો તે પેજ વિશે વધારાની માહિતી તમને બતાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
@@ -3465,6 +3465,7 @@
 <translation id="3641456520301071208">સાઇટ તમારા સ્થાનની માહિતી પૂછી શકે છે</translation>
 <translation id="3642070413432681490">વર્તુળાકાર કર્સર</translation>
 <translation id="3643962751030964445">આ ડિવાઇસ <ph name="DEVICE_MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે. <ph name="DEVICE_MANAGER" />ને <ph name="USER_EMAIL_ADDRESS" /> એકાઉન્ટ માટે કોઈ નવી પ્રોફાઇલની જરૂર છે</translation>
+<translation id="3644128856494356630">CppGC મેમરી</translation>
 <translation id="3645372836428131288">ફિંગરપ્રિન્ટનો કોઈ બીજો ભાગ કૅપ્ચર કરવા માટે તેને સહેજ ખસેડો.</translation>
 <translation id="3645951915068244649">આ બુકમાર્ક ફોલ્ડર વડે ટૅબનું ગ્રૂપ પહેલેથી જ બનાવવામાં આવ્યું હતું. શું તમે નવું ટૅબનું ગ્રૂપ બનાવવા અથવા વર્તમાન ગ્રૂપને બદલવા માગો છો?</translation>
 <translation id="3646789916214779970">ડિફૉલ્ટ થીમ પર ફરીથી સેટ કરો</translation>
@@ -4237,6 +4238,7 @@
 <translation id="4226303886821889519">અપડેટરનું વર્ઝન: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શન મંજૂરી ધરાવતું નથી}one{આ એક્સ્ટેન્શન મંજૂરી ધરાવતું નથી}other{કેટલાક એક્સ્ટેન્શન મંજૂરી ધરાવતા નથી}}</translation>
 <translation id="4229538146709970028">તમારા સર્ટિફિકેટ વડે <ph name="HOST_NAME" />ને પ્રમાણિત કરવા માટે કૃપા કરીને <ph name="TOKEN_NAME" /> અનલૉક કરો.</translation>
+<translation id="4230659518013393045">તમને વધુ સંબંધિત જવાબો આપવા માટે, તમારા વર્તમાન ટૅબનું પેજનું શીર્ષક, URL અને કન્ટેન્ટ Google સાથે શેર કરવામાં આવે છે. તમે બ્રાઉઝ કરો ત્યારે તમે ટૅબ ઉમેરી કે કાઢી નાખી શકો છો.</translation>
 <translation id="4232375817808480934">Kerberosની ગોઠવણી કરો</translation>
 <translation id="4232376164796433044">પાસવર્ડ + ઑટોમૅટિક ભરવાની સુવિધા</translation>
 <translation id="4233739489690259993">તમારી Chromebook હવે સુરક્ષા અને સૉફ્ટવેર અપડેટ મેળવતી નથી. નવીનતમ સુરક્ષા અને નવી સુવિધાઓ માટે તમારા ડિવાઇસને અપગ્રેડ કરો. ઑફરની શરતો લાગુ.</translation>
@@ -4580,7 +4582,6 @@
 <translation id="4495002167047709180"><ph name="SITE" /> પર આ એક્સ્ટેન્શનને મંજૂરી આપીએ?</translation>
 <translation id="4495419450179050807">આ પેજ પર બતાવશો નહીં</translation>
 <translation id="4500055235123625757"><ph name="LINK_BEGIN" />કેટલીક વેબસાઇટ<ph name="LINK_END" /> પર તમે ચલાવેલા વીડિયો કે ઑડિયો વિશેના પ્રશ્નોના જવાબ Gemini આપી શકે છે.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ક્રૅશ થયું છે</translation>
 <translation id="4500647907053779331">પસંદ કરેલી ટેક્સ્ટનો અનુવાદ <ph name="LANGUAGE" />માં કરો</translation>
 <translation id="4501530680793980440">રીમૂવલની પુષ્ટિ કરો</translation>
 <translation id="4502423230170890588">આ ડિવાઇસમાંથી કાઢી નાખો</translation>
@@ -5105,6 +5106,7 @@
 <translation id="488785315393301722">વિગતો બતાવો</translation>
 <translation id="488862352499217187">નવું ફોલ્ડર બનાવો</translation>
 <translation id="4888715715847020167">સેટિંગ પર જાઓ</translation>
+<translation id="4888899258150891194">CppGC મેમરી</translation>
 <translation id="4890292359366636311">ચિત્ર-માં-ચિત્ર સુવિધામાં ઑટોમૅટિક રીતે દાખલ થાઓ, જેથી તમે અન્ય ટૅબ અને વિન્ડોની સૌથી ઉપર તેનો ઉપયોગ કરી શકો.</translation>
 <translation id="4890399733764921729">કનેક્ટ કરી શકતા નથી. અન્ય મોબાઇલ પ્રદાતા દ્વારા લોક કરવામાં આવ્યું છે.</translation>
 <translation id="4890585766056792498">જોખમી સાઇટ સામે સુરક્ષા મેળવો</translation>
@@ -5469,7 +5471,6 @@
 <translation id="5173668317844998239">તમારી સિક્યુરિટી કી પર સાચવેલી ફિંગરપ્રિન્ટને ઉમેરો અથવા તેમાંથી ડિલીટ કરો</translation>
 <translation id="5174169235862638850">પાસવર્ડને ક્લિપબોર્ડ પર કૉપિ કર્યો</translation>
 <translation id="517488401359338823">સુરક્ષા ડિવાઇસ અનલૉક કરો</translation>
-<translation id="5176671554021050278">પેજ પરની ચોક્કસ છબીઓ અથવા ટેક્સ્ટ વિશે વધુ જાણવા માટે Google Lensનો ઉપયોગ કરો.</translation>
 <translation id="5177479852722101802">કૅમેરા અને માઇક્રોફોનના ઍક્સેસને બ્લૉક કરવાનું ચાલુ રાખો</translation>
 <translation id="5178667623289523808">પાછલું શોધો</translation>
 <translation id="5179428098696668914">AI પ્લેબૅક બંધ કરો</translation>
@@ -5792,6 +5793,7 @@
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> શોધો:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> વિન્ડો હવે <ph name="WINDOW_SIZE_PERCENT" /> પહોળી છે, <ph name="PANE_SIDE" /> વિભાગ હવે <ph name="PANE_SIZE_PERCENT" /> પહોળો છે.</translation>
 <translation id="5438060324827306856">&amp;એક્સ્ટેન્શન શોધો</translation>
+<translation id="5440240650630588012">ફોકસ કરવામાં મદદ માટે વાંચન લાઇન અથવા વિન્ડો લાગુ કરો. ⌥L દબાવો અથવા સેટિંગ પર જાઓ.</translation>
 <translation id="5440425659852470030">બાજુની પૅનલ બંધ કરો</translation>
 <translation id="544083962418256601">શૉર્ટકટ્સ બનાવો ...</translation>
 <translation id="5441133529460183413">Chrome બ્રાઉઝર પરથી વેબ ઍપ ઇન્સ્ટૉલ કરી છે</translation>
@@ -5978,6 +5980,7 @@
 <translation id="5576472948015790634">હવે તમે તમારા ટૅબના ગ્રૂપ અને Gemini ચૅટ એક જ જગ્યાએ મેનેજ કરી શકો છો. આને કોઈપણ સમયે અનપિન કરો.</translation>
 <translation id="5578059481725149024">સ્વતઃ સાઇન-ઇન</translation>
 <translation id="5578387000057347457">છબી બનાવવા માટે કસ્ટમ પ્રૉમ્પ્ટ દાખલ કરો અથવા ટેક્સ્ટને હાઇલાઇટ કરો</translation>
+<translation id="557893471177655572">લાઇન ફોકસ અજમાવી જુઓ</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, <ph name="BEGIN_LINK" />તેને તમારા Google એકાઉન્ટમાં સાચવો<ph name="END_LINK" />.}one{{ITEM_COUNT} આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, <ph name="BEGIN_LINK" />તેને તમારા Google એકાઉન્ટમાં સાચવો<ph name="END_LINK" />.}other{{ITEM_COUNT} આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, <ph name="BEGIN_LINK" />તેને તમારા Google એકાઉન્ટમાં સાચવો<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560"><ph name="SECTION_HEADER" /> સૂચિમાંથી <ph name="SITE" />ને કાઢી નાખો</translation>
 <translation id="5581031802689147441">વિભાજિત વ્યૂ</translation>
@@ -9993,6 +9996,7 @@ USB ડિવાઇસ</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8699296325072357994">પાસવર્ડ પેજ અને સંબંધિત માહિતીમાંથી કન્ટેન્ટ Googleને મોકલવામાં આવે છે અને માનવો દ્વારા તેનો રિવ્યૂ કરવામાં આવે છે. તમારો પાસવર્ડ એન્ક્રિપ્ટેડ છે અને કોઈએ ક્યારેય જોયો નથી. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">લૉન્ચર + backspace</translation>
+<translation id="8701058912406466818">ફોકસ કરવામાં મદદ માટે વાંચન લાઇન અથવા વિન્ડો લાગુ કરો. Alt+L દબાવો અથવા સેટિંગ પર જાઓ.</translation>
 <translation id="8702278591052316269">મેનૂ જેમાં છુપાવેલા સાચવેલા ટૅબના ગ્રૂપ શામેલ છે</translation>
 <translation id="8703346390800944767">જાહેરાત છોડો</translation>
 <translation id="8703372953981978786">આ લિંક કામ કરતી નથી</translation>
@@ -10755,6 +10759,7 @@ USB ડિવાઇસ</translation>
 <translation id="983192555821071799">બધા ટેબ્સ બંધ કરો</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - કૅમેરા અને માઇક્રોફોન રેકોર્ડિંગ</translation>
 <translation id="984705303330760860">ભાષાઓ માટે જોડણીની તપાસ સુવિધા ઉમેરો</translation>
+<translation id="986994187171579118"><ph name="EXTENSION_NAME" /> દ્વારા એક્સ્ટેન્શન બંધ કરવામાં આવ્યું</translation>
 <translation id="987264212798334818">સામાન્ય</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> તમારા મોબાઇલ ડિવાઇસમાંથી માહિતી મેળવવા માગે છે</translation>
 <translation id="988320949174893488">ક્યારેક અટકતો</translation>

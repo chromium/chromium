@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">‏אפשר גם להקיש על Enter כדי להפעיל פריטים. למשל, כדי לשלוח טקסט בטופס, מקישים על Enter. כדי להמשיך, יש להקיש על Enter.</translation>
 <translation id="2371402123699727805">ההכתבה פעילה. ‫<ph name="GESTURE" /> כדי לעצור. תנועות אחרות לא זמינות כרגע.</translation>
 <translation id="2381733276052567791">הפעלה וכיבוי של דיבור</translation>
+<translation id="2386248289416625097">אפשרויות</translation>
 <translation id="2390264819538553347">‏כדי להתקדם יש להקיש על Enter וכדי לחזור יש להקיש על backspace.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">‏יש להקליד כדי לחפש בדף. יש להקיש על Enter כדי לעבור אל התוצאה ועל מקשי החיצים למעלה ולמטה כדי לדפדף בתוצאות. אפשר להמשיך להקליד כדי לשנות את החיפוש או להקיש על Esc כדי לבטל.</translation>

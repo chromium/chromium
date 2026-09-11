@@ -1136,7 +1136,6 @@
 <translation id="2931453528659195355">खरेदीविषयक माहिती व्यवस्थापित करा</translation>
 <translation id="2933624813161016821">एम्बॉसिंग फॉइल</translation>
 <translation id="2935726091208500473">तुमचे टॅब शेअर करणे</translation>
-<translation id="2936698630976431647">Google Wallet मधील ऑफर ऑटोफिल करण्यासाठी प्रोमो कोड फील्ड निवडा</translation>
 <translation id="293796669683825859">टिप्पण्या</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक उघडा</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – तुमचा कर्सर दाखवण्यासाठी, अ‍ॅप्स स्विच करा, पेज रीलोड करा किंवा परत जा</translation>
@@ -1596,6 +1595,7 @@
 <translation id="3712004750972384495">स्क्रीन रेकॉर्डिंग सेव्ह करत आहे</translation>
 <translation id="3712006010833051684">एन्व्हलप #१०</translation>
 <translation id="3712624925041724820">परवाने संपुष्टात</translation>
+<translation id="371302509916403935">अधोरेखित</translation>
 <translation id="3713277100229669269">आता तुम्हाला पेमेंट करण्यापूर्वी कार्डशी संबंधित फायदे दिसतील</translation>
 <translation id="3714633008798122362">वेब कॅलेंडर</translation>
 <translation id="3714780639079136834">मोबाइल डेटा किंवा वाय-फाय सुरू करणे</translation>
@@ -3844,6 +3844,7 @@
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">या वेळी VR ला अनुमती आहे</translation>
+<translation id="7517198908921983825">Gemini द्वारे सुचवलेले · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">एन्व्हलप सी१०</translation>
 <translation id="7518003948725431193">या वेबपत्त्यासाठी वेबपेज आढळले नाही: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4215,7 +4216,6 @@
 <translation id="815036624016370447">तुमच्या Google खाते <ph name="ACCOUNT" /> मधील माहिती तुम्हाला Chrome मध्ये फॉर्म आणखी जलद भरण्यात मदत करू शकते</translation>
 <translation id="8150722005171944719"><ph name="URL" /> येथील फाइल वाचनीय नाही. ती काढून टाकलेली, हलविलेली असू शकते किंवा फाइल परवानग्या ॲक्सेस प्रतिबंधित करत असू शकतात.</translation>
 <translation id="8151185429379586178">डेव्हलपर टूल</translation>
-<translation id="8152194419479742504">टॅब स्विच न करता माहिती शोधण्यासाठी आणि भरण्यासाठी कोणत्याही फॉर्ममध्ये @@ टाइप करा</translation>
 <translation id="8153865548451212769">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर डाउनलोड करण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> वर डाउनलोड करण्याची शिफारस करत नाही}}</translation>
 <translation id="8155253549374198915">मागील उघडे असलेले टॅब</translation>
 <translation id="815805690561372740">तुम्ही ब्राउझ करत असताना तुमचे संरक्षण करण्यासाठी Chrome मध्ये बिल्ट-इन सुरक्षितता वैशिष्‍ट्ये आहेत — जसे की Google सुरक्षित ब्राउझिंग, ज्याला तुम्ही भेट देण्याचा प्रयत्न केलेल्या साइटवर <ph name="BEGIN_LINK" />अलीकडे मालवेअर आढळले आहे<ph name="END_LINK" />.</translation>
@@ -4279,6 +4279,7 @@
 <translation id="8269242089528251720">वेगळे दस्तऐवज/संकलित केलेल्या प्रती</translation>
 <translation id="8269703227894255363">{0,plural, =1{फाइल उघडण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल उघडण्यापासून ब्लॉक केल्या आहेत}}</translation>
 <translation id="8270242299912238708">पीडीएफ दस्तऐवज</translation>
+<translation id="8270320981823560179">ड्राइव्ह</translation>
 <translation id="8277900682056760511">पेमेंट हँडलर शीट उघडलेले आहे</translation>
 <translation id="827820107214076967">लॉग रिफ्रेश करा</translation>
 <translation id="8279611986089885641">Chrome सूचना सुरू असणे आवश्यक आहे. तुम्ही त्या <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> मध्ये सुरू करू शकता.</translation>

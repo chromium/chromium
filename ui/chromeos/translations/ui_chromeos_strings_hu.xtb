@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">hindi</translation>
 <translation id="7665680517722058469">Próbálkozzon másik kereséssel</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elem áthelyezve a kukába</translation>
-<translation id="7693909743393669729">A meghajtó formázásával minden rajta tárolt adat, és ezzel együtt az összes meglévő partíció is törlődik (többek között az esetlegesen nem láthatók is). A művelet nem vonható vissza.</translation>
 <translation id="7695430100978772476">Nem sikerült a(z) <ph name="DRIVE_NAME" /> formázása</translation>
 <translation id="76959938259365003">Nem sikerült kiüríteni a kukát.</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> a vágólapra másolva.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">USA „Workman” nemzetközi</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Sajnos a külső eszközön legalább egy partíció nem csatlakoztatható.</translation>
-<translation id="7908793776359722643">A partíció formázásával törli a rajta lévő összes adatot. A művelet nem vonható vissza.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">A Saját meghajtón lévő fájljai automatikusan szinkronizálódnak a Chromebookkal, így internetkapcsolat nélkül is hozzájuk férhet.</translation>
 <translation id="7925247922861151263">AAA-ellenőrzés sikertelen</translation>

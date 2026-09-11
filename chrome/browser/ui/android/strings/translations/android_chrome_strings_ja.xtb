@@ -1517,7 +1517,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 最近アクセスしていないため、サイトから権限を削除しました</translation>
 <translation id="6923291640965724312">没入型フォーマット</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 個のタブ}other{<ph name="NUMBER_OF_TABS" /> 個のタブ}}</translation>
-<translation id="6929224077895306814">デバイスと Google アカウントに保存されているセキュリティ コードがすべて削除されます</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />、選択された音声ありの固定のタブ</translation>
 <translation id="6937524809504266803">パーソナライズとリンク</translation>
 <translation id="6937876069006524083">ニックネーム（省略可）</translation>
@@ -1600,7 +1599,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7203150201908454328">展開表示中</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> 個のタブを新しいバックグラウンドのタブとして復元します。</translation>
 <translation id="7217781228893594884">シークレット タブは Chrome を終了するときにロックされます</translation>
-<translation id="7221869452894271364">このページを再読み込みします</translation>
+<translation id="7221869452894271364">ページを再読み込み</translation>
 <translation id="722681077040152344"><ph name="COUNT" /> 件のサイトの登録を解除しました</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 件のダウンロードが保留中です}other{# 件のダウンロードが保留中です}}</translation>
 <translation id="7237724030342645845">Google パスワード マネージャーが動作を停止しました</translation>

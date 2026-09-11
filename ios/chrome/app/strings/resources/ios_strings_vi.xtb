@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Ứng dụng RCS MLS</translation>
 <translation id="1508263560970797965">Tiếp tục ở chế độ ẩn danh</translation>
 <translation id="1509486075633541495">Đăng nhập vào trang web</translation>
+<translation id="1509922846321012406">Khám phá thêm các cách tăng cường quyền riêng tư và an toàn</translation>
 <translation id="1513858653616922153">Xóa mật khẩu</translation>
 <translation id="1517166097004694782">Ẩn tuỳ chọn "Tiếp tục trên thẻ này"</translation>
 <translation id="1520027731907768768">Nhận thông báo khi sản phẩm bạn theo dõi giảm giá.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Trình duyệt mặc định</translation>
 <translation id="2893791155497534382">Bạn có thể xoá mật khẩu và hoạt động khác trong phần cài đặt quản lý tương ứng</translation>
 <translation id="2894757982205307093">Thẻ mới trong nhóm</translation>
+<translation id="2897858638449756400">Khám phá thêm các cách tìm kiếm</translation>
 <translation id="2902312830803030883">Thao tác khác</translation>
 <translation id="2904788871580817212">Có ưu đãi giảm giá trên một thẻ đang mở, từ <ph name="PREVIOUS_PRICE" /> xuống còn <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Bạn có <ph name="NUMBER_OF_PASSWORDS" /> mật khẩu trùng lặp. Điều này có thể khiến bạn gặp rủi ro về bảo mật.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Thao tác này sẽ xoá các địa chỉ đã lưu trên thiết bị này. Các địa chỉ đã lưu trong Tài khoản Google <ph name="USER_EMAIL" /> của bạn cũng sẽ bị xoá</translation>
 <translation id="5056446788882570708">Đã phát hiện thấy sự cố <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Tạo hình ảnh</translation>
+<translation id="5058813911021873087">Khám phá thêm các cách sắp xếp và tiết kiệm thời gian</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Nâng tầm trải nghiệm duyệt web</translation>
 <translation id="5062321486222145940">Cài đặt Google Drive</translation>
@@ -1881,6 +1884,7 @@
 <translation id="6987201788018524855">Khám phá những tính năng hữu ích mà bạn chưa biết</translation>
 <translation id="6989636517316575338">Hỏi về trang bất kỳ</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Tất cả tác vụ</translation>
 <translation id="6998251471716094661">Theo dõi giá của sản phẩm và nhận thông báo khi có chương trình giảm giá trên bất cứ trang web nào</translation>
 <translation id="7004032350256606903">Tổ chức của bạn yêu cầu bạn duyệt web ở chế độ riêng tư.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>

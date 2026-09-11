@@ -1517,7 +1517,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome quitou estes permisos porque levas tempo sen acceder</translation>
 <translation id="6923291640965724312">Formato inmersivo</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestana}other{<ph name="NUMBER_OF_TABS" /> pestanas}}</translation>
-<translation id="6929224077895306814">Eliminaranse todos os códigos de seguranza que teñas gardados no dispositivo e na Conta de Google</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, pestana con son fixada e seleccionada</translation>
 <translation id="6937524809504266803">Personalización e vinculación</translation>
 <translation id="6937876069006524083">Alcume (opcional)</translation>

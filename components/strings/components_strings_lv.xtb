@@ -1095,6 +1095,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2859806420264540918">Šajā vietnē tiek rādītas traucējošas vai maldinošas reklāmas.</translation>
 <translation id="2873317327342476681">Dinozaura spēle; pieskarieties dinozauram vai nospiediet atstarpes taustiņu, lai to spēlētu</translation>
 <translation id="287387905105155974">Palīdzības burbulis</translation>
+<translation id="2875109558992200904">Ja pārlūkā Chrome tiek atzīmēti ar drošību saistīti notikumi, atbilstošie dati par notikumiem tiek nosūtīti administratoram. Šie dati var ietvert: pārlūkā Chrome apmeklēto lapu vietrāžus URL un nosaukumus; to lapu vietrāžus URL, no kurām kopējāt datus; failu nosaukumus vai metadatus; IP adreses; pārlūka vai ciļņu avārijas; lietotājvārdu, ko izmantojat, lai pierakstītos tīmekļa lietojumprogrammās, ierīcē un pārlūkā Chrome.</translation>
 <translation id="2876489322757410363">Ja maksāšanai tiks izmantota ārēja lietojumprogramma, tiks aizvērts inkognito režīms. Vai turpināt?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai Chrome iestatījumos pārvaldītu funkciju “Droša pārlūkošana” un citas funkcijas, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="2878197950673342043">Plakāta locījums</translation>
@@ -1135,7 +1136,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2931453528659195355">Pārvaldīt pirkumu informāciju</translation>
 <translation id="2933624813161016821">Folijspieduma folija</translation>
 <translation id="2935726091208500473">savu ciļņu kopīgošanu</translation>
-<translation id="2936698630976431647">Atlasiet akcijas koda lauku, lai automātiski aizpildītu piedāvājumus no lietotnes Google maks</translation>
 <translation id="293796669683825859">Komentāri</translation>
 <translation id="2938225289965773019">atvērt <ph name="PROTOCOL" /> saites</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – lai parādītu kursoru, pārslēgtu lietotnes, atkārtoti ielādētu lapu vai pārietu atpakaļ</translation>
@@ -1595,6 +1595,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3712004750972384495">Notiek ekrāna ieraksta saglabāšana</translation>
 <translation id="3712006010833051684">Aploksne 10</translation>
 <translation id="3712624925041724820">Nav pietiekami daudz licenču.</translation>
+<translation id="371302509916403935">Pasvītrojums</translation>
 <translation id="3713277100229669269">Tagad pirms maksāšanas varat skatīt kartes priekšrocības</translation>
 <translation id="3714633008798122362">tīmekļa kalendārs</translation>
 <translation id="3714780639079136834">Ieslēdziet mobilo datu savienojumu vai Wi-Fi.</translation>
@@ -1941,6 +1942,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4265635050210404830">Jūsu lojalitātes kartes</translation>
 <translation id="4265872034478892965">Atļāva jūsu administrators</translation>
 <translation id="4267590181863312380">Lai iegūtu vēsturi no citām savām ierīcēm, pierakstieties un sinhronizējiet vēsturi. Jūs varēsiet arī piekļūt parolēm un citiem datiem visās savās ierīcēs. Jebkurā brīdī iestatījumos varat pārtraukt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
+<translation id="4267837382000002014">Jūsu apmeklēto lapu vietrāži URL un nosaukumi tiek nosūtīti uz Google mākoni vai trešajām pusēm, lai veiktu analīzi, un tie var būt redzami jūsu administratoram. Piemēram, šie vietrāži var tikt pārmeklēti, lai konstatētu nedrošas vietnes vai filtrētu vietnes, pamatojoties uz administratora iestatītajām kārtulām.</translation>
 <translation id="4268025649754414643">Atslēgas šifrēšana</translation>
 <translation id="4269599248168651462">Servera sertifikāts ir izsniegts nosaukumam, kas nav unikāls.</translation>
 <translation id="4270541775497538019">6. izvades vieta</translation>
@@ -4211,7 +4213,6 @@ Papildu informācija:
 <translation id="815036624016370447">Informācija no jūsu Google konta (<ph name="ACCOUNT" />) var palīdzēt ātrāk aizpildīt veidlapas pārlūkā Chrome.</translation>
 <translation id="8150722005171944719">Vietnē <ph name="URL" /> esošo failu nevar nolasīt. Iespējams, tas ir noņemts vai pārvietots vai piekļuvei nepieciešamas atļaujas.</translation>
 <translation id="8151185429379586178">Izstrādātāju rīki</translation>
-<translation id="8152194419479742504">Ierakstiet @@ jebkurā veidlapā, lai izgūtu un aizpildītu informāciju, nepārslēdzot cilnes</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administratora politika nosaka, ka nav ieteicams lejupielādēt šo failu šeit: <ph name="DESTINATION_NAME" />.}zero{Administratora politika nosaka, ka nav ieteicams lejupielādēt šos failus šeit: <ph name="DESTINATION_NAME" />.}one{Administratora politika nosaka, ka nav ieteicams lejupielādēt šos failus šeit: <ph name="DESTINATION_NAME" />.}other{Administratora politika nosaka, ka nav ieteicams lejupielādēt šos failus šeit: <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="8155253549374198915">Pēdējās atvērtās cilnes</translation>
 <translation id="815805690561372740">Lai aizsargātu jūs pārlūkošanas laikā, pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, funkcija Google droša pārlūkošana, kas <ph name="BEGIN_LINK" />nesen konstatēja ļaunprātīgu programmatūru<ph name="END_LINK" /> vietnē, kuru mēģināt apmeklēt.</translation>
@@ -4275,6 +4276,7 @@ Papildu informācija:
 <translation id="8269242089528251720">Atsevišķi dokumenti/kopijas ar sakārtotu lapu secību</translation>
 <translation id="8269703227894255363">{0,plural, =1{Faila atvēršana ir bloķēta}zero{<ph name="FILE_COUNT" /> failu atvēršana ir bloķēta}one{<ph name="FILE_COUNT" /> faila atvēršana ir bloķēta}other{<ph name="FILE_COUNT" /> failu atvēršana ir bloķēta}}</translation>
 <translation id="8270242299912238708">PDF dokumenti</translation>
+<translation id="8270320981823560179">Disks</translation>
 <translation id="8277900682056760511">Maksājumu apstrādātāja lapa ir atvērta</translation>
 <translation id="827820107214076967">Atsvaidzināt žurnālus</translation>
 <translation id="8279611986089885641">Jābūt ieslēgtiem Chrome paziņojumiem. Varat tos ieslēgt šeit: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

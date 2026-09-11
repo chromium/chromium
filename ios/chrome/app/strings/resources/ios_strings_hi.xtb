@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">आरसीएस एमएलएस क्लाइंट</translation>
 <translation id="1508263560970797965">गुप्त मोड में जारी रखें</translation>
 <translation id="1509486075633541495">वेबसाइट में साइन इन करें</translation>
+<translation id="1509922846321012406">अपनी निजता और सुरक्षा को बेहतर बनाने के और ज़्यादा तरीके जानें</translation>
 <translation id="1513858653616922153">पासवर्ड मिटाएं</translation>
 <translation id="1517166097004694782">"इस टैब का इस्तेमाल करके जारी रखें" को छिपाएं</translation>
 <translation id="1520027731907768768">ट्रैक किए जा रहे प्रॉडक्ट की कीमत में कमी आने पर सूचनाएं पाएं.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">डिफ़ॉल्ट ब्राउज़र</translation>
 <translation id="2893791155497534382">मैनेजमेंट सेटिंग में जाकर, पासवर्ड और अन्य गतिविधि का डेटा मिटाया जा सकता है</translation>
 <translation id="2894757982205307093">ग्रुप में नया टैब जोड़ें</translation>
+<translation id="2897858638449756400">खोजने के और ज़्यादा तरीके जानें</translation>
 <translation id="2902312830803030883">और क्रियाएं</translation>
 <translation id="2904788871580817212">आपके खुले हुए टैब पर कीमत में गिरावट हुई है. <ph name="DOMAIN" /> पर <ph name="PRODUCT_NAME" /> की कीमत अब <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="PRICE" /> हो गई है</translation>
 <translation id="2905479111267140204">आपके <ph name="NUMBER_OF_PASSWORDS" /> पासवर्ड ऐसे हैं जिन्हें एक से ज़्यादा खातों में इस्तेमाल किया गया है. इनसे आपकी सुरक्षा को खतरा हो सकता है.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">ऐसा करने पर, इस डिवाइस में सेव किए गए पते मिट जाएंगे. इससे आपके Google खाते <ph name="USER_EMAIL" /> में सेव किए गए पते भी मिट जाते हैं.</translation>
 <translation id="5056446788882570708">समस्याएं <ph name="TIME" /> मिलीं.</translation>
 <translation id="5056587122125565772">इमेज जनरेट करें</translation>
+<translation id="5058813911021873087">व्यवस्थित रहने और समय बचाने के और ज़्यादा तरीके जानें</translation>
 <translation id="5059136629401106827">ठीक</translation>
 <translation id="5061202435354361813">ब्राउज़िंग को और बेहतर बनाएं</translation>
 <translation id="5062321486222145940">Google डिस्क इंस्टॉल करें</translation>
@@ -1881,6 +1884,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6987201788018524855">उन मददगार सुविधाओं के बारे में जानें जो आपने अब तक इस्तेमाल नहीं की हैं</translation>
 <translation id="6989636517316575338">किसी भी पेज के बारे में सवाल पूछें</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">सभी टास्क</translation>
 <translation id="6998251471716094661">प्रॉडक्ट की कीमतें ट्रैक करें. साथ ही, किसी भी साइट पर मौजूद प्रॉडक्ट की कीमत में गिरावट आने पर सूचनाएं पाएं</translation>
 <translation id="7004032350256606903">आपका संगठन चाहता है कि आप निजी मोड में ब्राउज़ करें.
 <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>

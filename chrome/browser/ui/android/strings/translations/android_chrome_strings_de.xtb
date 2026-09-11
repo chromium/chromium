@@ -1517,7 +1517,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome hat diese Berechtigungen entfernt, weil du die Website in letzter Zeit nicht besucht hast</translation>
 <translation id="6923291640965724312">Format für immersive Wiedergabe</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 Tab}other{<ph name="NUMBER_OF_TABS" /> Tabs}}</translation>
-<translation id="6929224077895306814">Alle auf deinem Gerät und in deinem Google-Konto gespeicherten Sicherheitscodes werden gelöscht</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, ausgewählter, angepinnter Tab mit Audio</translation>
 <translation id="6937524809504266803">Personalisierung &amp; Verknüpfung</translation>
 <translation id="6937876069006524083">Alias (optional)</translation>

@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">‏برنامج RCS MLS</translation>
 <translation id="1508263560970797965">هل تريد مواصلة استخدام "وضع التصفُّح المتخفي"؟</translation>
 <translation id="1509486075633541495">تسجيل الدخول إلى الموقع الإلكتروني</translation>
+<translation id="1509922846321012406">إليك المزيد من الطرق لتعزيز خصوصيتك وأمانك</translation>
 <translation id="1513858653616922153">حذف كلمة المرور</translation>
 <translation id="1517166097004694782">إخفاء قائمة "المتابعة باستخدام علامة التبويب هذه"</translation>
 <translation id="1520027731907768768">تلقّي تنبيهات بشأن انخفاض أسعار المنتجات التي تتتبّعها</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">المتصفح التلقائي</translation>
 <translation id="2893791155497534382">يمكنك حذف كلمات المرور والأنشطة الأخرى من خلال إعدادات إدارتها</translation>
 <translation id="2894757982205307093">علامة تبويب جديدة في مجموعة</translation>
+<translation id="2897858638449756400">إليك المزيد من الطرق للبحث</translation>
 <translation id="2902312830803030883">مزيد من الإجراءات</translation>
 <translation id="2904788871580817212">انخفاض في سعر المنتج "<ph name="PRODUCT_NAME" />" ضِمن علامة التبويب المفتوحة، من ‫<ph name="PREVIOUS_PRICE" /> إلى ‫<ph name="PRICE" />، على النطاق <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">لديك كلمات مرور يبلغ عددها <ph name="NUMBER_OF_PASSWORDS" /> مستخدَمة لحساب آخر ويمكن أن تعرّضك لمشاكل أمنية.</translation>
@@ -1107,7 +1109,7 @@
 <translation id="4634124774493850572">استخدام كلمة المرور</translation>
 <translation id="4634633632339959267">‏تتم مراجعة المحادثات واستخدامها لتحسين ذكاء Google الاصطناعي. <ph name="BEGIN_LINK" />إليك معلومات عن الخيارات المتاحة.<ph name="END_LINK" /> يتم أيضًا تخزين <ph name="BEGIN_LINK" />معلومات عن موقعك الجغرافي<ph name="END_LINK" /> ضِمن نشاطك.</translation>
 <translation id="4636930964841734540">معلومات</translation>
-<translation id="4641425577292284174">تأكَّد من أنّك تستخدم الإعدادات الأكثر أمانًا أو تعرَّف على الإجراءات المطلوبة لتعزيز الأمان</translation>
+<translation id="4641425577292284174">يجب التأكَّد من استخدام الإعدادات الأكثر أمانًا والاطّلاع على الإجراءات المطلوبة لتعزيز الأمان</translation>
 <translation id="4642472735733036929">توقّفت عملية تتبُّع السعر.</translation>
 <translation id="4645575059429386691">يديره والداك</translation>
 <translation id="4647758699119474035">‏تم تسجيل الدخول باسم "<ph name="USER_NAME" />". عنوان البريد الإلكتروني المستخدَم هو <ph name="USER_EMAIL" />. حدث خطأ في حساب Google. يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">‏يؤدي هذا الإجراء إلى حذف العناوين المحفوظة على هذا الجهاز وفي حسابك على Google "<ph name="USER_EMAIL" />".</translation>
 <translation id="5056446788882570708">تم العثور على مشاكل <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">إنشاء صورة</translation>
+<translation id="5058813911021873087">إليك المزيد من الطرق لتنظيم المهام وتوفير الوقت</translation>
 <translation id="5059136629401106827">حسنًا</translation>
 <translation id="5061202435354361813">تجربة تصفّح أفضل</translation>
 <translation id="5062321486222145940">‏تثبيت Google Drive</translation>
@@ -1879,6 +1882,7 @@
 <translation id="6987201788018524855">إليك ما فاتك من ميزات مفيدة</translation>
 <translation id="6989636517316575338">طرح سؤال عن أي صفحة</translation>
 <translation id="6990519590575500580">‏استخدام Facetime</translation>
+<translation id="6998236305642926573">كل المهام</translation>
 <translation id="6998251471716094661">يمكنك تتبُّع أسعار المنتجات والحصول على تنبيهات عند انخفاض الأسعار على أي موقع إلكتروني</translation>
 <translation id="7004032350256606903">تفرض مؤسستك سياسة التصفُّح بخصوصية تامّة.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>

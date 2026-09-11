@@ -1305,7 +1305,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="623755660902014047">Mode Lecture</translation>
 <translation id="6246073558347462570">Fenêtre pop-up de contexte</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
-<translation id="6248988683584659830">Paramètres de recherche</translation>
+<translation id="6248988683584659830">Rechercher dans les paramètres</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé multisélectionné</translation>
 <translation id="6251449557817521191">Consultez votre historique Chrome ici</translation>
 <translation id="6254139308321626268">Vous consultez un fichier PDF</translation>
@@ -1517,7 +1517,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome a retiré ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
 <translation id="6923291640965724312">Format immersif</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 onglet}one{<ph name="NUMBER_OF_TABS" /> onglet}other{<ph name="NUMBER_OF_TABS" /> onglets}}</translation>
-<translation id="6929224077895306814">Tous les codes de sécurité enregistrés sur votre appareil et dans votre compte Google seront supprimés</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, onglet épinglé sélectionné avec audio</translation>
 <translation id="6937524809504266803">Personnalisation et association</translation>
 <translation id="6937876069006524083">Pseudo (facultatif)</translation>

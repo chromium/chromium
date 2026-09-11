@@ -1095,6 +1095,7 @@
 <translation id="2859806420264540918">يعرض هذا الموقع الإلكتروني إعلانات مضلِّلة أو غير مرغوب فيها.</translation>
 <translation id="2873317327342476681">لبدء لعبة الديناصور، يُرجى النقر على الديناصور أو الضغط على مفتاح المسافة</translation>
 <translation id="287387905105155974">فقاعة المساعدة</translation>
+<translation id="2875109558992200904">‏عندما يبلِّغ Chrome عن أي أحداث أمنية، يتم إرسال بيانات عنها إلى المشرف. ويمكن أن تتضمّن هذه البيانات عناوين URL وأسماء لصفحات يتم الانتقال إليها في Chrome، وعناوين URL لصفحات تم نسخ بيانات منها، وأسماء ملفات أو بيانات وصفية، وعناوين IP، وأعطال المتصفِّح أو علامات التبويب، واسم المستخدم الذي يتم تسجيل الدخول من خلاله إلى كل من التطبيقات المستندة إلى الويب وجهازك وChrome.</translation>
 <translation id="2876489322757410363">ستتم مغادرة وضع التصفُّح المتخفي للدفع عبر تطبيق خارجي. هل تريد المتابعة؟</translation>
 <translation id="2876949457278336305">‏<ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة إعدادات ميزة "التصفُّح الآمن" وغيرها في إعدادات Chrome</translation>
 <translation id="2878197950673342043">الطي على شكل ملصق</translation>
@@ -1135,7 +1136,6 @@
 <translation id="2931453528659195355">إدارة معلومات التسوّق</translation>
 <translation id="2933624813161016821">قصدير مزخرف</translation>
 <translation id="2935726091208500473">مشاركة علامات التبويب</translation>
-<translation id="2936698630976431647">‏يمكنك اختيار حقل الرمز الترويجي لملء العروض تلقائيًا من "محفظة Google"</translation>
 <translation id="293796669683825859">التعليقات</translation>
 <translation id="2938225289965773019">فتح روابط <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> - لإظهار المؤشر، يمكنك التبديل بين التطبيقات أو إعادة تحميل الصفحة أو الرجوع</translation>
@@ -1596,6 +1596,7 @@
 <translation id="3712004750972384495">جارٍ حفظ تسجيل الشاشة</translation>
 <translation id="3712006010833051684">ظرف رقم 10</translation>
 <translation id="3712624925041724820">التراخيص مستنفذة</translation>
+<translation id="371302509916403935">تحته خط</translation>
 <translation id="3713277100229669269">يمكنك الآن الاطّلاع على مزايا البطاقة قبل الدفع</translation>
 <translation id="3714633008798122362">تقويم الويب</translation>
 <translation id="3714780639079136834">‏تفعيل بيانات الجوّال أو شبكة Wi-Fi</translation>
@@ -1943,6 +1944,7 @@
 <translation id="4265635050210404830">بطاقات الولاء</translation>
 <translation id="4265872034478892965">تم السماح من قبل المشرف</translation>
 <translation id="4267590181863312380">‏للحصول على السجلّ من أجهزتك الأخرى، يُرجى تسجيل الدخول ومزامنة السجلّ. بإمكانك أيضًا الوصول إلى كلمات المرور وغيرها من البيانات على جميع أجهزتك. ويمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. قد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
+<translation id="4267837382000002014">‏تُرسَل عناوين URL وأسماء الصفحات التي يتم الانتقال إليها إلى Google Cloud أو جهات خارجية بغرض تحليلها، وقد تكون مرئية للمشرف. على سبيل المثال، قد يتم فحص هذه الصفحات لرصد المواقع الإلكترونية غير الآمنة أو فلترة المواقع الإلكترونية استنادًا إلى القواعد التي حدّدها المشرف.</translation>
 <translation id="4268025649754414643">ترميز المفتاح</translation>
 <translation id="4269599248168651462">تم إصدار شهادة الخادم لمضيف اسمه غير فريد.</translation>
 <translation id="4270541775497538019">المكدِّس 6</translation>
@@ -3842,6 +3844,7 @@
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">تم السماح باستخدام الواقع الافتراضي هذه المرّة</translation>
+<translation id="7517198908921983825">‏من اقتراح Gemini ‏· <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">‏ظرف C10</translation>
 <translation id="7518003948725431193">لم يتم العثور على أي صفحة ويب لعنوان الويب:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4213,7 +4216,6 @@
 <translation id="815036624016370447">‏يمكن أن تساعدك المعلومات من حسابك على Google‏ (<ph name="ACCOUNT" />) في ملء النماذج بشكل أسرع في Chrome</translation>
 <translation id="8150722005171944719">الملف الموجود على <ph name="URL" /> غير قابل للقراءة. ربما تمت إزالته، أو ربما تكون أذونات الملف هي التي تمنع الدخول.</translation>
 <translation id="8151185429379586178">أدوات مطوري البرامج</translation>
-<translation id="8152194419479742504">كتابة @@ في أي نموذج للعثور على المعلومات وملئها بدون تبديل علامات التبويب</translation>
 <translation id="8153865548451212769">{0,plural, =1{لا تنصح سياسة المشرف بتنزيل هذا الملف على <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بتنزيل هذه الملفات على <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بتنزيل هذين الملفَّين على <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بتنزيل هذه الملفات على <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بتنزيل هذه الملفات على <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بتنزيل هذه الملفات على <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="8155253549374198915">علامات التبويب المفتوحة مؤخرًا</translation>
 <translation id="815805690561372740">‏يتضمّن متصفِّح Chrome ميزات أمان مدمجة لحمايتك أثناء التصفُّح، مثل ميزة "التصفُّح الآمن من Google" التي <ph name="BEGIN_LINK" />رصدت مؤخرًا برامج ضارة<ph name="END_LINK" /> على الموقع الإلكتروني الذي حاولت الانتقال إليه.</translation>
@@ -4278,6 +4280,7 @@
 <translation id="8269242089528251720">مستندات مفصولة/نُسخ مُجمّعة</translation>
 <translation id="8269703227894255363">{0,plural, =1{تم حظر فتح الملف}zero{تم حظر فتح <ph name="FILE_COUNT" /> ملف}two{تم حظر فتح ملفَين (<ph name="FILE_COUNT" />)}few{تم حظر فتح <ph name="FILE_COUNT" /> ملفات}many{تم حظر فتح <ph name="FILE_COUNT" /> ملفًا}other{تم حظر فتح <ph name="FILE_COUNT" /> ملف}}</translation>
 <translation id="8270242299912238708">‏مستندات PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">جدول بيانات معالج الدفع مفتوح</translation>
 <translation id="827820107214076967">إعادة تحميل السجلّات</translation>
 <translation id="8279611986089885641">‏يجب تفعيل ميزة إشعارات Chrome. يمكنك تفعيلها من خلال <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

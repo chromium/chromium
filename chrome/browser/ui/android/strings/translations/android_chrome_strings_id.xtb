@@ -1517,7 +1517,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome menghapus izin ini karena Anda tidak mengunjungi situs tersebut baru-baru ini</translation>
 <translation id="6923291640965724312">Format imersif</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tab}}</translation>
-<translation id="6929224077895306814">Semua kode keamanan yang disimpan di perangkat dan di Akun Google Anda akan dihapus</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, Tab Bersuara yang Disematkan dan Dipilih</translation>
 <translation id="6937524809504266803">Personalisasi &amp; Penautan</translation>
 <translation id="6937876069006524083">Nama panggilan (opsional)</translation>

@@ -505,7 +505,7 @@
 <translation id="411038122342629251">.input {$$COUNT :number} .match $$COUNT 1{{個のドット}} 3{{個のドット（省略記号）}} *{{{$$COUNT} 個のドット}}</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
 <translation id="4116415223832267137">アラート</translation>
-<translation id="4159784952369912983">パープル</translation>
+<translation id="4159784952369912983">紫</translation>
 <translation id="4161663686871496107">ChromeVox 音声フィードバックをご利用いただけます</translation>
 <translation id="4176463684765177261">停止中</translation>
 <translation id="4187322598335821254">行間を移動するには上または下にスワイプします</translation>

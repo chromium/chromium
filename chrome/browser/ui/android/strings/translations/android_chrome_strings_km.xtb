@@ -664,6 +664,7 @@
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />៖ <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">ចាកចេញពីការចាក់វីដេអូក្នុងទម្រង់ជក់ចិត្ត</translation>
+<translation id="3662595332590803433">បើកផ្ទាំងផ្ទាល់ខ្លួនក្នុង Chrome ជានិច្ច</translation>
 <translation id="3674208116086565128">ចូលទៅកាន់ទំព័រដើមនៅក្នុងកម្មវិធី Google</translation>
 <translation id="368329460027487650">បានចេញពីគណនី។ បើក​ជម្រើស​ចូលគណនី។</translation>
 <translation id="3684540848053703310">សន្លឹក​ខាងក្រោម​ដែលមានស្ថិតិ​តម្លៃ​ត្រូវបាន​បិទ</translation>
@@ -1517,7 +1518,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome បានដក​ការអនុញ្ញាត​ទាំងនេះ​ចេញ ដោយសារ​អ្នកមិនបាន​ចូលមើល​នាពេល​ថ្មីៗនេះ</translation>
 <translation id="6923291640965724312">ទម្រង់ជក់ចិត្ត</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ផ្ទាំង}other{<ph name="NUMBER_OF_TABS" /> ផ្ទាំង}}</translation>
-<translation id="6929224077895306814">លេខកូដ​សុវត្ថិភាព​ទាំងអស់​ដែលបានរក្សាទុក​នៅលើ​ឧបករណ៍​របស់អ្នក និង​នៅក្នុង​គណនី Google របស់អ្នក​នឹងត្រូវបានលុប</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, ផ្ទាំង​ដែលឮ​សំឡេងដែលបានខ្ទាស់ និង​បាន​ជ្រើសរើស</translation>
 <translation id="6937524809504266803">ការកំណត់ឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន និងការភ្ជាប់</translation>
 <translation id="6937876069006524083">ឈ្មោះ​ហៅក្រៅ (មិនតម្រូវ)</translation>
@@ -1628,6 +1628,7 @@
 <translation id="7335766481146072567">ចុច "បន្ត"</translation>
 <translation id="7336259382292148213">ការជូនដំណឹង​មើលទៅគ្មាន​បញ្ហា​ទេ</translation>
 <translation id="7339898014177206373">ផ្ទាំងថ្មី</translation>
+<translation id="7349983576451251297">បើកទំព័របណ្ដាញក្នុង Chrome ជំនួសឱ្យផ្ទាំងផ្ទាល់ខ្លួន</translation>
 <translation id="7352339641508007922">អូសដើម្បីថតរូបអេក្រង់វែង</translation>
 <translation id="7352651011704765696">មានបញ្ហាអ្វីមួយកើតឡើង</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{ចែករំលែកធាតុដែលបានជ្រើសរើស 1}other{ចែករំលែកធាតុដែលបានជ្រើសរើស #}}</translation>
@@ -1718,6 +1719,7 @@
 <translation id="7690596512217303514">ឧបករណ៍​របស់អ្នក​មិនអាចបើក Chrome បានទេ។ ដើម្បី​ដោះស្រាយ​បញ្ហានេះ សូមទាញយក​កំណែថ្មីបំផុត​របស់ Chrome ពី​ហាងកម្មវិធី​របស់អ្នក។</translation>
 <translation id="7692761875510935111">បើក​នៅក្នុង​កម្មវិធីរុករកតាម​អ៊ីនធឺណិត​យ៉ាងរហ័ស។ ដើម្បីកែផ្លូវកាត់នេះ សូមចុចឱ្យជាប់។</translation>
 <translation id="7695270712963178084">អ្វីដែល Chrome រកឃើញ</translation>
+<translation id="7695610746377249436">គេហទំព័រ រួមទាំង Google ប្រើ​ឆន្ទានុសិទ្ធិរបស់ខ្លួន​នៅ​ពេល​ឆ្លើយតប​នឹងសំណើ​នេះ។</translation>
 <translation id="7697383401610880082">ដង​អូស</translation>
 <translation id="7698359219371678927">បង្កើតអ៊ីមែលនៅក្នុង <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">បានបើក​សន្លឹក​ខាងក្រោម​សកម្មភាពថ្មីៗ​ពេញអេក្រង់</translation>

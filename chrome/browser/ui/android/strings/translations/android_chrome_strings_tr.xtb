@@ -968,7 +968,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Kartın üzerindeki ad</translation>
 <translation id="4807700370495020449">Kayıtlı bilgilerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için bu sitede ve Chrome'da oturum açın</translation>
-<translation id="480990236307250886">Ana sayfayı aç</translation>
+<translation id="480990236307250886">Ana sayfayı açın</translation>
 <translation id="4816492930507672669">Sayfaya sığdır</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> sekme grubu kapatıldı ve kaydedildi</translation>
 <translation id="4835385943915508971">Chrome, istenen kaynağa erişemiyor.</translation>
@@ -1517,7 +1517,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome, yakın zamanda ziyaret etmediğiniz için bu izinleri kaldırdı</translation>
 <translation id="6923291640965724312">Etkileyici biçim</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 sekme}other{<ph name="NUMBER_OF_TABS" /> sekme}}</translation>
-<translation id="6929224077895306814">Cihazınızda ve Google Hesabınızda kayıtlı tüm güvenlik kodları silinecek</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, Ses Çalan Seçili Sabit Sekme</translation>
 <translation id="6937524809504266803">Kişiselleştirme ve Bağlama</translation>
 <translation id="6937876069006524083">Takma ad (isteğe bağlı)</translation>
@@ -1600,7 +1599,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7203150201908454328">Genişletilmiş</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> sekmeyi, yeni arka plan sekmeleri olarak geri yükleyin.</translation>
 <translation id="7217781228893594884">Chrome'dan ayrıldığınızda gizli sekmeler kilitlenir</translation>
-<translation id="7221869452894271364">Bu sayfayı yeniden yükle</translation>
+<translation id="7221869452894271364">Bu sayfayı yeniden yükleyin</translation>
 <translation id="722681077040152344"><ph name="COUNT" /> sitenin aboneliğinden çıkıldı</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 indirme işlemi beklemede}other{# indirme işlemi beklemede}}</translation>
 <translation id="7237724030342645845">Google Şifre Yöneticisi çalışmayı durdurdu</translation>

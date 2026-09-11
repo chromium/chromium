@@ -36,7 +36,6 @@
 <translation id="1333654552732143316">Chrome を起動</translation>
 <translation id="1341711321000856656">別の Chrome プロフィールに切り替えて、そのプロフィールのパスワードを表示できます</translation>
 <translation id="1343830902827845050">Chrome にログイン</translation>
-<translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="1361351916482714918">Google レンズで賢くブラウジング</translation>
 <translation id="1363996462118479832">ログイン時にエラーが発生したため、ChromeOS はデータを同期できませんでした。</translation>
 <translation id="137466361146087520">Google Chrome ベータ版</translation>
@@ -785,7 +784,6 @@
 <translation id="8575047640889685742"><ph name="BEGIN_LINK" />独自のパスフレーズ<ph name="END_LINK" />を使用して Google アカウントの Chrome データをすべて暗号化する。暗号化の対象に Google Pay のお支払い方法と住所は含まれません。また、Chrome の閲覧履歴は同期されません。</translation>
 <translation id="8590782867495422699">Google 検索の AI モードを再度開く</translation>
 <translation id="8598779894319572882">ツールバーの [Google 検索の AI モード] ボタンから Google 検索の AI モードを再度開いて、ブラウジング中に質問できます</translation>
-<translation id="8601359445272098721">New! [画面を翻訳] ボタンを選択して、画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="8614913330719544658">Google Chrome が応答しません。今すぐ再起動しますか？</translation>
 <translation id="8623450603356630491">スマートフォンで Chrome にログイン</translation>
 <translation id="8624541899164515475">設定、新しいタブで開きます。</translation>

@@ -1517,7 +1517,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome odstránil tieto povolenia, pretože ste daný web v poslednom čase nenavštívili</translation>
 <translation id="6923291640965724312">Imerzný formát</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 karta}few{<ph name="NUMBER_OF_TABS" /> karty}many{<ph name="NUMBER_OF_TABS" /> tabs}other{<ph name="NUMBER_OF_TABS" /> kariet}}</translation>
-<translation id="6929224077895306814">Všetky bezpečnostné kódy uložené vo vašom zariadení a účte Google budú odstránené</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, vybraná pripnutá karta so zvukom</translation>
 <translation id="6937524809504266803">Prispôsobenie a prepojenie</translation>
 <translation id="6937876069006524083">Prezývka (nepovinné)</translation>

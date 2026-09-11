@@ -9,7 +9,7 @@
 <translation id="1065672644894730302">לא הייתה אפשרות לקרוא את ההעדפות שלך. ייתכן שחלק מהתכונות לא יהיו זמינות ושינויים בהעדפות לא יישמרו.</translation>
 <translation id="1083934481477628225">‏ההורה שלך השבית ב-Chromium את ההגדרה 'הרשאות לאתרים, לאפליקציות ולתוספים'</translation>
 <translation id="1090946077924227754">‏כדי לחפש תכונה או תוסף ספציפיים של Chromium, אפשר להקליד את השם המקוצר שלהם בסרגל הכתובות ואז ללחוץ על מקש המקלדת שנבחר</translation>
-<translation id="1098493699368672217">‏הצגת החיפוש באמצעות Chromium במגש המערכת והפעלת מקש קיצור</translation>
+<translation id="1098493699368672217">‏הצגת החיפוש באמצעות Chromium במגש המערכת והפעלת מקשי הקיצור</translation>
 <translation id="1104942323762546749">‏Chromium רוצה לייצא את הסיסמאות שלך. יש להקליד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>
 <translation id="112640046208448578">אפשר לנסות לזהות דברים או מקומות ולהעתיק או לתרגם טקסטים. כשמשתמשים בחיפוש תמונות, צילום מסך של הדף נשלח לשרת. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">‏Chromium מוגדר כדפדפן ברירת המחדל</translation>
@@ -37,7 +37,6 @@
 <translation id="1330562121671411446">זיהוי שפה אוטומטי</translation>
 <translation id="1342274909142618978">‏אני רוצה למחוק את הנתונים גם מ-Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">התכונה הוצמדה. מעכשיו אפשר לגשת לחיפוש התמונות דרך הכפתור החדש בסרגל הכלים</translation>
-<translation id="1356661055722410047">חדש! אפשר לתרגם טקסט ותמונות במסך</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1388276868779258475">‏עם אפליקציית Chromium אפשר להמשיך לגלוש בכל מקום</translation>
 <translation id="141901961143729572">כאן אפשר לשתף את המחשבות שלך</translation>
@@ -304,7 +303,7 @@
 <translation id="4298125729853015961">‏ייצוא סיסמאות מ-Chromium</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
 <translation id="4334241893986177674">חיפוש צילום המסך הזה</translation>
-<translation id="4368547723231502008">‏לבצע חיפוש ולשאול שאלות מכל מקום במכשיר, גם אם Chromium ממוזער</translation>
+<translation id="4368547723231502008">‏הקלדת חיפושים ושאלות מכל מקום במכשיר, גם אם Chromium ממוזער</translation>
 <translation id="4384331407722351213">‏הפעלת Chromium יחד עם Windows</translation>
 <translation id="4400772909124543403">אין עדכונים כרגע.</translation>
 <translation id="4407044323746248786">‏לסגור את Chromium בכל זאת?</translation>
@@ -734,7 +733,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="856656450041460113">רשימת שפות לחיפוש</translation>
 <translation id="8576826849825683917">‏מספר ארגונים מנהלים את Chromium</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
-<translation id="8601359445272098721">חדש! אפשר לתרגם טקסט ותמונות במסך באמצעות לחיצה על הכפתור "תרגום המסך"</translation>
 <translation id="8619360774459241877">‏הפעלת Chromium מתבצעת...</translation>
 <translation id="8624541899164515475">הגדרות, ייפתחו בכרטיסייה חדשה.</translation>
 <translation id="8648201657708811153">‏לא ניתן להגדיר את Google Chrome for Testing כדפדפן ברירת המחדל.</translation>

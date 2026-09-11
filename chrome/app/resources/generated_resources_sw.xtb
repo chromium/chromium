@@ -2628,7 +2628,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3000461861112256445">Kipengele cha sauti moja</translation>
 <translation id="3001144475369593262">Akaunti za watoto</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Hakuna vitufe vilivyowekewa mapendeleo}=1{Kitufe 1 kilichowekewa mapendeleo}other{Vitufe {COUNT} vilivyowekewa mapendeleo}}</translation>
-<translation id="3002745665522516995">Chagua chochote kwenye ukurasa ili utafute</translation>
 <translation id="3002864108328203174">Safu ya Chini ya Gemini katika skrini nusu.</translation>
 <translation id="3003144360685731741">Mitandao inayopendelewa</translation>
 <translation id="3003253259757197230">URL unazotembelea hutumwa kwa Google ili kutabiri tovuti ambazo huenda ukazitembelea baadaye na kukuonyesha maelezo ya ziada kuhusu ukurasa unaoutembelea</translation>
@@ -3477,6 +3476,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3641456520301071208">Tovuti zinaweza kuomba maelezo ya mahali ulipo</translation>
 <translation id="3642070413432681490">Kiteuzi cha duara</translation>
 <translation id="3643962751030964445">Kifaa hiki kinadhibitiwa na <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> anahitaji utengeneze wasifu mpya kwa ajili ya akaunti ya <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="3644128856494356630">Hifadhi ya CppGC</translation>
 <translation id="3645372836428131288">Sogeza kidogo ili unase sehemu tofauti ya alama ya kidole.</translation>
 <translation id="3645951915068244649">Tayari kikundi cha vichupo kimeanzishwa kwa kutumia folda hii ya alamisho. Ungependa kuanzisha kikundi kipya cha vichupo au kubadilisha kilichopo?</translation>
 <translation id="3646789916214779970">Rejesha mandhari chaguomsingi</translation>
@@ -4591,7 +4591,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4495002167047709180">Ungependa kuruhusu kiendelezi hiki kwenye <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Usionyeshe kwenye ukurasa huu</translation>
 <translation id="4500055235123625757">Gemini inaweza kujibu maswali kuhusu video au sauti uliyocheza katika <ph name="LINK_BEGIN" />baadhi ya tovuti<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> imeacha kufanya kazi</translation>
 <translation id="4500647907053779331">Tafsiri chaguo kwenda <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">Thibitisha Uondoaji</translation>
 <translation id="4502423230170890588">Ondoa kwenye kifaa hiki</translation>
@@ -5116,6 +5115,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="488785315393301722">Onyesha Maelezo</translation>
 <translation id="488862352499217187">Unda Folda Mpya</translation>
 <translation id="4888715715847020167">nenda kwenye mipangilio</translation>
+<translation id="4888899258150891194">Hifadhi ya CppGC</translation>
 <translation id="4890292359366636311">Ingia katika hali ya kupachika picha ndani ya picha nyingine kiotomatiki ili uweze kuitumia juu ya vichupo na madirisha mengine.</translation>
 <translation id="4890399733764921729">Imeshindwa kuunganisha Imefungwa na mtoa huduma mwingine wa vifaa vya mkononi.</translation>
 <translation id="4890585766056792498">Pata ulinzi dhidi ya tovuti hatari</translation>
@@ -5480,7 +5480,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5173668317844998239">Weka na ufute alama za vidole ulizohifadhi kwenye ufunguo wako wa usalama</translation>
 <translation id="5174169235862638850">Nenosiri limewekwa kwenye ubao wa kunakili</translation>
 <translation id="517488401359338823">Fungua Kifaa cha Usalama</translation>
-<translation id="5176671554021050278">Tumia Lenzi ya Google ili upate maelezo zaidi kuhusu picha au maandishi mahususi yaliyo kwenye ukurasa.</translation>
 <translation id="5177479852722101802">Endelea kuzuia ufikiaji wa kamera na maikrofoni</translation>
 <translation id="5178667623289523808">Pata Iliyotangulia</translation>
 <translation id="5179428098696668914">Zima kipengele cha Kucheza kwa AI</translation>

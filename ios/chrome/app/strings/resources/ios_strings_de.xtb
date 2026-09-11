@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">MLS-Client in RCS</translation>
 <translation id="1508263560970797965">Im Inkognitomodus fortfahren</translation>
 <translation id="1509486075633541495">Auf der Website anmelden</translation>
+<translation id="1509922846321012406">Weitere Möglichkeiten, um Datenschutz und Sicherheit zu verbessern</translation>
 <translation id="1513858653616922153">Passwort löschen</translation>
 <translation id="1517166097004694782">„Mit diesem Tab fortfahren“ ausblenden</translation>
 <translation id="1520027731907768768">Benachrichtigungen zu Preissenkungen für Produkte, die du beobachtest.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2893791155497534382">Passwörter und andere Aktivitäten können in den jeweiligen Verwaltungseinstellungen gelöscht werden</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
+<translation id="2897858638449756400">Weitere Suchmöglichkeiten entdecken</translation>
 <translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2904788871580817212">Preissenkung auf dem geöffneten Tab von <ph name="PREVIOUS_PRICE" /> auf <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Du nutzt <ph name="NUMBER_OF_PASSWORDS" /> wiederverwendete Passwörter, die deine Sicherheit gefährden könnten.</translation>
@@ -986,7 +988,7 @@
 <translation id="4232817129213135694">Passkeys für dieses Gerät einrichten</translation>
 <translation id="4237377247299956313">Tippe auf <ph name="BEGIN_BOLD" />Standard-Browser-App<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Known Traveler Number speichern</translation>
-<translation id="4241893428331130998">Keine gespeicherten Passwörter oder Passkeys</translation>
+<translation id="4241893428331130998">Du hast keine gespeicherten Passwörter oder Passkeys</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} Tabs öffnen}=1{{count} Tab öffnen}other{{count} Tabs öffnen}}</translation>
 <translation id="4250680216510889253">Nein</translation>
@@ -1107,7 +1109,7 @@
 <translation id="4634124774493850572">Passwort verwenden</translation>
 <translation id="4634633632339959267">Chats werden geprüft und zur Verbesserung von Google AI verwendet. <ph name="BEGIN_LINK" />Hier erfährst du mehr über deine Auswahlmöglichkeiten.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Informationen zu deinem Standort<ph name="END_LINK" /> werden auch in deinen Aktivitäten gespeichert.</translation>
 <translation id="4636930964841734540">Info</translation>
-<translation id="4641425577292284174">Du erfährst, ob du die sichersten Einstellungen verwendest oder etwas überprüfen musst</translation>
+<translation id="4641425577292284174">Erfahre, ob du die sichersten Einstellungen verwendest oder etwas überprüfen musst</translation>
 <translation id="4642472735733036929">Preis-Tracking gestoppt</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4647758699119474035">Angemeldet als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fehler bei Google-Konto. Öffne das Kontomenü.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht. Außerdem werden Adressen gelöscht, die in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert sind.</translation>
 <translation id="5056446788882570708">Probleme <ph name="TIME" /> gefunden.</translation>
 <translation id="5056587122125565772">Bild erstellen</translation>
+<translation id="5058813911021873087">Weitere Möglichkeiten, organisiert zu bleiben und Zeit zu sparen</translation>
 <translation id="5059136629401106827">Ok</translation>
 <translation id="5061202435354361813">Surfe jetzt auf einem neuen Level</translation>
 <translation id="5062321486222145940">Google Drive installieren</translation>
@@ -1881,6 +1884,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="6987201788018524855">Entdecke hilfreiche Funktionen, die du bisher verpasst hast</translation>
 <translation id="6989636517316575338">Fragen zu einer beliebigen Seite stellen</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Alle Aufgaben</translation>
 <translation id="6998251471716094661">Du kannst Preise von Produkten beobachten und dich benachrichtigen lassen, wenn der Preis auf einer Website sinkt</translation>
 <translation id="7004032350256606903">Deine Organisation verlangt, dass du im privaten Modus surfst.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -2189,7 +2193,7 @@ Du kannst es jederzeit wieder aktivieren.</translation>
 <translation id="8014007212279733632">Vor Autofill-Nutzung Identität bestätigen</translation>
 <translation id="8015826420689927262">Anhang löschen</translation>
 <translation id="8016869623424294549">Du bist dabei, das Profil zu wechseln</translation>
-<translation id="8017015647846870183">Aus dem Google Passwortmanager, einschließlich Passwörter und Passkeys</translation>
+<translation id="8017015647846870183">Alle Daten, einschließlich Passwörter und Passkeys, aus dem Google Passwortmanager löschen</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8023170444051056234">Du verlierst dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und sie wird von allen deinen Geräten gelöscht</translation>
 <translation id="8023878949384262191">Maximiert den Abschnitt</translation>

@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Odjemalec RCS MLS</translation>
 <translation id="1508263560970797965">Nadaljuj v anonimnem načinu</translation>
 <translation id="1509486075633541495">Prijavite se na spletnem mestu</translation>
+<translation id="1509922846321012406">Raziščite več načinov za izboljšanje zasebnosti in varnosti</translation>
 <translation id="1513858653616922153">Izbris gesla</translation>
 <translation id="1517166097004694782">Skrij »Nadaljuj s tem zavihkom«</translation>
 <translation id="1520027731907768768">Prejemanje opozoril o znižanju cen za izdelke, ki jih spremljate.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Privzeti brskalnik</translation>
 <translation id="2893791155497534382">Gesla in drugo dejavnost lahko izbrišete v nastavitvah upravljanja</translation>
 <translation id="2894757982205307093">Novi zavihek v skupini</translation>
+<translation id="2897858638449756400">Raziščite več načinov iskanja</translation>
 <translation id="2902312830803030883">Več dejanj</translation>
 <translation id="2904788871580817212">Znižanje cene na odprtem zavihku s cene <ph name="PREVIOUS_PRICE" /> na <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Imate toliko znova uporabljenih gesel, ki lahko ogrozijo vašo varnost: <ph name="NUMBER_OF_PASSWORDS" />.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">S tem izbrišete naslove, shranjene v tej napravi. Izbrišejo se tudi naslovi, shranjeni v računu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Težave so bile najdene: <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Ustvari sliko</translation>
+<translation id="5058813911021873087">Raziščite več načinov, kako se organizirati in prihraniti čas</translation>
 <translation id="5059136629401106827">V redu</translation>
 <translation id="5061202435354361813">Izboljšajte brskanje</translation>
 <translation id="5062321486222145940">Namesti Google Drive</translation>
@@ -1881,6 +1884,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6987201788018524855">Raziščite uporabne funkcije, ki ste jih spregledali</translation>
 <translation id="6989636517316575338">Vprašajte o poljubni strani</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Vsa opravila</translation>
 <translation id="6998251471716094661">Spremljajte cene izdelkov in prejemajte opozorila, ko se cena zniža na katerem koli spletnem mestu</translation>
 <translation id="7004032350256606903">Vaša organizacija zahteva, da brskate zasebno.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>

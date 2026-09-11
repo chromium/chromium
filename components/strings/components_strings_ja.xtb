@@ -1095,6 +1095,7 @@
 <translation id="2859806420264540918">このサイトでは煩わしい広告または誤解を招く広告が表示されます。</translation>
 <translation id="2873317327342476681">恐竜ゲーム、恐竜をタップするか Space キーを押すとプレイできます</translation>
 <translation id="287387905105155974">ヘルプバブル</translation>
+<translation id="2875109558992200904">セキュリティ イベントが Chrome によって報告されると、そのイベントに関するデータが管理者に送信されます。送信されるデータには、Chrome でアクセスしたページの URL とタイトル、データをコピーしたページの URL、ファイル名やメタデータ、IP アドレス、ブラウザやタブの障害のほか、ウェブベースのアプリケーションやデバイス、Chrome へのログインに使用したユーザー名が含まれる可能性があります。</translation>
 <translation id="2876489322757410363">外部アプリケーションを経由したお支払いの処理に進むため、シークレット モードを解除します。続行しますか？</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定でセーフ ブラウジングなどを管理できます</translation>
 <translation id="2878197950673342043">ポスター折り</translation>
@@ -1135,7 +1136,6 @@
 <translation id="2931453528659195355">ショッピング情報を管理</translation>
 <translation id="2933624813161016821">ホイル（エンボス）</translation>
 <translation id="2935726091208500473">タブの共有</translation>
-<translation id="2936698630976431647">プロモーション コードの欄を選択すると、Google ウォレットから特典が自動入力されます</translation>
 <translation id="293796669683825859">コメント</translation>
 <translation id="2938225289965773019">「<ph name="PROTOCOL" />」リンクを開く</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – カーソルを表示するには、アプリを切り替えるか、ページを再読み込みするか、前に戻ります</translation>
@@ -1596,6 +1596,7 @@
 <translation id="3712004750972384495">画面の録画を保存しています</translation>
 <translation id="3712006010833051684">#10 封筒</translation>
 <translation id="3712624925041724820">ライセンスを使い切りました</translation>
+<translation id="371302509916403935">下線付き</translation>
 <translation id="3713277100229669269">お支払いの前にカードのメリットを確認できるようになりました</translation>
 <translation id="3714633008798122362">ウェブ カレンダー</translation>
 <translation id="3714780639079136834">モバイルデータまたは Wi-Fi を有効にする</translation>
@@ -1863,7 +1864,7 @@
 <translation id="4154277373259957087">Chrome では、お支払い方法を入力する前に本人確認が行われるようになります。この機能は、<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />でいつでも変更できます。</translation>
 <translation id="4157273919218514718">Gemini のパーソナル インテリジェンスを使用します。<ph name="BEGIN_LINK" />設定を管理する<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">運転免許証を安全に更新</translation>
-<translation id="4159784952369912983">パープル</translation>
+<translation id="4159784952369912983">紫</translation>
 <translation id="4165422751765527461">新しいタブでヘルプセンター記事を開きます</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
 <translation id="4169189393773057143">Google ウォレットでポイントカードを管理するか、提案をオフにしてください</translation>
@@ -1943,6 +1944,7 @@
 <translation id="4265635050210404830">ポイントカード</translation>
 <translation id="4265872034478892965">管理者によって許可されています</translation>
 <translation id="4267590181863312380">他のデバイスと同じ履歴を使用するには、ログインして履歴を同期します。同期すると、すべてのデバイスでパスワードなどの設定も使用できるようになります。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
+<translation id="4267837382000002014">アクセスしたページの URL とタイトルは分析のため Google Cloud または第三者に送信されます。これらの URL とタイトルは管理者に公開される可能性があります。管理者はこれらの URL をスキャンして、安全でないウェブサイトを検出したり、設定したルールに基づきウェブサイトをフィルタリングしたりする可能性があります。</translation>
 <translation id="4268025649754414643">キーの暗号化</translation>
 <translation id="4269599248168651462">サーバー証明書が一意でない名前に対して発行されました。</translation>
 <translation id="4270541775497538019">スタッカー 6</translation>
@@ -4213,7 +4215,6 @@
 <translation id="815036624016370447">Google アカウント（<ph name="ACCOUNT" />）の情報を使用して、Chrome でフォームにすばやく入力できるようにします</translation>
 <translation id="8150722005171944719"><ph name="URL" /> のファイルを読むことができません。削除されたか移動された可能性があります。ファイルに対するアクセス権がない場合もあります。</translation>
 <translation id="8151185429379586178">デベロッパー ツール</translation>
-<translation id="8152194419479742504">フォームに「@@」と入力すると、タブを切り替えずに情報を検索して入力できます</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理者のポリシー設定では、このファイルを <ph name="DESTINATION_NAME" /> にダウンロードすることは推奨されていません}other{管理者のポリシー設定では、これらのファイルを <ph name="DESTINATION_NAME" /> にダウンロードすることは推奨されていません}}</translation>
 <translation id="8155253549374198915">最後に開いたタブ</translation>
 <translation id="815805690561372740">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしたサイトで<ph name="BEGIN_LINK" />最近マルウェアが検出<ph name="END_LINK" />されました。</translation>
@@ -4277,6 +4278,7 @@
 <translation id="8269242089528251720">個別のドキュメント（丁合いあり）</translation>
 <translation id="8269703227894255363">{0,plural, =1{ファイルを開けません}other{<ph name="FILE_COUNT" /> 個のファイルを開けません}}</translation>
 <translation id="8270242299912238708">PDF ドキュメント</translation>
+<translation id="8270320981823560179">ドライブ</translation>
 <translation id="8277900682056760511">支払いハンドラのシートが開いています</translation>
 <translation id="827820107214076967">ログを更新</translation>
 <translation id="8279611986089885641">Chrome の通知をオンにする必要があります。[<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />] でオンにできます。</translation>

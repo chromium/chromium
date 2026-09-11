@@ -36,7 +36,6 @@
 <translation id="1333654552732143316">Iniciar Chrome</translation>
 <translation id="1341711321000856656">Puedes cambiar a otro perfil de Chrome para ver las contraseñas.</translation>
 <translation id="1343830902827845050">Accede a Chrome</translation>
-<translation id="1356661055722410047">¡Novedad! Puedes traducir texto e imágenes en pantalla</translation>
 <translation id="1361351916482714918">Navega de forma más inteligente con Google Lens</translation>
 <translation id="1363996462118479832">ChromeOS no pudo sincronizar los datos porque se produjo un error de acceso.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -654,7 +653,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="7449333426561673451">{COUNT,plural, =1{La organización cierra Chrome automáticamente si no lo usas durante 1 minuto.}other{La organización cierra Chrome automáticamente si no lo usas durante # minutos.}}</translation>
 <translation id="7450541714075000668">Se copió el texto</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Tu organización borra automáticamente los datos de navegación si no usas Chrome durante 1 minuto. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas permanecerán abiertas.}other{Tu organización borra automáticamente los datos de navegación si no usas Chrome durante # minutos. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas permanecerán abiertas.}}</translation>
-<translation id="7466577301922356468">Enviar estos datos automáticamente a Google ayuda a mejorar Chrome. Puedes cambiar este parámetro de configuración en cualquier momento</translation>
+<translation id="7466577301922356468">Enviar estos datos automáticamente a Google ayuda a mejorar Chrome. Puedes cambiar este parámetro de configuración en cualquier momento.</translation>
 <translation id="7477130805345743099">Chrome te advertirá antes de que cargues un sitio con una conexión no segura</translation>
 <translation id="7481213027396403996">Obtén la seguridad más sólida de Chrome</translation>
 <translation id="749228101751499733">Mientras tengas acceso, puedes usar las contraseñas y otros elementos de tu Cuenta de Google en Chrome. <ph name="SHORTCUT" /> puede cambiar la configuración de tus servicios de Google.</translation>
@@ -788,7 +787,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="8575047640889685742">Usar tu <ph name="BEGIN_LINK" />propia frase de contraseña<ph name="END_LINK" /> para encriptar todos los datos de Chrome en tu Cuenta de Google. No se encriptarán las formas de pago ni las direcciones de Google Pay. No se sincronizará el historial de navegación de Chrome.</translation>
 <translation id="8590782867495422699">Volver a abrir el Modo IA de la Búsqueda de Google</translation>
 <translation id="8598779894319572882">Desde el botón "Modo IA de la Búsqueda de Google" en la barra de herramientas, puedes volver a abrir el Modo IA de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
-<translation id="8601359445272098721">¡Novedad! Puedes traducir texto e imágenes en la pantalla seleccionando el botón “Traducir pantalla”</translation>
 <translation id="8614913330719544658">Google Chrome no responde. ¿Quieres reiniciarlo ahora?</translation>
 <translation id="8623450603356630491">Accede a Chrome en tu teléfono</translation>
 <translation id="8624541899164515475">Configuración, se abre en una pestaña nueva.</translation>

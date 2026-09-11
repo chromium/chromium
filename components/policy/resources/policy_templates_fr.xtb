@@ -12445,11 +12445,6 @@ Cette option est utile lorsque l'administrateur sait qu'une fonctionnalité néc
 <translation id="8865404058177794289">Utiliser le paramètre par défaut concernant la vérification de l'utilisation des clés RSA</translation>
 <translation id="8866430022832109569">Rapports sur l'inventaire des applis</translation>
 <translation id="886645881209114007">Autoriser les utilisateurs à utiliser <ph name="PLUGIN_VM_NAME" /> dans <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="8867894831390233044">Permet de déterminer si les utilisateurs peuvent se servir ou non du débogage à distance.
-
-      Si cette règle est activée ou si elle n'est pas définie, les utilisateurs peuvent se servir du débogage à distance en spécifiant les boutons de ligne de commande --remote-debugging-port et --remote-debugging-pipe.
-
-      Si elle est désactivée, les utilisateurs ne peuvent pas se servir du débogage à distance.</translation>
 <translation id="8870995142109792885">Activer l'outil de recherche de plug-ins</translation>
 <translation id="8871974300055371298">Paramètres du contenu</translation>
 <translation id="8872029059067980702">Ne pas afficher l'écran d'introduction de Gemini lors de la connexion</translation>

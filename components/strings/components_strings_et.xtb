@@ -1095,6 +1095,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2859806420264540918">Sait kuvab sekkuvaid või eksitavaid reklaame.</translation>
 <translation id="2873317327342476681">Dinosaurusemäng, mängimiseks puudutage dinosaurust või vajutage tühikuklahvi</translation>
 <translation id="287387905105155974">Abimull</translation>
+<translation id="2875109558992200904">Kui Chrome märgistab turvalisusega seotud sündmused, saadetakse teie administraatorile asjakohased andmed sündmuste kohta. See võib hõlmata Chrome'is külastatud lehtede URL-e ja pealkirju, selliste lehtede URL-e, millelt andmeid kopeerisite, failinimesid või metaandmeid, IP-aadresse, brauseri või vahelehe kokkujooksmisi ning kasutajanime, mida kasutate veebipõhistesse rakendustesse, seadmesse ja Chrome'i sisselogimiseks.</translation>
 <translation id="2876489322757410363">Väljute inkognito režiimist, et välise rakenduse kaudu maksta. Kas soovite jätkata?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes Google'i ohutu sirvimise ja muu haldamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="2878197950673342043">Plakatikujuliselt volditud</translation>
@@ -1135,7 +1136,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2931453528659195355">Ostuteabe haldamine</translation>
 <translation id="2933624813161016821">Reljeefne trükk fooliumlehega</translation>
 <translation id="2935726091208500473">vahelehtede jagamise kohta</translation>
-<translation id="2936698630976431647">Valige sooduskoodi väli, et Google Walletist pakkumised automaatselt täita.</translation>
 <translation id="293796669683825859">Kommentaarid</translation>
 <translation id="2938225289965773019">Avada protokolli <ph name="PROTOCOL" /> lingid</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Kursori kuvamiseks vahetage rakendusi, laadige leht uuesti või minge tagasi</translation>
@@ -1596,6 +1596,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3712004750972384495">Ekraanikuva salvestamine</translation>
 <translation id="3712006010833051684">Ümbrik nr 10</translation>
 <translation id="3712624925041724820">Litsentsid on ammendunud</translation>
+<translation id="371302509916403935">Allajoonitud</translation>
 <translation id="3713277100229669269">Nüüd näete enne maksmist kaardi hüvesid</translation>
 <translation id="3714633008798122362">veebikalender</translation>
 <translation id="3714780639079136834">Lülitage sisse mobiilne andmeside või WiFi</translation>
@@ -1943,6 +1944,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4265635050210404830">Teie kliendikaardid</translation>
 <translation id="4265872034478892965">Lubas administraator</translation>
 <translation id="4267590181863312380">Oma ajaloo hankimiseks teistest seadmetest logige sisse ja sünkroonige ajalugu. Lisaks saate kõigis seadmetes oma paroole ja muud kasutada. Sünkroonimise võite igal ajal seadetes lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
+<translation id="4267837382000002014">Külastatavate lehtede URL-id ja pealkirjad saadetakse analüüsimiseks Google Cloudile või kolmandatele osapooltele ja need võivad olla nähtavad teie administraatorile. Näiteks võidakse neid skannida ebaturvaliste veebisaitide tuvastamiseks või veebisaitide filtreerimiseks administraatori määratud reeglite põhjal.</translation>
 <translation id="4268025649754414643">Võtme šifreerimine</translation>
 <translation id="4269599248168651462">Serveri sertifikaat väljastatakse korduvale nimele.</translation>
 <translation id="4270541775497538019">Virnastaja 6</translation>
@@ -4213,7 +4215,6 @@ Lisateave:
 <translation id="815036624016370447">Teave teie Google'i kontolt <ph name="ACCOUNT" /> aitab teil vorme Chrome'is kiiremini täita</translation>
 <translation id="8150722005171944719">Fail <ph name="URL" /> ei ole loetav. Võimalik, et see on eemaldatud, teisaldatud või faili load takistavad juurdepääsu.</translation>
 <translation id="8151185429379586178">Arendaja tööriistad</translation>
-<translation id="8152194419479742504">Sisestage mis tahes vormile @@, et teave leida ja sisestada ilma vahekaarti vahetamata</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administraatori eeskirjad ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> alla laadida}other{Administraatori eeskirjad ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> alla laadida}}</translation>
 <translation id="8155253549374198915">Viimati avatud vahelehed</translation>
 <translation id="815805690561372740">Chrome’il on sisseehitatud ohutusfunktsioonid, mis kaitsevad teid sirvimise ajal, näiteks Google’i ohutu sirvimine, mis <ph name="BEGIN_LINK" />tuvastas hiljuti pahavara<ph name="END_LINK" /> saidil, mida proovisite külastada.</translation>
@@ -4277,6 +4278,7 @@ Lisateave:
 <translation id="8269242089528251720">Eraldi dokumendid / järjestatud koopiad</translation>
 <translation id="8269703227894255363">{0,plural, =1{Faili avamine on blokeeritud}other{<ph name="FILE_COUNT" /> faili avamine on blokeeritud}}</translation>
 <translation id="8270242299912238708">PDF-dokumendid</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Maksetöötleja leht on avatud</translation>
 <translation id="827820107214076967">Värskenda logisid</translation>
 <translation id="8279611986089885641">Chrome'i märguanded peavad olema sisse lülitatud. Saate need sisse lülitada menüüs <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

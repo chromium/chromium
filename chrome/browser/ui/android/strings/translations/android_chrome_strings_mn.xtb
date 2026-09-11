@@ -1517,7 +1517,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Та сүүлийн үед зочлоогүй тул Chrome эдгээр зөвшөөрлийг хассан</translation>
 <translation id="6923291640965724312">Бодит мэт формат</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 таб}other{<ph name="NUMBER_OF_TABS" /> таб}}</translation>
-<translation id="6929224077895306814">Таны төхөөрөмж болон Google Бүртгэлд хадгалсан аюулгүй байдлын бүх кодыг устгана</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, Сонгогдож, бэхлэгдсэн, аудио тоглуулж буй таб</translation>
 <translation id="6937524809504266803">Хувийн болгох, холбох</translation>
 <translation id="6937876069006524083">Хоч (заавал биш)</translation>

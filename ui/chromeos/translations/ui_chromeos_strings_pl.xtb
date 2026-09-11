@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7665680517722058469">Spróbuj wyszukać coś innego</translation>
 <translation id="7689532716264131859">Elementy (<ph name="NUMBER_OF_ITEMS" />) zostały przeniesione do kosza</translation>
-<translation id="7693909743393669729">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych i wszystkich znajdujących się na nim partycji, w tym partycji niewidocznych. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7695430100978772476">Nie udało się sformatować: <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Nie udało się opróżnić kosza.</translation>
 <translation id="7705251383879779343">Plik <ph name="FILE_NAME" /> został skopiowany.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">amerykańska klawiatura międzynarodowa Workman</translation>
 <translation id="7903984238293908205">katakana</translation>
 <translation id="7908378463497120834">Nie można podłączyć co najmniej jednej partycji na urządzeniu zewnętrznej pamięci masowej.</translation>
-<translation id="7908793776359722643">Sformatowanie partycji usunie wszystkie zapisane na niej dane. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Pliki z Mojego dysku są automatycznie synchronizowane z Chromebookiem, więc masz do nich dostęp bez połączenia z internetem.</translation>
 <translation id="7925247922861151263">Sprawdzenie AAA nie powiodło się</translation>

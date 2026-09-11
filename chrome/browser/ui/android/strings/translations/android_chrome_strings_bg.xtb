@@ -664,6 +664,7 @@
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">Изход от режима за виртуална реалност</translation>
+<translation id="3662595332590803433">Персонализ. раздели да се отварят в Chrome</translation>
 <translation id="3674208116086565128">Към началната страница на приложението Google</translation>
 <translation id="368329460027487650">Не сте в профила си. Отваря опциите за вход.</translation>
 <translation id="3684540848053703310">Долният лист със статистика за цените е затворен</translation>
@@ -1517,7 +1518,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome премахна това разрешение, защото не сте посещавали този сайт наскоро</translation>
 <translation id="6923291640965724312">Формат за виртуална реалност</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 раздел}other{<ph name="NUMBER_OF_TABS" /> раздела}}</translation>
-<translation id="6929224077895306814">Всички кодове за сигурност, запазени на устройството ви и в профила ви в Google, ще бъдат изтрити</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" /> – избран фиксиран раздел, който възпроизвежда звук</translation>
 <translation id="6937524809504266803">Персонализиране и свързване</translation>
 <translation id="6937876069006524083">Псевдоним (по избор)</translation>
@@ -1628,6 +1628,7 @@
 <translation id="7335766481146072567">Натиснете „Напред“</translation>
 <translation id="7336259382292148213">Всичко е наред с известията</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
+<translation id="7349983576451251297">Отваряне на уеб стран. в Chrome вместо в персонализ. раздели</translation>
 <translation id="7352339641508007922">Плъзнете, за да направите дълга екранна снимка</translation>
 <translation id="7352651011704765696">Нещо се обърка</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Споделяне на 1 избран елемент}other{Споделяне на # избрани елемента}}</translation>
@@ -1718,6 +1719,7 @@
 <translation id="7690596512217303514">Устройството ви не успя да отвори Chrome. За да отстраните проблема, изтеглете най-новата актуализация на Chrome от магазина за приложения.</translation>
 <translation id="7692761875510935111">Бързо отваряне в браузър. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="7695270712963178084">Открития на Chrome</translation>
+<translation id="7695610746377249436">Сайтовете, включително Google, отговарят на тази заявка по свое усмотрение.</translation>
 <translation id="7697383401610880082">Манипулатор за преместване с плъзгане</translation>
 <translation id="7698359219371678927">Създайте имейл в <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Долният лист със скорошна активност е отворен на пълната височина</translation>

@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Klient MLS RCS</translation>
 <translation id="1508263560970797965">Kontynuuj w trybie incognito</translation>
 <translation id="1509486075633541495">Zaloguj się w witrynie</translation>
+<translation id="1509922846321012406">Poznaj więcej sposobów na zwiększenie prywatności i bezpieczeństwa</translation>
 <translation id="1513858653616922153">Usuń hasło</translation>
 <translation id="1517166097004694782">Ukryj opcję „Kontynuuj na tej karcie”</translation>
 <translation id="1520027731907768768">Otrzymuj alerty o obniżkach cen produktów, które śledzisz.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Domyślna przeglądarka</translation>
 <translation id="2893791155497534382">Hasła i inne dane związane z aktywnością można usunąć w ustawieniach zarządzania nimi</translation>
 <translation id="2894757982205307093">Nowa karta w grupie</translation>
+<translation id="2897858638449756400">Poznaj więcej sposobów na wyszukiwanie</translation>
 <translation id="2902312830803030883">Więcej czynności</translation>
 <translation id="2904788871580817212">Obniżka ceny na otwartej karcie. Poprzednio: <ph name="PREVIOUS_PRICE" />, teraz: <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Masz hasła, które zostały użyte ponownie (<ph name="NUMBER_OF_PASSWORDS" />), a to może narazić Cię na niebezpieczeństwo.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Spowoduje to usunięcie adresów zapisanych na tym urządzeniu. Usunięte zostaną też adresy zapisane na koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Znaleziono problemy <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Utwórz obraz</translation>
+<translation id="5058813911021873087">Poznaj więcej sposobów na poprawę organizacji i większą oszczędność czasu</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Kolejny poziom przeglądania</translation>
 <translation id="5062321486222145940">Zainstaluj Dysk Google</translation>
@@ -1881,6 +1884,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="6987201788018524855">Poznaj przydatne funkcje, które mogły umknąć Twojej uwadze</translation>
 <translation id="6989636517316575338">Zadawaj pytania dotyczące dowolnej strony</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Wszystkie zadania</translation>
 <translation id="6998251471716094661">Śledź ceny produktów i otrzymuj alerty, gdy cena spadnie w dowolnej witrynie</translation>
 <translation id="7004032350256606903">Twoja organizacja wymaga przeglądania prywatnego.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>

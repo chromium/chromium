@@ -12508,11 +12508,6 @@ Esta opción es útil si el administrador sabe que los usuarios del dispositivo 
 <translation id="8865404058177794289">Usar la configuración predeterminada para la comprobación de uso de claves RSA</translation>
 <translation id="8866430022832109569">Informes de inventario de aplicaciones</translation>
 <translation id="886645881209114007">Permite a los usuarios usar <ph name="PLUGIN_VM_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="8867894831390233044">Controla si los usuarios pueden usar la depuración remota.
-
-      Si se asigna el valor Enabled a la política o no se establece, los usuarios podrán usar la depuración remota especificando los modificadores de línea de comandos --remote-debugging-port y --remote-debugging-pipe.
-
-      Si se asigna el valor Disabled a la política, los usuarios no podrán usar la depuración remota.</translation>
 <translation id="8870995142109792885">Habilitar el buscador de complementos</translation>
 <translation id="8871974300055371298">Configuración de contenido</translation>
 <translation id="8872029059067980702">No mostrar la pantalla de introducción de Gemini durante el inicio de sesión</translation>

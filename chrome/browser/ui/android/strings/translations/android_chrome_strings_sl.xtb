@@ -664,6 +664,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">Izhod iz poglobljenega predvajanja</translation>
+<translation id="3662595332590803433">Vedno odpri zavihke po meri v Chromu</translation>
 <translation id="3674208116086565128">Odpiranje začetne strani aplikacije Google</translation>
 <translation id="368329460027487650">Odjavljen. Odpre možnosti za prijavo.</translation>
 <translation id="3684540848053703310">Zaprt razdelek na dnu zaslona z vpogledi v cene</translation>
@@ -1517,7 +1518,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome je odstranil ta dovoljenja, ker nedavno niste obiskali</translation>
 <translation id="6923291640965724312">Poglobljena oblika</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 zavihek}one{<ph name="NUMBER_OF_TABS" /> zavihek}two{<ph name="NUMBER_OF_TABS" /> zavihka}few{<ph name="NUMBER_OF_TABS" /> zavihki}other{<ph name="NUMBER_OF_TABS" /> zavihkov}}</translation>
-<translation id="6929224077895306814">Izbrisane bodo vse varnostne kode, shranjene v napravi in računu Google</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, izbrani pripeti zavihek z zvokom</translation>
 <translation id="6937524809504266803">Prilagajanje in povezovanje</translation>
 <translation id="6937876069006524083">Vzdevek (izbirno)</translation>
@@ -1628,6 +1628,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7335766481146072567">Pritisnite Naprej</translation>
 <translation id="7336259382292148213">Obvestila so videti v redu</translation>
 <translation id="7339898014177206373">Novo okno</translation>
+<translation id="7349983576451251297">Odpiranje spletnih strani v brskalniku Chrome namesto na zavihkih po meri</translation>
 <translation id="7352339641508007922">Povlecite, če želite ustvariti dolg posnetek zaslona.</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Delitev 1 izbranega elementa z drugimi}one{Delitev # izbranega elementa z drugimi}two{Delitev # izbranih elementov z drugimi}few{Delitev # izbranih elementov z drugimi}other{Delitev # izbranih elementov z drugimi}}</translation>
@@ -1718,6 +1719,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7690596512217303514">Naprava ni mogla odpreti Chroma. Če želite odpraviti težavo, prenesite najnovejšo posodobitev za Chrome iz trgovine z aplikacijami.</translation>
 <translation id="7692761875510935111">Hitro odprite v brskalniku. Če želite urediti to bližnjico, pridržite.</translation>
 <translation id="7695270712963178084">Chrome najde</translation>
+<translation id="7695610746377249436">Spletna mesta, vključno z Googlom, se na to zahtevo odzivajo po lastni presoji.</translation>
 <translation id="7697383401610880082">Ročica za vlečenje</translation>
 <translation id="7698359219371678927">Ustvarite e-poštno sporočilo v aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Razdelek na dnu zaslona za nedavno dejavnost je odprt pri polni višini</translation>

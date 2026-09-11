@@ -650,13 +650,13 @@ el cambio de contraseña, pero también puede aplicarse de manera forzosa con ci
 <translation id="1438739959477268107">Configuración predeterminada de generación de claves</translation>
 <translation id="1440408958042020947">Permitir el acceso de los usuarios que habilitaron Phone Hub a las fotos y los videos tomados recientemente del teléfono</translation>
 <translation id="1443532790824582949">Habilitar el teclado virtual táctil</translation>
-<translation id="1445955287827003066">Esta política controla si un dispositivo se segmenta para la migración de ChromeOS al siguiente SO y cuándo.
+<translation id="1445955287827003066">Esta política controla si un dispositivo está seleccionado para migrar de ChromeOS al siguiente SO y cuándo.
 
 Si estableces esta política en 0, la elegibilidad del dispositivo para la migración se determinará según la configuración predeterminada de Google, que puede depender del modelo del dispositivo, el hardware y otros factores.
 
-Si se establece esta política en 2147483647, el dispositivo se marcará como disponible y se segmentará para la migración sin una fecha límite específica.
+Si se establece esta política en 2147483647, el dispositivo se marcará como disponible y seleccionado para migración sin una fecha límite específica.
 
-Si se establece en un valor superior a 0 y menor que 2147483647, el dispositivo se marcará como disponible y se segmentará para la migración. El valor representa la fecha límite de finalización recomendada como la cantidad de segundos desde el tiempo Unix (1970-01-01 00:00:00 UTC).
+Si se establece en un valor mayor que 0 y menor que 2147483647, el dispositivo se marcará como disponible y seleccionado para migración. El valor representa la fecha límite de finalización recomendada como la cantidad de segundos desde el tiempo Unix (1970-01-01 00:00:00 UTC).
 
 Ten en cuenta que otros parámetros de configuración de actualización del dispositivo, como la fijación de versiones (<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY" />), la inhabilitación de actualizaciones (<ph name="DEVICE_AUTO_UPDATE_DISABLED_POLICY" />) o la configuración del canal de versiones (<ph name="DEVICE_RELEASE_CHANNEL_POLICY" />), pueden impedir que el dispositivo reciba las actualizaciones necesarias para iniciar la migración, incluso si se establece una fecha objetivo aquí. La política debe aplicarse siempre y el valor no establecido corresponde al valor predeterminado de Google, ya que su valor puede influir en el procesamiento de las políticas de actualización del dispositivo.</translation>
 <translation id="1447252610864877219">Permite que la app de Gemini realice acciones en las páginas web.</translation>
@@ -6957,7 +6957,7 @@ Nota: Esta función aún no está disponible de forma general, por lo que habili
 <translation id="5249006530384016395">Controlar si se habilita la sintaxis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> obsoleta para el estado personalizado de CSS</translation>
 <translation id="5249271416806588789">Talk to type es una función basada en IA que permite a los usuarios ingresar y editar texto con la voz, con la tecnología de modelos de IA generativa para proporcionar transcripción y formato de alta calidad.
 
-0 = Permite que se use la función y que Google use datos pertinentes para mejorar sus modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados, materiales de referencia y comentarios escritos, según la función. Es posible que personas revisen los datos para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+0 = Permite que se use la función y que Google use datos pertinentes para mejorar sus modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados, materiales de referencia y comentarios escritos, según la función. Es posible que los datos sean revisados por personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
 
 1 = Permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (lo que incluye las instrucciones, las entradas, los resultados, los materiales de referencia y los comentarios escritos). 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
@@ -12991,11 +12991,6 @@ Esta opción es útil cuando el administrador sabe que es probable que los usuar
 <translation id="8865404058177794289">Usar la configuración predeterminada para la verificación de uso de la clave RSA</translation>
 <translation id="8866430022832109569">Informes del inventario de la aplicación</translation>
 <translation id="886645881209114007">Permite que los usuarios utilicen <ph name="PLUGIN_VM_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="8867894831390233044">Determina si los usuarios pueden usar la depuración remota.
-
-      Si habilitas esta política o no la estableces, los usuarios podrán usar la depuración remota. Para hacerlo, deberán especificar los interruptores --remote-debugging-port y --remote-debugging-pipe de la línea de comandos.
-
-      Si la inhabilitas, los usuarios no podrán usar la depuración remota.</translation>
 <translation id="8870995142109792885">Habilitar el buscador de complementos</translation>
 <translation id="8871974300055371298">Configuración de contenido</translation>
 <translation id="8872029059067980702">No mostrar la pantalla de presentación de Gemini durante el acceso</translation>

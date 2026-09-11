@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS İstemcisi</translation>
 <translation id="1508263560970797965">Gizli modda devam et</translation>
 <translation id="1509486075633541495">Web sitesinde oturum açın</translation>
+<translation id="1509922846321012406">Gizliliğinizi ve güvenliğinizi artırmanın diğer yollarını keşfedin</translation>
 <translation id="1513858653616922153">Şifreyi sil</translation>
 <translation id="1517166097004694782">"Bu sekmeyle devam et" seçeneğini gizle</translation>
 <translation id="1520027731907768768">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarıları alın.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Varsayılan tarayıcı</translation>
 <translation id="2893791155497534382">Şifreler ve diğer etkinlikler kendi yönetim ayarlarından silinebilir</translation>
 <translation id="2894757982205307093">Grupta yeni sekme</translation>
+<translation id="2897858638449756400">Arama yapmanın diğer yollarını keşfedin</translation>
 <translation id="2902312830803030883">Diğer işlemler</translation>
 <translation id="2904788871580817212"><ph name="DOMAIN" /> adresinin açık olduğu sekmenizde <ph name="PRODUCT_NAME" /> ürününün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="PRICE" /> oldu</translation>
 <translation id="2905479111267140204">Güvenliğinizi riske atabilecek <ph name="NUMBER_OF_PASSWORDS" /> tane yeniden kullanılan şifreniz var.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Bu işlem, bu cihaza kaydedilen adresleri siler. Ayrıca, <ph name="USER_EMAIL" /> Google Hesabınızda kayıtlı adresler de silinir.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> sorun bulundu.</translation>
 <translation id="5056587122125565772">Resim oluştur</translation>
+<translation id="5058813911021873087">Düzenli olmanın ve zamandan tasarruf etmenin diğer yollarını keşfedin</translation>
 <translation id="5059136629401106827">Tamam</translation>
 <translation id="5061202435354361813">Göz atma deneyiminizi bir üst seviyeye taşıyın</translation>
 <translation id="5062321486222145940">Google Drive'ı yükle</translation>
@@ -1881,6 +1884,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="6987201788018524855">Kaçırdığınız faydalı özellikleri keşfedin</translation>
 <translation id="6989636517316575338">İstediğiniz sayfa hakkında soru sorun</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Tüm Görevler</translation>
 <translation id="6998251471716094661">Ürün fiyatlarını takip edin ve herhangi bir sitede fiyat düştüğünde uyarı alın</translation>
 <translation id="7004032350256606903">Kuruluşunuz, gizli olarak göz atmanızı zorunlu tutuyor.
 <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>

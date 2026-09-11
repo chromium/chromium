@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS-klient</translation>
 <translation id="1508263560970797965">Fortsæt i inkognito</translation>
 <translation id="1509486075633541495">Log ind på website</translation>
+<translation id="1509922846321012406">Se flere måder, du kan styrke dit privatliv og din sikkerhed på</translation>
 <translation id="1513858653616922153">Slet adgangskoden</translation>
 <translation id="1517166097004694782">Skjul "Fortsæt med denne fane"</translation>
 <translation id="1520027731907768768">Få notifikationer om prisfald på de produkter, du holder øje med.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2893791155497534382">Adgangskoder og anden aktivitet kan slettes i de tilhørende administrationsindstillinger</translation>
 <translation id="2894757982205307093">Ny fane i gruppe</translation>
+<translation id="2897858638449756400">Se flere måder at søge på</translation>
 <translation id="2902312830803030883">Flere handlinger</translation>
 <translation id="2904788871580817212">Prisfald på din åbne fane fra <ph name="PREVIOUS_PRICE" /> til <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> genbrugte adgangskoder, hvilket kan udgøre en sikkerhedsrisiko.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Denne handling sletter adresser, der er gemt på denne enhed. Den sletter også adresser, der er gemt på din Google-konto <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Der blev registreret problemer <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Opret billede</translation>
+<translation id="5058813911021873087">Se flere måder, du kan få overblik og spare tid på</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Få bedre browsing med Level Up</translation>
 <translation id="5062321486222145940">Installer Google Drev</translation>
@@ -1881,6 +1884,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="6987201788018524855">Se nyttige funktioner, du er gået glip af</translation>
 <translation id="6989636517316575338">Stil spørgsmål om en hvilken som helst side</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Alle opgaver</translation>
 <translation id="6998251471716094661">Overvåg priser på produkter, og få underretninger, når prisen falder på et website</translation>
 <translation id="7004032350256606903">Din organisation kræver, at du bruger privat browsing.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>

@@ -1517,7 +1517,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Pārlūkā Chrome tika noņemtas šīs atļaujas, jo pēdējā laikā neesat apmeklējis vietni</translation>
 <translation id="6923291640965724312">Iekļaujošs formāts</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 cilne}zero{<ph name="NUMBER_OF_TABS" /> cilnes}one{<ph name="NUMBER_OF_TABS" /> cilne}other{<ph name="NUMBER_OF_TABS" /> cilnes}}</translation>
-<translation id="6929224077895306814">Tiks dzēsti visi drošības kodi, kas ir saglabāti jūsu ierīcē un Google kontā</translation>
 <translation id="6933180670536678127">Atlasīta piesprausta cilne <ph name="TAB_TITLE" />, kurā tiek atskaņots audio</translation>
 <translation id="6937524809504266803">Personalizācija un saistīšana</translation>
 <translation id="6937876069006524083">Segvārds (neobligāti)</translation>

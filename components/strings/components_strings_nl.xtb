@@ -1095,6 +1095,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2859806420264540918">Site toont opdringerige of misleidende advertenties.</translation>
 <translation id="2873317327342476681">Dino-game, tik op de dino of druk op de spatiebalk om te spelen</translation>
 <translation id="287387905105155974">Hulpballon</translation>
+<translation id="2875109558992200904">Als Chrome beveiligingsgebeurtenissen markeert, worden relevante gegevens over de gebeurtenissen naar je beheerder gestuurd. Dit kunnen URL's en titels zijn van pagina's die je bezoekt in Chrome, URL's van pagina's waarvan je gegevens hebt gekopieerd, bestandsnamen of metadata, IP-adressen, browser- of tabbladcrashes en de gebruikersnaam die je gebruikt om in te loggen bij webgebaseerde apps, je apparaat en Chrome.</translation>
 <translation id="2876489322757410363">Je verlaat de incognitomodus om te betalen via een externe app. Doorgaan?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om Safe Browsing en meer te beheren in de Chrome-instellingen</translation>
 <translation id="2878197950673342043">Kruisvouw</translation>
@@ -1135,7 +1136,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2931453528659195355">Winkelgegevens beheren</translation>
 <translation id="2933624813161016821">Reliëffolie</translation>
 <translation id="2935726091208500473">je tabbladen delen</translation>
-<translation id="2936698630976431647">Selecteer het veld voor de promotiecode om aanbiedingen van Google Wallet automatisch in te vullen</translation>
 <translation id="293796669683825859">Reacties</translation>
 <translation id="2938225289965773019">Links voor <ph name="PROTOCOL" /> openen</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: als je de cursor wilt tonen, wissel je tussen apps, laad je de pagina opnieuw of ga je terug</translation>
@@ -1591,6 +1591,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3712004750972384495">Schermopname opslaan</translation>
 <translation id="3712006010833051684">Envelop #10</translation>
 <translation id="3712624925041724820">Licenties zijn verbruikt</translation>
+<translation id="371302509916403935">Onderstrepen</translation>
 <translation id="3713277100229669269">Je kunt nu de kaartvoordelen bekijken voordat je betaalt</translation>
 <translation id="3714633008798122362">online agenda</translation>
 <translation id="3714780639079136834">Zet je mobiele data of wifi aan</translation>
@@ -1937,6 +1938,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4265635050210404830">Je klantenkaarten</translation>
 <translation id="4265872034478892965">Toegestaan door je beheerder</translation>
 <translation id="4267590181863312380">Log in en synchroniseer je geschiedenis om de geschiedenis van je andere apparaten te krijgen. Je kunt ook onder andere je wachtwoorden op al je apparaten gebruiken. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
+<translation id="4267837382000002014">URL's en titels van pagina's die je bezoekt, worden voor analyse naar Google Cloud of derden gestuurd en zijn misschien zichtbaar voor je beheerder. Ze kunnen bijvoorbeeld worden gescand om onveilige websites op te sporen of websites te filteren op basis van regels die zijn ingesteld door de beheerder.</translation>
 <translation id="4268025649754414643">Sleutelcodering</translation>
 <translation id="4269599248168651462">Het servercertificaat is uitgegeven aan een niet-unieke naam.</translation>
 <translation id="4270541775497538019">Stapeleenheid 6</translation>
@@ -4206,7 +4208,6 @@ Aanvullende informatie:
 <translation id="815036624016370447">Met informatie uit je Google-account <ph name="ACCOUNT" /> kun je formulieren sneller invullen in Chrome</translation>
 <translation id="8150722005171944719">Het bestand op <ph name="URL" /> is onleesbaar. Het bestand is mogelijk verwijderd of verplaatst of de bestandsrechten zorgen ervoor dat het bestand niet kan worden geopend.</translation>
 <translation id="8151185429379586178">Ontwikkelaarstools</translation>
-<translation id="8152194419479742504">Typ @@ in een formulier om informatie te vinden en in te vullen zonder van tabblad te wisselen</translation>
 <translation id="8153865548451212769">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te downloaden naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te downloaden naar <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Laatst geopende tabbladen</translation>
 <translation id="815805690561372740">Chrome bevat ingebouwde veiligheidsfuncties die je beschermen terwijl je browst, zoals Google Safe Browsing, dat <ph name="BEGIN_LINK" />recent malware heeft gevonden<ph name="END_LINK" /> op de site die je probeerde te bezoeken.</translation>
@@ -4270,6 +4271,7 @@ Aanvullende informatie:
 <translation id="8269242089528251720">Afzonderlijke documenten/gesorteerde exemplaren</translation>
 <translation id="8269703227894255363">{0,plural, =1{Bestand kan niet worden geopend}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden geopend}}</translation>
 <translation id="8270242299912238708">Pdf-documenten</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Blad voor betalingshandler is geopend</translation>
 <translation id="827820107214076967">Logboeken vernieuwen</translation>
 <translation id="8279611986089885641">Chrome-meldingen moeten aanstaan. Je kunt ze aanzetten in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

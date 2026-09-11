@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7665680517722058469">Proba a facer outra busca</translation>
 <translation id="7689532716264131859">Enviáronse <ph name="NUMBER_OF_ITEMS" /> elementos á papeleira</translation>
-<translation id="7693909743393669729">Cando se formata unha unidade, bórranse todos os datos que contén e quítanse todas as súas particións, incluídas as invisibles. Esta acción non se pode desfacer.</translation>
 <translation id="7695430100978772476">Non se puido formatar <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Non se puido baleirar a papeleira.</translation>
 <translation id="7705251383879779343">Copiouse <ph name="FILE_NAME" />.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">Internacional Workman estadounidense</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Polo menos unha partición do dispositivo de almacenamento externo non se puido activar.</translation>
-<translation id="7908793776359722643">Cando se formata unha partición, bórranse todos os datos que contén. Esta acción non se pode desfacer.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Os ficheiros de A miña unidade sincronizaranse co teu Chromebook automaticamente para que poidas acceder a eles sen conexión a Internet.</translation>
 <translation id="7925247922861151263">Erro de comprobación de AAA</translation>

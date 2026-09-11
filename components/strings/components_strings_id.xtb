@@ -1096,6 +1096,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2859806420264540918">Situs ini menampilkan iklan yang mengganggu atau menyesatkan.</translation>
 <translation id="2873317327342476681">Game Dino, ketuk dino atau tekan spasi untuk bermain</translation>
 <translation id="287387905105155974">Balon bantuan</translation>
+<translation id="2875109558992200904">Saat peristiwa keamanan ditandai oleh Chrome, data yang relevan dengan peristiwa tersebut akan dikirimkan kepada administrator Anda. Data ini dapat mencakup URL dan judul halaman yang Anda kunjungi di Chrome, URL halaman tempat Anda menyalin data, nama file atau metadata, alamat IP, error browser atau tab yang tidak bekerja, serta nama pengguna yang Anda gunakan untuk login ke aplikasi berbasis web, perangkat Anda, dan Chrome.</translation>
 <translation id="2876489322757410363">Keluar dari mode Samaran untuk membayar melalui aplikasi eksternal. Lanjutkan?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola Safe Browsing dan lainnya di setelan Chrome</translation>
 <translation id="2878197950673342043">Lipatan poster</translation>
@@ -1136,7 +1137,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2931453528659195355">Kelola info belanja</translation>
 <translation id="2933624813161016821">Foil Emboss</translation>
 <translation id="2935726091208500473">membagikan tab Anda</translation>
-<translation id="2936698630976431647">Pilih kolom kode promo untuk mengisi otomatis penawaran dari Google Wallet</translation>
 <translation id="293796669683825859">Komentar</translation>
 <translation id="2938225289965773019">Membuka link <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Untuk menampilkan kursor, beralih aplikasi, memuat ulang halaman, atau kembali</translation>
@@ -1596,6 +1596,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3712004750972384495">Menyimpan perekaman layar</translation>
 <translation id="3712006010833051684">Envelope #10</translation>
 <translation id="3712624925041724820">Lisensi habis</translation>
+<translation id="371302509916403935">Garis bawah</translation>
 <translation id="3713277100229669269">Kini Anda dapat melihat manfaat kartu sebelum membayar</translation>
 <translation id="3714633008798122362">kalender web</translation>
 <translation id="3714780639079136834">Aktifkan data seluler atau Wi-Fi</translation>
@@ -1943,6 +1944,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4265635050210404830">Kartu loyalitas Anda</translation>
 <translation id="4265872034478892965">Diizinkan oleh administrator</translation>
 <translation id="4267590181863312380">Untuk mengakses histori Anda dari perangkat lain, login dan sinkronkan histori. Anda juga akan mendapatkan sandi dan info Anda yang lain di semua perangkat Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
+<translation id="4267837382000002014">URL dan judul halaman yang Anda kunjungi akan dikirim ke Google Cloud atau pihak ketiga untuk dianalisis, dan dapat dilihat oleh administrator Anda. Misalnya, URL mungkin dipindai untuk mendeteksi situs yang tidak aman atau memfilter situs berdasarkan aturan yang ditetapkan oleh administrator.</translation>
 <translation id="4268025649754414643">Penyandian Kunci</translation>
 <translation id="4269599248168651462">Sertifikat server diterbitkan untuk nama yang tidak unik.</translation>
 <translation id="4270541775497538019">Tempat kertas 6</translation>
@@ -4211,7 +4213,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="815036624016370447">Info dari Akun Google Anda <ph name="ACCOUNT" /> dapat membantu Anda mengisi formulir lebih cepat di Chrome</translation>
 <translation id="8150722005171944719">File pada <ph name="URL" /> tidak dapat dibaca.  File mungkin telah dihapus, dipindahkan, atau izin file mungkin mencegah akses.</translation>
 <translation id="8151185429379586178">Developer Tools</translation>
-<translation id="8152194419479742504">Ketik @@ di formulir mana pun untuk menemukan dan mengisi info tanpa beralih tab</translation>
 <translation id="8153865548451212769">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk mendownload file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk mendownload file ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Tab terakhir yang dibuka</translation>
 <translation id="815805690561372740">Chrome memiliki fitur keamanan bawaan untuk melindungi Anda saat menjelajah — seperti Google Safe Browsing, yang <ph name="BEGIN_LINK" />baru-baru ini menemukan malware<ph name="END_LINK" /> di situs yang Anda coba kunjungi.</translation>
@@ -4275,6 +4276,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8269242089528251720">Dokumen terpisah/Salinan tersusun</translation>
 <translation id="8269703227894255363">{0,plural, =1{File diblokir agar tidak dapat dibuka}other{<ph name="FILE_COUNT" /> file diblokir agar tidak dapat dibuka}}</translation>
 <translation id="8270242299912238708">Dokumen PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Lembar handler pembayaran terbuka</translation>
 <translation id="827820107214076967">Muat Ulang Log</translation>
 <translation id="8279611986089885641">Notifikasi Chrome harus aktif. Anda dapat mengaktifkannya di <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

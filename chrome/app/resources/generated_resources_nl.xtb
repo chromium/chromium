@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">Toegang verkrijgen tot een van deze USB-apparaten</translation>
 <translation id="1038462104119736705">Er wordt ten minste <ph name="INSTALL_SIZE" /> vrije opslagruimte aanbevolen voor Linux. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
 <translation id="1038643060055067718">Regels:</translation>
+<translation id="1039216421321079051">Extensie uitgezet door een andere extensie</translation>
 <translation id="1039337018183941703">Ongeldig of beschadigd bestand</translation>
 <translation id="1040761927998636252">Naamloze bookmark voor <ph name="URL" /></translation>
 <translation id="1041175011127912238">Deze pagina reageert niet</translation>
@@ -2615,7 +2616,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3000461861112256445">Monogeluid</translation>
 <translation id="3001144475369593262">Kinderaccounts</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Geen toetsen aangepast}=1{1 aangepaste toets}other{{COUNT} aangepaste toetsen}}</translation>
-<translation id="3002745665522516995">Selecteer iets op de pagina om te zoeken</translation>
 <translation id="3002864108328203174">Blad onderaan voor Gemini op halve hoogte.</translation>
 <translation id="3003144360685731741">Voorkeursnetwerken</translation>
 <translation id="3003253259757197230">URL's die je bezoekt, worden naar Google gestuurd om te voorspellen naar welke sites je misschien daarna gaat en extra informatie te tonen over de pagina die je bezoekt</translation>
@@ -3462,6 +3462,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3641456520301071208">Sites kunnen om je locatie vragen</translation>
 <translation id="3642070413432681490">Cursor omcirkelen</translation>
 <translation id="3643962751030964445">Dit apparaat wordt beheerd door <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> vereist een nieuw profiel voor het account <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="3644128856494356630">CppGC-geheugen</translation>
 <translation id="3645372836428131288">Beweeg je vinger enigszins om een ander deel van de vingerafdruk vast te leggen.</translation>
 <translation id="3645951915068244649">Er is al een tabbladgroep gemaakt met deze bookmarkmap. Wil je een nieuwe tabbladgroep maken of de bestaande vervangen?</translation>
 <translation id="3646789916214779970">Terugzetten naar standaardthema</translation>
@@ -4233,6 +4234,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4226303886821889519">Versie van updater: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Deze extensie is niet toegestaan}other{Sommige extensies zijn niet toegestaan}}</translation>
 <translation id="4229538146709970028">Ontgrendel <ph name="TOKEN_NAME" /> om jezelf bij <ph name="HOST_NAME" /> te verifiëren met je certificaat.</translation>
+<translation id="4230659518013393045">De paginatitel, URL en content van je huidige tabblad worden gedeeld met Google om je relevantere antwoorden te geven. Je kunt tabbladen toevoegen of verwijderen terwijl je browst.</translation>
 <translation id="4232375817808480934">Kerberos configureren</translation>
 <translation id="4232376164796433044">Wachtwoorden en automatisch invullen</translation>
 <translation id="4233739489690259993">Je Chromebook krijgt geen beveiligings- en software-updates meer. Upgrade je apparaat voor de nieuwste beveiliging en nieuwe functies. Er zijn voorwaarden van toepassing.</translation>
@@ -4576,7 +4578,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4495002167047709180">Deze extensie toestaan op <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Niet op deze pagina bekijken</translation>
 <translation id="4500055235123625757">Gemini kan vragen beantwoorden over de video of audio die je hebt afgespeeld op <ph name="LINK_BEGIN" />bepaalde websites<ph name="LINK_END" />.</translation>
-<translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> is gecrasht</translation>
 <translation id="4500647907053779331">&amp;Selectie vertalen naar het <ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">Verwijderen bevestigen</translation>
 <translation id="4502423230170890588">Verwijderen van dit apparaat</translation>
@@ -5100,6 +5101,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="488785315393301722">Details bekijken</translation>
 <translation id="488862352499217187">Nieuwe map maken</translation>
 <translation id="4888715715847020167">ga je naar Instellingen</translation>
+<translation id="4888899258150891194">CppGC-geheugen</translation>
 <translation id="4890292359366636311">Open scherm-in-scherm automatisch, zodat je deze functie bovenop andere tabbladen en vensters kunt gebruiken.</translation>
 <translation id="4890399733764921729">Kan geen verbinding maken. Vergrendeld door een andere mobiele provider.</translation>
 <translation id="4890585766056792498">Krijg bescherming tegen gevaarlijke sites</translation>
@@ -5464,7 +5466,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5173668317844998239">Vingerafdrukken toevoegen en verwijderen die zijn opgeslagen op je beveiligingssleutel</translation>
 <translation id="5174169235862638850">Wachtwoord gekopieerd naar klembord</translation>
 <translation id="517488401359338823">Beveiligingsapparaat ontgrendelen</translation>
-<translation id="5176671554021050278">Gebruik Google Lens voor meer informatie over specifieke afbeeldingen of tekst op een pagina.</translation>
 <translation id="5177479852722101802">Toegang tot de camera en microfoon blijven blokkeren</translation>
 <translation id="5178667623289523808">Zoek vorige</translation>
 <translation id="5179428098696668914">AI-weergave uitzetten</translation>
@@ -5786,6 +5787,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5436510242972373446">Zoeken op <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Het venster <ph name="WINDOW_SIDE" /> is nu <ph name="WINDOW_SIZE_PERCENT" /> breed en het deelvenster <ph name="PANE_SIDE" /> is nu <ph name="PANE_SIZE_PERCENT" /> breed.</translation>
 <translation id="5438060324827306856">&amp;Extensies zoeken</translation>
+<translation id="5440240650630588012">Pas een leesregel of -venster toe om je te helpen focussen. Druk op ⌥L of ga naar Instellingen.</translation>
 <translation id="5440425659852470030">Zijvenster sluiten</translation>
 <translation id="544083962418256601">Snelle links maken...</translation>
 <translation id="5441133529460183413">Web-app geïnstalleerd vanuit Chrome-browser</translation>
@@ -5972,6 +5974,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5576472948015790634">Je kunt je tabbladgroepen en Gemini-chats nu op één plek beheren. Je kunt dit altijd weer losmaken.</translation>
 <translation id="5578059481725149024">Automatisch inloggen</translation>
 <translation id="5578387000057347457">Voer een aangepaste prompt in of markeer tekst om een afbeelding te maken</translation>
+<translation id="557893471177655572">Regelfocus proberen</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 item wordt alleen op dit apparaat opgeslagen. Als je het op je andere apparaten wilt gebruiken, <ph name="BEGIN_LINK" />sla je het op in je Google-account<ph name="END_LINK" />.}other{{ITEM_COUNT} items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, <ph name="BEGIN_LINK" />sla je ze op in je Google-account<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560"><ph name="SITE" /> verwijderen uit de lijst <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">Gesplitste weergave</translation>
@@ -9984,6 +9987,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699296325072357994">Content van wachtwoordpagina's en gerelateerde informatie worden naar Google gestuurd en door mensen beoordeeld. Je wachtwoord is versleuteld en wordt nooit door iemand gezien. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">Launcher + backspace</translation>
+<translation id="8701058912406466818">Pas een leesregel of -venster toe om je te helpen focussen. Druk op Alt+L of ga naar Instellingen.</translation>
 <translation id="8702278591052316269">Menu met verborgen opgeslagen tabbladgroepen</translation>
 <translation id="8703346390800944767">Advertentie overslaan</translation>
 <translation id="8703372953981978786">Deze link werkt niet</translation>
@@ -10747,6 +10751,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="983192555821071799">Alle tabbladen sluiten</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: camera- en microfoonopname</translation>
 <translation id="984705303330760860">Talen voor spellingcontrole toevoegen</translation>
+<translation id="986994187171579118">Extensie uitgezet door <ph name="EXTENSION_NAME" /></translation>
 <translation id="987264212798334818">Algemeen</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> wil informatie van je mobiele apparaat opvragen</translation>
 <translation id="988320949174893488">Hapert soms</translation>

@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">‏کارخواه RCS MLS</translation>
 <translation id="1508263560970797965">ادامه در حالت «ناشناس»</translation>
 <translation id="1509486075633541495">ورود به سیستم وب‌سایت</translation>
+<translation id="1509922846321012406">روش‌های بیشتر برای تقویت حریم خصوصی و ایمنی کاوش کنید</translation>
 <translation id="1513858653616922153">حذف گذرواژه</translation>
 <translation id="1517166097004694782">پنهان کردن «ادامه دادن با این زبانه»</translation>
 <translation id="1520027731907768768">دریافت اعلان‌های کاهش قیمت برای محصولاتی که پیگیری می‌کنید.</translation>
@@ -258,7 +259,7 @@
 <translation id="1752547299766512813">ذخیره گذرواژه‌ها</translation>
 <translation id="1764070164487214210">مسیرها</translation>
 <translation id="1764511703783285459">«مدیر گذرواژه» دیگر هیچ گذرواژه یا گذرکلیدی را هم‌رسانی نکرد</translation>
-<translation id="1765555082983153259">‏‫«Chrome» می‌خواهد به میکروفون شما دسترسی داشته باشد</translation>
+<translation id="1765555082983153259">‏‫«Chrome» می‌خواهد به میکروفون شما دست یابد</translation>
 <translation id="1767766085187034454">‏ترجمه Google</translation>
 <translation id="1771016937398045251">منو ابزارها</translation>
 <translation id="1772468122139624049">مجدد بار کردن زبانه‌ها ممکن نیست</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">مرورگر پیش‌فرض</translation>
 <translation id="2893791155497534382">گذرواژه‌ها و فعالیت‌های دیگر را می‌توان در تنظیمات مدیریت آن‌ها حذف کرد</translation>
 <translation id="2894757982205307093">برگه جدید در گروه</translation>
+<translation id="2897858638449756400">روش‌های بیشتری را برای جستجو کردن کاوش کنید</translation>
 <translation id="2902312830803030883">کنش‌های بیشتر</translation>
 <translation id="2904788871580817212">کاهش قیمت در زبانه باز، از <ph name="PREVIOUS_PRICE" /> به <ph name="PRICE" />،‏ <ph name="PRODUCT_NAME" />،‏ <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204"><ph name="NUMBER_OF_PASSWORDS" /> گذرواژه دوباره‌استفاده‌شده دارید که می‌تواند امنیت شما را به‌خطر بیندازد.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">‏این کار نشانی‌های ذخیره‌شده در این دستگاه را حذف می‌کند. این کار همچنین نشانی‌های ذخیره‌شده در «حساب Google» <ph name="USER_EMAIL" /> را حذف می‌کند.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> مشکلاتی پیدا شد.</translation>
 <translation id="5056587122125565772">ساختن تصویر</translation>
+<translation id="5058813911021873087">روش‌های بیشتری را برای سازمان‌دهی و صرفه‌جویی در زمان کاوش کنید</translation>
 <translation id="5059136629401106827">خوب</translation>
 <translation id="5061202435354361813">ارتقا سطح مرور کردن</translation>
 <translation id="5062321486222145940">‏نصب Google Drive</translation>
@@ -1881,6 +1884,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6987201788018524855">ویژگی‌های مفیدی را که ازدست داده‌اید کاوش کنید</translation>
 <translation id="6989636517316575338">پرسش درباره هر صفحه‌ای</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">همه تکلیف‌ها</translation>
 <translation id="6998251471716094661">قیمت محصولات را پیگیری کنید و برای کاهش قیمت در هر سایتی هشدار دریافت کنید</translation>
 <translation id="7004032350256606903">سازمانتان از شما می‌خواهد به‌طور خصوصی مرور کنید.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>

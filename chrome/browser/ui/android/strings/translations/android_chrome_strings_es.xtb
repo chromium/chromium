@@ -1256,7 +1256,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="605721222689873409">AA</translation>
 <translation id="606985262342505139">Hoja inferior de la pestaña a altura completa</translation>
 <translation id="6071995715087444295">Para comprobar si hay contraseñas vulneradas, inicia sesión en tu cuenta de Google</translation>
-<translation id="6078323886959318429">Acceso directo</translation>
+<translation id="6078323886959318429">Añadir acceso directo</translation>
 <translation id="6085886413119427067">Determina cómo conectarse a sitios web mediante una conexión segura</translation>
 <translation id="6087286598828478206">¿Bloquear y salir del grupo?</translation>
 <translation id="6091464625487374759">Gemini ya está disponible en tu barra de herramientas. Para cambiar la herramienta fijada en cualquier momento, mantén pulsado el icono.</translation>
@@ -1517,7 +1517,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ha eliminado estos permisos porque no has visitado el sitio recientemente</translation>
 <translation id="6923291640965724312">Formato envolvente</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestaña}other{<ph name="NUMBER_OF_TABS" /> pestañas}}</translation>
-<translation id="6929224077895306814">Se eliminarán todos los códigos de seguridad guardados en tu dispositivo y en tu cuenta de Google</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, pestaña audible seleccionada fijada</translation>
 <translation id="6937524809504266803">Personalización y vinculación</translation>
 <translation id="6937876069006524083">Nombre (opcional)</translation>

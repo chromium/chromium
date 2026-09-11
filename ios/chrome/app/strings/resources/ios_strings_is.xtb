@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS-biðlari</translation>
 <translation id="1508263560970797965">Halda áfram í huliðsstillingu</translation>
 <translation id="1509486075633541495">Skrá inn á vefsvæði</translation>
+<translation id="1509922846321012406">Kannaðu fleiri leiðir til að auka persónuvernd og öryggi</translation>
 <translation id="1513858653616922153">Eyða aðgangsorði</translation>
 <translation id="1517166097004694782">Fela „Halda áfram á þessum flipa“</translation>
 <translation id="1520027731907768768">Fáðu tilkynningar um lækkað verð á vörum sem þú fylgist með.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Sjálfgefinn vafri</translation>
 <translation id="2893791155497534382">Hægt er að eyða aðgangsorðum og annarri virkni í umsjónarstillingum þeirra</translation>
 <translation id="2894757982205307093">Nýr flipi í hópi</translation>
+<translation id="2897858638449756400">Kannaðu fleiri leiðir til að leita</translation>
 <translation id="2902312830803030883">Fleiri aðgerðir</translation>
 <translation id="2904788871580817212">Verðlækkun í opnum flipa, úr <ph name="PREVIOUS_PRICE" /> í <ph name="PRICE" />, <ph name="PRODUCT_NAME" /> <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Þú ert með <ph name="NUMBER_OF_PASSWORDS" /> endurnýtt aðgangsorð sem gætu stefnt öryggi þínu í hættu.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Þetta eyðir vistuðum heimilisföngum í þessu tæki. Einnig eyðir þetta vistuðum heimilisföngum á Google-reikningnum <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Vandamál fundust <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Búa til mynd</translation>
+<translation id="5058813911021873087">Kannaðu fleiri leiðir til að koma skipulagi á hlutina og spara tíma</translation>
 <translation id="5059136629401106827">Í lagi</translation>
 <translation id="5061202435354361813">Færðu netvafrið upp á næsta stig</translation>
 <translation id="5062321486222145940">Setja upp Google Drive</translation>
@@ -1881,6 +1884,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="6987201788018524855">Uppgötvaðu gagnlega eiginleika sem fóru framhjá þér</translation>
 <translation id="6989636517316575338">Spyrja um hvaða síðu sem er</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Öll verkefni</translation>
 <translation id="6998251471716094661">Rektu verð á vörum og fáðu tilkynningar þegar verðið lækkar á einhverri síðu</translation>
 <translation id="7004032350256606903">Fyrirtækið þitt krefst þess að þú vafrir í huliðsstillingu.
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>

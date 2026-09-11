@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">מסמך יחיד</translation>
 <translation id="254524874071906077">‏הגדר את Chrome כדפדפן ברירת המחדל</translation>
 <translation id="2546283357679194313">‏קובצי Cookie ונתונים מאתרים</translation>
+<translation id="254672217349157196">אימות אוטומטי של כתובת האימייל</translation>
 <translation id="254947805923345898">ערך המדיניות לא חוקי.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> שלח תגובה לא חוקית.</translation>
 <translation id="2551608178605132291">כתובת: <ph name="ADDRESS" /></translation>
@@ -1094,6 +1095,7 @@
 <translation id="2859806420264540918">באתר הזה מוצגות מודעות מפריעות או מטעות.</translation>
 <translation id="2873317327342476681">‏משחק Dino, צריך ללחוץ על הדינוזאור או להקיש על מקש הרווח כדי לשחק</translation>
 <translation id="287387905105155974">בועת עזרה</translation>
+<translation id="2875109558992200904">‏כש-Chrome מדווח על אירועי אבטחה, נתונים רלוונטיים לגבי האירועים האלה נשלחים לאדמין. הנתונים האלה יכולים לכלול את כתובות ה-URL של הדפים שביקרת בהם ב-Chrome, כתובות URL של דפים שהעתקת מהם נתונים, שמות קבצים או מטא-נתונים, כתובות IP, קריסות של כרטיסיות או של הדפדפן, ושם המשתמש שבאמצעותו נכנסת לאפליקציות מבוססות-אינטרנט, למכשיר שלך ול-Chrome.</translation>
 <translation id="2876489322757410363">בחרת לצאת מהמצב האנונימי כדי לשלם באמצעות אפליקציה חיצונית. להמשיך?</translation>
 <translation id="2876949457278336305">‏<ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="2878197950673342043">קיפול כרזה</translation>
@@ -1134,7 +1136,6 @@
 <translation id="2931453528659195355">ניהול פרטי הקניות</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2935726091208500473">שיתוף הכרטיסיות</translation>
-<translation id="2936698630976431647">‏כדי למלא אוטומטית מבצעים מ-Google, צריך לבחור בשדה "קוד הטבה"</translation>
 <translation id="293796669683825859">תגובות</translation>
 <translation id="2938225289965773019">לפתוח קישורי <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706">‫<ph name="ORIGIN" /> – כדי להציג את הסמן, לעבור בין אפליקציות, לטעון מחדש את הדף או לחזור אחורה</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">‏עכשיו אפשר למצוא ולמלא מידע מ-Gmail ועוד.</translation>
 <translation id="3009036448238594149">‏<ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, צריך להקיש על מקש Tab כדי לעיין בפעולות הזמינות, ואז על Enter כדי לבצע את הפעולה שנבחרה.</translation>
 <translation id="3010991137650052245">כדי שאפשר יהיה להשתמש ב<ph name="PERMISSION" /> באתר הזה, צריך להעניק ל-<ph name="SHORT_PRODUCT_NAME" /> גישה</translation>
+<translation id="3013536714390403689">כתובת אימייל מאומתת</translation>
 <translation id="3014726756341138577">תכונות מתקדמות למדפסת</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
 <translation id="3016780570757425217">לדעת מה המיקום שלך</translation>
@@ -1594,6 +1596,7 @@
 <translation id="3712004750972384495">הקלטת המסך נשמרת</translation>
 <translation id="3712006010833051684">מעטפה 10</translation>
 <translation id="3712624925041724820">אין מספיק רישיונות</translation>
+<translation id="371302509916403935">קו תחתון</translation>
 <translation id="3713277100229669269">עכשיו אפשר לראות את ההטבות בכרטיס לפני שמשלמים</translation>
 <translation id="3714633008798122362">יומן אינטרנט</translation>
 <translation id="3714780639079136834">‏להפעיל את חבילת הגלישה או את ה-Wi-Fi</translation>
@@ -1941,6 +1944,7 @@
 <translation id="4265635050210404830">כרטיסי מועדון הלקוחות שלך</translation>
 <translation id="4265872034478892965">אושרה על-ידי מנהל המערכת</translation>
 <translation id="4267590181863312380">‏כדי לקבל את ההיסטוריה מהמכשירים האחרים שלך, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. סיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
+<translation id="4267837382000002014">‏כתובות URL וכותרות של דפים שנכנסת אליהם יישלחו אל Google Cloud או לצדדים שלישיים לצורך ניתוח, ויכול להיות שהם גלויים לאדמין שלך. לדוגמה, יכול להיות שהדפים יעברו סריקה לזיהוי אתרים לא בטוחים או לסינון אתרים לפי כללים שהוגדרו על ידי האדמין.</translation>
 <translation id="4268025649754414643">קידוד מפתח</translation>
 <translation id="4269599248168651462">אישור השרת מונפק לשם לא ייחודי.</translation>
 <translation id="4270541775497538019">מערים 6</translation>
@@ -4216,7 +4220,6 @@ Del</translation>
 <translation id="815036624016370447">‏פרטים מחשבון Google <ph name="ACCOUNT" /> יכולים לעזור לך למלא טפסים מהר יותר ב-Chrome</translation>
 <translation id="8150722005171944719">הקובץ הנמצא ב-<ph name="URL" /> לא ניתן לקריאה. ייתכן שהקובץ הוסר או הועבר, או שהרשאות הקובץ מונעות גישה אליו.</translation>
 <translation id="8151185429379586178">כלים למפתחים</translation>
-<translation id="8152194419479742504">כדי למצוא ולמלא את הפרטים בלי לעבור בין כרטיסיות, צריך להקליד @@ בטופס כלשהו</translation>
 <translation id="8153865548451212769">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">הכרטיסיות שנפתחו לאחרונה</translation>
 <translation id="815805690561372740">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך במהלך הגלישה, למשל הגלישה הבטוחה של Google, ש<ph name="BEGIN_LINK" />מצאה לאחרונה תוכנה זדונית<ph name="END_LINK" /> באתר שבו ניסית לבקר.</translation>
@@ -4280,6 +4283,7 @@ Del</translation>
 <translation id="8269242089528251720">מסמכים נפרדים/עותקים מסודרים</translation>
 <translation id="8269703227894255363">{0,plural, =1{אין אפשרות לפתוח את הקובץ}one{אין אפשרות לפתוח <ph name="FILE_COUNT" /> קבצים}two{אין אפשרות לפתוח <ph name="FILE_COUNT" /> קבצים}other{אין אפשרות לפתוח <ph name="FILE_COUNT" /> קבצים}}</translation>
 <translation id="8270242299912238708">‏מסמכי PDF</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">טופס פרטי התשלום פתוח</translation>
 <translation id="827820107214076967">רענון היומנים</translation>
 <translation id="8279611986089885641">‏ההתראות של Chrome צריכות לפעול. אפשר להפעיל אותן ב<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

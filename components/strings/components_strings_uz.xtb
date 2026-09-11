@@ -1135,7 +1135,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2931453528659195355">Xarid axborotini boshqarish</translation>
 <translation id="2933624813161016821">Naqshli folga</translation>
 <translation id="2935726091208500473">varaqlaringizni ulashish</translation>
-<translation id="2936698630976431647">Google Wallet takliflarini avtomatik kiritish uchun promo kod maydonini tanlang</translation>
 <translation id="293796669683825859">Fikrlar</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> havolalarini ochish</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Kursorni chiqarish uchun ilovalarni almashtiring, sahifani qayta yuklang yoki orqaga qayting</translation>
@@ -1592,6 +1591,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3712004750972384495">Ekran yozuvi saqlanmoqda</translation>
 <translation id="3712006010833051684">Envelope #10</translation>
 <translation id="3712624925041724820">Litsenziyalar yetarli emas</translation>
+<translation id="371302509916403935">Tagiga chizish</translation>
 <translation id="3713277100229669269">Endi karta imtiyozlari toʻlovdan oldin chqiadi</translation>
 <translation id="3714633008798122362">veb-taqvim</translation>
 <translation id="3714780639079136834">Mobil internet yoki Wi-Fi tarmoqlarini yoqish</translation>
@@ -2215,6 +2215,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4750917950439032686">Bu saytga shaxsiy ma’lumotlaringiz (parollar yoki bank kartalar kabi) xavfsiz uzatiladi.</translation>
 <translation id="4754461935447132332">Himoyalanmagan saytlarda ruxsat etilmaydi</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Saqlangan takliflarni koʻrish va kiritish uchun promokod maydonini tanlang</translation>
 <translation id="4757740693289347881">Kod yaroqsiz</translation>
 <translation id="4757993714154412917">Hozirgina shubhali saytda parol kiritdingiz. Hisoblar himoyasi uchun Chromium saqlangan parollaringizni tekshirishni tavsiya qiladi.</translation>
 <translation id="4758311279753947758">Aloqa ma’lumotini qo‘shish</translation>
@@ -3837,6 +3838,7 @@ Batafsil axborot:
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR ishlatishga shu safar ruxsat berildi</translation>
+<translation id="7517198908921983825">Gemini taklif qilgan · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Bu manzilda hech qanday veb-sahifa topilmadi: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4208,7 +4210,6 @@ Batafsil axborot:
 <translation id="815036624016370447">Google hisobingizdagi (<ph name="ACCOUNT" />) axborotlar Chrome orqali shakllarda tezroq kiritilishi mumkin</translation>
 <translation id="8150722005171944719"><ph name="URL" /> manzilidagi faylni o‘qib bo‘lmadi. U o‘chirilgan, ko‘chirilgan yoki ko‘rishni taqiqlovchi ruxsat cheklamalariga ega bo‘lishi mumkin.</translation>
 <translation id="8151185429379586178">Dasturchi vositalari</translation>
-<translation id="8152194419479742504">Varaqlarni almashtirmasdan axborotni eslash va kiritish uchun ixtiyoriy shaklda @@ deb yozing</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrator bu faylni <ph name="DESTINATION_NAME" />ga yuklab olishni tavsiya qilmaydi}other{Administrator bu fayllarni <ph name="DESTINATION_NAME" />ga yuklab olishni tavsiya qilmaydi}}</translation>
 <translation id="8155253549374198915">Oxirgi ochilgan varaqlar</translation>
 <translation id="815805690561372740">Chrome tarkibida Google Saytlarni xavfsiz kezish kabi himoya funksiyalari mavjud va bu funksiya siz ochayotgan saytda yaqinda <ph name="BEGIN_LINK" />zararli dasturni aniqlagan<ph name="END_LINK" />.</translation>
@@ -4272,6 +4273,7 @@ Batafsil axborot:
 <translation id="8269242089528251720">Bir nechta hujjat/Tartibli nusxalarda</translation>
 <translation id="8269703227894255363">{0,plural, =1{Faylni ochish taqiqlangan}other{<ph name="FILE_COUNT" /> ta faylni ochish taqiqlangan}}</translation>
 <translation id="8270242299912238708">PDF hujjatlar</translation>
+<translation id="8270320981823560179">Drive</translation>
 <translation id="8277900682056760511">Toʻlovlarni qayta ishlash vositasi ochildi</translation>
 <translation id="827820107214076967">Jurnalni yangilash</translation>
 <translation id="8279611986089885641">Chrome bildirishnomalari yoniq boʻlishi kerak. Ularni <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> orqali yoqishingiz mumkin</translation>

@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS Client</translation>
 <translation id="1508263560970797965">Magpatuloy sa Incognito</translation>
 <translation id="1509486075633541495">Mag-sign in sa website</translation>
+<translation id="1509922846321012406">Mag-explore pa ng mga paraan para i-boost ang iyong privacy at kaligtasan</translation>
 <translation id="1513858653616922153">I-delete ang password</translation>
 <translation id="1517166097004694782">I-hide ang "Magpatuloy sa tab na ito"</translation>
 <translation id="1520027731907768768">Makatanggap ng mga alerto sa pagbaba ng presyo para sa mga produktong sinusubaybayan mo.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Default na browser</translation>
 <translation id="2893791155497534382">Puwedeng i-delete ang mga password at iba pang aktibidad sa mga setting ng pamamahala ng mga ito</translation>
 <translation id="2894757982205307093">Bagong tab sa grupo</translation>
+<translation id="2897858638449756400">Mag-explore pa ng mga paraan para maghanap</translation>
 <translation id="2902312830803030883">Higit pang pagkilos</translation>
 <translation id="2904788871580817212">May pagbaba ng presyo sa iyong nakabukas na tab, <ph name="PRICE" /> na dating <ph name="PREVIOUS_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Mayroon kang <ph name="NUMBER_OF_PASSWORDS" /> (na) password na ginamit ulit na puwedeng maglagay ng iyong seguridad sa panganib.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Dine-delete nito ang mga address na naka-save sa device na ito. Dine-delete din nito ang mga address na naka-save sa iyong Google Account na <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Nakita ang mga isyu <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Gumawa ng larawan</translation>
+<translation id="5058813911021873087">Mag-explore pa ng mga paraan para maging organisado at makatipid ng oras</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">I-level up ang iyong pag-browse</translation>
 <translation id="5062321486222145940">I-install - Google Drive</translation>
@@ -1881,6 +1884,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="6987201788018524855">I-explore ang mga kapaki-pakinabang na feature na napalampas mo</translation>
 <translation id="6989636517316575338">Magtanong tungkol sa anumang page</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Lahat ng Gawain</translation>
 <translation id="6998251471716094661">Subaybayan ang mga presyo ng mga produkto at makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site</translation>
 <translation id="7004032350256606903">Ipinag-aatas sa iyo ng organisasyon mo na mag-browse nang pribado.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>

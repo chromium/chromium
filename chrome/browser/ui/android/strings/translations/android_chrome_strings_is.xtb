@@ -1517,7 +1517,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome fjarlægði þessar heimildir því þú hefur ekki heimsótt nýlega</translation>
 <translation id="6923291640965724312">Umlykjandi snið</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 flipi}one{<ph name="NUMBER_OF_TABS" /> flipi}other{<ph name="NUMBER_OF_TABS" /> flipar}}</translation>
-<translation id="6929224077895306814">Öllum öryggisnúmerum sem vistuð eru í tækinu og á Google-reikningnum þínum verður eytt</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, valinn festur flipi með hljóði</translation>
 <translation id="6937524809504266803">Sérsnið og tenging</translation>
 <translation id="6937876069006524083">Gælunafn (valfrjálst)</translation>

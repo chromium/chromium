@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS 클라이언트</translation>
 <translation id="1508263560970797965">시크릿 모드에서 계속</translation>
 <translation id="1509486075633541495">웹사이트에 로그인</translation>
+<translation id="1509922846321012406">개인 정보 보호 및 안전을 강화하는 다양한 방법을 살펴보세요</translation>
 <translation id="1513858653616922153">비밀번호 삭제</translation>
 <translation id="1517166097004694782">'이 탭으로 계속' 숨기기</translation>
 <translation id="1520027731907768768">추적하는 제품의 가격 인하 알림을 받습니다.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">기본 브라우저</translation>
 <translation id="2893791155497534382">관리 설정에서 비밀번호 및 기타 활동을 삭제할 수 있습니다</translation>
 <translation id="2894757982205307093">그룹에 새 탭 추가</translation>
+<translation id="2897858638449756400">다양한 검색 방법을 살펴보세요</translation>
 <translation id="2902312830803030883">추가 작업</translation>
 <translation id="2904788871580817212">열려 있는 탭의 가격 인하(이전: <ph name="PREVIOUS_PRICE" /> 현재: <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" />)</translation>
 <translation id="2905479111267140204">보안을 위협할 수 있는 재사용된 비밀번호가 <ph name="NUMBER_OF_PASSWORDS" />개 있습니다.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">이 기기에 저장된 주소가 삭제됩니다. 또한 Google 계정 <ph name="USER_EMAIL" />에 저장된 주소도 삭제됩니다</translation>
 <translation id="5056446788882570708">문제 발견 시간: <ph name="TIME" /></translation>
 <translation id="5056587122125565772">이미지 만들기</translation>
+<translation id="5058813911021873087">정리하고 시간을 절약할 수 있는 다양한 방법을 살펴보세요</translation>
 <translation id="5059136629401106827">확인</translation>
 <translation id="5061202435354361813">브라우징 레벨 업</translation>
 <translation id="5062321486222145940">Google Drive 설치</translation>
@@ -1881,6 +1884,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6987201788018524855">미처 놓친 유용한 기능을 살펴보세요</translation>
 <translation id="6989636517316575338">원하는 페이지에 관해 질문해 보세요</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">모든 작업</translation>
 <translation id="6998251471716094661">제품 가격을 추적하고 사이트에서 가격이 인하되면 알림을 받습니다</translation>
 <translation id="7004032350256606903">조직에서 비공개로 탐색할 것을 요구합니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

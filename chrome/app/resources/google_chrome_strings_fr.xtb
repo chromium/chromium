@@ -37,7 +37,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1333654552732143316">Lancer Chrome</translation>
 <translation id="1341711321000856656">Vous pouvez changer de profil pour voir les mots de passe d'un autre profil Chrome</translation>
 <translation id="1343830902827845050">Connectez-vous à Chrome</translation>
-<translation id="1356661055722410047">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran.</translation>
 <translation id="1361351916482714918">Naviguez malin avec Google Lens</translation>
 <translation id="1363996462118479832">Impossible de synchroniser vos données dans Chrome OS, car une erreur s'est produite lors de la connexion.</translation>
 <translation id="137466361146087520">Version bêta de Google Chrome</translation>
@@ -534,7 +533,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6235018212288296708">Règle de trafic entrant pour Google Chrome autorisant le trafic mDNS</translation>
 <translation id="624230925347970731">Chrome se fermera bientôt</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
-<translation id="6248988683584659830">Paramètres de recherche</translation>
+<translation id="6248988683584659830">Rechercher dans les paramètres</translation>
 <translation id="6251759518630934363">Vous avertit en cas de sites dangereux, y compris ceux dont Google n'avait pas connaissance, en analysant plus de données provenant des sites que la protection standard. Vous pouvez ignorer les avertissements de Chrome.</translation>
 <translation id="6277547788421725101">Ton parent a désactivé "Autorisations des sites, applications et extensions" pour Chrome</translation>
 <translation id="627882678981830918">Personnaliser et contrôler Chrome. Définir Chrome comme navigateur par défaut.</translation>
@@ -795,7 +794,6 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="8575047640889685742">Utiliser votre <ph name="BEGIN_LINK" />propre phrase secrète<ph name="END_LINK" /> pour chiffrer toutes les données Chrome de votre compte Google. Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.</translation>
 <translation id="8590782867495422699">Rouvrir le Mode IA dans la recherche Google</translation>
 <translation id="8598779894319572882">Vous pouvez rouvrir le Mode IA de la recherche Google à partir du bouton "Mode IA de la recherche Google" de la barre d'outils pour poser des questions pendant que vous naviguez</translation>
-<translation id="8601359445272098721">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran en sélectionnant le bouton "Traduire l'écran".</translation>
 <translation id="8614913330719544658">Google Chrome ne répond pas. Voulez-vous le relancer maintenant ?</translation>
 <translation id="8623450603356630491">Connectez-vous à Chrome sur votre téléphone</translation>
 <translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>

@@ -869,7 +869,6 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7665680517722058469">Prova una altra cerca</translation>
 <translation id="7689532716264131859">S'han mogut <ph name="NUMBER_OF_ITEMS" /> elements a la paperera</translation>
-<translation id="7693909743393669729">En formatar una unitat, se n'esborren totes les dades que s'hi hagin emmagatzemat i se'n suprimeixen totes les particions existents, incloses algunes que potser no es veuen. Aquesta acció no es pot desfer.</translation>
 <translation id="7695430100978772476">No s'ha pogut formatar <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">No s'ha pogut buidar la paperera.</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> s'ha copiat.</translation>
@@ -913,7 +912,6 @@
 <translation id="7901567919203965902">Workman nord-americà internacional</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908378463497120834">Com a mínim una partició del dispositiu d'emmagatzematge extern no s'ha pogut muntar.</translation>
-<translation id="7908793776359722643">En formatar una partició, se n'esborren totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Els fitxers de La meva unitat se sincronitzaran amb el Chromebook automàticament perquè hi puguis accedir sense connexió a Internet.</translation>
 <translation id="7925247922861151263">Error en la comprovació d'AAA</translation>

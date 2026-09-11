@@ -1095,6 +1095,7 @@
 <translation id="2859806420264540918">此网站展示过侵扰性或误导性广告。</translation>
 <translation id="2873317327342476681">恐龙游戏：点按恐龙或按空格键即可开玩</translation>
 <translation id="287387905105155974">帮助气泡</translation>
+<translation id="2875109558992200904">当 Chrome 标记了安全性事件时，系统会向您的管理员发送与该事件有关的数据。这些数据可能包括：您在 Chrome 中访问的网页网址和标题、您从中复制数据的网页网址、文件名或元数据、IP 地址、浏览器或标签页崩溃信息，以及您在登录 Web 应用、设备和 Chrome 时使用的用户名。</translation>
 <translation id="2876489322757410363">将要退出无痕模式，以便通过外部应用付款。是否继续？</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您的安全浏览设置及其他设置</translation>
 <translation id="2878197950673342043">海报折</translation>
@@ -1135,7 +1136,6 @@
 <translation id="2931453528659195355">管理购物信息</translation>
 <translation id="2933624813161016821">压纹箔</translation>
 <translation id="2935726091208500473">分享标签页</translation>
-<translation id="2936698630976431647">选择促销代码字段，即可自动填充 Google 钱包中的优惠信息</translation>
 <translation id="293796669683825859">评注</translation>
 <translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> - 如需显示光标，请切换应用、重新加载页面或返回</translation>
@@ -1592,6 +1592,7 @@
 <translation id="3712004750972384495">正在保存屏幕录制内容</translation>
 <translation id="3712006010833051684">#10 信封</translation>
 <translation id="3712624925041724820">许可已用尽</translation>
+<translation id="371302509916403935">下划线</translation>
 <translation id="3713277100229669269">现在，您可以在付款前查看凭卡可享的福利</translation>
 <translation id="3714633008798122362">网络日历</translation>
 <translation id="3714780639079136834">开启移动数据网络或 WLAN</translation>
@@ -1939,6 +1940,7 @@
 <translation id="4265635050210404830">会员卡</translation>
 <translation id="4265872034478892965">管理员允许</translation>
 <translation id="4267590181863312380">要访问您在其他设备上的历史记录，请登录并同步历史记录。登录后，您还可在您的所有设备上获取密码等信息。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
+<translation id="4267837382000002014">系统会将您所访问网页的网址和标题发送给 Google Cloud 或第三方以供分析，您的管理员可能会看到这些网址和标题。例如，系统可能会扫描这些网页，以检测不安全网站或按照管理员设定的规则过滤网站。</translation>
 <translation id="4268025649754414643">密钥加密</translation>
 <translation id="4269599248168651462">服务器证书颁发给了一个非唯一名称。</translation>
 <translation id="4270541775497538019">堆叠出纸器 6</translation>
@@ -4208,7 +4210,6 @@
 <translation id="815036624016370447">您可以使用 Google 账号 <ph name="ACCOUNT" /> 中的信息快速填写 Chrome 中的表单</translation>
 <translation id="8150722005171944719">无法读取 <ph name="URL" /> 上的文件。该文件可能已遭到删除、移动，或者文件权限不允许进行访问。</translation>
 <translation id="8151185429379586178">开发者工具</translation>
-<translation id="8152194419479742504">在任何表单中输入 @@ 即可查找并填写信息，而无需切换标签页</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理员政策不建议将此文件下载到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件下载到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">上次打开的标签页</translation>
 <translation id="815805690561372740">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了恶意软件<ph name="END_LINK" />。</translation>
@@ -4272,6 +4273,7 @@
 <translation id="8269242089528251720">单独的文档/逐份打印的副本</translation>
 <translation id="8269703227894255363">{0,plural, =1{此文件已被禁止打开}other{<ph name="FILE_COUNT" /> 个文件已被禁止打开}}</translation>
 <translation id="8270242299912238708">PDF 文档</translation>
+<translation id="8270320981823560179">云端硬盘</translation>
 <translation id="8277900682056760511">付款处理程序工作表已打开</translation>
 <translation id="827820107214076967">刷新日志</translation>
 <translation id="8279611986089885641">Chrome 通知必须处于开启状态。您可在<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />中开启此类通知。</translation>

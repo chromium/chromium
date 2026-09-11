@@ -1136,7 +1136,6 @@
 <translation id="2931453528659195355">Управление информацией о покупках</translation>
 <translation id="2933624813161016821">Фольга для тиснения</translation>
 <translation id="2935726091208500473">о предоставлении доступа к вкладкам</translation>
-<translation id="2936698630976431647">Выберите поле для промокода, чтобы автоматически применить предложения из Google Кошелька</translation>
 <translation id="293796669683825859">Комментарии</translation>
 <translation id="2938225289965773019">переход по ссылкам <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: чтобы увидеть указатель, переключитесь между приложениями, обновите страницу или вернитесь назад.</translation>
@@ -1596,6 +1595,7 @@
 <translation id="3712004750972384495">Сохраняется запись видео с экрана</translation>
 <translation id="3712006010833051684">Конверт 10</translation>
 <translation id="3712624925041724820">Недостаточно лицензий</translation>
+<translation id="371302509916403935">Подчеркнутый</translation>
 <translation id="3713277100229669269">Теперь перед оплатой вы можете видеть информацию о преимуществах карты</translation>
 <translation id="3714633008798122362">веб-календарь</translation>
 <translation id="3714780639079136834">Включите Wi-Fi или мобильный интернет.</translation>
@@ -3843,6 +3843,7 @@
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Дано разовое разрешение на использование VR</translation>
+<translation id="7517198908921983825">Предложено Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Не найдена страница для веб-адреса <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4214,7 +4215,6 @@
 <translation id="815036624016370447">Информация из вашего аккаунта Google <ph name="ACCOUNT" /> может помочь вам быстрее заполнять формы в Chrome.</translation>
 <translation id="8150722005171944719">Файл по адресу <ph name="URL" /> недоступен. Возможно, он был удален или перемещен либо права доступа к нему ограничены.</translation>
 <translation id="8151185429379586178">Инструменты разработчика</translation>
-<translation id="8152194419479742504">Введите "@@" в любой форме, чтобы использовать автозаполнение</translation>
 <translation id="8153865548451212769">{0,plural, =1{Администратор не рекомендует скачивать этот файл в место назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="8155253549374198915">Недавние вкладки</translation>
 <translation id="815805690561372740">В Chrome есть функции, защищающие вас при работе в браузере. К ним относится Google Безопасный просмотр. Недавно он <ph name="BEGIN_LINK" />обнаружил вредоносное ПО<ph name="END_LINK" /> на сайте, который вы попытались открыть.</translation>
@@ -4278,6 +4278,7 @@
 <translation id="8269242089528251720">Отдельные документы/печать по копиям</translation>
 <translation id="8269703227894255363">{0,plural, =1{Файл нельзя открыть}one{<ph name="FILE_COUNT" /> файл нельзя открыть}few{<ph name="FILE_COUNT" /> файла нельзя открыть}many{<ph name="FILE_COUNT" /> файлов нельзя открыть}other{<ph name="FILE_COUNT" /> файла нельзя открыть}}</translation>
 <translation id="8270242299912238708">PDF-файлы</translation>
+<translation id="8270320981823560179">Диск</translation>
 <translation id="8277900682056760511">Лист с обработчиком платежа открыт</translation>
 <translation id="827820107214076967">Обновить журналы</translation>
 <translation id="8279611986089885641">Необходимо включить уведомления в Chrome. Чтобы сделать это, откройте <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>

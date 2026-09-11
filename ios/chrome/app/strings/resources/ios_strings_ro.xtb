@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Client RCS MLS</translation>
 <translation id="1508263560970797965">Continuă în modul incognito</translation>
 <translation id="1509486075633541495">Conectează-te la site</translation>
+<translation id="1509922846321012406">Descoperă mai multe moduri de a-ți spori confidențialitatea și siguranța</translation>
 <translation id="1513858653616922153">Șterge parola</translation>
 <translation id="1517166097004694782">Ascunde opțiunea Continuă cu această filă</translation>
 <translation id="1520027731907768768">Primește alerte privind scăderile de preț pentru produsele pe care le urmărești.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Browserul prestabilit</translation>
 <translation id="2893791155497534382">Parolele și alte activități pot fi șterse din setările de gestionare respective</translation>
 <translation id="2894757982205307093">Filă nouă în grup</translation>
+<translation id="2897858638449756400">Explorează mai multe moduri de a căuta</translation>
 <translation id="2902312830803030883">Mai multe acțiuni</translation>
 <translation id="2904788871580817212">Scădere de preț în fila deschisă, de la <ph name="PREVIOUS_PRICE" /> la <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Ai <ph name="NUMBER_OF_PASSWORDS" /> parole refolosite care îți pot periclita securitatea.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Astfel, sunt șterse adresele salvate pe acest dispozitiv. Sunt șterse și adresele salvate în Contul Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">S-au găsit mai multe probleme <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Creează o imagine</translation>
+<translation id="5058813911021873087">Explorează mai multe moduri de a te organiza și de a economisi timp</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Treci la nivelul următor al navigării</translation>
 <translation id="5062321486222145940">Instalează Google Drive</translation>
@@ -1881,6 +1884,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="6987201788018524855">Explorează funcțiile utile pe care nu le-ai folosit</translation>
 <translation id="6989636517316575338">Întreabă despre orice pagină</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Toate activitățile</translation>
 <translation id="6998251471716094661">Urmărește prețurile produselor și primește alerte când scade prețul pe orice site</translation>
 <translation id="7004032350256606903">Organizația îți solicită să navighezi în privat.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>

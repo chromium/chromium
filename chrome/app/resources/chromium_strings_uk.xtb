@@ -37,7 +37,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1330562121671411446">Визначити мову</translation>
 <translation id="1342274909142618978">Також видалити дані з Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Пошук за зображенням закріплено. Щоб скористатися ним, натисніть нову кнопку на панелі інструментів.</translation>
-<translation id="1356661055722410047">Новинка! Тепер ви можете перекладати текст і зображення на екрані.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1388276868779258475">Переглядайте вебсторінки, де б ви не були, у додатку Chromium</translation>
 <translation id="141901961143729572">Поділіться своєю думкою</translation>
@@ -736,7 +735,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="856656450041460113">Пошук у списку мов</translation>
 <translation id="8576826849825683917">Вебпереглядачем Chromium керують кілька організацій</translation>
 <translation id="8586442755830160949">Авторське право <ph name="YEAR" /> Автори Chromium. Усі права захищено.</translation>
-<translation id="8601359445272098721">Новинка! Тепер ви можете перекладати текст і зображення на екрані, натиснувши кнопку "Перекласти вміст екрана".</translation>
 <translation id="8619360774459241877">Запускається Chromium…</translation>
 <translation id="8624541899164515475">Налаштування (відкриється в новій вкладці).</translation>
 <translation id="8648201657708811153">Google Chrome for Testing не можна зробити веб-переглядачем за умовчанням.</translation>
