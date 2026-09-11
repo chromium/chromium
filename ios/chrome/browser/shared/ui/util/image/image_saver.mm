@@ -6,21 +6,12 @@
 
 #import <Photos/Photos.h>
 
-#import "base/feature_list.h"
-#import "base/files/file_path.h"
-#import "base/format_macros.h"
-#import "base/functional/bind.h"
-#import "base/ios/ios_util.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/task/thread_pool.h"
-#import "base/threading/scoped_blocking_call.h"
+#import "base/check.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mime_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface ImageSaver ()
@@ -76,17 +67,9 @@
     return;
   }
 
-  // Use -imageWithData to validate `data`, but continue to pass the raw
-  // `data` to -savePhoto to ensure no data loss occurs.
-  UIImage* savedImage = [UIImage imageWithData:data];
-  if (!savedImage) {
-    [self displayPrivacyErrorAlertOnMainQueue:l10n_util::GetNSString(
-                                                  IDS_IOS_SAVE_IMAGE_ERROR)];
-    return;
-  }
-
-  // Dump `data` into the photo library. Requires the usage of
-  // NSPhotoLibraryAddUsageDescription.
+  // Dump `data` into the photo library. Handing raw data directly to
+  // PHPhotoLibrary avoids in-process image decoding while preserving the
+  // original format and metadata.
   __weak ImageSaver* weakSelf = self;
   [[PHPhotoLibrary sharedPhotoLibrary]
       performChanges:^{
@@ -98,9 +81,7 @@
                         options:options];
       }
       completionHandler:^(BOOL success, NSError* error) {
-        [weakSelf image:savedImage
-            didFinishSavingWithError:error
-                         contextInfo:nil];
+        [weakSelf didFinishSavingWithError:error];
       }];
 }
 
@@ -183,27 +164,35 @@
                                           message:errorContent
                                    preferredStyle:UIAlertControllerStyleAlert];
 
-  [_alertController
-      addAction:[UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
-                                         style:UIAlertActionStyleDefault
-                                       handler:nil]];
+  UIAlertAction* okAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                               style:UIAlertActionStyleDefault
+                             handler:nil];
+  okAction.accessibilityIdentifier =
+      [l10n_util::GetNSString(IDS_OK) stringByAppendingString:@"AlertAction"];
+  [_alertController addAction:okAction];
 
   [self.baseViewController presentViewController:_alertController
                                         animated:YES
                                       completion:nil];
 }
 
-// Called after the system attempts to write the image to the saved photos
-// album.
-- (void)image:(UIImage*)image
-    didFinishSavingWithError:(NSError*)error
-                 contextInfo:(void*)contextInfo {
+// Called after the system attempts to write the image to the photo library.
+- (void)didFinishSavingWithError:(NSError*)error {
   // Was there an error?
   if (error) {
-    // Saving photo failed, likely due to a permissions issue.
-    // This code may be execute outside of the main thread. Make sure to display
-    // the error on the main thread.
-    [self displayImageErrorAlertWithSettingsOnMainQueue];
+    // Check if saving failed due to insufficient permissions.
+    // This code may be executed outside of the main thread. Make sure to
+    // display the error on the main thread.
+    PHAuthorizationStatus status =
+        [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelAddOnly];
+    if (status == PHAuthorizationStatusDenied ||
+        status == PHAuthorizationStatusRestricted) {
+      [self displayImageErrorAlertWithSettingsOnMainQueue];
+    } else {
+      [self displayPrivacyErrorAlertOnMainQueue:l10n_util::GetNSString(
+                                                    IDS_IOS_SAVE_IMAGE_ERROR)];
+    }
   } else {
     // TODO(crbug.com/41362123): Provide a way for the user to easily reach the
     // photos app.

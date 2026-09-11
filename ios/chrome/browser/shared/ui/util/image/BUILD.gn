@@ -16,14 +16,30 @@ source_set("image") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "image_util_unittest.mm" ]
+  sources = [
+    "image_saver_unittest.mm",
+    "image_util_unittest.mm",
+  ]
   deps = [
     ":image",
+    ":web",
     "//base",
     "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/web/model/image_fetch",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
   ]
-  frameworks = [ "UniformTypeIdentifiers.framework" ]
+  frameworks = [
+    "Photos.framework",
+    "UniformTypeIdentifiers.framework",
+  ]
 }
 
 source_set("web") {

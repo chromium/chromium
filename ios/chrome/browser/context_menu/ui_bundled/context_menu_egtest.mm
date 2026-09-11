@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/buildflags.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -165,6 +166,12 @@ NSString* const kShortLinkHref = @"/destination";
 
 NSString* const kShortImgTitle = @"Chromium logo with a short title";
 
+#if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
+const char kInvalidImagePageUrl[] = "/invalidImagePage";
+const char kInvalidImageUrl[] = "/invalid_image.png";
+const char kInvalidImagePageText[] = "Invalid image test page.";
+#endif  // BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
+
 const char kLinkImagePageUrl[] = "/imageLink";
 
 // Template HTML value image test. (Use NSString for easier format printing and
@@ -243,11 +250,19 @@ id<GREYMatcher> OpenLinkInGroupButton() {
       IDS_IOS_CONTENT_CONTEXT_OPENLINKINTABGROUP);
 }
 
-// Matcher for the open link in group button in the context menu.
+// Matcher for the copy image button in the context menu.
 id<GREYMatcher> CopyImageButton() {
   return ContextMenuItemWithAccessibilityLabelId(
       IDS_IOS_CONTENT_CONTEXT_COPYIMAGE);
 }
+
+#if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
+// Matcher for the save image button in the context menu.
+id<GREYMatcher> SaveImageButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE);
+}
+#endif  // BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
 
 // Matcher for the copy link button in the context menu.
 id<GREYMatcher> CopyLinkButton() {
@@ -308,6 +323,18 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
         [NSString stringWithFormat:kLongLinkTestPageTemplateHtml, kLongLinkHref,
                                    kInitialPageDestinationLongLinkText];
     http_response->set_content(base::SysNSStringToUTF8(content));
+#if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
+  } else if (request.relative_url == kInvalidImagePageUrl) {
+    http_response->set_content(
+        "<html><head><meta name='viewport' content='width=device-width, "
+        "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' "
+        "/></head><body><p>Invalid image test page.</p>"
+        "<img src='/invalid_image.png' alt='Invalid Image' "
+        "width='100' height='100' /></body></html>");
+  } else if (request.relative_url == kInvalidImageUrl) {
+    http_response->set_content_type("image/png");
+    http_response->set_content("not_an_image");
+#endif  // BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
   } else {
     return nullptr;
   }
@@ -334,6 +361,25 @@ void RelaunchApp() {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
+
+#if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
+// Allows system permission if shown on Springboard without using eDO calls.
+void CheckAndAcceptSystemDialog() {
+  XCUIApplication* springboardApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.springboard"];
+  XCUIElement* alert = [[springboardApp
+      descendantsMatchingType:XCUIElementTypeAlert] firstMatch];
+  if ([alert waitForExistenceWithTimeout:1]) {
+    XCUIElement* allowButton = alert.buttons[@"Allow"];
+    if (![allowButton exists]) {
+      allowButton = [alert.buttons elementBoundByIndex:1];
+    }
+    if ([allowButton exists]) {
+      [allowButton tap];
+    }
+  }
+}
+#endif  // BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
 
 }  // namespace
 
@@ -1512,5 +1558,40 @@ void RelaunchApp() {
   [AnalysisConnectorsAppInterface clearDownloadProtectionRules];
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+
+#if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
+// Tests that attempting to save an invalid image from the context menu displays
+// an error alert to the user.
+- (void)testSaveInvalidImageShowsErrorAlert {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kInvalidImagePageUrl)];
+  [ChromeEarlGrey waitForWebStateContainingText:kInvalidImagePageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:ElementSelectorToLongPressImage()];
+
+  TapOnContextMenuButton(SaveImageButton());
+
+  CheckAndAcceptSystemDialog();
+
+  // Verify that the error alert is presented when saving invalid image data.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_text(l10n_util::GetNSString(
+                          IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_TITLE))];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_text(l10n_util::GetNSString(
+                                              IDS_IOS_SAVE_IMAGE_ERROR))];
+
+  // Dismiss the alert.
+  id<GREYMatcher> okButtonMatcher =
+      grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(IDS_OK)),
+                 grey_interactable(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:okButtonMatcher];
+  [[EarlGrey selectElementWithMatcher:okButtonMatcher]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_text(l10n_util::GetNSString(
+                          IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_TITLE))];
+}
+#endif  // BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
 
 @end
