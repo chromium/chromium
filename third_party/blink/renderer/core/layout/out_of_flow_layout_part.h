@@ -295,10 +295,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   const ContainingBlockInfo GetContainingBlockInfo(
       const LogicalOofPositionedNode&);
 
+  const BlockNode& Node() const { return container_builder_->Node(); }
   FragmentationType GetFragmentainerType() const {
-    if (container_builder_->Node().IsPaginatedRoot())
-      return kFragmentPage;
-    return kFragmentColumn;
+    return Node().IsPaginatedRoot() ? kFragmentPage : kFragmentColumn;
   }
   const ConstraintSpace& GetConstraintSpace() const {
     return container_builder_->GetConstraintSpace();

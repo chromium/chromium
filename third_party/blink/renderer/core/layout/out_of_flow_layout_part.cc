@@ -632,7 +632,7 @@ void OutOfFlowLayoutPart::Run() {
 
   // If the container is display-locked, then we skip the layout of descendants,
   // so we can early out immediately.
-  const BlockNode& node = container_builder_->Node();
+  const BlockNode& node = Node();
   if (node.ChildLayoutBlockedByDisplayLock()) {
     return;
   }
@@ -730,7 +730,7 @@ void OutOfFlowLayoutPart::HandleFragmentation() {
     return;
   }
 
-  if (container_builder_->Node().IsPaginatedRoot()) {
+  if (Node().IsPaginatedRoot()) {
     HeapVector<LogicalOofPositionedNode> candidates;
     ClearCollectionScope<HeapVector<LogicalOofPositionedNode>> scope(
         &candidates);
@@ -1686,7 +1686,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         // We have repeated fixed-positioned elements. If we add more
         // fragmentainers in the next iteration (because of nested OOFs), we
         // need to resume those when a new fragmentainer is added.
-        DCHECK(container_builder_->Node().IsPaginatedRoot());
+        DCHECK(Node().IsPaginatedRoot());
         DCHECK(previous_repeaded_fixedpos_resume_idx == kNotFound ||
                previous_repeaded_fixedpos_resume_idx <=
                    descendants_to_layout.size());
@@ -1718,7 +1718,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       container_builder_->SwapOutOfFlowFragmentainerDescendants(descendants);
   }
 
-  if (container_builder_->Node().IsPaginatedRoot()) {
+  if (Node().IsPaginatedRoot()) {
     // Finish repeated fixed-positioned elements.
     for (const NodeToLayout& node_to_layout : repeated_fixedpos_descendants) {
       const BlockNode& node = node_to_layout.node_info.node;
@@ -1820,7 +1820,7 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     containing_block = candidate_layout_box.Container();
   } else {
     anchor_map = container_builder_->GetAnchorMap();
-    containing_block = container_builder_->Node().GetLayoutBox();
+    containing_block = Node().GetLayoutBox();
     grid_layout_data = container_builder_->GetGridLayoutData();
   }
 
@@ -2760,8 +2760,7 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
 
   bool is_repeatable = false;
   if (is_in_block_fragmentation) {
-    if (container_builder_->Node().IsPaginatedRoot() &&
-        style.GetPosition() == EPosition::kFixed &&
+    if (Node().IsPaginatedRoot() && style.GetPosition() == EPosition::kFixed &&
         !oof_node_to_layout.containing_block_fragment) {
       // Paginated fixed-positioned elements are repeated on every page, if
       // contained by the initial containing block (i.e. when not contained by a
@@ -2871,7 +2870,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
 
   const LogicalFragmentLink& container_link =
       FragmentationContextChildren()[last_fragmentainer_index];
-  const BlockNode& node = container_builder_->Node();
+  const BlockNode& node = Node();
   LogicalOffset fragmentainer_offset = container_link.offset;
   if (is_new_fragment) {
     // The fragmentainer being requested doesn't exist yet. This just means that
@@ -3122,8 +3121,7 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   LayoutUnit fragmentainer_block_size;
 
   LayoutUnit target_block_offset = offset->block_offset;
-  if (clipped_container_block_offset &&
-      container_builder_->Node().IsPaginatedRoot()) {
+  if (clipped_container_block_offset && Node().IsPaginatedRoot()) {
     // If we're printing, and we have an OOF inside a clipped container, prevent
     // the start fragmentainer from preceding that of the clipped container.
     // This way we increase the likelihood of luring the OOF into the same
@@ -3196,7 +3194,7 @@ const PhysicalBoxFragment& OutOfFlowLayoutPart::GetChildFragment(
     wtf_size_t index) const {
   DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   const LogicalFragmentLink& link = FragmentationContextChildren()[index];
-  if (!container_builder_->Node().IsPaginatedRoot()) {
+  if (!Node().IsPaginatedRoot()) {
     return To<PhysicalBoxFragment>(*link.get());
   }
   DCHECK_EQ(link->GetBoxType(), PhysicalFragment::kPageContainer);
