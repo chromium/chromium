@@ -205,6 +205,7 @@ if (is_android) {
   android_library("public_java") {
     resources_package = "org.chromium.chrome.browser.glic"
     sources = [
+      "public/android/java/src/org/chromium/chrome/browser/glic/ConversationInfo.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicEnabling.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",

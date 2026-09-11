@@ -45,6 +45,9 @@ public class TabStripMenuMetricsUtils {
         TabMenuAction.ADD_TAB_TO_READING_LIST,
         TabMenuAction.SEND_TO_YOUR_DEVICES,
         TabMenuAction.TOGGLE_TAB_LAYOUT,
+        TabMenuAction.SHARE_TAB_WITH_GLIC_NEW_CHAT,
+        TabMenuAction.SHARE_TAB_WITH_GLIC_RECENT,
+        TabMenuAction.UNSHARE_TAB_WITH_GLIC,
         TabMenuAction.SHOWN,
     })
     public @interface TabMenuAction {
@@ -74,6 +77,9 @@ public class TabStripMenuMetricsUtils {
         String ADD_TAB_TO_READING_LIST = "AddTabToReadingList";
         String SEND_TO_YOUR_DEVICES = "SendToYourDevices";
         String TOGGLE_TAB_LAYOUT = "ToggleTabLayout";
+        String SHARE_TAB_WITH_GLIC_NEW_CHAT = "ShareTabWithGlicNewChat";
+        String SHARE_TAB_WITH_GLIC_RECENT = "ShareTabWithGlicRecent";
+        String UNSHARE_TAB_WITH_GLIC = "UnshareTabWithGlic";
         String SHOWN = "Shown";
     }
 
@@ -273,6 +279,27 @@ public class TabStripMenuMetricsUtils {
                 case TabMenuAction.TOGGLE_TAB_LAYOUT:
                     RecordUserAction.record("Android.VerticalTabs.TabMenu.ToggleTabLayout");
                     break;
+                case TabMenuAction.SHARE_TAB_WITH_GLIC_NEW_CHAT:
+                    if (isMultipleTabs) {
+                        RecordUserAction.record(
+                                "Android.VerticalTabs.TabMenu.ShareTabWithGlicNewChat.MultiTab");
+                    } else {
+                        RecordUserAction.record(
+                                "Android.VerticalTabs.TabMenu.ShareTabWithGlicNewChat");
+                    }
+                    break;
+                case TabMenuAction.SHARE_TAB_WITH_GLIC_RECENT:
+                    RecordUserAction.record(
+                            isMultipleTabs
+                                    ? "Android.VerticalTabs.TabMenu.ShareTabWithGlicRecent.MultiTab"
+                                    : "Android.VerticalTabs.TabMenu.ShareTabWithGlicRecent");
+                    break;
+                case TabMenuAction.UNSHARE_TAB_WITH_GLIC:
+                    RecordUserAction.record(
+                            isMultipleTabs
+                                    ? "Android.VerticalTabs.TabMenu.UnshareTabWithGlic.MultiTab"
+                                    : "Android.VerticalTabs.TabMenu.UnshareTabWithGlic");
+                    break;
                 case TabMenuAction.SHOWN:
                     RecordUserAction.record(
                             isMultipleTabs
@@ -412,6 +439,24 @@ public class TabStripMenuMetricsUtils {
                     break;
                 case TabMenuAction.TOGGLE_TAB_LAYOUT:
                     RecordUserAction.record("MobileToolbarTabMenu.ToggleTabLayout");
+                    break;
+                case TabMenuAction.SHARE_TAB_WITH_GLIC_NEW_CHAT:
+                    RecordUserAction.record(
+                            isMultipleTabs
+                                    ? "MobileToolbarTabMenu.ShareTabWithGlicNewChat.MultiTab"
+                                    : "MobileToolbarTabMenu.ShareTabWithGlicNewChat");
+                    break;
+                case TabMenuAction.SHARE_TAB_WITH_GLIC_RECENT:
+                    RecordUserAction.record(
+                            isMultipleTabs
+                                    ? "MobileToolbarTabMenu.ShareTabWithGlicRecent.MultiTab"
+                                    : "MobileToolbarTabMenu.ShareTabWithGlicRecent");
+                    break;
+                case TabMenuAction.UNSHARE_TAB_WITH_GLIC:
+                    RecordUserAction.record(
+                            isMultipleTabs
+                                    ? "MobileToolbarTabMenu.UnshareTabWithGlic.MultiTab"
+                                    : "MobileToolbarTabMenu.UnshareTabWithGlic");
                     break;
                 case TabMenuAction.SHOWN:
                     RecordUserAction.record(

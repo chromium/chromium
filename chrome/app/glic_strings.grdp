@@ -477,27 +477,27 @@
 
   <!-- Multi-Page -->
   <if expr="not use_titlecase">
-  <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]">
+  <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]" formatter_data="android_java">
     {NUM_TABS, plural,
       =1 {Share tab with Gemini}
     other {Share # tabs with Gemini}}
   </message>
-  <message name="IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT" desc="The label of the 'Start new chat' item in the Glic submenu.">
+  <message name="IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT" desc="The label of the 'Start new chat' item in the Glic submenu." formatter_data="android_java">
     Start new chat with Gemini
   </message>
   </if>
   <if expr="use_titlecase">
-  <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]">
+  <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]" formatter_data="android_java">
     {NUM_TABS, plural,
       =1 {Share Tab with Gemini}
     other {Share # Tabs with Gemini}}
   </message>
-  <message name="IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT" desc="The label of the 'Start new chat' item in the Glic submenu.">
+  <message name="IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT" desc="The label of the 'Start new chat' item in the Glic submenu." formatter_data="android_java">
     Start New Chat with Gemini
   </message>
   </if>
 
-  <message name="IDS_TAB_CXMENU_GLIC_UNSHARE" desc="The label of the tab context menu item for stopping sharing the selected tab or tabs with Gemini.">
+  <message name="IDS_TAB_CXMENU_GLIC_UNSHARE" desc="The label of the tab context menu item for stopping sharing the selected tab or tabs with Gemini." formatter_data="android_java">
     Unshare with Gemini
   </message>
 

@@ -35,6 +35,10 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripMenuMetricsUtils.TabMenuAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.ConversationInfo;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
@@ -166,6 +170,15 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     static void setSendTabToSelfCreatorForTesting(SendTabToSelfCoordinatorCreator creator) {
         sSendTabToSelfCreator = creator;
     }
+
+    // Feature param on ClankGlicContextMenu gating the tab strip "Share tab with
+    // Gemini" entry point, so every Glic context-menu entry shares the same feature
+    // (and experiment). Defaults to true and acts as a kill switch.
+    @VisibleForTesting
+    static final String PARAM_SHOW_GEMINI_ON_TAB_STRIP = "show_gemini_on_tab_strip";
+
+    // Maximum number of recent Glic conversations shown in the share submenu.
+    private static final int MAX_GLIC_RECENT_CONVERSATIONS = 10;
 
     private final TabGroupCreationCallback mTabGroupCreationCallback;
     private final WindowAndroid mWindowAndroid;
@@ -336,6 +349,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 pinTabItemCallback(tabModel, tabs);
             } else if (menuId == R.id.unpin_tab_menu_id) {
                 unpinTabItemCallback(tabModel, tabs);
+            } else if (menuId == R.id.glic_unshare_menu_id) {
+                glicUnshareTabsCallback(tabModel, tabs);
             } else if (menuId == R.id.mute_site_menu_id) {
                 muteSiteItemCallback(tabModel, tabs);
             } else if (menuId == R.id.unmute_site_menu_id) {
@@ -373,6 +388,14 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 }
             }
         };
+    }
+
+    private static void glicUnshareTabsCallback(TabModel tabModel, List<Tab> tabs) {
+        // The unshare item is only shown when Glic is ready and the service is
+        // available (see appendGlicItems), so both are expected to be non-null.
+        Profile profile = assumeNonNull(tabModel.getProfile());
+        GlicKeyedService service = assumeNonNull(GlicKeyedServiceFactory.getForProfile(profile));
+        service.unshareTabs(tabs);
     }
 
     private static void addToTabGroupItemCallback(
@@ -689,6 +712,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             itemList.add(createSendTabToSelfMenuItem());
             itemList.add(buildMenuDivider(isIncognito));
         }
+        appendGlicItems(itemList, tabs, isIncognito);
         addVerticalTabsItems(itemList, isIncognito);
         itemList.add(createCloseItem(isIncognito));
         if (shouldShowCloseOtherTabsItem(anchorInfo)) {
@@ -719,6 +743,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (ChromeFeatureList.sAndroidContextMenuDisabledMenuItems.isEnabled() && !isIncognito) {
             itemList.add(createAddTabToReadingListItem(anchorInfo));
         }
+        appendGlicItems(itemList, tabs, isIncognito);
         addVerticalTabsItems(itemList, isIncognito);
         itemList.add(createCloseItem(isIncognito));
         if (shouldShowCloseOtherTabsItem(anchorInfo)) {
@@ -763,6 +788,113 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 .withTitle(title)
                 .withMenuId(R.id.new_tab_to_the_right_menu_id)
                 .withIsIncognito(isIncognito)
+                .build();
+    }
+
+    /**
+     * Appends the "Share tab with Gemini" submenu (and an "Unshare with Gemini" item when any of
+     * the selected tabs are shared) when the feature is enabled and Glic is ready for the profile.
+     * No-op otherwise, leaving the menu unchanged.
+     *
+     * @param itemList The menu model the Glic items are appended to.
+     * @param tabs The tab(s) the context menu is acting on.
+     * @param isIncognito Whether the menu is being built for an incognito tab model.
+     */
+    private void appendGlicItems(ModelList itemList, List<Tab> tabs, boolean isIncognito) {
+        if (isIncognito) return;
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
+                || !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
+                        PARAM_SHOW_GEMINI_ON_TAB_STRIP,
+                        /* defaultValue= */ true)) {
+            return;
+        }
+        Profile profile = getTabModel().getProfile();
+        if (profile == null || !GlicEnabling.isReadyForProfile(profile)) return;
+        GlicKeyedService glicService = GlicKeyedServiceFactory.getForProfile(profile);
+        if (glicService == null) return;
+
+        boolean isMultipleTabs = tabs.size() > 1;
+        // Only add a leading separator when the previous item isn't already a
+        // divider, and never add a trailing one; the following group owns its
+        // own separator, so this stays correct even if Glic ends the menu.
+        if (!itemList.isEmpty() && itemList.get(itemList.size() - 1).type != ListItemType.DIVIDER) {
+            itemList.add(buildMenuDivider(isIncognito));
+        }
+
+        List<ListItem> submenuItems = new ArrayList<>();
+        // "Start new chat with Gemini" shares the tab(s) into a fresh conversation.
+        submenuItems.add(
+                buildGlicShareItem(
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.tab_cxmenu_glic_create_new_chat),
+                        R.id.glic_share_new_chat_sub_menu_id,
+                        isMultipleTabs,
+                        () ->
+                                glicService.shareTabs(
+                                        new ArrayList<>(tabs),
+                                        /* instanceId= */ null,
+                                        /* newConversation= */ true,
+                                        GlicKeyedService.GlicInvocationSource.TAB_CONTEXT_MENU)));
+
+        List<ConversationInfo> recentInstances =
+                glicService.getRecentlyActiveInstances(MAX_GLIC_RECENT_CONVERSATIONS);
+        if (!recentInstances.isEmpty()) {
+            submenuItems.add(buildMenuDivider(isIncognito));
+            for (ConversationInfo info : recentInstances) {
+                submenuItems.add(
+                        buildGlicShareItem(
+                                new ListItemBuilder().withTitle(info.title),
+                                R.id.glic_share_recent_sub_menu_id,
+                                isMultipleTabs,
+                                () ->
+                                        glicService.shareTabs(
+                                                new ArrayList<>(tabs),
+                                                info.instanceId,
+                                                /* newConversation= */ false,
+                                                GlicKeyedService.GlicInvocationSource
+                                                        .TAB_CONTEXT_MENU)));
+            }
+        }
+
+        String shareTitle =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.tab_cxmenu_glic_start_share, tabs.size(), tabs.size());
+        itemList.add(
+                new ListItemBuilder()
+                        .withTitle(shareTitle)
+                        .withIsIncognito(isIncognito)
+                        .withSubmenuItems(submenuItems)
+                        .build());
+
+        if (glicService.isTabPinnedToAnyInstance(tabs)) {
+            itemList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_cxmenu_glic_unshare)
+                            .withMenuId(R.id.glic_unshare_menu_id)
+                            .withIsIncognito(isIncognito)
+                            .build());
+        }
+    }
+
+    /**
+     * Builds a "Share tab with Gemini" submenu entry that records a metric and runs {@code action}
+     * when clicked. The Glic submenu is never shown in incognito, so items are always regular.
+     */
+    private ListItem buildGlicShareItem(
+            ListItemBuilder builder, int menuId, boolean isMultipleTabs, Runnable action) {
+        return builder.withIsIncognito(false)
+                .withClickListener(
+                        (v) -> {
+                            recordMenuAction(
+                                    menuId,
+                                    isMultipleTabs,
+                                    /* isIncognito= */ false,
+                                    mTabStripLayout);
+                            action.run();
+                        })
                 .build();
     }
 
@@ -1050,6 +1182,15 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         } else if (menuId == R.id.unpin_tab_menu_id) {
             TabStripMenuMetricsUtils.recordTabMenuUserAction(
                     TabMenuAction.UNPIN_TAB, isMultipleTabs, tabStripLayout);
+        } else if (menuId == R.id.glic_share_new_chat_sub_menu_id) {
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.SHARE_TAB_WITH_GLIC_NEW_CHAT, isMultipleTabs, tabStripLayout);
+        } else if (menuId == R.id.glic_share_recent_sub_menu_id) {
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.SHARE_TAB_WITH_GLIC_RECENT, isMultipleTabs, tabStripLayout);
+        } else if (menuId == R.id.glic_unshare_menu_id) {
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.UNSHARE_TAB_WITH_GLIC, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.close_tab) {
             TabStripMenuMetricsUtils.recordTabMenuUserAction(
                     TabMenuAction.CLOSE_TAB, isMultipleTabs, tabStripLayout);

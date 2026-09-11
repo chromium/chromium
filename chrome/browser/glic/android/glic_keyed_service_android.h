@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_ANDROID_GLIC_KEYED_SERVICE_ANDROID_H_
 
 #include <string>
+#include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
@@ -66,6 +67,29 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
 
   bool GetExperimentalTriggeringEnabled(JNIEnv* env);
   void SetExperimentalTriggeringEnabled(JNIEnv* env, bool enabled);
+
+  // Shares (pins) `tabs` with a Glic conversation from the tab context menu.
+  // Starts a new conversation when `new_conversation` is true, otherwise shares
+  // with the existing conversation identified by `instance_id`.
+  void ShareTabs(JNIEnv* env,
+                 std::vector<TabAndroid*> tabs,
+                 std::string instance_id,
+                 bool new_conversation,
+                 int32_t source);
+
+  // Unshares (unpins) `tabs` from all Glic conversations.
+  void UnshareTabs(JNIEnv* env, std::vector<TabAndroid*> tabs);
+
+  // Returns whether any of `tabs` is currently pinned to a Glic conversation.
+  bool IsTabPinnedToAnyInstance(JNIEnv* env, std::vector<TabAndroid*> tabs);
+
+  // Returns up to `limit` recently active Glic conversations as a flattened
+  // [id0, title0, id1, title1, ...] vector. The Java side
+  // (GlicKeyedServiceImpl) reassembles consecutive (id, title) pairs into
+  // ConversationInfo objects; a flattened string vector keeps the JNI
+  // signature simple.
+  std::vector<std::string> GetRecentlyActiveInstances(JNIEnv* env,
+                                                      int32_t limit);
 
   void OnGlobalShowHide();
   void OnUserEnabledActuationOnWebChanged();

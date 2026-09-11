@@ -4,17 +4,26 @@
 
 #include "chrome/browser/glic/android/glic_keyed_service_android.h"
 
+#include <vector>
+
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_instance_id.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -191,6 +200,89 @@ bool GlicKeyedServiceAndroid::GetExperimentalTriggeringEnabled(JNIEnv* env) {
 void GlicKeyedServiceAndroid::SetExperimentalTriggeringEnabled(JNIEnv* env,
                                                                bool enabled) {
   service_->enabling().SetExperimentalTriggeringEnabled(enabled);
+}
+
+void GlicKeyedServiceAndroid::ShareTabs(JNIEnv* env,
+                                        std::vector<TabAndroid*> tabs,
+                                        std::string instance_id,
+                                        bool new_conversation,
+                                        int32_t source) {
+  if (tabs.empty() || !tabs[0]) {
+    return;
+  }
+  TabAndroid* target_tab = tabs[0];
+  auto invocation_source = static_cast<mojom::InvocationSource>(source);
+
+  GlicInvokeOptions options =
+      new_conversation
+          ? GlicInvokeOptions(Target(*target_tab, NewConversation()),
+                              invocation_source)
+          : GlicInvokeOptions(Target(*target_tab, InstanceId(instance_id)),
+                              invocation_source);
+
+  std::vector<tabs::TabHandle> tab_handles;
+  tab_handles.reserve(tabs.size());
+  for (TabAndroid* tab : tabs) {
+    if (tab) {
+      tab_handles.push_back(tab->GetHandle());
+    }
+  }
+
+  if (new_conversation) {
+    base::UmaHistogramCounts100(
+        "Glic.TabContextMenu.PinnedTabsToNewConversation", tab_handles.size());
+  } else {
+    base::UmaHistogramCounts100(
+        "Glic.TabContextMenu.PinnedTabsToExistingConversation",
+        tab_handles.size());
+  }
+
+  options.tab_sharing =
+      TabSharingOptions(std::move(tab_handles), GlicPinTrigger::kContextMenu);
+  service_->instance_coordinator().Invoke(std::move(options));
+}
+
+void GlicKeyedServiceAndroid::UnshareTabs(JNIEnv* env,
+                                          std::vector<TabAndroid*> tabs) {
+  std::vector<tabs::TabHandle> tab_handles;
+  tab_handles.reserve(tabs.size());
+  for (TabAndroid* tab : tabs) {
+    if (tab) {
+      tab_handles.push_back(tab->GetHandle());
+    }
+  }
+  if (tab_handles.empty()) {
+    return;
+  }
+  service_->instance_coordinator().UnpinTabsFromAllInstances(
+      tab_handles, GlicUnpinTrigger::kContextMenu);
+}
+
+bool GlicKeyedServiceAndroid::IsTabPinnedToAnyInstance(
+    JNIEnv* env,
+    std::vector<TabAndroid*> tabs) {
+  for (TabAndroid* tab : tabs) {
+    if (tab && service_->instance_coordinator().IsTabPinnedToAnyInstance(
+                   tab->GetHandle())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::vector<std::string> GlicKeyedServiceAndroid::GetRecentlyActiveInstances(
+    JNIEnv* env,
+    int32_t limit) {
+  std::vector<ConversationInfo> infos =
+      service_->instance_coordinator().GetRecentlyActiveInstances(
+          static_cast<size_t>(limit), base::TimeDelta::Max());
+  std::vector<std::string> flattened;
+  flattened.reserve(infos.size() * 2);
+  for (const ConversationInfo& info : infos) {
+    flattened.push_back(info.instance_id.value());
+    flattened.push_back(info.title);
+  }
+  return flattened;
 }
 
 void GlicKeyedServiceAndroid::OnGlobalShowHide() {

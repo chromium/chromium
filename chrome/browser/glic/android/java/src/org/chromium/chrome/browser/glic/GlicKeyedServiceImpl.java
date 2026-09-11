@@ -23,6 +23,9 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Java side of the JNI bridge between GlicKeyedServiceImpl in Java and C++. All method calls are
  * delegated to the native C++ class.
@@ -95,6 +98,47 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
 
         GlicKeyedServiceImplJni.get()
                 .invokeWithConversation(mNativePtr, tab, glicConversationId, invocationSource);
+    }
+
+    @Override
+    public void shareTabs(
+            List<Tab> tabs,
+            @Nullable String instanceId,
+            boolean newConversation,
+            @GlicInvocationSource int invocationSource) {
+        if (mNativePtr == 0) return;
+        GlicKeyedServiceImplJni.get()
+                .shareTabs(
+                        mNativePtr,
+                        tabs,
+                        instanceId == null ? "" : instanceId,
+                        newConversation,
+                        invocationSource);
+    }
+
+    @Override
+    public void unshareTabs(List<Tab> tabs) {
+        if (mNativePtr == 0) return;
+        GlicKeyedServiceImplJni.get().unshareTabs(mNativePtr, tabs);
+    }
+
+    @Override
+    public boolean isTabPinnedToAnyInstance(List<Tab> tabs) {
+        if (mNativePtr == 0) return false;
+        return GlicKeyedServiceImplJni.get().isTabPinnedToAnyInstance(mNativePtr, tabs);
+    }
+
+    @Override
+    public List<ConversationInfo> getRecentlyActiveInstances(int limit) {
+        List<ConversationInfo> list = new ArrayList<>();
+        if (mNativePtr == 0) return list;
+        // Native returns a flattened [id0, title0, id1, title1, ...] list.
+        List<String> flat =
+                GlicKeyedServiceImplJni.get().getRecentlyActiveInstances(mNativePtr, limit);
+        for (int i = 0; i + 1 < flat.size(); i += 2) {
+            list.add(new ConversationInfo(flat.get(i), flat.get(i + 1)));
+        }
+        return list;
     }
 
     @Override
@@ -266,5 +310,23 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
         boolean getExperimentalTriggeringEnabled(long nativeGlicKeyedServiceAndroid);
 
         void setExperimentalTriggeringEnabled(long nativeGlicKeyedServiceAndroid, boolean enabled);
+
+        void shareTabs(
+                long nativeGlicKeyedServiceAndroid,
+                @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
+                @JniType("std::string") String instanceId,
+                boolean newConversation,
+                @GlicInvocationSource int source);
+
+        void unshareTabs(
+                long nativeGlicKeyedServiceAndroid,
+                @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
+
+        boolean isTabPinnedToAnyInstance(
+                long nativeGlicKeyedServiceAndroid,
+                @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
+
+        @JniType("std::vector<std::string>")
+        List<String> getRecentlyActiveInstances(long nativeGlicKeyedServiceAndroid, int limit);
     }
 }

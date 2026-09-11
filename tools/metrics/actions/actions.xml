@@ -4609,6 +4609,18 @@ should be able to be added at any place in this file.
     <variant name=".ShareTab.MultiTab"
         summary="User shared multiple tabs via the tab context menu on
                  Vertical Tabs."/>
+    <variant name=".ShareTabWithGlicNewChat"
+        summary="User shared the tab(s) into a new Gemini chat via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".ShareTabWithGlicNewChat.MultiTab"
+        summary="User shared multiple tabs into a new Gemini chat via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".ShareTabWithGlicRecent"
+        summary="User shared the tab(s) into a recent Gemini conversation via
+                 the tab context menu on Vertical Tabs."/>
+    <variant name=".ShareTabWithGlicRecent.MultiTab"
+        summary="User shared multiple tabs into a recent Gemini conversation
+                 via the tab context menu on Vertical Tabs."/>
     <variant name=".Shown"
         summary="Tab context menu was shown on Vertical Tabs."/>
     <variant name=".Shown.MultiTab"
@@ -4629,6 +4641,12 @@ should be able to be added at any place in this file.
     <variant name=".UnpinTab.MultiTab"
         summary="User unpinned multiple tabs via the tab context menu on
                  Vertical Tabs."/>
+    <variant name=".UnshareTabWithGlic"
+        summary="User unshared the tab(s) from Gemini via the tab context
+                 menu on Vertical Tabs."/>
+    <variant name=".UnshareTabWithGlic.MultiTab"
+        summary="User unshared multiple tabs from Gemini via the tab context
+                 menu on Vertical Tabs."/>
   </token>
 </action>
 
@@ -25356,6 +25374,18 @@ should be able to be added at any place in this file.
     <variant name=".ShareTab"
         summary="User shared the URL open in a tab, via the tab context menu
                  on tab strip on Android."/>
+    <variant name=".ShareTabWithGlicNewChat"
+        summary="User shared the tab(s) into a new Gemini chat via the tab
+                 context menu on tab strip on Android."/>
+    <variant name=".ShareTabWithGlicNewChat.MultiTab"
+        summary="User shared multiple tabs into a new Gemini chat via the tab
+                 context menu on tab strip on Android."/>
+    <variant name=".ShareTabWithGlicRecent"
+        summary="User shared the tab(s) into a recent Gemini conversation via
+                 the tab context menu on tab strip on Android."/>
+    <variant name=".ShareTabWithGlicRecent.MultiTab"
+        summary="User shared multiple tabs into a recent Gemini conversation
+                 via the tab context menu on tab strip on Android."/>
     <variant name=".Shown"
         summary="Recorded when the tab context menu is shown."/>
     <variant name=".Shown.MultiTab"
@@ -25378,6 +25408,12 @@ should be able to be added at any place in this file.
     <variant name=".UnpinTab.MultiTab"
         summary="User unpinned multiple tabs via the tab context menu on tab
                  strip on Android."/>
+    <variant name=".UnshareTabWithGlic"
+        summary="User unshared the tab(s) from Gemini via the tab context
+                 menu on tab strip on Android."/>
+    <variant name=".UnshareTabWithGlic.MultiTab"
+        summary="User unshared multiple tabs from Gemini via the tab context
+                 menu on tab strip on Android."/>
   </token>
 </action>
 

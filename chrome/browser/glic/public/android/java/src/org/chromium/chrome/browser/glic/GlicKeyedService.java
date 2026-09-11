@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * GlicKeyedService is the core class for managing Glic flows. It represents a native
@@ -35,6 +36,7 @@ public interface GlicKeyedService {
         GlicInvocationSource.THREE_DOTS_MENU,
         GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU,
         GlicInvocationSource.TOOLBAR_BUTTON,
+        GlicInvocationSource.TAB_CONTEXT_MENU,
         GlicInvocationSource.MAX_VALUE,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -45,7 +47,8 @@ public interface GlicKeyedService {
         int THREE_DOTS_MENU = 7;
         int WEB_CONTENTS_CONTEXT_MENU = 23;
         int TOOLBAR_BUTTON = 31;
-        int MAX_VALUE = 34;
+        int TAB_CONTEXT_MENU = 41;
+        int MAX_VALUE = 42;
     }
 
     // LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource)
@@ -253,4 +256,40 @@ public interface GlicKeyedService {
      * @return true if the bottom bar is enabled.
      */
     boolean isBottomBarEnabled();
+
+    /**
+     * Shares (pins) the given tabs with a Glic conversation, invoked from the tab strip context
+     * menu.
+     *
+     * @param tabs The tabs to share.
+     * @param instanceId The target conversation's instance id, or null to start a new conversation.
+     * @param newConversation Whether to start a brand new conversation.
+     * @param invocationSource How the share was triggered.
+     */
+    void shareTabs(
+            List<Tab> tabs,
+            @Nullable String instanceId,
+            boolean newConversation,
+            @GlicInvocationSource int invocationSource);
+
+    /**
+     * Unshares (unpins) the given tabs from all Glic conversations.
+     *
+     * @param tabs The tabs to unshare.
+     */
+    void unshareTabs(List<Tab> tabs);
+
+    /**
+     * Returns whether any of the given tabs is currently shared (pinned) with a Glic conversation.
+     *
+     * @param tabs The tabs to check.
+     */
+    boolean isTabPinnedToAnyInstance(List<Tab> tabs);
+
+    /**
+     * Returns up to {@code limit} recently active Glic conversations, most recent first.
+     *
+     * @param limit The maximum number of conversations to return.
+     */
+    List<ConversationInfo> getRecentlyActiveInstances(int limit);
 }
