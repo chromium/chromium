@@ -105,14 +105,10 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   // Place the pinned container.
   int pinned_width = pinned_preferred_width;
   if (available_width.is_bounded()) {
-    int min_pinned_width = 0;
-    if (const auto* pinned_container =
-            tab_strip_view->GetPinnedTabsContainer()) {
-      min_pinned_width = pinned_container->GetMinimumSize().width();
-    }
+    // Enforce the 50% cap without a minimum size override.
     pinned_width = CalculatePinnedContainerMainAxisSize(
         pinned_preferred_width, unpinned_preferred_width,
-        available_width.value(), min_pinned_width);
+        available_width.value(), /*min_pinned_size=*/0);
   }
 
   gfx::Rect pinned_bounds(x, 0, pinned_width, container_height);

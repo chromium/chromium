@@ -359,6 +359,19 @@ class HorizontalTabStripRegionViewNewInteractiveUiTest
     return tabs_added;
   }
 
+  // Adds unpinned tabs until the tab strip is scrollable, then removes tabs
+  // until it is no longer scrollable (i.e. just before overflowing).
+  void AddTabsUntilNearlyScrollable() {
+    AddTabsUntilScrollable();
+    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    auto* const model = browser()->GetTabStripModel();
+    while (scroll_button_container()->GetVisible() && model->count() > 1) {
+      model->CloseWebContentsAt(model->count() - 1,
+                                TabCloseTypes::CLOSE_USER_GESTURE);
+      views::test::RunScheduledLayout(browser_view);
+    }
+  }
+
   void AddPinnedTabsUntilScrollable() {
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     views::View* scroll_buttons = scroll_button_container();
@@ -464,9 +477,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
   BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
       gfx::Rect(100, 100, 1000, 800));
 
-  for (int i = 0; i < 20; ++i) {
-    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
-  }
+  AddTabsUntilNearlyScrollable();
   AddPinnedTabsUntilScrollable();
 
   RunTestSequence(
