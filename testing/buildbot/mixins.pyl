@@ -1163,12 +1163,12 @@
   'xcode_27_main': {
     'args': [
       '--xcode-build-version',
-      '27a5252f',
+      '27a266a',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_27a5252f',
+          'name': 'xcode_ios_27a266a',
           'path': 'Xcode.app',
         },
       ],

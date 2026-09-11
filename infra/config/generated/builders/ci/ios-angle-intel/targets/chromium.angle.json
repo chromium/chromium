@@ -14,7 +14,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "27a5252f",
+          "27a266a",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -49,7 +49,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_27a5252f",
+              "name": "xcode_ios_27a266a",
               "path": "Xcode.app"
             }
           ],
@@ -73,7 +73,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "27a5252f",
+          "27a266a",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -108,7 +108,7 @@
               "path": "Runtime-ios-26.5"
             },
             {
-              "name": "xcode_ios_27a5252f",
+              "name": "xcode_ios_27a266a",
               "path": "Xcode.app"
             }
           ],
@@ -132,7 +132,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "27a5252f",
+          "27a266a",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -167,7 +167,7 @@
               "path": "Runtime-ios-27.0"
             },
             {
-              "name": "xcode_ios_27a5252f",
+              "name": "xcode_ios_27a266a",
               "path": "Xcode.app"
             }
           ],
@@ -191,7 +191,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "27a5252f",
+          "27a266a",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -226,7 +226,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_27a5252f",
+              "name": "xcode_ios_27a266a",
               "path": "Xcode.app"
             }
           ],
@@ -250,7 +250,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "27a5252f",
+          "27a266a",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -285,7 +285,7 @@
               "path": "Runtime-ios-26.5"
             },
             {
-              "name": "xcode_ios_27a5252f",
+              "name": "xcode_ios_27a266a",
               "path": "Xcode.app"
             }
           ],
@@ -309,7 +309,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "27a5252f",
+          "27a266a",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -344,7 +344,7 @@
               "path": "Runtime-ios-27.0"
             },
             {
-              "name": "xcode_ios_27a5252f",
+              "name": "xcode_ios_27a266a",
               "path": "Xcode.app"
             }
           ],
