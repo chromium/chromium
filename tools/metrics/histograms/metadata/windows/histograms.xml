@@ -442,6 +442,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.ParentalControls.FetchResult" enum="BooleanSuccess"
+    expires_after="2027-02-28">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records whether the system was able to successfully determine the Microsoft
+    parental control settings. See
+    https://learn.microsoft.com/en-us/windows/win32/api/wpcapi/nf-wpcapi-iwpcsettings-getrestrictions
+    for details.
+  </summary>
+</histogram>
+
+<histogram name="Windows.ParentalControls.{Setting}" enum="Boolean"
+    expires_after="2027-02-28">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the status of the Windows Parental Controls {Setting} setting.
+    Recorded once during startup when platform parental controls are initialized
+    or queried, only if the parental control settings were successfully
+    determined.
+  </summary>
+  <token key="Setting">
+    <variant name="LoggingRequired"/>
+    <variant name="WebFiltered"/>
+  </token>
+</histogram>
+
 <histogram name="Windows.ParentProcessNameHash" enum="ProcessNameHash"
     expires_after="never">
 <!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->

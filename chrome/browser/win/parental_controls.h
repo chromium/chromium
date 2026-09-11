@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_WIN_PARENTAL_CONTROLS_H_
 #define CHROME_BROWSER_WIN_PARENTAL_CONTROLS_H_
 
+#include "base/feature_list.h"
+
+BASE_DECLARE_FEATURE(kEmitWindowsParentalControlsHistograms);
+
 struct WinParentalControls {
   bool any_restrictions = false;
   bool logging_required = false;
