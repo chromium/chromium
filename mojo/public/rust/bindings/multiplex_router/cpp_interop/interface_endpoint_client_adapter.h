@@ -56,7 +56,7 @@ class InterfaceEndpointClientAdapter
   // wrapper.
   bool AcceptWithResponder(
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) override;
+      std::unique_ptr<mojo::internal::ResponderThunk> responder) override;
 
   // Invoked by InterfaceEndpointClient on pipe disconnection or error; calls
   // the Rust disconnect callback.

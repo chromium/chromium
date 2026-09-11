@@ -9,18 +9,18 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "mojo/public/cpp/bindings/lib/responder_thunk.h"
 
 namespace mojo {
 
 class Message;
-class MessageReceiverWithStatus;
 
 namespace internal {
 
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ProxyToResponder {
+class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ProxyToResponder {
  public:
   ProxyToResponder(const Message& message,
-                   std::unique_ptr<MessageReceiverWithStatus> responder);
+                   std::unique_ptr<ResponderThunk>&& responder);
   ~ProxyToResponder();
 
   ProxyToResponder(const ProxyToResponder&) = delete;
@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ProxyToResponder {
   uint64_t request_id_;
   uint32_t trace_nonce_;
   bool is_sync_;
-  std::unique_ptr<MessageReceiverWithStatus> responder_;
+  std::unique_ptr<ResponderThunk> responder_;
 };
 
 }  // namespace internal

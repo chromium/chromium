@@ -57,20 +57,20 @@ bool ResponseGenerator::Accept(Message* message) {
 
 bool ResponseGenerator::AcceptWithResponder(
     Message* message,
-    std::unique_ptr<MessageReceiverWithStatus> responder) {
+    std::unique_ptr<internal::ResponderThunk> responder) {
   EXPECT_TRUE(message->has_flag(Message::kFlagExpectsResponse));
 
   bool result = SendResponse(message->name(), message->request_id(),
                              reinterpret_cast<const char*>(message->payload()),
                              responder.get());
-  EXPECT_TRUE(responder->IsConnected());
+  EXPECT_TRUE(responder->IsConnectedForTesting());
   return result;
 }
 
 bool ResponseGenerator::SendResponse(uint32_t name,
                                      uint64_t request_id,
                                      const char* request_string,
-                                     MessageReceiver* responder) {
+                                     internal::ResponderThunk* responder) {
   Message response;
   std::string response_string(request_string);
   response_string += " world!";
@@ -89,7 +89,7 @@ LazyResponseGenerator::~LazyResponseGenerator() = default;
 
 bool LazyResponseGenerator::AcceptWithResponder(
     Message* message,
-    std::unique_ptr<MessageReceiverWithStatus> responder) {
+    std::unique_ptr<internal::ResponderThunk> responder) {
   name_ = message->name();
   request_id_ = message->request_id();
   request_string_ =

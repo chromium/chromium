@@ -17,17 +17,22 @@ class MessageReceiverWithResponder;
 
 namespace internal {
 
+class ResponderThunk;
+
 // Helpers to send a given mojo message to a given receiver.
 // Extracted in a separate function to ensure that operations like emitting
 // trace events can be performed without affecting the binary size of the
 // generated bindings.
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS)
 void SendMojoMessage(MessageReceiverWithResponder& receiver,
                      Message& message,
                      std::unique_ptr<MessageReceiver> responder);
 
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS)
 void SendMojoMessage(MessageReceiver& receiver, Message& message);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS)
+void SendMojoMessage(ResponderThunk& responder, Message& message);
 
 }  // namespace internal
 }  // namespace mojo

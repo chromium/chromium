@@ -5,8 +5,10 @@
 #include "mojo/public/cpp/bindings/lib/send_message_helper.h"
 
 #include <tuple>
+#include <utility>
 
 #include "base/trace_event/typed_macros.h"
+#include "mojo/public/cpp/bindings/lib/responder_thunk.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
@@ -46,6 +48,14 @@ void SendMojoMessage(MessageReceiverWithResponder& receiver,
     TRACE_EVENT_INSTANT("toplevel.flow,mojom.flow", "Receive mojo sync reply",
                         perfetto::Flow::Global(flow_id));
   }
+}
+
+void SendMojoMessage(ResponderThunk& responder, Message& message) {
+  uint64_t flow_id = message.GetTraceId();
+  TRACE_EVENT_INSTANT("toplevel.flow,mojom.flow", "Send mojo message",
+                      perfetto::Flow::Global(flow_id));
+
+  std::ignore = responder.Accept(&message);
 }
 
 }  // namespace internal

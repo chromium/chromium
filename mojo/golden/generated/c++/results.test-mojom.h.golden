@@ -176,7 +176,7 @@ class  ResultInterfaceStubDispatch {
   static bool AcceptWithResponder(
       ResultInterface* impl,
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder);
+      std::unique_ptr<mojo::internal::ResponderThunk> responder);
 };
 
 template <typename ImplRefTraits =
@@ -201,7 +201,7 @@ class ResultInterfaceStub
 
   bool AcceptWithResponder(
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) override {
+      std::unique_ptr<mojo::internal::ResponderThunk> responder) override {
     if (ImplRefTraits::IsNull(sink_))
       return false;
     return ResultInterfaceStubDispatch::AcceptWithResponder(

@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
+#include "mojo/public/cpp/bindings/lib/responder_thunk.h"
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/cxx.rs.h"
 
 // Dummy functions to provide our contained `InterfaceEndpointClient`
@@ -121,7 +122,7 @@ bool InterfaceEndpointClientAdapter::Accept(mojo::Message* message) {
 // wrapper.
 bool InterfaceEndpointClientAdapter::AcceptWithResponder(
     mojo::Message* message,
-    std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+    std::unique_ptr<mojo::internal::ResponderThunk> responder) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (!info_.has_value()) {
     return false;

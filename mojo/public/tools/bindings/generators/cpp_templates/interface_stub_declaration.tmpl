@@ -4,7 +4,7 @@ class {{export_attribute}} {{interface.name}}StubDispatch {
   static bool AcceptWithResponder(
       {{interface.name}}* impl,
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder);
+      std::unique_ptr<mojo::internal::ResponderThunk> responder);
 };
 
 template <typename ImplRefTraits =
@@ -29,7 +29,7 @@ class {{interface.name}}Stub
 
   bool AcceptWithResponder(
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) override {
+      std::unique_ptr<mojo::internal::ResponderThunk> responder) override {
     if (ImplRefTraits::IsNull(sink_))
       return false;
     return {{interface.name}}StubDispatch::AcceptWithResponder(

@@ -383,7 +383,7 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
 {%        set response_type = method.response_parameters[0].kind %}
   static {{class_name}}::{{method.name}}Callback CreateCallback(
       ::mojo::Message& message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+      std::unique_ptr<mojo::internal::ResponderThunk>&& responder) {
     std::unique_ptr<{{class_name}}_{{method.name}}_ProxyToResponder> proxy(
         new {{class_name}}_{{method.name}}_ProxyToResponder(
             message, std::move(responder)));
@@ -400,7 +400,7 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
 {%      else %}
   static {{class_name}}::{{method.name}}Callback CreateCallback(
       ::mojo::Message& message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+      std::unique_ptr<mojo::internal::ResponderThunk>&& responder) {
     std::unique_ptr<{{class_name}}_{{method.name}}_ProxyToResponder> proxy(
         new {{class_name}}_{{method.name}}_ProxyToResponder(
             message, std::move(responder)));
@@ -428,7 +428,7 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
  private:
   {{class_name}}_{{method.name}}_ProxyToResponder(
       ::mojo::Message& message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder)
+      std::unique_ptr<mojo::internal::ResponderThunk>&& responder)
       : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
   }
 
@@ -580,7 +580,7 @@ bool {{class_name}}StubDispatch::Accept(
 bool {{class_name}}StubDispatch::AcceptWithResponder(
     {{interface.name}}* impl,
     mojo::Message* message,
-    std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+    std::unique_ptr<mojo::internal::ResponderThunk> responder) {
 {%- if interface.methods %}
   [[maybe_unused]] const bool message_is_sync =
       message->has_flag(mojo::Message::kFlagIsSync);

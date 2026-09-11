@@ -164,7 +164,7 @@ class IFace_Method_ProxyToResponder : public ::mojo::internal::ProxyToResponder 
  public:
   static IFace::MethodCallback CreateCallback(
       ::mojo::Message& message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+      std::unique_ptr<mojo::internal::ResponderThunk>&& responder) {
     std::unique_ptr<IFace_Method_ProxyToResponder> proxy(
         new IFace_Method_ProxyToResponder(
             message, std::move(responder)));
@@ -191,7 +191,7 @@ class IFace_Method_ProxyToResponder : public ::mojo::internal::ProxyToResponder 
  private:
   IFace_Method_ProxyToResponder(
       ::mojo::Message& message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder)
+      std::unique_ptr<mojo::internal::ResponderThunk>&& responder)
       : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
   }
 
@@ -316,7 +316,7 @@ bool IFaceStubDispatch::Accept(
 bool IFaceStubDispatch::AcceptWithResponder(
     IFace* impl,
     mojo::Message* message,
-    std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+    std::unique_ptr<mojo::internal::ResponderThunk> responder) {
   [[maybe_unused]] const bool message_is_sync =
       message->has_flag(mojo::Message::kFlagIsSync);
   [[maybe_unused]] const uint64_t request_id = message->request_id();

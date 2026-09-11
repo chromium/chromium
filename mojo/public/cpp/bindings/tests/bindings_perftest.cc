@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
+#include "mojo/public/cpp/bindings/lib/responder_thunk.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -167,7 +168,7 @@ class PingPongPaddle : public MessageReceiverWithResponderStatus {
 
   bool AcceptWithResponder(
       Message* message,
-      std::unique_ptr<MessageReceiverWithStatus> responder) override {
+      std::unique_ptr<internal::ResponderThunk> responder) override {
     NOTREACHED();
   }
 
@@ -241,7 +242,7 @@ class CounterReceiver : public MessageReceiverWithResponderStatus {
 
   bool AcceptWithResponder(
       Message* message,
-      std::unique_ptr<MessageReceiverWithStatus> responder) override {
+      std::unique_ptr<internal::ResponderThunk> responder) override {
     NOTREACHED();
   }
 

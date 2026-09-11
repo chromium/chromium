@@ -31,6 +31,10 @@ namespace mojo {
 class AssociatedGroupController;
 class ConnectionGroupRef;
 
+namespace internal {
+class ResponderThunk;
+}  // namespace internal
+
 using ReportBadMessageCallback =
     base::OnceCallback<void(std::string_view error)>;
 
@@ -399,24 +403,6 @@ class MessageReceiverWithResponder : public MessageReceiver {
       std::unique_ptr<MessageReceiver> responder) = 0;
 };
 
-// A MessageReceiver that is also able to provide status about the state
-// of the underlying MessagePipe to which it will be forwarding messages
-// received via the |Accept()| call.
-class MessageReceiverWithStatus : public MessageReceiver {
- public:
-  ~MessageReceiverWithStatus() override = default;
-
-  // Returns |true| if this MessageReceiver is currently bound to a MessagePipe,
-  // the pipe has not been closed, and the pipe has not encountered an error.
-  virtual bool IsConnected() = 0;
-
-  // Determines if this MessageReceiver is still bound to a message pipe and has
-  // not encountered any errors. This is asynchronous but may be called from any
-  // sequence. |callback| is eventually invoked from an arbitrary sequence with
-  // the result of the query.
-  virtual void IsConnectedAsync(base::OnceCallback<void(bool)> callback) = 0;
-};
-
 // An alternative to MessageReceiverWithResponder for cases in which it
 // is necessary for the implementor of this interface to know about the status
 // of the MessagePipe which will carry the responses.
@@ -424,13 +410,13 @@ class MessageReceiverWithResponderStatus : public MessageReceiver {
  public:
   ~MessageReceiverWithResponderStatus() override = default;
 
-  // A variant on Accept that registers a MessageReceiverWithStatus (known as
+  // A variant on Accept that registers a ResponderThunk (known as
   // the responder) to handle the response message generated from the given
   // message. Any of the responder's methods (Accept or IsValid) may be called
   // during  AcceptWithResponder or some time after its return.
   [[nodiscard]] virtual bool AcceptWithResponder(
       Message* message,
-      std::unique_ptr<MessageReceiverWithStatus> responder) = 0;
+      std::unique_ptr<internal::ResponderThunk> responder) = 0;
 };
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) PassThroughFilter

@@ -14,12 +14,16 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/rust/system/scoped_handle_interop.h"
 
+namespace mojo::internal {
+class ResponderThunk;
+}
+
 namespace mojo::rust::bindings {
 
 class AssociatedEndpointRustAdapter;
 
 // A struct which allows Rust to respond to a message using a C++-provided
-// `MessageReceiverWithStatus`, and to register new endpoints with the C++
+// `ResponderThunk`, and to register new endpoints with the C++
 // message pipe.
 //
 // This is an analogue to the Rust `ResponseSender` type, but uses C++ machinery
@@ -34,7 +38,7 @@ class AssociatedEndpointRustAdapter;
 class MojoResponderWrapper {
  public:
   MojoResponderWrapper(
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder,
+      std::unique_ptr<mojo::internal::ResponderThunk> responder,
       scoped_refptr<base::SequencedTaskRunner> runner,
       scoped_refptr<mojo::AssociatedGroupController> group_controller);
   ~MojoResponderWrapper();

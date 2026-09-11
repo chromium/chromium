@@ -216,7 +216,7 @@ class  PageStubDispatch {
   static bool AcceptWithResponder(
       Page* impl,
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder);
+      std::unique_ptr<mojo::internal::ResponderThunk> responder);
 };
 
 template <typename ImplRefTraits =
@@ -241,7 +241,7 @@ class PageStub
 
   bool AcceptWithResponder(
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) override {
+      std::unique_ptr<mojo::internal::ResponderThunk> responder) override {
     if (ImplRefTraits::IsNull(sink_))
       return false;
     return PageStubDispatch::AcceptWithResponder(
@@ -257,7 +257,7 @@ class  PageHandlerStubDispatch {
   static bool AcceptWithResponder(
       PageHandler* impl,
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder);
+      std::unique_ptr<mojo::internal::ResponderThunk> responder);
 };
 
 template <typename ImplRefTraits =
@@ -282,7 +282,7 @@ class PageHandlerStub
 
   bool AcceptWithResponder(
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) override {
+      std::unique_ptr<mojo::internal::ResponderThunk> responder) override {
     if (ImplRefTraits::IsNull(sink_))
       return false;
     return PageHandlerStubDispatch::AcceptWithResponder(
@@ -298,7 +298,7 @@ class  WebUiPageHandlerFactoryStubDispatch {
   static bool AcceptWithResponder(
       WebUiPageHandlerFactory* impl,
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder);
+      std::unique_ptr<mojo::internal::ResponderThunk> responder);
 };
 
 template <typename ImplRefTraits =
@@ -323,7 +323,7 @@ class WebUiPageHandlerFactoryStub
 
   bool AcceptWithResponder(
       mojo::Message* message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) override {
+      std::unique_ptr<mojo::internal::ResponderThunk> responder) override {
     if (ImplRefTraits::IsNull(sink_))
       return false;
     return WebUiPageHandlerFactoryStubDispatch::AcceptWithResponder(

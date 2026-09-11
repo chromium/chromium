@@ -231,7 +231,7 @@ class IFaceWithTypemap_Echo_ProxyToResponder : public ::mojo::internal::ProxyToR
  public:
   static IFaceWithTypemap::EchoCallback CreateCallback(
       ::mojo::Message& message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+      std::unique_ptr<mojo::internal::ResponderThunk>&& responder) {
     std::unique_ptr<IFaceWithTypemap_Echo_ProxyToResponder> proxy(
         new IFaceWithTypemap_Echo_ProxyToResponder(
             message, std::move(responder)));
@@ -258,7 +258,7 @@ class IFaceWithTypemap_Echo_ProxyToResponder : public ::mojo::internal::ProxyToR
  private:
   IFaceWithTypemap_Echo_ProxyToResponder(
       ::mojo::Message& message,
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder)
+      std::unique_ptr<mojo::internal::ResponderThunk>&& responder)
       : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
   }
 
@@ -383,7 +383,7 @@ bool IFaceWithTypemapStubDispatch::Accept(
 bool IFaceWithTypemapStubDispatch::AcceptWithResponder(
     IFaceWithTypemap* impl,
     mojo::Message* message,
-    std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+    std::unique_ptr<mojo::internal::ResponderThunk> responder) {
   [[maybe_unused]] const bool message_is_sync =
       message->has_flag(mojo::Message::kFlagIsSync);
   [[maybe_unused]] const uint64_t request_id = message->request_id();

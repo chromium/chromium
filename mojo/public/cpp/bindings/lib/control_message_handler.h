@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "mojo/public/cpp/bindings/lib/responder_thunk.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
@@ -33,13 +34,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ControlMessageHandler
 
   // Call the following methods only if IsControlMessage() returned true.
   bool Accept(Message* message) override;
-  bool AcceptWithResponder(
-      Message* message,
-      std::unique_ptr<MessageReceiverWithStatus> responder) override;
+  bool AcceptWithResponder(Message* message,
+                           std::unique_ptr<ResponderThunk> responder) override;
 
  private:
-  bool Run(Message* message,
-           std::unique_ptr<MessageReceiverWithStatus> responder);
+  bool Run(Message* message, std::unique_ptr<ResponderThunk> responder);
   bool RunOrClosePipe(Message* message);
 
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).

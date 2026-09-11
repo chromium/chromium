@@ -10,18 +10,19 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/interface_id.h"
+#include "mojo/public/cpp/bindings/lib/responder_thunk.h"
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h"
 
 namespace mojo::rust::bindings {
 
 // Concrete target object held inside `base::SequenceBound<ResponderHolder>`.
 // Accepts incoming message wrappers from Rust, converts them into C++
-// `mojo::Message` instances, and calls `MessageReceiverWithStatus::Accept` on
+// `mojo::Message` instances, and calls `ResponderThunk::Accept` on
 // the bound sequence.
 class MojoResponderWrapper::ResponderHolder {
  public:
   explicit ResponderHolder(
-      std::unique_ptr<mojo::MessageReceiverWithStatus> responder)
+      std::unique_ptr<mojo::internal::ResponderThunk> responder)
       : responder_(std::move(responder)) {}
 
   void Accept(
@@ -35,11 +36,11 @@ class MojoResponderWrapper::ResponderHolder {
   }
 
  private:
-  std::unique_ptr<mojo::MessageReceiverWithStatus> responder_;
+  std::unique_ptr<mojo::internal::ResponderThunk> responder_;
 };
 
 MojoResponderWrapper::MojoResponderWrapper(
-    std::unique_ptr<mojo::MessageReceiverWithStatus> responder,
+    std::unique_ptr<mojo::internal::ResponderThunk> responder,
     scoped_refptr<base::SequencedTaskRunner> runner,
     scoped_refptr<mojo::AssociatedGroupController> group_controller)
     : responder_(

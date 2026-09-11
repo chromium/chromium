@@ -4,14 +4,15 @@
 
 #include "mojo/public/cpp/bindings/lib/proxy_to_responder.h"
 
+#include <utility>
+
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
 namespace internal {
 
-ProxyToResponder::ProxyToResponder(
-    const Message& message,
-    std::unique_ptr<MessageReceiverWithStatus> responder)
+ProxyToResponder::ProxyToResponder(const Message& message,
+                                   std::unique_ptr<ResponderThunk>&& responder)
     : request_id_(message.request_id()),
       trace_nonce_(message.header()->trace_nonce),
       is_sync_(message.has_flag(Message::kFlagIsSync)),

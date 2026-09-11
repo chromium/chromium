@@ -87,7 +87,7 @@ bool ControlMessageHandler::Accept(Message* message) {
 
 bool ControlMessageHandler::AcceptWithResponder(
     Message* message,
-    std::unique_ptr<MessageReceiverWithStatus> responder) {
+    std::unique_ptr<ResponderThunk> responder) {
   if (!ValidateControlRequestWithResponse(message)) {
     return false;
   }
@@ -99,9 +99,8 @@ bool ControlMessageHandler::AcceptWithResponder(
   NOTREACHED();
 }
 
-bool ControlMessageHandler::Run(
-    Message* message,
-    std::unique_ptr<MessageReceiverWithStatus> responder) {
+bool ControlMessageHandler::Run(Message* message,
+                                std::unique_ptr<ResponderThunk> responder) {
   interface_control::internal::RunMessageParams_Data* params =
       reinterpret_cast<interface_control::internal::RunMessageParams_Data*>(
           message->mutable_payload());

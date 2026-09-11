@@ -171,7 +171,7 @@ bool PageStubDispatch::Accept(
 bool PageStubDispatch::AcceptWithResponder(
     Page* impl,
     mojo::Message* message,
-    std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+    std::unique_ptr<mojo::internal::ResponderThunk> responder) {
   [[maybe_unused]] const bool message_is_sync =
       message->has_flag(mojo::Message::kFlagIsSync);
   [[maybe_unused]] const uint64_t request_id = message->request_id();
@@ -325,7 +325,7 @@ bool PageHandlerStubDispatch::Accept(
 bool PageHandlerStubDispatch::AcceptWithResponder(
     PageHandler* impl,
     mojo::Message* message,
-    std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+    std::unique_ptr<mojo::internal::ResponderThunk> responder) {
   [[maybe_unused]] const bool message_is_sync =
       message->has_flag(mojo::Message::kFlagIsSync);
   [[maybe_unused]] const uint64_t request_id = message->request_id();
@@ -527,7 +527,7 @@ bool WebUiPageHandlerFactoryStubDispatch::Accept(
 bool WebUiPageHandlerFactoryStubDispatch::AcceptWithResponder(
     WebUiPageHandlerFactory* impl,
     mojo::Message* message,
-    std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+    std::unique_ptr<mojo::internal::ResponderThunk> responder) {
   [[maybe_unused]] const bool message_is_sync =
       message->has_flag(mojo::Message::kFlagIsSync);
   [[maybe_unused]] const uint64_t request_id = message->request_id();
