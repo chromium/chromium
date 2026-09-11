@@ -228,7 +228,7 @@ class OrganizerTrayViewTest
 
   OrganizerTrayView* tray_view() { return browser_view_->tray_view(); }
 
- private:
+ protected:
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockBrowserWindowInterface> browser_;
   std::unique_ptr<BrowserElementsViewsImpl> browser_elements_;
@@ -353,4 +353,26 @@ TEST_F(OrganizerTrayViewTest, SizeControlsToExclusionHeight) {
           },
           0)
           .SetDescription("Panel should start beneath controls."));
+}
+
+TEST_F(OrganizerTrayViewTest, ClearingPanelHandledGracefully) {
+  RunTestSequence(
+      ShowPanel(),
+      CheckView(
+          OrganizerTrayView::kTrayElementId,
+          [](OrganizerTrayView* tray) {
+            return OrganizerPanelHost::FromView(tray)->HasPanelView();
+          },
+          true),
+      Do([this]() {
+        panel_ = nullptr;
+        state_controller_->SetPanelViewForTesting(nullptr);
+      }),
+      WaitForHide(kOrganizerPanelViewElementId),
+      CheckView(
+          OrganizerTrayView::kTrayElementId,
+          [](OrganizerTrayView* tray) {
+            return OrganizerPanelHost::FromView(tray)->HasPanelView();
+          },
+          false));
 }
