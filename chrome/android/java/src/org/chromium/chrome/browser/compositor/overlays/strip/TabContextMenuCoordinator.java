@@ -458,7 +458,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             @TabClosingSource int tabClosingSource) {
         List<Tab> otherTabs = new ArrayList<>();
         for (Tab tab : tabModel) {
-            if (!tabIds.contains(tab.getId())) {
+            if (!tabIds.contains(tab.getId()) && !tab.getIsPinned()) {
                 otherTabs.add(tab);
             }
         }
@@ -641,6 +641,17 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 : idx < tabModel.getCount() - 1;
     }
 
+    private boolean shouldShowCloseOtherTabsItem(AnchorInfo anchorInfo) {
+        List<Integer> tabIds = anchorInfo.getAllTabIds();
+        TabModel tabModel = getTabModel();
+        for (Tab tab : tabModel) {
+            if (tab.getIsPinned()) continue;
+            if (tabIds.contains(tab.getId())) continue;
+            return true;
+        }
+        return false;
+    }
+
     private boolean canCloseTabsToTheRight(AnchorInfo anchorInfo) {
         List<Integer> tabIds = anchorInfo.getAllTabIds();
         TabModel tabModel = getTabModel();
@@ -680,7 +691,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
         addVerticalTabsItems(itemList, isIncognito);
         itemList.add(createCloseItem(isIncognito));
-        if (getTabModel().getCount() > 1) {
+        if (shouldShowCloseOtherTabsItem(anchorInfo)) {
             itemList.add(createCloseOtherTabsItem(isIncognito));
         }
         if (canCloseTabsToTheRight(anchorInfo)) {
@@ -710,7 +721,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
         addVerticalTabsItems(itemList, isIncognito);
         itemList.add(createCloseItem(isIncognito));
-        if (getTabModel().getCount() > anchorInfo.getAllTabIds().size()) {
+        if (shouldShowCloseOtherTabsItem(anchorInfo)) {
             itemList.add(createCloseOtherTabsItem(isIncognito));
         }
         if (canCloseTabsToTheRight(anchorInfo)) {
