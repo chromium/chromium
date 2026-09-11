@@ -198,20 +198,6 @@ public class ManageSyncSettingsTest {
                             UserSelectableType.THEMES,
                             ManageSyncSettings.PREF_ACCOUNT_SECTION_THEMES_TOGGLE));
 
-    /**
-     * Preference keys to bypass in the parity check:
-     *
-     * <ul>
-     *   <li>Hidden preferences that are currently (or erroneously) indexed as searchable entries
-     *       (failing the reverse parity check).
-     *   <li>Temporary known discrepancies tracked by bugs.
-     * </ul>
-     */
-    private static final Set<String> ALLOWLISTED_PREFERENCE_KEYS =
-            Set.of(
-                    // TODO(http://crbug.com/559486938): Remove once the bug is fixed.
-                    ManageSyncSettings.PREF_SIGN_OUT);
-
     private SettingsActivityInterface mSettingsActivityInterface;
 
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
@@ -1727,7 +1713,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
 
-        assertPreferenceScreenMatchesIndex(fragment, ALLOWLISTED_PREFERENCE_KEYS);
+        assertPreferenceScreenMatchesIndex(fragment);
     }
 
     @Test
@@ -1737,7 +1723,18 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
 
-        assertPreferenceScreenMatchesIndex(fragment, ALLOWLISTED_PREFERENCE_KEYS);
+        assertPreferenceScreenMatchesIndex(fragment);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(SigninFeatures.SIGN_OUT_OF_CHROME)
+    public void testPreferenceScreenMatchesSearchIndex_signedIn_desktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        assertPreferenceScreenMatchesIndex(fragment);
     }
 
     private void assertOpensIncognitoSession(

@@ -521,12 +521,16 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     requireContext(),
                     profile,
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
-            if (DeviceInfo.isDesktop()
-                    && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_OF_CHROME)) {
-                mSignOutPreference.setTitle(R.string.manage_sync_settings_sign_out_of_chrome);
-            }
+            mSignOutPreference.setTitle(getSignOutTitle());
         }
         mSignOutPreference.setSnackbarManagerSupplier(assumeNonNull(mSnackbarManagerSupplier));
+    }
+
+    private static @StringRes int getSignOutTitle() {
+        return DeviceInfo.isDesktop()
+                        && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_OF_CHROME)
+                ? R.string.manage_sync_settings_sign_out_of_chrome
+                : R.string.sign_out;
     }
 
     private static boolean shouldShowSignOutPref(Profile profile) {
@@ -1006,6 +1010,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     }
                     if (!shouldShowSignOutPref(profile)) {
                         indexData.removeEntryForKey(frag, PREF_SIGN_OUT);
+                    } else if (indexData.getEntryForKey(frag, PREF_SIGN_OUT) != null) {
+                        indexData.updateEntryForKey(frag, PREF_SIGN_OUT, getSignOutTitle());
                     }
                     if (!shouldShowSwitchToIncognitoPref(profile)) {
                         indexData.removeEntryForKey(frag, PREF_SWITCH_TO_INCOGNITO);
