@@ -248,6 +248,8 @@ export class AppElement extends AppElementBase {
       voiceSearchCoherenceAnySearchboxExperimentEnabled_: {type: Boolean},
       voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_:
           {type: Boolean},
+      voiceSearchCoherenceRealboxAutoEndpointEnabled_: {type: Boolean},
+      voiceSearchCoherenceRealboxHelperTextEnabled_: {type: Boolean},
 
       voiceSearchTranscript_: {type: String},
       voiceSearchReceivedSpeech_: {type: Boolean},
@@ -403,6 +405,10 @@ export class AppElement extends AppElementBase {
   protected accessor voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_:
       boolean = loadTimeData.getBoolean(
           'voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled');
+  protected accessor voiceSearchCoherenceRealboxAutoEndpointEnabled_: boolean =
+      loadTimeData.getBoolean('voiceSearchCoherenceRealboxAutoEndpointEnabled');
+  protected accessor voiceSearchCoherenceRealboxHelperTextEnabled_: boolean =
+      loadTimeData.getBoolean('voiceSearchCoherenceRealboxHelperTextEnabled');
 
   protected accessor voiceSearchTranscript_: string = '';
   protected accessor voiceSearchReceivedSpeech_: boolean = false;

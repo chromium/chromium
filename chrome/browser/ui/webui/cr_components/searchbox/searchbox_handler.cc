@@ -389,6 +389,14 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   dict.Set("voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled",
            omnibox::kVoiceSearchCoherenceSearchboxWithLiveTranscription.Get());
 
+  // Enables 3-second auto-endpointing for NTP Realbox voice search.
+  dict.Set("voiceSearchCoherenceRealboxAutoEndpointEnabled",
+           omnibox::kVoiceSearchCoherenceRealboxAutoEndpoint.Get());
+
+  // Enables helper text (e.g. "Listening...") in NTP Realbox voice search.
+  dict.Set("voiceSearchCoherenceRealboxHelperTextEnabled",
+           omnibox::kVoiceSearchCoherenceRealboxHelperText.Get());
+
   // Enables if either arm of the voice search ntp searchbox live experiment
   // is on.
   dict.Set("voiceSearchCoherenceAnySearchboxExperimentEnabled",

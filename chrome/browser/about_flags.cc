@@ -1411,13 +1411,41 @@ const FeatureEntry::FeatureParam
     kVoiceSearchCoherenceLiveTranscriptionParams[] = {
         {"VoiceSearchCoherenceSearchboxWithLiveTranscription", "true"}};
 
+const FeatureEntry::FeatureParam kVoiceSearchCoherenceRealboxArm1Params[] = {
+    {"VoiceSearchCoherenceSearchboxWithLiveTranscription", "false"},
+    {"VoiceSearchCoherenceRealboxAutoEndpoint", "false"},
+    {"VoiceSearchCoherenceRealboxHelperText", "true"}};
+
+const FeatureEntry::FeatureParam kVoiceSearchCoherenceRealboxArm2Params[] = {
+    {"VoiceSearchCoherenceSearchboxWithLiveTranscription", "false"},
+    {"VoiceSearchCoherenceRealboxAutoEndpoint", "true"},
+    {"VoiceSearchCoherenceRealboxHelperText", "true"}};
+
+const FeatureEntry::FeatureParam kVoiceSearchCoherenceRealboxArm3Params[] = {
+    {"VoiceSearchCoherenceSearchboxWithLiveTranscription", "true"},
+    {"VoiceSearchCoherenceRealboxAutoEndpoint", "false"},
+    {"VoiceSearchCoherenceRealboxHelperText", "true"}};
+
+const FeatureEntry::FeatureParam kVoiceSearchCoherenceRealboxArm4Params[] = {
+    {"VoiceSearchCoherenceSearchboxWithLiveTranscription", "true"},
+    {"VoiceSearchCoherenceRealboxAutoEndpoint", "true"},
+    {"VoiceSearchCoherenceRealboxHelperText", "true"}};
+
 // Normal 'Enabled' option is just 'No Live Transcription'. 'Disabled' option
 // disables live transcription and the experiment.
 const FeatureEntry::FeatureVariation
     kVoiceSearchCoherenceSearchboxVariations[] = {
         {"(No Live Transcription)", {}, nullptr},
         {"(With Live Transcription)",
-         kVoiceSearchCoherenceLiveTranscriptionParams, nullptr}};
+         kVoiceSearchCoherenceLiveTranscriptionParams, nullptr},
+        {"Arm 1: Wave only, manual submit + Listening",
+         kVoiceSearchCoherenceRealboxArm1Params, nullptr},
+        {"Arm 2: Wave only, 3s auto endpoint + Listening",
+         kVoiceSearchCoherenceRealboxArm2Params, nullptr},
+        {"Arm 3: Wave + Transcript, manual submit + Listening",
+         kVoiceSearchCoherenceRealboxArm3Params, nullptr},
+        {"Arm 4: Wave + Transcript, 3s auto endpoint + Listening",
+         kVoiceSearchCoherenceRealboxArm4Params, nullptr}};
 
 const FeatureEntry::FeatureParam
     kVoiceSearchCoherenceComposeboxCobrowsingParams[] = {

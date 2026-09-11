@@ -355,6 +355,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean(
       "voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled",
       omnibox::kVoiceSearchCoherenceSearchboxWithLiveTranscription.Get());
+  source->AddBoolean("voiceSearchCoherenceRealboxAutoEndpointEnabled",
+                     omnibox::kVoiceSearchCoherenceRealboxAutoEndpoint.Get());
+  source->AddBoolean("voiceSearchCoherenceRealboxHelperTextEnabled",
+                     omnibox::kVoiceSearchCoherenceRealboxHelperText.Get());
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"doneButton", IDS_DONE},

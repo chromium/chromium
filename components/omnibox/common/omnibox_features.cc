@@ -544,6 +544,18 @@ const base::FeatureParam<bool>
         &kVoiceSearchCoherenceSearchbox,
         "VoiceSearchCoherenceSearchboxWithLiveTranscription", false};
 
+// Enables 3-second auto-endpointing for NTP Realbox voice search.
+// When enabled, voice search automatically submits after 3 seconds of trailing
+// silence.
+const base::FeatureParam<bool> kVoiceSearchCoherenceRealboxAutoEndpoint{
+    &kVoiceSearchCoherenceSearchbox, "VoiceSearchCoherenceRealboxAutoEndpoint",
+    false};
+
+// Enables helper text (e.g. "Listening...") in NTP Realbox voice search.
+const base::FeatureParam<bool> kVoiceSearchCoherenceRealboxHelperText{
+    &kVoiceSearchCoherenceSearchbox, "VoiceSearchCoherenceRealboxHelperText",
+    false};
+
 #if BUILDFLAG(IS_ANDROID)
 // Accelerates time from cold start to focused Omnibox on low-end devices,
 // prioritizing Omnibox focus and background initialization.

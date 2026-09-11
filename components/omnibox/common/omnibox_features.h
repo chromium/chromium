@@ -239,6 +239,8 @@ extern const base::FeatureParam<bool>
 BASE_DECLARE_FEATURE(kVoiceSearchCoherenceSearchbox);
 extern const base::FeatureParam<bool>
     kVoiceSearchCoherenceSearchboxWithLiveTranscription;
+extern const base::FeatureParam<bool> kVoiceSearchCoherenceRealboxAutoEndpoint;
+extern const base::FeatureParam<bool> kVoiceSearchCoherenceRealboxHelperText;
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDiagnostics);
