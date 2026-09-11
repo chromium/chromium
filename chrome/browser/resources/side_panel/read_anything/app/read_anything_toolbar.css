@@ -49,7 +49,7 @@
 }
 
 #line-focus-off {
-  --cr-button-text-color: var(--rate-button-text-color);
+  --cr-button-text-color: var(--text-button-text-color);
   background: var(--audio-player-background-color);
   border: none;
   margin-inline-end: auto;
@@ -79,7 +79,7 @@
 .immersive-toolbar-container {
   --cr-icon-button-fill-color-default: var(--toolbar-icon-color);
   --play-pause-icon-color: var(--audio-player-icon-color);
-  --rate-button-text-color: var(--audio-controls-icon-color);
+  --text-button-text-color: var(--audio-controls-icon-color);
   --audio-controls-icon-color-internal: var(--audio-controls-icon-color);
   background-color: var(--background-color);
   display: flex;
@@ -123,7 +123,7 @@
  */
 #rate {
   --cr-focus-outline-color: var(--on-audio-player-focus-outline-color);
-  --cr-button-text-color: var(--rate-button-text-color);
+  --cr-button-text-color: var(--text-button-text-color);
   background-color: transparent;
   border: none;
   border-radius: 50%;
@@ -175,4 +175,16 @@
   #audio-controls #play-pause {
     --cr-icon-button-fill-color: CanvasText;
   }
+
+  #rate {
+    --cr-button-text-color: CanvasText;
+  }
+
+  #line-focus-off {
+    --cr-button-text-color: CanvasText;
+    background: transparent;
+    border: var(--cr-button-border,
+        1px solid var(--color-button-border, ButtonBorder));
+  }
 }
+
