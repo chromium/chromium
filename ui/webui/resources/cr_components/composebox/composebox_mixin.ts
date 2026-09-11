@@ -725,6 +725,12 @@ export const ComposeboxEmbedderMixin =
         // Common event handlers
         // =====================================================================
 
+        // Used in composeboxes that specifically render the voice search
+        // component internally instead of at the parent level.
+        // Example: NTP composebox, omnibox popup, contextual tasks.
+        // Examples of embedders that render voice search at the app level
+        // rather than inside composebox: Omnibox Everywhere.
+        // Receives events from the inner voice search component.
         onVoicePermissionChanged(e: CustomEvent<VoicePermissionPromptState>) {
           if (e.detail.isOpened) {
             // Only for when the permission prompt is showing, fire a resize

@@ -463,6 +463,18 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       this.voiceSearchListening_ =
           this.showVoiceSearchOverlay_ && !this.hasVoiceSearchError_;
     }
+
+    this.classList.toggle('has-permission-prompt', e.detail.isOpened);
+    if (e.detail.isOpened) {
+      this.style.setProperty(
+          '--voice_search_minimum_height', `${e.detail.height}px`);
+      this.style.setProperty(
+          '--voice_search_minimum_width', `${e.detail.width}px`);
+    } else {
+      this.style.removeProperty('--voice_search_minimum_height');
+      this.style.removeProperty('--voice_search_minimum_width');
+    }
+
     const audioAnimation =
         this.shadowRoot?.querySelector<SearchAnimatedGlowElement>(
             '#voiceSearchGlow');

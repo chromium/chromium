@@ -644,7 +644,7 @@ suite('OmniboxEverywhereComposeboxTest', () => {
   });
 
   test('configures animated glow on composebox correctly', async () => {
-    await new Promise(r => requestAnimationFrame(r));
+    await new Promise(resolve => requestAnimationFrame(resolve));
     await microtasksFinished();
     const glow = composebox.shadowRoot.querySelector<SearchAnimatedGlowElement>(
         '#animatedSearchElement');
@@ -660,7 +660,8 @@ suite('OmniboxEverywhereComposeboxTest', () => {
         composebox.playGlowAnimation(/*timeoutMs=*/ 10);
         assertEquals(GlowAnimationState.NONE, composebox.animationState);
 
-        await new Promise(r => requestAnimationFrame(r));
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        await microtasksFinished();
 
         // After rAF callback runs, animationState is EXPANDING.
         assertEquals(GlowAnimationState.EXPANDING, composebox.animationState);
@@ -1102,6 +1103,13 @@ suite('OmniboxEverywhereAppTest', () => {
         await microtasksFinished();
         assertTrue(voiceSearch.classList.contains('permission-prompt-showing'));
         assertTrue(glow.classList.contains('permission-prompt-showing'));
+        assertTrue(app.classList.contains('has-permission-prompt'));
+        assertEquals(
+            '200px',
+            app.style.getPropertyValue('--voice_search_minimum_height'));
+        assertEquals(
+            '100px',
+            app.style.getPropertyValue('--voice_search_minimum_width'));
 
         // Verify permission prompt closed state is handled.
         voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
@@ -1117,6 +1125,11 @@ suite('OmniboxEverywhereAppTest', () => {
         assertFalse(
             voiceSearch.classList.contains('permission-prompt-showing'));
         assertFalse(glow.classList.contains('permission-prompt-showing'));
+        assertFalse(app.classList.contains('has-permission-prompt'));
+        assertEquals(
+            '', app.style.getPropertyValue('--voice_search_minimum_height'));
+        assertEquals(
+            '', app.style.getPropertyValue('--voice_search_minimum_width'));
       });
 
   test(
@@ -1168,6 +1181,13 @@ suite('OmniboxEverywhereAppTest', () => {
         await microtasksFinished();
         assertTrue(voiceSearch.classList.contains('permission-prompt-showing'));
         assertTrue(glow.classList.contains('permission-prompt-showing'));
+        assertTrue(app.classList.contains('has-permission-prompt'));
+        assertEquals(
+            '200px',
+            app.style.getPropertyValue('--voice_search_minimum_height'));
+        assertEquals(
+            '100px',
+            app.style.getPropertyValue('--voice_search_minimum_width'));
 
         // Verify permission prompt closed state is handled in composebox mode.
         voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
@@ -1183,6 +1203,11 @@ suite('OmniboxEverywhereAppTest', () => {
         assertFalse(
             voiceSearch.classList.contains('permission-prompt-showing'));
         assertFalse(glow.classList.contains('permission-prompt-showing'));
+        assertFalse(app.classList.contains('has-permission-prompt'));
+        assertEquals(
+            '', app.style.getPropertyValue('--voice_search_minimum_height'));
+        assertEquals(
+            '', app.style.getPropertyValue('--voice_search_minimum_width'));
       });
 
   test(
@@ -1462,34 +1487,68 @@ suite('OmniboxEverywhereAppTest', () => {
     assertFalse(!!dialog);
   });
 
-  test('voice permission changed updates CSS class', async () => {
-    const searchbox =
-        app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
-    searchbox.dispatchEvent(
-        new CustomEvent('open-voice-search', {bubbles: true, composed: true}));
-    await microtasksFinished();
+  test(
+      'voice permission changed updates CSS class and dimensions', async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent(
+            'open-voice-search', {bubbles: true, composed: true}));
+        await microtasksFinished();
 
-    const voiceSearch = app.shadowRoot.querySelector('#voiceSearch')!;
-    assertTrue(!!voiceSearch);
+        const voiceSearch = app.shadowRoot.querySelector('#voiceSearch')!;
+        assertTrue(!!voiceSearch);
+        const glow = app.shadowRoot.querySelector<SearchAnimatedGlowElement>(
+            '#voiceSearchGlow');
+        assertTrue(!!glow);
 
-    voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
-      detail: {isOpened: true},
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
+        // Initial state: no prompt class or minimum dimensions set on host.
+        assertFalse(app.classList.contains('has-permission-prompt'));
+        assertEquals(
+            '', app.style.getPropertyValue('--voice_search_minimum_height'));
+        assertEquals(
+            '', app.style.getPropertyValue('--voice_search_minimum_width'));
 
-    assertTrue(voiceSearch.classList.contains('permission-prompt-showing'));
+        voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
+          detail: {
+            isOpened: true,
+            height: 120,
+            width: 250,
+          },
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
 
-    voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
-      detail: {isOpened: false},
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
+        assertTrue(voiceSearch.classList.contains('permission-prompt-showing'));
+        assertTrue(glow.classList.contains('permission-prompt-showing'));
+        assertTrue(app.classList.contains('has-permission-prompt'));
+        assertEquals(
+            '120px',
+            app.style.getPropertyValue('--voice_search_minimum_height'));
+        assertEquals(
+            '250px',
+            app.style.getPropertyValue('--voice_search_minimum_width'));
 
-    assertFalse(voiceSearch.classList.contains('permission-prompt-showing'));
-  });
+        voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
+          detail: {
+            isOpened: false,
+            height: 0,
+            width: 0,
+          },
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(
+            voiceSearch.classList.contains('permission-prompt-showing'));
+        assertFalse(glow.classList.contains('permission-prompt-showing'));
+        assertFalse(app.classList.contains('has-permission-prompt'));
+        assertEquals(
+            '', app.style.getPropertyValue('--voice_search_minimum_height'));
+        assertEquals(
+            '', app.style.getPropertyValue('--voice_search_minimum_width'));
+      });
 
   // TODO(crbug.com/552283274): Flaky on Mac.
   // <if expr="not is_macosx">

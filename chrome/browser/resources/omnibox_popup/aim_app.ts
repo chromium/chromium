@@ -185,7 +185,9 @@ export class OmniboxAimAppElement extends CrLitElement {
 
   // Fired from voice search component in cr-composebox if minimum height
   // and width are non zero when permission prompt is displayed, or any time
-  // when permission prompt hides.
+  // when permission prompt hides. Change the css class here to avoid
+  // adding css classes in the shared composebox component itself, and
+  // so omnibox searchbox can reuse this code later (not just composebox).
   protected onVoicePermissionPromptChanged(
       e: CustomEvent<VoicePermissionPromptState>) {
     if (e.detail.isOpened) {  // Permission prompt opened.

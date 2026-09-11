@@ -66,6 +66,16 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   margin: 0;
 }
 
+/* Only set min height if it exists;
+ * otherwise use existing min height.
+ */
+:host(.has-permission-prompt) #voiceSearchDialog {
+  height: 100%;
+  min-height: var(--voice_search_minimum_height, 128px);
+  width: 100%;
+  min-width: var(--voice_search_minimum_width);
+}
+
 #dialogAnchor {
   anchor-name: --dialog-anchor;
   inset-inline-start: 0;
@@ -186,6 +196,10 @@ cr-most-visited {
 
 :host([show-voice-search-overlay_]) {
   min-height: 128px;
+}
+
+:host([show-voice-search-overlay_].has-permission-prompt) {
+  min-height: var(--voice_search_minimum_height, 128px);
 }
 
 :host([show-voice-search-overlay_]) #content {
