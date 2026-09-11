@@ -1078,6 +1078,35 @@ TEST_F(HTMLCapabilityElementBaseSimTest, VisitedLinkIgnoresVisitedStyles) {
             style->VisitedDependentColor(GetCSSPropertyBackgroundColor()));
 }
 
+TEST_F(HTMLCapabilityElementBaseSimTest, InheritedVerticalWritingModeIsReset) {
+  // Properties that are not on the allow-list can still be inherited from a
+  // parent element. Verify that an inherited vertical writing-mode is reset so
+  // that the size constraints, which assume a horizontal inline axis, keep the
+  // text inside the element's bounds.
+  GetDocument().body()->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("writing-mode: vertical-rl; text-orientation: upright;"));
+  auto* permission_element = CreatePermissionElement(GetDocument(), "camera");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  const ComputedStyle* style = permission_element->GetComputedStyle();
+  ASSERT_TRUE(style);
+  EXPECT_EQ(WritingMode::kHorizontalTb, style->GetWritingMode());
+  EXPECT_EQ(ETextOrientation::kMixed, style->GetTextOrientation());
+  EXPECT_EQ(FontOrientation::kHorizontal,
+            style->GetFontDescription().Orientation());
+
+  auto* text_span =
+      permission_element->permission_text_span_for_testing().Get();
+  ASSERT_TRUE(text_span);
+  gfx::Rect element_rect =
+      permission_element->GetBoundingClientRect()->ToEnclosingRect();
+  gfx::Rect text_rect = text_span->GetBoundingClientRect()->ToEnclosingRect();
+  EXPECT_TRUE(element_rect.Contains(text_rect))
+      << "element=" << element_rect.ToString()
+      << " text=" << text_rect.ToString();
+}
+
 TEST_F(HTMLCapabilityElementBaseSimTest, FontSizeCanDisableElement) {
   GetDocument().GetSettings()->SetDefaultFontSize(12);
   auto* permission_element = CreatePermissionElement(GetDocument(), "camera");

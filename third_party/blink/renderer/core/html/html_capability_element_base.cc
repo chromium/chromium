@@ -921,14 +921,19 @@ void HTMLCapabilityElementBase::AdjustStyle(ComputedStyleBuilder& builder) {
     }
   }
 
-  // These webkit-prefixed properties are not supported by the permission
-  // element. But since they are inherited by default, they are passed through
-  // to the internal permission text span, even if they're not on the list of
-  // allowed CSS properties.
+  // These properties are not supported by the permission element. But since
+  // they are inherited by default, they are passed through to the internal
+  // permission text span, even if they're not on the list of allowed CSS
+  // properties.
   // Reset them here to avoid any side effects.
   builder.ResetTextStrokeWidth();
   builder.ResetTextFillColor();
   builder.ResetTextStrokeColor();
+  // TODO(crbug.com/560222073): Handle vertical writing mode properly.
+  builder.ResetWritingMode();
+  builder.ResetTextOrientation();
+  builder.ResetTextCombine();
+  builder.UpdateFontOrientation();
 
   // To prevent CSS :visited history leaks and ensure the button remains
   // fully legible and active in all states, we force the element to pretend
