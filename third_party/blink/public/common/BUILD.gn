@@ -113,6 +113,7 @@ source_set("headers") {
     "//content/*",
     "//fuchsia/*",
     "//pdf/*",
+    "//printing/*",
     "//services/*",
     "//storage/*",
     "//third_party/blink/*",

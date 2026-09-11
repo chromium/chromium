@@ -5,6 +5,7 @@ include_rules = [
   "+printing/printing_jni_headers",
   "+services/data_decoder/public/cpp",
   "+skia/ext",
+  "+third_party/blink/public/common/features.h",
   "+third_party/icu/source/common/unicode",
   "+third_party/icu/source/i18n/unicode",
   "+third_party/re2/src/re2",

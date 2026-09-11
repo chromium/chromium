@@ -19,5 +19,6 @@ source_set("common") {
   deps = [
     "//pdf:pdf_accessibility_constants",
     "//printing/buildflags",
+    "//third_party/blink/public/common",
   ]
 }

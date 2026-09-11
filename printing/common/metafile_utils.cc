@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -22,6 +23,7 @@
 #include "skia/ext/codec_utils.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -519,8 +521,13 @@ sk_sp<SkTypeface> DeserializeOopTypeface(SkStream& stream, void* ctx) {
 
   // Typeface not encountered before, expect it to be present in the stream.
   DCHECK(data_included);
-  sk_sp<SkTypeface> typeface =
-      SkTypeface::MakeDeserialize(&stream, skia::DefaultFontMgr());
+  sk_sp<SkTypeface> typeface;
+  if (base::FeatureList::IsEnabled(blink::features::kFontationsPrinting)) {
+    typeface = skia::MakeTypefaceWithFontations(&stream);
+  } else {
+    typeface = SkTypeface::MakeDeserialize(&stream, skia::DefaultFontMgr());
+  }
+
   context->emplace(id, typeface);
   return typeface;
 }
