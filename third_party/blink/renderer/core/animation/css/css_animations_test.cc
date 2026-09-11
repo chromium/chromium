@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "cc/animation/animation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
@@ -16,12 +20,15 @@
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
+#include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -30,6 +37,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
+#include "third_party/blink/renderer/core/style/style_animated_sources.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
@@ -3212,6 +3220,210 @@ TEST_P(CSSAnimationsTest, CSSTimelineScopeAttachedMultiple_NoCount_One) {
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsUseCounted(WebFeature::kCSSTimelineScopeAttachedMultiple));
+}
+
+class AnimatedSourceTest : public RenderingTest {
+ public:
+  AnimatedSourceTest()
+      : RenderingTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    RenderingTest::SetUp();
+    GetAnimationClock().ResetTimeForTesting();
+    GetDocument().Timeline().ResetForTesting();
+    // Advance timer to document time.
+    AdvanceClock(
+        base::Seconds(GetDocument().Timeline().ZeroTime().InSecondsF()));
+  }
+
+ protected:
+  // Starts an animation of `property` on `element` and updates style.
+  Animation* Animate(Element* element,
+                     CSSPropertyID property,
+                     const String& from,
+                     const String& to = String()) {
+    auto* effect = animation_test_helpers::CreateSimpleKeyframeEffectForTest(
+        element, property, from, to.IsNull() ? from : to);
+    Animation* animation = GetDocument().Timeline().Play(effect);
+    GetDocument().GetPendingAnimations().Update(nullptr, true);
+    UpdateAllLifecyclePhasesForTest();
+    return animation;
+  }
+
+  // Returns the recorded animation source for `property` on `element`.
+  AnimatedSource SourceFor(Element* element, CSSPropertyID property) {
+    return element->GetComputedStyle()->GetAnimatedSource(property);
+  }
+
+ private:
+  ScopedTrackAnimatedSourcesForTest enable_feature_{true};
+};
+
+// Behavior every property marked tracks_animated_source must satisfy.
+// Properties opted in through css_properties.json5 are picked up automatically
+// without changes to this file: the animated value is taken from the initial
+// style, so no per-property values are needed here.
+class AnimatedSourcePropertyTest
+    : public AnimatedSourceTest,
+      public testing::WithParamInterface<CSSPropertyID> {
+ protected:
+  // An animatable value for GetParam().
+  String Value() const {
+    return ComputedStyleUtils::ComputedPropertyValue(
+               CSSProperty::Get(GetParam()),
+               *ComputedStyle::GetInitialStyleSingleton())
+        ->CssText();
+  }
+};
+
+namespace {
+
+// All properties opted into tracks_animated_source in css_properties.json5.
+std::vector<CSSPropertyID> AnimatedSourceProperties() {
+  std::vector<CSSPropertyID> tracked;
+  for (CSSPropertyID id : CSSPropertyIDList()) {
+    if (GetAnimatedSourceProperty(id).has_value()) {
+      tracked.push_back(id);
+    }
+  }
+  return tracked;
+}
+
+// gtest-safe test suffix for a property, e.g. "transform".
+std::string AnimatedSourcePropertyName(
+    const testing::TestParamInfo<CSSPropertyID>& info) {
+  std::string name = CSSProperty::Get(info.param).GetPropertyName();
+  std::replace(name.begin(), name.end(), '-', '_');
+  return name;
+}
+
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AnimatedSourcePropertyTest,
+                         testing::ValuesIn(AnimatedSourceProperties()),
+                         AnimatedSourcePropertyName);
+
+TEST_P(AnimatedSourcePropertyTest, Lifecycle) {
+  SetBodyInnerHTML("<div id=animator></div>");
+  Element* animator = GetElementById("animator");
+  Animation* animation = Animate(animator, GetParam(), Value());
+  // The animated computed value should be attributed to animator.
+  EXPECT_TRUE(
+      SourceFor(animator, GetParam()).animated_source.IsOwnedBy(*animator));
+
+  // Cancel the animation. Since the static value reapplies, the source
+  // should be cleared.
+  animation->cancel();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(SourceFor(animator, GetParam()).animated_source.IsValid());
+}
+
+TEST_P(AnimatedSourcePropertyTest, InheritPropagatesSource) {
+  SetBodyInnerHTML("<div id=animator><div id=child></div></div>");
+  Element* animator = GetElementById("animator");
+  Element* child = GetElementById("child");
+  // Give child an explicit 'inherit' so it copies the animated value.
+  child->SetInlineStyleProperty(GetParam(), "inherit");
+  Animate(animator, GetParam(), Value());
+
+  // 'inherit' should carry the source to child whether or not the property
+  // inherits by default.
+  EXPECT_TRUE(
+      SourceFor(child, GetParam()).animated_source.IsOwnedBy(*animator));
+}
+
+TEST_P(AnimatedSourcePropertyTest, StartDelay) {
+  SetBodyInnerHTML("<div id=target></div>");
+  Element* target = GetElementById("target");
+
+  auto* effect = animation_test_helpers::CreateSimpleKeyframeEffectForTest(
+      target, GetParam(), Value(), Value());
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(10);
+  timing.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(5));
+  effect->UpdateSpecifiedTiming(timing);
+  Animation* animation = GetDocument().Timeline().Play(effect);
+  UpdateAllLifecyclePhasesForTest();
+
+  // During start delay (time = 0), the effect is not yet active, so no source
+  // is recorded.
+  EXPECT_FALSE(SourceFor(target, GetParam()).animated_source.IsValid());
+
+  // Advance time past start delay (to 6s). The effect is now active.
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(6000),
+                            ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(SourceFor(target, GetParam()).animated_source.IsOwnedBy(*target));
+  EXPECT_FALSE(SourceFor(target, GetParam()).has_untracked_dependencies);
+}
+
+TEST_P(AnimatedSourcePropertyTest, ImportantRuleWinsOverAnimation) {
+  SetBodyInnerHTML("<style>#target { " +
+                   CSSProperty::Get(GetParam()).GetPropertyNameString() + ": " +
+                   Value() + " !important }</style><div id=target></div>");
+  Element* target = GetElementById("target");
+  Animate(target, GetParam(), Value());
+  EXPECT_FALSE(SourceFor(target, GetParam()).animated_source.IsValid());
+}
+
+// Transition coverage uses fixed properties: starting a transition requires
+// two distinct computed values, which cannot be derived generically for an
+// arbitrary property. The transition handling under test does not branch per
+// property, so per-property coverage adds nothing here.
+TEST_F(AnimatedSourceTest, Transitions) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target { transition: transform 100s; transform: scale(1); }
+      #target.changed { transform: scale(2); }
+    </style>
+    <div id=target></div>
+  )HTML");
+  Element* target = GetElementById("target");
+  // Start the transitions by changing the class.
+  target->setAttribute(html_names::kClassAttr, AtomicString("changed"));
+  UpdateAllLifecyclePhasesForTest();
+
+  AnimatedSource transform_source =
+      SourceFor(target, CSSPropertyID::kTransform);
+  EXPECT_TRUE(transform_source.animated_source.IsOwnedBy(*target));
+  EXPECT_FALSE(transform_source.has_untracked_dependencies);
+}
+
+TEST_F(AnimatedSourceTest, TransitionWinsOverImportant) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target { transition: opacity 100s; opacity: 1 !important; }
+      #target.changed { opacity: 0 !important; }
+    </style>
+    <div id=target></div>
+  )HTML");
+  Element* target = GetElementById("target");
+  target->setAttribute(html_names::kClassAttr, AtomicString("changed"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(SourceFor(target, CSSPropertyID::kOpacity)
+                  .animated_source.IsOwnedBy(*target));
+}
+
+// A rezoomed inherited value goes through ApplyParentValue(): still attributed
+// to the animating ancestor, but no longer an exact copy of its value.
+// This path only exists for properties with affected_by_zoom, so it is not an
+// invariant of every tracked property and stays on transform.
+TEST_F(AnimatedSourceTest, RezoomedInheritHasUntrackedDependencies) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=animator>
+      <div id=child style="transform: inherit; zoom: 2"></div>
+    </div>
+  )HTML");
+  Element* animator = GetElementById("animator");
+  Element* child = GetElementById("child");
+  Animate(animator, CSSPropertyID::kTransform, "translateX(10px)",
+          "translateX(20px)");
+
+  AnimatedSource source = SourceFor(child, CSSPropertyID::kTransform);
+  EXPECT_TRUE(source.animated_source.IsOwnedBy(*animator));
+  EXPECT_TRUE(source.has_untracked_dependencies);
 }
 
 }  // namespace blink

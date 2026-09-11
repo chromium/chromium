@@ -45,6 +45,15 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
             "\n".join(
                 map(self._array_item,
                     self._css_properties.includes_currentcolor)),
+            'animated_source_property_enums':
+            "\n".join(f"  {p.enum_key} = {i}," for i, p in enumerate(
+                self._css_properties.tracks_animated_source)),
+            'animated_source_property_cases':
+            "\n".join(f"    case CSSPropertyID::{p.enum_key}:\n"
+                      f"      return AnimatedSourceProperty::{p.enum_key};"
+                      for p in self._css_properties.tracks_animated_source),
+            'animated_source_property_count':
+            len(self._css_properties.tracks_animated_source),
             'first_property_id':
             self._css_properties.first_property_id,
             'properties_count':

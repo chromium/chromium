@@ -54,6 +54,7 @@ ALIGNMENT_ORDER = [
     'NinePieceImage',
     'SVGPaint',
     'StyleAnchorScope',
+    'StyleAnimatedSources',
     'StyleInheritedVariables',
     'StyleNonInheritedVariables',
     'StyleTriggerScope',

@@ -55,6 +55,8 @@ def validate_property(prop, props_by_name):
         'Only longhands can be valid_for_marker [%s]' % name
     assert not prop.valid_for_highlight or prop.is_longhand, \
         'Only longhands can be valid_for_highlight [%s]' % name
+    assert not prop.tracks_animated_source or prop.is_longhand, \
+        'Only longhands can have tracks_animated_source [%s]' % name
     assert not prop.is_internal or prop.computable is None, \
         'Internal properties are always non-computable [%s]' % name
     assert not has_method('ParseSingleValue') or not prop.field_template == 'keyword', \
@@ -656,6 +658,10 @@ class CSSProperties(object):
     @property
     def includes_currentcolor(self):
         return [p for p in self._longhands if p.includes_currentcolor]
+
+    @property
+    def tracks_animated_source(self):
+        return [p for p in self._longhands if p.tracks_animated_source]
 
     @property
     def shorthands(self):

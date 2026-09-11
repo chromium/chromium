@@ -7,7 +7,12 @@
   {% if property.style_builder_declare %}
     {% if property.style_builder_generate_initial %}
 void {{class_name}}::ApplyInitial(StyleResolverState& state) const {
-{{(caller(property) ~ '}')}}
+{{caller(property)}}
+      {%- if property.tracks_animated_source %}
+  state.StyleBuilder().ClearAnimatedSource(
+      CSSPropertyID::{{property.enum_key}});
+      {% endif %}
+}
     {% endif %}
   {% endif %}
 {% endmacro %}
@@ -24,7 +29,13 @@ void {{class_name}}::ApplyInherit(StyleResolverState& state) const {
     }
   }
       {% endif %}
-{{(caller(property) ~ '}')}}
+{{caller(property)}}
+      {%- if property.tracks_animated_source %}
+  state.StyleBuilder().CopyAnimatedSourceFrom(
+      CSSPropertyID::{{property.enum_key}}, state.ParentStyle(),
+      /*has_untracked_dependencies=*/false);
+      {% endif %}
+}
     {% endif %}
   {% endif %}
 {% endmacro %}
@@ -39,7 +50,12 @@ void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value
       blink::AnchorScope::Mode::{{property.anchor_mode.to_enum_value()}},
       state.CssToLengthConversionData().GetAnchorEvaluator());
 {% endif %}
-{{(caller(property) ~ '}')}}
+{{caller(property)}}
+      {%- if property.tracks_animated_source %}
+  state.StyleBuilder().ClearAnimatedSource(
+      CSSPropertyID::{{property.enum_key}});
+      {% endif %}
+}
     {% endif %}
   {% endif %}
 {% endmacro %}

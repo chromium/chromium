@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/style/style_base_data.h"
 #include "third_party/blink/renderer/core/style/style_timeline_scope.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
@@ -2190,6 +2191,30 @@ void UpdateAnimationFlagsForAnimation(const Animation& animation,
   UpdateAnimationFlagsForEffect(effect, builder);
 }
 
+// Records this element as the source of tracked properties animated on it.
+// Mirrors the cascade: transitions beat everything, animations lose to
+// !important.
+void UpdateAnimatedSources(const CSSAnimationUpdate& update,
+                           Element& animating_element,
+                           ComputedStyleBuilder& builder) {
+  // Set by ApplyAnimatedStyle() before interpolations are applied.
+  const StyleBaseData* base_data = builder.BaseData();
+  const CSSBitset* important_set =
+      base_data ? base_data->GetBaseImportantSet() : nullptr;
+  for (const auto& entry : update.ActiveInterpolationsForAnimations()) {
+    const CSSPropertyID id = entry.key.GetCSSProperty().PropertyID();
+    if (important_set && important_set->Has(id)) {
+      continue;
+    }
+    builder.SetAnimatedSource(id, animating_element);
+  }
+  // Transitions replace the value outright, so they override the above.
+  for (const auto& entry : update.ActiveInterpolationsForTransitions()) {
+    builder.SetAnimatedSource(entry.key.GetCSSProperty().PropertyID(),
+                              animating_element);
+  }
+}
+
 }  // namespace
 
 void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
@@ -2267,6 +2292,10 @@ void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
           effect_stack.HasActiveAnimationsOnCompositor(
               PropertyHandle(GetCSSPropertyBackdropFilter())));
     }
+  }
+
+  if (RuntimeEnabledFeatures::TrackAnimatedSourcesEnabled()) {
+    UpdateAnimatedSources(update, animating_element, builder);
   }
 }
 

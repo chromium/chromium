@@ -1500,6 +1500,25 @@
       type_name: "EBlockEllipsis",
       default_value: "no-ellipsis",
       invalidate: ["layout", "paint"],
+    },
+    {
+      // Tracks animation sources for inherited properties.
+      name: "InheritedAnimatedSources",
+      inherited: true,
+      field_group: "misc-inherited->inherited-animated-sources",
+      field_template: "external",
+      type_name: "StyleAnimatedSources",
+      include_paths: ["third_party/blink/renderer/core/style/style_animated_sources.h"],
+      default_value: "StyleAnimatedSources()",
+    },
+    {
+      // Tracks animation sources for non-inherited properties.
+      name: "NonInheritedAnimatedSources",
+      field_group: "misc->animated-sources",
+      field_template: "external",
+      type_name: "StyleAnimatedSources",
+      include_paths: ["third_party/blink/renderer/core/style/style_animated_sources.h"],
+      default_value: "StyleAnimatedSources()",
     }
   ],
 }

@@ -4,6 +4,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_NAMES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_NAMES_H_
 
+#include <optional>
 #include <stddef.h>
 
 #include "base/check_op.h"
@@ -35,6 +36,25 @@ const CSSPropertyID kCSSComputableProperties[] = {
 inline constexpr CSSPropertyID kCSSIncludesCurrentColorProperties[] = {
   {{includes_currentcolor_properties}}
 };
+
+// Properties that track the animating element their computed value is derived
+// from.
+enum class AnimatedSourceProperty : unsigned {
+{{animated_source_property_enums}}
+  kNumFields = {{animated_source_property_count}},
+};
+inline constexpr unsigned kAnimatedSourcePropertyCount = {{animated_source_property_count}};
+
+// Returns the AnimatedSourceProperty for the given property, or nullopt if
+// the property does not track animated sources.
+constexpr std::optional<AnimatedSourceProperty> GetAnimatedSourceProperty(
+    CSSPropertyID id) {
+  switch (id) {
+{{animated_source_property_cases}}
+    default:
+      return std::nullopt;
+  }
+}
 
 // The lowest CSSPropertyID excluding kInvalid and kVariable.
 const int kIntFirstCSSProperty = {{first_property_id}};

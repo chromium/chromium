@@ -6475,6 +6475,10 @@
       base_feature: "none",
     },
     {
+      name: "TrackAnimatedSources",
+      status: "test",
+    },
+    {
       name: "TransferableRTCDataChannel",
       status: "stable",
     },

@@ -908,6 +908,15 @@
       valid_type: "bool",
     },
 
+    // - tracks_animated_source: true
+    //
+    // Whether to track the animating element that this property's value
+    // depends on through style inheritance and property references.
+    tracks_animated_source: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - devtools_keywords: ["keyword1", "keyword2"]
     //
     // Keywords that are valid for devtools. This would act as an override to
@@ -4763,6 +4772,7 @@
       parse_helper: "ConsumeAlphaValue",
       interpolable: true,
       compositable: true,
+      tracks_animated_source: true,
       field_group: "svg",  // Not SVG, but frequently used with it.
       field_template: "primitive",
       default_value: "1.0",
@@ -6680,6 +6690,7 @@
       interpolable: true,
       compositable: true,
       layout_dependent: true,
+      tracks_animated_source: true,
       field_group: "svg",  // Not SVG, but frequently used with it.
       field_template: "external",
       include_paths: ["third_party/blink/renderer/platform/transforms/transform_operations.h"],

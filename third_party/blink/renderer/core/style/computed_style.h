@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/style/font_size_style.h"
 #include "third_party/blink/renderer/core/style/gap_data_list.h"
 #include "third_party/blink/renderer/core/style/scroll_marker_group.h"
+#include "third_party/blink/renderer/core/style/style_animated_sources.h"
 #include "third_party/blink/renderer/core/style/style_cached_data.h"
 #include "third_party/blink/renderer/core/style/style_highlight_data.h"
 #include "third_party/blink/renderer/core/style/style_scrollbar_color.h"
@@ -463,6 +464,8 @@ class ComputedStyle final : public ComputedStyleBase {
   HashSet<AtomicString>* CustomHighlightNames() const {
     return CustomHighlightNamesInternal().get();
   }
+
+  CORE_EXPORT AnimatedSource GetAnimatedSource(CSSPropertyID property) const;
 
   /**
    * ComputedStyle properties
@@ -3414,6 +3417,21 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetOpacityInternal(v);
   }
 
+  // Sets the element animating the given property.
+  // Must be called after the base style has been resolved, since base styles
+  // can be shared between elements and must not record a specific element.
+  CORE_EXPORT void SetAnimatedSource(CSSPropertyID property,
+                                     Element& animating_element);
+
+  // Copies the animated source for the given property from a parent style
+  // (e.g. when inheriting from a parent style).
+  CORE_EXPORT void CopyAnimatedSourceFrom(CSSPropertyID property,
+                                          const ComputedStyle* parent_style,
+                                          bool has_untracked_dependencies);
+
+  // Clears any animated source recorded for the given property.
+  CORE_EXPORT void ClearAnimatedSource(CSSPropertyID property);
+
   // orphans
   void SetOrphans(int16_t o) { SetOrphansInternal(ClampTo<int16_t>(o, 1)); }
 
@@ -3722,6 +3740,10 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
  private:
+  void UpdateAnimatedSource(AnimatedSourceProperty property,
+                            bool is_inherited,
+                            AnimatedSource source);
+
   mutable bool has_own_animations_ = false;
   mutable bool has_own_transitions_ = false;
 };

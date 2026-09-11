@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -3069,6 +3070,21 @@ bool ComputedStyle::HasBaseEffectiveAppearance() const {
          EffectiveAppearance() == AppearanceValue::kBase;
 }
 
+AnimatedSource ComputedStyle::GetAnimatedSource(CSSPropertyID property) const {
+  if (!RuntimeEnabledFeatures::TrackAnimatedSourcesEnabled()) {
+    return {};
+  }
+  const std::optional<AnimatedSourceProperty> tracked =
+      GetAnimatedSourceProperty(property);
+  if (!tracked) {
+    return {};
+  }
+  const StyleAnimatedSources& sources = CSSProperty::Get(property).IsInherited()
+                                            ? InheritedAnimatedSources()
+                                            : NonInheritedAnimatedSources();
+  return sources.Get(*tracked);
+}
+
 ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style)
     : ComputedStyleBuilderBase(style) {}
 
@@ -3116,6 +3132,83 @@ void ComputedStyleBuilder::PropagateIndependentInheritedProperties(
   if (!HasVariableReference() && !HasVariableDeclaration() &&
       InheritedVariablesInternal() != parent_style.InheritedVariables()) {
     SetInheritedVariablesInternal(parent_style.InheritedVariablesInternal());
+  }
+}
+
+// Compares through the shared group first to avoid a copy-on-write when
+// unchanged.
+void ComputedStyleBuilder::UpdateAnimatedSource(AnimatedSourceProperty property,
+                                                bool is_inherited,
+                                                AnimatedSource source) {
+  DCHECK(source.IsValid());
+  if (is_inherited) {
+    if (InheritedAnimatedSources().Get(property) != source) {
+      MutableInheritedAnimatedSourcesInternal().Set(property, source);
+    }
+  } else if (NonInheritedAnimatedSources().Get(property) != source) {
+    MutableNonInheritedAnimatedSourcesInternal().Set(property, source);
+  }
+}
+
+void ComputedStyleBuilder::SetAnimatedSource(CSSPropertyID property,
+                                             Element& animating_element) {
+  // ForElement() may allocate through DOMNodeIds; only do that when
+  // setting an animated source.
+  if (!RuntimeEnabledFeatures::TrackAnimatedSourcesEnabled()) {
+    return;
+  }
+  const std::optional<AnimatedSourceProperty> tracked =
+      GetAnimatedSourceProperty(property);
+  if (!tracked) {
+    return;
+  }
+  UpdateAnimatedSource(*tracked, CSSProperty::Get(property).IsInherited(),
+                       AnimatedSource::ForElement(&animating_element));
+}
+
+void ComputedStyleBuilder::CopyAnimatedSourceFrom(
+    CSSPropertyID property,
+    const ComputedStyle* parent_style,
+    bool has_untracked_dependencies) {
+  if (!RuntimeEnabledFeatures::TrackAnimatedSourcesEnabled()) {
+    return;
+  }
+  const std::optional<AnimatedSourceProperty> tracked =
+      GetAnimatedSourceProperty(property);
+  if (!tracked) {
+    return;
+  }
+  if (!parent_style) {
+    ClearAnimatedSource(property);
+    return;
+  }
+  if (AnimatedSource source = parent_style->GetAnimatedSource(property);
+      source.IsValid()) {
+    source.has_untracked_dependencies = has_untracked_dependencies;
+    UpdateAnimatedSource(*tracked, CSSProperty::Get(property).IsInherited(),
+                         source);
+  } else {
+    ClearAnimatedSource(property);
+  }
+}
+
+void ComputedStyleBuilder::ClearAnimatedSource(CSSPropertyID property) {
+  if (!RuntimeEnabledFeatures::TrackAnimatedSourcesEnabled()) {
+    return;
+  }
+  const std::optional<AnimatedSourceProperty> tracked =
+      GetAnimatedSourceProperty(property);
+  if (!tracked) {
+    return;
+  }
+  // Compares through the shared group first to avoid a copy-on-write when
+  // already clear.
+  if (CSSProperty::Get(property).IsInherited()) {
+    if (InheritedAnimatedSources().Get(*tracked).IsValid()) {
+      MutableInheritedAnimatedSourcesInternal().Clear(*tracked);
+    }
+  } else if (NonInheritedAnimatedSources().Get(*tracked).IsValid()) {
+    MutableNonInheritedAnimatedSourcesInternal().Clear(*tracked);
   }
 }
 
