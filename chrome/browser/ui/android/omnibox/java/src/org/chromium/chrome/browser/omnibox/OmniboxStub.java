@@ -42,6 +42,9 @@ public interface OmniboxStub {
      */
     boolean isUrlBarFocused();
 
+    /** Selects all text in the omnibox. */
+    void selectAllText();
+
     /**
      * Get the {@link VoiceRecognitionHandler}.
      *

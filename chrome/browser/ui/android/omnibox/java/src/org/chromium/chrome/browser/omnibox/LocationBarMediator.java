@@ -3411,6 +3411,15 @@ class LocationBarMediator
         return mUrlHasFocus;
     }
 
+    @Override
+    public void selectAllText() {
+        if (mUrlCoordinator == null) return;
+        if (mCurrentInput != null) {
+            mCurrentInput.commitPreviewText().setSelection(TextSelection.SELECT_ALL);
+        }
+        mUrlCoordinator.selectAllText();
+    }
+
     /** {@link OmniboxStub#loadUrlFromVoice(String)} */
     @Override
     public void loadUrlFromVoice(String query) {

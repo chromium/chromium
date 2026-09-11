@@ -262,6 +262,12 @@ public class UrlBarCoordinator
         mUrlBar.clearTextSelection();
     }
 
+    /** Selects all text in the UrlBar and synchronizes selection state. */
+    public void selectAllText() {
+        mUrlBar.selectAll();
+        mMediator.setSelection(TextSelection.SELECT_ALL);
+    }
+
     @Override
     public int getSelectionStart() {
         return mUrlBar.getSelectionStart();

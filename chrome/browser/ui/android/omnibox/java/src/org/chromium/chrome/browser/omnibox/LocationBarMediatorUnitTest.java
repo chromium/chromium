@@ -5740,4 +5740,20 @@ public class LocationBarMediatorUnitTest {
         assertEquals(DisplayState.DRAFTING, mSessionState.getAutocompleteInput().getDisplayState());
         assertAutocompleteState(AutocompleteState.STANDBY);
     }
+
+    @Test
+    public void testSelectAllText() {
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        clearInvocations(mUrlCoordinator);
+
+        mSessionState.getAutocompleteInput().setPreviewText("preview");
+        assertTrue(mSessionState.getAutocompleteInput().hasPreviewText());
+
+        mMediator.selectAllText();
+
+        assertFalse(mSessionState.getAutocompleteInput().hasPreviewText());
+        assertEquals("preview", mSessionState.getAutocompleteInput().getUserText());
+        assertEquals(TextSelection.SELECT_ALL, mSessionState.getAutocompleteInput().getSelection());
+        verify(mUrlCoordinator).selectAllText();
+    }
 }

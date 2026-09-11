@@ -2462,6 +2462,12 @@ public class ToolbarManager
         return mLocationBar.getOmniboxStub().isUrlBarFocused();
     }
 
+    /** Selects all text in the URL bar. */
+    public void selectAllUrlBarText() {
+        if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
+        mLocationBar.getOmniboxStub().selectAllText();
+    }
+
     /** Returns the UrlBar text excluding the autocomplete text. */
     public String getUrlBarTextWithoutAutocomplete() {
         assert mLocationBar instanceof LocationBarCoordinator

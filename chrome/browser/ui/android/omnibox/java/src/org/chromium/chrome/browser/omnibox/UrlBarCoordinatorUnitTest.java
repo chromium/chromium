@@ -216,4 +216,10 @@ public class UrlBarCoordinatorUnitTest {
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ false);
         verify(mUrlBar).setCursorVisible(false);
     }
+
+    @Test
+    public void testSelectAllText_delegates() {
+        mCoordinator.selectAllText();
+        verify(mUrlBar).selectAll();
+    }
 }
