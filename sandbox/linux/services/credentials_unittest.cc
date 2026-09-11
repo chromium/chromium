@@ -87,8 +87,8 @@ SANDBOX_TEST(Credentials, DropAllCaps) {
 SANDBOX_TEST(Credentials, MoveToNewUserNS) {
   CHECK(Credentials::DropAllCapabilities());
   bool moved_to_new_ns = Credentials::MoveToNewUserNS();
-  UNSAFE_TODO(fprintf(stdout, "Unprivileged CLONE_NEWUSER supported: %s\n",
-                      moved_to_new_ns ? "true." : "false."));
+  fprintf(stdout, "Unprivileged CLONE_NEWUSER supported: %s\n",
+          moved_to_new_ns ? "true." : "false.");
   fflush(stdout);
   if (!moved_to_new_ns) {
     fprintf(stdout, "This kernel does not support unprivileged namespaces. "
