@@ -1544,6 +1544,8 @@ void PDFiumPage::PopulateAnnotationLinks() {
   int start_pos = 0;
   FPDF_LINK link_annot;
   FPDF_PAGE page = GetPage();
+  // Make sure `page` stays valid for the duration of the loop.
+  ScopedPageUnloadPreventer scoped_unload_preventer(this);
   while (FPDFLink_Enumerate(page, &start_pos, &link_annot)) {
     Link link;
     Area area = GetLinkTarget(link_annot, &link.target);
