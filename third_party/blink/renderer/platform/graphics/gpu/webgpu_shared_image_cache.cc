@@ -196,24 +196,6 @@ void WebGpuSharedImageLease::DrawToBackingSharedImage(
   }
 }
 
-void WebGpuSharedImageLease::WriteToBackingSharedImage(
-    base::FunctionRef<
-        gpu::SyncToken(const scoped_refptr<gpu::ClientSharedImage>&,
-                       const gpu::SyncToken&)> overwrite_callback) {
-  if (IsGpuContextLost()) {
-    return;
-  }
-
-  gpu::SyncToken external_write_sync_token =
-      overwrite_callback(resource_.shared_image_, resource_.sync_token_);
-
-  if (IsGpuContextLost()) {
-    return;
-  }
-
-  WaitSyncToken(external_write_sync_token);
-}
-
 std::optional<gpu::SyncToken> WebGpuSharedImageLease::CopyToBackingSharedImage(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     uint32_t src_x,

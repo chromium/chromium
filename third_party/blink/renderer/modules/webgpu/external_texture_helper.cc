@@ -416,14 +416,15 @@ ExternalTexture CreateExternalTexture(
     // `use_copy_to_shared_image` is true. Below we are going to copy the
     // contents of that visible rect into the leased
     // SharedImage, completely overwriting the SharedImage.
-    lease->WriteToBackingSharedImage(
-        [&](const scoped_refptr<gpu::ClientSharedImage>& client_si,
-            const gpu::SyncToken& begin_sync_token) {
-          // The returned sync token is from the SharedGpuContext.
-          return video_renderer->CopyVideoFrameToSharedImage(
-              raster_context_provider, std::move(media_video_frame), client_si,
-              begin_sync_token, /*use_visible_rect=*/true);
-        });
+    if (!lease->IsGpuContextLost()) {
+      gpu::SyncToken sync_token = video_renderer->CopyVideoFrameToSharedImage(
+          raster_context_provider, std::move(media_video_frame),
+          lease->GetSharedImage(), lease->GetSyncToken(),
+          /*use_visible_rect=*/true);
+      if (!lease->IsGpuContextLost()) {
+        lease->WaitSyncToken(sync_token);
+      }
+    }
   } else {
     // Delegate video transformation to Dawn.
     if (media_video_frame->HasSharedImage()) {

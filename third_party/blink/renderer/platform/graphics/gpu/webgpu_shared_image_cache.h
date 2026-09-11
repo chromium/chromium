@@ -167,15 +167,6 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
   void DrawToBackingSharedImage(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
-  // Invokes `overwrite_callback` with the ClientSharedImage backing this
-  // instance and a SyncToken that should be waited on before writing to the
-  // contents. When the callback finishes, it should return the SyncToken
-  // that should be waited on to ensure that the service-side operations of the
-  // overwrite have completed.
-  void WriteToBackingSharedImage(
-      base::FunctionRef<
-          gpu::SyncToken(const scoped_refptr<gpu::ClientSharedImage>&,
-                         const gpu::SyncToken&)> overwrite_callback);
 
   std::optional<gpu::SyncToken> CopyToBackingSharedImage(
       const scoped_refptr<gpu::ClientSharedImage>& shared_image,
@@ -184,6 +175,7 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
       const gpu::SyncToken& ready_sync_token);
 
   void WaitSyncToken(const gpu::SyncToken& sync_token);
+  bool IsGpuContextLost() const;
 
   // CanvasMemoryDumpClient implementation.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
@@ -191,7 +183,6 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
 
  private:
   gpu::raster::RasterInterface* RasterInterface() const;
-  bool IsGpuContextLost() const;
 
   Resource resource_;
   base::WeakPtr<WebGpuSharedImageCache> cache_;

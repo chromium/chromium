@@ -253,28 +253,5 @@ TEST_F(WebGpuSharedImageCacheTest, ReuseBeforeCleanUp) {
   EXPECT_EQ(0u, size);
 }
 
-TEST_F(WebGpuSharedImageCacheTest, WriteToBackingSharedImage) {
-  auto resource_size = gfx::Size(10, 10);
-  std::unique_ptr<WebGpuSharedImageLease> lease = cache_->LeaseSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, resource_size,
-      gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-
-  gpu::SyncToken initial_token = lease->GetSyncToken();
-  gpu::SyncToken test_token(gpu::CommandBufferNamespace::GPU_IO,
-                            gpu::CommandBufferId::FromUnsafeValue(1), 42);
-
-  bool callback_invoked = false;
-  lease->WriteToBackingSharedImage(
-      [&](const scoped_refptr<gpu::ClientSharedImage>& client_si,
-          const gpu::SyncToken& begin_sync_token) {
-        callback_invoked = true;
-        EXPECT_EQ(client_si, lease->GetSharedImage());
-        EXPECT_EQ(begin_sync_token, initial_token);
-        return test_token;
-      });
-
-  EXPECT_TRUE(callback_invoked);
-  EXPECT_EQ(lease->GetSyncToken(), test_token);
-}
 
 }  // namespace blink
