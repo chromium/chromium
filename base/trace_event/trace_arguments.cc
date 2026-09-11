@@ -220,9 +220,9 @@ TraceArguments::TraceArguments(int num_args,
 
   size_ = static_cast<unsigned char>(num_args);
   for (size_t n = 0; n < size_; ++n) {
-    UNSAFE_TODO(types_[n]) = UNSAFE_TODO(arg_types[n]);
-    UNSAFE_TODO(names_[n]) = UNSAFE_TODO(arg_names[n]);
-    UNSAFE_TODO(values_[n]).as_uint = UNSAFE_TODO(arg_values[n]);
+    types_[n] = UNSAFE_TODO(arg_types[n]);
+    names_[n] = UNSAFE_TODO(arg_names[n]);
+    values_[n].as_uint = UNSAFE_TODO(arg_values[n]);
   }
 }
 
@@ -235,15 +235,15 @@ void TraceArguments::CopyStringsTo(StringStorage* storage,
   if (copy_all_strings) {
     alloc_size += GetAllocLength(*extra_string);
     for (size_t n = 0; n < size_; ++n) {
-      alloc_size += GetAllocLength(UNSAFE_TODO(names_[n]));
+      alloc_size += GetAllocLength(names_[n]);
     }
   }
   for (size_t n = 0; n < size_; ++n) {
-    if (copy_all_strings && UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_STRING) {
-      UNSAFE_TODO(types_[n]) = TRACE_VALUE_TYPE_COPY_STRING;
+    if (copy_all_strings && types_[n] == TRACE_VALUE_TYPE_STRING) {
+      types_[n] = TRACE_VALUE_TYPE_COPY_STRING;
     }
-    if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_COPY_STRING) {
-      alloc_size += GetAllocLength(UNSAFE_TODO(values_[n]).as_string);
+    if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING) {
+      alloc_size += GetAllocLength(values_[n].as_string);
     }
   }
 
@@ -254,12 +254,12 @@ void TraceArguments::CopyStringsTo(StringStorage* storage,
     if (copy_all_strings) {
       CopyTraceEventParameter(&ptr, extra_string, end);
       for (size_t n = 0; n < size_; ++n) {
-        CopyTraceEventParameter(&ptr, &UNSAFE_TODO(names_[n]), end);
+        CopyTraceEventParameter(&ptr, &names_[n], end);
       }
     }
     for (size_t n = 0; n < size_; ++n) {
-      if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_COPY_STRING) {
-        CopyTraceEventParameter(&ptr, &UNSAFE_TODO(values_[n]).as_string, end);
+      if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING) {
+        CopyTraceEventParameter(&ptr, &values_[n].as_string, end);
       }
     }
 #if DCHECK_IS_ON()
@@ -269,12 +269,12 @@ void TraceArguments::CopyStringsTo(StringStorage* storage,
         DCHECK(storage->Contains(*extra_string));
       }
       for (size_t n = 0; n < size_; ++n) {
-        UNSAFE_TODO(DCHECK(storage->Contains(names_[n])));
+        DCHECK(storage->Contains(names_[n]));
       }
     }
     for (size_t n = 0; n < size_; ++n) {
-      if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_COPY_STRING) {
-        UNSAFE_TODO(DCHECK(storage->Contains(values_[n].as_string)));
+      if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING) {
+        DCHECK(storage->Contains(values_[n].as_string));
       }
     }
 #endif  // DCHECK_IS_ON()

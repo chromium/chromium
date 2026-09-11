@@ -1553,7 +1553,7 @@ TEST_F(FilePathTest, ReferencesParentWithNUL) {
 
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
 TEST_F(FilePathTest, NormalizePathSeparators) {
-  const struct UnaryTestData cases[] = {
+  const auto cases = std::to_array<UnaryTestData>({
       {FPL("foo/bar"), FPL("foo\\bar")},
       {FPL("foo/bar\\betz"), FPL("foo\\bar\\betz")},
       {FPL("foo\\bar"), FPL("foo\\bar")},
@@ -1585,13 +1585,12 @@ TEST_F(FilePathTest, NormalizePathSeparators) {
       {FPL("foo//bar///"), FPL("foo\\\\bar\\\\\\")},
       {FPL("foo/\\bar/\\"), FPL("foo\\\\bar\\\\")},
       {FPL("/\\foo\\/bar"), FPL("\\\\foo\\\\bar")},
-  };
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    FilePath input(UNSAFE_TODO(cases[i].input));
+  });
+  for (const auto& test_case : cases) {
+    FilePath input(test_case.input);
     FilePath observed = input.NormalizePathSeparators();
-    EXPECT_EQ(FilePath::StringType(UNSAFE_TODO(cases[i].expected)),
-              observed.value())
-        << "i: " << i << ", input: " << input.value();
+    EXPECT_EQ(FilePath::StringType(test_case.expected), observed.value())
+        << "input: " << input.value();
   }
 }
 #endif
@@ -1621,7 +1620,7 @@ TEST_F(FilePathTest, AsEndingWithSeparator) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(FilePathTest, ContentUriTest) {
-  const struct UnaryBooleanTestData cases[] = {
+  const auto cases = std::to_array<UnaryBooleanTestData>({
       {FPL("content://foo.bar"), true},
       {FPL("content://foo.bar/"), true},
       {FPL("content://foo/bar"), true},
@@ -1637,13 +1636,12 @@ TEST_F(FilePathTest, ContentUriTest) {
       {FPL("content:/dir/foo.bar"), false},
       {FPL("content: //foo.bar"), false},
       {FPL("content%2a%2f%2f"), false},
-  };
+  });
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    FilePath input(UNSAFE_TODO(cases[i].input));
+  for (const auto& test_case : cases) {
+    FilePath input(test_case.input);
     bool observed = input.IsContentUri();
-    EXPECT_EQ(UNSAFE_TODO(cases[i].expected), observed)
-        << "i: " << i << ", input: " << input.value();
+    EXPECT_EQ(test_case.expected, observed) << "input: " << input.value();
   }
 }
 #endif

@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -610,11 +611,11 @@ class BASE_EXPORT TraceArguments {
   // Destructor. NOTE: Intentionally inlined (see note above).
   ~TraceArguments() {
     for (size_t n = 0; n < size_; ++n) {
-      if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_CONVERTABLE) {
-        delete UNSAFE_TODO(values_[n]).as_convertable;
+      if (types_[n] == TRACE_VALUE_TYPE_CONVERTABLE) {
+        delete values_[n].as_convertable;
       }
-      if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_PROTO) {
-        delete UNSAFE_TODO(values_[n]).as_proto;
+      if (types_[n] == TRACE_VALUE_TYPE_PROTO) {
+        delete values_[n].as_proto;
       }
     }
   }
@@ -635,9 +636,9 @@ class BASE_EXPORT TraceArguments {
 
   // Accessors
   size_t size() const { return size_; }
-  const unsigned char* types() const { return types_; }
-  const char* const* names() const { return names_; }
-  const TraceValue* values() const { return values_; }
+  const unsigned char* types() const { return types_.data(); }
+  const char* const* names() const { return names_.data(); }
+  const TraceValue* values() const { return values_.data(); }
 
   // Use |storage| to copy all copyable strings.
   // If |copy_all_strings| is false, then only the TRACE_VALUE_TYPE_COPY_STRING
@@ -654,9 +655,9 @@ class BASE_EXPORT TraceArguments {
 
  private:
   unsigned char size_ = 0;
-  unsigned char types_[kMaxSize];
-  const char* names_[kMaxSize];
-  TraceValue values_[kMaxSize];
+  std::array<unsigned char, kMaxSize> types_;
+  std::array<const char*, kMaxSize> names_;
+  std::array<TraceValue, kMaxSize> values_;
 };
 
 }  // namespace trace_event

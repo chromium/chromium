@@ -8,6 +8,7 @@
 
 #include <array>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -790,12 +791,11 @@ TEST(FileTest, ReadWriteDataToLargeOffset) {
                         File::FLAG_DELETE_ON_CLOSE));
   ASSERT_TRUE(file.IsValid());
 
-  const char kData[] = "this file is sparse.";
-  constexpr size_t kDataLen = sizeof(kData) - 1;
+  constexpr std::string_view kData = "this file is sparse.";
   const int64_t kLargeFileOffset = (1LL << 31);
 
-  std::optional<size_t> bytes_written = file.Write(
-      kLargeFileOffset - kDataLen - 1, as_byte_span(kData).first(kDataLen));
+  std::optional<size_t> bytes_written =
+      file.Write(kLargeFileOffset - kData.size() - 1, as_byte_span(kData));
 
   // If the file fails to write, it is probably we are running out of disk space
   // and the file system doesn't support sparse file.
@@ -803,17 +803,15 @@ TEST(FileTest, ReadWriteDataToLargeOffset) {
     return;
   }
 
-  ASSERT_EQ(kDataLen, *bytes_written);
+  ASSERT_EQ(kData.size(), *bytes_written);
 
   // Now, try reading the content.
-  char data_read[kDataLen];
+  std::array<char, kData.size()> data_read;
   std::optional<size_t> bytes_read = file.Read(
-      kLargeFileOffset - kDataLen - 1, as_writable_byte_span(data_read));
+      kLargeFileOffset - kData.size() - 1, as_writable_byte_span(data_read));
 
-  ASSERT_EQ(kDataLen, bytes_read);
-  for (int i = 0; i < bytes_read; i++) {
-    EXPECT_EQ(UNSAFE_TODO(kData[i]), UNSAFE_TODO(data_read[i]));
-  }
+  ASSERT_EQ(kData.size(), bytes_read);
+  EXPECT_EQ(std::string_view(data_read), kData);
 }
 #endif  // !BUILDFLAG(IS_WIN)
 

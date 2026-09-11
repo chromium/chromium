@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
@@ -73,8 +74,8 @@ namespace base::strings {
 namespace {
 const size_t kSSizeMaxConst = ((size_t)(ssize_t)-1) >> 1;
 
-const char kUpCaseHexDigits[] = "0123456789ABCDEF";
-const char kDownCaseHexDigits[] = "0123456789abcdef";
+constexpr std::string_view kUpCaseHexDigits = "0123456789ABCDEF";
+constexpr std::string_view kDownCaseHexDigits = "0123456789abcdef";
 }  // namespace
 
 #if defined(NDEBUG)
@@ -396,8 +397,8 @@ bool Buffer::IToASCII(bool sign,
       }
     } else {
       started = true;
-      UNSAFE_TODO(Out((upcase ? kUpCaseHexDigits
-                              : kDownCaseHexDigits)[num % base + minint]));
+      Out((upcase ? kUpCaseHexDigits
+                  : kDownCaseHexDigits)[num % base + minint]);
     }
 
     minint = 0;

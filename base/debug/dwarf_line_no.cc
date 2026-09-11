@@ -60,8 +60,8 @@ struct ProgramInfo {
 
   // Store the file number table offsets.
   mutable unsigned int num_filenames = 1;
-  mutable uint64_t filename_offsets[kMaxFilenames];
-  mutable uint8_t filename_dirs[kMaxFilenames];
+  mutable std::array<uint64_t, kMaxFilenames> filename_offsets;
+  mutable std::array<uint8_t, kMaxFilenames> filename_dirs;
 
   unsigned int OpcodeToAdvance(uint8_t adjusted_opcode) const {
     // Special opcodes advance line numbers by an amount based on line_range
@@ -236,10 +236,9 @@ void EvaluateLineNumberProgram(const int fd,
 
         if (registers->last_file < kMaxFilenames) {
           info->module_filename_offset =
-              UNSAFE_TODO(program_info->filename_offsets[registers->last_file]);
+              program_info->filename_offsets[registers->last_file];
 
-          uint8_t dir =
-              UNSAFE_TODO(program_info->filename_dirs[registers->last_file]);
+          uint8_t dir = program_info->filename_dirs[registers->last_file];
           info->module_dir_offset = program_info->directory_offsets[dir];
           info->dir_size = program_info->directory_sizes[dir];
         }
@@ -335,9 +334,8 @@ void EvaluateLineNumberProgram(const int fd,
                 ++program_info.num_filenames;
                 // Store the offset from the start of file and skip the data to
                 // save memory.
-                UNSAFE_TODO(program_info.filename_offsets[cur_filename]) =
-                    filename_offset;
-                UNSAFE_TODO(program_info.filename_dirs[cur_filename]) =
+                program_info.filename_offsets[cur_filename] = filename_offset;
+                program_info.filename_dirs[cur_filename] =
                     static_cast<uint8_t>(value);
               }
 
@@ -576,10 +574,8 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReaderBase* reader,
     size_t cur_filename = program_info->num_filenames;
     if (cur_filename < kMaxFilenames && value < kMaxDirectories) {
       ++program_info->num_filenames;
-      UNSAFE_TODO(program_info->filename_offsets[cur_filename]) =
-          filename_offset;
-      UNSAFE_TODO(program_info->filename_dirs[cur_filename]) =
-          static_cast<uint8_t>(value);
+      program_info->filename_offsets[cur_filename] = filename_offset;
+      program_info->filename_dirs[cur_filename] = static_cast<uint8_t>(value);
     }
 
     // Modification time

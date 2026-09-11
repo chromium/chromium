@@ -440,16 +440,15 @@ void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
 
   if (edges_capacity_ == 0 && num_free_edges_ > 0) {
     // Still space in the inline storage, so use that.
-    UNSAFE_TODO(edges_.inline_edges[num_edges()]) =
-        AhoCorasickEdge{label, node};
+    edges_.inline_edges[num_edges()] = AhoCorasickEdge{label, node};
     if (label == kFailureNodeLabel) {
       // Make sure that kFailureNodeLabel is first.
       // NOTE: We don't use std::swap here, because the compiler doesn't
       // understand that inline_edges[] is 4-aligned and can give
       // a warning or error.
       AhoCorasickEdge temp = edges_.inline_edges[0];
-      edges_.inline_edges[0] = UNSAFE_TODO(edges_.inline_edges[num_edges()]);
-      UNSAFE_TODO(edges_.inline_edges[num_edges()]) = temp;
+      edges_.inline_edges[0] = edges_.inline_edges[num_edges()];
+      edges_.inline_edges[num_edges()] = temp;
     }
     --num_free_edges_;
     return;

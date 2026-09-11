@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <set>
 #include <string_view>
@@ -186,9 +187,9 @@ class BASE_EXPORT SubstringSetMatcher {
     const AhoCorasickEdge* edges() const {
       // NOTE: Returning edges_.inline_edges here is fine, because it's
       // the first thing in the struct (see the comment on edges_).
-      DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(edges_.inline_edges) %
+      DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(edges_.inline_edges.data()) %
                         alignof(AhoCorasickEdge));
-      return edges_capacity_ == 0 ? edges_.inline_edges : edges_.edges;
+      return edges_capacity_ == 0 ? edges_.inline_edges.data() : edges_.edges;
     }
 
     NodeID failure() const {
@@ -289,7 +290,7 @@ class BASE_EXPORT SubstringSetMatcher {
       RAW_PTR_EXCLUSION AhoCorasickEdge* edges;
 
       // Inline edge storage, used if edges_capacity_ == 0.
-      AhoCorasickEdge inline_edges[kNumInlineEdges];
+      std::array<AhoCorasickEdge, kNumInlineEdges> inline_edges;
     } edges_;
 
     // Whether we have an edge for kMatchIDLabel or kOutputLinkLabel,
