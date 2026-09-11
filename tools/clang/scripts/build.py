@@ -1068,6 +1068,8 @@ def main():
       )
       # TODO(crbug.com/549080734): remove once we roll past this revision
       GitCherryPick(LLVM_DIR, '061865f32607cd064ab944407cc863186702d6f1')
+      # TODO(crbug.com/559560868): remove once we roll past this revision
+      GitCherryPick(LLVM_DIR, 'b8007a8e4020b8bca2b12e941660e10bf5bf6716')
 
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)
