@@ -61,7 +61,11 @@ export class OmniboxEverywhereOmniboxElement extends
   }
 
   override get showContextEntrypoint(): boolean {
-    return false;
+    return this.isFuseboxEnabled;
+  }
+
+  override openContextMenu(): void {
+    this.onContextMenuEntrypointClick_();
   }
 
   static get is() {

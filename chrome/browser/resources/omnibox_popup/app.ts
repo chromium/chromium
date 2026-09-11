@@ -264,8 +264,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
 
     const entrypoint = this.getContextualEntrypointButton_();
     if (entrypoint) {
-      entrypoint.hasPopupFocus = this.selection.state ===
-          SelectionLineState.kFocusedButtonContextEntrypoint;
+      entrypoint.hasPopupFocus = this.isContextEntrypointVirtualFocused();
     }
   }
 

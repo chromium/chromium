@@ -445,8 +445,7 @@ export class OmniboxPopupSearchboxElement extends
 
         const entrypoint = this.getContextualEntrypointButton();
         if (entrypoint) {
-          entrypoint.hasPopupFocus = this.selection.state ===
-              SelectionLineState.kFocusedButtonContextEntrypoint;
+          entrypoint.hasPopupFocus = this.isContextEntrypointVirtualFocused();
         }
       }
     } else {

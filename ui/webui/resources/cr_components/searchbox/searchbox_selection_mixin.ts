@@ -119,6 +119,7 @@ export interface SearchboxSelectionMixinInterface {
 
   onSelectionChanged(e: CustomEvent<{value: OmniboxPopupSelection}>): void;
   isAiModeVirtualFocused(): boolean;
+  isContextEntrypointVirtualFocused(): boolean;
 }
 
 export type SearchboxSelectionMixinBase = CrLitElement;
@@ -159,6 +160,11 @@ export const SearchboxSelectionMixin = <
 
     isAiModeVirtualFocused(): boolean {
       return this.selection_.state === SelectionLineState.kFocusedButtonAim;
+    }
+
+    isContextEntrypointVirtualFocused(): boolean {
+      return this.selection_.state ===
+          SelectionLineState.kFocusedButtonContextEntrypoint;
     }
 
     getAvailableSelections(result: AutocompleteResult|null):

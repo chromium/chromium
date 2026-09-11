@@ -79,6 +79,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
                   .inputState="${this.inputState_}"
                   .energyEffectAnimationEnabled="${
                       this.energyEffectAnimationEnabled_}"
+                  .hasPopupFocus="${this.isContextEntrypointVirtualFocused()}"
                   @context-menu-entrypoint-click="${
       this.onContextMenuEntrypointClick_}">
               </cr-composebox-contextual-entrypoint-button>

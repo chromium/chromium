@@ -608,6 +608,101 @@ suite('OmniboxEverywhereOmniboxTest', () => {
             result, selection, SelectionDirection.kBackward,
             SelectionStep.kStateOrLine));
       });
+
+  test('showContextEntrypoint reflects isFuseboxEnabled', async () => {
+    assertTrue(omnibox.showContextEntrypoint);
+
+    testProxy.page.updateAimPopupEligibility(false);
+    await microtasksFinished();
+
+    assertFalse(omnibox.showContextEntrypoint);
+  });
+
+  test(
+      'Tab navigates to contextual entrypoint when dropdown is visible',
+      async () => {
+        omnibox.virtualFocusEnabled = true;
+        omnibox.dropdownIsVisible = true;
+        const match =
+            createSearchMatchForTesting({allowedToBeDefaultMatch: true});
+        const result = createAutocompleteResultForTesting({matches: [match]});
+        omnibox.activeQueryId = 0;
+        testProxy.page.autocompleteResultChanged(result);
+        await microtasksFinished();
+
+        assertEquals(0, omnibox.selection.line);
+        assertEquals(SelectionLineState.kNormal, omnibox.selection.state);
+
+        // Tab 1 -> AIM button.
+        const tabEvent1 = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        });
+        omnibox.$.input.inputElement.dispatchEvent(tabEvent1);
+        await microtasksFinished();
+        assertTrue(tabEvent1.defaultPrevented);
+        assertEquals(
+            SelectionLineState.kFocusedButtonAim, omnibox.selection.state);
+
+        // Tab 2 -> Contextual entrypoint button.
+        const tabEvent2 = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        });
+        omnibox.$.input.inputElement.dispatchEvent(tabEvent2);
+        await microtasksFinished();
+        assertTrue(tabEvent2.defaultPrevented);
+        assertEquals(
+            SelectionLineState.kFocusedButtonContextEntrypoint,
+            omnibox.selection.state);
+
+        const entrypoint =
+            omnibox.shadowRoot.querySelector<ContextualEntrypointButtonElement>(
+                '#context')!;
+        assertTrue(entrypoint.hasPopupFocus);
+      });
+
+  test(
+      'Enter on virtually focused contextual entrypoint triggers ' +
+          'showContextActionMenu',
+      async () => {
+        omnibox.virtualFocusEnabled = true;
+        omnibox.dropdownIsVisible = true;
+        const match = createSearchMatchForTesting();
+        omnibox.activeQueryId = 0;
+        testProxy.page.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: 0,
+              input: 'query',
+              matches: [match],
+            }));
+        await microtasksFinished();
+
+        omnibox.setSelection({
+          line: -1,
+          state: SelectionLineState.kFocusedButtonContextEntrypoint,
+          actionIndex: 0,
+        });
+        await microtasksFinished();
+
+        const enterEvent = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        });
+        omnibox.$.input.inputElement.dispatchEvent(enterEvent);
+        await microtasksFinished();
+
+        assertTrue(enterEvent.defaultPrevented);
+        const args = await testEverywhereProxy.handler.whenCalled(
+            'showContextActionMenu');
+        assertTrue(args !== undefined);
+      });
 });
 
 

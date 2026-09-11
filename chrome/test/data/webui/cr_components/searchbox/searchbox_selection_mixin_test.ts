@@ -119,6 +119,42 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     });
   });
 
+  test('isAiModeVirtualFocused', () => {
+    assertFalse(element.isAiModeVirtualFocused());
+
+    element.setSelection({
+      line: -1,
+      state: SelectionLineState.kFocusedButtonAim,
+      actionIndex: 0,
+    });
+    assertTrue(element.isAiModeVirtualFocused());
+
+    element.setSelection({
+      line: 0,
+      state: SelectionLineState.kNormal,
+      actionIndex: 0,
+    });
+    assertFalse(element.isAiModeVirtualFocused());
+  });
+
+  test('isContextEntrypointVirtualFocused', () => {
+    assertFalse(element.isContextEntrypointVirtualFocused());
+
+    element.setSelection({
+      line: -1,
+      state: SelectionLineState.kFocusedButtonContextEntrypoint,
+      actionIndex: 0,
+    });
+    assertTrue(element.isContextEntrypointVirtualFocused());
+
+    element.setSelection({
+      line: 0,
+      state: SelectionLineState.kNormal,
+      actionIndex: 0,
+    });
+    assertFalse(element.isContextEntrypointVirtualFocused());
+  });
+
   test('stepCyclesSelection', () => {
     const match1 = createAutocompleteMatch();
     const match2 = createAutocompleteMatch();
