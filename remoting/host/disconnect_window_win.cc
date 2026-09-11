@@ -268,8 +268,40 @@ BOOL DisconnectWindowWin::OnDialogMessage(HWND hwnd,
 
       return TRUE;
 
+    // Intercept position changes to keep the dialog anchored and prevent
+    // external displacement or window manager repositioning.
+    case WM_WINDOWPOSCHANGING: {
+      WINDOWPOS* pos = reinterpret_cast<WINDOWPOS*>(lparam);
+      if (pos && !(pos->flags & SWP_NOMOVE) && expected_x().has_value() &&
+          expected_y().has_value()) {
+        if (ShouldRepositionOnDisplacement(pos->x, pos->y)) {
+          pos->x = *expected_x();
+          pos->y = *expected_y();
+        }
+      }
+      return FALSE;
+    }
+
+    // Block attempts to move or minimize the dialog via system commands.
+    case WM_SYSCOMMAND:
+      if ((wparam & 0xFFF0) == SC_MOVE || (wparam & 0xFFF0) == SC_MINIMIZE) {
+        return TRUE;
+      }
+      return FALSE;
+
+    // Restore the dialog if it somehow gets minimized.
+    case WM_SIZE:
+      if (wparam == SIZE_MINIMIZED) {
+        ShowWindow(hwnd_, SW_RESTORE);
+        ResetRepositionAttempts();
+        SetDialogPosition();
+        return TRUE;
+      }
+      return FALSE;
+
     // Ensure the dialog stays visible if the display dimensions change.
     case WM_DISPLAYCHANGE:
+      ResetRepositionAttempts();
       SetDialogPosition();
       return TRUE;
 
@@ -283,6 +315,7 @@ BOOL DisconnectWindowWin::OnDialogMessage(HWND hwnd,
     // See crbug.com/556249179.
     case WM_SETTINGCHANGE:
       if (wparam == SPI_SETWORKAREA) {
+        ResetRepositionAttempts();
         SetDialogPosition();
         return TRUE;
       }
