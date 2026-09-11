@@ -33,6 +33,9 @@ extern const char kHistogramGWSOnConnectedCalled[];
 extern const char kHistogramGWSMaxStreamLimitPendingDelay[];
 extern const char kHistogramGWSFastFetchOpportunityTimeLoaderStart[];
 extern const char kHistogramGWSFastFetchOpportunityTimeFetchStart[];
+extern const char kHistogramGWSQuicSessionEstablishmentReason[];
+extern const char kHistogramGWSQuicSessionNonReuseReason[];
+extern const char kHistogramGWSSessionCreationInitiator[];
 
 extern const char kHistogramGWSConnectTimingFirstRequestDomainLookupDelay[];
 extern const char
@@ -111,6 +114,9 @@ extern const char kHistogramSiteInstanceProcessAssignment2[];
 extern const char kHistogramPrerenderSuffix[];
 extern const char kHistogramNonPrerenderSuffix[];
 extern const char kHistogramDuplicateIgnoredSuffix[];
+extern const char kConnectionReuseSuffix[];
+extern const char kDNSReuseSuffix[];
+extern const char kNonConnectionReuseSuffix[];
 
 }  // namespace internal
 
@@ -277,6 +283,7 @@ class GWSPageLoadMetricsObserver
   NavigationSourceType source_type_ = kUnknown;
   net::HttpConnectionInfoCoarse http_connection_info_ =
       net::HttpConnectionInfoCoarse::kOTHER;
+  std::optional<ConnectionReuseStatus> connection_reuse_status_;
 
   std::optional<base::TimeDelta> aft_start_time_;
   std::optional<base::TimeDelta> aft_end_time_;
