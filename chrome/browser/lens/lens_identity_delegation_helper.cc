@@ -8,8 +8,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/lens/sapisid/sapisid_module_loader.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/optimization_guide/core/optimization_guide_library_holder.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -86,9 +87,11 @@ std::optional<std::string> GenerateSapisidHash(
     const std::string& sapisid_cookie,
     const std::string& origin,
     base::Time timestamp) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  auto* loader = sapisid::SapisidModuleLoader::GetInstance();
-  if (!loader || !loader->library().is_valid()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  optimization_guide::OptimizationGuideLibraryHolder* loader =
+      optimization_guide::OptimizationGuideLibraryHolder::GetInstance();
+  if (!loader) {
     return std::nullopt;
   }
   typedef int (*GenerateFunc)(const char*, const char*, const char*, int64_t,
@@ -96,9 +99,9 @@ std::optional<std::string> GenerateSapisidHash(
   typedef void (*FreeFunc)(char*);
 
   GenerateFunc generate_func = reinterpret_cast<GenerateFunc>(
-      loader->library().GetFunctionPointer("GenerateSapisidHash"));
-  FreeFunc free_func = reinterpret_cast<FreeFunc>(
-      loader->library().GetFunctionPointer("FreeSapisidHash"));
+      loader->GetFunctionPointer("GenerateSapisidHash"));
+  FreeFunc free_func =
+      reinterpret_cast<FreeFunc>(loader->GetFunctionPointer("FreeSapisidHash"));
 
   if (!generate_func || !free_func) {
     return std::nullopt;

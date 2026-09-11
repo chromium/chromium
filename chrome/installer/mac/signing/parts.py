@@ -190,7 +190,6 @@ def get_parts(config):
             (
                 'liboptimization_guide_internal.dylib',
                 'libchromecompaneros.dylib',
-                'libsapisid.dylib',
             )
         )
     for library in dylibs:

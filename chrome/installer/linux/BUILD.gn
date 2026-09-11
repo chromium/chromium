@@ -97,15 +97,6 @@ if (enable_swiftshader) {
   packaging_files_shlibs += [ "$root_out_dir/libvk_swiftshader.so" ]
 }
 
-if (is_chrome_branded) {
-  strip_binary("strip_sapisid") {
-    binary_input = "$root_out_dir/libsapisid.so"
-    deps = [ "//chrome/browser/internal/lens/sapisid:generate_sapisid_module" ]
-  }
-
-  packaging_files_shlibs += [ "$root_out_dir/libsapisid.so" ]
-}
-
 if (build_with_internal_optimization_guide) {
   packaging_files_shlibs +=
       [ "$root_out_dir/liboptimization_guide_internal.so" ]
@@ -495,12 +486,6 @@ group("installer_deps") {
     ":theme_files",
     "//chrome",
   ]
-  if (is_chrome_branded) {
-    public_deps += [
-      ":strip_sapisid",
-      "//chrome/browser/internal/lens/sapisid:generate_sapisid_module",
-    ]
-  }
   public_deps += [
     "//chrome:packed_resources",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:chrome_management_service",
