@@ -7,7 +7,10 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
@@ -76,6 +79,43 @@ class MidiPermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
         ExecuteJs(kWebContentsElementId,
                   "() => { navigator.requestMIDIAccess( { sysex: true } ) }"),
         WaitForShow(PermissionPromptBubbleBaseView::kMainViewId));
+  }
+
+  auto VerifyMidiIndicator(const gfx::VectorIcon* expected_rounded_icon,
+                           const gfx::VectorIcon* expected_old_icon,
+                           int expected_tooltip_string_id) {
+    return AfterShow(
+        ContentSettingImageModel::kMidiSysexIconElementId,
+        base::BindLambdaForTesting(
+            [this, expected_rounded_icon, expected_old_icon,
+             expected_tooltip_string_id](ui::TrackedElement* element) {
+              const gfx::VectorIcon* icon = nullptr;
+              const gfx::VectorIcon* icon_badge = nullptr;
+              std::u16string tooltip_text;
+              if (features::IsWebUILocationBarEnabled()) {
+                auto* location_bar = static_cast<WebUILocationBar*>(
+                    BrowserWindow::FromBrowser(browser())->GetLocationBar());
+                auto* model =
+                    location_bar->content_setting_image_control().GetModel(
+                        ContentSettingImageModel::ImageType::kMidiSysex);
+                ASSERT_TRUE(model);
+                icon = model->icon();
+                icon_badge = model->get_icon_badge();
+                tooltip_text = model->get_tooltip();
+              } else {
+                auto* element_view = AsView<ContentSettingImageView>(element);
+                ASSERT_TRUE(element_view);
+                icon = element_view->get_icon_for_testing();
+                icon_badge = element_view->get_icon_badge_for_testing();
+                tooltip_text = element_view->get_tooltip_text_for_testing();
+              }
+              EXPECT_EQ(icon, features::IsRoundedIconsEnabled()
+                                  ? expected_rounded_icon
+                                  : expected_old_icon);
+              EXPECT_EQ(icon_badge, &gfx::VectorIcon::EmptyIcon());
+              EXPECT_EQ(tooltip_text,
+                        l10n_util::GetStringUTF16(expected_tooltip_string_id));
+            }));
   }
 
  protected:
@@ -156,20 +196,9 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
       NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kBlockButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      AfterShow(ContentSettingImageModel::kMidiSysexIconElementId,
-                base::BindOnce([](ui::TrackedElement* element) {
-                  auto* element_view = AsView<ContentSettingImageView>(element);
-                  EXPECT_EQ(
-                      element_view->get_icon_for_testing(),
-                      &(features::IsRoundedIconsEnabled()
-                            ? vector_icons::kPianoOffIcon
-                            : vector_icons::kMidiOffChromeRefreshOldIcon));
-                  EXPECT_EQ(element_view->get_icon_badge_for_testing(),
-                            &gfx::VectorIcon::EmptyIcon());
-                  EXPECT_EQ(element_view->get_tooltip_text_for_testing(),
-                            l10n_util::GetStringUTF16(
-                                IDS_BLOCKED_MIDI_SYSEX_MESSAGE));
-                })));
+      VerifyMidiIndicator(&vector_icons::kPianoOffIcon,
+                          &vector_icons::kMidiOffChromeRefreshOldIcon,
+                          IDS_BLOCKED_MIDI_SYSEX_MESSAGE));
 }
 
 // Display in-use indicator of MIDI when allowed.
@@ -179,17 +208,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
       NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      AfterShow(ContentSettingImageModel::kMidiSysexIconElementId,
-                base::BindOnce([](ui::TrackedElement* element) {
-                  auto* element_view = AsView<ContentSettingImageView>(element);
-                  EXPECT_EQ(element_view->get_icon_for_testing(),
-                            &(features::IsRoundedIconsEnabled()
-                                  ? vector_icons::kPianoIcon
-                                  : vector_icons::kMidiChromeRefreshOldIcon));
-                  EXPECT_EQ(element_view->get_icon_badge_for_testing(),
-                            &gfx::VectorIcon::EmptyIcon());
-                  EXPECT_EQ(element_view->get_tooltip_text_for_testing(),
-                            l10n_util::GetStringUTF16(
-                                IDS_ALLOWED_MIDI_SYSEX_MESSAGE));
-                })));
+      VerifyMidiIndicator(&vector_icons::kPianoIcon,
+                          &vector_icons::kMidiChromeRefreshOldIcon,
+                          IDS_ALLOWED_MIDI_SYSEX_MESSAGE));
 }
