@@ -156,12 +156,13 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   setInputText(text: string) {
     markOnce('SearchboxInputElement::setInputText:StartupStart');
     this.onSetInputText_(text);
-    markOnce('SearchboxInputElement::setInputText:StartupEnd');
-    // Records a user timing mark after the initial startup input text has been
-    // painted and presented to the display.
-    afterNextPaint(() => {
-      markOnce('SearchboxInputElement::setInputText:StartupRendered');
-    });
+    if (markOnce('SearchboxInputElement::setInputText:StartupEnd')) {
+      // Records a user timing mark after the initial startup input text has
+      // been painted and presented to the display.
+      afterNextPaint(() => {
+        markOnce('SearchboxInputElement::setInputText:StartupRendered');
+      });
+    }
   }
 
   setInput(update: InputUpdate) {
@@ -237,8 +238,8 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
 
     this.updateInput_({text: inputValue, inline: ''});
     // Record a user timing mark if the input has content.
-    if (inputValue.length > 0) {
-      markOnce('SearchboxInputElement::onInputInput_:HasContent');
+    if (inputValue.length > 0 &&
+        markOnce('SearchboxInputElement::onInputInput_:HasContent')) {
       // Records a user timing mark after the user's typed character echo and
       // trailing caret have been painted to the display.
       afterNextPaint(() => {
