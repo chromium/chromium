@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -15,7 +16,6 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
