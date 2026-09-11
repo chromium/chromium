@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
@@ -315,6 +316,10 @@ void ClipboardPromise::HandleReadWithPermission(
     return;
   }
 
+  if (RejectIfDocumentNotFocused()) {
+    return;
+  }
+
   // Snapshot the sequence number before format enumeration so a clipboard
   // change during the async IPC will be detected by getType() (fail-closed).
   // See crbug.com/498411773.
@@ -484,6 +489,10 @@ void ClipboardPromise::HandleReadTextWithPermission(
     return;
   }
 
+  if (RejectIfDocumentNotFocused()) {
+    return;
+  }
+
   // Non-Mac platforms proceed directly to an asynchronous OS clipboard read so
   // the renderer main thread is not blocked. Tracks crbug.com/474131935.
   system_clipboard->ReadPlainText(
@@ -517,6 +526,10 @@ void ClipboardPromise::OnPlatformPermissionResultForReadText(
     return;
   }
 
+  if (RejectIfDocumentNotFocused()) {
+    return;
+  }
+
   system_clipboard->ReadPlainText(
       mojom::blink::ClipboardBuffer::kStandard,
       BindOnce(&ClipboardPromise::OnReadPlainText, WrapPersistent(this)));
@@ -543,6 +556,10 @@ void ClipboardPromise::OnPlatformPermissionResultForRead(
   }
 
   if (RejectIfClipboardChangedSincePasteStart(*system_clipboard)) {
+    return;
+  }
+
+  if (RejectIfDocumentNotFocused()) {
     return;
   }
 
@@ -684,9 +701,7 @@ void ClipboardPromise::ValidatePreconditions(
   LocalDOMWindow& window = *To<LocalDOMWindow>(context);
   DCHECK(window.IsSecureContext());  // [SecureContext] in IDL
 
-  if (!window.document()->hasFocus()) {
-    script_promise_resolver_->RejectWithDOMException(
-        DOMExceptionCode::kNotAllowedError, "Document is not focused.");
+  if (RejectIfDocumentNotFocused()) {
     return;
   }
 
@@ -787,6 +802,24 @@ bool ClipboardPromise::RejectIfClipboardChangedSincePasteStart(
   script_promise_resolver_->RejectWithDOMException(
       DOMExceptionCode::kDataError,
       "Clipboard contents changed since paste event started.");
+  return true;
+}
+
+bool ClipboardPromise::RejectIfDocumentNotFocused() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* window = To<LocalDOMWindow>(GetExecutionContext());
+
+  // Trusted surfaces (WebUI, DevTools, chrome-untrusted, and Isolated Web Apps)
+  // are exempt from the focus requirement. See the corresponding browser-side
+  // check in ContentBrowserClient::IsClipboardPasteAllowed().
+  LocalFrame* frame = window->GetFrame();
+  const bool clipboard_focus_exempt =
+      frame && frame->GetSettings()->GetClipboardFocusExempt();
+  if (clipboard_focus_exempt || window->document()->hasFocus()) {
+    return false;
+  }
+  script_promise_resolver_->RejectWithDOMException(
+      DOMExceptionCode::kNotAllowedError, "Document is not focused.");
   return true;
 }
 

@@ -1874,6 +1874,14 @@ class ChromeContentBrowserClientClipboardTest : public InProcessBrowserTest {
     rfh->GetRenderWidgetHost()->SimulateUserInteraction(event);
     ASSERT_TRUE(content::ExecJs(rfh, "// no-op"));
   }
+
+  // Focuses `rfh` via window.focus(). This relies on ExecJs's synthetic user
+  // gesture and therefore does not set WebContents::HasRecentInteraction().
+  void FocusFrame(content::RenderFrameHost* rfh) {
+    content::FrameFocusedObserver focus_observer(rfh);
+    ASSERT_TRUE(content::ExecJs(rfh, "window.focus()"));
+    focus_observer.Wait();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -1917,6 +1925,10 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
   // frame without setting WebContents::HasRecentInteraction().
   ASSERT_TRUE(content::ExecJs(child_rfh, "// no-op"));
 
+  // The requesting frame must also be focused to read the clipboard. Focusing
+  // via window.focus() keeps WebContents::HasRecentInteraction() false.
+  ASSERT_NO_FATAL_FAILURE(FocusFrame(child_rfh));
+
   EXPECT_FALSE(web_contents->HasRecentInteraction());
   EXPECT_TRUE(child_rfh->HasTransientUserActivation());
   EXPECT_TRUE(IsClipboardPasteAllowed(child_rfh));
@@ -1939,6 +1951,8 @@ IN_PROC_BROWSER_TEST_F(
             sibling_child->GetRenderWidgetHost());
 
   ASSERT_NO_FATAL_FAILURE(SimulateUserInteraction(activated_child));
+
+  ASSERT_NO_FATAL_FAILURE(FocusFrame(activated_child));
 
   EXPECT_TRUE(web_contents->HasRecentInteraction());
   EXPECT_TRUE(main_rfh->HasTransientUserActivation());
@@ -1967,6 +1981,8 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_NO_FATAL_FAILURE(SimulateUserInteraction(activated_child));
 
+  ASSERT_NO_FATAL_FAILURE(FocusFrame(activated_child));
+
   EXPECT_TRUE(web_contents->HasRecentInteraction());
   EXPECT_TRUE(main_rfh->HasTransientUserActivation());
   EXPECT_TRUE(activated_child->HasTransientUserActivation());
@@ -1974,6 +1990,41 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(IsClipboardPasteAllowed(main_rfh));
   EXPECT_TRUE(IsClipboardPasteAllowed(activated_child));
   EXPECT_FALSE(IsClipboardPasteAllowed(nested_child));
+}
+
+// Verify that a frame still needs to be focused in order to read the
+// clipboard even if it has transient user activation.
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
+                       PasteAllowedByActivation_RequiresFrameFocus) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::RenderFrameHost* rfh = browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame();
+
+  // Arm transient user activation via ExecJs's synthetic user gesture.
+  ASSERT_TRUE(content::ExecJs(rfh, "// no-op"));
+  rfh->GetRenderWidgetHost()->Focus();
+  ASSERT_TRUE(rfh->HasTransientUserActivation());
+
+  // Activation on a focused frame is allowed.
+  EXPECT_TRUE(rfh->IsFocused());
+  EXPECT_TRUE(IsClipboardPasteAllowed(rfh));
+
+  // Blur does not clear transient activation, but an unfocused frame must not
+  // be allowed to read the clipboard on activation alone.
+  rfh->GetRenderWidgetHost()->Blur();
+  EXPECT_FALSE(rfh->IsFocused());
+  EXPECT_TRUE(rfh->HasTransientUserActivation());
+  EXPECT_FALSE(IsClipboardPasteAllowed(rfh));
+
+  // Restoring focus allows clipboard access again.
+  rfh->GetRenderWidgetHost()->Focus();
+  EXPECT_TRUE(rfh->IsFocused());
+  EXPECT_TRUE(IsClipboardPasteAllowed(rfh));
 }
 
 // Verifies that even when persistent clipboard permission is granted,

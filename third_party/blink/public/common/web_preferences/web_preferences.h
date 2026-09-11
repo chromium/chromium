@@ -72,6 +72,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool text_areas_are_resizable = true;
   bool allow_scripts_to_close_windows = false;
   bool allow_unrestricted_window_focus = false;
+  bool clipboard_focus_exempt = false;
   bool remote_fonts_enabled = true;
   bool javascript_can_access_clipboard = false;
   // We don't use dns_prefetching_enabled to disable DNS prefetching.  Instead,

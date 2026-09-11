@@ -209,6 +209,47 @@ TEST_F(ClipboardTest, ClipboardPromiseReadText) {
       mojom::blink::PermissionService::Name_, {});
 }
 
+// Focus is validated synchronously when readText() is invoked, but the document
+// can lose focus during the asynchronous permission round-trip, before the
+// clipboard is actually read. The read must be rejected in that case rather
+// than leaking clipboard contents copied while the page was unfocused.
+TEST_F(ClipboardTest, ReadTextRejectedWhenFocusLostBeforePermissionResponse) {
+  V8TestingScope scope;
+  ExecutionContext* executionContext = GetFrame().DomWindow();
+  WritePlainTextToClipboard("SensitiveClipboardData");
+
+  // Grant permission, but drop the document's focus while the permission
+  // request is being handled -- i.e. after the synchronous precondition check
+  // in ValidatePreconditions() but before the read continuation runs.
+  EXPECT_CALL(permission_service_, RequestPermission)
+      .WillOnce(WithArg<1>(
+          [this](mojom::blink::PermissionService::RequestPermissionCallback
+                     callback) {
+            SetPageFocus(false);
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::GRANTED, nullptr));
+          }));
+  BindMockPermissionService(executionContext);
+
+  SetSecureOrigin(executionContext);
+  // Focused at invocation time so ValidatePreconditions() passes.
+  SetPageFocus(true);
+
+  ScriptPromise<IDLString> promise = ClipboardPromise::CreateForReadText(
+      executionContext, scope.GetScriptState(), scope.GetExceptionState());
+  ScriptPromiseTester promise_tester(scope.GetScriptState(), promise);
+  promise_tester.WaitUntilSettled();  // Runs a nested event loop.
+
+  EXPECT_TRUE(promise_tester.IsRejected())
+      << "resolved with " << promise_tester.ValueAsString().Utf8();
+  EXPECT_EQ(promise_tester.ValueAsString(),
+            "NotAllowedError: Document is not focused.");
+
+  executionContext->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::PermissionService::Name_, {});
+}
+
 // Tests reading specific clipboard formats using ClipboardReadOptions.
 // Verifies that only requested formats are returned when clipboard contains
 // multiple formats.

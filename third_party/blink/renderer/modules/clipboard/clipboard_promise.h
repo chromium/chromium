@@ -123,6 +123,9 @@ class MODULES_EXPORT ClipboardPromise final
   // event started.
   bool RejectIfClipboardChangedSincePasteStart(SystemClipboard& clipboard);
 
+  // Reject the promise and return true if the document is not focused.
+  bool RejectIfDocumentNotFocused();
+
   // Returns the script state associated with the promise.
   ScriptState* GetScriptState() const;
   // ExecutionContextLifecycleObserver

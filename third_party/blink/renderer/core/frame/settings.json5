@@ -225,6 +225,15 @@
       initial: false,
     },
 
+    // Allows a page to be exempted from the Clipboard API document-focus
+    // requirement. This is intended for when the top-level document is a
+    // trusted surface (WebUI, DevTools, chrome-untrusted, or an Isolated
+    // Web App). See ContentBrowserClient::IsClipboardPasteAllowed().
+    {
+      name: "clipboardFocusExempt",
+      initial: false,
+    },
+
     // FIXME: This should really be disabled by default as it makes platforms that
     // don't support the feature download files they can't use by.
     // Leaving enabled for now to not change existing behavior.

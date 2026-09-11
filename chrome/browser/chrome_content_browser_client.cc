@@ -887,6 +887,11 @@ bool IsIsolatedWebAppOrigin(const url::Origin& origin) {
 #endif
 }
 
+bool IsClipboardFocusExemptOrigin(const url::Origin& main_frame_origin) {
+  return content::HasWebUIOrigin(main_frame_origin) ||
+         IsIsolatedWebAppOrigin(main_frame_origin);
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 bool IsIsolatedWebAppUrl(const GURL& url) {
@@ -4901,6 +4906,9 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
   web_prefs->is_indigo_onboarding =
       indigo::IndigoOnboardingDialog::IsOnboardingWebContents(web_contents);
 #endif
+
+  web_prefs->clipboard_focus_exempt = IsClipboardFocusExemptOrigin(
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(
@@ -4919,6 +4927,11 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   const auto autoplay_policy = GetAutoplayPolicyForWebContents(web_contents);
   prefs_changed |= (web_prefs->autoplay_policy != autoplay_policy);
   web_prefs->autoplay_policy = autoplay_policy;
+
+  const bool clipboard_focus_exempt = IsClipboardFocusExemptOrigin(
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  prefs_changed |= web_prefs->clipboard_focus_exempt != clipboard_focus_exempt;
+  web_prefs->clipboard_focus_exempt = clipboard_focus_exempt;
 
 #if !BUILDFLAG(IS_ANDROID)
   const bool require_transient_activation_for_get_display_media =
@@ -7898,19 +7911,31 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
 
+  // Standard web pages must hold frame focus to read clipboard data,
+  // preventing background tabs and subframes from scraping the clipboard.
+  //
+  // Trusted WebUI system apps (e.g., ChromeOS Files App), Isolated Web Apps,
+  // and DevTools are exempted because they often invoke clipboard commands
+  // via context menus, background UIs, or standalone windows where the page
+  // lacks focus (including in automated browser tests).
+  const url::Origin& main_frame_origin =
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
+  const bool is_focused_or_is_trusted_origin =
+      IsClipboardFocusExemptOrigin(main_frame_origin) ||
+      render_frame_host->IsFocused();
+
   // Paste requires either (1) transient user activation on the requesting
   // frame, ...
   // Transient user activation propagates from descendants to ancestors; see
   // https://html.spec.whatwg.org/multipage/interaction.html#user-activation-processing-model.
-  if (render_frame_host->HasTransientUserActivation()) {
+  if (render_frame_host->HasTransientUserActivation() &&
+      is_focused_or_is_trusted_origin) {
     return true;
   }
 
   // (2) granted web permission, ...
   content::BrowserContext* browser_context =
       render_frame_host->GetBrowserContext();
-  const url::Origin& main_frame_origin =
-      render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
   content::PermissionController* permission_controller =
       browser_context->GetPermissionController();
   blink::mojom::PermissionStatus status =
@@ -7919,25 +7944,9 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
               CreatePermissionDescriptorForPermissionType(
                   blink::PermissionType::CLIPBOARD_READ_WRITE),
           render_frame_host);
-  if (status == blink::mojom::PermissionStatus::GRANTED) {
-    // Standard web pages must hold frame focus to read clipboard data,
-    // preventing background tabs and subframes from scraping the clipboard.
-    //
-    // Trusted WebUI system apps (e.g., ChromeOS Files App), Isolated Web Apps,
-    // and DevTools are exempted because they often invoke clipboard commands
-    // via context menus, background UIs, or standalone windows where the page
-    // lacks focus (including in automated browser tests).
-    //
-    // We check the main frame's committed origin directly (rather than
-    // GetLastCommittedURL) to preserve origin inheritance for initial empty
-    // documents (e.g., about:blank popups created by trusted system apps),
-    // while ensuring sandboxed frames with opaque origins evaluate to an empty
-    // scheme and are safely excluded (see docs/security/origin-vs-url.md).
-    if (content::HasWebUIOrigin(main_frame_origin) ||
-        IsIsolatedWebAppOrigin(main_frame_origin) ||
-        render_frame_host->IsFocused()) {
-      return true;
-    }
+  if (status == blink::mojom::PermissionStatus::GRANTED &&
+      is_focused_or_is_trusted_origin) {
+    return true;
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

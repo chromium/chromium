@@ -329,6 +329,10 @@ void WebSettingsImpl::SetAllowUnrestrictedWindowFocus(bool allow) {
   settings_->SetAllowUnrestrictedWindowFocus(allow);
 }
 
+void WebSettingsImpl::SetClipboardFocusExempt(bool exempt) {
+  settings_->SetClipboardFocusExempt(exempt);
+}
+
 void WebSettingsImpl::SetWideViewportQuirkEnabled(
     bool wide_viewport_quirk_enabled) {
   settings_->SetWideViewportQuirkEnabled(wide_viewport_quirk_enabled);

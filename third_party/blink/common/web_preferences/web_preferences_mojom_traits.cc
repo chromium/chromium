@@ -68,6 +68,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->text_areas_are_resizable = data.text_areas_are_resizable();
   out->allow_scripts_to_close_windows = data.allow_scripts_to_close_windows();
   out->allow_unrestricted_window_focus = data.allow_unrestricted_window_focus();
+  out->clipboard_focus_exempt = data.clipboard_focus_exempt();
   out->remote_fonts_enabled = data.remote_fonts_enabled();
   out->javascript_can_access_clipboard = data.javascript_can_access_clipboard();
   out->dns_prefetching_enabled = data.dns_prefetching_enabled();

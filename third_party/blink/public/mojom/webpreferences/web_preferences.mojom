@@ -138,6 +138,7 @@ struct WebPreferences {
   bool text_areas_are_resizable;
   bool allow_scripts_to_close_windows;
   bool allow_unrestricted_window_focus;
+  bool clipboard_focus_exempt;
   bool remote_fonts_enabled;
   bool javascript_can_access_clipboard;
   // We don't use dns_prefetching_enabled to disable DNS prefetching.  Instead,
