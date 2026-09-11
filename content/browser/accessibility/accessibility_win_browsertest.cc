@@ -4913,24 +4913,31 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   CheckTextAtOffset(textarea_text, 46, IA2_TEXT_BOUNDARY_LINE, 32,
                     contents_string_length, L"\"KHTML, like\".\n");
 
+  // An offset one past the last character should return the last line which is
+  // blank. This is represented by Blink with yet another line break.
+  CheckTextAtOffset(textarea_text, contents_string_length,
+                    IA2_TEXT_BOUNDARY_LINE, contents_string_length,
+                    (contents_string_length + 1), L"\n");
+
   {
-    // There should be no text at an offset one past the last character.
+    // There should be no text after the blank line.
     LONG start_offset = 0;
     LONG end_offset = 0;
     base::win::ScopedBstr text;
     EXPECT_EQ(S_FALSE, textarea_text->get_textAtOffset(
-                           contents_string_length, IA2_TEXT_BOUNDARY_LINE,
+                           (contents_string_length + 1), IA2_TEXT_BOUNDARY_LINE,
                            &start_offset, &end_offset, text.Receive()));
 
     // Test special offsets.
     EXPECT_EQ(S_FALSE, textarea_text->get_textAtOffset(
                            IA2_TEXT_OFFSET_LENGTH, IA2_TEXT_BOUNDARY_LINE,
                            &start_offset, &end_offset, text.Receive()));
-
-    EXPECT_EQ(S_FALSE, textarea_text->get_textAtOffset(
-                           IA2_TEXT_OFFSET_CARET, IA2_TEXT_BOUNDARY_LINE,
-                           &start_offset, &end_offset, text.Receive()));
   }
+
+  // The caret should have moved to the blank line.
+  CheckTextAtOffset(textarea_text, IA2_TEXT_OFFSET_CARET,
+                    IA2_TEXT_BOUNDARY_LINE, contents_string_length,
+                    (contents_string_length + 1), L"\n");
 }
 
 IN_PROC_BROWSER_TEST_F(

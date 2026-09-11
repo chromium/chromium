@@ -1043,11 +1043,10 @@ std::pair<Text*, unsigned> TextControlElement::ResolveValueOffset(
   return {nullptr, 0};
 }
 
-Node* TextControlElement::CreatePlaceholderBreakElement() const {
+HTMLBRElement* TextControlElement::CreatePlaceholderBreakElement() const {
   auto* element = MakeGarbageCollected<HTMLBRElement>(GetDocument());
   element->setAttribute(html_names::kIdAttr,
                         shadow_element_names::kIdPlaceholderBreak);
-  element->setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
   return element;
 }
 
@@ -1090,7 +1089,10 @@ void TextControlElement::AdjustPlaceholderBreakElement() {
   if (!last_child && IsA<HTMLTextAreaElement>(this)) {
     // We need a placeholder break for an empty value in order to provide one
     // line-height and a baseline even if this element is not editable.
-    inner_editor->AppendChild(CreatePlaceholderBreakElement());
+    auto* placeholder_break = CreatePlaceholderBreakElement();
+    placeholder_break->setAttribute(html_names::kAriaHiddenAttr,
+                                    keywords::kTrue);
+    inner_editor->AppendChild(placeholder_break);
     return;
   }
   auto* last_child_text_node = DynamicTo<Text>(last_child);

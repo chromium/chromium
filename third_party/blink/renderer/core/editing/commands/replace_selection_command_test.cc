@@ -274,7 +274,7 @@ TEST_F(ReplaceSelectionCommandTest, InsertLineFeedsToTextArea) {
   EXPECT_TRUE(command.Apply());
   EXPECT_EQ(
       "<textarea><div><br>foo|<br>"
-      "<br aria-hidden=\"true\" id=\"textarea-placeholder-break\">"
+      "<br id=\"textarea-placeholder-break\">"
       "</div></textarea>",
       GetSelectionTextInFlatTreeFromBody(
           Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));

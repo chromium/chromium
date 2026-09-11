@@ -1,5 +1,5 @@
 // Select the 3rd word (AXSelectedTextMarkerRange).
-text_range={anchor: {:3, 0, down}, focus: {:3, 44, down}}
+text_range={anchor: {:3, 0, down}, focus: {:3, 45, down}}
 marker_0={:3, 0, down}
 marker_1={:3, 3, down}
 marker_2={:3, 9, down}
@@ -11,7 +11,7 @@ AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the 
 textarea.AXSelectedText='brown'
 textarea.accessibilitySelectedText='brown'
 // Select 2nd word on the 2nd line (AXSelectedTextMarkerRange).
-text_range={anchor: {:3, 0, down}, focus: {:3, 44, down}}
+text_range={anchor: {:3, 0, down}, focus: {:3, 45, down}}
 marker_0={:3, 0, down}
 marker_1={:3, 15, down}
 marker_2={:3, 19, down}

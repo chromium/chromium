@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control_multi_line.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
@@ -164,7 +165,9 @@ void HTMLTextAreaElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   auto* inner_editor = CreateInnerEditorElement();
   // We need a placeholder break for an empty value in order to provide one
   // line-height and a baseline even if this element is not editable.
-  inner_editor->AppendChild(CreatePlaceholderBreakElement());
+  auto* placeholder_break = CreatePlaceholderBreakElement();
+  placeholder_break->setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
+  inner_editor->AppendChild(placeholder_break);
   root.AppendChild(inner_editor);
 }
 

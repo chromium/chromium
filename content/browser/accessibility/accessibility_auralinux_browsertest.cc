@@ -468,17 +468,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   CheckTextAtOffset(atk_text, 46, ATK_TEXT_BOUNDARY_LINE_START, 32,
                     contents_string_length, "\"KHTML, like\".\n");
 
-  {
-    // There should be no text at an offset one past the last character.
-    int start_offset = 0;
-    int end_offset = 0;
-    char* text = atk_text_get_text_at_offset(atk_text, contents_string_length,
-                                             ATK_TEXT_BOUNDARY_LINE_START,
-                                             &start_offset, &end_offset);
-    EXPECT_EQ(0, start_offset);
-    EXPECT_EQ(0, end_offset);
-    EXPECT_EQ(nullptr, text);
-  }
+  // An offset one past the last character should return the last line which is
+  // blank. This is represented by Blink with yet another line break.
+  CheckTextAtOffset(atk_text, contents_string_length,
+                    ATK_TEXT_BOUNDARY_LINE_START, contents_string_length,
+                    (contents_string_length + 1), "\n");
 
   {
     // There should be no text after the blank line.

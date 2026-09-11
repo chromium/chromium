@@ -272,4 +272,29 @@ TEST_F(TextControlElementTest, TextAreaChangeEventOnElementRemoval) {
   }
 }
 
+TEST_F(TextControlElementTest, TextAreaPlaceholderBreakAriaHidden) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<textarea id='empty'></textarea>"
+      "<textarea id='trailing_newline'>abc\n</textarea>");
+  UpdateAllLifecyclePhases();
+
+  auto* empty_ta = To<HTMLTextAreaElement>(
+      GetDocument().getElementById(AtomicString("empty")));
+  auto* empty_break = To<Element>(empty_ta->InnerEditorElement()->lastChild());
+  ASSERT_TRUE(empty_break);
+  EXPECT_TRUE(TextControlElement::IsPlaceholderBreakElement(empty_break));
+  // An empty textarea placeholder break should be aria-hidden.
+  EXPECT_TRUE(empty_break->FastHasAttribute(html_names::kAriaHiddenAttr));
+
+  auto* newline_ta = To<HTMLTextAreaElement>(
+      GetDocument().getElementById(AtomicString("trailing_newline")));
+  auto* newline_break =
+      To<Element>(newline_ta->InnerEditorElement()->lastChild());
+  ASSERT_TRUE(newline_break);
+  EXPECT_TRUE(TextControlElement::IsPlaceholderBreakElement(newline_break));
+  // A trailing newline placeholder break must NOT be aria-hidden so that
+  // accessibility can expose the final blank line.
+  EXPECT_FALSE(newline_break->FastHasAttribute(html_names::kAriaHiddenAttr));
+}
+
 }  // namespace blink

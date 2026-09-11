@@ -38,6 +38,7 @@
 namespace blink {
 
 class ExceptionState;
+class HTMLBRElement;
 class V8SelectionMode;
 class OpaqueRange;
 
@@ -170,7 +171,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // value), meaning callers have no Text node to anchor geometry to.
   std::pair<Text*, unsigned> ResolveValueOffset(unsigned target) const;
 
-  Node* CreatePlaceholderBreakElement() const;
+  HTMLBRElement* CreatePlaceholderBreakElement() const;
   // Returns true if the specified node was created by
   // CreatePlaceholderBreakElement().
   static bool IsPlaceholderBreakElement(const Node* node);
