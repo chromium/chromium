@@ -266,9 +266,6 @@ bool RegisterTransformers() {
   pref_mapping->RegisterPrefTransformer(
       prefs::kPrivacySandboxM1AdMeasurementEnabled,
       std::make_unique<PrivacySandboxTransformer>());
-  pref_mapping->RegisterPrefTransformer(
-      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-      std::make_unique<PrivacySandboxTransformer>());
 
   return true;
 }

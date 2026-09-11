@@ -58,7 +58,6 @@ const privacySandboxPrefsToTestOnlyAllowedToDisable = [{
     topicsEnabled: true,
     fledgeEnabled: true,
     adMeasurementEnabled: true,
-    relatedWebsiteSetsEnabled: true,
   },
 }];
 
