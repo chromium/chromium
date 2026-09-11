@@ -4,6 +4,7 @@
 
 #include "cc/mojom/render_frame_metadata_mojom_traits.h"
 
+#include <cmath>
 #include <string_view>
 
 #include "base/debug/crash_logging.h"
@@ -21,7 +22,7 @@ namespace {
 
 void SetFailedCheckCrashKey(std::string_view check_name) {
   static auto* const crash_key = base::debug::AllocateCrashKeyString(
-      "rfm_failed_check", base::debug::CrashKeySize::Size32);
+      "rfm_failed_check", base::debug::CrashKeySize::Size64);
   base::debug::SetCrashKeyString(crash_key, check_name);
 }
 
@@ -50,6 +51,42 @@ bool StructTraits<cc::mojom::BrowserControlsMetadataDataView,
   out->bottom_controls_min_height_offset =
       data.bottom_controls_min_height_offset();
 #endif
+
+  if (!std::isfinite(out->top_controls_height) ||
+      out->top_controls_height < 0.f) {
+    SetFailedCheckCrashKey("top_controls_height");
+    return false;
+  }
+  if (!std::isfinite(out->top_controls_shown_ratio) ||
+      out->top_controls_shown_ratio < 0.f ||
+      out->top_controls_shown_ratio > 1.f) {
+    SetFailedCheckCrashKey("top_controls_shown_ratio");
+    return false;
+  }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  if (!std::isfinite(out->bottom_controls_height) ||
+      out->bottom_controls_height < 0.f) {
+    SetFailedCheckCrashKey("bottom_controls_height");
+    return false;
+  }
+  if (!std::isfinite(out->bottom_controls_shown_ratio) ||
+      out->bottom_controls_shown_ratio < 0.f ||
+      out->bottom_controls_shown_ratio > 1.f) {
+    SetFailedCheckCrashKey("bottom_controls_shown_ratio");
+    return false;
+  }
+  if (!std::isfinite(out->top_controls_min_height_offset) ||
+      out->top_controls_min_height_offset < 0.f) {
+    SetFailedCheckCrashKey("top_controls_min_height_offset");
+    return false;
+  }
+  if (!std::isfinite(out->bottom_controls_min_height_offset) ||
+      out->bottom_controls_min_height_offset < 0.f) {
+    SetFailedCheckCrashKey("bottom_controls_min_height_offset");
+    return false;
+  }
+#endif
+
   return true;
 }
 
@@ -70,6 +107,34 @@ bool StructTraits<
   out->max_page_scale_factor = data.max_page_scale_factor();
   out->root_overflow_y_hidden = data.root_overflow_y_hidden();
   out->has_transparent_background = data.has_transparent_background();
+#endif
+
+  if (!std::isfinite(out->device_scale_factor) ||
+      out->device_scale_factor <= 0.f) {
+    SetFailedCheckCrashKey("device_scale_factor");
+    return false;
+  }
+  if (!std::isfinite(out->page_scale_factor) || out->page_scale_factor <= 0.f) {
+    SetFailedCheckCrashKey("page_scale_factor");
+    return false;
+  }
+  if (!std::isfinite(out->external_page_scale_factor) ||
+      out->external_page_scale_factor <= 0.f) {
+    SetFailedCheckCrashKey("external_page_scale_factor");
+    return false;
+  }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  if (!std::isfinite(out->min_page_scale_factor) ||
+      out->min_page_scale_factor < 0.f) {
+    SetFailedCheckCrashKey("min_page_scale_factor");
+    return false;
+  }
+  if (!std::isfinite(out->max_page_scale_factor) ||
+      out->max_page_scale_factor < 0.f ||
+      out->max_page_scale_factor < out->min_page_scale_factor) {
+    SetFailedCheckCrashKey("max_page_scale_factor");
+    return false;
+  }
 #endif
   if (!data.ReadBrowserControlsMetadata(&out->browser_controls_metadata)) {
     SetFailedCheckCrashKey("browser_controls_metadata");
