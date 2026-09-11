@@ -64,7 +64,6 @@ class ComposeboxQueryControllerBridge
   void RemoveAttachment(const std::string& token);
   bool IsFuseboxEligible();
   bool IsPdfUploadEligible();
-  bool IsCreateImagesEligible();
   void SetActiveTool(omnibox::ToolMode tool_mode);
   void SetActiveModel(omnibox::ModelMode model_mode);
 

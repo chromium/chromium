@@ -13,7 +13,6 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
@@ -42,7 +41,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
@@ -88,7 +86,6 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
-import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
@@ -274,11 +271,9 @@ import java.util.function.Supplier;
 
     private void setController(@Nullable ComposeboxQueryControllerBridge controller) {
         if (mComposeboxQueryControllerBridge != null) {
-            if (OmniboxFeatures.sShowModelPicker.getValue()) {
-                mComposeboxQueryControllerBridge
-                        .getInputStateSupplier()
-                        .removeObserver(mOnInputStateChanged);
-            }
+            mComposeboxQueryControllerBridge
+                    .getInputStateSupplier()
+                    .removeObserver(mOnInputStateChanged);
             mComposeboxQueryControllerBridge
                     .getSuggestedTabsSupplier()
                     .removeObserver(mOnSuggestedTabsChanged);
@@ -287,11 +282,9 @@ import java.util.function.Supplier;
         mComposeboxQueryControllerBridge = controller;
         if (mComposeboxQueryControllerBridge == null) return;
 
-        if (OmniboxFeatures.sShowModelPicker.getValue()) {
-            mComposeboxQueryControllerBridge
-                    .getInputStateSupplier()
-                    .addSyncObserverAndCallIfNonNull(mOnInputStateChanged);
-        }
+        mComposeboxQueryControllerBridge
+                .getInputStateSupplier()
+                .addSyncObserverAndCallIfNonNull(mOnInputStateChanged);
 
         mComposeboxQueryControllerBridge
                 .getSuggestedTabsSupplier()
@@ -300,9 +293,6 @@ import java.util.function.Supplier;
         mModel.set(
                 FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE,
                 mComposeboxQueryControllerBridge.isPdfUploadEligible());
-        if (!OmniboxFeatures.sShowModelPicker.getValue() && mProfile != null) {
-            updateClientControlledToolButtonList();
-        }
     }
 
     private void setModelList(@Nullable FuseboxAttachmentModelList modelList) {
@@ -437,8 +427,7 @@ import java.util.function.Supplier;
     /* package */ void activateSearchMode() {
         if (trySetRequestType(AutocompleteRequestType.SEARCH)) {
             assert mModelList != null;
-            if (OmniboxFeatures.sShowModelPicker.getValue()
-                    && mComposeboxQueryControllerBridge != null) {
+            if (mComposeboxQueryControllerBridge != null) {
                 InputState inputState =
                         mComposeboxQueryControllerBridge.getInputStateSupplier().get();
                 if (inputState != null) {
@@ -604,8 +593,7 @@ import java.util.function.Supplier;
         }
         updateModelForCurrentTab();
         updateModelForRecentTabs();
-        if (OmniboxFeatures.sShowModelPicker.getValue()
-                && mComposeboxQueryControllerBridge != null) {
+        if (mComposeboxQueryControllerBridge != null) {
             InputState inputState = mComposeboxQueryControllerBridge.getInputStateSupplier().get();
             if (inputState != null) {
                 updateModelForPopupInputState(inputState);
@@ -803,30 +791,9 @@ import java.util.function.Supplier;
         updateFuseboxState();
         mHasAttachmentsSupplier.set(!mModelList.isEmpty());
         updateAttachmentsVisibility();
-        if (!OmniboxFeatures.sShowModelPicker.getValue()) {
-            updateClientControlledToolButtonList();
-            updatePopupButtonEnabledStates();
-        }
-
         if (mNeedUnfocusOnCancel && hasUserAddedAttachments()) {
             mNeedUnfocusOnCancel = false;
         }
-    }
-
-    private boolean areAttachmentsCompatibleWithCreateImage() {
-        if (!isInInputSession()) return false;
-        for (MVCListAdapter.ListItem listItem : mModelList) {
-            if (listItem.type == FuseboxAttachmentType.ATTACHMENT_FILE) {
-                return false;
-            }
-            if (listItem.type == FuseboxAttachmentType.ATTACHMENT_TAB) {
-                return false;
-            }
-            if (listItem.type == FuseboxAttachmentType.ATTACHMENT_PDF) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private void onTabPickerClicked() {
@@ -987,18 +954,6 @@ import java.util.function.Supplier;
         }
     }
 
-    private String getRequestTypeButtonText(@AutocompleteRequestType int requestType) {
-        int stringRes =
-                switch (requestType) {
-                    case AutocompleteRequestType.AI_MODE -> R.string.ai_mode_entrypoint_label;
-                    case AutocompleteRequestType.IMAGE_GENERATION -> R.string.omnibox_create_image;
-                    case AutocompleteRequestType.DEEP_SEARCH -> R.string.ntp_compose_deep_search;
-                    case AutocompleteRequestType.CANVAS -> R.string.ntp_compose_canvas;
-                    default -> Resources.ID_NULL;
-                };
-        return stringRes == Resources.ID_NULL ? "" : mContext.getString(stringRes);
-    }
-
     private String getRequestTypeButtonText(InputState inputState) {
         if (inputState.activeTool == ToolMode.TOOL_MODE_UNSPECIFIED_VALUE) {
             return mContext.getString(R.string.ai_mode_entrypoint_label);
@@ -1014,9 +969,6 @@ import java.util.function.Supplier;
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType Integer type) {
         updateFuseboxState();
         mModel.set(FuseboxProperties.REQUEST_TYPE, type);
-        if (!OmniboxFeatures.sShowModelPicker.getValue()) {
-            mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, getRequestTypeButtonText(type));
-        }
 
         if (isInInputSession()) {
             if (!ToolModeUtils.isAimRequest(type)) {
@@ -1026,39 +978,16 @@ import java.util.function.Supplier;
             }
         }
 
-        if (OmniboxFeatures.sShowModelPicker.getValue()) {
-            if (!isInInputSession()) return;
-            InputState inputState = mComposeboxQueryControllerBridge.getInputStateSupplier().get();
-            if (inputState != null) {
-                onInputStateChange(inputState);
-            }
-        } else {
-            updateClientControlledToolButtonList();
-            updatePopupButtonEnabledStates();
+        if (!isInInputSession()) return;
+        InputState inputState =
+                mComposeboxQueryControllerBridge != null
+                        ? mComposeboxQueryControllerBridge.getInputStateSupplier().get()
+                        : null;
+        if (inputState != null) {
+            onInputStateChange(inputState);
         }
 
         updatePlusButtonBackgroundStyle();
-    }
-
-    private void updatePopupButtonEnabledStates() {
-        assert !OmniboxFeatures.sShowModelPicker.getValue();
-        if (!isInInputSession()) return;
-
-        // Disable Camera and Gallery Selection popup buttons if no remaining attachments are left.
-        boolean allowByCapacity = mModelList.getRemainingAttachments() > 0;
-        // Disables popup buttons for Current Tab, Tab Picker, and File selection if the
-        // autocomplete request is not image generation and if there are no remaining attachments.
-        boolean allowNonImage =
-                mInput.getRequestType() != AutocompleteRequestType.IMAGE_GENERATION
-                        && allowByCapacity;
-
-        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, allowNonImage);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED, allowNonImage);
-        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_ENABLED, allowNonImage);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED, allowByCapacity);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED, allowByCapacity);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED, allowNonImage);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED, allowNonImage);
     }
 
     private PopupButtonData createAiModeToolButtonData() {
@@ -1073,33 +1002,6 @@ import java.util.function.Supplier;
                 PopupButtonType.TOOL,
                 ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
                 /* hasColor= */ false);
-    }
-
-    private void updateClientControlledToolButtonList() {
-        assert !OmniboxFeatures.sShowModelPicker.getValue();
-        if (!isInInputSession()) return;
-        List<PopupButtonData> toolButtons = new ArrayList<>();
-        if (!mIsDesktopPlatform) {
-            toolButtons.add(createAiModeToolButtonData());
-        }
-
-        if (mComposeboxQueryControllerBridge.isCreateImagesEligible()) {
-            toolButtons.add(
-                    new PopupButtonData(
-                            this::onDynamicButtonClicked,
-                            mContext.getString(R.string.omnibox_create_image),
-                            IconResourceIds.BANANA_VALUE,
-                            areAttachmentsCompatibleWithCreateImage(),
-                            mInput.getRequestType() == AutocompleteRequestType.IMAGE_GENERATION,
-                            PopupButtonType.TOOL,
-                            ToolMode.TOOL_MODE_IMAGE_GEN_VALUE,
-                            /* hasColor= */ true));
-        }
-
-        boolean showTools = !toolButtons.isEmpty();
-        mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, showTools);
-        mModel.set(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE, false);
-        mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, toolButtons);
     }
 
     private void launchCamera() {
@@ -1297,7 +1199,6 @@ import java.util.function.Supplier;
     }
 
     private void onInputStateChange(InputState inputState) {
-        assert OmniboxFeatures.sShowModelPicker.getValue();
         // Note that some of the time that this method is called in the middle of beginInput(), so
         // checking avoid checking isInInputSession() or using mModelList.
 
@@ -1310,7 +1211,6 @@ import java.util.function.Supplier;
     }
 
     private void updateModelForPopupInputState(InputState inputState) {
-        assert OmniboxFeatures.sShowModelPicker.getValue();
 
         boolean disableTabsForCanvas = OmniboxFeatures.sOmniboxDisableTabsForCanvas.isEnabled();
         boolean isCanvasActive =
@@ -1461,7 +1361,6 @@ import java.util.function.Supplier;
     }
 
     private void setModelMode(int modelMode) {
-        assert OmniboxFeatures.sShowModelPicker.getValue();
         if (!isInInputSession()) return;
 
         hidePopup();

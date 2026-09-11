@@ -37,7 +37,6 @@ import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassificati
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.url.GURL;
 
@@ -70,7 +69,6 @@ public class FuseboxSessionStateUnitTest {
 
     @Test
     public void testSetActiveTool() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
         FuseboxSessionState session = new FuseboxSessionState();
         Runnable onFullyActivated =
                 () -> {
@@ -90,35 +88,10 @@ public class FuseboxSessionStateUnitTest {
     }
 
     @Test
-    public void testSetActiveTool_disabledShowModelPicker() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(false);
-        FuseboxSessionState session = new FuseboxSessionState();
-        Runnable onFullyActivated =
-                () -> {
-                    AutocompleteInput input = session.getAutocompleteInput();
-                    input.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-                    verify(mComposeboxQueryControllerBridge, never())
-                            .setActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
-                };
-
-        session.activate(
-                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
-        RobolectricUtil.runAllBackgroundAndUi();
-    }
-
-    @Test
     public void testRequestTypeObserver() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
         FuseboxSessionState session = new FuseboxSessionState();
         assertTrue(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
         session.destroy();
-        assertFalse(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
-    }
-
-    @Test
-    public void testRequestTypeObserver_disabledShowModelPicker() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(false);
-        FuseboxSessionState session = new FuseboxSessionState();
         assertFalse(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
     }
 
@@ -208,7 +181,6 @@ public class FuseboxSessionStateUnitTest {
 
     @Test
     public void testDestroy() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
         FuseboxSessionState session = new FuseboxSessionState();
         session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -304,6 +276,7 @@ public class FuseboxSessionStateUnitTest {
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
         session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
 
-        assertNull(session.getAutocompleteInput().getPreviewMatchUrl());
+        GURL previewMatchUrl = session.getAutocompleteInput().getPreviewMatchUrl();
+        assertNull(previewMatchUrl);
     }
 }

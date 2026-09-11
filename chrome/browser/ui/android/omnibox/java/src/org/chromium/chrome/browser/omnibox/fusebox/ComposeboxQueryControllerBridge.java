@@ -189,11 +189,6 @@ public class ComposeboxQueryControllerBridge {
         return ComposeboxQueryControllerBridgeJni.get().isPdfUploadEligible(mNativeInstance);
     }
 
-    /** Returns whether the user is eligible for creating images. */
-    boolean isCreateImagesEligible() {
-        return ComposeboxQueryControllerBridgeJni.get().isCreateImagesEligible(mNativeInstance);
-    }
-
     /**
      * @param toolMode The active tool to set.
      */
@@ -286,8 +281,6 @@ public class ComposeboxQueryControllerBridge {
         boolean isFuseboxEligibleForProfile(@JniType("Profile*") Profile profile);
 
         boolean isPdfUploadEligible(long nativeComposeboxQueryControllerBridge);
-
-        boolean isCreateImagesEligible(long nativeComposeboxQueryControllerBridge);
 
         void setActiveTool(
                 long nativeComposeboxQueryControllerBridge,

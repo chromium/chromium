@@ -438,12 +438,6 @@ bool ComposeboxQueryControllerBridge::IsPdfUploadEligible() {
   return aim_service && aim_service->IsPdfUploadEligible();
 }
 
-bool ComposeboxQueryControllerBridge::IsCreateImagesEligible() {
-  AimEligibilityService* aim_service =
-      AimEligibilityServiceFactory::GetForProfile(profile_);
-  return aim_service && aim_service->IsCreateImagesEligible();
-}
-
 void ComposeboxQueryControllerBridge::SetActiveTool(
     omnibox::ToolMode tool_mode) {
   if (input_state_model_) {
