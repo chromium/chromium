@@ -365,7 +365,6 @@ class Generator(generator.Generator):
       "is_enum_kind": mojom.IsEnumKind,
       "is_any_handle_kind": mojom.IsAnyHandleKind,
       "is_any_interface_kind": mojom.IsAnyInterfaceKind,
-      "is_interface_kind": mojom.IsInterfaceKind,
       "is_pending_remote_kind": mojom.IsPendingRemoteKind,
       "is_pending_receiver_kind": mojom.IsPendingReceiverKind,
       "is_map_kind": mojom.IsMapKind,
@@ -476,8 +475,6 @@ class Generator(generator.Generator):
   def _ClosureType(self, kind):
     if kind in mojom.PRIMITIVES:
       return _kind_to_closure_type[kind]
-    if mojom.IsInterfaceKind(kind):
-      return kind.module.namespace + "." + kind.name + "Ptr"
     if mojom.IsPendingRemoteKind(kind):
       return kind.kind.module.namespace + "." + kind.kind.name + "Ptr"
     if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind):
@@ -582,7 +579,7 @@ class Generator(generator.Generator):
         or mojom.IsEnumKind(kind)
       ):
         return name
-      if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
+      if mojom.IsPendingRemoteKind(kind):
         return name + "Remote"
       if mojom.IsPendingReceiverKind(kind):
         return name + "PendingReceiver"
@@ -735,7 +732,7 @@ class Generator(generator.Generator):
         or mojom.IsEnumKind(kind)
       ):
         return "%sSpec.$" % name
-      if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
+      if mojom.IsPendingRemoteKind(kind):
         return "mojo.internal.InterfaceProxy(%sRemote)" % name
       if mojom.IsPendingReceiverKind(kind):
         return "mojo.internal.InterfaceRequest(%sPendingReceiver)" % name
@@ -782,8 +779,6 @@ class Generator(generator.Generator):
       return "null"
     if mojom.IsMapKind(field.kind):
       return "null"
-    if mojom.IsInterfaceKind(field.kind):
-      return "new %sPtr()" % self._JavaScriptType(field.kind)
     if mojom.IsPendingRemoteKind(field.kind):
       return "new %sPtr()" % self._JavaScriptType(field.kind.kind)
     if mojom.IsPendingReceiverKind(field.kind):
@@ -842,11 +837,6 @@ class Generator(generator.Generator):
       array_length = "" if kind.length is None else ", %d" % kind.length
       element_type = self._ElementCodecType(kind.kind)
       return "new codec.%s(%s%s)" % (array_type, element_type, array_length)
-    if mojom.IsInterfaceKind(kind):
-      return "new codec.%s(%sPtr)" % (
-        "NullableInterface" if mojom.IsNullableKind(kind) else "Interface",
-        self._JavaScriptType(kind),
-      )
     if mojom.IsPendingRemoteKind(kind):
       return "new codec.%s(%sPtr)" % (
         "NullableInterface" if mojom.IsNullableKind(kind) else "Interface",
@@ -1091,8 +1081,6 @@ class Generator(generator.Generator):
   def _FuzzHandleName(self, kind):
     if mojom.IsPendingReceiverKind(kind):
       return '{0}.{1}Request'.format(kind.kind.module.namespace, kind.kind.name)
-    elif mojom.IsInterfaceKind(kind):
-      return '{0}.{1}Ptr'.format(kind.module.namespace, kind.name)
     elif mojom.IsPendingRemoteKind(kind):
       return '{0}.{1}Ptr'.format(kind.kind.module.namespace, kind.kind.name)
     elif mojom.IsPendingAssociatedReceiverKind(kind):

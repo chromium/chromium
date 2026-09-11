@@ -142,7 +142,7 @@ class Generator(generator.Generator):
       self._CollectArray(kind, is_in_js)
     elif mojom.IsMapKind(kind):
       self._CollectMap(kind, is_in_js)
-    elif mojom.IsAnyInterfaceKind(kind):
+    elif mojom.IsInterfaceKind(kind) or mojom.IsAnyInterfaceKind(kind):
       self._CollectInterface(kind, is_in_js)
     elif mojom.IsUnionKind(kind):
       self._CollectUnion(kind, is_in_js)

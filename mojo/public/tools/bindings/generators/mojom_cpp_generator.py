@@ -289,7 +289,6 @@ class Generator(generator.Generator):
         or mojom.IsDoubleKind(kind)
         or mojom.IsFloatKind(kind)
         or mojom.IsAnyHandleKind(kind)
-        or mojom.IsInterfaceKind(kind)
         or mojom.IsAssociatedKind(kind)
         or mojom.IsPendingRemoteKind(kind)
         or mojom.IsPendingReceiverKind(kind)
@@ -600,7 +599,6 @@ class Generator(generator.Generator):
       "is_primary_nullable_value_kind_packed_field": pack.IsPrimaryNullableValueKindPackedField,
       "is_full_header_required_for_import": self._IsFullHeaderRequiredForImport,
       "is_integral_kind": mojom.IsIntegralKind,
-      "is_interface_kind": mojom.IsInterfaceKind,
       "is_receiver_kind": self._IsReceiverKind,
       "is_native_only_kind": IsNativeOnlyKind,
       "is_any_handle_kind": mojom.IsAnyHandleKind,
@@ -991,10 +989,6 @@ class Generator(generator.Generator):
           kind.value_kind, add_same_module_namespaces=add_same_module_namespaces
         ),
       )
-    if mojom.IsInterfaceKind(kind):
-      return "%sPtrInfo" % self._GetNameForKind(
-        kind, add_same_module_namespaces=add_same_module_namespaces
-      )
     if mojom.IsPendingRemoteKind(kind):
       return "::mojo::PendingRemote<%s>" % self._GetNameForKind(
         kind.kind, add_same_module_namespaces=add_same_module_namespaces
@@ -1167,10 +1161,6 @@ class Generator(generator.Generator):
 
   def _GetCppWrapperCallType(self, kind, add_same_module_namespaces=False):
     # TODO: Remove this once interfaces are always passed as PtrInfo.
-    if mojom.IsInterfaceKind(kind):
-      return "%sPtr" % self._GetNameForKind(
-        kind, add_same_module_namespaces=add_same_module_namespaces
-      )
     return self._GetCppWrapperType(
       kind, add_same_module_namespaces=add_same_module_namespaces
     )
@@ -1181,10 +1171,6 @@ class Generator(generator.Generator):
     # TODO: Remove all usage of this method in favor of
     # _GetCppWrapperParamTypeNew. This requires all generated code which passes
     # interface handles to use PtrInfo instead of Ptr.
-    if mojom.IsInterfaceKind(kind):
-      return "%sPtr" % self._GetNameForKind(
-        kind, add_same_module_namespaces=add_same_module_namespaces
-      )
     cpp_wrapper_type = self._GetCppWrapperType(
       kind, add_same_module_namespaces=add_same_module_namespaces
     )
@@ -1236,7 +1222,7 @@ class Generator(generator.Generator):
         self._GetCppFieldType(kind.key_kind),
         _GetTypeForElement(kind.value_kind),
       )
-    if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
+    if mojom.IsPendingRemoteKind(kind):
       return "mojo::internal::Interface_Data"
     if mojom.IsPendingReceiverKind(kind):
       return "mojo::internal::Handle_Data"
@@ -1450,8 +1436,6 @@ class Generator(generator.Generator):
       )
     if mojom.IsStringKind(kind):
       return "mojo::StringDataView"
-    if mojom.IsInterfaceKind(kind):
-      return "%sPtrDataView" % _GetName(kind)
     if mojom.IsPendingRemoteKind(kind):
       return "mojo::InterfacePtrDataView<%sInterfaceBase>" % _GetName(kind.kind)
     if mojom.IsPendingReceiverKind(kind):

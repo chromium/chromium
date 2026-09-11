@@ -461,7 +461,7 @@ bool HandleResponse(
 {%-           for param in method.response_parameters -%}
 {%-             set name = param.name|camel_to_under %}
 {%-             set kind = param.kind %}
-{%-             if kind|is_interface_kind or kind|is_associated_kind %}
+{%-             if kind|is_associated_kind %}
       {{kind|cpp_wrapper_param_type(add_same_module_namespaces=true)}}(std::move(local_{{name}})){{ ',' if not loop.last }}
 {%-             else %}
       std::move(local_{{name}}){{ ',' if not loop.last }}

@@ -152,11 +152,7 @@ class {{message_typename}}
           {{message_name}},
           message_flags)
 {%-     for param in parameters -%}
-{%-       if param.kind|is_interface_kind %}
-      , param_{{param.name}}_(param_{{param.name}}.PassInterface())
-{%-       else %}
       , param_{{param.name}}_(std::move(param_{{param.name}}))
-{%-       endif %}
 {%-     endfor -%} {}
 
   {{message_typename}}(const {{message_typename}}&) = delete;
@@ -218,11 +214,7 @@ class {{message_typename}}
 
     impl->{{method.name}}(
 {%-       for param in parameters -%}
-{%-         if param.kind|is_interface_kind %}
-        {{param.kind|get_name_for_kind}}Ptr(std::move(param_{{param.name}}_))
-{%-         else %}
         std::move(param_{{param.name}}_)
-{%-         endif %}
         {%- if not loop.last -%}, {%- endif %}
 {%-       endfor %}
 {%-       if method.response_parameters != None %}
@@ -243,11 +235,7 @@ class {{message_typename}}
 
     std::move(*callback).Run(
 {%-       for param in parameters -%}
-{%-         if param.kind|is_interface_kind %}
-        {{param.kind|get_name_for_kind}}Ptr(std::move(param_{{param.name}}_))
-{%-         else %}
         std::move(param_{{param.name}}_)
-{%-         endif %}
         {%- if not loop.last -%}, {% endif -%}
 {%-       endfor -%});
   }
@@ -269,11 +257,7 @@ class {{message_typename}}
     }
 
 {%          for param in parameters -%}
-{%-           if param.kind|is_interface_kind %}
-    out_{{param.name}}->Bind(std::move(param_{{param.name}}_));
-{%-           else %}
     *out_{{param.name}} = std::move(param_{{param.name}}_);
-{%-           endif %}
 {%          endfor %}
   }
 {%-       endif -%}

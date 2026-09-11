@@ -131,6 +131,15 @@ class TranslateTest(unittest.TestCase):
       ),
       "?rca:x:SomeInterface",
     )
+    self.assertEqual(
+      translate._MapKind(
+        ast.Typename(
+          ast.Remote(ast.Identifier('SomeInterface'), associated=True),
+          nullable=True,
+        )
+      ),
+      "?rma:x:SomeInterface",
+    )
 
   def testSelfRecursiveUnions(self):
     """Verifies _UnionField() raises when a union is self-recursive."""

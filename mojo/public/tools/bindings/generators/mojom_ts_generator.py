@@ -418,7 +418,7 @@ class Generator(generator.Generator):
         return name
       if mojom.IsUnionKind(kind) or mojom.IsEnumKind(kind):
         return name
-      if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
+      if mojom.IsPendingRemoteKind(kind):
         return name + "Remote"
       if mojom.IsPendingReceiverKind(
         kind
@@ -580,7 +580,7 @@ class Generator(generator.Generator):
         or mojom.IsEnumKind(kind)
       ):
         return "%sSpec.$" % name
-      if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
+      if mojom.IsPendingRemoteKind(kind):
         return "mojo.internal.InterfaceProxy(%sRemote)" % name
       if mojom.IsPendingReceiverKind(kind):
         return "mojo.internal.InterfaceRequest(%sPendingReceiver)" % name

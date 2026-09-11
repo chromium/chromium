@@ -1806,8 +1806,7 @@ def IsAnyHandleKind(kind):
 
 def IsAnyInterfaceKind(kind):
   return (
-    IsInterfaceKind(kind)
-    or IsAssociatedKind(kind)
+    IsAssociatedKind(kind)
     or IsPendingRemoteKind(kind)
     or IsPendingReceiverKind(kind)
   )
@@ -1883,18 +1882,12 @@ def MethodPassesAssociatedKinds(method, visited_kinds=None):
   )
 
 
-# Determines whether a method passes interfaces.
-def MethodPassesInterfaces(method):
-  return _AnyMethodParameterRecursive(method, IsInterfaceKind)
-
-
 def MethodNeedsRemoteKind(method, kind_to_check, visited_kinds=None):
 
   def needs_remote_import(reference_kind):
     return (
       (
-        IsInterfaceKind(reference_kind)
-        or IsPendingRemoteKind(reference_kind)
+        IsPendingRemoteKind(reference_kind)
         or IsPendingAssociatedRemoteKind(reference_kind)
       )
       # if types are compared directly, it will fail

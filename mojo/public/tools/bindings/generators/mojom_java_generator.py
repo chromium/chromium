@@ -239,11 +239,7 @@ def AppendEncodeDecodeParams(initial_params, context, kind, bit):
       params.append(GetJavaTrueFalse(mojom.IsNullableKind(kind)))
   if mojom.IsArrayKind(kind):
     params.append(GetArrayExpectedLength(kind))
-  if mojom.IsInterfaceKind(kind):
-    params.append('%s.MANAGER' % GetJavaType(context, kind))
   if mojom.IsPendingRemoteKind(kind):
-    params.append('%s.MANAGER' % GetJavaType(context, kind.kind))
-  if mojom.IsArrayKind(kind) and mojom.IsInterfaceKind(kind.kind):
     params.append('%s.MANAGER' % GetJavaType(context, kind.kind))
   if mojom.IsArrayKind(kind) and mojom.IsPendingRemoteKind(kind.kind):
     params.append('%s.MANAGER' % GetJavaType(context, kind.kind.kind))
@@ -264,7 +260,7 @@ def DecodeMethod(context, kind, offset, bit):
       return _DecodeMethodName(mojom.INT32)
     if mojom.IsPendingReceiverKind(kind):
       return 'readInterfaceRequest'
-    if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
+    if mojom.IsPendingRemoteKind(kind):
       return 'readServiceInterface'
     if mojom.IsPendingAssociatedReceiverKind(kind):
       return 'readAssociatedInterfaceRequestNotSupported'

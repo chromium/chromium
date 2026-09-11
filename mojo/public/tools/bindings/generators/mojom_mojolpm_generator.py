@@ -114,7 +114,6 @@ class Generator(CppGenerator):
         or mojom.IsDoubleKind(kind)
         or mojom.IsFloatKind(kind)
         or mojom.IsAnyHandleKind(kind)
-        or mojom.IsInterfaceKind(kind)
         or mojom.IsAssociatedKind(kind)
         or mojom.IsPendingRemoteKind(kind)
         or mojom.IsPendingReceiverKind(kind)
@@ -269,7 +268,6 @@ class Generator(CppGenerator):
       "is_double_kind": mojom.IsDoubleKind,
       "is_float_kind": mojom.IsFloatKind,
       "is_integral_kind": mojom.IsIntegralKind,
-      "is_interface_kind": mojom.IsInterfaceKind,
       "is_nullable_value_kind_packed_field": pack.IsNullableValueKindPackedField,
       "is_primary_nullable_value_kind_packed_field": pack.IsPrimaryNullableValueKindPackedField,
       "is_receiver_kind": self._IsReceiverKind,
