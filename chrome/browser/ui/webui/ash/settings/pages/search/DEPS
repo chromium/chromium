@@ -12,7 +12,6 @@ include_rules = [
   "+chrome/browser/ash/lobster/lobster_service_provider.h",
   "+chrome/browser/ash/lobster/mock_lobster_system_state_provider.h",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/search_engines",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/settings",
@@ -20,3 +19,10 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Only used to install a TestingFactory for the test.
+  "search_engines_handler_unittest\\.cc": [
+    "+chrome/browser/search_engines",
+  ],
+}
