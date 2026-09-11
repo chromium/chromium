@@ -814,6 +814,31 @@ if (is_win) {
       "//ui/views",
     ]
   }
+
+  source_set("windows_taskbar_icon_updater") {
+    public = [ "windows_taskbar_icon_updater.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/profiles:profile_util",
+      "//ui/views",
+    ]
+  }
+
+  source_set("windows_taskbar_icon_updater_impl") {
+    sources = [ "windows_taskbar_icon_updater.cc" ]
+    public_deps = [
+      ":windows_taskbar_icon_updater",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/taskbar",
+      "//chrome/browser/ui/browser_window",
+      "//ui/views",
+    ]
+  }
 }
 
 source_set("contents_capture_border_view") {
@@ -859,5 +884,60 @@ if (is_mac) {
     sources = [ "browser_native_widget_factory_mac.mm" ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [ ":browser_native_widget_factory" ]
+  }
+}
+
+source_set("system_menu_model_builder") {
+  public = [ "system_menu_model_builder.h" ]
+  public_deps = [
+    ":system_menu_model_delegate",
+    "//base",
+    "//ui/base/interaction",
+  ]
+}
+
+source_set("system_menu_model_builder_impl") {
+  sources = [ "system_menu_model_builder.cc" ]
+  public_deps = [
+    ":system_menu_model_builder",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":system_menu_model_delegate",
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/glic",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/user_education",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//components/strings:components_strings",
+    "//components/user_education/common",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/menus",
+  ]
+  if (is_chromeos) {
+    deps += [
+      "//ash",
+      "//chrome/browser/ash/boca/on_task",
+      "//chrome/browser/ui/ash/multi_user",
+      "//chromeos/strings",
+      "//chromeos/ui/frame",
+      "//components/account_id",
+      "//components/user_manager",
+    ]
+  }
+  if (use_ozone && !is_chromeos) {
+    deps += [ "//ui/ozone" ]
   }
 }

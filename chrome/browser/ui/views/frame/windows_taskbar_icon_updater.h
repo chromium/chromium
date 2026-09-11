@@ -8,9 +8,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_observer.h"
+
+class BrowserView;
 
 // Watches for profile changes and updates the window icon.
 class WindowsTaskbarIconUpdater : public ProfileAttributesStorage::Observer,

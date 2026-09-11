@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/taskbar/taskbar_decorator_win.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 
 WindowsTaskbarIconUpdater::WindowsTaskbarIconUpdater(BrowserView& browser_view)
     : browser_view_(browser_view) {

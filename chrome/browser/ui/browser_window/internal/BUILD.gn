@@ -203,6 +203,10 @@ source_set("internal") {
     if (use_aura) {
       deps += [ "//chrome/browser/ui:overscroll_pref_manager" ]
     }
+
+    if (is_win) {
+      deps += [ "//chrome/browser/ui/views/frame:windows_taskbar_icon_updater" ]
+    }
   }
 
   if (enable_extensions_core) {

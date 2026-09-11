@@ -2426,8 +2426,6 @@ static_library("ui") {
       "views/frame/browser_desktop_window_tree_host_win.h",
       "views/frame/browser_frame_view_win.cc",
       "views/frame/browser_frame_view_win.h",
-      "views/frame/windows_taskbar_icon_updater.cc",
-      "views/frame/windows_taskbar_icon_updater.h",
     ]
 
     public_deps += [
@@ -2441,6 +2439,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_caption_button_container_win",
       "//chrome/browser/ui/views/frame:browser_native_widget_factory_aura",
       "//chrome/browser/ui/views/frame:browser_window_property_manager_win",
+      "//chrome/browser/ui/views/frame:windows_taskbar_icon_updater_impl",
       "//chrome/browser/win:impl",
     ]
 
@@ -2457,6 +2456,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_native_widget_factory_aura",
       "//chrome/browser/ui/views/frame:browser_window_property_manager_win",
       "//chrome/browser/ui/views/frame:minimize_button_metrics_win",
+      "//chrome/browser/ui/views/frame:windows_taskbar_icon_updater",
+      "//chrome/browser/ui/views/frame:windows_taskbar_icon_updater_impl",
       "//chrome/browser/win:impl",
       "//components/search_engines",
       "//third_party/wtl",
@@ -2565,8 +2566,6 @@ static_library("ui") {
       "views/frame/multi_contents_view_mini_toolbar.h",
       "views/frame/picture_in_picture_browser_frame_view.cc",
       "views/frame/picture_in_picture_browser_frame_view.h",
-      "views/frame/system_menu_model_builder.cc",
-      "views/frame/system_menu_model_builder.h",
       "views/frame/themed_background.cc",
       "views/frame/themed_background.h",
       "views/frame/top_container_view.cc",
@@ -2806,6 +2805,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:shadow",
       "//chrome/browser/ui/views/frame:shadow_overlay_view",
       "//chrome/browser/ui/views/frame:shadow_overlay_view_impl",
+      "//chrome/browser/ui/views/frame:system_menu_model_builder",
+      "//chrome/browser/ui/views/frame:system_menu_model_builder_impl",
       "//chrome/browser/ui/views/frame:system_menu_model_delegate",
       "//chrome/browser/ui/views/frame:system_menu_model_delegate_impl",
       "//chrome/browser/ui/views/frame:tab_modal_dialog_host",
@@ -3078,6 +3079,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:find_bar_owner_views_impl",
       "//chrome/browser/ui/views/frame:scrim_view_controller_impl",
       "//chrome/browser/ui/views/frame:shadow_overlay_view_impl",
+      "//chrome/browser/ui/views/frame:system_menu_model_builder_impl",
       "//chrome/browser/ui/views/frame:system_menu_model_delegate_impl",
       "//chrome/browser/ui/views/frame:tab_modal_dialog_host_impl",
       "//chrome/browser/ui/views/frame:vertical_tab_strip_background_blur_backdrop",
