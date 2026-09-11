@@ -20,6 +20,10 @@ public final class PointerLockEventHelper {
     private float mLastPointerPositionX;
     private float mLastPointerPositionY;
 
+    // Holds the previous raw pointer event's position that was forwarded to native
+    private float mLastPointerRawPositionX;
+    private float mLastPointerRawPositionY;
+
     // Holds the previous trackpad event's position when the pointer is captured, the event's
     // position in this case contains the raw finger coordinates on the trackpad
     private float mLastTrackpadPositionX;
@@ -30,15 +34,17 @@ public final class PointerLockEventHelper {
     // Called whenever we have a new mouse event when the pointer is not locked. Needed for updating
     // the state of the pointer & trackpad variables that are used in calculating the correct
     // pointer position when the pointer is captured
-    public void onNonCapturedPointerEvent(float x, float y) {
-        updateLastPointerPosition(x, y);
+    public void onNonCapturedPointerEvent(float x, float y, float rawX, float rawY) {
+        updateLastPointerPosition(x, y, rawX, rawY);
         mIsLastTrackpadPositionValid = false;
     }
 
     // Updates the last pointer position that was forwarded to the native side
-    public void updateLastPointerPosition(float x, float y) {
+    public void updateLastPointerPosition(float x, float y, float rawX, float rawY) {
         mLastPointerPositionX = x;
         mLastPointerPositionY = y;
+        mLastPointerRawPositionX = rawX;
+        mLastPointerRawPositionY = rawY;
     }
 
     public float getLastPointerPositionX() {
@@ -47,6 +53,14 @@ public final class PointerLockEventHelper {
 
     public float getLastPointerPositionY() {
         return mLastPointerPositionY;
+    }
+
+    public float getLastPointerRawPositionXForTesting() {
+        return mLastPointerRawPositionX;
+    }
+
+    public float getLastPointerRawPositionYForTesting() {
+        return mLastPointerRawPositionY;
     }
 
     public MotionEvent transformCapturedPointerEvent(MotionEvent event, int deviceRotation) {
@@ -103,10 +117,47 @@ public final class PointerLockEventHelper {
         float currentPointerPositionX = mLastPointerPositionX + offsetX;
         float currentPointerPositionY = mLastPointerPositionY + offsetY;
 
-        MotionEvent ret = MotionEvent.obtain(event);
-        ret.setSource(InputDevice.SOURCE_MOUSE);
-        ret.setLocation(currentPointerPositionX, currentPointerPositionY);
+        float currentPointerRawPositionX = mLastPointerRawPositionX + offsetX;
+        float currentPointerRawPositionY = mLastPointerRawPositionY + offsetY;
 
+        return cloneEventWithLocation(
+                event,
+                currentPointerPositionX,
+                currentPointerPositionY,
+                currentPointerRawPositionX,
+                currentPointerRawPositionY,
+                InputDevice.SOURCE_MOUSE);
+    }
+
+    private static MotionEvent cloneEventWithLocation(
+            MotionEvent event, float x, float y, float rawX, float rawY, int source) {
+        MotionEvent.PointerCoords[] pointerCoordsList = getPointerCoordsForEvent(event);
+        if (pointerCoordsList.length > 0) {
+            float deltaRawX = rawX - pointerCoordsList[0].x;
+            float deltaRawY = rawY - pointerCoordsList[0].y;
+            for (int i = 0; i < pointerCoordsList.length; i++) {
+                pointerCoordsList[i].x += deltaRawX;
+                pointerCoordsList[i].y += deltaRawY;
+            }
+        }
+
+        MotionEvent ret =
+                MotionEvent.obtain(
+                        event.getDownTime(),
+                        event.getEventTime(),
+                        event.getAction(),
+                        event.getPointerCount(),
+                        getPointerPropertiesForEvent(event),
+                        pointerCoordsList,
+                        event.getMetaState(),
+                        event.getButtonState(),
+                        event.getXPrecision(),
+                        event.getYPrecision(),
+                        event.getDeviceId(),
+                        event.getEdgeFlags(),
+                        source,
+                        event.getFlags());
+        ret.setLocation(x, y);
         return ret;
     }
 

@@ -542,7 +542,8 @@ public class EventForwarder {
                 isTrackpadToMouseEventConversionEnabled()
                         && isTrackpadToMouseConversionEvent(event);
 
-        mPointerLockEventHelper.onNonCapturedPointerEvent(event.getX(), event.getY());
+        mPointerLockEventHelper.onNonCapturedPointerEvent(
+                event.getX(), event.getY(), event.getRawX(), event.getRawY());
 
         EventForwarderJni.get()
                 .onMouseEvent(
@@ -879,7 +880,8 @@ public class EventForwarder {
         }
 
         // Update the last event position
-        mPointerLockEventHelper.updateLastPointerPosition(event.getX(), event.getY());
+        mPointerLockEventHelper.updateLastPointerPosition(
+                event.getX(), event.getY(), event.getRawX(), event.getRawY());
 
         if (event.getAction() == MotionEvent.ACTION_SCROLL) {
             return EventForwarderJni.get()

@@ -140,4 +140,37 @@ public class PointerLockEventHelperTest {
         assertEquals(-offsetY, updatedEvent2.getX(), 0.01);
         assertEquals(offsetX, updatedEvent2.getY(), 0.01);
     }
+
+    @Test
+    public void testCapturedPointerEventUpdatesRawCoordinates() {
+        mPointerLockEventHelper.onNonCapturedPointerEvent(100f, 200f, 150f, 250f);
+        assertEquals(100f, mPointerLockEventHelper.getLastPointerPositionX(), 0.01);
+        assertEquals(200f, mPointerLockEventHelper.getLastPointerPositionY(), 0.01);
+        assertEquals(150f, mPointerLockEventHelper.getLastPointerRawPositionXForTesting(), 0.01);
+        assertEquals(250f, mPointerLockEventHelper.getLastPointerRawPositionYForTesting(), 0.01);
+
+        float startX = 4;
+        float startY = 10;
+        float offsetX = 2;
+        float offsetY = 5;
+
+        MotionEvent event1 = MotionEventTestUtils.getCapturedTrackpadMoveEvent(startX, startY);
+        MotionEvent event2 =
+                MotionEventTestUtils.getCapturedTrackpadMoveEvent(
+                        startX + offsetX, startY + offsetY);
+
+        MotionEvent updatedEvent1 =
+                mPointerLockEventHelper.transformCapturedPointerEvent(event1, Surface.ROTATION_0);
+        assertEquals(100f, updatedEvent1.getX(), 0.01);
+        assertEquals(200f, updatedEvent1.getY(), 0.01);
+        assertEquals(150f, updatedEvent1.getRawX(), 0.01);
+        assertEquals(250f, updatedEvent1.getRawY(), 0.01);
+
+        MotionEvent updatedEvent2 =
+                mPointerLockEventHelper.transformCapturedPointerEvent(event2, Surface.ROTATION_0);
+        assertEquals(100f + offsetX, updatedEvent2.getX(), 0.01);
+        assertEquals(200f + offsetY, updatedEvent2.getY(), 0.01);
+        assertEquals(150f + offsetX, updatedEvent2.getRawX(), 0.01);
+        assertEquals(250f + offsetY, updatedEvent2.getRawY(), 0.01);
+    }
 }
