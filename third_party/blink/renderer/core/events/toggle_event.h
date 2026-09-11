@@ -58,10 +58,8 @@ class ToggleEvent final : public Event {
  private:
   String old_state_;
   String new_state_;
-  // crbug.com/346835896: When ShadowRootReferenceTargetEnabled ships, the
-  // event's source will be managed by `related_target_` instead of `source_`.
-  // When the flag is cleaned up the `source_` member will be removed.
   Member<Element> source_;
+  // Used only to shape the path for browser-generated cross-tree events.
   Member<EventTarget> related_target_;
 };
 

@@ -48,10 +48,9 @@ class InterestEvent final : public Event {
   DispatchEventResult DispatchEvent(EventDispatcher&) override;
 
  private:
-  // crbug.com/346835896: When ShadowRootReferenceTargetEnabled ships, the
-  // event's source will be managed by `related_target_` instead of `source_`.
-  // When the flag is cleaned up the `source_` member will be removed.
   Member<Element> source_;
+  // This event only uses related_target_ to shape the event path for cross-tree
+  // dispatches. It's not returned by any script-accessible getters.
   Member<EventTarget> related_target_;
 };
 

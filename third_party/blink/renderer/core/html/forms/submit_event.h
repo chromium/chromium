@@ -82,11 +82,9 @@ class SubmitEvent : public Event {
   std::optional<PromiseResult> TakeRespondWithPromise();
 
  private:
-  // crbug.com/346835896: When ShadowRootReferenceTargetEnabled ships, the
-  // event's submitter will be managed by `related_target_` instead of
-  // `submitter_`. When the flag is cleaned up the `submitter_` member will be
-  // removed.
   Member<HTMLElement> submitter_;
+  // This event only uses related_target_ to shape the event path for cross-tree
+  // dispatches. It's not returned by any script-accessible getters.
   Member<EventTarget> related_target_;
   MemberScriptPromise<IDLAny> respond_with_promise_;
   Member<ScriptState> respond_with_script_state_;

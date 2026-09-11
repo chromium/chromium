@@ -43,10 +43,7 @@ class CommandEvent final : public Event {
   const String& command() const { return command_; }
 
   Element* source() const;
-  void SetSource(Element* source) {
-    source_ = source;
-    related_target_ = source;
-  }
+  void SetSource(Element* source) { source_ = source; }
 
   EventTarget* relatedTarget() const override { return related_target_.Get(); }
   void SetRelatedTarget(EventTarget* related_target) override {
@@ -56,10 +53,9 @@ class CommandEvent final : public Event {
   DispatchEventResult DispatchEvent(EventDispatcher&) override;
 
  private:
-  // crbug.com/346835896: When ShadowRootReferenceTargetEnabled ships, the
-  // event's source will be managed by `related_target_` instead of `source_`.
-  // When the flag is cleaned up the `source_` member will be removed.
   Member<Element> source_;
+  // This event only uses related_target_ to shape the event path for cross-tree
+  // dispatches. It's not returned by any script-accessible getters.
   Member<EventTarget> related_target_;
   String command_;
 };
