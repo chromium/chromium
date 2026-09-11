@@ -12,6 +12,10 @@
 
 class ProfileIOS;
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace password_manager {
 class OnDeviceEncryptionMetricsReporter;
 }  // namespace password_manager
@@ -33,6 +37,8 @@ class IOSChromeOnDeviceEncryptionMetricsReporterFactory
   ~IOSChromeOnDeviceEncryptionMetricsReporterFactory() override;
 
   // ProfileKeyedServiceFactoryIOS:
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
 };

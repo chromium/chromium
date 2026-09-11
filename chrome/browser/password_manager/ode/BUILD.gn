@@ -21,6 +21,7 @@ source_set("ode") {
     deps = [
       "//chrome/browser/sync",
       "//components/keyed_service/content",
+      "//components/pref_registry",
       "//components/sync/base",
     ]
   }

@@ -175,6 +175,24 @@ inline constexpr char kObsoleteAccountStoragePerAccountSettings[] =
     "profile.password_account_storage_settings";
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
+// Timestamp of the last time on-device encryption state for passkeys was
+// reported to UMA.
+inline constexpr char kOnDeviceEncryptionStatePasskeyLastReportingTime[] =
+    "password_manager.on_device_encryption_state_passkey_last_reporting_time";
+
+// Integer bucket of the last reported on-device encryption state for passkeys.
+inline constexpr char kOnDeviceEncryptionStatePasskeyLastReportedBucket[] =
+    "password_manager.on_device_encryption_state_passkey_last_reported_bucket";
+
+// Timestamp of the last time on-device encryption state for passwords was
+// reported to UMA.
+inline constexpr char kOnDeviceEncryptionStatePasswordLastReportingTime[] =
+    "password_manager.on_device_encryption_state_password_last_reporting_time";
+
+// Integer bucket of the last reported on-device encryption state for passwords.
+inline constexpr char kOnDeviceEncryptionStatePasswordLastReportedBucket[] =
+    "password_manager.on_device_encryption_state_password_last_reported_bucket";
+
 // Indicates the time (in seconds) when last cleaning of obsolete HTTP
 // credentials was performed.
 inline constexpr char kLastTimeObsoleteHttpCredentialsRemoved[] =

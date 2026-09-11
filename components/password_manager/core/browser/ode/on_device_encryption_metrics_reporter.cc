@@ -8,18 +8,46 @@
 #include <utility>
 
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_data_type_specific_metrics_reporter.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace password_manager {
 
+// static
+void OnDeviceEncryptionMetricsReporter::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(
+      prefs::kOnDeviceEncryptionStatePasskeyLastReportingTime, base::Time());
+  registry->RegisterIntegerPref(
+      prefs::kOnDeviceEncryptionStatePasskeyLastReportedBucket,
+      kNoReportedBucket);
+  registry->RegisterTimePref(
+      prefs::kOnDeviceEncryptionStatePasswordLastReportingTime, base::Time());
+  registry->RegisterIntegerPref(
+      prefs::kOnDeviceEncryptionStatePasswordLastReportedBucket,
+      kNoReportedBucket);
+}
+
 OnDeviceEncryptionMetricsReporter::OnDeviceEncryptionMetricsReporter(
     std::unique_ptr<OnDeviceEncryptionStateTracker> passkey_tracker,
-    std::unique_ptr<OnDeviceEncryptionStateTracker> password_tracker)
-    : passkey_reporter_(kPasskeyOnDeviceEncryptionStateHistogram,
-                        std::move(passkey_tracker)),
-      password_reporter_(kPasswordOnDeviceEncryptionStateHistogram,
-                         std::move(password_tracker)) {}
+    std::unique_ptr<OnDeviceEncryptionStateTracker> password_tracker,
+    PrefService& pref_service)
+    : passkey_reporter_(
+          kPasskeyOnDeviceEncryptionStateHistogram,
+          prefs::kOnDeviceEncryptionStatePasskeyLastReportingTime,
+          prefs::kOnDeviceEncryptionStatePasskeyLastReportedBucket,
+          std::move(passkey_tracker),
+          pref_service),
+      password_reporter_(
+          kPasswordOnDeviceEncryptionStateHistogram,
+          prefs::kOnDeviceEncryptionStatePasswordLastReportingTime,
+          prefs::kOnDeviceEncryptionStatePasswordLastReportedBucket,
+          std::move(password_tracker),
+          pref_service) {}
 
 OnDeviceEncryptionMetricsReporter::~OnDeviceEncryptionMetricsReporter() =
     default;

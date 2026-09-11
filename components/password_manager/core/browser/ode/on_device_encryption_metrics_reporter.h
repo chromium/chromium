@@ -12,6 +12,9 @@
 #include "components/password_manager/core/browser/ode/on_device_encryption_data_type_specific_metrics_reporter.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace password_manager {
 
 inline constexpr char kPasskeyOnDeviceEncryptionStateHistogram[] =
@@ -23,9 +26,12 @@ inline constexpr char kPasswordOnDeviceEncryptionStateHistogram[] =
 // passwords and passkeys.
 class OnDeviceEncryptionMetricsReporter : public KeyedService {
  public:
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   OnDeviceEncryptionMetricsReporter(
       std::unique_ptr<OnDeviceEncryptionStateTracker> passkey_tracker,
-      std::unique_ptr<OnDeviceEncryptionStateTracker> password_tracker);
+      std::unique_ptr<OnDeviceEncryptionStateTracker> password_tracker,
+      PrefService& pref_service);
 
   OnDeviceEncryptionMetricsReporter(const OnDeviceEncryptionMetricsReporter&) =
       delete;

@@ -17,10 +17,14 @@ source_set("ode") {
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/prefs",
     "//components/sync/service",
   ]
 
-  deps = [ "//components/sync/base" ]
+  deps = [
+    "//components/password_manager/core/common",
+    "//components/sync/base",
+  ]
 
   if (!is_android) {
     sources += [
@@ -44,6 +48,8 @@ source_set("unit_tests") {
   deps = [
     ":ode",
     "//base/test:test_support",
+    "//components/password_manager/core/common",
+    "//components/prefs:test_support",
     "//components/sync:test_support",
     "//testing/gmock",
     "//testing/gtest",

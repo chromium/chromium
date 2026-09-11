@@ -12,6 +12,7 @@ source_set("ode") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/ode",
+    "//components/pref_registry",
     "//components/sync/service",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",

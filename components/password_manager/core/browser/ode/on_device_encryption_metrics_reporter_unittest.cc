@@ -11,6 +11,8 @@
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_data_type_specific_metrics_reporter.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
@@ -18,10 +20,17 @@ namespace password_manager {
 namespace {
 
 class OnDeviceEncryptionMetricsReporterTest : public testing::Test {
+ public:
+  OnDeviceEncryptionMetricsReporterTest() {
+    OnDeviceEncryptionMetricsReporter::RegisterProfilePrefs(
+        pref_service_.registry());
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(OnDeviceEncryptionMetricsReporterTest,
@@ -33,8 +42,8 @@ TEST_F(OnDeviceEncryptionMetricsReporterTest,
   password_tracker->SetStateForTesting(
       OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
 
-  OnDeviceEncryptionMetricsReporter reporter(std::move(passkey_tracker),
-                                             std::move(password_tracker));
+  OnDeviceEncryptionMetricsReporter reporter(
+      std::move(passkey_tracker), std::move(password_tracker), pref_service_);
 
   // No initial metrics recorded before delay.
   histogram_tester_.ExpectTotalCount(kPasskeyOnDeviceEncryptionStateHistogram,
@@ -61,8 +70,8 @@ TEST_F(OnDeviceEncryptionMetricsReporterTest,
   auto password_tracker = std::make_unique<OnDeviceEncryptionStateTracker>();
   OnDeviceEncryptionStateTracker* raw_password_tracker = password_tracker.get();
 
-  OnDeviceEncryptionMetricsReporter reporter(std::move(passkey_tracker),
-                                             std::move(password_tracker));
+  OnDeviceEncryptionMetricsReporter reporter(
+      std::move(passkey_tracker), std::move(password_tracker), pref_service_);
 
   // Advance the time to start observations.
   task_environment_.FastForwardBy(kInitialStateReportingDelay);

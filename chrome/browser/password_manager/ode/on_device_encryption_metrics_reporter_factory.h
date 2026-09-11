@@ -10,6 +10,10 @@
 
 class Profile;
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace password_manager {
 
 class OnDeviceEncryptionMetricsReporter;
@@ -34,6 +38,8 @@ class OnDeviceEncryptionMetricsReporterFactory
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
