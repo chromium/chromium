@@ -414,6 +414,44 @@ BuildFederatedAuthUserInfoRequestIssue(
   return issue;
 }
 
+protocol::Audits::WebInstallIssueReason WebInstallIssueReasonToProtocol(
+    blink::mojom::WebInstallIssueReason reason) {
+  namespace WebInstallIssueReasonEnum =
+      protocol::Audits::WebInstallIssueReasonEnum;
+  switch (reason) {
+    case blink::mojom::WebInstallIssueReason::kManifestParsingOrNetworkError:
+      return WebInstallIssueReasonEnum::ManifestParsingOrNetworkError;
+    case blink::mojom::WebInstallIssueReason::kStartUrlInvalid:
+      return WebInstallIssueReasonEnum::StartUrlInvalid;
+    case blink::mojom::WebInstallIssueReason::kManifestMissingNameOrShortName:
+      return WebInstallIssueReasonEnum::ManifestMissingNameOrShortName;
+    case blink::mojom::WebInstallIssueReason::kManifestMissingId:
+      return WebInstallIssueReasonEnum::ManifestMissingId;
+    case blink::mojom::WebInstallIssueReason::kNoManifest:
+      return WebInstallIssueReasonEnum::NoManifest;
+  }
+  NOTREACHED();
+}
+
+std::unique_ptr<protocol::Audits::InspectorIssue> BuildWebInstallIssue(
+    const blink::mojom::WebInstallIssueDetailsPtr& issue_details) {
+  auto builder = protocol::Audits::WebInstallIssueDetails::Create();
+  if (issue_details->manifest_url) {
+    builder.SetManifestUrl(issue_details->manifest_url->spec());
+  }
+  auto web_install_issue_details =
+      builder.SetReason(WebInstallIssueReasonToProtocol(issue_details->reason))
+          .Build();
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetWebInstallIssueDetails(std::move(web_install_issue_details))
+          .Build();
+  return protocol::Audits::InspectorIssue::Create()
+      .SetCode(protocol::Audits::InspectorIssueCodeEnum::WebInstallIssue)
+      .SetDetails(std::move(protocol_issue_details))
+      .Build();
+}
+
 protocol::Audits::EmailVerificationRequestIssueReason
 EmailVerificationRequestResultToProtocol(
     blink::mojom::EmailVerificationRequestResult result) {
@@ -2488,6 +2526,8 @@ void BuildAndReportBrowserInitiatedIssue(
              blink::mojom::InspectorIssueCode::kEmailVerificationRequestIssue) {
     issue = BuildEmailVerificationRequestIssue(
         info->details->email_verification_request_details);
+  } else if (info->code == blink::mojom::InspectorIssueCode::kWebInstallIssue) {
+    issue = BuildWebInstallIssue(info->details->web_install_issue_details);
   } else {
     NOTREACHED() << "Unsupported type of browser-initiated issue";
   }

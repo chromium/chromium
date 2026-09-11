@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/model/parse_manifest_result.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -33,8 +34,7 @@ class WebContentsManager;
 // parses `manifest_contents` as a web app manifest, and validates that the
 // result has the required fields (valid start_url and name/short_name).
 //
-// Returns a ManifestPtr on success, or nullptr on failure (invalid JSON, empty
-// manifest, or missing required fields).
+// Returns the parsed manifest or a structured failure reason.
 //
 // `document_url` and `manifest_url` are forwarded to ManifestParser for
 // relative URL resolution. They may be the same URL when there is no
@@ -42,7 +42,7 @@ class WebContentsManager;
 class ParseManifestFromStringJob {
  public:
   using ResultCallback =
-      base::OnceCallback<void(blink::mojom::ManifestPtr manifest)>;
+      base::OnceCallback<void(ParseManifestResult parse_result)>;
 
   ParseManifestFromStringJob(WebContentsManager& web_contents_manager,
                              content::WebContents& web_contents,

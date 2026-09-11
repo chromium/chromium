@@ -29,6 +29,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 namespace content {
 
@@ -69,6 +70,17 @@ void ReportDummyIssue(RenderFrameHostImpl* rfh) {
       rfh, std::move(inspector_issue));
 }
 
+void ReportWebInstallIssue(RenderFrameHostImpl* rfh,
+                           const GURL& manifest_url,
+                           blink::mojom::WebInstallIssueReason reason) {
+  auto details = blink::mojom::InspectorIssueDetails::New();
+  details->web_install_issue_details =
+      blink::mojom::WebInstallIssueDetails::New(manifest_url, reason);
+  auto issue_info = blink::mojom::InspectorIssueInfo::New(
+      blink::mojom::InspectorIssueCode::kWebInstallIssue, std::move(details));
+  rfh->ReportInspectorIssue(std::move(issue_info));
+}
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
@@ -91,6 +103,28 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
   ReportDummyIssue(main_frame_host());
   // Verify we have received the SameSite issue.
   WaitForDummyIssueNotification();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
+                       DevToolsReceivesWebInstallIssueDetails) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  Attach();
+  SendCommandSync("Audits.enable");
+
+  const GURL manifest_url("https://example.com/manifest.json");
+  ReportWebInstallIssue(
+      main_frame_host(), manifest_url,
+      blink::mojom::WebInstallIssueReason::kManifestMissingId);
+
+  base::DictValue notification = WaitForNotification("Audits.issueAdded", true);
+  EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
+            protocol::Audits::InspectorIssueCodeEnum::WebInstallIssue);
+  EXPECT_EQ(*notification.FindStringByDottedPath(
+                "issue.details.webInstallIssueDetails.manifestUrl"),
+            manifest_url.spec());
+  EXPECT_EQ(*notification.FindStringByDottedPath(
+                "issue.details.webInstallIssueDetails.reason"),
+            protocol::Audits::WebInstallIssueReasonEnum::ManifestMissingId);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,

@@ -20,10 +20,10 @@ namespace {
 
 class ParseManifestFromManifestUrlCommandTest : public WebAppBrowserTestBase {
  public:
-  blink::mojom::ManifestPtr ParseAndAwaitResult(
+  ParseManifestResult ParseAndAwaitResult(
       const GURL& manifest_url,
       const std::string& manifest_contents) {
-    base::test::TestFuture<blink::mojom::ManifestPtr> future;
+    base::test::TestFuture<ParseManifestResult> future;
     provider().command_manager().ScheduleCommand(
         std::make_unique<ParseManifestFromManifestUrlCommand>(
             manifest_url, manifest_contents, future.GetCallback()));
@@ -40,9 +40,10 @@ IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
     "start_url": "/start"
   })json";
 
-  auto manifest = ParseAndAwaitResult(kManifestUrl, kManifest);
+  ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
-  ASSERT_TRUE(manifest);
+  ASSERT_TRUE(result.has_value());
+  const blink::mojom::ManifestPtr& manifest = result.value();
   EXPECT_EQ(manifest->start_url, GURL("https://example.com/start"));
   EXPECT_EQ(manifest->name, u"Test App");
 }
@@ -57,10 +58,25 @@ IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
     "start_url": "index.html"
   })json";
 
-  auto manifest = ParseAndAwaitResult(kManifestUrl, kManifest);
+  ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
-  ASSERT_TRUE(manifest);
+  ASSERT_TRUE(result.has_value());
+  const blink::mojom::ManifestPtr& manifest = result.value();
   EXPECT_EQ(manifest->start_url, GURL("https://example.com/app/index.html"));
+}
+
+// A missing start_url fails parsing requirements.
+IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
+                       MissingStartUrlFails) {
+  const GURL kManifestUrl("https://example.com/app/manifest.json");
+  const std::string kManifest = R"json({
+    "name": "Test App"
+  })json";
+
+  ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ParseManifestError::kStartUrlInvalid);
 }
 
 // A cross-origin absolute start_url is rejected by ManifestParser. The
@@ -73,22 +89,24 @@ IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
     "start_url": "https://evil.com/start"
   })json";
 
-  auto manifest = ParseAndAwaitResult(kManifestUrl, kManifest);
+  ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
-  // ManifestParser rejects cross-origin start_url, leaving has_valid_specified_
-  // start_url false. The command sees this and returns nullptr.
-  EXPECT_FALSE(manifest);
+  // ManifestParser rejects cross-origin start_url, leaving
+  // has_valid_specified_start_url false.
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ParseManifestError::kStartUrlInvalid);
 }
 
-// Invalid JSON causes the command to return nullptr.
+// Invalid JSON fails parsing requirements.
 IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
                        InvalidJsonFails) {
   const GURL kManifestUrl("https://example.com/manifest.json");
   const std::string kManifest = "this is not json {{{";
 
-  auto manifest = ParseAndAwaitResult(kManifestUrl, kManifest);
+  ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
-  EXPECT_FALSE(manifest);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ParseManifestError::kEmptyOrInvalidManifest);
 }
 
 // A manifest with no name or short_name fails the required fields check.
@@ -99,9 +117,11 @@ IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
     "start_url": "/"
   })json";
 
-  auto manifest = ParseAndAwaitResult(kManifestUrl, kManifest);
+  ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
-  EXPECT_FALSE(manifest);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            ParseManifestError::kManifestMissingNameOrShortName);
 }
 
 // A valid manifest with an explicit id field preserves has_custom_id.
@@ -114,9 +134,10 @@ IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
     "id": "/my-app-id"
   })json";
 
-  auto manifest = ParseAndAwaitResult(kManifestUrl, kManifest);
+  ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
-  ASSERT_TRUE(manifest);
+  ASSERT_TRUE(result.has_value());
+  const blink::mojom::ManifestPtr& manifest = result.value();
   EXPECT_TRUE(manifest->has_custom_id);
   EXPECT_EQ(manifest->id, GURL("https://example.com/my-app-id"));
 }
@@ -130,9 +151,10 @@ IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
     "start_url": "/"
   })json";
 
-  auto manifest = ParseAndAwaitResult(kManifestUrl, kManifest);
+  ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
-  ASSERT_TRUE(manifest);
+  ASSERT_TRUE(result.has_value());
+  const blink::mojom::ManifestPtr& manifest = result.value();
   EXPECT_FALSE(manifest->has_custom_id);
 }
 

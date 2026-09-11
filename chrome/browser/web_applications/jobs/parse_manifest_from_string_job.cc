@@ -23,22 +23,6 @@
 
 namespace web_app {
 
-namespace {
-
-bool HasRequiredManifestFields(const blink::mojom::ManifestPtr& manifest) {
-  if (!manifest->has_valid_specified_start_url) {
-    return false;
-  }
-
-  if (!manifest->short_name.has_value() && !manifest->name.has_value()) {
-    return false;
-  }
-
-  return true;
-}
-
-}  // namespace
-
 ParseManifestFromStringJob::ParseManifestFromStringJob(
     WebContentsManager& web_contents_manager,
     content::WebContents& web_contents,
@@ -70,7 +54,8 @@ void ParseManifestFromStringJob::OnAboutBlankLoaded(
     webapps::WebAppUrlLoaderResult result) {
   if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     debug_value_->Set("about_blank_error", base::ToString(result));
-    std::move(callback_).Run(blink::mojom::ManifestPtr());
+    std::move(callback_).Run(
+        base::unexpected(ParseManifestError::kInternalError));
     return;
   }
 
@@ -96,18 +81,35 @@ void ParseManifestFromStringJob::OnManifestParsed(
   // Note that most errors during parsing (e.g. errors to do with parsing a
   // particular field) are silently ignored. As long as the manifest is valid
   // JSON and contains a valid start_url and name, installation will proceed.
-  if (blink::IsEmptyManifest(manifest) ||
-      !HasRequiredManifestFields(manifest)) {
+  if (blink::IsEmptyManifest(manifest)) {
     debug_value_->Set("manifest_parse_error", "invalid_manifest");
     manifest_manager_.reset();
-    std::move(callback_).Run(blink::mojom::ManifestPtr());
+    std::move(callback_).Run(
+        base::unexpected(ParseManifestError::kEmptyOrInvalidManifest));
+    return;
+  }
+
+  if (!manifest->has_valid_specified_start_url) {
+    debug_value_->Set("manifest_parse_error", "invalid_start_url");
+    manifest_manager_.reset();
+    std::move(callback_).Run(
+        base::unexpected(ParseManifestError::kStartUrlInvalid));
+    return;
+  }
+
+  if (!manifest->short_name.has_value() && !manifest->name.has_value()) {
+    debug_value_->Set("manifest_parse_error", "missing_name");
+    manifest_manager_.reset();
+    std::move(callback_).Run(
+        base::unexpected(ParseManifestError::kManifestMissingNameOrShortName));
     return;
   }
 
   if (manifest->manifest_url != manifest_url_) {
     mojo::ReportBadMessage("Returned manifest has incorrect manifest URL");
     manifest_manager_.reset();
-    std::move(callback_).Run(blink::mojom::ManifestPtr());
+    std::move(callback_).Run(
+        base::unexpected(ParseManifestError::kInternalError));
     return;
   }
   manifest_manager_.reset();
@@ -121,7 +123,8 @@ void ParseManifestFromStringJob::OnManifestManagerDisconnected() {
     return;
   }
   debug_value_->Set("manifest_parse_error", "manifest_manager_disconnected");
-  std::move(callback_).Run(blink::mojom::ManifestPtr());
+  std::move(callback_).Run(
+      base::unexpected(ParseManifestError::kInternalError));
 }
 
 }  // namespace web_app

@@ -30,6 +30,7 @@ enum InspectorIssueCode {
   kUserReidentificationIssue,
   kPerformanceIssue,
   kEmailVerificationRequestIssue,
+  kWebInstallIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -266,6 +267,19 @@ struct EmailVerificationRequestIssueDetails {
   EmailVerificationRequestResult status;
 };
 
+enum WebInstallIssueReason {
+  kManifestParsingOrNetworkError,
+  kStartUrlInvalid,
+  kManifestMissingNameOrShortName,
+  kManifestMissingId,
+  kNoManifest,
+};
+
+struct WebInstallIssueDetails {
+  url.mojom.Url? manifest_url;
+  WebInstallIssueReason reason;
+};
+
 struct BounceTrackingIssueDetails {
   array<string> tracking_sites;
 };
@@ -366,6 +380,7 @@ struct InspectorIssueDetails {
   UserReidentificationIssueDetails? user_reidentification_issue_details;
   PerformanceIssueDetails? performance_issue_details;
   EmailVerificationRequestIssueDetails? email_verification_request_details;
+  WebInstallIssueDetails? web_install_issue_details;
   mojo_base.mojom.UnguessableToken? issue_id;
 };
 
