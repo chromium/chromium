@@ -346,4 +346,94 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   database.Close();
 }
 
+TEST_F(CriticalActionDatabaseTest, MigrationV1ToV2) {
+  // 1. Manually set up a V1 database using raw SQLite.
+  {
+    sql::Database raw_db(sql::Database::Tag("CriticalActions"));
+    ASSERT_TRUE(raw_db.Open(db_path_));
+
+    sql::MetaTable meta;
+    ASSERT_TRUE(meta.Init(&raw_db, /*version=*/1, /*compatible_version=*/1));
+
+    ASSERT_TRUE(
+        raw_db.Execute("CREATE TABLE CriticalActions ("
+                       "  critical_action_id TEXT PRIMARY KEY NOT NULL,"
+                       "  timestamp INTEGER NOT NULL,"
+                       "  visit_id INTEGER,"
+                       "  conversation_id TEXT,"
+                       "  actor_task_id TEXT,"
+                       "  action_type INTEGER NOT NULL,"
+                       "  url TEXT,"
+                       "  metadata TEXT"
+                       ")"));
+
+    // Insert 3 records in V1 format:
+    ASSERT_TRUE(
+        raw_db.Execute("INSERT INTO CriticalActions VALUES ("
+                       "  'act_1', 1000000, 42, 'conv_1', 'task_1', 1, "
+                       "'https://test.com', 'meta1')"));
+    ASSERT_TRUE(
+        raw_db.Execute("INSERT INTO CriticalActions VALUES ("
+                       "  'act_2', 2000000, 43, NULL, 'task_2', 2, "
+                       "'https://test.org', 'meta2')"));
+    ASSERT_TRUE(
+        raw_db.Execute("INSERT INTO CriticalActions VALUES ("
+                       "  'act_3', 3000000, 44, 'conv_2', 'task_3', 3, "
+                       "'https://test.io', 'meta3')"));
+
+    raw_db.Close();
+  }
+
+  // 2. Open via CriticalActionDatabase, which must auto-migrate to V2.
+  {
+    CriticalActionDatabase database(db_path_);
+    ASSERT_TRUE(database.Init());
+
+    // Legacy table should be dropped.
+    EXPECT_FALSE(database.GetDBForTesting().DoesTableExist("CriticalActions"));
+
+    // New tables should exist.
+    EXPECT_TRUE(
+        database.GetDBForTesting().DoesTableExist("CriticalActionEntries"));
+    EXPECT_TRUE(
+        database.GetDBForTesting().DoesTableExist("CriticalActionVisits"));
+    EXPECT_TRUE(database.GetDBForTesting().DoesTableExist(
+        "CriticalActionConversations"));
+
+    // Verify record A
+    auto act_1 = database.GetCriticalAction("act_1");
+    ASSERT_TRUE(act_1.has_value());
+    EXPECT_EQ(act_1->visit_id, 42);
+    EXPECT_EQ(act_1->conversation_id, "conv_1");
+    EXPECT_EQ(act_1->actor_task_id, "task_1");
+    EXPECT_EQ(act_1->action_type, ActionType::kFormFill);
+    EXPECT_EQ(act_1->url, GURL("https://test.com"));
+    EXPECT_EQ(act_1->metadata, "meta1");
+
+    // Verify record B
+    auto act_2 = database.GetCriticalAction("act_2");
+    ASSERT_TRUE(act_2.has_value());
+    EXPECT_EQ(act_2->visit_id, 43);
+    EXPECT_TRUE(act_2->conversation_id.empty());
+    EXPECT_EQ(act_2->action_type, ActionType::kDownload);
+
+    // Verify record C
+    auto act_3 = database.GetCriticalAction("act_3");
+    ASSERT_TRUE(act_3.has_value());
+    EXPECT_EQ(act_3->visit_id, 44);
+    EXPECT_EQ(act_3->conversation_id, "conv_2");
+    EXPECT_EQ(act_3->action_type, ActionType::kSettingChange);
+
+    // Verify database version was updated to 2.
+    sql::MetaTable meta;
+    ASSERT_TRUE(meta.Init(&database.GetDBForTesting(), 2, 1));
+    EXPECT_EQ(meta.GetVersionNumber(), 2);
+
+    // Verify GetCriticalActions retrieves all migrated records.
+    EXPECT_EQ(database.GetCriticalActions({}).size(), 3u);
+
+    database.Close();
+  }
+}
+
 }  // namespace critical_actions

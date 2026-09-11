@@ -80,6 +80,17 @@ class CriticalActionDatabase {
   // Must be called within an active transaction.
   bool InitSchema();
 
+  // Makes sure the database version is up to date, migrating sequentially if
+  // necessary. Returns true on success.
+  bool MigrateToCurrentVersion();
+
+  // Dispatches migration to the specified target `version`.
+  bool MigrateToVersion(int version);
+
+  // Migrates schema from version 1 (monolithic CriticalActions table) to
+  // version 2 (normalized 3-table schema).
+  bool MigrateFromV1ToV2();
+
   // SQLite error callback.
   void DatabaseErrorCallback(int extended_error, sql::Statement* statement);
 

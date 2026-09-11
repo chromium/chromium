@@ -214,12 +214,14 @@ TEST_F(CriticalActionServiceTest, GetCriticalActionsWithOptions) {
   entry1.critical_action_id =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry1.action_type = ActionType::kFormFill;
+  entry1.visit_id = 1;
   service_->AddCriticalAction(entry1);
 
   CriticalActionEntry entry2;
   entry2.critical_action_id =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry2.action_type = ActionType::kDownload;
+  entry2.visit_id = 2;
   service_->AddCriticalAction(entry2);
 
   // Get both entries.
