@@ -405,6 +405,29 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
+       ReschedulesUsingDefaultIntervalOnTransientErrorEvenWithNextRefreshTime) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(RunPrewarmCallback(
+          base::Time::Now() + base::Hours(2),
+          {RefreshResult::kRefreshed, RefreshResult::kServerError}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+
+  // Advance 59s: verify retry has NOT fired yet.
+  task_environment_.FastForwardBy(base::Seconds(59));
+  // Assert that initial call occurred and no retry was triggered during 0..59s.
+  testing::Mock::VerifyAndClearExpectations(&mock_session_manager());
+
+  // Advance 1s (reaching 60s): verify the retry fires now.
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(RunPrewarmCallback(std::nullopt, {RefreshResult::kRefreshed,
+                                                  RefreshResult::kRefreshed}));
+  task_environment_.FastForwardBy(base::Seconds(1));
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest,
        DoesNotRescheduleIfNoRefreshTimeAndNoTransientErrors) {
   DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
 

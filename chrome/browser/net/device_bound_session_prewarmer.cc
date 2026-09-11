@@ -123,16 +123,23 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
     }
   }
 
-  if (!earliest_next_refresh_time) {
-    if (std::ranges::none_of(results,
-                             &DeviceBoundSessionPrewarmer::IsTransientError)) {
-      // If there is no transient error and no next refresh time, we can stop
-      // prewarming.
-      return;
-    }
-
+  if (std::ranges::any_of(results,
+                          &DeviceBoundSessionPrewarmer::IsTransientError)) {
+    // If a session failed to refresh due to a transient error, retry after a
+    // short delay regardless of what `earliest_next_refresh_time` is.
+    // `earliest_next_refresh_time` only reflects the next refresh time of
+    // sessions that rotated successfully or didn't need refresh, so it could
+    // be set far in the future even if another session failed.
+    // TODO(crbug.com/544602741): Revisit whether earliest_next_refresh_time
+    // should account for failed sessions.
     timer_.Start(FROM_HERE, kMinPrewarmInterval, this,
                  &DeviceBoundSessionPrewarmer::DoPrewarm);
+    return;
+  }
+
+  if (!earliest_next_refresh_time) {
+    // If there is no transient error and no next refresh time, we can stop
+    // prewarming.
     return;
   }
 
