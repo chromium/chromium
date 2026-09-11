@@ -1239,6 +1239,16 @@ export class AppElement extends AppElementBase {
     this.voiceSearchReceivedSpeech_ = true;
   }
 
+  protected showVoiceSearchGlow_(): boolean {
+    if (this.hasVoiceSearchError) {
+      return false;
+    }
+    // Audio wave is rendered for all 4 Realbox experiment arms (which have
+    // helper text enabled) and the legacy 'No Live Transcription' arm.
+    return !this.voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_ ||
+        this.voiceSearchCoherenceRealboxHelperTextEnabled_;
+  }
+
   protected onVoiceSearchDialogClick_(e: MouseEvent) {
     const dialog = e.currentTarget as HTMLDialogElement;
     if (e.target === dialog) {

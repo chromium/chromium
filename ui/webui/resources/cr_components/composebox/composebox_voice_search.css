@@ -209,6 +209,38 @@
   opacity: 1;
 }
 
+:host([audio-wave-enabled]) #container {
+  height: 100%;
+  padding-top: 0;
+}
+
+:host([audio-wave-enabled]) #input {
+  box-sizing: border-box;
+  font-family: var(--cr-composebox-font-family, 'Google Sans Text', inherit);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  padding-bottom: 0;
+  padding-inline-end: 48px;
+  padding-inline-start: 48px;
+  padding-top: 18px;
+  text-align: start;
+}
+
+:host([audio-wave-enabled]) #input.empty {
+  padding-inline-end: 0;
+  padding-inline-start: 0;
+  padding-top: 20px;
+  text-align: center;
+}
+
+:host([audio-wave-enabled]) #input.empty #transcript-text {
+  font-family: var(--cr-composebox-font-family, 'Google Sans', inherit);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
 /* Use opacity and pointer-events to utilize fade transition
  * if error is shown.
  */

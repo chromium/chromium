@@ -167,6 +167,11 @@ export class ComposeboxVoiceSearchElement extends
 
   static override get properties() {
     return {
+      audioWaveEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
+      helperTextEnabled: {type: Boolean},
       submitStopButtonsEnabled: {type: Boolean},
       liveTranscriptEnabled: {
         type: Boolean,
@@ -228,10 +233,12 @@ export class ComposeboxVoiceSearchElement extends
       null;
 
   accessor activatedByKeyboard: boolean = false;
+  accessor audioWaveEnabled: boolean = false;
   accessor autosubmitEnabled: boolean = false;
   accessor detailedError: VoiceSearchError|null = null;
   accessor dynamicTimeoutEnabled: boolean = false;
   accessor hasErrorTimer: boolean = false;
+  accessor helperTextEnabled: boolean = false;
   accessor idleTimeout: number = 3000;
   accessor isPermissionPromptOpen: boolean = false;
   accessor liveTranscriptEnabled: boolean = true;

@@ -32,7 +32,7 @@
    * off with this.
    */
   overflow-x: hidden;
-  padding-block-start: 10px;
+  padding-block-start: var(--recording-wave-top-padding, 10px);
   position: relative;
 }
 

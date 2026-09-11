@@ -199,8 +199,7 @@ ${this.voiceSearchCoherenceAnySearchboxExperimentEnabled_ &&
       @close="${this.onVoiceSearchOverlayClose}"
       @click="${this.onVoiceSearchDialogClick_}">
     <div id="voiceSearchCardContainer">
-      ${!this.hasVoiceSearchError &&
-          !this.voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_ ? html`
+      ${this.showVoiceSearchGlow_() ? html`
         <search-animated-glow id="voiceSearchGlow"
             .coloredTicTacVoiceAnimationEnabled="${true}"
             .isListening="${this.voiceSearchListening_}"
@@ -212,6 +211,8 @@ ${this.voiceSearchCoherenceAnySearchboxExperimentEnabled_ &&
       <!-- Pass metricSource synchronously to avoid microtask race in unit tests. -->
       <cr-composebox-voice-search id="voiceSearch"
           in-voice-search-mode
+          .audioWaveEnabled="${
+            this.voiceSearchCoherenceRealboxHelperTextEnabled_}"
           @voice-permission-changed="${this.onVoicePermissionChanged_}"
           @voice-search-cancel="${this.onVoiceSearchCancel_}"
           @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
@@ -222,12 +223,16 @@ ${this.voiceSearchCoherenceAnySearchboxExperimentEnabled_ &&
           @recording-stopped="${this.onVoiceSearchRecordingStopped_}"
           .hasErrorTimer="${true}"
           .pageCallbackRouter="${this.searchboxCallbackRouter_}"
-          .autosubmitEnabled="${true}"
-          .dynamicTimeoutEnabled="${true}"
+          .autosubmitEnabled="${
+            this.voiceSearchCoherenceRealboxAutoEndpointEnabled_}"
+          .dynamicTimeoutEnabled="${
+            this.voiceSearchCoherenceRealboxAutoEndpointEnabled_}"
           .queryLengthLimit="${this.voiceQueryLengthLimit_}"
           .idleTimeout="${this.voiceIdleTimeoutMs_}"
           .liveTranscriptEnabled="${
             this.voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_}"
+          .helperTextEnabled="${
+            this.voiceSearchCoherenceRealboxHelperTextEnabled_}"
           .submitStopButtonsEnabled="${true}"
           .metricSource="${'NTP_REALBOX'}">
       </cr-composebox-voice-search>

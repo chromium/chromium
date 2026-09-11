@@ -437,6 +437,11 @@ ntp-lens-upload-dialog {
   min-height: 128px;
 }
 
+#voiceSearchDialog:has(#voiceSearch[audio-wave-enabled]) {
+  height: 168px;
+  min-height: 168px;
+}
+
 /* Disable default scrim and use custom scrim instead. */
 #voiceSearchDialog::backdrop {
   display: none;
@@ -451,6 +456,11 @@ ntp-lens-upload-dialog {
 #voiceSearchDialog:has(#voiceSearch[live-transcript-enabled])
     #voiceSearchCardContainer {
   height: auto;
+}
+
+#voiceSearchDialog:has(#voiceSearch[audio-wave-enabled])
+    #voiceSearchCardContainer {
+  height: 100%;
 }
 
 #voiceSearch {
@@ -473,6 +483,14 @@ ntp-lens-upload-dialog {
   position: static;
 }
 
+#voiceSearch[audio-wave-enabled] {
+  --voice-bottom-actions-inset-inline-end: 16px;
+  --voice-search-minimum-height: 168px;
+  height: 100%;
+  inset: 0;
+  position: absolute;
+}
+
 #voiceSearch::part(voice-stop-button) {
   position: relative;
 }
@@ -487,10 +505,22 @@ ntp-lens-upload-dialog {
   position: absolute;
 }
 
-#voiceSearch:not([live-transcript-enabled])
-    ~ #voiceSearchGlow::part(full-container-overlay) {
+#voiceSearchGlow::part(full-container-overlay) {
   min-block-size: 0;
   position: absolute;
+}
+
+#voiceSearchDialog:has(#voiceSearch[audio-wave-enabled])
+    #voiceSearchGlow {
+  --recording-wave-top-padding: 4px;
+}
+
+#voiceSearchDialog:has(#voiceSearch[audio-wave-enabled])
+    #voiceSearchGlow::part(full-container-overlay) {
+  height: 48px;
+  inset-inline: 0;
+  padding: 0;
+  top: 49px;
 }
 
 :host-context([webui-rounded-icons]) {
