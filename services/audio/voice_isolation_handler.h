@@ -39,7 +39,6 @@ class VoiceIsolationHandler {
   using DeliverProcessedAudioCallback = base::RepeatingCallback<void(
       const media::AudioBus& audio_bus,
       base::TimeTicks audio_capture_time,
-      std::optional<double> new_volume,
       const media::AudioGlitchInfo& audio_glitch_info)>;
 
   VoiceIsolationHandler(const VoiceIsolationHandler&) = delete;
@@ -60,7 +59,6 @@ class VoiceIsolationHandler {
   // Processes the captured audio. Called on the capture/processing thread.
   void ProcessCapturedAudio(const media::AudioBus& audio_source,
                             base::TimeTicks audio_capture_time,
-                            std::optional<double> volume,
                             const media::AudioGlitchInfo& audio_glitch_info);
 
   // Dynamic toggle for voice isolation. Called on the owning sequence.

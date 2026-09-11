@@ -64,6 +64,8 @@ class AudioProcessorHandlerTest : public ::testing::Test {
   base::MockCallback<AudioProcessorHandler::LogCallback> log_callback_;
   base::MockCallback<AudioProcessorHandler::DeliverProcessedAudioCallback>
       deliver_callback_;
+  base::MockCallback<AudioProcessorHandler::VolumeAdjustmentCallback>
+      volume_callback_;
   base::MockCallback<AudioProcessorHandler::ReferenceStreamErrorCallback>
       error_callback_;
 
@@ -153,7 +155,7 @@ TEST_F(AudioProcessorHandlerTest, ProcessingWithoutVoiceIsolationHandler) {
   mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      deliver_callback_.Get(), error_callback_.Get(),
+      deliver_callback_.Get(), volume_callback_.Get(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
@@ -166,9 +168,9 @@ TEST_F(AudioProcessorHandlerTest, ProcessingWithoutVoiceIsolationHandler) {
   input_bus->Zero();
 
   base::RunLoop run_loop;
-  EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+  EXPECT_CALL(deliver_callback_, Run(_, _, _))
       .WillOnce([&](const media::AudioBus& processed_bus,
-                    base::TimeTicks capture_time, std::optional<double> volume,
+                    base::TimeTicks capture_time,
                     const media::AudioGlitchInfo& glitch_info) {
         EXPECT_EQ(processed_bus.channels(), output_params_.channels());
         EXPECT_EQ(processed_bus.frames(), output_params_.frames_per_buffer());
@@ -199,7 +201,7 @@ TEST_F(AudioProcessorHandlerTest, ProcessingWithVoiceIsolationHandler) {
 
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      base::NullCallback(), error_callback_.Get(),
+      base::NullCallback(), volume_callback_.Get(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
@@ -215,9 +217,9 @@ TEST_F(AudioProcessorHandlerTest, ProcessingWithVoiceIsolationHandler) {
 
   base::RunLoop run_loop;
   // Processed audio is delivered.
-  EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+  EXPECT_CALL(deliver_callback_, Run(_, _, _))
       .WillOnce([&](const media::AudioBus& processed_bus,
-                    base::TimeTicks capture_time, std::optional<double> volume,
+                    base::TimeTicks capture_time,
                     const media::AudioGlitchInfo& glitch_info) {
         EXPECT_EQ(processed_bus.channels(), output_params_.channels());
         EXPECT_EQ(processed_bus.frames(), output_params_.frames_per_buffer());
@@ -226,6 +228,50 @@ TEST_F(AudioProcessorHandlerTest, ProcessingWithVoiceIsolationHandler) {
 
   handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0,
                                 media::AudioGlitchInfo());
+  run_loop.Run();
+
+  handler->StopProcessing();
+}
+
+TEST_F(AudioProcessorHandlerTest, VolumeAdjustmentWithVoiceIsolation) {
+  media::AudioProcessingSettings settings;
+  settings.automatic_gain_control = true;
+  settings.voice_isolation = true;
+  mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
+  auto mock_voice_isolation = std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* voice_isolation_mock_ptr =
+      mock_voice_isolation.get();
+
+  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _))
+      .WillOnce([](const media::AudioBus& input, media::AudioBus& output) {
+        input.CopyTo(&output);
+      });
+
+  auto handler = std::make_unique<AudioProcessorHandler>(
+      settings, input_params_, output_params_, log_callback_.Get(),
+      base::NullCallback(), volume_callback_.Get(), error_callback_.Get(),
+      controls_remote.InitWithNewPipeAndPassReceiver(),
+      /*aecdump_recording_manager=*/nullptr,
+      /*ml_model_manager=*/nullptr,
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          output_params_,
+                                          deliver_callback_.Get()));
+
+  handler->StartProcessing();
+
+  auto input_bus = media::AudioBus::Create(input_params_);
+  input_bus->Zero();
+
+  base::RunLoop run_loop;
+  // Volume adjustment should be dispatched directly to volume_callback_ by
+  // AudioProcessorHandler, while deliver_callback_ receives audio from
+  // VoiceIsolationHandler without volume.
+  EXPECT_CALL(volume_callback_, Run(testing::Gt(0.0)))
+      .WillOnce([&](double new_volume) { run_loop.Quit(); });
+  EXPECT_CALL(deliver_callback_, Run(_, _, _));
+
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                /*volume=*/0.0, media::AudioGlitchInfo());
   run_loop.Run();
 
   handler->StopProcessing();
@@ -242,7 +288,7 @@ TEST_F(AudioProcessorHandlerTest,
   mojo::Remote<media::mojom::AudioProcessorControls> remote;
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      base::NullCallback(), error_callback_.Get(),
+      base::NullCallback(), volume_callback_.Get(), error_callback_.Get(),
       remote.BindNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
@@ -260,10 +306,9 @@ TEST_F(AudioProcessorHandlerTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
-    EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+    EXPECT_CALL(deliver_callback_, Run(_, _, _))
         .WillOnce([&](const media::AudioBus& processed_bus,
                       base::TimeTicks capture_time,
-                      std::optional<double> volume,
                       const media::AudioGlitchInfo& glitch_info) {
           run_loop.Quit();
         });
@@ -282,10 +327,9 @@ TEST_F(AudioProcessorHandlerTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
-    EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+    EXPECT_CALL(deliver_callback_, Run(_, _, _))
         .WillOnce([&](const media::AudioBus& processed_bus,
                       base::TimeTicks capture_time,
-                      std::optional<double> volume,
                       const media::AudioGlitchInfo& glitch_info) {
           run_loop.Quit();
         });
@@ -304,10 +348,9 @@ TEST_F(AudioProcessorHandlerTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
-    EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+    EXPECT_CALL(deliver_callback_, Run(_, _, _))
         .WillOnce([&](const media::AudioBus& processed_bus,
                       base::TimeTicks capture_time,
-                      std::optional<double> volume,
                       const media::AudioGlitchInfo& glitch_info) {
           run_loop.Quit();
         });
@@ -325,7 +368,7 @@ TEST_F(AudioProcessorHandlerTest,
   mojo::Remote<media::mojom::AudioProcessorControls> remote;
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      deliver_callback_.Get(), error_callback_.Get(),
+      deliver_callback_.Get(), volume_callback_.Get(), error_callback_.Get(),
       remote.BindNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
@@ -356,7 +399,7 @@ TEST_F(AudioProcessorHandlerTest, NoVolumeAdjustmentOnSilence) {
   mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      deliver_callback_.Get(), error_callback_.Get(),
+      deliver_callback_.Get(), volume_callback_.Get(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
@@ -370,17 +413,50 @@ TEST_F(AudioProcessorHandlerTest, NoVolumeAdjustmentOnSilence) {
   // An arbitrary, non-trivial volume level in the range (0.0, 1.0).
   double volume = 0.789;
   base::RunLoop run_loop;
-  // The callback volume parameter is only set if the AGC recommends a volume
-  // adjustment. Since the input is silent, the AGC recommends no change,
-  // and we expect std::nullopt.
-  EXPECT_CALL(deliver_callback_, Run(_, _, Eq(std::nullopt), _))
+  // The volume adjustment callback is only called if the AGC recommends a
+  // volume adjustment. Since the input is silent, the AGC recommends no change,
+  // so volume_callback_ should not be called.
+  EXPECT_CALL(volume_callback_, Run(_)).Times(0);
+  EXPECT_CALL(deliver_callback_, Run(_, _, _))
       .WillOnce(
           [&](const media::AudioBus& processed_bus,
-              base::TimeTicks capture_time, std::optional<double> volume,
+              base::TimeTicks capture_time,
               const media::AudioGlitchInfo& glitch_info) { run_loop.Quit(); });
 
   handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), volume,
                                 media::AudioGlitchInfo());
+  run_loop.Run();
+
+  handler->StopProcessing();
+}
+
+TEST_F(AudioProcessorHandlerTest, VolumeAdjustmentRecommendedByAgc) {
+  media::AudioProcessingSettings settings;
+  settings.automatic_gain_control = true;
+
+  mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
+  auto handler = std::make_unique<AudioProcessorHandler>(
+      settings, input_params_, output_params_, log_callback_.Get(),
+      deliver_callback_.Get(), volume_callback_.Get(), error_callback_.Get(),
+      controls_remote.InitWithNewPipeAndPassReceiver(),
+      /*aecdump_recording_manager=*/nullptr,
+      /*ml_model_manager=*/nullptr,
+      /*voice_isolation_handler=*/nullptr);
+
+  handler->StartProcessing();
+
+  auto input_bus = media::AudioBus::Create(input_params_);
+  input_bus->Zero();
+
+  // At startup with zero volume, WebRTC AGC enforces a minimum input volume,
+  // recommending an upward adjustment.
+  base::RunLoop run_loop;
+  EXPECT_CALL(volume_callback_, Run(testing::Gt(0.0)))
+      .WillOnce([&](double new_volume) { run_loop.Quit(); });
+  EXPECT_CALL(deliver_callback_, Run(_, _, _));
+
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                /*volume=*/0.0, media::AudioGlitchInfo());
   run_loop.Run();
 
   handler->StopProcessing();
@@ -393,7 +469,7 @@ TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulation) {
   mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      deliver_callback_.Get(), error_callback_.Get(),
+      deliver_callback_.Get(), volume_callback_.Get(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
@@ -409,11 +485,11 @@ TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulation) {
   media::AudioGlitchInfo glitch_info2{.duration = base::Milliseconds(5),
                                       .count = 1};
 
-  EXPECT_CALL(deliver_callback_, Run(_, _, _, glitch_info1)).Times(1);
+  EXPECT_CALL(deliver_callback_, Run(_, _, glitch_info1)).Times(1);
   handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0,
                                 glitch_info1);
 
-  EXPECT_CALL(deliver_callback_, Run(_, _, _, glitch_info2)).Times(1);
+  EXPECT_CALL(deliver_callback_, Run(_, _, glitch_info2)).Times(1);
   handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0,
                                 glitch_info2);
 
@@ -426,7 +502,7 @@ TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulationWithFifo) {
   mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      deliver_callback_.Get(), error_callback_.Get(),
+      deliver_callback_.Get(), volume_callback_.Get(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
@@ -456,7 +532,7 @@ TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulationWithFifo) {
   // `deliver_callback_` will be called TWICE! The first call gets glitch_info1,
   // and the second gets glitch_info2! Let's verify this behavior:
   base::RunLoop run_loop1;
-  EXPECT_CALL(deliver_callback_, Run(_, _, _, glitch_info1)).WillOnce([&]() {
+  EXPECT_CALL(deliver_callback_, Run(_, _, glitch_info1)).WillOnce([&]() {
     run_loop1.Quit();
   });
   handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0,
@@ -464,7 +540,7 @@ TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulationWithFifo) {
   run_loop1.Run();
 
   base::RunLoop run_loop2;
-  EXPECT_CALL(deliver_callback_, Run(_, _, _, glitch_info2)).WillOnce([&]() {
+  EXPECT_CALL(deliver_callback_, Run(_, _, glitch_info2)).WillOnce([&]() {
     run_loop2.Quit();
   });
   handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0,
@@ -488,7 +564,7 @@ TEST_F(AudioProcessorHandlerTest,
 
   auto handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      base::NullCallback(), error_callback_.Get(),
+      base::NullCallback(), volume_callback_.Get(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
@@ -507,7 +583,7 @@ TEST_F(AudioProcessorHandlerTest,
   media::AudioGlitchInfo glitch_info2{.duration = base::Milliseconds(5),
                                       .count = 1};
   base::RunLoop run_loop1;
-  EXPECT_CALL(deliver_callback_, Run(_, _, _, glitch_info1)).WillOnce([&]() {
+  EXPECT_CALL(deliver_callback_, Run(_, _, glitch_info1)).WillOnce([&]() {
     run_loop1.Quit();
   });
   handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0,
@@ -515,7 +591,7 @@ TEST_F(AudioProcessorHandlerTest,
   run_loop1.Run();
 
   base::RunLoop run_loop2;
-  EXPECT_CALL(deliver_callback_, Run(_, _, _, glitch_info2)).WillOnce([&]() {
+  EXPECT_CALL(deliver_callback_, Run(_, _, glitch_info2)).WillOnce([&]() {
     run_loop2.Quit();
   });
   handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0,
@@ -565,20 +641,20 @@ TEST_F(AudioProcessorHandlerTest,
   auto input_bus = media::AudioBus::Create(output_params_);
   input_bus->Zero();
 
-  EXPECT_CALL(deliver_callback_, Run(testing::Ref(*input_bus), _, _, _));
-  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0, {});
+  EXPECT_CALL(deliver_callback_, Run(testing::Ref(*input_bus), _, _));
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return handler->IsInitializedForTesting(); }));
   EXPECT_FALSE(handler->IsVoiceIsolationBypassedForTesting());
 
   bool delivered_same_instance = true;
-  EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+  EXPECT_CALL(deliver_callback_, Run(_, _, _))
       .WillOnce([&](const media::AudioBus& bus, base::TimeTicks,
-                    std::optional<double>, const media::AudioGlitchInfo&) {
+                    const media::AudioGlitchInfo&) {
         delivered_same_instance = (&bus == input_bus.get());
       });
-  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0, {});
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
   EXPECT_FALSE(delivered_same_instance);
 }
 
@@ -701,7 +777,7 @@ TEST_F(AudioProcessorHandlerTest,
 
   auto audio_processor_handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      base::NullCallback(), error_callback_.Get(),
+      base::NullCallback(), volume_callback_.Get(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
@@ -723,9 +799,9 @@ TEST_F(AudioProcessorHandlerTest,
   input_bus->Zero();
 
   base::RunLoop run_loop;
-  EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+  EXPECT_CALL(deliver_callback_, Run(_, _, _))
       .WillOnce([&](const media::AudioBus& processed_bus,
-                    base::TimeTicks capture_time, std::optional<double> volume,
+                    base::TimeTicks capture_time,
                     const media::AudioGlitchInfo& glitch_info) {
         EXPECT_EQ(processed_bus.channels(), output_params_.channels());
         EXPECT_EQ(processed_bus.frames(), output_params_.frames_per_buffer());
@@ -746,7 +822,7 @@ TEST_F(AudioProcessorHandlerTest,
   mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;
   auto audio_processor_handler = std::make_unique<AudioProcessorHandler>(
       settings, input_params_, output_params_, log_callback_.Get(),
-      deliver_callback_.Get(), error_callback_.Get(),
+      deliver_callback_.Get(), volume_callback_.Get(), error_callback_.Get(),
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,

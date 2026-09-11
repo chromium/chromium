@@ -53,6 +53,7 @@ AudioProcessorHandler::AudioProcessorHandler(
     const media::AudioParameters& output_format,
     LogCallback log_callback,
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
+    VolumeAdjustmentCallback volume_adjustment_callback,
     ReferenceStreamErrorCallback reference_stream_error_callback,
     mojo::PendingReceiver<media::mojom::AudioProcessorControls>
         controls_receiver,
@@ -73,6 +74,7 @@ AudioProcessorHandler::AudioProcessorHandler(
                                                settings.echo_cancellation))),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
+      volume_adjustment_callback_(std::move(volume_adjustment_callback)),
       reference_stream_error_callback_(
           std::move(reference_stream_error_callback)),
       receiver_(this, std::move(controls_receiver)),
@@ -217,6 +219,10 @@ void AudioProcessorHandler::OnAudioProcessorOutput(
     base::TimeTicks audio_capture_time,
     std::optional<double> new_volume) {
   TRACE_EVENT("audio", "AudioProcessorHandler::OnAudioProcessorOutput");
+  if (new_volume && volume_adjustment_callback_) {
+    volume_adjustment_callback_.Run(*new_volume);
+  }
+
   // Retrieve and reset the accumulated glitch info to ensure it is attached
   // to the processed frame.
   const media::AudioGlitchInfo glitch_info =
@@ -225,11 +231,11 @@ void AudioProcessorHandler::OnAudioProcessorOutput(
   if (voice_isolation_handler_) {
     // Route the processed audio and its metadata through voice isolation.
     voice_isolation_handler_->ProcessCapturedAudio(
-        audio_bus, audio_capture_time, new_volume, glitch_info);
-  } else {
+        audio_bus, audio_capture_time, glitch_info);
+  } else if (deliver_processed_audio_callback_) {
     // Deliver directly to the final destination callback.
     deliver_processed_audio_callback_.Run(audio_bus, audio_capture_time,
-                                          new_volume, glitch_info);
+                                          glitch_info);
   }
 }
 }  // namespace audio

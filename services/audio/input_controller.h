@@ -317,7 +317,6 @@ class InputController final {
   using DeliverProcessedAudioCallback = base::RepeatingCallback<void(
       const media::AudioBus& audio_bus,
       base::TimeTicks audio_capture_time,
-      std::optional<double> new_volume,
       const media::AudioGlitchInfo& audio_glitch_info)>;
 
   // Called from DoCreate. Helper to isolate logic setting up audio processing
@@ -332,8 +331,8 @@ class InputController final {
       std::unique_ptr<VoiceIsolationHandler> voice_isolation,
       DeliverProcessedAudioCallback deliver_processed_audio_callback);
 
-  // Called from DoCreate. Helper to create a VoiceIsolationHandler. If might
-  // return nullptr if the VoiceIsolation component is not created. If created
+  // Called from DoCreate. Helper to create a VoiceIsolationHandler. It might
+  // return nullptr if the VoiceIsolation component is not created. If created,
   // `deliver_processed_audio_callback` should be consumed.
   std::unique_ptr<VoiceIsolationHandler> MaybeCreateVoiceIsolationHandler(
       raw_ptr<MlModelManager> ml_model_manager,
@@ -343,7 +342,6 @@ class InputController final {
   // Used as a callback for |audio_processor_handler_|.
   void DeliverProcessedAudio(const media::AudioBus& audio_bus,
                              base::TimeTicks audio_capture_time,
-                             std::optional<double> new_volume,
                              const media::AudioGlitchInfo& glitch_info);
 #endif
 

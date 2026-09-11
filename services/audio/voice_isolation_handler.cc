@@ -156,12 +156,11 @@ void VoiceIsolationHandler::OnComponentCreated(
 void VoiceIsolationHandler::ProcessCapturedAudio(
     const media::AudioBus& audio_source,
     base::TimeTicks audio_capture_time,
-    std::optional<double> volume,
     const media::AudioGlitchInfo& audio_glitch_info) {
   TRACE_EVENT("audio", "VoiceIsolationHandler::ProcessCapturedAudio");
   if (IsVoiceIsolationBypassed()) {
     deliver_processed_audio_callback_.Run(audio_source, audio_capture_time,
-                                          volume, audio_glitch_info);
+                                          audio_glitch_info);
     return;
   }
   DCHECK(voice_isolation_);
@@ -169,7 +168,7 @@ void VoiceIsolationHandler::ProcessCapturedAudio(
   DCHECK_EQ(output_bus_->frames(), audio_source.frames());
   voice_isolation_->ProcessAudio(audio_source, *output_bus_);
   deliver_processed_audio_callback_.Run(*output_bus_, audio_capture_time,
-                                        volume, audio_glitch_info);
+                                        audio_glitch_info);
 }
 
 void VoiceIsolationHandler::SetVoiceIsolation(bool enabled) {
