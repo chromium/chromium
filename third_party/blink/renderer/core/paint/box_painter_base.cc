@@ -1371,8 +1371,7 @@ void BoxPainterBase::PaintFillLayer(
   SkBlendMode composite_op = SkBlendMode::kSrcOver;
   std::optional<ScopedImageRenderingSettings> image_rendering_settings_context;
   std::optional<ScopedMaskLuminanceLayer> mask_luminance_scope;
-  if (fill_layer_info.should_paint_image &&
-      !fill_layer_info.image->IsPendingImage()) {
+  if (fill_layer_info.should_paint_image) {
     // Prepare compositing state first so that it's ready in case the layer
     // references an SVG <mask> element.
     if (ShouldApplyBlendOperation(fill_layer_info, bg_layer)) {
