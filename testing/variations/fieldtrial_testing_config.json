@@ -7374,6 +7374,29 @@
             ]
         }
     ],
+    "DiscoverEnableSkinnerOnBling": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260907",
+                    "enable_features": [
+                        "IOSGCR_allow_unsorted_cache_index",
+                        "IOSGCR_do_not_short_circuit_on_feed_operations_generator_failure",
+                        "IOSGCR_dsc_enable_synchronous_feed_sourcer_observer_registration",
+                        "IOSGCR_enable_persisted_feed_deferred_disk_writes",
+                        "IOSGCR_handle_feed_sourcer_processing_errors",
+                        "IOSGCR_notify_collection_model_of_account_change",
+                        "IOSGCR_notify_on_canceled_reload_by_cache",
+                        "IOSGCR_reset_sourcer_on_account_switch",
+                        "IOSGCR_use_live_feed_sourcer"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscoverWidescreenFeedClank": [
         {
             "platforms": [
