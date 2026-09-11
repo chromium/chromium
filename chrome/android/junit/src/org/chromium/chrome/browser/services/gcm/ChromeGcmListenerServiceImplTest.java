@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -33,7 +32,6 @@ import java.util.Map;
 
 /** Unit tests for {@link ChromeGcmListenerServiceImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ChromeGcmListenerServiceImplTest {
     private static final String TEST_APP_ID = "com.google.chrome.fcm.test";
     private static final String TEST_MESSAGE_ID = "msg_id_12345";

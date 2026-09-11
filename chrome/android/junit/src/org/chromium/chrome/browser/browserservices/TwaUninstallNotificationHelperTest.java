@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -40,7 +39,6 @@ import java.util.Set;
 
 /** Tests for {@link TwaUninstallNotificationHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TwaUninstallNotificationHelperTest {
     private static final String PACKAGE_NAME = "org.chromium.test.twa";
     private static final String APP_NAME = "Test App";
