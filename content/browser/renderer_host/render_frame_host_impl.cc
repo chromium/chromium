@@ -142,6 +142,7 @@
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/holding_blocking_idb_lock_handle.h"
 #include "content/browser/renderer_host/initiator_navigation_state_impl.h"
 #include "content/browser/renderer_host/input/input_injector_impl.h"
 #include "content/browser/renderer_host/ipc_utils.h"
@@ -6428,36 +6429,6 @@ BackForwardCacheDisablingFeatureHandle
 RenderFrameHostImpl::RegisterBackForwardCacheDisablingNonStickyFeature(
     BackForwardCacheDisablingFeature feature) {
   return BackForwardCacheDisablingFeatureHandle(this, feature);
-}
-
-using HoldingBlockingIDBLockHandle =
-    RenderFrameHostImpl::HoldingBlockingIDBLockHandle;
-
-HoldingBlockingIDBLockHandle::HoldingBlockingIDBLockHandle() = default;
-
-HoldingBlockingIDBLockHandle::HoldingBlockingIDBLockHandle(
-    HoldingBlockingIDBLockHandle&& other) = default;
-
-HoldingBlockingIDBLockHandle::HoldingBlockingIDBLockHandle(
-    RenderFrameHostImpl* render_frame_host)
-    : render_frame_host_(render_frame_host->GetWeakPtr()) {
-  CHECK(render_frame_host_);
-  render_frame_host_->OnStartHoldingBlockingIDBLock();
-}
-
-HoldingBlockingIDBLockHandle::~HoldingBlockingIDBLockHandle() {
-  Reset();
-}
-
-bool HoldingBlockingIDBLockHandle::IsValid() const {
-  return render_frame_host_.get();
-}
-
-void HoldingBlockingIDBLockHandle::Reset() {
-  if (render_frame_host_) {
-    render_frame_host_->OnStopHoldingBlockingIDBLock();
-  }
-  render_frame_host_ = nullptr;
 }
 
 HoldingBlockingIDBLockHandle

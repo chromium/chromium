@@ -13,6 +13,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
+#include "content/browser/renderer_host/holding_blocking_idb_lock_handle.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -158,8 +159,7 @@ class DocumentIndexedDBClientStateChecker final
   // Keep the association between the feature handles it registered.
   struct KeepActiveReceiverContext {
     BackForwardCacheDisablingFeatureHandle bfcache_feature_handle;
-    RenderFrameHostImpl::HoldingBlockingIDBLockHandle
-        holding_blocking_idb_lock_handle;
+    HoldingBlockingIDBLockHandle holding_blocking_idb_lock_handle;
   };
 
   explicit DocumentIndexedDBClientStateChecker(RenderFrameHost* rfh)

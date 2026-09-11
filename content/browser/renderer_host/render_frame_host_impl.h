@@ -287,7 +287,6 @@ class RemoteValidation;
 namespace content {
 
 class AgentSchedulingGroupHost;
-class UnboundedSurfaceWindow;
 class BrowsingContextState;
 class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
@@ -300,6 +299,7 @@ class FrameTree;
 class FrameTreeNode;
 class GeolocationServiceImpl;
 class GuestPageHolderImpl;
+class HoldingBlockingIDBLockHandle;
 class IdleManagerImpl;
 class NavigationEarlyHintsManager;
 class NavigationRequest;
@@ -322,6 +322,7 @@ class RenderWidgetHostView;
 class ServiceWorkerClient;
 class SiteInfo;
 class SpeechSynthesisImpl;
+class UnboundedSurfaceWindow;
 class WebAuthRequestSecurityChecker;
 class WebAuthRequestSecurityCheckerImpl;
 class WebUIImpl;
@@ -1900,29 +1901,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnBackForwardCacheDisablingStickyFeatureUsed(
       BackForwardCacheDisablingFeature feature);
 
-  // Used to notify that a document is blocking another IDB transaction, which
-  // means that it must not be frozen.
-  class HoldingBlockingIDBLockHandle {
-   public:
-    HoldingBlockingIDBLockHandle();
-    HoldingBlockingIDBLockHandle(HoldingBlockingIDBLockHandle&&);
-    HoldingBlockingIDBLockHandle& operator=(
-        HoldingBlockingIDBLockHandle&& other) = default;
-
-    ~HoldingBlockingIDBLockHandle();
-
-    bool IsValid() const;
-
-    void Reset();
-
-   private:
-    friend class RenderFrameHostImpl;
-    explicit HoldingBlockingIDBLockHandle(
-        RenderFrameHostImpl* render_frame_host);
-
-    base::WeakPtr<RenderFrameHostImpl> render_frame_host_ = nullptr;
-  };
-
   // Disables freezing for this document for the duration of the handle's
   // lifetime.
   HoldingBlockingIDBLockHandle RegisterHoldingBlockingIDBLockHandle();
@@ -3310,6 +3288,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
  private:
   friend class BackForwardCacheDisablingFeatureHandle;
   friend class CommitNavigationPauser;
+  friend class HoldingBlockingIDBLockHandle;
   friend class NavigationBrowserTest;
   friend class RenderFrameHostManagerUnloadBrowserTest;
   friend class RenderFrameHostPermissionsPolicyTest;
