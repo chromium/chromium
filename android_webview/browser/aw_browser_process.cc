@@ -363,12 +363,6 @@ void AwBrowserProcess::FetchHostAppCacheQuota() {
                      cache_quota));
 }
 
-// static
-ApkType AwBrowserProcess::GetApkType() {
-  return static_cast<ApkType>(
-      Java_AwBrowserProcess_getApkType(base::android::AttachCurrentThread()));
-}
-
 static void JNI_AwBrowserProcess_OnStartupComplete(JNIEnv* env) {
   AwBrowserProcess::GetInstance()->GetBrowserClient()->OnStartupComplete();
 }

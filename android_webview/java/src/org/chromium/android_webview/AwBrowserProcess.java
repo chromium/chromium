@@ -8,7 +8,6 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
@@ -21,7 +20,6 @@ import androidx.annotation.IntDef;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -89,7 +87,6 @@ public final class AwBrowserProcess {
             (int) TimeUnit.SECONDS.toMinutes(TimeUtils.SECONDS_PER_DAY);
 
     private static String sWebViewPackageName;
-    private static @ApkType int sApkType;
     private static @Nullable String sProcessDataDirSuffix;
     private static boolean sDataDirBasePathOverridden;
 
@@ -380,44 +377,6 @@ public final class AwBrowserProcess {
 
     public static boolean isDataDirBasePathOverridden() {
         return sDataDirBasePathOverridden;
-    }
-
-    public static void initializeApkType(ApplicationInfo info) {
-        if (info == null || info.metaData == null) {
-            sApkType = ApkType.UNKNOWN;
-            return;
-        }
-
-        String libraryName = info.metaData.getString("com.android.webview.WebViewLibrary");
-        if (libraryName == null) {
-            sApkType = ApkType.UNKNOWN;
-            return;
-        }
-
-        if (libraryName.contains("libwebviewchromium")) {
-            // The library name for standalone should be "libwebviewchromium.so".
-            sApkType = ApkType.STANDALONE;
-            return;
-        }
-
-        if (libraryName.contains("libmonochrome")) {
-            // The library name for trichrome is "libmonochrome.so" or "libmonochrome_64.so".
-            if (info.sharedLibraryFiles != null && info.sharedLibraryFiles.length > 0) {
-                // Only Trichrome uses shared library files.
-                sApkType = ApkType.TRICHROME;
-            } else {
-                sApkType = ApkType.UNKNOWN;
-            }
-            return;
-        }
-
-        sApkType = ApkType.UNKNOWN;
-    }
-
-    /** Returns the WebView APK type. */
-    @CalledByNative
-    public static @ApkType int getApkType() {
-        return sApkType;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and

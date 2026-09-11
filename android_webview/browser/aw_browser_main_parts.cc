@@ -281,24 +281,6 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   synthetic_trial_syncer_ = content::SyntheticTrialSyncer::Create(
       metrics->GetSyntheticTrialRegistry());
 
-  static constexpr char kWebViewApkTypeTrial[] = "WebViewApkType";
-  ApkType apk_type = AwBrowserProcess::GetApkType();
-  std::string apk_type_string;
-  switch (apk_type) {
-    case ApkType::TRICHROME:
-      apk_type_string = "Trichrome";
-      break;
-    case ApkType::STANDALONE:
-      apk_type_string = "Standalone";
-      break;
-    case ApkType::UNKNOWN:
-      apk_type_string = "Unknown";
-      break;
-  }
-  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      metrics, kWebViewApkTypeTrial, apk_type_string,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
-
   // We use 3393823 as an id reported for all WebView traffic to help analyse data on the
   // server-side for WebView embedders.
   std::vector<std::string> forced_variation_ids = {"3393823"};

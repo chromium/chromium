@@ -416,7 +416,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             }
             String webViewPackageName = packageInfo.packageName;
             AwBrowserProcess.setWebViewPackageName(webViewPackageName);
-            AwBrowserProcess.initializeApkType(packageInfo.applicationInfo);
 
             mWebViewDelegate = webViewDelegate;
             Application application = mFactoryInitDelegate.getApplication();

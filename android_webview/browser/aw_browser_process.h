@@ -7,7 +7,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_BROWSER_PROCESS_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_BROWSER_PROCESS_H_
 
-#include "android_webview/browser/aw_apk_type.h"
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
@@ -105,8 +104,6 @@ class AwBrowserProcess : public WebViewAppStateObserver {
   network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams();
 
   void PreMainMessageLoopRun();
-
-  static ApkType GetApkType();
 
   EnterpriseAuthenticationAppLinkManager*
   GetEnterpriseAuthenticationAppLinkManager();
