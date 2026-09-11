@@ -233,6 +233,7 @@ AndroidAutofillClient::ShowAutofillSuggestions(
 }
 
 void AndroidAutofillClient::UpdateAutofillDataListValues(
+    const autofill::LocalFrameToken& frame_token,
     base::span<const autofill::SelectOption> datalist) {
   // Leaving as an empty method since updating autofill popup window
   // dynamically does not seem to be a useful feature when delegating to Android

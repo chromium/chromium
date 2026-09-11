@@ -438,7 +438,8 @@ void AutofillExternalDelegate::OnQuery(
                  .field_datalist_options = field.datalist_options()};
   caret_bounds_ = caret_bounds;
   trigger_source_ = trigger_source;
-  manager_->client().UpdateAutofillDataListValues(field.datalist_options());
+  manager_->client().UpdateAutofillDataListValues(field.global_id().frame_token,
+                                                  field.datalist_options());
 }
 
 const AutofillField* AutofillExternalDelegate::GetQueriedField() const {

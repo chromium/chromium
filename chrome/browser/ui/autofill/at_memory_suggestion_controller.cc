@@ -169,6 +169,10 @@ void AtMemorySuggestionController::UpdateDataListValues(
   NOTREACHED();
 }
 
+const LocalFrameToken& AtMemorySuggestionController::GetFrameToken() const {
+  return controller_common_.frame_token;
+}
+
 void AtMemorySuggestionController::HideViewAndDie() {
   ui_session_id_ = std::nullopt;
 

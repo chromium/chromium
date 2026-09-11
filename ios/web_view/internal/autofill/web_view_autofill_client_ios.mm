@@ -251,6 +251,7 @@ WebViewAutofillClientIOS::ShowAutofillSuggestions(
 }
 
 void WebViewAutofillClientIOS::UpdateAutofillDataListValues(
+    const LocalFrameToken& frame_token,
     base::span<const SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.
 }

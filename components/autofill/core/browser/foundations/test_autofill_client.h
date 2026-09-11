@@ -410,6 +410,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   void UpdateAutofillDataListValues(
+      const LocalFrameToken& frame_token,
       base::span<const SelectOption> options) override {}
 
   void SetAutofillSuggestions(std::vector<Suggestion> suggestions) {

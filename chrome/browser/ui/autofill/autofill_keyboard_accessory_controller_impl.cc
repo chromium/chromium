@@ -755,6 +755,11 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
   }
 }
 
+const LocalFrameToken& AutofillKeyboardAccessoryControllerImpl::GetFrameToken()
+    const {
+  return controller_common_.frame_token;
+}
+
 bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
   return std::ranges::any_of(suggestions_, &IsStandaloneSuggestionType,
                              &Suggestion::type);

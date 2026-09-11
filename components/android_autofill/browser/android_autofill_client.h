@@ -127,6 +127,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient,
       const autofill::AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) final;
   void UpdateAutofillDataListValues(
+      const autofill::LocalFrameToken& frame_token,
       base::span<const autofill::SelectOption> datalist) final;
   void HideSuggestions(autofill::SuggestionHidingReason reason,
                        std::optional<autofill::FillingProduct> product) final;

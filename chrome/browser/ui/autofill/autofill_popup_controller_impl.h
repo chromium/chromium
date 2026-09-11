@@ -74,6 +74,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
+  const LocalFrameToken& GetFrameToken() const override;
   bool MayRecycle(
       base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,

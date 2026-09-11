@@ -547,6 +547,7 @@ ChromeAutofillClientIOS::ShowAutofillSuggestions(
 }
 
 void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
+    const LocalFrameToken& frame_token,
     base::span<const SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.
 }

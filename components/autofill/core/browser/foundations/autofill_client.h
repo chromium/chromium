@@ -665,6 +665,7 @@ class AutofillClient {
 
   // Update the data list values shown by the Autofill suggestions, if visible.
   virtual void UpdateAutofillDataListValues(
+      const LocalFrameToken& frame_token,
       base::span<const SelectOption> datalist) = 0;
 
   // Returns the identifier of the suggestion UI that is currently showing or

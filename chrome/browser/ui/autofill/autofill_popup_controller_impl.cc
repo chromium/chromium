@@ -483,6 +483,10 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   }
 }
 
+const LocalFrameToken& AutofillPopupControllerImpl::GetFrameToken() const {
+  return controller_common_.frame_token;
+}
+
 bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
     const {
   return !disable_threshold_for_testing_ &&

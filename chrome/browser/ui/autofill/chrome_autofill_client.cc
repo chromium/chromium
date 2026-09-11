@@ -908,8 +908,10 @@ ChromeAutofillClient::ShowAutofillSuggestions(
 }
 
 void ChromeAutofillClient::UpdateAutofillDataListValues(
+    const LocalFrameToken& frame_token,
     base::span<const SelectOption> options) {
-  if (suggestion_controller_) {
+  if (suggestion_controller_ &&
+      suggestion_controller_->GetFrameToken() == frame_token) {
     suggestion_controller_->UpdateDataListValues(options);
   }
 }
