@@ -10,7 +10,6 @@ import android.app.Activity;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -121,11 +120,6 @@ public class HubProvider {
 
                     selector.commitAllTabClosures();
                     selector.selectModel(isIncognito);
-                    if (isIncognito) {
-                        int tabCount = selector.getCurrentModelTabCountSupplier().get();
-                        RecordHistogram.recordBooleanHistogram(
-                                "Android.TabSwitcher.IncognitoClickedIsEmpty", tabCount == 0);
-                    }
                 };
         assumeNonNull(mCallbackController);
         mHubManagerSupplier.onAvailable(
