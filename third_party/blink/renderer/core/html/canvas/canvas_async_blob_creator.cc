@@ -188,7 +188,10 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     const SkColorInfo target_color_info =
         ImageEncoderUtils::GetColorInfoForEncoder(
             skia_image_->imageInfo().colorInfo(), image_->GetHdrMetadata());
-    if (target_color_info != skia_image_->imageInfo().colorInfo()) {
+    // It is more efficient to do alpha un-multiplication inside the decoder.
+    // https://crbug.com/557350372
+    if (target_color_info.makeAlphaType(skia_image_->imageInfo().alphaType()) !=
+        skia_image_->imageInfo().colorInfo()) {
       SkBitmap bitmap;
       if (bitmap.tryAllocPixels(SkImageInfo::Make(skia_image_->dimensions(),
                                                   target_color_info)) &&

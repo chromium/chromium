@@ -137,6 +137,9 @@ class CanvasAsyncBlobCreatorTest : public PageTestBase {
   MockCanvasAsyncBlobCreator* AsyncBlobCreator() {
     return async_blob_creator_.Get();
   }
+  sk_sp<SkImage> GetSkiaImage(CanvasAsyncBlobCreator* creator) {
+    return creator->skia_image_;
+  }
   ukm::UkmRecorder* UkmRecorder() { return &ukm_recorder_; }
   void TearDown() override;
 
@@ -229,6 +232,16 @@ TEST_F(CanvasAsyncBlobCreatorTest, IdleTaskFailedWhenStartTimeoutEventHappens) {
 
   EXPECT_EQ(IdleTaskStatus::kIdleTaskFailed,
             AsyncBlobCreator()->GetIdleTaskStatus());
+}
+
+TEST_F(CanvasAsyncBlobCreatorTest, NoConversionForSrgbPremul) {
+  scoped_refptr<StaticBitmapImage> image = CreateTransparentImage(20, 20);
+  sk_sp<SkImage> original_sk_image =
+      image->PaintImageForCurrentFrame().GetSwSkImage();
+  auto* async_blob_creator = MakeGarbageCollected<MockCanvasAsyncBlobCreator>(
+      image, kMimeTypePng, &GetDocument());
+  // The SkImage should not have been reallocated or converted.
+  EXPECT_EQ(GetSkiaImage(async_blob_creator), original_sk_image);
 }
 
 }  // namespace blink
