@@ -487,7 +487,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheExclusive) {
 
     // Entering into the BFCache should not evict the page.
     rfh->SetLifecycleState(
-        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+        RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
     EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
     // Taking a lock of a contentious type will not return synchronously, but
@@ -548,7 +548,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheShared) {
     // Entering into the BFCache should not evict the page. The lock should not
     // have been released.
     rfh->SetLifecycleState(
-        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+        RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
     EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
     {
@@ -622,7 +622,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeChildThenParent) {
     // Entering into the BFCache should not evict the page. The lock should
     // not have been released.
     rfh->SetLifecycleState(
-        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+        RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
     EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
     // When only inactive pages hold the child lock, taking a lock on an
@@ -687,7 +687,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeParentThenChild) {
     // Entering into the BFCache should not evict the page. The lock should
     // not have been released.
     rfh->SetLifecycleState(
-        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+        RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
     EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
     // When only inactive pages hold the parent lock, taking a lock on a
@@ -754,7 +754,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictPendingLockRoot) {
     // Entering into the BFCache should not evict the page. The lock should not
     // have been released.
     rfh->SetLifecycleState(
-        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+        RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
     EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
     // Reuse the bf_cache_context as if it were another page.
@@ -818,7 +818,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictDescendantPendingLockRoot) {
     // Entering into the BFCache should not evict the page. The lock should not
     // have been released.
     rfh->SetLifecycleState(
-        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+        RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
     EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
     // Reuse the bf_cache_context as if it were another page.
@@ -884,7 +884,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictAncestorPendingLockRoot) {
     // Entering into the BFCache should not evict the page. The lock should not
     // have been released.
     rfh->SetLifecycleState(
-        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+        RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
     EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
     // Reuse the bf_cache_context as if it were another page.
@@ -963,7 +963,7 @@ TEST_F(FileSystemAccessLockManagerTest,
       // Entering into the BFCache should not evict the page. The lock should
       // not have been released.
       rfh->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+          RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
       EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
       // Reuse the bf_cache_context as if it were another page.
@@ -1031,7 +1031,7 @@ TEST_F(FileSystemAccessLockManagerTest,
 
   // Entering into the BFCache should not evict the page.
   rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
   // Taking a lock of a contentious type will not return synchronously, but
@@ -1065,7 +1065,7 @@ TEST_F(FileSystemAccessLockManagerTest,
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
       kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
 
   base::FilePath parent = dir_.GetPath().AppendASCII("parent");
   auto parent_url = CreateLocalUrl(parent);
@@ -1095,7 +1095,7 @@ TEST_F(FileSystemAccessLockManagerTest,
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
       kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
 
   base::FilePath parent = dir_.GetPath().AppendASCII("parent");
   auto parent_url = CreateLocalUrl(parent);
@@ -1132,7 +1132,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictPendingChild) {
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
       kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
 
   base::FilePath parent = dir_.GetPath().AppendASCII("parent");
   auto parent_url = CreateLocalUrl(parent);
@@ -1165,7 +1165,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictAncestorOfPendingTree) {
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
       kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
 
   base::FilePath parent = dir_.GetPath().AppendASCII("parent");
   base::FilePath child = parent.AppendASCII("child");
@@ -1201,7 +1201,7 @@ TEST_F(FileSystemAccessLockManagerTest,
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
       kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
 
   base::FilePath parent = dir_.GetPath().AppendASCII("parent");
   base::FilePath child = parent.AppendASCII("child");
@@ -1243,7 +1243,7 @@ TEST_F(FileSystemAccessLockManagerTest,
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
       kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
 
   base::FilePath parent = dir_.GetPath().AppendASCII("parent");
   base::FilePath child = parent.AppendASCII("child");
@@ -1283,7 +1283,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictPendingTree) {
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
       kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
 
   base::FilePath parent = dir_.GetPath().AppendASCII("parent");
   auto parent_url = CreateLocalUrl(parent);

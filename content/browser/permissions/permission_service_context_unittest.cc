@@ -215,7 +215,7 @@ TEST_F(PermissionServiceContextTest,
   // Simulate the render frame host is back to active state by setting the
   // lifecycle state.
   render_frame_host()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kActive);
+      RenderFrameHostLifecycleStateImpl::kActive);
   EXPECT_TRUE(render_frame_host()->IsInLifecycleState(
       RenderFrameHost::LifecycleState::kActive));
   SimulatePermissionChangedEvent(blink::PermissionType::GEOLOCATION,
@@ -256,7 +256,7 @@ TEST_F(PermissionServiceContextTest,
   // lifecycle state. The last event should be dispatched and increment the
   // counter.
   render_frame_host()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kActive);
+      RenderFrameHostLifecycleStateImpl::kActive);
   EXPECT_TRUE(render_frame_host()->IsInLifecycleState(
       RenderFrameHost::LifecycleState::kActive));
   WaitForAsyncTasksToComplete();
@@ -287,7 +287,7 @@ TEST_F(PermissionServiceContextTest, CreateSubscriptionInBackForwardCache) {
   // Simulate the render frame host is back to active state by setting the
   // lifecycle state. The last event should be dispatched.
   render_frame_host()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kActive);
+      RenderFrameHostLifecycleStateImpl::kActive);
   EXPECT_TRUE(render_frame_host()->IsInLifecycleState(
       RenderFrameHost::LifecycleState::kActive));
   WaitForAsyncTasksToComplete();
@@ -321,7 +321,7 @@ TEST_F(PermissionServiceContextTest,
   // Simulate the render frame host is back to active state by setting the
   // lifecycle state. No event should be dispatched.
   render_frame_host()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kActive);
+      RenderFrameHostLifecycleStateImpl::kActive);
   EXPECT_TRUE(render_frame_host()->IsInLifecycleState(
       RenderFrameHost::LifecycleState::kActive));
   WaitForAsyncTasksToComplete();
@@ -350,7 +350,7 @@ TEST_F(PermissionServiceContextTest,
   // Simulate the render frame host is back to active state by setting the
   // lifecycle state. The last event should be dispatched.
   render_frame_host()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kActive);
+      RenderFrameHostLifecycleStateImpl::kActive);
   EXPECT_TRUE(render_frame_host()->IsInLifecycleState(
       RenderFrameHost::LifecycleState::kActive));
   WaitForAsyncTasksToComplete();

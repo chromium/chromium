@@ -791,7 +791,7 @@ RenderFrameHost* FindRequestManager::Traverse(RenderFrameHost* from_rfh,
   if (from_rfh_impl->IsPendingDeletion() ||
       from_rfh_impl->IsInBackForwardCache() ||
       from_rfh_impl->lifecycle_state() ==
-          RenderFrameHostImpl::LifecycleStateImpl::kPrerendering) {
+          RenderFrameHostLifecycleStateImpl::kPrerendering) {
     return nullptr;
   }
 

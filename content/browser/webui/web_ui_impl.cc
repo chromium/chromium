@@ -270,9 +270,9 @@ void WebUIImpl::SetRenderFrameHost(RenderFrameHost* render_frame_host) {
       static_cast<RenderFrameHostImpl*>(render_frame_host)->GetWeakPtr();
   // Assert that we can only open WebUI for the active or speculative pages.
   CHECK(frame_host_->lifecycle_state() ==
-                RenderFrameHostImpl::LifecycleStateImpl::kActive ||
+                RenderFrameHostLifecycleStateImpl::kActive ||
             frame_host_->lifecycle_state() ==
-                RenderFrameHostImpl::LifecycleStateImpl::kSpeculative,
+                RenderFrameHostLifecycleStateImpl::kSpeculative,
         base::NotFatalUntil::M158);
 }
 

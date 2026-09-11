@@ -235,7 +235,7 @@ TEST_F(AnchorElementInteractionHostImplTest, IgnoreMessagesWhenInactive) {
       PreloadingDataImpl::GetOrCreateForWebContents(web_contents());
 
   render_frame_host->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   EXPECT_FALSE(render_frame_host->IsActive());
 
   const auto kUrl = GURL("https://example.com/page1.html");

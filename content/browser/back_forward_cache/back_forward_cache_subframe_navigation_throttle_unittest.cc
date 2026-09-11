@@ -85,7 +85,7 @@ class BackForwardCacheSubframeNavigationThrottleTestBase
     // Set the lifecycle state to `kInBackForwardCache`.
     static_cast<RenderFrameHostImpl*>(subframe_rfh_)
         ->SetLifecycleState(
-            RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+            RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
     ASSERT_TRUE(static_cast<RenderFrameHostImpl*>(subframe_rfh_)
                     ->IsInLifecycleState(
                         RenderFrameHost::LifecycleState::kInBackForwardCache));

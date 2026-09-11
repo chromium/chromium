@@ -133,7 +133,7 @@ TEST_F(NavigatorTest, SimpleBrowserInitiatedNavigationFromNonLiveRenderer) {
   navigation->Commit();
   EXPECT_TRUE(main_test_rfh()->IsActive());
   EXPECT_EQ(main_test_rfh()->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleStateImpl::kActive);
+            RenderFrameHostLifecycleStateImpl::kActive);
   if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrl),
               main_test_rfh()->GetSiteInstance()->GetSiteInfo());

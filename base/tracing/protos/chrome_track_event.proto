@@ -608,7 +608,7 @@ message RenderFrameHost {
   optional GlobalRenderFrameHostId render_frame_host_id = 2;
 
   // NOTE: this proto must be kept consistent with
-  // RenderFrameHostImpl::LifecycleStateImpl.
+  // content::RenderFrameHostLifecycleStateImpl.
   enum LifecycleState {
     UNSPECIFIED = 0;
     SPECULATIVE = 1;

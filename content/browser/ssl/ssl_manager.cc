@@ -432,7 +432,7 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
     RenderFrameHostImpl* rfh =
         controller_->frame_tree().root()->current_frame_host();
     DCHECK(rfh);
-    CHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+    CHECK_NE(RenderFrameHostLifecycleStateImpl::kPrerendering,
              rfh->GetOutermostMainFrame()->lifecycle_state());
     WebContentsImpl* contents =
         WebContentsImpl::FromRenderFrameHostImpl(rfh->GetOutermostMainFrame());

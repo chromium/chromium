@@ -215,7 +215,7 @@ class RenderFrameHostFactoryForHistoryBackInterceptor
       base::UnguessableToken devtools_frame_token,
       const blink::InitiatorStateToken& initiator_state_token,
       bool renderer_initiated_creation,
-      RenderFrameHostImpl::LifecycleStateImpl lifecycle_state,
+      RenderFrameHostLifecycleStateImpl lifecycle_state,
       scoped_refptr<BrowsingContextState> browsing_context_state) override {
     return base::WrapUnique(new RenderFrameHostImplForHistoryBackInterceptor(
         site_instance, std::move(render_view_host), delegate, frame_tree,
@@ -7050,7 +7050,7 @@ IN_PROC_BROWSER_TEST_F(CommitNavigationRaceBrowserTest,
   CommitNavigationPauser commit_pauser(speculative_render_frame_host.get());
   commit_pauser.WaitForCommitAndPause();
 
-  ASSERT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit,
+  ASSERT_EQ(RenderFrameHostLifecycleStateImpl::kPendingCommit,
             speculative_render_frame_host->lifecycle_state());
 
   // Terminate the renderer process while `speculative_render_frame_host` is in
@@ -7235,7 +7235,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                                         ->render_manager()
                                         ->speculative_frame_host();
             ASSERT_TRUE(speculative_rfh);
-            EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit,
+            EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kPendingCommit,
                       speculative_rfh->lifecycle_state());
 
             // But it should not have any pending cross-document navigation

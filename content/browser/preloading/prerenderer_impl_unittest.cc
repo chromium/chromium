@@ -362,7 +362,7 @@ TEST_F(PrerendererTest, MaybePrerenderIgnoredWhenInactive) {
   PrerendererImpl prerenderer(*GetRenderFrameHost());
 
   GetRenderFrameHost()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   EXPECT_FALSE(GetRenderFrameHost()->IsActive());
 
   const GURL kPrerenderingUrl = GetSameOriginUrl("/empty.html");

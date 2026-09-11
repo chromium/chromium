@@ -88,7 +88,7 @@ TEST_F(IndexedDBClientStateCheckerFactoryTest,
 
   // Set the lifecycle state to `kInBackForwardCache`.
   rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   // Now the client state check should report that the document is not active.
   TestDisallowInactiveClient(rfh,
                              DisallowInactiveClientReason::kVersionChangeEvent,

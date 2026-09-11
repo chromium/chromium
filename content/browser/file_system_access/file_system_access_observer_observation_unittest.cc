@@ -316,14 +316,14 @@ class FileSystemAccessObserverObservationTest
 
     RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
     rfh->SetLifecycleState(
-        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+        RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   }
 
   void ExitBFCache() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
-    rfh->SetLifecycleState(RenderFrameHostImpl::LifecycleStateImpl::kActive);
+    rfh->SetLifecycleState(RenderFrameHostLifecycleStateImpl::kActive);
   }
 
   FakeChangeSource CreateFileChangeSource(storage::FileSystemURL file_url) {

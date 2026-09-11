@@ -583,11 +583,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
   RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
   RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_b->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_c->lifecycle_state());
 
   // Act as if there was a slow unload handler on rfh_b and rfh_c.
@@ -605,11 +605,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
 
   // 2) Navigate rfh_c to D.
   EXPECT_TRUE(NavigateToURLFromRenderer(rfh_c->frame_tree_node(), url_d));
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_b->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             rfh_c->lifecycle_state());
   RenderFrameHostImpl* rfh_d = rfh_b->child_at(0)->current_frame_host();
   // Set an arbitrarily long timeout to ensure the subframe unload timer doesn't
@@ -625,13 +625,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
 
   // 3) Navigate rfh_b to E.
   EXPECT_TRUE(NavigateToURLFromRenderer(rfh_b->frame_tree_node(), url_e));
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             rfh_b->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             rfh_c->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             rfh_d->lifecycle_state());
 
   // rfh_d completes its unload event. It deletes the frame, including rfh_c.
@@ -703,11 +703,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialPagehideHandler) {
   EXPECT_FALSE(delete_a1.deleted());
   EXPECT_FALSE(delete_b1.deleted());
   EXPECT_FALSE(delete_a2.deleted());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             a1->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kReadyToBeDeleted,
             b1->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             a2->lifecycle_state());
 
   // 3) B1 receives confirmation it has been deleted. This has no effect,
@@ -716,11 +716,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialPagehideHandler) {
   EXPECT_FALSE(delete_a1.deleted());
   EXPECT_FALSE(delete_b1.deleted());
   EXPECT_FALSE(delete_a2.deleted());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             a1->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kReadyToBeDeleted,
             b1->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             a2->lifecycle_state());
 
   // 4) A2 received confirmation that it has been deleted and destroy B1 and A2.
@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialPagehideHandler) {
   EXPECT_FALSE(delete_a1.deleted());
   EXPECT_TRUE(delete_b1.deleted());
   EXPECT_TRUE(delete_a2.deleted());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             a1->lifecycle_state());
 
   // 5) A1 receives mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame and

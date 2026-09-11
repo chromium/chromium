@@ -1435,7 +1435,7 @@ size_t GetOutermostMainFrameCountForFastShutdown(RenderProcessHost* process) {
         RenderFrameHostImpl* const outermost_rfh =
             static_cast<RenderFrameHostImpl*>(rfh)->GetOutermostMainFrame();
         if (outermost_rfh->lifecycle_state() ==
-            RenderFrameHostImpl::LifecycleStateImpl::kActive) {
+            RenderFrameHostLifecycleStateImpl::kActive) {
           outermost_main_frames.insert(outermost_rfh);
         }
       });
@@ -3082,7 +3082,7 @@ void RenderProcessHostImpl::ForEachRenderFrameHost(
     // Speculative RFHs are not exposed to //content embedders, so we have to
     // explicitly check them here to avoid leaks.
     if (rfh->lifecycle_state() ==
-        RenderFrameHostImpl::LifecycleStateImpl::kSpeculative) {
+        RenderFrameHostLifecycleStateImpl::kSpeculative) {
       continue;
     }
     on_render_frame_host(rfh);

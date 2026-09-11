@@ -1519,7 +1519,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, InactiveFrameIgnoredForRouting) {
   // Make sub_frame inactive.
   static_cast<RenderFrameHostImpl*>(sub_frame_.get())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+          RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   ASSERT_FALSE(sub_frame_->IsActive());
 
   // sub_frame must not be routed. main_frame (which is active) should be
@@ -1530,7 +1530,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, InactiveFrameIgnoredForRouting) {
 TEST_F(MediaSessionImplServiceRoutingTest, CannotAddPlayerForInactiveFrame) {
   static_cast<RenderFrameHostImpl*>(sub_frame_.get())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+          RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   ASSERT_FALSE(sub_frame_->IsActive());
 
   auto observer = std::make_unique<NiceMock<MockMediaSessionPlayerObserver>>(

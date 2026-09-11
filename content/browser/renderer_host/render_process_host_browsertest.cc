@@ -1552,14 +1552,14 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForEachRenderFrameHost) {
   FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* rfh_b = root->render_manager()->speculative_frame_host();
   ASSERT_TRUE(rfh_b);
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kSpeculative,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kSpeculative,
             rfh_b->lifecycle_state());
 
   std::vector<RenderFrameHost*> same_process_rfhs;
   auto non_speculative_rfh_collector =
       [&same_process_rfhs](RenderFrameHost* rfh) {
         auto* rfhi = static_cast<RenderFrameHostImpl*>(rfh);
-        EXPECT_NE(RenderFrameHostImpl::LifecycleStateImpl::kSpeculative,
+        EXPECT_NE(RenderFrameHostLifecycleStateImpl::kSpeculative,
                   rfhi->lifecycle_state());
         same_process_rfhs.push_back(rfh);
       };
@@ -1589,7 +1589,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForEachRenderFrameHost) {
 
   // 8. Check that `RenderProcessHost::ForEachRenderFrameHost` does not filter
   // `rfh_b` out, because its lifecycle has changed to kActive.
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_b->lifecycle_state());
 
   EXPECT_EQ(1, rph_b->GetRenderFrameHostCount());

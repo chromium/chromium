@@ -1408,7 +1408,7 @@ class MediaStreamDispatcherHostActiveRfhTest
   void DeactivateMainRfh() {
     RenderFrameHostImpl* const rfhi = RenderFrameHostImpl::From(main_rfh());
     rfhi->SetLifecycleState(
-        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+        RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   }
 
  protected:

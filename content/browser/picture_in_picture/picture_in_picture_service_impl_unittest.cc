@@ -793,7 +793,7 @@ TEST_F(PictureInPictureServiceImplTest,
 TEST_F(PictureInPictureServiceImplTest,
        StartSession_InactiveFrameRunningUnloadHandlers) {
   main_test_rfh()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+      RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   ASSERT_FALSE(main_test_rfh()->IsActive());
 
   mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>
@@ -814,7 +814,7 @@ TEST_F(PictureInPictureServiceImplTest,
 TEST_F(PictureInPictureServiceImplTest,
        StartSession_InactiveFrameInBackForwardCache) {
   main_test_rfh()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   ASSERT_FALSE(main_test_rfh()->IsActive());
 
   mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>
@@ -840,7 +840,7 @@ TEST_F(PictureInPictureServiceImplTest,
       .WillRepeatedly(testing::Return(true));
 
   main_test_rfh()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+      RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   ASSERT_FALSE(main_test_rfh()->IsActive());
 
   // Delegate confirmation should never be requested for an inactive frame.
@@ -902,7 +902,7 @@ TEST_F(PictureInPictureServiceImplTest,
 
   // Frame becomes inactive before user confirmation finishes.
   main_test_rfh()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+      RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   ASSERT_FALSE(main_test_rfh()->IsActive());
 
   ImmersivePlaybackConfirmationResult result;
@@ -951,7 +951,7 @@ TEST_F(PictureInPictureServiceImplTest,
 
   // Now frame becomes inactive and sends another StartSession call.
   main_test_rfh()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+      RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   ASSERT_FALSE(main_test_rfh()->IsActive());
 
   DummyPictureInPictureSessionObserver observer2;

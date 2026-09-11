@@ -4072,7 +4072,7 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
   // Only active and prerendered documents are allowed to navigate in their
   // frame.
   if (render_frame_host->lifecycle_state() !=
-      RenderFrameHostImpl::LifecycleStateImpl::kPrerendering) {
+      RenderFrameHostLifecycleStateImpl::kPrerendering) {
     // - If the document is in pending deletion, the browser already committed
     // to destroying this RenderFrameHost. See https://crbug.com/930278.
     // - If the document is in back-forward cache, it's not allowed to navigate

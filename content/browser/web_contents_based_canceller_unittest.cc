@@ -50,7 +50,7 @@ TEST_P(WebContentsBasedCancellerTest, CreateActiveVisible) {
 
 TEST_P(WebContentsBasedCancellerTest, CreateInactive) {
   main_rfh_impl()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   EXPECT_EQ(nullptr, CreateWebContentsBasedCanceller());
 }
 
@@ -84,7 +84,7 @@ TEST_P(WebContentsBasedCancellerTest, BecomeInactive) {
   base::test::TestFuture<void> future;
   ac->SetCancelCallback(future.GetCallback());
   main_rfh_impl()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   EXPECT_TRUE(future.Wait());
 }
 
@@ -139,7 +139,7 @@ TEST_P(WebContentsBasedCancellerTest, BecomeOccluded) {
 TEST_P(WebContentsBasedCancellerTest, InactiveBeforeSettingCallback) {
   auto ac = CreateWebContentsBasedCanceller();
   main_rfh_impl()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   base::test::TestFuture<void> future;
   ac->SetCancelCallback(future.GetCallback());
   EXPECT_TRUE(future.IsReady());
@@ -183,7 +183,7 @@ TEST_P(WebContentsBasedCancellerTest, Destroy) {
   ac->SetCancelCallback(future.GetCallback());
   ac.reset();
   main_rfh_impl()->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   EXPECT_FALSE(future.IsReady());
 }
 

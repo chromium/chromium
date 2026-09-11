@@ -179,7 +179,7 @@ TEST_F(ClipboardHostImplTest, WriteFromInactiveDocumentIsIgnored) {
 
   static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+          RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   ASSERT_FALSE(web_contents()->GetPrimaryMainFrame()->IsActive());
 
   mojo_clipboard()->WriteText(u"from-inactive-document");
@@ -200,7 +200,7 @@ TEST_F(ClipboardHostImplTest, ReadFromInactiveDocumentIsIgnored) {
 
   static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+          RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   ASSERT_FALSE(web_contents()->GetPrimaryMainFrame()->IsActive());
 
   std::u16string result = u"non-empty";
@@ -1288,7 +1288,7 @@ TEST_F(ClipboardHostImplChangeTest, NoNotificationToInactiveDocument) {
 
   static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+          RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   ASSERT_FALSE(web_contents()->GetPrimaryMainFrame()->IsActive());
 
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
@@ -1317,7 +1317,7 @@ TEST_F(ClipboardHostImplChangeTest,
   // The document goes away before the clipboard read completes.
   static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+          RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   deferred_clipboard_ptr->CompleteReadAvailableTypes({u"text/plain"});
   // Drain the listener pipe so that an unwanted OnClipboardDataChanged() would
   // actually be delivered, and therefore caught by the Times(0) expectation.

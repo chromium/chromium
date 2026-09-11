@@ -308,7 +308,6 @@ enum class CrashRepHandlingOutcome {
 constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
 using LifecycleState = RenderFrameHost::LifecycleState;
-using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
 base::LazyInstance<base::RepeatingCallbackList<void(WebContents*)>>::
     DestructorAtExit g_created_callbacks = LAZY_INSTANCE_INITIALIZER;
@@ -1850,7 +1849,7 @@ bool WebContentsImpl::IsPrerenderedFrame(FrameTreeNodeId frame_tree_node_id) {
   if (frame_tree_node->GetParentOrOuterDocumentOrEmbedder()) {
     return frame_tree_node->GetParentOrOuterDocumentOrEmbedder()
                ->lifecycle_state() ==
-           RenderFrameHostImpl::LifecycleStateImpl::kPrerendering;
+           RenderFrameHostLifecycleStateImpl::kPrerendering;
   }
   return frame_tree_node->GetFrameType() == FrameType::kPrerenderMainFrame;
 }
@@ -3366,7 +3365,7 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
 
   // Inner WebContents aren't supported with prerendering. See
   // https://crbug.com/40191159 for details.
-  CHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+  CHECK_NE(RenderFrameHostLifecycleStateImpl::kPrerendering,
            render_frame_host_impl->lifecycle_state());
 
   RenderFrameHostManager* inner_render_manager =
@@ -3709,7 +3708,7 @@ void WebContentsImpl::AttachGuestPage(
 
   // Guest pages aren't supported with prerendering. See
   // https://crbug.com/40191159 for details.
-  CHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+  CHECK_NE(RenderFrameHostLifecycleStateImpl::kPrerendering,
            outer_render_frame_host_impl->lifecycle_state());
 
   auto* guest_page_impl = static_cast<GuestPageHolderImpl*>(guest_page.get());
@@ -10307,7 +10306,7 @@ WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
 
     // Filters out inactive documents.
     if (other_render_frame_host->lifecycle_state() !=
-        RenderFrameHostImpl::LifecycleStateImpl::kActive) {
+        RenderFrameHostLifecycleStateImpl::kActive) {
       continue;
     }
 
@@ -11337,7 +11336,7 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
                "old_render_frame_host", old_frame, "new_render_frame_host",
                new_frame);
   DCHECK_NE(new_frame->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
+            RenderFrameHostLifecycleStateImpl::kSpeculative);
 
   // Only fire RenderViewHostChanged if it is related to our FrameTree, as
   // observers can not deal with events coming from non-primary FrameTree.

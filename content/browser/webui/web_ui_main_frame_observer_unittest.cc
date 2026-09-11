@@ -352,7 +352,7 @@ TEST_F(WebUIMainFrameObserverTest, SuppressedDuringTeardown) {
   // LifecycleState::kPendingDeletion.
   static_cast<RenderFrameHostImpl*>(web_ui_->GetRenderFrameHost())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+          RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
 
   CallOnDidAddMessageToConsole(web_ui_->GetRenderFrameHost(),
                                blink::mojom::ConsoleMessageLevel::kError,

@@ -4243,9 +4243,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       rfh->lifecycle_state(),
       testing::AnyOf(
           testing::Eq(
-              RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers),
-          testing::Eq(
-              RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache)));
+              RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers),
+          testing::Eq(RenderFrameHostLifecycleStateImpl::kInBackForwardCache)));
 
   // Without the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame and timer,
   // the process A will never shutdown. Simulate the process being killed now.
@@ -10342,9 +10341,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       rfh->lifecycle_state(),
       testing::AnyOf(
           testing::Eq(
-              RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers),
-          testing::Eq(
-              RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache)));
+              RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers),
+          testing::Eq(RenderFrameHostLifecycleStateImpl::kInBackForwardCache)));
 
   ASSERT_FALSE(rfh_observer.deleted());
 
@@ -13101,11 +13099,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderFrameHostImpl* rfh_c =
       rfh_b->frame_tree_node()->render_manager()->speculative_frame_host();
 
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_b->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kSpeculative,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kSpeculative,
             rfh_c->lifecycle_state());
 
   // 3) Deletion of B. The unload handler takes times to execute.
@@ -13114,9 +13112,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       ExecJs(rfh_a, JsReplace("document.querySelector('iframe').remove();")));
   EXPECT_FALSE(delete_b.deleted());
   EXPECT_TRUE(delete_c.deleted());  // The speculative RFH is deleted.
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             rfh_b->lifecycle_state());
 
   // The navigation has been canceled.
@@ -13157,13 +13155,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderFrameHostImpl* rfh_d =
       rfh_c->frame_tree_node()->render_manager()->speculative_frame_host();
 
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_b->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_c->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kSpeculative,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kSpeculative,
             rfh_d->lifecycle_state());
 
   // 3) Deletion of D. The unload handler takes times to execute.
@@ -13173,13 +13171,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_FALSE(delete_b.deleted());
   EXPECT_FALSE(delete_c.deleted());
   EXPECT_TRUE(delete_d.deleted());  // The speculative RFH is deleted.
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kReadyToBeDeleted,
             rfh_b->lifecycle_state());
   EXPECT_EQ(RenderFrameHost::LifecycleState::kPendingDeletion,
             rfh_b->GetLifecycleState());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             rfh_c->lifecycle_state());
   EXPECT_EQ(RenderFrameHost::LifecycleState::kPendingDeletion,
             rfh_c->GetLifecycleState());

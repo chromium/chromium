@@ -259,7 +259,7 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
          other_tld->frame_tree_node()->frame_tree().Nodes()) {
       RenderFrameHostImpl* other_rfh = frame_tree_node->current_frame_host();
       if (other_rfh->lifecycle_state() ==
-              RenderFrameHostImpl::LifecycleStateImpl::kActive &&
+              RenderFrameHostLifecycleStateImpl::kActive &&
           rfh->GetLastCommittedOrigin().IsSameOriginWith(
               other_rfh->GetLastCommittedOrigin())) {
         // Always log the feature on the COOP same-origin-allow-popups page,
@@ -1118,7 +1118,7 @@ void Navigator::RequestOpenURL(
   // the correct frame tree for the navigation. Due to the above logic, that
   // means this function currently can't be called for prerendering main frames.
   DCHECK(render_frame_host->lifecycle_state() !=
-             RenderFrameHostImpl::LifecycleStateImpl::kPrerendering ||
+             RenderFrameHostLifecycleStateImpl::kPrerendering ||
          frame_tree_node_id);
 
   OpenURLParams params(url, referrer, frame_tree_node_id, disposition,
@@ -1239,7 +1239,7 @@ void Navigator::NavigateFromFrameProxy(
   // Only active and prerendered documents are allowed to start navigation in
   // their frame.
   if (render_frame_host->lifecycle_state() !=
-      RenderFrameHostImpl::LifecycleStateImpl::kPrerendering) {
+      RenderFrameHostLifecycleStateImpl::kPrerendering) {
     // If this is reached in case the RenderFrameHost is in BackForwardCache
     // evict the document from BackForwardCache.
     if (render_frame_host->IsInactiveAndDisallowActivation(

@@ -3712,7 +3712,7 @@ void TestNavigationManager::RenderFrameCreated(
   NavigationRequest* request =
       host_impl->frame_tree_node()->navigation_request();
   if (host_impl->lifecycle_state() ==
-          RenderFrameHostImpl::LifecycleStateImpl::kSpeculative &&
+          RenderFrameHostLifecycleStateImpl::kSpeculative &&
       IsRequestCompatibleWithSpeculativeRFH(request) &&
       request->GetURL() == url_ &&
       (request == request_ || request_ == nullptr)) {
@@ -4957,7 +4957,7 @@ void SpeculativeRenderFrameHostObserver::RenderFrameCreated(
   NavigationRequest* request =
       host_impl->frame_tree_node()->navigation_request();
   if (host_impl->lifecycle_state() ==
-          RenderFrameHostImpl::LifecycleStateImpl::kSpeculative &&
+          RenderFrameHostLifecycleStateImpl::kSpeculative &&
       IsRequestCompatibleWithSpeculativeRFH(request) &&
       request->GetURL() == url_) {
     run_loop_.Quit();

@@ -537,7 +537,7 @@ bool RenderViewHostImpl::CreateRenderView(
                (!base::FeatureList::IsEnabled(
                     features::kPrerenderMoreCorrectSpeculativeRFHCreation) ||
                 main_rfh->lifecycle_state() ==
-                    RenderFrameHostImpl::LifecycleStateImpl::kSpeculative)) {
+                    RenderFrameHostLifecycleStateImpl::kSpeculative)) {
       // During prerender, the browser may need to create new speculative local
       // main frames. Normally, creating a speculative local main frame is a
       // two step process: the browser first creates a RenderViewHost with a

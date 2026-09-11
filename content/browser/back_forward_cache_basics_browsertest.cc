@@ -1438,7 +1438,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                      "var f = document.querySelector('iframe');"
                      "f.parentNode.removeChild(f);"));
   EXPECT_EQ(child_rfh->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+            RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
 
   // 2) Navigate away.
   shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -1453,7 +1453,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
   EXPECT_TRUE(main_rfh->IsActive());
   EXPECT_EQ(child_rfh->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+            RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
 }
 
 // Check that a frame with an invalid url doesn't affect the back-forward cache
@@ -2563,7 +2563,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowsingContextStateBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_d));
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_TRUE(rfh_c->IsInBackForwardCache());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers,
             rfh_b->lifecycle_state());
 
   rfh_b->SetUnloadACKCallbackForTesting(base::NullCallback());

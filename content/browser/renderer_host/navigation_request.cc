@@ -9748,17 +9748,18 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
   // When a speculative RenderFrameHost reaches ReadyToCommitNavigation, the
   // browser process has asked the renderer to commit the navigation and is
-  // waiting for confirmation of the commit. Update the LifecycleStateImpl to
-  // kPendingCommit as RenderFrameHost isn't considered speculative anymore and
-  // was chosen to commit as this navigation's final RenderFrameHost.
+  // waiting for confirmation of the commit. Update the
+  // RenderFrameHostLifecycleStateImpl to kPendingCommit as RenderFrameHost
+  // isn't considered speculative anymore and was chosen to commit as this
+  // navigation's final RenderFrameHost.
   if (GetRenderFrameHost()->lifecycle_state() ==
-      RenderFrameHostImpl::LifecycleStateImpl::kSpeculative) {
+      RenderFrameHostLifecycleStateImpl::kSpeculative) {
     // Only cross-RenderFrameHost navigations create speculative
     // RenderFrameHosts whereas SameDocument, BackForwardCache and
     // PrerenderedActivation navigations don't.
     CHECK(!IsSameDocument() && !IsPageActivation());
     GetRenderFrameHost()->SetLifecycleState(
-        RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit);
+        RenderFrameHostLifecycleStateImpl::kPendingCommit);
     pending_commit_metrics_.start_time = base::TimeTicks::Now();
   }
 

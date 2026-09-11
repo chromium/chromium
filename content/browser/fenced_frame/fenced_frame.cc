@@ -158,7 +158,7 @@ RenderFrameHostImpl* FencedFrame::GetProspectiveOuterDocument() {
 }
 
 FrameTree* FencedFrame::LoadingTree() {
-  CHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+  CHECK_NE(RenderFrameHostLifecycleStateImpl::kPrerendering,
            owner_render_frame_host_->lifecycle_state());
   return web_contents_->LoadingTree();
 }

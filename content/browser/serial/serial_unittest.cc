@@ -228,7 +228,7 @@ TEST_F(SerialTest, RequestPortWhenInactive) {
 
   static_cast<RenderFrameHostImpl*>(contents()->GetPrimaryMainFrame())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+          RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsActive());
 
   ON_CALL(delegate(), CanRequestPortPermission).WillByDefault(Return(true));

@@ -9160,7 +9160,7 @@ TEST_F(RequestTest, NonceAbsenceNoRecord) {
 TEST_F(RequestTest, NonPrimaryPageMetrics) {
   static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+          RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       // When the RenderFrameHost changes on navigation, no console message is
@@ -9651,7 +9651,7 @@ TEST_F(RequestTest, DisconnectFromNonPrimaryPage) {
 
   static_cast<RenderFrameHostImpl*>(main_test_rfh())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+          RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
 
   auto options = blink::mojom::IdentityCredentialDisconnectOptions::New();
   options->config = blink::mojom::IdentityProviderConfig::New();

@@ -25,7 +25,7 @@ PageProxy::PageProxy(PageImpl* cpp_page) {
   Java_PageImpl_Constructor(
       env, reinterpret_cast<intptr_t>(this),
       cpp_page->GetMainDocument().lifecycle_state() ==
-          RenderFrameHostImpl::LifecycleStateImpl::kPrerendering);
+          RenderFrameHostLifecycleStateImpl::kPrerendering);
 }
 
 PageProxy::~PageProxy() {

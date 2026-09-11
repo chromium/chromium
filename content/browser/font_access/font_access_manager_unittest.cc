@@ -321,7 +321,7 @@ TEST_F(FontAccessManagerTest, EnumerationFailsWhenInactive) {
 
   static_cast<RenderFrameHostImpl*>(main_rfh())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+          RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   EXPECT_FALSE(main_rfh()->IsActive());
 
   const auto [status, region] = manager_sync_->EnumerateLocalFonts();
@@ -352,7 +352,7 @@ TEST_F(FontAccessManagerTest,
 
   // Transition child frame to inactive state.
   child_rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+      RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   EXPECT_FALSE(child_rfh->IsActive());
   EXPECT_TRUE(main_rfh()->IsActive());
 
@@ -377,7 +377,7 @@ TEST_F(FontAccessManagerTest, EnumerationWhenInactiveWithKillSwitchDisabled) {
 
   static_cast<RenderFrameHostImpl*>(main_rfh())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+          RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   EXPECT_FALSE(main_rfh()->IsActive());
 
   const auto [status, region] = manager_sync_->EnumerateLocalFonts();

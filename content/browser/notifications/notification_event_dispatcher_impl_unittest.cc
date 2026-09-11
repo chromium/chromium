@@ -263,7 +263,7 @@ TEST_F(NotificationEventDispatcherImplTest,
   // Simulate the scenario where the rfh is put into the back/forward cache
   // by setting the lifecycle state explicitly.
   rfh->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   EXPECT_TRUE(rfh->IsInLifecycleState(
       RenderFrameHost::LifecycleState::kInBackForwardCache));
 
@@ -284,7 +284,7 @@ TEST_F(NotificationEventDispatcherImplTest,
 
   // Simulate the scenario where the rfh is back to active state and
   // dispatch a close event.
-  rfh->SetLifecycleState(RenderFrameHostImpl::LifecycleStateImpl::kActive);
+  rfh->SetLifecycleState(RenderFrameHostLifecycleStateImpl::kActive);
   EXPECT_FALSE(rfh->IsInLifecycleState(
       RenderFrameHost::LifecycleState::kInBackForwardCache));
 

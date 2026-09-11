@@ -5345,7 +5345,7 @@ TEST_F(AuthenticatorImplTest, InactiveRenderFrameHost) {
   // inactive.
   static_cast<RenderFrameHostImpl*>(main_rfh())
       ->SetLifecycleState(
-          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+          RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   ASSERT_FALSE(main_rfh()->IsActive());
 
   // Try to connect to the authenticator service.

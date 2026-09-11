@@ -1113,9 +1113,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_rfh_a2.WaitUntilDeleted();
 }
 
-// Sub-frame doesn't transition from LifecycleStateImpl::kInBackForwardCache to
-// LifecycleStateImpl::kRunningUnloadHandlers even when the sub-frame having
-// unload handlers is being evicted from BackForwardCache.
+// Sub-frame doesn't transition from
+// RenderFrameHostLifecycleStateImpl::kInBackForwardCache to
+// RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers even when the
+// sub-frame having unload handlers is being evicted from BackForwardCache.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheUnloadBrowserTest,
                        SubframeWithUnloadHandler) {
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -284,7 +284,7 @@ TEST_F(SpeculationHostImplTest, OnLCPPredictedInactiveFrame) {
 
   // Set the frame to inactive.
   render_frame_host->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      RenderFrameHostLifecycleStateImpl::kInBackForwardCache);
   EXPECT_FALSE(render_frame_host->IsActive());
 
   // Call OnLCPPredicted. It should return early without creating a decider or

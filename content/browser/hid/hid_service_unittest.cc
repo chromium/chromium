@@ -560,7 +560,7 @@ TEST_P(HidServiceTest, RequestDeviceWhenInactive) {
   rfh->SimulateUserActivation();
 
   static_cast<RenderFrameHostImpl*>(rfh)->SetLifecycleState(
-      RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+      RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
   EXPECT_FALSE(rfh->IsActive());
 
   ON_CALL(hid_delegate(), CanRequestDevicePermission)

@@ -21,7 +21,6 @@ namespace content::webid {
 
 using FederatedApiPermissionStatus =
     FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 using blink::mojom::EmailVerificationRequestResult;
 using blink::mojom::FederatedRequestResult;
 using blink::mojom::RequestTokenStatus;
@@ -209,19 +208,19 @@ AccountParseStatusToRequestResultAndTokenStatus(ParseStatus parse_status) {
 
 LifecycleStateFailureReason
 LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
-    LifecycleStateImpl lifecycle_state) {
+    RenderFrameHostLifecycleStateImpl lifecycle_state) {
   switch (lifecycle_state) {
-    case LifecycleStateImpl::kSpeculative:
+    case RenderFrameHostLifecycleStateImpl::kSpeculative:
       return LifecycleStateFailureReason::kSpeculative;
-    case LifecycleStateImpl::kPendingCommit:
+    case RenderFrameHostLifecycleStateImpl::kPendingCommit:
       return LifecycleStateFailureReason::kPendingCommit;
-    case LifecycleStateImpl::kPrerendering:
+    case RenderFrameHostLifecycleStateImpl::kPrerendering:
       return LifecycleStateFailureReason::kPrerendering;
-    case LifecycleStateImpl::kInBackForwardCache:
+    case RenderFrameHostLifecycleStateImpl::kInBackForwardCache:
       return LifecycleStateFailureReason::kInBackForwardCache;
-    case LifecycleStateImpl::kRunningUnloadHandlers:
+    case RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers:
       return LifecycleStateFailureReason::kRunningUnloadHandlers;
-    case LifecycleStateImpl::kReadyToBeDeleted:
+    case RenderFrameHostLifecycleStateImpl::kReadyToBeDeleted:
       return LifecycleStateFailureReason::kReadyToBeDeleted;
     default:
       return LifecycleStateFailureReason::kOther;
