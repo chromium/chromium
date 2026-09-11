@@ -55,27 +55,34 @@ void ContextualCueingService::ReportPageLoad() {
   }
 }
 
-void ContextualCueingService::OnCueClicked(CueTargetType type) {
+void ContextualCueingService::OnCueClicked(CueTargetType type,
+                                           bool record_ucb_stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   click_backoff_end_time_ = base::TimeTicks::Now() + kClickBackoffTime.Get();
   dismiss_count_ = 0;
-  target_stats_[type].clicks++;
-  WriteStatsToPref(type);
+  if (record_ucb_stats) {
+    target_stats_[type].clicks++;
+    WriteStatsToPref(type);
+  }
 }
 
-void ContextualCueingService::OnCueDismissed(CueTargetType type) {
+void ContextualCueingService::OnCueDismissed(CueTargetType type,
+                                             bool record_ucb_stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeDelta backoff_duration =
       kDismissBackoffTime.Get() *
       pow(kDismissBackoffMultiplierBase.Get(), dismiss_count_);
   dismiss_backoff_end_time_ = base::TimeTicks::Now() + backoff_duration;
   ++dismiss_count_;
-  target_stats_[type].dismissals++;
-  WriteStatsToPref(type);
+  if (record_ucb_stats) {
+    target_stats_[type].dismissals++;
+    WriteStatsToPref(type);
+  }
 }
 
 void ContextualCueingService::OnCueShown(const GURL& url,
                                          CueTargetType type,
+                                         bool record_ucb_stats,
                                          CueIntrusiveness intrusiveness) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (intrusiveness == CueIntrusiveness::kLoud) {
@@ -98,8 +105,10 @@ void ContextualCueingService::OnCueShown(const GURL& url,
     origin_iter->second.CueingNudgeShown();
   }
 
-  target_stats_[type].impressions++;
-  WriteStatsToPref(type);
+  if (record_ucb_stats) {
+    target_stats_[type].impressions++;
+    WriteStatsToPref(type);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

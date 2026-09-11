@@ -114,6 +114,7 @@ class ContextualCueingController
   // Returns the CueTarget for the given CueTargetType, or nullptr if there is
   // none.
   CueTarget* GetTarget(CueTargetType type);
+  bool ShouldRecordUcbStats(CueTargetType type) const;
 
   void OnCueInteraction(
       ContextualCueingInteraction interaction_type,
