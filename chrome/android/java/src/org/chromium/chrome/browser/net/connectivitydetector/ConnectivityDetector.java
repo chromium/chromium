@@ -95,9 +95,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         int PROBE_FALLBACK_URL = 3;
     }
 
-    // The result of the HTTP probing. Defined in tools/metrics/histograms/enums.xml.
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
+    // The result of the HTTP probing.
     @IntDef({
         ProbeResult.NO_INTERNET,
         ProbeResult.SERVER_ERROR,
@@ -120,8 +118,6 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         int VALIDATED_WITH_NO_CONTENT = 3;
         int VALIDATED_WITH_OK_BUT_ZERO_CONTENT_LENGTH = 4;
         int VALIDATED_WITH_OK_BUT_NO_CONTENT_LENGTH = 5;
-        // Count.
-        int RESULT_COUNT = 6;
     }
 
     /** Interface for observing network connectivity changes. */
@@ -330,13 +326,6 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
                                         + result
                                         + " and mConnectivityCheckingStage="
                                         + mConnectivityCheckingStage);
-                        if (mConnectivityCheckingStage
-                                == ConnectivityCheckingStage.PROBE_DEFAULT_URL) {
-                            RecordHistogram.recordEnumeratedHistogram(
-                                    "ConnectivityDetector.DefaultHttpProbeResult." + mClientName,
-                                    result,
-                                    ProbeResult.RESULT_COUNT);
-                        }
 
                         // If we just lose the connection, bail out.
                         if (mConnectionType == ConnectionType.CONNECTION_NONE) return;

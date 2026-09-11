@@ -24887,15 +24887,6 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/private_ai/status_code.h:StatusCode) -->
 
-<enum name="ProbeResult">
-  <int value="0" label="No internet"/>
-  <int value="1" label="Server error"/>
-  <int value="2" label="Not validated"/>
-  <int value="3" label="Validated with no content"/>
-  <int value="4" label="Validated with ok but zero content length"/>
-  <int value="5" label="Validated with ok but no content length"/>
-</enum>
-
 <enum name="ProcessType2">
   <summary>
     The value for type comes from the ProcessType enum in
