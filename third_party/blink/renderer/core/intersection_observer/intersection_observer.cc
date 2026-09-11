@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 
 #include "base/numerics/clamped_math.h"
@@ -83,8 +84,7 @@ void ParseMargin(const String& margin_parameter,
                  Vector<Length>& margin,
                  ExceptionState& exception_state,
                  const char* margin_name) {
-  // TODO(szager): Make sure this exact syntax and behavior is spec-ed
-  // somewhere.
+  // https://w3c.github.io/IntersectionObserver/#parse-a-margin
 
   // The root margin argument accepts syntax similar to that for CSS margin:
   //
@@ -106,14 +106,18 @@ void ParseMargin(const String& margin_parameter,
     if (token.GetType() == kPercentageToken) {
       margin.push_back(Length::Percent(token.NumericValue()));
     } else if (token.GetType() == kDimensionToken &&
-               token.GetUnitType() == CSSPrimitiveValue::UnitType::kPixels) {
-      margin.push_back(
-          Length::Fixed(static_cast<int>(floor(token.NumericValue()))));
+               CSSPrimitiveValue::IsAbsoluteLengthUnit(token.GetUnitType())) {
+      const double pixels =
+          token.NumericValue() *
+          CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
+              token.GetUnitType());
+      margin.push_back(Length::Fixed(static_cast<int>(floor(pixels))));
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          StrCat(
-              {margin_name, "Margin must be specified in pixels or percent."}));
+          StrCat({margin_name,
+                  "Margin must be specified in absolute length units or "
+                  "percent."}));
       break;
     }
     stream.ConsumeIncludingWhitespace();

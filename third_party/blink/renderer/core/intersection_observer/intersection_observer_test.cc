@@ -2447,7 +2447,8 @@ TEST_F(IntersectionObserverTest, ParseMarginUnsupportedUnitType) {
       exception_state);
   ASSERT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
-            "rootMargin must be specified in pixels or percent.");
+            "rootMargin must be specified in absolute length units or "
+            "percent.");
 }
 
 TEST_F(IntersectionObserverTest, ParseMarginUnsupportedUnit) {
@@ -2465,7 +2466,41 @@ TEST_F(IntersectionObserverTest, ParseMarginUnsupportedUnit) {
       exception_state);
   ASSERT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
-            "rootMargin must be specified in pixels or percent.");
+            "rootMargin must be specified in absolute length units or "
+            "percent.");
+}
+
+TEST_F(IntersectionObserverTest, AbsoluteLengthMargins) {
+  struct TestCase {
+    const char* input;
+    const char* expected;
+  };
+  const TestCase test_cases[] = {
+      {"10px", "10px 10px 10px 10px"},     {"10cm", "377px 377px 377px 377px"},
+      {"10mm", "37px 37px 37px 37px"},     {"10q", "9px 9px 9px 9px"},
+      {"10in", "960px 960px 960px 960px"}, {"10pt", "13px 13px 13px 13px"},
+      {"10pc", "160px 160px 160px 160px"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.input);
+    IntersectionObserverInit* observer_init =
+        IntersectionObserverInit::Create();
+    observer_init->setRootMargin(test_case.input);
+    observer_init->setScrollMargin(test_case.input);
+
+    DummyExceptionStateForTesting exception_state;
+    TestIntersectionObserverDelegate* observer_delegate =
+        MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+    IntersectionObserver* observer = IntersectionObserver::Create(
+        observer_init, *observer_delegate,
+        LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
+        exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    EXPECT_EQ(observer->rootMargin(), test_case.expected);
+    EXPECT_EQ(observer->scrollMargin(), test_case.expected);
+  }
 }
 
 TEST_F(IntersectionObserverTest, RootMarginString) {

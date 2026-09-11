@@ -308,6 +308,21 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     return (type >= UnitType::kEms && type <= UnitType::kUserUnits) ||
            type == UnitType::kQuirkyEms;
   }
+  // https://drafts.csswg.org/css-values/#absolute-lengths
+  static bool IsAbsoluteLengthUnit(UnitType unit) {
+    switch (unit) {
+      case UnitType::kPixels:
+      case UnitType::kCentimeters:
+      case UnitType::kMillimeters:
+      case UnitType::kQuarterMillimeters:
+      case UnitType::kInches:
+      case UnitType::kPoints:
+      case UnitType::kPicas:
+        return true;
+      default:
+        return false;
+    }
+  }
   static inline bool IsRelativeUnit(UnitType type) {
     return type == UnitType::kPercentage || type == UnitType::kEms ||
            type == UnitType::kExs || type == UnitType::kRems ||
