@@ -37,6 +37,10 @@ class BookmarksFileImporter : public Importer {
           user_data_importer::mojom::BookmarkHtmlParser>> html_parser,
       user_data_importer::BookmarkParser::ParsedBookmarks parsed_bookmarks);
 
+  // Called if the bookmark HTML parser disconnects without replying, e.g.
+  // because its process terminated. Ends the favorites item and the import.
+  void OnBookmarkHtmlParserDisconnected();
+
   mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
       html_parser_remote_;
 };

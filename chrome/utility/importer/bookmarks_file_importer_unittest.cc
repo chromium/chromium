@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <tuple>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -306,6 +307,42 @@ TEST_F(BookmarksFileImporterTest, ImportWithFavicon) {
   importer->SetBookmarkHtmlParser(receiver_.BindNewPipeAndPassRemote());
   importer->StartImport(source_profile, user_data_importer::FAVORITES,
                         bridge.get());
+  run_loop.Run();
+}
+
+TEST_F(BookmarksFileImporterTest, ImportWithParserDisconnect) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("bookmarks.html");
+  ASSERT_TRUE(base::WriteFile(
+      file_path, "<DT><A HREF=\"https://www.google.com/\">Google</A>"));
+
+  scoped_refptr<BookmarksFileImporter> importer = new BookmarksFileImporter();
+  auto bridge = base::MakeRefCounted<MockImporterBridge>();
+
+  user_data_importer::SourceProfile source_profile;
+  source_profile.source_path = file_path;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*bridge, NotifyStarted());
+  EXPECT_CALL(*bridge, NotifyItemStarted(user_data_importer::FAVORITES));
+  EXPECT_CALL(*bridge, AddBookmarks(_, _)).Times(0);
+  EXPECT_CALL(*bridge, SetKeywords(_, _)).Times(0);
+  EXPECT_CALL(*bridge, SetFavicons(_)).Times(0);
+  EXPECT_CALL(*bridge, NotifyItemEnded(user_data_importer::FAVORITES));
+  EXPECT_CALL(*bridge, NotifyEnded())
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  // Bind a remote whose receiver is dropped immediately, so that the parser is
+  // disconnected and never replies.
+  mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser> parser;
+  std::ignore = parser.InitWithNewPipeAndPassReceiver();
+  importer->SetBookmarkHtmlParser(std::move(parser));
+
+  importer->StartImport(source_profile, user_data_importer::FAVORITES,
+                        bridge.get());
+
+  // The import must still complete instead of stalling forever.
   run_loop.Run();
 }
 }  // namespace

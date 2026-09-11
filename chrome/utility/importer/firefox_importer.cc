@@ -272,6 +272,9 @@ void FirefoxImporter::ImportBookmarks() {
       std::move(html_parser_remote_));
 
   auto* raw_parser = html_parser.get();
+  raw_parser->set_disconnect_handler(
+      base::BindOnce(&FirefoxImporter::OnBookmarkHtmlParserDisconnected,
+                     base::WrapRefCounted(this)));
   (*raw_parser)
       ->Parse(raw_html,
               base::BindOnce(&FirefoxImporter::OnDefaultBookmarksParsed,
@@ -279,6 +282,11 @@ void FirefoxImporter::ImportBookmarks() {
                              toolbar_folder_id, menu_folder_id,
                              unsorted_folder_id, std::move(livemark_id),
                              favicons_location, std::move(html_parser)));
+}
+
+void FirefoxImporter::OnBookmarkHtmlParserDisconnected() {
+  bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+  ImportRemainingItems();
 }
 
 void FirefoxImporter::OnDefaultBookmarksParsed(

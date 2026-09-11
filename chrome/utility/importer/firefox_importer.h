@@ -140,6 +140,12 @@ class FirefoxImporter : public Importer {
           html_parser,
       user_data_importer::BookmarkParser::ParsedBookmarks default_bookmarks);
 
+  // Called if the bookmark HTML parser disconnects without replying, e.g.
+  // because its process terminated. Ends the favorites item and resumes the
+  // import so that the remaining items are still imported and the import
+  // terminates.
+  void OnBookmarkHtmlParserDisconnected();
+
   base::FilePath source_path_;
   base::FilePath app_path_;
   base::ScopedTempDir source_path_copy_;

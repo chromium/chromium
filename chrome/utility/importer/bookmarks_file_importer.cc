@@ -113,6 +113,9 @@ void BookmarksFileImporter::StartImport(
       std::move(html_parser_remote_));
 
   auto* raw_parser = html_parser.get();
+  raw_parser->set_disconnect_handler(
+      base::BindOnce(&BookmarksFileImporter::OnBookmarkHtmlParserDisconnected,
+                     base::WrapRefCounted(this)));
   (*raw_parser)
       ->Parse(
           raw_html,
@@ -141,6 +144,11 @@ void BookmarksFileImporter::OnBookmarksParsed(
     bridge_->SetFavicons(parsed_bookmarks.favicons);
   }
 
+  bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+  bridge_->NotifyEnded();
+}
+
+void BookmarksFileImporter::OnBookmarkHtmlParserDisconnected() {
   bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
   bridge_->NotifyEnded();
 }
