@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -94,7 +95,10 @@ namespace {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 class FakeMlModelHandle : public media::MlModelHandle {
  public:
-  FakeMlModelHandle() {
+  explicit FakeMlModelHandle(
+      base::OnceClosure on_destroy = base::NullCallback())
+      : on_destroy_(std::move(on_destroy)),
+        reply_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
     base::FilePath source_root;
     CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
 
@@ -110,7 +114,14 @@ class FakeMlModelHandle : public media::MlModelHandle {
   const tflite::FlatBufferModel& Get() override { return *model_; }
 
  private:
-  ~FakeMlModelHandle() override = default;
+  ~FakeMlModelHandle() override {
+    if (on_destroy_) {
+      reply_runner_->PostTask(FROM_HERE, std::move(on_destroy_));
+    }
+  }
+
+  base::OnceClosure on_destroy_;
+  scoped_refptr<base::SequencedTaskRunner> reply_runner_;
   std::vector<uint8_t> buffer_;
   std::unique_ptr<tflite::FlatBufferModel> model_;
 };
@@ -524,7 +535,85 @@ TEST_F(AudioProcessorHandlerTest, VoiceIsolationHandlerMaybeCreateSuccess) {
       .WillOnce([&]() { return base::MakeRefCounted<FakeMlModelHandle>(); });
   auto handler = VoiceIsolationHandler::MaybeCreate(
       model_manager, output_params_, deliver_callback_.Get());
-  EXPECT_TRUE(handler);
+  ASSERT_TRUE(handler);
+  EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler->IsInitializedForTesting(); }));
+  EXPECT_FALSE(handler->IsVoiceIsolationBypassedForTesting());
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerPassThroughDuringAsyncInitialization) {
+  MockMlModelManager model_manager;
+  EXPECT_CALL(model_manager,
+              GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+      .WillOnce([&]() { return base::MakeRefCounted<FakeMlModelHandle>(); });
+  auto handler = VoiceIsolationHandler::MaybeCreate(
+      model_manager, output_params_, deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+  EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
+
+  auto input_bus = media::AudioBus::Create(output_params_);
+  input_bus->Zero();
+
+  EXPECT_CALL(deliver_callback_, Run(testing::Ref(*input_bus), _, _, _));
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0, {});
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler->IsInitializedForTesting(); }));
+  EXPECT_FALSE(handler->IsVoiceIsolationBypassedForTesting());
+
+  bool delivered_same_instance = true;
+  EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+      .WillOnce([&](const media::AudioBus& bus, base::TimeTicks,
+                    std::optional<double>, const media::AudioGlitchInfo&) {
+        delivered_same_instance = (&bus == input_bus.get());
+      });
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0, {});
+  EXPECT_FALSE(delivered_same_instance);
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerDisableWhileInitializing) {
+  MockMlModelManager model_manager;
+  EXPECT_CALL(model_manager,
+              GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+      .WillOnce([&]() { return base::MakeRefCounted<FakeMlModelHandle>(); });
+  auto handler = VoiceIsolationHandler::MaybeCreate(
+      model_manager, output_params_, deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+  EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
+
+  // Redundant enable call is a no-op.
+  handler->SetVoiceIsolation(true);
+  EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
+
+  // Disable voice isolation while initialization is in flight.
+  handler->SetVoiceIsolation(false);
+  // Redundant disable call is a no-op.
+  handler->SetVoiceIsolation(false);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler->IsInitializedForTesting(); }));
+  EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerDestroyWhileInitializing) {
+  base::RunLoop run_loop;
+  MockMlModelManager model_manager;
+  EXPECT_CALL(model_manager,
+              GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+      .WillOnce([&]() {
+        return base::MakeRefCounted<FakeMlModelHandle>(run_loop.QuitClosure());
+      });
+  auto handler = VoiceIsolationHandler::MaybeCreate(
+      model_manager, output_params_, deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  handler.reset();
+  run_loop.Run();
 }
 
 TEST_F(AudioProcessorHandlerTest, VoiceIsolationHandlerHasProcessingThread) {

@@ -11,25 +11,29 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/base/audio_parameters.h"
 
 namespace media {
 class AudioBus;
-class AudioParameters;
 class MlModelHandle;
 class VoiceIsolation;
+class VoiceIsolationComponent;
 }  // namespace media
 
 namespace audio {
 class MlModelManager;
 
-// Encapsulates the voice isolation capability in the audio service.
+// Encapsulates voice isolation in the audio service.
 //
-// VoiceIsolationHandler manages routing captured audio through a voice
-// isolation pipeline. Currently, it is a pass-through wrapper that forwards
-// the audio and its metadata directly, serving as a placeholder for the
-// voice isolation implementation.
+// Manages routing captured audio through a voice isolation pipeline. When
+// created with a model handle, component initialization is dispatched
+// asynchronously to base::ThreadPool so audio capture can start immediately at
+// t=0 in pass-through warmup.
 class VoiceIsolationHandler {
  public:
   using DeliverProcessedAudioCallback = base::RepeatingCallback<void(
@@ -59,13 +63,22 @@ class VoiceIsolationHandler {
                             std::optional<double> volume,
                             const media::AudioGlitchInfo& audio_glitch_info);
 
-  // Dynamic toggle for voice isolation. Thread-safe.
+  // Dynamic toggle for voice isolation. Called on the owning sequence.
   void SetVoiceIsolation(bool enabled);
 
   // Returns true if voice isolation has its own processing thread (via an
   // internal FIFO). If false, ProcessCapturedAudio() executes synchronously on
   // the caller's thread.
   bool HasProcessingThread() const;
+
+  bool IsVoiceIsolationBypassedForTesting() const {
+    return IsVoiceIsolationBypassed();
+  }
+
+  bool IsInitializedForTesting() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+    return voice_isolation_ != nullptr;
+  }
 
  private:
   VoiceIsolationHandler(
@@ -78,19 +91,33 @@ class VoiceIsolationHandler {
       const media::AudioParameters& output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback);
 
+  void OnComponentCreated(
+      std::unique_ptr<media::VoiceIsolationComponent> component);
+
   bool IsVoiceIsolationBypassed() const;
 
+  SEQUENCE_CHECKER(owning_sequence_);
+
   const scoped_refptr<media::MlModelHandle> model_handle_;
-  const std::unique_ptr<media::VoiceIsolation> voice_isolation_;
+  const media::AudioParameters output_params_;
   const DeliverProcessedAudioCallback deliver_processed_audio_callback_;
   std::unique_ptr<media::AudioBus> output_bus_;
 
+  // Initialized on the owning sequence and read on the real-time audio thread
+  // when `bypass_voice_isolation_` is false.
+  std::unique_ptr<media::VoiceIsolation> voice_isolation_;
+
+  // Tracks whether voice isolation was requested to be enabled via
+  // SetVoiceIsolation(). If false, voice isolation remains bypassed even after
+  // async component creation completes.
+  bool voice_isolation_enabled_ GUARDED_BY_CONTEXT(owning_sequence_) = true;
+
   // Whether voice isolation is currently bypassed.
-  // Accessed on both the control/Mojo thread (via SetVoiceIsolation)
-  // and the real-time audio capture/processing thread
-  // (via ProcessCapturedAudio).
-  // std::atomic ensures thread-safe, lock-free toggling of voice isolation.
-  std::atomic<bool> bypass_voice_isolation_{false};
+  // std::atomic ensures thread-safe, lock-free toggling between the owning
+  // sequence and the real-time audio thread.
+  std::atomic<bool> bypass_voice_isolation_{true};
+
+  base::WeakPtrFactory<VoiceIsolationHandler> weak_factory_{this};
 };
 
 }  // namespace audio
