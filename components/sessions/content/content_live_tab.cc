@@ -69,6 +69,10 @@ SerializedUserAgentOverride ContentLiveTab::GetUserAgentOverride() {
   return serialized_ua_override;
 }
 
+base::WeakPtr<LiveTab> ContentLiveTab::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentLiveTab);
 
 }  // namespace sessions

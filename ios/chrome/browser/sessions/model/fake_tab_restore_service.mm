@@ -117,10 +117,10 @@ void FakeTabRestoreService::RemoveLeastRecentlyUsedEntries(int num_to_remove) {
   entries_.erase(start_it, entries_.end());
 }
 
-std::vector<sessions::LiveTab*> FakeTabRestoreService::RestoreEntryById(
-    sessions::LiveTabContext* context,
-    SessionID session_id,
-    WindowOpenDisposition disposition) {
+std::optional<std::vector<sessions::LiveTab*>>
+FakeTabRestoreService::RestoreEntryById(sessions::LiveTabContext* context,
+                                        SessionID session_id,
+                                        WindowOpenDisposition disposition) {
   NOTREACHED();
 }
 

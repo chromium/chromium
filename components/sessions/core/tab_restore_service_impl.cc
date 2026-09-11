@@ -1903,7 +1903,7 @@ void TabRestoreServiceImpl::RemoveLeastRecentlyUsedEntries(int num_to_remove) {
   helper_.RemoveLeastRecentlyUsedEntries(num_to_remove);
 }
 
-std::vector<LiveTab*> TabRestoreServiceImpl::RestoreEntryById(
+std::optional<std::vector<LiveTab*>> TabRestoreServiceImpl::RestoreEntryById(
     LiveTabContext* context,
     SessionID id,
     WindowOpenDisposition disposition) {

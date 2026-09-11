@@ -6,6 +6,7 @@
 #define COMPONENTS_SESSIONS_CONTENT_CONTENT_LIVE_TAB_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/live_tab.h"
@@ -43,6 +44,7 @@ class SESSIONS_EXPORT ContentLiveTab
   std::unique_ptr<tab_restore::PlatformSpecificTabData>
   GetPlatformSpecificTabData() override;
   SerializedUserAgentOverride GetUserAgentOverride() override;
+  base::WeakPtr<LiveTab> GetWeakPtr() override;
 
  private:
   friend class content::WebContentsUserData<ContentLiveTab>;
@@ -55,6 +57,8 @@ class SESSIONS_EXPORT ContentLiveTab
   content::NavigationController& navigation_controller() {
     return GetWebContents().GetController();
   }
+
+  base::WeakPtrFactory<ContentLiveTab> weak_ptr_factory_{this};
 };
 
 }  // namespace sessions

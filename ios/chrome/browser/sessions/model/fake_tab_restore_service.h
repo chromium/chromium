@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SESSIONS_MODEL_FAKE_TAB_RESTORE_SERVICE_H_
 #define IOS_CHROME_BROWSER_SESSIONS_MODEL_FAKE_TAB_RESTORE_SERVICE_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/split_tabs/split_tab_id.h"
@@ -45,7 +47,7 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
       sessions::LiveTabContext* context) override;
   void RemoveEntryById(SessionID session_id) override;
   void RemoveLeastRecentlyUsedEntries(int num_to_remove) override;
-  std::vector<sessions::LiveTab*> RestoreEntryById(
+  std::optional<std::vector<sessions::LiveTab*>> RestoreEntryById(
       sessions::LiveTabContext* context,
       SessionID session_id,
       WindowOpenDisposition disposition) override;
