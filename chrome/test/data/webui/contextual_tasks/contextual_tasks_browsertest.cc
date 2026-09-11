@@ -329,6 +329,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, InputPlate) {
   RunTest("contextual_tasks/input_plate_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, LensButton) {
+  RunTest("contextual_tasks/lens_button_test.js", "mocha.run();");
+}
 #endif
 
 // TODO(crbug.com/480689282): Flaky on ChromeOS debug.

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html $i18n{webuiRoundedIconsAttribute}>
 <head>
   <meta charset="utf-8">
   <title>Lens Button</title>
@@ -7,12 +7,9 @@
     html,
     body {
       align-items: center;
-      background-color: #e8f0fe;
-      color: #1a73e8;
+      background-color: transparent;
+      color-scheme: light dark;
       display: flex;
-      font-family: Roboto, Arial, sans-serif;
-      font-size: 12px;
-      font-weight: 500;
       height: 100%;
       justify-content: center;
       margin: 0;
@@ -24,6 +21,8 @@
   </style>
 </head>
 <body>
-  <span>Lens</span>
+  <lens-button-app></lens-button-app>
+  <script type="module" src="strings.m.js"></script>
+  <script type="module" src="lens_button_app.js"></script>
 </body>
 </html>

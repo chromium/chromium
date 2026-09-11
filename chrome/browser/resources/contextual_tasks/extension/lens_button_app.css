@@ -1,0 +1,79 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icon_button/cr_icon_button.css.js
+ * #include=cr-icon-button
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  user-select: none;
+  width: 100%;
+}
+
+#lensButton {
+  --cr-icon-button-fill-color: var(--color-composebox-voice-lens-button, rgba(10, 10, 10, 1));
+  --cr-icon-button-focus-outline-color:
+      var(--color-searchbox-results-icon-focused-outline, #0b57d0);
+  --cr-icon-button-hover-background-color:
+      var(--color-composebox-lens-button-hover-background, rgba(31, 31, 31, 0.06));
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-size: 36px;
+  --cr-icon-image: url(chrome://resources/cr_components/searchbox/icons/camera.svg);
+  margin: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  #lensButton {
+    --cr-icon-button-fill-color: var(--color-composebox-voice-lens-button, rgba(230, 232, 240, 1));
+    --cr-icon-button-focus-outline-color:
+        var(--color-searchbox-results-icon-focused-outline, #a8c7fa);
+    --cr-icon-button-hover-background-color:
+        var(--color-composebox-lens-button-hover-background, rgba(66, 68, 77, 1));
+  }
+}
+
+#lensButton[active],
+#lensButton.active {
+  background-color: var(--color-composebox-lens-active-background, rgba(225, 227, 232, 1));
+  border-radius: 50%;
+}
+
+@media (prefers-color-scheme: dark) {
+  #lensButton[active],
+  #lensButton.active {
+    background-color: var(--color-composebox-lens-active-background, rgba(66, 68, 77, 1));
+  }
+}
+
+#lensButton:focus-visible:focus {
+  box-shadow: none;
+  outline: 2px solid var(--color-searchbox-results-icon-focused-outline, #0b57d0);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #lensButton:focus-visible:focus {
+    outline-color: var(--color-searchbox-results-icon-focused-outline, #a8c7fa);
+  }
+}
+
+@media (forced-colors: active) {
+  #lensButton {
+    --cr-icon-button-fill-color: ButtonText;
+    border: 1px solid transparent;
+  }
+
+  #lensButton:focus-visible:focus {
+    outline-color: Highlight;
+  }
+}
