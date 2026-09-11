@@ -1299,6 +1299,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DataProtection.URLVerdictForScreenshot"
+    enum="Boolean" expires_after="2027-09-01">
+  <owner>alxchn@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the enterprise screenshot verdict from an realtime url lookup
+    verdict. Logged on each lookup success with a valid webcontents.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DataProtection.URLVerdictSource"
     enum="DataProtectionURLVerdictSource" expires_after="2027-01-24">
   <owner>alshawwa@chromium.org</owner>
