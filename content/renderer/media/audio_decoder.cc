@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
@@ -22,18 +22,17 @@
 #include "media/filters/audio_file_reader.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/media_buildflags.h"
-#include "third_party/blink/public/platform/web_audio_bus.h"
+#include "third_party/blink/public/platform/platform.h"
 
 using media::AudioBus;
 using media::AudioFileReader;
 using media::InMemoryUrlProtocol;
 using std::vector;
-using blink::WebAudioBus;
 
 namespace content {
 
 // Decode in-memory audio file data.
-std::unique_ptr<blink::WebAudioBus> DecodeAudioFileData(
+std::unique_ptr<blink::Platform::DecodedAudioFile> DecodeAudioFileData(
     base::span<const char> data) {
 #if BUILDFLAG(ENABLE_FFMPEG)
   const base::TimeTicks start_time = base::TimeTicks::Now();
@@ -67,23 +66,18 @@ std::unique_ptr<blink::WebAudioBus> DecodeAudioFileData(
 
   // Allocate and configure the output audio channel data and then
   // copy the decoded data to the destination.
-  auto out = std::make_unique<WebAudioBus>();
-  if (!out->TryInitialize(number_of_channels, number_of_frames, sample_rate)) {
+  auto audio_bus = AudioBus::Create(base::checked_cast<int>(number_of_channels),
+                                    base::checked_cast<int>(number_of_frames));
+  if (!audio_bus) {
     return nullptr;
   }
 
-  std::vector<base::SpanWriter<float>> dest_channels;
-  dest_channels.reserve(number_of_channels);
-  for (size_t ch = 0; ch < number_of_channels; ++ch) {
-    dest_channels.emplace_back(
-        UNSAFE_TODO(base::span(out->ChannelData(ch), out->length())));
-  }
-
   // Append all `decoded_audio_packets`, channel per channel.
+  int dest_frame_offset = 0;
   for (const auto& packet : decoded_audio_packets) {
-    for (size_t ch = 0; ch < number_of_channels; ++ch) {
-      dest_channels[ch].Write(packet->channel(ch));
-    }
+    packet->CopyPartialFramesTo(0, packet->frames(), dest_frame_offset,
+                                audio_bus.get());
+    dest_frame_offset += packet->frames();
   }
 
   const auto duration =
@@ -106,6 +100,9 @@ std::unique_ptr<blink::WebAudioBus> DecodeAudioFileData(
       (base::TimeTicks::Now() - start_time) / number_of_frames);
 
   if (number_of_frames > 0) {
+    auto out = std::make_unique<blink::Platform::DecodedAudioFile>();
+    out->bus = std::move(audio_bus);
+    out->sample_rate = sample_rate;
     return out;
   }
 #endif  // BUILDFLAG(ENABLE_FFMPEG)

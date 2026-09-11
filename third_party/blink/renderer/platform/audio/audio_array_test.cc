@@ -5,8 +5,8 @@
 #include "base/memory/aligned_memory.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 
@@ -95,14 +95,25 @@ TEST(AudioBusTest, TryCreateBySampleRateConvertingInvalidSampleRate) {
       nullptr);
 }
 
-TEST(WebAudioBusTest, SafeCast) {
-  WebAudioBus web_bus;
-  // Requesting a length that is out of bounds for wtf_size_t (uint32_t).
-  // TryInitialize should return false instead of crashing.
-  // Use a value that is large but doesn't truncate to 0 on 32-bit systems.
-  bool success =
-      web_bus.TryInitialize(2, std::numeric_limits<size_t>::max(), 44100);
-  EXPECT_FALSE(success);
+TEST(AudioBusTest, CreateFromMediaAudioBus) {
+  EXPECT_EQ(AudioBus::CreateFromMediaAudioBus(nullptr), nullptr);
+
+  constexpr int kChannels = 2;
+  constexpr int kFrames = 128;
+  constexpr float kSampleRate = 44100.0f;
+
+  auto media_bus = media::AudioBus::Create(kChannels, kFrames);
+  media_bus->channel(0)[0] = 0.5f;
+  media_bus->channel(1)[kFrames - 1] = -0.25f;
+
+  scoped_refptr<AudioBus> blink_bus =
+      AudioBus::CreateFromMediaAudioBus(std::move(media_bus), kSampleRate);
+  ASSERT_NE(blink_bus, nullptr);
+  EXPECT_EQ(blink_bus->NumberOfChannels(), static_cast<unsigned>(kChannels));
+  EXPECT_EQ(blink_bus->length(), static_cast<uint32_t>(kFrames));
+  EXPECT_EQ(blink_bus->SampleRate(), kSampleRate);
+  EXPECT_EQ(blink_bus->Channel(0)->Span()[0], 0.5f);
+  EXPECT_EQ(blink_bus->Channel(1)->Span()[kFrames - 1], -0.25f);
 }
 
-} // namespace blink
+}  // namespace blink

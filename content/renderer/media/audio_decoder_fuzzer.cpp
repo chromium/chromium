@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "content/public/test/blink_test_environment.h"
 #include "media/base/media.h"
-#include "third_party/blink/public/platform/web_audio_bus.h"
 
 struct Environment {
   Environment() {

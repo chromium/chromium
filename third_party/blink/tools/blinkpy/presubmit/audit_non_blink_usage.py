@@ -1667,6 +1667,7 @@ _CONFIG = [
             'third_party/blink/public/platform/platform.h',
         ],
         'allowed': [
+            'media::AudioBus',
             'viz::RasterContextProvider',
         ],
     },

@@ -31,6 +31,7 @@ include_rules = [
     "+components/viz/common",
     "+components/subresource_filter/core/common/scoped_rule.h",
     "+media/audio/audio_device_description.h",
+    "+media/base/audio_bus.h",
     "+media/base/audio_capturer_source.h",
     "+media/base/audio_latency.h",
     "+media/base/audio_renderer_sink.h",
