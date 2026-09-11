@@ -108,7 +108,7 @@ class PlaceholderService : public KeyedService,
   raw_ptr<TemplateURLService> template_url_service_;
   // Current default search engine.
   raw_ptr<const TemplateURL> current_dse_;
-  base::ObserverList<PlaceholderServiceObserver> model_observers_;
+  base::ReentrantObserverList<PlaceholderServiceObserver> model_observers_;
   // Cache for fetched/bundled icons. Keyed by icon size.
   NSCache<NSNumber*, UIImage*>* icon_cache_;
   // Map of icon sizes to a list of callbacks awaiting an icon of that size.

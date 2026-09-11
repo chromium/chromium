@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/task_environment.h"
@@ -254,6 +255,65 @@ TEST_F(PlaceholderServiceTest, TestDSESwitchesDuringFetch) {
   // icon
   EXPECT_EQ(received_icon_dse2_final, dse2_fetched_image);
   EXPECT_EQ(callback_dse2_count, 2);
+}
+
+class ReentrantTestObserver : public PlaceholderServiceObserver {
+ public:
+  explicit ReentrantTestObserver(PlaceholderService* service)
+      : service_(service) {}
+
+  void OnPlaceholderTextChanged() override {}
+
+  void OnPlaceholderImageChanged() override {
+    call_count_++;
+    if (call_count_ == 1) {
+      // Reentrantly request the icon.
+      service_->FetchDefaultSearchEngineIcon(
+          kDesiredMediumFaviconSizePt, base::BindRepeating(^(UIImage* icon){
+                                       }));
+    }
+  }
+
+  int call_count() const { return call_count_; }
+
+ private:
+  raw_ptr<PlaceholderService> service_;
+  int call_count_ = 0;
+};
+
+// Test that reentrant notification during observer iteration works safely.
+TEST_F(PlaceholderServiceTest, ReentrantObserverNotification) {
+  const CGFloat icon_size = kDesiredMediumFaviconSizePt;
+  UIImage* fetched_image = CreateTestSymbolImage(icon_size);
+  FaviconAttributes* fetched_attributes =
+      [FaviconAttributes attributesWithImage:fetched_image];
+
+  // Set expectation for FaviconForIconUrl to synchronously invoke the callback.
+  EXPECT_CALL(*mock_favicon_loader_,
+              FaviconForIconUrl(GURL("http://test.com/favicon.ico"), icon_size,
+                                icon_size, _))
+      .WillOnce([&](GURL, CGFloat, CGFloat,
+                    FaviconLoader::FaviconAttributesCompletionBlock block) {
+        block(fetched_attributes, /*cached=*/true);
+      });
+
+  ReentrantTestObserver observer(&placeholder_service_);
+  placeholder_service_.AddObserver(&observer);
+
+  // Trigger observer notification by changing DSE.
+  TemplateURLData data2;
+  data2.SetShortName(u"TestEngine2");
+  data2.SetKeyword(u"test2");
+  data2.SetURL("http://test2.com/search?q={searchTerms}");
+  data2.favicon_url = GURL("http://test.com/favicon.ico");
+  TemplateURL* dse2 =
+      template_url_service().Add(std::make_unique<TemplateURL>(data2));
+  template_url_service().SetUserSelectedDefaultSearchProvider(dse2);
+
+  // The observer should have been called initially and then reentrantly.
+  EXPECT_GE(observer.call_count(), 2);
+
+  placeholder_service_.RemoveObserver(&observer);
 }
 
 }  // namespace
