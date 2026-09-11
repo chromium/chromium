@@ -2314,15 +2314,16 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
-<histogram name="Tabs.MaxWindowsInADay{BatteryState}" units="tabs"
+<histogram name="Tabs.MaxWindowsInADay{BatteryState}" units="windows"
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    The maximum number of windows existing at the same time over the course of a
-    day. Desktop only.
+    The maximum number of concurrent windows open at the same time over the
+    course of a day (peak simultaneous windows, not cumulative total windows
+    opened). Desktop only.
 
     NOTE: This metric is asynchronous, the value reported on a given day
     represents the previous day's observations (which can be from a different
