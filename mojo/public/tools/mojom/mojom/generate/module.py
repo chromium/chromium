@@ -1024,7 +1024,7 @@ class PendingAssociatedReceiver(ReferenceKind):
     if kind is not None:
       if not isinstance(kind, Interface):
         raise Exception(
-          'pending_associated_receiver<T> requires T to be an interface'
+          'pending_associated_receiver<T> requires T to be an interface '
           + 'type. Got %r' % kind.spec
         )
       ReferenceKind.__init__(self, 'rca:' + kind.spec)
