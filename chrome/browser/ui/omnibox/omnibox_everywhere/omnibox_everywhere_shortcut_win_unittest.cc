@@ -63,8 +63,8 @@ TEST_F(OmniboxEverywhereShortcutWinTest, CreateStartMenuShortcut) {
   EXPECT_TRUE(helper.CreateStartMenuShortcut());
 
   base::FilePath shortcut_path = start_menu_dir.GetPath().Append(
-      base::StrCat({base::UTF16ToWide(l10n_util::GetStringUTF16(
-                        IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE)),
+      base::StrCat({base::UTF16ToWide(
+                        l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_NAME)),
                     L".lnk"}));
   EXPECT_TRUE(base::PathExists(shortcut_path));
 
@@ -111,8 +111,8 @@ TEST_F(OmniboxEverywhereShortcutWinTest, SequenceBoundHelper) {
   EXPECT_TRUE(future.Get());
 
   base::FilePath shortcut_path = start_menu_dir.GetPath().Append(
-      base::StrCat({base::UTF16ToWide(l10n_util::GetStringUTF16(
-                        IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE)),
+      base::StrCat({base::UTF16ToWide(
+                        l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_NAME)),
                     L".lnk"}));
   EXPECT_TRUE(base::PathExists(shortcut_path));
 }
@@ -182,8 +182,8 @@ TEST_F(OmniboxEverywhereShortcutWinTest, SetWindowPropertiesPersistentMode) {
       PKEY_AppUserModel_RelaunchDisplayNameResource, pv_name.Receive()));
   EXPECT_EQ(pv_name.get().vt, VT_LPWSTR);
   EXPECT_EQ(std::wstring(pv_name.get().pwszVal),
-            base::UTF16ToWide(l10n_util::GetStringUTF16(
-                IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE)));
+            base::UTF16ToWide(
+                l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_NAME)));
 
   widget->CloseNow();
 }

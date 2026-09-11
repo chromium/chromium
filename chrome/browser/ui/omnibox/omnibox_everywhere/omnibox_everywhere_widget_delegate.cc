@@ -53,7 +53,7 @@ ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowAppIcon() {
 }
 
 std::u16string OmniboxEverywhereWidgetDelegate::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE);
+  return l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_NAME);
 }
 
 }  // namespace omnibox_everywhere
