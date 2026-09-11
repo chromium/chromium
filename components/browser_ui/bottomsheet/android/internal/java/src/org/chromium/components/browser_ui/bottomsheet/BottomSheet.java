@@ -1659,8 +1659,16 @@ class BottomSheet extends BottomSheetView
     public boolean isSmallScreen() {
         if (sIsSmallScreenForTesting != null) return sIsSmallScreenForTesting;
 
-        // A small screen is defined by there being less than 160dp between half and full states.
-        float fullToHalfDiff = (1 - HALF_HEIGHT_RATIO) * mContainerHeight;
+        float halfRatio = HALF_HEIGHT_RATIO;
+        if (mSheetContent != null) {
+            float customHalf = mSheetContent.getHalfHeightRatio();
+            if (customHalf > 0 && customHalf < HALF_HEIGHT_RATIO) {
+                halfRatio = customHalf;
+            }
+        }
+
+        // A small screen is defined by there being less than 140dp between half and full states.
+        float fullToHalfDiff = (1 - halfRatio) * mContainerHeight;
         return fullToHalfDiff < mMinHalfFullDistance;
     }
 
