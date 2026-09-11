@@ -184,20 +184,20 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
 #pragma mark - Notifications
 
 - (void)updateLabelsFont {
-  _priceTrackingTitle.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
-  _priceTrackingSubtitle.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
-  _buyingOptionsTitle.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
-  _buyingOptionsSubtitle.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
-  _priceHistoryTitle.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  _priceTrackingTitle.font = PreferredFontForTextStyle(
+      UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  _priceTrackingSubtitle.font = PreferredFontForTextStyle(
+      UIFontTextStyleSubheadline, UIFontWeightRegular);
+  _buyingOptionsTitle.font = PreferredFontForTextStyle(
+      UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  _buyingOptionsSubtitle.font = PreferredFontForTextStyle(
+      UIFontTextStyleSubheadline, UIFontWeightRegular);
+  _priceHistoryTitle.font = PreferredFontForTextStyle(
+      UIFontTextStyleSubheadline, UIFontWeightSemibold);
   _priceHistoryPrimarySubtitle.font =
-      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
   _priceHistorySecondarySubtitle.font =
-      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
   [self setOrUpdateTrackButton];
 }
 
@@ -218,8 +218,8 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   _priceTrackingTitle = [self createLabel];
   [_priceTrackingTitle
       setAccessibilityIdentifier:kPriceTrackingTitleIdentifier];
-  _priceTrackingTitle.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  _priceTrackingTitle.font = PreferredFontForTextStyle(
+      UIFontTextStyleSubheadline, UIFontWeightSemibold);
   _priceTrackingTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
   _priceTrackingTitle.text = self.item.title;
   _priceTrackingTitle.accessibilityTraits = UIAccessibilityTraitHeader;
@@ -227,8 +227,8 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   _priceTrackingSubtitle = [self createLabel];
   [_priceTrackingSubtitle
       setAccessibilityIdentifier:kPriceTrackingSubtitleIdentifier];
-  _priceTrackingSubtitle.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
+  _priceTrackingSubtitle.font = PreferredFontForTextStyle(
+      UIFontTextStyleSubheadline, UIFontWeightRegular);
   _priceTrackingSubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
   _priceTrackingSubtitle.numberOfLines = 2;
   [self setOrUpdateTrackingSubtitleText];
@@ -275,8 +275,8 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   _buyingOptionsTitle = [self createLabel];
   [_buyingOptionsTitle
       setAccessibilityIdentifier:kBuyingOptionsTitleIdentifier];
-  _buyingOptionsTitle.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  _buyingOptionsTitle.font = PreferredFontForTextStyle(
+      UIFontTextStyleSubheadline, UIFontWeightSemibold);
   _buyingOptionsTitle.text =
       l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE);
   _buyingOptionsTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -285,8 +285,8 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   _buyingOptionsSubtitle = [self createLabel];
   [_buyingOptionsSubtitle
       setAccessibilityIdentifier:kBuyingOptionsSubtitleIdentifier];
-  _buyingOptionsSubtitle.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
+  _buyingOptionsSubtitle.font = PreferredFontForTextStyle(
+      UIFontTextStyleSubheadline, UIFontWeightRegular);
   _buyingOptionsSubtitle.text =
       l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE);
   _buyingOptionsSubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
@@ -349,8 +349,8 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
 
   _priceHistoryTitle = [self createLabel];
   [_priceHistoryTitle setAccessibilityIdentifier:kPriceHistoryTitleIdentifier];
-  _priceHistoryTitle.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  _priceHistoryTitle.font = PreferredFontForTextStyle(
+      UIFontTextStyleSubheadline, UIFontWeightSemibold);
   _priceHistoryTitle.text = titleText;
   _priceHistoryTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
   _priceHistoryTitle.accessibilityTraits = UIAccessibilityTraitHeader;
@@ -361,7 +361,7 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
     [_priceHistoryPrimarySubtitle
         setAccessibilityIdentifier:kPriceHistoryPrimarySubtitleIdentifier];
     _priceHistoryPrimarySubtitle.font =
-        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
     _priceHistoryPrimarySubtitle.text = primarySubtitleText;
     _priceHistoryPrimarySubtitle.textColor =
         [UIColor colorNamed:kTextSecondaryColor];
@@ -373,8 +373,8 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
       _priceHistorySecondarySubtitle = [self createLabel];
       [_priceHistorySecondarySubtitle
           setAccessibilityIdentifier:kPriceHistorySecondarySubtitleIdentifier];
-      _priceHistorySecondarySubtitle.font =
-          CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+      _priceHistorySecondarySubtitle.font = PreferredFontForTextStyle(
+          UIFontTextStyleFootnote, UIFontWeightRegular);
       _priceHistorySecondarySubtitle.text = secondarySubtitleText;
       _priceHistorySecondarySubtitle.textColor =
           [UIColor colorNamed:kTextSecondaryColor];
@@ -440,8 +440,8 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
 }
 
 - (void)setOrUpdateTrackButton {
-  UIFont* font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  UIFont* font = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
+                                           UIFontWeightSemibold);
   NSDictionary* attributes = @{NSFontAttributeName : font};
   NSString* titleText =
       self.item.isPriceTracked
