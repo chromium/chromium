@@ -299,7 +299,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
      */
     public static boolean isWindowInitiallyTranslucent(Activity activity) {
         return activity instanceof TranslucentCustomTabActivity
-                || activity instanceof SameTaskWebApkActivity;
+                || (activity instanceof SameTaskWebApkActivity
+                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.S);
     }
 
     @Override

@@ -8,10 +8,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -35,6 +41,7 @@ import org.chromium.webapk.lib.common.splash.SplashLayout;
 public class WebappSplashController implements SplashDelegate {
     public static final int HIDE_ANIMATION_DURATION_MS = 300;
 
+    private final Activity mActivity;
     private final SplashController mSplashController;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final WebappInfo mWebappInfo;
@@ -46,6 +53,7 @@ public class WebappSplashController implements SplashDelegate {
             SplashController splashController,
             TabObserverRegistrar tabObserverRegistrar,
             BrowserServicesIntentDataProvider intentDataProvider) {
+        mActivity = activity;
         mSplashController = splashController;
         mTabObserverRegistrar = tabObserverRegistrar;
 
@@ -89,6 +97,7 @@ public class WebappSplashController implements SplashDelegate {
     private View buildSplashFromWebApkInfo(Context appContext, int backgroundColor) {
         ViewGroup splashScreen = new FrameLayout(appContext);
         splashScreen.setBackgroundColor(backgroundColor);
+        setupSplashInsets(splashScreen);
 
         if (mWebappInfo.isForWebApk()) {
             initializeWebApkInfoSplashLayout(
@@ -152,8 +161,77 @@ public class WebappSplashController implements SplashDelegate {
         if (splashBitmap != null) {
             splashView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             splashView.setImageBitmap(splashBitmap);
+
+            // Pad by system bar insets so the WebAPK splash icon aligns with where
+            // SplashActivity displayed it without shifting.
+            setupSplashInsets(splashView);
         }
 
         return splashView;
+    }
+
+    /**
+     * Insets the splash view by system bar / caption bar insets.
+     *
+     * <p>WebAPK's SplashActivity only screenshots its content view (excluding caption / system
+     * bars). Since Chrome runs edge-to-edge across the entire window, we add padding matching the
+     * insets so the splash icon remains in the same position without shifting.
+     */
+    private void setupSplashInsets(View splashView) {
+        ViewCompat.setOnApplyWindowInsetsListener(
+                splashView,
+                (v, insetsCompat) -> {
+                    applySystemBarInsetsPadding(splashView, insetsCompat);
+                    return insetsCompat;
+                });
+
+        applySystemBarInsetsPadding(splashView);
+
+        splashView.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        applySystemBarInsetsPadding(splashView);
+                        ViewCompat.requestApplyInsets(splashView);
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {}
+                });
+    }
+
+    /** Resolves and applies system bar insets to the splash view padding. */
+    private boolean applySystemBarInsetsPadding(View splashView) {
+        WindowInsetsCompat rootInsets = ViewCompat.getRootWindowInsets(splashView);
+        if (rootInsets == null && mActivity.getWindow().peekDecorView() != null) {
+            rootInsets = ViewCompat.getRootWindowInsets(mActivity.getWindow().peekDecorView());
+        }
+        if (rootInsets != null) {
+            return applySystemBarInsetsPadding(splashView, rootInsets);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowInsets windowInsets =
+                    mActivity.getWindowManager().getCurrentWindowMetrics().getWindowInsets();
+            return applySystemBarInsetsPadding(
+                    splashView, WindowInsetsCompat.toWindowInsetsCompat(windowInsets, splashView));
+        }
+        return false;
+    }
+
+    private boolean applySystemBarInsetsPadding(View splashView, WindowInsetsCompat insetsCompat) {
+        int insetTypes =
+                WindowInsetsCompat.Type.systemBars()
+                        | WindowInsetsCompat.Type.captionBar()
+                        | WindowInsetsCompat.Type.mandatorySystemGestures();
+        Insets insets = insetsCompat.getInsets(insetTypes);
+        boolean changed =
+                insets.top != splashView.getPaddingTop()
+                        || insets.left != splashView.getPaddingLeft()
+                        || insets.right != splashView.getPaddingRight()
+                        || insets.bottom != splashView.getPaddingBottom();
+        if (changed) {
+            splashView.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+        }
+        return changed;
     }
 }

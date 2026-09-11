@@ -6,6 +6,6 @@ package org.chromium.chrome.browser.webapps;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** WebappActivity variant which is translucent and has documentLaunchMode="none". */
+/** WebappActivity variant which has documentLaunchMode="none". */
 @NullMarked
 public class SameTaskWebApkActivity extends WebappActivity {}

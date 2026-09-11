@@ -7,4 +7,18 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.Chromium.Widget" parent="Theme.Material3Expressive.DynamicColors.DayNight" />
+
+    <!-- Web app themes: On Android S+, windowBackground and
+         windowDisablePreview are removed and SameTaskWebApkActivity is
+         opaque to prevent convertFromTranslucent() surface reconfigurations
+         and black flashes. -->
+    <style
+        name="Theme.Chromium.Webapp"
+        parent="Theme.Chromium.WithWindowAnimation" />
+
+    <style
+        name="Theme.Chromium.Webapp.Translucent"
+        parent="Theme.Chromium.Webapp">
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
 </resources>

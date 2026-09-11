@@ -8,8 +8,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -21,7 +26,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
@@ -32,14 +41,14 @@ import org.chromium.webapk.test.WebApkTestHelper;
 @Config(sdk = 33)
 public class WebappActivityTest {
     private static class TestWebappActivity extends WebappActivity {
-        private BrowserServicesIntentDataProvider mMockIntentDataProvider;
+        private @Nullable BrowserServicesIntentDataProvider mMockIntentDataProvider;
 
-        void setMockIntentDataProvider(BrowserServicesIntentDataProvider provider) {
+        void setMockIntentDataProvider(@Nullable BrowserServicesIntentDataProvider provider) {
             mMockIntentDataProvider = provider;
         }
 
         @Override
-        public BrowserServicesIntentDataProvider getIntentDataProvider() {
+        public @Nullable BrowserServicesIntentDataProvider getIntentDataProvider() {
             return mMockIntentDataProvider != null
                     ? mMockIntentDataProvider
                     : super.getIntentDataProvider();
@@ -60,6 +69,49 @@ public class WebappActivityTest {
         boolean callCanSetTransparentStatusBarWithoutDelegate() {
             return canSetTransparentStatusBarWithoutDelegate();
         }
+
+        @Nullable Drawable callGetBackgroundDrawable() {
+            return getBackgroundDrawable();
+        }
+    }
+
+    private static class TestSameTaskWebApkActivity extends SameTaskWebApkActivity {
+        private @Nullable BrowserServicesIntentDataProvider mMockIntentDataProvider;
+
+        void setMockIntentDataProvider(@Nullable BrowserServicesIntentDataProvider provider) {
+            mMockIntentDataProvider = provider;
+        }
+
+        @Override
+        public @Nullable BrowserServicesIntentDataProvider getIntentDataProvider() {
+            return mMockIntentDataProvider != null
+                    ? mMockIntentDataProvider
+                    : super.getIntentDataProvider();
+        }
+
+        @Nullable Drawable callGetBackgroundDrawable() {
+            return getBackgroundDrawable();
+        }
+    }
+
+    private WebappExtras createWebappExtras(
+            @Nullable Integer backgroundColor, int defaultBackgroundColor) {
+        return new WebappExtras(
+                "id",
+                "https://example.com",
+                "https://example.com",
+                new WebappIcon(),
+                "name",
+                "shortName",
+                DisplayMode.STANDALONE,
+                0,
+                0,
+                backgroundColor,
+                null,
+                defaultBackgroundColor,
+                false,
+                false,
+                false);
     }
 
     @Test
@@ -148,5 +200,66 @@ public class WebappActivityTest {
 
         // Should return null because raw intent has neither WebAPK package name nor legacy ID.
         org.junit.Assert.assertNull(result);
+    }
+
+    @Test
+    public void getBackgroundDrawable_withCustomBackgroundColor() {
+        TestWebappActivity activity = new TestWebappActivity();
+        BrowserServicesIntentDataProvider intentDataProvider =
+                mock(BrowserServicesIntentDataProvider.class);
+        // Semi-transparent green (0x8000FF00) should be converted to opaque green (0xFF00FF00).
+        WebappExtras webappExtras = createWebappExtras(0x8000FF00, Color.WHITE);
+        when(intentDataProvider.getWebappExtras()).thenReturn(webappExtras);
+        activity.setMockIntentDataProvider(intentDataProvider);
+
+        Drawable drawable = activity.callGetBackgroundDrawable();
+        assertNotNull(drawable);
+        assertTrue(drawable instanceof ColorDrawable);
+        assertEquals(Color.GREEN, ((ColorDrawable) drawable).getColor());
+    }
+
+    @Test
+    public void getBackgroundDrawable_withDefaultBackgroundColorFallback() {
+        TestWebappActivity activity = new TestWebappActivity();
+        BrowserServicesIntentDataProvider intentDataProvider =
+                mock(BrowserServicesIntentDataProvider.class);
+        WebappExtras webappExtras = createWebappExtras(null, Color.BLUE);
+        when(intentDataProvider.getWebappExtras()).thenReturn(webappExtras);
+        activity.setMockIntentDataProvider(intentDataProvider);
+
+        Drawable drawable = activity.callGetBackgroundDrawable();
+        assertNotNull(drawable);
+        assertTrue(drawable instanceof ColorDrawable);
+        assertEquals(Color.BLUE, ((ColorDrawable) drawable).getColor());
+    }
+
+    @Test
+    @Config(sdk = 30)
+    public void getBackgroundDrawable_sameTaskWebApkActivity_preS_returnsNull() {
+        TestSameTaskWebApkActivity activity = new TestSameTaskWebApkActivity();
+        BrowserServicesIntentDataProvider intentDataProvider =
+                mock(BrowserServicesIntentDataProvider.class);
+        WebappExtras webappExtras = createWebappExtras(Color.RED, Color.WHITE);
+        when(intentDataProvider.getWebappExtras()).thenReturn(webappExtras);
+        activity.setMockIntentDataProvider(intentDataProvider);
+
+        Drawable drawable = activity.callGetBackgroundDrawable();
+        org.junit.Assert.assertNull(drawable);
+    }
+
+    @Test
+    @Config(sdk = 31)
+    public void getBackgroundDrawable_sameTaskWebApkActivity_sPlus_returnsColorDrawable() {
+        TestSameTaskWebApkActivity activity = new TestSameTaskWebApkActivity();
+        BrowserServicesIntentDataProvider intentDataProvider =
+                mock(BrowserServicesIntentDataProvider.class);
+        WebappExtras webappExtras = createWebappExtras(Color.RED, Color.WHITE);
+        when(intentDataProvider.getWebappExtras()).thenReturn(webappExtras);
+        activity.setMockIntentDataProvider(intentDataProvider);
+
+        Drawable drawable = activity.callGetBackgroundDrawable();
+        assertNotNull(drawable);
+        assertTrue(drawable instanceof ColorDrawable);
+        assertEquals(Color.RED, ((ColorDrawable) drawable).getColor());
     }
 }
