@@ -165,7 +165,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     private void onPropertyChanged(
             PropertyObservable<PropertyKey> model, @Nullable PropertyKey propertyKey) {
         assert model == mModel;
-        if (mExclusions != null && mExclusions.contains(propertyKey)) {
+        if (propertyKey != null && mExclusions != null && mExclusions.contains(propertyKey)) {
             return;
         }
         mViewOutdated = true;

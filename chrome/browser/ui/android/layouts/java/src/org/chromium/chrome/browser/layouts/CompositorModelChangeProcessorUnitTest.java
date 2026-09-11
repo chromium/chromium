@@ -115,4 +115,22 @@ public class CompositorModelChangeProcessorUnitTest {
                 callCount,
                 mRequestRenderCallbackHelper.getCallCount());
     }
+
+    @Test
+    public void testInitialBindWithExclusionsRequestsFrame() throws TimeoutException {
+        mCompositorMCP.destroy();
+        int callCount = mRequestRenderCallbackHelper.getCallCount();
+
+        mCompositorMCP =
+                CompositorModelChangeProcessor.create(
+                        mModel,
+                        mView,
+                        mViewBinder,
+                        mFrameRequestSupplier,
+                        mRequestRenderCallbackHelper::notifyCalled,
+                        true,
+                        Set.of(PROPERTY_EXCLUDED));
+
+        mRequestRenderCallbackHelper.waitForCallback(callCount, 1);
+    }
 }
