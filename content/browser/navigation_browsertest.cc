@@ -61,6 +61,7 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -10078,7 +10079,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                     .content_security_policies.size());
 
   // Go back to site B in the iframe, which will be blocked by CSP and result in
-  // an error page in site A's process.
+  // an error page in either site A's process or an isolated error page process.
   {
     TestNavigationObserver back_observer(web_contents, 1);
     ASSERT_TRUE(ExecJs(root, "history.back();"));
@@ -10086,12 +10087,25 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_FALSE(back_observer.last_navigation_succeeded());
     EXPECT_EQ(net::ERR_BLOCKED_BY_CSP, back_observer.last_net_error_code());
   }
-  EXPECT_EQ(process_a, child->current_frame_host()->GetProcess()->GetID());
+  ChildProcessId error_page_process =
+      child->current_frame_host()->GetProcess()->GetID();
+  if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+          /*in_main_frame=*/false)) {
+    EXPECT_NE(process_a, error_page_process);
+    EXPECT_NE(process_b, error_page_process);
+    EXPECT_TRUE(child->current_frame_host()
+                    ->GetSiteInstance()
+                    ->GetSiteInfo()
+                    .is_error_page());
+  } else {
+    EXPECT_EQ(process_a, error_page_process);
+  }
   // The error page's URL is the original target (b.com).
   EXPECT_EQ(b_post_target, child->current_url());
 
-  // Ensure that the failed navigation did not grant site A's process access to
-  // the file that was uploaded to site B.
+  // Ensure that the failed navigation did not grant the error page's process or
+  // site A's process access to the file that was uploaded to site B.
+  EXPECT_FALSE(policy->CanReadFile(error_page_process, file_path));
   EXPECT_FALSE(policy->CanReadFile(process_a, file_path));
 }
 
