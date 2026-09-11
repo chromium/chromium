@@ -421,9 +421,7 @@ ExternalTexture CreateExternalTexture(
           raster_context_provider, std::move(media_video_frame),
           lease->GetSharedImage(), lease->GetSyncToken(),
           /*use_visible_rect=*/true);
-      if (!lease->IsGpuContextLost()) {
-        lease->WaitSyncToken(sync_token);
-      }
+      lease->WaitSyncToken(sync_token);
     }
   } else {
     // Delegate video transformation to Dawn.
