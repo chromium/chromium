@@ -50,34 +50,19 @@ base::FilePath GetTestFilePath(const base::FilePath& dir,
   return path.Append(dir).Append(file);
 }
 
-PolicyTest::PolicyTest(bool map_all_hosts_to_localhost)
-    : map_all_hosts_to_localhost_(map_all_hosts_to_localhost) {}
+PolicyTest::PolicyTest() = default;
 
 PolicyTest::~PolicyTest() = default;
-
-void PolicyTest::set_map_all_hosts_to_localhost(
-    bool map_all_hosts_to_localhost) {
-  map_all_hosts_to_localhost_ = map_all_hosts_to_localhost;
-}
-
-bool PolicyTest::map_all_hosts_to_localhost() const {
-  return map_all_hosts_to_localhost_;
-}
 
 void PolicyTest::SetUpInProcessBrowserTestFixture() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch("noerrdialogs");
   provider_.SetDefaultReturns(true /* is_initialization_complete_return */,
                               true /* is_first_policy_load_complete_return */);
   BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
-  if (map_all_hosts_to_localhost_ && host_resolver()) {
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
 }
 
 void PolicyTest::SetUpOnMainThread() {
-  if (map_all_hosts_to_localhost_ && host_resolver()) {
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
+  host_resolver()->AddRule("*", "127.0.0.1");
 }
 
 void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {

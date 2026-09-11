@@ -42,19 +42,12 @@ class PolicyTest : public PlatformBrowserTest {
   };
 
  protected:
-  // `map_all_hosts_to_localhost` controls whether the test fixture
-  // automatically maps all hostnames to localhost during fixture setup and on
-  // the main thread. Tests that verify resolution failures or manage custom
-  // resolver rules should pass false.
-  explicit PolicyTest(bool map_all_hosts_to_localhost = true);
+  PolicyTest();
   ~PolicyTest() override;
 
   void SetUpInProcessBrowserTestFixture() override;
 
   void SetUpOnMainThread() override;
-
-  void set_map_all_hosts_to_localhost(bool map_all_hosts_to_localhost);
-  bool map_all_hosts_to_localhost() const;
 
   void UpdateProviderPolicy(const PolicyMap& policy);
 
@@ -71,7 +64,6 @@ class PolicyTest : public PlatformBrowserTest {
   bool NavigateToUrl(GURL url, PlatformBrowserTest* browser_test);
 
   testing::NiceMock<MockConfigurationPolicyProvider> provider_;
-  bool map_all_hosts_to_localhost_ = true;
 };
 
 class PolicyTestAppTerminationObserver {

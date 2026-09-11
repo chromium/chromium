@@ -59,8 +59,7 @@ std::vector<WebFeature> AllAddressSpaceFeatures() {
 
 LocalNetworkAccessBrowserTestBase::LocalNetworkAccessBrowserTestBase(
     bool map_all_hosts_to_localhost)
-    : policy::PolicyTest(map_all_hosts_to_localhost),
-      map_all_hosts_to_localhost_(map_all_hosts_to_localhost),
+    : map_all_hosts_to_localhost_(map_all_hosts_to_localhost),
       https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
       https_local_server_(net::EmbeddedTestServer::TYPE_HTTPS),
       https_public_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
