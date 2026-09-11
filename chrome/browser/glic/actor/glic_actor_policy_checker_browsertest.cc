@@ -114,7 +114,6 @@ class GlicActorPolicyCheckerBrowserTestBase : public GlicBrowserTest {
     GlicBrowserTest::SetUpOnMainThread();
 
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_https_test_server().Start());
 
     adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());

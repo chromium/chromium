@@ -1163,7 +1163,7 @@ class GlicBrowserTestMixin : public T {
   // safe profile access during teardown even if all browser windows were
   // closed.
   base::WeakPtr<Profile> weak_profile_;
-  bool use_https_for_glic_url_ = false;
+  bool use_https_for_glic_url_ = true;
 };
 
 using GlicBrowserTest = GlicBrowserTestMixin<PlatformBrowserTest>;

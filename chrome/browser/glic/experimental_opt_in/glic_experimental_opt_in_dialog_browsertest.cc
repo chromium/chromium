@@ -146,7 +146,6 @@ class GlicExperimentalOptInTest
     fake_gaia_.set_initialize_configuration(false);
     BaseClass::SetUpOnMainThread();
     opt_in_test_server_.StartAcceptingConnections();
-    ASSERT_TRUE(embedded_https_test_server().Start());
     host_resolver()->AddRule("*", "127.0.0.1");
     creation_subscription_ = content::RegisterWebContentsCreationCallback(
         base::BindRepeating(&GlicExperimentalOptInTest::OnWebContentsCreated,
