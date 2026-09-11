@@ -87,7 +87,7 @@ export class SettingsSafetyHubModuleElement extends
       header: {type: String},
 
       // The string for the subheader label.
-      subheader: {type: Object},
+      subheader: {type: String},
 
       // The icon for the module. Optional.
       headerIcon: {type: String},
@@ -118,7 +118,7 @@ export class SettingsSafetyHubModuleElement extends
   accessor sites: SiteInfo[]|null = [];
   accessor animated: boolean = false;
   accessor header: string = '';
-  accessor subheader: string|TrustedHTML = '';
+  accessor subheader: string = '';
   accessor headerIcon: string = '';
   accessor headerIconColor: string = '';
   accessor buttonIcon: string = '';
