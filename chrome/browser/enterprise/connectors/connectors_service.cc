@@ -90,6 +90,9 @@ std::string GetDeviceClientId(Profile* profile) {
 
 std::string MaybeGetProfileEmail(Profile* profile) {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  if (profile && profile->IsEnterpriseIsolatedModeProfile()) {
+    profile = profile->GetOriginalProfile();
+  }
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager) {
     return std::string();
@@ -340,7 +343,8 @@ bool ConnectorsService::ConnectorsEnabled() const {
   }
 #endif
 
-  return !profile->IsOffTheRecord() || profile->IsGuestSession();
+  return !profile->IsOffTheRecord() || profile->IsGuestSession() ||
+         profile->IsEnterpriseIsolatedModeProfile();
 }
 
 PrefService* ConnectorsService::GetPrefs() {

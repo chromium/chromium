@@ -514,6 +514,13 @@ class ConnectorsServiceProfileTypeBrowserTest : public testing::Test {
     return profile_testing_helper_.incognito_profile();
   }
 
+  TestingProfile* isolated_mode_parent_profile() {
+    return profile_testing_helper_.isolated_mode_parent_profile();
+  }
+  Profile* isolated_mode_profile() {
+    return profile_testing_helper_.isolated_mode_profile();
+  }
+
   TestingProfile* guest_profile() {
     return profile_testing_helper_.guest_profile();
   }
@@ -564,6 +571,7 @@ class ConnectorsServiceProfileTypeBrowserTest : public testing::Test {
 TEST_F(ConnectorsServiceProfileTypeBrowserTest, IsEnabled) {
   EXPECT_TRUE(CreateService(regular_profile())->ConnectorsEnabled());
   EXPECT_FALSE(CreateService(incognito_profile())->ConnectorsEnabled());
+  EXPECT_TRUE(CreateService(isolated_mode_profile())->ConnectorsEnabled());
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(CreateService(guest_profile())->ConnectorsEnabled());

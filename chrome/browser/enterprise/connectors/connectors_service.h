@@ -56,6 +56,8 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceProfileTypeBrowserTest, IsEnabled);
+  FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceProfileTypeBrowserTest,
+                           GetProfileEmail);
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceReportingFeatureTest,
                            ChromeOsManagedGuestSessionFlagSetInMgs);
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceReportingFeatureTest,
