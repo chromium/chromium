@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -21,7 +22,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_language_search_view.h"
 #include "chrome/common/chrome_switches.h"
@@ -41,6 +43,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "pdf/buildflags.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -471,6 +474,48 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
       // V5. Wait for the bubble to be dismissed.
       WaitForHide(TranslateBubbleView::kChangeTargetLanguage));
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+class TranslateBubbleViewPdfUITest : public TranslateBubbleViewUITest {
+ public:
+  TranslateBubbleViewPdfUITest() {
+    pdf_feature_list_.InitAndEnableFeature(translate::kEnableTranslatePdf);
+  }
+  ~TranslateBubbleViewPdfUITest() override = default;
+
+ private:
+  base::test::ScopedFeatureList pdf_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TranslateBubbleViewPdfUITest,
+                         ::testing::Values("Default",
+                                           "RightToLeft",
+                                           "Incognito",
+                                           "MultipleBubble",
+                                           "Theme"),
+                         [](const ::testing::TestParamInfo<std::string>& inf) {
+                           return inf.param;
+                         });
+
+// Verify that triggering PDF translation opens the side panel UI.
+IN_PROC_BROWSER_TEST_P(TranslateBubbleViewPdfUITest, PdfTranslationTrigger) {
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(chrome_translate_client);
+
+  chrome_translate_client->TriggerPdfTranslation();
+
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(side_panel_ui);
+  EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+    return side_panel_ui->IsSidePanelShowing() &&
+           side_panel_ui->GetCurrentEntryId() ==
+               SidePanelEntryId::kReadAnything;
+  }));
+}
+#endif
 
 INSTANTIATE_TEST_SUITE_P(All,
                          TranslateBubbleViewUITest,

@@ -78,6 +78,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/read_anything",
+      "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
@@ -150,6 +151,7 @@ if (!is_android) {
       "//content/public/browser",
       "//content/test:test_support",
       "//net:test_support",
+      "//pdf:buildflags",
       "//testing/gmock",
       "//testing/gtest",
       "//url",

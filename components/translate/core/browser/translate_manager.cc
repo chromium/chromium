@@ -45,6 +45,7 @@
 #include "components/translate/core/browser/translate_trigger_decision.h"
 #include "components/translate/core/browser/translate_url_util.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_language_matcher.h"
 #include "components/translate/core/common/translate_switches.h"
@@ -477,12 +478,28 @@ void TranslateManager::DoTranslatePage(std::string_view translate_script,
                                        std::string_view source_lang,
                                        std::string_view target_lang) {
   language_state_.set_translation_pending(true);
-  translate_driver_->TranslatePage(page_seq_no_, translate_script, source_lang,
-                                   target_lang);
-  if (translate_driver_->GetContentsMimeType() == "application/pdf" &&
-      base::FeatureList::IsEnabled(translate::kEnableTranslatePdf)) {
-    TranslateBrowserMetrics::ReportPdfSourceLanguage(source_lang);
-    TranslateBrowserMetrics::ReportPdfTargetLanguage(target_lang);
+  if (translate_driver_->GetContentsMimeType() == kPdfMimeType &&
+      base::FeatureList::IsEnabled(translate::kEnableTranslatePdf) &&
+      !translate_client_->IsReadingModeOpen()) {
+    std::optional<LanguageTag> parsed_source =
+        base::i18n::GetLanguageTagFromString(source_lang)
+            .value_or(base::i18n::GetKnownLanguageTag("und"));
+    std::optional<LanguageTag> parsed_target =
+        base::i18n::GetLanguageTagFromString(target_lang)
+            .value_or(base::i18n::GetKnownLanguageTag("und"));
+
+    TranslateBrowserMetrics::ReportPdfSourceLanguage(
+        parsed_source->tag_string());
+    TranslateBrowserMetrics::ReportPdfTargetLanguage(
+        parsed_target->tag_string());
+
+    language_state_.SetPendingTranslationLanguages(*parsed_source,
+                                                   *parsed_target);
+    translate_client_->TriggerPdfTranslation();
+
+  } else {
+    translate_driver_->TranslatePage(page_seq_no_, translate_script,
+                                     source_lang, target_lang);
   }
 }
 
@@ -1295,9 +1312,8 @@ void TranslateManager::RecordDecisionRankerEvent(
   }
 }
 
-void TranslateManager::SetPredefinedTargetLanguage(
-    base::i18n::LanguageTag language,
-    bool should_auto_translate) {
+void TranslateManager::SetPredefinedTargetLanguage(LanguageTag language,
+                                                   bool should_auto_translate) {
   language_state_.SetPredefinedTargetLanguage(language, should_auto_translate);
 }
 
