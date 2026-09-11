@@ -10,5 +10,5 @@ module pwc.mojom.features;
 // the browser-side binder checks.
 feature kPrivilegedWebContents {
   const string name = "PrivilegedWebContents";
-  const bool default_state = false;
+  const bool default_state = true;
 };
