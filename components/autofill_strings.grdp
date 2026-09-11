@@ -1611,6 +1611,11 @@
     Got it
   </message>
 
+  <message name="IDS_AUTOFILL_AI_ENTITY_SUPPRESSION_UNDO_TOAST_TEXT" desc="Text displayed in a toast notification when an Autofill AI suggestion has been removed by the user, explaining that the suggestion is removed and the original source data is not deleted." translateable="false">
+    <!-- TODO(crbug.com/501036619): Make string translateable once finalized. -->
+    Suggestion removed. Your original source won't be deleted.
+  </message>
+
   <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_TITLE" desc="A title of the notice that infroms the user that page content will be processed privately in the cloud.">
     Smarter autofill, kept private
   </message>
