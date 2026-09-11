@@ -8,12 +8,13 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {CardInfo, SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
 import { CardState, ContentSetting, ContentSettingsTypes, SafeBrowsingSetting, SafetyHubBrowserProxyImpl, SafetyHubEvent, PermissionsRevocationType } from 'chrome://settings/lazy_load.js';
-import {LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, PrefService, Router, routes, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
+import {LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, PrefService, PrefsBrowserProxy, Router, routes, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -29,12 +30,8 @@ suite('SafetyHubPage', function() {
   let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
   let passwordManagerProxy: TestPasswordManagerProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
   let prefService: PrefService;
-
-  suiteSetup(async function() {
-    prefService = PrefService.getInstance();
-    await prefService.whenInitialized();
-  });
 
   const notificationPermissionMockData = [{
     origin: 'www.example.com',
@@ -68,7 +65,17 @@ suite('SafetyHubPage', function() {
     state: CardState.INFO,
   };
 
-  setup(function() {
+  setup(async function() {
+    prefsBrowserProxy = new TestPrefsBrowserProxy([{
+      key: 'generated.safe_browsing',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: SafeBrowsingSetting.STANDARD,
+    }]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
     safetyHubBrowserProxy.setPasswordCardData(passwordCardMockData);
     safetyHubBrowserProxy.setVersionCardData(versionCardMockData);
@@ -86,7 +93,7 @@ suite('SafetyHubPage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-safety-hub-page');
     document.body.appendChild(testElement);
-    return flushTasks();
+    await flushTasks();
   });
 
   function assertNoRecommendationState(shouldBeVisible: boolean) {
