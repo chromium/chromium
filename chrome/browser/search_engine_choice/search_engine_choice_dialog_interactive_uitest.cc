@@ -106,6 +106,12 @@ class SearchEngineChoiceDialogInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   SearchEngineChoiceDialogInteractiveUiTest() {
+    // interactive_ui_tests sets `ui_test_utils::BringBrowserWindowToFront()`
+    // for the setup function by default. This causes timeouts on sanitizer bots
+    // and failures on Mac because the window-modal Search Engine Choice dialog
+    // steals activation, preventing the parent browser window from activating.
+    set_global_browser_set_up_function(nullptr);
+
     // TODO(crbug.com/539786691): Re-enable kPrewarm once the feature is
     // compatible with the test.
     webui_omnibox_feature_list_.InitWithFeatures(
@@ -185,16 +191,8 @@ class SearchEngineChoiceDialogInteractiveUiTest
   base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
-// TODO(crbug.com/431780231): Flaky on mac bots and chromeOS bots.
-#if BUILDFLAG(IS_MAC) ||       \
-    (BUILDFLAG(IS_CHROMEOS) && \
-     (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)))
-#define MAYBE_ChooseSearchEngine DISABLED_ChooseSearchEngine
-#else
-#define MAYBE_ChooseSearchEngine ChooseSearchEngine
-#endif
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
-                       MAYBE_ChooseSearchEngine) {
+                       ChooseSearchEngine) {
   SearchEngineChoiceDialogService* search_engine_choice_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           browser()->GetProfile());
