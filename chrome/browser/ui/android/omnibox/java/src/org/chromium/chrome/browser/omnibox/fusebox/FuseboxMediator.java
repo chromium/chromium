@@ -204,6 +204,9 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED, this::onImagePickerClicked);
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED, this::onFilePickerClicked);
         mModel.set(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED, this::onDrivePickerClicked);
+        mModel.set(FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED, this::onMoreOptionsClicked);
+        mModel.set(FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE, OmniboxFeatures.hasAccordion());
+        mModel.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, !OmniboxFeatures.hasAccordion());
         mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, List.of());
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of());
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST, List.of());
@@ -652,6 +655,9 @@ import java.util.function.Supplier;
     }
 
     private void hidePopup() {
+        if (OmniboxFeatures.hasAccordion()) {
+            mModel.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, false);
+        }
         boolean wasBottomSheet = mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.BOTTOM;
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         mPopupStateSupplier.set(PopupState.HIDDEN);
@@ -1387,6 +1393,12 @@ import java.util.function.Supplier;
         // TODO(https://crbug.com/476434460): Consider replacing with wiring in session state.
         FuseboxMetrics.notifySetActiveModelSource(SetActiveModelSource.SET_FROM_MODEL_SELECTION);
         mComposeboxQueryControllerBridge.setActiveModel(modelMode);
+    }
+
+    private void onMoreOptionsClicked() {
+        if (!isInInputSession()) return;
+        boolean expanded = mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED);
+        mModel.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, !expanded);
     }
 
     void selectFirstAttachment() {

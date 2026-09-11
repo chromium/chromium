@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.window.layout.WindowMetrics;
@@ -48,6 +50,8 @@ class FuseboxPopup {
     /* package */ final View mGalleryButton;
     /* package */ final View mFileButton;
     /* package */ final View mDriveButton;
+    /* package */ final View mMoreOptionsButton;
+    /* package */ final LinearLayout mAccordionContainer;
     /* package */ final View mToolsDivider;
     /* package */ final TextView mToolsHeader;
 
@@ -100,7 +104,8 @@ class FuseboxPopup {
             AnchoredPopupWindow popupWindow,
             View contentView,
             DynamicRectProvider dynamicRectProvider,
-            boolean isBottomSheet) {
+            boolean isBottomSheet,
+            boolean useCarousel) {
         mActivity = activity;
         mPopupWindow = popupWindow;
         mPopupWindow.setClippingEnabled(false);
@@ -131,7 +136,7 @@ class FuseboxPopup {
 
         ViewStub stub = contentView.findViewById(R.id.fusebox_attachments_stub);
         stub.setLayoutResource(
-                isBottomSheet
+                useCarousel
                         ? R.layout.fusebox_horizontal_attachments
                         : R.layout.fusebox_vertical_attachments);
         stub.inflate();
@@ -142,7 +147,8 @@ class FuseboxPopup {
         mGalleryButton = contentView.findViewById(R.id.fusebox_pick_picture_button);
         mFileButton = contentView.findViewById(R.id.fusebox_pick_file_button);
         mDriveButton = contentView.findViewById(R.id.fusebox_pick_drive_button);
-
+        mMoreOptionsButton = contentView.findViewById(R.id.fusebox_more_options_button);
+        mAccordionContainer = contentView.findViewById(R.id.fusebox_accordion_container);
         mToolsDivider = contentView.findViewById(R.id.fusebox_tools_divider);
         mToolsHeader = contentView.findViewById(R.id.fusebox_tools_header);
 
@@ -180,6 +186,14 @@ class FuseboxPopup {
                 R.string.omnibox_navattach_drive,
                 R.drawable.gs_drive_vd_theme_24,
                 R.string.accessibility_omnibox_add_from_drive);
+        initializeItem(
+                mMoreOptionsButton,
+                R.string.fusebox_more_options,
+                0,
+                R.string.fusebox_more_options);
+        ImageView startIcon = mMoreOptionsButton.findViewById(R.id.start_icon);
+        startIcon.setVisibility(View.GONE);
+        updateMoreOptionsButtonIcon(/* expand= */ false);
 
         mModelsDivider = contentView.findViewById(R.id.fusebox_models_divider);
         mModelsHeader = contentView.findViewById(R.id.fusebox_models_header);
@@ -275,6 +289,38 @@ class FuseboxPopup {
             mCachedContentView = null;
         }
         mPreviousAccessibilityImportance = null;
+    }
+
+    /**
+     * Sets whether the accordion container functions as an expandable accordion. When disabled, the
+     * container remains permanently visible.
+     */
+    void setAccordionEnabled(boolean enabled) {
+        if (!enabled) {
+            mAccordionContainer.setVisibility(View.VISIBLE);
+            mAccordionContainer.setAlpha(1f);
+            mAccordionContainer.setTranslationY(0f);
+        } else {
+            mAccordionContainer.setVisibility(View.GONE);
+        }
+    }
+
+    /** Toggles the accordion menu. */
+    void setAccordionExpanded(boolean expand) {
+        updateMoreOptionsButtonIcon(expand);
+        mAccordionContainer.setVisibility(expand ? View.VISIBLE : View.GONE);
+        updateLayout();
+    }
+
+    private void updateMoreOptionsButtonIcon(boolean expand) {
+        ImageView endIcon = mMoreOptionsButton.findViewById(R.id.end_icon);
+        @DrawableRes
+        int iconRes =
+                expand
+                        ? R.drawable.ic_expand_less_black_24dp
+                        : R.drawable.ic_expand_more_black_24dp;
+        endIcon.setImageResource(iconRes);
+        endIcon.setVisibility(View.VISIBLE);
     }
 
     /**
