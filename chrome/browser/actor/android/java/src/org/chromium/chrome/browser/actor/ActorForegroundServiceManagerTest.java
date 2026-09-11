@@ -478,7 +478,7 @@ public class ActorForegroundServiceManagerTest {
     }
 
     @Test
-    public void testOnTaskDemoted_NoActiveTasks_StopsService() {
+    public void testMaybeStopServiceNow_NoActiveTasks_StopsService() {
         mManager.setKeyedServiceForTesting(mKeyedService);
         int taskId = 1;
 
@@ -493,10 +493,10 @@ public class ActorForegroundServiceManagerTest {
         assertTrue(mManager.isServiceBoundForTesting());
 
         when(mNotificationService.hasPendingDemotions()).thenReturn(false);
-        mManager.onTaskDemoted(taskId);
+        mManager.maybeStopServiceNow();
 
         assertFalse(
-                "Service should be unbound after task demoted.",
+                "Service should be unbound after maybeStopServiceNow.",
                 mManager.isServiceBoundForTesting());
         verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
         verify(mServiceController).unbindService();
@@ -528,5 +528,33 @@ public class ActorForegroundServiceManagerTest {
         assertFalse(
                 "Service should be unbound after demotion delay.",
                 mManager.isServiceBoundForTesting());
+    }
+
+    @Test
+    public void testMaybeStopServiceRunnable_PendingDemotions_PostponesStop() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        ActorNotificationService.setDemotionDelayMsForTesting(30000);
+        int taskId = 1;
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+
+        when(mTask.isCompleted()).thenReturn(true);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+        when(mNotificationService.hasPendingDemotions()).thenReturn(true);
+        mManager.onTaskStateChanged(taskId, ActorTaskState.FINISHED);
+
+        assertTrue(mManager.isServiceBoundForTesting());
+
+        // When delay passes but pending demotions still exist, service should remain bound.
+        ShadowLooper.idleMainLooper(30, TimeUnit.SECONDS);
+        assertTrue(mManager.isServiceBoundForTesting());
+        verify(mServiceController, never()).stopActorForegroundService(anyInt());
+
+        // Once pending demotions are cleared, service stops.
+        when(mNotificationService.hasPendingDemotions()).thenReturn(false);
+        ShadowLooper.idleMainLooper(30, TimeUnit.SECONDS);
+        assertFalse(mManager.isServiceBoundForTesting());
+        verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
     }
 }

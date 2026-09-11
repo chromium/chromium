@@ -38,7 +38,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     private static final String TAG = "ActorFgsMngr";
     public static final int INVALID_NOTIFICATION_ID = -1;
     // Delay to ensure start/stop foreground doesn't happen too quickly.
-    private static long sWaitTimeMs = TimeUnit.SECONDS.toMillis(45);
+    private static long sWaitTimeMs = TimeUnit.SECONDS.toMillis(30);
 
     @Nullable private static ActorForegroundServiceManager sInstance;
 
@@ -51,6 +51,11 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                     if (mKeyedService == null
                             || mKeyedService.getActiveTasksCount() == 0
                             || mActiveTaskIds.isEmpty()) {
+                        if (mNotificationService != null
+                                && mNotificationService.hasPendingDemotions()) {
+                            postMaybeStopServiceRunnable();
+                            return;
+                        }
                         stopAndUnbindService();
                     }
                 }
@@ -353,19 +358,14 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             mPinnedNotificationId = INVALID_NOTIFICATION_ID;
             mPinnedNotification = null;
         }
-        if (mActiveTaskIds.isEmpty()
-                && (mNotificationService == null || !mNotificationService.hasPendingDemotions())) {
-            mHandler.removeCallbacks(mMaybeStopServiceRunnable);
-            stopAndUnbindService();
-        }
+        maybeStopServiceNow();
     }
 
     /**
-     * Handles demotion of a live task notification to a normal notification.
-     *
-     * @param taskId The ID of the task that was demoted.
+     * Stops and unbinds the foreground service if all tasks are finished and no demotions are
+     * pending.
      */
-    public void onTaskDemoted(int taskId) {
+    public void maybeStopServiceNow() {
         if (mActiveTaskIds.isEmpty()
                 && (mNotificationService == null || !mNotificationService.hasPendingDemotions())) {
             mHandler.removeCallbacks(mMaybeStopServiceRunnable);

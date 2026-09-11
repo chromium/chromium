@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Notification;
@@ -39,6 +40,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link ActorNotificationService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -933,5 +936,122 @@ public class ActorNotificationServiceTest {
         assertTrue(
                 "Demotion runnable should not re-post notification after dismissal",
                 mMockNotificationManager.getNotifications().isEmpty());
+    }
+
+    @Test
+    public void testIndividualTaskDemotion_DemotesBasedOnPerNotificationTimer() {
+        int taskId1 = 1;
+        int taskId2 = 2;
+        ActorTask task1 = mock(ActorTask.class);
+        when(task1.getId()).thenReturn(taskId1);
+        when(task1.getTitle()).thenReturn("Task 1");
+        when(task1.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mKeyedService.getTask(taskId1)).thenReturn(task1);
+
+        ActorTask task2 = mock(ActorTask.class);
+        when(task2.getId()).thenReturn(taskId2);
+        when(task2.getTitle()).thenReturn("Task 2");
+        when(task2.getState()).thenReturn(ActorTaskState.FAILED);
+        when(mKeyedService.getTask(taskId2)).thenReturn(task2);
+
+        // Task 1 finishes at t=0.
+        mNotificationService.updateNotificationForTask(
+                taskId1, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
+
+        // Advance by 20s.
+        ShadowLooper.idleMainLooper(20, TimeUnit.SECONDS);
+
+        // Task 2 finishes at t=20.
+        mNotificationService.updateNotificationForTask(
+                taskId2, ActorTaskState.FAILED, /* isSilent= */ false, /* isWarning= */ false);
+
+        assertTrue(mNotificationService.hasPendingDemotions());
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId1));
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId2));
+
+        // Advance by 10s (now t=30s from task 1, 10s from task 2).
+        ShadowLooper.idleMainLooper(10, TimeUnit.SECONDS);
+
+        // Task 1 should be demoted, Task 2 should still be pending demotion.
+        assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId1));
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId2));
+        assertTrue(mNotificationService.hasPendingDemotions());
+
+        Notification demoted1 =
+                mNotificationService.getCachedNotification(
+                        taskId1, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(demoted1);
+        assertFalse((demoted1.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+
+        Notification stillLive2 =
+                mNotificationService.getCachedNotification(
+                        taskId2, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(stillLive2);
+        assertTrue((stillLive2.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+
+        // Advance by another 20s (now t=50s from task 1, 30s from task 2).
+        ShadowLooper.idleMainLooper(20, TimeUnit.SECONDS);
+
+        // Now Task 2 should also be demoted.
+        assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId2));
+        assertFalse(mNotificationService.hasPendingDemotions());
+
+        Notification demoted2 =
+                mNotificationService.getCachedNotification(
+                        taskId2, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(demoted2);
+        assertFalse((demoted2.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+    }
+
+    @Test
+    public void testDemoteToNonLiveNotification_CallsMaybeStopServiceNowBeforeNotify() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        ActorForegroundServiceManager fgsManager = mock(ActorForegroundServiceManager.class);
+        ActorForegroundServiceManager.setInstanceForTesting(fgsManager);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        java.util.concurrent.atomic.AtomicBoolean notifiedDuringMaybeStop =
+                new java.util.concurrent.atomic.AtomicBoolean(false);
+        doAnswer(
+                        invocation -> {
+                            // At the moment maybeStopServiceNow is called, nonLiveWrapper
+                            // should NOT yet be notified.
+                            notifiedDuringMaybeStop.set(
+                                    mMockNotificationManager
+                                            .getNotifications()
+                                            .get(0)
+                                            .notification
+                                            .extras
+                                            .getBoolean(
+                                                    ActorNotificationFactory
+                                                            .EXTRA_REQUEST_PROMOTED_ONGOING,
+                                                    false));
+                            return null;
+                        })
+                .when(fgsManager)
+                .maybeStopServiceNow();
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(fgsManager).maybeStopServiceNow();
+        assertTrue(
+                "When maybeStopServiceNow was called, previous ongoing notification should"
+                        + " still be in manager",
+                notifiedDuringMaybeStop.get());
+        Notification demoted =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(demoted);
+        assertFalse(
+                "After demotion, notification should not request promoted ongoing",
+                demoted.extras.getBoolean(ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
     }
 }
