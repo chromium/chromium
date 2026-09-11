@@ -39,6 +39,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
@@ -94,6 +95,7 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Before
     public void setUp() {
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME);
         when(mView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
         TemplateUrlServiceFactoryJni.setInstanceForTesting(mTemplateUrlServiceFactory);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
@@ -123,7 +125,6 @@ public class AppLaunchDrawBlockerUnitTest {
                         mIncognitoRestoreAppLaunchDrawBlockerFactoryMock,
                         mShouldBlockDrawForTabLayoutSupplier);
         validateConstructorAndCaptureObservers();
-        SystemClock.setCurrentTimeMillis(INITIAL_TIME);
     }
 
     @Test
@@ -394,6 +395,9 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testBlockDrawForTabLayout() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.TabLayoutAvailable", 50);
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
@@ -407,13 +411,19 @@ public class AppLaunchDrawBlockerUnitTest {
         assertFalse("Draw should be blocked for tab layout.", listener.onPreDraw());
 
         // Tab layout is now ready.
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 50);
         mAppLaunchDrawBlocker.onTabLayoutAvailable();
         assertTrue("Draw should no longer be blocked.", listener.onPreDraw());
         verify(mViewTreeObserver, times(1)).removeOnPreDrawListener(listener);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testDoNotBlockDrawWhenTabLayoutDisabled() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.VerticalTabs.TabLayoutAvailable")
+                        .build();
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
@@ -422,6 +432,10 @@ public class AppLaunchDrawBlockerUnitTest {
         mInflationObserver.onPostInflationStartup();
 
         verify(mViewTreeObserver, never()).addOnPreDrawListener(any());
+
+        // onTabLayoutAvailable called without prior draw blocking shouldn't record metrics.
+        mAppLaunchDrawBlocker.onTabLayoutAvailable();
+        histogramWatcher.assertExpected();
     }
 
     private void validateConstructorAndCaptureObservers() {

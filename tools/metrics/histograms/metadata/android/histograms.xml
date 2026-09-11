@@ -6961,6 +6961,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.VerticalTabs.TabLayoutAvailable" units="ms"
+    expires_after="2027-07-22">
+  <owner>spdonghao@google.com</owner>
+  <owner>agazal@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <summary>
+    Records the time from ChromeTabbedActivity creation until the Vertical Tabs
+    layout UI becomes available, at which point the app launch pre-draw block is
+    released. Recorded at most once per activity launch, and only when that
+    pre-draw block was installed.
+  </summary>
+</histogram>
+
 <histogram name="Android.VerticalTabs.WindowWidthBoundaryOnToggle.{Direction}"
     enum="AndroidVerticalTabsWindowWidthBoundary" expires_after="2027-07-22">
   <owner>agazal@google.com</owner>

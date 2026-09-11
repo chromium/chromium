@@ -174,7 +174,11 @@ public class AppLaunchDrawBlocker {
 
     /** Should be called when the tab layout UI (horizontal strip or vertical rail) is ready. */
     public void onTabLayoutAvailable() {
-        mBlockDrawForTabLayout = false;
+        if (mBlockDrawForTabLayout) {
+            RecordHistogram.recordTimesHistogram(
+                    "Android.VerticalTabs.TabLayoutAvailable", uptimeMillis() - mStartTime);
+            mBlockDrawForTabLayout = false;
+        }
     }
 
     private void writeSearchEngineHadLogoPref() {
@@ -209,8 +213,6 @@ public class AppLaunchDrawBlocker {
     }
 
     /** Conditionally blocks the draw until the tab layout UI is ready on cold start. */
-    // TOOD(crbugs.com/547979039): Add metrics on how long we're blocking draw for cold starts / new
-    // window creation.
     private void maybeBlockDrawForTabLayout() {
         if (!mShouldBlockDrawForTabLayoutSupplier.get()) return;
         mBlockDrawForTabLayout = true;
