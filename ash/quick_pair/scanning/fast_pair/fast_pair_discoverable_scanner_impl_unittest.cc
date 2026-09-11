@@ -43,7 +43,7 @@
 namespace {
 
 constexpr char kValidModelId[] = "718c17";
-const std::string kAddress = "test_address";
+constexpr char kAddress[] = "test_address";
 
 class FakeQuickPairProcessManager
     : public ash::quick_pair::QuickPairProcessManager {

@@ -49,14 +49,14 @@ constexpr int kAccountKeyFilterNoNotificationHeader = 0b01100010;
 constexpr int kBatteryHeader = 0b00110011;
 constexpr int kSaltHeader = 0b00010001;
 constexpr long kModelIdLong = 7441431;
-const std::string kModelIdString = "718c17";
-const std::string kAccountKeyFilter = "112233445566";
-const std::string kSalt = "01";
-const std::string kBattery = "01048F";
-const std::string kInvalidBattery = "F1F48F";
-const std::string kBatteryUnknownValue = "3FFFFF";
-const std::string kModelId = "112233";
-const std::string kAddress = "test_address";
+constexpr char kModelIdString[] = "718c17";
+constexpr char kAccountKeyFilter[] = "112233445566";
+constexpr char kSalt[] = "01";
+constexpr char kBattery[] = "01048F";
+constexpr char kInvalidBattery[] = "F1F48F";
+constexpr char kBatteryUnknownValue[] = "3FFFFF";
+constexpr char kModelId[] = "112233";
+constexpr char kAddress[] = "test_address";
 
 }  // namespace
 

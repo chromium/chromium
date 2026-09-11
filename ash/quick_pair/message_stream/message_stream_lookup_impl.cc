@@ -4,8 +4,11 @@
 
 #include "ash/quick_pair/message_stream/message_stream_lookup_impl.h"
 
+#include <array>
+
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
+#include "base/no_destructor.h"
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -13,16 +16,21 @@
 
 namespace {
 
-const device::BluetoothUUID kMessageStreamUuid(
-    "df21fe2c-2515-4fdb-8886-f12c4d67927c");
+const device::BluetoothUUID& GetMessageStreamUuid() {
+  static const base::NoDestructor<device::BluetoothUUID> uuid(
+      "df21fe2c-2515-4fdb-8886-f12c4d67927c");
+  return *uuid;
+}
+
 constexpr int kMaxCreateMessageStreamAttempts{6};
 
 // Attempt retry `n` after cooldown period |message_retry_cooldowns[n-1]|.
 // These cooldown periods replicate those that Android's Fast Pair service
 // mandates.
-const std::vector<base::TimeDelta> kCreateMessageStreamRetryCooldowns{
-    base::Seconds(2), base::Seconds(4), base::Seconds(8), base::Seconds(16),
-    base::Seconds(32)};
+constexpr auto kCreateMessageStreamRetryCooldowns =
+    std::to_array<base::TimeDelta>({base::Seconds(2), base::Seconds(4),
+                                    base::Seconds(8), base::Seconds(16),
+                                    base::Seconds(32)});
 
 }  // namespace
 
@@ -94,7 +102,7 @@ void MessageStreamLookupImpl::DevicePairedChanged(
   }
 
   // Check to see if the device supports Message Streams.
-  if (!device || !device->GetUUIDs().contains(kMessageStreamUuid)) {
+  if (!device || !device->GetUUIDs().contains(GetMessageStreamUuid())) {
     return;
   }
 
@@ -118,7 +126,7 @@ void MessageStreamLookupImpl::DeviceConnectedStateChanged(
     bool is_now_connected) {
   // Check to see if the device supports Message Streams.
   if (!device || !device->IsPaired() ||
-      !device->GetUUIDs().contains(kMessageStreamUuid)) {
+      !device->GetUUIDs().contains(GetMessageStreamUuid())) {
     return;
   }
 
@@ -143,7 +151,7 @@ void MessageStreamLookupImpl::DeviceChanged(device::BluetoothAdapter* adapter,
   // because it is possible for a device to be connected to the adapter but not
   // paired (example: a request for the adapter's SDP records).
   if (!device || !(device->IsConnected() && device->IsPaired()) ||
-      !device->GetUUIDs().contains(kMessageStreamUuid)) {
+      !device->GetUUIDs().contains(GetMessageStreamUuid())) {
     return;
   }
 
@@ -163,7 +171,7 @@ void MessageStreamLookupImpl::DeviceAdded(device::BluetoothAdapter* adapter,
   // because it is possible for a device to be connected to the adapter but not
   // paired (example: a request for the adapter's SDP records).
   if (!device || !(device->IsConnected() && device->IsPaired()) ||
-      !device->GetUUIDs().contains(kMessageStreamUuid)) {
+      !device->GetUUIDs().contains(GetMessageStreamUuid())) {
     return;
   }
 
@@ -251,7 +259,7 @@ void MessageStreamLookupImpl::AttemptCreateMessageStream(
   pending_connect_requests_.insert(device_address);
 
   device->ConnectToService(
-      /*uuid=*/kMessageStreamUuid, /*callback=*/
+      /*uuid=*/GetMessageStreamUuid(), /*callback=*/
       base::BindOnce(&MessageStreamLookupImpl::OnConnected,
                      weak_ptr_factory_.GetWeakPtr(), device_address,
                      base::TimeTicks::Now(), type),

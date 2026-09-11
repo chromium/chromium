@@ -30,7 +30,7 @@ constexpr base::TimeDelta kFilterDeviceFoundTimeout = base::Seconds(1);
 constexpr base::TimeDelta kFilterDeviceLostTimeout = base::Seconds(40);
 
 constexpr uint8_t kFilterPatternStartPosition = 0;
-const std::vector<uint8_t> kFastPairFilterPatternValue = {0x2c, 0xfe};
+constexpr uint8_t kFastPairFilterPatternValue[] = {0x2c, 0xfe};
 constexpr base::TimeDelta kRssiSamplingPeriod = base::Milliseconds(500);
 
 }  // namespace
@@ -92,7 +92,8 @@ void FastPairScannerImpl::StartScanning() {
   device::BluetoothLowEnergyScanFilter::Pattern pattern(
       kFilterPatternStartPosition,
       device::BluetoothLowEnergyScanFilter::AdvertisementDataType::kServiceData,
-      kFastPairFilterPatternValue);
+      std::vector<uint8_t>(std::begin(kFastPairFilterPatternValue),
+                           std::end(kFastPairFilterPatternValue)));
   auto filter = device::BluetoothLowEnergyScanFilter::Create(
       device::BluetoothLowEnergyScanFilter::Range::kNear,
       kFilterDeviceFoundTimeout, kFilterDeviceLostTimeout, {pattern},

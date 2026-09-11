@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/message_stream/message_stream_lookup_impl.h"
 
+#include <array>
 #include <memory>
 
 #include "ash/quick_pair/common/fake_bluetooth_adapter.h"
@@ -14,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -26,25 +28,29 @@
 
 namespace {
 
-const char kAcceptFailedString[] = "Failed to accept connection.";
-const char kInvalidUUIDString[] = "Invalid UUID";
-const char kSocketNotListeningString[] = "Socket is not listening.";
+constexpr char kAcceptFailedString[] = "Failed to accept connection.";
+constexpr char kInvalidUUIDString[] = "Invalid UUID";
+constexpr char kSocketNotListeningString[] = "Socket is not listening.";
 
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 
 // Attempt retry `n` after cooldown period |message_retry_cooldowns[n-1]|.
-const std::vector<base::TimeDelta> create_message_stream_retry_cooldowns_{
-    base::Seconds(2), base::Seconds(4), base::Seconds(8), base::Seconds(16),
-    base::Seconds(32)};
+constexpr auto kCreateMessageStreamRetryCooldowns =
+    std::to_array<base::TimeDelta>({base::Seconds(2), base::Seconds(4),
+                                    base::Seconds(8), base::Seconds(16),
+                                    base::Seconds(32)});
 
-const device::BluetoothUUID kMessageStreamUuid(
-    "df21fe2c-2515-4fdb-8886-f12c4d67927c");
+const device::BluetoothUUID& GetMessageStreamUuid() {
+  static const base::NoDestructor<device::BluetoothUUID> uuid(
+      "df21fe2c-2515-4fdb-8886-f12c4d67927c");
+  return *uuid;
+}
 
-const char kMessageStreamConnectToServiceError[] =
+constexpr char kMessageStreamConnectToServiceError[] =
     "Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService.ErrorReason";
-const char kMessageStreamConnectToServiceResult[] =
+constexpr char kMessageStreamConnectToServiceResult[] =
     "Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService.Result";
-const char kMessageStreamConnectToServiceTime[] =
+constexpr char kMessageStreamConnectToServiceTime[] =
     "Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService."
     "TotalConnectTime";
 
@@ -211,7 +217,7 @@ class MessageStreamLookupImplTest : public testing::Test,
       base::RunLoop();
       EXPECT_EQ(GetMessageStream(), nullptr);
       task_environment_.FastForwardBy(
-          create_message_stream_retry_cooldowns_[curr_attempts - 1]);
+          kCreateMessageStreamRetryCooldowns[curr_attempts - 1]);
     }
   }
 
@@ -268,7 +274,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceAdded_NotPaired) {
 
   SetConnectToServiceError(kSocketNotListeningString);
   device_->SetPaired(false);
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceAdded();
@@ -304,7 +310,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceChanged_NotPaired) {
 
   SetConnectToServiceError(kSocketNotListeningString);
   device_->SetPaired(false);
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceChanged();
@@ -345,7 +351,7 @@ TEST_F(MessageStreamLookupImplTest, ConnectDevice_ConnectToServiceFailure) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   SetConnectToServiceError(kAcceptFailedString);
 
   EXPECT_EQ(GetMessageStream(), nullptr);
@@ -363,7 +369,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceAdded_ConnectToServiceFailure) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   SetConnectToServiceError(kInvalidUUIDString);
 
   EXPECT_EQ(GetMessageStream(), nullptr);
@@ -382,7 +388,7 @@ TEST_F(MessageStreamLookupImplTest,
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   device_->SetConnected(true);
   SetConnectToServiceError(kSocketNotListeningString);
 
@@ -401,7 +407,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceChanged_ConnectToServiceFailure) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   SetConnectToServiceError(kAcceptFailedString);
 
   EXPECT_EQ(GetMessageStream(), nullptr);
@@ -419,7 +425,7 @@ TEST_F(MessageStreamLookupImplTest, ConnectDevice_ConnectToServiceSuccess) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceConnectedStateChanged(/*is_now_connected=*/true);
@@ -437,7 +443,7 @@ TEST_F(MessageStreamLookupImplTest,
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DevicePairedChanged(/*new_paired_state=*/true);
@@ -454,7 +460,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceAdded_ConnectToServiceSuccess) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceAdded();
@@ -471,7 +477,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceChanged_ConnectToServiceSuccess) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceChanged();
@@ -485,7 +491,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceChanged_ConnectToServiceSuccess) {
 
 TEST_F(MessageStreamLookupImplTest,
        ConnectDevice_ConnectToServiceSuccess_Observer) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceConnectedStateChanged(/*is_now_connected=*/true);
@@ -495,7 +501,7 @@ TEST_F(MessageStreamLookupImplTest,
 
 TEST_F(MessageStreamLookupImplTest,
        DevicePairedChanged_ConnectToServiceSuccess_Observer) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   device_->SetConnected(true);
 
   EXPECT_EQ(GetMessageStream(), nullptr);
@@ -506,7 +512,7 @@ TEST_F(MessageStreamLookupImplTest,
 
 TEST_F(MessageStreamLookupImplTest,
        DeviceAdded_ConnectToServiceSuccess_Observer) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceAdded();
@@ -516,7 +522,7 @@ TEST_F(MessageStreamLookupImplTest,
 
 TEST_F(MessageStreamLookupImplTest,
        DeviceChanged_ConnectToServiceSuccess_Observer) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceChanged();
@@ -525,7 +531,7 @@ TEST_F(MessageStreamLookupImplTest,
 }
 
 TEST_F(MessageStreamLookupImplTest, ConnectDevice_DisconnectDevice) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceConnectedStateChanged(/*is_now_connected=*/true);
@@ -537,7 +543,7 @@ TEST_F(MessageStreamLookupImplTest, ConnectDevice_DisconnectDevice) {
 }
 
 TEST_F(MessageStreamLookupImplTest, PairDevice_UnpairDevice) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   device_->SetConnected(true);
   EXPECT_EQ(device_->IsConnected(), true);
   EXPECT_EQ(GetMessageStream(), nullptr);
@@ -551,7 +557,7 @@ TEST_F(MessageStreamLookupImplTest, PairDevice_UnpairDevice) {
 }
 
 TEST_F(MessageStreamLookupImplTest, DevicePairedChanged_NotConnected) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   device_->SetConnected(false);
   EXPECT_EQ(GetMessageStream(), nullptr);
 
@@ -561,7 +567,7 @@ TEST_F(MessageStreamLookupImplTest, DevicePairedChanged_NotConnected) {
 }
 
 TEST_F(MessageStreamLookupImplTest, AddDevice_RemoveDevice) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceAdded();
@@ -573,7 +579,7 @@ TEST_F(MessageStreamLookupImplTest, AddDevice_RemoveDevice) {
 }
 
 TEST_F(MessageStreamLookupImplTest, RemoveDevice_NoMessageStream) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DeviceRemoved();
@@ -591,7 +597,7 @@ TEST_F(MessageStreamLookupImplTest, EmptyDeviceRemoved) {
 }
 
 TEST_F(MessageStreamLookupImplTest, InFlightConnections) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   device_->SetPaired(true);
   device_->DontInvokeCallback();
 
@@ -608,7 +614,7 @@ TEST_F(MessageStreamLookupImplTest, InFlightConnections) {
 // connection.
 TEST_F(MessageStreamLookupImplTest,
        ConnectFailInitial_ConnectSuccessOnRetries) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   for (size_t num_unsuccessful_attempts = 1; num_unsuccessful_attempts < 5;
        num_unsuccessful_attempts++) {
     SetConnectToServiceError(kMessageStreamConnectToServiceError);
@@ -626,7 +632,7 @@ TEST_F(MessageStreamLookupImplTest,
 // to do so. This tests a connection failure after failing all 6 attempts.
 TEST_F(MessageStreamLookupImplTest,
        ConnectFailInitial_ConnectFailOnFiveRetries) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   SetConnectToServiceError(kMessageStreamConnectToServiceError);
   DeviceAdded();
   UnsuccessfulAttemptCreateMessageStream(/*num_unsuccessful_attempts=*/5);
@@ -637,7 +643,7 @@ TEST_F(MessageStreamLookupImplTest,
 
 TEST_F(MessageStreamLookupImplTest,
        ConnectFailInitial_NoCrashIfDeviceLostBetweenRetries) {
-  device_->AddUUID(kMessageStreamUuid);
+  device_->AddUUID(GetMessageStreamUuid());
   SetConnectToServiceError(kMessageStreamConnectToServiceError);
   DeviceAdded();
 

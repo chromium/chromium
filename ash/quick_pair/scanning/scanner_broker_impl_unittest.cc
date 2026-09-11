@@ -32,7 +32,7 @@
 
 namespace {
 
-const std::string kUserEmail = "test@test.test";
+constexpr char kUserEmail[] = "test@test.test";
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kValidModelId[] = "718c17";
 
