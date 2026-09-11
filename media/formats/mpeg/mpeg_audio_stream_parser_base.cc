@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "media/base/byte_queue.h"
 #include "media/base/channel_layout.h"
@@ -400,7 +401,9 @@ int MPEGAudioStreamParserBase::ParseID3v2(const uint8_t* data, int size) {
   if (size < 10)
     return 0;
 
-  BitReader reader(data, size);
+  // TODO(crbug.com/40284755): Spanify ParseID3v2 so this can drop UNSAFE_TODO.
+  BitReader reader(
+      UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(size))));
   uint32_t id;
   uint16_t version;
   uint8_t flags;

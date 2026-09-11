@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "media/base/container_names.h"
 #include "media/base/media_switches.h"
@@ -183,7 +184,8 @@ bool FFmpegGlue::OpenContext(bool is_local_file) {
     if (num_read < container_names::kMinimumContainerSize)
       return false;
 
-    container_ = container_names::DetermineContainer(buffer.data(), num_read);
+    container_ = container_names::DetermineContainer(
+        base::span(buffer).first(base::checked_cast<size_t>(num_read)));
     LogContainer(is_local_file, container_);
 
     detected_hls_ =

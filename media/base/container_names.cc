@@ -9,9 +9,12 @@
 
 #include <array>
 #include <limits>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/bit_reader.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -35,45 +38,39 @@ namespace container_names {
 #define UTF8_BYTE_ORDER_MARK "\xef\xbb\xbf"
 
 // Helper function to read 2 bytes (16 bits, big endian) from a buffer.
-static int Read16(const uint8_t* p) {
-  return p[0] << 8 | UNSAFE_TODO(p[1]);
+static int Read16(base::span<const uint8_t, 2u> p) {
+  return base::U16FromBigEndian(p);
 }
 
 // Helper function to read 3 bytes (24 bits, big endian) from a buffer.
-static uint32_t Read24(const uint8_t* p) {
-  return p[0] << 16 | UNSAFE_TODO(p[1]) << 8 | UNSAFE_TODO(p[2]);
+static uint32_t Read24(base::span<const uint8_t, 3u> p) {
+  return p[0] << 16 | p[1] << 8 | p[2];
 }
 
 // Helper function to read 4 bytes (32 bits, big endian) from a buffer.
-static uint32_t Read32(const uint8_t* p) {
-  return p[0] << 24 | UNSAFE_TODO(p[1]) << 16 | UNSAFE_TODO(p[2]) << 8 |
-         UNSAFE_TODO(p[3]);
+static uint32_t Read32(base::span<const uint8_t, 4u> p) {
+  return base::U32FromBigEndian(p);
 }
 
 // Helper function to read 4 bytes (32 bits, little endian) from a buffer.
-static uint32_t Read32LE(const uint8_t* p) {
-  return UNSAFE_TODO(p[3]) << 24 | UNSAFE_TODO(p[2]) << 16 |
-         UNSAFE_TODO(p[1]) << 8 | p[0];
+static uint32_t Read32LE(base::span<const uint8_t, 4u> p) {
+  return base::U32FromLittleEndian(p);
 }
 
 // Helper function to do buffer comparisons with a string without going off the
 // end of the buffer.
-static bool StartsWith(const uint8_t* buffer,
-                       size_t buffer_size,
-                       const char* prefix) {
-  size_t prefix_size = strlen(prefix);
-  return (prefix_size <= buffer_size &&
-          UNSAFE_TODO(memcmp(buffer, prefix, prefix_size)) == 0);
+static bool StartsWith(base::span<const uint8_t> buffer,
+                       std::string_view prefix) {
+  return (prefix.size() <= buffer.size() &&
+          buffer.first(prefix.size()) == base::as_byte_span(prefix));
 }
 
 // Helper function to do buffer comparisons with another buffer (to allow for
 // embedded \0 in the comparison) without going off the end of the buffer.
-static bool StartsWith(const uint8_t* buffer,
-                       size_t buffer_size,
-                       const uint8_t* prefix,
-                       size_t prefix_size) {
-  return (prefix_size <= buffer_size &&
-          UNSAFE_TODO(memcmp(buffer, prefix, prefix_size)) == 0);
+static bool StartsWith(base::span<const uint8_t> buffer,
+                       base::span<const uint8_t> prefix) {
+  return (prefix.size() <= buffer.size() &&
+          buffer.first(prefix.size()) == prefix);
 }
 
 // Helper function to read up to 64 bits from a bit stream.
@@ -92,14 +89,14 @@ static uint64_t ReadBits(BitReader* reader, size_t num_bits) {
 }
 
 // Checks for an ADTS AAC container.
-static bool CheckAac(const uint8_t* buffer, int buffer_size) {
+static bool CheckAac(base::span<const uint8_t> buffer) {
   // Audio Data Transport Stream (ADTS) header is 7 or 9 bytes
   // (from http://wiki.multimedia.cx/index.php?title=ADTS)
-  RCHECK(buffer_size > 6);
+  RCHECK(buffer.size() > 6);
 
-  int offset = 0;
-  while (offset + 6 < buffer_size) {
-    BitReader reader(UNSAFE_TODO(buffer + offset), 6);
+  size_t offset = 0;
+  while (offset + 6 < buffer.size()) {
+    BitReader reader(buffer.subspan(offset, 6u));
 
     // Syncword must be 0xfff.
     RCHECK(ReadBits(&reader, 12) == 0xfff);
@@ -131,7 +128,7 @@ static bool CheckAac(const uint8_t* buffer, int buffer_size) {
 const uint16_t kAc3SyncWord = 0x0b77;
 
 // Checks for an AC3 container.
-static bool CheckAc3(const uint8_t* buffer, int buffer_size) {
+static bool CheckAc3(base::span<const uint8_t> buffer) {
   // Reference: ATSC Standard: Digital Audio Compression (AC-3, E-AC-3)
   //            Doc. A/52:2012
   // (http://www.atsc.org/cms/standards/A52-2012(12-17).pdf)
@@ -153,11 +150,11 @@ static bool CheckAc3(const uint8_t* buffer, int buffer_size) {
           {2048, 2230, 3072}, {2304, 2506, 3456}, {2304, 2508, 3456},
           {2560, 2768, 3840}, {2560, 2770, 3840},
       }};
-  RCHECK(buffer_size > 6);
+  RCHECK(buffer.size() > 6);
 
-  int offset = 0;
-  while (offset + 6 < buffer_size) {
-    BitReader reader(UNSAFE_TODO(buffer + offset), 6);
+  size_t offset = 0;
+  while (offset + 6 < buffer.size()) {
+    BitReader reader(buffer.subspan(offset, 6u));
 
     // Check syncinfo.
     RCHECK(ReadBits(&reader, 16) == kAc3SyncWord);
@@ -182,17 +179,17 @@ static bool CheckAc3(const uint8_t* buffer, int buffer_size) {
 }
 
 // Checks for an EAC3 container (very similar to AC3)
-static bool CheckEac3(const uint8_t* buffer, int buffer_size) {
+static bool CheckEac3(base::span<const uint8_t> buffer) {
   // Reference: ATSC Standard: Digital Audio Compression (AC-3, E-AC-3)
   //            Doc. A/52:2012
   // (http://www.atsc.org/cms/standards/A52-2012(12-17).pdf)
 
   // EAC3 container looks like syncinfo | bsi | audfrm | audblk* | aux | check.
-  RCHECK(buffer_size > 6);
+  RCHECK(buffer.size() > 6);
 
-  int offset = 0;
-  while (offset + 6 < buffer_size) {
-    BitReader reader(UNSAFE_TODO(buffer + offset), 6);
+  size_t offset = 0;
+  while (offset + 6 < buffer.size()) {
+    BitReader reader(buffer.subspan(offset, 6u));
 
     // Check syncinfo.
     RCHECK(ReadBits(&reader, 16) == kAc3SyncWord);
@@ -220,37 +217,37 @@ static bool CheckEac3(const uint8_t* buffer, int buffer_size) {
 }
 
 // Additional checks for a BINK container.
-static bool CheckBink(const uint8_t* buffer, int buffer_size) {
+static bool CheckBink(base::span<const uint8_t> buffer) {
   // Reference: http://wiki.multimedia.cx/index.php?title=Bink_Container
-  RCHECK(buffer_size >= 44);
+  RCHECK(buffer.size() >= 44);
 
   // Verify number of frames specified.
-  UNSAFE_TODO(RCHECK(Read32LE(buffer + 8) > 0));
+  RCHECK(Read32LE(buffer.subspan(8u).first<4>()) > 0);
 
   // Verify width in range.
-  int width = Read32LE(UNSAFE_TODO(buffer + 20));
+  int width = Read32LE(buffer.subspan(20u).first<4>());
   RCHECK(width > 0 && width <= 32767);
 
   // Verify height in range.
-  int height = Read32LE(UNSAFE_TODO(buffer + 24));
+  int height = Read32LE(buffer.subspan(24u).first<4>());
   RCHECK(height > 0 && height <= 32767);
 
   // Verify frames per second specified.
-  UNSAFE_TODO(RCHECK(Read32LE(buffer + 28) > 0));
+  RCHECK(Read32LE(buffer.subspan(28u).first<4>()) > 0);
 
   // Verify video frames per second specified.
-  UNSAFE_TODO(RCHECK(Read32LE(buffer + 32) > 0));
+  RCHECK(Read32LE(buffer.subspan(32u).first<4>()) > 0);
 
   // Number of audio tracks must be 256 or less.
-  return (Read32LE(UNSAFE_TODO(buffer + 40)) <= 256);
+  return (Read32LE(buffer.subspan(40u).first<4>()) <= 256);
 }
 
 // Additional checks for a CAF container.
-static bool CheckCaf(const uint8_t* buffer, int buffer_size) {
+static bool CheckCaf(base::span<const uint8_t> buffer) {
   // Reference: Apple Core Audio Format Specification 1.0
   // (https://developer.apple.com/library/mac/#documentation/MusicAudio/Reference/CAFSpec/CAF_spec/CAF_spec.html)
-  RCHECK(buffer_size >= 52);
-  BitReader reader(buffer, buffer_size);
+  RCHECK(buffer.size() >= 52);
+  BitReader reader(buffer);
 
   // mFileType should be "caff".
   RCHECK(ReadBits(&reader, 32) == TAG('c', 'a', 'f', 'f'));
@@ -280,14 +277,14 @@ static bool CheckCaf(const uint8_t* buffer, int buffer_size) {
 }
 
 // Additional checks for a DTS container.
-static bool CheckDts(const uint8_t* buffer, int buffer_size) {
+static bool CheckDts(base::span<const uint8_t> buffer) {
   // Reference: ETSI TS 102 114 V1.3.1 (2011-08)
   // (http://www.etsi.org/deliver/etsi_ts/102100_102199/102114/01.03.01_60/ts_102114v010301p.pdf)
-  RCHECK(buffer_size > 11);
+  RCHECK(buffer.size() > 11);
 
-  int offset = 0;
-  while (offset + 11 < buffer_size) {
-    BitReader reader(UNSAFE_TODO(buffer + offset), 11);
+  size_t offset = 0;
+  while (offset + 11 < buffer.size()) {
+    BitReader reader(buffer.subspan(offset, 11u));
 
     // Verify sync word.
     RCHECK(ReadBits(&reader, 32) == 0x7ffe8001);
@@ -345,16 +342,16 @@ static bool CheckDts(const uint8_t* buffer, int buffer_size) {
 }
 
 // Checks for a DV container.
-static bool CheckDV(const uint8_t* buffer, int buffer_size) {
+static bool CheckDV(base::span<const uint8_t> buffer) {
   // Reference: SMPTE 314M (Annex A has differences with IEC 61834).
   // (http://standards.smpte.org/content/978-1-61482-454-1/st-314-2005/SEC1.body.pdf)
-  RCHECK(buffer_size > 11);
+  RCHECK(buffer.size() > 11);
 
-  int offset = 0;
+  size_t offset = 0;
   int current_sequence_number = -1;
   std::array<int, 6> last_block_number = {};
-  while (offset + 11 < buffer_size) {
-    BitReader reader(UNSAFE_TODO(buffer + offset), 11);
+  while (offset + 11 < buffer.size()) {
+    BitReader reader(buffer.subspan(offset, 11u));
 
     // Decode ID data. Sections 5, 6, and 7 are reserved.
     int section = ReadBits(&reader, 3);
@@ -406,19 +403,18 @@ static bool CheckDV(const uint8_t* buffer, int buffer_size) {
   return true;
 }
 
-
 // Checks for a GSM container.
-static bool CheckGsm(const uint8_t* buffer, int buffer_size) {
+static bool CheckGsm(base::span<const uint8_t> buffer) {
   // Reference: ETSI EN 300 961 V8.1.1
   // (http://www.etsi.org/deliver/etsi_en/300900_300999/300961/08.01.01_60/en_300961v080101p.pdf)
   // also http://tools.ietf.org/html/rfc3551#page-24
   // GSM files have a 33 byte block, only first 4 bits are fixed.
-  RCHECK(buffer_size >= 1024);  // Need enough data to do a decent check.
+  RCHECK(buffer.size() >= 1024);  // Need enough data to do a decent check.
 
-  int offset = 0;
-  while (offset < buffer_size) {
+  size_t offset = 0;
+  while (offset < buffer.size()) {
     // First 4 bits of each block are xD.
-    UNSAFE_TODO(RCHECK((buffer[offset] & 0xf0) == 0xd0));
+    RCHECK((buffer[offset] & 0xf0) == 0xd0);
     offset += 33;
   }
   return true;
@@ -429,9 +425,8 @@ static bool CheckGsm(const uint8_t* buffer, int buffer_size) {
 // number of bytes that must remain in the buffer when |start_code| is found.
 // Returns true if start_code found (and enough space in the buffer after it),
 // false otherwise.
-static bool AdvanceToStartCode(const uint8_t* buffer,
-                               int buffer_size,
-                               int* offset,
+static bool AdvanceToStartCode(base::span<const uint8_t> buffer,
+                               size_t* offset,
                                int bytes_needed,
                                int num_bits,
                                uint32_t start_code) {
@@ -441,8 +436,8 @@ static bool AdvanceToStartCode(const uint8_t* buffer,
   // Create a mask to isolate |num_bits| bits, once shifted over.
   uint32_t bits_to_shift = 24 - num_bits;
   uint32_t mask = (1 << num_bits) - 1;
-  while (*offset + bytes_needed < buffer_size) {
-    uint32_t next = Read24(UNSAFE_TODO(buffer + *offset));
+  while (*offset + bytes_needed < buffer.size()) {
+    uint32_t next = Read24(buffer.subspan(*offset).first<3>());
     if (((next >> bits_to_shift) & mask) == start_code)
       return true;
     ++(*offset);
@@ -451,16 +446,16 @@ static bool AdvanceToStartCode(const uint8_t* buffer,
 }
 
 // Checks for an H.261 container.
-static bool CheckH261(const uint8_t* buffer, int buffer_size) {
+static bool CheckH261(base::span<const uint8_t> buffer) {
   // Reference: ITU-T Recommendation H.261 (03/1993)
   // (http://www.itu.int/rec/T-REC-H.261-199303-I/en)
-  RCHECK(buffer_size > 16);
+  RCHECK(buffer.size() > 16);
 
-  int offset = 0;
+  size_t offset = 0;
   bool seen_start_code = false;
   while (true) {
     // Advance to picture_start_code, if there is one.
-    if (!AdvanceToStartCode(buffer, buffer_size, &offset, 4, 20, 0x10)) {
+    if (!AdvanceToStartCode(buffer, &offset, 4, 20, 0x10)) {
       // No start code found (or off end of buffer), so success if
       // there was at least one valid header.
       return seen_start_code;
@@ -468,7 +463,7 @@ static bool CheckH261(const uint8_t* buffer, int buffer_size) {
 
     // Now verify the block. AdvanceToStartCode() made sure that there are
     // at least 4 bytes remaining in the buffer.
-    BitReader reader(UNSAFE_TODO(buffer + offset), buffer_size - offset);
+    BitReader reader(buffer.subspan(offset));
     RCHECK(ReadBits(&reader, 20) == 0x10);
 
     // Skip the temporal reference and PTYPE.
@@ -499,17 +494,17 @@ static bool CheckH261(const uint8_t* buffer, int buffer_size) {
 }
 
 // Checks for an H.263 container.
-static bool CheckH263(const uint8_t* buffer, int buffer_size) {
+static bool CheckH263(base::span<const uint8_t> buffer) {
   // Reference: ITU-T Recommendation H.263 (01/2005)
   // (http://www.itu.int/rec/T-REC-H.263-200501-I/en)
   // header is PSC(22b) + TR(8b) + PTYPE(8+b).
-  RCHECK(buffer_size > 16);
+  RCHECK(buffer.size() > 16);
 
-  int offset = 0;
+  size_t offset = 0;
   bool seen_start_code = false;
   while (true) {
     // Advance to picture_start_code, if there is one.
-    if (!AdvanceToStartCode(buffer, buffer_size, &offset, 9, 22, 0x20)) {
+    if (!AdvanceToStartCode(buffer, &offset, 9, 22, 0x20)) {
       // No start code found (or off end of buffer), so success if
       // there was at least one valid header.
       return seen_start_code;
@@ -517,7 +512,7 @@ static bool CheckH263(const uint8_t* buffer, int buffer_size) {
 
     // Now verify the block. AdvanceToStartCode() made sure that there are
     // at least 9 bytes remaining in the buffer.
-    BitReader reader(UNSAFE_TODO(buffer + offset), 9);
+    BitReader reader(buffer.subspan(offset, 9u));
     RCHECK(ReadBits(&reader, 22) == 0x20);
 
     // Skip the temporal reference.
@@ -567,17 +562,17 @@ static bool CheckH263(const uint8_t* buffer, int buffer_size) {
 }
 
 // Checks for an H.264 container.
-static bool CheckH264(const uint8_t* buffer, int buffer_size) {
+static bool CheckH264(base::span<const uint8_t> buffer) {
   // Reference: ITU-T Recommendation H.264 (01/2012)
   // (http://www.itu.int/rec/T-REC-H.264)
   // Section B.1: Byte stream NAL unit syntax and semantics.
-  RCHECK(buffer_size > 4);
+  RCHECK(buffer.size() > 4);
 
-  int offset = 0;
+  size_t offset = 0;
   int parameter_count = 0;
   while (true) {
     // Advance to picture_start_code, if there is one.
-    if (!AdvanceToStartCode(buffer, buffer_size, &offset, 4, 24, 1)) {
+    if (!AdvanceToStartCode(buffer, &offset, 4, 24, 1)) {
       // No start code found (or off end of buffer), so success if
       // there was at least one valid header.
       return parameter_count > 0;
@@ -585,7 +580,7 @@ static bool CheckH264(const uint8_t* buffer, int buffer_size) {
 
     // Now verify the block. AdvanceToStartCode() made sure that there are
     // at least 4 bytes remaining in the buffer.
-    BitReader reader(UNSAFE_TODO(buffer + offset), 4);
+    BitReader reader(buffer.subspan(offset, 4u));
     RCHECK(ReadBits(&reader, 24) == 1);
 
     // Verify forbidden_zero_bit.
@@ -623,25 +618,22 @@ static const char kHls2[] = "#EXT-X-TARGETDURATION:";
 static const char kHls3[] = "#EXT-X-MEDIA-SEQUENCE:";
 
 // Additional checks for a HLS container.
-static bool CheckHls(const uint8_t* buffer, int buffer_size) {
+static bool CheckHls(base::span<const uint8_t> buffer) {
   // HLS is simply a play list used for Apple HTTP Live Streaming.
   // Reference: Apple HTTP Live Streaming Overview
   // (http://goo.gl/MIwxj)
 
-  if (StartsWith(buffer, buffer_size, kHlsSignature)) {
+  if (StartsWith(buffer, kHlsSignature)) {
     // Need to find "#EXT-X-STREAM-INF:", "#EXT-X-TARGETDURATION:", or
     // "#EXT-X-MEDIA-SEQUENCE:" somewhere in the buffer. Other playlists (like
     // WinAmp) only have additional lines with #EXTINF
     // (http://en.wikipedia.org/wiki/M3U).
-    int offset = strlen(kHlsSignature);
-    while (offset < buffer_size) {
-      if (UNSAFE_TODO(buffer[offset]) == '#') {
-        if (StartsWith(UNSAFE_TODO(buffer + offset), buffer_size - offset,
-                       kHls1) ||
-            StartsWith(UNSAFE_TODO(buffer + offset), buffer_size - offset,
-                       kHls2) ||
-            StartsWith(UNSAFE_TODO(buffer + offset), buffer_size - offset,
-                       kHls3)) {
+    size_t offset = strlen(kHlsSignature);
+    while (offset < buffer.size()) {
+      if (buffer[offset] == '#') {
+        if (StartsWith(buffer.subspan(offset), kHls1) ||
+            StartsWith(buffer.subspan(offset), kHls2) ||
+            StartsWith(buffer.subspan(offset), kHls3)) {
           return true;
         }
       }
@@ -652,18 +644,18 @@ static bool CheckHls(const uint8_t* buffer, int buffer_size) {
 }
 
 // Checks for a MJPEG stream.
-static bool CheckMJpeg(const uint8_t* buffer, int buffer_size) {
+static bool CheckMJpeg(base::span<const uint8_t> buffer) {
   // Reference: ISO/IEC 10918-1 : 1993(E), Annex B
   // (http://www.w3.org/Graphics/JPEG/itu-t81.pdf)
-  RCHECK(buffer_size >= 16);
+  RCHECK(buffer.size() >= 16);
 
-  int offset = 0;
+  size_t offset = 0;
   int last_restart = -1;
   int num_codes = 0;
-  while (offset + 5 < buffer_size) {
+  while (offset + 5 < buffer.size()) {
     // Marker codes are always a two byte code with the first byte xFF.
-    UNSAFE_TODO(RCHECK(buffer[offset] == 0xff));
-    uint8_t code = UNSAFE_TODO(buffer[offset + 1]);
+    RCHECK(buffer[offset] == 0xff);
+    uint8_t code = buffer[offset + 1];
     RCHECK(code >= 0xc0 || code == 1);
 
     // Skip sequences of xFF.
@@ -689,20 +681,19 @@ static bool CheckMJpeg(const uint8_t* buffer, int buffer_size) {
       offset += 2;
     } else {
       // All remaining marker codes are followed by a length of the header.
-      int length = Read16(UNSAFE_TODO(buffer + offset + 2)) + 2;
+      int length = Read16(buffer.subspan(offset + 2).first<2>()) + 2;
 
       // Special handling of SOS (start of scan) marker since the entropy
       // coded data follows the SOS. Any xFF byte in the data block must be
       // followed by x00 in the data.
       if (code == 0xda) {
-        int number_components = UNSAFE_TODO(buffer[offset + 4]);
+        int number_components = buffer[offset + 4];
         RCHECK(length == 8 + 2 * number_components);
 
         // Advance to the next marker.
         offset += length;
-        while (offset + 2 < buffer_size) {
-          if (UNSAFE_TODO(buffer[offset]) == 0xff &&
-              UNSAFE_TODO(buffer[offset + 1]) != 0) {
+        while (offset + 2 < buffer.size()) {
+          if (buffer[offset] == 0xff && buffer[offset + 1] != 0) {
             break;
           }
           ++offset;
@@ -723,13 +714,13 @@ enum Mpeg2StartCodes {
 };
 
 // Checks for a MPEG2 Program Stream.
-static bool CheckMpeg2ProgramStream(const uint8_t* buffer, int buffer_size) {
+static bool CheckMpeg2ProgramStream(base::span<const uint8_t> buffer) {
   // Reference: ISO/IEC 13818-1 : 2000 (E) / ITU-T Rec. H.222.0 (2000 E).
-  RCHECK(buffer_size > 14);
+  RCHECK(buffer.size() > 14);
 
-  int offset = 0;
-  while (offset + 14 < buffer_size) {
-    BitReader reader(UNSAFE_TODO(buffer + offset), 14);
+  size_t offset = 0;
+  while (offset + 14 < buffer.size()) {
+    BitReader reader(buffer.subspan(offset, 14u));
 
     // Must start with pack_start_code.
     RCHECK(ReadBits(&reader, 24) == 1);
@@ -792,10 +783,10 @@ static bool CheckMpeg2ProgramStream(const uint8_t* buffer, int buffer_size) {
     }
 
     // Check for system headers and PES_packets.
-    while (offset + 6 < buffer_size &&
-           Read24(UNSAFE_TODO(buffer + offset)) == 1) {
+    while (offset + 6 < buffer.size() &&
+           Read24(buffer.subspan(offset).first<3>()) == 1) {
       // Next 8 bits determine stream type.
-      int stream_id = UNSAFE_TODO(buffer[offset + 3]);
+      int stream_id = buffer[offset + 3];
 
       // Some stream types are reserved and shouldn't occur.
       if (mpeg_version == 0)
@@ -809,7 +800,7 @@ static bool CheckMpeg2ProgramStream(const uint8_t* buffer, int buffer_size) {
       if (stream_id == PROGRAM_END_CODE)  // end of stream.
         return true;
 
-      int pes_length = Read16(UNSAFE_TODO(buffer + offset + 4));
+      int pes_length = Read16(buffer.subspan(offset + 4).first<2>());
       RCHECK(pes_length > 0);
       offset = offset + 6 + pes_length;
     }
@@ -822,23 +813,23 @@ static bool CheckMpeg2ProgramStream(const uint8_t* buffer, int buffer_size) {
 const uint8_t kMpeg2SyncWord = 0x47;
 
 // Checks for a MPEG2 Transport Stream.
-static bool CheckMpeg2TransportStream(const uint8_t* buffer, int buffer_size) {
+static bool CheckMpeg2TransportStream(base::span<const uint8_t> buffer) {
   // Spec: ISO/IEC 13818-1 : 2000 (E) / ITU-T Rec. H.222.0 (2000 E).
   // Normal packet size is 188 bytes. However, some systems add various error
   // correction data at the end, resulting in packet of length 192/204/208
   // (https://en.wikipedia.org/wiki/MPEG_transport_stream). Determine the
   // length with the first packet.
-  RCHECK(buffer_size >= 250);  // Want more than 1 packet to check.
+  RCHECK(buffer.size() >= 250);  // Want more than 1 packet to check.
 
-  int offset = 0;
+  size_t offset = 0;
   int packet_length = -1;
-  while (UNSAFE_TODO(buffer[offset]) != kMpeg2SyncWord && offset < 20) {
+  while (buffer[offset] != kMpeg2SyncWord && offset < 20) {
     // Skip over any header in the first 20 bytes.
     ++offset;
   }
 
-  while (offset + 6 < buffer_size) {
-    BitReader reader(UNSAFE_TODO(buffer + offset), 6);
+  while (offset + 6 < buffer.size()) {
+    BitReader reader(buffer.subspan(offset, 6u));
 
     // Must start with sync byte.
     RCHECK(ReadBits(&reader, 8) == kMpeg2SyncWord);
@@ -873,14 +864,15 @@ static bool CheckMpeg2TransportStream(const uint8_t* buffer, int buffer_size) {
 
     // Attempt to determine the packet length on the first packet.
     if (packet_length < 0) {
-      if (UNSAFE_TODO(buffer[offset + 188]) == kMpeg2SyncWord) {
+      if (buffer[offset + 188] == kMpeg2SyncWord) {
         packet_length = 188;
-      } else if (UNSAFE_TODO(buffer[offset + 192]) == kMpeg2SyncWord) {
+      } else if (buffer[offset + 192] == kMpeg2SyncWord) {
         packet_length = 192;
-      } else if (UNSAFE_TODO(buffer[offset + 204]) == kMpeg2SyncWord) {
+      } else if (buffer[offset + 204] == kMpeg2SyncWord) {
         packet_length = 204;
-      } else
+      } else {
         packet_length = 208;
+      }
     }
     offset += packet_length;
   }
@@ -895,20 +887,20 @@ enum Mpeg4StartCodes {
 };
 
 // Checks for a raw MPEG4 bitstream container.
-static bool CheckMpeg4BitStream(const uint8_t* buffer, int buffer_size) {
+static bool CheckMpeg4BitStream(base::span<const uint8_t> buffer) {
   // Defined in ISO/IEC 14496-2:2001.
   // However, no length ... simply scan for start code values.
   // Note tags are very similar to H.264.
-  RCHECK(buffer_size > 4);
+  RCHECK(buffer.size() > 4);
 
-  int offset = 0;
+  size_t offset = 0;
   int sequence_start_count = 0;
   int sequence_end_count = 0;
   int visual_object_count = 0;
   int vop_count = 0;
   while (true) {
     // Advance to start_code, if there is one.
-    if (!AdvanceToStartCode(buffer, buffer_size, &offset, 6, 24, 1)) {
+    if (!AdvanceToStartCode(buffer, &offset, 6, 24, 1)) {
       // Not a complete sequence in memory, so return true if we've seen a
       // visual_object_sequence_start_code and a visual_object_start_code.
       return (sequence_start_count > 0 && visual_object_count > 0);
@@ -916,7 +908,7 @@ static bool CheckMpeg4BitStream(const uint8_t* buffer, int buffer_size) {
 
     // Now verify the block. AdvanceToStartCode() made sure that there are
     // at least 6 bytes remaining in the buffer.
-    BitReader reader(UNSAFE_TODO(buffer + offset), 6);
+    BitReader reader(buffer.subspan(offset, 6u));
     RCHECK(ReadBits(&reader, 24) == 1);
 
     int start_code = ReadBits(&reader, 8);
@@ -971,16 +963,16 @@ static bool CheckMpeg4BitStream(const uint8_t* buffer, int buffer_size) {
 }
 
 // Additional checks for a MOV/QuickTime/MPEG4 container.
-static bool CheckMov(const uint8_t* buffer, int buffer_size) {
+static bool CheckMov(base::span<const uint8_t> buffer) {
   // Reference: ISO/IEC 14496-12:2005(E).
   // (http://standards.iso.org/ittf/PubliclyAvailableStandards/c061988_ISO_IEC_14496-12_2012.zip)
-  RCHECK(buffer_size > 8);
+  RCHECK(buffer.size() > 8);
 
-  int offset = 0;
+  size_t offset = 0;
   int valid_top_level_boxes = 0;
-  while (offset + 8 < buffer_size) {
-    uint32_t atomsize = Read32(UNSAFE_TODO(buffer + offset));
-    uint32_t atomtype = Read32(UNSAFE_TODO(buffer + offset + 4));
+  while (offset + 8 < buffer.size()) {
+    uint32_t atomsize = Read32(buffer.subspan(offset).first<4>());
+    uint32_t atomtype = Read32(buffer.subspan(offset + 4).first<4>());
 
     // Only need to check for atoms that are valid at the top level. However,
     // "Boxes with an unrecognized type shall be ignored and skipped." So
@@ -1009,15 +1001,17 @@ static bool CheckMov(const uint8_t* buffer, int buffer_size) {
     }
     if (atomsize == 1) {
       // Indicates that the length is the next 64bits.
-      if (offset + 16 > buffer_size)
+      if (offset + 16 > buffer.size()) {
         break;
-      if (Read32(UNSAFE_TODO(buffer + offset + 8)) != 0) {
+      }
+      if (Read32(buffer.subspan(offset + 8).first<4>()) != 0) {
         break;  // Offset is way past buffer size.
       }
-      atomsize = Read32(UNSAFE_TODO(buffer + offset + 12));
+      atomsize = Read32(buffer.subspan(offset + 12).first<4>());
     }
-    if (atomsize == 0 || atomsize > static_cast<size_t>(buffer_size))
+    if (atomsize == 0 || atomsize > buffer.size()) {
       break;  // Indicates the last atom or length too big.
+    }
     offset += atomsize;
   }
   return valid_top_level_boxes >= 2;
@@ -1036,14 +1030,12 @@ enum MPEGLayer {
   LAYER_1
 };
 
-
-static bool ValidMpegAudioFrameHeader(const uint8_t* header,
-                                      int header_size,
+static bool ValidMpegAudioFrameHeader(base::span<const uint8_t> header,
                                       int* framesize) {
   // Reference: http://mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm.
-  DCHECK_GE(header_size, 4);
+  DCHECK_GE(header.size(), 4u);
   *framesize = 0;
-  BitReader reader(header, 4);  // Header can only be 4 bytes long.
+  BitReader reader(header.first(4u));  // Header can only be 4 bytes long.
 
   // Verify frame sync (11 bits) are all set.
   RCHECK(ReadBits(&reader, 11) == 0x7ff);
@@ -1118,23 +1110,21 @@ static bool ValidMpegAudioFrameHeader(const uint8_t* header,
 }
 
 // Additional checks for a MP3 container.
-static bool CheckMp3(const uint8_t* buffer, int buffer_size) {
+static bool CheckMp3(base::span<const uint8_t> buffer) {
   // This function assumes that the ID3 header is not present in the file and
   // simply checks for several valid MPEG audio buffers after skipping any
   // optional padding characters.
   int numSeen = 0;
-  int offset = 0;
+  size_t offset = 0;
 
   // Skip over any padding (0's).
-  while (offset < buffer_size && UNSAFE_TODO(buffer[offset]) == 0) {
+  while (offset < buffer.size() && buffer[offset] == 0) {
     ++offset;
   }
 
-  while (offset + 3 < buffer_size) {
+  while (offset + 3 < buffer.size()) {
     int framesize;
-    UNSAFE_TODO(RCHECK(ValidMpegAudioFrameHeader(
-        buffer + offset, buffer_size - offset, &framesize)));
-
+    RCHECK(ValidMpegAudioFrameHeader(buffer.subspan(offset), &framesize));
     // Have we seen enough valid headers?
     if (++numSeen > 10)
       return true;
@@ -1148,26 +1138,25 @@ static bool CheckMp3(const uint8_t* buffer, int buffer_size) {
 // accepted is optional whitespace followed by 1 or more digits. |max_digits|
 // specifies the maximum number of digits to process. Returns true if a valid
 // number is found, false otherwise.
-static bool VerifyNumber(const uint8_t* buffer,
-                         int buffer_size,
-                         int* offset,
+static bool VerifyNumber(base::span<const uint8_t> buffer,
+                         size_t* offset,
                          int max_digits) {
-  RCHECK(*offset < buffer_size);
+  RCHECK(*offset < buffer.size());
 
   // Skip over any leading space.
-  while (absl::ascii_isspace(UNSAFE_TODO(buffer[*offset]))) {
+  while (absl::ascii_isspace(buffer[*offset])) {
     ++(*offset);
-    RCHECK(*offset < buffer_size);
+    RCHECK(*offset < buffer.size());
   }
 
   // Need to process up to max_digits digits.
   int numSeen = 0;
-  while (--max_digits >= 0 &&
-         absl::ascii_isdigit(UNSAFE_TODO(buffer[*offset]))) {
+  while (--max_digits >= 0 && absl::ascii_isdigit(buffer[*offset])) {
     ++numSeen;
     ++(*offset);
-    if (*offset >= buffer_size)
+    if (*offset >= buffer.size()) {
       return true;  // Out of space but seen a digit.
+    }
   }
 
   // Success if at least one digit seen.
@@ -1177,52 +1166,52 @@ static bool VerifyNumber(const uint8_t* buffer,
 // Check that the next character in |buffer| is one of |c1| or |c2|. |c2| is
 // optional. Returns true if there is a match, false if no match or out of
 // space.
-static inline bool VerifyCharacters(const uint8_t* buffer,
-                                    int buffer_size,
-                                    int* offset,
+static inline bool VerifyCharacters(base::span<const uint8_t> buffer,
+                                    size_t* offset,
                                     char c1,
                                     char c2) {
-  RCHECK(*offset < buffer_size);
-  char c = static_cast<char>(UNSAFE_TODO(buffer[(*offset)++]));
+  RCHECK(*offset < buffer.size());
+  char c = static_cast<char>(buffer[(*offset)++]);
   return (c == c1 || (c == c2 && c2 != 0));
 }
 
 // Checks for a SRT container.
-static bool CheckSrt(const uint8_t* buffer, int buffer_size) {
+static bool CheckSrt(base::span<const uint8_t> buffer) {
   // Reference: http://en.wikipedia.org/wiki/SubRip
-  RCHECK(buffer_size > 20);
+  RCHECK(buffer.size() > 20);
 
   // First line should just be the subtitle sequence number.
-  int offset = StartsWith(buffer, buffer_size, UTF8_BYTE_ORDER_MARK) ? 3 : 0;
-  RCHECK(VerifyNumber(buffer, buffer_size, &offset, 100));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, '\n', '\r'));
+  size_t offset = StartsWith(buffer, UTF8_BYTE_ORDER_MARK) ? 3 : 0;
+  RCHECK(VerifyNumber(buffer, &offset, 100));
+  RCHECK(VerifyCharacters(buffer, &offset, '\n', '\r'));
 
   // Skip any additional \n\r.
-  while (VerifyCharacters(buffer, buffer_size, &offset, '\n', '\r')) {}
+  while (VerifyCharacters(buffer, &offset, '\n', '\r')) {
+  }
   --offset;  // Since VerifyCharacters() gobbled up the next non-CR/LF.
 
   // Second line should look like the following:
   //   00:00:10,500 --> 00:00:13,000
   // Units separator can be , or .
-  RCHECK(VerifyNumber(buffer, buffer_size, &offset, 100));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, ':', 0));
-  RCHECK(VerifyNumber(buffer, buffer_size, &offset, 2));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, ':', 0));
-  RCHECK(VerifyNumber(buffer, buffer_size, &offset, 2));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, ',', '.'));
-  RCHECK(VerifyNumber(buffer, buffer_size, &offset, 3));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, ' ', 0));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, '-', 0));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, '-', 0));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, '>', 0));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, ' ', 0));
-  RCHECK(VerifyNumber(buffer, buffer_size, &offset, 100));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, ':', 0));
-  RCHECK(VerifyNumber(buffer, buffer_size, &offset, 2));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, ':', 0));
-  RCHECK(VerifyNumber(buffer, buffer_size, &offset, 2));
-  RCHECK(VerifyCharacters(buffer, buffer_size, &offset, ',', '.'));
-  RCHECK(VerifyNumber(buffer, buffer_size, &offset, 3));
+  RCHECK(VerifyNumber(buffer, &offset, 100));
+  RCHECK(VerifyCharacters(buffer, &offset, ':', 0));
+  RCHECK(VerifyNumber(buffer, &offset, 2));
+  RCHECK(VerifyCharacters(buffer, &offset, ':', 0));
+  RCHECK(VerifyNumber(buffer, &offset, 2));
+  RCHECK(VerifyCharacters(buffer, &offset, ',', '.'));
+  RCHECK(VerifyNumber(buffer, &offset, 3));
+  RCHECK(VerifyCharacters(buffer, &offset, ' ', 0));
+  RCHECK(VerifyCharacters(buffer, &offset, '-', 0));
+  RCHECK(VerifyCharacters(buffer, &offset, '-', 0));
+  RCHECK(VerifyCharacters(buffer, &offset, '>', 0));
+  RCHECK(VerifyCharacters(buffer, &offset, ' ', 0));
+  RCHECK(VerifyNumber(buffer, &offset, 100));
+  RCHECK(VerifyCharacters(buffer, &offset, ':', 0));
+  RCHECK(VerifyNumber(buffer, &offset, 2));
+  RCHECK(VerifyCharacters(buffer, &offset, ':', 0));
+  RCHECK(VerifyNumber(buffer, &offset, 2));
+  RCHECK(VerifyCharacters(buffer, &offset, ',', '.'));
+  RCHECK(VerifyNumber(buffer, &offset, 3));
   return true;
 }
 
@@ -1272,11 +1261,11 @@ static uint64_t GetVint(BitReader* reader) {
 }
 
 // Additional checks for a WEBM container.
-static bool CheckWebm(const uint8_t* buffer, int buffer_size) {
+static bool CheckWebm(base::span<const uint8_t> buffer) {
   // Reference: http://www.matroska.org/technical/specs/index.html
-  RCHECK(buffer_size > 12);
+  RCHECK(buffer.size() > 12);
 
-  BitReader reader(buffer, buffer_size);
+  BitReader reader(buffer);
 
   // Verify starting Element Id.
   RCHECK(GetElementId(&reader) == 0x1a45dfa3);
@@ -1330,20 +1319,20 @@ enum VC1StartCodes {
 };
 
 // Checks for a VC1 bitstream container.
-static bool CheckVC1(const uint8_t* buffer, int buffer_size) {
+static bool CheckVC1(base::span<const uint8_t> buffer) {
   // Reference: SMPTE 421M
   // (http://standards.smpte.org/content/978-1-61482-555-5/st-421-2006/SEC1.body.pdf)
   // However, no length ... simply scan for start code values.
   // Expect to see SEQ | [ [ ENTRY ] PIC* ]*
   // Note tags are very similar to H.264.
 
-  RCHECK(buffer_size >= 24);
+  RCHECK(buffer.size() >= 24);
 
   // First check for Bitstream Metadata Serialization (Annex L)
-  if (buffer[0] == 0xc5 && Read32(UNSAFE_TODO(buffer + 4)) == 0x04 &&
-      Read32(UNSAFE_TODO(buffer + 20)) == 0x0c) {
+  if (buffer[0] == 0xc5 && Read32(buffer.subspan(4u).first<4>()) == 0x04 &&
+      Read32(buffer.subspan(20u).first<4>()) == 0x0c) {
     // Verify settings in STRUCT_C and STRUCT_A
-    BitReader reader(UNSAFE_TODO(buffer + 8), 12);
+    BitReader reader(buffer.subspan(8u, 12u));
 
     int profile = ReadBits(&reader, 4);
     if (profile == 0 || profile == 4) {  // simple or main
@@ -1384,12 +1373,12 @@ static bool CheckVC1(const uint8_t* buffer, int buffer_size) {
   }
 
   // Buffer isn't Bitstream Metadata, so scan for start codes.
-  int offset = 0;
+  size_t offset = 0;
   int sequence_start_code = 0;
   int frame_start_code = 0;
   while (true) {
     // Advance to start_code, if there is one.
-    if (!AdvanceToStartCode(buffer, buffer_size, &offset, 5, 24, 1)) {
+    if (!AdvanceToStartCode(buffer, &offset, 5, 24, 1)) {
       // Not a complete sequence in memory, so return true if we've seen a
       // sequence start and a frame start (not checking entry points since
       // they only occur in advanced profiles).
@@ -1398,7 +1387,7 @@ static bool CheckVC1(const uint8_t* buffer, int buffer_size) {
 
     // Now verify the block. AdvanceToStartCode() made sure that there are
     // at least 5 bytes remaining in the buffer.
-    BitReader reader(UNSAFE_TODO(buffer + offset), 5);
+    BitReader reader(buffer.subspan(offset, 5u));
     RCHECK(ReadBits(&reader, 24) == 1);
 
     // Keep track of the number of certain types received.
@@ -1451,40 +1440,41 @@ static const uint8_t kWtvSignature[] = {0xb7, 0xd8, 0x00, 0x20, 0x37, 0x49,
 // Attempt to determine the container type from the buffer provided. This is
 // a simple pass, that uses the first 4 bytes of the buffer as an index to get
 // a rough idea of the container format.
-static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
-                                                  int buffer_size) {
+static MediaContainerName LookupContainerByFirst4(
+    base::span<const uint8_t> buffer) {
   // Minimum size that the code expects to exist without checking size.
-  if (buffer_size < kMinimumContainerSize)
+  if (buffer.size() < kMinimumContainerSize) {
     return MediaContainerName::kContainerUnknown;
+  }
 
-  uint32_t first4 = Read32(buffer);
+  uint32_t first4 = Read32(buffer.first<4>());
   switch (first4) {
     case 0x1a45dfa3:
-      if (CheckWebm(buffer, buffer_size))
+      if (CheckWebm(buffer)) {
         return MediaContainerName::kContainerWEBM;
+      }
       break;
 
     case 0x3026b275:
-      if (StartsWith(buffer,
-                     buffer_size,
-                     kAsfSignature,
-                     sizeof(kAsfSignature))) {
+      if (StartsWith(buffer, kAsfSignature)) {
         return MediaContainerName::kContainerASF;
       }
       break;
 
     case TAG('#','!','A','M'):
-      if (StartsWith(buffer, buffer_size, kAmrSignature))
+      if (StartsWith(buffer, kAmrSignature)) {
         return MediaContainerName::kContainerAMR;
+      }
       break;
 
     case TAG('#','E','X','T'):
-      if (CheckHls(buffer, buffer_size))
+      if (CheckHls(buffer)) {
         return MediaContainerName::kContainerHLS;
+      }
       break;
 
     case TAG('.','R','M','F'):
-      if (UNSAFE_TODO(buffer[4]) == 0 && UNSAFE_TODO(buffer[5]) == 0) {
+      if (buffer[4] == 0 && buffer[5] == 0) {
         return MediaContainerName::kContainerRM;
       }
       break;
@@ -1498,24 +1488,27 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
     case TAG('B','I','K','g'):
     case TAG('B','I','K','h'):
     case TAG('B','I','K','i'):
-      if (CheckBink(buffer, buffer_size))
+      if (CheckBink(buffer)) {
         return MediaContainerName::kContainerBink;
+      }
       break;
 
     case TAG('c','a','f','f'):
-      if (CheckCaf(buffer, buffer_size))
+      if (CheckCaf(buffer)) {
         return MediaContainerName::kContainerCAF;
+      }
       break;
 
     case TAG('D','E','X','A'):
-      if (buffer_size > 15 && Read16(UNSAFE_TODO(buffer + 11)) <= 2048 &&
-          Read16(UNSAFE_TODO(buffer + 13)) <= 2048) {
+      if (buffer.size() > 15 &&
+          Read16(buffer.subspan(11u).first<2>()) <= 2048 &&
+          Read16(buffer.subspan(13u).first<2>()) <= 2048) {
         return MediaContainerName::kContainerDXA;
       }
       break;
 
     case TAG('D','T','S','H'):
-      if (Read32(UNSAFE_TODO(buffer + 4)) == TAG('D', 'H', 'D', 'R')) {
+      if (Read32(buffer.subspan(4u).first<4>()) == TAG('D', 'H', 'D', 'R')) {
         return MediaContainerName::kContainerDTSHD;
       }
       break;
@@ -1527,8 +1520,8 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
     case 0x0001a364:
     case 0x0002a364:
     case 0x0003a364:
-      if (Read32(UNSAFE_TODO(buffer + 4)) != 0 &&
-          Read32(UNSAFE_TODO(buffer + 8)) != 0) {
+      if (Read32(buffer.subspan(4u).first<4>()) != 0 &&
+          Read32(buffer.subspan(8u).first<4>()) != 0) {
         return MediaContainerName::kContainerIRCAM;
       }
       break;
@@ -1541,13 +1534,13 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
     case TAG('F','L','V',2):
     case TAG('F','L','V',3):
     case TAG('F','L','V',4):
-      if (UNSAFE_TODO(buffer[5]) == 0 && Read32(UNSAFE_TODO(buffer + 5)) > 8) {
+      if (buffer[5] == 0 && Read32(buffer.subspan(5u).first<4>()) > 8) {
         return MediaContainerName::kContainerFLV;
       }
       break;
 
     case TAG('F','O','R','M'):
-      switch (Read32(UNSAFE_TODO(buffer + 8))) {
+      switch (Read32(buffer.subspan(8u).first<4>())) {
         case TAG('A','I','F','F'):
         case TAG('A','I','F','C'):
           return MediaContainerName::kContainerAIFF;
@@ -1558,26 +1551,26 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
       return MediaContainerName::kContainerAPE;
 
     case TAG('O','N','2',' '):
-      if (Read32(UNSAFE_TODO(buffer + 8)) == TAG('O', 'N', '2', 'f')) {
+      if (Read32(buffer.subspan(8u).first<4>()) == TAG('O', 'N', '2', 'f')) {
         return MediaContainerName::kContainerAVI;
       }
       break;
 
     case TAG('O','g','g','S'):
-      if (UNSAFE_TODO(buffer[5]) <= 7) {
+      if (buffer[5] <= 7) {
         return MediaContainerName::kContainerOgg;
       }
       break;
 
     case TAG('R','F','6','4'):
-      if (buffer_size > 16 &&
-          Read32(UNSAFE_TODO(buffer + 12)) == TAG('d', 's', '6', '4')) {
+      if (buffer.size() > 16 &&
+          Read32(buffer.subspan(12u).first<4>()) == TAG('d', 's', '6', '4')) {
         return MediaContainerName::kContainerWAV;
       }
       break;
 
     case TAG('R','I','F','F'):
-      switch (Read32(UNSAFE_TODO(buffer + 8))) {
+      switch (Read32(buffer.subspan(8u).first<4>())) {
         case TAG('A','V','I',' '):
         case TAG('A','V','I','X'):
         case TAG('A','V','I','\x19'):
@@ -1589,28 +1582,28 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
       break;
 
     case TAG('[','S','c','r'):
-      if (StartsWith(buffer, buffer_size, kAssSignature))
+      if (StartsWith(buffer, kAssSignature)) {
         return MediaContainerName::kContainerASS;
+      }
       break;
 
     case TAG('\xef','\xbb','\xbf','['):
-      if (StartsWith(buffer, buffer_size, kAssBomSignature))
+      if (StartsWith(buffer, kAssBomSignature)) {
         return MediaContainerName::kContainerASS;
+      }
       break;
 
     case 0x7ffe8001:
     case 0xfe7f0180:
     case 0x1fffe800:
     case 0xff1f00e8:
-      if (CheckDts(buffer, buffer_size))
+      if (CheckDts(buffer)) {
         return MediaContainerName::kContainerDTS;
+      }
       break;
 
     case 0xb7d80020:
-      if (StartsWith(buffer,
-                     buffer_size,
-                     kWtvSignature,
-                     sizeof(kWtvSignature))) {
+      if (StartsWith(buffer, kWtvSignature)) {
         return MediaContainerName::kContainerWTV;
       }
       break;
@@ -1629,78 +1622,92 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
   }
 
   // Maybe the first 2 characters are something we can use.
-  uint32_t first2 = Read16(buffer);
+  uint32_t first2 = Read16(buffer.first<2>());
   switch (first2) {
     case kAc3SyncWord:
-      if (CheckAc3(buffer, buffer_size))
+      if (CheckAc3(buffer)) {
         return MediaContainerName::kContainerAC3;
-      if (CheckEac3(buffer, buffer_size))
+      }
+      if (CheckEac3(buffer)) {
         return MediaContainerName::kContainerEAC3;
+      }
       break;
 
     case 0xfff0:
     case 0xfff1:
     case 0xfff8:
     case 0xfff9:
-      if (CheckAac(buffer, buffer_size))
+      if (CheckAac(buffer)) {
         return MediaContainerName::kContainerAAC;
+      }
       break;
   }
 
   // Check if the file is in MP3 format without the ID3 header.
-  if (CheckMp3(buffer, buffer_size))
+  if (CheckMp3(buffer)) {
     return MediaContainerName::kContainerMP3;
+  }
 
   return MediaContainerName::kContainerUnknown;
 }
 
 // Attempt to determine the container name from the buffer provided.
-MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size) {
-  DCHECK(buffer);
-
+MediaContainerName DetermineContainer(base::span<const uint8_t> buffer) {
   // Since MOV/QuickTime/MPEG4 streams are common, check for them first.
-  if (CheckMov(buffer, buffer_size))
+  if (CheckMov(buffer)) {
     return MediaContainerName::kContainerMOV;
+  }
 
   // Next attempt the simple checks, that typically look at just the
   // first few bytes of the file.
-  MediaContainerName result = LookupContainerByFirst4(buffer, buffer_size);
+  MediaContainerName result = LookupContainerByFirst4(buffer);
   if (result != MediaContainerName::kContainerUnknown) {
     return result;
   }
 
   // Additional checks that may scan a portion of the buffer.
-  if (CheckMpeg2ProgramStream(buffer, buffer_size))
+  if (CheckMpeg2ProgramStream(buffer)) {
     return MediaContainerName::kContainerMPEG2PS;
-  if (CheckMpeg2TransportStream(buffer, buffer_size))
+  }
+  if (CheckMpeg2TransportStream(buffer)) {
     return MediaContainerName::kContainerMPEG2TS;
-  if (CheckMJpeg(buffer, buffer_size))
+  }
+  if (CheckMJpeg(buffer)) {
     return MediaContainerName::kContainerMJPEG;
-  if (CheckDV(buffer, buffer_size))
+  }
+  if (CheckDV(buffer)) {
     return MediaContainerName::kContainerDV;
-  if (CheckH261(buffer, buffer_size))
+  }
+  if (CheckH261(buffer)) {
     return MediaContainerName::kContainerH261;
-  if (CheckH263(buffer, buffer_size))
+  }
+  if (CheckH263(buffer)) {
     return MediaContainerName::kContainerH263;
-  if (CheckH264(buffer, buffer_size))
+  }
+  if (CheckH264(buffer)) {
     return MediaContainerName::kContainerH264;
-  if (CheckMpeg4BitStream(buffer, buffer_size))
+  }
+  if (CheckMpeg4BitStream(buffer)) {
     return MediaContainerName::kContainerMPEG4BS;
-  if (CheckVC1(buffer, buffer_size))
+  }
+  if (CheckVC1(buffer)) {
     return MediaContainerName::kContainerVC1;
-  if (CheckSrt(buffer, buffer_size))
+  }
+  if (CheckSrt(buffer)) {
     return MediaContainerName::kContainerSRT;
-  if (CheckGsm(buffer, buffer_size))
+  }
+  if (CheckGsm(buffer)) {
     return MediaContainerName::kContainerGSM;
+  }
 
   // AC3/EAC3 might not start at the beginning of the stream,
   // so scan for a start code.
-  int offset = 1;  // No need to start at byte 0 due to First4 check.
-  if (AdvanceToStartCode(buffer, buffer_size, &offset, 4, 16, kAc3SyncWord)) {
-    if (CheckAc3(UNSAFE_TODO(buffer + offset), buffer_size - offset)) {
+  size_t offset = 1;  // No need to start at byte 0 due to First4 check.
+  if (AdvanceToStartCode(buffer, &offset, 4, 16, kAc3SyncWord)) {
+    if (CheckAc3(buffer.subspan(offset))) {
       return MediaContainerName::kContainerAC3;
     }
-    if (CheckEac3(UNSAFE_TODO(buffer + offset), buffer_size - offset)) {
+    if (CheckEac3(buffer.subspan(offset))) {
       return MediaContainerName::kContainerEAC3;
     }
   }

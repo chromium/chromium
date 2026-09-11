@@ -25,14 +25,6 @@ class MEDIA_EXPORT BitReader {
  public:
   explicit BitReader(base::span<const uint8_t> data);
 
-  // Initialize the reader to start reading at `data`, `size` being size
-  // of `data` in bytes.
-  //
-  // DEPRECATED: Use the above `base::span` variant to avoid unsafe buffer
-  // usage.
-  // TODO(https://crbug.com/40284755): Remove this once the callers are gone.
-  BitReader(const uint8_t* data, int size);
-
   BitReader(const BitReader&) = delete;
   BitReader& operator=(const BitReader&) = delete;
 

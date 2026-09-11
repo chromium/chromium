@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -69,8 +70,8 @@ enum class MediaContainerName {
 enum { kMinimumContainerSize = 12 };
 
 // Determine the container type.
-MEDIA_EXPORT MediaContainerName DetermineContainer(const uint8_t* buffer,
-                                                   int buffer_size);
+MEDIA_EXPORT MediaContainerName
+DetermineContainer(base::span<const uint8_t> buffer);
 
 }  // namespace container_names
 

@@ -25,7 +25,7 @@ bool TsSectionCetsPssh::Parse(bool payload_unit_start_indicator,
   // TODO(dougsteed). This initial implementation requires the entire CETS-PSSH
   // to fit in one TS packet, so we know that the box length will fit in one
   // byte.
-  BitReader bit_reader(buf.data(), buf.size());
+  BitReader bit_reader(buf);
   bool md5_flag;
   RCHECK(bit_reader.ReadFlag(&md5_flag) && !md5_flag);
   RCHECK(bit_reader.SkipBits(31));

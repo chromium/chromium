@@ -6,10 +6,8 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/numerics/safe_conversions.h"
 
 namespace media {
 
@@ -20,14 +18,6 @@ constexpr size_t kRegWidthInBits = sizeof(uint64_t) * kBitsPerByte;
 
 BitReader::BitReader(base::span<const uint8_t> data)
     : initial_size_(data.size()), data_(data) {}
-
-BitReader::BitReader(const uint8_t* data, int size)
-    : BitReader(
-          // TODO(crbug.com/40284755): Remove this.
-          UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(size)))) {
-  DCHECK(data != nullptr);
-  DCHECK_GE(size, 0);
-}
 
 BitReader::~BitReader() = default;
 

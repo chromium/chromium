@@ -24,7 +24,8 @@ TEST(BitReaderTest, NormalOperationTest) {
   uint64_t value64;
   // 0101 0101 1001 1001 repeats 4 times
   uint8_t buffer[] = {0x55, 0x99, 0x55, 0x99, 0x55, 0x99, 0x55, 0x99};
-  BitReader reader1(buffer, 6);  // Initialize with 6 bytes only
+  BitReader reader1(
+      base::span(buffer).first(6u));  // Initialize with 6 bytes only
 
   EXPECT_TRUE(reader1.ReadBits(1, &value8));
   EXPECT_EQ(value8, 0);

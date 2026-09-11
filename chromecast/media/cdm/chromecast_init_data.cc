@@ -48,7 +48,7 @@ bool FindChromecastInitData(const std::vector<uint8_t>& init_data,
     return false;
   }
 
-  ::media::BitReader reader(pssh_data.data(), pssh_data.size());
+  ::media::BitReader reader(pssh_data);
 
   uint16_t msg_type;
   RCHECK(reader.ReadBits(2 * 8, &msg_type));

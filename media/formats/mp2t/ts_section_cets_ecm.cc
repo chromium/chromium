@@ -19,7 +19,7 @@ TsSectionCetsEcm::~TsSectionCetsEcm() {}
 
 bool TsSectionCetsEcm::Parse(bool payload_unit_start_indicator,
                              base::span<const uint8_t> buf) {
-  BitReader bit_reader(buf.data(), buf.size());
+  BitReader bit_reader(buf);
   uint8_t num_states;
   bool next_key_id_flag;
   bool no_byte_align;

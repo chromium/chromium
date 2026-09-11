@@ -23,9 +23,8 @@ namespace container_names {
 // Using a macros to simplify tests. Since EXPECT_EQ outputs the second argument
 // as a string when it fails, this lets the output identify what item actually
 // failed.
-#define VERIFY(buffer, name)                                                   \
-  EXPECT_EQ(name, DetermineContainer(reinterpret_cast<const uint8_t*>(buffer), \
-                                     sizeof(buffer)))
+#define VERIFY(buffer, name) \
+  EXPECT_EQ(name, DetermineContainer(base::as_byte_span(buffer)))
 
 // Test that small buffers are handled correctly.
 TEST(ContainerNamesTest, CheckSmallBuffer) {
@@ -143,16 +142,19 @@ void TestFile(MediaContainerName expected, const base::FilePath& filename) {
 
   // Windows implementation of ReadFile fails if file smaller than desired size,
   // so use file length if file less than 8192 bytes (http://crbug.com/243885).
-  int read_size = sizeof(buffer);
+  size_t read_size = sizeof(buffer);
   std::optional<int64_t> actual_size = base::GetFileSize(filename);
-  if (actual_size.has_value() && actual_size.value() < read_size) {
-    read_size = actual_size.value();
+  if (actual_size.has_value() &&
+      base::checked_cast<size_t>(actual_size.value()) < read_size) {
+    read_size = base::checked_cast<size_t>(actual_size.value());
   }
-  int read = base::ReadFile(filename, buffer, read_size);
+  std::optional<uint64_t> read =
+      base::ReadFile(filename, base::span(buffer).first(read_size));
+  ASSERT_TRUE(read.has_value()) << "Failure reading file " << filename.value();
 
   // Now verify the type.
-  EXPECT_EQ(expected,
-            DetermineContainer(reinterpret_cast<const uint8_t*>(buffer), read))
+  EXPECT_EQ(expected, DetermineContainer(base::as_byte_span(buffer).first(
+                          base::checked_cast<size_t>(read.value()))))
       << "Failure with file " << filename.value();
 }
 
@@ -273,13 +275,13 @@ TEST(ContainerNamesTest, FileCheckUNKNOWN) {
   TestFile(MediaContainerName::kContainerUnknown,
            GetTestDataFilePath("ten_byte_file"));
   TestFile(MediaContainerName::kContainerUnknown,
-           GetTestDataFilePath("README"));
+           GetTestDataFilePath("README.md"));
   TestFile(MediaContainerName::kContainerUnknown,
            GetTestDataFilePath("webm_vp8_track_entry"));
 }
 
 void DetermineContainerDoesNotCrash(base::span<const uint8_t> data) {
-  DetermineContainer(data.data(), base::checked_cast<int>(data.size()));
+  DetermineContainer(data);
 }
 
 FUZZ_TEST(ContainerNamesTest, DetermineContainerDoesNotCrash)

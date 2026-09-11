@@ -50,7 +50,7 @@ bool Vp9BoolDecoder::Initialize(base::span<const uint8_t> data) {
     return false;
   }
 
-  reader_ = std::make_unique<BitReader>(data.data(), data.size());
+  reader_ = std::make_unique<BitReader>(data);
   valid_ = true;
 
   bool_value_ = 0;
