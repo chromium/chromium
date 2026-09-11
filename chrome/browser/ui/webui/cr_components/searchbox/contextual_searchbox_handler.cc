@@ -2219,6 +2219,54 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
   new_contextual_session_handle->CheckSearchContentSharingSettings(
       profile_->GetPrefs());
 
+#if !BUILDFLAG(IS_ANDROID)
+  if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())) {
+    auto* browser_window_interface =
+        webui::GetBrowserWindowInterface(web_contents_);
+    auto* tab_list = TabListInterface::From(browser_window_interface);
+    auto* active_tab = tab_list ? tab_list->GetActiveTab() : nullptr;
+    auto* active_web_contents =
+        active_tab ? active_tab->GetContents() : nullptr;
+
+    if (ShouldOpenInLensSidePanel(active_web_contents,
+                                  new_contextual_session_handle.get())) {
+      if (base::FeatureList::IsEnabled(
+              omnibox::kContextManagementInComposebox)) {
+        if (auto* ui_service =
+                contextual_tasks::ContextualTasksUiServiceFactory::
+                    GetForBrowserContext(profile_)) {
+          auto* location_bar =
+              browser_window_interface
+                  ? browser_window_interface->GetFeatures().location_bar()
+                  : nullptr;
+          if (location_bar) {
+            if (auto* controller = location_bar->GetOmniboxController()) {
+              if (auto* popup_state_manager =
+                      controller->popup_state_manager()) {
+                popup_state_manager->SetPopupState(OmniboxPopupState::kNone);
+              }
+            }
+            location_bar->Revert();
+          }
+          contextual_tasks::StartTaskUiOptions options;
+          options.entry_point = PageClassificationToAimEntryPoint(
+              client()->GetPageClassification(/*is_prefetch=*/false));
+          ui_service->StartTaskUiInSidePanel(
+              browser_window_interface, active_tab, url,
+              std::move(new_contextual_session_handle), options);
+          if (active_web_contents) {
+            active_web_contents->Focus();
+          }
+          ClearFiles(/*should_block_auto_suggested_tabs=*/false,
+                     /*query_submitted=*/true);
+          contextual_session_handle->ClearSubmittedContextTokens();
+          return;
+        }
+      }
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   std::unique_ptr<contextual_search::InputStateModel> new_input_state_model;
   if (input_state_model_) {
     new_input_state_model =

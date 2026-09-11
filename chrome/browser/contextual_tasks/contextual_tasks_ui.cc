@@ -775,6 +775,11 @@ bool ContextualTasksUI::ShouldClearAllInputsOnSubmit(
     return false;
   }
 #endif
+  // If context management in composebox is enabled, do not wipe restored tabs
+  // on submit.
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    return false;
+  }
   return true;
 }
 

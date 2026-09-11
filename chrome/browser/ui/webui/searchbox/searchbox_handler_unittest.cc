@@ -88,6 +88,11 @@
 // OmniboxComposeboxHandler, which are dedicated to the desktop Omnibox Popup
 // and not compiled on Android.
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -96,6 +101,9 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/omnibox/common/composebox_features.h"
+#include "components/sessions/content/session_tab_helper.h"
 #endif
 
 namespace {
@@ -2174,6 +2182,30 @@ TEST_F(SearchboxOmniboxClientNavigationTest,
 // scope for Android WebUI NTP.
 #if !BUILDFLAG(IS_ANDROID)
 
+class MockContextualTasksUiService
+    : public contextual_tasks::ContextualTasksUiService {
+ public:
+  explicit MockContextualTasksUiService(Profile* profile)
+      : ContextualTasksUiService(profile,
+                                 /*delegate=*/nullptr,
+                                 /*contextual_tasks_service=*/nullptr,
+                                 /*identity_manager=*/nullptr,
+                                 /*aim_eligibility_service=*/nullptr,
+                                 /*eligibility_manager=*/nullptr,
+                                 /*cookie_synchronizer=*/nullptr) {}
+  ~MockContextualTasksUiService() override = default;
+
+  MOCK_METHOD(void,
+              StartTaskUiInSidePanelImpl,
+              (BrowserWindowInterface * browser_window_interface,
+               tabs::TabInterface* tab_interface,
+               const GURL& url,
+               std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                   session_handle,
+               contextual_tasks::StartTaskUiOptions options),
+              (override));
+};
+
 class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
  public:
   OmniboxComposeboxHandlerTest() = default;
@@ -2400,5 +2432,127 @@ TEST_F(OmniboxComposeboxHandlerTest, LensSearchEligibility) {
                 false);
   run_test_case(GURL("chrome://settings"), metrics::OmniboxEventProto::OTHER,
                 false);
+}
+TEST_F(OmniboxComposeboxHandlerTest,
+       ProcessContextAndOpenUrl_SingleActiveTabHandoffToSidePanel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{omnibox::kContextManagementInComposebox,
+                            contextual_tasks::kContextualTasksSidePanel},
+      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile(),
+              base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+                return std::make_unique<
+                    testing::NiceMock<MockContextualTasksUiService>>(
+                    Profile::FromBrowserContext(context));
+              })));
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents_.get(), base::BindRepeating([](content::WebContents*) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents_.get());
+
+  base::UnguessableToken active_tab_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo file_info;
+  file_info.file_token = active_tab_token;
+  file_info.tab_session_id = active_tab_id;
+
+  auto* mock_controller =
+      static_cast<contextual_search::MockContextualSearchContextController*>(
+          session_handle_->GetController());
+  EXPECT_CALL(*mock_controller, GetFileInfo(active_tab_token))
+      .WillRepeatedly(testing::Return(&file_info));
+
+  session_handle_->set_submitted_context_tokens({active_tab_token});
+  EXPECT_EQ(session_handle_->GetSubmittedContextTokens().size(), 1u);
+  EXPECT_TRUE(session_handle_->IsTabInContext(active_tab_id));
+
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      passed_session_handle;
+  EXPECT_CALL(*mock_ui_service,
+              StartTaskUiInSidePanelImpl(&browser_window_interface_, &mock_tab_,
+                                         testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](BrowserWindowInterface*, tabs::TabInterface*, const GURL&,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle,
+              contextual_tasks::StartTaskUiOptions options) {
+            passed_session_handle = std::move(handle);
+          });
+
+  OpenUrl(GURL("https://www.google.com/search?q=test"),
+          WindowOpenDisposition::CURRENT_TAB);
+
+  ASSERT_TRUE(passed_session_handle);
+  EXPECT_THAT(passed_session_handle->GetSubmittedContextTokens(),
+              testing::ElementsAre(active_tab_token));
+  EXPECT_TRUE(session_handle_->GetSubmittedContextTokens().empty());
+}
+
+TEST_F(OmniboxComposeboxHandlerTest,
+       ProcessContextAndOpenUrl_MultiTabDoesNotBypassToSidePanelDirectly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{omnibox::kContextManagementInComposebox,
+                            contextual_tasks::kContextualTasksSidePanel},
+      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile(),
+              base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+                return std::make_unique<
+                    testing::NiceMock<MockContextualTasksUiService>>(
+                    Profile::FromBrowserContext(context));
+              })));
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents_.get(), base::BindRepeating([](content::WebContents*) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents_.get());
+
+  base::UnguessableToken active_tab_token = base::UnguessableToken::Create();
+  base::UnguessableToken second_tab_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo file_info_1;
+  file_info_1.file_token = active_tab_token;
+  file_info_1.tab_session_id = active_tab_id;
+
+  contextual_search::FileInfo file_info_2;
+  file_info_2.file_token = second_tab_token;
+  file_info_2.tab_session_id = SessionID::FromSerializedValue(999);
+
+  auto* mock_controller =
+      static_cast<contextual_search::MockContextualSearchContextController*>(
+          session_handle_->GetController());
+  EXPECT_CALL(*mock_controller, GetFileInfo(active_tab_token))
+      .WillRepeatedly(testing::Return(&file_info_1));
+  EXPECT_CALL(*mock_controller, GetFileInfo(second_tab_token))
+      .WillRepeatedly(testing::Return(&file_info_2));
+
+  session_handle_->set_submitted_context_tokens(
+      {active_tab_token, second_tab_token});
+  EXPECT_EQ(session_handle_->GetSubmittedContextTokens().size(), 2u);
+
+  // For multi-tab submissions, ShouldOpenInLensSidePanel is false, so
+  // ProcessContextAndOpenUrl should NOT call StartTaskUiInSidePanelImpl
+  // directly.
+  EXPECT_CALL(*mock_ui_service,
+              StartTaskUiInSidePanelImpl(testing::_, testing::_, testing::_,
+                                         testing::_, testing::_))
+      .Times(0);
+
+  OpenUrl(GURL("https://www.google.com/search?q=test"),
+          WindowOpenDisposition::CURRENT_TAB);
 }
 #endif
