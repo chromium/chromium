@@ -19,7 +19,7 @@ import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {getCss} from './sources_menu.css.js';
 import {getHtml} from './sources_menu.html.js';
-import {hideUnboundedMenu, recordAction, showUnboundedMenu} from './utils.js';
+import {recordAction} from './utils.js';
 
 export interface SourcesMenuElement {
   $: {menu: CrActionMenuElement};
@@ -56,22 +56,16 @@ export class SourcesMenuElement extends CrLitElement {
   }
 
   showAt(target: HTMLElement) {
+    this.$.menu.useUnbounded = this.isUnboundedMenuEnabled_;
     this.$.menu.showAt(target, {
       noOffset: true,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
-      maxY: this.isUnboundedMenuEnabled_ ? Number.MAX_SAFE_INTEGER : undefined,
     });
-    showUnboundedMenu(this.$.menu, this.isUnboundedMenuEnabled_, 'sources');
   }
 
   close() {
     this.$.menu.close();
-  }
-
-  protected onOpenChanged_(e: CustomEvent<{value: boolean}>) {
-    const menu = e.currentTarget as CrActionMenuElement;
-    hideUnboundedMenu(
-        menu, this.isUnboundedMenuEnabled_, e.detail.value, 'sources');
+    this.$.menu.getDialog().removeAttribute('unbounded');
   }
 
   private getContextInfoFromEvent_(e: Event): ContextInfo {

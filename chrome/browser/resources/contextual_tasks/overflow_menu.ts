@@ -12,15 +12,17 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+// clang-format off
 // <if expr="not is_android">
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 // </if>
+// clang-format on
 
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {getCss} from './overflow_menu.css.js';
 import {getHtml} from './overflow_menu.html.js';
-import {hideUnboundedMenu, recordAction, showUnboundedMenu} from './utils.js';
+import {recordAction} from './utils.js';
 
 export interface OverflowMenuElement {
   $: {menu: CrActionMenuElement};
@@ -137,16 +139,16 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
   }
 
   showAt(target: HTMLElement) {
+    this.$.menu.useUnbounded = this.isUnboundedMenuEnabled_;
     this.$.menu.showAt(target, {
       noOffset: true,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
-      maxY: this.isUnboundedMenuEnabled_ ? Number.MAX_SAFE_INTEGER : undefined,
     });
-    showUnboundedMenu(this.$.menu, this.isUnboundedMenuEnabled_, 'overflow');
   }
 
   close() {
     this.$.menu.close();
+    this.$.menu.getDialog().removeAttribute('unbounded');
   }
 
   protected shouldShowPinButton_(): boolean {
@@ -209,9 +211,6 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
   }
 
   protected onOpenChanged_(e: CustomEvent<{value: boolean}>) {
-    const menu = e.currentTarget as CrActionMenuElement;
-    hideUnboundedMenu(
-        menu, this.isUnboundedMenuEnabled_, e.detail.value, 'overflow');
     this.fire('open-changed', {value: e.detail.value});
   }
 
