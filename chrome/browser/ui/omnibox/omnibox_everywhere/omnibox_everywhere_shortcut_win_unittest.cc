@@ -50,7 +50,7 @@ class OmniboxEverywhereShortcutWinTest : public ChromeViewsTestBase {
 TEST_F(OmniboxEverywhereShortcutWinTest, GetAppUserModelId) {
   std::wstring app_id = GetAppUserModelId();
   EXPECT_FALSE(app_id.empty());
-  EXPECT_NE(app_id.find(L"app_search_in_chrome"), std::wstring::npos);
+  EXPECT_NE(app_id.find(L"app_search_with_chrome"), std::wstring::npos);
 }
 
 TEST_F(OmniboxEverywhereShortcutWinTest, CreateStartMenuShortcut) {
@@ -164,8 +164,9 @@ TEST_F(OmniboxEverywhereShortcutWinTest, SetWindowPropertiesPersistentMode) {
   ASSERT_HRESULT_SUCCEEDED(
       pps->GetValue(PKEY_AppUserModel_ID, pv_appid.Receive()));
   EXPECT_EQ(pv_appid.get().vt, VT_LPWSTR);
-  EXPECT_NE(std::wstring(pv_appid.get().pwszVal).find(L"app_search_in_chrome"),
-            std::wstring::npos);
+  EXPECT_NE(
+      std::wstring(pv_appid.get().pwszVal).find(L"app_search_with_chrome"),
+      std::wstring::npos);
 
   // Verify RelaunchCommand.
   base::win::ScopedPropVariant pv_relaunch;

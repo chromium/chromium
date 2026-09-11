@@ -2308,8 +2308,9 @@ TEST_F(OmniboxEverywhereUIManagerTest, WindowPropertiesPersistentMode) {
   ASSERT_HRESULT_SUCCEEDED(
       pps->GetValue(PKEY_AppUserModel_ID, pv_appid.Receive()));
   EXPECT_EQ(pv_appid.get().vt, VT_LPWSTR);
-  EXPECT_NE(std::wstring(pv_appid.get().pwszVal).find(L"app_search_in_chrome"),
-            std::wstring::npos);
+  EXPECT_NE(
+      std::wstring(pv_appid.get().pwszVal).find(L"app_search_with_chrome"),
+      std::wstring::npos);
 
   // Verify RelaunchCommand.
   base::win::ScopedPropVariant pv_relaunch;

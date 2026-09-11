@@ -26,7 +26,7 @@ namespace omnibox_everywhere {
 
 namespace {
 
-constexpr wchar_t kAppName[] = L"app_search_in_chrome";
+constexpr wchar_t kAppName[] = L"app_search_with_chrome";
 
 base::FilePath GetChromeExePath() {
   base::FilePath chrome_dir;
