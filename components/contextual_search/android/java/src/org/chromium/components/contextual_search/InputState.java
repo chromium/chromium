@@ -15,7 +15,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
@@ -106,14 +105,6 @@ public class InputState {
         this.disabledModels = toList(disabledModels);
         this.mRawModelConfigs = modelConfigs;
         this.mRawModelSectionConfig = modelSectionConfig;
-
-        if (!OmniboxFeatures.sModelPickerOptimizations.getValue()) {
-            getInputTypeConfigs();
-            getToolConfigs();
-            getToolsSectionConfig();
-            getModelConfigs();
-            getModelSectionConfig();
-        }
     }
 
     public List<InputTypeConfig> getInputTypeConfigs() {

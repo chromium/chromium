@@ -19,7 +19,6 @@ import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
 import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
@@ -179,9 +178,7 @@ public class InputStateTest {
     }
 
     @Test
-    public void testLazyProtobufParsing_whenOptimizationsEnabled() {
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
-
+    public void testLazyProtobufParsing() {
         InputTypeConfig inputTypeConfig =
                 InputTypeConfig.newBuilder()
                         .setInputTypeValue(InputType.INPUT_TYPE_LENS_IMAGE_VALUE)
@@ -235,49 +232,6 @@ public class InputStateTest {
     }
 
     @Test
-    public void testEagerProtobufParsing_whenOptimizationsDisabled() {
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
-
-        InputTypeConfig inputTypeConfig =
-                InputTypeConfig.newBuilder()
-                        .setInputTypeValue(InputType.INPUT_TYPE_LENS_IMAGE_VALUE)
-                        .setMenuLabel("Lens Image")
-                        .build();
-        ToolConfig toolConfig =
-                ToolConfig.newBuilder()
-                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
-                        .setMenuLabel("Deep Search")
-                        .build();
-        SectionConfig toolsSectionConfig =
-                SectionConfig.newBuilder().setHeader("Tools Header").build();
-        ModelConfig modelConfig =
-                ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .setMenuLabel("Pro")
-                        .build();
-        SectionConfig modelSectionConfig =
-                SectionConfig.newBuilder().setHeader("Models Header").build();
-
-        InputState state =
-                new InputState.Builder()
-                        .withInputTypeConfigs(new byte[][] {inputTypeConfig.toByteArray()})
-                        .withToolConfigs(new byte[][] {toolConfig.toByteArray()})
-                        .withToolsSectionConfig(toolsSectionConfig.toByteArray())
-                        .withModelConfigs(new byte[][] {modelConfig.toByteArray()})
-                        .withModelSectionConfig(modelSectionConfig.toByteArray())
-                        .build();
-
-        assertEquals(1, state.getInputTypeConfigs().size());
-        assertEquals("Lens Image", state.getInputTypeConfigs().get(0).getMenuLabel());
-        assertEquals(1, state.getToolConfigs().size());
-        assertEquals("Deep Search", state.getToolConfigs().get(0).getMenuLabel());
-        assertEquals("Tools Header", state.getToolsSectionConfig().getHeader());
-        assertEquals(1, state.getModelConfigs().size());
-        assertEquals("Pro", state.getModelConfigs().get(0).getMenuLabel());
-        assertEquals("Models Header", state.getModelSectionConfig().getHeader());
-    }
-
-    @Test
     public void testEmptyAndNullConfigs() {
         InputState state = new InputState.Builder().build();
 
@@ -325,52 +279,5 @@ public class InputStateTest {
         assertEquals(SectionConfig.getDefaultInstance(), state.getToolsSectionConfig());
         assertTrue(state.getModelConfigs().isEmpty());
         assertEquals(SectionConfig.getDefaultInstance(), state.getModelSectionConfig());
-    }
-
-    @Test
-    public void testEqualsAndHashCode_lazyAndEager() {
-        InputTypeConfig inputTypeConfig =
-                InputTypeConfig.newBuilder()
-                        .setInputTypeValue(InputType.INPUT_TYPE_LENS_IMAGE_VALUE)
-                        .setMenuLabel("Lens Image")
-                        .build();
-        ToolConfig toolConfig =
-                ToolConfig.newBuilder()
-                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
-                        .setMenuLabel("Deep Search")
-                        .build();
-        SectionConfig toolsSectionConfig =
-                SectionConfig.newBuilder().setHeader("Tools Header").build();
-        ModelConfig modelConfig =
-                ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .setMenuLabel("Pro")
-                        .build();
-        SectionConfig modelSectionConfig =
-                SectionConfig.newBuilder().setHeader("Models Header").build();
-
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
-        InputState lazyState =
-                new InputState.Builder()
-                        .withInputTypeConfigs(new byte[][] {inputTypeConfig.toByteArray()})
-                        .withToolConfigs(new byte[][] {toolConfig.toByteArray()})
-                        .withToolsSectionConfig(toolsSectionConfig.toByteArray())
-                        .withModelConfigs(new byte[][] {modelConfig.toByteArray()})
-                        .withModelSectionConfig(modelSectionConfig.toByteArray())
-                        .build();
-
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
-        InputState eagerState =
-                new InputState.Builder()
-                        .withInputTypeConfigs(new byte[][] {inputTypeConfig.toByteArray()})
-                        .withToolConfigs(new byte[][] {toolConfig.toByteArray()})
-                        .withToolsSectionConfig(toolsSectionConfig.toByteArray())
-                        .withModelConfigs(new byte[][] {modelConfig.toByteArray()})
-                        .withModelSectionConfig(modelSectionConfig.toByteArray())
-                        .build();
-
-        assertEquals(lazyState, eagerState);
-        assertEquals(eagerState, lazyState);
-        assertEquals(lazyState.hashCode(), eagerState.hashCode());
     }
 }

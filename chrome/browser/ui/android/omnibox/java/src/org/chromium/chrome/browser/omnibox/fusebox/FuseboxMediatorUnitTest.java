@@ -2495,10 +2495,9 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void showPopup_tabsDisableCanvas_whenOptimizationsDisabled() {
+    public void showPopup_tabsDisableCanvas() {
         FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, true);
         OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ false);
         recreateMediator();
 
         ToolConfig canvasConfig =
@@ -2974,57 +2973,6 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void testOnInputStateChange_eagerWhenOptimizationsDisabled() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ false);
-        recreateMediator();
-
-        ModelConfig configAuto =
-                ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
-                        .setMenuLabel("Auto")
-                        .build();
-        ModelConfig configPro =
-                ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .setMenuLabel("Pro")
-                        .build();
-        ToolConfig deepSearchConfig =
-                ToolConfig.newBuilder()
-                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
-                        .setMenuLabel("Deep Search")
-                        .setChipLabel("Deep Search Chip")
-                        .build();
-
-        InputState state =
-                new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
-                        .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withModelConfigs(
-                                new byte[][] {configAuto.toByteArray(), configPro.toByteArray()})
-                        .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
-                        .build();
-
-        mInputStateSupplier.set(state);
-
-        // Request type button text is updated eagerly for the toolbar.
-        assertEquals("Deep Search Chip", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
-
-        // Popup properties are populated eagerly while popup is hidden when optimizations are
-        // disabled.
-        List<PopupButtonData> tools = mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
-        List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
-        assertNotNull(tools);
-        assertNotNull(models);
-        assertFalse(tools.isEmpty());
-        assertEquals(2, models.size());
-    }
-
-    @Test
     public void testOnInputStateChange_unknownIconResourceIds() {
         OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
@@ -3071,8 +3019,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void testActivateSearchMode_deduplicatesSetActiveModel_whenOptimizationsEnabled() {
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ true);
+    public void testActivateSearchMode_deduplicatesSetActiveModel() {
         OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
@@ -3105,45 +3052,6 @@ public class FuseboxMediatorUnitTest {
         mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
         assertEquals(AutocompleteRequestType.SEARCH, mModel.get(FuseboxProperties.REQUEST_TYPE));
         verify(mComposeboxQueryControllerBridge, never()).setActiveModel(anyInt());
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void
-            testActivateSearchMode_doesNotDeduplicateSetActiveModel_whenOptimizationsDisabled() {
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ false);
-        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
-        recreateMediator();
-
-        ModelConfig proConfig =
-                ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .setMenuLabel("Pro")
-                        .build();
-        InputState state =
-                new InputState.Builder()
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withModelConfigs(new byte[][] {proConfig.toByteArray()})
-                        .build();
-        mInputStateSupplier.set(state);
-
-        // Switch to AI mode via request type button.
-        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
-        assertEquals(AutocompleteRequestType.AI_MODE, mModel.get(FuseboxProperties.REQUEST_TYPE));
-        clearInvocations(mComposeboxQueryControllerBridge);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        FuseboxMetrics.SET_ACTIVE_MODEL_SOURCE_HISTOGRAM,
-                        SetActiveModelSource.RESET_FROM_ACTIVATE_SEARCH);
-
-        // Switch back to search mode. Optimizations disabled, so setActiveModel is called.
-        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
-        assertEquals(AutocompleteRequestType.SEARCH, mModel.get(FuseboxProperties.REQUEST_TYPE));
-        verify(mComposeboxQueryControllerBridge)
-                .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
         histogramWatcher.assertExpected();
     }
 
@@ -3187,10 +3095,8 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void
-            testOnInputStateChange_deduplicatesRequestTypeButtonText_whenOptimizationsEnabled() {
+    public void testOnInputStateChange_deduplicatesRequestTypeButtonText() {
         OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ToolConfig canvasConfig =
@@ -3226,9 +3132,8 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void testOnInputStateChange_updatesRequestTypeButtonText_whenOptimizationsDisabled() {
+    public void testOnInputStateChange_updatesRequestTypeButtonText_onDifferentTool() {
         OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ false);
         recreateMediator();
 
         ToolConfig canvasConfig =
@@ -3267,7 +3172,6 @@ public class FuseboxMediatorUnitTest {
     public void
             testOnAutocompleteRequestTypeChanged_deduplicatesRequestTypeButtonText_whenModelPickerDisabled() {
         OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ false);
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);

@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -703,11 +702,9 @@ class FuseboxViewBinder {
 
         // TODO(crbug.com/546568339): Refactor layout anchoring mode into PropertyModel once this
         // optimization feature is cleaned up.
-        if (OmniboxFeatures.sModelPickerOptimizations.getValue()) {
-            if (view.currentAnchoringMode == targetMode) {
-                FuseboxMetrics.recordReanchorViewsDuration(startTime);
-                return;
-            }
+        if (view.currentAnchoringMode == targetMode) {
+            FuseboxMetrics.recordReanchorViewsDuration(startTime);
+            return;
         }
 
         int topToTop = ConstraintSet.UNSET;

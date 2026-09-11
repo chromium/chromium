@@ -448,8 +448,7 @@ import java.util.function.Supplier;
                                             != ModelMode.MODEL_MODE_UNSPECIFIED_VALUE
                                     && mInput.getModelMode() != inputState.defaultModel;
                     boolean modelNeedsReset =
-                            !OmniboxFeatures.sModelPickerOptimizations.getValue()
-                                    || inputState.activeModel != inputState.defaultModel
+                            inputState.activeModel != inputState.defaultModel
                                     || inputHasNonDefaultModel;
                     if (modelNeedsReset) {
                         FuseboxMetrics.notifySetActiveModelSource(
@@ -1305,8 +1304,7 @@ import java.util.function.Supplier;
         mModel.set(
                 FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, getRequestTypeButtonText(inputState));
 
-        if (!OmniboxFeatures.sModelPickerOptimizations.getValue()
-                || mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
+        if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
             updateModelForPopupInputState(inputState);
         }
     }

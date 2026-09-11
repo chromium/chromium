@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -358,8 +357,7 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
-    public void reanchorViewsForCompactFusebox_deduplicatesWhenOptimizationsEnabled() {
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
+    public void reanchorViewsForCompactFusebox_deduplicates() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         FuseboxMetrics.REANCHOR_VIEWS_DURATION_HISTOGRAM);
