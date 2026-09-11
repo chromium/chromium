@@ -74,9 +74,40 @@ chrome.test.runTests([
         'Error: Invalid `frameId`.');
 
     await chrome.test.assertPromiseRejects(
+        chrome.cookies.getPartitionKey({tabId: tab.id, frameId: 999999}),
+        'Error: Invalid `frameId`.');
+
+    await chrome.test.assertPromiseRejects(
+        chrome.cookies.getPartitionKey({frameId: -1}),
+        'Error: Invalid `frameId`.');
+
+    await chrome.test.assertPromiseRejects(
+        chrome.cookies.getPartitionKey({frameId: 999999}),
+        'Error: Invalid `frameId`.');
+
+    await chrome.test.assertPromiseRejects(
         chrome.cookies.getPartitionKey(
             {tabId: tab.id, frameId: 0, documentId: ''}),
         'Error: Invalid `documentId`.');
+
+    await chrome.test.assertPromiseRejects(
+        chrome.cookies.getPartitionKey(
+            {documentId: '0123456789abcdef0123456789abcdef'}),
+        'Error: Invalid `documentId`.');
+
+    await chrome.test.assertPromiseRejects(
+        chrome.cookies.getPartitionKey(
+            {documentId: topLevelFrame.documentId, tabId: (tab.id - 1)}),
+        'Error: Provided `tabId` and `frameId` do not match the frame.');
+
+    await chrome.test.assertPromiseRejects(
+        chrome.cookies.getPartitionKey(
+            {documentId: crossSiteFrame.documentId, frameId: 999999}),
+        'Error: Provided `tabId` and `frameId` do not match the frame.');
+
+    await chrome.test.assertPromiseRejects(
+        chrome.cookies.getPartitionKey({}),
+        'Error: Either `documentId` or `tabId` must be specified.');
 
     chrome.test.succeed();
   },
@@ -127,6 +158,20 @@ chrome.test.runTests([
     });
     chrome.test.assertEq(expectedTopLevelKey, actualPartitionKey);
 
+    // Providing documentId and matching tabId without frameId.
+    actualPartitionKey = await chrome.cookies.getPartitionKey({
+      tabId: tab.id,
+      documentId: topLevelDocId,
+    });
+    chrome.test.assertEq(expectedTopLevelKey, actualPartitionKey);
+
+    // Providing documentId and matching frameId without tabId.
+    actualPartitionKey = await chrome.cookies.getPartitionKey({
+      frameId: topLevelFrame.frameId,
+      documentId: topLevelDocId,
+    });
+    chrome.test.assertEq(expectedTopLevelKey, actualPartitionKey);
+
     // Providing no frameId defaults to topLevel frameId (0).
     actualPartitionKey = await chrome.cookies.getPartitionKey({
       tabId: tab.id,
@@ -152,6 +197,20 @@ chrome.test.runTests([
 
     actualPartitionKey = await chrome.cookies.getPartitionKey({
       tabId: tab.id,
+      frameId: crossSiteFrame.frameId,
+      documentId: crossSiteDocId,
+    });
+    chrome.test.assertEq(expectedCrossSiteKey, actualPartitionKey);
+
+    // Providing documentId and matching tabId without frameId.
+    actualPartitionKey = await chrome.cookies.getPartitionKey({
+      tabId: tab.id,
+      documentId: crossSiteDocId,
+    });
+    chrome.test.assertEq(expectedCrossSiteKey, actualPartitionKey);
+
+    // Providing documentId and matching frameId without tabId.
+    actualPartitionKey = await chrome.cookies.getPartitionKey({
       frameId: crossSiteFrame.frameId,
       documentId: crossSiteDocId,
     });

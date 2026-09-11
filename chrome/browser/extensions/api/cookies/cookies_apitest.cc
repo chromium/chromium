@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
@@ -18,6 +19,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/buildflags/buildflags.h"
@@ -221,6 +224,116 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, TestGetPartitionKey) {
   EXPECT_TRUE(ExecJs(contents, script));
   EXPECT_TRUE(WaitForLoadStop(contents));
   ASSERT_TRUE(RunTest("cookies/get_partition_key")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(CookiesApiTest, TestGetPartitionKeyContextIsolation) {
+  // Set up an off-the-record window with a cross-site subframe.
+  const std::string default_response = "/defaultresponse";
+  content::WebContents* incognito_contents = PlatformOpenURLOffTheRecord(
+      profile(), embedded_test_server()->GetURL("a.com", default_response));
+  ASSERT_TRUE(incognito_contents);
+
+  const GURL cross_site_url =
+      embedded_test_server()->GetURL("b.com", default_response);
+  std::string script =
+      "var f = document.createElement('iframe');\n"
+      "f.src = '" +
+      cross_site_url.spec() +
+      "';\n"
+      "document.body.appendChild(f);\n";
+  EXPECT_TRUE(ExecJs(incognito_contents, script));
+  EXPECT_TRUE(WaitForLoadStop(incognito_contents));
+
+  content::RenderFrameHost* incognito_subframe =
+      content::ChildFrameAt(incognito_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(incognito_subframe);
+  int incognito_frame_id =
+      ExtensionApiFrameIdMap::GetFrameId(incognito_subframe);
+  std::string incognito_document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(incognito_subframe).ToString();
+
+  // Load an extension in the regular profile without off-the-record access.
+  static constexpr char kManifest[] = R"({
+    "name": "Cookies Partition Key Isolation Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["cookies"],
+    "host_permissions": ["*://*/*"],
+    "background": {"service_worker": "background.js"}
+  })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// background");
+
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = false});
+  ASSERT_TRUE(extension);
+
+  // Attempting to query the partition key for the off-the-record frame by
+  // frameId from the regular profile extension must be rejected.
+  {
+    auto function = base::MakeRefCounted<CookiesGetPartitionKeyFunction>();
+    function->set_extension(extension);
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function.get(),
+        base::StringPrintf(R"([{"frameId": %d}])", incognito_frame_id),
+        profile(), api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ("Invalid `frameId`.", error);
+  }
+
+  // Attempting to query the partition key for the off-the-record frame by
+  // documentId from the regular profile extension must be rejected.
+  {
+    auto function = base::MakeRefCounted<CookiesGetPartitionKeyFunction>();
+    function->set_extension(extension);
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function.get(),
+        base::StringPrintf(R"([{"documentId": "%s"}])",
+                           incognito_document_id.c_str()),
+        profile(), api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ("Invalid `documentId`.", error);
+  }
+
+  // Also verify that an extension without host permissions receives the same
+  // rejection error without any URL details.
+  static constexpr char kRestrictedManifest[] = R"({
+    "name": "Cookies Partition Key Restricted Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["cookies"],
+    "background": {"service_worker": "background.js"}
+  })";
+
+  TestExtensionDir restricted_test_dir;
+  restricted_test_dir.WriteManifest(kRestrictedManifest);
+  restricted_test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                                "// background");
+
+  const Extension* restricted_extension = LoadExtension(
+      restricted_test_dir.UnpackedPath(), {.allow_in_incognito = false});
+  ASSERT_TRUE(restricted_extension);
+
+  {
+    auto function = base::MakeRefCounted<CookiesGetPartitionKeyFunction>();
+    function->set_extension(restricted_extension);
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function.get(),
+        base::StringPrintf(R"([{"frameId": %d}])", incognito_frame_id),
+        profile(), api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ("Invalid `frameId`.", error);
+  }
+
+  {
+    auto function = base::MakeRefCounted<CookiesGetPartitionKeyFunction>();
+    function->set_extension(restricted_extension);
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function.get(),
+        base::StringPrintf(R"([{"documentId": "%s"}])",
+                           incognito_document_id.c_str()),
+        profile(), api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ("Invalid `documentId`.", error);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, OTRReceiverMojoConnectionError) {

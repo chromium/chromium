@@ -162,26 +162,22 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostByFrameId(
     int frame_id) {
   // Frame_id values of 0 are not guaranteed to be unique. Values less than 0
   // are invalid.
-  CHECK_GE(frame_id, 1);
+  if (frame_id < 1) {
+    return nullptr;
+  }
 
-  content::RenderFrameHost* render_frame_host = nullptr;
   for (const auto& iter : document_id_map_) {
-    if (frame_id ==
-        ExtensionApiFrameIdMap::GetFrameId(&iter.second->render_frame_host())) {
-      render_frame_host = &iter.second->render_frame_host();
-      break;
+    content::RenderFrameHost* render_frame_host =
+        &iter.second->render_frame_host();
+    if (frame_id == ExtensionApiFrameIdMap::GetFrameId(render_frame_host) &&
+        (render_frame_host->IsActive() ||
+         render_frame_host->IsInLifecycleState(
+             content::RenderFrameHost::LifecycleState::kPrerendering))) {
+      return render_frame_host;
     }
   }
 
-  // Fail if the frame is not active or in prerendering (e.g. in the
-  // back/forward cache).
-  if (!render_frame_host ||
-      (!render_frame_host->IsActive() &&
-       !render_frame_host->IsInLifecycleState(
-           content::RenderFrameHost::LifecycleState::kPrerendering))) {
-    return nullptr;
-  }
-  return render_frame_host;
+  return nullptr;
 }
 
 ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::DocumentIdFromString(
