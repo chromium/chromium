@@ -162,6 +162,11 @@ void OpenEncryptedDriveFsFile(const base::FilePath& file_path,
     return;
   }
 
+  if (!hosted_url.SchemeIsHTTPOrHTTPS()) {
+    LOG(WARNING) << "Rejecting URI with scheme: " << hosted_url.scheme();
+    return;
+  }
+
   OpenNewTab(hosted_url);
 }
 

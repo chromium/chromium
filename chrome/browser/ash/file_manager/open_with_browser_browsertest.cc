@@ -19,10 +19,17 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/launch_result.h"
 #include "content/public/test/browser_test.h"
@@ -343,6 +350,92 @@ IN_PROC_BROWSER_TEST_F(OpenHostedFileUnsafeSchemeTest,
   EXPECT_FALSE(OpenHostedFileInNewTabOrApp(profile(), file_path,
                                            mock_callback.Get(), unsafe_url));
   run_loop.Run();
+}
+
+class OpenDriveFsFileBrowserTest : public InProcessBrowserTest {
+ public:
+  OpenDriveFsFileBrowserTest() {
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    drive_mount_point_ = temp_dir_.GetPath();
+  }
+
+  bool SetUpUserDataDirectory() override {
+    return drive::SetUpUserDataDirectoryForDriveFsTest();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    create_drive_integration_service_ = base::BindRepeating(
+        &OpenDriveFsFileBrowserTest::CreateDriveIntegrationService,
+        base::Unretained(this));
+    service_factory_for_test_ = std::make_unique<
+        drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
+        &create_drive_integration_service_);
+  }
+
+ protected:
+  drive::DriveIntegrationService* CreateDriveIntegrationService(
+      Profile* profile) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    fake_drivefs_helpers_[profile] =
+        std::make_unique<test::FakeSimpleDriveFsHelper>(profile,
+                                                        drive_mount_point_);
+    return new drive::DriveIntegrationService(
+        g_browser_process->local_state(), profile,
+        IdentityManagerFactory::GetForProfile(profile), "", drive_mount_point_,
+        fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
+  }
+
+  storage::FileSystemURL SetUpDriveFile(const std::string& file_name,
+                                        const std::string& alternate_url) {
+    drivefs::FakeMetadata metadata;
+    metadata.path = base::FilePath("/").AppendASCII(file_name);
+    metadata.alternate_url = alternate_url;
+    fake_drivefs_helpers_[profile()]->fake_drivefs().SetMetadata(
+        std::move(metadata));
+    return storage::FileSystemURL::CreateForTest(
+        kTestStorageKey, storage::kFileSystemTypeLocal,
+        drive_mount_point_.AppendASCII(file_name));
+  }
+
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("chrome://file-manager");
+
+  Profile* profile() const {
+    if (browser()) {
+      return browser()->GetProfile();
+    }
+    return ProfileManager::GetActiveUserProfile();
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  base::FilePath drive_mount_point_;
+  drive::DriveIntegrationServiceFactory::FactoryCallback
+      create_drive_integration_service_;
+  std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
+      service_factory_for_test_;
+  std::map<Profile*, std::unique_ptr<test::FakeSimpleDriveFsHelper>>
+      fake_drivefs_helpers_;
+};
+
+IN_PROC_BROWSER_TEST_F(OpenDriveFsFileBrowserTest,
+                       RejectJavascriptURLInEncryptedFile) {
+  const GURL unsafe_url("data:text/html,<html></html>");
+  const GURL safe_url("https://drive.google.com/encrypted");
+  const storage::FileSystemURL unsafe_file =
+      SetUpDriveFile("unsafe.txt", unsafe_url.spec());
+  const storage::FileSystemURL safe_file =
+      SetUpDriveFile("safe.png", safe_url.spec());
+
+  content::TestNavigationObserver navigation_observer(
+      nullptr, /*expected_number_of_navigations=*/1);
+  navigation_observer.StartWatchingNewWebContents();
+
+  OpenFileWithAppOrBrowser(profile(), unsafe_file, "open-encrypted");
+  OpenFileWithAppOrBrowser(profile(), safe_file, "open-encrypted");
+
+  navigation_observer.Wait();
+  EXPECT_EQ(navigation_observer.last_navigation_url(), safe_url);
 }
 
 }  // namespace file_manager::util
