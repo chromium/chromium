@@ -275,6 +275,24 @@ std::string ComposeboxQueryControllerBridge::AddFile(
   return file_token.ToString();
 }
 
+std::string ComposeboxQueryControllerBridge::AddDriveFile(
+    const std::string& drive_id,
+    const std::optional<std::string>& resource_key,
+    const std::string& file_name,
+    const std::string& mime_type) {
+  base::UnguessableToken file_token = session_handle_->CreateContextToken();
+
+  contextual_search::ContextualSearchSessionHandle::DriveUploadParams params{
+      .drive_id = drive_id,
+      .resource_key = resource_key,
+      .mime_type = mime_type,
+      .file_name = file_name,
+  };
+  session_handle_->StartDriveContextUploadFlow(file_token, params);
+
+  return file_token.ToString();
+}
+
 std::string ComposeboxQueryControllerBridge::AddTabContext(
     content::WebContents* web_contents,
     bool is_suggested_tab) {

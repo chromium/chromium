@@ -49,6 +49,10 @@ class ComposeboxQueryControllerBridge
                       const std::string& file_name,
                       const std::string& file_type,
                       const jni_zero::JavaRef<jobject>& file_data);
+  std::string AddDriveFile(const std::string& drive_id,
+                           const std::optional<std::string>& resource_key,
+                           const std::string& file_name,
+                           const std::string& mime_type);
   std::string AddTabContext(content::WebContents* web_contents,
                             bool is_suggested_tab);
   std::string AddTabContextFromCache(int64_t tab_id, bool is_suggested_tab);

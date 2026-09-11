@@ -140,6 +140,21 @@ public class ComposeboxQueryControllerBridge {
     }
 
     /**
+     * Add the given Drive file to the current session.
+     *
+     * @param driveId Unique ID of the Drive file.
+     * @param resourceKey Optional resource key for link-shared Drive files.
+     * @param fileName Name/title of the Drive file.
+     * @param mimeType MIME type of the Drive file.
+     * @return Unique token representing the Drive file, used to manipulate added Drive files.
+     */
+    public @Nullable String addDriveFile(
+            String driveId, @Nullable String resourceKey, String fileName, String mimeType) {
+        return ComposeboxQueryControllerBridgeJni.get()
+                .addDriveFile(mNativeInstance, driveId, resourceKey, fileName, mimeType);
+    }
+
+    /**
      * Uploads the given tab, adding it to the current session. If the upload can't be performed,
      * null is returned.
      */
@@ -257,6 +272,14 @@ public class ComposeboxQueryControllerBridge {
                 @JniType("std::string") String fileName,
                 @JniType("std::string") String fileType,
                 ByteBuffer fileData);
+
+        @JniType("std::string")
+        @Nullable String addDriveFile(
+                long nativeComposeboxQueryControllerBridge,
+                @JniType("std::string") String driveId,
+                @JniType("std::optional<std::string>") @Nullable String resourceKey,
+                @JniType("std::string") String fileName,
+                @JniType("std::string") String mimeType);
 
         @JniType("std::string")
         @Nullable String addTabContext(
