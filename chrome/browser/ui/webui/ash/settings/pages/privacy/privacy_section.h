@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "components/prefs/pref_change_registrar.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace content {
@@ -27,7 +28,9 @@ class SearchTagRegistry;
 // search tags are added only for official Google Chrome OS builds.
 class PrivacySection : public OsSettingsSection {
  public:
-  PrivacySection(Profile* profile,
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  PrivacySection(const ApplicationLocaleStorage* application_locale_storage,
+                 Profile* profile,
                  SearchTagRegistry* search_tag_registry,
                  PrefService* pref_service);
   ~PrivacySection() override;

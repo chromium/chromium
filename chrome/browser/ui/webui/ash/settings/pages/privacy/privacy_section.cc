@@ -329,11 +329,15 @@ void AddChromeOsSecureDnsStrings(content::WebUIDataSource* html_source) {
 
 }  // namespace
 
-PrivacySection::PrivacySection(Profile* profile,
-                               SearchTagRegistry* search_tag_registry,
-                               PrefService* pref_service)
+PrivacySection::PrivacySection(
+    const ApplicationLocaleStorage* application_locale_storage,
+    Profile* profile,
+    SearchTagRegistry* search_tag_registry,
+    PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
-      sync_subsection_(profile, search_tag_registry),
+      sync_subsection_(application_locale_storage,
+                       profile,
+                       search_tag_registry),
       pref_service_(pref_service),
       auth_performer_(UserDataAuthClient::Get()),
       fp_engine_(&auth_performer_) {

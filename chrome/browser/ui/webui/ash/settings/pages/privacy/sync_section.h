@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_SYNC_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_SYNC_SECTION_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
+
+class ApplicationLocaleStorage;
 
 namespace content {
 class WebUIDataSource;
@@ -19,7 +22,10 @@ class SearchTagRegistry;
 // Provides UI strings and search tags for Sync settings.
 class SyncSection : public OsSettingsSection {
  public:
-  SyncSection(Profile* profile, SearchTagRegistry* search_tag_registry);
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  SyncSection(const ApplicationLocaleStorage* application_locale_storage,
+              Profile* profile,
+              SearchTagRegistry* search_tag_registry);
   ~SyncSection() override;
 
   // OsSettingsSection:
@@ -32,6 +38,9 @@ class SyncSection : public OsSettingsSection {
   bool LogMetric(chromeos::settings::mojom::Setting setting,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
+
+ private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 };
 
 }  // namespace ash::settings

@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/people/os_sync_handler.h"
@@ -22,6 +21,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
@@ -99,9 +99,12 @@ base::span<const SearchConcept> GetCategorizedSyncSearchConcepts() {
 
 }  // namespace
 
-SyncSection::SyncSection(Profile* profile,
-                         SearchTagRegistry* search_tag_registry)
-    : OsSettingsSection(profile, search_tag_registry) {
+SyncSection::SyncSection(
+    const ApplicationLocaleStorage* application_locale_storage,
+    Profile* profile,
+    SearchTagRegistry* search_tag_registry)
+    : OsSettingsSection(profile, search_tag_registry),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   CHECK(profile);
   CHECK(search_tag_registry);
 
@@ -139,7 +142,7 @@ void SyncSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                    syncer::kSyncEnableNewSyncDashboardUrl)
                    ? ash::chrome_external_urls::kNewSyncGoogleDashboardURL
                    : ash::chrome_external_urls::kLegacySyncGoogleDashboardURL),
-          g_browser_process->GetApplicationLocale())
+          application_locale_storage_->Get())
           .spec();
 
   html_source->AddString(
