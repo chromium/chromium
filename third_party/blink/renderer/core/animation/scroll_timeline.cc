@@ -175,23 +175,25 @@ void ScrollTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
 }
 
 Element* ScrollTimeline::source() const {
-  Element* source = ComputeSource();
+  return Sanitize(ComputeSource());
+}
 
-  if (!source) {
+/* static */
+Element* ScrollTimeline::Sanitize(Element* element) {
+  if (!element) {
     return nullptr;
   }
 
-  ShadowRoot* containing_shadow_root = source->ContainingShadowRoot();
-  while (containing_shadow_root && containing_shadow_root->IsUserAgent()) {
-    source = &containing_shadow_root->host();
-    containing_shadow_root = source->ContainingShadowRoot();
+  ShadowRoot* containing_shadow_root = element->ContainingShadowRoot();
+  if (containing_shadow_root && containing_shadow_root->IsUserAgent()) {
+    return Sanitize(&containing_shadow_root->host());
   }
 
-  if (PseudoElement* pseudo = DynamicTo<PseudoElement>(source)) {
-    source = &(pseudo->UltimateOriginatingElement());
+  if (PseudoElement* pseudo = DynamicTo<PseudoElement>(element)) {
+    return Sanitize(pseudo->parentElement());
   }
 
-  return source;
+  return element;
 }
 
 Element* ScrollTimeline::ComputeSource() const {

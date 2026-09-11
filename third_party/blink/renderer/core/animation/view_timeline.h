@@ -58,8 +58,9 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
                         PhysicalAxis physical_orientation,
                         TimelineState* state) const override;
 
- private:
+  Element* SubjectInternal() const;
 
+ private:
   std::optional<gfx::SizeF> SubjectSize() const;
   std::optional<gfx::PointF> SubjectPosition(LayoutBox* scroll_container) const;
 

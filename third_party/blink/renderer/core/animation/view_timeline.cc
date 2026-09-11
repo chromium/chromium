@@ -309,7 +309,7 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   LayoutBox* scroll_container =
       ComputeScrollContainer(state->resolved_source, physical_orientation);
   DCHECK(scroll_container);
-  DCHECK(subject());
+  DCHECK(SubjectInternal());
 
   std::optional<gfx::SizeF> subject_size = SubjectSize();
   if (!subject_size) {
@@ -344,11 +344,11 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
     Length updated_end = inset.GetEnd();
     if (style_dependant_start_inset_) {
       updated_start = InsetValueToLength(style_dependant_start_inset_,
-                                         subject(), Length::Fixed());
+                                         SubjectInternal(), Length::Fixed());
     }
     if (style_dependant_end_inset_) {
-      updated_end = InsetValueToLength(style_dependant_end_inset_, subject(),
-                                       Length::Fixed());
+      updated_end = InsetValueToLength(style_dependant_end_inset_,
+                                       SubjectInternal(), Length::Fixed());
     }
     inset = TimelineInset(updated_start, updated_end);
   }
@@ -384,11 +384,11 @@ void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
                                           double target_offset,
                                           PhysicalAxis orientation,
                                           LayoutBox* scroll_container) const {
-  if (!subject()) {
+  if (!SubjectInternal()) {
     return;
   }
 
-  LayoutBox* subject_layout_box = subject()->GetLayoutBox();
+  LayoutBox* subject_layout_box = SubjectInternal()->GetLayoutBox();
   if (!subject_layout_box || !scroll_container) {
     return;
   }
@@ -478,10 +478,11 @@ void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
 }
 
 std::optional<gfx::SizeF> ViewTimeline::SubjectSize() const {
-  if (!subject()) {
+  if (!SubjectInternal()) {
     return std::nullopt;
   }
-  const LayoutObject* subject_layout_object = subject()->GetLayoutObject();
+  const LayoutObject* subject_layout_object =
+      SubjectInternal()->GetLayoutObject();
   if (!subject_layout_object) {
     return std::nullopt;
   }
@@ -515,10 +516,10 @@ std::optional<gfx::SizeF> ViewTimeline::SubjectSize() const {
 
 std::optional<gfx::PointF> ViewTimeline::SubjectPosition(
     LayoutBox* scroll_container) const {
-  if (!subject() || !scroll_container) {
+  if (!SubjectInternal() || !scroll_container) {
     return std::nullopt;
   }
-  LayoutObject* subject_layout_object = subject()->GetLayoutObject();
+  LayoutObject* subject_layout_object = SubjectInternal()->GetLayoutObject();
   if (!subject_layout_object || !scroll_container) {
     return std::nullopt;
   }
@@ -592,6 +593,10 @@ CSSNumericValue* ViewTimeline::getCurrentTime(const String& rangeName) {
 }
 
 Element* ViewTimeline::subject() const {
+  return Sanitize(SubjectInternal());
+}
+
+Element* ViewTimeline::SubjectInternal() const {
   return GetReferenceElement();
 }
 
