@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/journeys/journey_row.h"
 #include "sql/database.h"
@@ -24,13 +23,7 @@ constexpr char kJourneysTableName[] = "journeys";
 constexpr char kHistoryEntriesTableName[] = "journey_history_entries";
 constexpr char kContinuationQueriesTableName[] = "journey_continuation_queries";
 
-// Common column list for SELECT queries on the journeys table.
-constexpr char kJourneyColumns[] =
-    "journey_id, title, emoji, overview, short_overview, "
-    "creation_time_micros";
-
-// Populates top-level JourneyRow fields from a statement row matching
-// `kJourneyColumns`.
+// Populates top-level JourneyRow fields from a statement row.
 JourneyRow ParseJourneyRow(sql::Statement& s) {
   JourneyRow journey;
   journey.journey_id = s.ColumnString(0);
@@ -44,8 +37,7 @@ JourneyRow ParseJourneyRow(sql::Statement& s) {
   if (s.GetColumnType(4) != sql::ColumnType::kNull) {
     journey.short_overview = s.ColumnString(4);
   }
-  journey.creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(s.ColumnInt64(5)));
+  journey.creation_time = s.ColumnTime(5);
   return journey;
 }
 
@@ -64,22 +56,24 @@ bool JourneysDatabase::InitJourneysTables() {
   // `creation_time_micros` stores microseconds since Windows epoch
   // consistent with `visits.visit_time`.
   if (!GetDB().DoesTableExist(kJourneysTableName)) {
-    if (!GetDB().Execute(
-            base::StrCat({"CREATE TABLE ", kJourneysTableName,
-                          " (journey_id TEXT PRIMARY KEY NOT NULL, "
-                          "title TEXT NOT NULL, "
-                          "emoji TEXT, "
-                          "overview TEXT, "
-                          "short_overview TEXT, "
-                          "creation_time_micros INTEGER NOT NULL)"}))) {
+    static constexpr char kCreateJourneysTableSql[] =
+        "CREATE TABLE journeys "
+        "(journey_id TEXT PRIMARY KEY NOT NULL, "
+        "title TEXT NOT NULL, "
+        "emoji TEXT, "
+        "overview TEXT, "
+        "short_overview TEXT, "
+        "creation_time_micros INTEGER NOT NULL)";
+    if (!GetDB().Execute(kCreateJourneysTableSql)) {
       return false;
     }
 
     // Index over creation_time so GetAllJourneys() can efficiently sort
     // journeys in reverse chronological order.
-    if (!GetDB().Execute(base::StrCat(
-            {"CREATE INDEX IF NOT EXISTS journeys_creation_time_idx ON ",
-             kJourneysTableName, " (creation_time_micros)"}))) {
+    static constexpr char kCreateJourneysTimeIndexSql[] =
+        "CREATE INDEX IF NOT EXISTS journeys_creation_time_idx ON "
+        "journeys (creation_time_micros)";
+    if (!GetDB().Execute(kCreateJourneysTimeIndexSql)) {
       return false;
     }
   }
@@ -88,42 +82,46 @@ bool JourneysDatabase::InitJourneysTables() {
   // Links a journey to its constituent visit timestamps, identifying the
   // local history visit.
   if (!GetDB().DoesTableExist(kHistoryEntriesTableName)) {
-    if (!GetDB().Execute(
-            base::StrCat({"CREATE TABLE ", kHistoryEntriesTableName,
-                          " (journey_id TEXT NOT NULL, "
-                          "visit_timestamp_micros INTEGER NOT NULL, "
-                          "PRIMARY KEY (journey_id, visit_timestamp_micros)) "
-                          "WITHOUT ROWID"}))) {
+    static constexpr char kCreateEntriesTableSql[] =
+        "CREATE TABLE journey_history_entries "
+        "(journey_id TEXT NOT NULL, "
+        "visit_timestamp_micros INTEGER NOT NULL, "
+        "PRIMARY KEY (journey_id, visit_timestamp_micros)) "
+        "WITHOUT ROWID";
+    if (!GetDB().Execute(kCreateEntriesTableSql)) {
       return false;
     }
 
     // Index over visit timestamps to support fast reverse lookups and
     // efficient JOINs with `visits.visit_time` in VisitDatabase.
-    if (!GetDB().Execute(base::StrCat(
-            {"CREATE INDEX IF NOT EXISTS "
-             "journey_history_entries_timestamp_idx ON ",
-             kHistoryEntriesTableName, " (visit_timestamp_micros)"}))) {
+    static constexpr char kCreateEntriesTimestampIndexSql[] =
+        "CREATE INDEX IF NOT EXISTS "
+        "journey_history_entries_timestamp_idx ON "
+        "journey_history_entries (visit_timestamp_micros)";
+    if (!GetDB().Execute(kCreateEntriesTimestampIndexSql)) {
       return false;
     }
   }
 
   // 3. Child table: journey_continuation_queries.
   if (!GetDB().DoesTableExist(kContinuationQueriesTableName)) {
-    if (!GetDB().Execute(
-            base::StrCat({"CREATE TABLE ", kContinuationQueriesTableName,
-                          " (id INTEGER PRIMARY KEY, "
-                          "journey_id TEXT NOT NULL, "
-                          "title TEXT NOT NULL, "
-                          "prompt TEXT NOT NULL)"}))) {
+    static constexpr char kCreateQueriesTableSql[] =
+        "CREATE TABLE journey_continuation_queries "
+        "(id INTEGER PRIMARY KEY, "
+        "journey_id TEXT NOT NULL, "
+        "title TEXT NOT NULL, "
+        "prompt TEXT NOT NULL)";
+    if (!GetDB().Execute(kCreateQueriesTableSql)) {
       return false;
     }
 
     // Index over journey_id so continuation queries can be efficiently fetched
     // and deleted for a given journey.
-    if (!GetDB().Execute(
-            base::StrCat({"CREATE INDEX IF NOT EXISTS "
-                          "journey_continuation_queries_journey_id_idx ON ",
-                          kContinuationQueriesTableName, " (journey_id)"}))) {
+    static constexpr char kCreateQueriesIndexSql[] =
+        "CREATE INDEX IF NOT EXISTS "
+        "journey_continuation_queries_journey_id_idx ON "
+        "journey_continuation_queries (journey_id)";
+    if (!GetDB().Execute(kCreateQueriesIndexSql)) {
       return false;
     }
   }
@@ -132,12 +130,9 @@ bool JourneysDatabase::InitJourneysTables() {
 }
 
 bool JourneysDatabase::DropJourneysTables() {
-  return GetDB().Execute(base::StrCat(
-             {"DROP TABLE IF EXISTS ", kHistoryEntriesTableName})) &&
-         GetDB().Execute(base::StrCat(
-             {"DROP TABLE IF EXISTS ", kContinuationQueriesTableName})) &&
-         GetDB().Execute(
-             base::StrCat({"DROP TABLE IF EXISTS ", kJourneysTableName}));
+  return GetDB().Execute("DROP TABLE IF EXISTS journey_history_entries") &&
+         GetDB().Execute("DROP TABLE IF EXISTS journey_continuation_queries") &&
+         GetDB().Execute("DROP TABLE IF EXISTS journeys");
 }
 
 bool JourneysDatabase::AddOrUpdateJourneys(
@@ -148,24 +143,28 @@ bool JourneysDatabase::AddOrUpdateJourneys(
 
   // Prepare SQL statements once outside the loop and reuse them across
   // iterations with Reset(true) for maximum batching efficiency.
-  sql::Statement insert_journey(GetDB().GetUniqueStatement(
-      base::StrCat({"INSERT OR REPLACE INTO ", kJourneysTableName, " (",
-                    kJourneyColumns, ") VALUES(?, ?, ?, ?, ?, ?)"})));
+  sql::Statement insert_journey(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR REPLACE INTO journeys (journey_id, title, emoji, overview, "
+      "short_overview, creation_time_micros) VALUES(?, ?, ?, ?, ?, ?)"));
 
-  sql::Statement delete_entries(GetDB().GetUniqueStatement(base::StrCat(
-      {"DELETE FROM ", kHistoryEntriesTableName, " WHERE journey_id = ?"})));
+  sql::Statement delete_entries(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM journey_history_entries WHERE journey_id = ?"));
 
-  sql::Statement delete_queries(GetDB().GetUniqueStatement(
-      base::StrCat({"DELETE FROM ", kContinuationQueriesTableName,
-                    " WHERE journey_id = ?"})));
+  sql::Statement delete_queries(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM journey_continuation_queries WHERE journey_id = ?"));
 
-  sql::Statement insert_entry(GetDB().GetUniqueStatement(
-      base::StrCat({"INSERT OR IGNORE INTO ", kHistoryEntriesTableName,
-                    " (journey_id, visit_timestamp_micros) VALUES(?, ?)"})));
+  sql::Statement insert_entry(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR IGNORE INTO journey_history_entries "
+      "(journey_id, visit_timestamp_micros) VALUES(?, ?)"));
 
-  sql::Statement insert_query(GetDB().GetUniqueStatement(
-      base::StrCat({"INSERT INTO ", kContinuationQueriesTableName,
-                    " (journey_id, title, prompt) VALUES(?, ?, ?)"})));
+  sql::Statement insert_query(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO journey_continuation_queries "
+      "(journey_id, title, prompt) VALUES(?, ?, ?)"));
 
   for (const JourneyRow& journey : journeys) {
     if (journey.journey_id.empty()) {
@@ -192,8 +191,7 @@ bool JourneysDatabase::AddOrUpdateJourneys(
     } else {
       insert_journey.BindNull(4);
     }
-    insert_journey.BindInt64(
-        5, journey.creation_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    insert_journey.BindTime(5, journey.creation_time);
     if (!insert_journey.Run()) {
       return false;
     }
@@ -215,8 +213,7 @@ bool JourneysDatabase::AddOrUpdateJourneys(
     for (const JourneyHistoryEntry& entry : journey.history_entries) {
       insert_entry.Reset(true);
       insert_entry.BindString(0, journey.journey_id);
-      insert_entry.BindInt64(
-          1, entry.visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      insert_entry.BindTime(1, entry.visit_time);
       if (!insert_entry.Run()) {
         return false;
       }
@@ -244,9 +241,10 @@ std::optional<JourneyRow> JourneysDatabase::GetJourney(
   }
 
   // 1. Fetch main journey fields.
-  sql::Statement s_journey(GetDB().GetUniqueStatement(
-      base::StrCat({"SELECT ", kJourneyColumns, " FROM ", kJourneysTableName,
-                    " WHERE journey_id = ?"})));
+  sql::Statement s_journey(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT journey_id, title, emoji, overview, short_overview, "
+      "creation_time_micros FROM journeys WHERE journey_id = ?"));
   s_journey.BindString(0, journey_id);
 
   if (!s_journey.Step()) {
@@ -256,20 +254,21 @@ std::optional<JourneyRow> JourneysDatabase::GetJourney(
   JourneyRow journey = ParseJourneyRow(s_journey);
 
   // 2. Fetch history entries.
-  sql::Statement s_entries(GetDB().GetUniqueStatement(
-      base::StrCat({"SELECT visit_timestamp_micros FROM ",
-                    kHistoryEntriesTableName, " WHERE journey_id = ?"})));
+  sql::Statement s_entries(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT visit_timestamp_micros FROM journey_history_entries "
+      "WHERE journey_id = ?"));
   s_entries.BindString(0, journey_id);
 
   while (s_entries.Step()) {
-    journey.history_entries.emplace_back(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(s_entries.ColumnInt64(0))));
+    journey.history_entries.emplace_back(s_entries.ColumnTime(0));
   }
 
   // 3. Fetch continuation queries.
-  sql::Statement s_queries(GetDB().GetUniqueStatement(
-      base::StrCat({"SELECT title, prompt FROM ", kContinuationQueriesTableName,
-                    " WHERE journey_id = ?"})));
+  sql::Statement s_queries(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT title, prompt FROM journey_continuation_queries "
+      "WHERE journey_id = ?"));
   s_queries.BindString(0, journey_id);
 
   while (s_queries.Step()) {
@@ -285,9 +284,11 @@ std::vector<JourneyRow> JourneysDatabase::GetAllJourneys() {
   absl::flat_hash_map<std::string, size_t> journey_id_to_index;
 
   // 1. Read all top-level journeys ordered by creation time descending.
-  sql::Statement s_journeys(GetDB().GetUniqueStatement(
-      base::StrCat({"SELECT ", kJourneyColumns, " FROM ", kJourneysTableName,
-                    " ORDER BY creation_time_micros DESC"})));
+  sql::Statement s_journeys(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT journey_id, title, emoji, overview, short_overview, "
+      "creation_time_micros FROM journeys "
+      "ORDER BY creation_time_micros DESC"));
 
   while (s_journeys.Step()) {
     JourneyRow journey = ParseJourneyRow(s_journeys);
@@ -301,24 +302,24 @@ std::vector<JourneyRow> JourneysDatabase::GetAllJourneys() {
 
   // 2. Fetch all history entries in a single batch query and attach to
   // journeys.
-  sql::Statement s_entries(GetDB().GetUniqueStatement(
-      base::StrCat({"SELECT journey_id, visit_timestamp_micros FROM ",
-                    kHistoryEntriesTableName})));
+  sql::Statement s_entries(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT journey_id, visit_timestamp_micros FROM "
+      "journey_history_entries"));
 
   while (s_entries.Step()) {
     std::string journey_id = s_entries.ColumnString(0);
     auto it = journey_id_to_index.find(journey_id);
     if (it != journey_id_to_index.end()) {
       journeys[it->second].history_entries.emplace_back(
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::Microseconds(s_entries.ColumnInt64(1))));
+          s_entries.ColumnTime(1));
     }
   }
 
   // 3. Fetch all continuation queries in a single batch query and attach.
-  sql::Statement s_queries(GetDB().GetUniqueStatement(
-      base::StrCat({"SELECT journey_id, title, prompt FROM ",
-                    kContinuationQueriesTableName})));
+  sql::Statement s_queries(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT journey_id, title, prompt FROM journey_continuation_queries"));
 
   while (s_queries.Step()) {
     std::string journey_id = s_queries.ColumnString(0);
@@ -344,16 +345,18 @@ bool JourneysDatabase::DeleteJourneys(
   }
 
   // Prepare delete statements once and reuse across IDs in the batch.
-  sql::Statement s_journey(GetDB().GetUniqueStatement(base::StrCat(
-      {"DELETE FROM ", kJourneysTableName, " WHERE journey_id = ?"})));
+  sql::Statement s_journey(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM journeys WHERE journey_id = ?"));
 
-  sql::Statement s_entries(GetDB().GetUniqueStatement(base::StrCat(
-      {"DELETE FROM ", kHistoryEntriesTableName, " WHERE journey_id = ?"})));
+  sql::Statement s_entries(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM journey_history_entries WHERE journey_id = ?"));
 
-  sql::Statement s_queries(GetDB().GetUniqueStatement(
-      base::StrCat({"DELETE FROM ", kContinuationQueriesTableName,
-                    " WHERE journey_id = ?"})));
+  sql::Statement s_queries(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM journey_continuation_queries WHERE journey_id = ?"));
 
+  bool all_succeeded = true;
   for (const std::string& journey_id : journey_ids) {
     if (journey_id.empty()) {
       continue;
@@ -362,31 +365,29 @@ bool JourneysDatabase::DeleteJourneys(
     s_journey.Reset(true);
     s_journey.BindString(0, journey_id);
     if (!s_journey.Run()) {
-      return false;
+      all_succeeded = false;
     }
 
     s_entries.Reset(true);
     s_entries.BindString(0, journey_id);
     if (!s_entries.Run()) {
-      return false;
+      all_succeeded = false;
     }
 
     s_queries.Reset(true);
     s_queries.BindString(0, journey_id);
     if (!s_queries.Run()) {
-      return false;
+      all_succeeded = false;
     }
   }
 
-  return true;
+  return all_succeeded;
 }
 
 bool JourneysDatabase::DeleteAllJourneys() {
-  return GetDB().Execute(base::StrCat({"DELETE FROM ", kJourneysTableName})) &&
-         GetDB().Execute(
-             base::StrCat({"DELETE FROM ", kHistoryEntriesTableName})) &&
-         GetDB().Execute(
-             base::StrCat({"DELETE FROM ", kContinuationQueriesTableName}));
+  return GetDB().Execute("DELETE FROM journeys") &&
+         GetDB().Execute("DELETE FROM journey_history_entries") &&
+         GetDB().Execute("DELETE FROM journey_continuation_queries");
 }
 
 }  // namespace history::journeys

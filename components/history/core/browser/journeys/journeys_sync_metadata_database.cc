@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/strings/strcat.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -54,10 +53,10 @@ JourneysSyncMetadataDatabase::~JourneysSyncMetadataDatabase() = default;
 
 bool JourneysSyncMetadataDatabase::Init() {
   if (!db_->DoesTableExist(kSyncMetadataTableName)) {
-    if (!db_->Execute(
-            base::StrCat({"CREATE TABLE ", kSyncMetadataTableName,
-                          " (storage_key TEXT PRIMARY KEY NOT NULL, "
-                          "value BLOB NOT NULL)"}))) {
+    static constexpr char kInitSql[] =
+        "CREATE TABLE journey_sync_metadata "
+        "(storage_key TEXT PRIMARY KEY NOT NULL, value BLOB NOT NULL)";
+    if (!db_->Execute(kInitSql)) {
       return false;
     }
   }
@@ -82,9 +81,8 @@ bool JourneysSyncMetadataDatabase::GetAllSyncMetadata(
 }
 
 bool JourneysSyncMetadataDatabase::ClearAllEntityMetadata() {
-  sql::Statement s(db_->GetUniqueStatement(
-      base::StrCat({"DELETE FROM ", kSyncMetadataTableName})));
-  return s.Run();
+  static constexpr char kSql[] = "DELETE FROM journey_sync_metadata";
+  return db_->Execute(kSql);
 }
 
 bool JourneysSyncMetadataDatabase::UpdateEntityMetadata(
@@ -95,9 +93,10 @@ bool JourneysSyncMetadataDatabase::UpdateEntityMetadata(
       << "Only the JOURNEY data type is supported";
   DCHECK(!storage_key.empty());
 
-  sql::Statement s(db_->GetUniqueStatement(
-      base::StrCat({"INSERT OR REPLACE INTO ", kSyncMetadataTableName,
-                    " (storage_key, value) VALUES(?, ?)"})));
+  static constexpr char kSql[] =
+      "INSERT OR REPLACE INTO journey_sync_metadata "
+      "(storage_key, value) VALUES(?, ?)";
+  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   s.BindString(0, storage_key);
   s.BindBlob(1, metadata.SerializeAsString());
 
@@ -111,8 +110,9 @@ bool JourneysSyncMetadataDatabase::ClearEntityMetadata(
       << "Only the JOURNEY data type is supported";
   DCHECK(!storage_key.empty());
 
-  sql::Statement s(db_->GetUniqueStatement(base::StrCat(
-      {"DELETE FROM ", kSyncMetadataTableName, " WHERE storage_key=?"})));
+  static constexpr char kSql[] =
+      "DELETE FROM journey_sync_metadata WHERE storage_key = ?";
+  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   s.BindString(0, storage_key);
 
   return s.Run();
@@ -140,8 +140,9 @@ bool JourneysSyncMetadataDatabase::ClearDataTypeState(
 bool JourneysSyncMetadataDatabase::GetAllEntityMetadata(
     syncer::MetadataBatch* metadata_batch) {
   DCHECK(metadata_batch);
-  sql::Statement s(db_->GetUniqueStatement(base::StrCat(
-      {"SELECT storage_key, value FROM ", kSyncMetadataTableName})));
+  static constexpr char kSql[] =
+      "SELECT storage_key, value FROM journey_sync_metadata";
+  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
 
   while (s.Step()) {
     std::string storage_key = s.ColumnString(0);
