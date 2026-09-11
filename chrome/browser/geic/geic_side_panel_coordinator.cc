@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/geic/geic_pwc_manager.h"
+#include "chrome/browser/geic/geic_view.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
@@ -20,7 +21,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
-#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
 namespace geic {
@@ -77,11 +77,11 @@ std::unique_ptr<views::View> GeicSidePanelCoordinator::CreateGeicView(
   tabs::TabInterface* tab = &tab_interface_.get();
   content::WebContents* web_contents =
       geic_manager ? geic_manager->GetOrCreateWebContentsForTab(tab) : nullptr;
-  auto web_view = std::make_unique<views::WebView>(profile);
+  auto geic_view = std::make_unique<GeicView>(profile);
   if (web_contents) {
-    web_view->SetWebContents(web_contents);
+    geic_view->SetWebContents(web_contents);
   }
-  return web_view;
+  return geic_view;
 }
 
 }  // namespace geic

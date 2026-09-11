@@ -20,6 +20,7 @@
 #include "chrome/browser/pwc/pwc_component_policy.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -121,6 +122,13 @@ content::WebContents* GeicPwcManager::GetOrCreateWebContentsForTab(
                                           std::move(browser_host));
 
   content::WebContents* wc = entry->web_contents();
+  if (!zoom::ZoomController::FromWebContents(wc)) {
+    zoom::ZoomController::CreateForWebContents(wc);
+  }
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(wc);
+  zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_ISOLATED);
+  zoom_controller->SetShowsNotificationBubble(false);
+
   wc->GetController().LoadURL(dev_url_, content::Referrer(),
                               ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
 
@@ -200,6 +208,18 @@ void GeicPwcManager::TabEntry::ReadyToCommitNavigation(
       navigation_handle->GetRenderFrameHost()) {
     navigation_handle->GetRenderFrameHost()->EnableMojoJsBindings(
         /*features=*/nullptr);
+  }
+}
+
+void GeicPwcManager::TabEntry::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted()) {
+    if (auto* zoom_controller =
+            zoom::ZoomController::FromWebContents(web_contents())) {
+      zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_ISOLATED);
+      zoom_controller->SetShowsNotificationBubble(false);
+    }
   }
 }
 

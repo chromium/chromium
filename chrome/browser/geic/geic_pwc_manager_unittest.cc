@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -136,6 +137,20 @@ TEST_F(GeicPwcManagerTest, InitializesDistinctPwcPerTab) {
   EXPECT_EQ(manager.entry_count_for_testing(), 0u);
   EXPECT_FALSE(manager.GetPwcForTab(tab2));
   EXPECT_FALSE(manager.GetBrowserHostForPwc(pwc2));
+}
+
+TEST_F(GeicPwcManagerTest, AttachesIsolatedZoomController) {
+  tabs::TabInterface* tab = AddTab(GURL("https://example.com/tab"));
+  const GURL test_url("https://localhost.corp.google.com:10443/side-panel");
+  GeicPwcManager manager(profile(), test_url);
+
+  content::WebContents* contents = manager.GetOrCreateWebContentsForTab(tab);
+  ASSERT_TRUE(contents);
+
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(contents);
+  ASSERT_TRUE(zoom_controller);
+  EXPECT_EQ(zoom_controller->zoom_mode(),
+            zoom::ZoomController::ZOOM_MODE_ISOLATED);
 }
 
 TEST_F(GeicPwcManagerTest, DoesNotInitializeWhenNoUrlConfigured) {

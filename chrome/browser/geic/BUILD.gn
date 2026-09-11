@@ -85,6 +85,7 @@ source_set("geic") {
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/tabs:public",
+      "//components/zoom",
       "//google_apis",
       "//mojo/public/cpp/base:protobuf_support",
       "//skia",
@@ -130,6 +131,7 @@ source_set("unit_tests") {
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/tabs:public",
       "//components/tabs:test_support",
+      "//components/zoom",
     ]
   }
 }
@@ -141,11 +143,15 @@ if (!is_android) {
       "geic_button.h",
       "geic_side_panel_coordinator.cc",
       "geic_side_panel_coordinator.h",
+      "geic_view.cc",
+      "geic_view.h",
     ]
+    public_deps = [ "//chrome/browser/pwc" ]
     deps = [
       ":geic",
       "//base",
       "//chrome/app:branded_strings_grit",
+      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/side_panel",
@@ -154,6 +160,9 @@ if (!is_android) {
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/tabs:tab_strip_button",
+      "//components/zoom",
+      "//content/public/common",
+      "//third_party/blink/public/common",
       "//ui/base",
       "//ui/base/metadata",
       "//ui/base/unowned_user_data",
@@ -191,6 +200,7 @@ source_set("browser_tests") {
     sources += [
       "geic_button_browsertest.cc",
       "geic_host_browsertest.cc",
+      "geic_zoom_browsertest.cc",
     ]
     deps += [
       ":ui",
@@ -198,12 +208,15 @@ source_set("browser_tests") {
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/tabs:tab_strip",
       "//chrome/common:channel_info",
       "//chrome/common:non_code_constants",
       "//components/version_info",
+      "//components/zoom",
       "//content/public/common",
+      "//third_party/blink/public/common",
       "//ui/events:test_support",
       "//ui/views",
       "//ui/views:test_support",

@@ -98,6 +98,8 @@ class GeicPwcManager : public base::SupportsUserData::Data,
         content::RenderFrameHost* render_frame_host) override;
     void ReadyToCommitNavigation(
         content::NavigationHandle* navigation_handle) override;
+    void DidFinishNavigation(
+        content::NavigationHandle* navigation_handle) override;
 
     content::WebContents* web_contents() {
       return pwc_ ? pwc_->web_contents() : nullptr;
