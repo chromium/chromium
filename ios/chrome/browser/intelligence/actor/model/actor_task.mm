@@ -134,13 +134,13 @@ void ActorTask::RemoveObserver(id<ActorTaskUpdatesObserver> observer) {
   [observers_ removeObserver:observer];
 }
 
-ActorTaskState ActorTask::GetState() const {
-  return state_;
-}
-
 ActorEngine& ActorTask::engine() const {
   CHECK(engine_);
   return *engine_;
+}
+
+ActorTaskState ActorTask::GetState() const {
+  return state_;
 }
 
 void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
@@ -176,46 +176,63 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
   }
 }
 
-void ActorTask::OnActCompleted(ActCallback callback,
-                               std::vector<ActionResult> results) {
-  // TODO(crbug.com/503054406): Check for tool errors.
+void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
+  [observers_ actorTaskDidStopWithID:task_id_ finalState:state_];
+  SetActuatingOnWebStates(false);
+  // TODO(crbug.com/496164697): Implement and test.
+}
 
-  if (ObserveLoadingWebStates()) {
-    DeferActCompletion(std::move(callback), std::move(results));
+void ActorTask::Pause(bool from_actor) {
+  // TODO(crbug.com/496164697): Implement and test.
+}
+
+void ActorTask::Resume() {
+  // TODO(crbug.com/496164697): Implement and test.
+}
+
+void ActorTask::Interrupt(bool retain_user_control,
+                          ActorTaskInterruptReason interrupt_reason) {
+  // TODO(crbug.com/548051839): Implement and test.
+  if (state_ != ActorTaskState::kReflecting &&
+      state_ != ActorTaskState::kActing) {
     return;
   }
-
-  SetState(ActorTaskState::kReflecting);
-  std::move(callback).Run(std::move(results));
+  Pause(/*from_actor=*/true);
+  SetState(ActorTaskState::kWaitingOnUser);
 }
 
-bool ActorTask::ObserveLoadingWebStates() {
-  for (const auto& weak_web_state : controlled_web_states_) {
-    web::WebState* web_state = weak_web_state.get();
-    if (web_state && web_state->IsLoading()) {
-      scoped_web_state_observations_.AddObservation(web_state);
-    }
+void ActorTask::Uninterrupt(ActorTaskState resumed_state) {
+  // TODO(crbug.com/548051839): Implement and test.
+  if (state_ != ActorTaskState::kWaitingOnUser) {
+    return;
+  }
+  Resume();
+  SetState(resumed_state);
+}
+
+bool ActorTask::IsControllingWebState(web::WebState* web_state) const {
+  if (!web_state) {
+    return false;
   }
 
-  return scoped_web_state_observations_.IsObservingAnySource();
+  for (const base::WeakPtr<web::WebState> controlled_web_state :
+       controlled_web_states_) {
+    if (controlled_web_state && controlled_web_state->GetUniqueIdentifier() ==
+                                    web_state->GetUniqueIdentifier()) {
+      return true;
+    }
+  }
+  return false;
 }
 
-void ActorTask::DeferActCompletion(ActCallback callback,
-                                   std::vector<ActionResult> results) {
-  deferred_act_callback_ =
-      base::BindOnce(std::move(callback), std::move(results));
-
-  load_timeout_timer_.Start(FROM_HERE, kPageLoadTimeout,
-                            base::BindOnce(&ActorTask::OnPageLoadedTimeout,
-                                           weak_ptr_factory_.GetWeakPtr()));
+AggregatedJournal& ActorTask::GetJournal() const {
+  CHECK(journal_);
+  return *journal_;
 }
 
-void ActorTask::DidStopLoading(web::WebState* web_state) {
-  OnWebStateFinishedLoading(web_state);
-}
-
-void ActorTask::WebStateDestroyed(web::WebState* web_state) {
-  OnWebStateFinishedLoading(web_state);
+ActorToolFactory& ActorTask::GetToolFactory() const {
+  CHECK(tool_factory_);
+  return *tool_factory_;
 }
 
 bool ActorTask::IsWindowIdValid(int32_t window_id) {
@@ -267,90 +284,6 @@ web::WebState* ActorTask::InsertWebState(
   return web_state;
 }
 
-AggregatedJournal& ActorTask::GetJournal() const {
-  CHECK(journal_);
-  return *journal_;
-}
-
-ActorToolFactory& ActorTask::GetToolFactory() const {
-  CHECK(tool_factory_);
-  return *tool_factory_;
-}
-
-void ActorTask::Interrupt(bool retain_user_control,
-                          ActorTaskInterruptReason interrupt_reason) {
-  // TODO(crbug.com/548051839): Implement and test.
-  if (state_ != ActorTaskState::kReflecting &&
-      state_ != ActorTaskState::kActing) {
-    return;
-  }
-  Pause(/*from_actor=*/true);
-  SetState(ActorTaskState::kWaitingOnUser);
-}
-
-void ActorTask::Uninterrupt(ActorTaskState resumed_state) {
-  // TODO(crbug.com/548051839): Implement and test.
-  if (state_ != ActorTaskState::kWaitingOnUser) {
-    return;
-  }
-  Resume();
-  SetState(resumed_state);
-}
-
-void ActorTask::OnWebStateFinishedLoading(web::WebState* web_state) {
-  scoped_web_state_observations_.RemoveObservation(web_state);
-
-  if (scoped_web_state_observations_.IsObservingAnySource()) {
-    return;
-  }
-
-  // Stop the timeout and execute the deferred callback since no more observed
-  // WebStates are still loading.
-  load_timeout_timer_.Stop();
-  SetState(ActorTaskState::kReflecting);
-  if (deferred_act_callback_) {
-    std::move(deferred_act_callback_).Run();
-  }
-}
-
-void ActorTask::OnPageLoadedTimeout() {
-  scoped_web_state_observations_.RemoveAllObservations();
-
-  SetState(ActorTaskState::kReflecting);
-  if (deferred_act_callback_) {
-    std::move(deferred_act_callback_).Run();
-  }
-}
-
-void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
-  [observers_ actorTaskDidStopWithID:task_id_ finalState:state_];
-  SetActuatingOnWebStates(false);
-  // TODO(crbug.com/496164697): Implement and test.
-}
-
-void ActorTask::Pause(bool from_actor) {
-  // TODO(crbug.com/496164697): Implement and test.
-}
-
-void ActorTask::Resume() {
-  // TODO(crbug.com/496164697): Implement and test.
-}
-
-bool ActorTask::IsControllingWebState(web::WebState* web_state) const {
-  if (!web_state) {
-    return false;
-  }
-
-  for (const base::WeakPtr<web::WebState> controlled_web_state :
-       controlled_web_states_) {
-    if (controlled_web_state && controlled_web_state->GetUniqueIdentifier() ==
-                                    web_state->GetUniqueIdentifier()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 const std::vector<base::WeakPtr<web::WebState>>&
 ActorTask::controlled_web_states() const {
   return controlled_web_states_;
@@ -359,6 +292,18 @@ ActorTask::controlled_web_states() const {
 bool ActorTask::allow_incognito_web_states() const {
   return allow_incognito_web_states_;
 }
+
+#pragma mark - web::WebStateObserver
+
+void ActorTask::DidStopLoading(web::WebState* web_state) {
+  OnWebStateFinishedLoading(web_state);
+}
+
+void ActorTask::WebStateDestroyed(web::WebState* web_state) {
+  OnWebStateFinishedLoading(web_state);
+}
+
+#pragma mark - Private
 
 void ActorTask::SetActuatingOnWebStates(bool actuating) {
   for (const base::WeakPtr<web::WebState>& web_state_weak :
@@ -391,6 +336,65 @@ void ActorTask::SetState(ActorTaskState new_state) {
   [observers_ actorTaskWithID:task_id_
                didChangeState:new_state
                     fromState:old_state];
+}
+
+void ActorTask::OnActCompleted(ActCallback callback,
+                               std::vector<ActionResult> results) {
+  // TODO(crbug.com/503054406): Check for tool errors.
+
+  if (ObserveLoadingWebStates()) {
+    DeferActCompletion(std::move(callback), std::move(results));
+    return;
+  }
+
+  SetState(ActorTaskState::kReflecting);
+  std::move(callback).Run(std::move(results));
+}
+
+bool ActorTask::ObserveLoadingWebStates() {
+  for (const auto& weak_web_state : controlled_web_states_) {
+    web::WebState* web_state = weak_web_state.get();
+    if (web_state && web_state->IsLoading()) {
+      scoped_web_state_observations_.AddObservation(web_state);
+    }
+  }
+
+  return scoped_web_state_observations_.IsObservingAnySource();
+}
+
+void ActorTask::DeferActCompletion(ActCallback callback,
+                                   std::vector<ActionResult> results) {
+  deferred_act_callback_ =
+      base::BindOnce(std::move(callback), std::move(results));
+
+  load_timeout_timer_.Start(FROM_HERE, kPageLoadTimeout,
+                            base::BindOnce(&ActorTask::OnPageLoadedTimeout,
+                                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ActorTask::OnWebStateFinishedLoading(web::WebState* web_state) {
+  scoped_web_state_observations_.RemoveObservation(web_state);
+
+  if (scoped_web_state_observations_.IsObservingAnySource()) {
+    return;
+  }
+
+  // Stop the timeout and execute the deferred callback since no more observed
+  // WebStates are still loading.
+  load_timeout_timer_.Stop();
+  SetState(ActorTaskState::kReflecting);
+  if (deferred_act_callback_) {
+    std::move(deferred_act_callback_).Run();
+  }
+}
+
+void ActorTask::OnPageLoadedTimeout() {
+  scoped_web_state_observations_.RemoveAllObservations();
+
+  SetState(ActorTaskState::kReflecting);
+  if (deferred_act_callback_) {
+    std::move(deferred_act_callback_).Run();
+  }
 }
 
 void ActorTask::OnWillExecuteTool(ToolType tool_type,

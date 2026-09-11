@@ -82,30 +82,6 @@ void ActorService::Shutdown() {
   task_observers_.clear();
 }
 
-// TODO(crbug.com/556295233): Add new ActorService observation pattern for
-// coarse updates (task started/completed).
-void ActorService::AddTaskUpdatesObserver(
-    id<ActorTaskUpdatesObserver> observer) {
-  if (!observer || std::ranges::contains(task_observers_, observer)) {
-    return;
-  }
-  std::erase_if(task_observers_, [](id obs) { return obs == nil; });
-  task_observers_.push_back(observer);
-  for (const auto& [task_id, task] : active_tasks_) {
-    task->AddObserver(observer);
-  }
-}
-
-// TODO(crbug.com/556295233): Add new ActorService observation pattern for
-// coarse updates (task started/completed).
-void ActorService::RemoveTaskUpdatesObserver(
-    id<ActorTaskUpdatesObserver> observer) {
-  std::erase(task_observers_, observer);
-  for (const auto& [task_id, task] : active_tasks_) {
-    task->RemoveObserver(observer);
-  }
-}
-
 ActorTaskId ActorService::CreateTask(const std::string& title,
                                      bool allow_incognito_web_states) {
   CHECK(IsActorEnabled());
@@ -157,30 +133,6 @@ void ActorService::PerformActions(
                                  std::move(callback)));
 }
 
-void ActorService::AddControlledWebStates(
-    ActorTask* task,
-    const std::vector<std::unique_ptr<ActorToolRequest>>& actions) {
-  CHECK(IsActorEnabled());
-  CHECK(task);
-
-  for (const auto& request : actions) {
-    // The vector is populated by `CreateActorToolRequests` with non-null
-    // entries, and since `AddControlledWebStates` is called before the vector
-    // is moved to the task, the pointers are guaranteed to still be valid.
-    CHECK(request);
-    web::WebStateID target_id = request->GetTargetWebStateId();
-    if (!target_id.valid()) {
-      continue;
-    }
-
-    web::WebState* web_state =
-        GetWebState(target_id, task->allow_incognito_web_states());
-    if (web_state) {
-      task->AddControlledWebState(web_state);
-    }
-  }
-}
-
 void ActorService::RequestTabObservation(ActorTaskId task_id,
                                          web::WebState* web_state,
                                          TabObservationCallback callback) {
@@ -213,6 +165,97 @@ void ActorService::RequestTabObservation(ActorTaskId task_id,
   [page_context_wrapper setShouldForceUpdateMissingSnapshots:YES];
   [page_context_wrapper populatePageContextFieldsAsync];
 }
+
+void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
+  // TODO(crbug.com/496163986): Implement and test.
+}
+
+void ActorService::InterruptTask(ActorTaskId task_id,
+                                 ActorTaskInterruptReason reason) {
+  // TODO(crbug.com/548051839): Implement and test.
+}
+
+void ActorService::StopTask(ActorTaskId task_id,
+                            ActorTaskStoppedReason reason) {
+  // TODO(crbug.com/496163986): Implement and test.
+  auto it = active_tasks_.find(task_id);
+  if (it != active_tasks_.end()) {
+    it->second->Stop(reason);
+  }
+  active_tasks_.erase(task_id);
+}
+
+// TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
+// cleaned up.
+void ActorService::StopAllTasks() {
+  while (!active_tasks_.empty()) {
+    StopTask(active_tasks_.begin()->first,
+             ActorTaskStoppedReason::kStoppedByUser);
+  }
+}
+
+// TODO(crbug.com/556295233): Add new ActorService observation pattern for
+// coarse updates (task started/completed).
+void ActorService::AddTaskUpdatesObserver(
+    id<ActorTaskUpdatesObserver> observer) {
+  if (!observer || std::ranges::contains(task_observers_, observer)) {
+    return;
+  }
+  std::erase_if(task_observers_, [](id obs) { return obs == nil; });
+  task_observers_.push_back(observer);
+  for (const auto& [task_id, task] : active_tasks_) {
+    task->AddObserver(observer);
+  }
+}
+
+// TODO(crbug.com/556295233): Add new ActorService observation pattern for
+// coarse updates (task started/completed).
+void ActorService::RemoveTaskUpdatesObserver(
+    id<ActorTaskUpdatesObserver> observer) {
+  std::erase(task_observers_, observer);
+  for (const auto& [task_id, task] : active_tasks_) {
+    task->RemoveObserver(observer);
+  }
+}
+
+std::optional<ActorTaskState> ActorService::GetActiveTaskState() const {
+  if (active_tasks_.empty()) {
+    return std::nullopt;
+  }
+  return active_tasks_.rbegin()->second->GetState();
+}
+
+web::WebState* ActorService::GetWebStateForID(web::WebStateID web_state_id,
+                                              ActorTaskId task_id) {
+  auto it = active_tasks_.find(task_id);
+  if (it == active_tasks_.end()) {
+    return nullptr;
+  }
+
+  for (const auto& weak_ptr : it->second->controlled_web_states()) {
+    if (weak_ptr && weak_ptr->GetUniqueIdentifier() == web_state_id) {
+      return weak_ptr.get();
+    }
+  }
+
+  return nullptr;
+}
+
+void ActorService::AddControlledWebState(ActorTaskId task_id,
+                                         web::WebState* web_state) {
+  CHECK(IsActorEnabled());
+
+  auto it = active_tasks_.find(task_id);
+  if (it != active_tasks_.end()) {
+    it->second->AddControlledWebState(web_state);
+  }
+}
+
+origin_gating::OriginGatingChecker* ActorService::GetOriginGatingChecker() {
+  return origin_gating_checker_.get();
+}
+
+#pragma mark - Private
 
 void ActorService::OnPageContextExtractionComplete(
     web::WebStateID web_state_id,
@@ -280,27 +323,28 @@ void ActorService::OnActCompleted(ActorTaskId task_id,
   }
 }
 
-std::optional<ActorTaskState> ActorService::GetActiveTaskState() const {
-  if (active_tasks_.empty()) {
-    return std::nullopt;
-  }
-  return active_tasks_.rbegin()->second->GetState();
-}
+void ActorService::AddControlledWebStates(
+    ActorTask* task,
+    const std::vector<std::unique_ptr<ActorToolRequest>>& actions) {
+  CHECK(IsActorEnabled());
+  CHECK(task);
 
-web::WebState* ActorService::GetWebStateForID(web::WebStateID web_state_id,
-                                              ActorTaskId task_id) {
-  auto it = active_tasks_.find(task_id);
-  if (it == active_tasks_.end()) {
-    return nullptr;
-  }
+  for (const auto& request : actions) {
+    // The vector is populated by `CreateActorToolRequests` with non-null
+    // entries, and since `AddControlledWebStates` is called before the vector
+    // is moved to the task, the pointers are guaranteed to still be valid.
+    CHECK(request);
+    web::WebStateID target_id = request->GetTargetWebStateId();
+    if (!target_id.valid()) {
+      continue;
+    }
 
-  for (const auto& weak_ptr : it->second->controlled_web_states()) {
-    if (weak_ptr && weak_ptr->GetUniqueIdentifier() == web_state_id) {
-      return weak_ptr.get();
+    web::WebState* web_state =
+        GetWebState(target_id, task->allow_incognito_web_states());
+    if (web_state) {
+      task->AddControlledWebState(web_state);
     }
   }
-
-  return nullptr;
 }
 
 web::WebState* ActorService::GetWebState(web::WebStateID web_state_id,
@@ -315,44 +359,6 @@ web::WebState* ActorService::GetWebState(web::WebStateID web_state_id,
 
   return browser_and_index.browser->GetWebStateList()->GetWebStateAt(
       browser_and_index.tab_index);
-}
-
-void ActorService::AddControlledWebState(ActorTaskId task_id,
-                                         web::WebState* web_state) {
-  CHECK(IsActorEnabled());
-
-  auto it = active_tasks_.find(task_id);
-  if (it != active_tasks_.end()) {
-    it->second->AddControlledWebState(web_state);
-  }
-}
-
-void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
-  // TODO(crbug.com/496163986): Implement and test.
-}
-
-void ActorService::InterruptTask(ActorTaskId task_id,
-                                 ActorTaskInterruptReason reason) {
-  // TODO(crbug.com/548051839): Implement and test.
-}
-
-void ActorService::StopTask(ActorTaskId task_id,
-                            ActorTaskStoppedReason reason) {
-  // TODO(crbug.com/496163986): Implement and test.
-  auto it = active_tasks_.find(task_id);
-  if (it != active_tasks_.end()) {
-    it->second->Stop(reason);
-  }
-  active_tasks_.erase(task_id);
-}
-
-// TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
-// cleaned up.
-void ActorService::StopAllTasks() {
-  while (!active_tasks_.empty()) {
-    StopTask(active_tasks_.begin()->first,
-             ActorTaskStoppedReason::kStoppedByUser);
-  }
 }
 
 // static
@@ -376,10 +382,6 @@ ActorService::CreateOriginGatingConfig() {
       // Do not cache decisions per-site, as actor safety policies require
       // re-evaluating each navigation and page action dynamically.
       /*use_site_keyed_cache=*/false);
-}
-
-origin_gating::OriginGatingChecker* ActorService::GetOriginGatingChecker() {
-  return origin_gating_checker_.get();
 }
 
 }  // namespace actor

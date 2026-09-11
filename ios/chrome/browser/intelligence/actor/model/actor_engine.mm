@@ -128,14 +128,59 @@ void ActorEngine::CancelOngoingAndPendingActions(
   }
 }
 
-void ActorEngine::SetState(State new_state) {
-  // TODO(crbug.com/503841160): Log the proper WebState URLs.
-  LogJournalEvent(GetJournal(), GURL(), GetTaskId(),
-                  "ExecutionEngine::StateChange",
-                  {{"current_state", ActorEngineStateToString(state_)},
-                   {"new_state", ActorEngineStateToString(new_state)}});
-  state_ = new_state;
+#pragma mark - ToolDelegate
+
+ActorTaskId ActorEngine::GetTaskId() const {
+  CHECK(owner_task_);
+  return owner_task_->task_id();
 }
+
+AggregatedJournal& ActorEngine::GetJournal() const {
+  CHECK(owner_task_);
+  return owner_task_->GetJournal();
+}
+
+ActorToolFactory& ActorEngine::GetToolFactory() const {
+  CHECK(owner_task_);
+  return owner_task_->GetToolFactory();
+}
+
+ActorTaskFormFillingHandler* ActorEngine::GetActorTaskFormFillingHandler() {
+  if (!form_filling_handler_) {
+    intervention_handler_ = [[ActorTaskInterventionHandler alloc] init];
+    form_filling_handler_ = ActorTaskFormFillingHandler::Create(
+        base::PassKey<ActorEngine>(), GetJournal(), GetTaskId());
+    form_filling_handler_->SetInterventionDelegate(base::PassKey<ActorEngine>(),
+                                                   intervention_handler_);
+  }
+  return form_filling_handler_.get();
+}
+
+void ActorEngine::InterruptFromTool() {
+  CHECK(owner_task_);
+  owner_task_->Interrupt(/*retain_user_control=*/false,
+                         ActorTaskInterruptReason::kUnknownReason);
+}
+
+void ActorEngine::UninterruptFromTool() {
+  CHECK(owner_task_);
+  owner_task_->Uninterrupt(ActorTaskState::kActing);
+}
+
+bool ActorEngine::IsWindowIdValid(int32_t window_id) {
+  CHECK(owner_task_);
+  return owner_task_->IsWindowIdValid(window_id);
+}
+
+web::WebState* ActorEngine::InsertWebState(
+    int32_t window_id,
+    const web::NavigationManager::WebLoadParams& load_params,
+    bool in_background) {
+  CHECK(owner_task_);
+  return owner_task_->InsertWebState(window_id, load_params, in_background);
+}
+
+#pragma mark - Private
 
 void ActorEngine::ExecuteNextAction() {
   if (next_action_index_ >= action_sequence_.size()) {
@@ -170,6 +215,15 @@ void ActorEngine::UiPreInvoke() {
       action->GetToolType(), GetWebStateIDForAction(action));
 
   FinishedUiPreInvoke(ActionResult(ToolExecutionResult::Ok()));
+}
+
+void ActorEngine::SetState(State new_state) {
+  // TODO(crbug.com/503841160): Log the proper WebState URLs.
+  LogJournalEvent(GetJournal(), GURL(), GetTaskId(),
+                  "ExecutionEngine::StateChange",
+                  {{"current_state", ActorEngineStateToString(state_)},
+                   {"new_state", ActorEngineStateToString(new_state)}});
+  state_ = new_state;
 }
 
 void ActorEngine::FinishedUiPreInvoke(ActionResult result) {
@@ -260,58 +314,6 @@ void ActorEngine::CompleteActions(ActionResult result) {
 size_t ActorEngine::InProgressActionIndex() const {
   CHECK_GT(next_action_index_, 0ul);
   return next_action_index_ - 1;
-}
-
-#pragma mark - ToolDelegate
-
-ActorTaskId ActorEngine::GetTaskId() const {
-  CHECK(owner_task_);
-  return owner_task_->task_id();
-}
-
-AggregatedJournal& ActorEngine::GetJournal() const {
-  CHECK(owner_task_);
-  return owner_task_->GetJournal();
-}
-
-ActorToolFactory& ActorEngine::GetToolFactory() const {
-  CHECK(owner_task_);
-  return owner_task_->GetToolFactory();
-}
-
-ActorTaskFormFillingHandler* ActorEngine::GetActorTaskFormFillingHandler() {
-  if (!form_filling_handler_) {
-    intervention_handler_ = [[ActorTaskInterventionHandler alloc] init];
-    form_filling_handler_ = ActorTaskFormFillingHandler::Create(
-        base::PassKey<ActorEngine>(), GetJournal(), GetTaskId());
-    form_filling_handler_->SetInterventionDelegate(base::PassKey<ActorEngine>(),
-                                                   intervention_handler_);
-  }
-  return form_filling_handler_.get();
-}
-
-void ActorEngine::InterruptFromTool() {
-  CHECK(owner_task_);
-  owner_task_->Interrupt(/*retain_user_control=*/false,
-                         ActorTaskInterruptReason::kUnknownReason);
-}
-
-void ActorEngine::UninterruptFromTool() {
-  CHECK(owner_task_);
-  owner_task_->Uninterrupt(ActorTaskState::kActing);
-}
-
-bool ActorEngine::IsWindowIdValid(int32_t window_id) {
-  CHECK(owner_task_);
-  return owner_task_->IsWindowIdValid(window_id);
-}
-
-web::WebState* ActorEngine::InsertWebState(
-    int32_t window_id,
-    const web::NavigationManager::WebLoadParams& load_params,
-    bool in_background) {
-  CHECK(owner_task_);
-  return owner_task_->InsertWebState(window_id, load_params, in_background);
 }
 
 }  // namespace actor
