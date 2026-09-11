@@ -140,7 +140,7 @@ class LayerTreeHostProxyTestSetNeedsCommitUnthrottled
     EXPECT_FALSE(GetProxyMain()->has_sent_unthrottled_commit_request());
 
     // Simulate being in throttled state.
-    GetProxyMain()->set_consecutive_no_damage_main_frames_for_testing(90);
+    GetProxyMain()->set_consecutive_no_damage_main_frames_for_testing(360);
 
     // Requesting a rAF commit should NOT set
     // has_sent_unthrottled_commit_request.

@@ -3632,9 +3632,9 @@ TEST(SchedulerStateMachineTest, ThrottleDueToConsecutiveNoDamageFrames) {
   EXPECT_EQ(base::TimeDelta(), state.MainFrameThrottledInterval());
   EXPECT_FALSE(state.ShouldThrottleSendBeginMainFrame());
 
-  // Simulating 90 consecutive no-update frames.
-  // The threshold for throttling is 90 consecutive no-update frames.
-  for (int i = 0; i < 90; i++) {
+  // Simulating 360 consecutive no-update frames.
+  // The threshold for throttling is 360 consecutive no-update frames.
+  for (int i = 0; i < 360; i++) {
     state.IssueNextBeginImplFrame();
     state.SetNeedsBeginMainFrame(false);
     EXPECT_ACTION_UPDATE_STATE(
@@ -3676,8 +3676,8 @@ TEST(SchedulerStateMachineTest, UnthrottledBeginMainFrameRequest) {
 
   state.FrameIntervalUpdated(base::Hertz(60));
 
-  // Simulating 90 consecutive no-update frames to trigger throttling.
-  for (int i = 0; i < 90; i++) {
+  // Simulating 360 consecutive no-update frames to trigger throttling.
+  for (int i = 0; i < 360; i++) {
     state.IssueNextBeginImplFrame();
     state.SetNeedsBeginMainFrame(false);
     EXPECT_ACTION_UPDATE_STATE(
@@ -3863,7 +3863,7 @@ TEST(SchedulerStateMachineTest,
   // throttle.
   state.SetRequestHighFramerate(true);
 
-  for (int i = 0; i < 90; i++) {
+  for (int i = 0; i < 360; i++) {
     state.IssueNextBeginImplFrame();
     state.SetNeedsBeginMainFrame(false);
     EXPECT_ACTION_UPDATE_STATE(
@@ -3892,8 +3892,8 @@ TEST(SchedulerStateMachineTest,
 
   // 2. Simulate throttling first, then request high framerate. Throttling
   // should stop. We already have 1 no-damage frame from the previous step after
-  // reset. Need 89 more to throttle.
-  for (int i = 0; i < 89; i++) {
+  // reset. Need 359 more to throttle.
+  for (int i = 0; i < 359; i++) {
     state.IssueNextBeginImplFrame();
     state.SetNeedsBeginMainFrame(false);
     EXPECT_ACTION_UPDATE_STATE(
@@ -3949,7 +3949,7 @@ TEST(SchedulerStateMachineTest,
   state.FrameIntervalUpdated(base::Hertz(60));
 
   // Simulate throttling.
-  for (int i = 0; i < 90; i++) {
+  for (int i = 0; i < 360; i++) {
     state.IssueNextBeginImplFrame();
     state.SetNeedsBeginMainFrame(false);
     EXPECT_ACTION_UPDATE_STATE(
