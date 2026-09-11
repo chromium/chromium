@@ -590,7 +590,8 @@ class BrowserAnimationController::GroupData : public gfx::AnimationDelegate {
   void MaybeStartLogger() {
     CHECK(current_motion_);
     if (current_motion_info_.histogram_prefix.is_specified() &&
-        current_motion_info_.duration.is_positive()) {
+        current_motion_info_.duration.is_positive() &&
+        controller_->browser_view_) {
       if (auto* const widget = controller_->browser_view_->GetWidget()) {
         logger_.emplace(widget, current_motion_info_.duration,
                         current_motion_info_.histogram_prefix.GetFullPrefix());

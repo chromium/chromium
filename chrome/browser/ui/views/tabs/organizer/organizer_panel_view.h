@@ -67,6 +67,7 @@ class OrganizerPanelView : public views::View {
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<actions::ActionItem> root_action_item_;
   const base::CallbackListSubscription state_controller_subscription_;
+  const base::CallbackListSubscription animation_subscription_;
 
   raw_ptr<views::View> web_view_ = nullptr;
 

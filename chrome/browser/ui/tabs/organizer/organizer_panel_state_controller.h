@@ -27,7 +27,7 @@ class OrganizerPanelStateController {
  public:
   DECLARE_USER_DATA(OrganizerPanelStateController);
 
-  explicit OrganizerPanelStateController(BrowserWindowInterface* browser_window,
+  explicit OrganizerPanelStateController(BrowserWindowInterface& browser_window,
                                          actions::ActionItem* root_action_item);
   OrganizerPanelStateController(const OrganizerPanelStateController&) = delete;
   OrganizerPanelStateController& operator=(
@@ -72,6 +72,7 @@ class OrganizerPanelStateController {
   std::optional<extensions::ExtensionId> active_extension_id_;
 #endif
 
+  const raw_ref<BrowserWindowInterface> browser_window_;
   const raw_ptr<actions::ActionItem> root_action_item_;
 
   // Callback list for state changes to the visibility.

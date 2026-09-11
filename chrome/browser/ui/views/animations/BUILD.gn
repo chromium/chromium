@@ -6,6 +6,8 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("animations") {
   sources = [
+    "organizer_panel_animations.cc",
+    "organizer_panel_animations.h",
     "side_panel_animations.cc",
     "side_panel_animations.h",
     "tab_strip_animations.cc",

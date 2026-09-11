@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
@@ -898,7 +899,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
 
   // TODO(crbug.com/469425263): Ensure correct layout calculations for the
   // Organizer Panel Container.
-  if (IsParentedToAndVisible(views().organizer_tray, views().browser_view)) {
+  if (IsParentedTo(views().organizer_tray, views().browser_view)) {
     int target_width = organizer_panel::kOrganizerPanelMinWidth;
     bool organizer_panel_should_appear_elevated = true;
     if (layout_data_->tab_strip_type == TabStripType::kVertical) {
@@ -915,14 +916,20 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     views().organizer_tray->SetIsElevated(
         organizer_panel_should_appear_elevated);
 
-    const double reveal_amount = views().organizer_tray->GetAnimationValue();
+    const double reveal_amount =
+        delegate()
+            .GetAnimationController()
+            ->GetCurrentValue(OrganizerPanelAnimations::kOrganizerPanel,
+                              OrganizerPanelAnimations::kVisibleWidth)
+            .value_or(0.0);
     const int visible_width = base::ClampFloor(target_width * reveal_amount);
 
     gfx::Rect organizer_panel_bounds =
         gfx::Rect(browser_params.visual_client_area.x(),
                   browser_params.visual_client_area.y(), visible_width,
                   browser_params.visual_client_area.height());
-    layout.AddChild(views().organizer_tray, organizer_panel_bounds);
+    layout.AddChild(views().organizer_tray, organizer_panel_bounds,
+                    visible_width > 0);
   }
 
   // When the tabstrip isn't at the top or in constrained widths, the top
@@ -1570,8 +1577,12 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       CustomFloatingCorner* const vertical_tabs_bottom_corner =
           views().vertical_tab_strip_bottom_corner;
       if (!views().organizer_tray->is_elevated()) {
-        auto organizer_panel_reveal_amount =
-            views().organizer_tray->GetAnimationValue();
+        const double organizer_panel_reveal_amount =
+            delegate()
+                .GetAnimationController()
+                ->GetCurrentValue(OrganizerPanelAnimations::kOrganizerPanel,
+                                  OrganizerPanelAnimations::kVisibleWidth)
+                .value_or(0.0);
         CustomCorners::ColorChoiceWithAlpha const fade_background{
             organizer_panel::kOrganizerPanelBackgroundColor,
             static_cast<float>(organizer_panel_reveal_amount)};

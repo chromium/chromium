@@ -8,15 +8,19 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
@@ -112,7 +116,15 @@ OrganizerPanelView::OrganizerPanelView(
       root_action_item_(root_action_item),
       state_controller_subscription_(state_controller->RegisterOnStateChanged(
           base::BindRepeating(&OrganizerPanelView::OnOrganizerPanelStateChanged,
-                              base::Unretained(this)))) {
+                              base::Unretained(this)))),
+      animation_subscription_(
+          BrowserAnimationController::From(browser)->Subscribe(
+              OrganizerPanelAnimations::kOrganizerPanel,
+              base::BindRepeating(
+                  [](OrganizerPanelView* view,
+                     const BrowserAnimationController*,
+                     BrowserAnimationUpdate) { view->InvalidateLayout(); },
+                  base::Unretained(this)))) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);

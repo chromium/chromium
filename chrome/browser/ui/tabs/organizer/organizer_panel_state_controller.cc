@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/actions/actions.h"
@@ -15,10 +19,11 @@
 DEFINE_USER_DATA(OrganizerPanelStateController);
 
 OrganizerPanelStateController::OrganizerPanelStateController(
-    BrowserWindowInterface* browser_window,
+    BrowserWindowInterface& browser_window,
     actions::ActionItem* root_action_item)
-    : root_action_item_(root_action_item),
-      scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
+    : browser_window_(browser_window),
+      root_action_item_(root_action_item),
+      scoped_unowned_user_data_(browser_window.GetUnownedUserDataHost(),
                                 *this) {
   UpdateOrganizerActionItem();
 }
@@ -46,6 +51,10 @@ void OrganizerPanelStateController::SetOrganizerVisible(bool visible) {
     active_extension_id_.reset();
   }
 #endif
+  BrowserAnimationController::From(&*browser_window_)
+      ->Start(OrganizerPanelAnimations::kOrganizerPanel,
+              is_visible_ ? OrganizerPanelAnimations::kShow
+                          : OrganizerPanelAnimations::kHide);
   NotifyStateChanged();
 }
 
@@ -57,8 +66,7 @@ void OrganizerPanelStateController::OpenForExtension(
   }
 
   active_extension_id_ = extension_id;
-  is_visible_ = true;
-  NotifyStateChanged();
+  SetOrganizerVisible(true);
 }
 
 void OrganizerPanelStateController::ToggleForExtension(

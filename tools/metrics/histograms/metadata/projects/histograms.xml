@@ -19,6 +19,15 @@ reviewer.
 
 <histograms>
 
+<!-- LINT.IfChange(OrganizerPanelAnimations) -->
+
+<variants name="OrganizerPanelAnimation">
+  <variant name="Hide" summary="Hide the organizer panel"/>
+  <variant name="Show" summary="Show the organizer panel"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/animations/organizer_panel_animations.cc:OrganizerPanelAnimations) -->
+
 <histogram name="Projects.ProjectsPanel.OpenedToEmptyState" enum="Boolean"
     expires_after="2026-12-01">
   <owner>chazzy@chromium.org</owner>
@@ -60,6 +69,29 @@ reviewer.
     panel is closed due to any reason (user action, closing the window, browser
     shutdown, etc.).
   </summary>
+</histogram>
+
+<histogram name="Projects.ProjectsPanel.{OrganizerPanelAnimation}.AnimationFPS"
+    units="fps" expires_after="2027-02-07">
+  <owner>dfried@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the frames per second for the organizer panel animation. This is
+    recorded after organizer panel animation is completed.
+  </summary>
+  <token key="OrganizerPanelAnimation" variants="OrganizerPanelAnimation"/>
+</histogram>
+
+<histogram
+    name="Projects.ProjectsPanel.{OrganizerPanelAnimation}.TimeOfLongestAnimationStep"
+    units="ms" expires_after="2027-02-07">
+  <owner>dfried@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the length of the longest step in an organizer panel animation. This
+    is recorded after organizer panel animation is completed.
+  </summary>
+  <token key="OrganizerPanelAnimation" variants="OrganizerPanelAnimation"/>
 </histogram>
 
 </histograms>

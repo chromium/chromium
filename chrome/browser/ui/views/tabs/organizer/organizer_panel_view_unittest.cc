@@ -14,8 +14,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -51,8 +53,12 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
     EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
         .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
 
+    animation_controller_ = std::make_unique<BrowserAnimationController>(
+        mock_browser_window_interface_);
+    animation_controller_->AddAnimationProvider(
+        std::make_unique<OrganizerPanelAnimations>());
     state_controller_ = std::make_unique<OrganizerPanelStateController>(
-        &mock_browser_window_interface_, root_action_item_.get());
+        mock_browser_window_interface_, root_action_item_.get());
 
     EXPECT_CALL(mock_browser_window_interface_, GetProfile())
         .WillRepeatedly(testing::Return(profile()));
@@ -78,6 +84,7 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
     widget_.reset();
 
     state_controller_.reset();
+    animation_controller_.reset();
     profile_.reset();
     ChromeViewsTestBase::TearDown();
   }
@@ -99,6 +106,7 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<actions::ActionItem> root_action_item_;
+  std::unique_ptr<BrowserAnimationController> animation_controller_;
   std::unique_ptr<OrganizerPanelStateController> state_controller_;
 
   // Widget owns the view.

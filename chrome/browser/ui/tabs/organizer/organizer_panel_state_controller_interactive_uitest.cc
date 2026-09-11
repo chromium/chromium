@@ -4,10 +4,16 @@
 
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
 
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
@@ -17,9 +23,16 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
 
 namespace base::test {
+
+namespace {
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kShowAnimationComplete);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHideAnimationComplete);
+}  // namespace
 
 class OrganizerPanelStateControllerInteractiveUiTest
     : public InteractiveBrowserTest {
@@ -36,6 +49,33 @@ class OrganizerPanelStateControllerInteractiveUiTest
     tabs::VerticalTabStripStateController::From(browser())
         ->SetVerticalTabsEnabled(true);
     RunScheduledLayouts();
+
+    animation_subscription_ =
+        BrowserAnimationController::From(browser())->Subscribe(
+            OrganizerPanelAnimations::kOrganizerPanel,
+            base::BindLambdaForTesting([this](const BrowserAnimationController*
+                                                  controller,
+                                              BrowserAnimationUpdate update) {
+              if (update == BrowserAnimationUpdate::kEnded) {
+                const auto motion = controller->GetCurrentMotion(
+                    OrganizerPanelAnimations::kOrganizerPanel);
+                auto* const browser_view =
+                    BrowserView::GetBrowserViewForBrowser(browser());
+                if (motion == OrganizerPanelAnimations::kShow) {
+                  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+                      kShowAnimationComplete, browser_view);
+                } else if (motion == OrganizerPanelAnimations::kHide) {
+                  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+                      kHideAnimationComplete, browser_view);
+                }
+              }
+            }));
+  }
+
+  void TearDownOnMainThread() override {
+    animation_subscription_ = base::CallbackListSubscription();
+
+    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   auto ExpectControllerState(bool open) {
@@ -49,11 +89,11 @@ class OrganizerPanelStateControllerInteractiveUiTest
   }
 
   auto WaitForPanelShow() {
-    auto steps = Steps(InParallel(
-        RunSubsequence(ExpectControllerState(true)),
-        RunSubsequence(WaitForEvent(OrganizerTrayView::kTrayElementId,
-                                    OrganizerTrayView::kOpenAnimationComplete)),
-        RunSubsequence(WaitForShow(kOrganizerPanelViewElementId))));
+    auto steps = Steps(
+        InParallel(RunSubsequence(ExpectControllerState(true)),
+                   RunSubsequence(WaitForEvent(kBrowserViewElementId,
+                                               kShowAnimationComplete)),
+                   RunSubsequence(WaitForShow(kOrganizerPanelViewElementId))));
     AddDescriptionPrefix(steps, "WaitForPanelShow()");
     return steps;
   }
@@ -61,9 +101,8 @@ class OrganizerPanelStateControllerInteractiveUiTest
   auto WaitForPanelHide() {
     auto steps = Steps(
         InParallel(RunSubsequence(ExpectControllerState(false)),
-                   RunSubsequence(WaitForEvent(
-                       OrganizerTrayView::kTrayElementId,
-                       OrganizerTrayView::kCloseAnimationComplete)),
+                   RunSubsequence(WaitForEvent(kBrowserViewElementId,
+                                               kHideAnimationComplete)),
                    RunSubsequence(WaitForHide(kOrganizerPanelViewElementId))));
     AddDescriptionPrefix(steps, "WaitForPanelHide()");
     return steps;
@@ -75,6 +114,7 @@ class OrganizerPanelStateControllerInteractiveUiTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription animation_subscription_;
 };
 
 // This test checks that we can click the tab search button to toggle the

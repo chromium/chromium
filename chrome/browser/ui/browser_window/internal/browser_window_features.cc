@@ -114,6 +114,7 @@
 #include "chrome/browser/ui/ui_controller_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
@@ -342,6 +343,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<SidePanelAnimations>());
   browser_animation_controller_->AddAnimationProvider(
       std::make_unique<TabStripAnimations>());
+  browser_animation_controller_->AddAnimationProvider(
+      std::make_unique<OrganizerPanelAnimations>());
 
   if (webui_browser::IsWebUIBrowserEnabled() &&
       browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
@@ -623,7 +626,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
       organizer_panel_state_controller_ =
           GetUserDataFactory().CreateInstance<OrganizerPanelStateController>(
-              *browser, browser, browser_actions_->root_action_item());
+              *browser, *browser, browser_actions_->root_action_item());
     }
 
     std::optional<bool> restored_state_collapsed =
