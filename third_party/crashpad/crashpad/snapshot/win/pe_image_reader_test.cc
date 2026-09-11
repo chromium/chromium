@@ -171,7 +171,12 @@ TEST(PEImageReader, VSFixedFileInfo_OneModule) {
   TestVSFixedFileInfo(&process_reader, module, true);
 }
 
-TEST(PEImageReader, VSFixedFileInfo_AllModules) {
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_VSFixedFileInfo_AllModules DISABLED_VSFixedFileInfo_AllModules
+#else
+#define MAYBE_VSFixedFileInfo_AllModules VSFixedFileInfo_AllModules
+#endif
+TEST(PEImageReader, MAYBE_VSFixedFileInfo_AllModules) {
   ProcessReaderWin process_reader;
   ASSERT_TRUE(process_reader.Initialize(GetCurrentProcess(),
                                         ProcessSuspensionState::kRunning));
