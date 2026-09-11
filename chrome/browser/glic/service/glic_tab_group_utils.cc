@@ -4,19 +4,13 @@
 
 #include "chrome/browser/glic/service/glic_tab_group_utils.h"
 
-#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
-#include "url/gurl.h"
-#include "url/url_constants.h"
 
 namespace glic {
 
@@ -65,34 +59,6 @@ std::vector<tabs::TabInterface*> GetTabsInTabGroup(
     return {};
   }
   return GetTabsInTabGroup(window, group_id);
-}
-
-tabs::TabInterface* GetGlicTabInGroup(Profile* profile,
-                                      tab_groups::TabGroupId group_id) {
-  for (tabs::TabInterface* tab : GetTabsInTabGroup(profile, group_id)) {
-    if (IsGlicOwnedTab(tab)) {
-      return tab;
-    }
-  }
-  return nullptr;
-}
-
-tabs::TabInterface* CreatePlaceholderTabInGroup(BrowserWindowInterface* window,
-                                                tab_groups::TabGroupId group_id,
-                                                int index) {
-  TabListInterface* tab_list = TabListInterface::From(window);
-  if (!tab_list) {
-    return nullptr;
-  }
-  Profile* profile = Profile::FromBrowserContext(window->GetProfile());
-  std::unique_ptr<content::WebContents> placeholder_contents =
-      content::WebContents::Create(content::WebContents::CreateParams(profile));
-  placeholder_contents->GetController().LoadURL(
-      GURL(url::kAboutBlankURL), content::Referrer(),
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
-
-  return tab_list->InsertWebContentsAt(index, std::move(placeholder_contents),
-                                       /*should_pin=*/false, group_id);
 }
 
 void EnsureTabInGroup(tabs::TabInterface* tab,

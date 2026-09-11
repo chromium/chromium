@@ -21,8 +21,7 @@ class GlicTabGroupBrowserTest
     : public GlicBrowserTestMixin<PlatformBrowserTest> {
  public:
   GlicTabGroupBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicTabGroups, {{"use_full_tab_embedder", "false"}});
+    feature_list_.InitAndEnableFeature(features::kGlicTabGroups);
   }
 
  private:
@@ -180,9 +179,8 @@ IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest,
   EXPECT_EQ(coordinator().GetInstanceForTab(tab2), instance);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    GlicTabGroupBrowserTest,
-    InvokeGlicOnOtherTabInGroupSwapsToSidePanelAndPlaceholder) {
+IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest,
+                       InvokeGlicOnOtherTabInGroupBindsToTab) {
   TabListInterface* tab_list = GetTabListInterface();
   ASSERT_TRUE(tab_list);
 

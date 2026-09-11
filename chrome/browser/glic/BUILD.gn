@@ -459,8 +459,6 @@ source_set("impl") {
     "service/glic_onboarding_status.h",
     "service/glic_onboarding_tracker.cc",
     "service/glic_onboarding_tracker.h",
-    "service/glic_tab_contents_swapper.cc",
-    "service/glic_tab_contents_swapper.h",
     "service/glic_tab_group_utils.cc",
     "service/glic_tab_group_utils.h",
     "service/glic_ui_embedder.h",
@@ -473,10 +471,6 @@ source_set("impl") {
     "widget/browser_conditions.h",
     "widget/conversions.cc",
     "widget/conversions.h",
-    "widget/glic_inactive_tab_ui.cc",
-    "widget/glic_inactive_tab_ui.h",
-    "widget/glic_tab_ui.cc",
-    "widget/glic_tab_ui.h",
     "widget/web_contents_delegate_util.h",
   ]
 

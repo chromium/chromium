@@ -76,9 +76,6 @@ GURL GetLocalizedGuestURL(const GURL& guest_url);
 // Returns true if `web_contents` contains the Glic WebUI application.
 bool IsGlicWebUI(const content::WebContents* web_contents);
 
-// Returns true if `tab` is owned by Glic.
-bool IsGlicOwnedTab(tabs::TabInterface* tab);
-
 // Returns true if `web_contents` is the Glic guest WebContents.
 bool IsGlicGuest(content::WebContents* web_contents);
 

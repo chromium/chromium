@@ -225,19 +225,6 @@ void GlicWebUIContentsManager::UpdateActuationTracker() {
       guest, state);
 }
 
-std::unique_ptr<content::WebContents>
-GlicWebUIContentsManager::ReleaseWebContents() {
-  CHECK(web_contents_);
-  return std::move(web_contents_);
-}
-
-void GlicWebUIContentsManager::ReclaimWebContents(
-    std::unique_ptr<content::WebContents> web_contents) {
-  CHECK(!web_contents_);
-  CHECK(web_contents);
-  web_contents_ = std::move(web_contents);
-}
-
 base::CallbackListSubscription
 GlicWebUIContentsManager::RegisterWebContentsChangedCallback(
     WebContentsChangedCallback callback) {

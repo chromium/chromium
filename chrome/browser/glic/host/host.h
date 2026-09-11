@@ -262,8 +262,6 @@ class Host : public GlicSharingManagerProvider {
   void OnGuestWebClientCleared(bool had_web_client);
 
   GlicWebContentsManager* contents_manager() { return contents_.get(); }
-  std::unique_ptr<content::WebContents> ReleaseWebContents();
-  void ReclaimWebContents(std::unique_ptr<content::WebContents> web_contents);
   // Returns the WebUI web contents. May be null.
   content::WebContents* webui_contents() const;
 

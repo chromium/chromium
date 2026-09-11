@@ -461,17 +461,6 @@ InstanceId Host::GetInstanceId() const {
   return glic_instance_ ? glic_instance_->id() : InstanceId::CreateNullId();
 }
 
-std::unique_ptr<content::WebContents> Host::ReleaseWebContents() {
-  CHECK(contents_);
-  return contents_->ReleaseWebContents();
-}
-
-void Host::ReclaimWebContents(
-    std::unique_ptr<content::WebContents> web_contents) {
-  CHECK(contents_);
-  contents_->ReclaimWebContents(std::move(web_contents));
-}
-
 content::WebContents* Host::webui_contents() const {
   return contents_ ? contents_->active_web_contents() : nullptr;
 }

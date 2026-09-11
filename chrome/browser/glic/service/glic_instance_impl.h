@@ -168,7 +168,6 @@ class GlicInstanceImpl : public GlicInstance,
   void BindTabGroup(tab_groups::TabGroupId group_id);
   void ShowForTabGroup(tab_groups::TabGroupId group_id,
                        std::optional<ShowOptions> options);
-  void SwapGlicTabToPlaceholder();
   void OnTabGroupingChanged(tabs::TabInterface* tab, bool is_added);
   void BindTabWithoutShowing(tabs::TabInterface* tab,
                              GlicPinTrigger pin_trigger,
@@ -214,7 +213,6 @@ class GlicInstanceImpl : public GlicInstance,
   // NOTE: This method may result in the deletion of `this`.
   void UnbindEmbedder(EmbedderKey key);
   void UnbindTab(tabs::TabInterface* tab);
-  void ReclaimWebContents(std::unique_ptr<content::WebContents> web_contents);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
   bool ContextAccessIndicatorEnabled();
   void CloseAllEmbedders();
@@ -232,7 +230,6 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<mojom::InvocationSource> GetInitialInvocationSource()
       const override;
   std::vector<tabs::TabInterface*> GetBoundTabs() const;
-  tabs::TabInterface* GetGlicTab() const;
 
   // If the key corresponds to a tab-associated embedder (such as a side panel),
   // returns the corresponding TabInterface pointer. Otherwise (e.g., a floating
@@ -364,7 +361,6 @@ class GlicInstanceImpl : public GlicInstance,
   GlicUiEmbedder* CreateActiveEmbedderForFloaty(
       const gfx::Rect& initial_bounds,
       tabs::TabInterface::Handle source_tab);
-  GlicUiEmbedder* CreateActiveEmbedderForTab(ShowOptions& options);
   void ShowInactiveSidePanelEmbedderFor(const SidePanelShowOptions& options);
   void SetActiveEmbedderAndNotifyVisibilityChange(
       std::optional<EmbedderKey> new_key);
@@ -381,15 +377,6 @@ class GlicInstanceImpl : public GlicInstance,
   void OnBoundTabDestroyed(tabs::TabInterface* tab);
   void OnBoundTabActivated(tabs::TabInterface* tab);
   void OnBoundTabActivatedAsync(base::WeakPtr<tabs::TabInterface> tab);
-  void OnGlicTabActivated(tabs::TabInterface* tab);
-  void OnGlicTabActivatedAsync(base::WeakPtr<tabs::TabInterface> tab);
-  void OnGlicTabWillDetach(tabs::TabInterface* tab,
-                           tabs::TabInterface::DetachReason reason);
-  void OnGlicTabClosedAsync(tabs::TabInterface::Handle tab_handle);
-  // Checks the associated tab group for any existing Glic-owned full tab.
-  // If one is found, registers/adopts it as this instance's full tab embedder
-  // and establishes observers for its lifetime and activation events.
-  void MaybeAdoptGlicTab();
   bool ShouldDoAutomaticActivation() const;
   void OnZeroStateSuggestionsFetched(
       mojom::ZeroStateSuggestionsPtr suggestions,
@@ -509,8 +496,6 @@ class GlicInstanceImpl : public GlicInstance,
   bool suppress_show_on_tab_added_to_task_ = false;
 
   std::optional<TabGroupBinding> tab_group_binding_;
-  bool is_contents_in_tab_ = false;
-  bool is_transitioning_full_tab_embedder_ = false;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };

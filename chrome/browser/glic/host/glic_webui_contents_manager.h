@@ -39,9 +39,6 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
   content::WebContents* active_web_contents() const override;
   void OnActuatingChanged(bool actuating) override;
   void OnTaskTabsVisibilityChanged(bool has_visible_tab) override;
-  std::unique_ptr<content::WebContents> ReleaseWebContents() override;
-  void ReclaimWebContents(
-      std::unique_ptr<content::WebContents> web_contents) override;
   base::CallbackListSubscription RegisterWebContentsChangedCallback(
       WebContentsChangedCallback callback) override;
   GlicWebClientManager& web_client_manager() override;

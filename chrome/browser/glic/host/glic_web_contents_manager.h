@@ -60,18 +60,6 @@ class GlicWebContentsManager {
   // Notifies the manager when task tabs visibility changes.
   virtual void OnTaskTabsVisibilityChanged(bool has_visible_tab) = 0;
 
-  // Releases ownership of the underlying WebContents, transferring it to the
-  // caller.
-  // TODO(b/555365681): Only used for tab embedders and slated for removal once
-  // tab embedders are deleted.
-  virtual std::unique_ptr<content::WebContents> ReleaseWebContents() = 0;
-
-  // Reclaims ownership of a previously released WebContents.
-  // TODO(b/555365681): Only used for tab embedders and slated for removal once
-  // tab embedders are deleted.
-  virtual void ReclaimWebContents(
-      std::unique_ptr<content::WebContents> web_contents) = 0;
-
   // Registers a callback to be notified when the active WebContents returned by
   // `web_contents()` changes (e.g. when swapping from loading overlay to
   // guest).

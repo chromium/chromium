@@ -36,7 +36,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
-#include "chrome/browser/glic/service/glic_tab_contents_swapper.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
@@ -514,14 +513,6 @@ GURL GetLocalizedGuestURL(const GURL& guest_url) {
 bool IsGlicWebUI(const content::WebContents* web_contents) {
   return web_contents &&
          GlicWebUiData::FromWebContents(web_contents) != nullptr;
-}
-
-bool IsGlicOwnedTab(tabs::TabInterface* tab) {
-  if (!tab || !tab->GetContents()) {
-    return false;
-  }
-  return tab->GetContents()->GetUserData(GlicPlaceholderUserData::kKey) ||
-         IsGlicWebUI(tab->GetContents());
 }
 
 bool IsProcessHostForGlic(content::RenderProcessHost* process_host) {

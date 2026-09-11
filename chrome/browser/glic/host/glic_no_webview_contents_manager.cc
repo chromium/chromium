@@ -744,16 +744,4 @@ void GlicNoWebviewContentsManager::UpdateActuationTracker() {
       guest_contents(), state);
 }
 
-// TODO(b/555365681): Remove once the legacy tab embedder is removed.
-std::unique_ptr<content::WebContents>
-GlicNoWebviewContentsManager::ReleaseWebContents() {
-  NOTREACHED();
-}
-
-// TODO(b/555365681): Remove once the legacy tab embedder is removed.
-void GlicNoWebviewContentsManager::ReclaimWebContents(
-    std::unique_ptr<content::WebContents> web_contents) {
-  NOTREACHED();
-}
-
 }  // namespace glic

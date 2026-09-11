@@ -395,10 +395,6 @@ GlicInstance* GlicInstanceCoordinatorImpl::ShowInstanceForTabGroup(
   GlicInstanceImpl* existing_instance = GetInstanceImplForTabGroup(group_id);
 
   if (existing_instance) {
-    if (tabs::TabInterface* glic_tab = existing_instance->GetGlicTab()) {
-      existing_instance->Show(ShowOptions::ForTab(*glic_tab));
-      return existing_instance;
-    }
     existing_instance->ShowForTabGroup(group_id, /*options=*/std::nullopt);
     return existing_instance;
   }
@@ -1213,7 +1209,6 @@ void GlicInstanceCoordinatorImpl::TransferTabGroupBinding(
   std::optional<tab_groups::TabGroupId> group_id =
       source_instance.GetTabGroup();
   if (group_id.has_value() && &target_instance != &source_instance) {
-    source_instance.SwapGlicTabToPlaceholder();
     target_instance.BindTabGroup(*group_id);
   }
 }

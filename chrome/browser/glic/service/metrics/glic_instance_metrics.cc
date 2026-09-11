@@ -62,10 +62,7 @@ namespace {
 
 SafeEmbedderKey ToSafeKey(const EmbedderKey& key) {
   return std::visit(
-      absl::Overload{[](const TabEmbedderKey& key) -> SafeEmbedderKey {
-                       return SafeEmbedderKey(key);
-                     },
-                     [](const SidePanelEmbedderKey& key) -> SafeEmbedderKey {
+      absl::Overload{[](const SidePanelEmbedderKey& key) -> SafeEmbedderKey {
                        return SafeEmbedderKey(key.tab->GetHandle());
                      },
                      [](const FloatingEmbedderKey& key) -> SafeEmbedderKey {
@@ -91,9 +88,6 @@ EmbedderType GetEmbedderTypeFromShowOptions(const ShowOptions& options) {
   }
   if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
     return EmbedderType::kFloaty;
-  }
-  if (std::holds_alternative<TabShowOptions>(options.embedder_options)) {
-    return EmbedderType::kTab;
   }
   return EmbedderType::kUnknown;
 }
