@@ -36,9 +36,9 @@ namespace safe_browsing {
 // V5UpdateCallback is invoked every time a scheduled update completes.
 // Parameters:
 //   - The mapping of update response protobufs received from the server for
-//     each list type. This can be `std::nullopt` if the update failed.
-using V5UpdateCallback = base::RepeatingCallback<void(
-    std::optional<std::map<ListIdentifier, V5::HashList>>)>;
+//     each list type.
+using V5UpdateCallback =
+    base::RepeatingCallback<void(std::map<ListIdentifier, V5::HashList>)>;
 
 class V5UpdateProtocolManager : public SBUpdateProtocolManager {
  public:

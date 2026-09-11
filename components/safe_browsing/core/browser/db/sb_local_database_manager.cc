@@ -1512,17 +1512,11 @@ void SBLocalDatabaseManager::V4UpdateRequestCompleted(
 }
 
 void SBLocalDatabaseManager::V5UpdateRequestCompleted(
-    std::optional<std::map<ListIdentifier, V5::HashList>>
-        parsed_server_response) {
+    std::map<ListIdentifier, V5::HashList> parsed_server_response) {
   CHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-  // TODO(crbug.com/362791941): Remove nullopt case from API since it never
-  // occurs.
-  if (!parsed_server_response.has_value()) {
-    return;
-  }
 
   auto update_map = std::make_unique<SBUpdateResponseMap>();
-  for (auto& [identifier, response] : parsed_server_response.value()) {
+  for (auto& [identifier, response] : parsed_server_response) {
     auto sb_response = std::make_unique<SBUpdateResponse>();
     sb_response->v5_response =
         std::make_unique<V5::HashList>(std::move(response));

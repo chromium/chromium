@@ -586,8 +586,7 @@ class SBLocalDatabaseManagerTest : public PlatformTest {
   }
 
   void V5UpdateRequestCompleted(
-      std::optional<std::map<ListIdentifier, V5::HashList>>
-          parsed_server_response) {
+      std::map<ListIdentifier, V5::HashList> parsed_server_response) {
     sb_local_database_manager_->V5UpdateRequestCompleted(
         std::move(parsed_server_response));
   }

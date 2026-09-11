@@ -439,8 +439,7 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // `parsed_server_response` is the map from list identifiers to their V5
   // hash list updates from the server.
   void V5UpdateRequestCompleted(
-      std::optional<std::map<ListIdentifier, V5::HashList>>
-          parsed_server_response);
+      std::map<ListIdentifier, V5::HashList> parsed_server_response);
 
   // Return true if we're enabled and have loaded real data for all of
   // these stores.
