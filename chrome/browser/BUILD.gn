@@ -1622,6 +1622,7 @@ source_set("core") {
     deps += [
       ":fullscreen",
       ":shell_integration_linux",
+      "//chrome/browser/lifetime",
       "//components/os_crypt/browser:posix_key_provider",
       "//third_party/libxml:xml_writer",
       "//ui/linux:display_server_utils",

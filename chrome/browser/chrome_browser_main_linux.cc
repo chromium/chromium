@@ -36,6 +36,7 @@
 
 #if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
+#include "chrome/browser/lifetime/session_end_listener_linux.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -67,6 +68,7 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
 #if BUILDFLAG(USE_DBUS)
   bluez::BluezDBusManager::Initialize(
       dbus_thread_linux::GetSharedSystemBus().get());
+  session_end_listener_ = SessionEndListenerLinux::Create();
 #endif  // BUILDFLAG(USE_DBUS)
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -110,6 +112,9 @@ void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
 #if BUILDFLAG(IS_CHROMEOS)
   // No-op; per PostBrowserStart() comment, this is done elsewhere.
 #else
+#if BUILDFLAG(USE_DBUS)
+  session_end_listener_.reset();
+#endif
   bluez::BluezDBusManager::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

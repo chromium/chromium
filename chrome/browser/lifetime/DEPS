@@ -2,4 +2,7 @@ specific_include_rules = {
   "application_lifetime_aura\\.cc": [
     "+ash/shell.h",
   ],
+  r"session_end_listener_linux(_unittest)?\.(cc|h)": [
+    "+dbus",
+  ],
 }

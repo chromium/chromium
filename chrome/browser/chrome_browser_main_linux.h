@@ -7,6 +7,8 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_MAIN_LINUX_H_
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_LINUX_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/config/linux/dbus/buildflags.h"
@@ -16,6 +18,10 @@
 namespace metrics {
 class StackSamplingRecorder;
 }
+#endif
+
+#if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+class SessionEndListenerLinux;
 #endif
 
 class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
@@ -47,6 +53,9 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
   // Used by ChromeOS tast tests. This is in ChromeBrowserMainPartsLinux for
   // historical reasons and should be moved to ChromeBrowserMainPartsAsh.
   scoped_refptr<metrics::StackSamplingRecorder> stack_sampling_recorder_;
+#endif
+#if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<SessionEndListenerLinux> session_end_listener_;
 #endif
 };
 

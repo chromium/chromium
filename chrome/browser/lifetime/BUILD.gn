@@ -57,6 +57,14 @@ source_set("lifetime") {
     ]
   }
 
+  if (is_linux && use_dbus) {
+    public += [ "session_end_listener_linux.h" ]
+    public_deps += [
+      "//components/dbus",
+      "//dbus",
+    ]
+  }
+
   if (!is_android && !is_chromeos) {
     public += [ "switch_utils.h" ]
   }
@@ -186,6 +194,15 @@ source_set("impl") {
     ]
   }
 
+  if (is_linux && use_dbus) {
+    sources += [ "session_end_listener_linux.cc" ]
+    deps += [
+      "//chrome/common:chrome_features",
+      "//components/dbus",
+      "//components/version_info",
+    ]
+  }
+
   if (!is_android && !is_chromeos) {
     sources += [ "switch_utils.cc" ]
   }
@@ -239,7 +256,13 @@ if (!is_android) {
       ]
     }
     if (is_linux && use_dbus) {
-      deps += [ "//components/dbus" ]
+      sources += [ "session_end_listener_linux_unittest.cc" ]
+      deps += [
+        "//chrome/common:chrome_features",
+        "//components/dbus",
+        "//components/version_info",
+        "//dbus:test_support",
+      ]
     }
   }
 
