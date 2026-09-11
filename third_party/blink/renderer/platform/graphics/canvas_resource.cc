@@ -485,7 +485,12 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
   auto resource = AdoptRef(new ExternalCanvasResource(
       std::move(client_si), sync_token, resource_source, hdr_metadata,
       std::move(release_callback), std::move(context_provider_wrapper)));
-  return resource->IsValid() ? resource : nullptr;
+
+  if (!resource->is_cross_thread() && !resource->context_provider_wrapper_) {
+    return nullptr;
+  }
+
+  return resource;
 }
 
 ExternalCanvasResource::~ExternalCanvasResource() {
@@ -508,20 +513,18 @@ ExternalCanvasResource::~ExternalCanvasResource() {
   }
 }
 
-bool ExternalCanvasResource::IsValid() const {
+scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
+  TRACE_EVENT0("blink", "ExternalCanvasResource::Bitmap");
+
   // On same thread we need to make sure context was not dropped, but
   // in the cross-thread case, checking a WeakPtr in not thread safe, not
   // to mention that we will use a shared context rather than the context
   // of origin to access the resource. In that case we will find out
   // whether the resource was dropped later, when we attempt to access the
   // mailbox.
-  return is_cross_thread() || context_provider_wrapper_;
-}
-
-scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
-  TRACE_EVENT0("blink", "ExternalCanvasResource::Bitmap");
-  if (!IsValid())
+  if (!is_cross_thread() && !context_provider_wrapper_) {
     return nullptr;
+  }
 
   // The |release_callback| keeps a ref on this resource to ensure the backing
   // shared image is kept alive until the lifetime of the image.
