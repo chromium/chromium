@@ -9,11 +9,6 @@
 
 namespace ash::personalization_app {
 
-void LogPersonalizationTheme(ColorMode color_mode) {
-  base::UmaHistogramEnumeration(kPersonalizationThemeColorModeHistogramName,
-                                color_mode);
-}
-
 void LogKeyboardBacklightColor(mojom::BacklightColor backlight_color) {
   base::UmaHistogramEnumeration(
       kPersonalizationKeyboardBacklightColorHistogramName, backlight_color);

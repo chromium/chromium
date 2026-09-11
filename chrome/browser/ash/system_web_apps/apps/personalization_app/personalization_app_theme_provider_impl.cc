@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
@@ -125,8 +124,6 @@ void PersonalizationAppThemeProviderImpl::SetColorModePref(
     bool dark_mode_enabled) {
   auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
   if (dark_light_mode_controller->IsDarkModeEnabled() != dark_mode_enabled) {
-    LogPersonalizationTheme(dark_mode_enabled ? ColorMode::kDark
-                                              : ColorMode::kLight);
     dark_light_mode_controller->ToggleColorMode();
   }
 }
@@ -135,9 +132,6 @@ void PersonalizationAppThemeProviderImpl::SetColorModeAutoScheduleEnabled(
     bool enabled) {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
-  if (enabled) {
-    LogPersonalizationTheme(ColorMode::kAuto);
-  }
   const ScheduleType schedule_type =
       enabled ? ScheduleType::kSunsetToSunrise : ScheduleType::kNone;
   pref_service->SetInteger(ash::prefs::kDarkModeScheduleType,

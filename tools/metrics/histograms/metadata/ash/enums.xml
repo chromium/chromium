@@ -1881,12 +1881,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="10" label="SeaPen Freeform"/>
 </enum>
 
-<enum name="PersonalizationThemeColorMode">
-  <int value="0" label="Light mode"/>
-  <int value="1" label="Dark mode"/>
-  <int value="2" label="Auto mode"/>
-</enum>
-
 <enum name="PickerSessionOutcome">
   <summary>The outcome of a Picker session.</summary>
   <int value="0" label="Unknown"/>

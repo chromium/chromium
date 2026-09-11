@@ -6117,15 +6117,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Personalization.Theme.ColorMode"
-    enum="PersonalizationThemeColorMode" expires_after="2025-03-09">
-  <owner>jasontt@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Emitted when a user selects a theme button in personalization hub.
-  </summary>
-</histogram>
-
 <histogram name="Ash.PhantomWindowController.Show.PresentationTime" units="ms"
     expires_after="2027-05-21">
   <owner>xdai@chromium.org</owner>

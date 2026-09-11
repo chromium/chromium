@@ -9,30 +9,12 @@
 
 namespace ash::personalization_app {
 
-// This enum is used to define the buckets for an enumerated UMA histogram.
-// Hence,
-//   (a) existing enumerated constants should never be deleted or reordered,
-//   (b) new constants should only be appended at the end of the enumeration.
-enum class ColorMode {
-  // Light color mode.
-  kLight = 0,
-  // Dark color mode.
-  kDark = 1,
-  // Auto scheduling mode.
-  kAuto = 2,
-  kMaxValue = kAuto,
-};
-
-inline constexpr char kPersonalizationThemeColorModeHistogramName[] =
-    "Ash.Personalization.Theme.ColorMode";
 inline constexpr char kPersonalizationKeyboardBacklightColorHistogramName[] =
     "Ash.Personalization.KeyboardBacklight.Color";
 
 // -----------------------------------------------------------------------------
 // Histograms
 // -----------------------------------------------------------------------------
-
-void LogPersonalizationTheme(ColorMode color_mode);
 
 void LogKeyboardBacklightColor(mojom::BacklightColor backlight_color);
 
