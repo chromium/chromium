@@ -99,6 +99,14 @@ enum class ActionButtonsVisibility {
 // When set to YES, the banner is hidden. Defaults to NO.
 @property(nonatomic, assign) BOOL shouldHideBanner;
 
+// When set to YES, the banner image is hidden. Defaults to NO.
+// Use this when the banner image is not needed, but the banner container is
+// still needed.
+@property(nonatomic, assign) BOOL shouldHideBannerImage;
+
+// The view containing the banner. Use this to add custom views to the banner.
+@property(nonatomic, strong) UIImageView* bannerImageView;
+
 // When set to YES, use `PromoStyleBackgroundView` as background. Only available
 // with hidden banner. This value has to be set before the view is loaded.
 // Defaults to NO.

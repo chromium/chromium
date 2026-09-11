@@ -46,26 +46,14 @@ source_set("ui") {
     "//ui/base",
   ]
 
-  public_deps = [
-    ":lottie_resources",
-    ":resources",
-  ]
+  public_deps = [ ":lottie_resources" ]
 
   frameworks = [ "UIKit.framework" ]
 }
 
-bundle_data_xcassets("resources") {
-  catalog = "resources/Assets.xcassets"
-  sources = [
-    "resources/Assets.xcassets/Contents.json",
-    "resources/Assets.xcassets/level_up_promo_header_image.imageset/Contents.json",
-    "resources/Assets.xcassets/level_up_promo_header_image.imageset/level_up_promo@2x.png",
-    "resources/Assets.xcassets/level_up_promo_header_image.imageset/level_up_promo@3x.png",
-  ]
-}
-
 bundle_data("lottie_resources") {
   sources = [
+    "resources/level_up_promo_animation.json",
     "resources/passwords_verified.json",
     "resources/photo_searches_performed.json",
     "resources/tabs_decluttered.json",
@@ -82,10 +70,16 @@ source_set("promo") {
 
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/animated_promo:utils",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
   ]
 
-  public_deps = [ ":resources" ]
+  public_deps = [ ":lottie_resources" ]
 }

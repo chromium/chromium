@@ -87,7 +87,6 @@ UIImage* ArrowDownImage() {
                                         UIScrollViewDelegate,
                                         UITextDragDelegate>
 
-@property(nonatomic, strong) UIImageView* bannerImageView;
 // This view contains only the header image.
 @property(nonatomic, strong) UIImageView* headerImageView;
 @property(nonatomic, strong) UITextView* disclaimerView;
@@ -911,7 +910,8 @@ UIImage* ArrowDownImage() {
 
 // Returns the banner image to be displayed.
 - (UIImage*)bannerImage {
-  if (self.shouldHideBanner && !self.bannerName) {
+  if (self.shouldHideBannerImage ||
+      (self.shouldHideBanner && !self.bannerName)) {
     return [[UIImage alloc] init];
   }
   return [UIImage imageNamed:self.bannerName];

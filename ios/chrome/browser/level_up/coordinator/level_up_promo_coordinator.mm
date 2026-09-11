@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/level_up/coordinator/level_up_promo_coordinator.h"
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/level_up/coordinator/level_up_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/level_up/ui/level_up_promo_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
-@interface LevelUpPromoCoordinator () <PromoStyleViewControllerDelegate>
+@interface LevelUpPromoCoordinator () <PromoStyleViewControllerDelegate,
+                                       UIAdaptivePresentationControllerDelegate>
 @end
 
 @implementation LevelUpPromoCoordinator {
@@ -24,6 +27,7 @@
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
+  _navigationController.presentationController.delegate = self;
   [_navigationController
       setModalPresentationStyle:UIModalPresentationFormSheet];
 
@@ -35,6 +39,7 @@
 }
 
 - (void)stop {
+  _navigationController.presentationController.delegate = nil;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -52,6 +57,17 @@
 }
 
 - (void)didTapSecondaryActionButton {
+  [self.delegate levelUpPromoCoordinatorDidCancel:self];
+}
+
+- (void)didTapDismissButton {
+  [self.delegate levelUpPromoCoordinatorDidCancel:self];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
   [self.delegate levelUpPromoCoordinatorDidCancel:self];
 }
 
