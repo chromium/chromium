@@ -1853,7 +1853,7 @@
             ]
         }
     ],
-    "AutoPictureInPictureSurveys": [
+    "AutoPictureInPictureSurveys_VideoConferencing": [
         {
             "platforms": [
                 "chromeos",
@@ -1867,7 +1867,7 @@
                     "params": {
                         "autopip_reason": "VideoConferencing",
                         "en_site_id": "zrpDNzCuQ0ugnJ3q1cK0XjBotKRz",
-                        "probability": "0.93",
+                        "probability": "0.37",
                         "prompt_result": "AllowedOnce"
                     },
                     "enable_features": [
