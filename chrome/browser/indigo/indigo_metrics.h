@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/time/time.h"
-#include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace page_actions {
@@ -16,6 +15,84 @@ enum class PageActionPriorityCategory;
 }  // namespace page_actions
 
 namespace indigo {
+
+struct CombinedEligibility;
+
+// LINT.IfChange(IndigoTransformationResult)
+
+// Results of Indigo action invocation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class IndigoTransformationResult {
+  kUnknown = 0,
+  kSuccess = 1,
+  kNotSignedIn = 2,
+  kMissingCapabilities = 3,
+  kDisabledByPolicy = 4,
+  kMissingScript = 5,
+  kRemoteStatusMissing = 6,
+  kServiceNotSupported = 7,
+  kMissingUserImage = 8,
+  kNotOnboarded = 9,
+  kGenerateImageError = 10,
+  kRefreshTokenInPersistentErrorState = 11,
+  kManagedDomain = 12,
+  kGlicDisabledForProfile = 13,
+  kEnterpriseDisallowed = 14,
+  kPrimaryImageDisconnected = 15,
+  kEmptyPrimaryImageSize = 16,
+  kPrimaryImageTooSmall = 17,
+  kNoPrimaryImageFound = 18,
+  kPrimaryImageReplacementCreationFailed = 19,
+  kMaxValue = kPrimaryImageReplacementCreationFailed,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationResult)
+
+// Trigger sources for the Indigo page action.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IndigoTriggerSource)
+enum class IndigoTriggerSource {
+  kUnknown = 0,
+  kForced = 1,
+  kOptimizationGuide = 2,
+  kLocalProductKeywordHeuristic = 3,
+  kMaxValue = kLocalProductKeywordHeuristic,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTriggerSource)
+
+// Entry points / presentation styles for the Indigo page action metrics.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IndigoPageActionEntryPoint)
+enum class IndigoPageActionEntryPoint {
+  kSuggestionChip = 0,
+  kProactiveAnchoredMessage = 1,
+  kReactiveAnchoredMessage = 2,
+  kErrorToast = 3,
+  kMaxValue = kErrorToast,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoPageActionEntryPoint)
+
+// Represents the UI surface that triggered an Indigo transformation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IndigoTransformationTriggerSource)
+enum class IndigoTransformationTriggerSource {
+  kPageAction = 0,
+  kErrorToastRetry = 1,
+  kRegenerate = 2,
+  kReplacePhoto = 3,
+  kMaxValue = kReplacePhoto,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationTriggerSource)
+
+enum class EntryPoint {
+  kSuggestionChip = 0,
+  kAnchoredMessage = 1,
+  kErrorToast = 2,
+};
 
 inline constexpr char kShownEntryPointHistogram[] =
     "Indigo.PageAction.ShownEntryPoint";
@@ -39,6 +116,17 @@ inline constexpr char kAnchoredMessageClickAction[] =
     "Indigo.PageAction.AnchoredMessage.Click";
 inline constexpr char kErrorToastRetryClickAction[] =
     "Indigo.ErrorToast.Retry.Click";
+
+inline constexpr char kTransformationTriggerAction[] =
+    "Indigo.Transformation.Trigger";
+inline constexpr char kTransformationSuccessAction[] =
+    "Indigo.Transformation.Success";
+inline constexpr char kTransformationFailureAction[] =
+    "Indigo.Transformation.Failure";
+inline constexpr char kTransformationResultHistogram[] =
+    "Indigo.Transformation.Result";
+inline constexpr char kTransformationTriggerSourceHistogram[] =
+    "Indigo.Transformation.TriggerSource";
 
 enum class IndigoApiEndpoint {
   kGenerate,
@@ -101,6 +189,17 @@ void RecordApiHttpResponse(IndigoApiEndpoint endpoint,
 void RecordApiStatusAndLatency(IndigoApiEndpoint endpoint,
                                IndigoApiStatus status,
                                base::TimeDelta latency);
+
+// Records UMA histogram and UserAction for transformation triggers.
+void RecordTransformationTrigger(IndigoTransformationTriggerSource source);
+
+// Records UMA histogram and UserAction for transformation results.
+void RecordTransformationResult(IndigoTransformationResult result);
+
+// Translates CombinedEligibility into IndigoTransformationResult and records
+// histogram.
+void RecordTransformationResultCannotGenerateImage(
+    const CombinedEligibility& eligibility);
 
 }  // namespace indigo
 

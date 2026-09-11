@@ -9,9 +9,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_image_replacement.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
@@ -363,9 +363,7 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
 
 void IndigoImageReplacementManager::NotifyReplacementsReady(bool is_cache_hit) {
   base::UmaHistogramBoolean("Indigo.Transformation.IsCacheHit", is_cache_hit);
-  base::UmaHistogramEnumeration("Indigo.Transformation.Result",
-                                IndigoTransformationResult::kSuccess);
-  base::RecordAction(base::UserMetricsAction("Indigo.Transformation.Success"));
+  RecordTransformationResult(IndigoTransformationResult::kSuccess);
 
   for (auto& [_, image_replacement] : receivers_.GetAllContexts()) {
     image_replacement->ReplacementImageURLReady();

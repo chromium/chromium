@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Error Toast"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoPageActionEntryPoint) -->
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoPageActionEntryPoint) -->
 
 <!-- LINT.IfChange(IndigoTransformationResult) -->
 
@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Primary image replacement creation failed"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoTransformationResult) -->
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoTransformationResult) -->
 
 <!-- LINT.IfChange(IndigoTransformationTriggerSource) -->
 
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Replace Photo"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoTransformationTriggerSource) -->
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoTransformationTriggerSource) -->
 
 <!-- LINT.IfChange(IndigoTriggerSource) -->
 
@@ -114,7 +114,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Local Product Keyword Heuristic"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoTriggerSource) -->
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoTriggerSource) -->
 
 </enums>
 

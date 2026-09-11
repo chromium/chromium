@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/indigo/api_client.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
@@ -45,63 +46,6 @@ class IndigoService;
 
 extern const char kForceIndigoSwitch[];
 
-// LINT.IfChange(IndigoTransformationResult)
-
-// Results of Indigo action invocation.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class IndigoTransformationResult {
-  kUnknown = 0,
-  kSuccess = 1,
-  kNotSignedIn = 2,
-  kMissingCapabilities = 3,
-  kDisabledByPolicy = 4,
-  kMissingScript = 5,
-  kRemoteStatusMissing = 6,
-  kServiceNotSupported = 7,
-  kMissingUserImage = 8,
-  kNotOnboarded = 9,
-  kGenerateImageError = 10,
-  kRefreshTokenInPersistentErrorState = 11,
-  kManagedDomain = 12,
-  kGlicDisabledForProfile = 13,
-  kEnterpriseDisallowed = 14,
-  kPrimaryImageDisconnected = 15,
-  kEmptyPrimaryImageSize = 16,
-  kPrimaryImageTooSmall = 17,
-  kNoPrimaryImageFound = 18,
-  kPrimaryImageReplacementCreationFailed = 19,
-  kMaxValue = kPrimaryImageReplacementCreationFailed,
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationResult)
-
-// Trigger sources for the Indigo page action.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(IndigoTriggerSource)
-enum class IndigoTriggerSource {
-  kUnknown = 0,
-  kForced = 1,
-  kOptimizationGuide = 2,
-  kLocalProductKeywordHeuristic = 3,
-  kMaxValue = kLocalProductKeywordHeuristic,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTriggerSource)
-
-// Entry points / presentation styles for the Indigo page action metrics.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(IndigoPageActionEntryPoint)
-enum class IndigoPageActionEntryPoint {
-  kSuggestionChip = 0,
-  kProactiveAnchoredMessage = 1,
-  kReactiveAnchoredMessage = 2,
-  kErrorToast = 3,
-  kMaxValue = kErrorToast,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoPageActionEntryPoint)
-
 enum class ResetType {
   kResetReplacementsAndContentScript,
   kResetReplacementsOnly,
@@ -112,25 +56,6 @@ enum class OnboardingDisposition {
   kDefault,
   // Triggered to replace the existing image.
   kReplacePhoto,
-};
-
-// Represents the UI surface that triggered an Indigo transformation.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(IndigoTransformationTriggerSource)
-enum class IndigoTransformationTriggerSource {
-  kPageAction = 0,
-  kErrorToastRetry = 1,
-  kRegenerate = 2,
-  kReplacePhoto = 3,
-  kMaxValue = kReplacePhoto,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationTriggerSource)
-
-enum class EntryPoint {
-  kSuggestionChip = 0,
-  kAnchoredMessage = 1,
-  kErrorToast = 2,
 };
 
 // Manages the Indigo page action and its various entry points, ensuring they

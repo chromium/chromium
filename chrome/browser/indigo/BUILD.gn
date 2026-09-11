@@ -143,6 +143,7 @@ source_set("unit_tests") {
     "indigo_agent_host_unittest.cc",
     "indigo_cue_target_unittest.cc",
     "indigo_menu_model_unittest.cc",
+    "indigo_metrics_unittest.cc",
     "indigo_page_action_controller_unittest.cc",
     "indigo_service_unittest.cc",
   ]

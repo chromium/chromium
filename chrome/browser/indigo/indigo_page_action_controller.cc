@@ -84,57 +84,6 @@ const char kForceIndigoOnboardingSwitch[] = "force-indigo-onboarding";
 // the transformation will fail.
 constexpr int kMinPrimaryImageWidthDips = 170;
 
-void RecordTransformationResultCannotGenerateImage(
-    const CombinedEligibility& eligibility) {
-  DCHECK(!eligibility.CanGenerateImage());
-  IndigoTransformationResult result;
-
-  if (eligibility.local_eligibility != LocalEligibility::kEligible) {
-    switch (eligibility.local_eligibility) {
-      case LocalEligibility::kNotSignedIn:
-        result = IndigoTransformationResult::kNotSignedIn;
-        break;
-      case LocalEligibility::kRefreshTokenInPersistentErrorState:
-        result =
-            IndigoTransformationResult::kRefreshTokenInPersistentErrorState;
-        break;
-      case LocalEligibility::kMissingCapabilities:
-        result = IndigoTransformationResult::kMissingCapabilities;
-        break;
-      case LocalEligibility::kDisabledByPolicy:
-        result = IndigoTransformationResult::kDisabledByPolicy;
-        break;
-      case LocalEligibility::kMissingScript:
-        result = IndigoTransformationResult::kMissingScript;
-        break;
-      case LocalEligibility::kManagedDomain:
-        result = IndigoTransformationResult::kManagedDomain;
-        break;
-      case LocalEligibility::kGlicDisabledForProfile:
-        result = IndigoTransformationResult::kGlicDisabledForProfile;
-        break;
-      case LocalEligibility::kEnterpriseDisallowed:
-        result = IndigoTransformationResult::kEnterpriseDisallowed;
-        break;
-      case LocalEligibility::kEligible:
-        NOTREACHED();
-    }
-  } else if (!eligibility.remote_eligibility.has_value()) {
-    result = IndigoTransformationResult::kRemoteStatusMissing;
-  } else if (!eligibility.remote_eligibility
-                  ->is_service_supported_for_account) {
-    result = IndigoTransformationResult::kServiceNotSupported;
-  } else if (!eligibility.remote_eligibility->has_user_image) {
-    result = IndigoTransformationResult::kMissingUserImage;
-  } else if (!eligibility.has_onboarded_pref) {
-    result = IndigoTransformationResult::kNotOnboarded;
-  } else {
-    result = IndigoTransformationResult::kUnknown;
-  }
-
-  base::UmaHistogramEnumeration("Indigo.Transformation.Result", result);
-}
-
 class Require1PSkillRefreshObserver : public skills::SkillsService::Observer {
  public:
   Require1PSkillRefreshObserver() = default;
@@ -424,10 +373,7 @@ void IndigoPageActionController::TriggerIndigoAgent(
   }
   if (IndigoAgentHost::GetOrCreateForPage(web_contents->GetPrimaryPage())
           ->Invoke()) {
-    base::RecordAction(
-        base::UserMetricsAction("Indigo.Transformation.Trigger"));
-    base::UmaHistogramEnumeration("Indigo.Transformation.TriggerSource",
-                                  source);
+    RecordTransformationTrigger(source);
   }
 }
 
@@ -524,8 +470,7 @@ void IndigoPageActionController::ShowToolbar() {
 void IndigoPageActionController::ShowInvocationErrorToast(
     IndigoTransformationResult result) {
   CHECK_NE(result, IndigoTransformationResult::kSuccess);
-  base::UmaHistogramEnumeration("Indigo.Transformation.Result", result);
-  base::RecordAction(base::UserMetricsAction("Indigo.Transformation.Failure"));
+  RecordTransformationResult(result);
 
   ToastController* toast_controller =
       ToastController::MaybeGetForTabInterface(&tab());
@@ -638,10 +583,7 @@ void IndigoPageActionController::TriggerRegeneration(
   auto* manager =
       IndigoImageReplacementManager::GetForPage(web_contents->GetPrimaryPage());
   if (manager && manager->RegenerateImage()) {
-    base::RecordAction(
-        base::UserMetricsAction("Indigo.Transformation.Trigger"));
-    base::UmaHistogramEnumeration("Indigo.Transformation.TriggerSource",
-                                  source);
+    RecordTransformationTrigger(source);
     DestroyToolbar();
   }
 }
