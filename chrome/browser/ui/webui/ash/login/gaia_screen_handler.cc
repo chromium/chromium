@@ -59,7 +59,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/nss_temp_certs_cache_chromeos.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
@@ -84,6 +83,7 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
@@ -100,6 +100,7 @@
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/version/version_loader.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/login/base_screen_handler_utils.h"
 #include "components/login/localized_values_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -189,24 +190,6 @@ void RecordAPILogin(bool is_third_party_idp, bool is_api_used) {
 constexpr base::TimeDelta kConnectingTimeout = base::Seconds(60);
 // Delay before showing ErrorScreen after the network state becomes offline.
 constexpr base::TimeDelta kOfflineTimeout = base::Seconds(1);
-
-std::string GetEnterpriseDomainManager() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->GetEnterpriseDomainManager();
-}
-
-std::string GetEnterpriseEnrollmentDomain() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->GetEnterpriseEnrollmentDomain();
-}
-
-std::string GetSSOProfile() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->GetSSOProfile();
-}
 
 std::string GetChromeType() {
   switch (chromeos::GetDeviceType()) {
@@ -416,12 +399,14 @@ void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
 
 GaiaScreenHandler::GaiaScreenHandler(
     PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
     ErrorScreen* error_screen)
     : BaseScreenHandler(kScreenId),
       local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       network_state_informer_(network_state_informer),
@@ -525,15 +510,17 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   }
   params.Set("screenMode", screen_mode_);
 
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string& app_locale = application_locale_storage_->Get();
   if (!app_locale.empty()) {
     params.Set("hl", app_locale);
   }
 
-  const std::string enterprise_enrollment_domain(
-      GetEnterpriseEnrollmentDomain());
-  const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
-  const std::string sso_profile(GetSSOProfile());
+  const std::string enterprise_enrollment_domain =
+      browser_policy_connector_ash_->GetEnterpriseEnrollmentDomain();
+  const std::string enterprise_domain_manager =
+      browser_policy_connector_ash_->GetEnterpriseDomainManager();
+  const std::string sso_profile =
+      browser_policy_connector_ash_->GetSSOProfile();
 
   if (!enterprise_enrollment_domain.empty()) {
     params.Set("enterpriseEnrollmentDomain", enterprise_enrollment_domain);
@@ -544,9 +531,8 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   if (!enterprise_domain_manager.empty()) {
     params.Set("enterpriseDomainManager", enterprise_domain_manager);
   }
-  params.Set("enterpriseManagedDevice", g_browser_process->platform_part()
-                                            ->browser_policy_connector_ash()
-                                            ->IsDeviceEnterpriseManaged());
+  params.Set("enterpriseManagedDevice",
+             InstallAttributes::Get()->IsEnterpriseManaged());
   const AccountId& owner_account_id =
       user_manager::UserManager::Get()->GetOwnerAccountId();
   params.Set("hasDeviceOwner", owner_account_id.is_valid());
@@ -672,12 +658,11 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
                static_cast<int>(PasswordlessSupportLevel::kConsumersOnly));
   }
 
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state->IsManagedPreference(
+  if (local_state_->IsManagedPreference(
           prefs::kUrlParameterToAutofillSAMLUsername)) {
     params.Set(
         "urlParameterToAutofillSAMLUsername",
-        local_state->GetString(prefs::kUrlParameterToAutofillSAMLUsername));
+        local_state_->GetString(prefs::kUrlParameterToAutofillSAMLUsername));
   }
 
   params.Set("autoReloadAttempts",
@@ -967,9 +952,8 @@ void GaiaScreenHandler::RecordCompleteAuthenticationMetrics(
   // have the option for passwordless login at the moment; and the consumer
   // users on managed device are excluded in the metric although they could have
   // the option for passwordless login.
-  const bool is_enterprise_managed = g_browser_process->platform_part()
-                                         ->browser_policy_connector_ash()
-                                         ->IsDeviceEnterpriseManaged();
+  const bool is_enterprise_managed =
+      InstallAttributes::Get()->IsEnterpriseManaged();
   if (!is_gaia_password_required_ && !is_enterprise_managed) {
     base::UmaHistogramBoolean(
         "OOBE.GaiaScreen.PasswordlessLoginRequests",
@@ -1090,7 +1074,7 @@ void GaiaScreenHandler::OnCookieWaitTimeout() {
 void GaiaScreenHandler::HandleLaunchSAMLPublicSession(
     const std::string& email) {
   const AccountId account_id =
-      user_manager::KnownUser(g_browser_process->local_state())
+      user_manager::KnownUser(&local_state_.get())
           .GetAccountId(email, std::string() /* id */, AccountType::UNKNOWN);
 
   UserContext context(user_manager::UserType::kPublicAccount, account_id);
@@ -1213,7 +1197,7 @@ void GaiaScreenHandler::HandleOnFatalError(int error_code,
 }
 
 void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   const AccountId account_id = known_user.GetAccountId(
       email, /*id=*/std::string(), AccountType::UNKNOWN);
   if (account_id == user_manager::UserManager::Get()->GetOwnerAccountId()) {
@@ -1250,9 +1234,8 @@ void GaiaScreenHandler::HandleGetDeviceId(const std::string& callback_id) {
   // (`populated_account_id_.GetUserEmail()`).
   ResolveJavascriptCallback(
       base::Value(callback_id),
-      GetOrGenerateDeviceId(
-          user_manager::KnownUser{g_browser_process->local_state()},
-          populated_account_id_.GetUserEmail()));
+      GetOrGenerateDeviceId(user_manager::KnownUser{&local_state_.get()},
+                            populated_account_id_.GetUserEmail()));
 }
 
 void GaiaScreenHandler::StartClearingDnsCache() {
@@ -1375,9 +1358,6 @@ void GaiaScreenHandler::Hide() {
 }
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
-  // TODO(crbug.com/489929275): Avoid using g_browser_process.
-  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
-
   // TODO(https://crbug.com/1317991): Investigate why the call is making Gaia
   // loading slowly.
   // CallExternalAPI("onBeforeLoad");
@@ -1386,7 +1366,7 @@ void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
   if (account_id.is_valid()) {
     login_request_variant_ = GaiaLoginVariant::kOnlineSignin;
   } else {
-    if (StartupUtils::IsOobeCompleted(local_state) &&
+    if (StartupUtils::IsOobeCompleted(local_state_.get()) &&
         StartupUtils::IsDeviceOwned()) {
       login_request_variant_ = GaiaLoginVariant::kAddUser;
     } else {
@@ -1518,8 +1498,7 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
     // out of scope and the certificates will not be held in memory anymore.
     untrusted_authority_certs_cache_ =
         std::make_unique<network::NSSTempCertsCacheChromeOS>(
-            g_browser_process->platform_part()
-                ->browser_policy_connector_ash()
+            browser_policy_connector_ash_
                 ->GetDeviceNetworkConfigurationUpdater()
                 ->GetAllAuthorityCertificates(
                     chromeos::onc::CertificateScope::Default()));
@@ -1530,8 +1509,7 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
 
   // TODO(crbug.com/1105387): Part of initial screen logic.
-  PrefService* prefs = g_browser_process->local_state();
-  if (prefs->GetBoolean(ash::prefs::kFactoryResetRequested)) {
+  if (local_state_->GetBoolean(ash::prefs::kFactoryResetRequested)) {
     DCHECK(LoginDisplayHost::default_host());
     LoginDisplayHost::default_host()->StartWizard(ResetView::kScreenId);
   }
@@ -1566,7 +1544,7 @@ void GaiaScreenHandler::LoadAuthenticator(bool force) {
   context.email = populated_account_id_.GetUserEmail();
 
   if (!context.email.empty()) {
-    user_manager::KnownUser known_user(g_browser_process->local_state());
+    user_manager::KnownUser known_user(&local_state_.get());
     // TODO(http://b/314902371): Figure out if we can read
     // `populated_account_id_.GetGaiaId()` instead of searching inside
     // `known_user`.
@@ -1814,7 +1792,7 @@ void GaiaScreenHandler::CheckIfAllowlisted(const std::string& user_email) {
     return;
   }
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   if (LoginDisplayHost::default_host() &&
       !LoginDisplayHost::default_host()->IsUserAllowlisted(
           known_user.GetAccountId(user_email, std::string() /* id */,

@@ -498,8 +498,8 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<MarketingOptInScreenHandler>());
 
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(
-      local_state, browser_policy_connector_ash, shared_url_loader_factory,
-      network_state_informer_, error_screen));
+      local_state, application_locale_storage, browser_policy_connector_ash,
+      shared_url_loader_factory, network_state_informer_, error_screen));
 
   AddScreenHandler(std::make_unique<OnlineAuthenticationScreenHandler>());
 
