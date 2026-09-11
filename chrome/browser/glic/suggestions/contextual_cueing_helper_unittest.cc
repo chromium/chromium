@@ -8,14 +8,17 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/suggestions/mock_contextual_cueing_service.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -27,18 +30,12 @@
 #include "content/public/test/navigation_simulator.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/test/glic_user_session_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace glic {
 namespace {
-
-#if !BUILDFLAG(IS_ANDROID)
 
 using ::testing::Return;
 
@@ -77,6 +74,12 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     ChromeRenderViewHostTestHarness::SetUp();
+
+#if BUILDFLAG(IS_ANDROID)
+    if (!glic::GlicEnabling::IsOsVersionSupported()) {
+      GTEST_SKIP() << "OS version not supported by Glic";
+    }
+#endif
 
     // Bypass glic eligibility check.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
@@ -121,16 +124,18 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {TestingProfile::TestingFactory{
-                OptimizationGuideKeyedServiceFactory::GetInstance(),
-                base::BindRepeating(&CreateOptimizationGuideKeyedService)},
-            TestingProfile::TestingFactory{
-                page_content_annotations::PageContentExtractionServiceFactory::
-                    GetInstance(),
-                base::BindRepeating(&CreatePageContentExtractionService)},
-            TestingProfile::TestingFactory{
-                ContextualCueingServiceFactory::GetInstance(),
-                base::BindRepeating(&CreateContextualCueingService)}};
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                 OptimizationGuideKeyedServiceFactory::GetInstance(),
+                 base::BindRepeating(&CreateOptimizationGuideKeyedService)},
+             TestingProfile::TestingFactory{
+                 page_content_annotations::PageContentExtractionServiceFactory::
+                     GetInstance(),
+                 base::BindRepeating(&CreatePageContentExtractionService)},
+             TestingProfile::TestingFactory{
+                 ContextualCueingServiceFactory::GetInstance(),
+                 base::BindRepeating(&CreateContextualCueingService)}});
   }
 
   std::unique_ptr<ContextualCueingHelper> CreateContextualCueingHelper() {
@@ -198,7 +203,6 @@ TEST_F(ContextualCueingHelperTest, Committed404Page) {
   navigation_simulator->Commit();
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace glic

@@ -796,6 +796,7 @@ source_set("unit_tests") {
     "public/glic_enabling_unittest.cc",
     "service/glic_invoke_handler_unittest.cc",
     "service/glic_invoke_task_unittest.cc",
+    "suggestions/caching_zero_state_suggestions_manager_unittest.cc",
   ]
   deps = [
     ":glic",
@@ -807,6 +808,8 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/gemini_enterprise:unit_tests",
+    "//chrome/browser/glic/suggestions:test_support",
+    "//chrome/browser/glic/suggestions:unit_tests",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/pwc:features_shared_cpp_sources",
     "//chrome/browser/sync",
@@ -845,7 +848,6 @@ source_set("unit_tests") {
       "service/metrics/glic_invoke_metrics_unittest.cc",
       "service/metrics/glic_metrics_session_manager_unittest.cc",
       "service/metrics/metrics_types_unittest.cc",
-      "suggestions/caching_zero_state_suggestions_manager_unittest.cc",
       "widget/glic_view_unittest.cc",
       "widget/glic_widget_unittest.cc",
       "widget/scoped_modal_dialog_manager_delegate_unittest.cc",
@@ -855,7 +857,6 @@ source_set("unit_tests") {
       "//chrome/browser/background",
       "//chrome/browser/glic/browser_ui:unit_tests",
       "//chrome/browser/glic/media:unit_tests",
-      "//chrome/browser/glic/suggestions:test_support",
       "//chrome/browser/prefs",
       "//chrome/browser/status_icons",
       "//chrome/common:chrome_features",

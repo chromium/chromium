@@ -6045,7 +6045,6 @@ test("unit_tests") {
       "//chrome/browser/first_run:unit_tests",
       "//chrome/browser/geolocation",
       "//chrome/browser/geolocation:unit_tests",
-      "//chrome/browser/glic/suggestions:unit_tests",
       "//chrome/browser/indigo:unit_tests",
       "//chrome/browser/lookalikes:unit_tests",
       "//chrome/browser/media:access_handler",
