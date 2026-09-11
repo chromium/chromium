@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/functional/bind.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/features.h"
@@ -29,18 +28,12 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
-#import "net/test/embedded_test_server/http_request.h"
-#import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
 NSString* const kTargetDeviceName = @"My other device";
 NSString* const kRemoteDeviceName = @"remote_device";
-NSString* const kSendTabToSelfModalCancelButtonId =
-    @"kSendTabToSelfModalCancelButton";
-NSString* const kSendTabToSelfModalMenuButtonId =
-    @"kSendTabToSelfModalMenuButton";
 NSString* const kExampleURL = @"https://www.example.com/";
 
 // Helpers for web element selectors.
