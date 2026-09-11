@@ -810,6 +810,466 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
   EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
 }
 
+// Cancelling an id that has no queued or running update is a no-op.
+TEST_F(UpdateClientTest, CancelUnknownIdReturnsFalse) {
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxUpdate>>
+      mock_update_checker_factory;
+  scoped_refptr<UpdateClient> update_client =
+      base::MakeRefCounted<UpdateClientImpl>(
+          config(), base::MakeRefCounted<MockPingManagerImpl>(config()),
+          mock_update_checker_factory.GetFactory());
+  EXPECT_FALSE(update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf"));
+}
+
+// Cancelling the id of a queued update cancels that CRX only: the running
+// update it was queued behind and the other CRX of the queued call complete
+// normally, and the cancelled CRX never downloads.
+TEST_F(UpdateClientTest, CancelQueuedUpdate) {
+  class DataCallbackMock {
+   public:
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<std::optional<CrxComponent>>&)> callback) {
+      std::vector<std::optional<CrxComponent>> components;
+      for (const auto& id : ids) {
+        CrxComponent crx;
+        crx.app_id = id;
+        crx.name = "test_" + id.substr(0, 4);
+        if (id == "jebgalgnebhfojomionfpkfelancnnkf") {
+          crx.pk_hash = base::ToVector(jebg_hash);
+        } else if (id == "abagagagagagagagagagagagagagagag") {
+          crx.pk_hash = base::ToVector(abag_hash);
+        } else {
+          crx.pk_hash = base::ToVector(ihfo_hash);
+        }
+        crx.version = base::Version("0.9");
+        crx.installer = base::MakeRefCounted<TestInstaller>();
+        crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
+        components.push_back(crx);
+      }
+      std::move(callback).Run(components);
+    }
+  };
+
+  // Every CRX checked for updates is up to date.
+  class MockUpdateChecker : public UpdateChecker {
+   public:
+    MockUpdateChecker() = default;
+
+    void CheckForUpdates(
+        scoped_refptr<UpdateContext> context,
+        const base::flat_map<std::string, std::string>& additional_attributes,
+        UpdateCheckCallback update_check_callback) override {
+      ProtocolParser::Results results;
+      for (const auto& id : context->components_to_check_for_updates) {
+        ProtocolParser::App result;
+        result.app_id = id;
+        result.status = "noupdate";
+        results.apps.push_back(result);
+      }
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
+                                    ErrorCategory::kNone, 0, 0));
+    }
+  };
+  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+
+  class MockCrxDownloader : public CrxDownloader {
+   public:
+    MockCrxDownloader() = default;
+
+   private:
+    ~MockCrxDownloader() override = default;
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      ADD_FAILURE();
+      return base::DoNothing();
+    }
+  };
+
+  class MockPingManager : public MockPingManagerImpl {
+   public:
+    explicit MockPingManager(scoped_refptr<Configurator> config)
+        : MockPingManagerImpl(config) {}
+
+   protected:
+    ~MockPingManager() override { EXPECT_TRUE(ping_data().empty()); }
+  };
+
+  SetMockCrxDownloader<MockCrxDownloader>();
+  scoped_refptr<UpdateClient> update_client =
+      base::MakeRefCounted<UpdateClientImpl>(
+          config(), base::MakeRefCounted<MockPingManager>(config()),
+          mock_update_checker_factory.GetFactory());
+
+  std::vector<CrxUpdateItem> items;
+  auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
+  EXPECT_CALL(*receiver, Receive(_))
+      .WillRepeatedly(
+          [&items](const CrxUpdateItem& item) { items.push_back(item); });
+
+  // The first update runs; the second one is queued behind it.
+  base::RunLoop first_loop;
+  update_client->Update({"jebgalgnebhfojomionfpkfelancnnkf"},
+                        base::BindOnce(&DataCallbackMock::Callback),
+                        /*crx_state_change_callback=*/{},
+                        /*is_foreground=*/true,
+                        ExpectErrorThenQuit(first_loop, Error::NONE));
+  base::RunLoop second_loop;
+  update_client->Update(
+      {"abagagagagagagagagagagagagagagag", "ihfokbkgjpifnbbojhneepfflplebdkc"},
+      base::BindOnce(&DataCallbackMock::Callback),
+      base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
+      /*is_foreground=*/true, ExpectErrorThenQuit(second_loop, Error::NONE));
+
+  EXPECT_TRUE(update_client->Cancel("abagagagagagagagagagagagagagagag"));
+
+  first_loop.Run();
+  second_loop.Run();
+
+  std::optional<CrxUpdateItem> abag;
+  std::optional<CrxUpdateItem> ihfo;
+  for (const auto& item : items) {
+    if (item.id == "abagagagagagagagagagagagagagagag") {
+      abag = item;
+    } else if (item.id == "ihfokbkgjpifnbbojhneepfflplebdkc") {
+      ihfo = item;
+    }
+  }
+  ASSERT_TRUE(abag);
+  EXPECT_EQ(ComponentState::kUpdateError, abag->state);
+  EXPECT_EQ(ErrorCategory::kService, abag->error_category);
+  EXPECT_EQ(static_cast<int>(ServiceError::CANCELLED), abag->error_code);
+  ASSERT_TRUE(ihfo);
+  EXPECT_EQ(ComponentState::kUpToDate, ihfo->state);
+}
+
+// Cancelling an update while its update check is in progress ends the update
+// with CANCELLED before any download starts.
+TEST_F(UpdateClientTest, CancelDuringUpdateCheck) {
+  class DataCallbackMock {
+   public:
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<std::optional<CrxComponent>>&)> callback) {
+      CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
+      crx.name = "test_jebg";
+      crx.pk_hash = base::ToVector(jebg_hash);
+      crx.version = base::Version("0.9");
+      crx.installer = base::MakeRefCounted<TestInstaller>();
+      crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
+      std::move(callback).Run({crx});
+    }
+  };
+
+  // The update check finds an update, which must not be downloaded.
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxUpdate>>
+      mock_update_checker_factory;
+
+  class MockCrxDownloader : public CrxDownloader {
+   public:
+    MockCrxDownloader() = default;
+
+   private:
+    ~MockCrxDownloader() override = default;
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      ADD_FAILURE();
+      return base::DoNothing();
+    }
+  };
+
+  class MockPingManager : public MockPingManagerImpl {
+   public:
+    explicit MockPingManager(scoped_refptr<Configurator> config)
+        : MockPingManagerImpl(config) {}
+
+   protected:
+    ~MockPingManager() override { EXPECT_TRUE(ping_data().empty()); }
+  };
+
+  SetMockCrxDownloader<MockCrxDownloader>();
+  scoped_refptr<UpdateClient> update_client =
+      base::MakeRefCounted<UpdateClientImpl>(
+          config(), base::MakeRefCounted<MockPingManager>(config()),
+          mock_update_checker_factory.GetFactory());
+
+  MockObserver observer(update_client);
+  {
+    InSequence seq;
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
+        .WillOnce([&update_client] {
+          // Cancel the update during the update check.
+          EXPECT_TRUE(
+              update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf"));
+        });
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })));
+  }
+
+  std::vector<CrxUpdateItem> items;
+  auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
+  EXPECT_CALL(*receiver, Receive(_))
+      .WillRepeatedly(
+          [&items](const CrxUpdateItem& item) { items.push_back(item); });
+
+  update_client->Update(
+      {"jebgalgnebhfojomionfpkfelancnnkf"},
+      base::BindOnce(&DataCallbackMock::Callback),
+      base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver), true,
+      ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
+
+  ASSERT_FALSE(items.empty());
+  EXPECT_EQ(ComponentState::kUpdateError, items.back().state);
+  EXPECT_EQ(ErrorCategory::kService, items.back().error_category);
+  EXPECT_EQ(static_cast<int>(ServiceError::CANCELLED), items.back().error_code);
+}
+
+// Cancelling ids that belong to queued ping and update check tasks completes
+// every task exactly once and drains the queue.
+TEST_F(UpdateClientTest, CancelWithQueuedPingAndCheckTasks) {
+  class DataCallbackMock {
+   public:
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<std::optional<CrxComponent>>&)> callback) {
+      std::vector<std::optional<CrxComponent>> components;
+      for (const auto& id : ids) {
+        CrxComponent crx;
+        crx.app_id = id;
+        crx.name = "test_" + id.substr(0, 4);
+        crx.pk_hash = base::ToVector(
+            id == "jebgalgnebhfojomionfpkfelancnnkf" ? jebg_hash : abag_hash);
+        crx.version = base::Version("0.9");
+        crx.installer = base::MakeRefCounted<TestInstaller>();
+        crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
+        components.push_back(crx);
+      }
+      std::move(callback).Run(components);
+    }
+  };
+
+  class MockUpdateChecker : public UpdateChecker {
+   public:
+    MockUpdateChecker() = default;
+
+    void CheckForUpdates(
+        scoped_refptr<UpdateContext> context,
+        const base::flat_map<std::string, std::string>& additional_attributes,
+        UpdateCheckCallback update_check_callback) override {
+      ProtocolParser::Results results;
+      for (const auto& id : context->components_to_check_for_updates) {
+        ProtocolParser::App result;
+        result.app_id = id;
+        result.status = "noupdate";
+        results.apps.push_back(result);
+      }
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
+                                    ErrorCategory::kNone, 0, 0));
+    }
+  };
+  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+
+  class MockCrxDownloader : public CrxDownloader {
+   public:
+    MockCrxDownloader() = default;
+
+   private:
+    ~MockCrxDownloader() override = default;
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      ADD_FAILURE();
+      return base::DoNothing();
+    }
+  };
+
+  SetMockCrxDownloader<MockCrxDownloader>();
+  scoped_refptr<UpdateClient> update_client =
+      base::MakeRefCounted<UpdateClientImpl>(
+          config(), base::MakeRefCounted<MockPingManagerImpl>(config()),
+          mock_update_checker_factory.GetFactory());
+
+  std::vector<CrxUpdateItem> items;
+  auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
+  EXPECT_CALL(*receiver, Receive(_))
+      .WillRepeatedly(
+          [&items](const CrxUpdateItem& item) { items.push_back(item); });
+
+  // The update runs; the ping and the update check are queued behind it.
+  base::RunLoop update_loop;
+  update_client->Update({"jebgalgnebhfojomionfpkfelancnnkf"},
+                        base::BindOnce(&DataCallbackMock::Callback),
+                        /*crx_state_change_callback=*/{},
+                        /*is_foreground=*/true,
+                        ExpectErrorThenQuit(update_loop, Error::NONE));
+  CrxComponent ping_crx;
+  ping_crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
+  ping_crx.version = base::Version("1.0");
+  base::RunLoop ping_loop;
+  update_client->SendPing(ping_crx, {.event_type = 3, .result = 1},
+                          ExpectErrorThenQuit(ping_loop, Error::NONE));
+  base::RunLoop check_loop;
+  update_client->CheckForUpdate(
+      "abagagagagagagagagagagagagagagag",
+      base::BindOnce(&DataCallbackMock::Callback),
+      base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
+      /*is_foreground=*/true, ExpectErrorThenQuit(check_loop, Error::NONE));
+
+  EXPECT_TRUE(update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf"));
+  EXPECT_TRUE(update_client->Cancel("abagagagagagagagagagagagagagagag"));
+
+  update_loop.Run();
+  ping_loop.Run();
+  check_loop.Run();
+
+  ASSERT_FALSE(items.empty());
+  EXPECT_EQ("abagagagagagagagagagagagagagagag", items.back().id);
+  EXPECT_EQ(ComponentState::kUpdateError, items.back().state);
+  EXPECT_EQ(ErrorCategory::kService, items.back().error_category);
+  EXPECT_EQ(static_cast<int>(ServiceError::CANCELLED), items.back().error_code);
+}
+
+// Cancelling the id of a running update cancels its download and the update
+// ends in an error state.
+TEST_F(UpdateClientTest, CancelRunningUpdateCancelsActiveDownload) {
+  class DataCallbackMock {
+   public:
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<std::optional<CrxComponent>>&)> callback) {
+      CrxComponent crx;
+      crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
+      crx.name = "test_jebg";
+      crx.pk_hash = base::ToVector(jebg_hash);
+      crx.version = base::Version("0.9");
+      crx.installer = base::MakeRefCounted<TestInstaller>();
+      crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
+      std::move(callback).Run({crx});
+    }
+  };
+
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxUpdate>>
+      mock_update_checker_factory;
+
+  // A downloader that never completes on its own and expects to be cancelled.
+  class MockCrxDownloader : public CrxDownloader {
+   public:
+    MockCrxDownloader() = default;
+
+   private:
+    ~MockCrxDownloader() override = default;
+
+    base::OnceClosure DoStartDownload(const GURL& url) override {
+      EXPECT_EQ("/download/jebgalgnebhfojomionfpkfelancnnkf.crx",
+                url.GetPath());
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadProgress,
+                                    base::Unretained(this), 10, 1015));
+      // Cancelling completes the download with CANCELLED, like the real
+      // downloaders do.
+      return base::BindOnce(&MockCrxDownloader::Cancel,
+                            base::WrapRefCounted(this), url);
+    }
+
+    void Cancel(const GURL& url) {
+      DownloadMetrics download_metrics;
+      download_metrics.url = url;
+      download_metrics.downloader = DownloadMetrics::kNone;
+      download_metrics.error = static_cast<int>(CrxDownloaderError::CANCELLED);
+      download_metrics.downloaded_bytes = 10;
+      download_metrics.total_bytes = 1015;
+      download_metrics.download_time_ms = 0;
+      Result result;
+      result.error = static_cast<int>(CrxDownloaderError::CANCELLED);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
+                                    base::Unretained(this), true, result,
+                                    download_metrics));
+    }
+  };
+
+  class MockPingManager : public MockPingManagerImpl {
+   public:
+    explicit MockPingManager(scoped_refptr<Configurator> config)
+        : MockPingManagerImpl(config) {}
+
+   protected:
+    ~MockPingManager() override {
+      // The ping shows that the update was cancelled.
+      const auto ping_data = MockPingManagerImpl::terminal_ping_data();
+      EXPECT_EQ(1u, ping_data.size());
+      EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", ping_data[0].id);
+      EXPECT_EQ(ErrorCategory::kService, ping_data[0].error_category);
+      EXPECT_EQ(static_cast<int>(ServiceError::CANCELLED),
+                ping_data[0].error_code);
+    }
+  };
+
+  SetMockCrxDownloader<MockCrxDownloader>();
+  scoped_refptr<UpdateClient> update_client =
+      base::MakeRefCounted<UpdateClientImpl>(
+          config(), base::MakeRefCounted<MockPingManager>(config()),
+          mock_update_checker_factory.GetFactory());
+
+  MockObserver observer(update_client);
+  {
+    InSequence seq;
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })));
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kCanUpdate;
+                })));
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kDownloading;
+                })))
+        .Times(AtLeast(1))
+        .WillRepeatedly([&update_client] {
+          // Cancel the update during the download.
+          EXPECT_TRUE(
+              update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf"));
+        });
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpdateError;
+                })));
+  }
+
+  std::vector<CrxUpdateItem> items;
+  auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
+  EXPECT_CALL(*receiver, Receive(_))
+      .WillRepeatedly(
+          [&items](const CrxUpdateItem& item) { items.push_back(item); });
+
+  update_client->Update(
+      {"jebgalgnebhfojomionfpkfelancnnkf"},
+      base::BindOnce(&DataCallbackMock::Callback),
+      base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver), true,
+      ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
+
+  ASSERT_FALSE(items.empty());
+  EXPECT_EQ(ComponentState::kUpdateError, items.back().state);
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items.back().id);
+  EXPECT_EQ(ErrorCategory::kService, items.back().error_category);
+  EXPECT_EQ(static_cast<int>(ServiceError::CANCELLED), items.back().error_code);
+}
+
 // Tests the scenario where two CRXs are checked for updates. On CRX has
 // an update, the other CRX does not.
 TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {

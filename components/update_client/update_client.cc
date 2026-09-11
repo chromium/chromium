@@ -157,8 +157,24 @@ void UpdateClientImpl::RunTask(scoped_refptr<Task> task) {
   VLOG(2) << __func__;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&Task::Run, task));
+      FROM_HERE, base::BindOnce(&UpdateClientImpl::StartTask, this, task));
   tasks_.insert(task);
+}
+
+void UpdateClientImpl::StartTask(scoped_refptr<Task> task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  task->Run();
+
+  // Running the task registers its CRXs with the update engine, so the
+  // cancellations requested while the task was pending can be applied now.
+  const auto it = pending_cancellations_.find(task);
+  if (it == pending_cancellations_.end()) {
+    return;
+  }
+  for (const auto& id : it->second) {
+    update_engine_->Cancel(id);
+  }
+  pending_cancellations_.erase(it);
 }
 
 void UpdateClientImpl::RunOrEnqueueTask(scoped_refptr<Task> task) {
@@ -180,6 +196,7 @@ void UpdateClientImpl::OnTaskComplete(Callback callback,
       FROM_HERE, base::BindOnce(std::move(callback), error));
 
   tasks_.erase(task);
+  pending_cancellations_.erase(task);
   VLOG(2) << __func__ << ": tasks_.empty(): " << tasks_.empty()
           << ", task_queue_.empty(): " << task_queue_.empty()
           << ", error: " << static_cast<int>(error);
@@ -258,6 +275,34 @@ void UpdateClientImpl::Stop() {
   for (auto& task : tasks_) {
     task->Cancel();
   }
+}
+
+bool UpdateClientImpl::Cancel(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Tasks are never cancelled as a whole here: a task may carry other CRXs,
+  // and the task types differ in how `Task::Cancel()` completes them. Instead,
+  // the cancellation is recorded for every task that carries `id` and applied
+  // to the update engine, which cancels the component for `id` only. A task
+  // that has not started yet is not known to the engine, so the cancellation
+  // is applied when the task starts, in `StartTask()`.
+  bool found = false;
+  for (const auto& task : task_queue_) {
+    if (std::ranges::contains(task->ids(), id)) {
+      pending_cancellations_[task].insert(id);
+      found = true;
+    }
+  }
+  for (const auto& task : tasks_) {
+    if (std::ranges::contains(task->ids(), id)) {
+      pending_cancellations_[task].insert(id);
+      found = true;
+    }
+  }
+  if (found) {
+    update_engine_->Cancel(id);
+  }
+  return found;
 }
 
 void UpdateClientImpl::CleanupStaleDownloads(base::Time older_than,

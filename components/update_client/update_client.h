@@ -486,6 +486,15 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   // effect if updates are not currently executed or queued up.
   virtual void Stop() = 0;
 
+  // Cancels the update of the CRX associated with `id`, whether that update is
+  // queued or in progress. Other CRXs in the same update task are not affected:
+  // a queued task still runs when scheduled, and only `id` transitions to
+  // `ComponentState::kUpdateError` with `ServiceError::CANCELLED` (aborting its
+  // download if in progress, or preventing it if queued). This is a best-effort
+  // request; an update that is past the point where it can be cancelled runs to
+  // completion. Returns true if an active or queued task for `id` was found.
+  virtual bool Cancel(const std::string& id) = 0;
+
   // Perform a best-effort cleanup up of temporary download directories older
   // than the given time.
   virtual void CleanupStaleDownloads(base::Time older_than,

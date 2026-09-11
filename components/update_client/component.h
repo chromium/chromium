@@ -98,7 +98,14 @@ class Component {
   // the update server has return a response containing an update.
   bool IsUpdateAvailable() const { return is_update_available_; }
 
-  void Cancel() { state_->Cancel(); }
+  // Cancels the update of this component. A component that is downloading or
+  // installing stops as soon as its pipeline can be interrupted. A component
+  // that has not started its update yet ends in `kUpdateError` with
+  // `ServiceError::CANCELLED` when it leaves `kChecking` or `kCanUpdate`.
+  void Cancel() {
+    is_cancelled_ = true;
+    state_->Cancel();
+  }
 
   base::TimeDelta GetUpdateDuration() const;
 
@@ -345,6 +352,9 @@ class Component {
 
   // True if the update check response for this component includes an update.
   bool is_update_available_ = false;
+
+  // True if `Cancel()` was called on this component.
+  bool is_cancelled_ = false;
 
   // The error reported by the update checker.
   int update_check_error_ = 0;

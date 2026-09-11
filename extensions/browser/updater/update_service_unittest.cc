@@ -134,6 +134,8 @@ class FakeUpdateClient : public update_client::UpdateClient {
 
   void Stop() override {}
 
+  bool Cancel(const std::string& id) override { return false; }
+
   void SendPing(const update_client::CrxComponent& crx_component,
                 PingParams ping_params,
                 update_client::Callback callback) override {

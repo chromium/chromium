@@ -107,6 +107,7 @@ class MockUpdateClient : public UpdateClient {
               (const, override));
   MOCK_METHOD(bool, IsUpdating, (const std::string& id), (const, override));
   MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(bool, Cancel, (const std::string& id), (override));
   MOCK_METHOD(void,
               SendPing,
               (const CrxComponent& crx_component,
