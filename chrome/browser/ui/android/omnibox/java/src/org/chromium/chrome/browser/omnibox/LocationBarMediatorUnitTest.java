@@ -70,6 +70,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
@@ -1879,6 +1880,19 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mMediator.beginInput(
                 new AutocompleteInput().setFocusReason(OmniboxFocusReason.FAKE_BOX_TAP));
+        assertTrue(mMediator.didFocusUrlFromFakebox());
+        verify(mUrlCoordinator).requestFocus();
+    }
+
+    @Test
+    public void testBeginInput_recordsFocusReason() {
+        mMediator.onFinishNativeInitialization();
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.OmniboxFocusReason", OmniboxFocusReason.FAKE_BOX_LONG_PRESS);
+        mMediator.beginInput(
+                new AutocompleteInput().setFocusReason(OmniboxFocusReason.FAKE_BOX_LONG_PRESS));
+        watcher.assertExpected();
         assertTrue(mMediator.didFocusUrlFromFakebox());
         verify(mUrlCoordinator).requestFocus();
     }

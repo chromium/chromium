@@ -33,7 +33,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -61,8 +60,6 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LocationBarLayoutTest {
-    private static final String SEARCH_TERMS = "machine learning";
-    private static final String SEARCH_TERMS_URL = "testing.com";
     // Tolerance in pixels for filling space checks to account for accumulated rounding errors
     // from two independent view boundaries (StatusView and Barrier).
     private static final int LAYOUT_ROUNDING_TOLERANCE_PX = 2;
@@ -85,10 +82,6 @@ public class LocationBarLayoutTest {
                 .getActivity()
                 .getWindowAndroid()
                 .setAndroidPermissionDelegate(mAndroidPermissionDelegate);
-    }
-
-    private String getUrlText(UrlBar urlBar) {
-        return ThreadUtils.runOnUiThreadBlocking(() -> urlBar.getText().toString());
     }
 
     private UrlBar getUrlBar() {
@@ -138,60 +131,6 @@ public class LocationBarLayoutTest {
 
         omnibox.deleteButtonElement.checkAbsent();
         omnibox.urlBarElement.check(matches(withText("")));
-    }
-
-    @Test
-    @SmallTest
-    @DisabledTest(message = "crbug.com/455509545")
-    public void testSetUrlBarFocus() {
-        LocationBarMediator locationBarMediator = getLocationBarMediator();
-
-        assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    locationBarMediator.beginInput(
-                            new AutocompleteInput()
-                                    .setUserText(SEARCH_TERMS_URL)
-                                    .setFocusReason(OmniboxFocusReason.FAKE_BOX_LONG_PRESS));
-                });
-        assertTrue(getLocationBarMediator().isUrlBarFocused());
-        assertTrue(getLocationBarMediator().didFocusUrlFromFakebox());
-        assertEquals(SEARCH_TERMS_URL, getUrlText(getUrlBar()));
-        assertEquals(
-                1, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    locationBarMediator.beginInput(
-                            new AutocompleteInput()
-                                    .setUserText(SEARCH_TERMS_URL)
-                                    .setFocusReason(OmniboxFocusReason.SEARCH_QUERY));
-                });
-        assertTrue(getLocationBarMediator().isUrlBarFocused());
-        assertTrue(getLocationBarMediator().didFocusUrlFromFakebox());
-        assertEquals(SEARCH_TERMS, getUrlText(getUrlBar()));
-        assertEquals(
-                1, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    locationBarMediator.endInput();
-                });
-        assertFalse(getLocationBarMediator().isUrlBarFocused());
-        assertFalse(getLocationBarMediator().didFocusUrlFromFakebox());
-        assertEquals(
-                1, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    locationBarMediator.beginInput(
-                            new AutocompleteInput().setFocusReason(OmniboxFocusReason.OMNIBOX_TAP));
-                });
-        assertTrue(getLocationBarMediator().isUrlBarFocused());
-        assertFalse(getLocationBarMediator().didFocusUrlFromFakebox());
-        assertEquals(
-                2, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
     }
 
     @Test
