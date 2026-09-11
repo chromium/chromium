@@ -3409,7 +3409,11 @@ test("content_unittests") {
   }
 
   if (is_linux || is_chromeos) {
-    deps += [ "//components/crash/content/browser/error_reporting" ]
+    deps += [
+      "//components/crash/content/browser/error_reporting",
+      "//sandbox/linux:sandbox_services",
+      "//sandbox/linux:sandbox_services_headers",
+    ]
   }
 
   if (is_fuchsia) {

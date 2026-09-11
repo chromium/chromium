@@ -107,7 +107,7 @@ constexpr char kThirdPartyIframesNotAllowedToShowFilePicker[] =
     "Third party iframes are not allowed to show a file picker.";
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
-bool CreateAndTruncateLocalFile(const base::FilePath& path) {
+base::File::Error CreateAndTruncateLocalFile(const base::FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   // Let the process umask determine permissions for new files. Do not follow a
@@ -116,18 +116,23 @@ bool CreateAndTruncateLocalFile(const base::FilePath& path) {
       open(path.value().c_str(),
            O_CREAT | O_WRONLY | O_NONBLOCK | O_CLOEXEC | O_NOFOLLOW, 0666)));
   if (!descriptor.is_valid()) {
-    return false;
+    return base::File::GetLastFileError();
   }
   // ftruncate() behavior for non-regular files is platform-dependent, so
   // explicitly reject them before truncating through the descriptor.
   struct stat file_info;
-  if (HANDLE_EINTR(fstat(descriptor.get(), &file_info)) != 0 ||
-      !S_ISREG(file_info.st_mode)) {
-    return false;
+  if (HANDLE_EINTR(fstat(descriptor.get(), &file_info)) != 0) {
+    return base::File::GetLastFileError();
+  }
+  if (!S_ISREG(file_info.st_mode)) {
+    return base::File::FILE_ERROR_NOT_A_FILE;
   }
 
   base::File file(std::move(descriptor));
-  return file.SetLength(0);
+  if (!file.SetLength(0)) {
+    return base::File::GetLastFileError();
+  }
+  return base::File::FILE_OK;
 }
 #endif
 
@@ -364,35 +369,33 @@ void ShowFilePickerOnUIThread(
 // with the result of this operation.
 void DidCreateFileToTruncate(
     storage::FileSystemURL url,
-    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(base::File::Error)> callback,
     scoped_refptr<base::SequencedTaskRunner> reply_runner,
     storage::FileSystemOperationRunner* operation_runner,
     base::File::Error result) {
   if (result != base::File::FILE_OK) {
     // Failed to create the file, don't even try to truncate it.
     reply_runner->PostTask(FROM_HERE,
-                           base::BindOnce(std::move(callback), false));
+                           base::BindOnce(std::move(callback), result));
     return;
   }
   operation_runner->Truncate(
       url, /*length=*/0,
       base::BindOnce(
-          [](base::OnceCallback<void(bool)> callback,
+          [](base::OnceCallback<void(base::File::Error)> callback,
              scoped_refptr<base::SequencedTaskRunner> reply_runner,
              base::File::Error result) {
-            reply_runner->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback),
-                                          result == base::File::FILE_OK));
+            reply_runner->PostTask(FROM_HERE,
+                                   base::BindOnce(std::move(callback), result));
           },
           std::move(callback), std::move(reply_runner)));
 }
 
 // Creates and truncates the file at `url`. Calls `callback` on `reply_runner`
-// with true if this succeeded, or false if either creation or truncation
-// failed.
+// with the error from either operation, or FILE_OK on success.
 void CreateAndTruncateFile(
     storage::FileSystemURL url,
-    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(base::File::Error)> callback,
     scoped_refptr<base::SequencedTaskRunner> reply_runner,
     storage::FileSystemOperationRunner* operation_runner) {
   // Binding operation_runner as a raw pointer is safe, since the callback is
@@ -1980,18 +1983,12 @@ void FileSystemAccessManagerImpl::DidCreateAndTruncateSaveFile(
     const PathInfo& entry,
     const storage::FileSystemURL& url,
     ChooseEntriesCallback callback,
-    bool success) {
+    base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<blink::mojom::FileSystemAccessEntryPtr> result_entries;
-  if (!success) {
-    // TODO(crbug.com/40717501): Failure to create or truncate the file
-    // should probably not just result in a generic error, but instead inform
-    // the user of the problem?
-    std::move(callback).Run(
-        file_system_access_error::FromStatus(
-            blink::mojom::FileSystemAccessStatus::kOperationFailed,
-            "Failed to create or truncate file"),
-        std::move(result_entries));
+  if (result != base::File::FILE_OK) {
+    std::move(callback).Run(file_system_access_error::FromFileError(result),
+                            std::move(result_entries));
     return;
   }
 

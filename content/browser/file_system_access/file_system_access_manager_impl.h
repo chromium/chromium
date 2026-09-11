@@ -555,7 +555,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
                                     const PathInfo& entry,
                                     const storage::FileSystemURL& url,
                                     ChooseEntriesCallback callback,
-                                    bool success);
+                                    base::File::Error result);
   void DidChooseDirectory(
       const BindingContext& binding_context,
       const PathInfo& entry,

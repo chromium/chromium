@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -15,6 +16,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
+#include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -409,6 +411,66 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   ASSERT_TRUE(base::GetPosixFilePermissions(test_file, &mode));
   EXPECT_EQ(kInitialMode, mode & base::FILE_PERMISSION_MASK);
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SaveFile_CancelDialog) {
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<CancellingSelectFileDialogFactory>());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ("AbortError", EvalJs(shell(),
+                                 "self.showSaveFilePicker().then("
+                                 "() => 'unexpected success', e => e.name)"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SaveFile_ReadOnlyFile) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  const std::string file_contents = "existing contents";
+  const base::FilePath test_file = CreateTestFile(file_contents);
+
+  // On Windows, MakeFileUnwritable() also prevents reading, so restore the
+  // permissions before checking the file's contents.
+  {
+    base::FilePermissionRestorer permission_restorer(test_file);
+    ASSERT_TRUE(base::MakeFileUnwritable(test_file));
+    base::File file(test_file, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+    if (file.IsValid()) {
+      GTEST_SKIP() << "File permissions do not prevent writing.";
+    }
+    ASSERT_EQ(base::File::FILE_ERROR_ACCESS_DENIED, file.error_details());
+
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{test_file}, &dialog_params_));
+    ASSERT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+    EXPECT_EQ("NoModificationAllowedError",
+              EvalJs(shell(),
+                     "self.showSaveFilePicker().then("
+                     "() => 'unexpected success', e => e.name)"));
+  }
+
+  std::string actual_contents;
+  ASSERT_TRUE(base::ReadFileToString(test_file, &actual_contents));
+  EXPECT_EQ(file_contents, actual_contents);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       SaveFile_MissingParentDirectory) {
+  const base::FilePath test_file =
+      temp_dir_.GetPath().AppendASCII("missing").AppendASCII("file");
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params_));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ("NotFoundError",
+            EvalJs(shell(),
+                   "self.showSaveFilePicker().then("
+                   "() => 'unexpected success', e => e.name)"));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_FALSE(base::PathExists(test_file));
 }
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)

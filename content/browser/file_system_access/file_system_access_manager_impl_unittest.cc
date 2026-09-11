@@ -23,6 +23,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
@@ -54,6 +55,7 @@
 #include "mojo/public/mojom/base/file_info.mojom.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/mock_quota_manager.h"
@@ -74,6 +76,18 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include <fcntl.h>
+#include <sys/prctl.h>
+#include <sys/stat.h>
+
+#include "base/files/scoped_file.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/threading/thread.h"
+#include "sandbox/linux/services/syscall_wrappers.h"      // nogncheck
+#include "sandbox/linux/system_headers/linux_landlock.h"  // nogncheck
 #endif
 
 namespace content {
@@ -2397,6 +2411,182 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
                                 future.GetCallback());
   ASSERT_TRUE(future.Wait());
 }
+
+namespace {
+
+class FileSystemAccessManagerImplSaveFileTest
+    : public FileSystemAccessManagerImplTest,
+      public testing::WithParamInterface<PathType> {
+ protected:
+  void ExpectSaveFileError(const base::FilePath& relative_path,
+                           base::File::Error expected_error) {
+    const base::FilePath root =
+        GetParam() == PathType::kLocal
+            ? dir_.GetPath()
+            : base::FilePath::FromASCII(kTestMountPoint);
+    const PathInfo path_info(GetParam(), root.Append(relative_path));
+    manager_->SetFilePickerResultForTesting(path_info);
+    static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
+        ->SimulateUserActivation();
+
+    ExpectShowFilePicker(
+        /*read_permission=*/true, /*write_permission=*/true,
+        PathInfo(path_info.type, path_info.path.DirName()));
+    ExpectConfirmSensitiveEntryAccess(
+        path_info,
+        FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed,
+        FileSystemAccessPermissionContext::UserAction::kSave);
+    EXPECT_CALL(permission_context_,
+                OnFileCreatedFromShowSaveFilePicker(testing::_, testing::_))
+        .Times(0);
+
+    auto save_file_picker_options = blink::mojom::SaveFilePickerOptions::New(
+        blink::mojom::AcceptsTypesInfo::New(
+            std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+            /*include_accepts_all=*/true),
+        /*suggested_name=*/std::string());
+    auto picker_options = blink::mojom::FilePickerOptions::New(
+        blink::mojom::TypeSpecificFilePickerOptionsUnion::
+            NewSaveFilePickerOptions(std::move(save_file_picker_options)),
+        /*starting_directory_id=*/std::string(),
+        blink::mojom::FilePickerStartInOptionsUnionPtr());
+
+    base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                           std::vector<blink::mojom::FileSystemAccessEntryPtr>>
+        future;
+    manager_remote_->ChooseEntries(std::move(picker_options),
+                                   future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    auto [error, entries] = future.Take();
+    EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kFileError, error->status);
+    EXPECT_EQ(expected_error, error->file_error);
+    EXPECT_TRUE(entries.empty());
+  }
+};
+
+TEST_P(FileSystemAccessManagerImplSaveFileTest, ReadOnlyFile) {
+  const base::FilePath relative_path(FILE_PATH_LITERAL("readonly"));
+  const base::FilePath test_file = dir_.GetPath().Append(relative_path);
+  const std::string file_contents = "existing contents";
+  ASSERT_TRUE(base::WriteFile(test_file, file_contents));
+
+  // On Windows, MakeFileUnwritable() also prevents reading, so restore the
+  // permissions before checking the file's contents.
+  {
+    base::FilePermissionRestorer permission_restorer(test_file);
+    ASSERT_TRUE(base::MakeFileUnwritable(test_file));
+    base::File file(test_file, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+    if (file.IsValid()) {
+      GTEST_SKIP() << "File permissions do not prevent writing.";
+    }
+    ASSERT_EQ(base::File::FILE_ERROR_ACCESS_DENIED, file.error_details());
+
+    ExpectSaveFileError(relative_path, base::File::FILE_ERROR_ACCESS_DENIED);
+  }
+
+  std::string actual_contents;
+  ASSERT_TRUE(base::ReadFileToString(test_file, &actual_contents));
+  EXPECT_EQ(file_contents, actual_contents);
+}
+
+TEST_P(FileSystemAccessManagerImplSaveFileTest, MissingParentDirectory) {
+  const base::FilePath relative_path =
+      base::FilePath(FILE_PATH_LITERAL("missing")).AppendASCII("file");
+
+  ExpectSaveFileError(relative_path, base::File::FILE_ERROR_NOT_FOUND);
+
+  EXPECT_FALSE(base::PathExists(dir_.GetPath().Append(relative_path)));
+}
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+TEST_P(FileSystemAccessManagerImplSaveFileTest, TruncateFailure) {
+  if (sandbox::landlock_create_ruleset(nullptr, 0,
+                                       LANDLOCK_CREATE_RULESET_VERSION) < 3) {
+    GTEST_SKIP() << "Landlock does not support restricting truncation.";
+  }
+
+  const base::FilePath relative_path(FILE_PATH_LITERAL("truncate-failure"));
+  const base::FilePath test_file = dir_.GetPath().Append(relative_path);
+  const std::string file_contents = "existing contents";
+  ASSERT_TRUE(base::WriteFile(test_file, file_contents));
+
+  // Landlock restrictions cannot be removed, so apply them only to a dedicated
+  // file thread that will be stopped when this test finishes.
+  base::Thread file_thread("SaveFileTruncateFailure");
+  ASSERT_TRUE(file_thread.Start());
+  base::test::TestFuture<bool> restricted;
+  file_thread.task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindLambdaForTesting([test_file] {
+        const landlock_ruleset_attr ruleset = {.handled_access_fs =
+                                                   LANDLOCK_ACCESS_FS_TRUNCATE};
+        base::ScopedFD ruleset_fd(
+            sandbox::landlock_create_ruleset(&ruleset, sizeof(ruleset), 0));
+        if (!ruleset_fd.is_valid() ||
+            prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) != 0 ||
+            sandbox::landlock_restrict_self(ruleset_fd.get(), 0) != 0) {
+          return false;
+        }
+
+        // Opening and checking the regular file must still succeed, so the
+        // picker will reach SetLength() rather than an earlier failure.
+        base::ScopedFD descriptor(HANDLE_EINTR(open(
+            test_file.value().c_str(),
+            O_CREAT | O_WRONLY | O_NONBLOCK | O_CLOEXEC | O_NOFOLLOW, 0666)));
+        struct stat file_info;
+        return descriptor.is_valid() &&
+               HANDLE_EINTR(fstat(descriptor.get(), &file_info)) == 0 &&
+               S_ISREG(file_info.st_mode);
+      }),
+      restricted.GetCallback());
+  ASSERT_TRUE(restricted.Get());
+
+  // Release the manager and its context while their file thread is still alive,
+  // including when an assertion below exits the test early.
+  base::ScopedClosureRunner release_context(base::BindLambdaForTesting([&] {
+    manager_remote_.reset();
+    manager_.reset();
+    // Wait for the manager's sequence-bound operation runner to be deleted on
+    // the IO sequence before releasing its context.
+    base::RunLoop manager_cleanup;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, manager_cleanup.QuitClosure());
+    manager_cleanup.Run();
+    file_system_context_.reset();
+    file_thread.FlushForTesting();
+  }));
+  manager_remote_.reset();
+  manager_.reset();
+  file_system_context_ =
+      storage::CreateFileSystemContextWithAdditionalProvidersForTesting(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          file_thread.task_runner(), quota_manager_proxy_, {}, dir_.GetPath());
+  manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
+      file_system_context_, chrome_blob_context_, &permission_context_,
+      /*off_the_record=*/false);
+  manager_->BindReceiver(binding_context_,
+                         manager_remote_.BindNewPipeAndPassReceiver());
+
+  // NativeFileUtil currently reports a generic error for SetLength() failures;
+  // the POSIX local path preserves the access-denied error from Landlock.
+  ExpectSaveFileError(relative_path, GetParam() == PathType::kLocal
+                                         ? base::File::FILE_ERROR_ACCESS_DENIED
+                                         : base::File::FILE_ERROR_FAILED);
+
+  std::string actual_contents;
+  ASSERT_TRUE(base::ReadFileToString(test_file, &actual_contents));
+  EXPECT_EQ(file_contents, actual_contents);
+}
+#endif
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FileSystemAccessManagerImplSaveFileTest,
+                         testing::Values(PathType::kLocal, PathType::kExternal),
+                         [](const testing::TestParamInfo<PathType>& info) {
+                           return info.param == PathType::kLocal ? "Local"
+                                                                 : "External";
+                         });
+
+}  // namespace
 
 TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
   PathInfo test_dir_info(dir_.GetPath());
