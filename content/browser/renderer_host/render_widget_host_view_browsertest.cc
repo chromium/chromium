@@ -1057,6 +1057,21 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
+                       SharedWorkerContextProviderDurationRecorded) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+  RenderFrameSubmissionObserver frame_observer(shell()->web_contents());
+  frame_observer.WaitForAnyFrameSubmission();
+  FetchHistogramsFromChildProcesses();
+  EXPECT_FALSE(histogram_tester
+                   .GetAllSamples(
+                       "GPU.CreateSharedWorkerContextProvider.Duration.Success")
+                   .empty());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
                        CompositorWorksWhenReusingRenderer) {
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = shell()->web_contents();

@@ -656,6 +656,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="GPU.CreateSharedWorkerContextProvider.Duration.{Result}"
+    units="ms" expires_after="2027-04-24">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the elapsed time taken to synchronously create and bind the shared
+    compositor raster worker context provider
+    (ContextProviderCommandBuffer::CreateForRaster and BindToCurrentSequence) in
+    the renderer. Recorded on the main thread with {Result} whenever a shared
+    worker context provider creation attempt finishes.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="failed to initialize or bind"/>
+    <variant name="Success" summary="successfully created and bound"/>
+  </token>
+</histogram>
+
 <histogram name="GPU.D3D11FeatureLevel" enum="D3D11FeatureLevel"
     expires_after="2027-02-07">
   <owner>zmo@chromium.org</owner>
