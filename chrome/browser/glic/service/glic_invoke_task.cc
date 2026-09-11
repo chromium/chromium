@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -192,7 +193,9 @@ SetTabPendingActuationTask::~SetTabPendingActuationTask() = default;
 
 void SetTabPendingActuationTask::Start(base::OnceClosure done_callback) {
   if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
-    actor_service->SetTabPendingActuation(tab_handle_);
+    if (auto* ui_state_manager = actor_service->GetActorUiStateManager()) {
+      ui_state_manager->SetTabPendingActuation(tab_handle_);
+    }
   }
   std::move(done_callback).Run();
 }
@@ -202,7 +205,9 @@ void SetTabPendingActuationTask::OnSequenceCompleted(bool success) {
     return;
   }
   if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
-    actor_service->ClearTabPendingActuation(tab_handle_);
+    if (auto* ui_state_manager = actor_service->GetActorUiStateManager()) {
+      ui_state_manager->ClearTabPendingActuation(tab_handle_);
+    }
   }
 }
 
