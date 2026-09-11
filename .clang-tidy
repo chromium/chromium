@@ -17,6 +17,7 @@
                     bugprone-unused-raii,
                     bugprone-use-after-move,
                     bugprone-virtual-near-miss,
+                    clang-analyzer-core.uninitialized.*,
                     google-build-explicit-make-pair,
                     google-default-arguments,
                     google-explicit-constructor,
