@@ -1,39 +1,33 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_VIEWS_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_VIEWS_H_
 
+#include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "base/memory/raw_ref.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/view.h"
+
+namespace views {
+class Background;
+class View;
+}  // namespace views
 
 class TabGroupHeader;
 class TabGroupViews;
 
-// Default styling of tab groups.
-class TabGroupStyle {
+// Styling of tab groups that depends on views.
+class TabGroupStyleViews {
  public:
-  static int GetTabGroupOverlapAdjustment();
-  static int GetChipCornerRadius(
-      TabStripOrientation orientation = TabStripOrientation::kHorizontal);
-  static int GetEmptyChipSize();
-  static gfx::Point GetTitleChipOffset(
-      std::optional<int> text_height = std::nullopt);
-  static gfx::Insets GetInsetsForHeaderChip(
-      TabStripOrientation orientation = TabStripOrientation::kHorizontal);
-  // Returns the horizontal padding between adjacent tab group headers when
-  // collapsed.
-  static int GetPaddingBetweenCollapsedHeaders();
-
-  explicit TabGroupStyle(const TabGroupViews& tab_group_views);
-  TabGroupStyle(const TabGroupStyle&) = delete;
-  TabGroupStyle& operator=(const TabGroupStyle&) = delete;
-  virtual ~TabGroupStyle();
+  explicit TabGroupStyleViews(const TabGroupViews& tab_group_views);
+  TabGroupStyleViews(const TabGroupStyleViews&) = delete;
+  TabGroupStyleViews& operator=(const TabGroupStyleViews&) = delete;
+  virtual ~TabGroupStyleViews();
 
   // returns whether the underline for the group should be hidden
   virtual bool TabGroupUnderlineShouldBeHidden() const;
@@ -73,4 +67,4 @@ class TabGroupStyle {
   const raw_ref<const TabGroupViews> tab_group_views_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_VIEWS_H_

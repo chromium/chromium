@@ -19,7 +19,7 @@ class TabGroupHeader;
 class TabGroupHighlight;
 class TabGroupUnderline;
 class TabStrip;
-class TabGroupStyle;
+class TabGroupStyleViews;
 
 // The manager of all views associated with a tab group. This handles visual
 // calculations and updates. Painting is done in TabStrip.
@@ -72,7 +72,7 @@ class TabGroupViews {
   raw_ptr<TabGroupHighlight> highlight_;
   raw_ptr<TabGroupUnderline> underline_;
   raw_ptr<TabGroupUnderline> drag_underline_;
-  std::unique_ptr<const TabGroupStyle> style_;
+  std::unique_ptr<const TabGroupStyleViews> style_;
 
   bool InTearDown() const;
 

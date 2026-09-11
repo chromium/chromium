@@ -6,15 +6,18 @@ source_set("shared") {
   sources = [
     "drop_arrow.h",
     "new_tab_button.h",
+    "new_tab_button_menu_model.h",
     "rounded_scroll_bar.h",
     "tab_strip_combo_button.h",
     "tab_strip_flat_edge_button.h",
   ]
 
   deps = [
+    "//base",
     "//chrome/browser/ui/views",
     "//chrome/browser/ui/views/frame",
     "//components/prefs",
+    "//ui/base/interaction",
     "//ui/base/metadata",
     "//ui/menus",
     "//ui/views",
@@ -25,6 +28,7 @@ source_set("impl") {
   sources = [
     "drop_arrow.cc",
     "new_tab_button.cc",
+    "new_tab_button_menu_model.cc",
     "rounded_scroll_bar.cc",
     "tab_strip_combo_button.cc",
     "tab_strip_flat_edge_button.cc",
@@ -43,21 +47,27 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/bookmarks",
     "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
     "//chrome/browser/ui/views/frame",
-    "//chrome/browser/ui/views/tabs:new_tab_button_menu_model",
     "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui/tab_search",
     "//components/prefs",
+    "//components/tabs:public",
     "//ui/actions",
+    "//ui/base",
+    "//ui/base/interaction",
     "//ui/menus",
     "//ui/views",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("interactive_ui_tests") {

@@ -2860,8 +2860,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/tab_sharing",
       "//chrome/browser/ui/views/tabs:base_impl",
       "//chrome/browser/ui/views/tabs:new_tab_button",
-      "//chrome/browser/ui/views/tabs:new_tab_button_menu_model",
-      "//chrome/browser/ui/views/tabs:new_tab_button_menu_model_impl",
       "//chrome/browser/ui/views/tabs:tab",
       "//chrome/browser/ui/views/tabs:tab_container",
       "//chrome/browser/ui/views/tabs:tab_container_impl",
@@ -3229,11 +3227,6 @@ static_library("ui") {
       # following header gets componentized:
       # - c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/tabs/tab:impl",
-
-      # TODO(crbug.com/451609048): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/browser_commands.h
-      "//chrome/browser/ui/views/tabs:new_tab_button_menu_model_impl",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following headers get componentized:

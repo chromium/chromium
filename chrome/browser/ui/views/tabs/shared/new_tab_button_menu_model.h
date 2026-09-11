@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_MENU_MODEL_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_MENU_MODEL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_SHARED_NEW_TAB_BUTTON_MENU_MODEL_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_SHARED_NEW_TAB_BUTTON_MENU_MODEL_H_
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -35,4 +35,4 @@ class NewTabButtonMenuModel : public ui::SimpleMenuModel,
   raw_ptr<BrowserWindowInterface> browser_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_MENU_MODEL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_SHARED_NEW_TAB_BUTTON_MENU_MODEL_H_

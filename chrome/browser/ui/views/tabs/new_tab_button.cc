@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/tabs/new_tab_button_menu_model.h"
+#include "chrome/browser/ui/views/tabs/shared/new_tab_button_menu_model.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/background.h"

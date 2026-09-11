@@ -12,7 +12,7 @@
 #include "ui/views/view.h"
 
 class TabGroupViews;
-class TabGroupStyle;
+class TabGroupStyleViews;
 
 // View for tab group underlines in the tab strip, which are markers of group
 // members. Underlines are included in the tab
@@ -32,7 +32,7 @@ class TabGroupUnderline : public views::View {
 
   TabGroupUnderline(TabGroupViews* tab_group_views,
                     const tab_groups::TabGroupId& group,
-                    const TabGroupStyle& style);
+                    const TabGroupStyleViews& style);
   TabGroupUnderline(const TabGroupUnderline&) = delete;
   TabGroupUnderline& operator=(const TabGroupUnderline&) = delete;
 
@@ -59,7 +59,7 @@ class TabGroupUnderline : public views::View {
 
   const raw_ptr<TabGroupViews> tab_group_views_;
   const tab_groups::TabGroupId group_;
-  const raw_ref<const TabGroupStyle> style_;
+  const raw_ref<const TabGroupStyleViews> style_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_UNDERLINE_H_

@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
-#include "chrome/browser/ui/views/tabs/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/tab_group_style_views.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -27,8 +27,8 @@ TabGroupViews::TabGroupViews(views::View* container_view,
                              TabSlotController& tab_slot_controller,
                              const tab_groups::TabGroupId& group)
     : tab_slot_controller_(tab_slot_controller), group_(group) {
-  style_ = std::make_unique<const TabGroupStyle>(*this);
-  const TabGroupStyle* style = style_.get();
+  style_ = std::make_unique<const TabGroupStyleViews>(*this);
+  const TabGroupStyleViews* style = style_.get();
 
   auto header =
       std::make_unique<TabGroupHeader>(*tab_slot_controller_, group_, *style);

@@ -27,7 +27,7 @@
 #include "ui/views/view_targeter_delegate.h"
 
 class TabSlotController;
-class TabGroupStyle;
+class TabGroupStyleViews;
 struct TabSizeInfo;
 class TabStyle;
 
@@ -53,7 +53,7 @@ class TabGroupHeader : public TabSlotView,
  public:
   TabGroupHeader(TabSlotController& tab_slot_controller,
                  const tab_groups::TabGroupId& group,
-                 const TabGroupStyle& style);
+                 const TabGroupStyleViews& style);
   TabGroupHeader(const TabGroupHeader&) = delete;
   TabGroupHeader& operator=(const TabGroupHeader&) = delete;
   ~TabGroupHeader() override;
@@ -162,7 +162,7 @@ class TabGroupHeader : public TabSlotView,
   // needs_attention_ set to true.
   const raw_ptr<views::ImageView> attention_indicator_;
 
-  const raw_ref<const TabGroupStyle> group_style_;
+  const raw_ref<const TabGroupStyleViews> group_style_;
   const raw_ptr<const TabStyle> tab_style_;
 
   // The current title of the group.

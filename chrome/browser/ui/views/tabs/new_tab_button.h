@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/tabs/new_tab_button_menu_model.h"
+#include "chrome/browser/ui/views/tabs/shared/new_tab_button_menu_model.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "ui/views/context_menu_controller.h"

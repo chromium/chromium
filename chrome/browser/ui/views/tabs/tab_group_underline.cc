@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 
-
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
-#include "chrome/browser/ui/views/tabs/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/tab_group_style_views.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -30,7 +30,7 @@ int TabGroupUnderline::GetStrokeInset() {
 
 TabGroupUnderline::TabGroupUnderline(TabGroupViews* tab_group_views,
                                      const tab_groups::TabGroupId& group,
-                                     const TabGroupStyle& style)
+                                     const TabGroupStyleViews& style)
     : tab_group_views_(tab_group_views), group_(group), style_(style) {}
 
 void TabGroupUnderline::UpdateBounds(const views::View* const leading_view,

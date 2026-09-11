@@ -23,11 +23,12 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
-#include "chrome/browser/ui/views/tabs/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/tab_group_style_views.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
@@ -139,7 +140,7 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
  public:
   TabGroupHighlightPathGenerator(const views::View* chip,
                                  const views::View* title,
-                                 const TabGroupStyle& style)
+                                 const TabGroupStyleViews& style)
       : chip_(chip), title_(title), style_(style) {}
   TabGroupHighlightPathGenerator(const TabGroupHighlightPathGenerator&) =
       delete;
@@ -157,14 +158,14 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
  private:
   const raw_ptr<const views::View, AcrossTasksDanglingUntriaged> chip_;
   const raw_ptr<const views::View, AcrossTasksDanglingUntriaged> title_;
-  const raw_ref<const TabGroupStyle> style_;
+  const raw_ref<const TabGroupStyleViews> style_;
 };
 
 }  // namespace
 
 TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
                                const tab_groups::TabGroupId& group,
-                               const TabGroupStyle& style)
+                               const TabGroupStyleViews& style)
     : HoverCardAnchorTarget(this),
       tab_slot_controller_(tab_slot_controller),
       title_chip_(AddChildView(std::make_unique<views::View>())),
@@ -580,11 +581,11 @@ int TabGroupHeader::GetDesiredWidth() const {
 }
 
 int TabGroupHeader::GetChipHeight() const {
-  return group_style_->GetEmptyChipSize();
+  return TabGroupStyle::GetEmptyChipSize();
 }
 
 int TabGroupHeader::GetChipY() const {
-  return group_style_->GetTitleChipOffset(std::nullopt).y();
+  return TabGroupStyle::GetTitleChipOffset(std::nullopt).y();
 }
 
 bool TabGroupHeader::ShouldShowHeaderIcon() const {
@@ -675,9 +676,9 @@ void TabGroupHeader::UpdateIsCollapsed() {
 void TabGroupHeader::CreateHeaderWithoutTitle() {
   const int chip_height = GetChipHeight();
   const int chip_y = GetChipY();
-  const int empty_width = group_style_->GetEmptyChipSize();
+  const int empty_width = TabGroupStyle::GetEmptyChipSize();
   const gfx::Point empty_origin =
-      group_style_->GetTitleChipOffset(std::nullopt);
+      TabGroupStyle::GetTitleChipOffset(std::nullopt);
 
   title_chip_->SetBounds(empty_origin.x(), chip_y, empty_width, chip_height);
   title_chip_->SetBackground(group_style_->GetEmptyTitleChipBackground(color_));
@@ -688,7 +689,7 @@ void TabGroupHeader::CreateHeaderWithoutTitle() {
     const bool should_show_attention_indicator = ShouldShowAttentionIndicator();
     if (should_show_attention_indicator) {
       const gfx::Insets title_chip_insets =
-          group_style_->GetInsetsForHeaderChip();
+          TabGroupStyle::GetInsetsForHeaderChip();
       const int title_chip_vertical_inset = 0;
       gfx::Rect title_chip_bounds = title_chip_->GetLocalBounds();
       const int attention_indicator_width =
@@ -757,17 +758,17 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   const int total_content_width =
       sync_icon_width + padding_between_label_sync_icon + text_width +
       attention_indicator_width + attention_indicator_padding;
-  const gfx::Insets title_chip_insets = group_style_->GetInsetsForHeaderChip();
+  const gfx::Insets title_chip_insets = TabGroupStyle::GetInsetsForHeaderChip();
   const int title_chip_width =
-      std::max(group_style_->GetEmptyChipSize(),
+      std::max(TabGroupStyle::GetEmptyChipSize(),
                total_content_width + title_chip_insets.width());
 
   const int chip_height = GetChipHeight();
   const int chip_y = GetChipY();
   const gfx::Point named_origin =
-      group_style_->GetTitleChipOffset(std::nullopt);
+      TabGroupStyle::GetTitleChipOffset(std::nullopt);
 
-  const int corner_radius = group_style_->GetChipCornerRadius();
+  const int corner_radius = TabGroupStyle::GetChipCornerRadius();
   title_chip_->SetBounds(named_origin.x(), chip_y, title_chip_width,
                          chip_height);
   title_chip_->SetBackground(

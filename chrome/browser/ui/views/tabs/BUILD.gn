@@ -54,41 +54,11 @@ source_set("base_impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
-source_set("new_tab_button_menu_model") {
-  sources = [ "new_tab_button_menu_model.h" ]
-
-  deps = [
-    "//base",
-    "//ui/base/interaction",
-    "//ui/menus",
-  ]
-}
-
-source_set("new_tab_button_menu_model_impl") {
-  sources = [ "new_tab_button_menu_model.cc" ]
-
-  deps = [
-    ":new_tab_button_menu_model",
-    "//base",
-    "//chrome/app:command_ids",
-    "//chrome/app:generated_resources",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs",
-    "//chrome/browser/ui/tabs:tab_group",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//components/tabs:public",
-    "//ui/base",
-    "//ui/base/interaction",
-  ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-}
-
 source_set("tab_group") {
   sources = [
     "tab_group_header.h",
     "tab_group_highlight.h",
-    "tab_group_style.h",
+    "tab_group_style_views.h",
     "tab_group_underline.h",
     "tab_group_views.h",
   ]
@@ -113,7 +83,7 @@ source_set("tab_group_impl") {
   sources = [
     "tab_group_header.cc",
     "tab_group_highlight.cc",
-    "tab_group_style.cc",
+    "tab_group_style_views.cc",
     "tab_group_underline.cc",
     "tab_group_views.cc",
   ]
@@ -136,6 +106,7 @@ source_set("tab_group_impl") {
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/views/tabs/common",
     "//chrome/browser/ui/views/tabs/groups",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/public",
@@ -536,13 +507,13 @@ source_set("new_tab_button") {
   ]
 
   deps = [
-    ":new_tab_button_menu_model",
     ":tab_strip",
     ":tab_strip_button",
     "//base",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/tabs/shared",
     "//ui/base:features",
     "//ui/views",
   ]
@@ -751,7 +722,6 @@ if (!is_chromeos_device) {
 
     deps = [
       ":new_tab_button",
-      ":new_tab_button_menu_model",
       ":tab",
       ":tab_group",
       ":tab_strip",
@@ -764,6 +734,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui/tabs:features",
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/views/interaction",
+      "//chrome/browser/ui/views/tabs/shared",
       "//chrome/browser/ui/views/test:test_support",
       "//chrome/common",
       "//chrome/test/base:in_process_browser_test",
