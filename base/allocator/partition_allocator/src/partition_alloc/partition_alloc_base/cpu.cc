@@ -4,6 +4,7 @@
 
 #include "partition_alloc/partition_alloc_base/cpu.h"
 
+#include <array>
 #include <cinttypes>
 #include <climits>
 #include <cstddef>
@@ -15,6 +16,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/containers/span.h"
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 
 #if PA_BUILDFLAG(PA_ARCH_CPU_ARM_FAMILY) &&                \
@@ -58,27 +60,32 @@ namespace {
 
 #if defined(__pic__) && defined(__i386__)
 
-void __cpuid(int cpu_info[4], int info_type) {
+void __cpuid(span<int, 4> cpu_info, int info_type) {
   __asm__ volatile(
       "mov %%ebx, %%edi\n"
       "cpuid\n"
       "xchg %%edi, %%ebx\n"
-      : "=a"(cpu_info[0]), "=D"(PA_UNSAFE_TODO(cpu_info[1])),
-        "=c"(PA_UNSAFE_TODO(cpu_info[2])), "=d"(PA_UNSAFE_TODO(cpu_info[3]))
+      : "=a"(cpu_info[0]), "=D"(cpu_info[1]), "=c"(cpu_info[2]),
+        "=d"(cpu_info[3])
       : "a"(info_type), "c"(0));
 }
 
 #else
 
-void __cpuid(int cpu_info[4], int info_type) {
+void __cpuid(span<int, 4> cpu_info, int info_type) {
   __asm__ volatile("cpuid\n"
-                   : "=a"(cpu_info[0]), "=b"(PA_UNSAFE_TODO(cpu_info[1])),
-                     "=c"(PA_UNSAFE_TODO(cpu_info[2])),
-                     "=d"(PA_UNSAFE_TODO(cpu_info[3]))
+                   : "=a"(cpu_info[0]), "=b"(cpu_info[1]), "=c"(cpu_info[2]),
+                     "=d"(cpu_info[3])
                    : "a"(info_type), "c"(0));
 }
 
 #endif
+#else
+// On MSVC, <intrin.h>'s __cpuid(int[4], int) does not accept std::array or span
+// directly, so provide a span<int, 4> wrapper here.
+void __cpuid(span<int, 4> cpu_info, int info_type) {
+  ::__cpuid(cpu_info.data(), info_type);
+}
 #endif  // !PA_BUILDFLAG(PA_COMPILER_MSVC)
 
 // xgetbv returns the value of an Intel Extended Control Register (XCR).
@@ -100,7 +107,7 @@ uint64_t xgetbv(uint32_t xcr) {
 
 void CPU::Initialize() {
 #if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
-  int cpu_info[4] = {-1, 0, 0, 0};
+  std::array<int, 4> cpu_info = {-1, 0, 0, 0};
 
   // __cpuid with an InfoType argument of 0 returns the number of
   // valid Ids in CPUInfo[0] and the CPU identification string in
@@ -115,7 +122,7 @@ void CPU::Initialize() {
 
   // Interpret CPU feature information.
   if (num_ids > 0) {
-    int cpu_info7[4] = {};
+    std::array<int, 4> cpu_info7 = {};
     __cpuid(cpu_info, 1);
     if (num_ids >= 7) {
       __cpuid(cpu_info7, 7);
@@ -171,7 +178,7 @@ void CPU::Initialize() {
   }
 
   if (!has_non_stop_time_stamp_counter_ && is_running_in_vm_) {
-    int cpu_info_hv[4] = {};
+    std::array<int, 4> cpu_info_hv = {};
     __cpuid(cpu_info_hv, 0x40000000);
     if (cpu_info_hv[1] == 0x7263694D &&  // Micr
         cpu_info_hv[2] == 0x666F736F &&  // osof
