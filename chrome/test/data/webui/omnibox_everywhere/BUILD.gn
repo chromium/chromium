@@ -10,6 +10,7 @@ build_webui_tests("build") {
   cc_test_files = [ "omnibox_everywhere_browsertest.cc" ]
 
   files = [
+    "fre_chin_test.ts",
     "fre_modal_test.ts",
     "omnibox_test.ts",
     "test_searchbox_browser_proxy.ts",

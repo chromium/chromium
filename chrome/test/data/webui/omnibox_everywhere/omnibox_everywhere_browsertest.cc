@@ -27,3 +27,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, TabSelectionAndRestoration) {
 IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, FreModal) {
   RunTest("omnibox_everywhere/fre_modal_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, FreChin) {
+  RunTest("omnibox_everywhere/fre_chin_test.js", "mocha.run();");
+}

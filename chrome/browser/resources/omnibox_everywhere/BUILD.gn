@@ -22,6 +22,8 @@ build_webui("build") {
     "composebox.ts",
     "app.html.ts",
     "app.ts",
+    "fre_chin.html.ts",
+    "fre_chin.ts",
     "fre_modal.html.ts",
     "fre_modal.ts",
     "omnibox.html.ts",
@@ -36,6 +38,7 @@ build_webui("build") {
   css_files = [
     "composebox.css",
     "app.css",
+    "fre_chin.css",
     "fre_modal.css",
     "omnibox.css",
     "profile_icon.css",
