@@ -407,27 +407,33 @@ TEST_P(SessionBindingUtilsTest, TestMaybeIncreaseSessionUsage) {
   EXPECT_EQ(request.usage_map[key2], SessionUsage::kInScopeRefreshNotAllowed);
 }
 
-TEST_P(SessionBindingUtilsTest, CreateAttestationValue_Tpm) {
-  base::DictValue result = CreateAttestationValue(
-      {.format = kTpm, .statement = {1, 2, 3}, .signature = {4, 5, 6}});
+TEST_P(SessionBindingUtilsTest, CreateBindingStatement_Tpm) {
+  base::DictValue result = CreateBindingStatement({.format = kTpm,
+                                                   .statement = {1, 2, 3},
+                                                   .signature = {4, 5, 6},
+                                                   .subject_key = {7, 8, 9}});
 
   EXPECT_THAT(result.FindString("fmt"), Pointee(Eq("TPM")));
   // base64url of {1, 2, 3}
   EXPECT_THAT(result.FindString("stmt"), Pointee(Eq("AQID")));
   // base64url of {4, 5, 6}
   EXPECT_THAT(result.FindString("sig"), Pointee(Eq("BAUG")));
+  // base64url of {7, 8, 9}
+  EXPECT_THAT(result.FindString("sub_key"), Pointee(Eq("BwgJ")));
 }
 
-TEST_P(SessionBindingUtilsTest, CreateAttestationValue_SecureEnclave) {
-  base::DictValue result = CreateAttestationValue({
+TEST_P(SessionBindingUtilsTest, CreateBindingStatement_SecureEnclave) {
+  base::DictValue result = CreateBindingStatement({
       .format = kSecureEnclave,
       .statement = {1, 2, 3},
       .signature = {4, 5, 6},
+      .subject_key = {7, 8, 9},
   });
 
   EXPECT_THAT(result.FindString("fmt"), Pointee(Eq("SECURE_ENCLAVE")));
   EXPECT_THAT(result.FindString("stmt"), Pointee(Eq("AQID")));
   EXPECT_THAT(result.FindString("sig"), Pointee(Eq("BAUG")));
+  EXPECT_THAT(result.FindString("sub_key"), Pointee(Eq("BwgJ")));
 }
 
 TEST_P(SessionBindingUtilsTest,
@@ -439,7 +445,10 @@ TEST_P(SessionBindingUtilsTest,
       CreateOuterRegistrationHeaderAndPayload(
           "inner_jws", RSA_PKCS1_SHA256, spki,
           GURL("https://example.com/register?query=param#fragment"),
-          {.format = kTpm, .statement = {1, 2, 3}, .signature = {4, 5, 6}}));
+          {.format = kTpm,
+           .statement = {1, 2, 3},
+           .signature = {4, 5, 6},
+           .subject_key = {7, 8, 9}}));
 
   ASSERT_OK_AND_ASSIGN((auto [header, payload]),
                        base::SplitStringOnce(result, '.'));
@@ -458,10 +467,11 @@ TEST_P(SessionBindingUtilsTest,
       base::DictValue()
           .Set("aud", "https://example.com/register")
           .Set("jti", "inner_jws")
-          .Set("att", CreateAttestationValue({
+          .Set("att", CreateBindingStatement({
                           .format = kTpm,
                           .statement = {1, 2, 3},
                           .signature = {4, 5, 6},
+                          .subject_key = {7, 8, 9},
                       }));
 
   EXPECT_EQ(actual_header, expected_header);
@@ -471,12 +481,14 @@ TEST_P(SessionBindingUtilsTest,
 TEST_P(SessionBindingUtilsTest,
        CreateOuterRegistrationHeaderAndPayload_InvalidSpki) {
   std::vector<uint8_t> invalid_spki = {1, 2, 3};
-  EXPECT_EQ(
-      CreateOuterRegistrationHeaderAndPayload(
-          "inner_jws", RSA_PKCS1_SHA256, invalid_spki,
-          GURL("https://example.com/register"),
-          {.format = kTpm, .statement = {1, 2, 3}, .signature = {4, 5, 6}}),
-      std::nullopt);
+  EXPECT_EQ(CreateOuterRegistrationHeaderAndPayload(
+                "inner_jws", RSA_PKCS1_SHA256, invalid_spki,
+                GURL("https://example.com/register"),
+                {.format = kTpm,
+                 .statement = {1, 2, 3},
+                 .signature = {4, 5, 6},
+                 .subject_key = {7, 8, 9}}),
+            std::nullopt);
 }
 
 TEST_P(SessionBindingUtilsTest, SecFetchSiteForReferringOrigin) {

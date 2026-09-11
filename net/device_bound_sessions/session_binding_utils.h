@@ -36,9 +36,10 @@ NET_EXPORT extern const char kSecFetchSiteHeaderName[];
 NET_EXPORT extern const char kSecFetchModeHeaderName[];
 NET_EXPORT extern const char kSecFetchDestHeaderName[];
 
-// Formats an attestation statement into a dictionary.
-base::DictValue NET_EXPORT CreateAttestationValue(
-    const crypto::AttestationStatement& attestation_statement);
+// Formats a binding statement into a dictionary as defined in
+// https://github.com/WICG/dbsc-sso#identity-providers-session-initialization.
+base::DictValue NET_EXPORT
+CreateBindingStatement(const crypto::AttestationStatement& statement);
 
 // Creates outer header and payload parts of a nested registration JWT. This is
 // needed for sessions including an attestation key.

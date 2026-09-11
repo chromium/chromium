@@ -74,11 +74,15 @@ std::optional<std::string_view> SignatureAlgorithmToString(
   }
 }
 
-std::string Base64UrlEncode(std::string_view data) {
+std::string Base64UrlEncode(base::span<const uint8_t> data) {
   std::string output;
   base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &output);
   return output;
+}
+
+std::string Base64UrlEncode(std::string_view data) {
+  return Base64UrlEncode(base::as_byte_span(data));
 }
 
 std::optional<std::string> CombineHeaderAndPayload(
@@ -142,23 +146,22 @@ std::optional<std::string> CreateHeaderAndPayload(
 
 }  // namespace
 
-base::DictValue CreateAttestationValue(
-    const crypto::AttestationStatement& attestation_statement) {
-  std::string_view format;
-  switch (attestation_statement.format) {
-    case crypto::AttestationStatement::Format::kTpm:
-      format = "TPM";
-      break;
-    case crypto::AttestationStatement::Format::kSecureEnclave:
-      format = "SECURE_ENCLAVE";
-      break;
-  }
+base::DictValue CreateBindingStatement(
+    const crypto::AttestationStatement& statement) {
+  std::string_view format = [&] {
+    switch (statement.format) {
+      case crypto::AttestationStatement::kTpm:
+        return "TPM";
+      case crypto::AttestationStatement::kSecureEnclave:
+        return "SECURE_ENCLAVE";
+    }
+    NOTREACHED();
+  }();
   return base::DictValue()
       .Set("fmt", format)
-      .Set("stmt", Base64UrlEncode(
-                       base::as_string_view(attestation_statement.statement)))
-      .Set("sig", Base64UrlEncode(
-                      base::as_string_view(attestation_statement.signature)));
+      .Set("stmt", Base64UrlEncode(statement.statement))
+      .Set("sig", Base64UrlEncode(statement.signature))
+      .Set("sub_key", Base64UrlEncode(statement.subject_key));
 }
 
 std::optional<std::string> CreateOuterRegistrationHeaderAndPayload(
@@ -184,7 +187,7 @@ std::optional<std::string> CreateOuterRegistrationHeaderAndPayload(
   auto payload = base::DictValue()
                      .Set("aud", RemoveQueryAndFragment(destination_url).spec())
                      .Set("jti", inner_jws)
-                     .Set("att", CreateAttestationValue(attestation_stmt));
+                     .Set("att", CreateBindingStatement(attestation_stmt));
 
   return CombineHeaderAndPayload(header, payload);
 }
@@ -234,8 +237,7 @@ std::optional<std::string> AppendSignatureToHeaderAndPayload(
     signature = base::span(*signature_holder);
   }
 
-  return base::StrCat(
-      {header_and_payload, ".", Base64UrlEncode(as_string_view(signature))});
+  return base::StrCat({header_and_payload, ".", Base64UrlEncode(signature)});
 }
 
 const char kSecFetchSiteHeaderName[] = "Sec-Fetch-Site";

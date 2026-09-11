@@ -912,6 +912,7 @@ TEST_F(RegistrationTest, AttestationSuccessWithChallenge) {
   EXPECT_THAT(att, DictionaryHasValue("fmt", base::Value("TPM")));
   EXPECT_THAT(att.FindString("stmt"), Pointee(Not(IsEmpty())));
   EXPECT_THAT(att.FindString("sig"), Pointee(Not(IsEmpty())));
+  EXPECT_THAT(att.FindString("sub_key"), Pointee(Not(IsEmpty())));
 
   const std::string& inner_jwt = CHECK_DEREF(outer_payload.FindString("jti"));
   EXPECT_TRUE(VerifyEs256Jwt(inner_jwt));
