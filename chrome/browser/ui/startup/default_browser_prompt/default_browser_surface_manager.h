@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "ui/views/widget/widget.h"
 
 class BrowserWindowInterface;
 
@@ -57,6 +58,14 @@ class DefaultBrowserSurfaceManager : public BrowserCollectionObserver {
   // Helper function to determine if a browser window is suitable for showing a
   // prompt. Excludes incognito, guest, and non-normal browser windows.
   bool IsBrowserValidForShowing(BrowserWindowInterface* browser);
+
+  // Handles close requests for dialog widgets across bubble and modal managers.
+  void OnDialogWidgetCloseRequested(BrowserWindowInterface* browser,
+                                    views::Widget::ClosedReason reason);
+
+  // Removes the tracked widget associated with the given browser window.
+  // Overridden by dialog managers that maintain widget mappings.
+  virtual void RemoveWidget(BrowserWindowInterface* browser) {}
 
  private:
   // Abstract methods to be implemented by subclasses to handle UI operations.

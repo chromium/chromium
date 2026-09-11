@@ -13,6 +13,7 @@
 #include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -160,4 +161,23 @@ void DefaultBrowserSurfaceManager::HandleIgnore() {
 
   controller_->OnIgnored();
   controller_.reset();
+}
+
+void DefaultBrowserSurfaceManager::OnDialogWidgetCloseRequested(
+    BrowserWindowInterface* browser,
+    views::Widget::ClosedReason reason) {
+  // Note: On Mac, the ESC dismissal is resolved as kUnspecified.
+  const bool is_dismiss_action =
+      reason == views::Widget::ClosedReason::kEscKeyPressed ||
+      reason == views::Widget::ClosedReason::kCloseButtonClicked ||
+      reason == views::Widget::ClosedReason::kCancelButtonClicked ||
+      reason == views::Widget::ClosedReason::kUnspecified;
+  if (is_dismiss_action) {
+    HandleDismiss();
+    DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+        DefaultBrowserPromptManager::CloseReason::kDismiss);
+    return;
+  }
+
+  RemoveWidget(browser);
 }

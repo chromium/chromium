@@ -13,7 +13,6 @@
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog_manager.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -167,6 +167,32 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
           std::to_underlying(
               default_browser::DefaultBrowserInteractionType::kAccepted),
           1),
+      Do([this]() { CloseDialogs(); }),
+      WaitForHide(default_browser::kBubbleDialogId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
+                       CloseWidgetViaEsc) {
+  ui::Accelerator esc_accelerator(ui::VKEY_ESCAPE, ui::EF_NONE);
+  RunTestSequence(
+      Do([this]() { ShowDialogManager(); }),
+      WaitForShow(default_browser::kBubbleDialogId),
+      VerifyHistogram("DefaultBrowser.BubbleDialog.ShellIntegration.Shown", 1,
+                      1),
+      SendAccelerator(default_browser::kBubbleDialogId, esc_accelerator),
+      VerifyHistogram(
+          "DefaultBrowser.BubbleDialog.ShellIntegration.Interaction",
+          std::to_underlying(
+              default_browser::DefaultBrowserInteractionType::kDismissed),
+          1),
+      // In this test fixture, `manager_` is a standalone instance and is not
+      // managed by `DefaultBrowserPromptManager::GetInstance()`. Because
+      // MakeCloseSynchronous intercepts the ESC key and delegates closing to
+      // DefaultBrowserPromptManager, we must manually call `CloseDialogs()`
+      // here on the standalone `manager_` to close the widget before waiting
+      // for hide.
+      // Verifying the interaction histogram should serve as a proxy
+      //  for the dialog being dismissed.
       Do([this]() { CloseDialogs(); }),
       WaitForHide(default_browser::kBubbleDialogId));
 }

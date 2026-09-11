@@ -14,10 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
-
-namespace views {
-class Widget;
-}
+#include "ui/views/widget/widget.h"
 
 class BrowserWindowInterface;
 
@@ -40,6 +37,8 @@ class DefaultBrowserBubbleDialogManager : public DefaultBrowserSurfaceManager {
   void ShowForBrowser(BrowserWindowInterface* browser) final;
   void CloseForBrowser(BrowserWindowInterface* browser) final;
   void CloseAllPromptInstances() final;
+
+  void RemoveWidget(BrowserWindowInterface* browser) override;
 
  private:
   void OnAccept();

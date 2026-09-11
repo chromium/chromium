@@ -46,11 +46,9 @@ class DefaultBrowserModalDialogManager : public DefaultBrowserSurfaceManager {
   void ShowForBrowser(BrowserWindowInterface* browser) final;
   void CloseForBrowser(BrowserWindowInterface* browser) final;
   void CloseAllPromptInstances() final;
+  void RemoveWidget(BrowserWindowInterface* browser) override;
 
  private:
-  void OnDialogWidgetCloseRequested(BrowserWindowInterface* browser,
-                                    views::Widget::ClosedReason reason);
-
   const bool use_settings_illustration_;
 
   // A map of browser windows to the prompt modal widgets.

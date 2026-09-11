@@ -69,22 +69,8 @@ void DefaultBrowserModalDialogManager::CloseAllPromptInstances() {
   }
 }
 
-void DefaultBrowserModalDialogManager::OnDialogWidgetCloseRequested(
-    BrowserWindowInterface* browser,
-    views::Widget::ClosedReason reason) {
-  // Note: On Mac, the ESC dismissal is resolved as kUnspecified.
-  const bool is_dismiss_action =
-      reason == views::Widget::ClosedReason::kEscKeyPressed ||
-      reason == views::Widget::ClosedReason::kCloseButtonClicked ||
-      reason == views::Widget::ClosedReason::kCancelButtonClicked ||
-      reason == views::Widget::ClosedReason::kUnspecified;
-  if (is_dismiss_action) {
-    HandleDismiss();
-    DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
-        DefaultBrowserPromptManager::CloseReason::kDismiss);
-    return;
-  }
-
+void DefaultBrowserModalDialogManager::RemoveWidget(
+    BrowserWindowInterface* browser) {
   dialog_widgets_.erase(browser);
 }
 
