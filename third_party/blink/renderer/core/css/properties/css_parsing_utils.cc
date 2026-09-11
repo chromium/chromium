@@ -4366,6 +4366,7 @@ bool IsDefaultAlignmentOrLeftOrRightKeyword(CSSValueID id) {
 
 bool IsContentPositionKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kCenter,
+                      CSSValueID::kFlowStart, CSSValueID::kFlowEnd,
                       CSSValueID::kFlexStart, CSSValueID::kFlexEnd>(id) ||
          IsFlowAlignmentKeyword(id);
 }

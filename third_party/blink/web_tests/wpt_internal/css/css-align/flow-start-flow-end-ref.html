@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    html, body {
+      color: black; background-color: white; font: 12.8px/1 monospace; padding: 0; margin: 0;
+    }
+
+    .row {
+      font-size: 0;
+    }
+
+    .label {
+      margin: 8px 4px 0;
+    }
+
+    .container {
+      width: 80px;
+      height: 80px;
+      border: 1px solid black;
+      margin: 4px;
+      vertical-align: top;
+    }
+
+    item {
+      display: block;
+      width: 20px;
+      height: 20px;
+      background: green;
+    }
+
+    .flex-row {
+      display: inline flex;
+    }
+
+    .flex-column {
+      display: inline flex;
+      flex-direction: column;
+    }
+
+    .flex-row-wrap {
+      display: inline flex;
+      flex-wrap: wrap;
+    }
+
+    .flex-column-wrap {
+      display: inline flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="label">Main axis, justify-content: row flex, then column flex</div>
+<div class="row">
+  <div class="container flex-row" style="justify-content: flex-start"><item></item></div>
+  <div class="container flex-row" style="justify-content: flex-end"><item></item></div>
+  <div class="container flex-column" style="justify-content: flex-start"><item></item></div>
+  <div class="container flex-column" style="justify-content: flex-end"><item></item></div>
+</div>
+
+<div class="label">Cross axis, align-items and align-self: row flex, then column flex</div>
+<div class="row">
+  <div class="container flex-row" style="align-items: flex-start"><item></item></div>
+  <div class="container flex-row" style="align-items: flex-end"><item></item></div>
+  <div class="container flex-row"><item style="align-self: flex-start"></item></div>
+  <div class="container flex-row"><item style="align-self: flex-end"></item></div>
+  <div class="container flex-column" style="align-items: flex-start"><item></item></div>
+  <div class="container flex-column" style="align-items: flex-end"><item></item></div>
+  <div class="container flex-column"><item style="align-self: flex-start"></item></div>
+  <div class="container flex-column"><item style="align-self: flex-end"></item></div>
+</div>
+
+<div class="label">Multi-line cross axis, align-content: row flex, then column flex</div>
+<div class="row">
+  <div class="container flex-row-wrap" style="align-content: flex-start"><item></item></div>
+  <div class="container flex-row-wrap" style="align-content: flex-end"><item></item></div>
+  <div class="container flex-column-wrap" style="align-content: flex-start"><item></item></div>
+  <div class="container flex-column-wrap" style="align-content: flex-end"><item></item></div>
+</div>
+</body>
+</html>

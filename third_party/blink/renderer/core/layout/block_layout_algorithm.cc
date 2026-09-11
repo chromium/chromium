@@ -286,10 +286,12 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
     case ItemPosition::kRight:
       return is_rtl ? LayoutUnit() : FreeSpace();
     case ItemPosition::kFlexStart:
+    case ItemPosition::kFlowStart:
     case ItemPosition::kStart:
       return LayoutUnit();
-    case ItemPosition::kFlexEnd:
     case ItemPosition::kEnd:
+    case ItemPosition::kFlexEnd:
+    case ItemPosition::kFlowEnd:
       return FreeSpace();
     case ItemPosition::kSelfStart:
       return self_start_end_converter().InlineStart();

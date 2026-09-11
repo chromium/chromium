@@ -43,10 +43,11 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
 
   if (use_counter) {
     if (!behave_like_table_cell) {
-      if (position != ContentPosition::kNormal &&
-          position != ContentPosition::kStart &&
-          position != ContentPosition::kBaseline &&
-          position != ContentPosition::kFlexStart) {
+      if (position != ContentPosition::kBaseline &&
+          position != ContentPosition::kFlexStart &&
+          position != ContentPosition::kFlowStart &&
+          position != ContentPosition::kNormal &&
+          position != ContentPosition::kStart) {
         UseCounter::Count(*use_counter,
                           WebFeature::kEffectiveAlignContentForBlock);
       }
@@ -107,9 +108,9 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
       }
       break;
 
-    case ContentPosition::kStart:
     case ContentPosition::kFlexStart:
     case ContentPosition::kFlowStart:
+    case ContentPosition::kStart:
       return BlockContentAlignment::kStart;
 
     case ContentPosition::kBaseline:

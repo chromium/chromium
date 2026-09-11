@@ -265,6 +265,10 @@ GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
       break;
   }
 
+  // TODO(celestepan): For grid-lanes containers with 'track-reverse', in the
+  // case of 'flow-start'/'flow-end' and their 'flex-start'/'flex-end' aliases,
+  // position the track collection against the reversed flow edge in grid-lanes
+  // layout.
   switch (content_alignment.GetPosition()) {
     case ContentPosition::kLeft: {
       DCHECK(is_for_columns);

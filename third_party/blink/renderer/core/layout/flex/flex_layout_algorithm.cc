@@ -325,6 +325,13 @@ ItemPosition FlexLayoutAlgorithm::ResolvedAlignSelf(
     return is_column_ ? logical.InlineEnd() : logical.BlockEnd();
   }
 
+  // TODO(celestepan): swap usage of `kFlexStart/End` with `kFlowStart/End`.
+  if (align == ItemPosition::kFlowStart) {
+    align = ItemPosition::kFlexStart;
+  } else if (align == ItemPosition::kFlowEnd) {
+    align = ItemPosition::kFlexEnd;
+  }
+
   if (is_wrap_reverse_) {
     if (align == ItemPosition::kFlexStart) {
       align = ItemPosition::kFlexEnd;
@@ -461,8 +468,10 @@ AxisEdge MainAxisStaticPositionEdge(
   const ContentPosition content_position = justify_content.GetPosition();
   DCHECK_NE(content_position, ContentPosition::kLeft);
   DCHECK_NE(content_position, ContentPosition::kRight);
-  if (content_position == ContentPosition::kFlexEnd)
+  if (content_position == ContentPosition::kFlexEnd ||
+      content_position == ContentPosition::kFlowEnd) {
     return is_reverse_direction ? AxisEdge::kStart : AxisEdge::kEnd;
+  }
 
   if (content_position == ContentPosition::kCenter ||
       justify_content.Distribution() == ContentDistributionType::kSpaceAround ||
