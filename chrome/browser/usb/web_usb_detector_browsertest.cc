@@ -169,6 +169,62 @@ IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
+                       UsbDeviceWithPrivilegedSchemeChromeAddedAndRemoved) {
+  GURL landing_page("chrome://settings");
+  Initialize();
+  auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0, 1, "Google", kProductName_1, "002", landing_page);
+  // For device with privileged landing page (chrome://), no notification is
+  // generated.
+  AddDeviceWithNotificationExpectation(device, false);
+  RemoveDeviceAndWaitNoNotification(device);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
+                       UsbDeviceWithPrivilegedSchemeFileAddedAndRemoved) {
+  GURL landing_page("file:///test.html");
+  Initialize();
+  auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0, 1, "Google", kProductName_1, "002", landing_page);
+  // For device with privileged landing page (file://), no notification is
+  // generated.
+  AddDeviceWithNotificationExpectation(device, false);
+  RemoveDeviceAndWaitNoNotification(device);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
+                       UsbDeviceWithPrivilegedSchemeExtensionAddedAndRemoved) {
+  GURL landing_page(
+      "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/manifest.json");
+  Initialize();
+  auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0, 1, "Google", kProductName_1, "002", landing_page);
+  // For device with privileged landing page (chrome-extension://), no
+  // notification is generated.
+  AddDeviceWithNotificationExpectation(device, false);
+  RemoveDeviceAndWaitNoNotification(device);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
+                       UsbDeviceWithValidHttpsLandingPageAddedAndRemoved) {
+  GURL landing_page("https://example.com/subpage");
+  Initialize();
+  auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0, 1, "Google", kProductName_1, "002", landing_page);
+  // For device with valid https:// landing page, a notification is generated.
+  AddDeviceWithNotificationExpectation(device, true);
+  std::optional<message_center::Notification> notification =
+      display_service_->GetNotification(device->guid());
+  ASSERT_TRUE(notification);
+  std::u16string expected_title = u"Google Product A detected";
+  EXPECT_EQ(expected_title, notification->title());
+  std::u16string expected_message = u"Go to example.com to connect.";
+  EXPECT_EQ(expected_message, notification->message());
+  EXPECT_TRUE(notification->delegate() != nullptr);
+  RemoveDeviceAndWaitNoNotification(device);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUsbDetectorTest,
                        UsbDeviceWasThereBeforeAndThenRemoved) {
   GURL landing_page(kLandingPage_1);
   // USB device was added before web_usb_detector was created.

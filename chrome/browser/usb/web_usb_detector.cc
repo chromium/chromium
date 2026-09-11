@@ -225,9 +225,10 @@ void WebUsbDetector::OnDeviceAdded(
     return;
 
   const GURL& landing_page = *device_info->webusb_landing_page;
-  if (!landing_page.is_valid() ||
-      !network::IsUrlPotentiallyTrustworthy(landing_page))
+  if (!landing_page.is_valid() || !landing_page.SchemeIsHTTPOrHTTPS() ||
+      !network::IsUrlPotentiallyTrustworthy(landing_page)) {
     return;
+  }
 
   if (base::StartsWith(GetActiveTabURL().spec(), landing_page.spec(),
                        base::CompareCase::INSENSITIVE_ASCII)) {
