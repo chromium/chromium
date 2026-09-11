@@ -81,6 +81,8 @@ void PrivateVerificationTokensURLLoaderThrottle::WillStartRequest(
         profile_.get());
     if (token_info.has_value()) {
       token_id_ = token_info->first;
+      redeemer_origin_ =
+          *request->trusted_params->isolation_info.top_frame_origin();
       request->headers.SetHeader(
           net::HttpRequestHeaders::kSecPrivateVerificationToken,
           token_info->second);
@@ -99,9 +101,13 @@ void PrivateVerificationTokensURLLoaderThrottle::WillRedirectRequest(
   }
   if (token_id_.has_value()) {
     if (pvt_service_ && !response_head.pvt_token_removed_due_to_cookies) {
+      if (profile_ && redeemer_origin_) {
+        pvt_service_->TrackerInsert(profile_.get(), *redeemer_origin_);
+      }
       pvt_service_->DeleteToken(*token_id_, base::DoNothing());
     }
     token_id_.reset();
+    redeemer_origin_.reset();
   }
 }
 
@@ -112,8 +118,12 @@ void PrivateVerificationTokensURLLoaderThrottle::WillProcessResponse(
   if (token_id_.has_value()) {
     if (pvt_service_ && response_head &&
         !response_head->pvt_token_removed_due_to_cookies) {
+      if (profile_ && redeemer_origin_) {
+        pvt_service_->TrackerInsert(profile_.get(), *redeemer_origin_);
+      }
       pvt_service_->DeleteToken(*token_id_, base::DoNothing());
     }
     token_id_.reset();
+    redeemer_origin_.reset();
   }
 }

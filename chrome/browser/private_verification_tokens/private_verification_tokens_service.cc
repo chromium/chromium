@@ -82,6 +82,17 @@ class OtrIssuerTracker : public base::SupportsUserData::Data {
   std::set<url::Origin> issuers;
 };
 
+OtrIssuerTracker* GetOrCreateOtrTracker(Profile* profile) {
+  OtrIssuerTracker* tracker = static_cast<OtrIssuerTracker*>(
+      profile->GetUserData(kOtrIssuerTrackerKey));
+  if (!tracker) {
+    auto new_tracker = std::make_unique<OtrIssuerTracker>();
+    tracker = new_tracker.get();
+    profile->SetUserData(kOtrIssuerTrackerKey, std::move(new_tracker));
+  }
+  return tracker;
+}
+
 }  // namespace
 
 // static
@@ -445,13 +456,7 @@ PrivateVerificationTokensService::GetTokenForRedemption(
 
   OtrIssuerTracker* tracker = nullptr;
   if (profile && profile->IsOffTheRecord()) {
-    tracker = static_cast<OtrIssuerTracker*>(
-        profile->GetUserData(kOtrIssuerTrackerKey));
-    if (!tracker) {
-      auto new_tracker = std::make_unique<OtrIssuerTracker>();
-      tracker = new_tracker.get();
-      profile->SetUserData(kOtrIssuerTrackerKey, std::move(new_tracker));
-    }
+    tracker = GetOrCreateOtrTracker(profile);
     if (tracker->issuers.contains(matching_issuer)) {
       // matching_issuer already received a token in this session.
       return std::nullopt;
@@ -473,12 +478,26 @@ PrivateVerificationTokensService::GetTokenForRedemption(
     return std::nullopt;
   }
 
-  if (tracker) {
-    tracker->issuers.insert(matching_issuer);
-  }
-
   std::string base64_token = base::Base64Encode(it->second.token.token());
   return std::make_pair(it->second.id, std::move(base64_token));
+}
+
+void PrivateVerificationTokensService::TrackerInsert(
+    Profile* profile,
+    const url::Origin& redeemer_origin) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(profile);
+  if (!profile->IsOffTheRecord()) {
+    return;
+  }
+
+  OtrIssuerTracker* tracker = GetOrCreateOtrTracker(profile);
+  auto it_issuer = redeemer_to_issuer_.find(redeemer_origin);
+  if (it_issuer == redeemer_to_issuer_.end()) {
+    return;
+  }
+
+  tracker->issuers.insert(it_issuer->second);
 }
 
 void PrivateVerificationTokensService::DeleteToken(int64_t token_id,

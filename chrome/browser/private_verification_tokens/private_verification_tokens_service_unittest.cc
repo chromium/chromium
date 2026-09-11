@@ -1152,6 +1152,8 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
           ->GetTokenForRedemption(url::Origin::Create(GURL("https://r1.a.com")),
                                   otr_profile)
           .has_value());
+  service()->TrackerInsert(otr_profile,
+                           url::Origin::Create(GURL("https://r1.a.com")));
   histogram_tester.ExpectTotalCount(
       "PrivateVerificationTokens.RedemptionLimitHit", 0);
 
@@ -1161,6 +1163,8 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
           ->GetTokenForRedemption(url::Origin::Create(GURL("https://r2.b.org")),
                                   otr_profile)
           .has_value());
+  service()->TrackerInsert(otr_profile,
+                           url::Origin::Create(GURL("https://r2.b.org")));
   histogram_tester.ExpectTotalCount(
       "PrivateVerificationTokens.RedemptionLimitHit", 0);
 

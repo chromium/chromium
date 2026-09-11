@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "url/origin.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -53,6 +54,7 @@ class PrivateVerificationTokensURLLoaderThrottle
   base::WeakPtr<Profile> profile_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::optional<int64_t> token_id_;
+  std::optional<url::Origin> redeemer_origin_;
 };
 
 #endif  // CHROME_BROWSER_PRIVATE_VERIFICATION_TOKENS_PRIVATE_VERIFICATION_TOKENS_URL_LOADER_THROTTLE_H_

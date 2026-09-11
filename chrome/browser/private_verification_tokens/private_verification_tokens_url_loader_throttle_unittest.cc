@@ -721,4 +721,102 @@ TEST_F(
       issuers, testing::Contains(url::Origin::Create(GURL("https://a.com")))));
 }
 
+TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
+       TokenRemovedDueToCookies_DoesNotLimitSubsequentRedemptions) {
+  WaitForInitialization(service());
+  StoreTestTokens(service());
+  SetTestIssuerConfig(service());
+
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  // 1. Initial request gets a token.
+  auto throttle1 = PrivateVerificationTokensURLLoaderThrottle::Create(
+      service(), otr_profile->GetWeakPtr(), shared_url_loader_factory());
+  ASSERT_TRUE(throttle1);
+
+  auto request1 =
+      CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page1"));
+  bool defer = false;
+  throttle1->WillStartRequest(&request1, &defer);
+
+  EXPECT_TRUE(request1.headers.HasHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken));
+
+  // 2. Token removed due to cookies.
+  network::mojom::URLResponseHead response_head;
+  response_head.pvt_token_removed_due_to_cookies = true;
+  throttle1->WillProcessResponse(GURL("https://r1.a.com/page1"), &response_head,
+                                 &defer);
+
+  WaitForTasksToComplete();
+
+  // 3. Second request for the same issuer should still get a token because the
+  // first one wasn't sent.
+  auto throttle2 = PrivateVerificationTokensURLLoaderThrottle::Create(
+      service(), otr_profile->GetWeakPtr(), shared_url_loader_factory());
+  ASSERT_TRUE(throttle2);
+
+  auto request2 =
+      CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page2"));
+  throttle2->WillStartRequest(&request2, &defer);
+
+  EXPECT_TRUE(request2.headers.HasHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken));
+}
+
+TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
+       TokenSuccessfullySent_LimitsSubsequentRedemptions) {
+  WaitForInitialization(service());
+  // Store two tokens for a.com so the store isn't the limiting factor.
+  {
+    auto tokens = CreateTestTokens();
+    tokens.emplace_back(url::Origin::Create(GURL("https://a.com")),
+                        std::vector<uint8_t>{8, 9, 10}, 3,
+                        base::Time::Now() + base::Hours(2), 1);
+
+    base::test::TestFuture<void> store_future;
+    service()->StoreTokens(std::move(tokens), store_future.GetCallback());
+    EXPECT_TRUE(store_future.Wait());
+  }
+  SetTestIssuerConfig(service());
+
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  // 1. Initial request gets a token.
+  auto throttle1 = PrivateVerificationTokensURLLoaderThrottle::Create(
+      service(), otr_profile->GetWeakPtr(), shared_url_loader_factory());
+  ASSERT_TRUE(throttle1);
+
+  auto request1 =
+      CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page1"));
+  bool defer = false;
+  throttle1->WillStartRequest(&request1, &defer);
+
+  EXPECT_TRUE(request1.headers.HasHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken));
+
+  // 2. Token successfully sent (not removed by cookies).
+  network::mojom::URLResponseHead response_head;
+  response_head.pvt_token_removed_due_to_cookies = false;
+  throttle1->WillProcessResponse(GURL("https://r1.a.com/page1"), &response_head,
+                                 &defer);
+
+  WaitForTasksToComplete();
+
+  // 3. Second request for the same issuer should NOT get a token due to OTR
+  // tracking limiting logic.
+  auto throttle2 = PrivateVerificationTokensURLLoaderThrottle::Create(
+      service(), otr_profile->GetWeakPtr(), shared_url_loader_factory());
+  ASSERT_TRUE(throttle2);
+
+  auto request2 =
+      CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page2"));
+  throttle2->WillStartRequest(&request2, &defer);
+
+  EXPECT_FALSE(request2.headers.HasHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken));
+}
+
 }  // namespace

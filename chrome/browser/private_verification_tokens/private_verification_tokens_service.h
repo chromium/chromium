@@ -118,6 +118,8 @@ class PrivateVerificationTokensService : public KeyedService {
     return issuer_config_;
   }
 
+  void TrackerInsert(Profile* profile, const url::Origin& redeemer_origin);
+
  private:
   explicit PrivateVerificationTokensService(
       HostContentSettingsMap* host_content_settings_map);
