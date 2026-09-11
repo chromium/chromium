@@ -63,6 +63,7 @@ source_set("omnibox_everywhere") {
     "debug",
     "//base",
     "//chrome/app:branded_strings",
+    "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_search",
     "//chrome/browser/contextual_tasks",

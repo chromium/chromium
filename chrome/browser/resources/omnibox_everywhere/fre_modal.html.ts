@@ -13,8 +13,7 @@ export function getHtml(this: FreModalElement) {
         <div class="content">
           <div class="header">
             <img class="chrome-logo"
-                srcset="chrome://theme/current-channel-logo@1x 1x,
-                        chrome://theme/current-channel-logo@2x 2x"
+                src="images/product-logo.svg"
                 alt="" role="presentation">
             <div class="title">${this.i18n('loomniboxFreTitle')}</div>
           </div>
