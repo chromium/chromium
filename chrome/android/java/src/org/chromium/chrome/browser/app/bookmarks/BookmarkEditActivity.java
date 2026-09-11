@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -89,6 +90,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private @Nullable BookmarkId mInitialParentId;
     private boolean mIsFolder;
     private boolean mOutcomeRecorded;
+    private boolean mFolderPickerActive;
 
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
@@ -398,6 +400,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
                 () -> {
                     BookmarkEditMetrics.recordFolderPickerOpened();
+                    mFolderPickerActive = true;
                     setDialogContentVisible(false);
                     mBookmarkManagerOpener.startFolderPickerActivity(
                             /* context= */ this, mProfile, mBookmarkId);
@@ -424,7 +427,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setDialogContentVisible(true);
+        if (!mFolderPickerActive) {
+            setDialogContentVisible(true);
+        }
     }
 
     /**
@@ -439,17 +444,26 @@ public class BookmarkEditActivity extends SnackbarActivity {
         if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             findViewById(android.R.id.content)
                     .setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+            if (visible) {
+                getWindow().setBackgroundDrawableResource(R.drawable.dialog_bg_no_shadow);
+            } else {
+                getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            }
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FOLDER_PICKER_REQUEST_CODE
-                && resultCode == BookmarkFolderPickerActivity.RESULT_DISMISS_ALL) {
-            finish();
-            if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
-                overridePendingTransition(0, 0);
+        if (requestCode == FOLDER_PICKER_REQUEST_CODE) {
+            mFolderPickerActive = false;
+            if (resultCode == BookmarkFolderPickerActivity.RESULT_DISMISS_ALL) {
+                finish();
+                if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+                    overridePendingTransition(0, 0);
+                }
+            } else {
+                setDialogContentVisible(true);
             }
         }
     }
