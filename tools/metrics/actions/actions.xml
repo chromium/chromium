@@ -427,7 +427,6 @@ should be able to be added at any place in this file.
   <variant name="_DownloadSettings" summary="For DownloadSettings feature."/>
   <variant name="_DownloadToolbarButton"
       summary="For Download toolbar button feature."/>
-  <variant name="_EphemeralTab" summary="For Ephemeral Tab."/>
   <variant name="_ExperimentalAIPromo" summary="For Experimental AI feature."/>
   <variant name="_ExplicitBrowserSigninPreferenceRemembered"
       summary="For Explicit Browser Signin Preference Remembered feature."/>

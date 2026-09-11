@@ -525,9 +525,6 @@ BASE_FEATURE(kIPHRequestDesktopSiteWindowSettingFeature,
 BASE_FEATURE(kIPHShoppingListSaveFlowFeature,
              "IPH_ShoppingListSaveFlow",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHEphemeralTabFeature,
-             "IPH_EphemeralTab",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHFeedCardMenuFeature,
              "IPH_FeedCardMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);

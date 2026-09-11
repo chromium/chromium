@@ -341,7 +341,6 @@ public class ChromeContextMenuPopulatorTest {
                                 mNativeDelegate));
         GSAUtils.setFakePassableGsaEnvironmentForTesting(true);
         doReturn(mTemplateUrlService).when(mPopulator).getTemplateUrlService();
-        doReturn(false).when(mPopulator).shouldTriggerEphemeralTabHelpUi();
         doReturn(false).when(mPopulator).shouldTriggerReadLaterHelpUi();
         doReturn(true).when(mPopulator).shouldShowEmptySpaceContextMenu();
         doReturn(false).when(mPopulator).shouldEnableTranslateItem();

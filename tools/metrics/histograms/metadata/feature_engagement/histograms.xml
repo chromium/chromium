@@ -244,8 +244,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DownloadSettings"
       summary="accessing download settings from download home"/>
   <variant name="IPH_DownloadToolbarButton" summary="download toolbar button"/>
-  <variant name="IPH_EphemeralTab"
-      summary="new label on the context menu for Ephemeral Tab"/>
   <variant name="IPH_ExplicitBrowserSigninPreferenceRemembered"
       summary="Confirmation message that the explicit browser signin
                preference was remembered"/>

@@ -64,7 +64,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.DOWNLOAD_PAGE_FEATURE,
     FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE,
     FeatureConstants.DOWNLOAD_SETTINGS_FEATURE,
-    FeatureConstants.EPHEMERAL_TAB_FEATURE,
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.FEED_HEADER_MENU_FEATURE,
     FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
@@ -274,8 +273,6 @@ public @interface FeatureConstants {
      * accessible through Downloads Home.
      */
     String DOWNLOAD_SETTINGS_FEATURE = "IPH_DownloadSettings";
-
-    String EPHEMERAL_TAB_FEATURE = "IPH_EphemeralTab";
 
     /** An IPH feature to show on a card menu on the FeedNewTabPage. */
     String FEED_CARD_MENU_FEATURE = "IPH_FeedCardMenu";

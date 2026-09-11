@@ -2911,8 +2911,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_OPEN_IMAGE_IN_NEW_TAB" desc="Context sensitive menu item for opening/viewing the selected image in a new tab. [CHAR_LIMIT=30]">
         Open image in new tab
       </message>
-      <message name="IDS_CONTEXTMENU_OPEN_IMAGE_IN_EPHEMERAL_TAB" desc="Context-sensitive menu item to open a quick preview of the selected image. Note that 'preview' is a verb, not a noun. We're also labeling it *New* to draw attention to it when first released. The selected image link will open in an overlay panel on top of the current tab which will go away easily too. [CHAR_LIMIT=30]">
-        Preview image <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+      <message name="IDS_CONTEXTMENU_OPEN_IMAGE_IN_EPHEMERAL_TAB" desc="Context-sensitive menu item to open a quick preview of the selected image. Note that 'preview' is a verb, not a noun. The selected image link will open in an overlay panel on top of the current tab which will go away easily too. [CHAR_LIMIT=30]">
+        Preview image
       </message>
       <message name="IDS_CONTEXTMENU_LOAD_ORIGINAL_IMAGE" desc="Context sensitive menu item for Lite mode low fidelity placeholder images that loads the original version in place. [CHAR_LIMIT=30]">
         Load image
@@ -2974,8 +2974,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_OPEN_IN_CHROME_INCOGNITO_TAB" desc="Context sensitive menu item to open the selected link in a Chrome Incognito tab from Chrome Custom Tab. [CHAR_LIMIT=30]">
         Open in Incognito tab
       </message>
-      <message name="IDS_CONTEXTMENU_OPEN_IN_EPHEMERAL_TAB" desc="Context-sensitive menu item to open a quick preview of the selected linked page.   Note that 'preview' is a verb, not a noun. We're also labeling it *New* to draw attention to it when first released. The selected link will open in an overlay panel on top of the current tab which will go away easily too. [CHAR_LIMIT=30]">
-        Preview page <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+      <message name="IDS_CONTEXTMENU_OPEN_IN_EPHEMERAL_TAB" desc="Context-sensitive menu item to open a quick preview of the selected linked page.   Note that 'preview' is a verb, not a noun. The selected link will open in an overlay panel on top of the current tab which will go away easily too. [CHAR_LIMIT=30]">
+        Preview page
       </message>
       <message name="IDS_CONTEXTMENU_READ_LATER" desc="Context sensitive menu item for marking a link to be read later. We're also labeling it *New* to draw attention to it when first released. [CHAR_LIMIT=30]">
         Add to reading list <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>

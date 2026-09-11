@@ -39,6 +39,8 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.AuxiliarySearchModule.Impression",
                 "Chrome.AuxiliarySearchModule.UserResponded",
                 "Chrome.ContinuousSearch.DismissalCount",
+                "Chrome.Contextmenu.OpenImageInEphemeralTabClicked",
+                "Chrome.Contextmenu.OpenInEphemeralTabClicked",
                 "Chrome.Cryptid.LastRenderTimestamp",
                 "Chrome.FindsNotifications.OptInDeclined",
                 "Chrome.FirstRun.FieldTrialEnabled",

@@ -132,7 +132,6 @@ DEFINE_VARIATION_PARAM(kIPHDownloadInfoBarDownloadContinuingFeature,
                        "IPH_DownloadInfoBarDownloadContinuing");
 DEFINE_VARIATION_PARAM(kIPHDownloadInfoBarDownloadsAreFasterFeature,
                        "IPH_DownloadInfoBarDownloadsAreFaster");
-DEFINE_VARIATION_PARAM(kIPHEphemeralTabFeature, "IPH_EphemeralTab");
 DEFINE_VARIATION_PARAM(kIPHExtensionsManageAppMenuFeature,
                        "IPH_ExtensionsManageAppMenu");
 DEFINE_VARIATION_PARAM(kIPHExtensionsManageToolbarFeature,
@@ -719,7 +718,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDownloadPageFeature),
         VARIATION_ENTRY(kIPHDownloadPageScreenshotFeature),
         VARIATION_ENTRY(kIPHDownloadSettingsFeature),
-        VARIATION_ENTRY(kIPHEphemeralTabFeature),
         VARIATION_ENTRY(kIPHExploreSitesTileFeature),
         VARIATION_ENTRY(kIPHExtensionsManageAppMenuFeature),
         VARIATION_ENTRY(kIPHExtensionsManageToolbarFeature),

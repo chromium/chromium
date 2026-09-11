@@ -161,8 +161,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final SparseArray<CustomContentAction> mCustomActionMap;
 
     private PendingIntentSender mPendingIntentSender;
-    // True when the tracker indicates IPH in the form of "new" label needs to be shown.
-    private @Nullable Boolean mShowEphemeralTabNewLabel;
 
     /** Defines the context menu modes */
     @IntDef({
@@ -551,7 +549,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     @Override
     public List<ModelList> buildContextMenu() {
         int nextCustomMenuItemId = CUSTOM_MENU_ITEM_ID_START;
-        mShowEphemeralTabNewLabel = null;
         mCustomActionMap.clear();
 
         List<ModelList> groupedItems = new ArrayList<>();
@@ -718,14 +715,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 || (mMode == ContextMenuMode.THIN_WEB_VIEW
                                         && mItemDelegate.supportsOpenInEphemeralTab()))
                         && EphemeralTabCoordinator.isSupported()) {
-                    boolean showNewLabel = shouldTriggerEphemeralTabHelpUi();
                     boolean isDataUrl =
                             mParams.getUrl().getScheme().equals(UrlConstants.DATA_SCHEME);
                     if (!isDataUrl) {
                         // Do not show the item if BrApp/CCT opens data: url as it could potentially
                         // cause a security issue.
-                        linkGroup.add(createListItem(Item.OPEN_IN_EPHEMERAL_TAB, showNewLabel));
-                        mShowEphemeralTabNewLabel = showNewLabel;
+                        linkGroup.add(createListItem(Item.OPEN_IN_EPHEMERAL_TAB));
                     }
                 }
                 if (shouldShowAskGeminiForLink()) {
@@ -822,12 +817,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (mItemDelegate.supportsOpenInEphemeralTab()
                     && EphemeralTabCoordinator.isSupported()
                     && !mParams.getSrcUrl().getScheme().equals(UrlConstants.DATA_SCHEME)) {
-                if (mShowEphemeralTabNewLabel == null) {
-                    mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
-                }
-                imageGroup.add(
-                        createListItem(
-                                Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
+                imageGroup.add(createListItem(Item.OPEN_IMAGE_IN_EPHEMERAL_TAB));
             }
             imageGroup.add(createListItem(Item.COPY_IMAGE));
             if (shouldShowSaveImage(isSrcDownloadableScheme)) {
@@ -1016,13 +1006,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         }
 
         return groupedItems;
-    }
-
-    @VisibleForTesting
-    boolean shouldTriggerEphemeralTabHelpUi() {
-        Tracker tracker = TrackerFactory.getTrackerForProfile(getProfile());
-        return tracker.isInitialized()
-                && tracker.shouldTriggerHelpUi(FeatureConstants.EPHEMERAL_TAB_FEATURE);
     }
 
     @VisibleForTesting
@@ -1523,12 +1506,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public void onMenuClosed() {
-        if (mShowEphemeralTabNewLabel != null && mShowEphemeralTabNewLabel) {
-            Tracker tracker = TrackerFactory.getTrackerForProfile(getProfile());
-            if (tracker.isInitialized()) tracker.dismissed(FeatureConstants.EPHEMERAL_TAB_FEATURE);
-        }
-    }
+    public void onMenuClosed() {}
 
     @Override
     public boolean hasCustomItems() {
