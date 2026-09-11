@@ -56,6 +56,8 @@ class MockDrivePickerBridge
       (override));
   MOCK_METHOD(void, LoadConsentKitUrl, (const GURL&), (override));
 
+  void Disconnect() { receiver_.reset(); }
+
  private:
   mojo::Receiver<drive_picker_host_untrusted::mojom::DrivePickerBridge>
       receiver_{this};
@@ -514,4 +516,189 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowCancel_RelaysCancel) {
   EXPECT_NE(
       profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
       static_cast<int>(contextual_search::DriveConsentState::kConsent));
+}
+
+TEST_F(DrivePickerHostUITest, ConsentKitFlowMissingFlowId_RelaysError) {
+  feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
+
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  MockDrivePickerBridge mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  MockResultHandler result_handler;
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog,
+      result_handler.BindAndGetRemote());
+
+  base::RunLoop consent_url_run_loop;
+  EXPECT_CALL(mock_bridge, LoadConsentKitUrl(testing::_))
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&consent_url_run_loop]() { consent_url_run_loop.Quit(); }));
+  controller.TriggerDrivePickerHost(std::move(request));
+  consent_url_run_loop.Run();
+
+  // Initial consent preference should not be kConsent.
+  EXPECT_NE(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+  // ShowDrivePicker should never be called.
+  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_)).Times(0);
+
+  // Construct message with flow_completed and DECISION_CONSENT, but NO flow_id.
+  identity_consent::IframeMessage message;
+  message.set_event(identity_consent::Event::DECISION_RESPONSE_EVENT);
+  message.mutable_privacy_flow_result()->mutable_flow_completed();
+  auto* decision = message.mutable_privacy_flow_result()->add_decision();
+  decision->set_ftc_consent_setting_id(
+      identity_consent::ConsentSettingId::
+          PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE);
+  decision->set_decision(identity_consent::Decision::DECISION_CONSENT);
+
+  base::RunLoop error_run_loop;
+  EXPECT_CALL(result_handler,
+              OnError(drive_picker_host::mojom::DrivePickerError::kUnknown))
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&error_run_loop]() { error_run_loop.Quit(); }));
+
+  controller.OnConsentKitIframeMessage(mojo_base::ProtoWrapper(message));
+  error_run_loop.Run();
+
+  // Preference should remain not kConsent.
+  EXPECT_NE(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+}
+
+TEST_F(DrivePickerHostUITest, ConsentKitFlowMismatchedFlowId_RelaysError) {
+  feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
+
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  MockDrivePickerBridge mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  MockResultHandler result_handler;
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog,
+      result_handler.BindAndGetRemote());
+
+  base::RunLoop consent_url_run_loop;
+  EXPECT_CALL(mock_bridge, LoadConsentKitUrl(testing::_))
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&consent_url_run_loop]() { consent_url_run_loop.Quit(); }));
+  controller.TriggerDrivePickerHost(std::move(request));
+  consent_url_run_loop.Run();
+
+  // Initial consent preference should not be kConsent.
+  EXPECT_NE(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+  // ShowDrivePicker should never be called.
+  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_)).Times(0);
+
+  // Construct message with flow_completed and DECISION_CONSENT, but an invalid
+  // flow_id.
+  identity_consent::IframeMessage message;
+  message.set_event(identity_consent::Event::DECISION_RESPONSE_EVENT);
+  message.mutable_privacy_flow_result()->mutable_flow_completed();
+  message.mutable_privacy_flow_result()->set_flow_id(
+      identity_consent::ConsentFlowId::CONSENT_FLOW_ID_UNSPECIFIED);
+  auto* decision = message.mutable_privacy_flow_result()->add_decision();
+  decision->set_ftc_consent_setting_id(
+      identity_consent::ConsentSettingId::
+          PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE);
+  decision->set_decision(identity_consent::Decision::DECISION_CONSENT);
+
+  base::RunLoop error_run_loop;
+  EXPECT_CALL(result_handler,
+              OnError(drive_picker_host::mojom::DrivePickerError::kUnknown))
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&error_run_loop]() { error_run_loop.Quit(); }));
+
+  controller.OnConsentKitIframeMessage(mojo_base::ProtoWrapper(message));
+  error_run_loop.Run();
+
+  // Preference should remain not kConsent.
+  EXPECT_NE(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+}
+
+TEST_F(DrivePickerHostUITest,
+       ConsentKitFlowUnsolicitedResult_DroppedWithoutConsentOrPicker) {
+  feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
+
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  MockDrivePickerBridge mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  // ShowDrivePicker should never be called.
+  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_)).Times(0);
+
+  // Send an unsolicited PrivacyFlowResult directly when no consent flow was
+  // requested (consent_result_handler_ is unbound).
+  identity_consent::PrivacyFlowResult result;
+  result.mutable_flow_completed();
+  result.set_flow_id(static_cast<identity_consent::ConsentFlowId>(
+      omnibox::kComposeboxDriveConsentFlowId.Get()));
+  auto* decision = result.add_decision();
+  decision->set_ftc_consent_setting_id(
+      identity_consent::ConsentSettingId::
+          PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE);
+  decision->set_decision(identity_consent::Decision::DECISION_CONSENT);
+
+  controller.OnConsentKitPrivacyFlowResult(mojo_base::ProtoWrapper(result));
+
+  // Preference must not be modified by unsolicited result.
+  EXPECT_NE(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+}
+
+TEST_F(DrivePickerHostUITest,
+       UntrustedBridgeDisconnect_RelaysErrorToConsentResultHandler) {
+  feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
+
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  MockDrivePickerBridge mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  MockResultHandler result_handler;
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog,
+      result_handler.BindAndGetRemote());
+
+  base::RunLoop consent_url_run_loop;
+  EXPECT_CALL(mock_bridge, LoadConsentKitUrl(testing::_))
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&consent_url_run_loop]() { consent_url_run_loop.Quit(); }));
+  controller.TriggerDrivePickerHost(std::move(request));
+  consent_url_run_loop.Run();
+
+  base::RunLoop disconnect_run_loop;
+  EXPECT_CALL(
+      result_handler,
+      OnError(drive_picker_host::mojom::DrivePickerError::kMojoDisconnected))
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&disconnect_run_loop]() { disconnect_run_loop.Quit(); }));
+
+  mock_bridge.Disconnect();
+  disconnect_run_loop.Run();
 }
