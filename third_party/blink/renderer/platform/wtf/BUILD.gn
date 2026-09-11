@@ -24,7 +24,7 @@ declare_args() {
   # Whether blink::HeapVector promptly frees its backing store via
   # Allocator::FreeVectorBacking(). When disabled, the backing store is left to
   # be reclaimed by garbage collection.
-  enable_heap_vector_promptly_free = true
+  enable_heap_vector_promptly_free = false
 }
 
 buildflag_header("wtf_buildflags") {
