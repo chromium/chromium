@@ -331,7 +331,7 @@ TEST_F(IOSChromePasswordManagerClientTest, AutomaticPasswordSaveTest) {
   auto mock_form_manager =
       std::make_unique<password_manager::MockPasswordFormManagerForUI>();
   EXPECT_CALL(*mock_form_manager, GetPendingCredentials())
-      .WillOnce(ReturnRef(form));
+      .WillRepeatedly(ReturnRef(form));
 
   client->AutomaticPasswordSave(std::move(mock_form_manager),
                                 /*is_update_confirmation=*/false);

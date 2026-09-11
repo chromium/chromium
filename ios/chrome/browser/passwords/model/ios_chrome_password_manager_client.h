@@ -32,6 +32,7 @@
 #import "ios/web/public/web_state_observer.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
 
+class GURL;
 class ProfileIOS;
 
 namespace device_reauth {
@@ -50,6 +51,10 @@ class PasswordManagerDriver;
 
 namespace safe_browsing {
 enum class WarningAction;
+}
+
+namespace webauthn {
+class PasskeyTabHelper;
 }
 
 @protocol IOSChromePasswordManagerClientBridge <PasswordManagerClientBridge>
@@ -191,6 +196,14 @@ class IOSChromePasswordManagerClient
       override;
 
  private:
+  // Returns the PasskeyTabHelper for the associated web state, or nullptr.
+  webauthn::PasskeyTabHelper* GetPasskeyTabHelper() const;
+
+  // Records a successful password login on the associated web state from
+  // `form_manager` to establish automatic passkey upgrade eligibility.
+  void RecordPasswordLogin(
+      const password_manager::PasswordFormManagerForUI* form_manager);
+
   __weak id<IOSChromePasswordManagerClientBridge> bridge_;
 
   password_manager::PasswordFeatureManagerImpl password_feature_manager_;

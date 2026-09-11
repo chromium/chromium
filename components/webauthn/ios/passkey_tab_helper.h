@@ -28,6 +28,10 @@ namespace sync_pb {
 class WebauthnCredentialSpecifics;
 }  // namespace sync_pb
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace web {
 class WebFrame;
 }  // namespace web
@@ -100,6 +104,22 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // the provided rp id and credential id.
   bool HasCredential(const std::string& rp_id,
                      const std::string& credential_id) const;
+
+  // Records a successful password login for the current web state to establish
+  // automatic passkey upgrade eligibility.
+  void RecordPasswordLogin(std::string_view username,
+                           const url::Origin& origin);
+
+  // Returns whether this tab has recorded a recent, unconsumed password login
+  // matching the username and relying party of `params`, and the automatic
+  // passkey upgrade feature is enabled.
+  //
+  // This is a synchronous, read-only check used early during renderer IPC
+  // validation (`PasskeyJavaScriptFeature`) to permit conditional passkey
+  // creation without a user gesture before querying the password store.
+  // Does not consume eligibility or inspect stored credentials.
+  bool HasAutomaticPasskeyUpgradeEligibility(
+      const RegistrationRequestParams& params) const;
 
   // Requests a passkey to be created given the provided request ID. Fetches the
   // shared keys list and calls the CompletePasskeyCreation callback.
@@ -241,10 +261,16 @@ class PasskeyTabHelper : public web::WebStateObserver,
       AssertionRequestParams params,
       IOSWebAuthnCredentialsDelegate* delegate);
 
-  // Whether automatic passkey upgrade is allowed.
+  // Returns whether automatic passkey upgrade is permitted after querying the
+  // `PasswordStore`.
+  //
+  // Verifies `HasAutomaticPasskeyUpgradeEligibility(params)` and checks that
+  // `logins` contains an unblocked password credential matching the user and
+  // domain active within `kPasskeyUpgradeRecencyThreshold`. If eligible, marks
+  // the tab's eligibility as consumed (single-use) and returns true.
   bool CanPerformAutomaticPasskeyUpgrade(
       const RegistrationRequestParams& params,
-      const std::vector<password_manager::StoredCredential>& logins) const;
+      const std::vector<password_manager::StoredCredential>& logins);
 
   // Handles passkey registration requests after it passes validation.
   void HandleRegistration(RegistrationRequestParams params);
@@ -363,6 +389,16 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Flag to avoid duplicate queries to the password store.
   bool is_querying_password_store_ = false;
+
+  // Stores eligibility for automatic passkey upgrade scoped to this tab.
+  struct AutomaticUpgradeEligibility {
+    std::string username;
+    std::string domain_rp_id;
+    base::TimeTicks timestamp;
+    bool consumed = false;
+  };
+
+  std::optional<AutomaticUpgradeEligibility> automatic_upgrade_eligibility_;
 
   // This is necessary because this object could be deleted during any callback,
   // and we don't want to risk a UAF if that happens.

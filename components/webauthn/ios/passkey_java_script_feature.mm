@@ -89,19 +89,57 @@ std::string Base64UrlEncode(std::string_view input) {
   return output;
 }
 
-// Validates whether the given passkey request is permitted to proceed.
-bool ValidateFeatureUsage(const PasskeyRequestParams& request_params,
-                          bool has_user_interaction) {
-  if (request_params.Type() == PasskeyRequestParams::RequestType::kModal) {
-    // Modal passkey registration or assertion is only allowed if it originates
-    // from a user gesture.
-    if (!has_user_interaction) {
-      return false;
+// Validates whether the given passkey registration (create) request is
+// permitted to proceed.
+bool ValidateFeatureUsageForCreate(
+    const RegistrationRequestParams& request_params,
+    bool has_user_interaction,
+    PasskeyTabHelper* passkey_tab_helper) {
+  switch (request_params.Type()) {
+    case PasskeyRequestParams::RequestType::kModal:
+      // Modal passkey registration is only allowed if it originates from a user
+      // gesture.
+      if (!has_user_interaction) {
+        return false;
+      }
+      return base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim);
+    case PasskeyRequestParams::RequestType::kConditionalCreate: {
+      // Conditional create is only allowed if there is user interaction or if
+      // the tab has eligible automatic passkey upgrade credentials from a
+      // recent password login.
+      bool is_user_authenticated =
+          has_user_interaction ||
+          (passkey_tab_helper &&
+           passkey_tab_helper->HasAutomaticPasskeyUpgradeEligibility(
+               request_params));
+      if (!is_user_authenticated) {
+        return false;
+      }
+      return base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim);
     }
+    case PasskeyRequestParams::RequestType::kConditionalGet:
+    case PasskeyRequestParams::RequestType::kUnknown:
+      return false;
+  }
+}
 
-    return base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim);
-  } else {
-    return base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim);
+// Validates whether the given passkey assertion (get) request is permitted to
+// proceed.
+bool ValidateFeatureUsageForGet(const AssertionRequestParams& request_params,
+                                bool has_user_interaction) {
+  switch (request_params.Type()) {
+    case PasskeyRequestParams::RequestType::kModal:
+      // Modal passkey assertion is only allowed if it originates from a user
+      // gesture.
+      if (!has_user_interaction) {
+        return false;
+      }
+      return base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim);
+    case PasskeyRequestParams::RequestType::kConditionalGet:
+      return base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim);
+    case PasskeyRequestParams::RequestType::kConditionalCreate:
+    case PasskeyRequestParams::RequestType::kUnknown:
+      return false;
   }
 }
 
@@ -389,8 +427,9 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
       return;
     }
 
-    if (!ValidateFeatureUsage(*registration_request_params,
-                              message.is_user_interacting())) {
+    if (!ValidateFeatureUsageForCreate(*registration_request_params,
+                                       message.is_user_interacting(),
+                                       passkey_tab_helper)) {
       // TODO(crbug.com/460485333): Log the error.
       passkey_tab_helper->DeferToRenderer(std::move(*request_info),
                                           registration_request_params->Type());
@@ -414,8 +453,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
       return;
     }
 
-    if (!ValidateFeatureUsage(*assertion_request_params,
-                              message.is_user_interacting())) {
+    if (!ValidateFeatureUsageForGet(*assertion_request_params,
+                                    message.is_user_interacting())) {
       // TODO(crbug.com/460485333): Log the error.
       passkey_tab_helper->DeferToRenderer(std::move(*request_info),
                                           assertion_request_params->Type());

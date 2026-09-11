@@ -4,6 +4,7 @@
 
 #import "components/webauthn/ios/passkey_tab_helper.h"
 
+#include <algorithm>
 #include <tuple>
 
 #import "base/check_deref.h"
@@ -35,6 +36,7 @@
 #import "ios/web/public/web_state.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "url/origin.h"
 
 namespace webauthn {
 
@@ -493,26 +495,66 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   MaybeShowInterstitialAndRegister(std::move(params));
 }
 
+void PasskeyTabHelper::RecordPasswordLogin(std::string_view username,
+                                           const url::Origin& origin) {
+  if (origin.opaque()) {
+    return;
+  }
+  automatic_upgrade_eligibility_ = AutomaticUpgradeEligibility{
+      .username = std::string(username),
+      .domain_rp_id = GetDomainAndRegistryOrHost(origin.host()),
+      .timestamp = base::TimeTicks::Now(),
+      .consumed = false,
+  };
+}
+
+bool PasskeyTabHelper::HasAutomaticPasskeyUpgradeEligibility(
+    const RegistrationRequestParams& params) const {
+  if (!client_->IsAutomaticPasskeyUpgradeEnabled()) {
+    return false;
+  }
+  if (!automatic_upgrade_eligibility_.has_value()) {
+    return false;
+  }
+  if (automatic_upgrade_eligibility_->consumed) {
+    return false;
+  }
+  base::TimeDelta elapsed =
+      base::TimeTicks::Now() - automatic_upgrade_eligibility_->timestamp;
+  if (elapsed.is_negative() || elapsed > kPasskeyUpgradeRecencyThreshold) {
+    return false;
+  }
+  std::string username = params.UserEntity().name;
+  std::string domain_rp_id = GetDomainAndRegistryOrHost(params.RpId());
+  return automatic_upgrade_eligibility_->username == username &&
+         automatic_upgrade_eligibility_->domain_rp_id == domain_rp_id;
+}
+
 // NOTE: If you change the domain matching logic in this method, please also
 // update the corresponding logic in
 // ios/chrome/credential_provider_extension/passkey_request_details.mm
 // (hasMatchingPassword:).
 bool PasskeyTabHelper::CanPerformAutomaticPasskeyUpgrade(
     const RegistrationRequestParams& params,
-    const std::vector<password_manager::StoredCredential>& logins) const {
-  if (!client_->IsAutomaticPasskeyUpgradeEnabled()) {
+    const std::vector<password_manager::StoredCredential>& logins) {
+  if (!HasAutomaticPasskeyUpgradeEligibility(params)) {
     return false;
   }
+
   std::string username = params.UserEntity().name;
   std::string domain_rp_id = GetDomainAndRegistryOrHost(params.RpId());
 
   for (const password_manager::StoredCredential& form : logins) {
-    if (base::UTF16ToUTF8(form.username_value) == username &&
+    if (!form.blocked_by_user &&
+        base::UTF16ToUTF8(form.username_value) == username &&
         GetDomainAndRegistryOrHost(form.url.host()) == domain_rp_id) {
+      base::Time most_recent_time = std::max(
+          {form.date_created, form.date_last_filled, form.date_last_used});
       base::TimeDelta time_since_last_use =
-          base::Time::Now() - form.date_last_used;
+          base::Time::Now() - most_recent_time;
       if (!time_since_last_use.is_negative() &&
           time_since_last_use <= kPasskeyUpgradeRecencyThreshold) {
+        automatic_upgrade_eligibility_->consumed = true;
         return true;
       }
     }
