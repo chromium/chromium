@@ -89,6 +89,11 @@ public class AutofillSaveCardBottomSheetContentTest {
     }
 
     @Test
+    public void testShowHandlebar() {
+        assertTrue(mContent.showHandlebar());
+    }
+
+    @Test
     public void testPriority() {
         assertEquals(BottomSheetContent.ContentPriority.HIGH, mContent.getPriority());
     }

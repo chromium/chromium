@@ -16,16 +16,12 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.AutofillSheetUiControllerFactory;
 import org.chromium.ui.widget.LoadingView;
 
 @NullMarked
 /*package*/ class AutofillSaveCardBottomSheetView {
     /** The view that contains all other views. */
     final ViewGroup mContentView;
-
-    /** The drag handler of the bottom sheet. */
-    final ImageView mDragHandler;
 
     /** The view that optionally scrolls the contents on smaller screens. */
     final ScrollView mScrollView;
@@ -72,13 +68,12 @@ import org.chromium.ui.widget.LoadingView;
     final ImageView mGooglePayPillLogo;
 
     AutofillSaveCardBottomSheetView(Context context) {
-        mContentView =
-                (ViewGroup)
+        mScrollView =
+                (ScrollView)
                         LayoutInflater.from(context)
                                 .inflate(
                                         R.layout.autofill_save_card_bottom_sheet, /* root= */ null);
-        mDragHandler = mContentView.findViewById(R.id.autofill_save_card_drag_handler);
-        mScrollView = mContentView.findViewById(R.id.autofill_save_card_scroll_view);
+        mContentView = mScrollView;
         mTitle = mContentView.findViewById(R.id.autofill_save_card_title_text);
         mDescription = mContentView.findViewById(R.id.autofill_save_card_description_text);
         mLogoIcon = mContentView.findViewById(R.id.autofill_save_card_icon);
@@ -94,10 +89,5 @@ import org.chromium.ui.widget.LoadingView;
         mLoadingView = mContentView.findViewById(R.id.autofill_save_card_loading_view);
         mGooglePayPillLogo =
                 mContentView.findViewById(R.id.autofill_save_card_google_pay_pill_logo);
-
-        // Drag handler is not useful when shown as a dialog.
-        if (AutofillSheetUiControllerFactory.shouldUseNonBlockingDialog(context)) {
-            mDragHandler.setVisibility(View.GONE);
-        }
     }
 }

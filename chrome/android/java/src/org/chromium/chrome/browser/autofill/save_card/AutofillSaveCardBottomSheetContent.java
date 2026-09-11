@@ -82,6 +82,11 @@ import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public int getPriority() {
         return ContentPriority.HIGH;
     }
