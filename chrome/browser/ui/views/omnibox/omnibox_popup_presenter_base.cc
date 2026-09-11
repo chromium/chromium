@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -394,13 +393,6 @@ void OmniboxPopupPresenterBase::EnsureWidgetCreated() {
   // On Windows use the software compositor to ensure that we don't block
   // the UI thread during command buffer creation. See http://crbug.com/40198772
   params.force_software_compositing = true;
-#endif
-#if BUILDFLAG(IS_MAC)
-  // Prevent showing stale frames on reshow after hide while waiting for new
-  // WebUI compositor frames.
-  if (omnibox::IsWebUIOmniboxFullPopupEnabled()) {
-    params.prevent_stale_content_after_hide = true;
-  }
 #endif
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = parent_widget->GetNativeView();
