@@ -3862,10 +3862,6 @@
       status: "stable",
     },
     {
-      name: "LayoutTableCellAlignmentSafe",
-      status: "stable",
-    },
-    {
       // When enabled, brings chromium into compliance with the resolution of:
       //   https://github.com/whatwg/html/issues/10671
       // This flag can be used to easily revert to the old behavior if the new

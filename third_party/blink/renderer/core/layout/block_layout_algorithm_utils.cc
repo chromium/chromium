@@ -84,7 +84,6 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
         case EVerticalAlign::kTop:
           // Do nothing for 'top' vertical alignment.
           return BlockContentAlignment::kStart;
-
         case EVerticalAlign::kBaselineMiddle:
         case EVerticalAlign::kSub:
         case EVerticalAlign::kSuper:
@@ -95,16 +94,10 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
           // table-cell vertical alignment.
         case EVerticalAlign::kBaseline:
           return BlockContentAlignment::kBaseline;
-
         case EVerticalAlign::kMiddle:
-          return RuntimeEnabledFeatures::LayoutTableCellAlignmentSafeEnabled()
-                     ? BlockContentAlignment::kSafeCenter
-                     : BlockContentAlignment::kUnsafeCenter;
-
+          return BlockContentAlignment::kSafeCenter;
         case EVerticalAlign::kBottom:
-          return RuntimeEnabledFeatures::LayoutTableCellAlignmentSafeEnabled()
-                     ? BlockContentAlignment::kSafeEnd
-                     : BlockContentAlignment::kUnsafeEnd;
+          return BlockContentAlignment::kSafeEnd;
       }
       break;
 
