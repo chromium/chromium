@@ -402,7 +402,7 @@ final class SigninButtonMediator
                         new AccountMenuCoordinator(
                                 mContext,
                                 mWindowAndroid,
-                                mProfileSupplier,
+                                assumeNonNull(mProfile),
                                 () -> mSigninCoordinator,
                                 mSigninAndHistorySyncActivityLauncher);
             }

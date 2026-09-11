@@ -49,7 +49,7 @@ public class AccountMenuCoordinator {
     public AccountMenuCoordinator(
             Context context,
             WindowAndroid windowAndroid,
-            Supplier<@Nullable Profile> profileSupplier,
+            Profile profile,
             Supplier<@Nullable BottomSheetSigninAndHistorySyncCoordinator>
                     signinCoordinatorSupplier,
             SigninAndHistorySyncActivityLauncher signinLauncher) {
@@ -85,7 +85,7 @@ public class AccountMenuCoordinator {
                         context,
                         modelList,
                         windowAndroid,
-                        profileSupplier,
+                        profile,
                         signinCoordinatorSupplier,
                         signinLauncher,
                         this::dismiss);

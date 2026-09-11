@@ -51,22 +51,24 @@ import java.util.function.Supplier;
 
 /** Mediator managing business logic and menu items for the Account Menu popup. */
 @NullMarked
-public class AccountMenuMediator implements ProfileDataCache.Observer {
+public class AccountMenuMediator
+        implements SigninManager.SignInStateObserver, ProfileDataCache.Observer {
     private final Context mContext;
     private final ModelList mModelList;
     private final WindowAndroid mWindowAndroid;
-    private final Supplier<@Nullable Profile> mProfileSupplier;
+    private final Profile mProfile;
     private final Supplier<@Nullable BottomSheetSigninAndHistorySyncCoordinator>
             mSigninCoordinatorSupplier;
     private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
     private final Runnable mDismissCallback;
     private @Nullable ProfileDataCache mProfileDataCache;
+    private @Nullable SigninManager mSigninManager;
 
     public AccountMenuMediator(
             Context context,
             ModelList modelList,
             WindowAndroid windowAndroid,
-            Supplier<@Nullable Profile> profileSupplier,
+            Profile profile,
             Supplier<@Nullable BottomSheetSigninAndHistorySyncCoordinator>
                     signinCoordinatorSupplier,
             SigninAndHistorySyncActivityLauncher signinLauncher,
@@ -74,11 +76,34 @@ public class AccountMenuMediator implements ProfileDataCache.Observer {
         mContext = context;
         mModelList = modelList;
         mWindowAndroid = windowAndroid;
-        mProfileSupplier = profileSupplier;
+        mProfile = profile;
         mSigninCoordinatorSupplier = signinCoordinatorSupplier;
         mSigninLauncher = signinLauncher;
         mDismissCallback = dismissCallback;
 
+        if (!mProfile.isOffTheRecord()) {
+            mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+            if (mSigninManager != null) {
+                mSigninManager.addSignInStateObserver(this);
+            }
+        }
+
+        updateMenuItems();
+    }
+
+    // SigninManager.SignInStateObserver implementation.
+    @Override
+    public void onSignInAllowedChanged() {
+        updateMenuItems();
+    }
+
+    @Override
+    public void onSignedIn() {
+        updateMenuItems();
+    }
+
+    @Override
+    public void onSignedOut() {
         updateMenuItems();
     }
 
@@ -99,8 +124,7 @@ public class AccountMenuMediator implements ProfileDataCache.Observer {
                                     openAutofillSettings();
                                 })));
 
-        Profile profile = mProfileSupplier.get();
-        if (profile != null && IncognitoUtils.isIncognitoModeEnabled(profile)) {
+        if (IncognitoUtils.isIncognitoModeEnabled(mProfile)) {
             mModelList.add(new ListItem(ItemType.DIVIDER, new PropertyModel()));
             int titleRes =
                     IncognitoUtils.shouldOpenIncognitoAsWindow()
@@ -121,6 +145,10 @@ public class AccountMenuMediator implements ProfileDataCache.Observer {
 
     /** Cleans up observers and resources. */
     public void destroy() {
+        if (mSigninManager != null) {
+            mSigninManager.removeSignInStateObserver(this);
+            mSigninManager = null;
+        }
         if (mProfileDataCache != null) {
             mProfileDataCache.removeObserver(this);
             mProfileDataCache = null;
@@ -129,12 +157,11 @@ public class AccountMenuMediator implements ProfileDataCache.Observer {
 
     @Override
     public void onProfileDataUpdated(DisplayableProfileData profileData) {
-        Profile profile = mProfileSupplier.get();
-        if (profile == null || profile.isOffTheRecord()) {
+        if (mProfile.isOffTheRecord()) {
             return;
         }
         IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
         AccountInfo primaryAccount =
                 identityManager != null ? identityManager.getPrimaryAccountInfo() : null;
         if (primaryAccount == null || !primaryAccount.getId().equals(profileData.getAccountId())) {
@@ -150,13 +177,12 @@ public class AccountMenuMediator implements ProfileDataCache.Observer {
     }
 
     private void maybeAddHeader() {
-        Profile profile = mProfileSupplier.get();
-        if (profile == null || profile.isOffTheRecord()) {
+        if (mProfile.isOffTheRecord()) {
             return;
         }
 
         IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
         if (identityManager != null) {
             AccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
             if (accountInfo != null) {
@@ -164,9 +190,7 @@ public class AccountMenuMediator implements ProfileDataCache.Observer {
                 return;
             }
         }
-
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-        if (signinManager != null && signinManager.isSigninAllowed()) {
+        if (mSigninManager != null && mSigninManager.isSigninAllowed()) {
             addPromoCard();
         }
     }
@@ -196,17 +220,15 @@ public class AccountMenuMediator implements ProfileDataCache.Observer {
     }
 
     private void startSigninFlow() {
-        Profile profile = mProfileSupplier.get();
-        if (profile == null || profile.isOffTheRecord()) {
+        if (mProfile.isOffTheRecord()) {
             return;
         }
 
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-        if (signinManager == null || !signinManager.isSigninAllowed()) {
+        if (mSigninManager == null || !mSigninManager.isSigninAllowed()) {
             return;
         }
 
-        Profile originalProfile = profile.getOriginalProfile();
+        Profile originalProfile = mProfile.getOriginalProfile();
         String title = mContext.getString(R.string.signin_account_picker_bottom_sheet_title);
         String subtitle =
                 mContext.getString(R.string.signin_account_picker_bottom_sheet_benefits_subtitle);

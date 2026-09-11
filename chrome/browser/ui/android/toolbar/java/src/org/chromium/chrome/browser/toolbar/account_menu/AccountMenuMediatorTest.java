@@ -118,7 +118,7 @@ public class AccountMenuMediatorTest {
                         mContext,
                         mModelList,
                         mWindowAndroid,
-                        () -> mProfile,
+                        mProfile,
                         () -> mSigninCoordinator,
                         mSigninLauncher,
                         mDismissCallback);
@@ -325,5 +325,47 @@ public class AccountMenuMediatorTest {
         assertNotNull(updatedProfileData);
         assertEquals("Updated Name", updatedProfileData.getFullName());
         assertEquals(TestAccounts.ACCOUNT1.getEmail(), updatedProfileData.getAccountEmail());
+    }
+
+    @Test
+    @SmallTest
+    public void testObserverRegistrationAndTeardown() {
+        verify(mSigninManager).addSignInStateObserver(mMediator);
+
+        mMediator.destroy();
+        verify(mSigninManager).removeSignInStateObserver(mMediator);
+    }
+
+    @Test
+    @SmallTest
+    public void testSignInStateObservers_updateMenuItems() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        mMediator.onSignedIn();
+        assertEquals(4, mModelList.size());
+        assertEquals(ItemType.IDENTITY_CARD, mModelList.get(0).type);
+
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(null);
+        mMediator.onSignedOut();
+        assertEquals(4, mModelList.size());
+        assertEquals(ItemType.PROMO_CARD, mModelList.get(0).type);
+
+        doReturn(false).when(mSigninManager).isSigninAllowed();
+        mMediator.onSignInAllowedChanged();
+        assertEquals(3, mModelList.size());
+        assertEquals(ItemType.MENU_ITEM, mModelList.get(0).type);
+    }
+
+    @Test
+    @SmallTest
+    public void testOffTheRecordProfile_omitsHeader() {
+        doReturn(true).when(mProfile).isOffTheRecord();
+        mMediator.updateMenuItems();
+
+        assertEquals(3, mModelList.size());
+        assertEquals(ItemType.MENU_ITEM, mModelList.get(0).type);
+        assertEquals(
+                R.string.menu_passwords_and_autofill,
+                mModelList.get(0).model.get(MenuItemProperties.TITLE_ID));
     }
 }
