@@ -2555,7 +2555,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2960950037335552881">Escanea este código con tu teléfono para acceder a tus favoritos, contraseñas y mucho más estés donde estés</translation>
 <translation id="2961040541145689181">Nuevo chat</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extensión proporcionada)</translation>
-<translation id="2961695502793809356">Haz clic para ir adelante o mantén presionado para ver el historial</translation>
+<translation id="2961695502793809356">Hacer clic para ir adelante o mantener presionado para ver el historial</translation>
 <translation id="29618148602069201">Asunto</translation>
 <translation id="2963151496262057773">El siguiente complemento no responde: <ph name="PLUGIN_NAME" /> ¿Quieres detenerlo?</translation>
 <translation id="2964193600955408481">Desactivar Wi-Fi</translation>
@@ -4467,7 +4467,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4401912261345737180">Conéctate con un código para transmitir</translation>
 <translation id="4403012369005671154">Voz a texto</translation>
 <translation id="4403775189117163360">Elegir otra carpeta</translation>
-<translation id="440411460180511551">Si Chromium encuentra una de tus contraseñas en una violación de la seguridad de los datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
+<translation id="440411460180511551">Si Chromium encuentra una de tus contraseñas en una violación de seguridad de datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
 <translation id="4404843640767531781">Tu padre o madre bloquearon <ph name="APP_NAME" />. Si quieres usar esa app, pídeles permiso.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mover a…</translation>
@@ -5707,7 +5707,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5375517140689139594">Modo de lectura (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">Los sitios pueden ayudar a verificar que no eres un bot</translation>
 <translation id="5376094717770783089">Solicita acceso</translation>
-<translation id="5376169624176189338">Haz clic para volver atrás o mantén presionado para ver el historial</translation>
+<translation id="5376169624176189338">Hacer clic para volver atrás o mantener presionado para ver el historial</translation>
 <translation id="5376931455988532197">Archivo demasiado grande</translation>
 <translation id="5377367976106153749">¿Deseas activar el acceso a la cámara?</translation>
 <translation id="5379140238605961210">Seguir bloqueando el acceso al micrófono</translation>
@@ -6614,7 +6614,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6099766472403716061">Permitir siempre que <ph name="HOST" /> controle y reprograme tus dispositivos MIDI</translation>
 <translation id="6100736666660498114">Menú Inicio</translation>
 <translation id="6100737823178787570">Aumenta el tamaño de la ventana para reanudar la tarea</translation>
-<translation id="6101170451607354234">Si Chrome encuentra una de tus contraseñas en una violación de la seguridad de los datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
+<translation id="6101170451607354234">Si Chrome encuentra una de tus contraseñas en una violación de seguridad de datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
 <translation id="6101226222197207147">Se agregó una aplicación nueva (<ph name="EXTENSION_NAME" />).</translation>
 <translation id="6102043788063419338">La "Protección avanzada" bloqueó este archivo.</translation>
 <translation id="6103681770816982672">Advertencia: vas a cambiar al canal de programadores</translation>

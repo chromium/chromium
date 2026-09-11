@@ -20,7 +20,7 @@
 <translation id="1486715732399361704">Bạn có thể tìm thấy tất cả nhóm thẻ của mình tại đây</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Tạo <ph name="NUM_MINS_ONE" /> phút trước}other{Tạo <ph name="NUM_MINS_MANY" /> phút trước}}</translation>
 <translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
-<translation id="1501480321619201731">Xóa nhóm</translation>
+<translation id="1501480321619201731">Xoá nhóm</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> mục không hoạt động}other{<ph name="TABS_COUNT_MANY" /> mục không hoạt động}}</translation>
 <translation id="1568067597247500137">Tắt tiếng trang web</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{Chuyển thẻ xuống dưới}other{Chuyển các thẻ xuống dưới}}</translation>

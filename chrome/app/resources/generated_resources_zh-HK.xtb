@@ -4477,7 +4477,7 @@
 <translation id="4401912261345737180">透過代碼連結即可投放</translation>
 <translation id="4403012369005671154">語音轉文字</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
-<translation id="440411460180511551">如果 Chromium 發現你的密碼在公開資料外洩事件中外洩，「Google 密碼管理工具」可能會在你登入時提議為你更改密碼。</translation>
+<translation id="440411460180511551">如果 Chromium 發現你的密碼出現在公開資料外洩事件中，「Google 密碼管理工具」可能會在你登入時提議為你更改密碼。</translation>
 <translation id="4404843640767531781">您的家長已封鎖「<ph name="APP_NAME" />」。請要求家長授權使用此應用程式。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移至…</translation>
@@ -6619,7 +6619,7 @@
 <translation id="6099766472403716061">一律允許 <ph name="HOST" /> 控制 MIDI 裝置及將其重新編程</translation>
 <translation id="6100736666660498114">開始選單</translation>
 <translation id="6100737823178787570">放大視窗以繼續工作</translation>
-<translation id="6101170451607354234">如果 Chrome 發現你的密碼在公開資料外洩事件中外洩，「Google 密碼管理工具」可能會在你登入時提議為你更改密碼。</translation>
+<translation id="6101170451607354234">如果 Chrome 發現你的密碼出現在公開資料外洩事件中，「Google 密碼管理工具」可能會在你登入時提議為你更改密碼。</translation>
 <translation id="6101226222197207147">已新增應用程式 (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">「進階保護功能」已封鎖此檔案。</translation>
 <translation id="6103681770816982672">警告：您即將切換為開發人員版</translation>

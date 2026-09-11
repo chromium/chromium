@@ -138,7 +138,7 @@
 <translation id="1485343711570311792">Mở trong <ph name="NATIVE_APP_NAME" /> • Từ <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Quay lại thẻ</translation>
 <translation id="1496514951988037011">tên người dùng</translation>
-<translation id="1501480321619201731">Xóa nhóm</translation>
+<translation id="1501480321619201731">Xoá nhóm</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
 <translation id="1513352483775369820">Dấu trang và lịch sử web</translation>
 <translation id="1515901671075971249">Phím tắt điều hướng thẻ</translation>
@@ -787,7 +787,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4165077084524712774">Công cụ khác</translation>
 <translation id="4170577491341606575">Đang tải dữ liệu của bạn\u2026</translation>
 <translation id="4172051516777682613">Luôn hiển thị</translation>
-<translation id="4176838562184310003">Chrome đã tắt không đúng cách và có thể đang cố gắng khôi phục các cửa sổ và thẻ mà bạn bị mất. Một số cửa sổ có thể bị thu nhỏ khi được khôi phục.</translation>
+<translation id="4176838562184310003">Chrome đã tắt không đúng cách và có thể cố gắng khôi phục các cửa sổ và thẻ bị mất. Một số cửa sổ có thể bị thu nhỏ khi được khôi phục.</translation>
 <translation id="4177222230309051052">Lấy tất cả dấu trang</translation>
 <translation id="417865198503699526">Tìm một chế độ cài đặt</translation>
 <translation id="4180726336228139707">Chỉ trên thiết bị này</translation>

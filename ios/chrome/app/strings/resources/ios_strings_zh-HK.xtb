@@ -19,7 +19,7 @@
 <translation id="1049743911850919806">無痕</translation>
 <translation id="1053651653201045802">已登出。重新登入即可使用帳戶中的書籤、密碼和其他資料。</translation>
 <translation id="1054745118061919935">繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
-<translation id="1056818261333183659">我應該買邊款？</translation>
+<translation id="1056818261333183659">我應該買哪一款？</translation>
 <translation id="10614374240317010">永不儲存</translation>
 <translation id="1062138828266376352">你的 PIN 並未變更。請檢查你的互聯網連線，然後再試一次</translation>
 <translation id="1063070031224282617">請選擇「<ph name="FILENAME" />」(<ph name="FILE_SIZE" />) 的儲存位置<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
@@ -1924,7 +1924,7 @@
 <translation id="720399613139435155">未能翻譯</translation>
 <translation id="7204922488054642675">個人化新聞</translation>
 <translation id="7206979415662233817">服務條款</translation>
-<translation id="721218676460477064">總結呢篇文章</translation>
+<translation id="721218676460477064">總結此文章</translation>
 <translation id="7215621211572884440">允許彈出式視窗</translation>
 <translation id="7218491361283758048">郵遞區號</translation>
 <translation id="7221173315674413369">在「最新功能」中探索新功能和提示</translation>
@@ -2244,7 +2244,7 @@
 <translation id="8232956427053453090">保留資料</translation>
 <translation id="8233237502828137700">關閉橫額宣傳</translation>
 <translation id="823339794112333264">開麥克風</translation>
-<translation id="8240217649914883113">加去我嘅日曆</translation>
+<translation id="8240217649914883113">加入我的日曆</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8252980988000695656">「Google 智能鏡頭」已完成！</translation>
 <translation id="8258734532103758067">我已匯出資料</translation>

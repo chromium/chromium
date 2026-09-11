@@ -405,7 +405,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2569733278091928697">Você vai poder gerenciar com facilidade controles de mídia, sessões de navegação anônima, downloads e muito mais</translation>
 <translation id="257088987046510401">Temas</translation>
 <translation id="2571711316400087311">Oferecer enviar páginas em outros idiomas ao Google Tradutor</translation>
-<translation id="2571834852878229351">Criar minha própria senha</translation>
+<translation id="2571834852878229351">Criar senha</translation>
 <translation id="2574249610672786438">Para acessar suas guias em qualquer lugar onde você usar o Chrome, faça login em todos os seus dispositivos</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e não poderá mais interagir com você nos Serviços do Google.</translation>
 <translation id="2581165646603367611">Essa ação vai apagar os cookies, cache e outros dados de sites que o Chrome não acredita serem importantes.</translation>
@@ -787,7 +787,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4165077084524712774">Mais ferramentas</translation>
 <translation id="4170577491341606575">Buscando seus dados\u2026</translation>
 <translation id="4172051516777682613">Sempre mostrar</translation>
-<translation id="4176838562184310003">O Chrome não foi encerrado corretamente e pode tentar restaurar as janelas e guias perdidas. Algumas janelas podem ser minimizadas com a restauração.</translation>
+<translation id="4176838562184310003">O Chrome não foi encerrado corretamente e pode tentar restaurar as janelas e guias fechadas. Ao fazer isso, algumas janelas podem ser minimizadas.</translation>
 <translation id="4177222230309051052">Acesse todos os seus favoritos</translation>
 <translation id="417865198503699526">Pesquise uma configuração</translation>
 <translation id="4180726336228139707">Somente neste dispositivo</translation>

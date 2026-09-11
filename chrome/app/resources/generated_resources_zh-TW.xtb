@@ -1528,7 +1528,7 @@
 <translation id="2182419606502127232">包含我的伺服器記錄。</translation>
 <translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="2184515124301515068">讓 Chrome 自行判斷何時允許網站播放音訊 (建議使用)</translation>
-<translation id="2184754597051264978">Gemini 將無法再登入「<ph name="URL" />」</translation>
+<translation id="2184754597051264978">Gemini 將無法再替你登入「<ph name="URL" />」</translation>
 <translation id="2186206192313702726">Google 智慧鏡頭</translation>
 <translation id="2186539124645132614">與 Gemini 展開新對話</translation>
 <translation id="2186711480981247270">透過其他裝置分享的網頁</translation>
@@ -2555,7 +2555,7 @@
 <translation id="2960950037335552881">用手機掃描這個 QR code，隨時隨地存取書籤、密碼等資訊</translation>
 <translation id="2961040541145689181">新對話</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (擴充功能已提供)</translation>
-<translation id="2961695502793809356">按一下到下一頁，按住可查看記錄</translation>
+<translation id="2961695502793809356">按一下可前往下一頁，按住可查看記錄</translation>
 <translation id="29618148602069201">主題</translation>
 <translation id="2963151496262057773">下列外掛程式無回應：<ph name="PLUGIN_NAME" /> 您要停止執行嗎？</translation>
 <translation id="2964193600955408481">停用 WiFi</translation>
@@ -5163,7 +5163,7 @@
 <translation id="4940364377601827259">有 <ph name="PRINTER_COUNT" /> 台可供儲存的印表機。</translation>
 <translation id="4940448324259979830">這個帳戶是由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="4940845626435830013">預留磁碟大小</translation>
-<translation id="4941391011436448776">Gemini 可登入的網站</translation>
+<translation id="4941391011436448776">Gemini 可替你登入的網站</translation>
 <translation id="4941627891654116707">字型大小</translation>
 <translation id="4941963255146903244">查看手機上的相片、媒體和應用程式</translation>
 <translation id="494286511941020793">Proxy 設定說明</translation>
@@ -5698,7 +5698,7 @@
 <translation id="5375517140689139594">閱讀模式 (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">網站可協助確認你不是機器人</translation>
 <translation id="5376094717770783089">要求存取權</translation>
-<translation id="5376169624176189338">按一下回上一頁，按住可查看記錄</translation>
+<translation id="5376169624176189338">按一下可返回上一頁，按住可查看記錄</translation>
 <translation id="5376931455988532197">檔案過大</translation>
 <translation id="5377367976106153749">要允許存取攝影機嗎？</translation>
 <translation id="5379140238605961210">繼續封鎖存取麥克風</translation>
@@ -5727,7 +5727,7 @@
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="539882584649709174">協助在網路上撰寫評論等簡短內容</translation>
 <translation id="5400196580536813396">不得尋找或使用能存取你裝置的印表機</translation>
-<translation id="5400836586163650660">灰</translation>
+<translation id="5400836586163650660">灰色</translation>
 <translation id="5400933848253186401">運用 Gemini 摘錄重點</translation>
 <translation id="5402367795255837559">點字</translation>
 <translation id="5402815541704507626">使用行動數據下載更新</translation>
@@ -5951,7 +5951,7 @@
 <translation id="5563460629751333413">連線至伺服器時發生問題，請稍後再試。</translation>
 <translation id="5563698194918415761">更新遭到網路政策或 Proxy 伺服器封鎖。</translation>
 <translation id="5563824734298958390">要退出分頁群組嗎？</translation>
-<translation id="5565606467367006469">快速將連結傳送到手機或任何其他已登入的裝置</translation>
+<translation id="5565606467367006469">快速將連結傳送到手機或其他已登入的裝置</translation>
 <translation id="5565735124758917034">管理中</translation>
 <translation id="5568069709869097550">無法登入</translation>
 <translation id="5568525251731145240">要刪除 <ph name="SITE_NAME" />、其下所有網站，以及所安裝應用程式的網站資料和權限嗎？</translation>
@@ -6122,7 +6122,7 @@
 <translation id="5720729194423017301">網站和搜尋引擎的捷徑</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5722086096420375088">綠色與白色</translation>
-<translation id="572328651809341494">最近開啟的分頁</translation>
+<translation id="572328651809341494">最近關閉的分頁</translation>
 <translation id="5723508132121499792">沒有執行中的背景應用程式</translation>
 <translation id="5724723163580775373">聚焦範圍：大</translation>
 <translation id="5725112283692663422">請提供你對「使用 AI 建立主題」的意見</translation>
@@ -6481,7 +6481,7 @@
 <translation id="5992652489368666106">無框線</translation>
 <translation id="5996490984199062729">你的設定檔尚未完成設定</translation>
 <translation id="5997337190805127100">進一步瞭解網站存取權</translation>
-<translation id="5997802678829218272">只要在不同裝置上登入同一個 Chrome 帳戶，就能快速互傳連結</translation>
+<translation id="5997802678829218272">只要登入同一個 Chrome 帳戶，就能在不同裝置間快速互傳連結</translation>
 <translation id="5998458948782718639">協助改善自動填入功能</translation>
 <translation id="5998976983953384016">確認並啟用</translation>
 <translation id="5999630716831179808">語音</translation>
@@ -7711,7 +7711,7 @@
 <translation id="6944854424004126054">還原視窗</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="694592694773692225">已在這個網頁禁止重新導向。</translation>
-<translation id="6946083836254858787">選取「傳送到你的裝置」，然後選擇要接收連結的裝置</translation>
+<translation id="6946083836254858787">選取「傳送到裝置」，然後選擇要接收連結的裝置</translation>
 <translation id="6949089178006131285">讀取 ChromeOS Flex 網路資訊</translation>
 <translation id="6949434160682548041">密碼 (選填)</translation>
 <translation id="6950143189069683062">記憶體詳細資料</translation>
@@ -8056,7 +8056,7 @@
 <translation id="7219473482981809164">我們發現多個可供下載的設定檔。請先選取你要下載的設定檔再繼續。</translation>
 <translation id="7220019174139618249">無法將密碼匯出到「<ph name="FOLDER" />」</translation>
 <translation id="722099540765702221">電源</translation>
-<translation id="7221869452894271364">重新載入此頁</translation>
+<translation id="7221869452894271364">重新載入此網頁</translation>
 <translation id="7222232353993864120">電子郵件地址</translation>
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>
@@ -8088,7 +8088,7 @@
 <translation id="7249764475759804559">開啟檔案時，將這個應用程式列為選項</translation>
 <translation id="7250616558727237648">你要分享檔案的目標裝置沒有回應，請再試一次。</translation>
 <translation id="7251635775446614726">管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
-<translation id="725310308981256997">詢問這個網頁的內容？</translation>
+<translation id="725310308981256997">詢問關於本頁的問題？</translation>
 <translation id="7253521419891527137">瞭解詳情(&amp;L)</translation>
 <translation id="725497546968438223">書籤資料夾按鈕</translation>
 <translation id="7255935316994522020">套用</translation>
@@ -8226,7 +8226,7 @@
 <translation id="7357271391997763660">要執行密碼檢查嗎？</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7359680654975233185">無法投放分頁</translation>
-<translation id="7360162988015675077">你造訪的網站 (包括 Google) 會自行決定如何回應這項要求。視所在地區的法律而定，網站可能會限制出售及分享你的資料，或限制將資料用於個人化廣告。</translation>
+<translation id="7360162988015675077">你造訪的網站 (包括 Google) 會自行決定如何回應這項要求。視所在地區的法律而定，網站可能會限制出售、分享或將你的資料用於個人化廣告的方式。</translation>
 <translation id="7360257054721917104">正在查看已儲存的桌面和範本，按下 Tab 鍵即可瀏覽。</translation>
 <translation id="7360333718677093875">表情符號挑選器</translation>
 <translation id="7360460316021916328">選擇視窗</translation>
@@ -8784,7 +8784,7 @@
 <translation id="777852709704682967">開啟書籤管理員(&amp;O)</translation>
 <translation id="7779840061887151693">螢幕</translation>
 <translation id="7780716468751073938">你與 Gemini 的對話及 <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace 資料<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />都不會受到審查，也不會用於改良生成式 AI 模型。Gemini 是 AI，可能會出錯。部分內容可能不適合所有人。</translation>
-<translation id="7780992949171378848">向網站傳送「選擇停用」要求，限制其使用你的資料</translation>
+<translation id="7780992949171378848">針對使用你資料的方式，向網站傳送「選擇停用」要求</translation>
 <translation id="7782102568078991263">沒有更多來自 Google 的建議</translation>
 <translation id="7782717250816686129">儲存登入畫面中的永久資料，並在工作階段中置入憑證。</translation>
 <translation id="7784020347632229094">進一步瞭解鍵盤快速鍵</translation>
@@ -10083,7 +10083,7 @@
 <translation id="8779720597365936419">是，請將我的個人資料與工作資料分開 (建議)</translation>
 <translation id="8780123805589053431">從 Google 取得圖片說明</translation>
 <translation id="8780443667474968681">語音搜尋功能已停用。</translation>
-<translation id="8781834595282316166">在群組中新增分頁</translation>
+<translation id="8781834595282316166">在群組新增分頁</translation>
 <translation id="8781980678064919987">蓋上機蓋時關機</translation>
 <translation id="8783171585655659524">包括螢幕截圖</translation>
 <translation id="8785622406424941542">觸控筆</translation>
