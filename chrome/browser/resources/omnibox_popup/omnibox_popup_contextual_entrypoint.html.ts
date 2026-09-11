@@ -19,8 +19,7 @@ ${this.showContextEntrypoint_ ? html`
           exportparts="entrypoint-button, context-menu-entrypoint-icon"
           .inputState="${this.inputState}"
           .applyContextButtonBackground="${this.applyContextButtonBackground_}"
-          .isOblongShape="${this.isOblongShape_}"
-          ?show-suggestion-label="${this.showContextButtonSuggestionLabel_}">
+          .isOblongShape="${this.isOblongShape_}">
       </omnibox-popup-contextual-entrypoint-button>
     ` : ''}
     ${this.isCurrentTabChipShown_ ? html`

@@ -163,7 +163,6 @@ struct EligibleMatchesAndActions {
         contextual_search_config.show_open_lens_action && !toolbelt_lens &&
         input.IsZeroSuggest() &&
         ContextualSearchProvider::LensEntrypointEligible(input, client) &&
-        !client->IsOmniboxNextLensSearchChipEnabled() &&
         !client->IsAskGShowChipEnabled();
 
     // - Check feature/params.

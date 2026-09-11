@@ -151,8 +151,6 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kWebUIOmniboxDynamicColorScheme.Get());
   source->AddBoolean("searchboxDynamicAnimation",
                      omnibox::kWebUIOmniboxDynamicAnimation.Get());
-  source->AddBoolean("omniboxShowContextButtonSuggestionLabel",
-                     omnibox::kContextButtonShowSuggestionLabel.Get());
   source->AddBoolean(
       "omniboxPopupDebugEnabled",
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug));
@@ -201,15 +199,11 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kShowContextMenuTabPreviews.Get());
   source->AddBoolean("composeboxShowImageSuggest",
                      omnibox::kShowComposeboxImageSuggestions.Get());
-  // The popup chip UI entrypoint is shared between the Omnibox Simplification
-  // experiment (kShowLensSearchChip) and the AskG experiment (kAskGShowChip).
-  // TODO(crbug.com/498556249): Consolidate once the Simplification experiment
-  // concludes.
+  // The popup chip UI entrypoint is enabled by the AskG experiment (kAskGShowChip).
   source->AddBoolean(
       "composeboxShowChip",
       omnibox::IsAimPopupEnabled(profile_) &&
-          (omnibox::kShowLensSearchChip.Get() ||
-           omnibox::kAskGShowChip.Get()));
+          omnibox::kAskGShowChip.Get());
   source->AddBoolean("composeboxShowCurrentTabChip",
                      omnibox::kAskGCurrentTabChip.Get());
   source->AddBoolean("composeboxShowLensIcon",

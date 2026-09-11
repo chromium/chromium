@@ -26,7 +26,6 @@ suite('OmniboxPopupContextualEntrypointButtonTest', () => {
       searchboxLayoutMode: 'TallBottomContext',
       hideClassicContextButton: false,
       composeboxShowContextMenuDescription: false,
-      omniboxShowContextButtonSuggestionLabel: false,
     });
 
     handler = TestMock.fromClass(OmniboxPopupPageHandlerRemote);

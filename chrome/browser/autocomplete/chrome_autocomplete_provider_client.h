@@ -139,7 +139,6 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   std::optional<bool> IsPagePaywalled() const override;
   bool ShouldSendContextualUrlSuggestParam() const override;
   bool ShouldSendPageTitleSuggestParam() const override;
-  bool IsOmniboxNextLensSearchChipEnabled() const override;
   bool IsAskGShowChipEnabled() const override;
   bool IsOmniboxNextAimPopupEnabled() const override;
   bool IsGeminiStarterPackEnabled() const override;

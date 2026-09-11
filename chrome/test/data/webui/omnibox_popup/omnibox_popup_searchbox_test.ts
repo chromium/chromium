@@ -56,7 +56,6 @@ suite('OmniboxPopupSearchboxTest', function() {
     loadTimeData.overrideValues({
       hideClassicContextButton: false,
       composeboxShowContextMenuDescription: false,
-      omniboxShowContextButtonSuggestionLabel: false,
       addContext: 'Add tabs and more',
       contextButtonShapeIsOblong: false,
       contextualMenuUsePecApi: false,
@@ -2063,7 +2062,6 @@ suite('OmniboxPopupSearchboxTest', function() {
        document.body.innerHTML = window.trustedTypes!.emptyHTML;
        loadTimeData.overrideValues({
          omniboxAimPopupEnabled: true,
-         omniboxShowContextButtonSuggestionLabel: false,
          hideClassicContextButton: false,
          contextualMenuUsePecApi: false,
          searchboxLayoutMode: 'TallBottomContext',
@@ -2098,7 +2096,6 @@ suite('OmniboxPopupSearchboxTest', function() {
        document.body.innerHTML = window.trustedTypes!.emptyHTML;
        loadTimeData.overrideValues({
          omniboxAimPopupEnabled: true,
-         omniboxShowContextButtonSuggestionLabel: false,
          hideClassicContextButton: false,
          contextualMenuUsePecApi: false,
          composeboxShowContextMenuDescription: true,
@@ -2135,7 +2132,6 @@ suite('OmniboxPopupSearchboxTest', function() {
 
        document.body.innerHTML = window.trustedTypes!.emptyHTML;
        loadTimeData.overrideValues({
-         omniboxShowContextButtonSuggestionLabel: false,
          hideClassicContextButton: true,
          contextualMenuUsePecApi: false,
        });

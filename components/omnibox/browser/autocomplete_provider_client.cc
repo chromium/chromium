@@ -80,9 +80,6 @@ bool AutocompleteProviderClient::in_background_state() const {
   return false;
 }
 
-bool AutocompleteProviderClient::IsOmniboxNextLensSearchChipEnabled() const {
-  return false;
-}
 
 bool AutocompleteProviderClient::IsAskGShowChipEnabled() const {
   return false;

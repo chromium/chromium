@@ -713,14 +713,6 @@ bool ChromeAutocompleteProviderClient::ShouldSendPageTitleSuggestParam() const {
       GetAimEligibilityService());
 }
 
-bool ChromeAutocompleteProviderClient::IsOmniboxNextLensSearchChipEnabled()
-    const {
-#if !BUILDFLAG(IS_ANDROID)
-  return IsOmniboxNextAimPopupEnabled() && omnibox::kShowLensSearchChip.Get();
-#else
-  return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
 
 bool ChromeAutocompleteProviderClient::IsAskGShowChipEnabled() const {
 #if !BUILDFLAG(IS_ANDROID)

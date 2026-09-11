@@ -1101,8 +1101,7 @@ std::u16string AutocompleteController::GetSuggestionGroupHeaderText(
         contextual_search_provider()->HasToolbeltLensAction();
     const auto* client = autocomplete_provider_client();
     bool has_contextual_chip =
-        (client->IsOmniboxNextLensSearchChipEnabled() ||
-         client->IsAskGShowChipEnabled()) &&
+        client->IsAskGShowChipEnabled() &&
         ContextualSearchProvider::LensEntrypointEligible(input_, client);
 
     if (suggestion_group_id.value() == omnibox::GROUP_CONTEXTUAL_SEARCH &&

@@ -58,7 +58,6 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
       applyContextButtonBackground_: {type: Boolean},
       usePecApi_: {type: Boolean},
       isOblongShape_: {type: Boolean},
-      showContextButtonSuggestionLabel_: {type: Boolean},
     };
   }
 
@@ -81,8 +80,6 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
       loadTimeData.getBoolean('contextualMenuUsePecApi');
   protected accessor isOblongShape_: boolean =
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
-  protected accessor showContextButtonSuggestionLabel_: boolean =
-      loadTimeData.getBoolean('omniboxShowContextButtonSuggestionLabel');
 
   private isComposeboxChipEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowChip');

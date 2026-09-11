@@ -49,7 +49,6 @@ export class ContextualEntrypointButtonElement extends
       // Public properties
       // =========================================================================
       showContextMenuDescription: {type: Boolean},
-      showSuggestionLabel: {type: Boolean, reflect: true},
       inputState: {type: Object},
       glifAnimationState: {type: String, reflect: true},
       uploadButtonDisabled: {type: Boolean},
@@ -72,7 +71,6 @@ export class ContextualEntrypointButtonElement extends
   }
 
   accessor showContextMenuDescription: boolean = false;
-  accessor showSuggestionLabel: boolean = false;
   accessor inputState: InputState|null = null;
   accessor sharedTabs: TabInfo[] = [];
   accessor restoredTabs: TabInfo[] = [];

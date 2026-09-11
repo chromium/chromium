@@ -29,7 +29,6 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
       searchboxLayoutMode: 'TallBottomContext',
       hideClassicContextButton: false,
       composeboxShowContextMenuDescription: false,
-      omniboxShowContextButtonSuggestionLabel: false,
       composeboxShowCurrentTabChip: true,
       composeboxShowChip: true,
       composeboxShowLensIcon: true,

@@ -113,8 +113,7 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features*/ {{omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}},
-                              {omnibox::internal::kWebUIOmniboxSimplification,
-                               {{omnibox::kShowLensSearchChip.name, "true"}}}},
+                              {omnibox::internal::kWebUIOmniboxSimplification, {}}},
         // TODO (crbug.com/555239052) - Fix tests when AskG is launched.
         /*disabled_features*/ {omnibox::kWebUIOmniboxAskGAboutThisPage});
   }
@@ -254,31 +253,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
                    .start_service_worker_for_navigation_hint_called());
 }
 
-class ChromeAutocompleteProviderClientWithChipTest
-    : public ChromeAutocompleteProviderClientTest {
- protected:
-  ChromeAutocompleteProviderClientWithChipTest() {
-    // Enable the AIM popup (which implies IsAimPopupFeatureEnabled = true) and
-    // the Lens Search Chip.
-    feature_list_.InitWithFeaturesAndParameters(
-        {{omnibox::internal::kWebUIOmniboxAimPopup, {}},
-         {omnibox::internal::kWebUIOmniboxSimplification,
-          {{omnibox::kShowLensSearchChip.name, "true"}}}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientWithChipTest,
-                       IsOmniboxNextLensSearchChipEnabled) {
-  EXPECT_TRUE(
-      GetAutocompleteProviderClient()->IsOmniboxNextLensSearchChipEnabled());
-  EXPECT_FALSE(
-      GetAutocompleteProviderClient()->IsAskGShowChipEnabled());
-}
-
 class ChromeAutocompleteProviderClientAskGShowChipTest
     : public ChromeAutocompleteProviderClientTest {
  protected:
@@ -296,8 +270,6 @@ class ChromeAutocompleteProviderClientAskGShowChipTest
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGShowChipTest,
                        IsAskGShowChipEnabled) {
-  EXPECT_FALSE(
-      GetAutocompleteProviderClient()->IsOmniboxNextLensSearchChipEnabled());
   EXPECT_TRUE(
       GetAutocompleteProviderClient()->IsAskGShowChipEnabled());
 }

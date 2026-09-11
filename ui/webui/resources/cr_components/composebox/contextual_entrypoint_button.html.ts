@@ -12,8 +12,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
   return html`<!--_html_template_start_-->
   <div id="${this.getWrapperId_()}" class="${this.getWrapperCssClass_()}"
       @pointerenter="${this.onEntrypointPointerenter_}">
-    ${(this.showContextMenuDescription || this.showSuggestionLabel)
-        && !this.windowWidthBelowThreshold_ ? html`
+    ${this.showContextMenuDescription && !this.windowWidthBelowThreshold_ ? html`
       <cr-button id="entrypoint"
           class="ai-mode-button"
           part="entrypoint-button"
@@ -27,8 +26,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
         <span id="description"
             aria-hidden="true"
             @animationend="${this.onDescriptionAnimationend_}">
-          ${this.showSuggestionLabel ?
-             this.i18n('searchBoxHintMultimodal') : this.i18n('addContext')}
+          ${this.i18n('addContext')}
         </span>
         ${this.smartTabSharingActive ? html`
           <cr-icon class="sts-active-coin" icon="composebox:screensaverAuto"

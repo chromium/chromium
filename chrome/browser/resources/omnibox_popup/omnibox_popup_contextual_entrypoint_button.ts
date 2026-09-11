@@ -36,10 +36,6 @@ export class OmniboxPopupContextualEntrypointButtonElement extends
         type: Boolean,
         reflect: true,
       },
-      showSuggestionLabel: {
-        type: Boolean,
-        reflect: true,
-      },
       hasPopupFocus: {
         type: Boolean,
         reflect: true,
@@ -54,7 +50,6 @@ export class OmniboxPopupContextualEntrypointButtonElement extends
   accessor inputState: InputState|null = null;
   accessor applyContextButtonBackground: boolean = false;
   accessor isOblongShape: boolean = false;
-  accessor showSuggestionLabel: boolean = false;
   accessor hasPopupFocus: boolean = false;
   protected accessor isMenuOpen_: boolean = false;
 

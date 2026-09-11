@@ -270,8 +270,6 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
 
   virtual void set_in_background_state(bool in_background_state) {}
 
-  // Whether the "Omnibox Next" Lens search chip feature is enabled.
-  virtual bool IsOmniboxNextLensSearchChipEnabled() const;
 
   // Whether the Ask G search chip is enabled.
   virtual bool IsAskGShowChipEnabled() const;
