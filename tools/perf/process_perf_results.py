@@ -619,7 +619,8 @@ def _upload_skia_json(
     build_properties: The build properties.
     logdog_benchmark_dict: The logdog dictionary entry to report errors.
   Returns:
-    0 if the conversion and upload is successful, 1 otherwise.
+    0 if the conversion and upload is successful (or skipped if empty),
+    1 otherwise.
   """
   builder_details = json_util.perf_builder_details_from_build_properties(
       properties=build_properties,
@@ -628,10 +629,14 @@ def _upload_skia_json(
   )
   skia_json_data = _process_skia_json(results_filename, builder_details,
                                       benchmark_name)
+  if skia_json_data is None:
+    logdog_benchmark_dict['skia_json_conversion_failed'] = 'True'
+    logdog_benchmark_dict['skia_json_upload_failed'] = 'True'
+    return 1
   if json_util.is_empty(skia_json_data):
     logdog_benchmark_dict['skia_json_empty'] = 'True'  # skip upload.
     logdog_benchmark_dict['skia_json_upload_skipped'] = 'True'
-    return 1
+    return 0
   skia_results_filename = os.path.join(tmpfile_dir, 'skia_results.json')
   with open(skia_results_filename, 'w') as f:
     json.dump(skia_json_data, f)

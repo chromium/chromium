@@ -488,6 +488,77 @@ class ProcessPerfResults_PerfSkiaJsonUnittest(unittest.TestCase):
     mock_file_open.assert_called_once_with(skia_results_filepath, 'w')
     mock_is_empty.assert_called_once_with(skia_json)
 
+  @mock.patch.object(
+    json_util,
+    'gcs_buckets_from_builder_name',
+    autospec=True,
+    return_value=['chrome-perf-dashboard-test'],
+  )
+  @mock.patch.object(json_util, 'is_empty', autospec=True, return_value=True)
+  @mock.patch.object(ppr_module, '_process_skia_json', autospec=True)
+  def test_upload_skia_json_empty(
+    self,
+    mock_process_skia_json,
+    mock_is_empty,
+    _,
+  ):
+    mock_process_skia_json.return_value = {'results': []}
+    logdog_benchmark_dict = {}
+    got = ppr_module._upload_skia_json(
+      benchmark_name='benchmark.example',
+      configuration_name='win-11-perf',
+      results_filename='results.json',
+      tmpfile_dir='tmpfile_dir',
+      build_properties={
+        'buildername': 'win-11-perf',
+        'buildnumber': 9719,
+        'got_revision_cp': 'refs/heads/main@{#1415171}',
+        'got_v8_revision': '0f87a54dade4353b6ece1d7591ca8c66f90c1c93',
+        'got_webrtc_revision': '0533b5eafe69b744f10fa178f5a6f9657eaeeb25',
+        'perf_dashboard_machine_group': 'ChromiumPerf',
+      },
+      logdog_benchmark_dict=logdog_benchmark_dict,
+    )
+    self.assertEqual(got, 0)
+    self.assertEqual(logdog_benchmark_dict['skia_json_empty'], 'True')
+    self.assertEqual(logdog_benchmark_dict['skia_json_upload_skipped'], 'True')
+    mock_is_empty.assert_called_once_with({'results': []})
+
+  @mock.patch.object(
+    json_util,
+    'gcs_buckets_from_builder_name',
+    autospec=True,
+    return_value=['chrome-perf-dashboard-test'],
+  )
+  @mock.patch.object(ppr_module, '_process_skia_json', autospec=True)
+  def test_upload_skia_json_conversion_failed(
+    self,
+    mock_process_skia_json,
+    _,
+  ):
+    mock_process_skia_json.return_value = None
+    logdog_benchmark_dict = {}
+    got = ppr_module._upload_skia_json(
+      benchmark_name='benchmark.example',
+      configuration_name='win-11-perf',
+      results_filename='results.json',
+      tmpfile_dir='tmpfile_dir',
+      build_properties={
+        'buildername': 'win-11-perf',
+        'buildnumber': 9719,
+        'got_revision_cp': 'refs/heads/main@{#1415171}',
+        'got_v8_revision': '0f87a54dade4353b6ece1d7591ca8c66f90c1c93',
+        'got_webrtc_revision': '0533b5eafe69b744f10fa178f5a6f9657eaeeb25',
+        'perf_dashboard_machine_group': 'ChromiumPerf',
+      },
+      logdog_benchmark_dict=logdog_benchmark_dict,
+    )
+    self.assertEqual(got, 1)
+    self.assertEqual(
+      logdog_benchmark_dict['skia_json_conversion_failed'], 'True'
+    )
+    self.assertEqual(logdog_benchmark_dict['skia_json_upload_failed'], 'True')
+
 
 class TestUploadIndividual(unittest.TestCase):
   def setUp(self):
