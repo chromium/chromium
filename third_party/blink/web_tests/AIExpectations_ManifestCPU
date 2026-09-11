@@ -22,24 +22,8 @@ crbug.com/517535239 external/wpt/ai/writer/writer-iframe.tentative.https.html [ 
 # The overflow test times out because filling the context window takes too long.
 external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.html [ Timeout ]
 
-# These tests produce minor token count variations, missing capability failures, or timing flakiness on legacy CPU.
-crbug.com/513585708 external/wpt/ai/language-model/language-model-append.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/language-model-clone.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/prompt/context/usage-initial-prompt.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/prompt/empty-inputs/null-input.tentative.https.window.html [ Failure Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/prompt/empty-inputs/undefined-input.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/prompt/prompt-simple-question.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/empty-object-input.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/empty-sequence-input.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/garbage-collection.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/prompt-streaming.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/rewriter/rewriter-abort.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/rewriter/rewriter-rewrite-streaming.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/rewriter/rewriter-rewrite.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/summarizer/summarizer-summarize-streaming.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/summarizer/summarizer-summarize.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/writer/writer-write-streaming.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/writer/writer-write.tentative.https.window.html [ Failure Timeout Pass ]
+# Concurrent summarize() calls reject with AbortError due to session execution cancellation.
+crbug.com/560176361 external/wpt/ai/summarizer/summarizer-summarize.tentative.https.window.html [ Failure Pass ]
 
 # Audio inputs are currently disabled by default for the CPU model via feature flags; image and video should be re-assessed.
 crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/audio/* [ Failure Pass ]
