@@ -534,8 +534,8 @@ RenderViewContextMenuBase::GetOpenURLParamsWithExtraHeaders(
     params_.link_followed = url;
   }
 
-  OpenURLParams open_url_params(url, referrer, disposition, transition, false,
-                                started_from_context_menu);
+  OpenURLParams open_url_params = OpenURLParams::CreateBrowserInitiated(
+      url, disposition, transition, referrer, started_from_context_menu);
   if (!extra_headers.empty())
     open_url_params.extra_headers = extra_headers;
 

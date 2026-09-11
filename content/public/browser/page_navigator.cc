@@ -93,6 +93,20 @@ OpenURLParams OpenURLParams::FromNavigationHandle(NavigationHandle* handle) {
   return params;
 }
 
+// static
+OpenURLParams OpenURLParams::CreateBrowserInitiated(
+    const GURL& url,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    const Referrer& referrer,
+    bool started_from_context_menu,
+    FrameTreeNodeId frame_tree_node_id) {
+  OpenURLParams params(url, referrer, frame_tree_node_id, disposition,
+                       transition, /*is_renderer_initiated=*/false);
+  params.started_from_context_menu = started_from_context_menu;
+  return params;
+}
+
 #if DCHECK_IS_ON()
 bool OpenURLParams::Valid() const {
   // Make sure URLs that result in an opaque origin have their initiator

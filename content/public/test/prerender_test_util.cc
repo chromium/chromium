@@ -719,8 +719,8 @@ PrerenderTestHelper::NavigatePrimaryPageAsync(WebContents& web_contents,
                          JsReplace("location = $1", url));
   } else {
     web_contents.OpenURL(
-        OpenURLParams(url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-                      transition, is_renderer_initiated),
+        OpenURLParams::CreateBrowserInitiated(
+            url, WindowOpenDisposition::CURRENT_TAB, transition),
         /*navigation_handle_callback=*/{});
   }
   return observer;

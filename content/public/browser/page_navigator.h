@@ -66,6 +66,15 @@ struct CONTENT_EXPORT OpenURLParams {
   // in reasonable defaults for other properties (like WindowOpenDisposition).
   static OpenURLParams FromNavigationHandle(NavigationHandle* handle);
 
+  // Creates OpenURLParams for a browser-initiated navigation.
+  static OpenURLParams CreateBrowserInitiated(
+      const GURL& url,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      const Referrer& referrer = Referrer(),
+      bool started_from_context_menu = false,
+      FrameTreeNodeId frame_tree_node_id = FrameTreeNodeId());
+
 #if DCHECK_IS_ON()
   // Returns true if the contents of this struct are considered valid and
   // satisfy dependencies between fields (e.g. about:blank URLs require

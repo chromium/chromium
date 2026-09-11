@@ -110,9 +110,8 @@ void VrpFlagsFactoryImpl::StartRendererForVrpFlags(
   }
 
   GURL target_url(base::StringPrintf("http://victim.test:%u/poc.html", port));
-  OpenURLParams params(target_url, Referrer(), open_disposition,
-                       ui::PAGE_TRANSITION_LINK,
-                       /*is_renderer_initiated=*/false);
+  OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
+      target_url, open_disposition, ui::PAGE_TRANSITION_LINK);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 

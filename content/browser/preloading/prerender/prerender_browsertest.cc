@@ -5743,11 +5743,11 @@ IN_PROC_BROWSER_TEST_F(
       const GURL same_origin_subframe_url3 =
           GetUrl("/empty.html?same_origin_iframe3");
       shell()->web_contents()->OpenURL(
-          OpenURLParams(same_origin_subframe_url3, Referrer(),
-                        child_frame->GetFrameTreeNodeId(),
-                        WindowOpenDisposition::CURRENT_TAB,
-                        ui::PAGE_TRANSITION_AUTO_SUBFRAME,
-                        /*is_renderer_initiated=*/false),
+          OpenURLParams::CreateBrowserInitiated(
+              same_origin_subframe_url3, WindowOpenDisposition::CURRENT_TAB,
+              ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
+              /*started_from_context_menu=*/false,
+              child_frame->GetFrameTreeNodeId()),
           /*navigation_handle_callback=*/{});
       capturer.Wait();
       child_frame = ChildFrameAt(prerender_frame_host, 0);
@@ -10419,10 +10419,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLInPrerenderingFrame) {
   TestNavigationManager iframe_observer(shell()->web_contents(),
                                         new_iframe_url);
   shell()->web_contents()->OpenURL(
-      OpenURLParams(
-          new_iframe_url, Referrer(), child_frame->GetFrameTreeNodeId(),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
-          /*is_renderer_initiated=*/false),
+      OpenURLParams::CreateBrowserInitiated(
+          new_iframe_url, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
+          /*started_from_context_menu=*/false,
+          child_frame->GetFrameTreeNodeId()),
       /*navigation_handle_callback=*/{});
   ASSERT_TRUE(iframe_observer.WaitForNavigationFinished());
   EXPECT_TRUE(iframe_observer.was_committed());
@@ -10564,11 +10565,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // prerendering page is activated.
   {
     shell()->web_contents()->OpenURL(
-        OpenURLParams(new_iframe_url, Referrer(),
-                      child_frame->GetFrameTreeNodeId(),
-                      WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_AUTO_SUBFRAME,
-                      /*is_renderer_initiated=*/false),
+        OpenURLParams::CreateBrowserInitiated(
+            new_iframe_url, WindowOpenDisposition::CURRENT_TAB,
+            ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
+            /*started_from_context_menu=*/false,
+            child_frame->GetFrameTreeNodeId()),
         /*navigation_handle_callback=*/{});
     ASSERT_TRUE(iframe_observer.WaitForFirstYieldAfterDidStartNavigation());
     NavigationRequest* request =
@@ -11438,11 +11439,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     TestNavigationManager iframe_observer(shell()->web_contents(),
                                           new_iframe_url);
     shell()->web_contents()->OpenURL(
-        OpenURLParams(new_iframe_url, Referrer(),
-                      child_frame->GetFrameTreeNodeId(),
-                      WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_AUTO_SUBFRAME,
-                      /*is_renderer_initiated=*/false),
+        OpenURLParams::CreateBrowserInitiated(
+            new_iframe_url, WindowOpenDisposition::CURRENT_TAB,
+            ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
+            /*started_from_context_menu=*/false,
+            child_frame->GetFrameTreeNodeId()),
         /*navigation_handle_callback=*/{});
     ASSERT_TRUE(iframe_observer.WaitForNavigationFinished());
     EXPECT_EQ(child_frame->GetLastCommittedURL(), new_iframe_url);
@@ -15466,9 +15467,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest,
 
   // Open a new tab, and the new page clears all settings.
   GURL new_tab_url = GetUrl("/image.html?acceptch-no-value");
-  OpenURLParams params(
-      new_tab_url, Referrer(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+  OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
+      new_tab_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK);
   auto* new_web_contents =
       web_contents_impl()->OpenURL(params, /*navigation_handle_callback=*/{});
   ASSERT_NE(nullptr, new_web_contents);

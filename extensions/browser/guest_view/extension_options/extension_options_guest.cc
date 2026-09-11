@@ -290,9 +290,9 @@ WebContents* ExtensionOptionsGuest::CreateCustomWebContents(
   //   ctrl-click or middle mouse button click
   if (extension_options_guest_delegate_) {
     extension_options_guest_delegate_->OpenURLInNewTab(
-        content::OpenURLParams(target_url, content::Referrer(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PAGE_TRANSITION_LINK, false),
+        content::OpenURLParams::CreateBrowserInitiated(
+            target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_LINK),
         /*navigation_handle_callback=*/{});
   }
 

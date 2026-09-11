@@ -134,17 +134,18 @@ void SecurityInterstitialControllerClient::ShowCertificateViewer() {
 
 void SecurityInterstitialControllerClient::OpenUrlInCurrentTab(
     const GURL& url) {
-  content::OpenURLParams params(url, Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void SecurityInterstitialControllerClient::OpenUrlInNewForegroundTab(
     const GURL& url) {
-  content::OpenURLParams params(url, Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 

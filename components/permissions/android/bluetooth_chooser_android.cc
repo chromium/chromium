@@ -187,10 +187,9 @@ BluetoothChooserAndroid::CreateForTesting(
 
 void BluetoothChooserAndroid::OpenURL(const char* url) {
   web_contents_->OpenURL(
-      content::OpenURLParams(GURL(url), content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                             false /* is_renderer_initiated */),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 }
 

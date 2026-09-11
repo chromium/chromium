@@ -830,12 +830,11 @@ void PermissionRequestManager::OpenHelpCenterLink(const ui::Event& event) {
   switch (requests_[0]->request_type()) {
     case permissions::RequestType::kStorageAccess:
       GetAssociatedWebContents()->OpenURL(
-          content::OpenURLParams(
+          content::OpenURLParams::CreateBrowserInitiated(
               GURL(permissions::kEmbeddedContentHelpCenterURL),
-              content::Referrer(),
               ui::DispositionFromEventFlags(
                   event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-              ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false),
+              ui::PAGE_TRANSITION_LINK),
           /*navigation_handle_callback=*/{});
       break;
     default:
