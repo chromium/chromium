@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -55,6 +56,18 @@ void CenterDialogOnTargetDisplay(views::Widget* widget,
     if (!context_bounds.IsEmpty()) {
       parent_bounds = context_bounds;
     }
+#if BUILDFLAG(IS_MAC)
+    // Only enable floating & activation independence if the caller widget was
+    // explicitly designed to float.
+    const bool is_floating_companion =
+        context_widget->GetZOrderLevel() == ui::ZOrderLevel::kFloatingWindow;
+
+    if (is_floating_companion) {
+      widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+      widget->SetActivationIndependence(true);
+      widget->SetCanAppearInExistingFullscreenSpaces(true);
+    }
+#endif
   }
 
   gfx::Rect dialog_bounds = parent_bounds;
