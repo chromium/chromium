@@ -1467,7 +1467,7 @@ policies:
   1466: ProxyProvisioningDomains
   1467: ThirdPartyAiChatSettings
   1468: ProcessIsolationEnabled
-  1469: Indigo
+  1469: TryOnYouSettings
   1470: DeviceOnlinePasswordMismatchBehavior
   1471: UpdateOnZeroWindowEnabled
   1472: BackForwardCacheForWebSocketsAllowed

@@ -497,7 +497,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kVoiceTypingSettings,
     prefs::kVoiceTypingSettings,
     base::Value::Type::INTEGER },
-  { key::kIndigo,
+  { key::kTryOnYouSettings,
     indigo::prefs::kIndigoPolicy,
     base::Value::Type::INTEGER },
 #endif
@@ -3681,7 +3681,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #if !BUILDFLAG(IS_ANDROID)
   gen_ai_default_policies.emplace_back(key::kVoiceTypingSettings,
                                        prefs::kVoiceTypingSettings);
-  gen_ai_default_policies.emplace_back(key::kIndigo,
+  gen_ai_default_policies.emplace_back(key::kTryOnYouSettings,
                                        indigo::prefs::kIndigoPolicy);
 #endif
   // Default value for SearchContentSharingSettings is 0 if

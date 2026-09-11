@@ -70,8 +70,9 @@ class IndigoPolicyTest : public policy::PolicyTest {
                             std::optional<int> gen_ai_policy) {
     policy::PolicyMap policies;
     if (indigo_policy.has_value()) {
-      policies.Set(policy::key::kIndigo, policy::POLICY_LEVEL_MANDATORY,
-                   policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      policies.Set(policy::key::kTryOnYouSettings,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD,
                    base::Value(indigo_policy.value()), nullptr);
     }
     if (gen_ai_policy.has_value()) {

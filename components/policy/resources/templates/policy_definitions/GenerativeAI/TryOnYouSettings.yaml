@@ -1,0 +1,44 @@
+caption: Settings for Try on You.
+default: 0
+desc: |-
+  Try on You is an AI-powered feature that allows users to virtually try on clothing images found on the web and will provide helpful shopping insights in Gemini in Chrome, if Gemini in Chrome is enabled.
+
+  0 = Allow the feature to be used, while allowing Google to use relevant data to improve its AI models. Relevant data may include images, inputs, outputs, source materials, and feedback, depending on the feature. It may also be reviewed by humans to improve AI models. 0 is the default value, except when noted below.
+
+  1 = Allow the feature to be used, but does not allow Google to improve models using users' content (including images, inputs, outputs, source materials, and feedback). 1 is the default value for Enterprise users managed by <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph> and for Education accounts managed by <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>.
+
+  2 = Do not allow the feature.
+
+  Note: The restriction on model improvements (value 1) only applies when Try on You is triggered through the <ph name="CHROME">Chrome</ph> browser flow. It does not apply when the feature is used through other flows.
+
+  If the policy is unset, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy. For more information on data handling for generative AI features, please see https://support.google.com/chrome/a?p=generative_ai_settings
+
+  Try on You is not available in all countries or all languages. Setting this policy does not guarantee the feature will be enabled; it remains subject to availability. For more info on the roll-out, check the Enterprise Release Notes: https://support.google.com/chrome/a/answer/7679408?hl=en
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable Try on You with model improvement.
+  name: Allowed
+  value: 0
+- caption: Enable Try on You without model improvement.
+  name: AllowedWithoutDataCollection
+  value: 1
+- caption: Disable Try on You.
+  name: Disabled
+  value: 2
+owners:
+- liuwilliam@chromium.org
+- file://chrome/browser/indigo/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome.*:155-
+- chrome_os:155-
+tags: []
+type: int-enum
