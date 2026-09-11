@@ -15,6 +15,7 @@
 #include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -867,6 +868,15 @@ void SBProtocolManagerUtil::SetClientInfoFromConfig(
   CHECK(client_info, base::NotFatalUntil::M162);
   client_info->set_client_id(config.client_name);
   client_info->set_client_version(config.version);
+}
+
+// static
+void SBProtocolManagerUtil::SetV5UserAgentHeader(
+    net::HttpRequestHeaders* headers,
+    const V4ProtocolConfig& config) {
+  CHECK(headers);
+  headers->SetHeader(net::HttpRequestHeaders::kUserAgent,
+                     base::StrCat({config.client_name, " ", config.version}));
 }
 
 // static

@@ -493,6 +493,20 @@ class SBProtocolManagerUtil {
   static void SetClientInfoFromConfig(ClientInfo* client_info,
                                       const V4ProtocolConfig& config);
 
+  // Sets the User-Agent header for a V5 request based on the config.
+  // The v5 User-Agent header docs state: "While there is no prescribed format
+  // for supplying the client identification in this header, we suggest simply
+  // including the original client ID and client version separated by a space
+  // character or a slash character."
+  // Thus, this uses the same `client_name` and `version` originally used for
+  // v4, here separated with a space character.
+  // Parameters:
+  //   - `headers`: The HTTP request headers to populate.
+  //   - `config`: The protocol configuration containing client name and
+  //     version.
+  static void SetV5UserAgentHeader(net::HttpRequestHeaders* headers,
+                                   const V4ProtocolConfig& config);
+
   // Stores the client state values for each of the lists in `store_state_map`
   // into `list_client_states`.
   // TODO(crbug.com/372395685): Deprecate with v4.

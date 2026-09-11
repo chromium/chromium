@@ -176,15 +176,8 @@ void V5UpdateProtocolManager::IssueUpdateRequest(
   resource_request->method = "GET";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  // The v5 User-Agent header docs state: "While there is no prescribed format
-  // for supplying the client identification in this header, we suggest simply
-  // including the original client ID and client version separated by a space
-  // character or a slash character."
-  // Thus, this uses the same `client_name` and `version` originally used for
-  // v4, here separated with a space character.
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kUserAgent,
-      base::StrCat({config_.client_name, " ", config_.version}));
+  SBProtocolManagerUtil::SetV5UserAgentHeader(&resource_request->headers,
+                                              config_);
 
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(resource_request),

@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/sb_test_util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -379,6 +380,20 @@ TEST_F(SBProtocolManagerUtilTest, TestGetHashPrefix) {
   EXPECT_EQ(
       SBProtocolManagerUtil::GetHashPrefix("dcba1111111111111111111111111111"),
       "dcba");
+}
+
+TEST_F(SBProtocolManagerUtilTest, SetV5UserAgentHeader) {
+  // TODO(crbug.com/362791941): Replace v4 references.
+  V4ProtocolConfig config(/*client_name=*/"client",
+                          /*disable_auto_update=*/false,
+                          /*key_param=*/"",
+                          /*version=*/"1.0");
+  net::HttpRequestHeaders headers;
+  SBProtocolManagerUtil::SetV5UserAgentHeader(&headers, config);
+  std::optional<std::string> user_agent =
+      headers.GetHeader(net::HttpRequestHeaders::kUserAgent);
+  ASSERT_TRUE(user_agent.has_value());
+  EXPECT_EQ(*user_agent, "client 1.0");
 }
 
 }  // namespace safe_browsing

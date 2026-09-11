@@ -10,8 +10,8 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_util.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -284,10 +284,8 @@ void V5GetHashProtocolManager::GetFullHashes(
   resource_request->method = "GET";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  // TODO(crbug.com/362791941): share with v5_update_protocol_manager
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kUserAgent,
-      base::StrCat({config_.client_name, " ", config_.version}));
+  SBProtocolManagerUtil::SetV5UserAgentHeader(&resource_request->headers,
+                                              config_);
 
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
