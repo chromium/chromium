@@ -37,11 +37,7 @@ bool IsGpuContextLost(
 WebGpuSharedImageLease::WebGpuSharedImageLease(
     Resource resource,
     base::WeakPtr<WebGpuSharedImageCache> cache)
-    : resource_(std::move(resource)),
-      cache_(cache),
-      recorder_for_external_draws_(std::make_unique<MemoryManagedPaintRecorder>(
-          resource_.shared_image_->size(),
-          /*client=*/nullptr)) {
+    : resource_(std::move(resource)), cache_(cache) {
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
@@ -128,10 +124,11 @@ void WebGpuSharedImageLease::DrawToBackingSharedImage(
     return;
   }
 
-  draw_callback(recorder_for_external_draws_->getRecordingCanvas());
-  if (recorder_for_external_draws_->HasReleasableDrawOps()) {
-    cc::PaintRecord last_recording =
-        recorder_for_external_draws_->ReleaseMainRecording();
+  MemoryManagedPaintRecorder recorder(resource_.shared_image_->size(),
+                                      /*client=*/nullptr);
+  draw_callback(recorder.getRecordingCanvas());
+  if (recorder.HasReleasableDrawOps()) {
+    cc::PaintRecord last_recording = recorder.ReleaseMainRecording();
 
     auto access = resource_.shared_image_->BeginRasterAccess(
         RasterInterface(), resource_.sync_token_, /*readonly=*/false);
