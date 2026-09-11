@@ -147,6 +147,7 @@ robolectric_library("incognito_junit_tests") {
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorFactoryTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthDialogTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManagerTest.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthMediatorTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/TabSwitcherIncognitoReauthCoordinatorTest.java",
   ]
 
