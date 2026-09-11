@@ -142,6 +142,7 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.TextSelection;
@@ -2149,6 +2150,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testSetUrlFocusChangeInProgress() {
+        OmniboxFeatures.setDebounceKeyboardVisibilityForTesting(false);
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
         mMediator.setUrlFocusChangeInProgress(/* inProgress= */ true);
         mMediator.onFinishNativeInitialization();
@@ -2177,7 +2179,34 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testSetUrlFocusChangeInProgress_accessibilityWorkaroundSuppressedByFlag() {
+        OmniboxFeatures.setDebounceKeyboardVisibilityForTesting(true);
+        mMediator.addUrlFocusChangeListener(mUrlCoordinator);
+        mMediator.setUrlFocusChangeInProgress(/* inProgress= */ true);
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true);
+        mMediator.beginInput(
+                new AutocompleteInput()
+                        .setUserText("text")
+                        .setFocusReason(OmniboxFocusReason.FAKE_BOX_TAP));
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.setUrlFocusChangeInProgress(/* inProgress= */ false);
+
+        // The UrlBar must never be blurred: UrlBarCoordinator hides the keyboard on blur, and
+        // nothing re-shows it afterwards. See crbug.com/534375541.
+        verify(mUrlCoordinator, never()).clearFocus();
+        verify(mUrlCoordinator, never()).requestFocus();
+        verify(mUrlCoordinator).onUrlAnimationFinished(true);
+    }
+
+    @Test
     public void testSetUrlFocusChangeInProgress_accessibilityWorkaroundPreservesSession() {
+        OmniboxFeatures.setDebounceKeyboardVisibilityForTesting(false);
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
         mMediator.setUrlFocusChangeInProgress(/* inProgress= */ true);
         mMediator.onFinishNativeInitialization();

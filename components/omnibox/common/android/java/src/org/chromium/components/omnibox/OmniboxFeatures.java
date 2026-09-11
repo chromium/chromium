@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 import com.google.android.gms.location.Priority;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -388,6 +389,7 @@ public class OmniboxFeatures {
     /** Modifies the output of {@link #isDebounceKeyboardVisibilityEnabled()} for testing. */
     public static void setDebounceKeyboardVisibilityForTesting(@Nullable Boolean value) {
         sDebounceKeyboardVisibilityForTesting = value;
+        ResettersForTesting.register(() -> sDebounceKeyboardVisibilityForTesting = null);
     }
 
     /**
