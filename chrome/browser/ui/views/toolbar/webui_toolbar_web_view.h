@@ -187,6 +187,11 @@ class WebUIToolbarWebView
   void SetBackForwardEnabled(int command_id, bool enabled);
   void SetForwardVisible(bool visible);
 
+  // Cleans up UI dependencies and destroys the hosted WebContents.
+  // Called early during window teardown (forwarded via
+  // ToolbarView::DestroyWebUIToolbarWebContents) as well as in the destructor.
+  void DestroyWebContents();
+
   // May be nullptr.
   WebUILocationBar* GetLocationBar() { return location_bar_.get(); }
 

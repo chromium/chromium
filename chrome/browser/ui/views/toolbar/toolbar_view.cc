@@ -309,6 +309,17 @@ ToolbarView::~ToolbarView() {
   }
 }
 
+// Forwards the early teardown request to both the embedded and detached WebUI
+// toolbar web views to stop renderer script execution before IPC disconnection.
+void ToolbarView::DestroyWebUIToolbarWebContents() {
+  if (toolbar_webview_) {
+    toolbar_webview_->DestroyWebContents();
+  }
+  if (detached_toolbar_webview_) {
+    detached_toolbar_webview_->DestroyWebContents();
+  }
+}
+
 void ToolbarView::Init() {
 #if defined(USE_AURA)
   // Avoid generating too many occlusion tracking calculation events before this

@@ -2632,9 +2632,11 @@ void BrowserView::OnWindowDidShow() {
 void BrowserView::UpdateWindowControlsOverlayAvailable() {
   bool available = AppUsesWindowControlsOverlay();
 
+  // An empty InfoBarContainerView should not disable WCO, even before layout
+  // updates visibility.
   if ((toolbar_ && toolbar_->custom_tab_bar() &&
        toolbar_->custom_tab_bar()->GetVisible()) ||
-      (infobar_container_ && infobar_container_->GetVisible())) {
+      (infobar_container_ && !infobar_container_->IsEmpty())) {
     available = false;
   }
 
@@ -2871,18 +2873,15 @@ void BrowserView::OnWidgetVisibilityChanged(views::Widget* widget,
     // Once the browser window becomes visible for the first time during
     // startup, transition to the disabled state and flush any layouts
     // deferred while invisible to ensure the screen paints with correct
-    // bounds. We handle this in the visibility observer rather than
-    // high-level Show() paths to guarantee flushes happen regardless of how
-    // the widget was shown.
-    // We call InvalidateLayout() rather than a synchronous
-    // LayoutImmediately() because the upcoming paint tick will trigger
-    // Widget::LayoutRootViewIfNecessary() and synchronously lay out the view
-    // anyway. Invalidating asynchronously avoids redundant layout passes and
-    // blocks during the visibility transition.
+    // bounds. InvalidateLayout() marks the hierarchy dirty, and
+    // Widget::LayoutRootViewIfNecessary() lays it out synchronously so that
+    // callers or tests inspecting child view bounds immediately after Show()
+    // receive up-to-date geometry before the next paint tick.
     startup_layout_state_ = StartupLayoutState::kDisabled;
     if (layout_deferred_while_invisible_) {
       layout_deferred_while_invisible_ = false;
       InvalidateLayout();
+      widget->LayoutRootViewIfNecessary();
     }
   }
 }
@@ -4134,6 +4133,11 @@ views::View* BrowserView::CreateMacOverlayView() {
 void BrowserView::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(widget_observation_.IsObservingSource(widget));
   widget_observation_.Reset();
+
+  // Permanently suppress layout during teardown to avoid running layout on
+  // destroying child views or widgets.
+  suppress_layout_for_teardown_ = true;
+
   // Destroy any remaining WebContents early on. Doing so may result in
   // calling back to one of the Views/LayoutManagers or supporting classes of
   // BrowserView. By destroying here we ensure all said classes are valid.
@@ -4141,6 +4145,13 @@ void BrowserView::OnWidgetDestroying(views::Widget* widget) {
   // order that they were present in the tab strip.
   while (browser()->GetTabStripModel()->count()) {
     browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
+  }
+
+  // Also destroy WebUI toolbar WebContents early so that its renderer process
+  // halts script execution and does not try to query browser IPC services
+  // (such as Windows DirectWrite font proxy) after teardown begins.
+  if (toolbar_) {
+    toolbar_->DestroyWebUIToolbarWebContents();
   }
 }
 
@@ -4571,10 +4582,11 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
     result = views::CloseRequestResult::kCannotClose;
   }
 
-  // Layout must be suppressed during teardown. Normally, this is automatic
-  // when the layout manager is destroyed in the destructor, but it also needs
-  // to happen when the tabstrip model is being torn down.
-  base::AutoReset<bool> suppress_layout(&suppress_layout_for_teardown_, true);
+  // Layout must be suppressed during teardown permanently once window closing
+  // has started to prevent any subsequent layout passes while tabs and child
+  // views are torn down.
+  suppress_layout_for_teardown_ = true;
+
   UnloadController::From(browser_)->OnWindowClosing();
   return result;
 }
@@ -4795,8 +4807,11 @@ gfx::Size BrowserView::GetMinimumSize() const {
 
 void BrowserView::Layout(PassKey) {
   TRACE_EVENT0("ui", "BrowserView::Layout");
+  // Do not perform layout if the view is not yet initialized, in fullscreen
+  // transition, shutting down, or if the underlying widget has already closed.
   if (!initialized_ || in_process_fullscreen_ ||
-      suppress_layout_for_teardown_) {
+      suppress_layout_for_teardown_ ||
+      (browser_widget_ && browser_widget_->IsClosed())) {
     return;
   }
 
@@ -4815,8 +4830,15 @@ void BrowserView::Layout(PassKey) {
     // views::WebView via FillLayout). Subsequent layouts while invisible are
     // safe to skip because the window size has not changed, meaning the initial
     // bounds remain valid.
-    layout_deferred_while_invisible_ = true;
-    return;
+    //
+    // However, if the active contents container has not yet received its
+    // initial non-empty bounds (e.g. during tab restore or when the first tab
+    // is added to the window), allow this layout pass so that the web contents
+    // gets properly sized before it starts loading.
+    if (size().IsEmpty() || !GetContentsSize().IsEmpty()) {
+      layout_deferred_while_invisible_ = true;
+      return;
+    }
   }
 
   // Allow only a single layout operation once top controls sliding begins.

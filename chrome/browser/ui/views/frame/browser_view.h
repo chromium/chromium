@@ -477,6 +477,18 @@ class BrowserView : public BrowserWindow,
     return window_management_permission_granted_;
   }
 
+  bool is_layout_deferred_for_testing() const {
+    return layout_deferred_while_invisible_;
+  }
+
+  bool is_startup_layout_deferring_for_testing() const {
+    return startup_layout_state_ == StartupLayoutState::kDeferring;
+  }
+
+  bool is_startup_layout_disabled_for_testing() const {
+    return startup_layout_state_ == StartupLayoutState::kDisabled;
+  }
+
   void UpdateWebAppStatusIconsVisiblity();
 
   // Getter for the `window.setResizable(bool)` state.

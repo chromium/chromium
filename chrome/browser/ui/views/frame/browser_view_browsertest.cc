@@ -2212,3 +2212,56 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWidgetWithTabsNoCrash) {
   // crash due to operations on detached layers.
   BrowserView::GetBrowserViewForBrowser(browser2)->GetWidget()->CloseNow();
 }
+
+class BrowserViewDeferLayoutTest : public InProcessBrowserTest {
+ public:
+  BrowserViewDeferLayoutTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDeferLayoutDuringBrowserStartup);
+  }
+  ~BrowserViewDeferLayoutTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest, DeferLayoutWhileInvisible) {
+  // Create a new browser window without showing it.
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
+  BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
+  views::Widget* widget2 = browser_view2->GetWidget();
+  ASSERT_FALSE(widget2->IsVisible());
+
+  // Trigger an initial layout pass so the window establishes starting bounds.
+  widget2->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(browser_view2->is_startup_layout_deferring_for_testing());
+
+  // Add a tab while still invisible. Since the contents container initially
+  // has empty bounds, layout must proceed to properly size the web contents
+  // container.
+  chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
+  widget2->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(browser_view2->GetContentsSize().IsEmpty());
+
+  // Now that the contents container has non-empty bounds, subsequent layout
+  // requests while the window is invisible should be deferred.
+  browser_view2->InvalidateLayout();
+  widget2->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(browser_view2->is_layout_deferred_for_testing());
+  EXPECT_TRUE(browser_view2->is_startup_layout_deferring_for_testing());
+
+  // Showing the window should flush any deferred layout and disable deferral.
+  browser2->GetWindow()->Show();
+  EXPECT_TRUE(widget2->IsVisible());
+  EXPECT_FALSE(browser_view2->is_layout_deferred_for_testing());
+  EXPECT_TRUE(browser_view2->is_startup_layout_disabled_for_testing());
+
+  // Once shown, subsequent layout requests are never deferred.
+  browser_view2->InvalidateLayout();
+  widget2->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(browser_view2->is_layout_deferred_for_testing());
+
+  widget2->CloseNow();
+}

@@ -497,12 +497,22 @@ WebUIToolbarWebView::WebUIToolbarWebView(
 }
 
 WebUIToolbarWebView::~WebUIToolbarWebView() {
+  DestroyWebContents();
+}
+
+void WebUIToolbarWebView::DestroyWebContents() {
   if (auto* ui = GetWebUIToolbarUI()) {
     ui->DependenciesDestroying();
   }
   if (web_contents()) {
     web_contents()->RemoveUserData(
         WebUIToolbarUIDependencyProviderUserData::UserDataKey());
+  }
+  if (web_view_) {
+    // Resetting the WebContents in the child WebView immediately destroys the
+    // owned WebContents unique_ptr and terminates its renderer process before
+    // browser-side IPC services disconnect.
+    web_view_->SetWebContents(nullptr);
   }
 }
 

@@ -216,6 +216,11 @@ class ToolbarView : public views::AccessiblePaneView,
     return detached_toolbar_webview_.get();
   }
 
+  // Forwards an early teardown request to any child WebUIToolbarWebView
+  // instances (both embedded and detached) to destroy their hosted
+  // WebContents before browser-side IPC services disconnect.
+  void DestroyWebUIToolbarWebContents();
+
   glic::ToolbarGlicActorTaskIcon* glic_actor_task_icon() {
     return glic_actor_task_icon_;
   }

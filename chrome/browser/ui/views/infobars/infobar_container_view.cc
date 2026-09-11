@@ -80,6 +80,12 @@ constexpr int kSeparatorHeightDip = 1;
 
 InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
     : infobars::InfoBarContainerWithPriority(delegate) {
+  // Views default to visible. InfoBarContainerView previously relied on its
+  // initial layout pass to discover that it had no infobars and hide itself.
+  // When startup layout is deferred while invisible, relying on layout causes
+  // queries like UpdateWindowControlsOverlayAvailable() to see an empty
+  // container as visible. Start hidden by default until infobars are added.
+  SetVisible(false);
   SetID(VIEW_ID_INFO_BAR_CONTAINER);
   SetProperty(views::kElementIdentifierKey, kInfoBarContainerElementId);
   content_shadow_ = AddChildView(std::make_unique<ContentShadow>());
