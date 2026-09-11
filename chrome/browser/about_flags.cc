@@ -2061,19 +2061,14 @@ constexpr FeatureEntry::FeatureVariation kOmniboxDiagnosticsAndroidVaiants[] = {
 
 const FeatureEntry::FeatureParam kOmniboxAimRedirectComposeplate[] = {
     {"redirect_composeplate_button", "true"}};
-const FeatureEntry::FeatureParam kOmniboxAimModelPickerAndCanvas[] = {
-    {"show_model_picker", "true"}};
 const FeatureEntry::FeatureParam kOmniboxAimModelPickerBottomSheet_1[] = {
-    {"show_model_picker", "true"},
     {"show_bottom_sheet_popup", "true"},
     {"show_ntp_plus_button", "true"},
     {"use_ask_hint_for_ntp", "true"}};
 const FeatureEntry::FeatureParam kOmniboxAimModelPickerBottomSheet_2[] = {
-    {"show_model_picker", "true"},
     {"show_bottom_sheet_popup", "true"},
     {"show_ntp_plus_button", "true"}};
 const FeatureEntry::FeatureParam kOmniboxAimModelPickerBottomSheet_3[] = {
-    {"show_model_picker", "true"},
     {"show_bottom_sheet_popup", "true"}};
 const FeatureEntry::FeatureParam kOmniboxAimContextMenuNoAccordion[] = {
     {"show_bottom_sheet_popup", "false"},
@@ -2095,13 +2090,11 @@ const FeatureEntry::FeatureParam kOmniboxAimBottomSheetCarouselNoAccordion[] = {
     {"show_bottom_sheet_popup", "true"},
     {"fusebox_popup_carousel_ui", "true"},
     {"fusebox_popup_use_accordion_ui", "false"}};
-const FeatureEntry::FeatureParam kOmniboxAimModelPickerHint[] = {
-    {"show_model_picker", "true"},
+const FeatureEntry::FeatureParam kOmniboxAimHint[] = {
     {"use_ask_hint_for_ntp", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"Redirect Composeplate", kOmniboxAimRedirectComposeplate, nullptr},
-    {"Model Picker & Tools", kOmniboxAimModelPickerAndCanvas, nullptr},
     {"^ + Bottom Sheet (1)", kOmniboxAimModelPickerBottomSheet_1, nullptr},
     {"^ + Bottom Sheet (2)", kOmniboxAimModelPickerBottomSheet_2, nullptr},
     {"^ + Bottom Sheet (3)", kOmniboxAimModelPickerBottomSheet_3, nullptr},
@@ -2113,7 +2106,7 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
      nullptr},
     {"Bottom Sheet: Carousel, No Accordion",
      kOmniboxAimBottomSheetCarouselNoAccordion, nullptr},
-    {"Model Picker Hint", kOmniboxAimModelPickerHint, nullptr},
+    {"Hint", kOmniboxAimHint, nullptr},
 };
 
 #endif  // BUILDFLAG(IS_ANDROID)

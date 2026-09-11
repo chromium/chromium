@@ -56,7 +56,6 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.url.GURL;
@@ -220,7 +219,6 @@ public class HintTextUpdaterUnitTest {
 
     @Test
     public void testGetOmniboxHintText_FuseboxSessionState() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
 
         String searchEngineHint = "Search Google or type URL";
@@ -285,12 +283,7 @@ public class HintTextUpdaterUnitTest {
         verify(mUpdateHintTextCallback).onResult(eq(aiModeHint));
 
         clearInvocations(mUpdateHintTextCallback);
-        OmniboxFeatures.sShowModelPicker.setForTesting(false);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
-        verify(mUpdateHintTextCallback).onResult(eq(searchEngineHint));
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
-
-        clearInvocations(mUpdateHintTextCallback);
         when(mFuseboxSessionState.getComposeboxQueryControllerBridge()).thenReturn(null);
         mUpdater.onTitleChanged();
         verify(mUpdateHintTextCallback).onResult(eq(searchEngineHint));
@@ -305,7 +298,7 @@ public class HintTextUpdaterUnitTest {
     }
 
     @Test
-    public void testGetOmniboxHintText_ModelPickerDisabled() {
+    public void testGetOmniboxHintText_noSessionStateFallback() {
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
 
         clearInvocations(mUpdateHintTextCallback);

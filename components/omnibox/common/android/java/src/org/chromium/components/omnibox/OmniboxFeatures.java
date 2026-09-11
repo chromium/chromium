@@ -173,14 +173,6 @@ public class OmniboxFeatures {
             newBooleanParam(sOmniboxMultimodalInput, "allow_current_tab", true);
 
     /**
-     * If the expanded set of inputs (model picker as well as canvas tool) should be options. These
-     * new types, as well as all existing types, should be driven through PEC instead of hard coded
-     * into the client when this param is enabled.
-     */
-    public static final BooleanCachedFeatureParam sShowModelPicker =
-            newBooleanParam(sOmniboxMultimodalInput, "show_model_picker", true);
-
-    /**
      * Whether the bottom sheet popup should be shown. This is private to ensure that callers use
      * {@link #shouldShowBottomSheetPopup()} which also checks if the platform is desktop.
      */

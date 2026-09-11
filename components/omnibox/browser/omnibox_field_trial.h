@@ -696,9 +696,6 @@ inline constexpr base::FeatureParam<bool> kMobileParityEnableFeedForGoogleOnly{
 
 #if BUILDFLAG(IS_ANDROID)
 // Fusebox -->
-inline constexpr base::FeatureParam<bool> kOmniboxShowModelPicker{
-    &omnibox::kOmniboxMultimodalInput, "show_model_picker", true};
-
 inline constexpr base::FeatureParam<bool>
     kOmniboxMultimodalPrioritizeSuggestionsForFirstDocument{
         &omnibox::kOmniboxMultimodalInput,

@@ -2164,7 +2164,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChange_updatesDriveButton() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
         recreateMediator();
         FeatureOverrides.overrideFlag(
                 OmniboxFeatureList.COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION, true);

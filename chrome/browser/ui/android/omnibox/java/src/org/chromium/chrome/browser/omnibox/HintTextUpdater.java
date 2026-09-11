@@ -32,7 +32,6 @@ import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.text.SpanApplier;
@@ -240,8 +239,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             return mResourceProvider.getString(R.string.omnibox_empty_hint);
         }
 
-        if (OmniboxFeatures.sShowModelPicker.getValue()
-                && ToolModeUtils.isAimRequest(requestType)) {
+        if (ToolModeUtils.isAimRequest(requestType)) {
             String toolHint = getToolHintFromInputState(requestType, fuseboxSessionState);
             if (!TextUtils.isEmpty(toolHint)) {
                 return toolHint;

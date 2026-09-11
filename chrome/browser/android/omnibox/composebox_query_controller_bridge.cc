@@ -662,29 +662,26 @@ void ComposeboxQueryControllerBridge::OnTaskChanged() {
 }
 
 void ComposeboxQueryControllerBridge::InitializeInputStateModel() {
-  if (OmniboxFieldTrial::kOmniboxShowModelPicker.Get()) {
-    AimEligibilityService* aim_service =
-        AimEligibilityServiceFactory::GetForProfile(profile_);
-    auto* ui_service = profile_
-                           ? contextual_tasks::ContextualTasksUiServiceFactory::
-                                 GetForBrowserContext(profile_)
-                           : nullptr;
-    bool is_signed_in =
-        ui_service && ui_service->IsSignedInToBrowserWithValidCredentials();
-    bool browser_identity_matches_aim_identity =
-        is_signed_in && ui_service->IsUrlForPrimaryAccount(GURL());
-    const omnibox::SearchboxConfig* config_ptr =
-        aim_service->GetSearchboxConfig();
-    input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
-        *session_handle_, config_ptr ? *config_ptr : omnibox::SearchboxConfig(),
-        GURL(), profile_ ? profile_->IsOffTheRecord() : false, is_signed_in,
-        browser_identity_matches_aim_identity);
-    input_state_subscription_ =
-        input_state_model_->subscribe(base::BindRepeating(
-            &ComposeboxQueryControllerBridge::OnInputStateChanged,
-            weak_ptr_factory_.GetWeakPtr()));
-    input_state_model_->Initialize();
-  }
+  AimEligibilityService* aim_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  auto* ui_service = profile_
+                         ? contextual_tasks::ContextualTasksUiServiceFactory::
+                               GetForBrowserContext(profile_)
+                         : nullptr;
+  bool is_signed_in =
+      ui_service && ui_service->IsSignedInToBrowserWithValidCredentials();
+  bool browser_identity_matches_aim_identity =
+      is_signed_in && ui_service->IsUrlForPrimaryAccount(GURL());
+  const omnibox::SearchboxConfig* config_ptr =
+      aim_service->GetSearchboxConfig();
+  input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
+      *session_handle_, config_ptr ? *config_ptr : omnibox::SearchboxConfig(),
+      GURL(), profile_ ? profile_->IsOffTheRecord() : false, is_signed_in,
+      browser_identity_matches_aim_identity);
+  input_state_subscription_ = input_state_model_->subscribe(
+      base::BindRepeating(&ComposeboxQueryControllerBridge::OnInputStateChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+  input_state_model_->Initialize();
 }
 
 void ComposeboxQueryControllerBridge::UpdateStateFromUrl(const GURL& url) {
