@@ -15,11 +15,13 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -44,7 +46,7 @@ public class PageLoadMetricsTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private static final int PAGE_LOAD_METRICS_TIMEOUT_MS = 6000;
+    private static final long PAGE_LOAD_METRICS_TIMEOUT_MS = ScalableTimeout.scaleTimeout(20000);
     private static final String PAGE_PREFIX = "/chrome/test/data/android/google.html";
 
     private EmbeddedTestServer mTestServer;
@@ -87,15 +89,37 @@ public class PageLoadMetricsTest {
     public void setUp() throws Exception {
         mPage = mActivityTestRule.startOnBlankPage();
         mTestServer = mActivityTestRule.getTestServer();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().hasWindowFocus(),
+                "Activity should have window focus before test begins");
+        CriteriaHelper.pollUiThread(
+                () -> !mActivityTestRule.getActivityTab().isLoading(),
+                "Tab should not be loading before test begins");
     }
 
     private void assertMetricsEmitted(PageLoadMetricsTestObserver observer)
             throws InterruptedException {
         Assert.assertTrue(
-                "First Contentful Paint should be reported",
+                "Navigation should be observed (navId=" + observer.getNavigationId() + ")",
+                observer.waitForNavigationEvent());
+        Assert.assertTrue(
+                "First Contentful Paint should be reported (expected navId="
+                        + observer.getNavigationId()
+                        + ", last observed FCP navId="
+                        + observer.getLastObservedFcpNavId()
+                        + ", last observed FCP ms="
+                        + observer.getLastObservedFcpMs()
+                        + ")",
                 observer.waitForFirstContentfulPaintEvent());
         Assert.assertTrue(
-                "Load event start event should be reported", observer.waitForLoadEventStartEvent());
+                "Load event start event should be reported (expected navId="
+                        + observer.getNavigationId()
+                        + ", last observed load navId="
+                        + observer.getLastObservedLoadEventNavId()
+                        + ", last observed load ms="
+                        + observer.getLastObservedLoadEventMs()
+                        + ")",
+                observer.waitForLoadEventStartEvent());
     }
 
     /**
@@ -106,23 +130,40 @@ public class PageLoadMetricsTest {
     public static class PageLoadMetricsTestObserver implements PageLoadMetrics.Observer {
         private static final long NO_NAVIGATION_ID = -1;
 
+        private final @Nullable WebContents mExpectedWebContents;
         private final CountDownLatch mPrerenderingNavigationLatch = new CountDownLatch(1);
         private final CountDownLatch mActivationLatch = new CountDownLatch(1);
         private final CountDownLatch mFirstContentfulPaintLatch = new CountDownLatch(1);
         private final CountDownLatch mLoadEventStartLatch = new CountDownLatch(1);
-        private long mNavigationId = NO_NAVIGATION_ID;
-        private long mPrerenderingId = NO_NAVIGATION_ID;
+        private final CountDownLatch mNavigationLatch = new CountDownLatch(1);
+        private volatile long mNavigationId = NO_NAVIGATION_ID;
+        private volatile long mPrerenderingId = NO_NAVIGATION_ID;
+        private volatile long mLastObservedFcpNavId = NO_NAVIGATION_ID;
+        private volatile long mLastObservedFcpMs = -1;
+        private volatile long mLastObservedLoadEventNavId = NO_NAVIGATION_ID;
+        private volatile long mLastObservedLoadEventMs = -1;
+
+        // Under MPArch (Prerender2), prerendered pages share the host WebContents, so
+        // filtering by mExpectedWebContents safely observes both primary and prerendered events.
+        public PageLoadMetricsTestObserver(@Nullable WebContents expectedWebContents) {
+            mExpectedWebContents = expectedWebContents;
+        }
 
         @Override
         public void onNewNavigation(
                 WebContents webContents,
                 long navigationId,
                 boolean isFirstNavigationInWebContents) {
+            if (mExpectedWebContents != null && webContents != mExpectedWebContents) return;
+
             if (PageLoadMetrics.isPrerendering()) {
                 if (mPrerenderingId == NO_NAVIGATION_ID) mPrerenderingId = navigationId;
                 mPrerenderingNavigationLatch.countDown();
             } else {
-                if (mNavigationId == NO_NAVIGATION_ID) mNavigationId = navigationId;
+                if (mNavigationId == NO_NAVIGATION_ID) {
+                    mNavigationId = navigationId;
+                    mNavigationLatch.countDown();
+                }
             }
         }
 
@@ -132,6 +173,8 @@ public class PageLoadMetricsTest {
                 long prerenderingNavigationId,
                 long activatingNavigationId,
                 long activationStartMicros) {
+            if (mExpectedWebContents != null && webContents != mExpectedWebContents) return;
+
             Assert.assertEquals(
                     "prerenderingNavigationId should be consistent",
                     mPrerenderingId,
@@ -154,9 +197,13 @@ public class PageLoadMetricsTest {
                 long navigationId,
                 long navigationStartMicros,
                 long firstContentfulPaintMs) {
+            if (mExpectedWebContents != null && webContents != mExpectedWebContents) return;
+
+            mLastObservedFcpNavId = navigationId;
+            mLastObservedFcpMs = firstContentfulPaintMs;
             if (mNavigationId != navigationId) return;
 
-            if (firstContentfulPaintMs > 0) mFirstContentfulPaintLatch.countDown();
+            if (firstContentfulPaintMs >= 0) mFirstContentfulPaintLatch.countDown();
         }
 
         @Override
@@ -165,17 +212,25 @@ public class PageLoadMetricsTest {
                 long navigationId,
                 long navigationStartMicros,
                 long loadEventStartMs) {
+            if (mExpectedWebContents != null && webContents != mExpectedWebContents) return;
+
+            mLastObservedLoadEventNavId = navigationId;
+            mLastObservedLoadEventMs = loadEventStartMs;
             if (mPrerenderingId != NO_NAVIGATION_ID) {
                 if (mPrerenderingId == navigationId) {
                     Assert.assertTrue(
                             "Should be registered as prerendering",
                             PageLoadMetrics.isPrerendering());
-                    if (loadEventStartMs > 0) mLoadEventStartLatch.countDown();
+                    if (loadEventStartMs >= 0) mLoadEventStartLatch.countDown();
                 }
             }
             if (mNavigationId != navigationId) return;
 
-            if (loadEventStartMs > 0) mLoadEventStartLatch.countDown();
+            if (loadEventStartMs >= 0) mLoadEventStartLatch.countDown();
+        }
+
+        public boolean waitForNavigationEvent() throws InterruptedException {
+            return mNavigationLatch.await(PAGE_LOAD_METRICS_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
 
         public boolean waitForPrerenderingNavigationEvent() throws InterruptedException {
@@ -187,22 +242,12 @@ public class PageLoadMetricsTest {
             return mActivationLatch.await(PAGE_LOAD_METRICS_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
 
-        // Wait methods below assume that the navigation either has already started or it will never
-        // start.
         public boolean waitForFirstContentfulPaintEvent() throws InterruptedException {
-            // The event will not occur if there is no navigation to observe, so we can exit
-            // earlier.
-            if (mNavigationId == NO_NAVIGATION_ID) return false;
-
             return mFirstContentfulPaintLatch.await(
                     PAGE_LOAD_METRICS_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
 
         public boolean waitForLoadEventStartEvent() throws InterruptedException {
-            // The event will not occur if there is no navigation to observe, so we can exit
-            // earlier.
-            if (mNavigationId == NO_NAVIGATION_ID) return false;
-
             return mLoadEventStartLatch.await(PAGE_LOAD_METRICS_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
 
@@ -213,50 +258,81 @@ public class PageLoadMetricsTest {
         public boolean hasPrerendering() {
             return mPrerenderingId != NO_NAVIGATION_ID;
         }
+
+        public long getLastObservedFcpNavId() {
+            return mLastObservedFcpNavId;
+        }
+
+        public long getLastObservedFcpMs() {
+            return mLastObservedFcpMs;
+        }
+
+        public long getLastObservedLoadEventNavId() {
+            return mLastObservedLoadEventNavId;
+        }
+
+        public long getLastObservedLoadEventMs() {
+            return mLastObservedLoadEventMs;
+        }
     }
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/558374266")
     public void testPageLoadMetricEmitted() throws InterruptedException {
         Assert.assertFalse(
                 "Tab shouldn't be loading anything before we add observer",
                 mActivityTestRule.getActivityTab().isLoading());
-        PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
+        PageLoadMetricsTestObserver metricsObserver =
+                new PageLoadMetricsTestObserver(mActivityTestRule.getWebContents());
         ThreadUtils.runOnUiThreadBlocking(
-                () -> PageLoadMetrics.addObserver(metricsObserver, false));
+                () ->
+                        PageLoadMetrics.addObserver(
+                                metricsObserver, /* supportPrerendering= */ false));
 
-        mActivityTestRule.loadUrl(getNextLoadUrl());
-        assertMetricsEmitted(metricsObserver);
-        Assert.assertFalse("Should not have prerendering", metricsObserver.hasPrerendering());
-
-        mActivityTestRule.loadUrl(getNextLoadUrl());
-        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(metricsObserver));
+        try {
+            mActivityTestRule.loadUrl(getNextLoadUrl());
+            assertMetricsEmitted(metricsObserver);
+            Assert.assertFalse("Should not have prerendering", metricsObserver.hasPrerendering());
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> PageLoadMetrics.removeObserver(metricsObserver));
+        }
     }
 
     @Test
     @SmallTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445205
     public void testPageLoadMetricNavigationIdSetCorrectly() throws InterruptedException {
-        PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> PageLoadMetrics.addObserver(metricsObserver, false));
-        mActivityTestRule.loadUrl(getNextLoadUrl());
-        assertMetricsEmitted(metricsObserver);
+        PageLoadMetricsTestObserver metricsObserver =
+                new PageLoadMetricsTestObserver(mActivityTestRule.getWebContents());
+        PageLoadMetricsTestObserver metricsObserver2 =
+                new PageLoadMetricsTestObserver(mActivityTestRule.getWebContents());
+        try {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            PageLoadMetrics.addObserver(
+                                    metricsObserver, /* supportPrerendering= */ false));
+            mActivityTestRule.loadUrl(getNextLoadUrl());
+            assertMetricsEmitted(metricsObserver);
 
-        PageLoadMetricsTestObserver metricsObserver2 = new PageLoadMetricsTestObserver();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> PageLoadMetrics.addObserver(metricsObserver2, false));
-        mActivityTestRule.loadUrl(getNextLoadUrl());
-        assertMetricsEmitted(metricsObserver2);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            PageLoadMetrics.addObserver(
+                                    metricsObserver2, /* supportPrerendering= */ false));
+            mActivityTestRule.loadUrl(getNextLoadUrl());
+            assertMetricsEmitted(metricsObserver2);
 
-        Assert.assertNotEquals(
-                "Subsequent navigations should have different navigation ids",
-                metricsObserver.getNavigationId(),
-                metricsObserver2.getNavigationId());
-
-        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(metricsObserver));
-        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(metricsObserver2));
+            Assert.assertNotEquals(
+                    "Subsequent navigations should have different navigation ids",
+                    metricsObserver.getNavigationId(),
+                    metricsObserver2.getNavigationId());
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        PageLoadMetrics.removeObserver(metricsObserver);
+                        PageLoadMetrics.removeObserver(metricsObserver2);
+                    });
+        }
     }
 
     @Test
@@ -267,46 +343,56 @@ public class PageLoadMetricsTest {
                 "Tab shouldn't be loading anything before we add observer",
                 mActivityTestRule.getActivityTab().isLoading());
         // Add two observers, one doesn't support prerendering, and the other is does.
-        PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> PageLoadMetrics.addObserver(metricsObserver, false));
+        PageLoadMetricsTestObserver metricsObserver =
+                new PageLoadMetricsTestObserver(mActivityTestRule.getWebContents());
         PageLoadMetricsTestObserver prerenderingSupportMetricsObserver =
-                new PageLoadMetricsTestObserver();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> PageLoadMetrics.addObserver(prerenderingSupportMetricsObserver, true));
+                new PageLoadMetricsTestObserver(mActivityTestRule.getWebContents());
+        try {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            PageLoadMetrics.addObserver(
+                                    metricsObserver, /* supportPrerendering= */ false));
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            PageLoadMetrics.addObserver(
+                                    prerenderingSupportMetricsObserver,
+                                    /* supportPrerendering= */ true));
 
-        mActivityTestRule.loadUrl(getNextLoadUrl());
-        // Both observers should recognize primary page's metrics.
-        assertMetricsEmitted(metricsObserver);
-        assertMetricsEmitted(prerenderingSupportMetricsObserver);
-        Assert.assertFalse("Should not have prerendering", metricsObserver.hasPrerendering());
-        Assert.assertFalse(
-                "Should not have prerendering yet",
-                prerenderingSupportMetricsObserver.hasPrerendering());
+            mActivityTestRule.loadUrl(getNextLoadUrl());
+            // Both observers should recognize primary page's metrics.
+            assertMetricsEmitted(metricsObserver);
+            assertMetricsEmitted(prerenderingSupportMetricsObserver);
+            Assert.assertFalse("Should not have prerendering", metricsObserver.hasPrerendering());
+            Assert.assertFalse(
+                    "Should not have prerendering yet",
+                    prerenderingSupportMetricsObserver.hasPrerendering());
 
-        String prerenderingUrl = getNextLoadUrl();
-        addPrerender(prerenderingUrl);
-        Assert.assertTrue(
-                "Prerendering navigation should be observed",
-                prerenderingSupportMetricsObserver.waitForPrerenderingNavigationEvent());
-        Assert.assertFalse(
-                "Observers that don't support prerendering should not recognize prerendering",
-                metricsObserver.hasPrerendering());
-        Assert.assertTrue(
-                "Observers that support prerendering should recognize prerendering",
-                prerenderingSupportMetricsObserver.hasPrerendering());
-        Assert.assertTrue(
-                "Observers that support prerendering should recognize prerendering load event",
-                prerenderingSupportMetricsObserver.waitForLoadEventStartEvent());
+            String prerenderingUrl = getNextLoadUrl();
+            addPrerender(prerenderingUrl);
+            Assert.assertTrue(
+                    "Prerendering navigation should be observed",
+                    prerenderingSupportMetricsObserver.waitForPrerenderingNavigationEvent());
+            Assert.assertFalse(
+                    "Observers that don't support prerendering should not recognize prerendering",
+                    metricsObserver.hasPrerendering());
+            Assert.assertTrue(
+                    "Observers that support prerendering should recognize prerendering",
+                    prerenderingSupportMetricsObserver.hasPrerendering());
+            Assert.assertTrue(
+                    "Observers that support prerendering should recognize prerendering load event",
+                    prerenderingSupportMetricsObserver.waitForLoadEventStartEvent());
 
-        // Activate the prerendered page.
-        activatePrerender(prerenderingUrl);
-        Assert.assertTrue(
-                "Observers that support prerendering should observe activation event",
-                prerenderingSupportMetricsObserver.waitForActivationEvent());
-
-        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(metricsObserver));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> PageLoadMetrics.removeObserver(prerenderingSupportMetricsObserver));
+            // Activate the prerendered page.
+            activatePrerender(prerenderingUrl);
+            Assert.assertTrue(
+                    "Observers that support prerendering should observe activation event",
+                    prerenderingSupportMetricsObserver.waitForActivationEvent());
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        PageLoadMetrics.removeObserver(metricsObserver);
+                        PageLoadMetrics.removeObserver(prerenderingSupportMetricsObserver);
+                    });
+        }
     }
 }

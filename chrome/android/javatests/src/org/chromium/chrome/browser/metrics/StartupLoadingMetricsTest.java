@@ -136,13 +136,18 @@ public class StartupLoadingMetricsTest {
 
     private void runAndWaitForPageLoadMetricsRecorded(Runnable runnable) throws Exception {
         PageLoadMetricsTest.PageLoadMetricsTestObserver testObserver =
-                new PageLoadMetricsTest.PageLoadMetricsTestObserver();
-        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.addObserver(testObserver, false));
-        runnable.run();
-        // First Contentful Paint may be recorded asynchronously after a page load is finished, we
-        // have to wait the event to occur.
-        testObserver.waitForFirstContentfulPaintEvent();
-        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(testObserver));
+                new PageLoadMetricsTest.PageLoadMetricsTestObserver(
+                        /* expectedWebContents= */ null);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> PageLoadMetrics.addObserver(testObserver, /* supportPrerendering= */ false));
+        try {
+            runnable.run();
+            // First Contentful Paint may be recorded asynchronously after a page load is finished,
+            // we have to wait the event to occur.
+            testObserver.waitForFirstContentfulPaintEvent();
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(testObserver));
+        }
     }
 
     private void loadUrlAndWaitForPageLoadMetricsRecorded(
@@ -228,14 +233,9 @@ public class StartupLoadingMetricsTest {
                         .build();
         Intent intent = new Intent(LauncherShortcutActivity.ACTION_OPEN_NEW_TAB);
         intent.setClass(ContextUtils.getApplicationContext(), LauncherShortcutActivity.class);
-        runAndWaitForPageLoadMetricsRecorded(
-                () ->
-                        mTabbedActivityTestRule
-                                .startWithIntentPlusUrlTo(intent, null)
-                                .arriveAt(
-                                        RegularNewTabPageStation.newBuilder()
-                                                .withEntryPoint()
-                                                .build()));
+        mTabbedActivityTestRule
+                .startWithIntentPlusUrlTo(intent, /* url= */ null)
+                .arriveAt(RegularNewTabPageStation.newBuilder().withEntryPoint().build());
         assertMainIntentLaunchColdStartHistogramRecorded(1);
         waitForHistogram(histogramWatcher);
     }
