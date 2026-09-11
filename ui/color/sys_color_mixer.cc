@@ -4,7 +4,9 @@
 
 #include "ui/color/sys_color_mixer.h"
 
+#include "base/feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -181,16 +183,26 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   mixer[kColorSysSurfaceNumberedForeground] = {
       dark_mode ? SkColorSetRGB(0xD1, 0xE1, 0xFF)
                 : SkColorSetRGB(0x69, 0x91, 0xD6)};
-  mixer[kColorSysSurface1] = AlphaBlend({kColorSysSurfaceNumberedForeground},
-                                        {kColorSysSurface}, 0x0C);
-  mixer[kColorSysSurface2] = AlphaBlend({kColorSysSurfaceNumberedForeground},
-                                        {kColorSysSurface}, 0x14);
-  mixer[kColorSysSurface3] = AlphaBlend({kColorSysSurfaceNumberedForeground},
-                                        {kColorSysSurface}, 0x1C);
-  mixer[kColorSysSurface4] = AlphaBlend({kColorSysSurfaceNumberedForeground},
-                                        {kColorSysSurface}, 0x1E);
-  mixer[kColorSysSurface5] = AlphaBlend({kColorSysSurfaceNumberedForeground},
-                                        {kColorSysSurface}, 0x23);
+
+  if (dark_mode &&
+      base::FeatureList::IsEnabled(features::kDarkModeSurfaceTokens)) {
+    mixer[kColorSysSurface1] = {kColorRefNeutral12};
+    mixer[kColorSysSurface2] = {kColorRefNeutral15};
+    mixer[kColorSysSurface3] = {kColorRefNeutral20};
+    mixer[kColorSysSurface4] = {kColorRefNeutral25};
+    mixer[kColorSysSurface5] = {kColorRefNeutral30};
+  } else {
+    mixer[kColorSysSurface1] = AlphaBlend({kColorSysSurfaceNumberedForeground},
+                                          {kColorSysSurface}, 0x0C);
+    mixer[kColorSysSurface2] = AlphaBlend({kColorSysSurfaceNumberedForeground},
+                                          {kColorSysSurface}, 0x14);
+    mixer[kColorSysSurface3] = AlphaBlend({kColorSysSurfaceNumberedForeground},
+                                          {kColorSysSurface}, 0x1C);
+    mixer[kColorSysSurface4] = AlphaBlend({kColorSysSurfaceNumberedForeground},
+                                          {kColorSysSurface}, 0x1E);
+    mixer[kColorSysSurface5] = AlphaBlend({kColorSysSurfaceNumberedForeground},
+                                          {kColorSysSurface}, 0x23);
+  }
 
   // General.
   mixer[kColorSysOnSurfaceSecondary] = {dark_mode ? kColorRefNeutral80

@@ -14335,6 +14335,7 @@ from previous Chrome versions.
   <int value="-140763100"
       label="EnableServiceWorkersForChromeUntrusted:disabled"/>
   <int value="-140665765" label="MultiCaptureReworkedUsageIndicators:enabled"/>
+  <int value="-139885421" label="DarkModeSurfaceTokens:enabled"/>
   <int value="-138983372" label="DesktopPWAWindowing:disabled"/>
   <int value="-138951938" label="GlassToolbar:disabled"/>
   <int value="-138820512" label="DesktopPWAsTabStrip:enabled"/>
@@ -16040,6 +16041,7 @@ from previous Chrome versions.
   <int value="387233614" label="HomePageButtonForceEnabled:disabled"/>
   <int value="387487896" label="AndroidWindowPopupLargeScreen:enabled"/>
   <int value="387678734" label="ShortcutCustomizationApp:disabled"/>
+  <int value="387753132" label="DarkModeSurfaceTokens:disabled"/>
   <int value="388118272" label="DynamicColorAndroid:disabled"/>
   <int value="388328387" label="WindowsMixedReality:enabled"/>
   <int value="388632022" label="JavaScriptExperimentalSharedMemory:disabled"/>
