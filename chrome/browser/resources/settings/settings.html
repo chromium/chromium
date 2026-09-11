@@ -33,6 +33,12 @@
     html[settings-refresh-2026] {
       background: var(--color-settings-webui-page-background);
     }
+
+<if expr="is_chromeos">
+    html[settings-refresh-2026] body {
+      font-family: 'Google Sans', Roboto, sans-serif;
+    }
+</if>
   </style>
 </head>
 <body>
