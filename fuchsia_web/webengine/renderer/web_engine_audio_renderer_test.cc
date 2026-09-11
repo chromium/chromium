@@ -150,11 +150,10 @@ class TestStreamSink : public fuchsia::media::testing::StreamSink_TestBase {
   }
 
   void WaitPacket() {
-    if (!received_packets_.empty()) {
-      return;
+    while (received_packets_.empty()) {
+      EXPECT_TRUE(packet_received_future_.Wait());
+      packet_received_future_.Clear();
     }
-    EXPECT_TRUE(packet_received_future_.Wait());
-    packet_received_future_.Clear();
   }
 
   // fuchsia::media::StreamSink overrides.
@@ -180,6 +179,7 @@ class TestStreamSink : public fuchsia::media::testing::StreamSink_TestBase {
     std::move(std::begin(received_packets_), std::end(received_packets_),
               std::back_inserter(discarded_packets_));
     received_packets_.clear();
+    packet_received_future_.Clear();
   }
 
   // Other methods are not expected to be called.
@@ -209,26 +209,11 @@ class TestAudioConsumer
       fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request)
       : binding_(this, std::move(request)), volume_control_binding_(this) {}
 
-  std::unique_ptr<TestStreamSink> TakeStreamSink() {
-    return std::move(stream_sink_);
-  }
-
   std::unique_ptr<TestStreamSink> WaitStreamSinkConnected() {
-    if (!stream_sink_) {
-      EXPECT_TRUE(stream_sink_created_future_.Wait());
-      stream_sink_created_future_.Clear();
-    }
-    EXPECT_TRUE(stream_sink_);
-    return TakeStreamSink();
+    return stream_sink_future_.Take();
   }
 
-  void WaitStarted() {
-    if (started_)
-      return;
-
-    EXPECT_TRUE(started_future_.Wait());
-    EXPECT_TRUE(started_);
-  }
+  void WaitStarted() { EXPECT_TRUE(start_media_time_future_.Wait()); }
 
   void UpdateStatus(std::optional<base::TimeTicks> reference_time,
                     std::optional<base::TimeDelta> media_time) {
@@ -254,11 +239,11 @@ class TestAudioConsumer
 
   void SignalEndOfStream() { binding_.events().OnEndOfStream(); }
 
-  bool started() const { return started_; }
+  bool IsStarted() const { return start_media_time_future_.IsReady(); }
   bool stream_sink_had_packets_at_start() const {
     return stream_sink_had_packets_at_start_;
   }
-  base::TimeDelta start_media_time() const { return start_media_time_; }
+  base::TimeDelta GetStartMediaTime() { return start_media_time_future_.Get(); }
   float playback_rate() const { return playback_rate_; }
   float volume() const { return volume_; }
 
@@ -270,33 +255,27 @@ class TestAudioConsumer
       fidl::InterfaceRequest<fuchsia::media::StreamSink> stream_sink_request)
       override {
     create_stream_sink_called_ = true;
-    stream_sink_ = std::make_unique<TestStreamSink>(
+    stream_sink_future_.SetValue(std::make_unique<TestStreamSink>(
         std::move(buffers), std::move(stream_type), std::move(compression),
-        std::move(stream_sink_request));
-    if (!stream_sink_created_future_.IsReady()) {
-      stream_sink_created_future_.SetValue();
-    }
+        std::move(stream_sink_request)));
   }
 
   void Start(fuchsia::media::AudioConsumerStartFlags flags,
              int64_t reference_time,
              int64_t media_time) override {
     EXPECT_TRUE(create_stream_sink_called_);
-    EXPECT_FALSE(started_);
+    EXPECT_FALSE(IsStarted());
     EXPECT_EQ(reference_time, fuchsia::media::NO_TIMESTAMP);
-    started_ = true;
-    start_media_time_ = base::TimeDelta::FromZxDuration(media_time);
     stream_sink_had_packets_at_start_ =
-        stream_sink_ && stream_sink_->HasPendingOrReceivedPackets();
-    if (!started_future_.IsReady()) {
-      started_future_.SetValue();
-    }
+        stream_sink_future_.IsReady() &&
+        stream_sink_future_.Get()->HasPendingOrReceivedPackets();
+    start_media_time_future_.SetValue(
+        base::TimeDelta::FromZxDuration(media_time));
   }
 
   void Stop() override {
-    EXPECT_TRUE(started_);
-    started_ = false;
-    started_future_.Clear();
+    EXPECT_TRUE(IsStarted());
+    start_media_time_future_.Clear();
   }
 
   void SetRate(float rate) override { playback_rate_ = rate; }
@@ -337,10 +316,8 @@ class TestAudioConsumer
 
   fidl::Binding<fuchsia::media::AudioConsumer> binding_;
   fidl::Binding<fuchsia::media::audio::VolumeControl> volume_control_binding_;
-  std::unique_ptr<TestStreamSink> stream_sink_;
-
-  base::test::TestFuture<void> stream_sink_created_future_;
-  base::test::TestFuture<void> started_future_;
+  base::test::TestFuture<std::unique_ptr<TestStreamSink>> stream_sink_future_;
+  base::test::TestFuture<base::TimeDelta> start_media_time_future_;
 
   bool create_stream_sink_called_ = false;
   bool stream_sink_had_packets_at_start_ = false;
@@ -348,11 +325,7 @@ class TestAudioConsumer
   WatchStatusCallback status_callback_;
   std::optional<fuchsia::media::AudioConsumerStatus> status_update_;
 
-  bool started_ = false;
-  base::TimeDelta start_media_time_;
-
   float playback_rate_ = 1.0;
-
   float volume_ = 1.0;
 };
 
@@ -638,14 +611,14 @@ void WebEngineAudioRendererTestBase::FillBuffer() {
 }
 
 void WebEngineAudioRendererTestBase::StartPlayback(base::TimeDelta start_time) {
-  EXPECT_FALSE(audio_consumer_->started());
+  EXPECT_FALSE(audio_consumer_->IsStarted());
   time_source_->SetMediaTime(start_time);
 
   ASSERT_NO_FATAL_FAILURE(FillBuffer());
   time_source_->StartTicking();
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(audio_consumer_->started());
-  EXPECT_EQ(audio_consumer_->start_media_time(), start_time);
+  EXPECT_TRUE(audio_consumer_->IsStarted());
+  EXPECT_EQ(audio_consumer_->GetStartMediaTime(), start_time);
 
   audio_consumer_->UpdateStatus(base::TimeTicks::Now(), start_time);
   task_environment_.RunUntilIdle();
@@ -673,10 +646,10 @@ void WebEngineAudioRendererTestBase::StartPlaybackAndVerifyClock(
   demuxer_stream_pos_ = start_time;
   ASSERT_NO_FATAL_FAILURE(FillBuffer());
 
-  EXPECT_FALSE(audio_consumer_->started());
+  EXPECT_FALSE(audio_consumer_->IsStarted());
   time_source_->StartTicking();
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(audio_consumer_->started());
+  EXPECT_TRUE(audio_consumer_->IsStarted());
 
   // Start position should be reported before updated status is received.
   EXPECT_EQ(time_source_->CurrentMediaTime(), start_time);
@@ -924,7 +897,7 @@ struct ConfigChangeTestConfig {
   bool encrypted_tail;
 };
 
-class WebEngineAudioRendererConfgChangeTest
+class WebEngineAudioRendererConfigChangeTest
     : public WebEngineAudioRendererTestBase,
       public testing::WithParamInterface<ConfigChangeTestConfig> {
   media::AudioDecoderConfig GetStreamConfig() final {
@@ -940,14 +913,13 @@ class WebEngineAudioRendererConfgChangeTest
 
 // Run all WebEngineAudioRendererTests with CDM enabled and disabled.
 INSTANTIATE_TEST_SUITE_P(ConfigChange,
-                         WebEngineAudioRendererConfgChangeTest,
+                         WebEngineAudioRendererConfigChangeTest,
                          testing::Values(ConfigChangeTestConfig{false, false},
                                          ConfigChangeTestConfig{false, true},
                                          ConfigChangeTestConfig{true, false},
                                          ConfigChangeTestConfig{true, true}));
 
-// TODO(crbug.com/559860633): Re-enable once TestAudioConsumer future is fixed.
-TEST_P(WebEngineAudioRendererConfgChangeTest, DISABLED_ConfigChange) {
+TEST_P(WebEngineAudioRendererConfigChangeTest, ConfigChange) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
@@ -1188,7 +1160,7 @@ TEST_P(WebEngineAudioRendererTest, PlaybackBeforeSinkCreation) {
   // StreamSink() is connected and the packets are buffered.
   audio_consumer_->WaitStarted();
   EXPECT_TRUE(audio_consumer_->stream_sink_had_packets_at_start());
-  stream_sink_ = audio_consumer_->TakeStreamSink();
+  stream_sink_ = audio_consumer_->WaitStreamSinkConnected();
   stream_sink_->WaitPacket();
   EXPECT_GT(stream_sink_->received_packets()->size(), 0U);
   EXPECT_FALSE(stream_sink_->received_end_of_stream());
