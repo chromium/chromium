@@ -9,6 +9,7 @@
 
 #import "base/base64.h"
 #import "base/functional/bind.h"
+#import "base/rand_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/dom_distiller/core/distiller.h"
@@ -27,6 +28,7 @@ ReaderModeDistillerViewer::ReaderModeDistillerViewer(
     DistillationFinishedCallback callback)
     : DistillerViewerInterface(distiller_service->GetDistilledPagePrefs()),
       url_(url),
+      csp_nonce_(base::Base64Encode(base::RandBytesAsVector(16))),
       callback_(std::move(callback)),
       waiting_for_page_ready_(true),
       web_state_(web_state) {
@@ -65,12 +67,13 @@ void ReaderModeDistillerViewer::OnArticleReady(
   if (!is_empty) {
     const std::string html = dom_distiller::viewer::GetArticleTemplateHtml(
         distilled_page_prefs_->GetTheme(),
-        distilled_page_prefs_->GetFontFamily(), std::string(),
+        distilled_page_prefs_->GetFontFamily(), csp_nonce_,
         /*use_offline_data=*/false);
     std::string html_and_script(html);
-    html_and_script += "<script>" + buffer_ + "</script>";
+    html_and_script +=
+        "<script nonce=\"" + csp_nonce_ + "\">" + buffer_ + "</script>";
     std::move(callback_).Run(url_, html_and_script, {}, article_proto->title(),
-                             std::string());
+                             csp_nonce_);
     buffer_.clear();
     waiting_for_page_ready_ = false;
   } else {

@@ -57,6 +57,11 @@ class ReaderModeDistillerViewer : public DistillerViewerInterface {
 
   // The url of the distilled page.
   const GURL url_;
+  // CSP nonce for the viewer's inline script. The viewer document is
+  // committed at the original article's origin without HTTP response
+  // headers, so a nonce-based <meta> CSP is required to prevent untrusted
+  // markup from executing script at that origin.
+  const std::string csp_nonce_;
   // Callback to run once distillation is complete.
   DistillationFinishedCallback callback_;
   // Whether the page is sufficiently initialized to handle updates from the

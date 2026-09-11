@@ -225,6 +225,20 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
     csp << "form-action 'none'; ";
     csp << "base-uri 'none'; ";
     csp << "\">";
+  } else if (!csp_nonce.empty()) {
+    // Reader mode (non-offline) viewer on iOS: the composed document is
+    // committed via -[WKWebView loadData:...baseURL:] at the original
+    // article's origin and carries no HTTP response headers, so without a
+    // <meta> policy it has no CSP at all. Restrict script execution to the
+    // nonced viewer script so that markup surviving distillation (e.g. on*
+    // event handler attributes or srcdoc iframes) cannot execute script at
+    // the article's origin. Styles/images/fonts are intentionally left
+    // unrestricted to keep the viewer functional.
+    csp << "<meta http-equiv=\"Content-Security-Policy\" content=\"";
+    csp << "script-src 'nonce-" << csp_nonce << "'; ";
+    csp << "object-src 'none'; ";
+    csp << "form-action 'none'; ";
+    csp << "\">";
   }
   substitutions.push_back(csp.str());  // $1
   substitutions.push_back(css.str());  // $2
