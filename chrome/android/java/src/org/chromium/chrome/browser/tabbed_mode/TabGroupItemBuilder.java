@@ -34,12 +34,16 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTabGroupItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -188,7 +192,10 @@ import java.util.function.Supplier;
 
     private @StringRes int getAddToGroupMenuItemString(@Nullable Token currentTabGroupId) {
         TabModel tabModel = mTabModelSelector.getCurrentModel();
-        return TabGroupUiUtils.getAddToGroupMenuItemString(tabModel, currentTabGroupId);
+        TabGroupSyncService syncService = mTabGroupSyncServiceSupplier.get();
+        GroupWindowChecker windowChecker = new GroupWindowChecker(mContext, syncService, tabModel);
+        return TabGroupUiUtils.getAddToGroupMenuItemString(
+                currentTabGroupId, windowChecker.hasOtherGroups(currentTabGroupId));
     }
 
     private List<ListItem> buildSubmenuForAddToGroup(@Nullable Tab currentTab) {
@@ -202,37 +209,35 @@ import java.util.function.Supplier;
         List<GroupWindowInfo> sortedGroups = windowChecker.getDefaultSortedGroupList();
 
         for (GroupWindowInfo tabGroup : sortedGroups) {
-            if (tabGroup.localId == null || Objects.equals(currentGroupId, tabGroup.localId)) {
+            if (tabGroup.localId == null && !TabGroupUiUtils.isRemoteGroupOperationsEnabled()) {
+                continue;
+            }
+            if (currentGroupId != null && Objects.equals(currentGroupId, tabGroup.localId)) {
                 continue;
             }
 
-            submenuItems.add(
-                    buildTabGroupListItem(
-                            tabGroup.localId,
-                            tabGroup.title,
-                            tabGroup.color,
-                            tabModel.isIncognito()));
+            submenuItems.add(buildTabGroupListItem(tabGroup, tabModel.isIncognito()));
         }
         return submenuItems;
     }
 
-    private ListItem buildTabGroupListItem(
-            Token groupId, String title, @TabGroupColorId int color, boolean isIncognito) {
-        PropertyModel model =
+    private ListItem buildTabGroupListItem(GroupWindowInfo tabGroup, boolean isIncognito) {
+        PropertyModel.Builder builder =
                 AppMenuItemUtils.populateBaseModelForTextItem(
                                 new PropertyModel.Builder(AppMenuTabGroupItemProperties.ALL_KEYS),
                                 mAppMenuItemTheme,
                                 R.id.add_to_existing_group_menu_item_id,
                                 mIsMenuIconAtStart)
-                        .with(AppMenuItemProperties.TITLE, title)
+                        .with(AppMenuItemProperties.TITLE, tabGroup.title)
                         .with(
                                 AppMenuItemProperties.ICON,
-                                getTabGroupDrawable(mContext, isIncognito, color))
+                                getTabGroupDrawable(mContext, isIncognito, tabGroup.color))
                         .with(AppMenuItemProperties.ICON_NO_TINT, true)
-                        .with(AppMenuTabGroupItemProperties.TAB_GROUP_ID, groupId)
-                        .build();
-
-        return AppMenuItemUtils.createStandardListItem(model, /* showIcon= */ true);
+                        .with(AppMenuTabGroupItemProperties.TAB_GROUP_ID, tabGroup.localId);
+        if (TabGroupUiUtils.isRemoteGroupOperationsEnabled() && tabGroup.syncId != null) {
+            builder.with(AppMenuTabGroupItemProperties.SYNC_GROUP_ID, tabGroup.syncId);
+        }
+        return AppMenuItemUtils.createStandardListItem(builder.build(), /* showIcon= */ true);
     }
 
     /**
@@ -315,32 +320,27 @@ import java.util.function.Supplier;
                         mIsMenuIconAtStart));
 
         for (GroupWindowInfo tabGroup : sortedGroups) {
-            if (tabGroup.localId == null) {
+            if (tabGroup.localId == null && !TabGroupUiUtils.isRemoteGroupOperationsEnabled()) {
                 continue;
             }
-            submenuItems.add(
-                    buildTabGroupParentSubmenuItem(
-                            tabGroup.localId, tabGroup.title, tabGroup.color, showIcons, tabModel));
+            submenuItems.add(buildTabGroupParentSubmenuItem(tabGroup, showIcons, tabModel));
         }
         return submenuItems;
     }
 
     private ListItem buildTabGroupParentSubmenuItem(
-            Token groupId,
-            String title,
-            @TabGroupColorId int color,
-            boolean showIcons,
-            TabModel tabModel) {
+            GroupWindowInfo tabGroup, boolean showIcons, TabModel tabModel) {
         PropertyModel model =
                 AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
                         mContext,
                         mAppMenuItemTheme,
                         R.id.tab_group_menu_item_id,
-                        title,
+                        tabGroup.title,
                         showIcons
-                                ? getTabGroupDrawable(mContext, tabModel.isIncognito(), color)
+                                ? getTabGroupDrawable(
+                                        mContext, tabModel.isIncognito(), tabGroup.color)
                                 : null,
-                        () -> buildSubmenuForSpecificGroup(groupId, tabModel),
+                        () -> buildSubmenuForSpecificGroup(tabGroup, tabModel),
                         mIsMenuIconAtStart);
         model.set(AppMenuItemProperties.ICON_NO_TINT, true);
 
@@ -351,12 +351,20 @@ import java.util.function.Supplier;
      * Builds the submenu items for a specific tab group item. This contains a list of all the tabs
      * inside the given tab group.
      *
-     * @param groupId The ID of the tab group.
+     * @param tabGroup The {@link GroupWindowInfo} representing the tab group.
      * @param tabModel The current {@link TabModel}.
      * @return A list of {@link ListItem}s representing the tabs in the group.
      */
-    private List<ListItem> buildSubmenuForSpecificGroup(Token groupId, TabModel tabModel) {
-        List<ListItem> submenuItems = new ArrayList<>();
+    private List<ListItem> buildSubmenuForSpecificGroup(
+            GroupWindowInfo tabGroup, TabModel tabModel) {
+        if (tabGroup.localId == null) {
+            if (!TabGroupUiUtils.isRemoteGroupOperationsEnabled()) {
+                return Collections.emptyList();
+            }
+            return buildSubmenuForRemoteGroup(tabGroup, tabModel);
+        }
+
+        Token groupId = tabGroup.localId;
         List<Tab> tabs = tabModel.getTabsInGroup(groupId);
         if (tabs.isEmpty() && TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()) {
             TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
@@ -374,6 +382,7 @@ import java.util.function.Supplier;
         }
         Profile profile = tabModel.getProfile();
         assert profile != null;
+        List<ListItem> submenuItems = new ArrayList<>();
         for (Tab tab : tabs) {
             PropertyModel model =
                     AppMenuItemUtils.populateBaseModelForTextItem(
@@ -400,6 +409,58 @@ import java.util.function.Supplier;
             submenuItems.add(new ListItem(AppMenuHandler.AppMenuItemType.TAB, model));
         }
         return submenuItems;
+    }
+
+    private List<ListItem> buildSubmenuForRemoteGroup(GroupWindowInfo tabGroup, TabModel tabModel) {
+        if (tabGroup.syncId == null) {
+            return Collections.emptyList();
+        }
+        TabGroupSyncService syncService = mTabGroupSyncServiceSupplier.get();
+        if (syncService == null) {
+            return Collections.emptyList();
+        }
+        SavedTabGroup savedGroup = syncService.getGroup(tabGroup.syncId);
+        if (savedGroup == null || savedGroup.savedTabs == null) {
+            return Collections.emptyList();
+        }
+        Profile profile = tabModel.getProfile();
+        assert profile != null;
+
+        List<ListItem> submenuItems = new ArrayList<>();
+        for (SavedTabGroupTab tab : savedGroup.savedTabs) {
+            submenuItems.add(buildSubmenuItemForSavedTab(tab, tabModel, profile));
+        }
+        return submenuItems;
+    }
+
+    private ListItem buildSubmenuItemForSavedTab(
+            SavedTabGroupTab tab, TabModel tabModel, Profile profile) {
+        GURL tabUrl = tab.url != null ? tab.url : GURL.emptyGURL();
+        PropertyModel model =
+                AppMenuItemUtils.populateBaseModelForTextItem(
+                                new PropertyModel.Builder(AppMenuTabItemProperties.ALL_KEYS),
+                                mAppMenuItemTheme,
+                                R.id.tab_group_tab_menu_item,
+                                mIsMenuIconAtStart)
+                        .with(AppMenuItemProperties.TITLE, tab.title != null ? tab.title : "")
+                        .with(
+                                AppMenuTabItemProperties.TAB_ID,
+                                tab.localId != null ? tab.localId : Tab.INVALID_TAB_ID)
+                        .with(
+                                AppMenuItemProperties.ICON_SUPPLIER,
+                                AppMenuItemUtils.createIconSupplierForTab(
+                                        mContext,
+                                        tabUrl,
+                                        /* tabGroupId= */ null,
+                                        tabModel.isIncognito(),
+                                        /* cachedFavicon= */ null,
+                                        /* fallbackToHost= */ false,
+                                        mRoundedIconGenerator,
+                                        mDefaultFaviconHelper,
+                                        mFaviconHelperSupplier.get(),
+                                        profile))
+                        .build();
+        return new ListItem(AppMenuHandler.AppMenuItemType.TAB, model);
     }
 
     /**

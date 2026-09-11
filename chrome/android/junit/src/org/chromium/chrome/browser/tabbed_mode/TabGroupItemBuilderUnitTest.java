@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -89,10 +90,11 @@ public class TabGroupItemBuilderUnitTest {
     @Mock private Tab mTab;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabWindowManager mTabWindowManager;
+    @Mock private TabList mTabList;
 
     private TabGroupItemBuilder mTabGroupItemBuilder;
-    private TabModel mTabModel;
-    private TabModel mIncognitoTabModel;
+    @Mock private TabModel mTabModel;
+    @Mock private TabModel mIncognitoTabModel;
 
     @Before
     public void setUp() {
@@ -103,9 +105,6 @@ public class TabGroupItemBuilderUnitTest {
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         mFaviconHelper = new FaviconHelper();
-
-        mTabModel = Mockito.mock(TabModel.class);
-        mIncognitoTabModel = Mockito.mock(TabModel.class);
 
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
@@ -734,5 +733,227 @@ public class TabGroupItemBuilderUnitTest {
         assertEquals(
                 R.id.create_new_tab_group_menu_id,
                 tabGroupsSubmenuItems.get(0).model.get(AppMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testBuildTabGroupsParentItem_withGroupWindowChecker_remoteGroup() {
+        SavedTabGroup remoteGroup = new SavedTabGroup();
+        remoteGroup.syncId = "remote_id";
+        remoteGroup.localId = null;
+        remoteGroup.title = "Remote Group";
+        remoteGroup.color = TabGroupColorId.BLUE;
+        remoteGroup.updateTimeMs = 100L;
+
+        SavedTabGroupTab remoteTab = new SavedTabGroupTab();
+        remoteTab.syncId = "remote_tab_id";
+        remoteTab.title = "Remote Tab";
+        remoteTab.url = JUnitTestGURLs.URL_1;
+        remoteGroup.savedTabs = List.of(remoteTab);
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"remote_id"});
+        when(mTabGroupSyncService.getGroup("remote_id")).thenReturn(remoteGroup);
+
+        List<Tab> emptyTabs = List.of();
+        when(mTabList.iterator()).thenAnswer(invocation -> emptyTabs.iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mTabList);
+
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        TabGroupItemBuilder builder =
+                new TabGroupItemBuilder(
+                        mContext,
+                        mAppMenuItemTheme,
+                        mTabModelSelector,
+                        /* isMenuIconAtStart= */ false,
+                        /* shouldShowIconBeforeItem= */ true,
+                        mRoundedIconGenerator,
+                        mDefaultFaviconHelper,
+                        () -> mFaviconHelper,
+                        () -> mTabGroupSyncService);
+
+        ListItem tabGroupsParent = builder.buildTabGroupsParentItem(mTab);
+        assertNotNull(tabGroupsParent);
+
+        List<ListItem> tabGroupsSubmenuItems =
+                tabGroupsParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+
+        ListItem groupItem = findItemById(tabGroupsSubmenuItems, R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        assertEquals("Remote Group", groupItem.model.get(AppMenuItemProperties.TITLE));
+
+        List<ListItem> tabsSubmenuItems =
+                groupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+        assertEquals(1, tabsSubmenuItems.size());
+        assertEquals("Remote Tab", tabsSubmenuItems.get(0).model.get(AppMenuItemProperties.TITLE));
+        assertEquals(
+                Tab.INVALID_TAB_ID,
+                tabsSubmenuItems.get(0).model.get(AppMenuTabItemProperties.TAB_ID));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testBuildAddToGroupItem_remoteGroup_syncGroupIdSet() {
+        SavedTabGroup remoteGroup = new SavedTabGroup();
+        remoteGroup.syncId = "remote_id";
+        remoteGroup.localId = null;
+        remoteGroup.title = "Remote Group";
+        remoteGroup.color = TabGroupColorId.BLUE;
+        remoteGroup.updateTimeMs = 100L;
+
+        SavedTabGroupTab remoteTab = new SavedTabGroupTab();
+        remoteTab.syncId = "remote_tab_id";
+        remoteTab.title = "Remote Tab";
+        remoteTab.url = JUnitTestGURLs.URL_1;
+        remoteGroup.savedTabs = List.of(remoteTab);
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"remote_id"});
+        when(mTabGroupSyncService.getGroup("remote_id")).thenReturn(remoteGroup);
+
+        List<Tab> emptyTabs = List.of();
+        when(mTabList.iterator()).thenAnswer(invocation -> emptyTabs.iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mTabList);
+
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        TabGroupItemBuilder builder =
+                new TabGroupItemBuilder(
+                        mContext,
+                        mAppMenuItemTheme,
+                        mTabModelSelector,
+                        /* isMenuIconAtStart= */ false,
+                        /* shouldShowIconBeforeItem= */ true,
+                        mRoundedIconGenerator,
+                        mDefaultFaviconHelper,
+                        () -> mFaviconHelper,
+                        () -> mTabGroupSyncService);
+
+        ListItem addToGroupItem = builder.buildAddToGroupItem(mTab, /* showIcon= */ true);
+        assertNotNull(addToGroupItem);
+
+        List<ListItem> submenuItems =
+                addToGroupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+        assertEquals(1, submenuItems.size());
+
+        ListItem groupItem = submenuItems.get(0);
+        assertEquals(
+                R.id.add_to_existing_group_menu_item_id,
+                groupItem.model.get(AppMenuItemProperties.MENU_ITEM_ID));
+        assertEquals("Remote Group", groupItem.model.get(AppMenuItemProperties.TITLE));
+        assertEquals("remote_id", groupItem.model.get(AppMenuTabGroupItemProperties.SYNC_GROUP_ID));
+        assertNull(groupItem.model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testBuildTabGroupsParentItem_remoteGroup_disabled() {
+        SavedTabGroup remoteGroup = new SavedTabGroup();
+        remoteGroup.syncId = "remote_id";
+        remoteGroup.localId = null;
+        remoteGroup.title = "Remote Group";
+        remoteGroup.color = TabGroupColorId.BLUE;
+        remoteGroup.updateTimeMs = 100L;
+
+        SavedTabGroupTab remoteTab = new SavedTabGroupTab();
+        remoteTab.syncId = "remote_tab_id";
+        remoteTab.title = "Remote Tab";
+        remoteTab.url = JUnitTestGURLs.URL_1;
+        remoteGroup.savedTabs = List.of(remoteTab);
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"remote_id"});
+        when(mTabGroupSyncService.getGroup("remote_id")).thenReturn(remoteGroup);
+
+        List<Tab> emptyTabs = List.of();
+        when(mTabList.iterator()).thenAnswer(invocation -> emptyTabs.iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mTabList);
+
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        TabGroupItemBuilder builder =
+                new TabGroupItemBuilder(
+                        mContext,
+                        mAppMenuItemTheme,
+                        mTabModelSelector,
+                        /* isMenuIconAtStart= */ false,
+                        /* shouldShowIconBeforeItem= */ true,
+                        mRoundedIconGenerator,
+                        mDefaultFaviconHelper,
+                        () -> mFaviconHelper,
+                        () -> mTabGroupSyncService);
+
+        ListItem tabGroupsParent = builder.buildTabGroupsParentItem(mTab);
+        assertNotNull(tabGroupsParent);
+
+        List<ListItem> tabGroupsSubmenuItems =
+                tabGroupsParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+
+        ListItem groupItem = findItemById(tabGroupsSubmenuItems, R.id.tab_group_menu_item_id);
+        assertNull(groupItem);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testBuildAddToGroupItem_remoteGroup_disabled() {
+        Token token1 = Token.createRandom();
+
+        SavedTabGroup localGroup = new SavedTabGroup();
+        localGroup.syncId = "local_id";
+        localGroup.localId = new LocalTabGroupId(token1);
+        localGroup.title = "Local Group";
+        localGroup.color = TabGroupColorId.BLUE;
+        localGroup.updateTimeMs = 100L;
+        localGroup.savedTabs = List.of(new SavedTabGroupTab());
+
+        SavedTabGroup remoteGroup = new SavedTabGroup();
+        remoteGroup.syncId = "remote_id";
+        remoteGroup.localId = null;
+        remoteGroup.title = "Remote Group";
+        remoteGroup.color = TabGroupColorId.RED;
+        remoteGroup.updateTimeMs = 200L;
+        remoteGroup.savedTabs = List.of(new SavedTabGroupTab());
+
+        when(mTabGroupSyncService.getAllGroupIds())
+                .thenReturn(new String[] {"local_id", "remote_id"});
+        when(mTabGroupSyncService.getGroup("local_id")).thenReturn(localGroup);
+        when(mTabGroupSyncService.getGroup("remote_id")).thenReturn(remoteGroup);
+
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getTabGroupId()).thenReturn(token1);
+
+        TabList tabList = Mockito.mock(TabList.class);
+        List<Tab> tabs = List.of(tab1);
+        when(tabList.iterator()).thenAnswer(invocation -> tabs.iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(tabList);
+
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        TabGroupItemBuilder builder =
+                new TabGroupItemBuilder(
+                        mContext,
+                        mAppMenuItemTheme,
+                        mTabModelSelector,
+                        /* isMenuIconAtStart= */ false,
+                        /* shouldShowIconBeforeItem= */ true,
+                        mRoundedIconGenerator,
+                        mDefaultFaviconHelper,
+                        () -> mFaviconHelper,
+                        () -> mTabGroupSyncService);
+
+        ListItem addToGroupItem = builder.buildAddToGroupItem(null, /* showIcon= */ true);
+        assertNotNull(addToGroupItem);
+
+        List<ListItem> submenuItems =
+                addToGroupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+        assertEquals(1, submenuItems.size());
+
+        ListItem groupItem = submenuItems.get(0);
+        assertEquals(
+                R.id.add_to_existing_group_menu_item_id,
+                groupItem.model.get(AppMenuItemProperties.MENU_ITEM_ID));
+        assertEquals("Local Group", groupItem.model.get(AppMenuItemProperties.TITLE));
+        assertEquals(token1, groupItem.model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID));
+        assertNull(groupItem.model.get(AppMenuTabGroupItemProperties.SYNC_GROUP_ID));
     }
 }

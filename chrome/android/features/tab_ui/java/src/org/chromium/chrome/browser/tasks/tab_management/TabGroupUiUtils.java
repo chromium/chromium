@@ -28,8 +28,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,26 +59,6 @@ public class TabGroupUiUtils {
             return R.string.menu_move_tab_to_group;
         }
         return hasTabGroups ? R.string.menu_add_tab_to_group : R.string.menu_add_tab_to_new_group;
-    }
-
-    /**
-     * Returns the string resource ID for the 'add to group' menu item ("Add tab to group" vs "Add
-     * tab to new group" vs "Move tab to group").
-     *
-     * @param tabModel The current {@link TabModel}.
-     * @param currentTabGroupId The tab group ID of the current tab if already in a group, or null.
-     */
-    public static @StringRes int getAddToGroupMenuItemString(
-            @Nullable TabModel tabModel, @Nullable Token currentTabGroupId) {
-        if (currentTabGroupId != null) {
-            return R.string.menu_move_tab_to_group;
-        }
-        Collection<TabModelSelector> selectors =
-                isCrossWindowTabGroupOperationsEnabled()
-                        ? TabWindowManagerSingleton.getInstance().getAllTabModelSelectors()
-                        : Collections.emptyList();
-        return getAddToGroupMenuItemString(
-                currentTabGroupId, TabGroupUtils.hasTabGroups(tabModel, selectors));
     }
 
     /**

@@ -97,45 +97,6 @@ public class TabGroupUiUtilsUnitTest {
     }
 
     @Test
-    public void testGetAddToGroupMenuItemString_alreadyInGroup() {
-        Token tabGroupId = new Token(1L, 1L);
-        assertEquals(
-                R.string.menu_move_tab_to_group,
-                TabGroupUiUtils.getAddToGroupMenuItemString(mTabModel, tabGroupId));
-    }
-
-    @Test
-    public void testGetAddToGroupMenuItemString_noTabGroups() {
-        when(mTabModel.getTabGroupCount()).thenReturn(0);
-        assertEquals(
-                R.string.menu_add_tab_to_new_group,
-                TabGroupUiUtils.getAddToGroupMenuItemString(
-                        mTabModel, /* currentTabGroupId= */ null));
-    }
-
-    @Test
-    public void testGetAddToGroupMenuItemString_hasTabGroupsInCurrentWindow() {
-        when(mTabModel.getTabGroupCount()).thenReturn(1);
-        assertEquals(
-                R.string.menu_add_tab_to_group,
-                TabGroupUiUtils.getAddToGroupMenuItemString(
-                        mTabModel, /* currentTabGroupId= */ null));
-
-        Token tabGroupId = new Token(1L, 1L);
-        assertEquals(
-                R.string.menu_move_tab_to_group,
-                TabGroupUiUtils.getAddToGroupMenuItemString(mTabModel, tabGroupId));
-    }
-
-    @Test
-    public void testGetAddToGroupMenuItemString_nullModel() {
-        assertEquals(
-                R.string.menu_add_tab_to_new_group,
-                TabGroupUiUtils.getAddToGroupMenuItemString(
-                        /* tabModel= */ null, /* currentTabGroupId= */ null));
-    }
-
-    @Test
     public void testGetAddToGroupMenuItemString_withHasTabGroups() {
         Token tabGroupId = new Token(1L, 1L);
         assertEquals(
@@ -307,24 +268,6 @@ public class TabGroupUiUtilsUnitTest {
         assertEquals(
                 "Move tab to group",
                 TabGroupUiUtils.getAddToGroupMenuItemTitle(context, Token.createRandom(), 1));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
-    public void testGetAddToGroupMenuItemString_crossWindow() {
-        when(mTabModel.getTabGroupCount()).thenReturn(0);
-        when(mTabModel.isIncognito()).thenReturn(false);
-
-        TabModelSelector otherSelector = mock(TabModelSelector.class);
-        TabModel otherModel = mock(TabModel.class);
-        when(otherSelector.getModel(false)).thenReturn(otherModel);
-        when(otherModel.getTabGroupCount()).thenReturn(1);
-        when(mTabWindowManager.getAllTabModelSelectors()).thenReturn(List.of(otherSelector));
-
-        assertEquals(
-                R.string.menu_add_tab_to_group,
-                TabGroupUiUtils.getAddToGroupMenuItemString(
-                        mTabModel, /* currentTabGroupId= */ null));
     }
 
     @Test
