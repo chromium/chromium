@@ -99,12 +99,15 @@ bool CardboardDeviceParams::IsValid() {
   return size_ != 0;
 }
 
-const uint8_t* CardboardDeviceParams::encoded_device_params() {
-  if (std::holds_alternative<uint8_t*>(encoded_device_params_)) {
-    return std::get<uint8_t*>(encoded_device_params_);
-  } else if (std::holds_alternative<OwnedCardboardParams>(
-                 encoded_device_params_)) {
-    return std::get<OwnedCardboardParams>(encoded_device_params_).get();
+const uint8_t* CardboardDeviceParams::encoded_device_params() const {
+  if (const auto* ptr =
+          std::get_if<raw_ptr<uint8_t>>(&encoded_device_params_)) {
+    return *ptr;
+  }
+
+  if (const auto* params =
+          std::get_if<OwnedCardboardParams>(&encoded_device_params_)) {
+    return params->get();
   }
 
   NOTREACHED();

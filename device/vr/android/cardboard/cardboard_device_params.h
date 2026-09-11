@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "device/vr/android/cardboard/scoped_cardboard_objects.h"
 
 namespace device {
@@ -42,7 +43,7 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDeviceParams {
 
   bool IsValid();
 
-  const uint8_t* encoded_device_params();
+  const uint8_t* encoded_device_params() const;
   int size() { return size_; }
 
  private:
@@ -53,7 +54,8 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDeviceParams {
   // launched. Meant to be used for testing purposes only.
   static bool use_cardboard_v1_device_params_for_testing_;
 
-  std::variant<uint8_t*, OwnedCardboardParams> encoded_device_params_ = nullptr;
+  std::variant<raw_ptr<uint8_t>, OwnedCardboardParams> encoded_device_params_ =
+      nullptr;
   int size_ = 0;
 };
 

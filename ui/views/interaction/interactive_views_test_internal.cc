@@ -186,11 +186,11 @@ InteractiveViewsTestPrivate::DebugTreeNode
 InteractiveViewsTestPrivate::DebugTreeNodeViews::ToNode(
     const InteractiveViewsTestPrivate& owner) const {
   InteractiveViewsTestPrivate::DebugTreeNode result;
-  if (std::holds_alternative<const View*>(impl)) {
+  if (std::holds_alternative<raw_ptr<const View>>(impl)) {
     result = *owner.DebugDumpElement(element);
   } else {
-    result =
-        DebugTreeNode(owner.DebugDumpWidget(*std::get<const Widget*>(impl)));
+    result = DebugTreeNode(
+        owner.DebugDumpWidget(*std::get<raw_ptr<const Widget>>(impl)));
   }
   for (auto& child : children) {
     result.children.emplace_back(child.ToNode(owner));

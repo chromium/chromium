@@ -55,7 +55,7 @@ class InteractiveViewsTestPrivate
   // Represents a temporary data stucture used when building Views hierarchies
   // into `DebugTreeNode`s.
   struct DebugTreeNodeViews {
-    using Element = std::variant<const View*, const Widget*>;
+    using Element = std::variant<raw_ptr<const View>, raw_ptr<const Widget>>;
     using List = std::set<DebugTreeNodeViews>;
 
     DebugTreeNodeViews();
