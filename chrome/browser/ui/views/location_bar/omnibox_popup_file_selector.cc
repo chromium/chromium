@@ -52,7 +52,11 @@ OmniboxPopupFileSelector::OmniboxPopupFileSelector(
     gfx::NativeWindow owning_window)
     : owning_window_(owning_window) {}
 
-OmniboxPopupFileSelector::~OmniboxPopupFileSelector() = default;
+OmniboxPopupFileSelector::~OmniboxPopupFileSelector() {
+  if (file_dialog_) {
+    file_dialog_->ListenerDestroyed();
+  }
+}
 
 std::optional<lens::ImageEncodingOptions>
 OmniboxPopupFileSelector::CreateImageEncodingOptions() {

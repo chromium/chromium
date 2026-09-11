@@ -100,6 +100,26 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
+                       DestructionWithOpenDialogCallsListenerDestroyed) {
+  auto* omnibox_controller = BrowserWindow::FromBrowser(browser())
+                                 ->GetLocationBar()
+                                 ->GetOmniboxController();
+  MockOmniboxEditModel mock_edit_model(omnibox_controller);
+
+  auto file_selector = std::make_unique<OmniboxPopupFileSelector>(
+      browser()->GetWindow()->GetNativeWindow());
+
+  file_selector->OpenFileUploadDialog(
+      browser()->GetTabStripModel()->GetActiveWebContents(),
+      /*is_image=*/true, &mock_edit_model, std::nullopt,
+      /*was_ai_mode_open=*/true);
+
+  // Destroy the file selector while the dialog is open.
+  // This must call ListenerDestroyed() on the dialog and not crash.
+  file_selector.reset();
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
                        UploadUnsupportedTextFileUpdatesContextData) {
   auto* omnibox_controller = BrowserWindow::FromBrowser(browser())
                                  ->GetLocationBar()
