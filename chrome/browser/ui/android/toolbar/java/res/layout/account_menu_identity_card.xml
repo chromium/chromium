@@ -11,14 +11,15 @@ found in the LICENSE file.
     style="@style/MaterialCardStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="12dp"
-    android:layout_marginVertical="6dp"
+    android:layout_marginHorizontal="@dimen/account_menu_card_margin_horizontal"
+    android:layout_marginTop="@dimen/account_menu_card_margin_top"
+    android:layout_marginBottom="@dimen/account_menu_card_margin_bottom"
     app:cornerRadius="@dimen/account_menu_containment_corner_radius">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp"
+        android:padding="@dimen/account_menu_card_padding"
         android:orientation="vertical"
         android:gravity="center_horizontal">
 

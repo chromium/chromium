@@ -5,6 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
+<!-- default_popup_menu_bg adds side padding. Setting paddingHorizontal="0dp"
+     lets cards and dividers set their own side spacing. -->
 <androidx.recyclerview.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/account_menu_container"
@@ -13,6 +15,7 @@ found in the LICENSE file.
     android:minWidth="@dimen/account_menu_min_width"
     android:paddingTop="@dimen/account_menu_padding_vertical"
     android:paddingBottom="@dimen/account_menu_padding_vertical"
+    android:paddingHorizontal="0dp"
     android:clipToOutline="true"
     android:elevation="@dimen/app_menu_elevation"
     android:background="@drawable/default_popup_menu_bg" />

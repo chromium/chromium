@@ -5,8 +5,11 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<TextView
+<org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/AccountMenuControlRow"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    android:layout_height="wrap_content"
+    app:drawableWidth="@dimen/account_menu_item_icon_size"
+    app:drawableHeight="@dimen/account_menu_item_icon_size" />

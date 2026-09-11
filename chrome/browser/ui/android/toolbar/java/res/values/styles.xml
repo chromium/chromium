@@ -80,7 +80,7 @@ found in the LICENSE file.
             @dimen/account_menu_horizontal_padding
         </item>
         <item name="android:drawablePadding">
-            @dimen/account_menu_horizontal_padding
+            @dimen/account_menu_item_icon_padding
         </item>
         <item name="android:drawableTint">?android:attr/textColorPrimary</item>
         <item name="android:textAppearance">
