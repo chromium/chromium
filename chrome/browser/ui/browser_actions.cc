@@ -139,7 +139,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -1162,7 +1162,7 @@ void BrowserActions::InitializeChromeMenuActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  auto* controller = OrganizerPanelStateController::From(bwi);
+                  auto* controller = OrganizerPanelController::From(bwi);
                   if (controller) {
                     controller->SetOrganizerVisible(
                         !controller->IsOrganizerPanelVisible());

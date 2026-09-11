@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -133,8 +133,7 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
   auto CheckControllerState(bool visible) {
     return CheckResult(
                [this]() {
-                 return organizer_panel_state_controller()
-                     ->IsOrganizerPanelVisible();
+                 return organizer_panel_controller()->IsOrganizerPanelVisible();
                },
                visible)
         .SetDescription("CheckControllerState");
@@ -159,8 +158,8 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
     return steps;
   }
 
-  OrganizerPanelStateController* organizer_panel_state_controller() {
-    return OrganizerPanelStateController::From(browser());
+  OrganizerPanelController* organizer_panel_controller() {
+    return OrganizerPanelController::From(browser());
   }
 
   BrowserView* browser_view() {
@@ -394,13 +393,13 @@ class OrganizerPanelExtensionInteractiveUiTest
       const extensions::ExtensionId& id = extensions::ExtensionId()) {
     auto steps = Steps(CheckResult(
         [this]() {
-          return organizer_panel_state_controller()->IsOrganizerPanelVisible();
+          return organizer_panel_controller()->IsOrganizerPanelVisible();
         },
         visible));
     if (!id.empty()) {
       steps += CheckResult(
           [this]() {
-            return organizer_panel_state_controller()->active_extension_id();
+            return organizer_panel_controller()->active_extension_id();
           },
           id);
     }
@@ -408,8 +407,8 @@ class OrganizerPanelExtensionInteractiveUiTest
     return steps;
   }
 
-  OrganizerPanelStateController* organizer_panel_state_controller() {
-    return OrganizerPanelStateController::From(browser());
+  OrganizerPanelController* organizer_panel_controller() {
+    return OrganizerPanelController::From(browser());
   }
 
   BrowserView* browser_view() {
@@ -504,9 +503,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
 
   RunTestSequence(
       // Open organizer panel without specifying an extension ID.
-      Do([this]() {
-        organizer_panel_state_controller()->SetOrganizerVisible(true);
-      }),
+      Do([this]() { organizer_panel_controller()->SetOrganizerVisible(true); }),
       WaitForPanelOpen(), WaitForShow(OrganizerPanelView::kWebViewElementId));
 }
 

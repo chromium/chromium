@@ -16,7 +16,7 @@
 #include "extensions/common/extension_id.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #endif
 
@@ -66,7 +66,7 @@ void ToggleExtensionSidePanel(BrowserWindowInterface* browser_window,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* organizer_controller =
       organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()
-          ? OrganizerPanelStateController::From(browser_window)
+          ? OrganizerPanelController::From(browser_window)
           : nullptr;
   if (organizer_controller) {
     organizer_controller->ToggleForExtension(extension_id);
@@ -91,7 +91,7 @@ void OpenGlobalExtensionSidePanel(BrowserWindowInterface& browser_window,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* organizer_controller =
       organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()
-          ? OrganizerPanelStateController::From(&browser_window)
+          ? OrganizerPanelController::From(&browser_window)
           : nullptr;
   if (organizer_controller) {
     organizer_controller->OpenForExtension(extension_id);
@@ -175,7 +175,7 @@ void OpenContextualExtensionSidePanel(BrowserWindowInterface& browser_window,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* organizer_controller =
       organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()
-          ? OrganizerPanelStateController::From(&browser_window)
+          ? OrganizerPanelController::From(&browser_window)
           : nullptr;
   if (organizer_controller) {
     organizer_controller->OpenForExtension(extension_id);
@@ -217,7 +217,7 @@ void CloseGlobalExtensionSidePanel(BrowserWindowInterface* browser_window,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* organizer_controller =
       organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()
-          ? OrganizerPanelStateController::From(browser_window)
+          ? OrganizerPanelController::From(browser_window)
           : nullptr;
   if (organizer_controller) {
     organizer_controller->CloseForExtension(extension_id);
@@ -265,7 +265,7 @@ void CloseContextualExtensionSidePanel(BrowserWindowInterface* browser_window,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* organizer_controller =
       organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()
-          ? OrganizerPanelStateController::From(browser_window)
+          ? OrganizerPanelController::From(browser_window)
           : nullptr;
   if (organizer_controller) {
     organizer_controller->CloseForExtension(extension_id);

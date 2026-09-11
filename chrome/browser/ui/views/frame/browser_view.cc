@@ -122,7 +122,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
@@ -1009,9 +1009,9 @@ BrowserView::BrowserView(BrowserWindowInterface* browser)
     horizontal_tab_strip_region_view_->InitializeTabStrip();
   }
 
-  auto* const organizer_panel_state_controller =
-      OrganizerPanelStateController::From(browser_);
-  if (organizer_panel_state_controller) {
+  auto* const organizer_panel_controller =
+      OrganizerPanelController::From(browser_);
+  if (organizer_panel_controller) {
     auto organizer_panel = OrganizerPanelView::Create(*browser_);
     organizer_tray_ =
         AddChildView(std::make_unique<OrganizerTrayView>(*browser_, this));

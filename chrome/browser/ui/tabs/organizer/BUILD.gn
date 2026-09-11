@@ -6,7 +6,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 source_set("organizer") {
   sources = [
-    "organizer_panel_state_controller.h",
+    "organizer_panel_controller.h",
     "organizer_prefs.h",
   ]
 
@@ -23,7 +23,7 @@ source_set("organizer") {
 
 source_set("impl") {
   sources = [
-    "organizer_panel_state_controller.cc",
+    "organizer_panel_controller.cc",
     "organizer_prefs.cc",
   ]
 
@@ -51,7 +51,7 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "organizer_panel_state_controller_unittest.cc" ]
+  sources = [ "organizer_panel_controller_unittest.cc" ]
   deps = [
     ":impl",
     "//base/test:test_support",
@@ -66,7 +66,7 @@ source_set("unit_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "organizer_panel_state_controller_interactive_uitest.cc" ]
+  sources = [ "organizer_panel_controller_interactive_uitest.cc" ]
   deps = [
     ":impl",
     "//chrome/browser/ui",

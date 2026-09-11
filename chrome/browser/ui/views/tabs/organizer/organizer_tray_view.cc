@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
@@ -318,8 +318,8 @@ void OrganizerTrayView::Layout(PassKey) {
 
 void OrganizerTrayView::ClosePanel() {
   // Ignore if the panel is already animating closed.
-  if (!GetVisible() || !OrganizerPanelStateController::From(&*browser_)
-                            ->IsOrganizerPanelVisible()) {
+  if (!GetVisible() ||
+      !OrganizerPanelController::From(&*browser_)->IsOrganizerPanelVisible()) {
     return;
   }
 

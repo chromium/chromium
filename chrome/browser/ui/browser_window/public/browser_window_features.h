@@ -91,7 +91,7 @@ class LocationBarModel;
 class MemorySaverOptInIPHController;
 class PinnedToolbarActions;
 class ProfileMenuCoordinator;
-class OrganizerPanelStateController;
+class OrganizerPanelController;
 class ReadingListSidePanelCoordinator;
 class RecentActivityBubbleCoordinator;
 class ScrimViewController;
@@ -453,8 +453,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<tab_groups::MostRecentSharedTabUpdateStore>
       most_recent_shared_tab_update_store_;
   std::unique_ptr<ProfileMenuCoordinator> profile_menu_coordinator_;
-  std::unique_ptr<OrganizerPanelStateController>
-      organizer_panel_state_controller_;
+  std::unique_ptr<OrganizerPanelController> organizer_panel_controller_;
   std::unique_ptr<qrcode_generator::QRCodeWindowController>
       qrcode_window_controller_;
   std::unique_ptr<ReadingListSidePanelCoordinator>

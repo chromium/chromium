@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -253,7 +253,7 @@ BrowserWindowInterface* TabSearchBubbleHost::GetBrowser() {
 void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
   if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
     auto* controller =
-        OrganizerPanelStateController::From(browser_window_interface_);
+        OrganizerPanelController::From(browser_window_interface_);
     if (controller) {
       controller->SetOrganizerVisible(!controller->IsOrganizerPanelVisible());
       return;

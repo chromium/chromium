@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "ui/views/view_class_properties.h"
 
@@ -25,7 +25,7 @@ OrganizerPanelExtensionView::OrganizerPanelExtensionView(
       browser_(browser),
       root_action_item_(BrowserActions::From(&browser)->root_action_item()),
       state_controller_subscription_(
-          OrganizerPanelStateController::From(&browser)->RegisterOnStateChanged(
+          OrganizerPanelController::From(&browser)->RegisterOnStateChanged(
               base::BindRepeating(
                   &OrganizerPanelExtensionView::OnOrganizerPanelStateChanged,
                   base::Unretained(this)))) {}
@@ -184,7 +184,7 @@ void OrganizerPanelExtensionView::OnExtensionHostDestroyed(
 }
 
 void OrganizerPanelExtensionView::OnOrganizerPanelStateChanged(
-    OrganizerPanelStateController* state_controller) {
+    OrganizerPanelController* state_controller) {
   if (state_controller->IsOrganizerPanelVisible() &&
       organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()) {
     if (state_controller->active_extension_id().has_value()) {

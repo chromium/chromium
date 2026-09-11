@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
@@ -34,13 +33,13 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kShowAnimationComplete);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHideAnimationComplete);
 }  // namespace
 
-class OrganizerPanelStateControllerInteractiveUiTest
+class OrganizerPanelControllerInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
-  OrganizerPanelStateControllerInteractiveUiTest() {
+  OrganizerPanelControllerInteractiveUiTest() {
     scoped_feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
   }
-  ~OrganizerPanelStateControllerInteractiveUiTest() override = default;
+  ~OrganizerPanelControllerInteractiveUiTest() override = default;
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
@@ -81,8 +80,7 @@ class OrganizerPanelStateControllerInteractiveUiTest
   auto ExpectControllerState(bool open) {
     return CheckResult(
                [this]() {
-                 return organizer_panel_state_controller()
-                     ->IsOrganizerPanelVisible();
+                 return organizer_panel_controller()->IsOrganizerPanelVisible();
                },
                open)
         .AddDescriptionPrefix("ExpectControllerState()");
@@ -108,8 +106,8 @@ class OrganizerPanelStateControllerInteractiveUiTest
     return steps;
   }
 
-  OrganizerPanelStateController* organizer_panel_state_controller() {
-    return OrganizerPanelStateController::From(browser());
+  OrganizerPanelController* organizer_panel_controller() {
+    return OrganizerPanelController::From(browser());
   }
 
  private:
@@ -119,7 +117,7 @@ class OrganizerPanelStateControllerInteractiveUiTest
 
 // This test checks that we can click the tab search button to toggle the
 // organizer panel.
-IN_PROC_BROWSER_TEST_F(OrganizerPanelStateControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(OrganizerPanelControllerInteractiveUiTest,
                        VerifyOrganizerPanelButton) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
@@ -136,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelStateControllerInteractiveUiTest,
 
 // This test checks that clicking the tab search button opens the organizer
 // panel in vertical tabs mode.
-IN_PROC_BROWSER_TEST_F(OrganizerPanelStateControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(OrganizerPanelControllerInteractiveUiTest,
                        VerifyTabSearchButtonInVerticalTabs) {
   RunTestSequence(
       WaitForShow(kVerticalTabStripTopContainerElementId),

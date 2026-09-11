@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views_impl.h"
@@ -125,7 +125,7 @@ class OrganizerTrayViewTest
         std::make_unique<OrganizerPanelAnimations>());
 
     state_controller_ =
-        std::make_unique<OrganizerPanelStateController>(browser_, root_action_);
+        std::make_unique<OrganizerPanelController>(browser_, root_action_);
 
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     browser_view_ =
@@ -230,7 +230,7 @@ class OrganizerTrayViewTest
   std::unique_ptr<BrowserElementsViewsImpl> browser_elements_;
   std::unique_ptr<BrowserActions> browser_actions_;
   std::unique_ptr<BrowserAnimationController> animation_controller_;
-  std::unique_ptr<OrganizerPanelStateController> state_controller_;
+  std::unique_ptr<OrganizerPanelController> state_controller_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<FakeBrowserView> browser_view_;
   raw_ptr<views::View> panel_;

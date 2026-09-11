@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 
 #include <memory>
 
@@ -17,10 +17,10 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
-class OrganizerPanelStateControllerTest : public testing::Test {
+class OrganizerPanelControllerTest : public testing::Test {
  public:
-  OrganizerPanelStateControllerTest() = default;
-  ~OrganizerPanelStateControllerTest() override = default;
+  OrganizerPanelControllerTest() = default;
+  ~OrganizerPanelControllerTest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -37,7 +37,7 @@ class OrganizerPanelStateControllerTest : public testing::Test {
 
     // Action items like ToggleOrganizerPanel are tested in interactive ui
     // tests.
-    controller_ = std::make_unique<OrganizerPanelStateController>(
+    controller_ = std::make_unique<OrganizerPanelController>(
         mock_browser_window_interface_, /*root_action_item=*/nullptr);
   }
 
@@ -47,22 +47,22 @@ class OrganizerPanelStateControllerTest : public testing::Test {
     testing::Test::TearDown();
   }
 
-  OrganizerPanelStateController* controller() { return controller_.get(); }
+  OrganizerPanelController* controller() { return controller_.get(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<BrowserAnimationController> animation_controller_;
-  std::unique_ptr<OrganizerPanelStateController> controller_;
+  std::unique_ptr<OrganizerPanelController> controller_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   MockBrowserWindowInterface mock_browser_window_interface_;
 };
 
-TEST_F(OrganizerPanelStateControllerTest, Initial) {
+TEST_F(OrganizerPanelControllerTest, Initial) {
   EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
 }
 
-TEST_F(OrganizerPanelStateControllerTest, OrganizerPanelEnabled) {
+TEST_F(OrganizerPanelControllerTest, OrganizerPanelEnabled) {
   controller()->SetOrganizerVisible(true);
   EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
 
@@ -70,8 +70,8 @@ TEST_F(OrganizerPanelStateControllerTest, OrganizerPanelEnabled) {
   EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
 }
 
-TEST_F(OrganizerPanelStateControllerTest, Subscription) {
-  UNCALLED_MOCK_CALLBACK(OrganizerPanelStateController::StateChangedCallback,
+TEST_F(OrganizerPanelControllerTest, Subscription) {
+  UNCALLED_MOCK_CALLBACK(OrganizerPanelController::StateChangedCallback,
                          callback);
   const auto subscription =
       controller()->RegisterOnStateChanged(callback.Get());
@@ -84,8 +84,8 @@ TEST_F(OrganizerPanelStateControllerTest, Subscription) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-TEST_F(OrganizerPanelStateControllerTest, ExtensionOpenToggleClose) {
-  UNCALLED_MOCK_CALLBACK(OrganizerPanelStateController::StateChangedCallback,
+TEST_F(OrganizerPanelControllerTest, ExtensionOpenToggleClose) {
+  UNCALLED_MOCK_CALLBACK(OrganizerPanelController::StateChangedCallback,
                          callback);
   const auto subscription =
       controller()->RegisterOnStateChanged(callback.Get());

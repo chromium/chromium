@@ -14,7 +14,7 @@
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/common/extension_id.h"
 
-class OrganizerPanelStateController;
+class OrganizerPanelController;
 
 namespace actions {
 class ActionItem;
@@ -51,8 +51,7 @@ class OrganizerPanelExtensionView : public OrganizerPanelView,
   // extensions::ExtensionHostObserver:
   void OnExtensionHostDestroyed(extensions::ExtensionHost* host) override;
 
-  void OnOrganizerPanelStateChanged(
-      OrganizerPanelStateController* state_controller);
+  void OnOrganizerPanelStateChanged(OrganizerPanelController* state_controller);
 
  private:
   const raw_ref<BrowserWindowInterface> browser_;

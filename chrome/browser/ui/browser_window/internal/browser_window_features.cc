@@ -89,7 +89,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
@@ -624,8 +624,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
     if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
-      organizer_panel_state_controller_ =
-          GetUserDataFactory().CreateInstance<OrganizerPanelStateController>(
+      organizer_panel_controller_ =
+          GetUserDataFactory().CreateInstance<OrganizerPanelController>(
               *browser, *browser, browser_actions_->root_action_item());
     }
 

@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -62,7 +62,7 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
         mock_browser_window_interface_);
     animation_controller_->AddAnimationProvider(
         std::make_unique<OrganizerPanelAnimations>());
-    state_controller_ = std::make_unique<OrganizerPanelStateController>(
+    state_controller_ = std::make_unique<OrganizerPanelController>(
         mock_browser_window_interface_, root_action_item_.get());
   }
 
@@ -96,7 +96,7 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
   TestingProfile* profile() { return profile_.get(); }
 
  protected:
-  OrganizerPanelStateController* state_controller() {
+  OrganizerPanelController* state_controller() {
     return state_controller_.get();
   }
 
@@ -119,7 +119,7 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
   std::unique_ptr<actions::ActionItem> root_action_item_;
   std::unique_ptr<BrowserActions> browser_actions_;
   std::unique_ptr<BrowserAnimationController> animation_controller_;
-  std::unique_ptr<OrganizerPanelStateController> state_controller_;
+  std::unique_ptr<OrganizerPanelController> state_controller_;
 
   // Widget owns the view.
   std::unique_ptr<views::Widget> widget_;
