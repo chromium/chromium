@@ -725,6 +725,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteInputUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizerUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/PageClassificationUtilsUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/SecurityStatusIconUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/ToolModeUtilsUnitTest.java",

@@ -1060,7 +1060,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.omnibox") {
     "src/org/chromium/chrome/browser/omnibox/OmniboxDisplayStatePTTest.java",
     "src/org/chromium/chrome/browser/omnibox/OmniboxPTTest.java",
     "src/org/chromium/chrome/browser/omnibox/OmniboxTest.java",
-    "src/org/chromium/chrome/browser/omnibox/OmniboxUrlEmphasizerTest.java",
     "src/org/chromium/chrome/browser/omnibox/SiteSearchTest.java",
     "src/org/chromium/chrome/browser/omnibox/UrlBarTest.java",
     "src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeaderTest.java",
