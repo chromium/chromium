@@ -29,6 +29,14 @@
 #pragma mark - ChromeCoordinator
 
 - (void)stop {
+  UIPrintInteractionController* printInteractionController =
+      [UIPrintInteractionController sharedPrintController];
+  if (printInteractionController.delegate == self) {
+    printInteractionController.delegate = nil;
+    printInteractionController.printPageRenderer = nil;
+    printInteractionController.printingItem = nil;
+    printInteractionController.printInfo = nil;
+  }
   self.defaultBaseViewController = nil;
 }
 
@@ -82,10 +90,16 @@
   CHECK_EQ((renderer ? 1 : 0) + (item ? 1 : 0), 1);
   CHECK(title);
   CHECK(baseViewController);
-  self.defaultBaseViewController = baseViewController;
-  base::RecordAction(base::UserMetricsAction("MobilePrintMenuAirPrint"));
   UIPrintInteractionController* printInteractionController =
       [UIPrintInteractionController sharedPrintController];
+  if (printInteractionController.delegate) {
+    // The shared print controller is already presenting on behalf of this or
+    // another coordinator. Ignore this request rather than mutating the state
+    // of the in-progress session.
+    return;
+  }
+  self.defaultBaseViewController = baseViewController;
+  base::RecordAction(base::UserMetricsAction("MobilePrintMenuAirPrint"));
   printInteractionController.delegate = self;
 
   UIPrintInfo* printInfo = [UIPrintInfo printInfo];
@@ -104,6 +118,10 @@
           DLOG(ERROR) << "Air printing error: "
                       << base::SysNSStringToUTF8(error.description);
         }
+        controller.delegate = nil;
+        controller.printPageRenderer = nil;
+        controller.printingItem = nil;
+        controller.printInfo = nil;
       }];
 }
 

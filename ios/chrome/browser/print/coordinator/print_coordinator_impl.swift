@@ -27,6 +27,13 @@ class SwiftPrintCoordinatorImpl: PrintCoordinator,
 
   @objc override func stop() {
     MainActor.assumeIsolated {
+      let printInteractionController = UIPrintInteractionController.shared
+      if printInteractionController.delegate === self {
+        printInteractionController.delegate = nil
+        printInteractionController.printPageRenderer = nil
+        printInteractionController.printingItem = nil
+        printInteractionController.printInfo = nil
+      }
       defaultBaseViewController = nil
     }
   }
@@ -71,9 +78,15 @@ class SwiftPrintCoordinatorImpl: PrintCoordinator,
   ) {
     // Only one item must be passed.
     assert((renderer != nil) != (item != nil))
+    let printInteractionController = UIPrintInteractionController.shared
+    if printInteractionController.delegate != nil {
+      // The shared print controller is already presenting on behalf of this or
+      // another coordinator. Ignore this request rather than mutating the state
+      // of the in-progress session.
+      return
+    }
     self.defaultBaseViewController = baseViewController
     base.swift.RecordUserMetricsAction("MobilePrintMenuAirPrint")
-    let printInteractionController = UIPrintInteractionController.shared
     printInteractionController.delegate = self
 
     let printInfo = UIPrintInfo.printInfo()
@@ -90,6 +103,10 @@ class SwiftPrintCoordinatorImpl: PrintCoordinator,
         if let error = error {
           NSLog("Air printing error: %@", error.localizedDescription)
         }
+        controller.delegate = nil
+        controller.printPageRenderer = nil
+        controller.printingItem = nil
+        controller.printInfo = nil
       })
   }
 }

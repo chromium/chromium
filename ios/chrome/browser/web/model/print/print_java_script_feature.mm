@@ -36,6 +36,15 @@ void PrintJavaScriptFeature::ScriptMessageReceived(
     const web::ScriptMessage& message) {
   DCHECK(web_state);
 
+  // TODO(crbug.com/560132282): Extend this condition to cover pre-rendered tabs
+  // as well.
+  if (!web_state->IsVisible()) {
+    // Ignore window.print() calls from background tabs. The system print
+    // controller is process-wide and showing it for a hidden WebState would
+    // present over (or replace) the foreground tab's UI.
+    return;
+  }
+
   if (!message.is_main_frame() && !message.is_user_interacting()) {
     // Ignore non user-initiated window.print() calls from iframes, to prevent
     // abusive behavior from web sites.
