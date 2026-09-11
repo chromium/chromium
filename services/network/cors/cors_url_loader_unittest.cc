@@ -2462,6 +2462,288 @@ TEST_F(CorsURLLoaderTest, ForbiddenSecHeaderOnRedirectFails) {
                   "FollowRedirect"));
 }
 
+TEST_F(CorsURLLoaderTest, OriginHeaderRemovalOnRedirectFails) {
+  CreateLoaderAndStart(GURL("https://example.com/"),
+                       GURL("https://example.com/path"),
+                       mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", GURL("https://redirect.test/")));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_TRUE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_FALSE(client().has_received_completion());
+
+  ClearHasReceivedRedirect();
+  BadMessageTestHelper bad_message_helper;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  // Test non-canonical casing to verify case-insensitive matching.
+  headers_update_params.removed_headers = {"origin"};
+  FollowRedirect(std::move(headers_update_params));
+
+  RunUntilComplete();
+
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_THAT(
+      bad_message_helper.bad_message_reports(),
+      ElementsAre("CorsURLLoader: Forbidden header removal from renderer in "
+                  "FollowRedirect"));
+}
+
+TEST_F(CorsURLLoaderTest, ForbiddenSecHeaderRemovalOnRedirectFails) {
+  CreateLoaderAndStart(GURL("https://example.com/"),
+                       GURL("https://example.com/path"),
+                       mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", GURL("https://redirect.test/")));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_TRUE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_FALSE(client().has_received_completion());
+
+  ClearHasReceivedRedirect();
+  BadMessageTestHelper bad_message_helper;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  // Test mixed casing to verify case-insensitive matching.
+  headers_update_params.removed_headers = {"sEc-FeTcH-sItE"};
+  FollowRedirect(std::move(headers_update_params));
+
+  RunUntilComplete();
+
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_THAT(
+      bad_message_helper.bad_message_reports(),
+      ElementsAre("CorsURLLoader: Forbidden header removal from renderer in "
+                  "FollowRedirect"));
+}
+
+TEST_F(CorsURLLoaderTest, MixedAllowedAndForbiddenHeaderRemovalFails) {
+  CreateLoaderAndStart(GURL("https://example.com/"),
+                       GURL("https://example.com/path"),
+                       mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", GURL("https://redirect.test/")));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_TRUE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_FALSE(client().has_received_completion());
+
+  ClearHasReceivedRedirect();
+  BadMessageTestHelper bad_message_helper;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"Sec-CH-UA", "Origin"};
+  FollowRedirect(std::move(headers_update_params));
+
+  RunUntilComplete();
+
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_THAT(
+      bad_message_helper.bad_message_reports(),
+      ElementsAre("CorsURLLoader: Forbidden header removal from renderer in "
+                  "FollowRedirect"));
+}
+
+TEST_F(CorsURLLoaderTest, MixedClientHintAndForbiddenSecHeaderRemovalFails) {
+  CreateLoaderAndStart(GURL("https://example.com/"),
+                       GURL("https://example.com/path"),
+                       mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", GURL("https://redirect.test/")));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_TRUE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_FALSE(client().has_received_completion());
+
+  ClearHasReceivedRedirect();
+  BadMessageTestHelper bad_message_helper;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"Sec-CH-UA", "Sec-Fetch-Site"};
+  FollowRedirect(std::move(headers_update_params));
+
+  RunUntilComplete();
+
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_THAT(
+      bad_message_helper.bad_message_reports(),
+      ElementsAre("CorsURLLoader: Forbidden header removal from renderer in "
+                  "FollowRedirect"));
+}
+
+TEST_F(CorsURLLoaderTest, ClientHintSecHeaderRemovalOnRedirectAllowed) {
+  ResourceRequest request;
+  request.url = GURL("https://example.com/path");
+  request.request_initiator = url::Origin::Create(GURL("https://example.com/"));
+  request.mode = mojom::RequestMode::kCors;
+  request.headers.SetHeader("Sec-CH-UA", "\"Chromium\";v=\"128\"");
+  request.headers.SetHeader("Sec-CH-UA-Mobile", "?0");
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", GURL("https://redirect.test/")));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_TRUE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_FALSE(client().has_received_completion());
+  EXPECT_TRUE(GetRequest().headers.HasHeader("Sec-CH-UA"));
+  EXPECT_TRUE(GetRequest().headers.HasHeader("Sec-CH-UA-Mobile"));
+
+  ClearHasReceivedRedirect();
+  BadMessageTestHelper bad_message_helper;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"Sec-CH-UA", "Sec-CH-UA-Mobile"};
+  FollowRedirect(std::move(headers_update_params));
+
+  if (base::FeatureList::IsEnabled(
+          features::kAvoidCorsURLLoaderRestartOnRedirect)) {
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return current_loader() && current_loader()->follow_redirect_called();
+    }));
+    EXPECT_TRUE(bad_message_helper.bad_message_reports().empty());
+    EXPECT_EQ(1, num_created_loaders());
+    EXPECT_THAT(current_loader()->last_headers_update_params().removed_headers,
+                testing::ElementsAre("Sec-CH-UA", "Sec-CH-UA-Mobile"));
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_TRUE(bad_message_helper.bad_message_reports().empty());
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_FALSE(GetRequest().headers.HasHeader("Sec-CH-UA"));
+    EXPECT_FALSE(GetRequest().headers.HasHeader("Sec-CH-UA-Mobile"));
+  }
+}
+
+TEST_F(CorsURLLoaderTest, BrowserProcessHeaderRemovalOnRedirectAllowed) {
+  const url::Origin origin = url::Origin::Create(GURL("https://example.com/"));
+  ResetFactory(origin, OriginatingProcessId::browser());
+
+  ResourceRequest request;
+  request.url = GURL("https://example.com/path");
+  request.request_initiator = origin;
+  request.mode = mojom::RequestMode::kCors;
+  request.headers.SetHeader("Origin", "https://example.com");
+  request.headers.SetHeader("Sec-Fetch-Site", "same-origin");
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", GURL("https://redirect.test/")));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_TRUE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_FALSE(client().has_received_completion());
+  EXPECT_TRUE(GetRequest().headers.HasHeader("Origin"));
+  EXPECT_TRUE(GetRequest().headers.HasHeader("Sec-Fetch-Site"));
+
+  ClearHasReceivedRedirect();
+  BadMessageTestHelper bad_message_helper;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"Origin", "Sec-Fetch-Site"};
+  FollowRedirect(std::move(headers_update_params));
+
+  if (base::FeatureList::IsEnabled(
+          features::kAvoidCorsURLLoaderRestartOnRedirect)) {
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return current_loader() && current_loader()->follow_redirect_called();
+    }));
+    EXPECT_TRUE(bad_message_helper.bad_message_reports().empty());
+    EXPECT_EQ(1, num_created_loaders());
+    EXPECT_THAT(current_loader()->last_headers_update_params().removed_headers,
+                testing::ElementsAre("Sec-Fetch-Site"));
+    // The Origin header was removed from client params without a bad message,
+    // but CORS rules re-attach Origin for cross-origin CORS requests.
+    EXPECT_TRUE(current_loader()
+                    ->last_headers_update_params()
+                    .modified_headers.HasHeader("Origin"));
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_TRUE(bad_message_helper.bad_message_reports().empty());
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_FALSE(GetRequest().headers.HasHeader("Sec-Fetch-Site"));
+    // The Origin header was removed from client params without a bad message,
+    // but CORS rules re-attach Origin for cross-origin CORS requests.
+    EXPECT_TRUE(GetRequest().headers.HasHeader("Origin"));
+  }
+}
+
+TEST_F(CorsURLLoaderTest, HeaderRemovalAllowedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kBlockSecurityHeaderRemovalOnRedirect);
+
+  CreateLoaderAndStart(GURL("https://example.com/"),
+                       GURL("https://example.com/path"),
+                       mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", GURL("https://redirect.test/")));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_TRUE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_FALSE(client().has_received_completion());
+
+  ClearHasReceivedRedirect();
+  BadMessageTestHelper bad_message_helper;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"Origin", "Sec-Fetch-Site"};
+  FollowRedirect(std::move(headers_update_params));
+
+  if (base::FeatureList::IsEnabled(
+          features::kAvoidCorsURLLoaderRestartOnRedirect)) {
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return current_loader() && current_loader()->follow_redirect_called();
+    }));
+    EXPECT_TRUE(bad_message_helper.bad_message_reports().empty());
+    EXPECT_EQ(1, num_created_loaders());
+    EXPECT_THAT(current_loader()->last_headers_update_params().removed_headers,
+                testing::ElementsAre("Sec-Fetch-Site"));
+    EXPECT_TRUE(current_loader()
+                    ->last_headers_update_params()
+                    .modified_headers.HasHeader("Origin"));
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_TRUE(bad_message_helper.bad_message_reports().empty());
+    EXPECT_EQ(2, num_created_loaders());
+  }
+}
+
 TEST_F(CorsURLLoaderTest, SameOriginCredentialsModeWithoutInitiator) {
   // This test needs to simulate a factory used from the browser process,
   // because only the browser process may start requests with no

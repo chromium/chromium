@@ -338,6 +338,12 @@ BASE_DECLARE_FEATURE(kBlockInvalidOriginHeaderModificationOnRedirect);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kBlockInvalidOriginHeader);
 
+// When enabled, the network service will prohibit non-browser processes from
+// removing security-sensitive headers (such as Origin and Sec- headers other
+// than Client Hints) in CorsURLLoader::FollowRedirect.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kBlockSecurityHeaderRemovalOnRedirect);
+
 // If enabled, the variations headers for allowlisted domains will be included
 // in the Reporting API uploads.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)

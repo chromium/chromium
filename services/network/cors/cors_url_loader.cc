@@ -28,6 +28,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_log_util.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -653,7 +654,20 @@ void CorsURLLoader::FollowRedirect(
     return;
   }
 
-  // TODO(crbug.com/556536450): Clean up removed_headers handling.
+  std::string forbidden_removed_header;
+  if (!process_id_.is_browser() &&
+      base::FeatureList::IsEnabled(
+          features::kBlockSecurityHeaderRemovalOnRedirect) &&
+      !ValidateRemovedHeaders(headers_update_params.removed_headers,
+                              &forbidden_removed_header)) {
+    SCOPED_CRASH_KEY_STRING32("network", "forbidden_sec_header",
+                              forbidden_removed_header);
+    HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
+    mojo::ReportBadMessage(
+        "CorsURLLoader: Forbidden header removal from renderer in "
+        "FollowRedirect");
+    return;
+  }
   for (const auto& name : headers_update_params.removed_headers) {
     request_.headers.RemoveHeader(name);
     request_.cors_exempt_headers.RemoveHeader(name);

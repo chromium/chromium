@@ -360,4 +360,67 @@ TEST(HeaderUtilTest,
   EXPECT_EQ(*headers.GetHeader("Sec-Speculation-Tags"), std::string(2048, 'a'));
 }
 
+TEST(HeaderUtilTest, ValidateRemovedHeaders) {
+  std::string forbidden_header;
+
+  // Empty list is valid.
+  EXPECT_TRUE(ValidateRemovedHeaders({}, &forbidden_header));
+  EXPECT_TRUE(forbidden_header.empty());
+
+  // Non-security headers are valid to remove.
+  EXPECT_TRUE(ValidateRemovedHeaders({"Accept", "Authorization", "User-Agent"},
+                                     &forbidden_header));
+  EXPECT_TRUE(forbidden_header.empty());
+
+  // Client Hints (Sec-CH-*) are permitted to be removed on redirect.
+  EXPECT_TRUE(ValidateRemovedHeaders({"Sec-CH-UA", "Sec-CH-UA-Mobile"},
+                                     &forbidden_header));
+  EXPECT_TRUE(forbidden_header.empty());
+
+  // Client Hints case-insensitivity.
+  EXPECT_TRUE(ValidateRemovedHeaders({"sec-ch-ua", "SEC-CH-UA-PLATFORM"},
+                                     &forbidden_header));
+  EXPECT_TRUE(forbidden_header.empty());
+
+  // Origin header removal is forbidden (canonical and non-canonical casing).
+  EXPECT_FALSE(ValidateRemovedHeaders({"Origin"}, &forbidden_header));
+  EXPECT_EQ(forbidden_header, "Origin");
+
+  forbidden_header.clear();
+  EXPECT_FALSE(ValidateRemovedHeaders({"origin"}, &forbidden_header));
+  EXPECT_EQ(forbidden_header, "origin");
+
+  forbidden_header.clear();
+  EXPECT_FALSE(ValidateRemovedHeaders({"ORIGIN"}, &forbidden_header));
+  EXPECT_EQ(forbidden_header, "ORIGIN");
+
+  // Sec- headers other than Sec-CH- are forbidden to remove.
+  forbidden_header.clear();
+  EXPECT_FALSE(ValidateRemovedHeaders({"Sec-Fetch-Site"}, &forbidden_header));
+  EXPECT_EQ(forbidden_header, "Sec-Fetch-Site");
+
+  forbidden_header.clear();
+  EXPECT_FALSE(ValidateRemovedHeaders({"sEc-FeTcH-mOdE"}, &forbidden_header));
+  EXPECT_EQ(forbidden_header, "sEc-FeTcH-mOdE");
+
+  forbidden_header.clear();
+  EXPECT_FALSE(ValidateRemovedHeaders({"Sec-Purpose"}, &forbidden_header));
+  EXPECT_EQ(forbidden_header, "Sec-Purpose");
+
+  forbidden_header.clear();
+  EXPECT_FALSE(ValidateRemovedHeaders({"Sec-GPC"}, &forbidden_header));
+  EXPECT_EQ(forbidden_header, "Sec-GPC");
+
+  // Mixed permitted Client Hints and forbidden headers.
+  forbidden_header.clear();
+  EXPECT_FALSE(
+      ValidateRemovedHeaders({"Sec-CH-UA", "Origin"}, &forbidden_header));
+  EXPECT_EQ(forbidden_header, "Origin");
+
+  forbidden_header.clear();
+  EXPECT_FALSE(ValidateRemovedHeaders({"Sec-CH-UA", "Sec-Fetch-Dest"},
+                                      &forbidden_header));
+  EXPECT_EQ(forbidden_header, "Sec-Fetch-Dest");
+}
+
 }  // namespace network

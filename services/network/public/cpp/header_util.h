@@ -5,7 +5,9 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_HEADER_UTIL_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_HEADER_UTIL_H_
 
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/component_export.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
@@ -44,6 +46,15 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool ContainsForbiddenSecurityHeader(
     net::HttpRequestHeaders& headers,
     std::string* out_forbidden_header_name = nullptr);
+
+// Validates that `removed_headers` does not contain security-sensitive headers
+// (e.g. Origin, or Sec- headers other than Client Hints) from an untrusted
+// client. Returns true if all headers are valid to remove, or false if an
+// illegal header removal is found, optionally setting
+// `out_forbidden_header_name`.
+COMPONENT_EXPORT(NETWORK_CPP)
+bool ValidateRemovedHeaders(const std::vector<std::string>& removed_headers,
+                            std::string* out_forbidden_header_name = nullptr);
 
 // Parses the referrer policy header if present. Returns
 // mojom::ReferrerPolicy::kDefault if the header is absent.
