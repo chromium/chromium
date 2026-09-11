@@ -66,7 +66,7 @@ class OmniboxEverywhereSettingsHandlerTest : public testing::Test {
   std::unique_ptr<TestingOmniboxEverywhereSettingsHandler> handler_;
 };
 
-TEST_F(OmniboxEverywhereSettingsHandlerTest, GetInitialShortcutIsEmpty) {
+TEST_F(OmniboxEverywhereSettingsHandlerTest, GetDefaultShortcut) {
   base::ListValue args;
   args.Append(kCallbackId);
   handler()->HandleGetOmniboxEverywhereShortcut(args);
@@ -76,7 +76,7 @@ TEST_F(OmniboxEverywhereSettingsHandlerTest, GetInitialShortcutIsEmpty) {
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
   EXPECT_EQ(kCallbackId, call_data.arg1()->GetString());
   EXPECT_TRUE(call_data.arg2()->GetBool());
-  EXPECT_TRUE(call_data.arg3()->GetString().empty());
+  EXPECT_FALSE(call_data.arg3()->GetString().empty());
 }
 
 TEST_F(OmniboxEverywhereSettingsHandlerTest, SetAndGetCustomValidShortcut) {
@@ -149,18 +149,6 @@ TEST_F(OmniboxEverywhereSettingsHandlerTest, SetEmptyShortcutClearsPref) {
 
   EXPECT_EQ("", local_state->GetString(
                     omnibox_everywhere::prefs::kOmniboxEverywhereHotkey));
-
-  // Verify getter returns empty string after clearing.
-  base::ListValue get_args;
-  get_args.Append("callback-2");
-  handler()->HandleGetOmniboxEverywhereShortcut(get_args);
-
-  EXPECT_EQ(2U, web_ui()->call_data().size());
-  const auto& get_call_data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIResponse", get_call_data.function_name());
-  EXPECT_EQ("callback-2", get_call_data.arg1()->GetString());
-  EXPECT_TRUE(get_call_data.arg2()->GetBool());
-  EXPECT_TRUE(get_call_data.arg3()->GetString().empty());
 }
 
 TEST_F(OmniboxEverywhereSettingsHandlerTest, SetShortcutSuspensionState) {

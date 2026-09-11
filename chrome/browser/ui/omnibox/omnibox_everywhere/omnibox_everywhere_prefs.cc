@@ -230,15 +230,21 @@ void OnFreStageDismissed(Profile* profile,
   }
 }
 
+ui::Accelerator GetDefaultOmniboxEverywhereHotkey() {
+  // TODO(crbug.com/556870238): Remove the default hotkey because
+  // shortcuts should be explicitly chosen by the user.
+  return ui::Accelerator(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
+}
+
 ui::Accelerator GetOmniboxEverywhereHotkey(PrefService* local_state) {
   if (!local_state) {
-    return ui::Accelerator();
+    return GetDefaultOmniboxEverywhereHotkey();
   }
 
   const std::string hotkey_str =
       local_state->GetString(kOmniboxEverywhereHotkey);
   if (hotkey_str.empty()) {
-    return ui::Accelerator();
+    return GetDefaultOmniboxEverywhereHotkey();
   }
 
   const ui::Accelerator hotkey = ui::Command::StringToAccelerator(hotkey_str);
@@ -247,7 +253,7 @@ ui::Accelerator GetOmniboxEverywhereHotkey(PrefService* local_state) {
     return hotkey;
   }
 
-  return ui::Accelerator();
+  return GetDefaultOmniboxEverywhereHotkey();
 }
 
 void SetOmniboxEverywhereHotkey(PrefService* local_state,

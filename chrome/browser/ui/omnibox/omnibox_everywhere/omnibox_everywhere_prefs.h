@@ -152,16 +152,19 @@ void OnFreStageDismissed(Profile* profile,
                          FreStage stage,
                          PrefService* local_state = nullptr);
 
+// Returns the default global hotkey accelerator for Omnibox Everywhere.
+ui::Accelerator GetDefaultOmniboxEverywhereHotkey();
+
 // Returns the configured global hotkey accelerator for Omnibox Everywhere from
-// local state, or an empty accelerator if unset or invalid.
+// local state, falling back to the default accelerator if unset or invalid.
 ui::Accelerator GetOmniboxEverywhereHotkey(PrefService* local_state);
 
 // Sets the configured global hotkey accelerator in local state.
 void SetOmniboxEverywhereHotkey(PrefService* local_state,
                                 std::string_view hotkey_str);
 
-// Returns true if a global hotkey combination is explicitly configured for
-// Omnibox Everywhere and enabled.
+// Returns true if a global hotkey combination is available for Omnibox
+// Everywhere (either explicitly configured or default fallback) and enabled.
 bool HasOmniboxEverywhereHotkey(PrefService* local_state);
 
 // Returns token strings for the accelerator (e.g. ["Cmd", "Shift", "Space"]).
