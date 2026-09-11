@@ -63,14 +63,26 @@ TEST(ScreenAIServiceImplTest, IsVulnerableToTlsDtvCrash) {
   EXPECT_FALSE(IsVulnerableToTlsDtvCrash_ForTesting("2.39", nullptr));
   EXPECT_FALSE(IsVulnerableToTlsDtvCrash_ForTesting("3.0", nullptr));
 
-  // Safe: glibc < 2.35, but Static TLS allocated successfully (valid mock
-  // address).
-  EXPECT_FALSE(IsVulnerableToTlsDtvCrash_ForTesting("2.31", &mock_tls_block));
-  EXPECT_FALSE(IsVulnerableToTlsDtvCrash_ForTesting("2.27", &mock_tls_block));
+  // Safe: glibc between 2.32 and 2.34 with Static TLS allocated successfully
+  // (valid mock address).
+  EXPECT_FALSE(IsVulnerableToTlsDtvCrash_ForTesting("2.34", &mock_tls_block));
+  EXPECT_FALSE(IsVulnerableToTlsDtvCrash_ForTesting("2.32", &mock_tls_block));
 
-  // Vulnerable: glibc < 2.35 AND Static TLS exhausted (tls_block is nullptr).
+  // Vulnerable: glibc between 2.32 and 2.34 AND Static TLS exhausted (tls_block
+  // is nullptr).
+  EXPECT_TRUE(IsVulnerableToTlsDtvCrash_ForTesting("2.34", nullptr));
+  EXPECT_TRUE(IsVulnerableToTlsDtvCrash_ForTesting("2.32", nullptr));
+
+  // Vulnerable: glibc < 2.32 regardless of tls_block.
+  EXPECT_TRUE(IsVulnerableToTlsDtvCrash_ForTesting("2.31", &mock_tls_block));
   EXPECT_TRUE(IsVulnerableToTlsDtvCrash_ForTesting("2.31", nullptr));
-  EXPECT_TRUE(IsVulnerableToTlsDtvCrash_ForTesting("2.27", nullptr));
+
+  // When glibc version is unknown or not parseable, rely on tls_block.
+  EXPECT_FALSE(IsVulnerableToTlsDtvCrash_ForTesting(nullptr, &mock_tls_block));
+  EXPECT_TRUE(IsVulnerableToTlsDtvCrash_ForTesting(nullptr, nullptr));
+  EXPECT_FALSE(
+      IsVulnerableToTlsDtvCrash_ForTesting("invalid", &mock_tls_block));
+  EXPECT_TRUE(IsVulnerableToTlsDtvCrash_ForTesting("invalid", nullptr));
 
   // Handle is null: should return false.
   EXPECT_FALSE(IsVulnerableToTlsDtvCrash(nullptr));

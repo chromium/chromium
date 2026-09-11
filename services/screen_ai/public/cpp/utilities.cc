@@ -89,8 +89,9 @@ base::FilePath GetTestComponentDir() {
 // TLS block pointers across Linux build configurations.
 bool IsVulnerableToTlsDtvCrash_Internal(const char* version_str,
                                         void* tls_block) {
-  // Check if system glibc version is >= 2.35 (where DTV allocation race was
-  // fixed upstream).
+  // Check system glibc version:
+  // - glibc >= 2.35 is safe (where DTV allocation race was fixed upstream).
+  // - glibc < 2.32 is vulnerable regardless of tls_block.
   if (version_str) {
     base::Version version(version_str);
     if (version.IsValid() && version.components().size() >= 2) {
@@ -100,16 +101,20 @@ bool IsVulnerableToTlsDtvCrash_Internal(const char* version_str,
         return false;  // Safe: glibc 2.35+ handles concurrent DTV allocations
                        // safely.
       }
+      if (major < 2 || (major == 2 && minor < 32)) {
+        return true;  // Vulnerable: glibc < 2.32.
+      }
     }
   }
 
-  // `tls_block == nullptr` indicates that glibc's Static TLS surplus pool was
-  // exhausted prior to loading Screen AI (e.g. by third-party drivers or
-  // tools), forcing glibc to fall back to dynamic DTV TLS allocation. On glibc
-  // < 2.35, dynamic DTV TLS allocation has an unlocked race condition in
-  // `__tls_get_addr()` that corrupts PartitionAlloc's ThreadCache freelist
-  // during multithreaded OCR. Conversely, a non-null `tls_block` means Static
-  // TLS was successfully allocated, bypassing `__tls_get_addr()` calls safely.
+  // On glibc between 2.32 and 2.34, `tls_block == nullptr` indicates that
+  // glibc's Static TLS surplus pool was exhausted prior to loading Screen AI
+  // (e.g. by third-party drivers or tools), forcing glibc to fall back to
+  // dynamic DTV TLS allocation. On glibc < 2.35, dynamic DTV TLS allocation has
+  // an unlocked race condition in `__tls_get_addr()` that corrupts
+  // PartitionAlloc's ThreadCache freelist during multithreaded OCR. Conversely,
+  // a non-null `tls_block` means Static TLS was successfully allocated,
+  // bypassing `__tls_get_addr()` calls safely.
   if (tls_block == nullptr) {
     return true;  // Vulnerable machine.
   }
@@ -191,14 +196,19 @@ bool IsVulnerableToTlsDtvCrash(void* dlopen_handle) {
 #if defined(__GLIBC__)
   if (dlopen_handle != nullptr) {
     void* tls_block = nullptr;
-    if (dlinfo(dlopen_handle, RTLD_DI_TLS_DATA, &tls_block) == 0) {
-      return IsVulnerableToTlsDtvCrash_Internal(gnu_get_libc_version(),
-                                                tls_block);
+    // `dlinfo` retrieves the TLS block address if allocated via Static TLS.
+    // If `dlinfo` fails (e.g. on glibc < 2.4 where RTLD_DI_TLS_DATA is
+    // unsupported), reset `tls_block` to nullptr to safely treat it as
+    // unallocated.
+    if (dlinfo(dlopen_handle, RTLD_DI_TLS_DATA, &tls_block) != 0) {
+      tls_block = nullptr;
     }
+    return IsVulnerableToTlsDtvCrash_Internal(gnu_get_libc_version(),
+                                              tls_block);
   }
 #endif  // defined(__GLIBC__)
 
-  return false;  // Safe: Static TLS was successfully allocated or not glibc.
+  return false;  // Safe: null handle or not glibc.
 }
 #endif  // BUILDFLAG(IS_LINUX)
 

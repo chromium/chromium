@@ -158,7 +158,7 @@ bool ScreenAILibraryWrapperImpl::InitOCR() {
   glibc_version_crash_key.Set(gnu_get_libc_version());
 
   bool is_vulnerable = IsVulnerableToTlsDtvCrash(library_.get());
-  base::UmaHistogramBoolean("Accessibility.ScreenAI.VulnerableToTlsDtvCrash",
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.VulnerableToTlsDtvCrash2",
                             is_vulnerable);
   if (is_vulnerable) {
     LOG(ERROR) << "Disabling Screen AI OCR on this device due to glibc TLS DTV "

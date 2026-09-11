@@ -46,16 +46,18 @@ uint32_t GetMaxDimensionForOCR();
 // from `base::ScopedNativeLibrary::get()`). `IsVulnerableToTlsDtvCrash` queries
 // `dlinfo` with `dlopen_handle` to inspect the Static TLS block allocation.
 //
-// A machine is vulnerable if both of the following are true:
-// 1. System glibc version is < 2.35 (glibc 2.35+ fixed concurrent DTV
-//    allocations).
-// 2. Static TLS allocation failed for Screen AI (retrieved `tls_block` is
-//    nullptr).
-//    - A non-null `tls_block` indicates glibc assigned thread_local variables
-//      to the Static TLS surplus pool, bypassing `__tls_get_addr()` safely.
+// A machine is vulnerable if either of the following is true:
+// 1. System glibc version is < 2.32 (regardless of `tls_block`).
+// 2. System glibc version is < 2.35 and Static TLS allocation failed for Screen
+//    AI (retrieved `tls_block` is nullptr).
+//    - On glibc 2.32 to 2.34, a non-null `tls_block` indicates glibc assigned
+//      thread_local variables to the Static TLS surplus pool, bypassing
+//      `__tls_get_addr()` safely.
 //    - A null `tls_block` indicates Static TLS was exhausted, forcing glibc to
 //      fall back to dynamic DTV TLS allocation, which triggers a thread-safety
 //      race condition in `__tls_get_addr()` on glibc < 2.35.
+//
+// glibc 2.35+ fixed concurrent DTV allocations upstream and is always safe.
 bool IsVulnerableToTlsDtvCrash(void* dlopen_handle);
 
 // Helper for testing IsVulnerableToTlsDtvCrash with custom glibc version and

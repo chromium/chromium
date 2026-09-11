@@ -4269,16 +4269,16 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.VulnerableToTlsDtvCrash" enum="Boolean"
-    expires_after="2027-06-01">
+<histogram name="Accessibility.ScreenAI.VulnerableToTlsDtvCrash2"
+    enum="Boolean" expires_after="2027-06-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records true if the system environment is vulnerable to glibc DTV TLS
-    allocation races (glibc &lt; 2.35 with Static TLS pool exhausted) when
-    Screen AI OCR initialization is attempted, or false otherwise. This metric
-    is recorded during Screen AI OCR initialization, only on Linux and when
-    glibc is used.
+    allocation races (glibc &lt; 2.32, or glibc &lt; 2.35 with Static TLS pool
+    exhausted) when Screen AI OCR initialization is attempted, or false
+    otherwise. This metric is recorded during Screen AI OCR initialization, only
+    on Linux and when glibc is used.
   </summary>
 </histogram>
 
