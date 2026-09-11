@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -196,9 +197,13 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithContextualCueing,
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithContextualCueing,
                        testGetZeroStateSuggestionsApi) {
+  base::HistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
   EXPECT_EQ(fake_cueing_service()->pinned_tabs_call_count(), 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetZeroStateSuggestionsAndSubscribe",
+      mojom::GlicRequestEvent::kRequestReceived, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithContextualCueing,

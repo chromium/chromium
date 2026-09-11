@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_api_metrics.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/suggestions/caching_zero_state_suggestions_manager.h"
@@ -286,6 +287,8 @@ void GlicZeroStateSuggestionsManager::GetZeroStateSuggestionsAndSubscribe(
     mojo::PendingRemote<mojom::ZeroStateSuggestionsClient> client,
     mojom::ZeroStateSuggestionsOptionsPtr options,
     GetZeroStateSuggestionsAndSubscribeCallback callback) {
+  LogApiRequestCount(
+      GlicHostApiRequestId::kGetZeroStateSuggestionsAndSubscribe);
   client_remote_.reset();
   if (client.is_valid()) {
     client_remote_.Bind(std::move(client));

@@ -8,12 +8,8 @@ import type {ExperimentalTriggeringClient} from './experimental_triggering/exper
 import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
 import {defInterface, defMessage} from './transport/messaging.js';
 import type {ErrorCodec, PendingRemote, TransferableException} from './transport/post_message_transport.js';
-import type {ZeroStateSuggestionsClient, ZeroStateSuggestionsHost} from './zero_state_suggestions/zero_state_suggestions_types.js';
-
 export type {
   ExperimentalTriggeringClient,
-  ZeroStateSuggestionsClient,
-  ZeroStateSuggestionsHost,
 };
 
 /*

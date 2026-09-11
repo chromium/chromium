@@ -6,7 +6,7 @@
 // Communicates with the web client side in ../client/.
 
 import {enumToClient} from '../../enum_conversions.js';
-import {ExperimentalTriggeringClientReceiver, GlicRequestEvent as MojomGlicRequestEvent, WebClientHandlerRemote, ZeroStateSuggestionsHandlerRemote} from '../../glic.mojom-webui.js';
+import {ExperimentalTriggeringClientReceiver, GlicRequestEvent as MojomGlicRequestEvent, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
 import type {ExperimentalTriggeringUpdatesHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
 import {ClientCapabilities} from '../../glic_api/glic_api.js';
 import {ObservableValue} from '../../observable.js';
@@ -17,11 +17,9 @@ import {ExperimentalTriggeringClientDef} from '../experimental_triggering/experi
 import type {ExperimentalTriggeringClient} from '../experimental_triggering/experimental_triggering_types.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
 import {getHostRequestHistogramInfo} from '../request_types.js';
-import type {WebClient, ZeroStateSuggestionsHost} from '../request_types.js';
+import type {WebClient} from '../request_types.js';
 import type {ResponseExtras} from '../transport/messaging.js';
-import type {InterfaceDef, PendingReceiver, PendingRemote, PostMessageLifecycleObserver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
-import {ZeroStateSuggestionsHostMessageHandler} from '../zero_state_suggestions/zero_state_suggestions_host.js';
-import {ZeroStateSuggestionsHostDef} from '../zero_state_suggestions/zero_state_suggestions_types.js';
+import type {InterfaceDef, PendingReceiver, PostMessageLifecycleObserver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 
 import {conversionSettings, urlFromClient} from './conversions.js';
 import {HostMessageHandler} from './host_from_client.js';
@@ -70,8 +68,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   captureRegionObserver?: CaptureRegionObserverImpl;
 
   readonly router: PostMessageRouter;
-
-  zeroStateSuggestionsHandler?: ZeroStateSuggestionsHandlerRemote;
   private isDestroyed = false;
 
   private experimentalTriggeringUpdatesHandler =
@@ -121,7 +117,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
       clientCapabilities: Set<ClientCapabilities>): {
     experimentalTriggeringReceiver?: PendingReceiver<
                                       ExperimentalTriggeringClient>,
-    zeroStateSuggestionsRemote?: PendingRemote<ZeroStateSuggestionsHost>,
   } {
     this.panelIsActive = initialState.panelIsActive;
     this.instanceIsActive = initialState.instanceIsActive;
@@ -137,27 +132,8 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     this.handler.createExperimentalTriggeringClient(
         experimentalTriggeringClientReceiver.$.bindNewPipeAndPassRemote());
 
-    let zeroStateSuggestionsRemote: PendingRemote<ZeroStateSuggestionsHost>|
-        undefined;
-    if (initialState.enableZeroStateSuggestions) {
-      this.zeroStateSuggestionsHandler = maybeWrapWithLogging(
-          new ZeroStateSuggestionsHandlerRemote(),
-          {prefix: 'ZeroStateSuggestionsHandler'});
-      this.handler.createZeroStateSuggestionsHandler(
-          this.zeroStateSuggestionsHandler.$.bindNewPipeAndPassReceiver());
-      const zeroStateSuggestionsHostMessageHandler =
-          new ZeroStateSuggestionsHostMessageHandler(
-              this.zeroStateSuggestionsHandler, this.router);
-      const {remote: zeroStateSuggestionsRemoteVal} =
-          this.router.newPipeWithReceiver(
-              zeroStateSuggestionsHostMessageHandler,
-              ZeroStateSuggestionsHostDef);
-      zeroStateSuggestionsRemote = zeroStateSuggestionsRemoteVal;
-    }
-
     return {
       experimentalTriggeringReceiver,
-      zeroStateSuggestionsRemote,
     };
   }
 

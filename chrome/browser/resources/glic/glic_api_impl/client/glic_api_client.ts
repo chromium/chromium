@@ -159,7 +159,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.actorClient = new GlicBrowserHostActor();
     this.annotationClient = new GlicBrowserHostAnnotation();
     this.skillsClient = new GlicBrowserHostSkills();
-    this.suggestionsClient = new GlicBrowserHostZeroStateSuggestions(this);
+    this.suggestionsClient = new GlicBrowserHostZeroStateSuggestions();
     this.toolsClient = new GlicBrowserHostTools();
     this.geicClient = new GlicBrowserHostGeic();
 
@@ -210,6 +210,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.toolsClient.destroyTools();
     this.annotationClient.destroyAnnotation();
     this.geicClient.destroy();
+    this.suggestionsClient.destroySuggestions();
     if (this.webClientReceiver) {
       this.webClientReceiver.$.close();
       this.webClientReceiver = undefined;
@@ -231,8 +232,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.experimentalTriggeringClient.initialize(
         this.router, initialPipes.experimentalTriggeringReceiver,
         this.webClient, this.clientRemote);
-    this.suggestionsClient.initialize(
-        initialState, initialPipes.zeroStateSuggestionsRemote);
+    this.suggestionsClient.initialize(initialState, this.handler);
     this.toolsClient.initialize(initialState, this.handler);
     this.geicClient.initialize(initialState, this.handler);
 

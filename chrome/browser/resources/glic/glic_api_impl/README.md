@@ -26,3 +26,10 @@ Shared utilities for message passing with postMessage.
 The actor module. Contains the client implementation for actor related glic API
 functions.
   actor_client.ts - client implementation.
+
+### zero_state_suggestions/
+
+The zero state suggestions module. Contains the client implementation for zero
+state suggestions related glic API functions.
+  zero_state_suggestions_client.ts - client implementation.
+

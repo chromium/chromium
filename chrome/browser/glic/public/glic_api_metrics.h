@@ -66,6 +66,7 @@ enum class GlicHostApiRequestId {
   kUnpinAllTabs = 51,
   kSubscribeToPinCandidates = 52,
   kGetZeroStateSuggestionsForFocusedTab = 54,
+  kGetZeroStateSuggestionsAndSubscribe = 55,
   kSetClosedCaptioningSetting = 56,
   kDropScrollToHighlight = 57,
   kMaybeRefreshUserStatus = 58,
