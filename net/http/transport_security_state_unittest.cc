@@ -674,35 +674,28 @@ TEST_F(TransportSecurityStateTest, DeleteAllDynamicDataBetween) {
   EXPECT_FALSE(state.HasPublicKeyPins("example.com"));
   bool include_subdomains = false;
   state.AddHSTS("example.com", expiry, include_subdomains);
-  state.AddHPKP("example.com", expiry, include_subdomains,
-                GetSampleSPKIHashes());
 
   state.DeleteAllDynamicDataBetween(expiry, base::Time::Max(),
                                     base::DoNothing());
   EXPECT_TRUE(
       state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
-  EXPECT_TRUE(state.HasPublicKeyPins("example.com"));
 
   state.DeleteAllDynamicDataBetween(older, current_time, base::DoNothing());
   EXPECT_TRUE(
       state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
-  EXPECT_TRUE(state.HasPublicKeyPins("example.com"));
 
   state.DeleteAllDynamicDataBetween(base::Time(), current_time,
                                     base::DoNothing());
   EXPECT_TRUE(
       state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
-  EXPECT_TRUE(state.HasPublicKeyPins("example.com"));
 
   state.DeleteAllDynamicDataBetween(older, base::Time::Max(),
                                     base::DoNothing());
   EXPECT_FALSE(
       state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
-  EXPECT_FALSE(state.HasPublicKeyPins("example.com"));
 
   // Dynamic data in |state| should be empty now.
   EXPECT_FALSE(TransportSecurityState::STSStateIterator(state).HasNext());
-  EXPECT_FALSE(state.has_dynamic_pkp_state());
 }
 
 // Setting `is_top_level_nav` true prevents the upgrade from being blocked by
@@ -714,20 +707,15 @@ TEST_F(TransportSecurityStateTest, DeleteDynamicDataForHost) {
   bool include_subdomains = false;
 
   state.AddHSTS("example1.test", expiry, include_subdomains);
-  state.AddHPKP("example1.test", expiry, include_subdomains,
-                GetSampleSPKIHashes());
 
   EXPECT_TRUE(
       state.ShouldUpgradeToSSL("example1.test", /*is_top_level_nav=*/true));
   EXPECT_FALSE(
       state.ShouldUpgradeToSSL("example2.test", /*is_top_level_nav=*/true));
-  EXPECT_TRUE(state.HasPublicKeyPins("example1.test"));
-  EXPECT_FALSE(state.HasPublicKeyPins("example2.test"));
 
   EXPECT_TRUE(state.DeleteDynamicDataForHost("example1.test"));
   EXPECT_FALSE(
       state.ShouldUpgradeToSSL("example1.test", /*is_top_level_nav=*/true));
-  EXPECT_FALSE(state.HasPublicKeyPins("example1.test"));
 }
 
 TEST_F(TransportSecurityStateTest, LongNames) {

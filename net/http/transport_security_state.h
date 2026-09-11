@@ -321,7 +321,7 @@ class NET_EXPORT TransportSecurityState {
                      const std::vector<PinSetInfo>& host_pins,
                      base::Time update_time);
 
-  // Clears all dynamic data (e.g. HSTS and HPKP data).
+  // Clears all dynamic HSTS data.
   //
   // Does NOT persist changes using the Delegate, as this function is only
   // used to clear any dynamic data prior to re-loading it from a file.
@@ -336,8 +336,8 @@ class NET_EXPORT TransportSecurityState {
   void AddOrUpdateEnabledSTSHosts(const HashedHost& hashed_host,
                                   const STSState& state);
 
-  // Deletes all dynamic data (e.g. HSTS or HPKP data) created between a time
-  // period  [|start_time|, |end_time|).
+  // Deletes all dynamic HSTS data created between a time period
+  // [|start_time|, |end_time|).
   //
   // If any entries are deleted, the new state will be persisted through
   // the Delegate (if any). Calls |callback| when data is persisted to disk.
@@ -345,10 +345,9 @@ class NET_EXPORT TransportSecurityState {
                                    base::Time end_time,
                                    base::OnceClosure callback);
 
-  // Deletes any dynamic data stored for |host| (e.g. HSTS or HPKP data).
-  // If |host| doesn't have an exact entry then no action is taken. Does
-  // not delete static (i.e. preloaded) data.  Returns true iff an entry
-  // was deleted.
+  // Deletes any dynamic HSTS data stored for |host|. If |host| doesn't have an
+  // exact entry then no action is taken. Does not delete static (i.e.
+  // preloaded) data.  Returns true iff an entry was deleted.
   //
   // If an entry is deleted, the new state will be persisted through
   // the Delegate (if any).

@@ -452,8 +452,6 @@ void TransportSecurityState::AddHPKPInternal(std::string_view host,
     const HashedHost hashed_host = HashHost(canonicalized_host);
     enabled_pkp_hosts_.erase(hashed_host);
   }
-
-  DirtyNotify();
 }
 
 void TransportSecurityState::
@@ -493,12 +491,6 @@ bool TransportSecurityState::DeleteDynamicDataForHost(std::string_view host) {
     deleted = true;
   }
 
-  auto pkp_iterator = enabled_pkp_hosts_.find(hashed_host);
-  if (pkp_iterator != enabled_pkp_hosts_.end()) {
-    enabled_pkp_hosts_.erase(pkp_iterator);
-    deleted = true;
-  }
-
   if (deleted) {
     DirtyNotify();
   }
@@ -508,7 +500,6 @@ bool TransportSecurityState::DeleteDynamicDataForHost(std::string_view host) {
 void TransportSecurityState::ClearDynamicData() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   enabled_sts_hosts_.clear();
-  enabled_pkp_hosts_.clear();
 }
 
 void TransportSecurityState::DeleteAllDynamicDataBetween(
@@ -528,18 +519,6 @@ void TransportSecurityState::DeleteAllDynamicDataBetween(
     }
 
     ++sts_iterator;
-  }
-
-  auto pkp_iterator = enabled_pkp_hosts_.begin();
-  while (pkp_iterator != enabled_pkp_hosts_.end()) {
-    if (pkp_iterator->second.last_observed >= start_time &&
-        pkp_iterator->second.last_observed < end_time) {
-      dirtied = true;
-      enabled_pkp_hosts_.erase(pkp_iterator++);
-      continue;
-    }
-
-    ++pkp_iterator;
   }
 
   if (dirtied && delegate_) {
@@ -822,7 +801,6 @@ bool TransportSecurityState::GetDynamicPKPState(std::string_view host,
     // If the entry is invalid, drop it.
     if (current_time > j->second.expiry) {
       enabled_pkp_hosts_.erase(j);
-      DirtyNotify();
       continue;
     }
 
