@@ -178,12 +178,11 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
           gpu::SyncToken(const scoped_refptr<gpu::ClientSharedImage>&,
                          const gpu::SyncToken&)> overwrite_callback);
 
-  bool CopyToBackingSharedImage(
+  std::optional<gpu::SyncToken> CopyToBackingSharedImage(
       const scoped_refptr<gpu::ClientSharedImage>& shared_image,
       uint32_t src_x,
       uint32_t src_y,
-      const gpu::SyncToken& ready_sync_token,
-      gpu::SyncToken& completion_sync_token);
+      const gpu::SyncToken& ready_sync_token);
 
   void WaitSyncToken(const gpu::SyncToken& sync_token);
 

@@ -87,11 +87,10 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     bool copy_success = false;
     if (image->IsTextureBacked()) {
       if (auto shared_image = image->GetSharedImage()) {
-        gpu::SyncToken completion_sync_token;
-        if (lease->CopyToBackingSharedImage(
+        if (auto completion_sync_token = lease->CopyToBackingSharedImage(
                 std::move(shared_image), image_sub_rect.x(), image_sub_rect.y(),
-                image->GetSyncToken(), completion_sync_token)) {
-          image->UpdateSyncToken(completion_sync_token);
+                image->GetSyncToken())) {
+          image->UpdateSyncToken(*completion_sync_token);
           copy_success = true;
         }
       }
