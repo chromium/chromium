@@ -129,14 +129,23 @@ void VoiceIsolationImpl::ProcessAudio(const AudioBus& input_bus,
 }
 }  // namespace
 
+std::unique_ptr<VoiceIsolationComponent> VoiceIsolation::CreateComponent(
+    const tflite::FlatBufferModel* model) {
+  return CreateVoiceIsolation(model);
+}
+
+std::unique_ptr<VoiceIsolation> VoiceIsolation::Create(
+    std::unique_ptr<VoiceIsolationComponent> component,
+    const media::AudioParameters& audio_params) {
+  CHECK(component);
+  return std::make_unique<VoiceIsolationImpl>(std::move(component),
+                                              audio_params);
+}
+
 std::unique_ptr<VoiceIsolation> VoiceIsolation::Create(
     const tflite::FlatBufferModel* model,
     const media::AudioParameters& audio_params) {
-  std::unique_ptr<VoiceIsolationComponent> component =
-      CreateVoiceIsolation(model);
-
-  return std::make_unique<VoiceIsolationImpl>(std::move(component),
-                                              audio_params);
+  return Create(CreateComponent(model), audio_params);
 }
 
 }  // namespace media

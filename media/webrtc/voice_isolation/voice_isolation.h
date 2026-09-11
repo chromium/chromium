@@ -14,6 +14,7 @@ namespace media {
 
 class AudioBus;
 class AudioParameters;
+class VoiceIsolationComponent;
 
 class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
  public:
@@ -22,6 +23,16 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
   // remain valid for the lifetime of the VoiceIsolation object.
   static std::unique_ptr<VoiceIsolation> Create(
       const tflite::FlatBufferModel* model,
+      const media::AudioParameters& audio_params);
+
+  // Creates a VoiceIsolationComponent from `model`. `model` must remain valid
+  // for the lifetime of the component.
+  static std::unique_ptr<VoiceIsolationComponent> CreateComponent(
+      const tflite::FlatBufferModel* model);
+
+  // Creates a VoiceIsolation object wrapping an existing `component`.
+  static std::unique_ptr<VoiceIsolation> Create(
+      std::unique_ptr<VoiceIsolationComponent> component,
       const media::AudioParameters& audio_params);
 
   virtual ~VoiceIsolation() = default;

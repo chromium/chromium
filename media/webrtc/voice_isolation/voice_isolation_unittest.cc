@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -113,4 +114,40 @@ TEST(VoiceIsolationTest, VoiceIsolationCanAdaptToAudioParameters) {
       output_bus->channel(0).begin(), 0.0f);
   EXPECT_NEAR(output_energy, 0.0f, 1e-6);
 }
+
+TEST(VoiceIsolationTest, TwoStageCreationSucceedsAndProcessesAudio) {
+  constexpr int kSampleRate = 16000;
+  constexpr int kFrameSize = 320;
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::Stereo(), kSampleRate,
+                         kFrameSize);
+
+  std::unique_ptr<tflite::FlatBufferModel> model = GetTestModelBuffer();
+
+  std::unique_ptr<VoiceIsolationComponent> component =
+      VoiceIsolation::CreateComponent(model.get());
+  ASSERT_NE(component, nullptr);
+
+  std::unique_ptr<VoiceIsolation> voice_isolation =
+      VoiceIsolation::Create(std::move(component), params);
+  ASSERT_NE(voice_isolation, nullptr);
+
+  // Use a 2-channel bus to match the AudioParameters.
+  std::unique_ptr<AudioBus> input_bus = AudioBus::Create(2, kFrameSize);
+  std::unique_ptr<AudioBus> output_bus = AudioBus::Create(2, kFrameSize);
+
+  std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(), 2.0f);
+  std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(), 4.0f);
+  output_bus->Zero();
+
+  voice_isolation->ProcessAudio(*input_bus, *output_bus);
+  voice_isolation->ProcessAudio(*input_bus, *output_bus);
+
+  for (int i = 0; i < kFrameSize; ++i) {
+    constexpr float expected = 3.0f;
+    EXPECT_FLOAT_EQ(output_bus->channel(0)[i], expected);
+    EXPECT_FLOAT_EQ(output_bus->channel(1)[i], expected);
+  }
+}
+
 }  // namespace media
