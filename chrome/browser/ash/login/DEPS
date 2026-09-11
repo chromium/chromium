@@ -42,7 +42,6 @@ include_rules = [
   "+chrome/browser/metrics",
   "+chrome/browser/net",
   "+chrome/browser/policy",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/sessions",
   "+chrome/browser/signin",
@@ -84,6 +83,7 @@ specific_include_rules = {
     "+ui/message_center/test/message_center_waiter.h",
   ],
   ".*_unittest\\.cc": [
+    "+chrome/browser/prefs",
     "+services/network/network_context.h",
   ],
   "crash_restore_browsertest\\.cc": [
