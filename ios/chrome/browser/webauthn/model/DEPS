@@ -12,6 +12,7 @@ include_rules = [
   "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
+  "+ios/chrome/common/credential_provider",
   "+ios/chrome/common/ui/reauthentication",
   "+ui/base",
   # keep-sorted end

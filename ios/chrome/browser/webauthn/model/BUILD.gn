@@ -6,23 +6,35 @@ import("//ios/build/chrome_build.gni")
 
 source_set("model") {
   sources = [
+    "ios_device_authorization_client.h",
+    "ios_device_authorization_client.mm",
+    "ios_device_authorization_service_factory.h",
+    "ios_device_authorization_service_factory.mm",
     "ios_passkey_model_factory.cc",
     "ios_passkey_model_factory.h",
   ]
   deps = [
     "//base",
     "//components/affiliations/core/browser:affiliations",
+    "//components/keyed_service/core",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/browser/ui",
     "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/sync/model",
     "//components/webauthn/core/browser",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/core/browser/device_authorization",
+    "//components/webauthn/core/browser/device_authorization:features",
+    "//google_apis",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
+    "//ios/chrome/common",
+    "//ios/chrome/common/credential_provider",
     "//ios/web/public",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -63,18 +75,26 @@ source_set("ios_chrome_passkey_client") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ios_chrome_passkey_client_unittest.mm" ]
+  sources = [
+    "ios_chrome_passkey_client_unittest.mm",
+    "ios_device_authorization_client_unittest.mm",
+  ]
   deps = [
     ":ios_chrome_passkey_client",
+    ":model",
     "//base/test:test_support",
     "//components/password_manager/core/common",
     "//components/prefs:test_support",
     "//components/sync:test_support",
     "//components/sync/service",
+    "//components/webauthn/core/browser/device_authorization",
+    "//components/webauthn/core/browser/device_authorization:features",
     "//components/webauthn/ios",
+    "//google_apis",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/common/credential_provider",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
