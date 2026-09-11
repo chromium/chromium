@@ -2976,7 +2976,7 @@ void ComposeboxQueryController::UploadChunk(
           },
           std::move(completion_callback)),
       progress_callback,
-      GURL(lens::features::GetLensOverlayUploadChunkEndpointURL()));
+      GURL(lens::features::GetLensComposeboxUploadChunkEndpointUrl()));
 }
 
 void ComposeboxQueryController::OnPageContentPayloadForChunkUploadReady(
