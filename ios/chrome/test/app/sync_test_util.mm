@@ -326,8 +326,9 @@ bool VerifySyncInvalidationFieldsPopulated() {
     if (entity.specifics().device_info().cache_guid() == cache_guid) {
       const sync_pb::InvalidationSpecificFields& invalidation_fields =
           entity.specifics().device_info().invalidation_fields();
-      return !invalidation_fields.instance_id_token().empty() &&
-             !invalidation_fields.interested_data_type_ids().empty();
+      // TODO(crbug.com/40754340): check if `instance_id_token` is present once
+      // fixed.
+      return !invalidation_fields.interested_data_type_ids().empty();
     }
   }
   // The local DeviceInfo hasn't been committed yet.
