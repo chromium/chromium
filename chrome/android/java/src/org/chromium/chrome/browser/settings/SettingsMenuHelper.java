@@ -16,6 +16,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
@@ -30,6 +31,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
+import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /**
@@ -102,13 +104,46 @@ public class SettingsMenuHelper {
     }
 
     /**
-     * Removes any help menu items (general or targeted) from the menu when SettingsInTab is
-     * enabled.
+     * Removes any help menu items (general, targeted, site settings or editor) from the menu when
+     * SettingsInTab is enabled.
      */
     private static void removeHelpMenuItems(Menu menu) {
         menu.removeItem(R.id.menu_id_general_help);
         menu.removeItem(R.id.menu_id_targeted_help);
+        menu.removeItem(R.id.menu_id_site_settings_help);
         menu.removeItem(R.id.help_menu_id);
+    }
+
+    /**
+     * Removes menu items whose action view is a {@link SearchView}. Used when the fragment's search
+     * UI is hosted somewhere else (see MultiColumnTitleUpdater), to avoid showing a duplicate
+     * search icon in the toolbar.
+     */
+    private static void removeSearchMenuItems(Menu menu) {
+        for (int i = menu.size() - 1; i >= 0; --i) {
+            MenuItem item = menu.getItem(i);
+            if (item.getActionView() instanceof SearchView) {
+                // Collapse first, otherwise an expanded action view can stay attached to the
+                // toolbar after its item is removed.
+                item.collapseActionView();
+                menu.removeItem(item.getItemId());
+            }
+        }
+    }
+
+    /**
+     * Returns whether the detailed page title hosts the fragment's own search UI. In that case the
+     * search icon lives next to the page title (see MultiColumnTitleUpdater) and must not be
+     * duplicated in the toolbar. The detailed page title is only visible in two-column layouts.
+     */
+    private static boolean isSearchShownInDetailedPageTitle(
+            @Nullable Fragment mainFragment, Delegate delegate) {
+        if (!SettingsInTab.isEnabled()) return false;
+
+        if (!(mainFragment instanceof SearchViewProvider)) return false;
+
+        MultiColumnSettings multiColumnSettings = delegate.getMultiColumnSettings();
+        return multiColumnSettings != null && multiColumnSettings.isTwoColumn();
     }
 
     /**
@@ -130,6 +165,12 @@ public class SettingsMenuHelper {
         if (mainFragment != null && mainFragment.isAdded() && mainFragment.hasOptionsMenu()) {
             mainFragment.onCreateOptionsMenu(menu, activity.getMenuInflater());
             mainFragment.onPrepareOptionsMenu(menu);
+
+            // The search icon is handled by MultiColumnTitleUpdater because it appears next to
+            // the detailed page title in two-column layouts.
+            if (isSearchShownInDetailedPageTitle(mainFragment, delegate)) {
+                removeSearchMenuItems(menu);
+            }
         }
 
         onPrepareOptionsMenu(menu);

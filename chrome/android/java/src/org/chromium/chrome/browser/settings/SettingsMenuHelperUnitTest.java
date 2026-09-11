@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
@@ -43,11 +44,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
+import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link SettingsMenuHelper}. */
@@ -61,6 +64,7 @@ public class SettingsMenuHelperUnitTest {
 
     @Mock private SettingsMenuHelper.Delegate mDelegate;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    @Mock private MultiColumnSettings mMultiColumnSettings;
 
     private TestActivity mActivity;
 
@@ -318,6 +322,101 @@ public class SettingsMenuHelperUnitTest {
         assertNotNull(menu.findItem(R.id.delete_menu_id));
         assertNull(menu.findItem(R.id.help_menu_id));
         assertNull(menu.findItem(R.id.menu_id_general_help));
+    }
+
+    /** Mimics a site settings page, which adds both a search item and a help item. */
+    public static class TestSiteSettingsMenuFragment extends Fragment
+            implements SearchViewProvider {
+        public TestSiteSettingsMenuFragment() {
+            setHasOptionsMenu(true);
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, android.view.MenuInflater inflater) {
+            MenuItem search = menu.add(Menu.NONE, R.id.search, Menu.NONE, "Search");
+            search.setActionView(new SearchView(requireContext()));
+            menu.add(Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, "Help");
+        }
+
+        @Override
+        public void setSearchViewObserver(SearchViewProvider.Observer observer) {}
+
+        @Override
+        public void initSearchView(SearchView searchView) {}
+    }
+
+    private TestSiteSettingsMenuFragment addSiteSettingsMenuFragment() {
+        TestSiteSettingsMenuFragment fragment = new TestSiteSettingsMenuFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(fragment, "site_settings_menu")
+                .commitNow();
+        when(mDelegate.getMainFragment()).thenReturn(fragment);
+        return fragment;
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateOptionsMenu_SettingsInTab_TwoColumn_removesSearchAndHelp() {
+        // Show a page that adds its own search and help menu items.
+        addSiteSettingsMenuFragment();
+
+        // The detailed page title hosts the fragment's search UI in two-column layouts.
+        when(mMultiColumnSettings.isTwoColumn()).thenReturn(true);
+        when(mDelegate.getMultiColumnSettings()).thenReturn(mMultiColumnSettings);
+
+        // Build the toolbar menu for the page.
+        SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
+
+        // Neither icon should appear next to the main search box in the toolbar.
+        Menu menu = mToolbar.getMenu();
+        assertEquals(0, menu.size());
+        assertNull(menu.findItem(R.id.search));
+        assertNull(menu.findItem(R.id.menu_id_site_settings_help));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateOptionsMenu_SettingsInTab_SingleColumn_keepsSearchRemovesHelp() {
+        // Show a page that adds its own search and help menu items.
+        addSiteSettingsMenuFragment();
+
+        // In single-column layouts the detailed page title is hidden, so the toolbar search item
+        // is the only way to search within the page.
+        when(mMultiColumnSettings.isTwoColumn()).thenReturn(false);
+        when(mDelegate.getMultiColumnSettings()).thenReturn(mMultiColumnSettings);
+
+        // Build the toolbar menu for the page.
+        SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
+
+        // The search item survives, but SettingsInTab never shows a help icon.
+        Menu menu = mToolbar.getMenu();
+        assertEquals(1, menu.size());
+        assertNotNull(menu.findItem(R.id.search));
+        assertNull(menu.findItem(R.id.menu_id_site_settings_help));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testUpdateOptionsMenu_SettingsInTabDisabled_keepsSearchAndHelp() {
+        // Show a page that adds its own search and help menu items.
+        addSiteSettingsMenuFragment();
+
+        // Two-column layout, but the SettingsInTab feature is off.
+        when(mMultiColumnSettings.isTwoColumn()).thenReturn(true);
+        when(mDelegate.getMultiColumnSettings()).thenReturn(mMultiColumnSettings);
+
+        // Build the toolbar menu for the page.
+        SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
+
+        // Legacy settings keeps the page's menu items and the general help item.
+        Menu menu = mToolbar.getMenu();
+        assertNotNull(menu.findItem(R.id.search));
+        assertNotNull(menu.findItem(R.id.menu_id_site_settings_help));
+        assertNotNull(menu.findItem(R.id.menu_id_general_help));
     }
 
     @Test
