@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -883,21 +884,29 @@ void OmniboxEverywhereUI::ShowContextActionMenu(const gfx::Rect& anchor_rect) {
         &OmniboxEverywhereUI::OnFileChooserClosed, weak_factory_.GetWeakPtr()));
   }
 
-  // `anchor_rect` is the bounding box of the '+' entrypoint button in WebUI
-  // viewport coordinates (CSS DIPs relative to the top-left of the
-  // WebContents). We offset it by `GetContainerBounds().OffsetFromOrigin()`
-  // (the screen position of the WebContents) to convert
-  // `anchor_rect.bottom_left()` into desktop screen DIP coordinates expected by
-  // Views MenuRunner.
-  gfx::Point screen_point =
-      anchor_rect.bottom_left() +
-      web_contents->GetContainerBounds().OffsetFromOrigin();
+  gfx::Point screen_point = CalculateContextMenuAnchorPoint(
+      anchor_rect, web_contents->GetContainerBounds());
 
   context_menu_ = std::make_unique<OmniboxContextMenu>(
       widget, file_selector_.get(), web_contents,
       base::BindRepeating(&OmniboxEverywhereUI::OnContextMenuClosed,
                           weak_factory_.GetWeakPtr()));
   context_menu_->RunMenuAt(screen_point, ui::mojom::MenuSourceType::kNone);
+}
+
+// static
+gfx::Point OmniboxEverywhereUI::CalculateContextMenuAnchorPoint(
+    const gfx::Rect& anchor_rect,
+    const gfx::Rect& container_bounds) {
+  // `anchor_rect` is the bounding box of the '+' entrypoint button in WebUI
+  // viewport coordinates (CSS DIPs relative to the top-left of the
+  // WebContents). We offset it by `container_bounds.OffsetFromOrigin()`
+  // (the screen position of the WebContents) to convert `anchor_rect`
+  // (bottom_right in RTL, bottom_left in LTR) into desktop screen DIP
+  // coordinates expected by Views MenuRunner.
+  return (base::i18n::IsRTL() ? anchor_rect.bottom_right()
+                              : anchor_rect.bottom_left()) +
+         container_bounds.OffsetFromOrigin();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxEverywhereUI)
