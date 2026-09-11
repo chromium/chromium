@@ -18238,6 +18238,21 @@
             ]
         }
     ],
+    "SigninButtonProfileMenu": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SigninButtonProfileMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "SigninPromoLimitsExperiment": [
         {
             "platforms": [
