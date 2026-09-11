@@ -61,13 +61,8 @@ class WebrtcProject : public Project {
         source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
         raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
 
-    // Running in-place inside Chromium: absolute path contains
-    // "third_party/webrtc". We only want to spanify WebRTC sources, excluding
-    // its own internal third_party.
     llvm::StringRef file(filename);
-    return (file.contains("third_party/") &&
-            !file.contains("third_party/webrtc/")) ||
-           file.contains("third_party/webrtc/third_party/");
+    return file.contains("third_party");
   }
 };
 

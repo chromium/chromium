@@ -80,13 +80,8 @@ class SkiaProject : public Project {
         source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
         raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
 
-    // Running in-place inside Chromium: absolute path contains
-    // "third_party/skia". We only want to spanify Skia sources, excluding its
-    // own internal third_party.
     llvm::StringRef file(filename);
-    return (file.contains("third_party/") &&
-            !file.contains("third_party/skia/")) ||
-           file.contains("third_party/skia/third_party/");
+    return file.contains("third_party");
   }
   bool SupportsStaticExtent() const override { return false; }
 };

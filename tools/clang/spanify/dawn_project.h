@@ -89,13 +89,8 @@ class DawnProject : public Project {
         source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
         raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
 
-    // Running in-place inside Chromium: absolute path contains
-    // "third_party/dawn". We only want to spanify Dawn sources, excluding its
-    // own internal third_party.
     llvm::StringRef file(filename);
-    return (file.contains("third_party/") &&
-            !file.contains("third_party/dawn/")) ||
-           file.contains("third_party/dawn/third_party/");
+    return file.contains("third_party");
   }
 
   bool SupportsStaticExtent() const override {
