@@ -37,6 +37,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -987,6 +988,32 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   // preventing CHECK failures in BrowserProcessImpl::StartTearDown.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&chrome::CloseAllBrowsersAndQuit));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       ShutdownWithOpenBrowserAndBackgroundModeEnabled) {
+  PrefService* local_state = g_browser_process->local_state();
+
+  set_exit_when_last_browser_closes(false);
+
+  // Enable background mode pref.
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
+
+  auto* keep_alive_registry = KeepAliveRegistry::GetInstance();
+  ASSERT_TRUE(keep_alive_registry->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+
+  // Quit the browser while a browser window is still open.
+  // This exercises BrowserCloseManager::CloseBrowsers(), which must exit
+  // background mode and release the keep-alive so the process can terminate.
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
+  chrome::CloseAllBrowsersAndQuit();
+  observer.Wait();
+
+  EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
+  EXPECT_FALSE(keep_alive_registry->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

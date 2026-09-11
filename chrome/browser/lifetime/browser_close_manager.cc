@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
@@ -206,6 +208,11 @@ void BrowserCloseManager::CloseBrowsers() {
       glic::GlicBackgroundModeManager::GetInstance();
   if (glic_background_mode_manager) {
     glic_background_mode_manager->ExitBackgroundMode();
+  }
+
+  if (auto* controller =
+          g_browser_process->GetFeatures()->omnibox_everywhere_controller()) {
+    controller->ExitBackgroundMode();
   }
 
   ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
