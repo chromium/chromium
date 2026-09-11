@@ -37,7 +37,7 @@
           'http/tests/devtools',
         ],
         'swarming': {
-          'shards': 2,
+          'shards': 4,
         },
       },
     },
