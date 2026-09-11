@@ -399,7 +399,9 @@ void DOMStorageContextWrapper::AddNamespace(
 void DOMStorageContextWrapper::RemoveNamespace(
     const std::string& namespace_id) {
   base::AutoLock lock(alive_namespaces_lock_);
-  CHECK(alive_namespaces_.contains(namespace_id), base::NotFatalUntil::M158);
+  // TODO(crbug.com/559061670): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(alive_namespaces_.contains(namespace_id));
   alive_namespaces_.erase(namespace_id);
 }
 
