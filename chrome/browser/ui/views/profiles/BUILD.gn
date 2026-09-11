@@ -649,6 +649,7 @@ if (enable_dice_support) {
     ]
     deps = [
       ":profile_management_types",
+      ":profile_picker_post_sign_in_adapter",
       ":profile_picker_sign_in_provider",
       ":profile_picker_web_contents_host",
       "//base",
@@ -760,6 +761,135 @@ if (enable_dice_support) {
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/common",
+    ]
+  }
+
+  source_set("profile_picker_turn_sync_on_delegate") {
+    public = [ "profile_picker_turn_sync_on_delegate.h" ]
+    sources = [ "profile_picker_turn_sync_on_delegate.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/webui/signin",
+    ]
+    deps = [
+      ":profile_management_types",
+      "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/enterprise",
+      "//chrome/browser/regional_capabilities",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:signin_ui_error",
+      "//chrome/common:constants",
+      "//components/regional_capabilities",
+      "//components/signin/public/base",
+      "//components/sync/base:features",
+    ]
+  }
+
+  source_set("profile_picker_post_sign_in_adapter") {
+    public = [ "profile_picker_post_sign_in_adapter.h" ]
+    sources = [ "profile_picker_post_sign_in_adapter.cc" ]
+    public_deps = [
+      ":profile_management_types",
+      ":profile_picker_web_contents_host",
+      "//base",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/ui/webui/signin",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//content/public/browser",
+      "//skia",
+    ]
+    deps = [
+      ":profile_picker_turn_sync_on_delegate",
+      "//chrome/browser/regional_capabilities",
+      "//chrome/browser/signin",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/webui/intro",
+      "//chrome/common:constants",
+      "//components/regional_capabilities",
+      "//components/sync/base:features",
+      "//net",
+      "//ui/base:types",
+    ]
+    allow_circular_includes_from = [ ":profile_picker_turn_sync_on_delegate" ]
+  }
+
+  source_set("profile_management_flow_controller_impl") {
+    public = [ "profile_management_flow_controller_impl.h" ]
+    sources = [
+      "profile_management_flow_controller.cc",
+      "profile_management_flow_controller_impl.cc",
+    ]
+    public_deps = [
+      ":profile_management_flow_controller",
+      "//base",
+    ]
+    deps = [
+      ":profile_management_step_controller",
+      ":profile_management_types",
+      ":profile_picker_post_sign_in_adapter",
+      ":profile_picker_sign_in_provider",
+      ":profile_picker_toolbar",
+      ":profile_picker_web_contents_host",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/webui/signin",
+      "//components/signin/public/base",
+      "//components/web_modal",
+      "//content/public/browser",
+    ]
+  }
+
+  source_set("profile_picker_flow_controller") {
+    public = [ "profile_picker_flow_controller.h" ]
+    public_deps = [
+      ":profile_management_flow_controller",
+      ":profile_management_flow_controller_impl",
+      "//base",
+    ]
+  }
+
+  source_set("profile_picker_flow_controller_impl") {
+    sources = [ "profile_picker_flow_controller.cc" ]
+    public_deps = [
+      ":profile_picker_flow_controller",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":avatar_toolbar_button",
+      ":profile_customization_bubble_sync_controller",
+      ":profile_management_flow_controller_impl",
+      ":profile_management_step_controller",
+      ":profile_management_types",
+      ":profile_picker_post_sign_in_adapter",
+      ":profile_picker_reauth_provider",
+      ":profile_picker_sign_in_provider",
+      ":profile_picker_web_contents_host",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/enterprise",
+      "//chrome/browser/metrics",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engine_choice",
+      "//chrome/browser/signin",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:signin_ui_error",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//net",
     ]
   }
 }

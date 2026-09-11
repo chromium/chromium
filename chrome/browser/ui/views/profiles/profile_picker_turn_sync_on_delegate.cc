@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"

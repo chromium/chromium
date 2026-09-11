@@ -2231,17 +2231,8 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "views/profiles/profile_management_flow_controller.cc",
-      "views/profiles/profile_management_flow_controller_impl.cc",
-      "views/profiles/profile_management_flow_controller_impl.h",
       "views/profiles/profile_menu_view.cc",
       "views/profiles/profile_menu_view.h",
-      "views/profiles/profile_picker_flow_controller.cc",
-      "views/profiles/profile_picker_flow_controller.h",
-      "views/profiles/profile_picker_post_sign_in_adapter.cc",
-      "views/profiles/profile_picker_post_sign_in_adapter.h",
-      "views/profiles/profile_picker_turn_sync_on_delegate.cc",
-      "views/profiles/profile_picker_turn_sync_on_delegate.h",
       "views/profiles/profile_picker_view.cc",
       "views/profiles/profile_picker_view.h",
     ]
@@ -2314,15 +2305,20 @@ static_library("ui") {
         "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
         "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view_impl",
         "//chrome/browser/ui/views/profiles:profile_management_flow_controller",
+        "//chrome/browser/ui/views/profiles:profile_management_flow_controller_impl",
         "//chrome/browser/ui/views/profiles:profile_management_step_controller",
         "//chrome/browser/ui/views/profiles:profile_management_step_controller_impl",
+        "//chrome/browser/ui/views/profiles:profile_picker_flow_controller",
+        "//chrome/browser/ui/views/profiles:profile_picker_flow_controller_impl",
         "//chrome/browser/ui/views/profiles:profile_picker_glic_flow_controller",
         "//chrome/browser/ui/views/profiles:profile_picker_omnibox_everywhere_flow_controller",
+        "//chrome/browser/ui/views/profiles:profile_picker_post_sign_in_adapter",
         "//chrome/browser/ui/views/profiles:profile_picker_reauth_provider",
         "//chrome/browser/ui/views/profiles:profile_picker_reauth_provider_impl",
         "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider",
         "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider_impl",
         "//chrome/browser/ui/views/profiles:profile_picker_toolbar",
+        "//chrome/browser/ui/views/profiles:profile_picker_turn_sync_on_delegate",
         "//chrome/browser/ui/views/profiles:profile_picker_utils",
         "//chrome/browser/ui/views/profiles/feature_showcase",
         "//chrome/browser/ui/webui/feature_showcase",
@@ -2334,10 +2330,12 @@ static_library("ui") {
       # that can't be split out yet.
       allow_circular_includes_from += [
         # profile_management_step_controller_impl,
+        # profile_picker_flow_controller_impl,
         # profile_picker_reauth_provider_impl, and
         # profile_picker_sign_in_provider_impl include headers from
         # //chrome/browser/ui:ui which cannot be split out yet.
         "//chrome/browser/ui/views/profiles:profile_management_step_controller_impl",
+        "//chrome/browser/ui/views/profiles:profile_picker_flow_controller_impl",
         "//chrome/browser/ui/views/profiles:profile_picker_reauth_provider_impl",
         "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider_impl",
 
