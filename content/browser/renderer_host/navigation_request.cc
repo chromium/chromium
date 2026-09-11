@@ -3544,10 +3544,21 @@ void NavigationRequest::ResetStateForSiteInstanceChange() {
   origin_related_state_.reset();
 
   // If this was not a redirect that preserves POST submissions (e.g., 307), or
-  // if this will be an error page that may end up in another process, then
-  // clear the post_data as well to prevent leaking file references to a
-  // different SiteInstance.
-  if (!IsPost() || DidEncounterError()) {
+  // if this will be a blocked error page or otherwise ends up in the current
+  // process, then clear the post_data as well to prevent leaking file
+  // references to a different SiteInstance.
+  //
+  // It is not necessary to reset POST data for error pages in the isolated
+  // error page process, and it is important not to reset it for failed cases
+  // that end up in kDestinationProcess (e.g. "Confirm Form Resubmission"
+  // pages with ERR_CACHE_MISS), when it might later be used successfully.
+  //
+  // TODO(crbug.com/40134629): Remove the error page exception if subframe error
+  // page isolation is enabled.
+  if (!IsPost() ||
+      (DidEncounterError() &&
+       (ComputeErrorPageProcess() == ErrorPageProcess::kCurrentProcess ||
+        net::IsRequestBlockedError(net_error_)))) {
     common_params_->post_data.reset();
   }
 }
