@@ -63,6 +63,8 @@ class PasswordProtectionJavaScriptFeature : public web::JavaScriptFeature {
   // Process-wide (all WebStates combined) rate-limit window state.
   base::TimeTicks keydown_interval_start_;
   int keydown_events_in_interval_ = 0;
+  base::TimeTicks paste_interval_start_;
+  int paste_events_in_interval_ = 0;
 
   // Returns true if a paste event (shortcut or actual paste) for `web_state`
   // should be ignored due to rate limiting. Otherwise, updates the last paste

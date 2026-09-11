@@ -36,6 +36,7 @@ inline constexpr base::TimeDelta kPasteKeyTimerDuration =
 // environments, and burst typing while bounding aggregate event frequency.
 constexpr base::TimeDelta kAggregateRateLimitInterval = base::Seconds(1);
 constexpr int kMaxKeyDownEventsPerInterval = 80;
+constexpr int kMaxPasteEventsPerInterval = 10;
 
 // Returns true if an additional event should be dropped because the
 // process-wide budget (`max_events_per_interval` per aggregate interval) is
@@ -151,18 +152,22 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
 bool PasswordProtectionJavaScriptFeature::IsPasteRateLimited(
     web::WebState* web_state) {
   const base::TimeTicks now = base::TimeTicks::Now();
-  auto [it, inserted] = last_paste_timestamps_.insert({web_state, now});
-  if (inserted) {
-    // First paste for this tab - not rate limited.
-    return false;
+  auto it = last_paste_timestamps_.find(web_state);
+  if (it != last_paste_timestamps_.end()) {
+    const base::TimeDelta elapsed = now - it->second;
+    if (elapsed < kPasteRateLimit) {
+      return true;
+    }
   }
 
-  const base::TimeDelta elapsed = now - it->second;
-  if (elapsed < kPasteRateLimit) {
+  // Enforce the process-wide aggregate budget across all WebStates.
+  if (IsAggregateRateLimited(now, paste_interval_start_,
+                             paste_events_in_interval_,
+                             kMaxPasteEventsPerInterval)) {
     return true;
   }
 
-  it->second = now;
+  last_paste_timestamps_[web_state] = now;
   return false;
 }
 
@@ -235,5 +240,7 @@ void PasswordProtectionJavaScriptFeature::RemoveObserver(
   if (lookup_by_web_state_.empty()) {
     keydown_interval_start_ = base::TimeTicks();
     keydown_events_in_interval_ = 0;
+    paste_interval_start_ = base::TimeTicks();
+    paste_events_in_interval_ = 0;
   }
 }
