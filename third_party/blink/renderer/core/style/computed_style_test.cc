@@ -925,7 +925,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
 
 TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   ColorSchemeHelper color_scheme_helper(document);
@@ -933,9 +933,9 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   AtomicString property_name("color-scheme");
   CSSPropertyRef ref(&property_name, state.GetDocument());
@@ -965,7 +965,7 @@ TEST_F(ComputedStyleTest, ApplyLightDarkColor) {
   using css_test_helpers::ParseDeclarationBlock;
 
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   ColorSchemeHelper color_scheme_helper(document);
@@ -973,9 +973,9 @@ TEST_F(ComputedStyleTest, ApplyLightDarkColor) {
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   CSSValueList* dark_value = CSSValueList::CreateSpaceSeparated();
   dark_value->Append(*CSSIdentifierValue::Create(CSSValueID::kDark));
@@ -1017,7 +1017,7 @@ TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
   using css_test_helpers::ParseDeclarationBlock;
 
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   ColorSchemeHelper color_scheme_helper(document);
@@ -1025,9 +1025,9 @@ TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   auto* bgimage_declaration = ParseDeclarationBlock(
       "background-image:light-dark(none, url(dummy.png))", kUASheetMode);
@@ -1045,7 +1045,7 @@ TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
   cascade1.Apply();
   EXPECT_TRUE(state.TakeStyle()->HasBackgroundImage());
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   StyleCascade cascade2(state);
   cascade2.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(document);
@@ -1064,14 +1064,14 @@ TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
 
 TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
   state.StyleBuilder().SetEffectiveZoom(1.5);
 
   auto* calc_value = CSSMathFunctionValue::Create(
@@ -1645,14 +1645,14 @@ TEST_F(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
 
 TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
   EXPECT_FALSE(state.StyleBuilder().Animations());
   EXPECT_FALSE(state.StyleBuilder().Transitions());
 
@@ -2050,14 +2050,14 @@ TEST_F(ComputedStyleTest, ContainerNameNoDiff) {
 
 TEST_F(ComputedStyleTest, BackgroundRepeat) {
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
       CSSIdentifierValue::Create(CSSValueID::kRepeatX));
@@ -2077,14 +2077,14 @@ TEST_F(ComputedStyleTest, BackgroundRepeat) {
 
 TEST_F(ComputedStyleTest, MaskRepeat) {
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
       CSSIdentifierValue::Create(CSSValueID::kRepeatY));
@@ -2104,14 +2104,14 @@ TEST_F(ComputedStyleTest, MaskRepeat) {
 
 TEST_F(ComputedStyleTest, MaskMode) {
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   auto* mode_style_value = CSSIdentifierValue::Create(CSSValueID::kAlpha);
 
@@ -2142,14 +2142,14 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToConstrainedHigh) {
             "dynamic-range-limit-mix(standard 30%, constrained 70%)");
 
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
       state, *dynamic_range_limit_mix_value,
@@ -2178,14 +2178,14 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToHigh) {
             "dynamic-range-limit-mix(standard 40%, no-limit 60%)");
 
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
       state, *dynamic_range_limit_mix_value,
@@ -2214,14 +2214,14 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixConstrainedHighToHigh) {
             "dynamic-range-limit-mix(constrained 55%, no-limit 45%)");
 
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
       state, *dynamic_range_limit_mix_value,
@@ -2251,14 +2251,14 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
       "dynamic-range-limit-mix(standard 20%, constrained 60%, no-limit 20%)");
 
   Document& document = GetDocument();
-  const ComputedStyle* initial =
+  const ComputedStyle& initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial));
+                           StyleRequest(&initial));
 
-  state.CreateNewClonedStyle(*initial);
+  state.CreateNewClonedStyle(initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
       state, *dynamic_range_limit_mix_value,

@@ -5199,7 +5199,7 @@ bool Element::SkipStyleRecalcForContainer(
 
 const ComputedStyle* Element::ParentComputedStyle() const {
   if (IsSkeletonPseudoElement()) {
-    return GetDocument().GetStyleResolver().InitialStyleForElement();
+    return &GetDocument().GetStyleResolver().InitialStyleForElement();
   }
   Element* parent = LayoutTreeBuilderTraversal::ParentElement(*this);
   auto is_rendered_as_sibling = [this] {

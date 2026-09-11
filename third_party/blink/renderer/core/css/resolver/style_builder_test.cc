@@ -88,12 +88,12 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
 }
 
 TEST_F(StyleBuilderTest, HasExplicitInheritance) {
-  const ComputedStyle* parent_style =
+  const ComputedStyle& parent_style =
       GetDocument().GetStyleResolver().InitialStyleForElement();
   StyleResolverState state(GetDocument(), *GetDocument().body(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(parent_style));
-  state.CreateNewClonedStyle(*parent_style);
+                           StyleRequest(&parent_style));
+  state.CreateNewClonedStyle(parent_style);
 
   EXPECT_FALSE(state.ParentStyle()->ChildHasExplicitInheritance());
   EXPECT_FALSE(state.StyleBuilder().HasExplicitInheritance());

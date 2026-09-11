@@ -25,7 +25,7 @@ class CSSContainerValuesTest : public PageTestBase {
   void SetContainerWritingDirection(WritingMode writing_mode,
                                     TextDirection direction) {
     ComputedStyleBuilder builder(
-        *GetDocument().GetStyleResolver().InitialStyleForElement());
+        GetDocument().GetStyleResolver().InitialStyleForElement());
     builder.SetWritingMode(writing_mode);
     builder.SetDirection(direction);
     ContainerElement().SetComputedStyle(builder.TakeStyle());

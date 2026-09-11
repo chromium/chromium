@@ -258,8 +258,8 @@ AnchorEvaluator* StyleResolverState::GetAnchorEvaluator() const {
                                : nullptr;
 }
 
-void StyleResolverState::SetParentStyle(const ComputedStyle* parent_style) {
-  parent_style_ = std::move(parent_style);
+void StyleResolverState::SetParentStyle(const ComputedStyle& parent_style) {
+  parent_style_ = &parent_style;
   if (style_builder_) {
     // Need to update conversion data for 'lh' units.
     InvalidateLengthConversionData();

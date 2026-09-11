@@ -57,7 +57,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
 
   ContainerQueryEvaluator* CreateEvaluatorForType(unsigned container_type) {
     ComputedStyleBuilder builder(
-        *GetDocument().GetStyleResolver().InitialStyleForElement());
+        GetDocument().GetStyleResolver().InitialStyleForElement());
     builder.SetContainerType(container_type);
     ContainerElement().SetComputedStyle(builder.TakeStyle());
     return MakeGarbageCollected<ContainerQueryEvaluator>(ContainerElement());
@@ -109,7 +109,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
                               unsigned container_type,
                               PhysicalAxes axes) {
     ComputedStyleBuilder builder(
-        *GetDocument().GetStyleResolver().InitialStyleForElement());
+        GetDocument().GetStyleResolver().InitialStyleForElement());
     builder.SetContainerType(container_type);
     ContainerElement().SetComputedStyle(builder.TakeStyle());
     return evaluator->SizeContainerChanged(size, axes);
@@ -120,7 +120,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
                                 ContainerStuckPhysical stuck_vertical,
                                 unsigned container_type) {
     ComputedStyleBuilder builder(
-        *GetDocument().GetStyleResolver().InitialStyleForElement());
+        GetDocument().GetStyleResolver().InitialStyleForElement());
     builder.SetContainerType(container_type);
     ContainerElement().SetComputedStyle(builder.TakeStyle());
     return evaluator->StickyContainerChanged(stuck_horizontal, stuck_vertical);
@@ -130,7 +130,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
                               ContainerSnappedFlags snapped,
                               unsigned container_type) {
     ComputedStyleBuilder builder(
-        *GetDocument().GetStyleResolver().InitialStyleForElement());
+        GetDocument().GetStyleResolver().InitialStyleForElement());
     builder.SetContainerType(container_type);
     ContainerElement().SetComputedStyle(builder.TakeStyle());
     return evaluator->SnapContainerChanged(snapped);
@@ -309,7 +309,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
 
   Element& container_element = ContainerElement();
   ComputedStyleBuilder builder(
-      *GetDocument().GetStyleResolver().InitialStyleForElement());
+      GetDocument().GetStyleResolver().InitialStyleForElement());
   builder.SetContainerType(type_inline_size);
   const ComputedStyle* style = builder.TakeStyle();
   container_element.SetComputedStyle(style);

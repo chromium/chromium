@@ -49,12 +49,12 @@ TEST_F(HTMLEmbedElementTest, FallbackState) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  const ComputedStyle* initial_style =
+  const ComputedStyle& initial_style =
       GetDocument().GetStyleResolver().InitialStyleForElement();
 
   // We should get |true| as a result and don't trigger a DCHECK.
   EXPECT_TRUE(
-      static_cast<Element*>(embed)->LayoutObjectIsNeeded(*initial_style));
+      static_cast<Element*>(embed)->LayoutObjectIsNeeded(initial_style));
 
   // This call will update fallback state of the object.
   object->UpdatePlugin();
@@ -65,7 +65,7 @@ TEST_F(HTMLEmbedElementTest, FallbackState) {
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(
-      static_cast<Element*>(embed)->LayoutObjectIsNeeded(*initial_style));
+      static_cast<Element*>(embed)->LayoutObjectIsNeeded(initial_style));
 }
 
 TEST_F(HTMLEmbedElementTest, NotEnforceLayoutImageType) {
@@ -84,11 +84,11 @@ TEST_F(HTMLEmbedElementTest, NotEnforceLayoutImageType) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  const ComputedStyle* initial_style =
+  const ComputedStyle& initial_style =
       GetDocument().GetStyleResolver().InitialStyleForElement();
 
   EXPECT_FALSE(
-      static_cast<Element*>(embed)->LayoutObjectIsNeeded(*initial_style));
+      static_cast<Element*>(embed)->LayoutObjectIsNeeded(initial_style));
 
   object->UpdatePlugin();
 
@@ -97,7 +97,7 @@ TEST_F(HTMLEmbedElementTest, NotEnforceLayoutImageType) {
   EXPECT_FALSE(object->WillUseFallbackContentAtLayout());
 
   EXPECT_TRUE(
-      static_cast<Element*>(embed)->LayoutObjectIsNeeded(*initial_style));
+      static_cast<Element*>(embed)->LayoutObjectIsNeeded(initial_style));
 }
 
 }  // namespace blink

@@ -268,17 +268,17 @@ class TestCascade {
                                        const ComputedStyle* parent_style) {
     state.GetDocument().GetStyleEngine().UpdateViewportSize();
     if (parent_style) {
-      state.CreateNewStyle(*InitialStyle(state.GetDocument()), *parent_style);
-      state.SetParentStyle(parent_style);
+      state.CreateNewStyle(InitialStyle(state.GetDocument()), *parent_style);
+      state.SetParentStyle(*parent_style);
     } else {
-      state.CreateNewClonedStyle(*InitialStyle(state.GetDocument()));
+      state.CreateNewClonedStyle(InitialStyle(state.GetDocument()));
       state.SetParentStyle(InitialStyle(state.GetDocument()));
     }
     state.SetOldStyle(state.GetElement().GetComputedStyle());
     return state;
   }
 
-  static const ComputedStyle* InitialStyle(Document& document) {
+  static const ComputedStyle& InitialStyle(Document& document) {
     return document.GetStyleResolver().InitialStyleForElement();
   }
 
