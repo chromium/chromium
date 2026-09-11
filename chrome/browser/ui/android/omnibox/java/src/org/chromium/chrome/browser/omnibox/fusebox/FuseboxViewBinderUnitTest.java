@@ -121,7 +121,8 @@ public class FuseboxViewBinderUnitTest {
                         mPopupWindow,
                         popupView,
                         mDynamicRectProvider,
-                        /* isBottomSheet= */ false);
+                        /* isBottomSheet= */ false,
+                        /* useCarousel= */ false);
         mViewHolder = new FuseboxViewHolder(parent, mPopup);
 
         // Initialize workable defaults.
@@ -149,7 +150,7 @@ public class FuseboxViewBinderUnitTest {
     }
 
     private View getDynamicButton(FuseboxPopup popup, int index) {
-        ViewGroup group = popup.mViewGroup;
+        ViewGroup group = popup.mAccordionContainer;
         int headerIndex = group.indexOfChild(popup.mModelsHeader);
         return group.getChildAt(headerIndex + 1 + index);
     }
@@ -159,7 +160,7 @@ public class FuseboxViewBinderUnitTest {
     }
 
     private View getDynamicToolButton(int index) {
-        ViewGroup group = mPopup.mViewGroup;
+        ViewGroup group = mPopup.mAccordionContainer;
         int headerIndex = group.indexOfChild(mPopup.mToolsHeader);
         return group.getChildAt(headerIndex + 1 + index);
     }
@@ -177,7 +178,8 @@ public class FuseboxViewBinderUnitTest {
                         mPopupWindow,
                         popupView,
                         mDynamicRectProvider,
-                        /* isBottomSheet= */ true);
+                        /* isBottomSheet= */ true,
+                        /* useCarousel= */ true);
         return new FuseboxViewHolder(mViewHolder.parentView, popup);
     }
 
@@ -673,13 +675,14 @@ public class FuseboxViewBinderUnitTest {
         PopupButtonData data2 = new PopupButtonDataBuilder().withText("button 2").build();
 
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(data1, data2));
-        int headerIndex = mPopup.mViewGroup.indexOfChild(mPopup.mModelsHeader);
-        assertEquals(2, mPopup.mViewGroup.getChildCount() - (headerIndex + 1));
+        ViewGroup group = mPopup.mAccordionContainer;
+        int headerIndex = group.indexOfChild(mPopup.mModelsHeader);
+        assertEquals(2, group.getChildCount() - (headerIndex + 1));
         assertEquals(6, mPopup.mAttachmentButtons.size());
         assertEquals(2, mPopup.mDynamicThemedButtons.size());
 
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(data1));
-        assertEquals(1, mPopup.mViewGroup.getChildCount() - (headerIndex + 1));
+        assertEquals(1, group.getChildCount() - (headerIndex + 1));
         assertEquals(6, mPopup.mAttachmentButtons.size());
         assertEquals(1, mPopup.mDynamicThemedButtons.size());
     }
@@ -698,12 +701,13 @@ public class FuseboxViewBinderUnitTest {
                         .build();
 
         mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, List.of(data1, data2));
-        int headerIndex = mPopup.mViewGroup.indexOfChild(mPopup.mToolsHeader);
-        int dividerIndex = mPopup.mViewGroup.indexOfChild(mPopup.mModelsDivider);
+        ViewGroup group = mPopup.mAccordionContainer;
+        int headerIndex = group.indexOfChild(mPopup.mToolsHeader);
+        int dividerIndex = group.indexOfChild(mPopup.mModelsDivider);
         assertEquals(2, dividerIndex - (headerIndex + 1));
 
         mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, List.of(data1));
-        dividerIndex = mPopup.mViewGroup.indexOfChild(mPopup.mModelsDivider);
+        dividerIndex = group.indexOfChild(mPopup.mModelsDivider);
         assertEquals(1, dividerIndex - (headerIndex + 1));
     }
 
@@ -1054,5 +1058,75 @@ public class FuseboxViewBinderUnitTest {
         ViewGroup.LayoutParams dynamicLayoutParams = dynamicIcon.getLayoutParams();
         assertEquals(expectedBottomSheetIconSize, dynamicLayoutParams.width);
         assertEquals(expectedBottomSheetIconSize, dynamicLayoutParams.height);
+    }
+
+    @Test
+    public void bind_popupMoreOptionsClicked() {
+        FuseboxViewHolder viewHolder = createBottomSheetViewHolder();
+        PropertyModel model = createBottomSheetModel();
+        model.set(FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED, mRunnable);
+        mBinder.bind(model, viewHolder, FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED);
+
+        assertNotNull(viewHolder.popup.mMoreOptionsButton);
+        viewHolder.popup.mMoreOptionsButton.performClick();
+        verify(mRunnable).run();
+    }
+
+    @Test
+    public void bind_popupMoreOptionsVisible() {
+        FuseboxViewHolder viewHolder = createBottomSheetViewHolder();
+        PropertyModel model = createBottomSheetModel();
+
+        model.set(FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE, true);
+        mBinder.bind(model, viewHolder, FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE);
+        assertNotNull(viewHolder.popup.mMoreOptionsButton);
+        assertEquals(View.VISIBLE, viewHolder.popup.mMoreOptionsButton.getVisibility());
+        assertEquals(View.GONE, viewHolder.popup.mAccordionContainer.getVisibility());
+
+        model.set(FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE, false);
+        mBinder.bind(model, viewHolder, FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE);
+        assertEquals(View.GONE, viewHolder.popup.mMoreOptionsButton.getVisibility());
+        assertEquals(View.VISIBLE, viewHolder.popup.mAccordionContainer.getVisibility());
+    }
+
+    @Test
+    public void bind_popupToolButtons_withAccordion() {
+        OmniboxFeatures.setUseAccordionForTesting(true);
+
+        PopupButtonData data1 =
+                new PopupButtonDataBuilder()
+                        .withText("tool 1")
+                        .withType(PopupButtonType.TOOL)
+                        .build();
+        PopupButtonData data2 =
+                new PopupButtonDataBuilder()
+                        .withText("tool 2")
+                        .withType(PopupButtonType.TOOL)
+                        .build();
+
+        mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, List.of(data1, data2));
+
+        assertEquals(8, mPopup.mAccordionContainer.getChildCount());
+        TextView text1 = getDynamicToolButton(0).findViewById(R.id.action_text);
+        assertEquals("tool 1", text1.getText());
+        TextView text2 = getDynamicToolButton(1).findViewById(R.id.action_text);
+        assertEquals("tool 2", text2.getText());
+    }
+
+    @Test
+    public void bind_popupAccordionExpanded() {
+        FuseboxViewHolder viewHolder = createBottomSheetViewHolder();
+        PropertyModel model = createBottomSheetModel();
+
+        model.set(FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE, true);
+        mBinder.bind(model, viewHolder, FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE);
+
+        model.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, true);
+        mBinder.bind(model, viewHolder, FuseboxProperties.POPUP_ACCORDION_EXPANDED);
+        assertEquals(View.VISIBLE, viewHolder.popup.mAccordionContainer.getVisibility());
+
+        model.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, false);
+        mBinder.bind(model, viewHolder, FuseboxProperties.POPUP_ACCORDION_EXPANDED);
+        assertEquals(View.GONE, viewHolder.popup.mAccordionContainer.getVisibility());
     }
 }

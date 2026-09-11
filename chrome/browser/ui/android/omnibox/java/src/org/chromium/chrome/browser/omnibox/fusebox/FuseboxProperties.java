@@ -155,6 +155,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey PLUS_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** Whether the accordion menu in the popup is expanded. */
+    public static final WritableBooleanPropertyKey POPUP_ACCORDION_EXPANDED =
+            new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the Camera button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_CAMERA_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -257,6 +261,14 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_MODEL_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** Action to perform when the user clicks the More Options button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_MORE_OPTIONS_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the More Options button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_MORE_OPTIONS_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** Holds button data objects for each recent tab that is to be shown. */
     public static final WritableObjectPropertyKey<List<PopupButtonData>>
             POPUP_RECENT_TABS_BUTTON_DATA_LIST = new WritableObjectPropertyKey<>();
@@ -293,6 +305,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_TOOL_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** Whether the popup should use the carousel layout. */
+    public static final ReadableBooleanPropertyKey POPUP_USE_CAROUSEL =
+            new ReadableBooleanPropertyKey();
+
     /** Tracks the {@link AutocompleteRequestType}. */
     public static final WritableIntDefPropertyKey<AutocompleteRequestType> REQUEST_TYPE =
             new WritableIntDefPropertyKey<>(AutocompleteRequestType.SEARCH);
@@ -320,6 +336,7 @@ class FuseboxProperties {
         PLUS_BUTTON_BACKGROUND_STYLE,
         PLUS_BUTTON_CLICKED,
         PLUS_BUTTON_VISIBLE,
+        POPUP_ACCORDION_EXPANDED,
         POPUP_ATTACH_CAMERA_CLICKED,
         POPUP_ATTACH_CAMERA_ENABLED,
         POPUP_ATTACH_CAMERA_VISIBLE,
@@ -344,6 +361,8 @@ class FuseboxProperties {
         POPUP_MODEL_DIVIDER_VISIBLE,
         POPUP_MODEL_HEADER_TEXT,
         POPUP_MODEL_HEADER_VISIBLE,
+        POPUP_MORE_OPTIONS_CLICKED,
+        POPUP_MORE_OPTIONS_VISIBLE,
         POPUP_RECENT_TABS_BUTTON_DATA_LIST,
         POPUP_RECENT_TABS_DIVIDER_VISIBLE,
         POPUP_RECENT_TABS_ENABLED,
@@ -353,6 +372,7 @@ class FuseboxProperties {
         POPUP_TOOL_DIVIDER_VISIBLE,
         POPUP_TOOL_HEADER_TEXT,
         POPUP_TOOL_HEADER_VISIBLE,
+        POPUP_USE_CAROUSEL,
         REQUEST_TYPE,
         REQUEST_TYPE_BUTTON_CLICKED,
         REQUEST_TYPE_BUTTON_TEXT,

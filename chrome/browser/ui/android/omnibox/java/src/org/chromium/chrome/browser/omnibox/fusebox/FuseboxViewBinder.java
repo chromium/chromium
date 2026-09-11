@@ -102,6 +102,8 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.PLUS_BUTTON_VISIBLE) {
             boolean showPlusButton = model.get(FuseboxProperties.PLUS_BUTTON_VISIBLE);
             view.plusButton.setVisibility(showPlusButton ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == FuseboxProperties.POPUP_ACCORDION_EXPANDED) {
+            view.popup.setAccordionExpanded(model.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run());
@@ -180,6 +182,16 @@ class FuseboxViewBinder {
                     model.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
+        } else if (propertyKey == FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED) {
+            view.popup.mMoreOptionsButton.setOnClickListener(
+                    v -> model.get(FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE) {
+            boolean visible = model.get(FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE);
+            updateButtonVisibility(
+                    model,
+                    FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE,
+                    view.popup.mMoreOptionsButton);
+            view.popup.setAccordionEnabled(visible);
         } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST) {
             updateRecentTabsButtons(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE) {
@@ -320,7 +332,7 @@ class FuseboxViewBinder {
     private static void updateModelButtons(PropertyModel model, FuseboxViewHolder view) {
         List<PopupButtonData> buttonDataList =
                 model.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
-        ViewGroup group = view.popup.mViewGroup;
+        ViewGroup group = view.popup.mAccordionContainer;
         int headerIndex = group.indexOfChild(view.popup.mModelsHeader);
         assert headerIndex >= 0;
 
@@ -330,7 +342,7 @@ class FuseboxViewBinder {
     private static void updateToolButtons(PropertyModel model, FuseboxViewHolder view) {
         List<PopupButtonData> buttonDataList =
                 model.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
-        ViewGroup group = view.popup.mViewGroup;
+        ViewGroup group = view.popup.mAccordionContainer;
         int headerIndex = group.indexOfChild(view.popup.mToolsHeader);
         assert headerIndex >= 0;
         int dividerIndex = group.indexOfChild(view.popup.mModelsDivider);
