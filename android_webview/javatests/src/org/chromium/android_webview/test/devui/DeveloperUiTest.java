@@ -129,8 +129,8 @@ public class DeveloperUiTest {
     public void tearDown() throws Exception {
         // Activity is launched, i.e the test is not skipped.
         if (mRule.getActivity() != null) {
-            // Tests are responsible for verifying every Intent they trigger.
-            assertNoUnverifiedIntents();
+            // Tests are responsible for verifying every Intent they trigger and calling
+            // assertNoUnverifiedIntents().
             Intents.release();
         }
     }
@@ -150,6 +150,8 @@ public class DeveloperUiTest {
                 .check(matches(hasTextColor(R.color.navigation_unselected)));
         onView(withId(R.id.navigation_net_logs_ui))
                 .check(matches(hasTextColor(R.color.navigation_unselected)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -212,6 +214,8 @@ public class DeveloperUiTest {
                 .check(matches(hasTextColor(R.color.navigation_unselected)));
         onView(withId(R.id.navigation_net_logs_ui))
                 .check(matches(hasTextColor(R.color.navigation_unselected)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -224,6 +228,8 @@ public class DeveloperUiTest {
         openOptionsMenu();
         onView(withText("Change WebView Provider")).check(matches(isDisplayed())).perform(click());
         intended(IntentMatchers.hasAction(Settings.ACTION_WEBVIEW_SETTINGS));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -256,6 +262,8 @@ public class DeveloperUiTest {
                                 hasParamWithValue(
                                         "customFields",
                                         BugTrackerConstants.OS_FIELD + ":Android"))));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -290,6 +298,8 @@ public class DeveloperUiTest {
                         IntentMatchers.hasData(hasHost("details")),
                         IntentMatchers.hasData(
                                 hasParamWithValue("id", TEST_WEBVIEW_PACKAGE_NAME))));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -310,6 +320,8 @@ public class DeveloperUiTest {
                         IntentMatchers.hasData(
                                 hasPath(
                                         "/chromium/src/+/HEAD/android_webview/docs/developer-ui.md"))));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -325,6 +337,8 @@ public class DeveloperUiTest {
         onView(withText("SafeMode status")).perform(click());
 
         onView(withId(R.id.fragment_safe_mode)).check(matches(isDisplayed()));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -353,6 +367,8 @@ public class DeveloperUiTest {
                         hasAction(Intent.ACTION_VIEW),
                         hasData(hasScheme("https")),
                         hasData(hasHost("issues.chromium.org"))));
+
+        assertNoUnverifiedIntents();
     }
 
     private void switchToFlagsUi() {
@@ -381,6 +397,8 @@ public class DeveloperUiTest {
         switchToFlagsUi();
 
         checkFlagSpinnersEnabledState(true);
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -401,6 +419,8 @@ public class DeveloperUiTest {
         onView(withText("Cancel")).check(matches(isDisplayed())).perform(click());
 
         checkFlagSpinnersEnabledState(false);
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -417,6 +437,8 @@ public class DeveloperUiTest {
 
         switchToFlagsUi();
         checkFlagSpinnersEnabledState(true);
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -443,5 +465,7 @@ public class DeveloperUiTest {
         assertFalse(
                 "We should no longer need to ask for permission",
                 activity.needToRequestPostNotificationPermission());
+
+        assertNoUnverifiedIntents();
     }
 }

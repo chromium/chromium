@@ -87,8 +87,8 @@ public class HomeFragmentTest {
         WebViewPackageHelper.setCurrentWebViewPackageForTesting(null);
         // Activity is launched, i.e the test is not skipped.
         if (mRule.getActivity() != null) {
-            // Tests are responsible for verifying every Intent they trigger.
-            assertNoUnverifiedIntents();
+            // Tests are responsible for verifying every Intent they trigger and calling
+            // assertNoUnverifiedIntents.
             Intents.release();
         }
     }
@@ -157,6 +157,8 @@ public class HomeFragmentTest {
                 .atPosition(1)
                 .onChildView(withId(android.R.id.text2))
                 .check(matches(withText(expectedDeviceInfo)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -216,6 +218,8 @@ public class HomeFragmentTest {
                 .atPosition(2)
                 .onChildView(withId(android.R.id.text2))
                 .check(matches(withText(expectedDeviceInfo)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -256,6 +260,8 @@ public class HomeFragmentTest {
         String expectedDeviceInfo =
                 String.format(Locale.US, "%s - %s", Build.MODEL, Build.FINGERPRINT);
         assertThat(getClipBoardTextOnUiThread(context), is(equalTo(expectedDeviceInfo)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -290,6 +296,8 @@ public class HomeFragmentTest {
                                                         .CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT))))
                 .perform(click());
         intended(IntentMatchers.hasAction(Settings.ACTION_WEBVIEW_SETTINGS));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -320,5 +328,7 @@ public class HomeFragmentTest {
                 .check(matches(withText(WebViewPackageError.CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT)))
                 .perform(click());
         intended(IntentMatchers.hasAction(Settings.ACTION_WEBVIEW_SETTINGS));
+
+        assertNoUnverifiedIntents();
     }
 }

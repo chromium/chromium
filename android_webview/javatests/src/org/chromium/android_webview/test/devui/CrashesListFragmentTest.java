@@ -122,8 +122,8 @@ public class CrashesListFragmentTest {
 
         // Activity is launched, i.e the test is not skipped.
         if (mRule.getActivity() != null) {
-            // Tests are responsible for verifying every Intent they trigger.
-            assertNoUnverifiedIntents();
+            // Tests are responsible for verifying every Intent they trigger and calling
+            // assertNoUnverifiedIntents.
             Intents.release();
         }
     }
@@ -427,6 +427,8 @@ public class CrashesListFragmentTest {
                 .check(matches(isDisplayed()))
                 .check(matches(isEnabled()))
                 .check(matches(withDrawable(R.drawable.ic_delete)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -483,6 +485,8 @@ public class CrashesListFragmentTest {
                 .perform(click());
         onView(withText(CrashesListFragment.CRASH_BUG_DIALOG_MESSAGE)).check(doesNotExist());
         intended(IntentMatchers.filterEquals(expectedIntent));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -528,6 +532,8 @@ public class CrashesListFragmentTest {
                 .check(matches(isDisplayed()))
                 .check(matches(isEnabled()))
                 .check(matches(withDrawable(R.drawable.ic_delete)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -575,6 +581,8 @@ public class CrashesListFragmentTest {
                 .check(matches(isDisplayed()))
                 .check(matches(isEnabled()))
                 .check(matches(withDrawable(R.drawable.ic_delete)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -618,6 +626,8 @@ public class CrashesListFragmentTest {
                 .check(matches(isDisplayed()))
                 .check(matches(isEnabled()))
                 .check(matches(withDrawable(R.drawable.ic_delete)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -687,6 +697,8 @@ public class CrashesListFragmentTest {
                 new File(minidumpFile.getAbsolutePath().replace("skipped", "forced"));
         assertThat("skipped minidump file shouldn't exist", not(minidumpFile.exists()));
         assertThat("renamed forced minidump file should exist", renamedMinidumpFile.exists());
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -742,6 +754,8 @@ public class CrashesListFragmentTest {
                 new File(minidumpFile.getAbsolutePath().replace("skipped", "forced"));
         assertThat("skipped minidump file shouldn't exist", not(minidumpFile.exists()));
         assertThat("renamed forced minidump file should exist", renamedMinidumpFile.exists());
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -785,6 +799,8 @@ public class CrashesListFragmentTest {
         headerDataInteraction
                 .onChildView(withId(R.id.crash_package_icon))
                 .check(matches(withDrawable(packageManager.getApplicationIcon(appInfo))));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -807,6 +823,8 @@ public class CrashesListFragmentTest {
         onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
 
         checkMissingPackageInfoCrashItemHeader(onData(anything()).atPosition(0), crashInfo);
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -827,6 +845,8 @@ public class CrashesListFragmentTest {
         onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
 
         checkMissingPackageInfoCrashItemHeader(onData(anything()).atPosition(0), crashInfo);
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -846,6 +866,8 @@ public class CrashesListFragmentTest {
         onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
 
         checkMissingPackageInfoCrashItemHeader(onData(anything()).atPosition(0), crashInfo);
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -885,6 +907,8 @@ public class CrashesListFragmentTest {
             checkUnknownPackageCrashItemHeader(
                     onData(anything()).atPosition(i), crashInfo[crashReportsNum - i - 1]);
         }
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -922,6 +946,8 @@ public class CrashesListFragmentTest {
         helper.waitForCallback(crashListLoadInitCount, 1);
 
         onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -954,6 +980,8 @@ public class CrashesListFragmentTest {
         helper.waitForCallback(crashListLoadInitCount, 1);
 
         onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -984,6 +1012,8 @@ public class CrashesListFragmentTest {
         helper.waitForCallback(crashListLoadInitCount, 1);
 
         onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -1013,6 +1043,8 @@ public class CrashesListFragmentTest {
         helper.waitForCallback(crashListLoadInitCount, 1);
 
         onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -1041,6 +1073,8 @@ public class CrashesListFragmentTest {
 
         onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
         checkUnknownPackageCrashItemHeader(onData(anything()).atPosition(0), crashInfo);
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -1111,6 +1145,8 @@ public class CrashesListFragmentTest {
         onData(anything()).atPosition(2).perform(longClick());
         // This a pending upload, nothing should be copied
         assertThat(getClipBoardTextOnUiThread(context), is(""));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -1133,6 +1169,8 @@ public class CrashesListFragmentTest {
                         WebViewPackageHelper.loadLabel(context));
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text)).check(matches(withText(expectedErrorMessage)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -1148,6 +1186,8 @@ public class CrashesListFragmentTest {
         launchCrashesFragment();
 
         onView(withId(R.id.main_error_view)).check(matches(not(isDisplayed())));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -1184,6 +1224,8 @@ public class CrashesListFragmentTest {
         intended(
                 IntentMatchers.hasAction(
                         CrashesListFragment.USAGE_AND_DIAGONSTICS_ACTIVITY_INTENT_ACTION));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -1225,6 +1267,8 @@ public class CrashesListFragmentTest {
                                 withText(
                                         CrashesListFragment
                                                 .CRASH_COLLECTION_DISABLED_ERROR_MESSAGE)));
+
+        assertNoUnverifiedIntents();
     }
 
     @Test
@@ -1243,5 +1287,7 @@ public class CrashesListFragmentTest {
         onView(withId(R.id.error_text))
                 .check(matches(withText(CrashesListFragment.NO_GMS_ERROR_MESSAGE)));
         onView(withId(R.id.action_button)).check(matches(not(isDisplayed())));
+
+        assertNoUnverifiedIntents();
     }
 }
