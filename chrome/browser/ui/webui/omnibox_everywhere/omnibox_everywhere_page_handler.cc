@@ -24,6 +24,12 @@ void OmniboxEverywherePageHandler::ShowContextActionMenu(
   }
 }
 
+void OmniboxEverywherePageHandler::SetIsComposebox(bool is_composebox) {
+  if (web_ui_controller_) {
+    web_ui_controller_->SetIsComposebox(is_composebox);
+  }
+}
+
 void OmniboxEverywherePageHandler::OnContextMenuClosed() {
   if (page_) {
     page_->OnContextMenuClosed();

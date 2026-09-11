@@ -1008,6 +1008,7 @@ class MockSpeechRecognition {
 suite('OmniboxEverywhereAppTest', () => {
   let app: OmniboxEverywhereAppElement;
   let testProxy: TestSearchboxBrowserProxy;
+  let testEverywhereProxy: TestOmniboxEverywhereBrowserProxy;
   let mockPageHandler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
   setup(async () => {
@@ -1040,6 +1041,8 @@ suite('OmniboxEverywhereAppTest', () => {
 
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
+    testEverywhereProxy = new TestOmniboxEverywhereBrowserProxy();
+    OmniboxEverywhereBrowserProxyImpl.setInstance(testEverywhereProxy);
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
         mockPageHandler,
@@ -1269,6 +1272,67 @@ suite('OmniboxEverywhereAppTest', () => {
             !!app.shadowRoot.querySelector('omnibox-everywhere-composebox'));
         const restoredSearchbox =
             app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        assertTrue(!!restoredSearchbox);
+      });
+
+  test(
+      'mode transitions call setIsComposebox on browser proxy handler',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: '', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        let isComposebox =
+            await testEverywhereProxy.handler.whenCalled('setIsComposebox');
+        assertTrue(isComposebox);
+        testEverywhereProxy.handler.reset();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+
+        composebox.dispatchEvent(new CustomEvent('close-composebox', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        isComposebox =
+            await testEverywhereProxy.handler.whenCalled('setIsComposebox');
+        assertFalse(isComposebox);
+        testEverywhereProxy.handler.reset();
+
+        // Reopen composebox and verify query submission cleans up UI without
+        // calling setIsComposebox across Mojo.
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: 'query', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+        isComposebox =
+            await testEverywhereProxy.handler.whenCalled('setIsComposebox');
+        assertTrue(isComposebox);
+        testEverywhereProxy.handler.reset();
+
+        const activeComposebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!activeComposebox);
+        activeComposebox.dispatchEvent(new CustomEvent('composebox-submit', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertEquals(
+            0, testEverywhereProxy.handler.getCallCount('setIsComposebox'));
+        const restoredSearchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
         assertTrue(!!restoredSearchbox);
       });
 

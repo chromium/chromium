@@ -324,7 +324,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       SearchboxBrowserProxy.getInstance().handler.setActiveToolMode(
           initialMode, false);
     }
-    this.isComposeboxMode_ = true;
+    this.setIsComposebox_(true);
     await this.updateComplete;
     if (this.composebox) {
       this.composebox.focusInput();
@@ -335,6 +335,15 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
           this.mostVisitedListenerId_);
       this.mostVisitedListenerId_ = null;
     }
+  }
+
+  private setIsComposebox_(isComposebox: boolean) {
+    if (this.isComposeboxMode_ === isComposebox) {
+      return;
+    }
+    this.isComposeboxMode_ = isComposebox;
+    OmniboxEverywhereBrowserProxyImpl.getInstance().handler.setIsComposebox(
+        isComposebox);
   }
 
   protected onFreClose_() {
@@ -356,7 +365,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
 
   protected async onOpenComposebox_(e: CustomEvent<ComposeboxState>) {
     this.composeboxState_ = e.detail;
-    this.isComposeboxMode_ = true;
+    this.setIsComposebox_(true);
     await this.updateComplete;
     const composebox =
         this.shadowRoot?.querySelector<OmniboxEverywhereComposeboxElement>(
@@ -369,7 +378,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
 
   protected async onCloseComposebox_() {
     this.composeboxState_ = null;
-    this.isComposeboxMode_ = false;
+    this.setIsComposebox_(false);
     await this.updateComplete;
     const searchbox =
         this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(

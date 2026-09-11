@@ -616,14 +616,21 @@ OmniboxEverywhereUI::GetOrCreateContextualSessionHandle() {
   return shared_session_handle_.get();
 }
 
-void OmniboxEverywhereUI::set_is_composebox_mode(bool mode) {
-  is_composebox_mode_ = mode;
+void OmniboxEverywhereUI::SetIsComposebox(bool is_composebox) {
+  if (is_composebox_mode_ == is_composebox) {
+    return;
+  }
+  if (is_composebox) {
+    is_composebox_mode_ = true;
+  } else {
+    ClearContextualSessionHandle();
+  }
 }
 
 void OmniboxEverywhereUI::ClearContextualSessionHandle() {
   shared_session_handle_.reset();
   pending_upload_statuses_.clear();
-  set_is_composebox_mode(false);
+  is_composebox_mode_ = false;
 
   // OmniboxEverywhereUI concurrently hosts both `omnibox_handler_` and
   // `composebox_handler_` across a persistent WebContents.
@@ -791,7 +798,7 @@ bool OmniboxEverywhereUI::IsCommandIdVisible(int command_id) const {
 
 void OmniboxEverywhereUI::OpenComposebox(
     omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state) {
-  set_is_composebox_mode(true);
+  SetIsComposebox(true);
   if (page_handler_) {
     page_handler_->OpenComposebox(std::move(initial_state));
   }

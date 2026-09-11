@@ -45,6 +45,10 @@ interface PageHandlerFactory {
 interface PageHandler {
   // Shows the native contextual '+' dropdown menu anchored at `anchor_rect`.
   ShowContextActionMenu(gfx.mojom.Rect anchor_rect);
+
+  // Notifies the browser that the composebox presentation mode in WebUI has
+  // changed (e.g. opened or closed/submitted).
+  SetIsComposebox(bool is_composebox);
 };
 
 // The WebUI page for Omnibox Everywhere lifecycle events.

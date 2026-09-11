@@ -189,7 +189,7 @@ class OmniboxEverywhereUI
   void OnContextMenuClosed();
 
   bool is_composebox_mode() const { return is_composebox_mode_; }
-  void set_is_composebox_mode(bool mode);
+  void SetIsComposebox(bool is_composebox);
 
   void AddFileContext(const base::UnguessableToken& token,
                       searchbox::mojom::SelectedFileInfoPtr file_info);
