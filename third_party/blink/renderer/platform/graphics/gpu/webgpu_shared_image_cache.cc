@@ -378,7 +378,7 @@ WebGpuSharedImageCache::LeaseSharedImage(viz::SharedImageFormat format,
 
     auto shared_image = sii->CreateSharedImage(
         {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
-         shared_image_usage_flags, "CanvasResourceRaster"},
+         shared_image_usage_flags, "WebGpuSharedImageCache"},
         gpu::kNullSurfaceHandle);
 
     gpu::SyncToken creation_sync_token = shared_image->creation_sync_token();
