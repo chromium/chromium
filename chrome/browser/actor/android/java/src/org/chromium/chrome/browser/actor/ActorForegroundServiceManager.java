@@ -330,10 +330,15 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
 
     @VisibleForTesting
     void stopAndUnbindService() {
+        stopAndUnbindService(ServiceCompat.STOP_FOREGROUND_DETACH);
+    }
+
+    @VisibleForTesting
+    void stopAndUnbindService(int flags) {
         if (!mIsServiceBound) return;
         mIsServiceBound = false;
 
-        getServiceController().stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
+        getServiceController().stopActorForegroundService(flags);
         getServiceController().unbindService();
 
         mStartForegroundCalled = false;
@@ -351,14 +356,18 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
      * @param taskId The ID of the task whose notification was dismissed.
      */
     public void onNotificationDismissed(int taskId) {
+        boolean wasPinned = mPinnedNotificationId == taskId;
         if (mNotificationService != null) {
             mNotificationService.clearTaskData(taskId);
         }
-        if (mPinnedNotificationId == taskId) {
+        if (wasPinned) {
             mPinnedNotificationId = INVALID_NOTIFICATION_ID;
             mPinnedNotification = null;
         }
-        maybeStopServiceNow();
+        maybeStopServiceNow(
+                wasPinned
+                        ? ServiceCompat.STOP_FOREGROUND_REMOVE
+                        : ServiceCompat.STOP_FOREGROUND_DETACH);
     }
 
     /**
@@ -366,10 +375,20 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
      * pending.
      */
     public void maybeStopServiceNow() {
+        maybeStopServiceNow(ServiceCompat.STOP_FOREGROUND_DETACH);
+    }
+
+    /**
+     * Stops and unbinds the foreground service with the specified flags if all tasks are finished
+     * and no demotions are pending.
+     *
+     * @param flags ServiceCompat flags for stopping the foreground service.
+     */
+    public void maybeStopServiceNow(int flags) {
         if (mActiveTaskIds.isEmpty()
                 && (mNotificationService == null || !mNotificationService.hasPendingDemotions())) {
             mHandler.removeCallbacks(mMaybeStopServiceRunnable);
-            stopAndUnbindService();
+            stopAndUnbindService(flags);
         }
     }
 
