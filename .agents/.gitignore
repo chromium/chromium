@@ -7,6 +7,7 @@
 !rules/
 /rules/*
 !/rules/README.md
+!/rules/rust.md
 
 # We want to ignore skills besides any that we check in (elsewhere)
 # to allow users to make their own.
