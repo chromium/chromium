@@ -12,7 +12,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/atomic_sequence_num.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/tone_map_util.h"
@@ -96,7 +95,6 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   uint32_t SerializedSize() const final;
   bool Serialize(base::span<uint8_t> data) const final;
 
-  static uint32_t GetNextId() { return s_next_id_.GetNext(); }
   bool IsYuv() const {
     return image_.yuv_plane_config != SkYUVAInfo::PlaneConfig::kUnknown;
   }
@@ -109,7 +107,6 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   sk_sp<SkColorSpace> target_color_space_;
   const uint32_t id_;
   uint32_t size_ = 0;
-  static base::AtomicSequenceNumber s_next_id_;
 
   Image image_;
 
