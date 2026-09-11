@@ -1165,6 +1165,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                                 getTabModel(),
                                                 tabs,
                                                 tabGroup,
+                                                /* syncService= */ null,
+                                                /* uiActionHandler= */ null,
                                                 /* tabMovedCallback= */ null,
                                                 /* bringToFront= */ true));
                     };

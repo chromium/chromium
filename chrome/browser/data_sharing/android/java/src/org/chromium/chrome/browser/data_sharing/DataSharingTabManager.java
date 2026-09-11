@@ -966,4 +966,9 @@ public class DataSharingTabManager {
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier) {
         mShareDelegateSupplier = shareDelegateSupplier;
     }
+
+    /** Returns the {@link TabGroupUiActionHandler} instance. */
+    public @Nullable TabGroupUiActionHandler getTabGroupUiActionHandler() {
+        return mTabGroupUiActionHandlerSupplier.get();
+    }
 }

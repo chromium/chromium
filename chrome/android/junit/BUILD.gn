@@ -1534,6 +1534,7 @@ if (is_android) {
       "//chrome/browser/ui/android/bars_common:java",
       "//chrome/browser/ui/vertical_tabs:java",
       "//chrome/test/android:chrome_java_transit",
+      "//components/saved_tab_groups/public:java",
       "//components/sensitive_content:sensitive_content_features_java",
     ]
   }

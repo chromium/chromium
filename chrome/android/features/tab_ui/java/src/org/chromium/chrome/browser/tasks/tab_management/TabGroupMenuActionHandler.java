@@ -141,6 +141,8 @@ public class TabGroupMenuActionHandler {
                 mTabModel,
                 List.of(tab),
                 destinationGroup,
+                /* syncService= */ null,
+                /* uiActionHandler= */ null,
                 /* tabMovedCallback= */ null,
                 /* bringToFront= */ true);
         return true;

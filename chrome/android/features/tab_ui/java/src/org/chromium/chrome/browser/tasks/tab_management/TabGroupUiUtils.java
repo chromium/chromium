@@ -23,6 +23,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -98,25 +101,115 @@ public class TabGroupUiUtils {
     }
 
     /**
-     * Adds the given tabs to the destination tab group. Handles both local tab group merge within
-     * the same window and cross-window move to another window.
+     * Resolves the {@link GroupWindowInfo} for a group given a local tab group ID or a sync group
+     * ID.
+     *
+     * @param context The current context.
+     * @param tabModel The current tab model.
+     * @param syncService The tab group sync service, or null.
+     * @param groupId The local tab group ID, or null.
+     * @param syncGroupId The sync tab group ID, or null.
+     * @return The resolved {@link GroupWindowInfo}, or null if neither ID was resolvable.
+     */
+    public static @Nullable GroupWindowInfo getGroupWindowInfo(
+            Context context,
+            TabModel tabModel,
+            @Nullable TabGroupSyncService syncService,
+            @Nullable Token groupId,
+            @Nullable String syncGroupId) {
+        GroupWindowChecker checker = new GroupWindowChecker(context, syncService, tabModel);
+        if (groupId != null) {
+            return GroupWindowInfo.forLocalGroup(
+                    context, tabModel, groupId, checker.getState(groupId));
+        } else if (syncGroupId != null && syncService != null) {
+            SavedTabGroup group = syncService.getGroup(syncGroupId);
+            if (group != null) {
+                return GroupWindowInfo.forSyncedGroup(context, group, checker.getState(group));
+            }
+        }
+        return null;
+    }
+
+    private static boolean isRemoteGroup(GroupWindowInfo group) {
+        return group.groupWindowState == GroupWindowState.HIDDEN || group.localId == null;
+    }
+
+    /**
+     * Determines whether tabs can be added to the destination group based on feature flags, group
+     * window state, and required service dependencies.
+     *
+     * @param destinationGroup The target group information.
+     * @param syncService The sync service required to resolve restored remote groups.
+     * @param uiActionHandler The UI handler required to restore remote groups.
+     * @return True if tabs can be added to the destination group, false otherwise.
+     */
+    public static boolean isValidDestination(
+            @Nullable GroupWindowInfo destinationGroup,
+            @Nullable TabGroupSyncService syncService,
+            @Nullable TabGroupUiActionHandler uiActionHandler) {
+        if (destinationGroup == null) {
+            return false;
+        }
+        if (destinationGroup.groupWindowState == GroupWindowState.IN_CURRENT_CLOSING) {
+            return false;
+        }
+        if (destinationGroup.groupWindowState == GroupWindowState.IN_ANOTHER) {
+            return isCrossWindowTabGroupOperationsEnabled() && destinationGroup.localId != null;
+        }
+        if (isRemoteGroup(destinationGroup)) {
+            return isRemoteGroupOperationsEnabled()
+                    && destinationGroup.syncId != null
+                    && syncService != null
+                    && uiActionHandler != null;
+        }
+        return destinationGroup.localId != null;
+    }
+
+    /**
+     * Adds the given tabs to the destination tab group. Handles local tab group merge within the
+     * same window, cross-window move to another window, and restoring remote tab groups.
      *
      * @param sourceTabModel The source {@link TabModel}.
      * @param tabs The list of {@link Tab}s to add to the group.
      * @param destinationGroup The {@link GroupWindowInfo} representing the target tab group.
+     * @param syncService The sync service used to look up restored tab groups.
+     * @param uiActionHandler The UI action handler used to restore remote tab groups.
      * @param tabMovedCallback Optional callback invoked when tabs are moved.
      * @param bringToFront Whether to bring the destination window to the front if cross-window.
      */
     public static void addTabsToGroup(
             TabModel sourceTabModel,
             List<Tab> tabs,
-            GroupWindowInfo destinationGroup,
+            @Nullable GroupWindowInfo destinationGroup,
+            @Nullable TabGroupSyncService syncService,
+            @Nullable TabGroupUiActionHandler uiActionHandler,
             @Nullable TabMovedCallback tabMovedCallback,
             boolean bringToFront) {
+        if (tabs == null || tabs.isEmpty()) {
+            return;
+        }
+        if (destinationGroup == null
+                || !isValidDestination(destinationGroup, syncService, uiActionHandler)) {
+            return;
+        }
         Token destinationGroupId = destinationGroup.localId;
-        if (destinationGroupId == null
-                || tabs.isEmpty()
-                || areTabsAlreadyInGroup(tabs, destinationGroupId)) {
+        if (destinationGroupId != null && areTabsAlreadyInGroup(tabs, destinationGroupId)) {
+            return;
+        }
+        if (isRemoteGroup(destinationGroup)) {
+            assert destinationGroup.syncId != null;
+            assert syncService != null;
+            assert uiActionHandler != null;
+
+            String syncId = destinationGroup.syncId;
+            uiActionHandler.openTabGroup(syncId);
+            SavedTabGroup savedGroup = syncService.getGroup(syncId);
+            if (savedGroup == null || savedGroup.localId == null) {
+                return;
+            }
+            destinationGroupId = savedGroup.localId.tabGroupId;
+        }
+        if (destinationGroupId == null || areTabsAlreadyInGroup(tabs, destinationGroupId)) {
             return;
         }
 
