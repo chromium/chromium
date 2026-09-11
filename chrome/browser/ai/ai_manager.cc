@@ -80,6 +80,8 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
+using blink::mojom::AILanguageCodePtr;
+
 namespace {
 
 constexpr float kDefaultMaxTemperature = 2.0f;
@@ -122,6 +124,8 @@ const char kExperimentalLanguageWarning[] =
 const char kSpeedPreferenceMarkdownWarning[] =
     "The 'speed' performance preference utilizes a model with limited support "
     "for 'markdown' format.";
+
+const char kModelVersionParam[] = "model_version";
 
 // Eagerly initializes other downloadable APIs when any session type is created.
 BASE_FEATURE(kBuiltInAIEagerInit, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -716,7 +720,6 @@ std::string_view AILanguageModelSamplingModeToString(
 // field param kModelVersionParam to specify the model version. Example:
 // --enable-features=AIApiFoundationalModel:model_version/v4
 BASE_FEATURE(kAIApiFoundationalModel, base::FEATURE_DISABLED_BY_DEFAULT);
-const char kModelVersionParam[] = "model_version";
 
 AIManager::AIManager(content::BrowserContext* browser_context,
                      content::RenderFrameHost* rfh)
