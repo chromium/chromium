@@ -142,6 +142,7 @@ const auto& GetNeverSniffedMimeTypes() {
       "application/vnd.spreadsheet-openxml",
       "application/vnd.wordprocessing-openxml",
       "text/csv",
+      "text/pdf",
       // Block signed documents to protect (potentially sensitive) unencrypted
       // body of the signed document.  There should be no need to block
       // encrypted documents (e.g. `multipart/encrypted` nor
