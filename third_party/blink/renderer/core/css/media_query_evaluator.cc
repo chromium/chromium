@@ -449,17 +449,16 @@ static bool DisplayStateMediaFeatureEval(const MediaQueryExpValue& value,
 static bool ResizableMediaFeatureEval(const MediaQueryExpValue& value,
                                       MediaQueryOperator,
                                       const MediaValues& media_values) {
-  // No value = boolean context:
-  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  bool resizable = media_values.Resizable();
+
+  // No value = boolean context.
   if (!value.IsValid()) {
-    return true;
+    return resizable;
   }
 
   if (!value.IsId()) {
     return false;
   }
-
-  bool resizable = media_values.Resizable();
 
   return (resizable && value.Id() == CSSValueID::kTrue) ||
          (!resizable && value.Id() == CSSValueID::kFalse);

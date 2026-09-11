@@ -144,8 +144,21 @@ MediaQueryEvaluatorTestCase g_display_state_test_cases[] = {
 
 MediaQueryEvaluatorTestCase g_resizable_test_cases[] = {
     {"(resizable)", true},
+    {"not (resizable)", false},
     {"(resizable: true)", true},
     {"(resizable: false)", false},
+    {"(resizable: #true)", false},
+    {"(resizable: @true)", false},
+    {"(resizable: 'true')", false},
+    {"(resizable: \"true\")", false},
+    {"(resizable: @junk true)", false},
+};
+
+MediaQueryEvaluatorTestCase g_non_resizable_test_cases[] = {
+    {"(resizable)", false},
+    {"not (resizable)", true},
+    {"(resizable: true)", false},
+    {"(resizable: false)", true},
     {"(resizable: #true)", false},
     {"(resizable: @true)", false},
     {"(resizable: 'true')", false},
@@ -536,6 +549,17 @@ TEST(MediaQueryEvaluatorTest, Cached) {
     MediaQueryEvaluator* media_query_evaluator =
         MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_resizable_test_cases, media_query_evaluator);
+  }
+
+  // Non-resizable resizable values.
+  {
+    ScopedDesktopPWAsAdditionalWindowingControlsForTest scoped_feature(true);
+    data.resizable = false;
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
+    TestMQEvaluator(g_non_resizable_test_cases, media_query_evaluator);
+    data.resizable = true;
   }
 
   // Print values.

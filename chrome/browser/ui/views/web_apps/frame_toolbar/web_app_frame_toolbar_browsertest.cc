@@ -2852,12 +2852,26 @@ IN_PROC_BROWSER_TEST_F(
 
   // Defaults to `std::nullopt` -> Returns "fallback".
   CheckCanResize(true, std::nullopt);
+  // Verify resizable boolean evaluation.
+  EXPECT_EQ(content::EvalJs(web_contents,
+                            "window.matchMedia('(resizable)').matches;"),
+            true);
+  EXPECT_EQ(content::EvalJs(web_contents,
+                            "window.matchMedia('not (resizable)').matches;"),
+            false);
 
   // Explicitly set to false -> Returns false.
   EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/false,
                              /*resizable_expected=*/false),
             "window.setResizable(false) succeeded.");
   CheckCanResize(false, false);
+  // Verify resizable boolean evaluation.
+  EXPECT_EQ(content::EvalJs(web_contents,
+                            "window.matchMedia('(resizable)').matches;"),
+            false);
+  EXPECT_EQ(content::EvalJs(web_contents,
+                            "window.matchMedia('not (resizable)').matches;"),
+            true);
 
   // Explicitly set to true -> Returns true.
   EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/true,
