@@ -4016,7 +4016,6 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "MigratedAutomation": "true",
                         "MigratedChromeForTesting": "true",
                         "MigratedCollectedCookies": "true",
                         "MigratedDevToolsSharedProcess": "true",
