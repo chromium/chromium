@@ -17719,6 +17719,23 @@
             ]
         }
     ],
+    "ScheduledRestart": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScheduledRestart"
+                    ]
+                }
+            ]
+        }
+    ],
     "SchoolToolsBocaPollingInterval": [
         {
             "platforms": [
