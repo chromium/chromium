@@ -325,6 +325,7 @@ if (is_win || is_mac || is_linux) {
     ]
 
     deps = [
+      ":first_run_flow_controller",
       ":profile_management_step_controller",
       ":profile_management_types",
       "//chrome/browser/profiles:profile",
@@ -892,5 +893,69 @@ if (enable_dice_support) {
       "//components/signin/public/base",
       "//net",
     ]
+  }
+
+  source_set("first_run_flow_controller") {
+    public = [ "first_run_flow_controller.h" ]
+    public_deps = [
+      ":profile_management_flow_controller",
+      ":profile_management_flow_controller_impl",
+      ":profile_management_types",
+      ":profile_picker_toolbar",
+      ":profile_picker_web_contents_host",
+      "//base",
+      "//chrome/browser:shell_integration",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/views/profiles/feature_showcase:metrics",
+      "//chrome/browser/ui/webui/intro",
+      "//services/audio/public/cpp",
+    ]
+  }
+
+  source_set("first_run_flow_controller_impl") {
+    sources = [ "first_run_flow_controller.cc" ]
+    public_deps = [
+      ":first_run_flow_controller",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":profile_management_step_controller",
+      ":profile_picker_flow_controller",
+      ":profile_picker_post_sign_in_adapter",
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser:global_features",
+      "//chrome/browser/enterprise",
+      "//chrome/browser/policy",
+      "//chrome/browser/prefs",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/regional_capabilities",
+      "//chrome/browser/search_engine_choice",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/views/profiles/feature_showcase",
+      "//chrome/browser/ui/webui",
+      "//chrome/browser/ui/webui/feature_showcase",
+      "//chrome/browser/ui/webui/intro",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:signin_ui_error",
+      "//chrome/browser/ui/webui/whats_new",
+      "//chrome/common:channel_info",
+      "//chrome/common:constants",
+      "//components/application_locale_storage",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//content/public/browser",
+      "//google_apis",
+      "//ui/base",
+      "//ui/views",
+    ]
+    if (is_win) {
+      deps += [ "//chrome/browser/win" ]
+    }
   }
 }

@@ -439,7 +439,10 @@ source_set("interactive_ui_tests") {
       "webui_toolbar/webui_toolbar_js_interactive_uitest.cc",
     ]
 
-    deps += [ "//chrome/test/data/webui:composebox_pixel_test_support" ]
+    deps += [
+      "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar",
+      "//chrome/test/data/webui:composebox_pixel_test_support",
+    ]
   }
 
   if (enable_extensions_core) {

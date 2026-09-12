@@ -3293,6 +3293,7 @@ if (!is_android) {
           "../browser/ui/views/profiles/first_run_sign_in_celebration_ui_browsertest.cc",
         ]
         deps += [
+          "//chrome/browser/ui/views/profiles:first_run_flow_controller",
           "//chrome/browser/ui/views/profiles/feature_showcase",
           "//chrome/browser/ui/webui/intro",
         ]
@@ -8271,6 +8272,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/frame:glass_frame_service",
       "//chrome/browser/ui/views/frame:multi_contents_background_view",
       "//chrome/browser/ui/views/frame:multi_contents_resize_area",
+      "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar",
       "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/new_tab_footer",
@@ -9016,6 +9018,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/enterprise/idle:interactive_ui_tests",
         "//chrome/browser/ui/startup:test_support_ui",
         "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
+        "//chrome/browser/ui/views/profiles:first_run_flow_controller",
         "//chrome/browser/ui/views/profiles:profile_picker_toolbar",
         "//chrome/browser/ui/views/profiles/feature_showcase:metrics",
         "//chrome/browser/ui/webui/feature_showcase",

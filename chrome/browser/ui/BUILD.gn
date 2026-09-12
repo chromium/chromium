@@ -356,6 +356,44 @@ if (!is_android) {
     ]
     deps = [ "//chrome/browser/ui/browser_window" ]
   }
+
+  source_set("browser_tabrestore") {
+    public = [ "browser_tabrestore.h" ]
+    public_deps = [
+      "//base",
+      "//components/sessions",
+    ]
+  }
+
+  source_set("browser_tabrestore_impl") {
+    sources = [ "browser_tabrestore.cc" ]
+    public_deps = [
+      ":browser_tabrestore",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":tab_ui_helper",
+      "//base",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/glic",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/send_tab_to_self",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_group",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/webui_browser",
+      "//chrome/common:buildflags",
+      "//components/sessions",
+      "//components/tab_groups",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//third_party/blink/public/common:headers",
+      "//ui/gfx/geometry",
+      "//ui/gfx/range",
+    ]
+  }
 }
 
 if (is_mac) {
@@ -1362,6 +1400,8 @@ static_library("ui") {
       ":browser_content_setting_bubble_model_delegate",
       ":browser_content_setting_bubble_model_delegate_impl",
       ":browser_tab_menu_model_delegate",
+      ":browser_tabrestore",
+      ":browser_tabrestore_impl",
       ":browser_window_deleter",
       ":browser_window_deleter_impl",
       ":browser_window_theme_observer",
@@ -1379,6 +1419,7 @@ static_library("ui") {
     ]
     allow_circular_includes_from += [
       ":browser_content_setting_bubble_model_delegate_impl",
+      ":browser_tabrestore_impl",
       ":browser_window_deleter_impl",
       ":browser_window_theme_observer_impl",
     ]
@@ -1460,8 +1501,6 @@ static_library("ui") {
       "browser_manager_service_factory.h",
       "browser_tab_restorer.cc",
       "browser_tab_strip_model_delegate.cc",
-      "browser_tabrestore.cc",
-      "browser_tabrestore.h",
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
       "browser_window.h",
@@ -2015,8 +2054,6 @@ static_library("ui") {
       "views/frame/immersive_mode_controller_chromeos.h",
       "views/frame/picture_in_picture_browser_frame_view_ash.cc",
       "views/frame/picture_in_picture_browser_frame_view_ash.h",
-      "views/frame/top_controls_slide_controller_chromeos.cc",
-      "views/frame/top_controls_slide_controller_chromeos.h",
     ]
 
     deps += [
@@ -2167,6 +2204,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_frame_header_chromeos",
       "//chrome/browser/ui/views/frame:browser_frame_header_chromeos_impl",
       "//chrome/browser/ui/views/frame:browser_native_widget_factory_chromeos",
+      "//chrome/browser/ui/views/frame:top_controls_slide_controller_chromeos",
+      "//chrome/browser/ui/views/frame:top_controls_slide_controller_chromeos_impl",
       "//chrome/browser/ui/views/profiles:profile_indicator_icon",
       "//chrome/browser/ui/views/select_file_dialog_extension",
       "//chrome/browser/ui/views/web_apps:protocol_handler_picker_coordinator",
@@ -2278,6 +2317,7 @@ static_library("ui") {
       # views/frame/browser_frame_view_chromeos.h and
       # views/frame/browser_view.h which cannot be split out yet.
       "//chrome/browser/ui/views/frame:browser_frame_header_chromeos_impl",
+      "//chrome/browser/ui/views/frame:top_controls_slide_controller_chromeos_impl",
 
       # browser_native_widget_factory_chromeos.cc includes
       # views/frame/browser_native_widget_ash.h which cannot be split out yet.
@@ -2410,15 +2450,13 @@ static_library("ui") {
     ]
 
     if (enable_dice_support) {
-      sources += [
-        "views/profiles/first_run_flow_controller.cc",
-        "views/profiles/first_run_flow_controller.h",
-      ]
       deps += [
         "webui/signin/batch_upload:mojo_bindings",
         "//chrome/browser/ui/views/profiles:cross_device_signin_qr_bubble_views",
         "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
         "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view_impl",
+        "//chrome/browser/ui/views/profiles:first_run_flow_controller",
+        "//chrome/browser/ui/views/profiles:first_run_flow_controller_impl",
         "//chrome/browser/ui/views/profiles:profile_management_flow_controller",
         "//chrome/browser/ui/views/profiles:profile_management_flow_controller_impl",
         "//chrome/browser/ui/views/profiles:profile_management_step_controller",
@@ -2449,6 +2487,7 @@ static_library("ui") {
         # profile_picker_reauth_provider_impl, and
         # profile_picker_sign_in_provider_impl include headers from
         # //chrome/browser/ui:ui which cannot be split out yet.
+        "//chrome/browser/ui/views/profiles:first_run_flow_controller_impl",
         "//chrome/browser/ui/views/profiles:profile_management_step_controller_impl",
         "//chrome/browser/ui/views/profiles:profile_picker_flow_controller_impl",
         "//chrome/browser/ui/views/profiles:profile_picker_reauth_provider_impl",
@@ -2678,12 +2717,8 @@ static_library("ui") {
       "views/frame/layout/browser_view_tabbed_layout_impl.h",
       "views/frame/multi_contents_view.cc",
       "views/frame/multi_contents_view.h",
-      "views/frame/multi_contents_view_mini_toolbar.cc",
-      "views/frame/multi_contents_view_mini_toolbar.h",
       "views/frame/picture_in_picture_browser_frame_view.cc",
       "views/frame/picture_in_picture_browser_frame_view.h",
-      "views/frame/themed_background.cc",
-      "views/frame/themed_background.h",
       "views/frame/top_container_view.cc",
       "views/frame/top_container_view.h",
       "views/frame/vertical_tab_strip_region_view.cc",
@@ -2913,6 +2948,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:multi_contents_resize_area_impl",
       "//chrome/browser/ui/views/frame:multi_contents_view_delegate",
       "//chrome/browser/ui/views/frame:multi_contents_view_drop_target_controller",
+      "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar",
+      "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar_impl",
       "//chrome/browser/ui/views/frame:opaque_browser_frame_view_layout_delegate",
       "//chrome/browser/ui/views/frame:safe_invoke",
       "//chrome/browser/ui/views/frame:scrim_view",
@@ -2927,6 +2964,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:system_menu_model_delegate_impl",
       "//chrome/browser/ui/views/frame:tab_modal_dialog_host",
       "//chrome/browser/ui/views/frame:tab_modal_dialog_host_impl",
+      "//chrome/browser/ui/views/frame:themed_background",
+      "//chrome/browser/ui/views/frame:themed_background_impl",
       "//chrome/browser/ui/views/frame:vertical_tab_strip_background_blur_backdrop",
       "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/frame:windows_icon_painter",
@@ -3193,11 +3232,13 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:custom_corners_impl",
       "//chrome/browser/ui/views/frame:custom_floating_corner_impl",
       "//chrome/browser/ui/views/frame:find_bar_owner_views_impl",
+      "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar_impl",
       "//chrome/browser/ui/views/frame:scrim_view_controller_impl",
       "//chrome/browser/ui/views/frame:shadow_overlay_view_impl",
       "//chrome/browser/ui/views/frame:system_menu_model_builder_impl",
       "//chrome/browser/ui/views/frame:system_menu_model_delegate_impl",
       "//chrome/browser/ui/views/frame:tab_modal_dialog_host_impl",
+      "//chrome/browser/ui/views/frame:themed_background_impl",
       "//chrome/browser/ui/views/frame:vertical_tab_strip_background_blur_backdrop",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_navigation_button_container_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_origin_text_impl",
@@ -3987,6 +4028,7 @@ if (!is_android) {
       ":breadcrumb_manager_browser_agent",
       ":browser_actions",
       ":browser_instant_controller",
+      ":browser_tabrestore",
       ":browser_ui_prefs",
       ":confirm_bubble",
       ":managed_ui",

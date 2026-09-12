@@ -126,6 +126,7 @@ source_set("side_panel") {
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/animations",
+    "//chrome/browser/ui/views/frame:themed_background",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui:webui_util",

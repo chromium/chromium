@@ -119,6 +119,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
     "//chrome/browser/ui/views/bookmarks/saved_tab_groups:impl",
     "//chrome/browser/ui/views/commerce",
+    "//chrome/browser/ui/views/frame:themed_background",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

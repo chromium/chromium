@@ -522,6 +522,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:browser_tabrestore",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui:view_ids",
