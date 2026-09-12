@@ -19,6 +19,18 @@ if (media_use_symphonia_decoder) {
   }
 }
 
+if (media_use_symphonia_demuxer) {
+  rust_static_library("symphonia_demuxer_bridge") {
+    allow_unsafe = true
+
+    crate_root = "symphonia_demuxer_bridge.rs"
+    sources = [ "symphonia_demuxer_bridge.rs" ]
+    cxx_bindings = [ "symphonia_demuxer_bridge.rs" ]
+    visibility = [ ":*" ]
+    deps = [ "//third_party/rust/symphonia/v0_6:lib" ]
+  }
+}
+
 source_set("filters") {
   # Do not expand the visibility here without double-checking with OWNERS, this
   # is a roll-up target which is part of the //media component. Most other DEPs
@@ -160,6 +172,11 @@ source_set("filters") {
       "symphonia_audio_decoder.h",
     ]
     deps += [ ":symphonia_decoder_bridge" ]
+  }
+
+  if (media_use_symphonia_demuxer) {
+    sources += [ "symphonia_source_bridge.h" ]
+    deps += [ ":symphonia_demuxer_bridge" ]
   }
 
   if (media_use_libvpx) {
@@ -444,8 +461,11 @@ source_set("unit_tests") {
 
   # NOTE: if more rust tests that are not gated on Symphonia being enabled are
   # added to filters, this conditional can be dropped.
-  if (media_use_symphonia) {
+  if (media_use_symphonia_decoder) {
     deps += [ ":rust_unittests" ]
+  }
+  if (media_use_symphonia_demuxer) {
+    deps += [ ":symphonia_demuxer_bridge_unittests" ]
   }
 
   if (media_use_ffmpeg) {
@@ -474,6 +494,20 @@ if (media_use_symphonia_decoder) {
       ":symphonia_decoder_bridge",
       "//testing/rust_gtest_interop",
       "//third_party/rust/num_traits/v0_2:lib",
+      "//third_party/rust/symphonia/v0_6:lib",
+    ]
+  }
+}
+
+if (media_use_symphonia_demuxer) {
+  rust_static_library("symphonia_demuxer_bridge_unittests") {
+    testonly = true
+    is_gtest_unittests = true
+    crate_root = "symphonia_demuxer_bridge_unittest.rs"
+    sources = [ "symphonia_demuxer_bridge_unittest.rs" ]
+    deps = [
+      ":symphonia_demuxer_bridge",
+      "//testing/rust_gtest_interop",
       "//third_party/rust/symphonia/v0_6:lib",
     ]
   }
