@@ -36,6 +36,7 @@ class DictationBubbleUi : public views::BubbleDialogDelegate {
   // views::BubbleDialogDelegate:
   gfx::Rect GetBubbleBounds() override;
   void Init() override;
+  views::View* GetInitiallyFocusedView() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementIdForTesting);

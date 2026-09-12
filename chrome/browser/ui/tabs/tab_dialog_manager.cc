@@ -358,7 +358,8 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
   // window) is painted as active. This prevents a background browser window
   // from becoming foreground on showing the dialog.
   views::Widget* const host_widget = GetHostWidget();
-  if (host_widget && host_widget->ShouldPaintAsActive()) {
+  if (host_widget && host_widget->ShouldPaintAsActive() &&
+      !params_->should_show_inactive) {
     widget_->Show();
   } else {
     widget->ShowInactive();

@@ -60,6 +60,8 @@ class DictationToastView : public views::View {
   void UpdateForState(UiState state);
   void UpdateAudioLevel(float audio_level);
 
+  views::MdTextButton* toggle_button() { return toggle_button_; }
+
  private:
   base::RepeatingClosure close_callback_;
   base::RepeatingClosure toggle_active_stream_callback_;
@@ -220,16 +222,6 @@ DictationBubbleUi::DictationBubbleUi(
   SetContentsView(std::make_unique<DictationToastView>(
       std::move(close_callback), std::move(toggle_active_stream_callback)));
 
-  // Make this not activatable during creation, so that it does not steal focus
-  // from the page.
-  SetCanActivate(false);
-  // After creation, we need to make this activatable again. Otherwise, we would
-  // discard mouse activation messages from Windows and the buttons in this
-  // bubble wouldn't be clickable. See https://crbug.com/542199776
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&DictationBubbleUi::SetCanActivate,
-                                weak_ptr_factory_.GetWeakPtr(), true));
-
   // TODO(crbug.com/509983464): Update this to call an undeprecated factory
   // function when this bug is fixed.
   widget_ =
@@ -273,6 +265,8 @@ void DictationBubbleUi::Init() {
   toast_view->Init();
   toast_view->UpdateForState(state_);
 
+  SetInitiallyFocusedView(toast_view->toggle_button());
+
   const auto* const layout_provider = ChromeLayoutProvider::Get();
   const gfx::Insets insets = layout_provider->GetInsetsMetric(
       views::InsetsMetric::INSETS_VECTOR_IMAGE_BUTTON);
@@ -294,6 +288,11 @@ void DictationBubbleUi::Init() {
       total_vertical_margins - top_margin,
       layout_provider->GetDistanceMetric(
           DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON)));
+}
+
+views::View* DictationBubbleUi::GetInitiallyFocusedView() {
+  auto* toast_view = views::AsViewClass<DictationToastView>(GetContentsView());
+  return toast_view ? toast_view->toggle_button() : nullptr;
 }
 
 gfx::Rect DictationBubbleUi::GetBubbleBounds() {
