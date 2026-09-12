@@ -1304,6 +1304,9 @@ void GeminiBrowserAgent::OnProcessingStatusChanged(
 
   processing_status_ = processing_status;
   switch (processing_status) {
+    case ios::provider::GeminiClientMode::kListening:
+      LogLiveSessionStartedMetrics();
+      break;
     case ios::provider::GeminiClientMode::kTranscribing:
       RequestPageContextGeneration();
       break;
@@ -1399,11 +1402,7 @@ void GeminiBrowserAgent::OnModeChanged(ios::provider::GeminiViewMode mode) {
     // user dismisses it, metrics will be recorded without the user having ever
     // used Live.
     if (HasGivenAllLivePermissions()) {
-      RecordLiveSessionStarted();
-      if (live_session_start_time_.is_null()) {
-        live_session_start_time_ = base::TimeTicks::Now();
-        live_turn_count_ = 0;
-      }
+      LogLiveSessionStartedMetrics();
     }
     if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded) {
       ResetFullscreenDisabler();
@@ -2276,6 +2275,15 @@ bool GeminiBrowserAgent::HasGivenAllLivePermissions() const {
 
   return [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio] ==
          AVAuthorizationStatusAuthorized;
+}
+
+void GeminiBrowserAgent::LogLiveSessionStartedMetrics() {
+  if (!live_session_start_time_.is_null()) {
+    return;
+  }
+  RecordLiveSessionStarted();
+  live_session_start_time_ = base::TimeTicks::Now();
+  live_turn_count_ = 0;
 }
 
 void GeminiBrowserAgent::SetSessionCommandHandlers() {

@@ -531,6 +531,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // overall interaction.
   base::TimeDelta live_session_accumulated_duration_;
 
+  // Records Gemini live session started metrics and initializes session timing.
+  void LogLiveSessionStartedMetrics();
+
   // Logs Gemini live related metrics and resets values if needed.
   void LogLiveSessionMetrics(bool floaty_dismissed = false);
 
