@@ -134,18 +134,20 @@ bool GlicKeyedServiceAndroid::InvokeWithAutoSubmit(JNIEnv* env,
   }
 }
 
-void GlicKeyedServiceAndroid::InvokeWithPrompt(JNIEnv* env,
+bool GlicKeyedServiceAndroid::InvokeWithPrompt(JNIEnv* env,
                                                TabAndroid* tab,
                                                std::string text,
                                                int32_t source) {
   if (!tab) {
-    return;
+    return false;
   }
 
   GlicInvokeOptions options(Target(*tab),
                             static_cast<mojom::InvocationSource>(source));
   options.prompts.push_back(std::move(text));
-  service_->Invoke(std::move(options));
+  // Invoke() returns a null WeakPtr if the Glic instance could not be created,
+  // which means the prompt was never delivered.
+  return !!service_->Invoke(std::move(options));
 }
 
 void GlicKeyedServiceAndroid::Invoke(JNIEnv* env,

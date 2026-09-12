@@ -171,8 +171,14 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                     PARAM_ASK_GEMINI_SEND_SELECTED_TEXT,
                     true)) {
                 String text = mSelectedText != null ? mSelectedText : "";
-                return GlicKeyedServiceHandler.invokeWithPrompt(
-                        profile, mTab, text, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+                boolean sent =
+                        GlicKeyedServiceHandler.invokeWithPrompt(
+                                profile,
+                                mTab,
+                                text,
+                                GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+                GlicMetrics.recordSendSelectedTextSucceeded(sent);
+                return sent;
             }
             return GlicKeyedServiceHandler.invoke(
                     profile, mTab, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);

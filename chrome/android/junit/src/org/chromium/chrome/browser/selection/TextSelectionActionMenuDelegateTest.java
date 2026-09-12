@@ -395,10 +395,17 @@ public class TextSelectionActionMenuDelegateTest {
         SelectionMenuItem askGemini = findItem(items, R.id.contextmenu_ask_gemini);
         assertNotNull(askGemini);
 
+        when(mGlicKeyedService.invokeWithPrompt(
+                        mTab, "test", GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU))
+                .thenReturn(true);
+
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Glic.EntryPoint.Click.Other",
-                        GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Glic.EntryPoint.Click.Other",
+                                GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU)
+                        .expectBooleanRecord("Glic.EntryPoint.SendSelectedTextSucceeded", true)
+                        .build();
 
         boolean handled =
                 mDelegate.handleMenuItemClick(askGemini, mWebContents, /* containerView= */ null);
@@ -406,6 +413,35 @@ public class TextSelectionActionMenuDelegateTest {
         assertTrue(handled);
         verify(mGlicKeyedService)
                 .invokeWithPrompt(mTab, "test", GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testAskGemini_recordsFailedSendWhenServiceRejects() {
+        enableAskGeminiForSelection();
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+
+        List<SelectionMenuItem> items =
+                mDelegate.getAdditionalMenuItems(
+                        MenuType.FLOATING,
+                        /* isSelectionPassword= */ false,
+                        /* isSelectionReadOnly= */ true,
+                        /* selectedText= */ "test");
+        SelectionMenuItem askGemini = findItem(items, R.id.contextmenu_ask_gemini);
+        assertNotNull(askGemini);
+
+        when(mGlicKeyedService.invokeWithPrompt(
+                        mTab, "test", GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU))
+                .thenReturn(false);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Glic.EntryPoint.SendSelectedTextSucceeded", false);
+
+        boolean handled =
+                mDelegate.handleMenuItemClick(askGemini, mWebContents, /* containerView= */ null);
+
+        assertFalse(handled);
         histogramWatcher.assertExpected();
     }
 

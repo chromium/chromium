@@ -76,10 +76,12 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     }
 
     @Override
-    public void invokeWithPrompt(Tab tab, String text, @GlicInvocationSource int invocationSource) {
-        if (mNativePtr == 0) return;
+    public boolean invokeWithPrompt(
+            Tab tab, String text, @GlicInvocationSource int invocationSource) {
+        if (mNativePtr == 0) return false;
 
-        GlicKeyedServiceImplJni.get().invokeWithPrompt(mNativePtr, tab, text, invocationSource);
+        return GlicKeyedServiceImplJni.get()
+                .invokeWithPrompt(mNativePtr, tab, text, invocationSource);
     }
 
     @Override
@@ -284,7 +286,7 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
                 @JniType("std::string") String text,
                 @GlicInvocationSource int source);
 
-        void invokeWithPrompt(
+        boolean invokeWithPrompt(
                 long nativeGlicKeyedServiceAndroid,
                 @JniType("TabAndroid*") Tab tab,
                 @JniType("std::string") String text,

@@ -86,8 +86,9 @@ public interface GlicKeyedService {
      * @param tab The {@link Tab} to target.
      * @param text The text prompt to populate.
      * @param invocationSource How the UI was triggered.
+     * @return true if Glic was successfully invoked with the prompt.
      */
-    void invokeWithPrompt(Tab tab, String text, @GlicInvocationSource int invocationSource);
+    boolean invokeWithPrompt(Tab tab, String text, @GlicInvocationSource int invocationSource);
 
     /**
      * Invokes the Glic service, opening the panel attached to the given tab without

@@ -38,4 +38,16 @@ public class GlicMetrics {
         RecordHistogram.recordEnumeratedHistogram(
                 "Glic.EntryPoint.Click." + tabContext, source, GlicInvocationSource.MAX_VALUE + 1);
     }
+
+    /**
+     * Recorded when Chrome attempts to send the user's selected text to Glic, after the user taps
+     * the 'Ask Gemini' item in the text selection menu. Pairs with Glic.EntryPoint.Click.{Ntp,
+     * Other} to form a click to successful-send funnel.
+     *
+     * @param succeeded Whether the selected text was successfully handed off to the Glic service.
+     */
+    public static void recordSendSelectedTextSucceeded(boolean succeeded) {
+        RecordHistogram.recordBooleanHistogram(
+                "Glic.EntryPoint.SendSelectedTextSucceeded", succeeded);
+    }
 }

@@ -48,7 +48,7 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
                             std::string text,
                             int32_t source);
 
-  void InvokeWithPrompt(JNIEnv* env,
+  bool InvokeWithPrompt(JNIEnv* env,
                         TabAndroid* tab,
                         std::string text,
                         int32_t source);

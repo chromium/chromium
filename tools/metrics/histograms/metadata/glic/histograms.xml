@@ -716,6 +716,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.EntryPoint.SendSelectedTextSucceeded" enum="Boolean"
+    expires_after="2027-05-30">
+  <owner>alexiswu@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Recorded on Android when the user taps the 'Ask Gemini' item in the text
+    selection menu and Chrome attempts to send the selected text to Glic.
+    Records true if Glic was successfully invoked with the selected text, and
+    false if the target tab or the Glic service was unavailable, or if Glic
+    could not be opened. Pairs with Glic.EntryPoint.Click.{TabContext}
+    (WebContentsContextMenu bucket) to form a click to successful-send funnel
+    for the text selection entry point.
+  </summary>
+</histogram>
+
 <histogram name="Glic.EntryPoint.Status" enum="GlicEntryPointStatus"
     expires_after="2027-01-31">
   <owner>sanaakbani@google.com</owner>
