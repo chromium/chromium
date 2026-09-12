@@ -218,13 +218,33 @@ AST_MATCHER(clang::ClassTemplateSpecializationDecl,
 }
 
 static bool IsAnnotated(const clang::Decl* decl,
-                        const std::string& expected_annotation) {
-  clang::AnnotateAttr* attr = decl->getAttr<clang::AnnotateAttr>();
-  return attr && (attr->getAnnotation() == expected_annotation);
+                        llvm::StringRef expected_annotation) {
+  for (const auto* attr : decl->specific_attrs<clang::AnnotateAttr>()) {
+    if (attr->getAnnotation() == expected_annotation) {
+      return true;
+    }
+  }
+  return false;
 }
 
 AST_MATCHER(clang::Decl, isRawPtrExclusionAnnotated) {
-  return IsAnnotated(&Node, "raw_ptr_exclusion");
+  if (IsAnnotated(&Node, "raw_ptr_exclusion")) {
+    return true;
+  }
+  // RAW_PTR_EXCLUSION can be placed on a typedef/using alias rather than the
+  // field itself (e.g. `using PtrList = RAW_PTR_EXCLUSION std::vector<T*>;`).
+  // In that case, the attribute lives on the TypedefNameDecl, not the
+  // FieldDecl.
+  if (const auto* field_decl = clang::dyn_cast<clang::FieldDecl>(&Node)) {
+    clang::QualType type = field_decl->getType();
+    while (const auto* typedef_type = type->getAs<clang::TypedefType>()) {
+      if (IsAnnotated(typedef_type->getDecl(), "raw_ptr_exclusion")) {
+        return true;
+      }
+      type = typedef_type->getDecl()->getUnderlyingType();
+    }
+  }
+  return false;
 }
 
 AST_MATCHER(clang::CXXRecordDecl, isAnonymousStructOrUnion) {

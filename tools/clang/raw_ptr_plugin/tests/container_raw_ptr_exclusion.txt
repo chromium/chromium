@@ -1,0 +1,7 @@
+container_raw_ptr_exclusion.cpp:46:27: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<SomeClass*> error_field_;
+  ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+container_raw_ptr_exclusion.cpp:49:20: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  UnannotatedUsing error_unannotated_alias_;
+  ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
