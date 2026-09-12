@@ -11,8 +11,7 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/types/strong_alias.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_encoder_dictionary.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
@@ -28,7 +27,7 @@ class FormData;
 // map to value 1.
 class FieldClassificationModelEncoder {
  public:
-  using TokenId = base::StrongAlias<class TokenIdTag, uint32_t>;
+  using TokenId = FieldClassificationModelEncoderDictionary::TokenId;
 
   // An encoded representation of the form's labels.
   // Each element of the vector corresponds to an encoded feature (e.g. HTML
@@ -58,7 +57,6 @@ class FieldClassificationModelEncoder {
       optimization_guide::proto::AutofillFieldClassificationEncodingParameters
           encoding_parameters);
 
-  FieldClassificationModelEncoder();
   FieldClassificationModelEncoder(const FieldClassificationModelEncoder&);
   FieldClassificationModelEncoder(FieldClassificationModelEncoder&&);
   FieldClassificationModelEncoder& operator=(
@@ -66,7 +64,7 @@ class FieldClassificationModelEncoder {
   FieldClassificationModelEncoder& operator=(FieldClassificationModelEncoder&&);
   ~FieldClassificationModelEncoder();
 
-  TokenId TokenToId(std::u16string_view token) const;
+  TokenId TokenToId(std::string_view token) const;
 
   // Encodes the `form` into the `ModelInput` representation understood by the
   // `FieldClassificationModelExecutor`. This is done by encoding the attributes
@@ -84,7 +82,7 @@ class FieldClassificationModelEncoder {
       const FormData& form) const;
 
   // Tokenizes the specific `input` to a vector of size
-  // `max_tokens_per_feature`. The token IDs are looked up in token_to_id_
+  // `max_tokens_per_feature`. The token IDs are looked up in dictionary_
   // after standardizing and splitting on whitespace.
   // Excess tokens are deleted or extra tokens (representing empty
   // strings) are appended to generate a vector of the desired size.
@@ -92,11 +90,13 @@ class FieldClassificationModelEncoder {
 
   // Returns the TokenId for the special CLS ("classification") token, which
   // is always included at the beginning of the model input.
-  TokenId GetClsToken() const { return TokenId(token_to_id_.size() + 1); }
+  TokenId GetClsToken() const {
+    return TokenId(dictionary_.GetVocabularySize());
+  }
 
   // Performs the reverse mapping TokenID -> string, which is only used for
   // populating chrome://autofill-ml-internals.
-  std::string FindTokenById(TokenId id) const;
+  std::string_view FindTokenById(TokenId id) const;
 
  private:
   friend class FieldClassificationModelEncoderTestApi;
@@ -116,7 +116,7 @@ class FieldClassificationModelEncoder {
   //   - Remove specified characters.
   std::u16string StandardizeString(std::u16string_view input) const;
 
-  base::flat_map<std::u16string, TokenId> token_to_id_;
+  FieldClassificationModelEncoderDictionary dictionary_;
   optimization_guide::proto::AutofillFieldClassificationEncodingParameters
       encoding_parameters_;
 };

@@ -30,9 +30,11 @@ using testing::TestWithParam;
 
 namespace {
 // Representation of an empty string.
-constexpr TokenId kEmpty = TokenId(0);
+constexpr TokenId kEmpty =
+    FieldClassificationModelEncoderDictionary::kPaddingTokenId;
 // Representation of a token that is not in the dictionary.
-constexpr TokenId kUnknown = TokenId(1);
+constexpr TokenId kUnknown =
+    FieldClassificationModelEncoderDictionary::kUnknownTokenId;
 // Representation of the token "telefone" (may change if the test model
 // changes).
 constexpr TokenId kTelefone = TokenId(10);
@@ -106,19 +108,19 @@ class FieldClassificationModelEncoderTest : public testing::Test {
 
 TEST_F(FieldClassificationModelEncoderTest, TokensMappedCorrectly) {
   FieldClassificationModelEncoder encoder(CreateBasicEncoder());
-  EXPECT_EQ(encoder.TokenToId(u"number"), kNumber);
+  EXPECT_EQ(encoder.TokenToId("number"), kNumber);
 }
 
 // Tests that words out of vocabulary return 1.
 TEST_F(FieldClassificationModelEncoderTest, WordOutOfVocab) {
   FieldClassificationModelEncoder encoder(CreateBasicEncoder());
-  EXPECT_EQ(encoder.TokenToId(u"OutOfVocab"), kUnknown);
+  EXPECT_EQ(encoder.TokenToId("OutOfVocab"), kUnknown);
 }
 
 // Tests that empty strings return 0 for padding.
 TEST_F(FieldClassificationModelEncoderTest, EmptyToken) {
   FieldClassificationModelEncoder encoder(CreateBasicEncoder());
-  EXPECT_EQ(encoder.TokenToId(u""), kEmpty);
+  EXPECT_EQ(encoder.TokenToId(""), kEmpty);
 }
 
 TEST_F(FieldClassificationModelEncoderTest, InputEncodedCorrectly) {

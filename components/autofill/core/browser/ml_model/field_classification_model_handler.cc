@@ -405,30 +405,33 @@ void FieldClassificationModelHandler::OnModelUpdated(
   }
   // The model was loaded or updated.
   state_.reset();
-  ModelState state;
+  optimization_guide::proto::AutofillFieldClassificationModelMetadata metadata;
   if (!model_info->model_metadata ||
-      !state.metadata.ParseFromString(model_info->model_metadata->value())) {
+      !metadata.ParseFromString(model_info->model_metadata->value())) {
     // The model should always come with metadata - but since this comes from
     // the server-side and might change in the future, it might fail.
     return;
   }
-  state.encoder = FieldClassificationModelEncoder(
-      state.metadata.input_token(), state.metadata.encoding_parameters());
+  FieldClassificationModelEncoder encoder(metadata.input_token(),
+                                          metadata.encoding_parameters());
   // Protobuf's `RepeatedPtrField::Clear()` only resets the size to 0
   // and does not free the underlying memory. See:
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/protobuf/src/google/protobuf/repeated_ptr_field.h;l=715-728;drc=84e9f8cb8ba9621be941c81af04d33df743f7de4
   // Since `metadata` is kept in memory indefinitely, we forcefully free the
   // memory by swapping it with an empty array.
-  state.metadata.clear_input_token();
+  metadata.clear_input_token();
   google::protobuf::RepeatedPtrField<std::string> empty_tokens;
-  state.metadata.mutable_input_token()->Swap(&empty_tokens);
+  metadata.mutable_input_token()->Swap(&empty_tokens);
 
   supported_types_.clear();
-  for (int type : state.metadata.output_type()) {
+  for (int type : metadata.output_type()) {
     supported_types_.insert(
         ToSafeFieldType(FieldType(type)).value_or(NO_SERVER_DATA));
   }
-  state_.emplace(std::move(state));
+  state_.emplace(ModelState{
+      .metadata = std::move(metadata),
+      .encoder = std::move(encoder),
+  });
 
   // Invalidate cached predictions, if any.
   predictions_cache_.Clear();
@@ -540,20 +543,18 @@ FieldClassificationModelHandler::CalculateModelInputHash(
 
 std::string FieldClassificationModelHandler::TokenIdToString(
     FieldClassificationModelEncoder::TokenId token_id) const {
-  if (token_id.value() == 0) {
-    // Padding token, always encoded as 0.
+  if (token_id == FieldClassificationModelEncoderDictionary::kPaddingTokenId) {
     return "";
   }
-  if (token_id.value() == 1) {
-    // Unknown, out-of-vocabulary token, always encoded as 1.
+  if (token_id == FieldClassificationModelEncoderDictionary::kUnknownTokenId) {
     return "[UNK]";
   }
   if (token_id == state_->encoder.GetClsToken()) {
     return "[CLS]";
   }
-  std::string token = state_->encoder.FindTokenById(token_id);
+  std::string_view token = state_->encoder.FindTokenById(token_id);
   if (!token.empty()) {
-    return token;
+    return std::string(token);
   }
   return "[INVALID]";
 }

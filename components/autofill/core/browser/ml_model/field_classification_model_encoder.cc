@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
@@ -32,9 +31,6 @@ namespace autofill {
 
 namespace {
 
-constexpr FieldClassificationModelEncoder::TokenId kUnknownTokenId =
-    FieldClassificationModelEncoder::TokenId(1);
-
 size_t GetFieldEncodingSize(
     const optimization_guide::proto::
         AutofillFieldClassificationEncodingParameters& encoding_parameters) {
@@ -49,26 +45,9 @@ FieldClassificationModelEncoder::FieldClassificationModelEncoder(
     const google::protobuf::RepeatedPtrField<std::string>& tokens,
     optimization_guide::proto::AutofillFieldClassificationEncodingParameters
         encoding_parameters)
-    : encoding_parameters_(std::move(encoding_parameters)) {
-  std::vector<
-      std::pair<std::u16string, FieldClassificationModelEncoder::TokenId>>
-      entries = {
-          // Index 0 is reserved for padding to `kOutputSequenceLength`.
-          // For example, a label "first name" is encoded as [?, ?, 0] if the
-          // output sequence length is 3.
-          {u"", FieldClassificationModelEncoder::TokenId(0)},
-          // Index 1 is reserved for words not in the dictionary.
-          {u"", kUnknownTokenId},
-      };
-  entries.reserve(2 + tokens.size());
-  size_t i = 2;
-  for (const std::string& token : tokens) {
-    entries.emplace_back(base::UTF8ToUTF16(token), TokenId(i++));
-  }
-  token_to_id_ = base::flat_map<std::u16string, TokenId>(std::move(entries));
-}
+    : dictionary_(tokens),
+      encoding_parameters_(std::move(encoding_parameters)) {}
 
-FieldClassificationModelEncoder::FieldClassificationModelEncoder() = default;
 FieldClassificationModelEncoder::FieldClassificationModelEncoder(
     const FieldClassificationModelEncoder&) = default;
 FieldClassificationModelEncoder::FieldClassificationModelEncoder(
@@ -79,25 +58,14 @@ FieldClassificationModelEncoder& FieldClassificationModelEncoder::operator=(
     FieldClassificationModelEncoder&&) = default;
 FieldClassificationModelEncoder::~FieldClassificationModelEncoder() = default;
 
-std::string FieldClassificationModelEncoder::FindTokenById(TokenId id) const {
-  // This is inefficient, but it is only used for populating
-  // chrome://autofill-ml-internals, which is a debugging page. A faster
-  // implementation would require using some memory.
-  for (const auto& [token, token_id] : token_to_id_) {
-    if (token_id == id) {
-      return base::UTF16ToUTF8(token);
-    }
-  }
-  return "";
+std::string_view FieldClassificationModelEncoder::FindTokenById(
+    TokenId id) const {
+  return dictionary_.FindTokenById(id);
 }
 
 FieldClassificationModelEncoder::TokenId
-FieldClassificationModelEncoder::TokenToId(std::u16string_view token) const {
-  auto match = token_to_id_.find(token);
-  if (match == token_to_id_.end()) {
-    return kUnknownTokenId;
-  }
-  return match->second;
+FieldClassificationModelEncoder::TokenToId(std::string_view token) const {
+  return dictionary_.TokenToId(token);
 }
 
 std::vector<std::vector<FieldClassificationModelEncoder::TokenId>>
@@ -161,7 +129,7 @@ FieldClassificationModelEncoder::EncodeField(const FormFieldData& field) const {
 
   // Pad the remaining space, if any, with zeroes.
   std::fill_n(std::back_inserter(output), output.capacity() - output.size(),
-              TokenId(0u));
+              FieldClassificationModelEncoderDictionary::kPaddingTokenId);
 
   return output;
 }
@@ -203,7 +171,7 @@ FieldClassificationModelEncoder::EncodeFormFeatures(
 
   // Pad the remaining space, if any, with zeroes.
   std::fill_n(std::back_inserter(output), output.capacity() - output.size(),
-              TokenId(0u));
+              FieldClassificationModelEncoderDictionary::kPaddingTokenId);
   return output;
 }
 
@@ -244,15 +212,22 @@ FieldClassificationModelEncoder::EncodeAttribute(
     std::u16string_view input) const {
   std::u16string standardized_input = StandardizeString(input);
 
-  std::vector<std::u16string> split_string =
-      base::SplitString(standardized_input, u" ", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::u16string_view> split_string =
+      base::SplitStringPiece(standardized_input, u" ", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
 
   // Padding the output to be of size `max_tokens_per_feature`.
   split_string.resize(encoding_parameters_.max_tokens_per_feature(), u"");
 
+  // The UTF-16 to UTF-8 conversion is done per token, rather than once on
+  // `standardized_input`, because individual tokens are short enough that the
+  // small string optimization typically avoids a heap allocation. Splitting in
+  // UTF-16 also trims non-ASCII whitespace (e.g. U+00A0) from the tokens, which
+  // splitting the UTF-8 string wouldn't.
   return base::ToVector(split_string, [&](std::u16string_view token) {
-    return TokenToId(token);
+    return token.empty()
+               ? FieldClassificationModelEncoderDictionary::kPaddingTokenId
+               : TokenToId(base::UTF16ToUTF8(token));
   });
 }
 
@@ -263,7 +238,7 @@ bool FieldClassificationModelEncoder::ShouldEncodeFormLevelFeatures() const {
 FieldClassificationModelEncoder::TokenId
 FieldClassificationModelEncoder::form_cls_token() const {
   CHECK(ShouldEncodeFormLevelFeatures());
-  return TokenId(token_to_id_.size() + 2);
+  return TokenId(dictionary_.GetVocabularySize() + 1);
 }
 
 }  // namespace autofill
