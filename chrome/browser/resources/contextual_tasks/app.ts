@@ -1135,6 +1135,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     // reloading.
     this.forcedComposeboxBounds_ = null;
     this.occluders_ = null;
+    this.guestWidth_ = 0;
     this.isInputHidden_ = false;
     this.isDomContentLoaded_ = false;
 
@@ -1238,6 +1239,15 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     // <if expr="is_android">
     if (_viewportWidth !== undefined && _viewportWidth > 0) {
       this.guestWidth_ = _viewportWidth;
+    } else if (this.isZeroState_ && occluders && occluders.length > 0) {
+      // In zero state, the server does not send _viewportWidth.
+      // Infer guest width from an occluder covering from (0, 0).
+      for (const occ of occluders) {
+        if (occ.top === 0 && occ.left === 0 && occ.width > 0) {
+          this.guestWidth_ = occ.width;
+          break;
+        }
+      }
     }
     // </if>
 
