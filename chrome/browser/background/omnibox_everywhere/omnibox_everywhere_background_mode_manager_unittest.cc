@@ -250,9 +250,8 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ContextMenuStructure) {
             IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS);
 
   ui::Accelerator accelerator;
-  EXPECT_TRUE(menu->GetAcceleratorForCommandId(
+  EXPECT_FALSE(menu->GetAcceleratorForCommandId(
       IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &accelerator));
-  EXPECT_EQ(accelerator, prefs::GetDefaultOmniboxEverywhereHotkey());
 }
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
@@ -269,9 +268,8 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
   ASSERT_NE(menu, nullptr);
 
   ui::Accelerator accelerator;
-  EXPECT_TRUE(menu->GetAcceleratorForCommandId(
+  EXPECT_FALSE(menu->GetAcceleratorForCommandId(
       IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &accelerator));
-  EXPECT_EQ(accelerator, prefs::GetDefaultOmniboxEverywhereHotkey());
 
   // Update custom hotkey pref and verify the status icon context menu updates.
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetString(
@@ -284,6 +282,32 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
   EXPECT_EQ(
       accelerator,
       ui::Accelerator(ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN));
+
+  // Clear hotkey and verify accelerator is removed from context menu.
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetString(
+      prefs::kOmniboxEverywhereHotkey, "");
+
+  menu = status_icon->GetContextMenuForTesting();
+  ASSERT_NE(menu, nullptr);
+  EXPECT_FALSE(menu->GetAcceleratorForCommandId(
+      IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &accelerator));
+
+  // Re-set hotkey, then disable hotkey and verify accelerator is removed.
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetString(
+      prefs::kOmniboxEverywhereHotkey, "Ctrl+Shift+Space");
+
+  menu = status_icon->GetContextMenuForTesting();
+  ASSERT_NE(menu, nullptr);
+  EXPECT_TRUE(menu->GetAcceleratorForCommandId(
+      IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &accelerator));
+
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
+      prefs::kHotkeyEnabled, false);
+
+  menu = status_icon->GetContextMenuForTesting();
+  ASSERT_NE(menu, nullptr);
+  EXPECT_FALSE(menu->GetAcceleratorForCommandId(
+      IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &accelerator));
 }
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ExecuteToggleCommand) {

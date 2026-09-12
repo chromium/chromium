@@ -67,6 +67,11 @@ OmniboxEverywhereBackgroundModeManager::OmniboxEverywhereBackgroundModeManager(
       base::BindRepeating(
           &OmniboxEverywhereBackgroundModeManager::UpdateStatusIconContextMenu,
           base::Unretained(this)));
+  hotkey_enabled_pref_member_.Init(
+      prefs::kHotkeyEnabled, g_browser_process->local_state(),
+      base::BindRepeating(
+          &OmniboxEverywhereBackgroundModeManager::UpdateStatusIconContextMenu,
+          base::Unretained(this)));
   OnPrefChanged();
 }
 
@@ -273,13 +278,15 @@ void OmniboxEverywhereBackgroundModeManager::UpdateStatusIconContextMenu() {
 
   PrefService* local_state =
       g_browser_process ? g_browser_process->local_state() : nullptr;
-  ui::Accelerator hotkey = prefs::GetOmniboxEverywhereHotkey(local_state);
   menu->AddItem(IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE,
                 l10n_util::GetStringUTF16(
                     IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE));
-  menu->SetAcceleratorForCommandId(
-      IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &hotkey);
-  menu->SetForceShowAcceleratorForItemAt(0, true);
+  if (prefs::HasOmniboxEverywhereHotkey(local_state)) {
+    ui::Accelerator hotkey = prefs::GetOmniboxEverywhereHotkey(local_state);
+    menu->SetAcceleratorForCommandId(
+        IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &hotkey);
+    menu->SetForceShowAcceleratorForItemAt(0, true);
+  }
   menu->AddSeparator(ui::NORMAL_SEPARATOR);
 
   menu->AddItem(
