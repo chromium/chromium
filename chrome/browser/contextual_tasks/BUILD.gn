@@ -259,6 +259,7 @@ source_set("ui") {
     sources += [
       "contextual_tasks_ghost_loader_view.h",
       "contextual_tasks_panel_host_desktop.h",
+      "contextual_tasks_permission_chip.h",
       "contextual_tasks_web_view.h",
       "location_bar_stub.h",
     ]
@@ -451,6 +452,7 @@ source_set("ui_impl") {
     sources += [
       "contextual_tasks_ghost_loader_view.cc",
       "contextual_tasks_panel_host_desktop.cc",
+      "contextual_tasks_permission_chip.cc",
       "contextual_tasks_web_view.cc",
       "location_bar_stub.cc",
     ]
