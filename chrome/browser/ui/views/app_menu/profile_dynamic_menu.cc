@@ -104,33 +104,19 @@ ProfileDynamicMenu::ProfileDynamicMenu(BrowserWindowInterface* browser)
 
 ProfileDynamicMenu::~ProfileDynamicMenu() = default;
 
-// Populates the actions inside the profile dynamic submenu.
-// Structured in three sections:
-//  1. Sync & sign-in status header and actionable recovery items.
-//  2. Primary actions (Manage Google Account, Customize Chrome, Close Profile).
-//  3. Other Profiles on this machine, followed by creation/management footer
-//  options.
-void ProfileDynamicMenu::BuildProfileActions(actions::BaseAction* parent_item) {
-  if (!parent_item) {
+// Populates the sync/sign-in section of the profile submenu.
+void ProfileDynamicMenu::BuildSyncSection(actions::BaseAction* parent_item) {
+  if (!parent_item || !browser_window_interface_) {
     return;
   }
-  // Clear any existing children to prevent duplicating items on re-population.
-  parent_item->ResetActionList();
-
   Profile* profile = browser_window_interface_->GetProfile();
-  CHECK(profile);
-
-  // 1. Sync / Sign-in section (only for regular profiles; omitted for guest,
-  // incognito, and isolated mode).
-  if (!profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
-      !profile->IsEnterpriseIsolatedModeProfile()) {
-    if (BuildSyncSection(parent_item, profile)) {
-      parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
-    }
+  if (!profile || profile->IsIncognitoProfile() || profile->IsGuestSession() ||
+      profile->IsEnterpriseIsolatedModeProfile()) {
+    return;
   }
-
-  // 2. Other Profiles (omitted for guest & incognito).
-  BuildOtherProfiles(parent_item);
+  if (BuildSyncSectionImpl(parent_item, profile)) {
+    parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
+  }
 }
 
 void ProfileDynamicMenu::BuildOtherProfiles(actions::BaseAction* parent_item) {
@@ -147,8 +133,8 @@ void ProfileDynamicMenu::BuildOtherProfiles(actions::BaseAction* parent_item) {
 
 // Populates the top sync/sign-in section of the profile submenu.
 // Returns true if any items were added to `parent_item`.
-bool ProfileDynamicMenu::BuildSyncSection(actions::BaseAction* parent_item,
-                                          Profile* profile) {
+bool ProfileDynamicMenu::BuildSyncSectionImpl(actions::BaseAction* parent_item,
+                                              Profile* profile) {
 #if !BUILDFLAG(IS_CHROMEOS)
   // Check if sign-in is allowed by policy or configuration.
   if (!CanOfferSignin(profile, GaiaId(), /*email=*/std::string(),
@@ -265,39 +251,25 @@ bool ProfileDynamicMenu::BuildSyncSection(actions::BaseAction* parent_item,
                 ? vector_icons::kSyncIcon
                 : vector_icons::kSyncChromeRefreshOldIcon,
             ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
-  } else {
-    // User is signed out or not syncing.
-    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-      if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-        parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-            kActionShowSignin, ActionAppMenuManager::DisplayType::kRow,
-            ui::kColorMenuBackground,
-            l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON),
-            ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
-                                                  : kAccountCircleOldIcon,
-                ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
-        signin_metrics::LogSignInOffered(
-            signin_metrics::AccessPoint::kMenu,
-            signin_ui_util::GetSingleAccountForPromos(
-                identity_manager,
-                AccountPreviewDataServiceFactory::GetForProfile(profile))
-                    .IsEmpty()
-                ? signin_metrics::PromoAction::
-                      PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
-                : signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
-      }
-    } else {
-      parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-          kActionTurnOnSync, ActionAppMenuManager::DisplayType::kRow,
-          ui::kColorMenuBackground,
-          l10n_util::GetStringUTF16(IDS_PROFILE_ROW_TURN_ON_SYNC),
-          ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled()
-                  ? vector_icons::kSyncDisabledIcon
-                  : vector_icons::kSyncOffChromeRefreshOldIcon,
-              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
-    }
+  } else if (!identity_manager->HasPrimaryAccount(
+                 signin::ConsentLevel::kSignin)) {
+    parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
+        kActionShowSignin, ActionAppMenuManager::DisplayType::kRow,
+        ui::kColorMenuBackground,
+        l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON),
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
+                                              : kAccountCircleOldIcon,
+            ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
+    signin_metrics::LogSignInOffered(
+        signin_metrics::AccessPoint::kMenu,
+        signin_ui_util::GetSingleAccountForPromos(
+            identity_manager,
+            AccountPreviewDataServiceFactory::GetForProfile(profile))
+                .IsEmpty()
+            ? signin_metrics::PromoAction::
+                  PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
+            : signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
   }
   return true;
 #else

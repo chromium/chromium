@@ -27,11 +27,11 @@ class ProfileDynamicMenu {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void BuildProfileActions(actions::BaseAction* parent_item);
+  void BuildSyncSection(actions::BaseAction* parent_item);
   void BuildOtherProfiles(actions::BaseAction* parent_item);
 
  private:
-  bool BuildSyncSection(actions::BaseAction* parent_item, Profile* profile);
+  bool BuildSyncSectionImpl(actions::BaseAction* parent_item, Profile* profile);
   void BuildOtherProfilesSection(actions::BaseAction* parent_item,
                                  Profile* profile,
                                  const ui::ColorProvider* color_provider);

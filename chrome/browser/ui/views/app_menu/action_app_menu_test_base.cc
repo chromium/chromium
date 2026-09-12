@@ -10,11 +10,13 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "ui/actions/actions.h"
 
 ActionAppMenuTestBase::ActionAppMenuTestBase() = default;
@@ -23,6 +25,12 @@ ActionAppMenuTestBase::~ActionAppMenuTestBase() = default;
 void ActionAppMenuTestBase::SetUp() {
   ChromeViewsTestBase::SetUp();
   profile_ = std::make_unique<TestingProfile>();
+  SyncServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(),
+      base::BindRepeating(
+          [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+            return std::make_unique<syncer::TestSyncService>();
+          }));
   TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), TabRestoreServiceFactory::GetDefaultFactory());
   tab_groups::TabGroupSyncServiceFactory::GetInstance()->SetTestingFactory(
@@ -78,6 +86,12 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionAddNewProfile, u"Add new profile");
   add_action(kActionOpenGuestProfile, u"Open Guest profile");
   add_action(kActionManageChromeProfiles, u"Manage Chrome profiles");
+  add_action(kActionShowSignin, u"Sign in to Chrome");
+  add_action(kActionTurnOnSync, u"Turn on sync");
+  add_action(kActionShowSyncSettings, u"Sync settings");
+  add_action(kActionShowSyncPassphraseDialog, u"Enter passphrase");
+  add_action(kActionShowSigninWhenPaused, u"Sign in again");
+  add_action(kActionUpgradeDialog, u"Update Chrome");
   add_action(kActionPasswordsAndAutofillSubmenu, u"Passwords and autofill");
   add_action(kActionShowPasswordManager, u"Password Manager");
   add_action(kActionShowPaymentMethods, u"Payment methods");

@@ -475,7 +475,10 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
         section.AddSubmenu(
             kActionProfileSubmenu,
             [this, profile](AppMenuBuilder& sub) {
-              sub.AddAction(kActionManageGoogleAccount)
+              sub.AddDynamicSection([this](actions::BaseAction* parent) {
+                   profile_menu_->BuildSyncSection(parent);
+                 })
+                  .AddAction(kActionManageGoogleAccount)
                   .AddAction(kActionCustomizeChrome)
                   .AddAction(kActionCloseProfile, /*type=*/std::nullopt,
                              l10n_util::GetPluralStringFUTF16(

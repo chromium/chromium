@@ -43,31 +43,6 @@ class ProfileDynamicMenuTest : public ActionAppMenuTestBase {
             [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
               return std::make_unique<syncer::TestSyncService>();
             }));
-
-    auto add_action = [this](actions::ActionId action_id, std::u16string text) {
-      root_action_->AddChild(
-          actions::ActionItem::Builder(
-              base::BindRepeating(&MockActionCallback::Call,
-                                  base::Unretained(&mock_action_invoked_),
-                                  action_id))
-              .SetActionId(action_id)
-              .SetText(text)
-              .SetEnabled(true)
-              .SetVisible(true)
-              .Build());
-    };
-
-    add_action(kActionCustomizeChrome, u"Customize Chrome");
-    add_action(kActionCloseProfile, u"Close profile");
-    add_action(kActionShowSyncSettings, u"Sync settings");
-    add_action(kActionShowSyncPassphraseDialog, u"Enter passphrase");
-    add_action(kActionTurnOnSync, u"Turn on sync");
-    add_action(kActionShowSigninWhenPaused, u"Sign in again");
-    add_action(kActionOpenGuestProfile, u"Open Guest profile");
-    add_action(kActionAddNewProfile, u"Add new profile");
-    add_action(kActionManageChromeProfiles, u"Manage Chrome profiles");
-    add_action(kActionShowSignin, u"Sign in to Chrome");
-    add_action(kActionUpgradeDialog, u"Update Chrome");
   }
 
   actions::BaseAction* FindChildAction(actions::ActionItem* parent,
@@ -86,7 +61,7 @@ class ProfileDynamicMenuTest : public ActionAppMenuTestBase {
   }
 };
 
-TEST_F(ProfileDynamicMenuTest, BuildProfileActions_GuestProfile) {
+TEST_F(ProfileDynamicMenuTest, BuildSyncSection_GuestProfile) {
   TestingProfile::Builder guest_builder;
   guest_builder.SetGuestSession();
   std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
@@ -97,13 +72,13 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_GuestProfile) {
   ProfileDynamicMenu menu(&mock_window_interface_);
   auto parent_item = actions::ActionItem::Builder().Build();
 
-  menu.BuildProfileActions(parent_item.get());
+  menu.BuildSyncSection(parent_item.get());
 
-  // For guest profile, sync and other profiles sections are omitted.
+  // For guest profile, sync section is omitted.
   EXPECT_TRUE(parent_item->GetChildren().children().empty());
 }
 
-TEST_F(ProfileDynamicMenuTest, BuildProfileActions_IncognitoProfile) {
+TEST_F(ProfileDynamicMenuTest, BuildSyncSection_IncognitoProfile) {
   Profile* incognito_profile =
       profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
@@ -113,18 +88,18 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_IncognitoProfile) {
   ProfileDynamicMenu menu(&mock_window_interface_);
   auto parent_item = actions::ActionItem::Builder().Build();
 
-  menu.BuildProfileActions(parent_item.get());
+  menu.BuildSyncSection(parent_item.get());
 
-  // For incognito profile, sync and other profiles sections are omitted.
+  // For incognito profile, sync section is omitted.
   EXPECT_TRUE(parent_item->GetChildren().children().empty());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(ProfileDynamicMenuTest, BuildProfileActions_StandardProfile) {
+TEST_F(ProfileDynamicMenuTest, BuildSyncSection_StandardProfile) {
   ProfileDynamicMenu menu(&mock_window_interface_);
   auto parent_item = actions::ActionItem::Builder().Build();
 
-  menu.BuildProfileActions(parent_item.get());
+  menu.BuildSyncSection(parent_item.get());
 
   EXPECT_FALSE(parent_item->GetChildren().children().empty());
   // Verify the sync section divider is added.
@@ -136,20 +111,7 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_StandardProfile) {
             ActionAppMenuManager::DisplayType::kDivider);
 }
 
-TEST_F(ProfileDynamicMenuTest, BuildProfileActions_MultipleCallsResetList) {
-  ProfileDynamicMenu menu(&mock_window_interface_);
-  auto parent_item = actions::ActionItem::Builder().Build();
-
-  menu.BuildProfileActions(parent_item.get());
-  size_t initial_count = parent_item->GetChildren().children().size();
-  EXPECT_GT(initial_count, 0u);
-
-  // Calling it again should not append duplicates
-  menu.BuildProfileActions(parent_item.get());
-  EXPECT_EQ(parent_item->GetChildren().children().size(), initial_count);
-}
-
-TEST_F(ProfileDynamicMenuTest, BuildProfileActions_SignedInProfile) {
+TEST_F(ProfileDynamicMenuTest, BuildSyncSection_SignedInProfile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_.get());
   signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
@@ -158,7 +120,7 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_SignedInProfile) {
   ProfileDynamicMenu menu(&mock_window_interface_);
   auto parent_item = actions::ActionItem::Builder().Build();
 
-  menu.BuildProfileActions(parent_item.get());
+  menu.BuildSyncSection(parent_item.get());
 
   // When signed in, sync section header should show the signed-in message with
   // email.
@@ -169,7 +131,7 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_SignedInProfile) {
                                  {u"test@example.com"}));
 }
 
-TEST_F(ProfileDynamicMenuTest, BuildProfileActions_SyncError) {
+TEST_F(ProfileDynamicMenuTest, BuildSyncSection_SyncError) {
   SyncServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(),
       base::BindRepeating(
@@ -187,7 +149,7 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_SyncError) {
   ProfileDynamicMenu menu(&mock_window_interface_);
   auto parent_item = actions::ActionItem::Builder().Build();
 
-  menu.BuildProfileActions(parent_item.get());
+  menu.BuildSyncSection(parent_item.get());
 
   // When Sync has a passphrase error, the passphrase dialog action row should
   // be populated.
@@ -195,26 +157,6 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_SyncError) {
             nullptr);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-TEST_F(ProfileDynamicMenuTest, BuildProfileActions_MultipleProfiles) {
-  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(profile_manager.SetUp());
-
-  TestingProfile* profile1 = profile_manager.CreateTestingProfile("Profile 1");
-  profile_manager.CreateTestingProfile("Profile 2");
-
-  ON_CALL(mock_window_interface_, GetProfile())
-      .WillByDefault(testing::Return(profile1));
-
-  ProfileDynamicMenu menu(&mock_window_interface_);
-  auto parent_item = actions::ActionItem::Builder().Build();
-
-  menu.BuildProfileActions(parent_item.get());
-
-  // With multiple profiles managed by ProfileManager, Other Profiles section
-  // should have header, profile entry, and separator.
-  EXPECT_GT(parent_item->GetChildren().children().size(), 0u);
-}
 
 TEST_F(ProfileDynamicMenuTest, BuildOtherProfiles_MultipleProfiles) {
   TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
