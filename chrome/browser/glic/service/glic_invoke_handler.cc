@@ -141,11 +141,16 @@ GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
     tabs::TabInterface* tab = tab_handle->Get();
     if (tab) {
       BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-      if (!browser ||
-          browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
-        return {TabSurface{/*tab=*/nullptr, /*is_new=*/false}};
+      // Allow detached / background tabs for actuation, reject non-normal browser windows.
+      bool is_background_actuation =
+        !browser && target.actuation_target == mojom::ActuationTarget::kTargetSurface;
+      bool is_normal_browser =
+        browser && browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
+
+      if (is_background_actuation || is_normal_browser) {
+        return {TabSurface{tab, /*is_new=*/false}};
       }
-      return {TabSurface{tab, /*is_new=*/false}};
+      return {TabSurface{/*tab=*/nullptr, /*is_new=*/false}};
     }
   }
 

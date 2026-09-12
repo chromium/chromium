@@ -1233,6 +1233,54 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   CloseBrowserSynchronously(app_browser);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, ResolveTargetSurfaceDetachedTab) {
+  // Open a new background tab and detach it to simulate a detached background
+  // tab.
+  tabs::TabInterface* tab = GetTabListInterface()->OpenTab(
+      GURL("about:blank"), -1, /*foreground=*/false);
+  ASSERT_TRUE(tab);
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+  ASSERT_TRUE(browser);
+  int tab_index = browser->GetTabStripModel()->GetIndexOfTab(tab);
+  ASSERT_GE(tab_index, 0);
+
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser->GetTabStripModel()->DetachTabAtForInsertion(tab_index);
+  ASSERT_TRUE(detached_tab);
+  EXPECT_EQ(detached_tab->GetBrowserWindowInterface(), nullptr);
+
+  // 1. Without background actuation target, detached tab is rejected.
+  {
+    Target target;
+    target.surface = detached_tab->GetHandle();
+    target.actuation_target = mojom::ActuationTarget::kAgentDecides;
+    auto resolved =
+        GlicInvokeHandler::ResolveTargetSurface(GetProfile(), target);
+    ASSERT_TRUE(
+        std::holds_alternative<GlicInvokeHandler::TabSurface>(resolved));
+    auto tab_surface = std::get<GlicInvokeHandler::TabSurface>(resolved);
+    EXPECT_EQ(tab_surface.tab, nullptr);
+  }
+
+  // 2. With background actuation target (kTargetSurface), detached tab is
+  // allowed.
+  {
+    Target target;
+    target.surface = detached_tab->GetHandle();
+    target.actuation_target = mojom::ActuationTarget::kTargetSurface;
+    auto resolved =
+        GlicInvokeHandler::ResolveTargetSurface(GetProfile(), target);
+    ASSERT_TRUE(
+        std::holds_alternative<GlicInvokeHandler::TabSurface>(resolved));
+    auto tab_surface = std::get<GlicInvokeHandler::TabSurface>(resolved);
+    EXPECT_EQ(tab_surface.tab, detached_tab.get());
+  }
+
+  // Reattach the detached tab before test ends.
+  browser->GetTabStripModel()->InsertDetachedTabAt(
+      tab_index, std::move(detached_tab), AddTabTypes::ADD_NONE);
+}
+
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, ResolveTargetSurfaceFloating) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance,
                        OpenGlicForActiveTabAndDetach());
