@@ -321,6 +321,14 @@ public class LaunchIntentDispatcher {
             return false;
         }
 
+        // Strip internal verified extras from incoming client intent so that they cannot be
+        // spoofed.
+        IntentUtils.safeRemoveExtra(mIntent, CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        IntentUtils.safeRemoveExtra(
+                mIntent, CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_HANDLING_DATA);
+        IntentUtils.safeRemoveExtra(
+                mIntent, CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_CAN_WRITE);
+
         if (!clearTopIntentsForCustomTabsEnabled(mIntent)) {
             // The old way of delivering intents relies on calling the activity directly via a
             // static reference. It doesn't allow using CLEAR_TOP, and also doesn't work when an

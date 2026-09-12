@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -408,6 +410,47 @@ public class LaunchIntentDispatcherTest {
     }
 
     @Test
+    public void testFileHandling_DelegatedToExistingHandler_StripsSpoofedVerifiedData() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        FileHandlingData clientData =
+                new FileHandlingData(Arrays.asList(Uri.parse("content://client/data")));
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA, clientData.toBundle());
+        FileHandlingData spoofedData =
+                new FileHandlingData(Arrays.asList(Uri.parse("content://spoofed/data")));
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_HANDLING_DATA,
+                spoofedData.toBundle());
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_CAN_WRITE, new boolean[] {true});
+
+        doReturn(mSessionHandler).when(mSessionDataHolder).getActiveHandlerForIntent(any());
+        doReturn(true).when(mSessionHandler).handleIntent(any());
+        doReturn(123).when(mSessionHandler).getTaskId();
+
+        Activity spyActivity = spy(mActivity);
+        doReturn(mActivityManager).when(spyActivity).getSystemService(Context.ACTIVITY_SERVICE);
+
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mSessionHandler).handleIntent(intentCaptor.capture());
+        Intent deliveredIntent = intentCaptor.getValue();
+
+        assertFalse(
+                deliveredIntent.hasExtra(
+                        CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_HANDLING_DATA));
+        assertFalse(
+                deliveredIntent.hasExtra(
+                        CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_CAN_WRITE));
+        assertTrue(
+                deliveredIntent.hasExtra(TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA));
+    }
+
+    @Test
     public void testShareTarget_CallerHasReadPermission_StashesVerifiedShareData() {
         Uri fileUri = Uri.parse("content://com.example/shared_file.jpg");
         ShareData shareData = new ShareData("share_title", "share_text", Arrays.asList(fileUri));
@@ -542,6 +585,38 @@ public class LaunchIntentDispatcherTest {
         assertEquals(
                 false,
                 launchedIntent.hasExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA));
+    }
+
+    @Test
+    public void testShareTarget_DelegatedToExistingHandler_StripsSpoofedVerifiedData() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        ShareData clientData =
+                new ShareData("title", "text", Arrays.asList(Uri.parse("content://client/data")));
+        intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, clientData.toBundle());
+        ShareData spoofedData =
+                new ShareData("title", "text", Arrays.asList(Uri.parse("content://spoofed/data")));
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA, spoofedData.toBundle());
+
+        doReturn(mSessionHandler).when(mSessionDataHolder).getActiveHandlerForIntent(any());
+        doReturn(true).when(mSessionHandler).handleIntent(any());
+        doReturn(123).when(mSessionHandler).getTaskId();
+
+        Activity spyActivity = spy(mActivity);
+        doReturn(mActivityManager).when(spyActivity).getSystemService(Context.ACTIVITY_SERVICE);
+
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mSessionHandler).handleIntent(intentCaptor.capture());
+        Intent deliveredIntent = intentCaptor.getValue();
+
+        assertFalse(
+                deliveredIntent.hasExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA));
+        assertTrue(deliveredIntent.hasExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA));
     }
 
     @Test
