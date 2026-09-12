@@ -22,11 +22,6 @@
 
 <script>
 promise_test(async t => {
-  await check_scroll_axis_lock(t, {scroller, input_source: 'touch'});
-}, "scroll-axis-lock: none allows free diagonal touch scroll " +
-   "even with steep angle (no railing)");
-
-promise_test(async t => {
   await check_scroll_axis_lock(t, {scroller, input_source: 'wheel'});
 }, "scroll-axis-lock: none allows free diagonal wheel scroll " +
    "even with steep angle (no railing)");

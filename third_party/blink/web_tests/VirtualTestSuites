@@ -2811,7 +2811,8 @@
       "svg/zoom/page/zoom-getbbox-invariance.html",
       "svg/zoom/page/zoom-getctm-invariance.html",
       "svg/zoom/page/zoom-getscreenctm-getboundingclientrect-parity.html",
-      "external/wpt/css/css-overflow/scroll-axis-lock.html"
+      "external/wpt/css/css-overflow/scroll-axis-lock-none-touch.html",
+      "external/wpt/css/css-overflow/scroll-axis-lock-none-wheel.html"
     ],
     "exclusive_tests": [
       "external/wpt/css/css-masking/clip-path/animations/clip-path-animation-mixed-interpolation.html",
