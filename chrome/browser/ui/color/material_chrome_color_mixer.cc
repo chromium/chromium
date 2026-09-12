@@ -194,7 +194,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysTonalContainer};
 
   // App Menu colors.
-  mixer[kColorAppMenuYourChromeBackground] = {ui::kColorSysTonalContainer};
+  mixer[kColorAppMenuChipBackground] = {ui::kColorSysTonalContainer};
+  mixer[kColorAppMenuChipBackgroundHovered] = {ui::GetResultingPaintColor(
+      ui::kColorSysStateHoverOnSubtle, kColorAppMenuChipBackground)};
+  mixer[kColorAppMenuChipForeground] = {ui::kColorSysOnTonalContainer};
+  mixer[kColorAppMenuYourChromeBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorAppMenuToolsAndActionsBackground] = {
       ui::kColorSysNeutralContainer};
   mixer[kColorAppMenuBlockButtonBackground] = {ui::kColorSysSurface};

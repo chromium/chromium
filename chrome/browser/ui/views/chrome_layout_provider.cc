@@ -98,7 +98,7 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       return gfx::Insets::TLBR(8, 0, 0, 0);
     case INSETS_ACTION_APP_MENU_FOOTER_BUTTON:
       return gfx::Insets::VH(4, 8);
-    case INSETS_PROFILE_SIGNIN_STATUS_CHIP:
+    case INSETS_APP_MENU_CHIP:
       // Relies on the parent menu's margins for vertical alignment
       // with other items.
       return gfx::Insets::VH(0, 12);

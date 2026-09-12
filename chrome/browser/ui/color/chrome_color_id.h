@@ -24,6 +24,9 @@
   E_CPONLY(kColorAppMenuHighlightPrimary) \
   E_CPONLY(kColorAppMenuExpandedForegroundDefault) \
   E_CPONLY(kColorAppMenuExpandedForegroundPrimary) \
+  E_CPONLY(kColorAppMenuChipBackground) \
+  E_CPONLY(kColorAppMenuChipBackgroundHovered) \
+  E_CPONLY(kColorAppMenuChipForeground) \
   E_CPONLY(kColorAppMenuChipInkDropHover) \
   E_CPONLY(kColorAppMenuChipInkDropRipple) \
   E_CPONLY(kColorAppMenuYourChromeBackground) \

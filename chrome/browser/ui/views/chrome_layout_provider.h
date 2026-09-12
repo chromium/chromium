@@ -37,8 +37,8 @@ enum ChromeInsetsMetric {
   INSETS_ACTION_APP_MENU_FOOTER_MARGIN,
   // Padding for a Block-style Action App Menu footer button.
   INSETS_ACTION_APP_MENU_FOOTER_BUTTON,
-  // Padding for the profile sign-in status chip in the app menu.
-  INSETS_PROFILE_SIGNIN_STATUS_CHIP,
+  // Padding for a status chip in the app menu.
+  INSETS_APP_MENU_CHIP,
   // Padding for the block creation action buttons row container.
   INSETS_ACTION_APP_MENU_BLOCK_ROW,
   // Internal padding for a block entry button.

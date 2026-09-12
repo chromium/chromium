@@ -99,6 +99,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::MenuSeparatorType,
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuChipTextInternal)
 
 const ui::ClassProperty<ActionAppMenuManager::DisplayType>* const
     ActionAppMenuManager::kDisplayTypeKey = kAppMenuDisplayTypeInternal;
@@ -114,6 +115,9 @@ const ui::ClassProperty<ui::ImageModel*>* const
 
 const ui::ClassProperty<ui::MenuSeparatorType>* const
     ActionAppMenuManager::kSeparatorKey = kAppMenuSeparatorInternal;
+
+const ui::ClassProperty<std::u16string*>* const
+    ActionAppMenuManager::kChipTextKey = kAppMenuChipTextInternal;
 
 namespace {
 
@@ -289,7 +293,8 @@ ActionAppMenuManager::CreateIndirectActionItem(
     DisplayType display_type,
     std::optional<ui::ColorId> container_color,
     std::optional<std::u16string> text_override,
-    std::optional<ui::ImageModel> icon_override) {
+    std::optional<ui::ImageModel> icon_override,
+    std::optional<std::u16string> chip_text) {
   actions::ActionItem* action =
       actions::ActionManager::Get().FindAction(action_id);
   if (!action) {
@@ -312,6 +317,11 @@ ActionAppMenuManager::CreateIndirectActionItem(
   if (icon_override.has_value()) {
     item->SetProperty(kIconOverrideKey,
                       std::make_unique<ui::ImageModel>(icon_override.value()));
+  }
+
+  if (chip_text.has_value()) {
+    item->SetProperty(kChipTextKey,
+                      std::make_unique<std::u16string>(chip_text.value()));
   }
 
   return item;

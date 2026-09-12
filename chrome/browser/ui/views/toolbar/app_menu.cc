@@ -475,9 +475,8 @@ void AddSignedInChipToProfileMenuItem(
                           : ui::kColorAppMenuProfileRowChipBackground,
                       profile_chip_corner_radii))
                   .SetBorder(views::CreateEmptyBorder(
-                      ChromeLayoutProvider::Get()
-                          ->GetInsetsMetric(
-                              INSETS_PROFILE_SIGNIN_STATUS_CHIP))))
+                      ChromeLayoutProvider::Get()->GetInsetsMetric(
+                          INSETS_APP_MENU_CHIP))))
           .Build();
 
   // MenuItemView has specific layout logic for child views which does not work

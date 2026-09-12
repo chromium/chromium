@@ -43,13 +43,15 @@ class ActionAppMenuManager {
   static const ui::ClassProperty<std::u16string*>* const kTextOverrideKey;
   static const ui::ClassProperty<ui::ImageModel*>* const kIconOverrideKey;
   static const ui::ClassProperty<ui::MenuSeparatorType>* const kSeparatorKey;
+  static const ui::ClassProperty<std::u16string*>* const kChipTextKey;
 
   static std::unique_ptr<actions::IndirectActionItem> CreateIndirectActionItem(
       actions::ActionId action_id,
       DisplayType display_type,
       std::optional<ui::ColorId> container_color = std::nullopt,
       std::optional<std::u16string> text_override = std::nullopt,
-      std::optional<ui::ImageModel> icon_override = std::nullopt);
+      std::optional<ui::ImageModel> icon_override = std::nullopt,
+      std::optional<std::u16string> chip_text = std::nullopt);
 
   static std::unique_ptr<actions::ActionItem> CreateSectionActionItem(
       DisplayType display_type,

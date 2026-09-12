@@ -12,6 +12,7 @@ source_set("app_menu") {
     "action_app_menu.h",
     "action_app_menu_block_button.h",
     "action_app_menu_block_view.h",
+    "action_app_menu_chip_view.h",
     "action_app_menu_footer_button.h",
     "action_app_menu_footer_view.h",
     "action_app_menu_manager.h",
@@ -53,6 +54,7 @@ source_set("impl") {
     "action_app_menu.cc",
     "action_app_menu_block_button.cc",
     "action_app_menu_block_view.cc",
+    "action_app_menu_chip_view.cc",
     "action_app_menu_footer_button.cc",
     "action_app_menu_footer_view.cc",
     "action_app_menu_manager.cc",
@@ -172,6 +174,7 @@ if (toolkit_views) {
     testonly = true
 
     sources = [
+      "action_app_menu_chip_view_unittest.cc",
       "action_app_menu_manager_unittest.cc",
       "action_app_menu_search_bar_view_unittest.cc",
       "action_app_menu_search_item_unittest.cc",

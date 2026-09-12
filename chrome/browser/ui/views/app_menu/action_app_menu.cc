@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_block_view.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_chip_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
@@ -299,6 +300,11 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   const ui::Accelerator& accel = action_item->GetAccelerator();
   if (accel.key_code() != ui::VKEY_UNKNOWN) {
     menu_item->SetMinorText(accel.GetShortcutText());
+  }
+
+  if (std::u16string* chip_text =
+          child_base->GetProperty(ActionAppMenuManager::kChipTextKey)) {
+    ActionAppMenuChipView::AttachTo(menu_item, *chip_text);
   }
 
   const auto* provider = ChromeLayoutProvider::Get();
