@@ -37,6 +37,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/task_manager:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_content_setting_bubble_model_delegate",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:constants",

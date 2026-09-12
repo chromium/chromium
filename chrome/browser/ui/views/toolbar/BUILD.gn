@@ -214,6 +214,7 @@ source_set("impl") {
     "//chrome/browser/sync:factories",
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:browser_content_setting_bubble_model_delegate",
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui:toolbar_controller_util",
     "//chrome/browser/ui:ui_features",

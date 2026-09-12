@@ -60,6 +60,38 @@ if (is_chromeos) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [ ":browser_native_widget_factory" ]
   }
+
+  source_set("browser_frame_header_chromeos") {
+    public = [ "browser_frame_header_chromeos.h" ]
+    public_deps = [
+      "//base",
+      "//chromeos/ui/frame",
+      "//ui/gfx",
+    ]
+  }
+
+  source_set("browser_frame_header_chromeos_impl") {
+    sources = [ "browser_frame_header_chromeos.cc" ]
+    public_deps = [
+      ":browser_frame_header_chromeos",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":safe_invoke",
+      "//base",
+      "//chrome/browser/ui/web_applications",
+      "//chromeos/ash/experiences/system_web_apps/types",
+      "//chromeos/ui/base",
+      "//chromeos/ui/frame",
+      "//skia",
+      "//ui/base",
+      "//ui/color",
+      "//ui/display",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+  }
 }
 
 static_library("test_support") {

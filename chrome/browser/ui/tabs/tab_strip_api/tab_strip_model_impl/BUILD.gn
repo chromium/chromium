@@ -29,6 +29,7 @@ source_set("tab_strip_model_impl") {
   deps = [
     "converters",
     "tree_builder",
+    "//chrome/browser/ui:browser_window_theme_observer",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_menu",
@@ -84,6 +85,7 @@ source_set("browser_tests") {
     "tree_builder:browser_tests",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ui:browser_window_theme_observer",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",

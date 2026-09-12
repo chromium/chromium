@@ -9,10 +9,10 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
+enum class BrowserThemeChangeType;
 
 // Observes ThemeService for theme changes and notifies registered listeners.
 // This was previously handled directly by Browser.

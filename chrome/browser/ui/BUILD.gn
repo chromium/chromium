@@ -295,6 +295,55 @@ if (!is_android) {
     ]
   }
 
+  source_set("browser_content_setting_bubble_model_delegate") {
+    public = [ "browser_content_setting_bubble_model_delegate.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/content_settings",
+      "//ui/base/unowned_user_data",
+    ]
+  }
+
+  source_set("browser_content_setting_bubble_model_delegate_impl") {
+    sources = [ "browser_content_setting_bubble_model_delegate.cc" ]
+    public_deps = [
+      ":browser_content_setting_bubble_model_delegate",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser/content_settings:content_settings_util",
+      "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui:tab_dialogs",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common:constants",
+      "//components/subresource_filter/core/browser",
+      "//ui/base",
+    ]
+  }
+
+  source_set("browser_window_theme_observer") {
+    public = [ "browser_window_theme_observer.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/themes",
+      "//ui/base/unowned_user_data",
+    ]
+  }
+
+  source_set("browser_window_theme_observer_impl") {
+    sources = [ "browser_window_theme_observer.cc" ]
+    public_deps = [
+      ":browser_window_theme_observer",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/browser_window",
+    ]
+  }
+
   source_set("browser_window_deleter") {
     public = [ "browser_window_deleter.h" ]
   }
@@ -1310,9 +1359,13 @@ static_library("ui") {
 
   if (!is_android) {
     deps += [
+      ":browser_content_setting_bubble_model_delegate",
+      ":browser_content_setting_bubble_model_delegate_impl",
       ":browser_tab_menu_model_delegate",
       ":browser_window_deleter",
       ":browser_window_deleter_impl",
+      ":browser_window_theme_observer",
+      ":browser_window_theme_observer_impl",
       ":chrome_pages",
       ":chrome_web_modal_dialog_manager_delegate",
       "//chrome/browser:certificate_viewer",
@@ -1324,7 +1377,11 @@ static_library("ui") {
       "//chrome/browser/ui/webui/webui_gallery",
       "//chrome/browser/ui/zoom:browser_window_zoom_observer",
     ]
-    allow_circular_includes_from += [ ":browser_window_deleter_impl" ]
+    allow_circular_includes_from += [
+      ":browser_content_setting_bubble_model_delegate_impl",
+      ":browser_window_deleter_impl",
+      ":browser_window_theme_observer_impl",
+    ]
   }
 
   if (!is_android || enable_webui_ntp) {
@@ -1396,8 +1453,6 @@ static_library("ui") {
       "browser_command_controller.h",
       "browser_commands.cc",
       "browser_commands.h",
-      "browser_content_setting_bubble_model_delegate.cc",
-      "browser_content_setting_bubble_model_delegate.h",
       "browser_live_tab_context.cc",
       "browser_manager_service.cc",
       "browser_manager_service.h",
@@ -1410,8 +1465,6 @@ static_library("ui") {
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
       "browser_window.h",
-      "browser_window_theme_observer.cc",
-      "browser_window_theme_observer.h",
       "chrome_pages.cc",
       "intent_picker_tab_helper.cc",
       "intent_picker_tab_helper.h",
@@ -1951,8 +2004,6 @@ static_library("ui") {
     sources += [
       "settings_window_manager_chromeos.cc",
       "settings_window_manager_chromeos.h",
-      "views/frame/browser_frame_header_chromeos.cc",
-      "views/frame/browser_frame_header_chromeos.h",
       "views/frame/browser_frame_view_chromeos.cc",
       "views/frame/browser_frame_view_chromeos.h",
       "views/frame/browser_frame_view_factory_chromeos.cc",
@@ -2113,6 +2164,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/extensions/dialogs:document_scanner_start_scan_confirmation_dialog",
       "//chrome/browser/ui/views/extensions/dialogs:print_job_confirmation_dialog",
       "//chrome/browser/ui/views/extensions/dialogs:request_file_system_dialog",
+      "//chrome/browser/ui/views/frame:browser_frame_header_chromeos",
+      "//chrome/browser/ui/views/frame:browser_frame_header_chromeos_impl",
       "//chrome/browser/ui/views/frame:browser_native_widget_factory_chromeos",
       "//chrome/browser/ui/views/profiles:profile_indicator_icon",
       "//chrome/browser/ui/views/select_file_dialog_extension",
@@ -2220,6 +2273,11 @@ static_library("ui") {
       "//chrome/browser/ui/ash/wallpaper",
       "//chrome/browser/ui/ash/wm",
       "//chrome/browser/ui/chromeos/locked_state",
+
+      # browser_frame_header_chromeos.cc includes
+      # views/frame/browser_frame_view_chromeos.h and
+      # views/frame/browser_view.h which cannot be split out yet.
+      "//chrome/browser/ui/views/frame:browser_frame_header_chromeos_impl",
 
       # browser_native_widget_factory_chromeos.cc includes
       # views/frame/browser_native_widget_ash.h which cannot be split out yet.

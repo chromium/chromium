@@ -6,6 +6,7 @@
 
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 DEFINE_USER_DATA(BrowserWindowThemeObserver);

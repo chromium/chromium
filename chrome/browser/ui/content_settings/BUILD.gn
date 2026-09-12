@@ -103,6 +103,7 @@ source_set("browser_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/content_settings:content_settings_util",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_content_setting_bubble_model_delegate",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views:content_setting_bubble_contents",

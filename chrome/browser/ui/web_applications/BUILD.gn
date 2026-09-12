@@ -181,6 +181,7 @@ source_set("impl") {
       "//chrome/browser/permissions",
       "//chrome/browser/policy:policy_util",
       "//chrome/browser/ui:browser_init_state",
+      "//chrome/browser/ui:browser_window_theme_observer",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/profiles",
