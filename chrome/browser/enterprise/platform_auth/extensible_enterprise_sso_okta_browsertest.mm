@@ -135,6 +135,11 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_.Start());
   }
 
+  void TearDownOnMainThread() override {
+    platform_auth_policy_observer_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   void TearDown() override {
     session_override_.reset();
     InProcessBrowserTest::TearDown();

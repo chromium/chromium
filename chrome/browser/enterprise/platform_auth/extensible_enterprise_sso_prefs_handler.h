@@ -89,8 +89,7 @@ class ExtensibleEnterpriseSSOPrefsHandler {
           cf_prefs_observer_override);
 
   std::unique_ptr<CFPreferencesObserver> cf_preferences_observer_;
-  // Dangling pointer specific to: try/mac13-tests
-  raw_ptr<PrefService, DanglingUntriaged> local_state_{nullptr};
+  raw_ptr<PrefService> local_state_{nullptr};
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ExtensibleEnterpriseSSOPrefsHandler> weak_ptr_factory_{
