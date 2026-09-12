@@ -24,8 +24,6 @@ include_rules = [
   "+chrome/browser/ui/exclusive_access/exclusive_access_manager.h",
   "+chrome/browser/ui/exclusive_access/fullscreen_controller.h",
   "+chrome/browser/ui/views/frame/browser_view.h",
-  "+chrome/browser/ui/tabs/tab_strip_model_delegate.h",
-  "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
   "+chrome/browser/ui/immersive/immersive_mode_controller.h",
   "+chrome/test/base/in_process_browser_test.h",
   "+chrome/test/base/testing_profile.h",

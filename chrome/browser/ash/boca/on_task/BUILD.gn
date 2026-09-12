@@ -22,10 +22,7 @@ static_library("on_task") {
     "on_task_system_web_app_manager_impl.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/tabs:tab_strip_model_observer",
-  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash",
@@ -43,7 +40,7 @@ static_library("on_task") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
-    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/navigator",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/on_task",

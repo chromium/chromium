@@ -22,9 +22,7 @@
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/boca/on_task/on_task_pod_controller_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
@@ -92,7 +90,7 @@ void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
     return;
   }
   browser_ = browser;
-  browser_->GetBrowser().GetTabStripModel()->AddObserver(this);
+  tab_observation_.Observe(ash::BrowserController::GetInstance());
   active_tab_observer_.Observe(browser_->GetActiveWebContents());
 
   if (ash::features::IsBocaOnTaskPodEnabled()) {
@@ -183,13 +181,13 @@ void LockedSessionWindowTracker::MaybeCloseWebContents(
     return;
   }
   if (browser_->GetWebContentsCount() > 1) {
-    if (browser_->GetBrowser().GetTabStripModel()->GetIndexOfWebContents(tab) ==
-        TabStripModel::kNoTab) {
+    std::optional<size_t> index = browser_->GetIndexOfWebContents(tab);
+    if (!index) {
       return;
     }
     on_task_blocklist()->RemoveChildFilter(tab);
-    browser_->GetBrowser().GetTabStripModel()->CloseWebContents(
-        tab, TabCloseTypes::CLOSE_NONE);
+    browser_->CloseWebContentsAt(*index,
+                                 ash::BrowserDelegate::UserGesture::kNo);
   }
 }
 
@@ -223,8 +221,8 @@ OnTaskBlocklist* LockedSessionWindowTracker::on_task_blocklist() {
   return on_task_blocklist_.get();
 }
 
-BrowserWindowInterface* LockedSessionWindowTracker::browser() {
-  return browser_ ? &browser_->GetBrowser() : nullptr;
+ash::BrowserDelegate* LockedSessionWindowTracker::browser() {
+  return browser_;
 }
 
 bool LockedSessionWindowTracker::CanOpenNewPopup() {
@@ -232,9 +230,7 @@ bool LockedSessionWindowTracker::CanOpenNewPopup() {
 }
 
 void LockedSessionWindowTracker::CleanupWindowTracker() {
-  if (browser_) {
-    browser_->GetBrowser().GetTabStripModel()->RemoveObserver(this);
-  }
+  tab_observation_.Reset();
   active_tab_observer_.Observe(nullptr);
   if (on_task_blocklist_) {
     on_task_blocklist_->CleanupBlocklist();
@@ -330,66 +326,63 @@ void LockedSessionWindowTracker::TriggerFedCmFederatedLoginCompletionForTesting(
   OnFedCmFederatedLogin(success);
 }
 
-void LockedSessionWindowTracker::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (selection.active_tab_changed()) {
-    active_tab_observer_.Observe(selection.new_contents);
-    RefreshUrlBlocklist();
-    // When all tabs are closing, the tab strip model is still active, but the
-    // active tab is no longer valid. This can cause a crash if we try to access
-    // the navigation context of the active tab.
-    if (!tab_strip_model->closing_all() && !tab_strip_model->empty() &&
-        on_task_pod_controller_) {
-      on_task_pod_controller_->OnPageNavigationContextChanged();
-    }
-    if (selection.new_contents) {
-      NotifyActiveTabChanged(selection.new_contents->GetTitle());
+void LockedSessionWindowTracker::OnTabInserted(ash::BrowserDelegate* browser,
+                                               content::WebContents* contents) {
+  if (browser != browser_) {
+    return;
+  }
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(contents);
+  const GURL url = contents->GetVisibleURL();
+  SessionID parent_tab_id = SessionID::InvalidValue();
+  content::WebContents* const opener =
+      contents->GetFirstWebContentsInLiveOriginalOpenerChain();
+  if (opener) {
+    parent_tab_id = sessions::SessionTabHelper::IdForTab(opener);
+  } else {
+    content::WebContents* const active_contents =
+        active_tab_observer_.web_contents();
+    // When new tabs are added, if there is no active tab or it is the boca app
+    // homepage, then we set `parent_tab_id` to be invalid.
+    if (active_contents && (active_contents->GetVisibleURL() !=
+                            GURL(ash::boca::kChromeBocaAppUntrustedIndexURL))) {
+      parent_tab_id = sessions::SessionTabHelper::IdForTab(active_contents);
     }
   }
-  if (change.type() == TabStripModelChange::kInserted) {
-    for (const auto& contents : change.GetInsert()->contents) {
-      SessionID tab_id =
-          sessions::SessionTabHelper::IdForTab(contents.contents);
-      GURL url = contents.contents->GetVisibleURL();
-      SessionID parent_tab_id = SessionID::InvalidValue();
-      content::WebContents* const opener =
-          contents.contents->GetFirstWebContentsInLiveOriginalOpenerChain();
-      if (opener) {
-        parent_tab_id = sessions::SessionTabHelper::IdForTab(opener);
-      } else {
-        content::WebContents* const old_contents = selection.old_contents;
-        // When new tabs are added, if the current active tab is closed or is
-        // boca app homepage, then we set `parent_tab_id` to be invalid.
-        if (old_contents &&
-            (TabStripModel::kNoTab !=
-             browser_->GetBrowser().GetTabStripModel()->GetIndexOfWebContents(
-                 old_contents)) &&
-            (old_contents->GetVisibleURL() !=
-             GURL(ash::boca::kChromeBocaAppUntrustedIndexURL))) {
-          parent_tab_id = sessions::SessionTabHelper::IdForTab(old_contents);
-        }
-      }
-      for (auto& observer : observers_) {
-        observer.OnTabAdded(parent_tab_id, tab_id, url);
-      }
-    }
+  for (auto& observer : observers_) {
+    observer.OnTabAdded(parent_tab_id, tab_id, url);
   }
 }
 
-void LockedSessionWindowTracker::OnTabWillBeRemoved(tabs::TabInterface* tab,
-                                                    int index) {
-  if (tab->GetContents() == active_tab_observer_.web_contents()) {
+void LockedSessionWindowTracker::OnTabRemoved(ash::BrowserDelegate* browser,
+                                              content::WebContents* contents,
+                                              bool will_delete) {
+  if (browser != browser_) {
+    return;
+  }
+  if (contents == active_tab_observer_.web_contents()) {
     active_tab_observer_.Observe(nullptr);
   }
-  on_task_blocklist()->RemoveParentFilter(tab->GetContents());
-  on_task_blocklist()->RemoveChildFilter(tab->GetContents());
-  const SessionID tab_id =
-      sessions::SessionTabHelper::IdForTab(tab->GetContents());
+  on_task_blocklist()->RemoveParentFilter(contents);
+  on_task_blocklist()->RemoveChildFilter(contents);
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(contents);
   for (auto& observer : observers_) {
     observer.OnTabRemoved(tab_id);
   }
+}
+
+void LockedSessionWindowTracker::OnActiveWebContentsChanged(
+    ash::BrowserDelegate* browser,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  if (browser != browser_) {
+    return;
+  }
+  active_tab_observer_.Observe(new_contents);
+  RefreshUrlBlocklist();
+  if (on_task_pod_controller_) {
+    on_task_pod_controller_->OnPageNavigationContextChanged();
+  }
+  NotifyActiveTabChanged(new_contents->GetTitle());
 }
 
 // ash::BrowserController::Observer Implementation

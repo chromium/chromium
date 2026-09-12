@@ -107,9 +107,7 @@ content::WebContents* GetParentTab(content::NavigationHandle* navigation_handle,
     const SessionID parent_tab_id =
         on_task_blocklist->GetParentTabId(navigating_tab);
     if (parent_tab_id.is_valid()) {
-      BrowserDelegate* const tracked_browser =
-          BrowserController::GetInstance()->GetDelegate(
-              window_tracker->browser());
+      BrowserDelegate* const tracked_browser = window_tracker->browser();
       parent_tab = GetWebContentsForTabId(tracked_browser, parent_tab_id);
     }
 
@@ -185,7 +183,7 @@ void OnTaskLockedSessionNavigationThrottle::MaybeCreateAndAdd(
 
   // Ensure we only apply the nav throttle on OnTask SWA navigations.
   if (content_browser &&
-      (&content_browser->GetBrowser() != window_tracker->browser() &&
+      (content_browser != window_tracker->browser() &&
        content_browser->GetType() != BrowserType::kAppPopup)) {
     return;
   }
@@ -270,7 +268,7 @@ bool OnTaskLockedSessionNavigationThrottle::IsOutsideOnTaskAppNavigation() {
   // context, but is moved to a different browser right after (such as open link
   // in chrome window context menu).
   if (!content_browser ||
-      (&content_browser->GetBrowser() != window_tracker->browser() &&
+      (content_browser != window_tracker->browser() &&
        content_browser->GetType() != BrowserType::kAppPopup)) {
     return true;
   }
