@@ -262,7 +262,10 @@ if (!is_android) {
       "//components/undo",
     ]
     if (is_mac) {
-      deps += [ "//chrome/browser:global_keyboard_shortcuts_mac" ]
+      deps += [
+        ":browser_commands_mac",
+        "//chrome/browser:global_keyboard_shortcuts_mac",
+      ]
     }
     if (is_chromeos) {
       deps += [
@@ -273,6 +276,60 @@ if (!is_android) {
     if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
     }
+  }
+
+  source_set("browser_tab_menu_model_delegate") {
+    public = [ "browser_tab_menu_model_delegate.h" ]
+    sources = [ "browser_tab_menu_model_delegate.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/tabs:tab_menu",
+      "//components/sessions:session_id",
+    ]
+    deps = [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/web_applications",
+      "//components/saved_tab_groups/public",
+      "//ui/base",
+    ]
+  }
+
+  source_set("browser_window_deleter") {
+    public = [ "browser_window_deleter.h" ]
+  }
+
+  source_set("browser_window_deleter_impl") {
+    sources = [ "browser_window_deleter.cc" ]
+    public_deps = [
+      ":browser_window_deleter",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [ "//chrome/browser/ui/browser_window" ]
+  }
+}
+
+if (is_mac) {
+  source_set("browser_commands_mac") {
+    public = [ "browser_commands_mac.h" ]
+  }
+
+  source_set("browser_commands_mac_impl") {
+    sources = [ "browser_commands_mac.mm" ]
+    public_deps = [
+      ":browser_commands_mac",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":fullscreen_util_mac",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//components/remote_cocoa/app_shim",
+    ]
   }
 }
 
@@ -1253,6 +1310,9 @@ static_library("ui") {
 
   if (!is_android) {
     deps += [
+      ":browser_tab_menu_model_delegate",
+      ":browser_window_deleter",
+      ":browser_window_deleter_impl",
       ":chrome_pages",
       ":chrome_web_modal_dialog_manager_delegate",
       "//chrome/browser:certificate_viewer",
@@ -1264,6 +1324,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/webui_gallery",
       "//chrome/browser/ui/zoom:browser_window_zoom_observer",
     ]
+    allow_circular_includes_from += [ ":browser_window_deleter_impl" ]
   }
 
   if (!is_android || enable_webui_ntp) {
@@ -1342,8 +1403,6 @@ static_library("ui") {
       "browser_manager_service.h",
       "browser_manager_service_factory.cc",
       "browser_manager_service_factory.h",
-      "browser_tab_menu_model_delegate.cc",
-      "browser_tab_menu_model_delegate.h",
       "browser_tab_restorer.cc",
       "browser_tab_strip_model_delegate.cc",
       "browser_tabrestore.cc",
@@ -1351,8 +1410,6 @@ static_library("ui") {
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
       "browser_window.h",
-      "browser_window_deleter.cc",
-      "browser_window_deleter.h",
       "browser_window_theme_observer.cc",
       "browser_window_theme_observer.h",
       "chrome_pages.cc",
@@ -2365,8 +2422,6 @@ static_library("ui") {
 
   if (is_mac) {
     sources += [
-      "browser_commands_mac.h",
-      "browser_commands_mac.mm",
       "views/frame/browser_frame_view_factory_mac.mm",
       "views/frame/browser_frame_view_mac.h",
       "views/frame/browser_frame_view_mac.mm",
@@ -2379,6 +2434,8 @@ static_library("ui") {
     ]
 
     deps += [
+      ":browser_commands_mac",
+      ":browser_commands_mac_impl",
       ":browser_mac",
       ":fullscreen_util_mac",
       "//chrome/browser/apps/app_shim",
@@ -2390,6 +2447,7 @@ static_library("ui") {
     # Any circular includes must depend on the target
     # "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
+      ":browser_commands_mac_impl",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui/cocoa",
 

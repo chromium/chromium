@@ -2588,7 +2588,10 @@ if (!is_android) {
     deps += [ "//chrome/browser/ui/performance_controls/test_support" ]
 
     if (is_mac) {
-      deps += [ "//chrome/updater:browser_sources" ]
+      deps += [
+        "//chrome/browser/ui:browser_commands_mac",
+        "//chrome/updater:browser_sources",
+      ]
     }
 
     if (enable_guest_view) {
@@ -8534,6 +8537,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser:app_controller_mac",
         "//chrome/browser:chrome_browser_application_mac",
         "//chrome/browser:global_keyboard_shortcuts_mac",
+        "//chrome/browser/ui:browser_commands_mac",
         "//chrome/browser/ui/cocoa",
         "//chrome/installer/mac:install_test_util",
       ]

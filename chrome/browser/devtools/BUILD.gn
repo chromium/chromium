@@ -713,6 +713,7 @@ if (!is_android) {
       ":devtools",
       ":test_support",
       "//base",
+      "//chrome/browser/ui:browser_window_deleter",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",

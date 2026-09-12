@@ -310,6 +310,9 @@ source_set("browser_tests") {
   if (is_chromeos) {
     deps += [ "//chromeos/ui/frame:test_support" ]
   }
+  if (is_mac) {
+    deps += [ "//chrome/browser/ui:browser_commands_mac" ]
+  }
 }
 
 source_set("unit_tests") {

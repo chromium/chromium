@@ -497,7 +497,10 @@ if (!is_android) {
           "//url",
         ]
         if (is_mac) {
-          deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
+          deps += [
+            "//chrome/browser/ui:browser_commands_mac",
+            "//chrome/browser/ui:fullscreen_util_mac",
+          ]
         }
       }
     }
