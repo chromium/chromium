@@ -255,12 +255,25 @@ chrome.tabs.getAllInWindow = function(windowId, callback) {};
  *   active: (boolean|undefined),
  *   selected: (boolean|undefined),
  *   pinned: (boolean|undefined),
- *   openerTabId: (number|undefined)
+ *   openerTabId: (number|undefined),
+ *   splitWithTabId: (number|undefined)
  * }} createProperties
  * @param {function(!chrome.tabs.Tab): void=} callback
  * @see https://developer.chrome.com/extensions/tabs#method-create
  */
 chrome.tabs.create = function(createProperties, callback) {};
+
+/**
+ * Splits two existing tabs into a Split View.
+ * @param {!Array<number>} tabIds An array of exactly two tab IDs to pair into a
+ *     Split View. All tabs must meet the following conditions: <ul><li>They must
+ *     be adjacent.</li><li>They must not already be in a split
+ *     view.</li><li>They must have matching <code>windowId</code>,
+ *     <code>pinned</code>, and <code>groupId</code> states.</li></ul>
+ * @param {function(number): void=} callback
+ * @see https://developer.chrome.com/extensions/tabs#method-createSplit
+ */
+chrome.tabs.createSplit = function(tabIds, callback) {};
 
 /**
  * Duplicates a tab.
@@ -391,6 +404,14 @@ chrome.tabs.group = function(options, callback) {};
  * @see https://developer.chrome.com/extensions/tabs#method-ungroup
  */
 chrome.tabs.ungroup = function(tabIds, callback) {};
+
+/**
+ * Separates the tabs in a Split View into independent tabs.
+ * @param {number} splitViewId The ID of the Split View to separate.
+ * @param {function(): void=} callback
+ * @see https://developer.chrome.com/extensions/tabs#method-unsplit
+ */
+chrome.tabs.unsplit = function(splitViewId, callback) {};
 
 /**
  * Detects the primary language of the content in a tab.
