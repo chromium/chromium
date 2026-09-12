@@ -992,7 +992,6 @@ int HttpCache::Transaction::DoLoop(int result) {
         NOTREACHED() << "bad state " << state;
     }
     DCHECK(next_state_ != STATE_UNSET) << "Previous state was " << state;
-
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 
   // Assert Start() state machine's allowed last state in successful cases when
@@ -1607,13 +1606,12 @@ int HttpCache::Transaction::DoDoneHeadersAddToEntryComplete(int result) {
   // created a new ActiveEntry (new_entry_) to write to (and doomed the old
   // one). Now that the new entry has been created, start writing the response.
 
-  DCHECK_EQ(result, OK);
+  CHECK(result == OK || result == ERR_CACHE_RACE);
   DCHECK_EQ(mode_, WRITE);
   DCHECK(new_entry_);
   DCHECK(response_.headers);
 
   cache_pending_ = false;
-  done_headers_create_new_entry_ = false;
 
   // It is unclear exactly how this state is reached with an ERR_CACHE_RACE, but
   // this check appears to fix a rare crash. See crbug.com/959194.
@@ -1622,6 +1620,7 @@ int HttpCache::Transaction::DoDoneHeadersAddToEntryComplete(int result) {
     return OK;
   }
 
+  done_headers_create_new_entry_ = false;
   entry_ = std::move(new_entry_);
   DCHECK_NE(response_.headers->response_code(), HTTP_NOT_MODIFIED);
   DCHECK(entry_->CanTransactionWriteResponseHeaders(this, partial_ != nullptr,
@@ -2435,18 +2434,42 @@ int HttpCache::Transaction::DoHeadersPhaseCannotProceed(int result) {
   // failure, restart this transaction.
   DCHECK(!reading_);
 
+  entry_.reset();
+  new_entry_.reset();
+  new_response_ = nullptr;
+
+  // If response headers were already received from the network during
+  // validation and we were only attempting to create a new replacement cache
+  // entry, do not restart the transaction over the network. Instead, fall back
+  // to un-cached pass-through (mode_ = NONE) and return the received response
+  // directly to the consumer without issuing a duplicate network fetch.
+  if (done_headers_create_new_entry_) {
+    base::UmaHistogramBoolean("HttpCache.RaceAfterHeadersHandled", true);
+    done_headers_create_new_entry_ = false;
+    mode_ = NONE;
+
+    // Safety invariant: Ensure the caller has a live network stream to read
+    // the response body from.
+    CHECK(network_trans_);
+
+    // Invariant: `done_headers_create_new_entry_` is only set when replacing an
+    // entry after validation mismatch. For range requests, a 206 response
+    // routes to STATE_PARTIAL_HEADERS_RECEIVED (bypassing entry replacement),
+    // and a 200 OK causes ValidatePartialResponse() to reset `partial_`.
+    CHECK(!partial_);
+
+    TransitionToState(STATE_NONE);
+    return OK;
+  }
+
   // Reset before invoking SetRequest() which can reset the request info sent to
   // network transaction.
   if (network_trans_) {
     network_trans_.reset();
   }
 
-  new_response_ = nullptr;
-
   SetRequest(net_log_);
 
-  entry_.reset();
-  new_entry_.reset();
   last_disk_cache_access_start_time_ = TimeTicks();
 
   // TODO(crbug.com/40772202): This should probably clear `response_`,

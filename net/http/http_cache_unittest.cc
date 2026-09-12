@@ -17681,6 +17681,208 @@ TEST_F(HttpCacheTest, RestartResetsDoneHeadersCreateNewEntry) {
   RunTransactionTest(cache.http_cache(), kSimpleGET_Transaction);
 }
 
+namespace {
+
+class RaceMockBackend : public MockDiskCache {
+ public:
+  Error DoomEntry(const std::string& key,
+                  RequestPriority request_priority,
+                  CompletionOnceCallback callback) override {
+    if (fail_doom_with_race_) {
+      return ERR_CACHE_RACE;
+    }
+    return MockDiskCache::DoomEntry(key, request_priority, std::move(callback));
+  }
+
+  EntryResult CreateEntry(const std::string& key,
+                          RequestPriority request_priority,
+                          EntryResultCallback callback) override {
+    if (fail_create_with_race_) {
+      return EntryResult::MakeError(ERR_CACHE_RACE);
+    }
+    if (on_create_entry_callback_) {
+      callback = base::BindOnce(
+          [](EntryResultCallback cb, base::OnceClosure on_create,
+             EntryResult res) {
+            std::move(cb).Run(std::move(res));
+            std::move(on_create).Run();
+          },
+          std::move(callback), std::move(on_create_entry_callback_));
+    }
+    return MockDiskCache::CreateEntry(key, request_priority,
+                                      std::move(callback));
+  }
+
+  void set_fail_doom_with_race(bool fail) { fail_doom_with_race_ = fail; }
+  void set_fail_create_with_race(bool fail) { fail_create_with_race_ = fail; }
+  void set_on_create_entry_callback(base::OnceClosure callback) {
+    on_create_entry_callback_ = std::move(callback);
+  }
+
+ private:
+  bool fail_doom_with_race_ = false;
+  bool fail_create_with_race_ = false;
+  base::OnceClosure on_create_entry_callback_;
+};
+
+class RaceMockBackendFactory : public HttpCache::BackendFactory {
+ public:
+  disk_cache::BackendResult CreateBackend(
+      NetLog* net_log,
+      disk_cache::BackendResultCallback callback) override {
+    return disk_cache::BackendResult::Make(std::make_unique<RaceMockBackend>());
+  }
+};
+
+}  // namespace
+
+// Tests that when creating a replacement cache entry fails with ERR_CACHE_RACE
+// after response headers have already been received
+// (done_headers_create_new_entry_ == true), DoHeadersPhaseCannotProceed falls
+// back to un-cached pass-through (mode_ = NONE) and completes rather than
+// issuing a duplicate network fetch or crashing.
+// Note: ERR_CACHE_RACE is simulated via DoomEntry() in RaceMockBackend to
+// exercise the HttpCache::Transaction state machine branch deterministically.
+TEST_F(HttpCacheTest, HeadersPhaseCannotProceedAfterHeadersDoesNotRestart) {
+  base::HistogramTester histogram_tester;
+  MockHttpCache cache(std::make_unique<RaceMockBackendFactory>());
+
+  // 1. Populate the cache with a fresh entry.
+  ScopedMockTransaction trans(kSimpleGET_Transaction);
+  RunTransactionTest(cache.http_cache(), trans);
+  auto* backend = static_cast<RaceMockBackend*>(cache.disk_cache());
+  ASSERT_TRUE(backend);
+
+  // 2. Start a transaction that holds a reader on the fresh entry.
+  MockHttpRequest reader_request(trans);
+  Context reader_context;
+  reader_context.trans = cache.CreateTransaction();
+  reader_context.result = reader_context.trans->Start(
+      &reader_request, reader_context.callback.callback(), NetLogWithSource());
+  EXPECT_THAT(reader_context.callback.GetResult(reader_context.result), IsOk());
+
+  // 3. Configure the backend to fail the subsequent replacement DoomEntry with
+  // ERR_CACHE_RACE.
+  backend->set_fail_doom_with_race(true);
+
+  // 4. Update the mock transaction response body so validation yields new data.
+  trans.data = "<html><body>New Content</body></html>";
+
+  // 5. Start a second transaction which revalidates against the entry.
+  MockHttpRequest validator_request(trans);
+  validator_request.load_flags |= LOAD_VALIDATE_CACHE;
+  Context validator_context;
+  validator_context.trans = cache.CreateTransaction();
+  validator_context.result = validator_context.trans->Start(
+      &validator_request, validator_context.callback.callback(),
+      NetLogWithSource());
+  EXPECT_THAT(validator_context.callback.GetResult(validator_context.result),
+              IsOk());
+
+  // 6. Under the fix, validator_context degrades to pass-through without
+  // restarting over network. Transaction count should be 2 (1 for initial
+  // populate, 1 for validation), NOT 3!
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+
+  // Verify response body delivered to validator is the new content.
+  ReadAndVerifyTransaction(validator_context.trans.get(), trans);
+
+  // Verify existing reader on the doomed entry can still read original content.
+  ReadAndVerifyTransaction(reader_context.trans.get(), kSimpleGET_Transaction);
+
+  histogram_tester.ExpectUniqueSample("HttpCache.RaceAfterHeadersHandled", true,
+                                      1);
+}
+
+// Tests that when CreateEntry() fails with ERR_CACHE_RACE after response
+// headers have already been received, the transaction cleanly degrades to
+// pass-through without restarting or crashing.
+TEST_F(HttpCacheTest, HeadersPhaseCannotProceedCreateEntryRace) {
+  base::HistogramTester histogram_tester;
+  MockHttpCache cache(std::make_unique<RaceMockBackendFactory>());
+
+  ScopedMockTransaction trans(kSimpleGET_Transaction);
+  RunTransactionTest(cache.http_cache(), trans);
+  auto* backend = static_cast<RaceMockBackend*>(cache.disk_cache());
+  ASSERT_TRUE(backend);
+
+  MockHttpRequest reader_request(trans);
+  Context reader_context;
+  reader_context.trans = cache.CreateTransaction();
+  reader_context.result = reader_context.trans->Start(
+      &reader_request, reader_context.callback.callback(), NetLogWithSource());
+  EXPECT_THAT(reader_context.callback.GetResult(reader_context.result), IsOk());
+
+  // Fail CreateEntry() with ERR_CACHE_RACE.
+  backend->set_fail_create_with_race(true);
+  trans.data = "<html><body>New Content</body></html>";
+
+  MockHttpRequest validator_request(trans);
+  validator_request.load_flags |= LOAD_VALIDATE_CACHE;
+  Context validator_context;
+  validator_context.trans = cache.CreateTransaction();
+  validator_context.result = validator_context.trans->Start(
+      &validator_request, validator_context.callback.callback(),
+      NetLogWithSource());
+  EXPECT_THAT(validator_context.callback.GetResult(validator_context.result),
+              IsOk());
+
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  ReadAndVerifyTransaction(validator_context.trans.get(), trans);
+  ReadAndVerifyTransaction(reader_context.trans.get(), kSimpleGET_Transaction);
+
+  histogram_tester.ExpectUniqueSample("HttpCache.RaceAfterHeadersHandled", true,
+                                      1);
+}
+
+// Tests that when CreateEntry() succeeds (allocating new_entry_) and
+// AddToEntry() fails with ERR_CACHE_RACE, DoDoneHeadersAddToEntryComplete
+// transitions to DoHeadersPhaseCannotProceed and cleans up new_entry_ without
+// hitting the DoneWithEntry CHECK crash.
+TEST_F(HttpCacheTest, HeadersPhaseCannotProceedAddToEntryRace) {
+  base::HistogramTester histogram_tester;
+  MockHttpCache cache(std::make_unique<RaceMockBackendFactory>());
+
+  ScopedMockTransaction trans(kSimpleGET_Transaction);
+  RunTransactionTest(cache.http_cache(), trans);
+  auto* backend = static_cast<RaceMockBackend*>(cache.disk_cache());
+  ASSERT_TRUE(backend);
+
+  MockHttpRequest reader_request(trans);
+  Context reader_context;
+  reader_context.trans = cache.CreateTransaction();
+  reader_context.result = reader_context.trans->Start(
+      &reader_request, reader_context.callback.callback(), NetLogWithSource());
+  EXPECT_THAT(reader_context.callback.GetResult(reader_context.result), IsOk());
+
+  trans.data = "<html><body>New Content</body></html>";
+
+  MockHttpRequest validator_request(trans);
+  validator_request.load_flags |= LOAD_VALIDATE_CACHE;
+
+  // When CreateEntry() completes for the replacement entry, trigger
+  // FailActiveEntry() so that AddToEntry() receives ERR_CACHE_RACE while
+  // waiting for STATE_DONE_HEADERS_ADD_TO_ENTRY_COMPLETE.
+  backend->set_on_create_entry_callback(
+      base::BindOnce(&MockHttpCache::FailActiveEntry, base::Unretained(&cache),
+                     validator_request.CacheKey()));
+
+  Context validator_context;
+  validator_context.trans = cache.CreateTransaction();
+  validator_context.result = validator_context.trans->Start(
+      &validator_request, validator_context.callback.callback(),
+      NetLogWithSource());
+  EXPECT_THAT(validator_context.callback.GetResult(validator_context.result),
+              IsOk());
+
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  ReadAndVerifyTransaction(validator_context.trans.get(), trans);
+  ReadAndVerifyTransaction(reader_context.trans.get(), kSimpleGET_Transaction);
+
+  histogram_tester.ExpectUniqueSample("HttpCache.RaceAfterHeadersHandled", true,
+                                      1);
+}
+
 TEST_F(HttpCacheTest, SetMaxBytesBeforeInitWithoutForcedInit) {
   base::HistogramTester histogram_tester;
   auto* factory = new MockBackendFactory();

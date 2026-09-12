@@ -898,6 +898,13 @@ int MockHttpCache::GetCountWriterTransactions(const std::string& key) {
                                    : 0;
 }
 
+void MockHttpCache::FailActiveEntry(const std::string& key) {
+  auto entry = http_cache_.GetActiveEntry(key);
+  if (entry) {
+    http_cache_.ProcessEntryFailure(entry.get());
+  }
+}
+
 base::WeakPtr<HttpCache> MockHttpCache::GetWeakPtr() {
   return http_cache_.GetWeakPtr();
 }

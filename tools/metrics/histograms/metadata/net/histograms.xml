@@ -1604,6 +1604,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="HttpCache.RaceAfterHeadersHandled" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>deepakr@google.com</owner>
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Logged when HttpCache::Transaction encounters a race condition during entry
+    replacement after response headers have already been received. Recorded in
+    DoHeadersPhaseCannotProceed to track how often caching is abandoned for a
+    revalidation mismatch.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.ResponseFreshnessIsZero" enum="Boolean"
     expires_after="2027-06-01">
   <owner>bashi@chromium.org</owner>

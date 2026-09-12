@@ -373,6 +373,7 @@ class MockHttpCache {
   int GetCountAddToEntryQueue(const std::string& key);
   int GetCountDoneHeadersQueue(const std::string& key);
   int GetCountWriterTransactions(const std::string& key);
+  void FailActiveEntry(const std::string& key);
 
   base::WeakPtr<HttpCache> GetWeakPtr();
 

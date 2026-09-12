@@ -747,8 +747,13 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   bool handling_206_ = false;     // We must deal with this 206 response.
   bool cache_pending_ = false;    // We are waiting for the HttpCache.
 
-  // Headers have been received from the network and it's not a match with the
-  // existing entry.
+  // Signals that response headers were received from the network during
+  // validation that did not match the existing cache entry, and this
+  // transaction is attempting to allocate a replacement cache entry. If
+  // replacement entry allocation fails with ERR_CACHE_RACE, this flag signals
+  // to DoHeadersPhaseCannotProceed() that network headers were already
+  // received, so the transaction should degrade cleanly to pass-through
+  // (mode_ = NONE) rather than restarting the request over the network.
   bool done_headers_create_new_entry_ = false;
 
   bool vary_mismatch_ = false;  // The request doesn't match the stored vary
