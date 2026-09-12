@@ -6,6 +6,8 @@
 
 #include <string_view>
 
+#include "build/build_config.h"
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/i18n/icu4c_tag_converter.h"
 #include "base/i18n/language_tag_value_converters.h"
@@ -537,6 +539,16 @@ TEST(LanguageTagTest, Canonicalize) {
   // Deprecated tags: "tl" -> "fil"
   EXPECT_THAT(LanguageTagConverter::GetInstance().FromString("tl"),
               Optional(GetKnownLanguageTag("fil")));
+
+#if BUILDFLAG(IS_WIN)
+  // Windows legacy Chinese tags: "zh-chs" -> "zh-cn"
+  EXPECT_THAT(LanguageTagConverter::GetInstance().FromString("zh-chs"),
+              Optional(GetKnownLanguageTag("zh-CN")));
+
+  // Windows legacy Chinese tags: "zh-cht" -> "zh-tw"
+  EXPECT_THAT(LanguageTagConverter::GetInstance().FromString("zh-cht"),
+              Optional(GetKnownLanguageTag("zh-TW")));
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST(LanguageTagTest, LegacyLanguages) {

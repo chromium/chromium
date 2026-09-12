@@ -14,14 +14,13 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/i18n/tag_converters.h"
 #include "base/i18n/win/preferred_languages.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
-namespace base {
-namespace win {
-namespace i18n {
+namespace base::i18n {
 
 namespace {
 
@@ -145,9 +144,7 @@ bool GetAliasedLanguageOffset(const AvailableLanguageAliases& available_aliases,
     return true;
   }
   if (available_aliases.zh_cn_language_offset &&
-      // Pre-Vista alias for Chinese w/ script subtag.
-      (language == L"zh-chs" ||
-       // Vista+ alias for Chinese w/ script subtag.
+      (// Vista+ alias for Chinese w/ script subtag.
        language == L"zh-hans" ||
        // Although the wildcard entry for zh would result in this, alias zh-sg
        // so that it will win if it precedes another valid tag in a list of
@@ -157,9 +154,7 @@ bool GetAliasedLanguageOffset(const AvailableLanguageAliases& available_aliases,
     return true;
   }
   if (available_aliases.zh_tw_language_offset &&
-      // Pre-Vista alias for Chinese w/ script subtag.
-      (language == L"zh-cht" ||
-       // Vista+ alias for Chinese w/ script subtag.
+      (// Vista+ alias for Chinese w/ script subtag.
        language == L"zh-hant" ||
        // Alias Hong Kong and Macau to Taiwan.
        language == L"zh-hk" || language == L"zh-mo")) {
@@ -208,11 +203,11 @@ bool GetCompatibleNeutralLanguageOffset(
 // candidate and |matched_offset| is assigned the language offset of the
 // selected translation.
 // static
-bool SelectIf(const std::vector<std::wstring>& candidates,
+bool SelectIf(span<const LanguageTag> candidates,
               span<const LangToOffset> languages_to_offset,
               const AvailableLanguageAliases& available_aliases,
               const LangToOffset** matched_language_to_offset,
-              std::wstring* matched_name) {
+              LanguageTag* matched_name) {
   DCHECK(matched_language_to_offset);
   DCHECK(matched_name);
 
@@ -221,30 +216,25 @@ bool SelectIf(const std::vector<std::wstring>& candidates,
 
   // An earlier candidate entry matching on an exact match or alias match takes
   // precedence over a later candidate entry matching on an exact match.
-  for (const std::wstring& scan : candidates) {
-    std::wstring lower_case_candidate = ToLowerASCII(scan);
-    if (GetExactLanguageOffset(languages_to_offset, lower_case_candidate,
+  for (const auto& scan : candidates) {
+    std::wstring scan_wide =
+        base::ASCIIToWide(base::ToLowerASCII(scan.tag_string()));
+    if (GetExactLanguageOffset(languages_to_offset, scan_wide,
                                matched_language_to_offset) ||
-        GetAliasedLanguageOffset(available_aliases, lower_case_candidate,
+        GetAliasedLanguageOffset(available_aliases, scan_wide,
                                  matched_language_to_offset)) {
-      matched_name->assign(scan);
+      *matched_name = scan;
       return true;
     }
   }
 
   // If no candidate matches exactly or by alias, try to match by locale neutral
   // language.
-  for (const std::wstring& scan : candidates) {
-    std::wstring lower_case_candidate = ToLowerASCII(scan);
-
-    // Extract the locale neutral language from the language to search and try
-    // to find an exact match for that language in the provided table.
-    std::wstring neutral_language =
-        lower_case_candidate.substr(0, lower_case_candidate.find(L'-'));
-
+  for (const auto& scan : candidates) {
+    std::wstring neutral_language = base::ASCIIToWide(scan.language_subtag());
     if (GetCompatibleNeutralLanguageOffset(available_aliases, neutral_language,
                                            matched_language_to_offset)) {
-      matched_name->assign(scan);
+      *matched_name = scan;
       return true;
     }
   }
@@ -253,18 +243,16 @@ bool SelectIf(const std::vector<std::wstring>& candidates,
 }
 
 void SelectLanguageMatchingCandidate(
-    const std::vector<std::wstring>& candidates,
+    span<const LanguageTag> candidates,
     span<const LangToOffset> languages_to_offset,
     size_t* selected_offset,
-    std::wstring* matched_candidate,
-    std::wstring* selected_language) {
+    LanguageTag* matched_candidate,
+    LanguageTag* selected_language) {
   DCHECK(selected_offset);
   DCHECK(matched_candidate);
   DCHECK(selected_language);
   DCHECK(!languages_to_offset.empty());
   DCHECK_EQ(static_cast<size_t>(*selected_offset), languages_to_offset.size());
-  DCHECK(matched_candidate->empty());
-  DCHECK(selected_language->empty());
   // Note: While DCHECK_IS_ON() seems redundant here, this is required to avoid
   // compilation errors, since IsArraySortedAndLowerCased is not defined
   // otherwise.
@@ -287,30 +275,37 @@ void SelectLanguageMatchingCandidate(
   if (!SelectIf(candidates, languages_to_offset, available_aliases,
                 &matched_language_to_offset, matched_candidate)) {
     matched_language_to_offset = available_aliases.en_us_language_offset;
-    *matched_candidate =
-        std::wstring(available_aliases.en_us_language_offset->first);
+    *matched_candidate = GetKnownLanguageTag("en-US");
   }
 
   DCHECK(matched_language_to_offset);
   // Get the real language being used for the matched candidate.
-  *selected_language = std::wstring(matched_language_to_offset->first);
+  *selected_language = base::i18n::GetLanguageTagFromString(
+                           base::WideToASCII(matched_language_to_offset->first))
+                           .value();
   *selected_offset = matched_language_to_offset->second;
 }
 
-std::vector<std::wstring> GetCandidatesFromSystem(
+std::vector<LanguageTag> GetCandidatesFromSystem(
     std::wstring_view preferred_language) {
-  std::vector<std::wstring> candidates;
+  std::vector<LanguageTag> candidates;
 
   // Get the initial candidate list for this particular implementation (if
   // applicable).
   if (!preferred_language.empty()) {
-    candidates.emplace_back(preferred_language);
+    std::string ascii_preferred = base::WideToASCII(preferred_language);
+    std::ranges::replace(ascii_preferred, '_', '-');
+    if (std::optional<LanguageTag> preferred_tag =
+            base::i18n::GetLanguageTagFromString(ascii_preferred);
+        preferred_tag) {
+      candidates.push_back(*preferred_tag);
+    }
   }
 
   // Now try the UI languages.  Use the thread preferred ones since that will
   // kindly return us a list of all kinds of fallbacks.
-  for (const auto& tag : ::base::i18n::GetThreadPreferredUILanguageList()) {
-    candidates.emplace_back(ASCIIToWide(tag.tag_string()));
+  for (const auto& language : base::i18n::GetThreadPreferredUILanguageList()) {
+    candidates.push_back(language);
   }
   return candidates;
 }
@@ -322,9 +317,11 @@ LanguageSelector::LanguageSelector(std::wstring_view preferred_language,
     : LanguageSelector(GetCandidatesFromSystem(preferred_language),
                        languages_to_offset) {}
 
-LanguageSelector::LanguageSelector(const std::vector<std::wstring>& candidates,
+LanguageSelector::LanguageSelector(span<const LanguageTag> candidates,
                                    span<const LangToOffset> languages_to_offset)
-    : selected_offset_(languages_to_offset.size()) {
+    : matched_candidate_(GetKnownLanguageTag("und")),
+      selected_language_(GetKnownLanguageTag("und")),
+      selected_offset_(languages_to_offset.size()) {
   SelectLanguageMatchingCandidate(candidates, languages_to_offset,
                                   &selected_offset_, &matched_candidate_,
                                   &selected_language_);
@@ -332,6 +329,4 @@ LanguageSelector::LanguageSelector(const std::vector<std::wstring>& candidates,
 
 LanguageSelector::~LanguageSelector() = default;
 
-}  // namespace i18n
-}  // namespace win
-}  // namespace base
+}  // namespace base::i18n

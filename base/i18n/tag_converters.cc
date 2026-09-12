@@ -5,6 +5,8 @@
 #include "base/i18n/tag_converters.h"
 
 #include <algorithm>
+
+#include "build/build_config.h"
 #include <array>
 #include <string_view>
 #include <vector>
@@ -98,6 +100,14 @@ std::optional<LanguageTag> LanguageTagConverter::FromString(
   if (tag.size() < 2) {
     return std::nullopt;
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (base::EqualsCaseInsensitiveASCII(tag, "zh-chs")) {
+    tag = "zh-CN";
+  } else if (base::EqualsCaseInsensitiveASCII(tag, "zh-cht")) {
+    tag = "zh-TW";
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   std::optional<std::string> bcp47_converted_tag =
       ConvertLegacyCodeToBcp47IfNecessary(tag);

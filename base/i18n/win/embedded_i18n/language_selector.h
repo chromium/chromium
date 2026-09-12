@@ -16,10 +16,9 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/i18n/base_i18n_export.h"
+#include "base/i18n/language_tag.h"
 
-namespace base {
-namespace win {
-namespace i18n {
+namespace base::i18n {
 
 // Selects a language from a set of available translations based on the user's
 // preferred language list. An optional preferred language may be provided to
@@ -45,7 +44,7 @@ class BASE_I18N_EXPORT LanguageSelector {
   // |languages_to_offset_begin| and |languages_to_offset_end| point to a sorted
   // array of language identifiers (and their offsets) for which translations
   // are available.
-  LanguageSelector(const std::vector<std::wstring>& candidates,
+  LanguageSelector(span<const LanguageTag> candidates,
                    span<const LangToOffset> languages_to_offset);
 
   LanguageSelector(const LanguageSelector&) = delete;
@@ -57,23 +56,21 @@ class BASE_I18N_EXPORT LanguageSelector {
   size_t offset() const { return selected_offset_; }
 
   // The full name of the candidate language for which a match was found.
-  const std::wstring& matched_candidate() const LIFETIME_BOUND {
+  const LanguageTag& matched_candidate() const LIFETIME_BOUND {
     return matched_candidate_;
   }
 
   // The name of the selected translation.
-  const std::wstring& selected_translation() const LIFETIME_BOUND {
+  const LanguageTag& selected_translation() const LIFETIME_BOUND {
     return selected_language_;
   }
 
  private:
-  std::wstring matched_candidate_;
-  std::wstring selected_language_;
+  LanguageTag matched_candidate_;
+  LanguageTag selected_language_;
   size_t selected_offset_;
 };
 
-}  // namespace i18n
-}  // namespace win
-}  // namespace base
+}  // namespace base::i18n
 
 #endif  // BASE_I18N_WIN_EMBEDDED_I18N_LANGUAGE_SELECTOR_H_

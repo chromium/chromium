@@ -28,15 +28,14 @@
 namespace updater {
 namespace {
 
-constexpr base::win::i18n::LanguageSelector::LangToOffset
-    kLanguageOffsetPairs[] = {
+constexpr base::i18n::LanguageSelector::LangToOffset kLanguageOffsetPairs[] = {
 #define HANDLE_LANGUAGE(l_, o_) {L## #l_, o_},
-        DO_LANGUAGES
+    DO_LANGUAGES
 #undef HANDLE_LANGUAGE
 };
 
 size_t GetLanguageOffset(const std::wstring& lang) {
-  return base::win::i18n::LanguageSelector(lang, kLanguageOffsetPairs).offset();
+  return base::i18n::LanguageSelector(lang, kLanguageOffsetPairs).offset();
 }
 
 }  // namespace

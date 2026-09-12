@@ -293,7 +293,7 @@ std::wstring GetStringResource(UINT base_message_id);
 std::wstring GetStringResource(UINT base_message_id,
                                const std::vector<std::wstring>& subst);
 
-// Gets the language selected by the base::win::i18n::LanguageSelector.
+// Gets the language selected by the base::i18n::LanguageSelector.
 std::wstring GetSelectedLanguage();
 
 // Securely clear a base::DictValue that may have a password field.

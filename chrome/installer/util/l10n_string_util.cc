@@ -41,10 +41,9 @@
 
 namespace {
 
-constexpr base::win::i18n::LanguageSelector::LangToOffset
-    kLanguageOffsetPairs[] = {
+constexpr base::i18n::LanguageSelector::LangToOffset kLanguageOffsetPairs[] = {
 #define HANDLE_LANGUAGE(l_, o_) {L## #l_, o_},
-        DO_LANGUAGES
+    DO_LANGUAGES
 #undef HANDLE_LANGUAGE
 };
 
@@ -56,8 +55,8 @@ std::wstring GetPreferredLanguageFromGoogleUpdate() {
   return language;
 }
 
-const base::win::i18n::LanguageSelector& GetLanguageSelector() {
-  static base::NoDestructor<base::win::i18n::LanguageSelector> instance(
+const base::i18n::LanguageSelector& GetLanguageSelector() {
+  static base::NoDestructor<base::i18n::LanguageSelector> instance(
       GetPreferredLanguageFromGoogleUpdate(), kLanguageOffsetPairs);
   return *instance;
 }
@@ -135,9 +134,10 @@ std::wstring GetLocalizedString(int base_message_id) {
   base::debug::Alias(&bundle_data_handle);
   base::debug::Alias(&bundle_data);
   base::debug::Alias(&bundle_size);
+  std::wstring selected_translation_wide =
+      base::ASCIIToWide(language_selector.selected_translation().tag_string());
   DEBUG_ALIAS_FOR_WCHARCSTR(selected_translation,
-                            language_selector.selected_translation().c_str(),
-                            16);
+                            selected_translation_wide.c_str(), 16);
   NOTREACHED() << "Unable to find resource id " << message_id;
 }
 
@@ -158,7 +158,8 @@ std::wstring GetLocalizedEulaResource() {
     return L"";
 
   // The resource names are more or less the upcased language names.
-  std::wstring language(GetLanguageSelector().selected_translation());
+  std::wstring language = base::ASCIIToWide(
+      GetLanguageSelector().selected_translation().tag_string());
   std::replace(language.begin(), language.end(), L'-', L'_');
   language = base::ToUpperASCII(language);
 
@@ -186,7 +187,8 @@ std::wstring GetLocalizedEulaResource() {
 }
 
 std::wstring GetCurrentTranslation() {
-  return GetLanguageSelector().selected_translation();
+  return base::ASCIIToWide(
+      GetLanguageSelector().selected_translation().tag_string());
 }
 
 int GetBaseMessageIdForMode(int base_message_id) {

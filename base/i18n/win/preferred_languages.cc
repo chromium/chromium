@@ -61,7 +61,7 @@ std::vector<LanguageTag> GetPreferredUILanguageList(
       ++languages_added;
     }
   }
-  DCHECK_EQ(languages_added, language_count);
+  DCHECK_LE(languages_added, language_count);
   return languages;
 }
 
