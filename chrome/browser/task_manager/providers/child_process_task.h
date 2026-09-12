@@ -14,6 +14,10 @@
 
 class ProcessResourceUsage;
 
+namespace base {
+class Process;
+}  // namespace base
+
 namespace content {
 struct ChildProcessData;
 class RenderProcessHost;
@@ -45,9 +49,10 @@ class ChildProcessTask : public Task {
     kUnknownRenderProcess,
   };
 
-  // Creates a child process task given its |data| which is
+  // Creates a child process task given its |data| and |process| which are
   // received from observing |content::BrowserChildProcessObserver|.
-  explicit ChildProcessTask(const content::ChildProcessData& data);
+  ChildProcessTask(const content::ChildProcessData& data,
+                   const base::Process& process);
 
   // Creates a child process task for a render process (such as a spare,
   // Glic, or unknown render process host).

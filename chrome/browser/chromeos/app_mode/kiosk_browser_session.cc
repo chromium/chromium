@@ -15,6 +15,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
@@ -62,22 +63,27 @@ void DumpPluginProcess(const std::set<int>& child_ids) {
 
   bool dump_requested = false;
 
-  content::BrowserChildProcessHostIterator iter(
-      content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED);
-  while (!iter.Done()) {
+  for (content::BrowserChildProcessHostIterator iter(
+           content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED);
+       !iter.Done(); ++iter) {
     const content::ChildProcessData& data = iter.GetData();
     if (child_ids.count(data.id) == 1) {
+      const base::Process& process = iter.GetProcess();
+      if (!process.IsValid()) {
+        LOG(WARNING) << "Plugin process is not valid, skipping dump for: "
+                     << data.name;
+        continue;
+      }
       // Send a signal to dump the plugin process.
-      if (kill(data.GetProcess().Handle(), SIGFPE) == 0) {
+      if (kill(process.Handle(), SIGFPE) == 0) {
         dump_requested = true;
       } else {
         PLOG(WARNING) << "Failed to send SIGFPE to plugin process"
-                      << ", pid=" << data.GetProcess().Pid()
+                      << ", pid=" << process.Pid()
                       << ", type=" << data.process_type
                       << ", name=" << data.name;
       }
     }
-    ++iter;
   }
 
   // Wait a bit to let dump finish (if requested) before rebooting the device.

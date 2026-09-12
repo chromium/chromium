@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/process/process.h"
 #include "base/values.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -32,13 +33,13 @@ base::ListValue FetchBrowserChildProcesses() {
 
   for (BrowserChildProcessHostIterator itr; !itr.Done(); ++itr) {
     const ChildProcessData& process_data = itr.GetData();
+    const base::Process& process = itr.GetProcess();
     // Only add processes that have already started, i.e. with valid handles.
-    if (!process_data.GetProcess().IsValid()) {
+    if (!process.IsValid()) {
       continue;
     }
     base::DictValue proc;
-    proc.Set("processId",
-             base::strict_cast<double>(process_data.GetProcess().Pid()));
+    proc.Set("processId", base::strict_cast<double>(process.Pid()));
     proc.Set("processType",
              content::GetProcessTypeNameInEnglish(process_data.process_type));
     proc.Set("name", process_data.name);

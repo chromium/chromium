@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/process/process.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -389,10 +390,11 @@ void CompositorView::SetDrawPaused(JNIEnv* env, bool paused) {
 }
 
 void CompositorView::BrowserChildProcessLaunchedAndConnected(
-    const content::ChildProcessData& data) {
+    const content::ChildProcessData& data,
+    const base::Process& process) {
   DVLOG(1) << "Child process launched (type=" << data.process_type
-           << ", id=" << data.GetChildProcessId()
-           << ", pid=" << data.GetProcess().Pid() << ")";
+           << ", id=" << data.GetChildProcessId() << ", pid=" << process.Pid()
+           << ")";
 }
 
 void CompositorView::BrowserChildProcessKilled(

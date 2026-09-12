@@ -11,6 +11,7 @@
 
 #include "base/file_version_info.h"
 #include "base/functional/bind.h"
+#include "base/process/process.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -198,11 +199,14 @@ void MemoryDetails::StartFetch() {
   // the process is being launched, so we skip it.
   for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
     ProcessMemoryInformation info;
-    if (!iter.GetData().GetProcess().IsValid())
+    const base::Process& process = iter.GetProcess();
+    if (!process.IsValid()) {
       continue;
-    info.pid = iter.GetData().GetProcess().Pid();
-    if (!info.pid)
+    }
+    info.pid = process.Pid();
+    if (!info.pid) {
       continue;
+    }
 
     info.process_type = iter.GetData().process_type;
     info.renderer_type = ProcessMemoryInformation::RENDERER_UNKNOWN;

@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -413,7 +414,8 @@ void ProcessMonitor::RenderProcessHostDestroyed(
 }
 
 void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
-    const content::ChildProcessData& data) {
+    const content::ChildProcessData& data,
+    const base::Process& process) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
@@ -429,8 +431,8 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
   bool inserted =
       browser_child_process_infos_
           .emplace(std::piecewise_construct, std::forward_as_tuple(data.id),
-                   std::forward_as_tuple(key, CreateProcessMetricsDelegate(
-                                                  data.GetProcess().Handle())))
+                   std::forward_as_tuple(
+                       key, CreateProcessMetricsDelegate(process.Handle())))
           .second;
   DCHECK(inserted);
 }

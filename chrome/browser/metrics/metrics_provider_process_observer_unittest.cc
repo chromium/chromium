@@ -76,8 +76,8 @@ TEST_F(MetricsProviderProcessObserverTest, ObservesBrowserChildProcesses) {
   // Simulate GPU process launch.
   content::ChildProcessData gpu_data(content::PROCESS_TYPE_GPU,
                                      content::ChildProcessId(10));
-  gpu_data.SetProcess(base::Process::Current());
-  observer.BrowserChildProcessLaunchedAndConnected(gpu_data);
+  observer.BrowserChildProcessLaunchedAndConnected(gpu_data,
+                                                   base::Process::Current());
 
   ASSERT_EQ(delegate_.start_calls().size(), 2u);
   EXPECT_EQ(delegate_.start_calls()[1].content_id, content::ChildProcessId(10));
@@ -87,8 +87,8 @@ TEST_F(MetricsProviderProcessObserverTest, ObservesBrowserChildProcesses) {
   content::ChildProcessData net_data(content::PROCESS_TYPE_UTILITY,
                                      content::ChildProcessId(11));
   net_data.metrics_name = "network.mojom.NetworkService";
-  net_data.SetProcess(base::Process::Current());
-  observer.BrowserChildProcessLaunchedAndConnected(net_data);
+  observer.BrowserChildProcessLaunchedAndConnected(net_data,
+                                                   base::Process::Current());
 
   ASSERT_EQ(delegate_.start_calls().size(), 3u);
   EXPECT_EQ(delegate_.start_calls()[2].content_id, content::ChildProcessId(11));

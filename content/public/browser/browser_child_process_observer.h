@@ -7,6 +7,10 @@
 
 #include "content/common/content_export.h"
 
+namespace base {
+class Process;
+}
+
 namespace content {
 
 struct ChildProcessData;
@@ -18,9 +22,10 @@ struct ChildProcessTerminationInfo;
 class CONTENT_EXPORT BrowserChildProcessObserver {
  public:
   // Called when a child process has successfully launched and has connected to
-  // it child process host. `data.GetProcess()` is guaranteed to be valid.
+  // its child process host. `process` is guaranteed to be valid.
   virtual void BrowserChildProcessLaunchedAndConnected(
-      const ChildProcessData& data) {}
+      const ChildProcessData& data,
+      const base::Process& process) {}
 
   // Called after a ChildProcessHost is disconnected from the child process.
   virtual void BrowserChildProcessHostDisconnected(

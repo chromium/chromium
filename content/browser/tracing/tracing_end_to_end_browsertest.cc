@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/process/process.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/task_annotator.h"
 #include "base/test/tracing/test_trace_processor.h"
@@ -832,9 +833,9 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, AddTraceEventWithProcessId) {
   std::vector<base::ProcessId> child_pids;
   content::BrowserChildProcessHostIterator iterator;
   while (!iterator.Done()) {
-    const content::ChildProcessData& data = iterator.GetData();
-    if (data.GetProcess().IsValid()) {
-      child_pids.push_back(data.GetProcess().Pid());
+    const base::Process& process = iterator.GetProcess();
+    if (process.IsValid()) {
+      child_pids.push_back(process.Pid());
     }
     ++iterator;
   }

@@ -55,6 +55,10 @@ class CONTENT_EXPORT BrowserChildProcessHost {
   // Returns the ChildProcessHost object used by this object.
   virtual ChildProcessHost* GetHost() = 0;
 
+  // Returns the child process. May be invalid if the process has not started
+  // yet or has terminated.
+  virtual const base::Process& GetProcess() = 0;
+
   // Returns the termination info of a child.
   // |known_dead| indicates that the child is already dead. On Linux, this
   // information is necessary to retrieve accurate information. See

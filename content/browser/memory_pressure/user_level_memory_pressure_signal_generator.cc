@@ -221,7 +221,7 @@ base::ByteSize UserLevelMemoryPressureSignalGenerator::
   for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
     add_process_private_footprint(
         total_pmf_visible_or_higher_priority_renderers_bytes,
-        iter.GetData().GetProcess());
+        iter.GetProcess());
   }
 
   // Measure private memory footprints of renderer processes with visible

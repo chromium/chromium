@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/process/process.h"
 #include "base/rand_util.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_context.h"
@@ -65,7 +66,7 @@ MetricsProviderProcessObserver::MetricsProviderProcessObserver(
   // Record the GPU, and Record 1/`downsampling_factor_` currently active
   // utility processes.
   for (content::BrowserChildProcessHostIterator it; !it.Done(); ++it) {
-    ProbabilisticallyListenToNonRenderer(it.GetData());
+    ProbabilisticallyListenToNonRenderer(it.GetData(), it.GetProcess());
   }
 }
 
@@ -74,8 +75,9 @@ MetricsProviderProcessObserver::~MetricsProviderProcessObserver() {
 }
 
 void MetricsProviderProcessObserver::ProbabilisticallyListenToNonRenderer(
-    const content::ChildProcessData& data) {
-  if (data.GetProcess().IsValid() &&
+    const content::ChildProcessData& data,
+    const base::Process& process) {
+  if (process.IsValid() &&
       (data.process_type == content::PROCESS_TYPE_GPU ||
        (data.process_type == content::PROCESS_TYPE_UTILITY &&
         data.metrics_name == "network.mojom.NetworkService") ||
@@ -88,8 +90,8 @@ void MetricsProviderProcessObserver::ProbabilisticallyListenToNonRenderer(
             : GetProcessTypeSuffix(
                   static_cast<content::ProcessType>(data.process_type));
 
-    delegate_->StartListeningToProcess(data.GetChildProcessId(),
-                                       data.GetProcess().Pid(), process_suffix);
+    delegate_->StartListeningToProcess(data.GetChildProcessId(), process.Pid(),
+                                       process_suffix);
   }
 }
 
@@ -139,8 +141,9 @@ void MetricsProviderProcessObserver::RenderProcessHostDestroyed(
 }
 
 void MetricsProviderProcessObserver::BrowserChildProcessLaunchedAndConnected(
-    const content::ChildProcessData& data) {
-  ProbabilisticallyListenToNonRenderer(data);
+    const content::ChildProcessData& data,
+    const base::Process& process) {
+  ProbabilisticallyListenToNonRenderer(data, process);
 }
 
 void MetricsProviderProcessObserver::BrowserChildProcessHostDisconnected(

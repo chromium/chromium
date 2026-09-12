@@ -5,6 +5,7 @@
 #include "components/metrics/content/content_stability_metrics_provider.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/process/process.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/metrics/content/extensions_helper.h"
@@ -88,7 +89,8 @@ TEST_F(ContentStabilityMetricsProviderTest,
                                                content::ChildProcessId());
   child_process_data.metrics_name = kTestUtilityProcessName;
 
-  provider.BrowserChildProcessLaunchedAndConnected(child_process_data);
+  provider.BrowserChildProcessLaunchedAndConnected(child_process_data,
+                                                   base::Process::Current());
   const int kExitCode = 1;
   content::ChildProcessTerminationInfo abnormal_termination_info;
   abnormal_termination_info.status =
@@ -123,7 +125,8 @@ TEST_F(ContentStabilityMetricsProviderTest, CdmServiceProcessObserverUtility) {
   child_process_data.metrics_name = kTestCdmServiceUtilityProcessName;
   child_process_data.sandbox_type = sandbox::mojom::Sandbox::kCdm;
 
-  provider.BrowserChildProcessLaunchedAndConnected(child_process_data);
+  provider.BrowserChildProcessLaunchedAndConnected(child_process_data,
+                                                   base::Process::Current());
   const int kExitCode = 333;
   content::ChildProcessTerminationInfo abnormal_termination_info;
   abnormal_termination_info.status =
@@ -184,7 +187,8 @@ TEST_F(ContentStabilityMetricsProviderTest,
   child_process_data.sandbox_type =
       sandbox::mojom::Sandbox::kMediaFoundationCdm;
 
-  provider.BrowserChildProcessLaunchedAndConnected(child_process_data);
+  provider.BrowserChildProcessLaunchedAndConnected(child_process_data,
+                                                   base::Process::Current());
   const int kExitCode = 555;
   content::ChildProcessTerminationInfo abnormal_termination_info;
   abnormal_termination_info.status =
@@ -213,7 +217,8 @@ TEST_F(ContentStabilityMetricsProviderTest,
   child_process_data.metrics_name = kTestMediaDrmSupportUtlityProcessName;
   child_process_data.sandbox_type = sandbox::mojom::Sandbox::kNoSandbox;
 
-  provider.BrowserChildProcessLaunchedAndConnected(child_process_data);
+  provider.BrowserChildProcessLaunchedAndConnected(child_process_data,
+                                                   base::Process::Current());
   const int kExitCode = 555;
   content::ChildProcessTerminationInfo abnormal_termination_info;
   abnormal_termination_info.status =

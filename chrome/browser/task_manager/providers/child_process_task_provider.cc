@@ -35,12 +35,14 @@ Task* ChildProcessTaskProvider::GetTaskOfUrlRequest(int child_id,
 }
 
 void ChildProcessTaskProvider::BrowserChildProcessLaunchedAndConnected(
-    const content::ChildProcessData& data) {
+    const content::ChildProcessData& data,
+    const base::Process& process) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!data.GetProcess().IsValid())
+  if (!process.IsValid()) {
     return;
+  }
 
-  CreateTask(data);
+  CreateTask(data, process);
 }
 
 void ChildProcessTaskProvider::BrowserChildProcessHostDisconnected(
@@ -56,12 +58,14 @@ void ChildProcessTaskProvider::StartUpdating() {
   // First, get the pre-existing child processes data.
   for (BrowserChildProcessHostIterator itr; !itr.Done(); ++itr) {
     const ChildProcessData& process_data = itr.GetData();
+    const base::Process& process = itr.GetProcess();
 
     // Only add processes that have already started, i.e. with valid handles.
-    if (!process_data.GetProcess().IsValid())
+    if (!process.IsValid()) {
       continue;
+    }
 
-    CreateTask(process_data);
+    CreateTask(process_data, process);
   }
 
   // Now start observing.
@@ -81,8 +85,8 @@ void ChildProcessTaskProvider::StopUpdating() {
   tasks_by_child_id_.clear();
 }
 
-void ChildProcessTaskProvider::CreateTask(
-    const content::ChildProcessData& data) {
+void ChildProcessTaskProvider::CreateTask(const content::ChildProcessData& data,
+                                          const base::Process& process) {
   auto [itr, inserted] =
       tasks_by_child_id_.try_emplace(data.GetChildProcessId(), nullptr);
   if (!inserted) {
@@ -94,7 +98,7 @@ void ChildProcessTaskProvider::CreateTask(
   }
 
   // Create the task and notify the observer.
-  itr->second = std::make_unique<ChildProcessTask>(data);
+  itr->second = std::make_unique<ChildProcessTask>(data, process);
   NotifyObserverTaskAdded(itr->second.get());
 }
 

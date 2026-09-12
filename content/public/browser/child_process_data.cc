@@ -12,7 +12,12 @@ ChildProcessData::ChildProcessData(int process_type, ChildProcessId id)
       id(id.GetUnsafeValue()),
       child_process_id_(id) {}
 
-ChildProcessData::ChildProcessData(ChildProcessData&& rhs) = default;
+ChildProcessData::ChildProcessData(const ChildProcessData&) = default;
+ChildProcessData& ChildProcessData::operator=(const ChildProcessData&) =
+    default;
+
+ChildProcessData::ChildProcessData(ChildProcessData&&) = default;
+ChildProcessData& ChildProcessData::operator=(ChildProcessData&&) = default;
 
 ChildProcessData::~ChildProcessData() {}
 

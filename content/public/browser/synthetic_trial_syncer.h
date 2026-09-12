@@ -64,7 +64,8 @@ class CONTENT_EXPORT SyntheticTrialSyncer
 
   // BrowserChildProcessObserver:
   void BrowserChildProcessLaunchedAndConnected(
-      const ChildProcessData& data) override;
+      const ChildProcessData& data,
+      const base::Process& process) override;
   void BrowserChildProcessHostDisconnected(
       const ChildProcessData& data) override;
 

@@ -106,7 +106,8 @@ class ContentStabilityMetricsProvider
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override;
   void BrowserChildProcessLaunchedAndConnected(
-      const content::ChildProcessData& data) override;
+      const content::ChildProcessData& data,
+      const base::Process& process) override;
   void BrowserChildProcessLaunchFailed(
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override;

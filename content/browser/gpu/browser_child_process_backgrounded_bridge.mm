@@ -33,7 +33,7 @@ BrowserChildProcessBackgroundedBridge::BrowserChildProcessBackgroundedBridge(
     : process_(process), objc_storage_(std::make_unique<ObjCStorage>()) {
   base::PortProvider* port_provider =
       BrowserChildProcessHost::GetPortProvider();
-  if (port_provider->TaskForHandle(process_->GetData().GetProcess().Handle()) !=
+  if (port_provider->TaskForHandle(process_->GetProcess().Handle()) !=
       MACH_PORT_NULL) {
     Initialize();
   } else {
@@ -108,7 +108,7 @@ void BrowserChildProcessBackgroundedBridge::Initialize() {
 
 void BrowserChildProcessBackgroundedBridge::OnReceivedTaskPort(
     base::ProcessHandle process_handle) {
-  if (process_->GetData().GetProcess().Handle() != process_handle) {
+  if (process_->GetProcess().Handle() != process_handle) {
     return;
   }
 

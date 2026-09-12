@@ -177,7 +177,8 @@ void ContentStabilityMetricsProvider::BrowserChildProcessCrashed(
 }
 
 void ContentStabilityMetricsProvider::BrowserChildProcessLaunchedAndConnected(
-    const content::ChildProcessData& data) {
+    const content::ChildProcessData& data,
+    const base::Process& process) {
   DCHECK(!data.metrics_name.empty());
   if (data.process_type == content::PROCESS_TYPE_UTILITY)
     helper_.BrowserUtilityProcessLaunched(data.metrics_name);

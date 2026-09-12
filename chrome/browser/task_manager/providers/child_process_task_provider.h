@@ -36,7 +36,8 @@ class ChildProcessTaskProvider
 
   // content::BrowserChildProcessObserver:
   void BrowserChildProcessLaunchedAndConnected(
-      const content::ChildProcessData& data) override;
+      const content::ChildProcessData& data,
+      const base::Process& process) override;
   void BrowserChildProcessHostDisconnected(
       const content::ChildProcessData& data) override;
 
@@ -49,7 +50,8 @@ class ChildProcessTaskProvider
 
   // Creates a ChildProcessTask from the given |data| and notifies the observer
   // of its addition.
-  void CreateTask(const content::ChildProcessData& data);
+  void CreateTask(const content::ChildProcessData& data,
+                  const base::Process& process);
 
   // Deletes a ChildProcessTask whose `child_process_id` is provided after
   // notifying the observer of its deletion.

@@ -175,7 +175,8 @@ void SubprocessMetricsProvider::MergeHistogramDeltas(
 }
 
 void SubprocessMetricsProvider::BrowserChildProcessLaunchedAndConnected(
-    const content::ChildProcessData& data) {
+    const content::ChildProcessData& data,
+    const base::Process& process) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // See if the new process has a memory allocator and take control of it if so.

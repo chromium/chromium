@@ -22,9 +22,10 @@ DevtoolsProcessObserver::~DevtoolsProcessObserver() {
 }
 
 void DevtoolsProcessObserver::BrowserChildProcessLaunchedAndConnected(
-    const content::ChildProcessData& data) {
+    const content::ChildProcessData& data,
+    const base::Process& process) {
   if (data.process_type == content::PROCESS_TYPE_GPU) {
-    tracing_agent_->set_gpu_pid(data.GetProcess().Pid());
+    tracing_agent_->set_gpu_pid(process.Pid());
   }
 }
 

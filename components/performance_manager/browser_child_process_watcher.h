@@ -50,10 +50,11 @@ class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
   // Allows tests to create a ProcessNode for `data`. In production the
   // ProcessNode is created when the host's child process is launched, but it's
   // not always possible to launch a real process in tests so this can simulate
-  // it by passing a running process, possibly base::Process::Current(), in
-  // data.GetProcess(). The ProcessNode must not already exist. It will not be
+  // it by passing a running process, possibly base::Process::Current(), as
+  // `process`. The ProcessNode must not already exist. It will not be
   // tied to the lifetime of the process.
-  void CreateChildProcessNodeForTesting(const content::ChildProcessData& data);
+  void CreateChildProcessNodeForTesting(const content::ChildProcessData& data,
+                                        const base::Process& process);
 
   // Allows tests to delete the ProcessNode for `data`. In production this
   // happens when the host's child process exits, but nodes created with
@@ -69,7 +70,8 @@ class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
  private:
   // BrowserChildProcessObserver overrides.
   void BrowserChildProcessLaunchedAndConnected(
-      const content::ChildProcessData& data) override;
+      const content::ChildProcessData& data,
+      const base::Process& process) override;
   void BrowserChildProcessHostDisconnected(
       const content::ChildProcessData& data) override;
   void BrowserChildProcessCrashed(

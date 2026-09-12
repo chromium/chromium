@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
+#include "base/process/process.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
@@ -364,7 +365,7 @@ void AddChildProcessInfo(
 
   for (BrowserChildProcessHostIterator it; !it.Done(); ++it) {
     const ChildProcessData& process_data = it.GetData();
-    const base::Process& process = process_data.GetProcess();
+    const base::Process& process = it.GetProcess();
     if (process.IsValid()) {
       process_info->emplace_back(
           MakeProcessInfo(process, process_data.metrics_name));

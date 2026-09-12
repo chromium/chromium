@@ -18,6 +18,7 @@
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
@@ -99,7 +100,7 @@ class ChildProcessTuningDelegateImpl
  private:
   void SetBatterySaverModeForAllChildProcessHosts(bool enabled) override {
     for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-      if (!iter.GetData().GetProcess().IsValid()) {
+      if (!iter.GetProcess().IsValid()) {
         continue;
       }
 
@@ -139,9 +140,10 @@ class ChildProcessTuningDelegateImpl
 
   // content::BrowserChildProcessObserver:
   void BrowserChildProcessLaunchedAndConnected(
-      const content::ChildProcessData& data) override {
+      const content::ChildProcessData& data,
+      const base::Process& process) override {
     // TODO(etiennep): Replace this by a CHECK.
-    if (!data.GetProcess().IsValid()) {
+    if (!process.IsValid()) {
       return;
     }
     if (battery_saver_mode_enabled_) {

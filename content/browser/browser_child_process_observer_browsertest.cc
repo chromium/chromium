@@ -5,6 +5,7 @@
 #include "content/public/browser/browser_child_process_observer.h"
 
 #include "base/functional/bind.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/browser/browser_child_process_host_impl.h"
@@ -92,7 +93,11 @@ class BrowserChildProcessNotificationObserver
  protected:
   // BrowserChildProcessObserver:
   void BrowserChildProcessLaunchedAndConnected(
-      const ChildProcessData& data) override {
+      const ChildProcessData& data,
+      const base::Process& process) override {
+    if (data.id == child_id_) {
+      EXPECT_TRUE(process.IsValid());
+    }
     OnNotification(data, Notification::kLaunchedAndConnected);
   }
   void BrowserChildProcessHostDisconnected(
@@ -121,8 +126,9 @@ class BrowserChildProcessNotificationObserver
   }
 
   void OnNotification(const ChildProcessData& data, Notification notification) {
-    if (data.id == child_id_)
+    if (data.id == child_id_) {
       on_notification_callback_.Run(notification);
+    }
   }
 
  private:

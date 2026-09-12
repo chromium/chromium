@@ -7,6 +7,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/functional/bind.h"
+#include "base/process/process.h"
 #include "base/types/fixed_array.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_thread.h"
@@ -59,7 +60,7 @@ void ProcessIdFeedbackSource::PrepareProcessIds() {
   }
 
   for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-    const base::Process& process = iter.GetData().GetProcess();
+    const base::Process& process = iter.GetProcess();
     if (process.IsValid()) {
       process_ids_[iter.GetData().process_type].push_back(process.Handle());
     }

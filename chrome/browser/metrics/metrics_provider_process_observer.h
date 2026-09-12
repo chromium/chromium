@@ -72,7 +72,8 @@ class MetricsProviderProcessObserver
 
   // content::BrowserChildProcessObserver:
   void BrowserChildProcessLaunchedAndConnected(
-      const content::ChildProcessData& data) override;
+      const content::ChildProcessData& data,
+      const base::Process& process) override;
   void BrowserChildProcessHostDisconnected(
       const content::ChildProcessData& data) override;
   void BrowserChildProcessCrashed(
@@ -90,7 +91,8 @@ class MetricsProviderProcessObserver
   // metrics, or, in the case of miscellaneous utility processes, listen to
   // them only 1/`downsampling_factor` of the time.
   void ProbabilisticallyListenToNonRenderer(
-      const content::ChildProcessData& data);
+      const content::ChildProcessData& data,
+      const base::Process& process);
 
   // Listen to renderers only 1/`downsampling_factor` of the time.
   void ProbabilisticallyListenToRenderer(content::RenderProcessHost* host);

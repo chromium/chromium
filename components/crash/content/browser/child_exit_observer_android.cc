@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/process/process.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_termination_info.h"
@@ -104,9 +105,10 @@ void ChildExitObserver::OnChildExit(TerminationInfo* info) {
 }
 
 void ChildExitObserver::BrowserChildProcessLaunchedAndConnected(
-    const content::ChildProcessData& data) {
+    const content::ChildProcessData& data,
+    const base::Process& process) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  browser_child_process_id_to_pid_[data.id] = data.GetProcess().Handle();
+  browser_child_process_id_to_pid_[data.id] = process.Handle();
 }
 
 void ChildExitObserver::BrowserChildProcessHostDisconnected(

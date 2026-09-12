@@ -63,9 +63,10 @@ ProcessNodeImpl* BrowserChildProcessWatcher::GetChildProcessNode(
 }
 
 void BrowserChildProcessWatcher::CreateChildProcessNodeForTesting(
-    const content::ChildProcessData& data) {
+    const content::ChildProcessData& data,
+    const base::Process& process) {
   CHECK(!tracked_process_nodes_.contains(BrowserChildProcessHostId(data.id)));
-  BrowserChildProcessLaunchedAndConnected(data);
+  BrowserChildProcessLaunchedAndConnected(data, process);
 }
 
 void BrowserChildProcessWatcher::DeleteChildProcessNodeForTesting(
@@ -81,14 +82,15 @@ void BrowserChildProcessWatcher::DeleteBrowserProcessNodeForTesting() {
 }
 
 void BrowserChildProcessWatcher::BrowserChildProcessLaunchedAndConnected(
-    const content::ChildProcessData& data) {
+    const content::ChildProcessData& data,
+    const base::Process& process) {
   if (data.process_type == content::PROCESS_TYPE_GPU ||
       data.process_type == content::PROCESS_TYPE_UTILITY) {
     std::unique_ptr<ProcessNodeImpl> process_node =
         PerformanceManagerImpl::CreateProcessNode(
             static_cast<content::ProcessType>(data.process_type),
             BrowserChildProcessHostProxy(BrowserChildProcessHostId(data.id)));
-    OnProcessLaunched(data.GetProcess(), data.metrics_name, process_node.get());
+    OnProcessLaunched(process, data.metrics_name, process_node.get());
     const auto [_, inserted] = tracked_process_nodes_.emplace(
         BrowserChildProcessHostId(data.id), std::move(process_node));
     CHECK(inserted);

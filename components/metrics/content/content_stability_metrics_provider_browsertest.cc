@@ -72,7 +72,8 @@ class ContentStabilityProviderBrowserTest
   }
 
   void BrowserChildProcessLaunchedAndConnected(
-      const content::ChildProcessData& data) override {
+      const content::ChildProcessData& data,
+      const base::Process& process) override {
     if (data.metrics_name == content::mojom::TestService::Name_)
       std::move(done_closure_).Run();
   }

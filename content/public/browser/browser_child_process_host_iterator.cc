@@ -67,4 +67,9 @@ ChildProcessHost* BrowserChildProcessHostIterator::GetHost() {
   return (*iterator_)->GetHost();
 }
 
+const base::Process& BrowserChildProcessHostIterator::GetProcess() {
+  CHECK(!Done());
+  return (*iterator_)->GetProcess();
+}
+
 }  // namespace content

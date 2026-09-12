@@ -97,7 +97,8 @@ void SyntheticTrialSyncer::OnSyntheticTrialsChanged(
 }
 
 void SyntheticTrialSyncer::BrowserChildProcessLaunchedAndConnected(
-    const ChildProcessData& data) {
+    const ChildProcessData& data,
+    const base::Process& process) {
   const int unique_id = data.id;
   ChildProcessHost* host = FindChildProcessHost(unique_id);
   if (host == nullptr) {
@@ -124,8 +125,8 @@ void SyntheticTrialSyncer::BrowserChildProcessLaunchedAndConnected(
 
 void SyntheticTrialSyncer::BrowserChildProcessHostDisconnected(
     const ChildProcessData& data) {
-  // Since data.GetProcess().IsValid() returns false, we cannot get the child
-  // process' pid here.
+  // ChildProcessData does not carry a process handle, so we look up the
+  // connection by unique child process ID.
   child_process_unique_id_to_mojo_connections_.erase(data.id);
 }
 

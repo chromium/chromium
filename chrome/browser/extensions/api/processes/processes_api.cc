@@ -510,8 +510,8 @@ ExtensionFunction::ResponseAction ProcessesTerminateFunction::Run() {
   auto* browser_child_process_host =
       content::BrowserChildProcessHost::FromID(child_process_host_id_);
   if (browser_child_process_host) {
-    return RespondNow(TerminateIfAllowed(
-        browser_child_process_host->GetData().GetProcess().Handle()));
+    return RespondNow(
+        TerminateIfAllowed(browser_child_process_host->GetProcess().Handle()));
   }
 
   return RespondNow(Error(errors::kProcessNotFound,

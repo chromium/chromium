@@ -15,6 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/process_resource_usage.h"
@@ -138,12 +139,13 @@ bool UsesV8Memory(int process_type) {
 
 gfx::ImageSkia* ChildProcessTask::s_icon_ = nullptr;
 
-ChildProcessTask::ChildProcessTask(const content::ChildProcessData& data)
+ChildProcessTask::ChildProcessTask(const content::ChildProcessData& data,
+                                   const base::Process& process)
     : Task(GetLocalizedTitle(data.name,
                              data.process_type,
                              ProcessSubtype::kNoSubtype),
            FetchIcon(IDR_PLUGINS_FAVICON, &s_icon_),
-           data.GetProcess().Handle()),
+           process.Handle()),
       process_resources_sampler_(CreateProcessResourcesSampler(data.id)),
       unique_child_process_id_(data.id),
       process_type_(data.process_type),

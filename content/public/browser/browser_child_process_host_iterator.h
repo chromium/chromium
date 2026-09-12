@@ -10,6 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 
+namespace base {
+class Process;
+}
+
 namespace content {
 class BrowserChildProcessHostDelegate;
 class BrowserChildProcessHostImpl;
@@ -18,7 +22,7 @@ class ChildProcessHost;
 
 // This class allows iteration through either all child processes, or ones of a
 // specific type, depending on which constructor is used.  Note that this should
-// be done from the IO thread and that the iterator should not be kept around as
+// be done from the UI thread and that the iterator should not be kept around as
 // it may be invalidated on subsequent event processing in the event loop.
 class CONTENT_EXPORT BrowserChildProcessHostIterator {
  public:
@@ -33,6 +37,10 @@ class CONTENT_EXPORT BrowserChildProcessHostIterator {
   const ChildProcessData& GetData();
   BrowserChildProcessHostDelegate* GetDelegate();
   ChildProcessHost* GetHost();
+
+  // Returns the child process. May be invalid if the process has not started
+  // yet or has terminated.
+  const base::Process& GetProcess();
 
  private:
   bool all_;
