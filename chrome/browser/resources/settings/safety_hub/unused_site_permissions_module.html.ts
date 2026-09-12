@@ -1,3 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsSafetyHubUnusedSitePermissionsModuleElement} from './unused_site_permissions_module.js';
+
+export function getHtml(
+    this: SettingsSafetyHubUnusedSitePermissionsModuleElement) {
+  return html`<!--_html_template_start_-->
 <settings-safety-hub-module
     id="module"
     animated
@@ -45,3 +56,5 @@
 <cr-tooltip fit-to-visible-bounds manual-mode position="top" offset="3">
   $i18n{safetyHubUnusedSitePermissionsUndoLabel}
 </cr-tooltip>
+<!--_html_template_end_-->`;
+}

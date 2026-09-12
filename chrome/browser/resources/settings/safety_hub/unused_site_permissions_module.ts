@@ -483,9 +483,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
   }
 }
 
-export type UnusedSitePermissionsModuleElement =
-    SettingsSafetyHubUnusedSitePermissionsModuleElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-safety-hub-unused-site-permissions-module':

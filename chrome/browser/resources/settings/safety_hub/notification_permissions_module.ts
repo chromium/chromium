@@ -499,6 +499,3 @@ declare global {
 customElements.define(
     SettingsSafetyHubNotificationPermissionsModuleElement.is,
     SettingsSafetyHubNotificationPermissionsModuleElement);
-
-export type NotificationPermissionsModuleElement =
-    SettingsSafetyHubNotificationPermissionsModuleElement;

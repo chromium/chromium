@@ -121,8 +121,6 @@ export class SettingsSafetyHubEntryPointElement extends
   }
 }
 
-export type SafetyHubEntryPointElement = SettingsSafetyHubEntryPointElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-safety-hub-entry-point': SettingsSafetyHubEntryPointElement;

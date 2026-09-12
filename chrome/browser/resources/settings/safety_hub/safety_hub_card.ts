@@ -92,5 +92,3 @@ declare global {
 
 customElements.define(
     SettingsSafetyHubCardElement.is, SettingsSafetyHubCardElement);
-
-export type SafetyHubCardElement = SettingsSafetyHubCardElement;

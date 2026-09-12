@@ -1,6 +1,15 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import {RestartType} from '../relaunch_mixin_lit.js';
-#html_wrapper_imports_end -->
+
+import type {SettingsSafetyHubPageElement} from './safety_hub_page.js';
+
+export function getHtml(this: SettingsSafetyHubPageElement) {
+  return html`<!--_html_template_start_-->
 <settings-subpage class="multi-card" page-title="$i18n{safetyHub}"
     learn-more-url="$i18n{safetyHubHelpCenterURL}"
     route-path="${this.routePath}">
@@ -56,12 +65,14 @@ import {RestartType} from '../relaunch_mixin_lit.js';
         .sites="${this.userEducationItemList_}">
     </settings-safety-hub-module>
   ` : ''}
-  <if expr="not is_chromeos">
-    ${this.shouldShowRelaunchDialog ? html`
-      <relaunch-confirmation-dialog
-          .restartType="${RestartType.RELAUNCH}"
-          @close="${this.onRelaunchDialogClose}" is-version-update>
-      </relaunch-confirmation-dialog>
-    ` : ''}
-  </if>
+<if expr="not is_chromeos">
+  ${this.shouldShowRelaunchDialog ? html`
+    <relaunch-confirmation-dialog
+        .restartType="${RestartType.RELAUNCH}"
+        @close="${this.onRelaunchDialogClose}" is-version-update>
+    </relaunch-confirmation-dialog>
+  ` : ''}
+</if>
 </settings-subpage>
+<!--_html_template_end_-->`;
+}

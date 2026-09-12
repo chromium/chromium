@@ -460,8 +460,6 @@ export class SettingsSafetyHubPageElement extends
   }
 }
 
-export type SafetyHubPageElement = SettingsSafetyHubPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-safety-hub-page': SettingsSafetyHubPageElement;

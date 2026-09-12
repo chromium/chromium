@@ -80,8 +80,6 @@ export class SettingsSafetyHubExtensionsModuleElement extends
   }
 }
 
-export type ExtensionsModuleElement = SettingsSafetyHubExtensionsModuleElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-safety-hub-extensions-module':

@@ -388,5 +388,3 @@ declare global {
 
 customElements.define(
     SettingsSafetyHubModuleElement.is, SettingsSafetyHubModuleElement);
-
-export type SafetyHubModuleElement = SettingsSafetyHubModuleElement;
