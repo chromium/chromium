@@ -6,3 +6,4 @@ check_raw_ptr_in_container:
     - "std::unordered_set"
     - "std::deque"
     - "std::tuple"
+    - "std::variant"
