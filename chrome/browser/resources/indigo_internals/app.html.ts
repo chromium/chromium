@@ -135,12 +135,14 @@ export function getHtml(this: IndigoInternalsAppElement) {
                 No prompts loaded. Verify that the prompts file exists.
               </td>
             </tr>
-          ` : this.loadedPrompts_.map(item => html`
-            <tr>
-              <td class="key-cell">${item.key}</td>
-              <td class="prompt-cell">${item.prompt}</td>
-            </tr>
-          `)}
+          ` : html`
+            ${this.loadedPrompts_.map(item => html`
+              <tr>
+                <td class="key-cell">${item.key}</td>
+                <td class="prompt-cell">${item.prompt}</td>
+              </tr>
+            `)}
+          `}
         </tbody>
       </table>
     </div>

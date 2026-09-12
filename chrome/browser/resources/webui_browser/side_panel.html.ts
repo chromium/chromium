@@ -22,7 +22,7 @@ ${this.showing_ ? html`
     <div id="content">
       ${this.showBookmarks_ ? html`
         <webui-browser-bookmarks></webui-browser-bookmarks>
-      ` : this.webView}
+      ` : html`${this.webView}`}
     </div>
   </div>
 ` : ''}

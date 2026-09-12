@@ -25,23 +25,27 @@ ${this.subscriptions_.length > 0 ? html`
         subscription.productInfos.length === 0 ? html`
           <tr>
             <td>${subscription.clusterId}</td>
-          </tr>` : subscription.productInfos.map(productInfo => html`
-          <tr>
-            <td>${productInfo.info.clusterId}</td>
-            <td>${productInfo.info.domain}</td>
-            <td>${productInfo.info.currentPrice}</td>
-            <td>${productInfo.info.previousPrice}</td>
-            <td>
-              ${productInfo.info.productUrl ? html`
-                <a href="${productInfo.info.productUrl}" target="_blank">
-                  ${productInfo.info.title}
-                </a>` : productInfo.info.title}
-              ${productInfo.info.imageUrl && html`
-                <a href="${productInfo.info.imageUrl}" target="_blank">
-                  (image)
-                </a>`}
-            </td>
-          </tr>`))}
+          </tr>
+        ` : html`
+          ${subscription.productInfos.map(productInfo => html`
+            <tr>
+              <td>${productInfo.info.clusterId}</td>
+              <td>${productInfo.info.domain}</td>
+              <td>${productInfo.info.currentPrice}</td>
+              <td>${productInfo.info.previousPrice}</td>
+              <td>
+                ${productInfo.info.productUrl ? html`
+                  <a href="${productInfo.info.productUrl}" target="_blank">
+                    ${productInfo.info.title}
+                  </a>` : html`${productInfo.info.title}`}
+                ${productInfo.info.imageUrl && html`
+                  <a href="${productInfo.info.imageUrl}" target="_blank">
+                    (image)
+                  </a>`}
+              </td>
+            </tr>
+          `)}
+        `)}
     </tbody>
   </table>
 ` : html`<div>No subscriptions found.</div>`}`;

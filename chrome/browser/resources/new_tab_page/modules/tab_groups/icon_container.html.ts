@@ -23,7 +23,7 @@ export function getHtml(this: IconContainerElement) {
     <div class="cell overflow-count" aria-hidden="true">
       ${this.getOverflowCount() <= 99 ? html`
         +${this.getOverflowCount()}
-      ` : '99+'}
+      ` : html`99+`}
     </div>
   ` : ''}
   </div>

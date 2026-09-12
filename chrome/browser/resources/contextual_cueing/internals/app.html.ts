@@ -12,9 +12,10 @@ export function getHtml(this: ContextualCueingInternalsAppElement) {
 <div class="card">
   <h2>Generated Cues (Reverse Chronological)</h2>
   <div class="cues-container">
-    ${this.shownCues_.length === 0 ?
-      html`<div class="empty-state">No cues shown yet.</div>` :
-      this.shownCues_.map((cue, index) => html`
+    ${this.shownCues_.length === 0 ? html`
+      <div class="empty-state">No cues shown yet.</div>
+    ` : html`
+      ${this.shownCues_.map((cue, index) => html`
         <div class="cue-item">
           <div class="cue-details">
             ${cue.cuj ? html`<div class="cue-field"><strong>CUJ:</strong> <span>${cue.cuj}</span></div>` : ''}
@@ -28,6 +29,7 @@ export function getHtml(this: ContextualCueingInternalsAppElement) {
           </cr-button>
         </div>
       `)}
+    `}
   </div>
 </div>`;
 }

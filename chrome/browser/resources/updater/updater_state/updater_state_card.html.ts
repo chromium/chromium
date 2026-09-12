@@ -35,7 +35,7 @@ export function getHtml(this: UpdaterStateCardElement) {
         <div>
           ${this.formattedLastCheckedRelative}
         </div>
-      ` : '$i18n{never}'}
+      ` : html`$i18n{never}`}
     </div>
   </div>
   <div class="row">
@@ -48,7 +48,7 @@ export function getHtml(this: UpdaterStateCardElement) {
         <div>
           ${this.formattedLastStartedRelative}
         </div>
-      ` : '$i18n{never}'}
+      ` : html`$i18n{never}`}
     </div>
   </div>
   <div class="row">

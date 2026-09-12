@@ -22,12 +22,14 @@ export function getHtml(this: TabSearchSplitItemElement) {
 <div class="text-container" aria-hidden="true">
   <div id="primaryContainer">
     <div id="primaryText" title="${this.data.title}">${this.data.title}</div>
-    ${this.data.tabs ? this.data.tabs.map((tab) => html`
-      ${this.hasMediaAlertForTab_(tab) ? html`
-        <img class="media-alert
-            ${this.getMediaAlertImageClassForTab_(tab)}">
-      ` : ''}
-    `) : ''}
+    ${this.data.tabs ? html`
+      ${this.data.tabs.map(item => html`
+        ${this.hasMediaAlertForTab_(item) ? html`
+          <img class="media-alert
+              ${this.getMediaAlertImageClassForTab_(item)}">
+        ` : ''}
+      `)}
+    ` : ''}
   </div>
   <div id="secondaryTextContainer">
     <svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg"
