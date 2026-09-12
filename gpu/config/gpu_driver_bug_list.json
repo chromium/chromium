@@ -3898,6 +3898,19 @@
       "features": [
         "use_tex_sub_image_for_host_twiddled_npot_uploads"
       ]
+    },
+    {
+      "id": 496,
+      "cr_bugs": [556870863],
+      "description": "Program binary cache entries can collide in Imagination's GLES driver",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "gl_type": "angle_gles",
+      "features": [
+        "disable_program_cache"
+      ]
     }
   ]
 }
