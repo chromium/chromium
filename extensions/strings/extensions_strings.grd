@@ -309,6 +309,9 @@
       <message name="IDS_EXTENSION_CANT_MODIFY_POLICY_REQUIRED" desc="Error message when a user tries to remove or change an extension that is required by administrator policy.">
         The administrator of this machine requires <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> to be installed. It cannot be removed or modified.
       </message>
+      <message name="IDS_EXTENSION_CANT_POLICY_INSTALL_IN_LOW_TRUST" desc="Error message when an extension cannot be installed via policy because the device or profile is in a low-trust environment.">
+        <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> (extension ID "<ph name="EXTENSION_ID">$2<ex>nckgahadagoaajjgafhacjanaoiihapd</ex></ph>") cannot be policy-installed in low-trust environments.
+      </message>
       <message name="IDS_EXTENSION_CANT_UNINSTALL_POLICY_REQUIRED" desc="Error message when a user tries to uninstall an extension that is required by administrator policy.">
         The administrator of this machine requires <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> to be installed. It cannot be uninstalled.
       </message>

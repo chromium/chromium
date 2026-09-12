@@ -8,8 +8,12 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/low_trust_policy_install_block_manager.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "extensions/browser/managed_installation_mode.h"
 #include "extensions/browser/manifest_v2_handler.h"
 #include "extensions/buildflags/buildflags.h"
@@ -163,6 +167,40 @@ void StandardManagementPolicyProvider::UserMayInstall(
     scoped_refptr<const Extension> extension,
     base::OnceCallback<void(ManagementPolicy::Decision)> callback) const {
   std::u16string error;
+
+  // Evaluate DSE/NTP policy overrides first so they take precedence over
+  // general policy abuse mitigations (such as off-store or greylist rules).
+  // This blocks the policy installation and transitions the extension to an
+  // effective user-allowed state rather than force-disabling it.
+  //
+  // TODO(crbug.com/536913423): Currently this also intercepts user-initiated
+  // installs if a corresponding policy is configured. A follow-up CL will
+  // allow user installs (e.g. from Chrome Web Store) while keeping policy
+  // installs blocked.
+  if (settings_->ShouldBlockPolicyInstalledDseNtpOverrideExtension(
+          *extension)) {
+    if (auto* block_manager = settings_->low_trust_block_manager()) {
+      std::string update_url =
+          settings_->GetEffectiveUpdateURL(*extension).spec();
+      block_manager->MarkBlocked(
+          extension->id(),
+          BlockedExtensionInfo{
+              .override_type = util::GetDseNtpOverrideType(*extension),
+              .update_url = std::move(update_url),
+              .timestamp = base::Time::Now()});
+    }
+    LOG_POLICY(WARNING, POLICY_PROCESSING)
+        << "[BlockLowTrustExtension] Blocked installation of policy extension "
+        << extension->id()
+        << ": Extension is not allowed to override DSE/NTP settings in "
+           "low-trust environments.";
+    error = l10n_util::GetStringFUTF16(
+        IDS_EXTENSION_CANT_POLICY_INSTALL_IN_LOW_TRUST,
+        base::UTF8ToUTF16(extension->name()),
+        base::UTF8ToUTF16(extension->id()));
+    std::move(callback).Run({false, error});
+    return;
+  }
 
   ManagedInstallationMode installation_mode =
       settings_->GetInstallationMode(extension.get());
