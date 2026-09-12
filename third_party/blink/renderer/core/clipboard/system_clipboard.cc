@@ -60,15 +60,22 @@ CloneFsaToken(
 
 }  // namespace
 
-SystemClipboard::SystemClipboard(LocalFrame* frame)
-    : clipboard_(frame->DomWindow()),
-      clipboard_listener_receiver_(this, frame->DomWindow()) {
-  frame->GetBrowserInterfaceBroker().GetInterface(
+SystemClipboard::SystemClipboard(ExecutionContext* execution_context)
+    : clipboard_(execution_context),
+      clipboard_listener_receiver_(this, execution_context) {
+  execution_context->GetBrowserInterfaceBroker().GetInterface(
       clipboard_.BindNewPipeAndPassReceiver(
-          frame->GetTaskRunner(TaskType::kUserInteraction)));
+          execution_context->GetTaskRunner(TaskType::kUserInteraction)));
 #if BUILDFLAG(IS_OZONE)
-  is_selection_buffer_available_ =
-      frame->GetSettings()->GetSelectionClipboardBufferAvailable();
+  // Left false for a worker. Nothing can put a worker into selection mode
+  // today: SetSelectionMode() is only reached through
+  // ClipboardCommands::ExecutePasteGlobalSelection(), which needs a LocalFrame.
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    if (auto* frame = window->GetFrame()) {
+      is_selection_buffer_available_ =
+          frame->GetSettings()->GetSelectionClipboardBufferAvailable();
+    }
+  }
 #endif  // BUILDFLAG(IS_OZONE)
 }
 

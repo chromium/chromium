@@ -23,13 +23,13 @@
 namespace blink {
 
 class DataObject;
+class ExecutionContext;
 class Image;
 class KURL;
-class LocalFrame;
 class ScopedSystemClipboardSnapshot;
 
 // SystemClipboard:
-// - is a LocalFrame bounded object.
+// - is an ExecutionContext bounded object.
 // - provides sanitized, platform-neutral read/write access to the clipboard.
 // - mediates between core classes and mojom::ClipboardHost.
 //
@@ -41,7 +41,7 @@ class CORE_EXPORT SystemClipboard final
  public:
   enum SmartReplaceOption { kCanSmartReplace, kCannotSmartReplace };
 
-  explicit SystemClipboard(LocalFrame* frame);
+  explicit SystemClipboard(ExecutionContext* execution_context);
   SystemClipboard(const SystemClipboard&) = delete;
   SystemClipboard& operator=(const SystemClipboard&) = delete;
 
