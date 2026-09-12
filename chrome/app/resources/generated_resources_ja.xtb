@@ -2104,7 +2104,7 @@
 <translation id="2628874386573004005">Gemini との新しいチャットを開始</translation>
 <translation id="2629058811622993283">（すべてのウィンドウと関連アプリの）アプリの音声も共有する</translation>
 <translation id="2629227353894235473">Android アプリの開発</translation>
-<translation id="2630703150574465936">あなたのアカウントを使用してこれらのサイトやアプリに自動でログインすることを Gemini に許可しています</translation>
+<translation id="2630703150574465936">Gemini があなたのアカウントを使用して、これらのサイトやアプリに自動でログインすることを許可しています</translation>
 <translation id="2631498379019108537">シェルフに入力オプションを表示</translation>
 <translation id="2632176111713971407">サイトが共有タブのスクロールとズームを要求できる</translation>
 <translation id="2633212996805280240">「<ph name="EXTENSION_NAME" />」を削除しますか？</translation>
@@ -2551,7 +2551,7 @@
 <translation id="2960950037335552881">スマートフォンでスキャンすると、ブックマークやパスワードなどを外出先でも利用できるようになります</translation>
 <translation id="2961040541145689181">新しいチャット</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" />（期限延長済み）</translation>
-<translation id="2961695502793809356">クリックすると次に進みます。押したまま待つと履歴が表示されます。</translation>
+<translation id="2961695502793809356">クリックして次に進むか、長押しで履歴を表示</translation>
 <translation id="29618148602069201">主題</translation>
 <translation id="2963151496262057773">プラグイン（<ph name="PLUGIN_NAME" />）は応答していません。強制終了しますか？</translation>
 <translation id="2964193600955408481">Wi-Fi を無効にする</translation>
@@ -4142,7 +4142,7 @@
 <translation id="4156532396656021084">検索エンジンとショートカットを管理(&amp;M)</translation>
 <translation id="4157869833395312646">Microsoft SGC（Server Gated Cryptography）</translation>
 <translation id="4158315983204257156">ウェブサイトのテキストのサイズとフォント</translation>
-<translation id="4159784952369912983">パープル</translation>
+<translation id="4159784952369912983">紫</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
 <translation id="4167924027691268367"><ph name="SHORTCUT_TITLE" /> ショートカットのその他の操作</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> に帰属する設定の一部を共有しています。これらの設定は、マルチログインを使用した場合にのみこのアカウントに適用されます。</translation>
@@ -5687,7 +5687,7 @@
 <translation id="5375517140689139594">リーディング モード（<ph name="READING_MODE_SHORTCUT" />）</translation>
 <translation id="5375577102295339548">サイトは、あなたが bot でないことを確認する情報を提供できます。</translation>
 <translation id="5376094717770783089">アクセスをリクエスト</translation>
-<translation id="5376169624176189338">クリックすると前に戻ります。押したまま待つと履歴が表示されます。</translation>
+<translation id="5376169624176189338">クリックして前に戻るか、長押しで履歴を表示</translation>
 <translation id="5376931455988532197">ファイル サイズが大きすぎます</translation>
 <translation id="5377367976106153749">カメラへのアクセスをオンにしますか？</translation>
 <translation id="5379140238605961210">マイクへのアクセスを引き続きブロックする</translation>
@@ -8036,7 +8036,7 @@
 <translation id="7219473482981809164">ダウンロード可能なプロファイルが複数見つかりました。続行する前に、ダウンロードするプロファイルを選択してください。</translation>
 <translation id="7220019174139618249">パスワードを「<ph name="FOLDER" />」にエクスポートできません</translation>
 <translation id="722099540765702221">充電源</translation>
-<translation id="7221869452894271364">このページを再読み込みします</translation>
+<translation id="7221869452894271364">ページを再読み込み</translation>
 <translation id="7222232353993864120">メール アドレス</translation>
 <translation id="7222335051802562841">更新を完了</translation>
 <translation id="7222373446505536781">F11</translation>

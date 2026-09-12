@@ -2081,7 +2081,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2605668923777146443">Acesse <ph name="LINK_BEGIN" />Configurações<ph name="LINK_END" /> para ver suas opções do Better Together.</translation>
 <translation id="2606246518223360146">Vincular dados</translation>
 <translation id="2606890864830643943">Como exportar dados de diagnóstico</translation>
-<translation id="2609533306502181883">Pesquise um tema</translation>
+<translation id="2609533306502181883">Pesquise um assunto</translation>
 <translation id="2609896558069604090">Criar atalhos...</translation>
 <translation id="2609980095400624569">Não foi possível estabelecer a conexão</translation>
 <translation id="2610157865375787051">Suspender</translation>
@@ -2564,7 +2564,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2960950037335552881">Leia o QR code com seu celular e acesse seus favoritos, senhas e muito mais em qualquer lugar</translation>
 <translation id="2961040541145689181">Nova conversa</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extensão fornecida)</translation>
-<translation id="2961695502793809356">Clique para avançar, pressione para ver o histórico</translation>
+<translation id="2961695502793809356">Clique para avançar, segure para ver o histórico</translation>
 <translation id="29618148602069201">Tema</translation>
 <translation id="2963151496262057773">Este plug-in não responde: <ph name="PLUGIN_NAME" />. Quer interrompê-lo?</translation>
 <translation id="2964193600955408481">Desativar Wi-Fi</translation>
@@ -2990,7 +2990,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3285329711156774325">Pesquisar habilidades</translation>
 <translation id="3285500645985761267">Permitir que sites relacionados vejam sua atividade no grupo</translation>
 <translation id="328571385944182268">Salvar senhas?</translation>
-<translation id="3285969135399641759">Aprenda um novo recurso</translation>
+<translation id="3285969135399641759">Aprenda a fazer algo novo</translation>
 <translation id="3289668031376215426">Capitalização automática</translation>
 <translation id="3289856944988573801">Para verificar se há atualizações, utilize Ethernet ou Wi-Fi.</translation>
 <translation id="3290249595466894471">Envia também uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças</translation>
@@ -5706,7 +5706,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5375517140689139594">Modo de leitura (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">Os sites podem ajudar a verificar que você é uma pessoa real</translation>
 <translation id="5376094717770783089">Pedidos de acesso</translation>
-<translation id="5376169624176189338">Clique para voltar, pressione para ver o histórico</translation>
+<translation id="5376169624176189338">Clique para voltar, segure para ver o histórico</translation>
 <translation id="5376931455988532197">Arquivo muito grande</translation>
 <translation id="5377367976106153749">Permitir o acesso à câmera?</translation>
 <translation id="5379140238605961210">Continuar bloqueando o acesso ao microfone</translation>
@@ -9670,7 +9670,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8460448946170646641">Revise os principais controles de privacidade e segurança</translation>
 <translation id="8460490661223303637">Para economizar memória, o Chrome removeu parte do conteúdo</translation>
 <translation id="8460932807646981183">Gerenciar mecanismos de pesquisa e pesquisas em sites</translation>
-<translation id="8461572080432076264">Ouvir Esta Página</translation>
+<translation id="8461572080432076264">Ouvir esta página</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8461973047386722744">Nenhuma senha encontrada</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{Caixa de listagem com 1 item}one{Caixa de listagem com {NUM_TABS} item}other{Caixa de listagem com {NUM_TABS} itens}}</translation>

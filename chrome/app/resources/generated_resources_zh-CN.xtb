@@ -1148,7 +1148,7 @@
 <translation id="1885066963699478692">正被用来设置政策的 XML 文件。</translation>
 <translation id="1885089541024391265">Google 日历</translation>
 <translation id="1885106732301550621">磁盘空间</translation>
-<translation id="188537499764410817">Gemini 可以为您自动登录的网站将显示在此处</translation>
+<translation id="188537499764410817">Gemini 可为您自动登录的网站会显示在此处</translation>
 <translation id="1886996562706621347">允许网站要求成为协议的默认处理程序（推荐）</translation>
 <translation id="1887210448491286312">停止将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1887442540531652736">登录错误</translation>
@@ -2105,7 +2105,7 @@
 <translation id="2628874386573004005">发起与 Gemini 的新对话</translation>
 <translation id="2629058811622993283">同时分享应用音频（含该应用所有窗口及关联应用的音频）</translation>
 <translation id="2629227353894235473">开发 Android 应用</translation>
-<translation id="2630703150574465936">您已允许 Gemini 使用您的账号自动登录这些网站和应用</translation>
+<translation id="2630703150574465936">您已允许 Gemini 使用您的账号自动登录以下网站和应用</translation>
 <translation id="2631498379019108537">在任务栏中显示输入法选项</translation>
 <translation id="2632176111713971407">网站可以请求滚动和缩放分享的标签页</translation>
 <translation id="2633212996805280240">要删除“<ph name="EXTENSION_NAME" />”吗？</translation>
@@ -2552,7 +2552,7 @@
 <translation id="2960950037335552881">使用手机扫描此二维码，即可随时随地获取您的书签、密码等信息</translation>
 <translation id="2961040541145689181">新对话</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" />（已提供扩展功能）</translation>
-<translation id="2961695502793809356">点击可前进，按住可查看历史记录</translation>
+<translation id="2961695502793809356">点击前进，长按查看历史记录</translation>
 <translation id="29618148602069201">主题</translation>
 <translation id="2963151496262057773">以下插件没有响应：<ph name="PLUGIN_NAME" />。是否要停止使用该插件？</translation>
 <translation id="2964193600955408481">停用 Wi-Fi</translation>
@@ -4799,7 +4799,7 @@
 <translation id="4681453295291708042">停用“附近分享”功能</translation>
 <translation id="4681512854288453141">来源政策</translation>
 <translation id="4681930562518940301">在新标签页中打开原始图片(&amp;I)</translation>
-<translation id="4682003508123230705">辅导学习</translation>
+<translation id="4682003508123230705">帮我学习</translation>
 <translation id="4682481611456523884">此网站上的嵌入式内容无法使用它们保存的与您相关的信息</translation>
 <translation id="4682807230647698604">当您使用这些功能时，系统会将相关数据发送给 Google，以便打造 AI 体验</translation>
 <translation id="4683143253481759090">Chrome 已更新</translation>
@@ -5151,7 +5151,7 @@
 <translation id="4940364377601827259">有 <ph name="PRINTER_COUNT" /> 台可保存的打印机。</translation>
 <translation id="4940448324259979830">这个账号由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="4940845626435830013">预留磁盘空间大小</translation>
-<translation id="4941391011436448776">Gemini 可以为您自动登录的网站</translation>
+<translation id="4941391011436448776">Gemini 可为您自动登录的网站</translation>
 <translation id="4941627891654116707">字号</translation>
 <translation id="4941963255146903244">查看您手机上的照片、媒体内容和应用</translation>
 <translation id="494286511941020793">代理配置帮助</translation>
@@ -5688,7 +5688,7 @@
 <translation id="5375517140689139594">阅读模式 (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">网站可帮助验证您不是机器人</translation>
 <translation id="5376094717770783089">请求访问权限</translation>
-<translation id="5376169624176189338">点击可后退，按住可查看历史记录</translation>
+<translation id="5376169624176189338">点击后退，长按查看历史记录</translation>
 <translation id="5376931455988532197">文件过大</translation>
 <translation id="5377367976106153749">开启摄像头使用权限？</translation>
 <translation id="5379140238605961210">继续禁止使用麦克风</translation>
@@ -9646,7 +9646,7 @@
 <translation id="8460448946170646641">检查重要的隐私控制设置和安全控件</translation>
 <translation id="8460490661223303637">为节省内存，Chrome 移除了部分内容</translation>
 <translation id="8460932807646981183">管理搜索引擎和网站搜索</translation>
-<translation id="8461572080432076264">读出此网页的内容</translation>
+<translation id="8461572080432076264">朗读此网页的内容</translation>
 <translation id="8461914792118322307">代理</translation>
 <translation id="8461973047386722744">找不到任何密码</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{包含 1 项内容的列表框}other{包含 {NUM_TABS} 项内容的列表框}}</translation>

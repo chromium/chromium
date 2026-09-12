@@ -870,7 +870,7 @@
 <translation id="4532845899244822526">选择文件夹</translation>
 <translation id="4535755320005483982">共享“<ph name="GROUP_TITLE" />”标签页分组</translation>
 <translation id="4537137366307982887">提示通知选择启用底部动作条已以最大高度显示</translation>
-<translation id="4537987892902330164">您已使用 <ph name="NAME_OR_EMAIL" /> 的身份登录。</translation>
+<translation id="4537987892902330164">目前登录的账号是“<ph name="NAME_OR_EMAIL" />”</translation>
 <translation id="4543131175509360848">无通行密钥表格</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_COUNT_MANY" /> 个标签页，<ph name="TAB_COUNT_INCOGNITO" /> 个无痕式标签页}}</translation>
 <translation id="4558311620361989323">网页快捷键</translation>
@@ -2090,7 +2090,7 @@
 <translation id="95817756606698420">在中国，Chrome 可以使用<ph name="BEGIN_BOLD" />搜狗<ph name="END_BOLD" />作为搜索引擎。如果需要，您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中进行更改。</translation>
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="963246339335003378">打开任务管理器</translation>
-<translation id="966337994629449077">您目前登录的账号为 <ph name="FROM_EMAIL" />。\n\n如需在电脑上继续操作，请切换到 <ph name="TO_EMAIL" />。您将获得此账号的密码、书签等信息。</translation>
+<translation id="966337994629449077">您目前登录的账号为 <ph name="FROM_EMAIL" />。\n\n如需在电脑上继续操作，请切换到 <ph name="TO_EMAIL" />。您将可以使用此账号的密码、书签等信息。</translation>
 <translation id="970715775301869095">还剩 <ph name="MINUTES" /> 分钟</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>

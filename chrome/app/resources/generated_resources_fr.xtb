@@ -2068,7 +2068,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2605668923777146443">Accédez aux <ph name="LINK_BEGIN" />paramètres<ph name="LINK_END" /> afin de voir vos options pour Better Together.</translation>
 <translation id="2606246518223360146">Associer les données</translation>
 <translation id="2606890864830643943">Exportation des données de diagnostic…</translation>
-<translation id="2609533306502181883">Fais des recherches sur un thème</translation>
+<translation id="2609533306502181883">Effectuer une recherche sur un thème</translation>
 <translation id="2609896558069604090">Créer des raccourcis…</translation>
 <translation id="2609980095400624569">Impossible d'établir la connexion</translation>
 <translation id="2610157865375787051">Veille</translation>
@@ -2552,7 +2552,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2960950037335552881">Scannez ce code avec votre téléphone pour accéder à vos favoris, mots de passe et plus encore où que vous soyez</translation>
 <translation id="2961040541145689181">Nouvelle discussion</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extension accordée)</translation>
-<translation id="2961695502793809356">Cliquer pour avancer, maintenir pour voir l'historique</translation>
+<translation id="2961695502793809356">Cliquez pour avancer, maintenez pour voir l'historique</translation>
 <translation id="29618148602069201">Thème</translation>
 <translation id="2963151496262057773">Le plug-in "<ph name="PLUGIN_NAME" />" ne répond pas. Voulez-vous l'interrompre ?</translation>
 <translation id="2964193600955408481">Désactiver le réseau Wi-Fi</translation>
@@ -5689,7 +5689,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5375517140689139594">Mode Lecture (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">Les sites peuvent aider à confirmer que vous n'êtes pas un robot</translation>
 <translation id="5376094717770783089">Demande d'accès</translation>
-<translation id="5376169624176189338">Cliquer pour revenir en arrière, maintenir pour voir l'historique</translation>
+<translation id="5376169624176189338">Cliquez pour revenir en arrière, maintenez pour voir l'historique</translation>
 <translation id="5376931455988532197">Fichier trop volumineux.</translation>
 <translation id="5377367976106153749">Activer l'accès à l'appareil photo ?</translation>
 <translation id="5379140238605961210">Continuer à bloquer l'accès au micro</translation>
@@ -6786,7 +6786,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6247620186971210352">Aucune application n'a été trouvée</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">Système : <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="6248988683584659830">Paramètres de recherche</translation>
+<translation id="6248988683584659830">Rechercher dans les paramètres</translation>
 <translation id="6249200942125593849">Gérer les paramètres d'accessibilité</translation>
 <translation id="6250186368828697007">Les détails sont masqués lors du partage d'écran</translation>
 <translation id="6250887692313997958">Sélectionnez un onglet à ajouter à la vue fractionnée</translation>
@@ -7260,7 +7260,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6619243162837544323">État du réseau</translation>
 <translation id="6619801788773578757">Ajouter une application kiosque</translation>
 <translation id="6619990499523117484">Confirmez votre code.</translation>
-<translation id="6621282332208609777">Posez une question à Google ou saisissez une URL</translation>
+<translation id="6621282332208609777">Poser une question à Google ou saisir une URL</translation>
 <translation id="6621391692573306628">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil et celui-ci</translation>
 <translation id="6622980291894852883">Continuer à bloquer les images</translation>
 <translation id="6624036901798307345">En mode tablette, appuyez sur le bouton de la barre d'outils du compteur d'onglets pour ouvrir la nouvelle barre d'onglets qui affiche une vignette de chaque onglet.</translation>

@@ -1942,7 +1942,7 @@
 <translation id="2498539833203011245">Свернуть</translation>
 <translation id="2498765460639677199">Огромный</translation>
 <translation id="2500471369733289700">Заблокировано в целях безопасности</translation>
-<translation id="2500915336169200382">Спросить Gemini об этом: <ph name="SELECTION" /></translation>
+<translation id="2500915336169200382">Спросить Gemini о "<ph name="SELECTION" />"</translation>
 <translation id="2501173422421700905">Cертификат приостановлен</translation>
 <translation id="2501797496290880632">Укажите быстрые клавиши</translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
@@ -10461,7 +10461,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Узнать о том, какие данные собирает Google и как их использует, можно на странице <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />.</translation>
-<translation id="9066782832737749352">Озвучивание текста</translation>
+<translation id="9066782832737749352">Преобразование текста в речь</translation>
 <translation id="9068598199622656904">Если нужно сочетание клавиш, можно нажимать их по одной, а не одновременно</translation>
 <translation id="9068878141610261315">Файлы такого типа не поддерживаются.</translation>
 <translation id="9069417381769492963">По вашему запросу нет закладок.</translation>

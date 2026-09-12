@@ -709,7 +709,7 @@
 <translation id="4150201353443180367">ディスプレイ</translation>
 <translation id="4155551848414053977">スキャナの電源がオンになっていて、ネットワーク経由または直接接続して使用できることを確認してください</translation>
 <translation id="4159238217853743776">一部</translation>
-<translation id="4159784952369912983">パープル</translation>
+<translation id="4159784952369912983">紫</translation>
 <translation id="416219735020840807">音声文字変換モデルをダウンロードできません。もう一度お試しになるか、<ph name="DEVICE_TYPE" /> を再起動してください。</translation>
 <translation id="4170180284036919717">写真を撮る</translation>
 <translation id="4170700058716978431">失敗</translation>
@@ -1416,7 +1416,7 @@
 <translation id="7212547870105584639">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部デバイスのファームウェア アップデート</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
-<translation id="7221869452894271364">このページを再読み込みします</translation>
+<translation id="7221869452894271364">ページを再読み込み</translation>
 <translation id="7223952304612664117">これにより、システム サービスは [位置情報の精度] の機能を使用してユーザーの現在地を特定できるようになります。[位置情報の精度] をオンにした場合、ワイヤレス シグナルとセンサーに関する情報に基づいて、デバイスの位置情報が推定されます。</translation>
 <translation id="7233782086689993269">ショートカットを復元しました</translation>
 <translation id="723419678599947502">Google AI を使用してタイトルを作成</translation>

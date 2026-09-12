@@ -6441,7 +6441,7 @@
 <translation id="5961545272769624207">Призначити жест</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (максимум <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Відкрити всі в &amp;новому вікні}=1{Відкрити в &amp;новому вікні}one{Відкрити всі ({COUNT}) у &amp;новому вікні}few{Відкрити всі ({COUNT}) у &amp;новому вікні}many{Відкрити всі ({COUNT}) у &amp;новому вікні}other{Відкрити всі ({COUNT}) у &amp;новому вікні}}</translation>
-<translation id="5964247741333118902">Вбудований контент</translation>
+<translation id="5964247741333118902">Вставлений контент</translation>
 <translation id="5965607173855879702">Видалення даних…</translation>
 <translation id="5966511985653515929">Дані сайтів буде видалено з пристрою, коли ви закриєте всі вікна</translation>
 <translation id="5968022600320704045">Нічого не знайдено</translation>
