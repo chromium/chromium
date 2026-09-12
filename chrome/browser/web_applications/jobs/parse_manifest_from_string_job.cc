@@ -13,12 +13,10 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/message.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -64,13 +62,10 @@ void ParseManifestFromStringJob::OnAboutBlankLoaded(
   CHECK_EQ(web_contents_->GetURL(), GURL(url::kAboutBlankURL));
   debug_value_->Set("about_blank_loaded", true);
 
-  web_contents_->GetPrimaryMainFrame()->GetRemoteInterfaces()->GetInterface(
-      manifest_manager_.BindNewPipeAndPassReceiver());
-  manifest_manager_.set_disconnect_handler(
-      base::BindOnce(&ParseManifestFromStringJob::OnManifestManagerDisconnected,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  manifest_manager_->ParseManifestFromString(
+  content::PageManifestManager* page_manifest_manager =
+      content::PageManifestManager::GetOrCreate(
+          web_contents_->GetPrimaryPage());
+  page_manifest_manager->ParseManifestFromString(
       document_url_, manifest_url_, manifest_contents_,
       base::BindOnce(&ParseManifestFromStringJob::OnManifestParsed,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -83,7 +78,6 @@ void ParseManifestFromStringJob::OnManifestParsed(
   // JSON and contains a valid start_url and name, installation will proceed.
   if (blink::IsEmptyManifest(manifest)) {
     debug_value_->Set("manifest_parse_error", "invalid_manifest");
-    manifest_manager_.reset();
     std::move(callback_).Run(
         base::unexpected(ParseManifestError::kEmptyOrInvalidManifest));
     return;
@@ -91,7 +85,6 @@ void ParseManifestFromStringJob::OnManifestParsed(
 
   if (!manifest->has_valid_specified_start_url) {
     debug_value_->Set("manifest_parse_error", "invalid_start_url");
-    manifest_manager_.reset();
     std::move(callback_).Run(
         base::unexpected(ParseManifestError::kStartUrlInvalid));
     return;
@@ -99,32 +92,13 @@ void ParseManifestFromStringJob::OnManifestParsed(
 
   if (!manifest->short_name.has_value() && !manifest->name.has_value()) {
     debug_value_->Set("manifest_parse_error", "missing_name");
-    manifest_manager_.reset();
     std::move(callback_).Run(
         base::unexpected(ParseManifestError::kManifestMissingNameOrShortName));
     return;
   }
 
-  if (manifest->manifest_url != manifest_url_) {
-    mojo::ReportBadMessage("Returned manifest has incorrect manifest URL");
-    manifest_manager_.reset();
-    std::move(callback_).Run(
-        base::unexpected(ParseManifestError::kInternalError));
-    return;
-  }
-  manifest_manager_.reset();
-
   debug_value_->Set("manifest_parsed", true);
   std::move(callback_).Run(std::move(manifest));
-}
-
-void ParseManifestFromStringJob::OnManifestManagerDisconnected() {
-  if (!callback_) {
-    return;
-  }
-  debug_value_->Set("manifest_parse_error", "manifest_manager_disconnected");
-  std::move(callback_).Run(
-      base::unexpected(ParseManifestError::kInternalError));
 }
 
 }  // namespace web_app

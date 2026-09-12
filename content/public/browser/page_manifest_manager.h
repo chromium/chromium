@@ -5,11 +5,15 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PAGE_MANIFEST_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_PAGE_MANIFEST_MANAGER_H_
 
+#include <string>
+
 #include "base/callback_list.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-forward.h"
+
+class GURL;
 
 namespace content {
 class Page;
@@ -62,6 +66,20 @@ class CONTENT_EXPORT PageManifestManager {
   // from the page (i.e. changing from a specified manifest to no manifest).
   virtual base::CallbackListSubscription GetAllSpecifiedManifests(
       AllManifestsCallbackList::CallbackType callback) = 0;
+
+  using ParseManifestCallback =
+      base::OnceCallback<void(blink::mojom::ManifestPtr)>;
+
+  // Parses the given manifest string using the renderer associated with this
+  // page. Performs browser-side security validation on the parsed manifest
+  // against `document_url` and `manifest_url`. If the renderer returns an
+  // invalid manifest (e.g. cross-origin handlers or mismatched manifest URL),
+  // a Mojo bad message is reported, terminating the renderer process, and
+  // `callback` is called with an empty ManifestPtr.
+  virtual void ParseManifestFromString(const GURL& document_url,
+                                       const GURL& manifest_url,
+                                       const std::string& manifest_contents,
+                                       ParseManifestCallback callback) = 0;
 };
 
 }  // namespace content

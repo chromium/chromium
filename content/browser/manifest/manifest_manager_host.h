@@ -67,6 +67,16 @@ class CONTENT_EXPORT ManifestManagerHost
       blink::mojom::ManifestRequestResult result,
       blink::mojom::ManifestPtr manifest);
 
+  void ParseManifestFromString(const GURL& document_url,
+                               const GURL& manifest_url,
+                               const std::string& manifest_contents,
+                               ParseManifestCallback callback) override;
+
+  blink::mojom::ManifestPtr ValidateParsedManifestFromStringForTesting(
+      const GURL& document_url,
+      const GURL& manifest_url,
+      blink::mojom::ManifestPtr manifest);
+
  private:
   explicit ManifestManagerHost(Page& page);
 
@@ -80,6 +90,16 @@ class CONTENT_EXPORT ManifestManagerHost
   blink::mojom::ManifestPtr ValidateAndMaybeOverrideManifest(
       blink::mojom::ManifestRequestResult result,
       blink::mojom::ManifestPtr manifest);
+
+  blink::mojom::ManifestPtr ValidateParsedManifestFromString(
+      const GURL& document_url,
+      const GURL& manifest_url,
+      blink::mojom::ManifestPtr manifest);
+
+  void OnParseManifestFromStringResponse(const GURL& document_url,
+                                         const GURL& manifest_url,
+                                         ParseManifestCallback callback,
+                                         blink::mojom::ManifestPtr manifest);
 
   std::vector<GetManifestCallback> ExtractPendingCallbacks();
   void OnConnectionError();

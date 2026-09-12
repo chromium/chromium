@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_client.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/schemeful_site.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -344,6 +345,73 @@ void ManifestManagerHost::
         blink::mojom::ManifestPtr manifest) {
   CHECK_IS_TEST();
   ValidateAndMaybeOverrideManifest(result, std::move(manifest));
+}
+
+void ManifestManagerHost::ParseManifestFromString(
+    const GURL& document_url,
+    const GURL& manifest_url,
+    const std::string& manifest_contents,
+    ParseManifestCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetManifestManager().ParseManifestFromString(
+      document_url, manifest_url, manifest_contents,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(
+              &ManifestManagerHost::OnParseManifestFromStringResponse,
+              weak_factory_.GetWeakPtr(), document_url, manifest_url,
+              std::move(callback)),
+          blink::mojom::ManifestPtr()));
+}
+
+void ManifestManagerHost::OnParseManifestFromStringResponse(
+    const GURL& document_url,
+    const GURL& manifest_url,
+    ParseManifestCallback callback,
+    blink::mojom::ManifestPtr manifest) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  manifest = ValidateParsedManifestFromString(document_url, manifest_url,
+                                              std::move(manifest));
+  std::move(callback).Run(std::move(manifest));
+}
+
+blink::mojom::ManifestPtr ManifestManagerHost::ValidateParsedManifestFromString(
+    const GURL& document_url,
+    const GURL& manifest_url,
+    blink::mojom::ManifestPtr manifest) {
+  if (!manifest || blink::IsEmptyManifest(manifest)) {
+    return blink::mojom::Manifest::New();
+  }
+
+  if (manifest->manifest_url != manifest_url) {
+    mojo::ReportBadMessage("Returned manifest has incorrect manifest URL");
+    return blink::mojom::Manifest::New();
+  }
+
+  url::Origin document_origin = url::Origin::Create(document_url);
+  if (document_origin.opaque()) {
+    return blink::mojom::Manifest::New();
+  }
+
+  if (std::optional<std::string> bad_message_error =
+          MaybeGetBadMessageStringForManifest(
+              blink::mojom::ManifestRequestResult::kSuccess, *manifest,
+              document_origin);
+      bad_message_error.has_value()) {
+    mojo::ReportBadMessage(*bad_message_error);
+    return blink::mojom::Manifest::New();
+  }
+
+  return manifest;
+}
+
+blink::mojom::ManifestPtr
+ManifestManagerHost::ValidateParsedManifestFromStringForTesting(  // IN-TEST
+    const GURL& document_url,
+    const GURL& manifest_url,
+    blink::mojom::ManifestPtr manifest) {
+  CHECK_IS_TEST();
+  return ValidateParsedManifestFromString(document_url, manifest_url,
+                                          std::move(manifest));
 }
 
 std::vector<ManifestManagerHost::GetManifestCallback>
