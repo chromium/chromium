@@ -33,6 +33,7 @@ class MockToolsRemote extends TestBrowserProxy {
       'seekToTimestamp',
       'translatePage',
       'openGeminiPanel',
+      'closeGeminiPanel',
     ]);
   }
   openUrl() {
@@ -79,6 +80,9 @@ class MockToolsRemote extends TestBrowserProxy {
   }
   openGeminiPanel() {
     return Promise.resolve('');
+  }
+  closeGeminiPanel() {
+    return Promise.resolve();
   }
 }
 

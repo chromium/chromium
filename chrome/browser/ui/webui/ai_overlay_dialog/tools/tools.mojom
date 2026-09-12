@@ -163,6 +163,10 @@ interface AiOverlayTools {
   //
   // prompt: The request, question, or prompt to send to the Gemini side panel.
   OpenGeminiPanel(string prompt) => result<string, string>;
+
+  // @NON_BLOCKING
+  // Closes the Gemini side panel in Chrome if it is currently open.
+  CloseGeminiPanel() => result<mojo_base.mojom.Empty, string>;
 };
 
 // Infrastructure interface for tool manifest discovery.

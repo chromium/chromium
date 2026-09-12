@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -483,6 +484,28 @@ void AiOverlayTools::OpenGeminiPanel(const std::string& prompt,
   glic_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
       std::move(options));
+}
+
+void AiOverlayTools::CloseGeminiPanel(CloseGeminiPanelCallback callback) {
+  RecordToolCallInvoked("CloseGeminiPanel");
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+          browser_->GetProfile());
+
+  if (!glic_service) {
+    std::move(callback).Run(base::unexpected("Glic service not available"));
+    return;
+  }
+
+  if (glic_service->instance_coordinator().IsPanelShowingForBrowser(
+          *browser_)) {
+    // TODO(gklassen): Use a dedicated invocation source for tool calls when
+    // productionizing.
+    glic_service->instance_coordinator().Toggle(
+        browser_, /*prevent_close=*/false,
+        glic::mojom::InvocationSource::kOsButton);
+  }
+  std::move(callback).Run(std::monostate());
 }
 
 void AiOverlayTools::SeekToTimestamp(const std::string& timecode,

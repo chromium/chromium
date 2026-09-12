@@ -79,6 +79,7 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
                     SelectOptionCallback callback) override;
   void OpenGeminiPanel(const std::string& prompt,
                        OpenGeminiPanelCallback callback) override;
+  void CloseGeminiPanel(CloseGeminiPanelCallback callback) override;
   void GetToolDefinitions(GetToolDefinitionsCallback callback) override;
 
  private:
