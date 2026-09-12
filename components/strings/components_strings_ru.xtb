@@ -2219,6 +2219,7 @@
 <translation id="4750917950439032686">Информация, которую вы сообщаете этому сайту (например, пароли и номера банковских карт), защищена.</translation>
 <translation id="4754461935447132332">Запрещено для незащищенных сайтов</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Выберите поле для промокода, чтобы посмотреть и применить сохраненные предложения</translation>
 <translation id="4757740693289347881">Недопустимый код.</translation>
 <translation id="4757993714154412917">Вы только что ввели пароль на поддельном сайте. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в браузере Chromium.</translation>
 <translation id="4758311279753947758">Добавить контактные данные</translation>
@@ -3843,7 +3844,6 @@
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Дано разовое разрешение на использование VR</translation>
-<translation id="7517198908921983825">Предложено Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Не найдена страница для веб-адреса <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

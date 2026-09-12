@@ -2220,6 +2220,7 @@
 <translation id="4750917950439032686">თქვენი ინფორმაცია (მაგალითად, პაროლები ან საკრედიტო ბარათების ნომრები) ამ საიტზე კონფიდენციალურად გაიგზავნება.</translation>
 <translation id="4754461935447132332">დაუშვებელია დაუცველი საიტებისთვის</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">მონიშნეთ პრომო-კოდის ველი თქვენი შენახული შეთავაზებების სანახავად და გამოსაყენებლად</translation>
 <translation id="4757740693289347881">კოდი არასწორია</translation>
 <translation id="4757993714154412917">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. თქვენი ანგარიშების დაცვის მიზნით, Chromium გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="4758311279753947758">საკონტაქტო ინფორმაციის დამატება</translation>
@@ -3843,7 +3844,6 @@
 <translation id="7514365320538308">ჩამოტვირთვა</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR ამჯერად ნებადართულია</translation>
-<translation id="7517198908921983825">გთავაზობთ Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">კონვერტი C10</translation>
 <translation id="7518003948725431193">ვებგვერდი ვერ მოიძებნა ვებ-მისამართისთვის: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

@@ -910,7 +910,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1696685050160038195">Zum umfassenden Schutz deines Geräts solltest du nur Software von vertrauenswürdigen Quellen und Entwicklern ausführen und installieren.</translation>
 <translation id="1697122132646041614">Wenn du „Mag ich nicht“ auswählst, wird ein Formular geöffnet, über das du detailliertes Feedback dazu geben kannst, warum dir diese Ergebnisse nicht gefallen.</translation>
 <translation id="1697532407822776718">Fertig!</translation>
-<translation id="1698796500103229697">&amp;Zahlungsmethoden</translation>
 <translation id="1698899521169711967">Tastaturnavigation</translation>
 <translation id="1699807488537653303">Passwortfehler beheben</translation>
 <translation id="1700201317341192482">Virtuelle Karte entfernen</translation>
@@ -2512,7 +2511,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2926708162326352948">Design wurde durch das hochgeladene Bild aktualisiert</translation>
 <translation id="2927017729816812676">Cache-Speicher</translation>
 <translation id="2928030851119977280">Deine Auswahl wurde gespeichert. Sie wird angewendet, wenn du dich in anderen Google-Diensten anmeldest.</translation>
-<translation id="2928361271496576301">Hotkey akzeptieren</translation>
 <translation id="2928795416630981206">Dürfen meine Kameraposition erfassen</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome hat Berechtigungen von 1 Website entfernt}other{Chrome hat Berechtigungen von {NUM_SITES} Websites entfernt}}</translation>
 <translation id="2931157624143513983">An Druckbereich anpassen</translation>
@@ -2531,6 +2529,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2939908794993783865">Zusätzliche inaktive Websites</translation>
 <translation id="2939938020978911855">Verfügbare Bluetooth-Geräte anzeigen</translation>
 <translation id="2941112035454246133">Niedrig</translation>
+<translation id="2942228903502008519">Tabs maximieren (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">Bitte warten...</translation>
 <translation id="2942581856830209953">Diese Seite anpassen</translation>
 <translation id="2942707801577151363">Du kannst Word-, Excel- und PowerPoint-Dateien öffnen, bearbeiten und speichern. Für bestimmte Funktionen kann ein Abo erforderlich sein.</translation>
@@ -3306,7 +3305,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3527473647192919613">Neues isoliertes Fenster</translation>
 <translation id="3528498924003805721">Verknüpfungsziele</translation>
 <translation id="35296112145429559">Scrollbuttons anpinnen</translation>
-<translation id="3529851166527095708">&amp;Adressen und mehr</translation>
 <translation id="3530919970074558307">Fokus auf Gruppe aufheben</translation>
 <translation id="3531070080754387701">Microsoft 365 kann die Datei „<ph name="FILE_NAMES" />“ in diesem Ordner nicht öffnen</translation>
 <translation id="3531883061432162622">Deine Leseliste und Lesezeichen unter „Lesezeichen und Listen“ aufrufen</translation>
@@ -3723,7 +3721,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3812525830114410218">Ungültiges Zertifikat</translation>
 <translation id="3813296892522778813">Wenn du keine Ergebnisse erhältst, <ph name="BEGIN_LINK_CHROMIUM" />rufe die Google Chrome-Hilfe auf<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">Verwendete Sprache zum Übersetzen von Seiten und Schnellinfos</translation>
-<translation id="381485723922188688">Wahltaste</translation>
 <translation id="3815668647912194650">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie verlassen, wenn du keinen Zugriff mehr darauf haben möchtest.</translation>
 <translation id="3816118180265633665">Chrome-Farben</translation>
 <translation id="3817524650114746564">Proxy-Einstellungen des Computers öffnen</translation>
@@ -5449,6 +5446,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5155299520372681119">Der Dateiupload ist abgelaufen und wurde entfernt.</translation>
 <translation id="5156638757840305347">Der Cursor wird hervorgehoben, wenn er erscheint oder bewegt wird</translation>
 <translation id="5157250307065481244">Websitedetails ansehen</translation>
+<translation id="5157258206078001821">Tabs minimieren (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">Crostini einrichten</translation>
 <translation id="5159236862360390997">Es werden mehrere Infofelder mit Anleitungen angezeigt.
           Wenn du ein Infofeld hervorheben möchtest, drücke auf „<ph name="ACCELERATOR" />“. Wenn du zu dem Element wechseln möchtest, auf das es zeigt, drücke noch einmal.</translation>
@@ -6033,7 +6031,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5625225435499354052">In Google Pay bearbeiten</translation>
 <translation id="5627832140542566187">Displayausrichtung</translation>
 <translation id="5628434207686266338">Gerätepasswort festlegen</translation>
-<translation id="5628652442614339066">Einfach öffnen mit</translation>
 <translation id="562935524653278697">Dein Administrator hat die Synchronisierung des Verlaufs sowie deiner Lesezeichen, Passwörter und sonstigen Einstellungen deaktiviert.</translation>
 <translation id="5631017369956619646">CPU-Auslastung</translation>
 <translation id="5631272057151918206">Dadurch werden bis zu <ph name="OFFLINE_STORAGE_SIZE" /> Speicherplatz freigegeben, der von deinen Offlinedateien belegt wird. Einige Dateien werden weiterhin offline verfügbar sein. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -6503,7 +6500,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6003143259071779217">eSIM-Mobilfunknetz entfernen</translation>
 <translation id="6003479444341796444">Titelleiste wird jetzt angezeigt</translation>
 <translation id="6003582434972667631">Das Design wurde von deiner Organisation festgelegt</translation>
-<translation id="6005010326905893430">selbst anpassen</translation>
 <translation id="6005045517426700202">Backsteingebäude</translation>
 <translation id="6006484371116297560">Klassisch</translation>
 <translation id="6007053304250788613">Im Spiegelmodus kann nur ein Display ausgeschlossen werden</translation>
@@ -6663,6 +6659,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6136637346277431354">Tabs und mehr hinzufügen</translation>
 <translation id="6140948187512243695">Details ansehen</translation>
 <translation id="6141988275892716286">Download bestätigen</translation>
+<translation id="6142784636114866877">Tabs maximieren (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">Hilfe</translation>
 <translation id="6143366292569327983">Wähle die Ausgangssprache aus</translation>
 <translation id="6144938890088808325">Bei der Verbesserung von Chromebooks helfen</translation>
@@ -6733,7 +6730,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6190953336330058278">Phone Hub-Apps</translation>
 <translation id="6192333916571137726">Datei herunterladen</translation>
 <translation id="6192413564913825901">In Ordner „Alle Lesezeichen“ verschieben</translation>
-<translation id="6194333736420234626">&amp;Zahlungsmethoden</translation>
 <translation id="6195005504600220730">Informationen zu deinem Browser, Betriebssystem und Gerät abrufen</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6196854373336333322">Die Erweiterung <ph name="EXTENSION_NAME" /> hat die Kontrolle über deine Proxyeinstellungen übernommen. Das bedeutet, dass sie sämtliche Onlineaktivitäten ändern, abbrechen oder überwachen kann. Wenn du nicht sicher bist, wie es zu dieser Änderung gekommen ist, war sie wahrscheinlich nicht beabsichtigt.</translation>
@@ -6956,7 +6952,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6367396429435748845">Drücke <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" />, um die Tastaturmaus zu pausieren und fortzusetzen</translation>
 <translation id="6367853307713830174">Gemini zeigt die einzelnen Schritte an und versucht, vor sensiblen Schritten deine Bestätigung einzuholen. Du hast jederzeit die Möglichkeit, den Vorgang zu unterbrechen oder selbst zu übernehmen.</translation>
 <translation id="6367985768157257101">Über Nearby Share empfangen?</translation>
-<translation id="6368157733310917710">&amp;Adressen und mehr</translation>
 <translation id="6368276408895187373">Aktiviert – <ph name="VARIATION_NAME" /></translation>
 <translation id="6369420654782669629">Kürzel für Funktionen und Erweiterungen</translation>
 <translation id="6370021412472292592">Manifest konnte nicht geladen werden.</translation>
@@ -7520,7 +7515,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6801435275744557998">Touchscreen kalibrieren</translation>
 <translation id="6801920212017470190">Lass dich unterwegs über alle Preissenkungen informieren</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
-<translation id="6802825994120702390">Du kannst deiner Frage Kontext hinzufügen, indem du einen Bereich oder den gesamten Bildschirm auswählst</translation>
 <translation id="6803766346203101854">Diese Website darf Daten auf deinem Gerät speichern.</translation>
 <translation id="6805236548654699520">Indem du deine Einstellungen auf die sicheren Standardeinstellungen zurücksetzt, kannst du unter anderem unerwünschte Pop‑ups entfernen und Netzwerkprobleme beheben.</translation>
 <translation id="6805478749741295868">Dies ist eine experimentelle KI-Funktion, die nicht immer richtig funktioniert.</translation>
@@ -9870,6 +9864,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" /> zu meinen Kontakten hinzufügen</translation>
 <translation id="8617601976406256334">Websitedaten und Berechtigungen für <ph name="SITE_NAME" /> löschen?</translation>
 <translation id="8617748779076050570">ID der sicheren Verbindung: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Kontaktdaten</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Darf keine Web-Apps auf deinem Gerät installieren</translation>
 <translation id="8619803522055190423">Schlagschatten</translation>
@@ -9984,6 +9979,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8692107307702113268">Das Passwort enthält mehr als 1.000 Zeichen</translation>
 <translation id="8693862390730570097">Automatisches Öffnen von „Formuliere für mich“ nicht zulassen</translation>
 <translation id="8694596275649352090">Im Ruhemodus oder beim Zuklappen sperren</translation>
+<translation id="8695214265159551349">Tabs minimieren (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">&amp;Adresse öffnen...</translation>
 <translation id="869884720829132584">Apps-Menü</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
@@ -10488,7 +10484,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9071664234353284876">Keine Authentifizierung</translation>
 <translation id="9072220108592671115">Installierte Version: <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">Du hast Gemini die Berechtigung erteilt, sich auf diesen Websites anzumelden, um Aufgaben für dich zu erledigen</translation>
-<translation id="9074190188883314952">Mit dem Lens-Button kannst du teilen, was auf deinem Bildschirm zu sehen ist</translation>
 <translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 Kern}other{{CORE_COUNT} Kerne}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9075413375877487220">Diese Erweiterung wird vom erweiterten Safe Browsing als nicht vertrauenswürdig eingestuft.</translation>
@@ -10643,7 +10638,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9195969368671142407">Wenn deine Organisation die Speicheroption für dein Google-Konto einschränkt, kannst du Tabgruppen nicht teilen oder ihnen beitreten</translation>
 <translation id="9197456336762295195">Scanne diesen QR-Code mit der Kamera des Geräts, auf dem sich dein Passkey für google.com befindet</translation>
 <translation id="919840898042157087">Bewegung „Statisch“</translation>
-<translation id="9198797990125364460">Google von überall aus fragen</translation>
 <translation id="9199503643457729322">Klicke hier, um den Datenschutz-Leitfaden zu verlassen.</translation>
 <translation id="9199695835892108985">Alle Berechtigungen für serielle Ports zurücksetzen?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> kann Dateien in <ph name="FOLDERNAME" /> bearbeiten</translation>

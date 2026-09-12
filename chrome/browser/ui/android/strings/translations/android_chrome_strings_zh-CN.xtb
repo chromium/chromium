@@ -664,6 +664,7 @@
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">退出沉浸式播放</translation>
+<translation id="3662595332590803433">一律在 Chrome 中打开自定义标签页</translation>
 <translation id="3674208116086565128">在 Google 应用中打开“首页”标签页</translation>
 <translation id="368329460027487650">已退出账号。打开登录选项。</translation>
 <translation id="3684540848053703310">显示价格分析的底部动作条已关闭</translation>
@@ -893,7 +894,7 @@
 <translation id="4532845899244822526">选择文件夹</translation>
 <translation id="4535755320005483982">共享“<ph name="GROUP_TITLE" />”标签页分组</translation>
 <translation id="4537137366307982887">提示通知选择启用底部动作条已以最大高度显示</translation>
-<translation id="4537987892902330164">您已使用 <ph name="NAME_OR_EMAIL" /> 的身份登录。</translation>
+<translation id="4537987892902330164">目前登录的账号是“<ph name="NAME_OR_EMAIL" />”</translation>
 <translation id="4543131175509360848">无通行密钥表格</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_COUNT_MANY" /> 个标签页，<ph name="TAB_COUNT_INCOGNITO" /> 个无痕式标签页}}</translation>
 <translation id="4558311620361989323">网页快捷键</translation>
@@ -1426,7 +1427,6 @@
 <translation id="6642299196749785472">附加标签页</translation>
 <translation id="6647441008198474441">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 个联系人}other{<ph name="CONTACT_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 个联系人}}</translation>
-<translation id="6649642165559792194">预览图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="6659594942844771486">Tab 键</translation>
 <translation id="666731172850799929">在 <ph name="APP_NAME" />中打开</translation>
 <translation id="6669390930482049506">通知我</translation>
@@ -1625,6 +1625,7 @@
 <translation id="7335766481146072567">按“继续”</translation>
 <translation id="7336259382292148213">通知权限正常</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
+<translation id="7349983576451251297">在 Chrome 浏览器中打开网页，而不是在自定义标签页中打开</translation>
 <translation id="7352339641508007922">拖动即可截取长屏幕</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{分享 1 个所选项}other{分享 # 个所选项}}</translation>
@@ -1715,6 +1716,7 @@
 <translation id="7690596512217303514">您的设备无法打开 Chrome。若要解决此问题，请从应用商店下载最新的 Chrome 更新。</translation>
 <translation id="7692761875510935111">快速在浏览器中打开。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="7695270712963178084">Chrome 发现</translation>
+<translation id="7695610746377249436">网站（包括 Google）可自行决定是否响应此请求。</translation>
 <translation id="7697383401610880082">拖动手柄</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中创建电子邮件</translation>
 <translation id="7702420606070050505">显示近期活动的底部动作条已全屏打开</translation>
@@ -1741,6 +1743,7 @@
 <translation id="7792388396321542707">停止分享</translation>
 <translation id="780287761701992588">在所有设备上获取保存的书签、密码等信息</translation>
 <translation id="780301667611848630">不用了</translation>
+<translation id="7804364787702057554">设置 Chrome 账号</translation>
 <translation id="7810647596859435254">打开方式…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{所有文件，列表中有 1 个文件}other{所有文件，列表中有 # 个文件}}</translation>
 <translation id="7815484226266492798">长屏幕截图</translation>
@@ -1783,7 +1786,6 @@
 <translation id="7968014550143838305">已添加到阅读清单</translation>
 <translation id="7968982339740310781">查看详情</translation>
 <translation id="7969391000881506217">失效日期*</translation>
-<translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">若您使用的密码遭遇了数据泄露，向您发出警告。</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> 由于您近期未访问过此网站，Chrome 已移除这些权限</translation>
 <translation id="799576009106109668">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
@@ -2131,7 +2133,7 @@
 <translation id="95817756606698420">在中国，Chrome 可以使用<ph name="BEGIN_BOLD" />搜狗<ph name="END_BOLD" />作为搜索引擎。如果需要，您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中进行更改。</translation>
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="963246339335003378">打开任务管理器</translation>
-<translation id="966337994629449077">您目前登录的账号为 <ph name="FROM_EMAIL" />。\n\n如需在电脑上继续操作，请切换到 <ph name="TO_EMAIL" />。您将获得此账号的密码、书签等信息。</translation>
+<translation id="966337994629449077">您目前登录的账号为 <ph name="FROM_EMAIL" />。\n\n如需在电脑上继续操作，请切换到 <ph name="TO_EMAIL" />。您将可以使用此账号的密码、书签等信息。</translation>
 <translation id="970715775301869095">还剩 <ph name="MINUTES" /> 分钟</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>

@@ -14,11 +14,9 @@
 <translation id="4278390842282768270">Autorisés</translation>
 <translation id="4412992751769744546">Autoriser les témoins tiers</translation>
 <translation id="4711259472133554310">Vous pouvez créer des exceptions dans les paramètres pour toujours autoriser des sites en particulier à utiliser des témoins tiers.</translation>
-<translation id="5117284457376555514">Les sites ne peuvent pas utiliser de témoins tiers pour personnaliser le contenu et les annonces, ni pour connaître les actions que vous effectuez sur d'autres sites, à moins que vous autorisiez les sites connexes à y accéder. Certaines fonctionnalités du site peuvent ne pas fonctionner comme prévu.</translation>
 <translation id="5677928146339483299">Bloqués</translation>
 <translation id="6196640612572343990">Bloquer les témoins de tiers</translation>
 <translation id="6308169245546905162">Les sites peuvent utiliser des témoins tiers pour connaître les actions que vous effectuez sur d'autres sites.</translation>
-<translation id="6710025070089118043">Les sites ne peuvent pas utiliser de témoins tiers pour personnaliser le contenu et les annonces ni pour connaître les actions que vous effectuez sur d'autres sites, à moins que vous autorisiez les sites connexes à y accéder.</translation>
 <translation id="7315780377187123731">En savoir plus sur l'option Bloquer les témoins tiers</translation>
 <translation id="7374493521304367420">Les sites peuvent toujours utiliser des témoins pour voir l'activité de navigation sur leur propre site.</translation>
 <translation id="7453144832830554937">Les fonctionnalités du site qui font appel à des témoins tiers peuvent ne pas fonctionner.</translation>
@@ -26,5 +24,4 @@
 <translation id="8200078544056087897">Les fonctionnalités du site qui font appel à des témoins tiers devraient fonctionner comme prévu.</translation>
 <translation id="839994149685752920">Les sites peuvent utiliser des témoins tiers pour personnaliser le contenu et les annonces.</translation>
 <translation id="9039924186462989565">Lorsque vous êtes en mode Navigation privée, Chromium empêche les sites d'utiliser des témoins tiers</translation>
-<translation id="9162335340010958530">Les sites ne peuvent pas utiliser de témoins tiers pour personnaliser le contenu et les annonces ni pour connaître les actions que vous effectuez sur d'autres sites, à moins que vous autorisiez les sites connexes à y accéder.</translation>
 </translationbundle>

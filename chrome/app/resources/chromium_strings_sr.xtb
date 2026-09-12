@@ -70,6 +70,7 @@
 <translation id="1793486931176048546">Кликните на <ph name="BEGIN_BOLD" />Да<ph name="END_BOLD" /> у Windows обавештењу да бисте закачили Chromium на траку задатака ради брзог приступа.</translation>
 <translation id="1808667845054772817">Поново инсталирај Chromium</translation>
 <translation id="1820835682567584003">Chromium покушава да <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chromium преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Моћи ћете да преузмете и додатке и друго са уређаја <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Следећи пут када отворите Chromium на уређају <ph name="DEVICE_TYPE" />, видећете упит да користите Google менаџер лозинки.</translation>
 <translation id="1838374766361614909">Обришите претрагу</translation>
 <translation id="18552579716432081">Да бисте избрисали податке прегледања само са овог уређаја, али не и са Google налога, <ph name="BEGIN_LINK" />одјавите се из Chromium-а<ph name="END_LINK" />.</translation>
@@ -192,6 +193,7 @@
 <translation id="3038232873781883849">Чека се инсталирање...</translation>
 <translation id="3045032126857188731">Језик превода: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Затворите дијалог повратних информација</translation>
+<translation id="3064717200427679322">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chromium преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Моћи ћете да преузмете и листу за читање и друго са уређаја <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Други Chromium профили</translation>
 <translation id="3068290154869370196">Додаци су програмски додаци који вам омогућавају да прилагодите Chromium. Додаци вам помажу да прилагодите Chromium, од организације до поједностављивања свакодневних задатака.</translation>
 <translation id="3068515742935458733">Помозите нам да побољшамо Chromium тако што ћете Google-у слати извештаје о отказивању и <ph name="UMA_LINK" /></translation>
@@ -293,6 +295,7 @@
 <translation id="4147856324248078748">П&amp;рилагодите Chromium</translation>
 <translation id="4148957013307229264">Инсталирање...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – пријављивање на мрежу – Chromium</translation>
+<translation id="4208652172235621272">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chromium преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Моћи ћете да преузмете и листу за читање и друго на свим уређајима.</translation>
 <translation id="421369550622382712">Откријте одличне апликације, игре, додатке и теме за Chromium.</translation>
 <translation id="4217080900579554343">Да би вам овај додатак и други садржај били доступни на свим рачунарима, пријавите се у Chromium</translation>
 <translation id="4217972271355023382">Ако желиш већу безбедност онлајн уз изборе родитеља, пређи на свој Chromium профил на ком си већ пријављен/а као <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -307,7 +310,6 @@
 <translation id="4298125729853015961">Извезите лозинке из Chromium-а</translation>
 <translation id="4304713468139749426">Менаџер лозинки</translation>
 <translation id="4334241893986177674">Претражите овај снимак екрана</translation>
-<translation id="4368547723231502008">Претражујте и постављајте питања с било ког места, чак и ако је Chromium умањен</translation>
 <translation id="4384331407722351213">Покрени Chromium када се Windows покрене</translation>
 <translation id="4400772909124543403">Нема доступних ажурирања</translation>
 <translation id="4407044323746248786">Желите ли ипак да затворите Chromium?</translation>
@@ -393,6 +395,7 @@
 <translation id="5382964351116519680">Отвори претрагу помоћу Chromium-а</translation>
 <translation id="5383439451358640070">Сазнајте зашто Chromium блокира неке фајлове</translation>
 <translation id="5386450000063123300">Ажурирање Chromium-а (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chromium преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Моћи ћете да преузмете и додатке и друго на свим уређајима.</translation>
 <translation id="538767207339317086">Дозволи пријављивање у Chromium</translation>
 <translation id="5405650547142096840">Уклони из Chromium-а</translation>
 <translation id="5424544524441439284">Смањује перформансе, али чини Chromium отпорнијим на нападе</translation>

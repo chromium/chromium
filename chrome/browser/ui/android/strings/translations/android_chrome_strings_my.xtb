@@ -664,6 +664,7 @@
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />− <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">ဘက်ပေါင်းစုံမုဒ်မှ ထွက်ရန်</translation>
+<translation id="3662595332590803433">Chrome ၌ စိတ်ကြိုက်တဘ်များ အမြဲဖွင့်ရန်</translation>
 <translation id="3674208116086565128">‘Google အက်ပ်’ ပင်မစာမျက်နှာသို့ သွားရန်</translation>
 <translation id="368329460027487650">အကောင့်ထွက်ထားသည်။ လက်မှတ်ထိုးဝင်ရန် နည်းလမ်းများ ဖွင့်နိုင်သည်။</translation>
 <translation id="3684540848053703310">ဈေးနှုန်းသိကောင်းစရာများ အောက်ခြေအပိုဆောင်း စာမျက်နှာကို ပိတ်လိုက်သည်</translation>
@@ -1425,7 +1426,6 @@
 <translation id="6642299196749785472">တဘ်များ ပူးတွဲရန်</translation>
 <translation id="6647441008198474441">နောက်တစ်ကြိမ် သင်ဝင်ကြည့်မည့် ဝဘ်ဆိုက်များကို ခန့်မှန်းရန် သင်ကြည့်ထားသော URL များကို Google သို့ ပို့သည်</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ခု}other{<ph name="CONTACT_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ခု}}</translation>
-<translation id="6649642165559792194">ပုံအစမ်းကြည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="6659594942844771486">တဘ်</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> တွင်ဖွင့်မည်</translation>
 <translation id="6669390930482049506">ကျွန်ုပ်ကို အကြောင်းကြားရန်</translation>
@@ -1626,6 +1626,7 @@
 <translation id="7335766481146072567">ရှေ့ဆက်ရန်ကို နှိပ်ပါ</translation>
 <translation id="7336259382292148213">အကြောင်းကြားချက်များ အဆင်ပြေပုံပေါ်သည်</translation>
 <translation id="7339898014177206373">ဝင်ဒိုး အသစ်</translation>
+<translation id="7349983576451251297">စိတ်ကြိုက်တဘ်အစား Chrome ဘရောင်ဇာ၌ ဝဘ်စာမျက်နှာများ ဖွင့်ရန်</translation>
 <translation id="7352339641508007922">ဖန်သားပြင်ဓာတ်ပုံအရှည် ရိုက်ရန် ဖိဆွဲပါ</translation>
 <translation id="7352651011704765696">တစ်ခုခု မှားသွားသည်</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{ရွေးချယ်ထားသည့် အကြောင်းအရာ ၁ ခုကို မျှဝေရန်}other{ရွေးချယ်ထားသည့် အကြောင်းအရာ # ခုကို မျှဝေရန်}}</translation>
@@ -1716,6 +1717,7 @@
 <translation id="7690596512217303514">သင့်စက်က Chrome ကို ဖွင့်၍မရပါ။ ပြဿနာဖြေရှင်းရန် အက်ပ်စတိုးမှ Chrome နောက်ဆုံးအပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်ပါ။</translation>
 <translation id="7692761875510935111">ဘရောင်ဇာတွင် အမြန်ဖွင့်ရန်။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ရန် ထိထားပါ။</translation>
 <translation id="7695270712963178084">Chrome တွေ့ရှိမှုများ</translation>
+<translation id="7695610746377249436">Google အပါအဝင် ဝဘ်ဆိုက်များသည် ဤတောင်းဆိုချက်ကို တုံ့ပြန်ရာတွင် ၎င်းတို့၏ ကိုယ်ပိုင်ဆုံးဖြတ်ချက်ကို အသုံးပြုသည်။</translation>
 <translation id="7697383401610880082">ဖိဆွဲအထိန်း</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />  တွင် အီးမေးလ်ရေးပါ</translation>
 <translation id="7702420606070050505">မကြာသေးမီက လုပ်ဆောင်ချက် အောက်ခြေအပိုဆောင်း စာမျက်နှာကို မြင်ကွင်းအပြည့် ဖွင့်လိုက်သည်</translation>
@@ -1742,6 +1744,7 @@
 <translation id="7792388396321542707">မျှဝေမှု ရပ်ရန်</translation>
 <translation id="780287761701992588">သင့်စက်အားလုံးပေါ်ရှိ လိပ်စာ၊ စကားဝှက် စသည်တို့ကို ရယူနိုင်သည်</translation>
 <translation id="780301667611848630">မလိုပါ</translation>
+<translation id="7804364787702057554">Chrome ရှိ သင့်အကောင့်</translation>
 <translation id="7810647596859435254">… ဖြင့် ဖွင့်ရန်</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ဖိုင်အားလုံး၊ စာရင်းရှိ ဖိုင် ၁ ဖိုင်}other{ဖိုင်အားလုံး၊ စာရင်းရှိ ဖိုင် # ဖိုင်}}</translation>
 <translation id="7815484226266492798">ဖန်သားပြင်ပုံ အရှည်</translation>
@@ -1784,7 +1787,6 @@
 <translation id="7968014550143838305">ဖတ်ရန်စာရင်းသို့ ထည့်လိုက်ပါပြီ</translation>
 <translation id="7968982339740310781">အသေးစိတ်များ ကြည့်ရှုရန်</translation>
 <translation id="7969391000881506217">သက်တမ်းကုန်ဆုံးရက်*</translation>
-<translation id="7975379999046275268">စာမျက်နှာ အစမ်းကြည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ဒေတာကျိုးပေါက်မှုတွင် ပါဝင်သော စကားဝှက်ကို သင်သုံးပါက သတိပေးပါသည်။</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" />၊ <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> လတ်တလော သင်ဝင်ကြည့်ခြင်းမရှိသဖြင့် Chrome က ဤခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="799576009106109668">လက်ရှိဝဘ်စာမျက်နှာ ဝင်ကြည့်ခြင်းအပေါ် အခြေခံပြီး အကြောင်းအရာကို အလိုအလျောက်ဖွင့်သောကြောင့် ကြည့်ရှုရာတွင် ပိုမြန်ပါမည်</translation>

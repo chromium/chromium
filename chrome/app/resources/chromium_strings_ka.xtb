@@ -70,6 +70,7 @@
 <translation id="1793486931176048546">აირჩიეთ <ph name="BEGIN_BOLD" />დიახ<ph name="END_BOLD" /> Windows-ის შეტყობინებაში, რომ ჩაამაგროთ Chromium ამოცანათა ზოლში სწრაფი წვდომისთვის.</translation>
 <translation id="1808667845054772817">Chromium-ის ხელახალი ინსტალაცია</translation>
 <translation id="1820835682567584003">Chromium ცდილობს შემდეგს: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> შესულია სისტემაში. ცალკე დათვალიერების გასაგრძელებლად შედით Chromium-ში თქვენს პირად პროფილში ანგარიშით <ph name="USER_EMAIL_ADDRESS" />. თქვენ ასევე მიიღებთ თქვენს გაფართოებებსა და სხვა მონაცემებს <ph name="DEVICE" />-დან.</translation>
 <translation id="183031085822326697">შემდეგ ჯერზე, როცა გახსნით Chromium-ს თქვენს <ph name="DEVICE_TYPE" />-ში, დაინახავთ მოთხოვნას Google პაროლების მმართველის გამოყენების შესახებ.</translation>
 <translation id="1838374766361614909">ძიების გასუფთავება</translation>
 <translation id="18552579716432081">დათვალიერების მონაცემების მხოლოდ ამ მოწყობილობიდან წასაშლელად და Google ანგარიშში მათ შესანარჩუნებლად <ph name="BEGIN_LINK" />გამოდით Chromium-იდან<ph name="END_LINK" />.</translation>
@@ -192,6 +193,7 @@
 <translation id="3038232873781883849">ინსტალაციის მოლოდინში...</translation>
 <translation id="3045032126857188731">თარგმანის ენა: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">გამოხმაურების დიალოგური ფანჯრის დახურვა</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> შესულია სისტემაში. ცალკე დათვალიერების გასაგრძელებლად შედით Chromium-ში თქვენს პირად პროფილში ანგარიშით <ph name="USER_EMAIL_ADDRESS" />. თქვენ ასევე მიიღებთ საკითხავ სიასა და სხვა მონაცემებს <ph name="DEVICE" />-დან.</translation>
 <translation id="3068187312562070417">სხვა Chromium პროფილები</translation>
 <translation id="3068290154869370196">გაფართოებები არის დანამატები, რომლებიც გეხმარებათ Chromium-ის მორგებაში. გაფართოებები გეხმარებათ Chromium-ის თქვენს საჭიროებებზე მორგებაში, იქნება ეს ორგანიზება თუ ყოველდღიური ამოცანების გამარტივება.</translation>
 <translation id="3068515742935458733">დაგვეხმარეთ Chromium-ის გაუმჯობესებაში: გამოგზავნეთ მოხსენებები შეცდომების და <ph name="UMA_LINK" />-ის შესახებ Google-ში</translation>
@@ -293,6 +295,7 @@
 <translation id="4147856324248078748">თქვენი Chromium-ის მორგება</translation>
 <translation id="4148957013307229264">ინსტალაცია…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> — ქსელში შესვლა — Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> შესულია სისტემაში. ცალკე დათვალიერების გასაგრძელებლად შედით Chromium-ში თქვენს პირად პროფილში ანგარიშით <ph name="USER_EMAIL_ADDRESS" />. თქვენს საკითხავ სიასა და სხვა მონაცემებს თქვენს ყველა მოწყობილობაზე მიიღებთ.</translation>
 <translation id="421369550622382712">აღმოაჩინეთ შესანიშნავი აპები, თამაშები, გაფართოებები და თემები Chromium-ისთვის.</translation>
 <translation id="4217080900579554343">ამ გაფართოების და სხვა ერთეულების თქვენს კომპიუტერზე მისაღებად შედით Chromium-ში</translation>
 <translation id="4217972271355023382">ონლაინ უსაფრთხოების დასაცავად, თქვენი მშობლის არჩევანით, გადართეთ Chromium პროფილზე, რომელშიც უკვე შესული ხართ, როგორც <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -307,7 +310,6 @@
 <translation id="4298125729853015961">Chromium-იდან პაროლების ექსპორტი</translation>
 <translation id="4304713468139749426">პაროლების მმართველი</translation>
 <translation id="4334241893986177674">ეკრანის ამ ანაბეჭდის მოძიება</translation>
-<translation id="4368547723231502008">მოიძიეთ ინფორმაცია და დასვით კითხვები ნებისმიერი ადგილიდან, მაშინაც კი, როცა Chromium ჩაკეცილია</translation>
 <translation id="4384331407722351213">Chromium-ის გაშვება Windows-ის ჩართვისას</translation>
 <translation id="4400772909124543403">განახლებები ხელმისაწვდომი არ არის.</translation>
 <translation id="4407044323746248786">მაინც გსურთ Chromium-იდან გასვლა?</translation>
@@ -393,6 +395,7 @@
 <translation id="5382964351116519680">Chromium-ით ძიების გახსნა</translation>
 <translation id="5383439451358640070">შეიტყვეთ, რატომ ბლოკავს Chromium ზოგიერთ ფაილს</translation>
 <translation id="5386450000063123300">მიმდინარეობს Chromium-ის განახლება (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> შესულია სისტემაში. ცალკე დათვალიერების გასაგრძელებლად შედით Chromium-ში თქვენს პირად პროფილში ანგარიშით <ph name="USER_EMAIL_ADDRESS" />. თქვენს გაფართოებებსა და სხვა მონაცემებს თქვენს ყველა მოწყობილობაზე მიიღებთ.</translation>
 <translation id="538767207339317086">Chromium-ში შესვლის დაშვება</translation>
 <translation id="5405650547142096840">Chromium-იდან ამოღება</translation>
 <translation id="5424544524441439284">ამცირებს წარმადობას, თუმცა Chromium შეტევების წინაშე უფრო მდგრადი იქნება</translation>

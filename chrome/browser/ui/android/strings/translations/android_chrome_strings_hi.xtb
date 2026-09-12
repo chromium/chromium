@@ -1427,7 +1427,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6642299196749785472">टैब अटैच करें</translation>
 <translation id="6647441008198474441">इस बात का अंदाज़ा लगाने के लिए कि आपको कौन-कौनसी साइटें पसंद हैं, Google को आपके देखे गए पेजों के यूआरएल भेजे जाते हैं</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}one{<ph name="CONTACT_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}other{<ph name="CONTACT_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}}</translation>
-<translation id="6649642165559792194">इमेज की झलक देखें <ph name="BEGIN_NEW" />नई<ph name="END_NEW" /></translation>
 <translation id="6659594942844771486">टैब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> में खोलें</translation>
 <translation id="6669390930482049506">मुझे सूचना दें</translation>
@@ -1746,6 +1745,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7792388396321542707">शेयर करना बंद करें</translation>
 <translation id="780287761701992588">अपने सभी डिवाइसों पर बुकमार्क, पासवर्ड वगैरह का ऐक्सेस पाएं</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
+<translation id="7804364787702057554">Chrome में आपका खाता</translation>
 <translation id="7810647596859435254">इसमें खोलें…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{सभी फ़ाइलें, सूची में 1 फ़ाइल है}one{सभी फ़ाइलें, सूची में # फ़ाइल है}other{सभी फ़ाइलें, सूची में # फ़ाइलें हैं}}</translation>
 <translation id="7815484226266492798">लंबा स्क्रीनशॉट</translation>
@@ -1788,7 +1788,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7968014550143838305">'पढ़ने की सूची' में जोड़ा गया</translation>
 <translation id="7968982339740310781">विवरण दिखाएं</translation>
 <translation id="7969391000881506217">खत्म होने की तारीख*</translation>
-<translation id="7975379999046275268">पेज की झलक देखें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">अगर आपने किसी ऐसे पासवर्ड का इस्तेमाल किया है जो डेटा के गलत इस्तेमाल की वजह से हैक हो गया है, तो यह चेतावनी दिखाती है.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome ने इस साइट के लिए ये अनुमतियां हटा दी हैं, क्योंकि आपने हाल ही में इसका इस्तेमाल नहीं किया है</translation>
 <translation id="799576009106109668">आपको ज़्यादा तेज़ी से ब्राउज़ करने का अनुभव मिलता है, क्योंकि कॉन्टेंट आपके हाल ही में देखे गए पेजों के हिसाब से लोड होता है</translation>

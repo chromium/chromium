@@ -664,6 +664,7 @@
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">தத்ரூபமான பிளேபேக்கில் இருந்து வெளியேறும்</translation>
+<translation id="3662595332590803433">பிரத்தியேகப் பக்கங்களை Chromeமில் திற</translation>
 <translation id="3674208116086565128">Google ஆப்ஸின் முகப்புப் பக்கத்திற்குச் செல்லும்</translation>
 <translation id="368329460027487650">வெளியேறிவிட்டீர்கள். உள்நுழைவதற்கான விருப்பத்தேர்வுகளைத் திறக்கும்.</translation>
 <translation id="3684540848053703310">கட்டண விவரங்களுக்கான கீழ்ப்புறச் சீட்டு மூடப்பட்டது</translation>
@@ -1426,7 +1427,6 @@
 <translation id="6642299196749785472">பக்கங்களை இணைக்கும்</translation>
 <translation id="6647441008198474441">நீங்கள் அடுத்து பார்வையிடக்கூடிய தளங்களைக் கணிப்பதற்காக, நீங்கள் பார்வையிடும் URLகள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> தொடர்பு}other{<ph name="CONTACT_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> தொடர்புகள்}}</translation>
-<translation id="6649642165559792194">மாதிரிக்காட்சி <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> இல் திற</translation>
 <translation id="6669390930482049506">எனக்குத் தெரிவி</translation>
@@ -1627,6 +1627,7 @@
 <translation id="7335766481146072567">தொடர்க என்பதை அழுத்தவும்</translation>
 <translation id="7336259382292148213">அறிவிப்புகள் சரியாக உள்ளன</translation>
 <translation id="7339898014177206373">புதிய சாளரம்</translation>
+<translation id="7349983576451251297">பிரத்தியேகமாக இல்லாமல் Chromeமில் பக்கங்கள் திறக்கும்</translation>
 <translation id="7352339641508007922">நீண்ட ஸ்கிரீன்ஷாட்டை எடுக்க இழுக்கவும்</translation>
 <translation id="7352651011704765696">ஏதோ தவறு ஏற்பட்டது</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{தேர்ந்தெடுத்த 1 உருப்படியைப் பகிரும்}other{தேர்ந்தெடுத்த # உருப்படிகளைப் பகிரும்}}</translation>
@@ -1717,6 +1718,7 @@
 <translation id="7690596512217303514">உங்கள் சாதனத்தில் Chrome உலாவியைத் திறக்க முடியவில்லை. இதைச் சரிசெய்ய ஆப்ஸ்டோருக்குச் சென்று Chrome உலாவியைச் சமீபத்திய பதிப்பிற்குப் புதுப்பிக்கவும்.</translation>
 <translation id="7692761875510935111">பிரவுசரில் விரைவாகத் திறக்கும். இந்த ஷார்ட்கட்டை மாற்ற தொட்டுப் பிடித்திருக்கவும்.</translation>
 <translation id="7695270712963178084">Chrome Finds</translation>
+<translation id="7695610746377249436">இந்தக் கோரிக்கைக்குப் பதிலளிக்கும்போது Google உள்ளிட்ட தளங்கள் அவற்றின் விருப்புரிமையைப் பயன்படுத்தும்</translation>
 <translation id="7697383401610880082">இழுப்பதற்கான ஹேண்டில்</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> இல் மின்னஞ்சலை உருவாக்கவும்</translation>
 <translation id="7702420606070050505">சமீபத்திய செயல்பாடுகளைக் காட்டும் கீழ்ப்புறச் சீட்டு முழு உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
@@ -1743,6 +1745,7 @@
 <translation id="7792388396321542707">பகிர்தலை நிறுத்து</translation>
 <translation id="780287761701992588">உங்கள் புக்மார்க்குகள், கடவுச்சொற்கள் மற்றும் பலவற்றை உங்கள் சாதனங்கள் அனைத்திலும் பெறலாம்</translation>
 <translation id="780301667611848630">வேண்டாம்</translation>
+<translation id="7804364787702057554">Chromeமில் உங்கள் கணக்கு</translation>
 <translation id="7810647596859435254">இதன் மூலம் திற…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{அனைத்து ஃபைல்களும், பட்டியலில் 1 ஃபைல் உள்ளது}other{அனைத்து ஃபைல்களும், பட்டியலில் # ஃபைல்கள் உள்ளன}}</translation>
 <translation id="7815484226266492798">நீண்ட ஸ்கிரீன்ஷாட்</translation>
@@ -1785,7 +1788,6 @@
 <translation id="7968014550143838305">வாசிப்புப் பட்டியலில் சேர்ந்தது</translation>
 <translation id="7968982339740310781">விவரங்களைக் காண்பி</translation>
 <translation id="7969391000881506217">காலாவதித் தேதி*</translation>
-<translation id="7975379999046275268">பக்க மாதிரிக்காட்சியைக் காட்டு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">தரவு மீறலில் பாதிக்கப்பட்டுள்ள கடவுச்சொல்லை நீங்கள் பயன்படுத்தினால் உங்களை எச்சரிக்கும்.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> நீங்கள் சமீபத்தில் இந்தத் தளத்தைப் பார்வையிடாததால் Chrome இந்த அனுமதிகளை அகற்றியது</translation>
 <translation id="799576009106109668">நீங்கள் தற்போது பார்க்கும் இணையப் பக்கத்தின் அடிப்படையில் உள்ளடக்கம் முன்கூட்டியே ஏற்றப்படுவதால் விரைவாக உலாவலாம்</translation>

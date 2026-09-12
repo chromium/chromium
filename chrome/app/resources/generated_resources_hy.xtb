@@ -910,7 +910,6 @@
 <translation id="1696685050160038195">Ձեր սարքը պաշտպանելու համար գործարկեք և տեղադրեք ծրագրեր միայն վստահելի աղբյուրներից և մշակողներից։</translation>
 <translation id="1697122132646041614">«Վատն է» կոճակը բացում է ձև, որտեղ կարող եք մանրամասն հայտնել ձեր կարծիքը։</translation>
 <translation id="1697532407822776718">Տեղակայումը բարեհաջող ավարտված է:</translation>
-<translation id="1698796500103229697">&amp;Վճարման եղանակներ</translation>
 <translation id="1698899521169711967">Ակտիվ նշորդի ռեժիմ</translation>
 <translation id="1699807488537653303">Շտկել գաղտնաբառի հետ կապված սխալը</translation>
 <translation id="1700201317341192482">Վիրտուալ քարտի հեռացում</translation>
@@ -2510,7 +2509,6 @@
 <translation id="2926708162326352948">Թեման թարմացվեց վերբեռնված պատկերով</translation>
 <translation id="2927017729816812676">Հիշապահեստ</translation>
 <translation id="2928030851119977280">Կարգավորումները պահվեցին։ Դրանք կկիրառվեն, երբ մուտք գործեք Google-ի այլ ծառայություններ։</translation>
-<translation id="2928361271496576301">Ընդունել թեժ ստեղնը</translation>
 <translation id="2928795416630981206">Թույլատրվում է հետագծել ձեր տեսախցիկի դիրքը</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome-ը հեռացրել է թույլտվությունները 1 կայքից}one{Chrome-ը հեռացրել է թույլտվությունները {NUM_SITES} կայքից}other{Chrome-ը հեռացրել է թույլտվությունները {NUM_SITES} կայքից}}</translation>
 <translation id="2931157624143513983">Տեղավորել տպվող հատվածում</translation>
@@ -2529,6 +2527,7 @@
 <translation id="2939908794993783865">Լրացուցիչ ոչ ակտիվ կայքեր</translation>
 <translation id="2939938020978911855">Ցուցադրել հասանելի Bluetooth սարքերը</translation>
 <translation id="2941112035454246133">Ցածր</translation>
+<translation id="2942228903502008519">Ծավալել ներդիրները (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">Սպասում ենք օգտատիրոջ թույլտվությանը...</translation>
 <translation id="2942581856830209953">Անհատականացնել այս էջը</translation>
 <translation id="2942707801577151363">Բացեք, փոփոխեք և պահեք Word, Excel և PowerPoint ֆայլեր։ Որոշ գործառույթներից օգտվելու համար կարող է բաժանորդագրություն պահանջվել։</translation>
@@ -3304,7 +3303,6 @@
 <translation id="3527473647192919613">Նոր մեկուսացված պատուհան</translation>
 <translation id="3528498924003805721">Դյուրանցումների վերջնակետեր</translation>
 <translation id="35296112145429559">Ամրացնել ոլորման կոճակները</translation>
-<translation id="3529851166527095708">&amp;Հասցեներ և ավելին</translation>
 <translation id="3530919970074558307">Չեղարկել խմբի ընտրությունը</translation>
 <translation id="3531070080754387701">Microsoft 365-ը չի կարող բացել <ph name="FILE_NAMES" /> ֆայլն այս պանակից</translation>
 <translation id="3531883061432162622">Ձեր ընթերցանության ցանկը և էջանիշները կարող եք գտնել «Էջանիշներ և ցանկեր» բաժնում</translation>
@@ -3721,7 +3719,6 @@
 <translation id="3812525830114410218">Սխալ վկայական</translation>
 <translation id="3813296892522778813">Եթե չեք գտնում ձեր ուզածը, այցելեք <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome-ի օգնության էջ<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">Էջերի թարգմանության և արագ պատասխանների համար օգտագործվող լեզուն</translation>
-<translation id="381485723922188688">Option</translation>
 <translation id="3815668647912194650">Պահպանեք այս խումբը՝ հետագայում ներդիրներ ավելացնելու համար, կամ լքեք այն, եթե այլևս չեք ուզում օգտվել դրանից։</translation>
 <translation id="3816118180265633665">Chrome-ի գույներ</translation>
 <translation id="3817524650114746564">Ձեր համակարգչում բացեք պրոքսի սերվերի կարգավորումները</translation>
@@ -5448,6 +5445,7 @@
 <translation id="5155299520372681119">Ներբեռնման ժամանակը սպառվել է, և Ֆայլը հեռացվել է։</translation>
 <translation id="5156638757840305347">Նշորդն ընդգծված է, երբ այն հայտնվում կամ շարժվում է</translation>
 <translation id="5157250307065481244">Դիտել կայքի մանրամասները</translation>
+<translation id="5157258206078001821">Ծալել ներդիրները (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">Կարգավորել Crostini-ն</translation>
 <translation id="5159236862360390997">Ձեզ կցուցադրվի ցուցումներով օգնության ամպիկների շարք։
           Սեղմեք <ph name="ACCELERATOR" />՝ ֆոկուսը որևէ ամպիկի վրա տեղափոխելու համար, ու ևս մեկ անգամ՝ ֆոկուսը տեղափոխելու այն տարրի վրա, որը նշված է ամպիկի կողմից։</translation>
@@ -6032,7 +6030,6 @@
 <translation id="5625225435499354052">Փոփոխել Google Pay-ում</translation>
 <translation id="5627832140542566187">Էկրանի դիրքավորումը</translation>
 <translation id="5628434207686266338">Սահմանեք սարքի գաղտնաբառը</translation>
-<translation id="5628652442614339066">Բացելու համար սեղմեք</translation>
 <translation id="562935524653278697">Ադմինիստրատորն անջատել է ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և մյուս կարգավորումների համաժամացումը:</translation>
 <translation id="5631017369956619646">CPU-ի օգտագործումը</translation>
 <translation id="5631272057151918206">Կազատվի մինչև <ph name="OFFLINE_STORAGE_SIZE" /> տարածք, որն օգտագործվում է ձեր օֆլայն ֆայլերի կողմից։ Որոշ ֆայլեր դեռ հասանելի կլինեն անցանց։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -6502,7 +6499,6 @@
 <translation id="6003143259071779217">Հեռացնել eSIM-ի բջջային ցանցը</translation>
 <translation id="6003479444341796444">Անվանագոտին ցուցադրված է</translation>
 <translation id="6003582434972667631">Թեման սահմանվում է ձեր կազմակերպության կողմից</translation>
-<translation id="6005010326905893430">ստեղծել իմ տարբերակը</translation>
 <translation id="6005045517426700202">Աղյուսե շենք</translation>
 <translation id="6006484371116297560">Դասական</translation>
 <translation id="6007053304250788613">Հայելու ռեժիմում հնարավոր է բացառել միայն մեկ էկրան</translation>
@@ -6662,6 +6658,7 @@
 <translation id="6136637346277431354">Ավելացրեք ներդիրներ և ավելին</translation>
 <translation id="6140948187512243695">Մանրամասներ</translation>
 <translation id="6141988275892716286">Հաստատեք ներբեռնումը</translation>
+<translation id="6142784636114866877">Ծավալել ներդիրները (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">Օգնություն</translation>
 <translation id="6143366292569327983">Ընտրեք էջի բնագրի լեզուն</translation>
 <translation id="6144938890088808325">Օգնեք բարձրացնել Chromebook-ի որակը</translation>
@@ -6732,7 +6729,6 @@
 <translation id="6190953336330058278">Հեռախոսի կառավարման կենտրոնի հավելվածներ</translation>
 <translation id="6192333916571137726">Ներբեռնել ֆայլը</translation>
 <translation id="6192413564913825901">Անցնել «Բոլոր էջանիշները» բաժին</translation>
-<translation id="6194333736420234626">&amp;Վճարման եղանակներ</translation>
 <translation id="6195005504600220730">Կարդալ տեղեկություններ ձեր դիտարկիչի, օպերացիոն համակարգի և սարքի մասին</translation>
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="6196854373336333322">Ձեր պրոքսիի կարգավորումները վերահսկվում են «<ph name="EXTENSION_NAME" />» ընդլայնման կողմից: Դա նշանակում է, որ այն կարող է փոխել, խափանել կամ աննկատ գրառել այն ամենը, ինչ անում եք առցանց: Եթե չգիտեք, թե ինչու է այդ փոփոխությունը տեղի ունեցել, հավանաբար դուք դա չէիք ուզում:</translation>
@@ -6955,7 +6951,6 @@
 <translation id="6367396429435748845">Մկնիկի ստեղներով կառավարումը դադարեցնելու և վերսկսելու համար սեղմեք <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /></translation>
 <translation id="6367853307713830174">Gemini-ը ցույց է տալիս իր քայլերը և խնդրում հաստատել դրանք նախքան զգայուն տեղեկությունների հետ աշխատելը։ Դուք ցանկացած պահի կարող եք կանգնեցնել օգնականի աշխատանքը կամ ինքներդ ստանձնել առաջադրանքի կատարումը։</translation>
 <translation id="6367985768157257101">Ստանա՞լ «Փոխանակում մոտակա սարքերի հետ» գործառույթի միջոցով</translation>
-<translation id="6368157733310917710">&amp;Հասցեներ և ավելին</translation>
 <translation id="6368276408895187373">Միացված է – <ph name="VARIATION_NAME" /></translation>
 <translation id="6369420654782669629">Գործառույթների և ընդլայնումների դյուրանցումներ</translation>
 <translation id="6370021412472292592">Չհաջողվեց բեռնել մանիֆեստը:</translation>
@@ -7521,7 +7516,6 @@
 <translation id="6801435275744557998">Չափաբերել հպէկրանը</translation>
 <translation id="6801920212017470190">Հետևեք գնիջեցումներին, որտեղ էլ որ լինեք</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
-<translation id="6802825994120702390">Ավելացրեք համատեքստ ձեր հարցին՝ ընտրելով որևէ տարածք կամ ամբողջ էկրանը</translation>
 <translation id="6803766346203101854">Այս կայքը կարող է տվյալներ պահել ձեր սարքում։</translation>
 <translation id="6805236548654699520">Հեռացրեք անցանկալի ելնող պատուհանները, շտկեք ցանցային խնդիրները և ավելին՝ վերականգնելով ձեր կարգավորումները ապահով կանխադրված տարբերակով։</translation>
 <translation id="6805478749741295868">Սա արհեստական բանականության փորձնական գործառույթ է, և երբեմն կարող է սխալներով աշխատել։</translation>
@@ -9870,6 +9864,7 @@
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" />՝ ավելացնել կոնտակտներում</translation>
 <translation id="8617601976406256334">Հեռացնե՞լ <ph name="SITE_NAME" /> կայքի տվյալներն ու թույլտվությունները</translation>
 <translation id="8617748779076050570">Անվտանգ միացման կոդ՝ <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;Կոնտակտային տվյալներ</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">Չեն կարող ձեր սարքում վեբ ծրագրեր տեղադրել</translation>
 <translation id="8619803522055190423">Հեռացնել ստվերը</translation>
@@ -9984,6 +9979,7 @@
 <translation id="8692107307702113268">Գաղտնաբառը պարունակում է ավելի քան 1000 նիշ</translation>
 <translation id="8693862390730570097">Թույլ չտալ, որ տեքստագրիչն ավտոմատ բացվի</translation>
 <translation id="8694596275649352090">Կողպել, երբ սարքն անցնում է քնի ռեժիմի, կամ դրա կափարիչը փակվում է</translation>
+<translation id="8695214265159551349">Ծալել ներդիրները (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">Բացել &amp;հասցեն…</translation>
 <translation id="869884720829132584">Հավելվածների ընտրացանկ</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
@@ -10488,7 +10484,6 @@
 <translation id="9071664234353284876">Իսկորոշում չի պահանջվում</translation>
 <translation id="9072220108592671115">Տեղադրված տարբերակը՝ <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">Դուք թույլատրել եք Gemini-ին մուտք գործել այս կայքեր՝ ձեր առաջադրանքները կատարելու համար</translation>
-<translation id="9074190188883314952">Օգտագործեք Տեսապակու կոճակը՝ էկրանին ցուցադրվող բովանդակությամբ կիսվելու համար</translation>
 <translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 միջուկ}one{{CORE_COUNT} միջուկ}other{{CORE_COUNT} միջուկ}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9075413375877487220">Այս ընդլայնումը վստահելի չէ բարելավված Ապահով դիտարկման համար։</translation>
@@ -10643,7 +10638,6 @@
 <translation id="9195969368671142407">Դա նշանակում է, որ դուք չեք կարող կիսվել ներդիրների խմբերով կամ միանալ դրանց</translation>
 <translation id="9197456336762295195">Սկանավորեք այս QR կոդը այն սարքի տեսախցիկի միջոցով, որում կա google.com կայքի համար անհրաժեշտ մուտքի բանալին</translation>
 <translation id="919840898042157087">Ստատիկ շարժում</translation>
-<translation id="9198797990125364460">Հարցրեք Google-ին ցանկացած վայրից</translation>
 <translation id="9199503643457729322">Սեղմեք՝ Գաղտնիության ուղեցույցից դուրս գալու համար։</translation>
 <translation id="9199695835892108985">Զրոյացնե՞լ սերիական միացքների բոլոր թույլտվությունները։</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> կայքը կկարողանա փոփոխել «<ph name="FOLDERNAME" />» պանակի ֆայլերը</translation>

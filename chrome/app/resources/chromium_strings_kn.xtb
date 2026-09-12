@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">ತ್ವರಿತ ಆ್ಯಕ್ಸೆಸ್‌ಗಾಗಿ ನಿಮ್ಮ ಟಾಸ್ಕ್‌ಬಾರ್‌ಗೆ Chromium ಅನ್ನು ಪಿನ್ ಮಾಡಲು Windows ನೋಟಿಫಿಕೇಶನ್‌ನಲ್ಲಿ <ph name="BEGIN_BOLD" />ಹೌದು<ph name="END_BOLD" /> ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="1808667845054772817">Chromium ಅನ್ನು ಮರುಸ್ಥಾಪಿಸು</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> ಅನ್ನು ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> ಅನ್ನು ಈಗಾಗಲೇ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ವಿವರಗಳನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿರಿಸಲು, Chromium ಗೆ ನಿಮ್ಮದೇ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ <ph name="USER_EMAIL_ADDRESS" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ. <ph name="DEVICE" /> ನಿಂದ ನಿಮ್ಮ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಸಹ ನೀವು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="183031085822326697">ಮುಂದಿನ ಬಾರಿ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನೀವು Chromium ಅನ್ನು ತೆರೆದಾಗ, Google Password Manager ಅನ್ನು ಬಳಸಲು ನಿಮಗೆ ಪ್ರಾಂಪ್ಟ್ ಕಾಣಿಸುತ್ತದೆ.</translation>
 <translation id="1838374766361614909">ಹುಡುಕಾಟ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="18552579716432081">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು Google ಖಾತೆಯಲ್ಲಿ ಇರಿಸಿಕೊಂಡು, ಅದನ್ನು ಈ ಸಾಧನದಿಂದ ಮಾತ್ರ ಅಳಿಸಲು, <ph name="BEGIN_LINK" />Chromium ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3045032126857188731">ಅನುವಾದಿಸಿದ ಭಾಷೆ: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">ಫೀಡ್‌ಬ್ಯಾಕ್ ಡೈಲಾಗ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> ಅನ್ನು ಈಗಾಗಲೇ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ವಿವರಗಳನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿರಿಸಲು, Chromium ಗೆ ನಿಮ್ಮದೇ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ <ph name="USER_EMAIL_ADDRESS" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ. <ph name="DEVICE" /> ನಿಂದ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿ ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಸಹ ನೀವು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="3068187312562070417">ಇತರ Chromium ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
 <translation id="3068290154869370196">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ಆ್ಯಡ್-ಆನ್‌ಗಳಾಗಿದ್ದು, ಅವು Chromium ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ನಿಮಗೆ ಅವಕಾಶ ನೀಡುತ್ತವೆ. ವ್ಯವಸ್ಥಿತವಾಗಿರುವುದರಿಂದ ಹಿಡಿದು ದೈನಂದಿನ ಕಾರ್ಯಗಳನ್ನು ಸರಳಗೊಳಿಸುವವರೆಗೆ, ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು Chromium ಅನ್ನು ನಿಮಗೆ ಬೇಕಾದ ಹಾಗೆ ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ನೆರವಾಗುತ್ತವೆ.</translation>
 <translation id="3068515742935458733">Google ಗೆ ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು ಮತ್ತು <ph name="UMA_LINK" /> ಕಳುಹಿಸುವುದರಿಂದ Chromium ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
@@ -289,6 +291,7 @@
 <translation id="4147856324248078748">ನಿಮ್ಮ Chromium ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="4148957013307229264">ಸ್ಥಾಪನೆಗೊಳ್ಳುತ್ತಿದೆ...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - ನೆಟ್‌ವರ್ಕ್ ಸೈನ್ ಇನ್ - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> ಅನ್ನು ಈಗಾಗಲೇ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ವಿವರಗಳನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿರಿಸಲು, Chromium ಗೆ ನಿಮ್ಮದೇ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ <ph name="USER_EMAIL_ADDRESS" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ. ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿ ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಸಹ ನೀವು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="421369550622382712">Chromium ಗಾಗಿ ಅದ್ಭುತ ಅಪ್ಲಿಕೇಶನ್‌‌ಗಳು, ಗೇಮ್‌ಗಳು, ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ಹಾಗೂ ಥೀಮ್‌ಗಳನ್ನು ಅನ್ವೇಷಿಸಿ.</translation>
 <translation id="4217080900579554343">ನಿಮ್ಮ ಎಲ್ಲಾ ಕಂಪ್ಯೂಟರ್‌ಗಳಲ್ಲಿ ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಪಡೆಯಲು, Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4217972271355023382">ನಿಮ್ಮ ಪೋಷಕರ ಆಯ್ಕೆಗಳೊಂದಿಗೆ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿರಲು, ನೀವು ಈಗಾಗಲೇ ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ನಿಮ್ಮ Chromium ಪ್ರೊಫೈಲ್‌ <ph name="USER_EMAIL_ADDRESS" /> ಗೆ ಬದಲಿಸಿ</translation>
@@ -303,7 +306,6 @@
 <translation id="4298125729853015961">Chromium ನಿಂದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ</translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="4334241893986177674">ಈ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ಹುಡುಕಿ</translation>
-<translation id="4368547723231502008">Chromium ಅನ್ನು ಮಿನಿಮೈಸ್ ಮಾಡಿದ್ದರೂ ಸಹ, ಎಲ್ಲಿಂದಲಾದರೂ ಹುಡುಕಿ ಮತ್ತು ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ</translation>
 <translation id="4384331407722351213">Windows ಪ್ರಾರಂಭವಾದಾಗ Chromium ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4400772909124543403">ಯಾವುದೇ ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="4407044323746248786">ಹೇಗಿದ್ದರೂ Chromium ನಿಂದ ನಿರ್ಗಮಿಸುವುದೇ?</translation>
@@ -389,6 +391,7 @@
 <translation id="5382964351116519680">Chromium ಮೂಲಕ ಹುಡುಕಾಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5383439451358640070">Chromium ಕೆಲವು ಫೈಲ್‌ಗಳನ್ನು ಏಕೆ ನಿರ್ಬಂಧಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ತಿಳಿಯಿರಿ</translation>
 <translation id="5386450000063123300">Chromium ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> ಅನ್ನು ಈಗಾಗಲೇ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ವಿವರಗಳನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿರಿಸಲು, Chromium ಗೆ ನಿಮ್ಮದೇ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ <ph name="USER_EMAIL_ADDRESS" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ. ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ನೀವು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="538767207339317086">Chromium ಸೈನ್-ಇನ್ ಅನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="5405650547142096840">Chromium ನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="5424544524441439284">ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ ಆದರೆ Chromium ಅನ್ನು ಅಸಿಮೆಟ್ರಿಕ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ಗಳ ವಿರುದ್ದ ಮತ್ತಷ್ಟು ಪ್ರತಿರಕ್ಷಣೆ ಮಾಡುತ್ತದೆ</translation>

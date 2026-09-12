@@ -2220,6 +2220,7 @@
 <translation id="4750917950439032686">आपकी जानकारी (जैसे- पासवर्ड या क्रेडिट कार्ड नंबर वगैरह) जब इस साइट पर भेजी जाती है, तब वह निजी होती है.</translation>
 <translation id="4754461935447132332">सिर्फ़ सुरक्षित साइटों को ही अनुमति है</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">सेव किए गए ऑफ़र देखने और उन्हें भरने के लिए, प्रोमो कोड वाला फ़ील्ड चुनें</translation>
 <translation id="4757740693289347881">कोड अमान्य है</translation>
 <translation id="4757993714154412917">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. अपने खातों को सुरक्षित करने के लिए, Chromium का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="4758311279753947758">संपर्क जानकारी जोड़ें</translation>
@@ -3844,7 +3845,6 @@
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">इस बार वीआर की अनुमति दी गई</translation>
-<translation id="7517198908921983825">Gemini ने सुझाया है · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="7518003948725431193">इस वेब पते के लिए कोई वेब पेज नहीं मिला था: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

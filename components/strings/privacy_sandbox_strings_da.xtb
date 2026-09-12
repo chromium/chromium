@@ -14,11 +14,9 @@
 <translation id="4278390842282768270">Tilladt</translation>
 <translation id="4412992751769744546">Tillad tredjepartscookies</translation>
 <translation id="4711259472133554310">Du kan oprette undtagelser under Indstillinger for altid at tillade, at specifikke websites bruger tredjepartscookies</translation>
-<translation id="5117284457376555514">Websites kan hverken bruge tredjepartscookies til at foretage personlig tilpasning af indhold og annoncer eller indhente oplysninger om de handlinger, du foretager på andre websites, medmindre du giver relaterede websites adgang til dem. Nogle websitefunktioner fungerer muligvis ikke som forventet.</translation>
 <translation id="5677928146339483299">Blokeret</translation>
 <translation id="6196640612572343990">Bloker tredjepartscookies</translation>
 <translation id="6308169245546905162">Websites kan bruge tredjepartscookies til at indhente oplysninger om de handlinger, du foretager på andre websites</translation>
-<translation id="6710025070089118043">Websites kan hverken bruge tredjepartscookies til at foretage personlig tilpasning af indhold og annoncer eller indhente oplysninger om de handlinger, du foretager på andre websites, medmindre du giver relaterede websites adgang til dem</translation>
 <translation id="7315780377187123731">Mere om indstillingen Bloker tredjepartscookies</translation>
 <translation id="7374493521304367420">Websites kan stadig bruge cookies til at se browseraktivitet på deres eget website</translation>
 <translation id="7453144832830554937">Websitefunktioner, der er afhængige af tredjepartscookies, fungerer muligvis ikke</translation>
@@ -26,5 +24,4 @@
 <translation id="8200078544056087897">Websitefunktioner, der er afhængige af tredjepartscookies, fungerer som forventet</translation>
 <translation id="839994149685752920">Websites kan bruge tredjepartscookies til at foretage personlig tilpasning af indhold og annoncer</translation>
 <translation id="9039924186462989565">Når du er i inkognitotilstand, blokerer Chromium websites, så de ikke kan bruge tredjepartscookies</translation>
-<translation id="9162335340010958530">Websites kan hverken bruge tredjepartscookies til at foretage personlig tilpasning af indhold og annoncer eller indhente oplysninger om de handlinger, du foretager på andre websites, medmindre du giver relaterede websites adgang til dem</translation>
 </translationbundle>

@@ -14,11 +14,9 @@
 <translation id="4278390842282768270">已允許</translation>
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
 <translation id="4711259472133554310">你可以前往「設定」建立例外網站清單，一律允許特定網站使用第三方 Cookie</translation>
-<translation id="5117284457376555514">網站無法運用第三方 Cookie 提供個人化內容和廣告，也無法瞭解你在其他網站的操作，除非你允許相關網站存取這些 Cookie。某些網站功能可能無法正常運作。</translation>
 <translation id="5677928146339483299">已封鎖</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6308169245546905162">網站可以透過第三方 Cookie，瞭解你在其他網站的操作</translation>
-<translation id="6710025070089118043">網站無法運用第三方 Cookie 提供個人化內容和廣告，也無法瞭解你在其他網站的操作，除非你允許相關網站存取這些 Cookie</translation>
 <translation id="7315780377187123731">進一步瞭解「封鎖第三方 Cookie」選項</translation>
 <translation id="7374493521304367420">網站仍可使用 Cookie 查看你在該網站上的瀏覽活動</translation>
 <translation id="7453144832830554937">依賴第三方 Cookie 的網站功能可能無法運作</translation>
@@ -26,5 +24,4 @@
 <translation id="8200078544056087897">依賴第三方 Cookie 的網站功能應該能正常運作</translation>
 <translation id="839994149685752920">網站可以運用第三方 Cookie 提供個人化內容和廣告</translation>
 <translation id="9039924186462989565">在無痕模式下，Chromium 會禁止網站使用第三方 Cookie</translation>
-<translation id="9162335340010958530">網站無法運用第三方 Cookie 提供個人化內容和廣告，也無法瞭解你在其他網站的操作，除非你允許相關網站存取這些 Cookie</translation>
 </translationbundle>

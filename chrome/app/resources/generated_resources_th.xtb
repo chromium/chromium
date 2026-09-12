@@ -910,7 +910,6 @@
 <translation id="1696685050160038195">คุณควรเรียกใช้และติดตั้งซอฟต์แวร์จากแหล่งที่มาและนักพัฒนาซอฟต์แวร์ที่เชื่อถือได้เท่านั้นเพื่อรักษาอุปกรณ์ให้ปลอดภัย</translation>
 <translation id="1697122132646041614">ปุ่ม "ไม่ชอบ" จะเปิดแบบฟอร์มสำหรับส่งความคิดเห็นโดยละเอียดเกี่ยวกับสาเหตุที่คุณไม่ชอบผลการค้นหาเหล่านี้</translation>
 <translation id="1697532407822776718">คุณพร้อมแล้ว!</translation>
-<translation id="1698796500103229697">วิธีการชำระเงิน</translation>
 <translation id="1698899521169711967">การเรียกดูด้วยแป้นพิมพ์</translation>
 <translation id="1699807488537653303">แก้ไขข้อผิดพลาดเกี่ยวกับรหัสผ่าน</translation>
 <translation id="1700201317341192482">นำบัตรเสมือนออก</translation>
@@ -2512,7 +2511,6 @@
 <translation id="2926708162326352948">อัปเดตธีมเป็นรูปภาพที่อัปโหลดแล้ว</translation>
 <translation id="2927017729816812676">พื้นที่เก็บข้อมูลแคช</translation>
 <translation id="2928030851119977280">บันทึกการตั้งค่าที่เลือกแล้ว การตั้งค่าจะมีผลเมื่อคุณลงชื่อเข้าใช้บริการอื่นๆ ของ Google</translation>
-<translation id="2928361271496576301">ยอมรับแป้นพิมพ์ลัด</translation>
 <translation id="2928795416630981206">ได้รับอนุญาตให้ติดตามตำแหน่งของกล้อง</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome นำสิทธิ์ออกจากเว็บไซต์แล้ว 1 เว็บ}other{Chrome นำสิทธิ์ออกจากเว็บไซต์แล้ว {NUM_SITES} เว็บ}}</translation>
 <translation id="2931157624143513983">พอดีกับพื้นที่ที่พิมพ์ได้</translation>
@@ -2531,6 +2529,7 @@
 <translation id="2939908794993783865">เว็บไซต์อื่นที่ไม่ได้ใช้งาน</translation>
 <translation id="2939938020978911855">แสดงอุปกรณ์บลูทูธที่ใช้ได้</translation>
 <translation id="2941112035454246133">ต่ำ</translation>
+<translation id="2942228903502008519">ขยายแท็บ (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">กำลังรอ...</translation>
 <translation id="2942581856830209953">ปรับแต่งหน้านี้</translation>
 <translation id="2942707801577151363">เปิด แก้ไข และบันทึกไฟล์ Word, Excel และ PowerPoint บางฟีเจอร์อาจต้องสมัครใช้บริการ</translation>
@@ -3306,7 +3305,6 @@
 <translation id="3527473647192919613">หน้าต่างแยกใหม่</translation>
 <translation id="3528498924003805721">เป้าหมายทางลัด</translation>
 <translation id="35296112145429559">ปักหมุดปุ่มเลื่อน</translation>
-<translation id="3529851166527095708">ที่อยู่และอื่นๆ</translation>
 <translation id="3530919970074558307">ยกเลิกการสนทนากลุ่ม</translation>
 <translation id="3531070080754387701">Microsoft 365 เปิด <ph name="FILE_NAMES" /> จากโฟลเดอร์นี้ไม่ได้</translation>
 <translation id="3531883061432162622">ค้นหาเรื่องรออ่านและบุ๊กมาร์กได้ในบุ๊กมาร์กและรายการ</translation>
@@ -3723,7 +3721,6 @@
 <translation id="3812525830114410218">ใบรับรองมีปัญหา</translation>
 <translation id="3813296892522778813">ไปที่<ph name="BEGIN_LINK_CHROMIUM" />ความช่วยเหลือของ Google Chrome<ph name="END_LINK_CHROMIUM" /> หากคุณไม่พบข้อมูลที่กำลังค้นหา</translation>
 <translation id="3813358687923336574">ภาษาที่ใช้ในการแปลหน้าเว็บและใช้กับคำตอบด่วน</translation>
-<translation id="381485723922188688">Option</translation>
 <translation id="3815668647912194650">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือออกจากกลุ่มหากคุณไม่ต้องการเข้าถึงกลุ่มแล้ว</translation>
 <translation id="3816118180265633665">สีของ Chrome</translation>
 <translation id="3817524650114746564">เปิดการตั้งค่าพร็อกซีของคอมพิวเตอร์</translation>
@@ -5449,6 +5446,7 @@
 <translation id="5155299520372681119">ไฟล์ที่อัปโหลดหมดอายุและถูกนำออกแล้ว</translation>
 <translation id="5156638757840305347">ระบบจะไฮไลต์เคอร์เซอร์เมื่อปรากฏขึ้นหรือเคลื่อนที่</translation>
 <translation id="5157250307065481244">ดูรายละเอียดเว็บไซต์</translation>
+<translation id="5157258206078001821">ยุบแท็บ (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">ตั้งค่า Crostini</translation>
 <translation id="5159236862360390997">ชุดลูกโป่งบทแนะนำพร้อมวิธีการจะแสดงขึ้นมา
           กด <ph name="ACCELERATOR" /> เพื่อโฟกัสลูกโป่ง จากนั้นกดอีกครั้งเพื่อโฟกัสองค์ประกอบที่ลูกโป่งชี้ไป</translation>
@@ -6033,7 +6031,6 @@
 <translation id="5625225435499354052">แก้ไขใน Google Pay</translation>
 <translation id="5627832140542566187">การวางแนวจอแสดงผล</translation>
 <translation id="5628434207686266338">ตั้งรหัสผ่านของอุปกรณ์</translation>
-<translation id="5628652442614339066">เปิดได้ง่ายๆ ด้วยแป้นพิมพ์</translation>
 <translation id="562935524653278697">ผู้ดูแลระบบของคุณได้ปิดใช้การซิงค์ของบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ</translation>
 <translation id="5631017369956619646">การใช้ CPU</translation>
 <translation id="5631272057151918206">การดำเนินการนี้จะนำพื้นที่เก็บข้อมูลซึ่งไฟล์ออฟไลน์ใช้อยู่ออกได้สูงสุด <ph name="OFFLINE_STORAGE_SIZE" /> ไฟล์บางรายการจะยังใช้งานแบบออฟไลน์ได้ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -6503,7 +6500,6 @@
 <translation id="6003143259071779217">นำเครือข่ายมือถือของ eSIM ออก</translation>
 <translation id="6003479444341796444">แถบชื่อกำลังแสดงอยู่</translation>
 <translation id="6003582434972667631">องค์กรของคุณเป็นผู้ตั้งค่าธีม</translation>
-<translation id="6005010326905893430">แก้ไขด้วยตัวเอง</translation>
 <translation id="6005045517426700202">อาคารอิฐ</translation>
 <translation id="6006484371116297560">คลาสสิก</translation>
 <translation id="6007053304250788613">จะไม่รวมจอแสดงผลได้เพียง 1 จอเท่านั้นในโหมดมิเรอร์</translation>
@@ -6663,6 +6659,7 @@
 <translation id="6136637346277431354">เพิ่มแท็บและอื่นๆ</translation>
 <translation id="6140948187512243695">แสดงรายละเอียด</translation>
 <translation id="6141988275892716286">ยืนยันการดาวน์โหลด</translation>
+<translation id="6142784636114866877">ขยายแท็บ (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">รับความช่วยเหลือ</translation>
 <translation id="6143366292569327983">เลือกภาษาต้นทางของหน้า</translation>
 <translation id="6144938890088808325">ช่วยเราปรับปรุง Chromebook</translation>
@@ -6733,7 +6730,6 @@
 <translation id="6190953336330058278">แอปในฮับโทรศัพท์</translation>
 <translation id="6192333916571137726">ดาวน์โหลดไฟล์</translation>
 <translation id="6192413564913825901">ย้ายไปยังบุ๊กมาร์กทั้งหมด</translation>
-<translation id="6194333736420234626">วิธีการชำระเงิน</translation>
 <translation id="6195005504600220730">อ่านข้อมูลเกี่ยวกับเบราว์เซอร์ ระบบปฏิบัติการ และอุปกรณ์ของคุณ</translation>
 <translation id="6196640612572343990">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6196854373336333322">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ได้เข้าควบคุมการตั้งค่าพร็อกซีของคุณ ซึ่งหมายความว่าส่วนขยายนี้จะสามารถเปลี่ยนแปลง ทำให้เสียหาย หรือดักฟังทุกอย่างที่คุณทำทางออนไลน์ได้ หากคุณไม่แน่ใจว่าการเปลี่ยนแปลงนี้เกิดขึ้นได้อย่างไร คุณอาจไม่ต้องการส่วนขยายนี้</translation>
@@ -6956,7 +6952,6 @@
 <translation id="6367396429435748845">กด <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> เพื่อหยุดชั่วคราวและใช้งานแป้นเมาส์ต่อ</translation>
 <translation id="6367853307713830174">Gemini จะแสดงขั้นตอนและพยายามยืนยันก่อนดำเนินการขั้นตอนที่ละเอียดอ่อน ซึ่งคุณสามารถหยุดหรือควบคุมได้ทุกเมื่อ</translation>
 <translation id="6367985768157257101">ต้องการรับด้วยการแชร์ใกล้เคียงไหม</translation>
-<translation id="6368157733310917710">ที่อยู่และอื่นๆ</translation>
 <translation id="6368276408895187373">เปิดใช้อยู่ - <ph name="VARIATION_NAME" /></translation>
 <translation id="6369420654782669629">ทางลัดสำหรับฟีเจอร์และส่วนขยาย</translation>
 <translation id="6370021412472292592">ไม่สามารถโหลดไฟล์ Manifest</translation>
@@ -7520,7 +7515,6 @@
 <translation id="6801435275744557998">ปรับเทียบหน้าจอสัมผัส</translation>
 <translation id="6801920212017470190">ติดตามการลดราคาทั้งหมดได้ทุกที่ทุกเวลา</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
-<translation id="6802825994120702390">เพิ่มบริบทให้กับคำถามโดยเลือกพื้นที่หรือทั้งหน้าจอ</translation>
 <translation id="6803766346203101854">เว็บไซต์นี้ได้รับอนุญาตให้บันทึกข้อมูลในอุปกรณ์ของคุณ</translation>
 <translation id="6805236548654699520">นำป๊อปอัปที่ไม่ต้องการออก แก้ไขปัญหาเครือข่าย และอื่นๆ อีกมากมายด้วยการกู้คืนการตั้งค่าเป็นค่าเริ่มต้นที่ปลอดภัย</translation>
 <translation id="6805478749741295868">นี่เป็นฟีเจอร์ AI เวอร์ชันทดลองและอาจไม่ถูกต้องเสมอไป</translation>
@@ -9869,6 +9863,7 @@
 <translation id="8616441548384109662">เพิ่ม <ph name="CONTACT_NAME" /> ลงในรายชื่อติดต่อ</translation>
 <translation id="8617601976406256334">ลบข้อมูลเว็บไซต์และสิทธิ์ของ <ph name="SITE_NAME" /> ใช่ไหม</translation>
 <translation id="8617748779076050570">รหัสการเชื่อมต่อที่ปลอดภัย: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">ข้อมูลติดต่อ</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">ไม่ได้รับอนุญาตให้ติดตั้งเว็บแอปในอุปกรณ์</translation>
 <translation id="8619803522055190423">เงาตกกระทบ</translation>
@@ -9983,6 +9978,7 @@
 <translation id="8692107307702113268">รหัสผ่านมีอักขระเกิน 1,000 ตัว</translation>
 <translation id="8693862390730570097">ไม่อนุญาตให้ฟีเจอร์ "ช่วยฉันเขียน" เปิดโดยอัตโนมัติ</translation>
 <translation id="8694596275649352090">ล็อกเมื่ออยู่ในโหมดสลีปหรือเมื่อพับจอ</translation>
+<translation id="8695214265159551349">ยุบแท็บ (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">เปิด&amp;ตำแหน่ง...</translation>
 <translation id="869884720829132584">เมนูของแอปพลิเคชัน</translation>
 <translation id="869891660844655955">วันที่หมดอายุ</translation>
@@ -10487,7 +10483,6 @@
 <translation id="9071664234353284876">ไม่มีการตรวจสอบสิทธิ์</translation>
 <translation id="9072220108592671115">เวอร์ชันที่ติดตั้ง <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">คุณให้สิทธิ์ Gemini ลงชื่อเข้าใช้เว็บไซต์เหล่านี้เพื่อทำงานให้คุณ</translation>
-<translation id="9074190188883314952">ใช้ปุ่ม Lens เพื่อแชร์สิ่งที่อยู่บนหน้าจอ</translation>
 <translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 แกน}other{{CORE_COUNT} แกน}}</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9075413375877487220">Google Safe Browsing เวอร์ชันปรับปรุงไม่เชื่อถือส่วนขยายนี้</translation>
@@ -10642,7 +10637,6 @@
 <translation id="9195969368671142407">เมื่อองค์กรจำกัดการบันทึกลงในบัญชี Google ของคุณ คุณจะแชร์หรือเข้าร่วมกลุ่มแท็บไม่ได้</translation>
 <translation id="9197456336762295195">สแกนคิวอาร์โค้ดนี้ด้วยกล้องในอุปกรณ์ที่มีพาสคีย์สำหรับ google.com</translation>
 <translation id="919840898042157087">การเคลื่อนไหวแบบคงที่</translation>
-<translation id="9198797990125364460">ถาม Google ได้จากทุกที่</translation>
 <translation id="9199503643457729322">คลิกเพื่อออกจากคู่มือความเป็นส่วนตัว</translation>
 <translation id="9199695835892108985">รีเซ็ตสิทธิ์ทั้งหมดของพอร์ตอนุกรมไหม</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> จะแก้ไขไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>

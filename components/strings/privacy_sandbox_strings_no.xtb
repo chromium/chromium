@@ -14,11 +14,9 @@
 <translation id="4278390842282768270">Tillatt</translation>
 <translation id="4412992751769744546">Tillat informasjonskapsler fra tredjeparter</translation>
 <translation id="4711259472133554310">Du kan opprette unntak i innstillingene for alltid å tillate at bestemte nettsteder bruker informasjonskapsler fra tredjeparter</translation>
-<translation id="5117284457376555514">Nettsteder kan ikke bruke informasjonskapsler fra tredjeparter for å tilpasse innhold og annonser eller for å finne ut hva du gjør på andre nettsteder, med mindre du gir relaterte nettsteder tilgang til dem. Det kan hende at noen nettstedsfunksjoner ikke fungerer som forventet.</translation>
 <translation id="5677928146339483299">Blokkert</translation>
 <translation id="6196640612572343990">Blokker informasjonskapsler fra tredjeparter</translation>
 <translation id="6308169245546905162">Nettsteder kan bruke informasjonskapsler fra tredjeparter for å finne ut hva du gjør på andre nettsteder</translation>
-<translation id="6710025070089118043">Nettsteder kan ikke bruke informasjonskapsler fra tredjeparter for å tilpasse innhold og annonser eller finne ut hva du gjør på andre nettsteder, med mindre du gir relaterte nettsteder tilgang til dem</translation>
 <translation id="7315780377187123731">Mer om alternativet for å blokkere informasjonskapsler fra tredjeparter</translation>
 <translation id="7374493521304367420">Nettsteder kan fortsatt bruke informasjonskapsler for å se nettleseraktivitet på sitt eget nettsted</translation>
 <translation id="7453144832830554937">Nettstedsfunksjoner som er avhengige av informasjonskapsler fra tredjeparter, fungerer kanskje ikke</translation>
@@ -26,5 +24,4 @@
 <translation id="8200078544056087897">Nettstedsfunksjoner som er avhengige av informasjonskapsler fra tredjeparter, skal fungere som forventet</translation>
 <translation id="839994149685752920">Nettsteder kan bruke informasjonskapsler fra tredjeparter for å tilpasse innhold og annonser</translation>
 <translation id="9039924186462989565">Når du er i inkognitomodus, blokkerer Chromium nettsteder fra å bruke informasjonskapsler fra tredjeparter</translation>
-<translation id="9162335340010958530">Nettsteder kan ikke bruke informasjonskapsler fra tredjeparter for å tilpasse innhold og annonser eller for å finne ut hva du gjør på andre nettsteder, med mindre du gir relaterte nettsteder tilgang til dem</translation>
 </translationbundle>

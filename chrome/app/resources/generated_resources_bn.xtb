@@ -911,7 +911,6 @@
 <translation id="1696685050160038195">আপনার ডিভাইস সুরক্ষিত রাখতে, শুধুমাত্র বিশ্বস্ত সোর্স ও ডেভেলপারদের থেকে পাওয়া সফ্টওয়্যারই রান ও ইনস্টল করা উচিত।</translation>
 <translation id="1697122132646041614">'থাম্বস-ডাউন' আইকন এমন একটি ফর্ম খোলে, যেখানে এইসব ফলাফল কেন আপনার পছন্দ হয়নি সেই সম্পর্কিত বিশদ মতামত জমা দেওয়া যায়।</translation>
 <translation id="1697532407822776718">আপনার সমস্ত সেট আছে!</translation>
-<translation id="1698796500103229697">&amp;পেমেন্ট পদ্ধতি</translation>
 <translation id="1698899521169711967">ক্যারেট ব্রাউজিং</translation>
 <translation id="1699807488537653303">পাসওয়ার্ড সংক্রান্ত সমস্যার সমাধান করুন</translation>
 <translation id="1700201317341192482">আপনার ভার্চুয়াল কার্ড সরিয়ে দিন</translation>
@@ -2525,7 +2524,6 @@
 <translation id="2926708162326352948">আপলোড করা ছবিতে থিম আপডেট করা হয়েছে</translation>
 <translation id="2927017729816812676">ক্যাশে সঞ্চয় স্থান</translation>
 <translation id="2928030851119977280">পছন্দ সেভ করা হয়েছে। আপনি অন্য Google পরিষেবায় সাইন করলে আপনার পছন্দ প্রয়োগ করা হবে।</translation>
-<translation id="2928361271496576301">'হট কী' বেছে নিন</translation>
 <translation id="2928795416630981206">আপনার ক্যামেরার পজিশন ট্র্যাক করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ১টি সাইটের জন্য অনুমতি সরিয়ে দিয়েছে}one{Chrome {NUM_SITES}টি সাইটের জন্য অনুমতি সরিয়ে দিয়েছে}other{Chrome {NUM_SITES}টি সাইটের জন্য অনুমতি সরিয়ে দিয়েছে}}</translation>
 <translation id="2931157624143513983">পৃষ্ঠার প্রিন্টযোগ্য অংশে ফিট করুন</translation>
@@ -2544,6 +2542,7 @@
 <translation id="2939908794993783865">বন্ধ থাকা অতিরিক্ত সাইট</translation>
 <translation id="2939938020978911855">উপলব্ধ ব্লুটুথ ডিভাইসগুলি দেখান</translation>
 <translation id="2941112035454246133">নিম্ন</translation>
+<translation id="2942228903502008519">ট্যাব বড় করুন (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="2942560570858569904">অপেক্ষা করা হচ্ছে...</translation>
 <translation id="2942581856830209953">এই পৃষ্ঠাটি কাস্টমাইজ করুন</translation>
 <translation id="2942707801577151363">Word, Excel ও PowerPoint ফাইল খুলুন, এডিট এবং সেভ করুন। কিছু ফিচারের জন্য সাবস্ক্রিপশনের প্রয়োজন হতে পারে।</translation>
@@ -3321,7 +3320,6 @@
 <translation id="3527473647192919613">নতুন আইসোলেটেড উইন্ডো</translation>
 <translation id="3528498924003805721">শর্টকাট লক্ষ্যগুলি</translation>
 <translation id="35296112145429559">স্ক্রল বোতাম পিন করুন</translation>
-<translation id="3529851166527095708">&amp;অ্যাড্রেস ও আরও</translation>
 <translation id="3530919970074558307">গ্রুপ আনফোকাস করুন</translation>
 <translation id="3531070080754387701">এই ফোল্ডার থেকে Microsoft 365 <ph name="FILE_NAMES" /> ফাইল খুলতে পারছে না</translation>
 <translation id="3531883061432162622">আপনার বুকমার্ক ও তালিকায় নিজের পড়ার তালিকা খুঁজুন</translation>
@@ -3738,7 +3736,6 @@
 <translation id="3812525830114410218">খারাপ সার্টিফিকেট</translation>
 <translation id="3813296892522778813">আপনি যা খুঁজছেন তা খুঁজে না পেলে <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome সহায়তা<ph name="END_LINK_CHROMIUM" />য় যান</translation>
 <translation id="3813358687923336574">পৃষ্ঠাগুলি অনুবাদ ও 'কুইক আন্সার' ফিচারের জন্য ব্যবহার করা ভাষা</translation>
-<translation id="381485723922188688">Option</translation>
 <translation id="3815668647912194650">পরে ট্যাব যোগ করার জন্য এই গ্রুপটি রেখে দিন অথবা আর অ্যাক্সেস করতে না চাইলে ছেড়ে বেরিয়ে আসুন</translation>
 <translation id="3816118180265633665">Chrome কালার</translation>
 <translation id="3817524650114746564">আপনার কম্পিউটারের প্রক্সি সেটিংস খুলুন</translation>
@@ -5465,6 +5462,7 @@
 <translation id="5155299520372681119">ফাইল আপলোড করার মেয়াদ শেষ হয়ে গেছে এবং সেটি সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="5156638757840305347">কার্সর দেখা গেলে বা সরলে তা হাইলাইট করা হয়</translation>
 <translation id="5157250307065481244">সাইটের বিবরণ দেখুন</translation>
+<translation id="5157258206078001821">ট্যাব আড়াল করুন (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="5159094275429367735">Crostini সেট আপ করুন</translation>
 <translation id="5159236862360390997">টিউটোরিয়াল সহ সহায়তা বাবলের একটি সিরিজ দেখানো হবে।
           প্রথমে বাবলে, তারপরে এটি যে এলিমেন্টের দিকে নির্দেশ করছে আবার তাতে ফোকাস করতে <ph name="ACCELERATOR" /> প্রেস করুন।</translation>
@@ -6053,7 +6051,6 @@
 <translation id="5625225435499354052">Google Pay-তে এডিট করুন</translation>
 <translation id="5627832140542566187">ডিসপ্লে ওরিয়েন্টেশন</translation>
 <translation id="5628434207686266338">ডিভাইসের পাসওয়ার্ড সেট করুন</translation>
-<translation id="5628652442614339066">এর সাহায্যে সহজেই খুলুন</translation>
 <translation id="562935524653278697">আপনার অ্যাডমিনিস্ট্রেটর বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংসের সিঙ্ক করা বন্ধ করেছে।</translation>
 <translation id="5631017369956619646">CPU ব্যবহার</translation>
 <translation id="5631272057151918206">এটি আপনার অফলাইন ফাইলের মাধ্যমে ব্যবহার করা স্পেসের <ph name="OFFLINE_STORAGE_SIZE" /> পর্যন্ত মুছে দেবে। কিছু ফাইল এখনও অফলাইনে পাওয়া যাবে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -6524,7 +6521,6 @@
 <translation id="6003143259071779217">ই-সিম মোবাইল নেটওয়ার্ক সরান</translation>
 <translation id="6003479444341796444">এখন টাইটেল বার দেখা যাচ্ছে</translation>
 <translation id="6003582434972667631">থিমটি আপনার সংস্থা সেট করেছে</translation>
-<translation id="6005010326905893430">আপনার নিজের শর্টকাট এডিট করুন</translation>
 <translation id="6005045517426700202">ইটের বিল্ডিং</translation>
 <translation id="6006484371116297560">ক্লাসিক</translation>
 <translation id="6007053304250788613">মিরর মোড থেকে মাত্র একটি ডিসপ্লেকেই বাদ দেওয়া যায়</translation>
@@ -6684,6 +6680,7 @@
 <translation id="6136637346277431354">ট্যাব ও আরও অনেক কিছু যোগ করুন</translation>
 <translation id="6140948187512243695">বিশদ বিবরণ দেখান</translation>
 <translation id="6141988275892716286">ডাউনলোড নিশ্চিত করুন</translation>
+<translation id="6142784636114866877">ট্যাব বড় করুন (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="6143186082490678276">সাহায্য পান</translation>
 <translation id="6143366292569327983">যে পৃষ্ঠার ভাষা অনুবাদ করতে চান, সেটি বেছে নিন</translation>
 <translation id="6144938890088808325">আমাদের Chromebooks উন্নত করতে সাহায্য করুন</translation>
@@ -6754,7 +6751,6 @@
 <translation id="6190953336330058278">ফোন হাব সম্পর্কিত অ্যাপ</translation>
 <translation id="6192333916571137726">ফাইল ডাউনলোড করুন</translation>
 <translation id="6192413564913825901">'সব বুকমার্ক' মেনুতে যান</translation>
-<translation id="6194333736420234626">&amp;পেমেন্ট পদ্ধতি</translation>
 <translation id="6195005504600220730">আপনার ব্রাউজার, OS ও ডিভাইসের ব্যাপারে বিভিন্ন তথ্য পড়ুন</translation>
 <translation id="6196640612572343990">তৃতীয় পক্ষের কুকিজ অবরুদ্ধ করুন</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" এক্সটেনশন আপনার প্রক্সী সেটিংস নিয়ন্ত্রণ করছে, যার মানে হল আপনি অনলাইনে যাই করুন না কেন এটি তার পরিবর্তন করতে, সেখানে জোর করে প্রবেশ বা সেটি লুকিয়ে দেখতে পারবে। আপনি যদি বুঝতে না পারেন কেন এই পরিবর্তনটি হয়েছে তাহলে আপনি সম্ভবত এটি চাইছেন না।</translation>
@@ -6977,7 +6973,6 @@
 <translation id="6367396429435748845">'মাউস কী' পজ ও আবার চালু করতে, <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> প্রেস করুন</translation>
 <translation id="6367853307713830174">Gemini এর ধাপগুলি দেখায় এবং সংবেদনশীল অ্যাকশন নেওয়ার আগে বিষয়টি কনফার্ম করার চেষ্টা করে। আপনি যেকোনও সময় এটি বন্ধ করতে বা নিজে কন্ট্রোল করতে পারবেন।</translation>
 <translation id="6367985768157257101">'নিয়ারবাই শেয়ার' ফিচারের মাধ্যমে আপনি কি ডেটা পেতে চান?</translation>
-<translation id="6368157733310917710">&amp;অ্যাড্রেস ও আরও</translation>
 <translation id="6368276408895187373">চালু আছে – <ph name="VARIATION_NAME" /></translation>
 <translation id="6369420654782669629">ফিচার ও এক্সটেনশনের শর্টকাট</translation>
 <translation id="6370021412472292592">ম্যানিফেস্ট লোড করা যাবে না।</translation>
@@ -7543,7 +7538,6 @@
 <translation id="6801435275744557998">টাচস্ক্রীন ক্যানিব্রেট করুন</translation>
 <translation id="6801920212017470190">যেকোনও জায়গা থেকে আপনার সব দাম কমা সম্পর্কিত তথ্য পান</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
-<translation id="6802825994120702390">স্ক্রিনের কোনও অংশ বা সম্পূর্ণ স্ক্রিন বেছে নিয়ে আপনার প্রশ্নের সাথে প্রাসঙ্গিক তথ্য যোগ করুন</translation>
 <translation id="6803766346203101854">এই সাইটকে আপনার ডিভাইসে ডেটা সেভ করার অনুমতি দেওয়া হয়েছে।</translation>
 <translation id="6805236548654699520">আপনার সেটিংস নিরাপদ ডিফল্টে ফিরিয়ে আনার মাধ্যমে অবাঞ্ছিত পপ-আপ সরান, নেটওয়ার্ক সমস্যা সমাধান এবং আরও অনেক কিছু করুন।</translation>
 <translation id="6805478749741295868">এটি হল পরীক্ষামূলক AI ফিচার এবং সব সময় সঠিক তথ্য দেবে না।</translation>
@@ -9893,6 +9887,7 @@
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" />-কে আপনার পরিচিতিতে যোগ করুন</translation>
 <translation id="8617601976406256334"><ph name="SITE_NAME" />-এর সাইট ডেটা ও অনুমতি মুছবেন?</translation>
 <translation id="8617748779076050570">নিরাপদ কানেকশন আইডি: <ph name="CONNECTION_ID" /></translation>
+<translation id="8618586951885164886">&amp;যোগাযোগের তথ্য</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619369551122276044">আপনার ডিভাইসে ওয়েব অ্যাপ ইস্টল করার অনুমতি নেই</translation>
 <translation id="8619803522055190423">ড্রপ শ্যাডো</translation>
@@ -10007,6 +10002,7 @@
 <translation id="8692107307702113268">পাসওয়ার্ডে ১০০০টির বেশি অক্ষর আছে</translation>
 <translation id="8693862390730570097">"আমাকে লিখতে সাহায্য করো" ফিচারকে অটোমেটিক খোলার অনুমতি দেবেন না</translation>
 <translation id="8694596275649352090">স্লিপ মোড বা যখন ঢাকনাটি বন্ধ থাকবে তখন বন্ধ করুন</translation>
+<translation id="8695214265159551349">ট্যাব আড়াল করুন (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="8695825812785969222">Open &amp;Location...</translation>
 <translation id="869884720829132584">অ্যাপ্লিকেশনস মেনু</translation>
 <translation id="869891660844655955">মেয়াদকাল সমাপ্তির তারিখ</translation>
@@ -10511,7 +10507,6 @@
 <translation id="9071664234353284876">কোনও যাচাইকরণ নেই</translation>
 <translation id="9072220108592671115">ইনস্টল করা ভার্সন <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">আপনার জন্য টাস্ক সম্পূর্ণ করতে, আপনি Gemini-কে এইসব সাইটে সাইন-ইন করার অনুমতি দিয়েছেন</translation>
-<translation id="9074190188883314952">আপনার স্ক্রিনে যা আছে তা শেয়ার করতে Lens বোতাম ব্যবহার করুন</translation>
 <translation id="9074618195273027322">{CORE_COUNT,plural, =1{১টি কোর}one{{CORE_COUNT}টি কোর}other{{CORE_COUNT}টি কোর}}</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9075413375877487220">এই এক্সটেনশনটি উন্নত Safe Browsing-এর কাছে বিশ্বাসযোগ্য নয়।</translation>
@@ -10666,7 +10661,6 @@
 <translation id="9195969368671142407">আপনার সংস্থা আপনাকে Google অ্যাকাউন্টে সেভ করতে না দিলে, আপনি ট্যাব গ্রুপে শেয়ার করতে বা যোগ দিতে পারবেন না</translation>
 <translation id="9197456336762295195">যে ডিভাইসে google.com-এর জন্য আপনার পাসকী আছে, তার ক্যামেরা ব্যবহার করে এই QR কোড স্ক্যান করুন</translation>
 <translation id="919840898042157087">স্ট্যাটিক মুভমেন্ট</translation>
-<translation id="9198797990125364460">যেকোনও জায়গা থেকে Google-কে জিজ্ঞাসা করুন</translation>
 <translation id="9199503643457729322">গোপনীয়তা সংক্রান্ত গাইড থেকে দূরে নেভিগেট করতে ক্লিক করুন।</translation>
 <translation id="9199695835892108985">সব সিরিয়াল পোর্টের অনুমতি রিসেট করবেন?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> ফোল্ডারের ফাইলগুলি এডিট করতে পারবে</translation>

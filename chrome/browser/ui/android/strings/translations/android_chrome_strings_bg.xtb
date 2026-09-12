@@ -1427,7 +1427,6 @@
 <translation id="6642299196749785472">Прикачване на разделите</translation>
 <translation id="6647441008198474441">Посещаваните от вас URL адреси се изпращат до Google с цел предвиждане на следващите страници, които е възможно да посетите</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
-<translation id="6649642165559792194">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Отваряне в <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Искам да получавам известия</translation>
@@ -1746,6 +1745,7 @@
 <translation id="7792388396321542707">Спиране на споделянето</translation>
 <translation id="780287761701992588">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
+<translation id="7804364787702057554">Профилът ви в Chrome</translation>
 <translation id="7810647596859435254">Отваряне със…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Всички файлове, 1 файл в списъка}other{Всички файлове, # файла в списъка}}</translation>
 <translation id="7815484226266492798">Дълга екранна снимка</translation>
@@ -1788,7 +1788,6 @@
 <translation id="7968014550143838305">Добавено към списъка за четене</translation>
 <translation id="7968982339740310781">Преглед на подробностите</translation>
 <translation id="7969391000881506217">Дата на валидност*</translation>
-<translation id="7975379999046275268">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Предупреждава ви, ако използвате парола, която е компрометирана при нарушение на сигурността на данните.</translation>
 <translation id="7987499071758862048">„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и „<ph name="PERMISSION_3" />“ <ph name="SEPARATOR" /> Chrome премахна тези разрешения, защото не сте посещавали този сайт наскоро</translation>
 <translation id="799576009106109668">Ще сърфирате по-бързо, тъй като съдържанието се зарежда предварително въз основа на уеб страницата, която сте посетили в момента</translation>

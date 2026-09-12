@@ -67,6 +67,7 @@
 <translation id="1793486931176048546">Chromium को अपने टास्कबार पर पिन करने के लिए, Windows की सूचना में <ph name="BEGIN_BOLD" />हां<ph name="END_BOLD" /> पर क्लिक करें. इससे यह तुरंत ऐक्सेस किया जा सकेगा.</translation>
 <translation id="1808667845054772817">क्रोमियम को फिर से इंस्टॉल करें</translation>
 <translation id="1820835682567584003">Chromium, <ph name="AUTHENTICATION_PURPOSE" /> की कोशिश कर रहा है</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> ने पहले से साइन इन किया हुआ है. अपने ब्राउज़िंग डेटा को अलग से मैनेज करने के लिए, Chromium में अपनी प्रोफ़ाइल में <ph name="USER_EMAIL_ADDRESS" /> से साइन इन करें. इससे आपको <ph name="DEVICE" /> पर एक्सटेंशन वगैरह का ऐक्सेस भी मिलेगा.</translation>
 <translation id="183031085822326697">अगली बार अपने <ph name="DEVICE_TYPE" /> पर Chromium खोलने पर, आपको Google Password Manager इस्तेमाल करने का प्रॉम्प्ट दिखेगा.</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
 <translation id="18552579716432081">ब्राउज़िंग डेटा को सिर्फ़ इस डिवाइस से मिटाने और अपने Google खाते में सेव रखने के लिए, <ph name="BEGIN_LINK" />Chromium से साइन आउट करें<ph name="END_LINK" />.</translation>
@@ -189,6 +190,7 @@
 <translation id="3038232873781883849">इंस्टॉल करने की प्रोसेस, कुछ देर में शुरू होगी...</translation>
 <translation id="3045032126857188731">वह भाषा जिसमें अनुवाद किया गया: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">सुझाव देने वाला डायलॉग बॉक्स बंद करें</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> ने पहले से साइन इन किया हुआ है. अपने ब्राउज़िंग डेटा को अलग से मैनेज करने के लिए, Chromium में अपनी प्रोफ़ाइल में <ph name="USER_EMAIL_ADDRESS" /> से साइन इन करें. इससे आपको <ph name="DEVICE" /> पर रीडिंग लिस्ट वगैरह का ऐक्सेस भी मिलेगा.</translation>
 <translation id="3068187312562070417">Chromium की अन्य प्रोफ़ाइलें</translation>
 <translation id="3068290154869370196">एक्सटेंशन, ऐड-ऑन होते हैं. इनकी मदद से, Chromium को अपनी पसंद के मुताबिक बनाया जा सकता है. इससे आपको व्यवस्थित रहने और रोज़मर्रा के कामों को आसान बनाने में मदद मिलती है.</translation>
 <translation id="3068515742935458733">Google को क्रैश रिपोर्ट और <ph name="UMA_LINK" /> भेजकर क्रोमियम को बेहतर बनाने में मदद करें</translation>
@@ -290,6 +292,7 @@
 <translation id="4147856324248078748">Chromium को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="4148957013307229264">इंस्‍टॉल हो रहा है...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - नेटवर्क में साइन इन करें - क्रोमियम</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> ने पहले से साइन इन किया हुआ है. अपने ब्राउज़िंग डेटा को अलग से मैनेज करने के लिए, Chromium में अपनी प्रोफ़ाइल में <ph name="USER_EMAIL_ADDRESS" /> से साइन इन करें. इससे आपको अपने सभी डिवाइसों पर रीडिंग लिस्ट वगैरह का ऐक्सेस भी मिलेगा.</translation>
 <translation id="421369550622382712">क्रोमियम के लिए शानदार ऐप्‍स, गेम, एक्‍सटेंशन और थीम खोजें.</translation>
 <translation id="4217080900579554343">अपने सभी कंप्यूटर पर यह एक्सटेंशन और इसी तरह का अन्य टूल पाने के लिए, Chromium में साइन इन करें</translation>
 <translation id="4217972271355023382">अपने माता-पिता के चुने गए विकल्पों के साथ ऑनलाइन सुरक्षित रहने के लिए, अपनी Chromium प्रोफ़ाइल पर स्विच करें, जहां आपने पहले से <ph name="USER_EMAIL_ADDRESS" /> के तौर पर साइन इन किया है</translation>
@@ -304,7 +307,6 @@
 <translation id="4298125729853015961">Chromium से पासवर्ड एक्सपोर्ट करें</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4334241893986177674">इस स्क्रीनशॉट को खोजें</translation>
-<translation id="4368547723231502008">Chromium को छोटा करने के बाद भी, कहीं से भी जानकारी खोजें और सवाल पूछें</translation>
 <translation id="4384331407722351213">Windows के चालू होते ही Chromium को लॉन्च करें</translation>
 <translation id="4400772909124543403">कोई अपडेट उपलब्ध नहीं है</translation>
 <translation id="4407044323746248786">फिर भी क्रोमियम से बाहर निकलें?</translation>
@@ -390,6 +392,7 @@
 <translation id="5382964351116519680">'Chromium की मदद से खोजें' सुविधा खोलें</translation>
 <translation id="5383439451358640070">जानें कि Chromium कुछ फ़ाइलों को क्यों ब्लॉक करता है</translation>
 <translation id="5386450000063123300">क्रोमियम अपडेट हो रहा है (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> ने पहले से साइन इन किया हुआ है. अपने ब्राउज़िंग डेटा को अलग से मैनेज करने के लिए, Chromium में अपनी प्रोफ़ाइल में <ph name="USER_EMAIL_ADDRESS" /> से साइन इन करें. इससे आपको अपने सभी डिवाइसों पर एक्सटेंशन वगैरह का ऐक्सेस भी मिलेगा.</translation>
 <translation id="538767207339317086">क्रोमियम में साइन-इन करने दें</translation>
 <translation id="5405650547142096840">क्रोमियम से निकालें</translation>
 <translation id="5424544524441439284">इससे परफ़ॉर्मेंस कम होती है, लेकिन Chromium की सायबर हमलों से बचने की क्षमता बढ़ जाती है</translation>

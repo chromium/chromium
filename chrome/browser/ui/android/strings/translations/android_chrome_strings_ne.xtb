@@ -664,6 +664,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">इमर्सिभ प्लेब्याकबाट बाहिरिनुहोस्</translation>
+<translation id="3662595332590803433">कस्टम ट्याबहरू सधैँ Chrome मा खोल्नुहोस्</translation>
 <translation id="3674208116086565128">Google एपको होममा जानुहोस्</translation>
 <translation id="368329460027487650">साइन आउट गरिएको छ। यो बटनमा ट्याप गर्दा साइन इन गर्ने विकल्पहरू खुल्छन्।</translation>
 <translation id="3684540848053703310">मूल्यसम्बन्धी इनसाइटहरू समावेश भएको पुछारको पाना बन्द गरिएको छ</translation>
@@ -1425,7 +1426,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6642299196749785472">ट्याबहरू एट्याच गर्नुहोस्</translation>
 <translation id="6647441008198474441">तपाईंले यसपछि खोल्न सक्ने साइट पूर्वानुमान गर्ने प्रयोजनका लागि तपाईंले खोल्ने URL हरू Google मा पठाइन्छन्</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}other{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}}</translation>
-<translation id="6649642165559792194"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> छविको पूर्वावलोकन गर्नुहोस्</translation>
 <translation id="6659594942844771486">ट्याब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
 <translation id="6669390930482049506">मलाई नोटिफिकेसन पठाउनुहोस्</translation>
@@ -1626,6 +1626,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7335766481146072567">"जारी राख्नुहोस्" मा थिच्नुहोस्</translation>
 <translation id="7336259382292148213">नोटिफिकेसनको सङ्ख्या ठिकै देखिन्छ</translation>
 <translation id="7339898014177206373">नयाँ विन्डो</translation>
+<translation id="7349983576451251297">वेबपेजहरू कस्टम ट्याबहरूको साटो Chrome ब्राउजरमा खोल्नुहोस्</translation>
 <translation id="7352339641508007922">लामो स्क्रिनसट खिच्न ड्र्याग गर्नुहोस्</translation>
 <translation id="7352651011704765696">कुनै त्रुटि भयो</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{चयन गरिएको १ वस्तु सेयर गर्नुहोस्}other{चयन गरिएका # वस्तुहरू सेयर गर्नुहोस्}}</translation>
@@ -1716,6 +1717,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7690596512217303514">तपाईंको डिभाइसमा Chrome खोल्न सकिएन। यो समस्या समाधान गर्न एप स्टोरमा गई Chrome को नवीनतम अपडेट डाउनलोड गर्नुहोस्।</translation>
 <translation id="7692761875510935111">तुरुन्तै ब्राउजरमा खोल्नुहोस्। यो सर्टकट परिवर्तन गर्न टच गरिराख्नुहोस्।</translation>
 <translation id="7695270712963178084">Chrome Finds</translation>
+<translation id="7695610746377249436">यो अनुरोधको जवाफ दिने क्रममा Google लगायतका साइटहरूले आफ्नै स्वविवेक प्रयोग गर्छन्।</translation>
 <translation id="7697383401610880082">ड्र्याग ह्यान्डल</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> मा इमेल सिर्जना गर्नुहोस्</translation>
 <translation id="7702420606070050505">हालसालैको क्रियाकलापसम्बन्धी जानकारी दिने पुछारको पाना पूरै स्क्रिनमा खोलिएको छ</translation>
@@ -1742,6 +1744,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7792388396321542707">साझा गर्न बन्द गर्नुहोस्</translation>
 <translation id="780287761701992588">आफूले प्रयोग गर्ने सबै डिभाइसमा आफ्ना बुकमार्क, पासवर्डलगायतका थप कुरा प्राप्त गर्नुहोस्</translation>
 <translation id="780301667611848630">पर्दैन, धन्यवाद</translation>
+<translation id="7804364787702057554">Chrome मा भएको तपाईंको खाता</translation>
 <translation id="7810647596859435254">निम्नमार्फत खोल्नुहोस्…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{सबै फाइल, सूचीमा एउटा फाइल छ}other{सबै फाइल, सूचीमा # वटा फाइल छन्}}</translation>
 <translation id="7815484226266492798">लामो स्क्रिनसट</translation>
@@ -1784,7 +1787,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7968014550143838305">अध्ययन सूचीमा हालियो</translation>
 <translation id="7968982339740310781">विवरणहरू हेर्नुहोस्</translation>
 <translation id="7969391000881506217">म्याद सकिने मिति*</translation>
-<translation id="7975379999046275268"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> पृष्ठको पूर्वावलोकन गर्नु…</translation>
 <translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> तपाईंले हालसालै यो साइट नखोल्नुभएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>
 <translation id="799576009106109668">तपाईंले हालै खोलेको वेबपेजका आधारमा अग्रिम रूपमा सामग्री लोड गरिएको हुनाले तपाईं छिटो ब्राउज गर्नु हुने छ</translation>

@@ -664,6 +664,7 @@
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3662363748131724714">ഇമേഴ്‌സീവ് പ്ലേബാക്കിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
+<translation id="3662595332590803433">എപ്പോഴും Chrome-ൽ കസ്റ്റം ടാബുകൾ തുറക്കൂ</translation>
 <translation id="3674208116086565128">Google ആപ്പ് ഹോമിലേക്ക് പോകുക</translation>
 <translation id="368329460027487650">സൈൻ ഔട്ട് ചെയ്‌തു. സൈൻ ഇൻ ചെയ്യാനുള്ള ഓപ്‌ഷനുകൾ തുറക്കുന്നു.</translation>
 <translation id="3684540848053703310">നിരക്ക് ഉൾക്കാഴ്‌ചകളുടെ ബോട്ടം ഷീറ്റ് അടച്ചു</translation>
@@ -1426,7 +1427,6 @@
 <translation id="6642299196749785472">ടാബുകൾ അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="6647441008198474441">നിങ്ങൾ അടുത്തതായി ഏതൊക്കെ സൈറ്റുകളായിരിക്കും സന്ദർശിക്കുകയെന്ന് പ്രവചിക്കാൻ, നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കൾ Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
-<translation id="6649642165559792194"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> ചിത്രം പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="6659594942844771486">ടാബ്</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6669390930482049506">എന്നെ അറിയിക്കുക</translation>
@@ -1627,6 +1627,7 @@
 <translation id="7335766481146072567">'തുടരുക' അമർത്തുക</translation>
 <translation id="7336259382292148213">അറിയിപ്പുകൾ നല്ല നിലയിലാണെന്ന് തോന്നുന്നു</translation>
 <translation id="7339898014177206373">പുതിയ വിന്‍ഡോ</translation>
+<translation id="7349983576451251297">കസ്റ്റം ടാബുകൾക്ക് പകരം Chrome ബ്രൗസറിൽ വെബ് പേജുകൾ തുറക്കുക</translation>
 <translation id="7352339641508007922">നീളത്തിലുള്ള സ്ക്രീന്‍ഷോട്ട് എടുക്കാൻ വലിച്ചിടുക</translation>
 <translation id="7352651011704765696">എന്തോ കുഴപ്പം സംഭവിച്ചു</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{തിരഞ്ഞെടുത്ത ഒരു ഇനം പങ്കിടുക}other{തിരഞ്ഞെടുത്ത # ഇനങ്ങൾ പങ്കിടുക}}</translation>
@@ -1717,6 +1718,7 @@
 <translation id="7690596512217303514">നിങ്ങളുടെ ഉപകരണത്തിന് Chrome തുറക്കാനായില്ല. പ്രശ്നം പരിഹരിക്കാൻ, നിങ്ങളുടെ ആപ്പ് സ്റ്റോറിൽ നിന്ന് ഏറ്റവും പുതിയ Chrome അപ്ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യുക.</translation>
 <translation id="7692761875510935111">ബ്രൗസറിൽ വേഗത്തിൽ തുറക്കുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="7695270712963178084">Chrome നിർദ്ദേശങ്ങൾ</translation>
+<translation id="7695610746377249436">ഈ അഭ്യർത്ഥനയോട് പ്രതികരിക്കുമ്പോൾ Google ഉൾപ്പെടെയുള്ള സൈറ്റുകൾ അവയുടെ വിവേചനാധികാരം ഉപയോഗിക്കുന്നു.</translation>
 <translation id="7697383401610880082">വലിച്ചിടുന്നതിനുള്ള ഹാൻഡിൽ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> ആപ്പിൽ ഇമെയിൽ സൃഷ്‌ടിക്കുക</translation>
 <translation id="7702420606070050505">'സമീപകാല ആക്റ്റിവിറ്റി' ബോട്ടം ഷീറ്റ് പൂർണ്ണ സ്ക്രീനിൽ തുറന്നു</translation>
@@ -1743,6 +1745,7 @@
 <translation id="7792388396321542707">പങ്കിടൽ നിർത്തുക</translation>
 <translation id="780287761701992588">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ എന്നിവയും മറ്റും നേടുക</translation>
 <translation id="780301667611848630">വേണ്ട</translation>
+<translation id="7804364787702057554">Chrome-ലെ നിങ്ങളുടെ അക്കൗണ്ട്</translation>
 <translation id="7810647596859435254">ഇത് ഉപയോഗിച്ച് തുറക്കുക...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{എല്ലാ ഫയലുകളും, ലിസ്റ്റിൽ ഒരു ഫയൽ}other{എല്ലാ ഫയലുകളും, ലിസ്റ്റിൽ # ഫയലുകൾ}}</translation>
 <translation id="7815484226266492798">നീളത്തിലുള്ള സ്ക്രീന്‍ഷോട്ട്</translation>
@@ -1785,7 +1788,6 @@
 <translation id="7968014550143838305">വായനാ ലിസ്റ്റിൽ ചേർത്തു</translation>
 <translation id="7968982339740310781">വിശദാംശങ്ങൾ കാണുക</translation>
 <translation id="7969391000881506217">കാലഹരണപ്പെടുന്ന തീയതി*</translation>
-<translation id="7975379999046275268"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> പേജ് പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="7977451675950311423">ഡാറ്റാ ലംഘനത്തിൽ അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ് നിങ്ങൾ ഉപയോഗിക്കുകയാണെങ്കിൽ മുന്നറിയിപ്പ് നൽകുന്നു.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്തതിനാൽ Chrome ഈ അനുമതികൾ നീക്കം ചെയ്തു</translation>
 <translation id="799576009106109668">നിങ്ങളുടെ നിലവിലെ വെബ്‌പേജ് സന്ദർശനം അടിസ്ഥാനമാക്കി സമയോചിതമായി ഉള്ളടക്കം ലോഡ് ചെയ്യുന്നതിനാൽ നിങ്ങൾക്ക് കൂടുതൽ വേഗത്തിൽ ബ്രൗസ് ചെയ്യാം</translation>
