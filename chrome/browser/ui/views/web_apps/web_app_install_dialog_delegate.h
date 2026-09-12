@@ -55,7 +55,7 @@ struct MaxAllowedShrinkage {
 };
 
 inline constexpr MaxAllowedShrinkage kSimpleMaxShrinkage = {40, 20};
-inline constexpr MaxAllowedShrinkage kDetailedMaxShrinkage = {100, 150};
+inline constexpr MaxAllowedShrinkage kDetailedMaxShrinkage = {100, 75};
 inline constexpr MaxAllowedShrinkage kDiyMaxShrinkage = {50, 50};
 inline constexpr MaxAllowedShrinkage kLaunchMaxShrinkage = {50, 50};
 
@@ -63,9 +63,11 @@ MaxAllowedShrinkage GetMaxAllowedShrinkage(InstallDialogType type);
 
 // For some browser windows that are smaller in size, the install dialog's
 // current size is smaller than the preferred size, leading to important
-// security information being occluded. This function performs the comparison
-// between the sizes and prevents that from happening.
-// This serves as a stop-gap fix for crbug.com/384962294.
+// security information (such as the app origin) being occluded. This function
+// performs the comparison between the sizes, and additionally verifies that the
+// origin label is fully visible within the dialog, preventing security
+// spoofing. This serves as a stop-gap fix for crbug.com/384962294 and
+// crbug.com/506830581.
 // TODO(crbug.com/346974105): Remove once tab modal dialogs can be sized
 // irrespective of the size of the browser window triggering it.
 bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget,

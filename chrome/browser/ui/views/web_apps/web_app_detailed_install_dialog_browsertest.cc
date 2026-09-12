@@ -378,15 +378,60 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
-                       SmallPopupClosesWindowAutomatically) {
+                       WindowResizeTo240ClosesDialog) {
   auto popup_value =
       OpenPopupOfSize(browser()->GetTabStripModel()->GetActiveWebContents(),
-                      GURL("https://www.example.com"));
-  EXPECT_TRUE(popup_value.has_value());
+                      GURL("https://www.example.com"),
+                      /*width=*/600, /*height=*/500);
+  ASSERT_TRUE(popup_value.has_value());
   content::WebContents* popup_contents = popup_value.value();
   BrowserWindowInterface* popup_browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           popup_contents);
+  ASSERT_NE(popup_browser, nullptr);
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetMLInstallTracker(popup_browser);
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppDetailedInstallDialog");
+  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
+  SetScreenshotFetcher(std::make_unique<FakeScreenshotFetcher>(
+      GetScreenshots(std::string()), base::flat_set<int>()));
+  ShowWebAppDetailedInstallDialog(
+      popup_browser->GetTabStripModel()->GetActiveWebContents(),
+      GetInstallInfo(), std::move(install_tracker), test_future.GetCallback(),
+      screenshot_fetcher(), PwaInProductHelpState::kNotShown);
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  EXPECT_FALSE(test_future.IsReady());
+
+  base::HistogramTester histograms;
+  views::test::WidgetDestroyedWaiter destroy_waiter(widget);
+  // Resize popup window to 240px height where origin would be occluded.
+  ui_test_utils::SetAndWaitForBounds(*popup_browser, gfx::Rect(600, 240));
+  destroy_waiter.Wait();
+
+  ASSERT_TRUE(test_future.Wait());
+  EXPECT_FALSE(test_future.Get<bool>());
+
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCloseButtonClicked, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
+                       SmallPopupClosesWindowAutomatically) {
+  auto popup_value =
+      OpenPopupOfSize(browser()->GetTabStripModel()->GetActiveWebContents(),
+                      GURL("https://www.example.com"));
+  ASSERT_TRUE(popup_value.has_value());
+  content::WebContents* popup_contents = popup_value.value();
+  BrowserWindowInterface* popup_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          popup_contents);
+  ASSERT_NE(popup_browser, nullptr);
 
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetMLInstallTracker(popup_browser);
@@ -408,6 +453,49 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
                                   screenshot_fetcher(),
                                   PwaInProductHelpState::kNotShown);
   run_loop.Run();
+
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCloseButtonClicked, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
+                       ShortPopupClosesDialogAutomatically) {
+  auto popup_value =
+      OpenPopupOfSize(browser()->GetTabStripModel()->GetActiveWebContents(),
+                      GURL("https://www.example.com"),
+                      /*width=*/600, /*height=*/240);
+  ASSERT_TRUE(popup_value.has_value());
+  content::WebContents* popup_contents = popup_value.value();
+  BrowserWindowInterface* popup_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          popup_contents);
+  ASSERT_NE(popup_browser, nullptr);
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetMLInstallTracker(popup_browser);
+
+  base::HistogramTester histograms;
+  views::AnyWidgetObserver widget_observer(views::test::AnyWidgetTestPasskey{});
+
+  base::RunLoop run_loop;
+  widget_observer.set_closing_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (widget->GetName() == "WebAppDetailedInstallDialog") {
+          run_loop.Quit();
+        }
+      }));
+  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
+  SetScreenshotFetcher(std::make_unique<FakeScreenshotFetcher>(
+      GetScreenshots(std::string()), base::flat_set<int>()));
+  ShowWebAppDetailedInstallDialog(
+      popup_contents, GetInstallInfo(), std::move(install_tracker),
+      test_future.GetCallback(), screenshot_fetcher(),
+      PwaInProductHelpState::kNotShown);
+  run_loop.Run();
+
+  ASSERT_TRUE(test_future.Wait());
+  EXPECT_FALSE(test_future.Get<bool>());
 
   histograms.ExpectUniqueSample(
       "WebApp.InstallConfirmation.CloseReason",

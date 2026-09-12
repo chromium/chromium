@@ -40,9 +40,11 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -111,12 +113,41 @@ MaxAllowedShrinkage GetMaxAllowedShrinkage(InstallDialogType type) {
 bool IsWidgetCurrentSizeSmallerThanPreferredSize(
     views::Widget* widget,
     MaxAllowedShrinkage shrinkage) {
+  CHECK(widget);
+  views::View* contents_view = widget->GetContentsView();
+  CHECK(contents_view);
+
   const gfx::Size& current_size = widget->GetSize();
-  const gfx::Size& preferred_size =
-      widget->GetContentsView()->GetPreferredSize();
+  const gfx::Size preferred_size = contents_view->GetPreferredSize();
   int min_width = preferred_size.width() - shrinkage.max_width_shrinkage;
   int min_height = preferred_size.height() - shrinkage.max_height_shrinkage;
-  return current_size.width() < min_width || current_size.height() < min_height;
+  if (current_size.width() < min_width || current_size.height() < min_height) {
+    return true;
+  }
+
+  // Ensure views layout is up to date before checking visibility bounds.
+  widget->LayoutRootViewIfNecessary();
+
+  // Check if the app origin/version label is visible within the dialog.
+  // In a small window or when scrolled/clipped, the origin label may be
+  // occluded or cut off by the scroll view viewport fold.
+  views::View* origin_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kSimpleInstallDialogAppInfoLabel,
+          views::ElementTrackerViews::GetContextForWidget(widget));
+  if (origin_view && contents_view->Contains(origin_view)) {
+    if (origin_view->IsDrawn()) {
+      if (origin_view->size().IsEmpty()) {
+        return true;
+      }
+      const gfx::Rect visible_bounds = origin_view->GetVisibleBounds();
+      if (visible_bounds != origin_view->GetLocalBounds()) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallDialogDelegate,
