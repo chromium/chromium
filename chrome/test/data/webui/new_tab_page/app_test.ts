@@ -4861,8 +4861,8 @@ suite('NewTabPageAppTest', () => {
         });
 
     test(
-        'dynamicTimeoutEnabled = true configures speech recognition and ' +
-            'disables idle timer',
+        'autoEndpoint enabled configures continuous speech recognition and ' +
+            'idle timers',
         async () => {
           loadTimeData.overrideValues({
             voiceSearchCoherenceAnySearchboxExperimentEnabled: true,
@@ -4877,19 +4877,23 @@ suite('NewTabPageAppTest', () => {
           const searchbox = $$(app, '#searchbox');
           assertTrue(!!searchbox);
           searchbox.dispatchEvent(new Event('open-voice-search'));
+          await app.updateComplete;
           await microtasksFinished();
 
-          // Verify speech recognition continuous property is false.
-          assertFalse(mockSpeechRecognition.continuous);
+          // Speech recognition should be continuous so that the frontend
+          // controls endpoint timing via idleTimeout rather than webkit cutting
+          // off immediately.
+          assertTrue(mockSpeechRecognition.continuous);
 
-          // Verify setTimeout is NOT called for idle timeout (only called for
-          // outside click listener registration).
-          const setTimeoutCalls = windowProxy.getArgs('setTimeout');
-          const has8000Timeout = setTimeoutCalls.some(
-              (args: [unknown, number]) => args[1] === 8000);
-          assertFalse(
-              has8000Timeout,
-              'Should not start idle timer when dynamicTimeout is enabled');
+          const voiceSearch =
+              app.shadowRoot.querySelector<ComposeboxVoiceSearchElement>(
+                  'cr-composebox-voice-search');
+          assertTrue(!!voiceSearch);
+          await voiceSearch.updateComplete;
+          assertFalse(voiceSearch.dynamicTimeoutEnabled);
+          assertTrue(voiceSearch.autosubmitEnabled);
+          assertEquals(3000, voiceSearch.idleTimeout);
+          assertEquals(10000, voiceSearch.manualSubmitIdleTimeout);
         });
 
     test(

@@ -219,6 +219,12 @@ export class ComposeboxVoiceSearchElement extends
        */
       idleTimeout: {type: Number},
       /**
+       * Time in milliseconds to wait before closing the UI if no speech
+       * has been detected at all since start, or trailing silence for
+       * manual submit mode. If undefined, falls back to `idleTimeout`.
+       */
+      manualSubmitIdleTimeout: {type: Number},
+      /**
        * Whether voice search was activated by a keyboard shortcut.
        */
       activatedByKeyboard: {type: Boolean},
@@ -242,6 +248,7 @@ export class ComposeboxVoiceSearchElement extends
   accessor idleTimeout: number = 3000;
   accessor isPermissionPromptOpen: boolean = false;
   accessor liveTranscriptEnabled: boolean = true;
+  accessor manualSubmitIdleTimeout: number|undefined = undefined;
   accessor metricSource: string = '';
   // Accept page callback router attribute asynchronously, so that the parent
   // and voice search component can share the same mojo connection and source of
@@ -415,6 +422,7 @@ export class ComposeboxVoiceSearchElement extends
       e.preventDefault();
       e.stopPropagation();
     }
+    this.state_ = State.RESULT_FINAL;
     this.fire('recording-stopped', this.transcript_);
     this.recordMetric_(
         VoiceSearchMetricType.ACTION, VoiceSearchAction.STOP_BUTTON_CLICKED,
@@ -458,10 +466,23 @@ export class ComposeboxVoiceSearchElement extends
     }
   }
 
+  private getIdleTimeout_(): number {
+    // State enum values < SPEECH_RECEIVED (UNINITIALIZED, STARTED,
+    // AUDIO_RECEIVED) indicate that speech has not yet been detected. In this
+    // case, wait for manualSubmitIdleTimeout (initial silence timeout) before
+    // timing out.
+    if (!this.transcript_ && this.state_ < State.SPEECH_RECEIVED) {
+      return this.manualSubmitIdleTimeout ?? this.idleTimeout;
+    }
+    return this.autosubmitEnabled ?
+        this.idleTimeout :
+        (this.manualSubmitIdleTimeout ?? this.idleTimeout);
+  }
+
   private resetIdleTimer_() {
     WindowProxy.getInstance().clearTimeout(this.timerId_);
     this.timerId_ = WindowProxy.getInstance().setTimeout(
-        this.onIdleTimeout_.bind(this), this.idleTimeout);
+        this.onIdleTimeout_.bind(this), this.getIdleTimeout_());
   }
 
   protected onSubmitClick_(e: Event) {
@@ -478,7 +499,9 @@ export class ComposeboxVoiceSearchElement extends
     }
     // If there is text transcribed, process it as final.
     if (this.transcript_) {
-      this.onFinalResult_(this.transcript_, /* force_submit=*/ true);
+      const forceSubmit =
+          this.manualSubmitIdleTimeout === undefined || this.autosubmitEnabled;
+      this.onFinalResult_(this.transcript_, forceSubmit);
       return;
     }
     this.onError_(VoiceSearchError.NO_SPEECH);
@@ -604,12 +627,7 @@ export class ComposeboxVoiceSearchElement extends
           this.onFinalResult_(this.transcript_, /*forceSubmit=*/ true);
           return;
         }
-        // If `continuous` is disabled, that means that speech
-        // webkit is the source of truth for timing out and has
-        // decided to time out.
-        if (!this.dynamicTimeoutEnabled) {
-          this.onError_(VoiceSearchError.NO_MATCH);
-        } else if (this.transcript_) {
+        if (this.transcript_) {
           this.onFinalResult_(this.transcript_);
         } else {
           this.onError_(VoiceSearchError.NO_MATCH);
@@ -709,9 +727,11 @@ export class ComposeboxVoiceSearchElement extends
     this.detailedError = error;
 
     // Handle error display and dismissal behavior based on the embedder.
-    if (!this.hasErrorTimer) {
-      if (error === VoiceSearchError.NO_MATCH || error === VoiceSearchError.NO_SPEECH) {
-        // Without a timer, NO_MATCH and NO_SPEECH errors close immediately with no message.
+    if (!this.hasErrorTimer || error === VoiceSearchError.NO_SPEECH) {
+      if (error === VoiceSearchError.NO_MATCH ||
+          error === VoiceSearchError.NO_SPEECH) {
+        // Without a timer (or for NO_SPEECH), errors close immediately with no
+        // message.
         this.errorMessage_ = '';
         this.resetState_();
         this.recordMetric_(
@@ -738,8 +758,8 @@ export class ComposeboxVoiceSearchElement extends
       this.errorMessage_ = this.getErrorText_(error);
       this.fire('voice-search-error', /*canceled-by-error=*/ false);
 
-      if (error === VoiceSearchError.NO_MATCH || error === VoiceSearchError.NO_SPEECH) {
-        // NO_MATCH and NO_SPEECH errors auto-close after a longer delay.
+      if (error === VoiceSearchError.NO_MATCH) {
+        // NO_MATCH errors auto-close after a longer delay.
         this.timerId_ = WindowProxy.getInstance().setTimeout(() => {
           this.recordMetric_(
               VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_CANCELING,
@@ -794,12 +814,15 @@ export class ComposeboxVoiceSearchElement extends
     if (!result) {
       return;
     }
+    // Set state to RESULT_FINAL before voiceModeEndCleanup_() so that when
+    // voiceRecognition_.abort() fires onRecognitionEnd_, it is treated as a
+    // no-op and does not re-enter onFinalResult_().
+    this.state_ = State.RESULT_FINAL;
     if (!this.autosubmitEnabled && !forceSubmit) {
-      this.fire('recording-stopped', this.transcript_);
+      this.fire('recording-stopped', result);
       this.voiceModeEndCleanup_();
       return;
     }
-    this.state_ = State.RESULT_FINAL;
     // Metric recorded through this event firing:
     this.fire('voice-search-final-result', result);
     this.recordMetric_(

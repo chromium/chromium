@@ -225,10 +225,10 @@ ${this.voiceSearchCoherenceAnySearchboxExperimentEnabled_ &&
           .pageCallbackRouter="${this.searchboxCallbackRouter_}"
           .autosubmitEnabled="${
             this.voiceSearchCoherenceRealboxAutoEndpointEnabled_}"
-          .dynamicTimeoutEnabled="${
-            this.voiceSearchCoherenceRealboxAutoEndpointEnabled_}"
+          .dynamicTimeoutEnabled="${false}"
           .queryLengthLimit="${this.voiceQueryLengthLimit_}"
-          .idleTimeout="${this.voiceIdleTimeoutMs_}"
+          .idleTimeout="${this.voiceAutoSubmitIdleTimeoutMs_}"
+          .manualSubmitIdleTimeout="${this.voiceManualSubmitIdleTimeoutMs_}"
           .liveTranscriptEnabled="${
             this.voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_}"
           .helperTextEnabled="${

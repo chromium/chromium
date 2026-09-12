@@ -509,6 +509,140 @@ suite('ComposeboxVoiceSearch', () => {
       });
 
   test(
+      'NO_SPEECH error closes immediately even when hasErrorTimer is true',
+      async () => {
+        const voiceSearchElement =
+            (await openVoiceSearchUI()) as unknown as MockComposeboxVoiceSearch;
+        voiceSearchElement.hasErrorTimer = true;
+
+        let cancelEventFired = false;
+        voiceSearchElement.addEventListener('voice-search-cancel', () => {
+          cancelEventFired = true;
+        });
+
+        // Intercept the idle timer triggered during start().
+        const setTimeoutCalls = windowProxy.getArgs('setTimeout');
+        assertTrue(setTimeoutCalls.length >= 1);
+        const callback = setTimeoutCalls[0][0];
+
+        windowProxy.resetResolver('setTimeout');
+        callback();
+        await microtasksFinished();
+
+        assertEquals(null, voiceSearchElement.detailedError);
+        assertEquals('', voiceSearchElement.errorMessage_);
+        assertTrue(cancelEventFired);
+        assertEquals(0, windowProxy.getCallCount('setTimeout'));
+      });
+
+  test(
+      'initial idle timeout uses manualSubmitIdleTimeout when specified',
+      async () => {
+        const voiceSearchElement = await openVoiceSearchUI();
+        voiceSearchElement.manualSubmitIdleTimeout = 10000;
+        voiceSearchElement.idleTimeout = 3000;
+
+        windowProxy.resetResolver('setTimeout');
+        windowProxy.reset();
+
+        mockSpeechRecognition.onaudiostart!(new Event('audiostart'));
+        await microtasksFinished();
+
+        const [, timeoutMs] = await windowProxy.whenCalled('setTimeout');
+        assertEquals(10000, timeoutMs);
+      });
+
+  test(
+      'idle timeout after speech in manual submit arm stops recording ' +
+          'without submitting',
+      async () => {
+        const voiceSearchElement = await openVoiceSearchUI();
+        voiceSearchElement.manualSubmitIdleTimeout = 10000;
+        voiceSearchElement.idleTimeout = 3000;
+        voiceSearchElement.autosubmitEnabled = false;
+        voiceSearchElement.submitStopButtonsEnabled = true;
+        await voiceSearchElement.updateComplete;
+
+        let recordingStoppedTranscript: string|null = null;
+        voiceSearchElement.addEventListener('recording-stopped', (e: Event) => {
+          recordingStoppedTranscript = (e as CustomEvent<string>).detail;
+        });
+        let finalResultFired = false;
+        voiceSearchElement.addEventListener('voice-search-final-result', () => {
+          finalResultFired = true;
+        });
+
+        windowProxy.getArgs('setTimeout').length = 0;
+
+        mockSpeechRecognition.onspeechstart!(new Event('speechstart'));
+        await microtasksFinished();
+
+        const result = createResults(1);
+        Object.assign(
+            result.results[0]![0]!, {confidence: 1, transcript: 'hello world'});
+        mockSpeechRecognition.onresult!(result);
+        await microtasksFinished();
+
+        // Verify trailing timeout is manualSubmitIdleTimeout (10000ms) for
+        // manual submit.
+        const setTimeoutCalls = windowProxy.getArgs('setTimeout');
+        const idleCall = [...setTimeoutCalls].reverse().find(
+            (call: [unknown, number]) => call[1] === 10000);
+        assertTrue(!!idleCall);
+
+        // Fire the idle callback.
+        const callback = idleCall[0] as Function;
+        callback();
+        await microtasksFinished();
+
+        assertEquals('hello world', recordingStoppedTranscript);
+        assertFalse(finalResultFired);
+      });
+
+  test(
+      'idle timeout after speech in auto-endpoint arm auto-submits query',
+      async () => {
+        const voiceSearchElement = await openVoiceSearchUI();
+        voiceSearchElement.manualSubmitIdleTimeout = 10000;
+        voiceSearchElement.idleTimeout = 3000;
+        voiceSearchElement.autosubmitEnabled = true;
+        voiceSearchElement.submitStopButtonsEnabled = true;
+        await voiceSearchElement.updateComplete;
+
+        let finalResultQuery: string|null = null;
+        voiceSearchElement.addEventListener(
+            'voice-search-final-result', (e: Event) => {
+              finalResultQuery = (e as CustomEvent<string>).detail;
+            });
+
+        windowProxy.getArgs('setTimeout').length = 0;
+
+        mockSpeechRecognition.onspeechstart!(new Event('speechstart'));
+        await microtasksFinished();
+
+        const result = createResults(1);
+        Object.assign(
+            result.results[0]![0]!,
+            {confidence: 1, transcript: 'search query'});
+        mockSpeechRecognition.onresult!(result);
+        await microtasksFinished();
+
+        // Verify trailing timeout is idleTimeout (3000ms) for
+        // auto-endpoint.
+        const setTimeoutCalls = windowProxy.getArgs('setTimeout');
+        const idleCall = [...setTimeoutCalls].reverse().find(
+            (call: [unknown, number]) => call[1] === 3000);
+        assertTrue(!!idleCall);
+
+        // Fire the idle callback.
+        const callback = idleCall[0] as Function;
+        callback();
+        await microtasksFinished();
+
+        assertEquals('search query', finalResultQuery);
+      });
+
+  test(
       'NO_MATCH error renders Try Again link and hides Details link',
       async () => {
         const voiceSearchElement = await openVoiceSearchUI();
