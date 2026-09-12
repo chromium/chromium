@@ -16,14 +16,20 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
+#include "chrome/browser/extensions/low_trust_policy_install_block_manager.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_constants.h"
@@ -34,7 +40,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pending_extension_manager.h"
@@ -425,5 +433,89 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
   }
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+TEST_F(ExternalProviderImplTest, LowTrustBlockedScannerBypass) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBlockPolicyDseNtpOverridesInLowTrust);
+
+  // Initialize service with external providers.
+  InitService(/*autoupdate_enabled=*/false);
+
+  // Define a GPO force-install JSON (using update URL).
+  const std::string json = base::StringPrintf(
+      R"(
+        {
+          "%s": {
+            "external_update_url": "https://clients2.google.com/service/update2/crx"
+          }
+        }
+      )",
+      kGoodApp.app_id);
+
+  // 1. Simulate an unmanaged (low trust) environment.
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  // Create the provider with policy locations and register it with the manager.
+  auto provider = std::make_unique<ExternalProviderImpl>(
+      external_provider_manager(),
+      base::MakeRefCounted<ExternalTestingLoader>(
+          json, base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
+      profile(), mojom::ManifestLocation::kInvalidLocation,
+      mojom::ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS);
+  ExternalProviderImpl* raw_provider = provider.get();
+  external_provider_manager()->AddProviderForTesting(std::move(provider));
+
+  // Run the initial scan.
+  raw_provider->VisitRegisteredExtension();
+
+  // First time: Since the extension is NOT yet in the blocked preference cache,
+  // it should be added to the pending manager.
+  auto* manager = PendingExtensionManager::Get(profile());
+  EXPECT_TRUE(manager->IsIdPending(kGoodApp.app_id));
+
+  // Clear it for the next scan.
+  manager->Remove(kGoodApp.app_id);
+
+  // 2. Mark the extension as blocked by low trust in preferences.
+  ExtensionManagementFactory::GetForBrowserContext(profile())
+      ->low_trust_block_manager()
+      ->MarkBlocked(
+          kGoodApp.app_id,
+          BlockedExtensionInfo{
+              .override_type = util::DseNtpOverrideType::kDse,
+              .update_url = "https://clients2.google.com/service/update2/crx",
+              .timestamp = base::Time::Now()});
+  EXPECT_TRUE(ExtensionManagementFactory::GetForBrowserContext(profile())
+                  ->low_trust_block_manager()
+                  ->IsBlocked(kGoodApp.app_id));
+
+  // Run the scan again.
+  raw_provider->VisitRegisteredExtension();
+
+  // Second time: Since the extension is in the blocked cache and the
+  // environment is low-trust, it is skipped and not added to the pending
+  // manager.
+  EXPECT_FALSE(manager->IsIdPending(kGoodApp.app_id));
+
+  // 3. Simulate transition to a managed (trusted) environment.
+  policy::ScopedManagementServiceOverrideForTesting trusted_profile_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  // Run the scan again.
+  raw_provider->VisitRegisteredExtension();
+
+  // Third time: Since the environment is now trusted, it should not be
+  // skipped, and it should be added to the pending manager. The ID remains
+  // preserved in the blocked cache.
+  EXPECT_TRUE(manager->IsIdPending(kGoodApp.app_id));
+  EXPECT_TRUE(ExtensionManagementFactory::GetForBrowserContext(profile())
+                  ->low_trust_block_manager()
+                  ->IsBlocked(kGoodApp.app_id));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace extensions

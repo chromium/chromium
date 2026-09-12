@@ -147,6 +147,7 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
           NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED);
   low_trust_block_manager_ =
       std::make_unique<LowTrustPolicyInstallBlockManager>(*pref_service_);
+  low_trust_block_manager_->CleanupStaleRecords();
   providers_.push_back(
       std::make_unique<StandardManagementPolicyProvider>(this, profile_.get()));
   providers_.push_back(
@@ -421,12 +422,8 @@ bool ExtensionManagement::IsGreylistedForceInstalledInLowTrustEnvironment(
       setting->installation_mode != ManagedInstallationMode::kForced) {
     return false;
   }
-
-  return GetHigherManagementAuthorityTrustworthinessForPolicyLoading(profile_) <
-         policy::ManagementAuthorityTrustworthiness::TRUSTED;
-#else
-  return false;
 #endif
+  return IsLowTrustEnforcementActive();
 }
 
 bool ExtensionManagement::IsForceInstalledInLowTrustEnvironment(
@@ -439,12 +436,8 @@ bool ExtensionManagement::IsForceInstalledInLowTrustEnvironment(
   if (!Manifest::IsPolicyLocation(extension.location())) {
     return false;
   }
-
-  return GetHigherManagementAuthorityTrustworthinessForPolicyLoading(profile_) <
-         policy::ManagementAuthorityTrustworthiness::TRUSTED;
-#else
-  return false;
 #endif
+  return IsLowTrustEnforcementActive();
 }
 
 bool ExtensionManagement::ShouldBlockForceInstalledOffstoreExtension(
@@ -463,7 +456,12 @@ bool ExtensionManagement::ShouldBlockForceInstalledOffstoreExtension(
   if (!Manifest::IsPolicyLocation(extension.location())) {
     return false;
   }
+#endif
+  return IsLowTrustEnforcementActive();
+}
 
+bool ExtensionManagement::IsLowTrustEnforcementActive() const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return GetHigherManagementAuthorityTrustworthinessForPolicyLoading(profile_) <
          policy::ManagementAuthorityTrustworthiness::TRUSTED;
 #else
@@ -471,10 +469,18 @@ bool ExtensionManagement::ShouldBlockForceInstalledOffstoreExtension(
 #endif
 }
 
-bool ExtensionManagement::ShouldBlockPolicyInstalledDseNtpOverrideExtension(
-    const Extension& extension) {
+bool ExtensionManagement::IsDseNtpOverrideBlockingActive() const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (!base::FeatureList::IsEnabled(kBlockPolicyDseNtpOverridesInLowTrust)) {
+    return false;
+  }
+#endif
+  return IsLowTrustEnforcementActive();
+}
+
+bool ExtensionManagement::ShouldBlockPolicyInstalledDseNtpOverrideExtension(
+    const Extension& extension) {
+  if (!IsDseNtpOverrideBlockingActive()) {
     return false;
   }
   ManagedInstallationMode mode = GetInstallationMode(&extension);
@@ -482,15 +488,17 @@ bool ExtensionManagement::ShouldBlockPolicyInstalledDseNtpOverrideExtension(
       mode != ManagedInstallationMode::kRecommended) {
     return false;
   }
-  if (GetHigherManagementAuthorityTrustworthiness(profile_) >=
-      policy::ManagementAuthorityTrustworthiness::TRUSTED) {
-    return false;
-  }
   return util::GetDseNtpOverrideType(extension) !=
          util::DseNtpOverrideType::kNone;
-#else
-  return false;
-#endif
+}
+
+bool ExtensionManagement::IsExtensionBlockedByLowTrust(
+    const ExtensionId& extension_id) const {
+  if (!IsDseNtpOverrideBlockingActive()) {
+    return false;
+  }
+  return low_trust_block_manager_ &&
+         low_trust_block_manager_->IsBlocked(extension_id);
 }
 
 APIPermissionSet ExtensionManagement::GetBlockedAPIPermissions(

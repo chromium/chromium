@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
+#include "chrome/browser/extensions/low_trust_policy_install_block_manager.h"
 #include "chrome/browser/extensions/standard_management_policy_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -1574,6 +1575,52 @@ TEST_F(ExtensionManagementServiceTest,
         extension_management_->ShouldBlockForceInstalledOffstoreExtension(
             *forced_extension));
   }
+}
+
+TEST_F(ExtensionManagementServiceTest, IsExtensionBlockedByLowTrust) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBlockPolicyDseNtpOverridesInLowTrust);
+#endif
+
+  const std::string extension_id = "abcdefghijklmnopabcdefghijklmnop";
+
+  // 1. Simulate low trust (unmanaged).
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(profile_.get()),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  // Initially false before marking blocked on all platforms.
+  EXPECT_FALSE(
+      extension_management_->IsExtensionBlockedByLowTrust(extension_id));
+
+  // Mark as blocked in LowTrustPolicyInstallBlockManager.
+  extension_management_->low_trust_block_manager()->MarkBlocked(
+      extension_id,
+      BlockedExtensionInfo{.override_type = util::DseNtpOverrideType::kDse,
+                           .update_url = "http://example.com",
+                           .timestamp = base::Time::Now()});
+
+  bool expect_blocked =
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      true;
+#else
+      false;
+#endif
+
+  // Returns true on Win/Mac when marked in low trust, false on other platforms.
+  EXPECT_EQ(extension_management_->IsExtensionBlockedByLowTrust(extension_id),
+            expect_blocked);
+
+  // 2. Simulate high trust (managed enterprise).
+  policy::ScopedManagementServiceOverrideForTesting trusted_management(
+      policy::ManagementServiceFactory::GetForProfile(profile_.get()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  // Returns false in trusted environments on all platforms even if cached in
+  // prefs.
+  EXPECT_FALSE(
+      extension_management_->IsExtensionBlockedByLowTrust(extension_id));
 }
 
 // Tests the flag value indicating that extensions are blocklisted by default.
