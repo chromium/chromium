@@ -30,7 +30,7 @@ class IncognitoTaskInfo : public TaskInfo {
     return LevelUpTaskCategory::kSafety;
   }
   std::string GetTriggerUserAction() const override {
-    return "MobileTabGridSelectIncognitoPanel";
+    return "MobileIncognitoBrowserShown";
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_TASK_COMPLETED_INCOGNITO);

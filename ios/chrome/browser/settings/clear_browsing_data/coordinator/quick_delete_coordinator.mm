@@ -6,6 +6,7 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
@@ -63,6 +64,9 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   // The radial wipe animation should only be performed if Quick Delete is
   // opened on top of a tab or the tab grid.
   BOOL _canPerformRadialWipeAnimation;
+
+  // Tracks whether browsing data deletion has successfully completed.
+  BOOL _deletionFinished;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -120,8 +124,25 @@ using browsing_data::DeleteBrowsingDataDialogAction;
 }
 
 - (void)stop {
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  ProceduralBlock completion = nil;
+  if (_deletionFinished) {
+    _deletionFinished = NO;
+    completion = ^{
+      base::RecordAction(
+          base::UserMetricsAction("ClearBrowsingData_QuickDeleteFinished"));
+    };
+  }
+  UIViewController* presentingViewController =
+      _viewController.presentingViewController;
+  if (presentingViewController) {
+    // The metric is emitted synchronously after the dismiss animation
+    // completes because user action observers may need the sheet to be
+    // completely dismissed to consider the action to be fully completed.
+    [presentingViewController dismissViewControllerAnimated:YES
+                                                 completion:completion];
+  } else if (completion) {
+    completion();
+  }
   [self disconnect];
 }
 
@@ -245,6 +266,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
 }
 
 - (void)releaseOtherWindows {
+  _deletionFinished = YES;
   _windowUIBlocker.reset();
 }
 
@@ -304,6 +326,8 @@ using browsing_data::DeleteBrowsingDataDialogAction;
         // Add vibration at the end of the animation including after the tabs
         // rearrange.
         TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+        base::RecordAction(
+            base::UserMetricsAction("ClearBrowsingData_QuickDeleteFinished"));
       },
       _window, std::move(_windowUIBlocker));
 

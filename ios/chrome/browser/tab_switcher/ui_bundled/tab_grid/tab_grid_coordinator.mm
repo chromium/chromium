@@ -582,6 +582,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   sceneState.window.overrideUserInterfaceStyle =
       UIUserInterfaceStyleUnspecified;
 
+  if (incognito && (wasTabGridVisible ||
+                    self.browserLayoutViewController != viewController)) {
+    base::RecordAction(base::UserMetricsAction("MobileIncognitoBrowserShown"));
+  }
+
   // If another browserLayoutViewController is already being presented, swap
   // this one into the container.
   if (self.browserLayoutViewController && !wasTabGridVisible) {

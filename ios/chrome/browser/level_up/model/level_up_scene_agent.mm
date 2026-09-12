@@ -15,12 +15,16 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
@@ -123,17 +127,16 @@
     return;
   }
 
-  Browser* browser =
-      self.sceneState.browserProviderInterface.currentBrowserProvider.browser;
-  if (!browser) {
+  Browser* browser = [self currentBrowser];
+  CHECK(browser);
+
+  // By design, no completion snackbar is shown in incognito.
+  if (browser->type() == Browser::Type::kIncognito) {
     return;
   }
 
   id<SnackbarCommands> snackbarHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
-  if (!snackbarHandler) {
-    return;
-  }
 
   SnackbarMessage* snackbarMessage = [[SnackbarMessage alloc]
       initWithTitle:base::SysUTF8ToNSString(
@@ -144,23 +147,46 @@
 
   __weak LevelUpSceneAgent* weakSelf = self;
   action.handler = ^{
-    LevelUpSceneAgent* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    Browser* strongBrowser = strongSelf.sceneState.browserProviderInterface
-                                 .currentBrowserProvider.browser;
-    if (!strongBrowser) {
-      return;
-    }
-    id<LevelUpCommands> levelUpHandler = HandlerForProtocol(
-        strongBrowser->GetCommandDispatcher(), LevelUpCommands);
-    [levelUpHandler showLevelUp];
+    [weakSelf onSnackbarAction];
   };
 
   snackbarMessage.action = action;
 
   [snackbarHandler showSnackbarMessage:snackbarMessage];
+}
+
+#pragma mark - Private
+
+// Returns the current active browser for the associated scene.
+- (Browser*)currentBrowser {
+  return self.sceneState.browserProviderInterface.currentBrowserProvider
+      .browser;
+}
+
+// Called when the user taps the action button in the completion snackbar.
+- (void)onSnackbarAction {
+  Browser* browser = [self currentBrowser];
+  CHECK(browser);
+
+  // Since there is no active NTP, an NTP will be created before presenting
+  // Level Up.
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+  __weak LevelUpSceneAgent* weakSelf = self;
+  [sceneHandler prepareToPresentModalWithSnackbarDismissal:NO
+                                                completion:^{
+                                                  [weakSelf showLevelUp];
+                                                }];
+}
+
+// Shows the Level Up UI.
+- (void)showLevelUp {
+  Browser* browser = [self currentBrowser];
+  CHECK(browser);
+
+  id<LevelUpCommands> levelUpHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), LevelUpCommands);
+  [levelUpHandler showLevelUp];
 }
 
 @end

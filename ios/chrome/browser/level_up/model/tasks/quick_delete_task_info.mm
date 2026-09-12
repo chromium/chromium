@@ -29,7 +29,7 @@ class QuickDeleteTaskInfo : public TaskInfo {
     return LevelUpTaskCategory::kSafety;
   }
   std::string GetTriggerUserAction() const override {
-    return "ClearBrowsingData_UserDeletedCookieOrCache";
+    return "ClearBrowsingData_QuickDeleteFinished";
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(

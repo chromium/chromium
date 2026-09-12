@@ -8081,6 +8081,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ClearBrowsingData_QuickDeleteFinished">
+  <owner>novakovica@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when the Quick Delete flow has completely finished on iOS and any
+    deletion animation or UI dismissal is done.
+  </description>
+</action>
+
 <action name="ClearBrowsingData_SameSiteNoneData" not_user_triggered="true">
   <owner>dylancutler@google.com</owner>
   <description>SameSite=None cookies were deleted.</description>
@@ -20754,6 +20763,14 @@ should be able to be added at any place in this file.
   <description>
     The user has started biometric authentication for incognito access. iOS
     only.
+  </description>
+</action>
+
+<action name="MobileIncognitoBrowserShown">
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when the incognito browser is shown on iOS.
   </description>
 </action>
 

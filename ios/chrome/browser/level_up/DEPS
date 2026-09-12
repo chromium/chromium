@@ -1,4 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sessions/model",
