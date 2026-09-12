@@ -58,6 +58,8 @@ export interface MenuStateItem<T> {
   // Optional semantic item category. Defaults to SettingsItemType.RADIO if
   // omitted.
   itemType?: SettingsItemType;
+  // Optional event name override. If omitted, falls back to group.eventName.
+  eventName?: string;
 }
 
 export interface MenuHeader {
@@ -70,7 +72,7 @@ export interface MenuHeader {
 export interface MenuGroup<T> {
   header: MenuHeader;
   items: Array<MenuStateItem<T>>;
-  eventName: string;
+  eventName?: string;
 }
 
 // Defines the contract for any menu that appears in the Toolbar.

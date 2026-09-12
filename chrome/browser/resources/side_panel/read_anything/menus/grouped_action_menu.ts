@@ -82,7 +82,11 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
     assert(group);
     const menuItem = group.items[itemIndex];
     assert(menuItem);
-    this.fire(group.eventName, {data: menuItem.data});
+    const eventName = menuItem.eventName || group.eventName;
+    assert(
+        eventName,
+        'At least one of menu item or menu group should have an event name');
+    this.fire(eventName, {data: menuItem.data});
     if (this.closeOnClick) {
       this.$.lazyMenu.get().close();
     }
