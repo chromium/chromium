@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.89.0"
 name = "jxl_macros"
-version = "0.7.2"
+version = "0.7.3"
 authors = ["Luca Versari <veluca93@gmail.com>"]
 build = false
 autolib = false

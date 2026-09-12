@@ -505,6 +505,7 @@ fn hsqueeze_scalar(
 }
 
 #[inline(always)]
+#[allow(clippy::too_many_arguments)]
 fn hsqueeze_impl_i16<D: SimdDescriptor>(
     d: D,
     y_start: usize,
@@ -513,6 +514,7 @@ fn hsqueeze_impl_i16<D: SimdDescriptor>(
     in_next_avg: Option<&ImageRect<'_, i16>>,
     out_prev: Option<&ImageRect<'_, i16>>,
     out: &mut ImageRectMut<'_, i16>,
+    buf: &mut [i16; 2048],
 ) {
     const {
         assert!(D::I16Vec::LEN <= 32);
@@ -536,13 +538,12 @@ fn hsqueeze_impl_i16<D: SimdDescriptor>(
     let mask = !(lanes - 1);
     let y_limit = if w >= lanes { h & mask } else { y_start };
 
-    let mut buf = [0i16; 2048];
     for y in (y_start..y_limit).step_by(lanes) {
         for dy in 0..lanes {
             buf[dy] = in_avg.row(y + dy)[0];
             buf[lanes + dy] = in_res.row(y + dy)[0];
         }
-        let mut avg_first = D::I16Vec::load(d, &buf);
+        let mut avg_first = D::I16Vec::load(d, buf);
         let mut res_first = D::I16Vec::load(d, &buf[lanes..]);
 
         let mut prev_b = match out_prev {
@@ -551,7 +552,7 @@ fn hsqueeze_impl_i16<D: SimdDescriptor>(
                 for (dy, out) in buf[..lanes].iter_mut().enumerate() {
                     *out = lr.row(y + dy)[3];
                 }
-                D::I16Vec::load(d, &buf)
+                D::I16Vec::load(d, buf)
             }
         };
 
@@ -600,12 +601,12 @@ fn hsqueeze_impl_i16<D: SimdDescriptor>(
                 for (idx, out) in buf[..lanes].iter_mut().enumerate() {
                     *out = in_avg.row(y + idx)[w];
                 }
-                D::I16Vec::load(d, &buf)
+                D::I16Vec::load(d, buf)
             } else if let Some(lr) = in_next_avg {
                 for (idx, out) in buf[..lanes].iter_mut().enumerate() {
                     *out = lr.row(y + idx)[0];
                 }
-                D::I16Vec::load(d, &buf)
+                D::I16Vec::load(d, buf)
             } else {
                 avg_first
             };
@@ -680,6 +681,7 @@ fn hsqueeze_impl_i16<D: SimdDescriptor>(
             in_next_avg,
             out_prev,
             out,
+            buf,
         );
     }
     if lanes > 8 && remainder_rows >= 8 && w >= 8 {
@@ -691,6 +693,7 @@ fn hsqueeze_impl_i16<D: SimdDescriptor>(
             in_next_avg,
             out_prev,
             out,
+            buf,
         );
     }
 
@@ -782,8 +785,9 @@ simd_function!(
         in_next_avg: Option<&ImageRect<'_, i16>>,
         out_prev: Option<&ImageRect<'_, i16>>,
         out: &mut ImageRectMut<'_, i16>,
+        buf: &mut [i16; 2048],
     ) {
-        hsqueeze_impl_i16(d, 0, in_avg, in_res, in_next_avg, out_prev, out)
+        hsqueeze_impl_i16(d, 0, in_avg, in_res, in_next_avg, out_prev, out, buf)
     }
 );
 
@@ -794,6 +798,7 @@ fn do_hsqueeze_step_i16(
     in_next_avg: Option<&ImageRect<'_, i16>>,
     out_prev: Option<&ImageRect<'_, i16>>,
     buffers: &mut [&mut ModularChannel],
+    scratch_i16: &mut [i16; 2048],
 ) {
     trace!("hsqueeze step in_avg: {in_avg:?} in_res: {in_res:?} in_next_avg: {in_next_avg:?}");
     let out = buffers.first_mut().unwrap();
@@ -813,7 +818,14 @@ fn do_hsqueeze_step_i16(
         return;
     }
     // Otherwise: 2 or more in in row
-    hsqueeze_i16(in_avg, in_res, in_next_avg, out_prev, &mut out_rect);
+    hsqueeze_i16(
+        in_avg,
+        in_res,
+        in_next_avg,
+        out_prev,
+        &mut out_rect,
+        scratch_i16,
+    );
 }
 
 #[inline(always)]
@@ -853,6 +865,7 @@ pub fn do_hsqueeze_step(
     out_prev: Option<&RawImageRect<'_>>,
     buffers: &mut [&mut ModularChannel],
     storage: ModularStorage,
+    scratch_i16: &mut [i16; 2048],
 ) {
     if storage == ModularStorage::I16 {
         do_hsqueeze_step_i16(
@@ -861,6 +874,7 @@ pub fn do_hsqueeze_step(
             in_next_avg.map(|r| ImageRect::<i16>::from_raw(*r)).as_ref(),
             out_prev.map(|r| ImageRect::<i16>::from_raw(*r)).as_ref(),
             buffers,
+            scratch_i16,
         );
     } else {
         do_hsqueeze_step_i32(

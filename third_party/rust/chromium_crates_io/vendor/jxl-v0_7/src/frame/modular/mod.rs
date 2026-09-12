@@ -210,12 +210,15 @@ impl ModularBufferInfo {
     }
 }
 
+use crate::frame::modular::decode::specialized_trees::LUT_TABLE_SIZE;
 use crate::frame::modular::transforms::smooth_squeeze::SmoothUpsampleScratch;
 
 pub(super) struct ScratchSpace {
     smooth_upsample_scratch: SmoothUpsampleScratch,
     palette_row_scratch: [Vec<i32>; 4],
     decode_row_scratch: [Vec<i32>; 3],
+    tree_lut_scratch: Box<[u8; LUT_TABLE_SIZE]>,
+    hsqueeze_i16_scratch: Box<[i16; 2048]>,
 }
 
 impl Debug for ScratchSpace {
@@ -230,6 +233,8 @@ impl ScratchSpace {
             smooth_upsample_scratch: SmoothUpsampleScratch::default(),
             palette_row_scratch: [vec![], vec![], vec![], vec![]],
             decode_row_scratch: [vec![], vec![], vec![]],
+            tree_lut_scratch: crate::util::box_array(0u8),
+            hsqueeze_i16_scratch: crate::util::box_array(0i16),
         }
     }
 }
@@ -414,7 +419,7 @@ impl FullModularImage {
             })
             .collect();
 
-        sorted_buffers.sort_by_key(|x| x.0);
+        sorted_buffers.sort_unstable_by_key(|x| x.0);
 
         section_buffer_indices.push(
             sorted_buffers
@@ -463,7 +468,7 @@ impl FullModularImage {
 
         // Ensure that the channel list in each group is sorted by actual channel ID.
         for list in section_buffer_indices.iter_mut() {
-            list.sort_by_key(|x| buffer_info[*x].coded_channel_id);
+            list.sort_unstable_by_key(|x| (buffer_info[*x].coded_channel_id, *x));
         }
 
         trace!(?section_buffer_indices);

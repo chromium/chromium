@@ -408,7 +408,7 @@ impl Frame {
         Ok(())
     }
 
-    pub fn finalize(mut self) -> Result<Option<DecoderState>> {
+    pub fn finalize(mut self: Box<Self>) -> Result<Option<DecoderState>> {
         // First, drop the render pipeline to ensure that no other references to the reference
         // frames are around.
         self.render_pipeline = None;

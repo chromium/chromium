@@ -334,12 +334,12 @@ pub struct CustomTransformData {
     #[coder(Bits(3))]
     custom_weight_mask: u32,
     #[condition((custom_weight_mask & 1) != 0)]
-    #[default(DEFAULT_KERN_2)]
-    pub weights2: [f32; 15],
+    #[default(Box::new(DEFAULT_KERN_2))]
+    pub weights2: Box<[f32; 15]>,
     #[condition((custom_weight_mask & 2) != 0)]
-    #[default(DEFAULT_KERN_4)]
-    pub weights4: [f32; 55],
+    #[default(Box::new(DEFAULT_KERN_4))]
+    pub weights4: Box<[f32; 55]>,
     #[condition((custom_weight_mask & 4) != 0)]
-    #[default(DEFAULT_KERN_8)]
-    pub weights8: [f32; 210],
+    #[default(Box::new(DEFAULT_KERN_8))]
+    pub weights8: Box<[f32; 210]>,
 }

@@ -197,7 +197,7 @@ impl Frame {
         frame_header: FrameHeader,
         toc: Toc,
         mut decoder_state: DecoderState,
-    ) -> Result<Self> {
+    ) -> Result<Box<Self>> {
         if frame_header.is_visible() {
             decoder_state.visible_frame_index += 1;
             decoder_state.nonvisible_frame_index = 0;
@@ -282,7 +282,7 @@ impl Frame {
 
         let group_dim = frame_header.group_dim();
 
-        Ok(Self {
+        Ok(Box::new(Self {
             #[cfg(test)]
             use_simple_pipeline: decoder_state.use_simple_pipeline,
             group_status: GroupStatus::new(&frame_header),
@@ -308,7 +308,7 @@ impl Frame {
             dirty_lf_groups: BTreeSet::new(),
             buffer_recycler: Arc::new(BufferRecycler::new(group_dim)),
             lf_preview_dirty_groups: BTreeSet::new(),
-        })
+        }))
     }
 
     pub fn allow_rendering_before_last_pass(&self) -> bool {

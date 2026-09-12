@@ -11,7 +11,7 @@ use crate::frame::modular::decode::common::make_pixel;
 use crate::frame::modular::decode::specialized_trees::run_on_specialized_tree;
 use crate::frame::modular::predict::{PredictionData, WeightedPredictorState};
 use crate::frame::modular::tree::{NUM_NONREF_PROPERTIES, PROPERTIES_PER_PREVCHAN, predict};
-use crate::frame::modular::{ModularChannel, ModularStorage, Tree};
+use crate::frame::modular::{ModularChannel, ModularStorage, ScratchSpace, Tree};
 use crate::headers::modular::{GroupHeader, WeightedHeader};
 use crate::image::{Image, ImageRectMut};
 use crate::util::tracing_wrappers::*;
@@ -287,10 +287,15 @@ pub(super) fn decode_modular_channel(
     reader: &mut SymbolReader,
     br: &mut BitReader,
     storage: ModularStorage,
-    scratch: &mut [Vec<i32>; 3],
+    scratch_space: &mut ScratchSpace,
 ) -> Result<()> {
     debug!("reading channel");
     let size = buffers[chan].size(storage);
+    let ScratchSpace {
+        decode_row_scratch,
+        tree_lut_scratch,
+        ..
+    } = scratch_space;
     if size.0 <= 4 || size.1 <= 2 || size.0 * size.1 <= SMALL_CHANNEL_THRESHOLD {
         let mut decoder = FullTree::new(tree, &header.wp_header, chan, stream_id, size.0, storage)?;
         decode_modular_channel_impl(
@@ -301,13 +306,20 @@ pub(super) fn decode_modular_channel(
             reader,
             br,
             storage,
-            scratch,
+            decode_row_scratch,
         )?;
         br.check_for_error()?;
         return Ok(());
     }
 
-    run_on_specialized_tree(tree, chan, stream_id, size.0, header, storage, {
+    run_on_specialized_tree(
+        tree,
+        chan,
+        stream_id,
+        size.0,
+        header,
+        storage,
+        tree_lut_scratch,
         |t| {
             decode_modular_channel_impl(
                 t,
@@ -317,9 +329,9 @@ pub(super) fn decode_modular_channel(
                 reader,
                 br,
                 storage,
-                scratch,
+                decode_row_scratch,
             )
-        }
-    })?;
+        },
+    )?;
     br.check_for_error()
 }

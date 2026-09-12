@@ -257,6 +257,18 @@ impl BoxParser {
         self.aux.box_buffer.as_ref()
     }
 
+    pub(super) fn is_codestream_complete(&self) -> bool {
+        if !self.latest_codestream_box.is_last() {
+            return false;
+        }
+
+        match self.state {
+            ParseState::Codestream(Some(0)) => true,
+            ParseState::Codestream(_) => false,
+            _ => true,
+        }
+    }
+
     fn add_checkpoint(&mut self) {
         if !self.allow_checkpoint {
             return;
@@ -523,7 +535,7 @@ impl BoxParser {
                     }
                     self.state = ParseState::BoxNeeded(8);
                 }
-                ParseState::Skip(count) => {
+                ParseState::Codestream(count) | ParseState::Skip(count) => {
                     if count == Some(0) {
                         self.state = ParseState::Complete;
                         continue;

@@ -27,9 +27,9 @@ const DELTA_PALETTE_ENTRIES: usize = 143;
 
 #[derive(Debug)]
 struct ImplicitPalette {
-    deltas: [[i32; DELTA_PALETTE_ENTRIES]; RGB_CHANNELS],
-    small_cube: [[i32; LARGE_CUBE_OFFSET]; RGB_CHANNELS],
-    large_cube: [[i32; LARGE_CUBE_ENTRIES]; RGB_CHANNELS],
+    deltas: Box<[[i32; DELTA_PALETTE_ENTRIES]; RGB_CHANNELS]>,
+    small_cube: Box<[[i32; LARGE_CUBE_OFFSET]; RGB_CHANNELS]>,
+    large_cube: Box<[[i32; LARGE_CUBE_ENTRIES]; RGB_CHANNELS]>,
 }
 
 impl ImplicitPalette {
@@ -110,7 +110,8 @@ impl ImplicitPalette {
         ];
         const MULTIPLIER: [i32; 2] = [-1, 1];
 
-        let mut deltas = [[0; DELTA_PALETTE_ENTRIES]; RGB_CHANNELS];
+        let mut deltas: Box<[[i32; DELTA_PALETTE_ENTRIES]; RGB_CHANNELS]> =
+            crate::util::box_array([0; DELTA_PALETTE_ENTRIES]);
         for (c, deltas_c) in deltas.iter_mut().enumerate() {
             for (idx, slot) in deltas_c.iter_mut().enumerate() {
                 let mut result = DELTA_PALETTE[(idx + 1) >> 1][c] * MULTIPLIER[idx & 1];
@@ -123,7 +124,8 @@ impl ImplicitPalette {
 
         let scale = |value: usize, bit_depth: usize| ((value * ((1 << bit_depth) - 1)) / 4) as i32;
 
-        let mut small_cube = [[0; LARGE_CUBE_OFFSET]; RGB_CHANNELS];
+        let mut small_cube: Box<[[i32; LARGE_CUBE_OFFSET]; RGB_CHANNELS]> =
+            crate::util::box_array([0; LARGE_CUBE_OFFSET]);
         for (c, cube_c) in small_cube.iter_mut().enumerate() {
             for (idx, slot) in cube_c.iter_mut().enumerate() {
                 let shifted = idx >> (c * SMALL_CUBE_BITS);
@@ -132,7 +134,8 @@ impl ImplicitPalette {
             }
         }
 
-        let mut large_cube = [[0; LARGE_CUBE_ENTRIES]; RGB_CHANNELS];
+        let mut large_cube: Box<[[i32; LARGE_CUBE_ENTRIES]; RGB_CHANNELS]> =
+            crate::util::box_array([0; LARGE_CUBE_ENTRIES]);
         for (c, cube_c) in large_cube.iter_mut().enumerate() {
             for (idx, slot) in cube_c.iter_mut().enumerate() {
                 let val = match c {

@@ -182,21 +182,15 @@ mod tests {
         panic!("failed to reach image-info state while parsing cmyk_layers.jxl");
     }
 
-    /// Regression test: an out-of-order `jxlp` stream with trailing container
-    /// bytes used to spin forever when header parsing needed more codestream
-    /// than the boxes provided.
     #[test]
-    fn ooo_jxlp_with_trailing_bytes_does_not_hang() {
-        let data = include_bytes!("../../../tests/testdata/ooo_jxlp_with_trailing_bytes.jxl");
+    fn incomplete_ooo_jxlp() {
+        let data = include_bytes!("../../../tests/testdata/incomplete_ooo_jxlp.jxl");
 
         let mut decoder = JxlDecoderInner::new(JxlDecoderOptions::default());
         let mut input = data.as_slice();
         let result = decoder.process(&mut input, None, None);
         assert!(
-            matches!(
-                result,
-                Ok(crate::api::ProcessingResult::NeedsMoreInput { .. })
-            ),
+            matches!(result, Err(crate::error::Error::UnexpectedCodestreamBoxEnd)),
             "{result:?}"
         );
     }

@@ -126,7 +126,7 @@ pub fn meta_apply_local_transforms<'a, 'b>(
     // if necessary.
     if !channels.iter().map(|x| x.0).is_sorted() {
         let mut buf_new_position: Vec<_> = channels.iter().map(|x| x.0).collect();
-        buf_new_position.sort();
+        buf_new_position.sort_unstable();
         let buf_tmp: Vec<_> = channels
             .iter()
             .map(|x| {
@@ -341,6 +341,7 @@ impl TransformStep {
                         None,
                         &mut bufs,
                         storage,
+                        &mut scratch_space.hsqueeze_i16_scratch,
                     );
                 }
                 buffers[*buf_out] = out_buf;

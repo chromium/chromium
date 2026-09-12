@@ -255,7 +255,7 @@ pub(in crate::frame::modular) fn decode_modular_subbitstream(
                 &mut reader,
                 br,
                 storage,
-                &mut scratch_space.decode_row_scratch,
+                scratch_space,
             ) {
                 if let Some(p) = partial_decoded_buffers {
                     *p = last_safe_buf;

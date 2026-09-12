@@ -208,6 +208,23 @@ impl CodestreamParser {
         &mut self,
         input: &mut CodestreamInput,
         decode_options: &JxlDecoderOptions,
+        output_buffers: Option<&mut [JxlOutputBuffer]>,
+        parallel_runner: &mut dyn JxlParallelRunner,
+    ) -> Result<()> {
+        let result = self.process_inner(input, decode_options, output_buffers, parallel_runner);
+        if let Err(Error::OutOfBounds(_)) = result
+            && input.box_parser().is_codestream_complete()
+        {
+            Err(Error::UnexpectedCodestreamBoxEnd)
+        } else {
+            result
+        }
+    }
+
+    fn process_inner(
+        &mut self,
+        input: &mut CodestreamInput,
+        decode_options: &JxlDecoderOptions,
         mut output_buffers: Option<&mut [JxlOutputBuffer]>,
         parallel_runner: &mut dyn JxlParallelRunner,
     ) -> Result<()> {

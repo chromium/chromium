@@ -501,6 +501,31 @@ fn idct2d_thin<D: SimdDescriptor>(
 }
 
 macro_rules! make_idct2d {
+    ($name: ident, $h: literal, $w: literal, heap) => {
+        #[inline(never)]
+        pub fn $name<D: SimdDescriptor>(d: D, data: &mut [f32]) {
+            const L: usize = if $w < $h { $h } else { $w };
+            // TODO: pass a scratch buffer from caller instead of allocating Vec here
+            let mut storage = vec![D::F32Vec::zero(d); L];
+            let mut scratch = vec![D::F32Vec::zero(d); L];
+            if $w == $h {
+                return d.call(
+                    #[inline(always)]
+                    |_| idct2d_square(d, data, $w, &mut storage, &mut scratch),
+                );
+            }
+            if $w > $h {
+                return d.call(
+                    #[inline(always)]
+                    |_| idct2d_wide(d, data, $w, $h, &mut storage, &mut scratch),
+                );
+            }
+            return d.call(
+                #[inline(always)]
+                |_| idct2d_thin(d, data, $w, $h, &mut storage, &mut scratch),
+            );
+        }
+    };
     ($name: ident, $h: literal, $w: literal) => {
         pub fn $name<D: SimdDescriptor>(d: D, data: &mut [f32]) {
             const L: usize = if $w < $h { $h } else { $w };
@@ -529,12 +554,12 @@ macro_rules! make_idct2d {
 make_idct2d!(idct2d_32_64, 32, 64);
 make_idct2d!(idct2d_64_32, 64, 32);
 make_idct2d!(idct2d_64_64, 64, 64);
-make_idct2d!(idct2d_64_128, 64, 128);
-make_idct2d!(idct2d_128_64, 128, 64);
-make_idct2d!(idct2d_128_128, 128, 128);
-make_idct2d!(idct2d_128_256, 128, 256);
-make_idct2d!(idct2d_256_128, 256, 128);
-make_idct2d!(idct2d_256_256, 256, 256);
+make_idct2d!(idct2d_64_128, 64, 128, heap);
+make_idct2d!(idct2d_128_64, 128, 64, heap);
+make_idct2d!(idct2d_128_128, 128, 128, heap);
+make_idct2d!(idct2d_128_256, 128, 256, heap);
+make_idct2d!(idct2d_256_128, 256, 128, heap);
+make_idct2d!(idct2d_256_256, 256, 256, heap);
 
 #[cfg(test)]
 #[inline(always)]

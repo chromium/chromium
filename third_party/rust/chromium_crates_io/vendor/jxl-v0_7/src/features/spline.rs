@@ -810,7 +810,7 @@ impl Splines {
         }
 
         // TODO(from libjxl): Consider linear sorting here.
-        segments_by_y.sort_by_key(|segment| segment.0);
+        segments_by_y.sort_unstable_by_key(|segment| segment.0);
 
         self.segment_indices.clear();
         self.segment_indices.try_reserve(segments_by_y.len())?;

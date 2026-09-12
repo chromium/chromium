@@ -709,7 +709,7 @@ impl PatchesDictionary {
         }
 
         // Ensure that the relative order of patches is preserved.
-        patches_for_row_result.sort();
+        patches_for_row_result.sort_unstable();
     }
 
     #[inline(always)]

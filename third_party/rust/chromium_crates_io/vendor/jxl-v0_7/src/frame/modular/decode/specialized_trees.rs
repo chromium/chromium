@@ -205,10 +205,13 @@ impl<WP: MaybeWeightedPredictor, R: Reader> ModularChannelDecoder for FlatTree<W
 
 const LUT_MAX_SPLITVAL: i32 = 1023;
 const LUT_MIN_SPLITVAL: i32 = -1024;
-const LUT_TABLE_SIZE: usize = (LUT_MAX_SPLITVAL - LUT_MIN_SPLITVAL + 1) as usize;
+pub const LUT_TABLE_SIZE: usize = (LUT_MAX_SPLITVAL - LUT_MIN_SPLITVAL + 1) as usize;
 const _: () = assert!(LUT_TABLE_SIZE.is_power_of_two());
 
-fn make_lut(tree: &[TreeNode]) -> Option<[u8; LUT_TABLE_SIZE]> {
+fn make_lut<'a>(
+    tree: &[TreeNode],
+    ans: &'a mut [u8; LUT_TABLE_SIZE],
+) -> Option<&'a [u8; LUT_TABLE_SIZE]> {
     struct RangeAndNode {
         range: Range<i32>,
         node: u32,
@@ -218,7 +221,6 @@ fn make_lut(tree: &[TreeNode]) -> Option<[u8; LUT_TABLE_SIZE]> {
         node: 0,
     }];
 
-    let mut ans = [0u8; LUT_TABLE_SIZE];
     while let Some(RangeAndNode { range, node }) = stack.pop() {
         let v = tree[node as usize];
         match v {
@@ -257,16 +259,22 @@ fn make_lut(tree: &[TreeNode]) -> Option<[u8; LUT_TABLE_SIZE]> {
     Some(ans)
 }
 
-struct WpOnly<R> {
-    lut: [u8; LUT_TABLE_SIZE],
+struct WpOnly<'a, R> {
+    lut: &'a [u8; LUT_TABLE_SIZE],
     wp_state: WeightedPredictorState,
     reader: R,
 }
 
-impl<R: Reader> WpOnly<R> {
-    fn new(tree: &[TreeNode], header: &GroupHeader, xsize: usize, reader: R) -> Option<Self> {
+impl<'a, R: Reader> WpOnly<'a, R> {
+    fn new(
+        tree: &[TreeNode],
+        header: &GroupHeader,
+        xsize: usize,
+        reader: R,
+        lut: &'a mut [u8; LUT_TABLE_SIZE],
+    ) -> Option<Self> {
         let wp_state = WeightedPredictorState::new(&header.wp_header, xsize);
-        let lut = make_lut(tree)?;
+        let lut = make_lut(tree, lut)?;
         Some(Self {
             lut,
             wp_state,
@@ -275,7 +283,7 @@ impl<R: Reader> WpOnly<R> {
     }
 }
 
-impl<R: Reader> ModularChannelDecoder for WpOnly<R> {
+impl<'a, R: Reader> ModularChannelDecoder for WpOnly<'a, R> {
     #[inline(always)]
     fn decode_one(
         &mut self,
@@ -299,19 +307,19 @@ impl<R: Reader> ModularChannelDecoder for WpOnly<R> {
 const GRADIENT_PROPERTY: u8 = 9;
 const WEIGHTED_PROPERTY: u8 = 15;
 
-struct GradientOnly<R> {
-    lut: [u8; LUT_TABLE_SIZE],
+struct GradientOnly<'a, R> {
+    lut: &'a [u8; LUT_TABLE_SIZE],
     reader: R,
 }
 
-impl<R: Reader> GradientOnly<R> {
-    fn new(tree: &[TreeNode], reader: R) -> Option<Self> {
-        let lut = make_lut(tree)?;
+impl<'a, R: Reader> GradientOnly<'a, R> {
+    fn new(tree: &[TreeNode], reader: R, lut: &'a mut [u8; LUT_TABLE_SIZE]) -> Option<Self> {
+        let lut = make_lut(tree, lut)?;
         Some(Self { lut, reader })
     }
 }
 
-impl<R: Reader> ModularChannelDecoder for GradientOnly<R> {
+impl<'a, R: Reader> ModularChannelDecoder for GradientOnly<'a, R> {
     #[inline(always)]
     fn needs_toptop(&self) -> bool {
         false
@@ -450,13 +458,15 @@ impl ModularChannelDecoder for NoTreeZero {
     }
 }
 
-pub fn run_on_specialized_tree<F: FnOnce(&mut dyn ModularChannelDecoder) -> Result<()>>(
+#[allow(clippy::too_many_arguments)]
+pub(super) fn run_on_specialized_tree<F: FnOnce(&mut dyn ModularChannelDecoder) -> Result<()>>(
     tree: &Tree,
     channel: usize,
     stream: usize,
     xsize: usize,
     header: &GroupHeader,
     storage: ModularStorage,
+    lut_scratch: &mut [u8; LUT_TABLE_SIZE],
     run: F,
 ) -> Result<()> {
     // TODO(veluca): consider skipping the pruning if header.uses_global_tree is true.
@@ -585,14 +595,14 @@ pub fn run_on_specialized_tree<F: FnOnce(&mut dyn ModularChannelDecoder) -> Resu
 
     if !uses_non_wp
         && !uses_non420
-        && let Some(mut wp) = WpOnly::new(&pruned_tree, header, xsize, Reader420NoLz)
+        && let Some(mut wp) = WpOnly::new(&pruned_tree, header, xsize, Reader420NoLz, lut_scratch)
     {
         return run(&mut wp);
     }
 
     if !uses_non_gradient
         && !uses_non420
-        && let Some(mut grad) = GradientOnly::new(&pruned_tree, Reader420NoLz)
+        && let Some(mut grad) = GradientOnly::new(&pruned_tree, Reader420NoLz, lut_scratch)
     {
         return run(&mut grad);
     }

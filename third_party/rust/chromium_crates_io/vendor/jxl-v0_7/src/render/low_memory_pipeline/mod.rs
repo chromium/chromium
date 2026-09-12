@@ -262,7 +262,7 @@ impl RenderPipeline for LowMemoryRenderPipeline {
                     .enumerate()
                     .map(|(i, (outer, inner))| (*outer, *inner, i))
                     .collect();
-                v.sort();
+                v.sort_unstable();
                 v
             })
             .collect();

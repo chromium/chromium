@@ -31,3 +31,17 @@ impl NewWithCapacity for String {
         Ok(s)
     }
 }
+
+/// Allocates a boxed fixed-size array `Box<[T; N]>` directly on the heap,
+/// initialized with copies of `elem`.
+///
+/// Unlike `Box::new([elem; N])`, this allocates the array directly on the heap
+/// without first constructing the entire `[T; N]` array on the stack, preventing
+/// stack overflow or large stack frames for large `N`.
+#[inline]
+pub fn box_array<T: Clone, const N: usize>(elem: T) -> Box<[T; N]> {
+    vec![elem; N]
+        .into_boxed_slice()
+        .try_into()
+        .unwrap_or_else(|_| unreachable!())
+}

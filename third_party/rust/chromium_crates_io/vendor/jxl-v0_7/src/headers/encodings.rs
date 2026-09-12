@@ -208,6 +208,17 @@ impl<T: UnconditionalCoder<Config>, Config, const N: usize> UnconditionalCoder<C
     }
 }
 
+impl<Config, T: UnconditionalCoder<Config>> UnconditionalCoder<Config> for Box<T> {
+    type Nonserialized = T::Nonserialized;
+    fn read_unconditional(
+        config: &Config,
+        br: &mut BitReader,
+        nonserialized: &Self::Nonserialized,
+    ) -> Result<Box<T>, Error> {
+        Ok(Box::new(T::read_unconditional(config, br, nonserialized)?))
+    }
+}
+
 pub struct VectorCoder<T: Sized> {
     pub size_coder: U32Coder,
     pub value_coder: T,
