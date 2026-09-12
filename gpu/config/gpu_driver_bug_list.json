@@ -3855,6 +3855,19 @@
       "features": [
         "upload_oversized_mip_levels_via_unpack_buffer"
       ]
+    },
+    {
+      "id": 496,
+      "cr_bugs": [556870863],
+      "description": "Program binary cache entries can collide in Imagination's GLES driver",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "gl_type": "angle_gles",
+      "features": [
+        "disable_program_cache"
+      ]
     }
   ]
 }
