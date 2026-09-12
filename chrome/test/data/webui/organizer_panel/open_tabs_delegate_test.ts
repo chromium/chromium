@@ -114,7 +114,6 @@ suite('OpenTabsDelegateTest', () => {
     loadTimeData.resetForTesting({
       openTabs: 'Open Tabs',
       closeTab: 'Close tab',
-      splitView: 'Split View',
     });
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     const {instance, remote} =
@@ -286,7 +285,6 @@ suite('OpenTabsDelegateTest', () => {
         const splitTab1ElapsedText = '3m ago';
         const splitTab2Hostname = 'sheets.google.com';
         const splitTab2ElapsedText = '7m ago';
-        const splitViewTitle = loadTimeData.getString('splitView');
 
         const splitTab1 = createTab({
           tabId: SPLIT_TAB_1_ID,
@@ -332,7 +330,7 @@ suite('OpenTabsDelegateTest', () => {
         assertEquals(1, items.length);
 
         const item = items[0]!;
-        assertDeepEquals([splitViewTitle], item.title);
+        assertDeepEquals([SPLIT_TAB_1_TITLE, SPLIT_TAB_2_TITLE], item.title);
         assertEquals(3, item.description?.length);
         assertDeepEquals(
             {text: splitTab1Hostname, elideFromStart: true},

@@ -205,12 +205,10 @@ export class OpenTabsDelegate implements
 
   private toSectionItem_(item: OpenTabsItem):
       OrganizerListSectionItem<OpenTabsItem> {
-    let title: string[];
     let tabs: Tab[];
     let prefixIcon: OrganizerListSectionItemIcon;
 
     if (isSplitTab(item)) {
-      title = [loadTimeData.getString('splitView')];
       tabs = item.tabs;
       prefixIcon = {
         stackedFavicons: {
@@ -219,10 +217,11 @@ export class OpenTabsDelegate implements
         },
       };
     } else {
-      title = [item.tab.title];
       tabs = [item.tab];
       prefixIcon = {url: item.tab.url};
     }
+
+    const title = tabs.map(tab => tab.title);
 
     const description: OrganizerListSectionItemDescriptionPart[] =
         tabs.map(tab => ({
