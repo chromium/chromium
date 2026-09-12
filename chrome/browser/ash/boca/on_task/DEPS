@@ -38,8 +38,4 @@ specific_include_rules = {
     "+chrome/common/chrome_paths.h",
     "+chrome/common/webui_url_constants.h",
   ],
-  "on_task_locked_session_window_tracker\\.(h|cc)": [
-    "+chrome/browser/ui/tabs/tab_change_type.h",
-    "+chrome/browser/ui/tabs/tab_enums.h",
-  ],
 }

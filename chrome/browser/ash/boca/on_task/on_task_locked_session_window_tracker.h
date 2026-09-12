@@ -7,10 +7,8 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -115,9 +113,25 @@ class LockedSessionWindowTracker : public KeyedService,
   void TriggerFedCmFederatedLoginCompletionForTesting(bool success);
 
  private:
+  // Observes the active tab's WebContents for title updates and page
+  // navigations.
+  class ActiveTabWebContentsObserver : public content::WebContentsObserver {
+   public:
+    explicit ActiveTabWebContentsObserver(LockedSessionWindowTracker* tracker);
+    ~ActiveTabWebContentsObserver() override;
+
+    using content::WebContentsObserver::Observe;
+
+    // content::WebContentsObserver:
+    void DidFinishNavigation(
+        content::NavigationHandle* navigation_handle) override;
+    void TitleWasSet(content::NavigationEntry* entry) override;
+
+   private:
+    const raw_ptr<LockedSessionWindowTracker> tracker_;
+  };
+
   // TabStripModelObserver Impl
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override;
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
@@ -147,6 +161,7 @@ class LockedSessionWindowTracker : public KeyedService,
       content::Page& page);
 
   void CleanupWindowTracker();
+  void NotifyActiveTabChanged(const std::u16string& title);
 
   bool can_open_new_popup_ = true;
   bool can_start_navigation_throttle_ = true;
@@ -162,6 +177,7 @@ class LockedSessionWindowTracker : public KeyedService,
   base::ScopedObservation<ash::BrowserController,
                           ash::BrowserController::Observer>
       browser_controller_observation_{this};
+  ActiveTabWebContentsObserver active_tab_observer_{this};
   absl::flat_hash_map<ash::BrowserDelegate*,
                       std::unique_ptr<base::CancelableOnceClosure>>
       pending_close_tasks_;

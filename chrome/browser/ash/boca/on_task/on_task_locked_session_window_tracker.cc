@@ -18,22 +18,17 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/values.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/boca/on_task/on_task_pod_controller_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
-#include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -45,6 +40,9 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "ui/aura/window.h"
@@ -95,6 +93,7 @@ void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
   }
   browser_ = browser;
   browser_->GetBrowser().GetTabStripModel()->AddObserver(this);
+  active_tab_observer_.Observe(browser_->GetActiveWebContents());
 
   if (ash::features::IsBocaOnTaskPodEnabled()) {
     on_task_pod_controller_ =
@@ -236,6 +235,7 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   if (browser_) {
     browser_->GetBrowser().GetTabStripModel()->RemoveObserver(this);
   }
+  active_tab_observer_.Observe(nullptr);
   if (on_task_blocklist_) {
     on_task_blocklist_->CleanupBlocklist();
   }
@@ -259,6 +259,13 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   }
 }
 
+void LockedSessionWindowTracker::NotifyActiveTabChanged(
+    const std::u16string& title) {
+  for (auto& observer : observers_) {
+    observer.OnActiveTabChanged(title);
+  }
+}
+
 void LockedSessionWindowTracker::ShowURLBlockedToast() {
   ash::boca::OnTaskNotificationsManager::ToastCreateParams toast_create_params(
       ash::boca::kOnTaskUrlBlockedToastId,
@@ -271,25 +278,32 @@ void LockedSessionWindowTracker::ShowURLBlockedToast() {
   notifications_manager_->CreateToast(std::move(toast_create_params));
 }
 
-// TabStripModelObserver Implementation
-void LockedSessionWindowTracker::OnTabChangedAt(tabs::TabInterface* tab,
-                                                TabChangeType change_type) {
-  if (change_type == TabChangeType::kAll) {
-    RefreshUrlBlocklist();
-  }
-  // When all tabs are closing, the tab strip model is still active, but the
-  // active tab is no longer valid. This can cause a crash if we try to access
-  // the navigation context of the active tab.
-  if (!browser_->GetBrowser().GetTabStripModel()->closing_all() &&
-      browser_->GetWebContentsCount() && on_task_pod_controller_) {
-    on_task_pod_controller_->OnPageNavigationContextChanged();
-  }
+// LockedSessionWindowTracker::ActiveTabWebContentsObserver Implementation
+LockedSessionWindowTracker::ActiveTabWebContentsObserver::
+    ActiveTabWebContentsObserver(LockedSessionWindowTracker* tracker)
+    : tracker_(tracker) {}
 
-  if (tab->IsActivated()) {
-    // Only fire for active tab.
-    for (auto& observer : observers_) {
-      observer.OnActiveTabChanged(tab->GetContents()->GetTitle());
-    }
+LockedSessionWindowTracker::ActiveTabWebContentsObserver::
+    ~ActiveTabWebContentsObserver() = default;
+
+void LockedSessionWindowTracker::ActiveTabWebContentsObserver::
+    DidFinishNavigation(content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+  tracker_->RefreshUrlBlocklist();
+  if (tracker_->on_task_pod_controller_) {
+    tracker_->on_task_pod_controller_->OnPageNavigationContextChanged();
+  }
+  tracker_->NotifyActiveTabChanged(web_contents()->GetTitle());
+}
+
+void LockedSessionWindowTracker::ActiveTabWebContentsObserver::TitleWasSet(
+    content::NavigationEntry* entry) {
+  if (web_contents() && entry &&
+      entry == web_contents()->GetController().GetLastCommittedEntry()) {
+    tracker_->NotifyActiveTabChanged(web_contents()->GetTitle());
   }
 }
 
@@ -321,6 +335,7 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (selection.active_tab_changed()) {
+    active_tab_observer_.Observe(selection.new_contents);
     RefreshUrlBlocklist();
     // When all tabs are closing, the tab strip model is still active, but the
     // active tab is no longer valid. This can cause a crash if we try to access
@@ -330,9 +345,7 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
       on_task_pod_controller_->OnPageNavigationContextChanged();
     }
     if (selection.new_contents) {
-      for (auto& observer : observers_) {
-        observer.OnActiveTabChanged(selection.new_contents->GetTitle());
-      }
+      NotifyActiveTabChanged(selection.new_contents->GetTitle());
     }
   }
   if (change.type() == TabStripModelChange::kInserted) {
@@ -367,6 +380,9 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
 
 void LockedSessionWindowTracker::OnTabWillBeRemoved(tabs::TabInterface* tab,
                                                     int index) {
+  if (tab->GetContents() == active_tab_observer_.web_contents()) {
+    active_tab_observer_.Observe(nullptr);
+  }
   on_task_blocklist()->RemoveParentFilter(tab->GetContents());
   on_task_blocklist()->RemoveChildFilter(tab->GetContents());
   const SessionID tab_id =
@@ -382,10 +398,7 @@ void LockedSessionWindowTracker::OnBrowserClosed(
   pending_close_tasks_.erase(browser);
   if (browser == browser_) {
     // Notify not in workbook when boca closed.
-    for (auto& observer : observers_) {
-      observer.OnActiveTabChanged(
-          l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS));
-    }
+    NotifyActiveTabChanged(l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS));
     CleanupWindowTracker();  // Will reset `browser_`.
   }
   if (browser->GetType() == ash::BrowserType::kAppPopup) {
@@ -447,19 +460,13 @@ void LockedSessionWindowTracker::OnBrowserActivated(
                            std::move(tracker)));
       }
     }
-    for (auto& observer : observers_) {
-      observer.OnActiveTabChanged(
-          l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS));
-    }
+    NotifyActiveTabChanged(l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS));
     return;
   }
   if (!browser_->GetActiveWebContents()) {
     return;
   }
-  const std::u16string& title = browser_->GetActiveWebContents()->GetTitle();
-  for (auto& observer : observers_) {
-    observer.OnActiveTabChanged(title);
-  }
+  NotifyActiveTabChanged(browser_->GetActiveWebContents()->GetTitle());
 }
 
 // content::WebContentsObserver Impl
