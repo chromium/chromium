@@ -1,0 +1,94 @@
+'use strict';
+
+/**
+ * Run assertions to check whether a scroller applies scroll axis lock.
+ *
+ * @param {test}          The test object that run the assertions.
+ * @param {config}        Test configuration
+ *   - scroller: Element whose scrolling is tested.
+ *   - input_source: the input triggering the scroll ("touch" or "wheel").
+ * @return {promise}      A promise resolved after the checks complete
+ *                        successufully or is rejected in case of failure.
+ *
+ */
+async function check_scroll_axis_lock(test, config) {
+  await waitForCompositorReady();
+
+  const scroller = config.scroller;
+  await waitForScrollReset(test, scroller);
+  assert_equals(scroller.scrollLeft, 0);
+  assert_equals(scroller.scrollTop, 0);
+
+  let received_wheel_event = null;
+
+  // Scroll mostly vertically, with a small horizontal component.
+  // Move left (scroll right) by 2, up (scroll down) by 150.
+  // This steep angle would normally trigger vertical railing
+  // (horizontal scroll = 0).
+  // With scroll-axis-lock: none, it should not rail.
+  const bounds = scroller.getBoundingClientRect();
+  const start_x = bounds.left + bounds.width / 2;
+  const start_y = bounds.top + bounds.height / 2;
+  const delta_x = 2;
+  const delta_y = 150;
+
+  // We use tolerances because the final scroll offsets might not
+  // match the input deltas exactly. For touch, the initial gesture movement is
+  // affected by touch slop (which is platform-dependent), requiring a loose
+  // tolerance of 30 on the dominant Y axis. Wheel scrolls do not have slop,
+  // so we use a small tolerance of 1. For the minor X axis in the touch test,
+  // we also use a small tolerance so that locking (scrollLeft=0) is still
+  // disallowed.
+  const tolerance_x = 1;
+  const tolerance_y = (config.input_source === 'touch') ? 30 : 1;
+
+  const end_x = start_x - delta_x;
+  const end_y = start_y - delta_y;
+
+  const scrollend_promise =
+      waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
+
+  if (config.input_source === 'touch') {
+    await new test_driver.Actions()
+        .addPointer('finger', 'touch')
+        .pointerMove(Math.round(start_x), Math.round(start_y))
+        .pointerDown()
+        .addTick()
+        .pause(100)
+        .pointerMove(Math.round(end_x), Math.round(end_y))
+        .addTick()
+        .pause(100)  // Pause to avoid fling
+        .pointerUp()
+        .send();
+  } else if (config.input_source === 'wheel') {
+    scroller.addEventListener('wheel', (e) => {
+      received_wheel_event = e;
+    }, {once: true});
+
+    await new test_driver.Actions()
+        .addWheel('wheel')
+        .scroll(0, 0, Math.round(delta_x), Math.round(delta_y),
+                {origin: scroller})
+        .send();
+  }
+
+  // Wait for scroll to end.
+  await scrollend_promise;
+
+  assert_approx_equals(scroller.scrollTop, delta_y, tolerance_y,
+                       'Should have scrolled vertically');
+  assert_approx_equals(scroller.scrollLeft, delta_x, tolerance_x,
+                       'Should have scrolled horizontally (not railed to Y)');
+
+  if (config.input_source === 'wheel') {
+    // The wheel delta will always be the unlocked value.
+    // With scroll-axis-lock: none, the wheel delta should match the scroll
+    // delta.
+    assert_not_equals(received_wheel_event, null,
+                      'Should have received a wheel event');
+    assert_equals(received_wheel_event.deltaX, delta_x,
+                  'wheel event deltaX should match sent delta');
+    assert_equals(received_wheel_event.deltaY, delta_y,
+                  'wheel event deltaY should match sent delta');
+  }
+}
