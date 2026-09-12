@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/commerce/core",
   "+components/page_content_annotations/core",
+  "+ios/chrome/browser/commerce/model",
   "+ios/chrome/browser/optimization_guide/model",
 ]

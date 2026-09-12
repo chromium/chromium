@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/page_classification/page_classification_service_factory.h"
 
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/intelligence/page_classification/optimization_guide_page_classification_service.h"
 #import "ios/chrome/browser/intelligence/page_classification/page_classification_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -16,7 +17,8 @@ std::unique_ptr<KeyedService> BuildPageClassificationService(
     ProfileIOS* profile) {
   CHECK(!profile->IsOffTheRecord());
   return std::make_unique<OptimizationGuidePageClassificationService>(
-      OptimizationGuideServiceFactory::GetForProfile(profile));
+      OptimizationGuideServiceFactory::GetForProfile(profile),
+      commerce::ShoppingServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -44,6 +46,7 @@ PageClassificationServiceFactory::GetDefaultFactory() {
 PageClassificationServiceFactory::PageClassificationServiceFactory()
     : ProfileKeyedServiceFactoryIOS("PageClassificationService") {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
+  DependsOn(commerce::ShoppingServiceFactory::GetInstance());
 }
 
 PageClassificationServiceFactory::~PageClassificationServiceFactory() = default;

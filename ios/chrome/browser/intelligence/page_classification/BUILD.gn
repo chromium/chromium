@@ -20,15 +20,19 @@ source_set("page_classification") {
     "page_classification_service.h",
     "page_classification_service_factory.h",
     "page_classification_service_factory.mm",
+    "shopping_eligibility_vertical.h",
+    "shopping_eligibility_vertical.mm",
   ]
   public_deps = [ "//components/page_content_annotations/core" ]
   deps = [
     ":education_page_detector",
     "//base",
+    "//components/commerce/core:shopping_service",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
@@ -46,14 +50,18 @@ source_set("unit_tests") {
     "education_java_script_feature_unittest.mm",
     "optimization_guide_page_classification_service_unittest.mm",
     "page_classification_service_factory_unittest.mm",
+    "shopping_eligibility_vertical_unittest.mm",
   ]
   deps = [
     ":page_classification",
     "//base",
     "//base/test:test_support",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core:shopping_service_test_support",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",

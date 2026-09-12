@@ -19,6 +19,10 @@
 #import "ios/web/public/web_state_observer.h"
 #import "url/gurl.h"
 
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
+
 namespace optimization_guide {
 class OptimizationGuideDecider;
 enum class OptimizationGuideDecision;
@@ -32,13 +36,14 @@ class WebState;
 // Profile-scoped implementation of `PageClassificationService` that evaluates
 // vertical page classification using OptimizationGuide metadata (Petacat
 // taxonomy and Knowledge Graph MIDs) combined with isolated-world DOM
-// structural heuristics (word count and heading count).
+// structural heuristics (word count and heading count) and commerce signals.
 class OptimizationGuidePageClassificationService
     : public PageClassificationService,
       public web::WebStateObserver {
  public:
-  explicit OptimizationGuidePageClassificationService(
-      optimization_guide::OptimizationGuideDecider* opt_guide_decider);
+  OptimizationGuidePageClassificationService(
+      optimization_guide::OptimizationGuideDecider* opt_guide_decider,
+      commerce::ShoppingService* shopping_service = nullptr);
   ~OptimizationGuidePageClassificationService() override;
 
   OptimizationGuidePageClassificationService(
@@ -80,12 +85,31 @@ class OptimizationGuidePageClassificationService
 
     // Callback to execute once classification completes or fails.
     PageClassificationCallback callback;
+
+    // Accumulated classification result from each vertical.
+    PageClassificationResult result;
+
+    // Track completion of parallel vertical evaluations.
+    bool education_complete = false;
+    bool shopping_complete = false;
+
+    // Weak pointer to the WebState being classified.
+    base::WeakPtr<web::WebState> web_state;
   };
 
-  // Completes and removes the in-flight request for `web_state_id`, invoking
-  // its callback with `result`.
-  void CompleteRequest(web::WebStateID web_state_id,
-                       const PageClassificationResult& result);
+  // Checks whether all vertical evaluations for `web_state_id` are complete,
+  // and if so, delivers `result` via callback and removes the request.
+  void CheckRequestCompletion(web::WebStateID web_state_id);
+
+  void OnEducationEvaluationComplete(
+      web::WebStateID web_state_id,
+      uint64_t request_id,
+      std::optional<CategoryResult> education_result);
+
+  void OnShoppingEvaluationComplete(
+      web::WebStateID web_state_id,
+      uint64_t request_id,
+      std::optional<CategoryResult> shopping_result);
 
   void OnOptimizationGuideDecision(
       base::WeakPtr<web::WebState> web_state,
@@ -104,6 +128,7 @@ class OptimizationGuidePageClassificationService
 
   raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_decider_ =
       nullptr;
+  raw_ptr<commerce::ShoppingService> shopping_service_ = nullptr;
   uint64_t next_request_id_ = 0;
   base::flat_map<web::WebStateID, std::unique_ptr<InFlightRequest>>
       active_requests_;

@@ -12,12 +12,14 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/test_future.h"
 #import "base/values.h"
+#import "components/commerce/core/mock_shopping_service.h"
 #import "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #import "ios/chrome/browser/intelligence/page_classification/education_eligibility_vertical.h"
 #import "ios/chrome/browser/intelligence/page_classification/education_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/page_classification/page_classification_service.h"
+#import "ios/chrome/browser/intelligence/page_classification/shopping_eligibility_vertical.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -141,8 +143,16 @@ class OptimizationGuidePageClassificationServiceTest : public PlatformTest {
         EducationJavaScriptFeature::GetInstance()->GetSupportedContentWorld(),
         std::move(frames_manager));
 
-    service_ =
-        std::make_unique<OptimizationGuidePageClassificationService>(&decider_);
+    service_ = std::make_unique<OptimizationGuidePageClassificationService>(
+        &decider_, &mock_shopping_service_);
+
+    ON_CALL(mock_shopping_service_, GetAvailableProductInfoForUrl(testing::_))
+        .WillByDefault(testing::Return(std::nullopt));
+    ON_CALL(mock_shopping_service_, IsShoppingPage(testing::_, testing::_))
+        .WillByDefault(
+            [](const GURL& url, commerce::IsShoppingPageCallback callback) {
+              std::move(callback).Run(url, false);
+            });
   }
 
   void TearDown() override {
@@ -152,10 +162,17 @@ class OptimizationGuidePageClassificationServiceTest : public PlatformTest {
 
   void SetOptimizationGuideEducationResponse(std::string_view category_id,
                                              float score) {
+    SetOptimizationGuideCategoriesResponse({{std::string(category_id), score}});
+  }
+
+  void SetOptimizationGuideCategoriesResponse(
+      const std::vector<std::pair<std::string, float>>& categories) {
     optimization_guide::proto::PageEntitiesMetadata page_entities;
-    auto* cat = page_entities.add_categories();
-    cat->set_category_id(std::string(category_id));
-    cat->set_score(score);
+    for (const auto& [cat_id, score] : categories) {
+      auto* cat = page_entities.add_categories();
+      cat->set_category_id(cat_id);
+      cat->set_score(score);
+    }
 
     optimization_guide::proto::Any any_metadata;
     any_metadata.set_type_url(
@@ -186,6 +203,7 @@ class OptimizationGuidePageClassificationServiceTest : public PlatformTest {
   raw_ptr<web::FakeWebFrame> main_frame_ = nullptr;
   std::unique_ptr<base::Value> dom_response_value_;
   FakeOptimizationGuideDecider decider_;
+  commerce::MockShoppingService mock_shopping_service_;
   std::unique_ptr<OptimizationGuidePageClassificationService> service_;
 };
 
@@ -238,11 +256,19 @@ TEST_F(OptimizationGuidePageClassificationServiceTest,
   EXPECT_TRUE(result.category_results.empty());
 }
 
-// Tests that non-educational category is rejected.
+// Tests that non-educational category is rejected for education, but marks
+// shopping eligible if matching shopping service.
 TEST_F(OptimizationGuidePageClassificationServiceTest,
-       TestNonEducationalCategory) {
-  fake_web_state_.SetCurrentURL(GURL("https://example.com/shopping"));
-  SetOptimizationGuideEducationResponse("/Shopping/Apparel", 0.95f);
+       TestNonEducationalCategoryWithShopping) {
+  GURL shopping_url("https://example.com/product/123");
+  fake_web_state_.SetCurrentURL(shopping_url);
+  SetOptimizationGuideEducationResponse("/Sports/Football", 0.95f);
+
+  commerce::ProductInfo product_info;
+  product_info.title = "Football Boots";
+  EXPECT_CALL(mock_shopping_service_,
+              GetAvailableProductInfoForUrl(shopping_url))
+      .WillOnce(testing::Return(product_info));
 
   base::test::TestFuture<const PageClassificationResult&> future;
   service_->ClassifyWebState(&fake_web_state_, future.GetCallback());
@@ -250,7 +276,72 @@ TEST_F(OptimizationGuidePageClassificationServiceTest,
   const PageClassificationResult& result = future.Get();
   EXPECT_FALSE(result.IsEligibleForCategory(
       page_content_annotations::CategoryType::kEducation));
-  EXPECT_TRUE(result.category_results.empty());
+  EXPECT_TRUE(result.IsEligibleForCategory(
+      page_content_annotations::CategoryType::kShopping));
+  auto shopping_result = result.GetResultForCategory(
+      page_content_annotations::CategoryType::kShopping);
+  ASSERT_TRUE(shopping_result.has_value());
+  EXPECT_FLOAT_EQ(kDefaultShoppingProductConfidence, shopping_result->score);
+}
+
+// Tests that dual educational and shopping signals are both captured.
+TEST_F(OptimizationGuidePageClassificationServiceTest,
+       TestDualEducationAndShoppingClassification) {
+  GURL dual_url("https://en.wikipedia.org/wiki/Quantum_mechanics");
+  fake_web_state_.SetCurrentURL(dual_url);
+  SetOptimizationGuideEducationResponse("/Science/Physics", 0.85f);
+  SetDOMFeaturesResponse(1000, 5);
+
+  commerce::ProductInfo product_info;
+  product_info.title = "Physics Textbook";
+  EXPECT_CALL(mock_shopping_service_, GetAvailableProductInfoForUrl(dual_url))
+      .WillOnce(testing::Return(product_info));
+
+  base::test::TestFuture<const PageClassificationResult&> future;
+  service_->ClassifyWebState(&fake_web_state_, future.GetCallback());
+
+  const PageClassificationResult& result = future.Get();
+  EXPECT_TRUE(result.IsEligibleForCategory(
+      page_content_annotations::CategoryType::kEducation));
+  auto edu_result = result.GetResultForCategory(
+      page_content_annotations::CategoryType::kEducation);
+  ASSERT_TRUE(edu_result.has_value());
+  EXPECT_FLOAT_EQ(0.85f, edu_result->score);
+  EXPECT_TRUE(result.IsEligibleForCategory(
+      page_content_annotations::CategoryType::kShopping));
+  auto shopping_result = result.GetResultForCategory(
+      page_content_annotations::CategoryType::kShopping);
+  ASSERT_TRUE(shopping_result.has_value());
+  EXPECT_FLOAT_EQ(kDefaultShoppingProductConfidence, shopping_result->score);
+}
+
+// Tests that Shopping is evaluated and eligible even when OptimizationGuide is
+// unavailable.
+TEST_F(OptimizationGuidePageClassificationServiceTest,
+       TestShoppingEligibleWhenOptimizationGuideUnavailable) {
+  GURL shopping_url("https://example.com/item/456");
+  fake_web_state_.SetCurrentURL(shopping_url);
+  decider_.SetResponse(optimization_guide::OptimizationGuideDecision::kFalse,
+                       optimization_guide::OptimizationMetadata());
+
+  commerce::ProductInfo product_info;
+  product_info.title = "Wireless Headphones";
+  EXPECT_CALL(mock_shopping_service_,
+              GetAvailableProductInfoForUrl(shopping_url))
+      .WillOnce(testing::Return(product_info));
+
+  base::test::TestFuture<const PageClassificationResult&> future;
+  service_->ClassifyWebState(&fake_web_state_, future.GetCallback());
+
+  const PageClassificationResult& result = future.Get();
+  EXPECT_FALSE(result.IsEligibleForCategory(
+      page_content_annotations::CategoryType::kEducation));
+  EXPECT_TRUE(result.IsEligibleForCategory(
+      page_content_annotations::CategoryType::kShopping));
+  auto shopping_result = result.GetResultForCategory(
+      page_content_annotations::CategoryType::kShopping);
+  ASSERT_TRUE(shopping_result.has_value());
+  EXPECT_FLOAT_EQ(kDefaultShoppingProductConfidence, shopping_result->score);
 }
 
 // Tests that successful classification and DOM extraction returns eligible.
@@ -328,6 +419,28 @@ TEST_F(OptimizationGuidePageClassificationServiceTest,
 
   // Executing the deferred callback after the WebState was destroyed must
   // safely clean up without calling the client callback or crashing.
+  decider_.RunDeferredCallback();
+  EXPECT_FALSE(callback_called);
+}
+
+// Tests that if the WebState navigated to a different URL before all
+// evaluations completed, the result is discarded and callback is not invoked.
+TEST_F(OptimizationGuidePageClassificationServiceTest,
+       TestWebStateNavigatedAwayBeforeCompletion) {
+  fake_web_state_.SetCurrentURL(
+      GURL("https://en.wikipedia.org/wiki/Quantum_mechanics"));
+
+  decider_.SetDeferCallback(true);
+  bool callback_called = false;
+  service_->ClassifyWebState(
+      &fake_web_state_,
+      base::BindOnce(
+          [](bool* called, const PageClassificationResult&) { *called = true; },
+          &callback_called));
+
+  // Navigate to another URL before OptimizationGuide finishes.
+  fake_web_state_.SetCurrentURL(GURL("https://example.com/other"));
+
   decider_.RunDeferredCallback();
   EXPECT_FALSE(callback_called);
 }
