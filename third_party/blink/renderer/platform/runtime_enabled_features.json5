@@ -812,7 +812,7 @@
     {
       // Killswitch M153.
       name: "AvoidEmbeddedContentViewLocation",
-      status: "stable",
+      status: "experimental",
     },
     {
       // Disables the synchronous focus blur behavior when a focused form control
