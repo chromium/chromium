@@ -1462,6 +1462,17 @@ void MapPathBuilderErrorsToCertStatus(const bssl::CertPathErrors& errors,
     *cert_status |= CERT_STATUS_AUTHORITY_INVALID;
   }
 
+  if (errors.ContainsError(bssl::cert_errors::kMtcLandmarkNotRecognized)) {
+    // TODO(crbug.com/452986180): actually add the new error statuses.
+    *cert_status |= CERT_STATUS_AUTHORITY_INVALID;
+  }
+
+  if (errors.ContainsError(
+          bssl::cert_errors::kMtcUnacceptableCosignatureVerificationResult)) {
+    // TODO(crbug.com/452986180): actually add the new error statuses.
+    *cert_status |= CERT_STATUS_AUTHORITY_INVALID;
+  }
+
   if (errors.ContainsError(kCtRequirementsNotMet)) {
     *cert_status |= CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED;
   }

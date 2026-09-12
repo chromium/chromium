@@ -832,17 +832,20 @@ TEST_F(CertVerifyProcBuiltinTest, MtcNonTrivialProof) {
   auto ca_key = crypto::keypair::PrivateKey::GenerateEcP256();
 
   bssl::TrustStoreInMemory trust_store;
-  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
-      kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
-      x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
-      mtc_log.GetPerLogLandmarkSubtreeHashes());
-  ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
   AddTrustStore(&trust_store);
 
+  scoped_refptr<X509Certificate> cert1 = X509Certificate::CreateFromBytes(
+      *mtc_log.CreateSignaturelessCertificate(leaf_index));
+  ASSERT_TRUE(cert1);
+
   {
-    scoped_refptr<X509Certificate> cert1 = X509Certificate::CreateFromBytes(
-        *mtc_log.CreateSignaturelessCertificate(leaf_index));
-    ASSERT_TRUE(cert1);
+    // Verification should succeed if the anchor is configured with the
+    // matching trusted landmark data.
+    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+        kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
+        x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
+        mtc_log.GetPerLogLandmarkSubtreeHashes());
+    ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
 
     CertVerifyResult verify_result;
     NetLogSource verify_net_log_source;
@@ -852,6 +855,76 @@ TEST_F(CertVerifyProcBuiltinTest, MtcNonTrivialProof) {
 
     int error = callback.WaitForResult();
     EXPECT_THAT(error, IsOk());
+  }
+
+  {
+    // If the anchor has trusted landmark data, but the subtree hash doesn't
+    // match the one in the certificate, verification should fail with the
+    // standard ERR_CERT_AUTHORITY_INVALID error code.
+    trust_store.Clear();
+    auto landmark_data = mtc_log.GetPerLogLandmarkSubtreeHashes();
+    for (auto& subtree : landmark_data[0].trusted_subtrees) {
+      subtree.hash[0] ^= 1;
+    }
+    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+        kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
+        x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
+        landmark_data);
+    ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(cert1.get(), "www.example.com", /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  {
+    // If the anchor has trusted landmark data, but the subtree range in the
+    // certificate isn't present in the trusted landmark data, verification
+    // should fail with the standard ERR_CERT_AUTHORITY_INVALID error code.
+    // TODO(crbug.com/452986180): make it return a more specific error code.
+    trust_store.Clear();
+    auto landmark_data = mtc_log.GetPerLogLandmarkSubtreeHashes();
+    landmark_data[0].log_number++;
+    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+        kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
+        x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
+        landmark_data);
+    ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(cert1.get(), "www.example.com", /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  {
+    // If the anchor does not have any trusted landmark data, verification
+    // should fail with the standard ERR_CERT_AUTHORITY_INVALID error code.
+    // TODO(crbug.com/452986180): make it return a more specific error code.
+    trust_store.Clear();
+    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+        kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
+        x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
+        std::vector<bssl::LogTrustedSubtrees>());
+    ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(cert1.get(), "www.example.com", /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   }
 }
 
@@ -1108,6 +1181,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
            &verify_result, &verify_net_log_source, callback.callback());
 
     int error = callback.WaitForResult();
+    // TODO(crbug.com/452986180): make it return a more specific error code.
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
     EXPECT_EQ(std::vector<std::vector<uint8_t>>{},
               TakeLastValidAdditionalCosigners());
