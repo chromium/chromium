@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
+
 #include <cstddef>
 #include <memory>
 #include <vector>
@@ -11,12 +13,12 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "content/browser/hid/hid_service.h"
 #include "content/browser/hid/hid_test_utils.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_device_delegate_observer_unittest.h"
-#include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -136,6 +138,10 @@ class MockHidManagerClient : public device::mojom::HidManagerClient {
   void Bind(mojo::PendingAssociatedReceiver<device::mojom::HidManagerClient>
                 receiver) {
     receiver_.Bind(std::move(receiver));
+  }
+
+  void set_disconnect_handler(base::OnceClosure closure) {
+    receiver_.set_disconnect_handler(std::move(closure));
   }
 
   MOCK_METHOD(void, DeviceAdded, (device::mojom::HidDeviceInfoPtr), (override));
@@ -543,20 +549,19 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, OnHidManagerConnectionError) {
     auto* version = context()->GetLiveVersion(version_ids[idx]);
     ASSERT_NE(version, nullptr);
     EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
-    EXPECT_EQ(context()
-                  ->hid_delegate_observer()
-                  ->GetHidServiceForTesting(registrations[idx]->id())
-                  ->clients()
-                  .size(),
-              1u);
+    auto services =
+        context()->hid_delegate_observer()->GetHidServicesForTesting(
+            registrations[idx]->id());
+    ASSERT_EQ(services.size(), 1u);
+    EXPECT_EQ(services[0]->clients().size(), 1u);
   }
   hid_delegate().OnHidManagerConnectionError();
   for (size_t idx = 0; idx < num_workers; ++idx) {
-    EXPECT_TRUE(context()
-                    ->hid_delegate_observer()
-                    ->GetHidServiceForTesting(registrations[idx]->id())
-                    ->clients()
-                    .empty());
+    auto services =
+        context()->hid_delegate_observer()->GetHidServicesForTesting(
+            registrations[idx]->id());
+    ASSERT_EQ(services.size(), 1u);
+    EXPECT_TRUE(services[0]->clients().empty());
   }
 }
 
@@ -592,11 +597,11 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, OnPermissionRevoked) {
     EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
     hid_connections[idx] =
         OpenDevice(hid_services[idx], device, hid_connection_clients[idx]);
-    EXPECT_FALSE(context()
-                     ->hid_delegate_observer()
-                     ->GetHidServiceForTesting(registrations[idx]->id())
-                     ->GetWatchersForTesting()
-                     .empty());
+    auto services =
+        context()->hid_delegate_observer()->GetHidServicesForTesting(
+            registrations[idx]->id());
+    ASSERT_EQ(services.size(), 1u);
+    EXPECT_FALSE(services[0]->GetWatchersForTesting().empty());
 
     base::RunLoop run_loop;
     auto origin = url::Origin::Create(origins[idx]);
@@ -608,13 +613,86 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, OnPermissionRevoked) {
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     hid_delegate().OnPermissionRevoked(origin);
     run_loop.Run();
-    EXPECT_TRUE(context()
-                    ->hid_delegate_observer()
-                    ->GetHidServiceForTesting(registrations[idx]->id())
-                    ->GetWatchersForTesting()
-                    .empty());
+    services = context()->hid_delegate_observer()->GetHidServicesForTesting(
+        registrations[idx]->id());
+    ASSERT_EQ(services.size(), 1u);
+    EXPECT_TRUE(services[0]->GetWatchersForTesting().empty());
     testing::Mock::VerifyAndClearExpectations(&hid_delegate());
   }
+}
+
+TEST_F(ServiceWorkerHidDelegateObserverTest,
+       OnPermissionRevokedMultipleServicesForSameRegistration) {
+  auto device1 = CreateDeviceWithOneReport("device1-guid");
+  auto device2 = CreateDeviceWithOneReport("device2-guid");
+  ConnectDevice(*device1);
+  ConnectDevice(*device2);
+
+  const GURL origin_url(kTestUrl);
+  auto registration = InstallServiceWorker(origin_url);
+  auto* version1 = registration->active_version();
+  ASSERT_NE(version1, nullptr);
+  StartServiceWorker(version1);
+  auto hid_service1 = CreateHidService(version1);
+
+  // Create an installing version for the same registration to simulate a
+  // service worker update where both versions are simultaneously running.
+  auto version2 =
+      CreateNewServiceWorkerVersion(context()->registry(), registration,
+                                    GURL("https://www.google.com/worker2.js"),
+                                    blink::mojom::ScriptType::kClassic);
+  version2->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+  version2->SetStatus(ServiceWorkerVersion::Status::INSTALLING);
+  registration->SetInstallingVersion(version2);
+  StartServiceWorker(version2.get());
+  auto hid_service2 = CreateHidService(version2.get());
+
+  EXPECT_EQ(context()
+                ->hid_delegate_observer()
+                ->GetHidServicesForTesting(registration->id())
+                .size(),
+            2u);
+
+  FakeHidConnectionClient hid_connection_client1;
+  FakeHidConnectionClient hid_connection_client2;
+  auto hid_connection1 =
+      OpenDevice(hid_service1, device1, hid_connection_client1);
+  auto hid_connection2 =
+      OpenDevice(hid_service2, device2, hid_connection_client2);
+
+  auto services = context()->hid_delegate_observer()->GetHidServicesForTesting(
+      registration->id());
+  ASSERT_EQ(services.size(), 2u);
+  EXPECT_FALSE(services[0]->GetWatchersForTesting().empty());
+  EXPECT_FALSE(services[1]->GetWatchersForTesting().empty());
+
+  auto origin = url::Origin::Create(origin_url);
+  TestFuture<void> decrement_future1;
+  TestFuture<void> decrement_future2;
+  EXPECT_CALL(hid_delegate(), GetDeviceInfo(_, device1->guid))
+      .WillOnce(Return(device1.get()));
+  EXPECT_CALL(hid_delegate(), GetDeviceInfo(_, device2->guid))
+      .WillOnce(Return(device2.get()));
+  EXPECT_CALL(hid_delegate(),
+              HasDevicePermission(_, nullptr, origin, Ref(*device1)))
+      .WillOnce(Return(false));
+  EXPECT_CALL(hid_delegate(),
+              HasDevicePermission(_, nullptr, origin, Ref(*device2)))
+      .WillOnce(Return(false));
+  EXPECT_CALL(hid_delegate(), DecrementConnectionCount(_, origin))
+      .WillOnce(RunClosure(decrement_future1.GetRepeatingCallback()))
+      .WillOnce(RunClosure(decrement_future2.GetRepeatingCallback()));
+
+  hid_delegate().OnPermissionRevoked(origin);
+  EXPECT_TRUE(decrement_future1.Wait());
+  EXPECT_TRUE(decrement_future2.Wait());
+
+  services = context()->hid_delegate_observer()->GetHidServicesForTesting(
+      registration->id());
+  ASSERT_EQ(services.size(), 2u);
+  EXPECT_TRUE(services[0]->GetWatchersForTesting().empty());
+  EXPECT_TRUE(services[1]->GetWatchersForTesting().empty());
 }
 
 TEST_F(ServiceWorkerHidDelegateObserverTest,
@@ -626,7 +704,19 @@ TEST_F(ServiceWorkerHidDelegateObserverTest,
   ASSERT_NE(version, nullptr);
   StartServiceWorker(version);
   auto hid_service = CreateHidService(version);
+  MockHidManagerClient hid_manager_client;
+  RegisterHidManagerClient(hid_service, hid_manager_client);
+  auto services = context()->hid_delegate_observer()->GetHidServicesForTesting(
+      registration->id());
+  ASSERT_EQ(services.size(), 1u);
+  base::WeakPtr<HidService> service_impl = services[0];
+  ASSERT_TRUE(service_impl);
+  EXPECT_EQ(service_impl->clients().size(), 1u);
   EXPECT_FALSE(hid_delegate().observer_list().empty());
+
+  TestFuture<void> disconnect_future;
+  hid_manager_client.set_disconnect_handler(
+      disconnect_future.GetRepeatingCallback());
 
   TestFuture<blink::ServiceWorkerStatusCode> unregister_future;
   context()->UnregisterServiceWorker(
@@ -634,14 +724,81 @@ TEST_F(ServiceWorkerHidDelegateObserverTest,
       /*is_immediate=*/true, ServiceWorkerRegistration::DeleteInitiator::kTest,
       unregister_future.GetCallback());
   EXPECT_EQ(unregister_future.Get<0>(), blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_TRUE(disconnect_future.Wait());
   // Wait until all of the
   // ServiceWorkerDeviceDelegateObserver::OnRegistrationDeleted are called.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(hid_delegate().observer_list().empty());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return hid_delegate().observer_list().empty(); }));
+  ASSERT_TRUE(service_impl);
+  EXPECT_TRUE(service_impl->clients().empty());
 }
 
 TEST_F(ServiceWorkerHidDelegateObserverTest,
-       HasLatestHidServiceAfterServiceWorkerStopThenStart) {
+       ActivatingWorkerNotDoubleNotified) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->active_version();
+  ASSERT_NE(version, nullptr);
+  StartServiceWorker(version);
+  version->SetStatus(ServiceWorkerVersion::Status::ACTIVATING);
+
+  auto hid_service = CreateHidService(version);
+  MockHidManagerClient hid_manager_client;
+  RegisterHidManagerClient(hid_service, hid_manager_client);
+
+  auto device = CreateDeviceWithOneReport();
+  TestFuture<device::mojom::HidDeviceInfoPtr> device_added_future;
+  EXPECT_CALL(hid_manager_client, DeviceAdded).Times(1).WillOnce([&](auto d) {
+    device_added_future.SetValue(std::move(d));
+  });
+
+  ConnectDevice(*device);
+  EXPECT_EQ(device_added_future.Get()->guid, device->guid);
+
+  // Transitioning from ACTIVATING to ACTIVATED should not notify a second time.
+  version->SetStatus(ServiceWorkerVersion::Status::ACTIVATED);
+  FlushHidServicePipe(hid_service);
+}
+
+TEST_F(ServiceWorkerHidDelegateObserverTest,
+       RunningWorkerWithoutClientQueuesPendingCallback) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->active_version();
+  ASSERT_NE(version, nullptr);
+  StartServiceWorker(version);
+  EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
+  EXPECT_EQ(version->status(), ServiceWorkerVersion::Status::ACTIVATED);
+
+  // Create HidService while the worker is kRunning, but do not register the
+  // client yet (simulating RegisterClient Mojo call still in flight).
+  auto hid_service = CreateHidService(version);
+
+  auto device = CreateDeviceWithOneReport();
+  ConnectDevice(*device);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return context()
+        ->hid_delegate_observer()
+        ->GetPendingCallbacksForTesting()
+        .contains(version->version_id());
+  }));
+
+  // When RegisterClient completes, the queued event should be delivered.
+  MockHidManagerClient hid_manager_client;
+  TestFuture<device::mojom::HidDeviceInfoPtr> device_added_future;
+  EXPECT_CALL(hid_manager_client, DeviceAdded).WillOnce([&](auto d) {
+    device_added_future.SetValue(std::move(d));
+  });
+  RegisterHidManagerClient(hid_service, hid_manager_client);
+  EXPECT_EQ(device_added_future.Get()->guid, device->guid);
+  EXPECT_FALSE(context()
+                   ->hid_delegate_observer()
+                   ->GetPendingCallbacksForTesting()
+                   .contains(version->version_id()));
+}
+
+TEST_F(ServiceWorkerHidDelegateObserverTest,
+       PrunesStoppedHidServiceAfterServiceWorkerStopThenStart) {
   auto device = CreateDeviceWithOneReport();
   ConnectDevice(*device);
 
@@ -651,18 +808,19 @@ TEST_F(ServiceWorkerHidDelegateObserverTest,
   ASSERT_NE(version, nullptr);
   StartServiceWorker(version);
   auto hid_service = CreateHidService(version);
-  EXPECT_TRUE(context()->hid_delegate_observer()->GetHidServiceForTesting(
-      registration->id()));
+  EXPECT_FALSE(context()
+                   ->hid_delegate_observer()
+                   ->GetHidServicesForTesting(registration->id())
+                   .empty());
 
   // Create a connection so that we can get to the point when the HidService is
   // destroyed by expecting DecrementConnectionCount being called.
   FakeHidConnectionClient hid_connection_client;
   auto hid_connection = OpenDevice(hid_service, device, hid_connection_client);
-  EXPECT_FALSE(context()
-                   ->hid_delegate_observer()
-                   ->GetHidServiceForTesting(registration->id())
-                   ->GetWatchersForTesting()
-                   .empty());
+  auto services = context()->hid_delegate_observer()->GetHidServicesForTesting(
+      registration->id());
+  ASSERT_EQ(services.size(), 1u);
+  EXPECT_FALSE(services[0]->GetWatchersForTesting().empty());
 
   // Simulate the scenario of stopping the worker, the HidService will be
   // destroyed.
@@ -674,14 +832,19 @@ TEST_F(ServiceWorkerHidDelegateObserverTest,
   StopServiceWorker(version);
   hid_service.reset();
   run_loop.Run();
-  EXPECT_FALSE(context()->hid_delegate_observer()->GetHidServiceForTesting(
-      registration->id()));
+  EXPECT_TRUE(context()
+                  ->hid_delegate_observer()
+                  ->GetHidServicesForTesting(registration->id())
+                  .empty());
 
   // Then start the worker and create a new HidService.
   StartServiceWorker(version);
   hid_service = CreateHidService(version);
-  EXPECT_TRUE(context()->hid_delegate_observer()->GetHidServiceForTesting(
-      registration->id()));
+  EXPECT_EQ(context()
+                ->hid_delegate_observer()
+                ->GetHidServicesForTesting(registration->id())
+                .size(),
+            1u);
 }
 
 TEST_F(ServiceWorkerHidDelegateObserverTest,
@@ -922,6 +1085,34 @@ TEST_F(ServiceWorkerHidDelegateObserverNoEventHandlersTest,
       context()->hid_delegate_observer()->registration_id_map().empty());
 }
 
+TEST_F(ServiceWorkerHidDelegateObserverNoEventHandlersTest,
+       DeviceRemovedClosesOpenDeviceConnection) {
+  auto device = CreateDeviceWithOneReport();
+  ConnectDevice(*device);
+
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+  StartServiceWorker(version);
+  auto hid_service = CreateHidService(version);
+
+  FakeHidConnectionClient hid_connection_client;
+  auto hid_connection = OpenDevice(hid_service, device, hid_connection_client);
+  auto services = context()->hid_delegate_observer()->GetHidServicesForTesting(
+      registration->id());
+  ASSERT_EQ(services.size(), 1u);
+  EXPECT_FALSE(services[0]->GetWatchersForTesting().empty());
+
+  TestFuture<void> disconnect_future;
+  EXPECT_CALL(hid_delegate(),
+              DecrementConnectionCount(_, url::Origin::Create(origin)))
+      .WillOnce(RunClosure(disconnect_future.GetRepeatingCallback()));
+  DisconnectDevice(*device);
+  EXPECT_TRUE(disconnect_future.Wait());
+  EXPECT_TRUE(services[0]->GetWatchersForTesting().empty());
+}
+
 // Shutdown the service worker context and make sure that
 // ServiceWorkerHidDelegateObserver removes itself from the hid delegate
 // properly.
@@ -931,9 +1122,11 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, ShutdownServiceWorkerContext) {
   auto* version = registration->newest_installed_version();
   ASSERT_NE(version, nullptr);
   StartServiceWorker(version);
-  CreateHidService(version);
-  EXPECT_TRUE(context()->hid_delegate_observer()->GetHidServiceForTesting(
-      registration->id()));
+  auto hid_service = CreateHidService(version);
+  EXPECT_FALSE(context()
+                   ->hid_delegate_observer()
+                   ->GetHidServicesForTesting(registration->id())
+                   .empty());
 
   EXPECT_FALSE(hid_delegate().observer_list().empty());
   helper()->ShutdownContext();

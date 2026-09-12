@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_HID_DELEGATE_OBSERVER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_HID_DELEGATE_OBSERVER_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation_traits.h"
 #include "content/browser/hid/hid_service.h"
@@ -46,13 +48,15 @@ class CONTENT_EXPORT ServiceWorkerHidDelegateObserver
   void OnHidManagerConnectionError() override;
   void OnPermissionRevoked(const url::Origin& origin) override;
 
-  // Register the `hid_service` to be the latest HidService for
-  // `registraiton_id`.
+  // Register the `hid_service` for `registration_id`. There can be multiple
+  // live HidService instances for a registration (e.g., when a waiting
+  // service worker version starts while the active version is still running).
   void RegisterHidService(int64_t registration_id,
                           base::WeakPtr<HidService> hid_service);
 
-  HidService* GetHidServiceForTesting(int64_t registration_id) {
-    return GetHidService(registration_id);
+  std::vector<base::WeakPtr<HidService>> GetHidServicesForTesting(
+      int64_t registration_id) {
+    return GetHidServices(registration_id);
   }
 
  private:
@@ -76,12 +80,12 @@ class CONTENT_EXPORT ServiceWorkerHidDelegateObserver
                      scoped_refptr<ServiceWorkerVersion> version,
                      blink::ServiceWorkerStatusCode service_worker_status);
 
-  // Get HidService for the `registration_id`. It can be null if no live
-  // HidService for the `registration_id`.
-  HidService* GetHidService(int64_t registration_id);
+  // Get all live HidServices for the `registration_id`.
+  std::vector<base::WeakPtr<HidService>> GetHidServices(
+      int64_t registration_id);
 
-  // The map for registration id to the latest registered HidService.
-  base::flat_map<int64_t, base::WeakPtr<HidService>> hid_services_;
+  // The map for registration id to the list of live registered HidServices.
+  base::flat_map<int64_t, std::vector<base::WeakPtr<HidService>>> hid_services_;
 
   base::ScopedObservation<HidDelegate, ServiceWorkerHidDelegateObserver>
       hid_delegate_observation{this};

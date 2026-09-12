@@ -69,9 +69,10 @@ void ServiceWorkerHidDelegateObserver::OnDeviceChanged(
 
 void ServiceWorkerHidDelegateObserver::OnHidManagerConnectionError() {
   for (auto const& [id, info] : registration_id_map()) {
-    auto* hid_service = GetHidService(id);
-    if (hid_service) {
-      hid_service->OnHidManagerConnectionError();
+    for (auto const& hid_service : GetHidServices(id)) {
+      if (hid_service) {
+        hid_service->OnHidManagerConnectionError();
+      }
     }
   }
 }
@@ -79,9 +80,10 @@ void ServiceWorkerHidDelegateObserver::OnHidManagerConnectionError() {
 void ServiceWorkerHidDelegateObserver::OnPermissionRevoked(
     const url::Origin& origin) {
   for (auto const& [id, info] : registration_id_map()) {
-    auto* hid_service = GetHidService(id);
-    if (hid_service) {
-      hid_service->OnPermissionRevoked(origin);
+    for (auto const& hid_service : GetHidServices(id)) {
+      if (hid_service) {
+        hid_service->OnPermissionRevoked(origin);
+      }
     }
   }
 }
@@ -90,13 +92,14 @@ void ServiceWorkerHidDelegateObserver::RegisterHidService(
     int64_t registration_id,
     base::WeakPtr<HidService> hid_service) {
   Register(registration_id);
-  // `hid_services_` may already have an entry for `registration_id` in a case
-  // where the service worker went to sleep and now is worken up. In that
-  // case, the HidService from `hid_services_[registration_id]` is the weak ptr
-  // of previous HidService before the service worker went to sleep. We don't
-  // care about the previous HidService, so here just overwrite it with
-  // `hid_service`, which is the latest one.
-  hid_services_[registration_id] = hid_service;
+  // Multiple HidService instances can exist for the same `registration_id`
+  // (e.g., an installing version evaluating top-level `navigator.hid` listeners
+  // creates a new instance while the active version is still running). Prune
+  // invalidated weak pointers and append `hid_service` so all live instances
+  // are notified on permission revocation.
+  auto& services = hid_services_[registration_id];
+  std::erase_if(services, [](const auto& service) { return !service; });
+  services.push_back(std::move(hid_service));
 }
 
 void ServiceWorkerHidDelegateObserver::RegistrationAdded(
@@ -111,6 +114,12 @@ void ServiceWorkerHidDelegateObserver::RegistrationAdded(
 
 void ServiceWorkerHidDelegateObserver::RegistrationRemoved(
     int64_t registration_id) {
+  for (auto const& hid_service : GetHidServices(registration_id)) {
+    if (hid_service) {
+      hid_service->OnHidManagerConnectionError();
+    }
+  }
+  hid_services_.erase(registration_id);
   if (registration_id_map().empty()) {
     hid_delegate_observation.Reset();
   }
@@ -120,20 +129,45 @@ void ServiceWorkerHidDelegateObserver::DispatchHidDeviceEventToWorkers(
     const device::mojom::HidDeviceInfo& device_info,
     HidServiceDeviceEventCallback callback) {
   for (auto const& [id, info] : registration_id_map()) {
-    // No need to proceed if the registration doesn't have any event listeners.
-    if (!info.has_event_handlers) {
-      continue;
-    }
-    // Forward it to HidService if the service worker is running, HidService is
-    // available, and it has clients registered.
-    auto* hid_service = GetHidService(id);
-    if (hid_service) {
+    // Forward the event to all currently running (kRunning) HidService
+    // instances so that open device connections are cleaned up immediately
+    // (e.g. on device removal), even if no JS event listeners were registered.
+    // Track whether the event was delivered to an already-running ACTIVATED or
+    // ACTIVATING version whose client is ready so we know if we need to wake it
+    // up below.
+    bool delivered_to_active_version = false;
+    for (auto const& hid_service : GetHidServices(id)) {
+      if (!hid_service) {
+        continue;
+      }
       auto version = hid_service->service_worker_version();
       if (version &&
           version->running_status() == blink::EmbeddedWorkerStatus::kRunning) {
-        callback.Run(device_info, hid_service);
-        continue;
+        auto status = version->status();
+        callback.Run(device_info, hid_service.get());
+        // Mark as delivered only if the active version (ACTIVATING or
+        // ACTIVATED) already has a registered client. If `clients()` is empty
+        // (RegisterClient Mojo call still in flight), leave this false so
+        // DispatchEventToWorker queues a pending callback rather than losing
+        // the event. Checking ACTIVATING prevents double-notifying when it
+        // transitions to ACTIVATED in DispatchEventToWorker.
+        if ((status == ServiceWorkerVersion::ACTIVATED ||
+             status == ServiceWorkerVersion::ACTIVATING) &&
+            !hid_service->clients().empty()) {
+          delivered_to_active_version = true;
+        }
       }
+    }
+    if (delivered_to_active_version) {
+      continue;
+    }
+
+    // Check `has_event_handlers` after notifying running services above, since
+    // running workers must clean up open device connections (e.g. on device
+    // removal) even without JS listeners, whereas a stopped/sleeping ACTIVATED
+    // worker should only be woken up if it registered JS event listeners.
+    if (!info.has_event_handlers) {
+      continue;
     }
 
     // Avoid waking up the worker if eventually the device event won't be
@@ -172,33 +206,45 @@ void ServiceWorkerHidDelegateObserver::WorkerStarted(
   }
 
   auto registration_id = version->registration_id();
-  auto* hid_service = GetHidService(registration_id);
-  // Even when the service worker is in the running state, the HidService may
-  // not be available or the render-side HidManagerClient may not have yet
-  // registered. This is because the service worker is set to running state
-  // after the script is evaluated, but the inter-process request that creates
-  // the HidService or gets the HidManagerClient registered may still be in
-  // progress. In order to handle this case, the callback is stored and will be
-  // processed when the HidService is ready and the HidManagerClient is
-  // registered with the HidService.
-  if (!hid_service || hid_service->clients().empty()) {
+  // Deliver the event only to HidService instances belonging to the woken
+  // `version` (ignoring services from other versions of the same registration)
+  // that already have a registered render-side HidManagerClient.
+  bool has_ready_service = false;
+  for (auto const& hid_service : GetHidServices(registration_id)) {
+    if (hid_service &&
+        hid_service->service_worker_version().get() == version.get() &&
+        !hid_service->clients().empty()) {
+      callback.Run(*device_info, hid_service.get());
+      has_ready_service = true;
+    }
+  }
+  // Even when `version` is in the running state, its HidService may not yet be
+  // created or its render-side HidManagerClient may not yet be registered
+  // (since the worker enters kRunning after script evaluation while the Mojo
+  // requests to create HidService / register HidManagerClient are still in
+  // flight). Store the callback to be run once `version`'s HidService client is
+  // registered.
+  if (!has_ready_service) {
     AddPendingCallback(
         version.get(),
         base::BindOnce(&ServiceWorkerHidDelegateObserver::WorkerStarted,
                        base::Unretained(this), std::move(device_info),
                        std::move(callback), version, service_worker_status));
-    return;
   }
-  callback.Run(*device_info, hid_service);
 }
 
-HidService* ServiceWorkerHidDelegateObserver::GetHidService(
-    int64_t registration_id) {
+std::vector<base::WeakPtr<HidService>>
+ServiceWorkerHidDelegateObserver::GetHidServices(int64_t registration_id) {
   auto it = hid_services_.find(registration_id);
   if (it == hid_services_.end()) {
-    return nullptr;
+    return {};
   }
-  return it->second.get();
+  std::erase_if(it->second, [](const auto& service) { return !service; });
+  if (it->second.empty()) {
+    hid_services_.erase(it);
+    return {};
+  }
+  return it->second;
 }
 
 }  // namespace content
