@@ -78,7 +78,6 @@ extern const base::FeatureParam<bool> kDiscountOnShoppyPage;
 BASE_DECLARE_FEATURE(kDiscountsUiRefactor);
 
 BASE_DECLARE_FEATURE(kRetailCoupons);
-BASE_DECLARE_FEATURE(kCommerceDeveloper);
 // Parameter for enabling feature variation of coupons with code.
 extern const char kRetailCouponsWithCodeParam[];
 

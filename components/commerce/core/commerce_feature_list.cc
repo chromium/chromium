@@ -229,8 +229,6 @@ BASE_FEATURE(kShoppingPageTypes, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRetailCoupons, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommerceDeveloper, base::FEATURE_DISABLED_BY_DEFAULT);
-
 const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 
 const char kRevertIconOnFailureParam[] =
