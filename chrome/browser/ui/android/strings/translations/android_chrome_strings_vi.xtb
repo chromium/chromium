@@ -342,7 +342,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2421705177906985956">Hiện không có trang web nào để hiển thị</translation>
 <translation id="2426805022920575512">Chọn một tài khoản khác</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video, 1 video trong danh sách}other{Video, # video trong danh sách}}</translation>
-<translation id="2433507940547922241">Hình thức</translation>
+<translation id="2433507940547922241">Giao diện</translation>
 <translation id="2449931042095204989">Khi ứng dụng Google hoặc trang web tạo bằng Google Sites yêu cầu tải trước các đường liên kết trên trang ở chế độ riêng tư, thì Chrome sẽ mã hoá và tải trước những trang này thông qua các máy chủ của Google mà không có cookie. Điều này giúp ẩn danh tính của bạn khỏi trang web được tải trước.</translation>
 <translation id="2450019289047528273">Phương thức thanh toán và thông tin khác từ Google Wallet</translation>
 <translation id="2450083983707403292">Bạn có muốn bắt đầu tải xuống <ph name="FILE_NAME" /> lần nữa không?</translation>
@@ -1259,7 +1259,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="623755660902014047">Chế độ đọc</translation>
 <translation id="6246073558347462570">Cửa sổ bật lên theo ngữ cảnh</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
-<translation id="6248988683584659830">Tìm kiếm cài đặt</translation>
+<translation id="6248988683584659830">Tìm chế độ cài đặt</translation>
 <translation id="6250486830372700930">Bạn cũng có thể xoá các tiện ích khỏi thiết bị này</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, Thẻ ẩn danh được ghim và chọn cùng với nhiều thẻ khác</translation>
 <translation id="6251449557817521191">Xem Nhật ký duyệt web trên Chrome tại đây</translation>

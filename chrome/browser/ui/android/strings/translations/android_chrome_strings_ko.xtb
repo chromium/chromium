@@ -342,7 +342,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2421705177906985956">지금 표시할 사이트가 없습니다.</translation>
 <translation id="2426805022920575512">다른 계정 선택</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{동영상, 목록에 있는 동영상 1개}other{동영상, 목록에 있는 동영상 #개}}</translation>
-<translation id="2433507940547922241">모양</translation>
+<translation id="2433507940547922241">디자인</translation>
 <translation id="2449931042095204989">Google 사이트 또는 앱에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 페이지를 암호화한 다음 쿠키를 사용하지 않고 Google 서버를 통해 미리 로드합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있습니다.</translation>
 <translation id="2450019289047528273">Google 월렛의 결제 수단 및 기타 정보</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" />의 다운로드를 다시 시작하시겠습니까?</translation>
@@ -985,7 +985,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5032430150487044192">QR 코드를 만들 수 없음</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 자세한 정보를 확인하려면 아래의 '세부정보 더보기'를 선택하세요.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개 - <ph name="URL_LIST" />}other{탭 <ph name="TAB_COUNT_MANY" />개 - <ph name="URL_LIST" />}}</translation>
-<translation id="5040262127954254034">개인정보 보호</translation>
+<translation id="5040262127954254034">개인 정보 보호</translation>
 <translation id="504456571576643789">고려사항</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" />개 창 선택됨}other{<ph name="WINDOW_COUNT_NORMAL" />개 창 선택됨}}</translation>
 <translation id="506254248375231072">탭 없음</translation>
