@@ -16,6 +16,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
+#include "ui/base/test/mock_base_window.h"
+#include "ui/views/widget/widget.h"
 
 class BrowserActions;
 class TestingProfile;
@@ -36,6 +38,8 @@ class ActionAppMenuTestBase : public ChromeViewsTestBase {
 
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockBrowserWindowInterface> mock_window_interface_;
+  testing::NiceMock<ui::MockBaseWindow> mock_base_window_;
+  std::unique_ptr<views::Widget> widget_;
   TestTabStripModelDelegate test_tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   BrowserWindowFeatures features_;

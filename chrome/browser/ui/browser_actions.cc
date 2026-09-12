@@ -81,6 +81,7 @@
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -129,6 +130,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
@@ -145,6 +147,7 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_util.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1595,12 +1598,24 @@ void BrowserActions::InitializeChromeMenuActions() {
           .Build());
 
   root_action_item_->AddChild(
-      actions::ActionItem::Builder(
+      ChromeMenuAction(
           base::BindRepeating([](actions::ActionItem* item,
                                  actions::ActionInvocationContext context) {
             profiles::SwitchToGuestProfile();
-          }))
-          .SetActionId(kActionOpenGuestProfile)
+          }),
+          kActionOpenGuestProfile, IDS_OPEN_GUEST_PROFILE,
+          IDS_OPEN_GUEST_PROFILE,
+          features::IsRoundedIconsEnabled() ? kAccountBoxIcon
+                                            : kAccountBoxOldIcon,
+          /*is_pinnable=*/false)
+          .SetProperty(views::kElementIdentifierKey,
+                       AppMenuModel::kProfileOpenGuestItem)
+          .SetVisible(profile && !profile->IsIncognitoProfile() &&
+                      !profile->IsGuestSession() &&
+                      !profile->IsEnterpriseIsolatedModeProfile() &&
+                      g_browser_process &&
+                      g_browser_process->profile_manager() &&
+                      profiles::IsGuestModeEnabled(*profile))
           .Build());
 
   root_action_item_->AddChild(
@@ -3966,6 +3981,10 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           kActionManageGoogleAccount, IDS_MANAGE_GOOGLE_ACCOUNT,
           IDS_MANAGE_GOOGLE_ACCOUNT, manage_account_icon,
           /*is_pinnable=*/false)
+          .SetVisible(HasUnconstentedProfile(profile) &&
+                      !IsSyncPaused(profile) &&
+                      !profile->IsPrimaryOTRProfileWithRegularParent() &&
+                      !profile->IsEnterpriseIsolatedModeProfile())
           .Build());
 
   root_action_item_->AddChild(
@@ -4112,14 +4131,19 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
   root_action_item_->AddChild(
-      actions::ActionItem::Builder(
+      ChromeMenuAction(
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 chrome::ShowSettingsSubPage(bwi, chrome::kManageProfileSubPage);
               },
-              bwi))
-          .SetActionId(kActionCustomizeChrome)
+              bwi),
+          kActionCustomizeChrome, IDS_CUSTOMIZE_CHROME, IDS_CUSTOMIZE_CHROME,
+          features::IsRoundedIconsEnabled() ? kEditIcon
+                                            : kEditChromeRefreshOldIcon,
+          /*is_pinnable=*/false)
+          .SetVisible(!profile->IsPrimaryOTRProfileWithRegularParent() &&
+                      !profile->IsGuestSession())
           .Build());
 
   root_action_item_->AddChild(
@@ -4136,6 +4160,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionCloseProfile)
+          .SetText(l10n_util::GetPluralStringFUTF16(IDS_CLOSE_PROFILE,
+                                                    CountBrowsersFor(profile)))
+          .SetTooltipText(l10n_util::GetPluralStringFUTF16(
+              IDS_CLOSE_PROFILE, CountBrowsersFor(profile)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
+                                                : kCloseChromeRefreshOldIcon,
+              ui::kColorIcon))
           .Build());
 #endif
 
@@ -4267,25 +4299,41 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .Build());
 
   root_action_item_->AddChild(
-      actions::ActionItem::Builder(
+      ChromeMenuAction(
           base::BindRepeating([](actions::ActionItem* item,
                                  actions::ActionInvocationContext context) {
             ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
                 ProfilePicker::EntryPoint::
                     kAppMenuProfileSubMenuAddNewProfile));
-          }))
-          .SetActionId(kActionAddNewProfile)
+          }),
+          kActionAddNewProfile, IDS_ADD_NEW_PROFILE, IDS_ADD_NEW_PROFILE,
+          features::IsRoundedIconsEnabled() ? kPersonAddIcon
+                                            : kAccountAddChromeRefreshOldIcon,
+          /*is_pinnable=*/false)
+          .SetVisible(profile && !profile->IsIncognitoProfile() &&
+                      !profile->IsGuestSession() &&
+                      !profile->IsEnterpriseIsolatedModeProfile() &&
+                      g_browser_process && g_browser_process->local_state() &&
+                      profiles::IsProfileCreationAllowed())
           .Build());
 
   root_action_item_->AddChild(
-      actions::ActionItem::Builder(
+      ChromeMenuAction(
           base::BindRepeating([](actions::ActionItem* item,
                                  actions::ActionInvocationContext context) {
             ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
                 ProfilePicker::EntryPoint::
                     kAppMenuProfileSubMenuManageProfiles));
-          }))
-          .SetActionId(kActionManageChromeProfiles)
+          }),
+          kActionManageChromeProfiles, IDS_MANAGE_CHROME_PROFILES,
+          IDS_MANAGE_CHROME_PROFILES,
+          features::IsRoundedIconsEnabled()
+              ? kManageAccountsIcon
+              : kAccountManageChromeRefreshOldIcon,
+          /*is_pinnable=*/false)
+          .SetVisible(!profile->IsIncognitoProfile() &&
+                      !profile->IsGuestSession() &&
+                      !profile->IsEnterpriseIsolatedModeProfile())
           .Build());
 #endif
 
@@ -4952,13 +5000,19 @@ void BrowserActions::InitializeSubmenuActions() {
                  ? kAccountCircleIcon
                  : kAccountCircleChromeRefreshOldIcon);
 
+  const int profile_title_id =
+      profile_->IsIncognitoProfile()
+          ? IDS_INCOGNITO_PROFILE_MENU_TITLE
+          : (profile_->IsGuestSession() ? IDS_GUEST_PROFILE_NAME
+                                        : IDS_SINGLE_PROFILE_DISPLAY_NAME);
+
   root_action_item_->AddChild(
       ChromeMenuAction(
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionProfileSubmenu, IDS_READING_LIST_MENU, IDS_READING_LIST_MENU,
+          kActionProfileSubmenu, profile_title_id, profile_title_id,
           avatar_vector_icon,
           /*is_pinnable=*/false)
           .Build());

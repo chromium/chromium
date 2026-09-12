@@ -129,13 +129,7 @@ void ProfileDynamicMenu::BuildProfileActions(actions::BaseAction* parent_item) {
     }
   }
 
-  // 2. Primary profile actions (Manage Account, Customize, and Close Profile).
-  BuildManageGoogleAccountRow(parent_item, profile);
-  BuildCustomizeProfileRow(parent_item, profile);
-  BuildCloseProfileRow(parent_item, profile);
-
-  // 3. Other Profiles & Profile Management footer (omitted for guest &
-  // incognito).
+  // 2. Other Profiles (omitted for guest & incognito).
   const ui::ColorProvider* color_provider = GetColorProvider();
   BuildOtherProfilesSection(parent_item, profile, color_provider);
 }
@@ -300,75 +294,13 @@ bool ProfileDynamicMenu::BuildSyncSection(actions::BaseAction* parent_item,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-// Adds "Manage your Google Account" menu row.
-// Only visible for signed-in accounts when sync is not paused.
-void ProfileDynamicMenu::BuildManageGoogleAccountRow(
-    actions::BaseAction* parent_item,
-    Profile* profile) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (HasUnconstentedProfile(profile) && !IsSyncPaused(profile) &&
-      !profile->IsIncognitoProfile() &&
-      !profile->IsEnterpriseIsolatedModeProfile()) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    const gfx::VectorIcon& manage_account_icon =
-        vector_icons::kGoogleGLogoMonochromeIcon;
-#else
-    const gfx::VectorIcon& manage_account_icon =
-        features::IsRoundedIconsEnabled() ? kManageAccountsIcon
-                                          : kAccountManageChromeRefreshOldIcon;
-#endif
-    parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-        kActionManageGoogleAccount, ActionAppMenuManager::DisplayType::kRow,
-        ui::kColorMenuBackground,
-        l10n_util::GetStringUTF16(IDS_MANAGE_GOOGLE_ACCOUNT),
-        ui::ImageModel::FromVectorIcon(manage_account_icon, ui::kColorMenuIcon,
-                                       ui::SimpleMenuModel::kDefaultIconSize)));
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-}
-
-// Adds "Customize Chrome" menu row.
-void ProfileDynamicMenu::BuildCustomizeProfileRow(
-    actions::BaseAction* parent_item,
-    Profile* profile) {
-  // Opens the side panel to customize theme and avatar colors.
-  if (!profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
-      !profile->IsEnterpriseIsolatedModeProfile()) {
-    parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-        kActionCustomizeChrome, ActionAppMenuManager::DisplayType::kRow,
-        ui::kColorMenuBackground,
-        l10n_util::GetStringUTF16(IDS_CUSTOMIZE_CHROME),
-        ui::ImageModel::FromVectorIcon(
-            features::IsRoundedIconsEnabled() ? kEditIcon
-                                              : kEditChromeRefreshOldIcon,
-            ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
-  }
-}
-
-// Adds "Close Profile" menu row showing the number of open windows.
-void ProfileDynamicMenu::BuildCloseProfileRow(actions::BaseAction* parent_item,
-                                              Profile* profile) {
-  parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-      kActionCloseProfile, ActionAppMenuManager::DisplayType::kRow,
-      ui::kColorMenuBackground,
-      l10n_util::GetPluralStringFUTF16(IDS_CLOSE_PROFILE,
-                                       CountBrowsersFor(profile)),
-      ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
-                                            : kCloseChromeRefreshOldIcon,
-          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
-}
-
-// Populates "Other Chrome profiles" section and the profile management footer
-// options.
+// Populates "Other Chrome profiles" section.
 void ProfileDynamicMenu::BuildOtherProfilesSection(
     actions::BaseAction* parent_item,
     Profile* profile,
     const ui::ColorProvider* color_provider) {
   const bool has_profile_manager =
       g_browser_process && g_browser_process->profile_manager();
-  const bool is_guest_mode_enabled =
-      has_profile_manager && profiles::IsGuestModeEnabled(*profile);
   if (!profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
       !profile->IsEnterpriseIsolatedModeProfile()) {
     if (has_profile_manager) {
@@ -443,39 +375,6 @@ void ProfileDynamicMenu::BuildOtherProfilesSection(
         parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
       }
     }
-
-    // Profile management footer options: Add new profile, Open Guest, and
-    // Manage profiles.
-    if (profiles::IsProfileCreationAllowed()) {
-      parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-          kActionAddNewProfile, ActionAppMenuManager::DisplayType::kRow,
-          ui::kColorMenuBackground,
-          l10n_util::GetStringUTF16(IDS_ADD_NEW_PROFILE),
-          ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled()
-                  ? kPersonAddIcon
-                  : kAccountAddChromeRefreshOldIcon,
-              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
-    }
-    if (is_guest_mode_enabled) {
-      parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-          kActionOpenGuestProfile, ActionAppMenuManager::DisplayType::kRow,
-          ui::kColorMenuBackground,
-          l10n_util::GetStringUTF16(IDS_OPEN_GUEST_PROFILE),
-          ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kAccountBoxIcon
-                                                : kAccountBoxOldIcon,
-              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
-    }
-    parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-        kActionManageChromeProfiles, ActionAppMenuManager::DisplayType::kRow,
-        ui::kColorMenuBackground,
-        l10n_util::GetStringUTF16(IDS_MANAGE_CHROME_PROFILES),
-        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                           ? kManageAccountsIcon
-                                           : kAccountManageChromeRefreshOldIcon,
-                                       ui::kColorMenuIcon,
-                                       ui::SimpleMenuModel::kDefaultIconSize)));
   }
 }
 

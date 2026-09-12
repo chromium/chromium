@@ -289,6 +289,12 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   actions::ActionItem* const action_item = child_base->GetActionItem();
   CHECK(action_item);
 
+  const ui::ElementIdentifier element_id =
+      action_item->GetProperty(views::kElementIdentifierKey);
+  if (element_id) {
+    menu_item->SetProperty(views::kElementIdentifierKey, element_id);
+  }
+
   if (ui::ImageModel* icon_override =
           child_base->GetProperty(ActionAppMenuManager::kIconOverrideKey)) {
     menu_item->SetIcon(StandardizeMenuIconSize(*icon_override));

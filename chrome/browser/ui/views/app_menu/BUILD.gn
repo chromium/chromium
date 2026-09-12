@@ -200,6 +200,7 @@ if (toolkit_views) {
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions",
+      "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/test:test_support",
       "//components/enterprise/isolated_mode",

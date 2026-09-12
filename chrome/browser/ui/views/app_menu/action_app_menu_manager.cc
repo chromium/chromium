@@ -463,11 +463,15 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
         section.AddSubmenu(
             kActionProfileSubmenu,
             [profile](AppMenuBuilder& sub) {
-              if (HasUnconstentedProfile(profile) && !IsSyncPaused(profile) &&
-                  !profile->IsIncognitoProfile() &&
-                  !profile->IsEnterpriseIsolatedModeProfile()) {
-                sub.AddAction(kActionManageGoogleAccount);
-              }
+              sub.AddAction(kActionManageGoogleAccount)
+                  .AddAction(kActionCustomizeChrome)
+                  .AddAction(kActionCloseProfile, /*type=*/std::nullopt,
+                             l10n_util::GetPluralStringFUTF16(
+                                 IDS_CLOSE_PROFILE, CountBrowsersFor(profile)))
+                  .AddDivider()
+                  .AddAction(kActionAddNewProfile)
+                  .AddAction(kActionOpenGuestProfile)
+                  .AddAction(kActionManageChromeProfiles);
             },
             DisplayType::kRow,
             /*text_override=*/profile_name.empty()

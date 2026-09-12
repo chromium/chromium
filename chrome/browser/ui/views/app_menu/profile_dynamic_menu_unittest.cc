@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -21,6 +22,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/mock_base_window.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/native_ui_types.h"
@@ -34,11 +36,12 @@ class ProfileDynamicMenuTest : public ActionAppMenuTestBase {
   void SetUp() override {
     ActionAppMenuTestBase::SetUp();
 
-    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-    EXPECT_CALL(mock_base_window_, GetNativeWindow())
-        .WillRepeatedly(testing::Return(widget_->GetNativeWindow()));
-    EXPECT_CALL(mock_window_interface_, GetWindow())
-        .WillRepeatedly(testing::Return(&mock_base_window_));
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
 
     auto add_action = [this](actions::ActionId action_id, std::u16string text) {
       root_action_->AddChild(
@@ -66,11 +69,6 @@ class ProfileDynamicMenuTest : public ActionAppMenuTestBase {
     add_action(kActionUpgradeDialog, u"Update Chrome");
   }
 
-  void TearDown() override {
-    widget_.reset();
-    ActionAppMenuTestBase::TearDown();
-  }
-
   actions::BaseAction* FindChildAction(actions::ActionItem* parent,
                                        actions::ActionId action_id) {
     if (!parent) {
@@ -85,12 +83,42 @@ class ProfileDynamicMenuTest : public ActionAppMenuTestBase {
     }
     return nullptr;
   }
-
- protected:
-  testing::NiceMock<ui::MockBaseWindow> mock_base_window_;
-  std::unique_ptr<views::Widget> widget_;
 };
 
+TEST_F(ProfileDynamicMenuTest, BuildProfileActions_GuestProfile) {
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
+
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(guest_profile.get()));
+
+  ProfileDynamicMenu menu(&mock_window_interface_);
+  auto parent_item = actions::ActionItem::Builder().Build();
+
+  menu.BuildProfileActions(parent_item.get());
+
+  // For guest profile, sync and other profiles sections are omitted.
+  EXPECT_TRUE(parent_item->GetChildren().children().empty());
+}
+
+TEST_F(ProfileDynamicMenuTest, BuildProfileActions_IncognitoProfile) {
+  Profile* incognito_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(incognito_profile));
+
+  ProfileDynamicMenu menu(&mock_window_interface_);
+  auto parent_item = actions::ActionItem::Builder().Build();
+
+  menu.BuildProfileActions(parent_item.get());
+
+  // For incognito profile, sync and other profiles sections are omitted.
+  EXPECT_TRUE(parent_item->GetChildren().children().empty());
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileDynamicMenuTest, BuildProfileActions_StandardProfile) {
   ProfileDynamicMenu menu(&mock_window_interface_);
   auto parent_item = actions::ActionItem::Builder().Build();
@@ -98,27 +126,13 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_StandardProfile) {
   menu.BuildProfileActions(parent_item.get());
 
   EXPECT_FALSE(parent_item->GetChildren().children().empty());
-
-  actions::BaseAction* close_profile =
-      FindChildAction(parent_item.get(), kActionCloseProfile);
-  ASSERT_NE(close_profile, nullptr);
-  EXPECT_EQ(close_profile->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kContainerColorKey),
-            ui::kColorMenuBackground);
-
-  actions::BaseAction* customize_chrome =
-      FindChildAction(parent_item.get(), kActionCustomizeChrome);
-  ASSERT_NE(customize_chrome, nullptr);
-  EXPECT_EQ(customize_chrome->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kContainerColorKey),
-            ui::kColorMenuBackground);
-
-  actions::BaseAction* manage_chrome_profiles =
-      FindChildAction(parent_item.get(), kActionManageChromeProfiles);
-  ASSERT_NE(manage_chrome_profiles, nullptr);
-  EXPECT_EQ(manage_chrome_profiles->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kContainerColorKey),
-            ui::kColorMenuBackground);
+  // Verify the sync section divider is added.
+  EXPECT_EQ(parent_item->GetChildren()
+                .children()
+                .back()
+                ->GetActionItem()
+                ->GetProperty(ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kDivider);
 }
 
 TEST_F(ProfileDynamicMenuTest, BuildProfileActions_MultipleCallsResetList) {
@@ -134,46 +148,6 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_MultipleCallsResetList) {
   EXPECT_EQ(parent_item->GetChildren().children().size(), initial_count);
 }
 
-TEST_F(ProfileDynamicMenuTest, BuildProfileActions_GuestProfile) {
-  TestingProfile::Builder guest_builder;
-  guest_builder.SetGuestSession();
-  std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
-
-  ON_CALL(mock_window_interface_, GetProfile())
-      .WillByDefault(testing::Return(guest_profile.get()));
-
-  ProfileDynamicMenu menu(&mock_window_interface_);
-  auto parent_item = actions::ActionItem::Builder().Build();
-
-  menu.BuildProfileActions(parent_item.get());
-
-  EXPECT_NE(FindChildAction(parent_item.get(), kActionCloseProfile), nullptr);
-  EXPECT_EQ(FindChildAction(parent_item.get(), kActionCustomizeChrome),
-            nullptr);
-  EXPECT_EQ(FindChildAction(parent_item.get(), kActionManageChromeProfiles),
-            nullptr);
-}
-
-TEST_F(ProfileDynamicMenuTest, BuildProfileActions_IncognitoProfile) {
-  Profile* incognito_profile =
-      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-
-  ON_CALL(mock_window_interface_, GetProfile())
-      .WillByDefault(testing::Return(incognito_profile));
-
-  ProfileDynamicMenu menu(&mock_window_interface_);
-  auto parent_item = actions::ActionItem::Builder().Build();
-
-  menu.BuildProfileActions(parent_item.get());
-
-  EXPECT_NE(FindChildAction(parent_item.get(), kActionCloseProfile), nullptr);
-  EXPECT_EQ(FindChildAction(parent_item.get(), kActionCustomizeChrome),
-            nullptr);
-  EXPECT_EQ(FindChildAction(parent_item.get(), kActionManageChromeProfiles),
-            nullptr);
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileDynamicMenuTest, BuildProfileActions_SignedInProfile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_.get());
@@ -185,9 +159,13 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_SignedInProfile) {
 
   menu.BuildProfileActions(parent_item.get());
 
-  // When signed in, Manage Google Account row should be populated.
-  EXPECT_NE(FindChildAction(parent_item.get(), kActionManageGoogleAccount),
-            nullptr);
+  // When signed in, sync section header should show the signed-in message with
+  // email.
+  EXPECT_FALSE(parent_item->GetChildren().children().empty());
+  EXPECT_EQ(
+      parent_item->GetChildren().children().front()->GetActionItem()->GetText(),
+      l10n_util::GetStringFUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE_WITH_EMAIL,
+                                 {u"test@example.com"}));
 }
 
 TEST_F(ProfileDynamicMenuTest, BuildProfileActions_SyncError) {
@@ -214,8 +192,6 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_SyncError) {
   // be populated.
   EXPECT_NE(FindChildAction(parent_item.get(), kActionShowSyncPassphraseDialog),
             nullptr);
-  EXPECT_NE(FindChildAction(parent_item.get(), kActionManageGoogleAccount),
-            nullptr);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -235,8 +211,6 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_MultipleProfiles) {
   menu.BuildProfileActions(parent_item.get());
 
   // With multiple profiles managed by ProfileManager, Other Profiles section
-  // and profile management footer actions should be populated.
-  EXPECT_NE(FindChildAction(parent_item.get(), kActionAddNewProfile), nullptr);
-  EXPECT_NE(FindChildAction(parent_item.get(), kActionManageChromeProfiles),
-            nullptr);
+  // should have header, profile entry, and separator.
+  EXPECT_GT(parent_item->GetChildren().children().size(), 0u);
 }
