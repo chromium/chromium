@@ -13,4 +13,10 @@ extern const char kTipsMagicStackModuleDisplayedTypeHistogram[];
 // indicates which tip was interacted with.
 extern const char kTipsMagicStackModuleTappedTypeHistogram[];
 
+// User action names.
+// Logged when the Save Passwords promo is dismissed.
+extern const char kSavePasswordsPromoDismissedAction[];
+// Logged when the Autofill Passwords promo is dismissed.
+extern const char kAutofillPasswordsPromoDismissedAction[];
+
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_MODEL_TIPS_METRICS_H_

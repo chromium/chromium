@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_passwords_coordinator.h"
 
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
+#import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/save_passwords_instructional_view_controller.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/use_autofill_instructional_view_controller.h"
 #import "ios/chrome/browser/instructions_bottom_sheet/ui/instructions_bottom_sheet_view_controller.h"
@@ -130,6 +132,10 @@ using segmentation_platform::TipIdentifier;
 
 // Dismisses the sheet.
 - (void)dismissSheet {
+  base::RecordAction(
+      base::UserMetricsAction(_identifier == TipIdentifier::kSavePasswords
+                                  ? kSavePasswordsPromoDismissedAction
+                                  : kAutofillPasswordsPromoDismissedAction));
   [_delegate tipsPasswordsCoordinatorDidFinish:self];
 }
 

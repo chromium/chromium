@@ -19129,6 +19129,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileAutofillPasswordsPromoDismissed">
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Reported when the Autofill Passwords tip promo is dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobileAutofillSettingsBack">
   <owner>jsobiech@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -23224,6 +23232,15 @@ should be able to be added at any place in this file.
   <description>
     Reported when the user opens the Password Checkup page from a Safety Check
     notification. iOS only.
+  </description>
+</action>
+
+<action name="MobileSavePasswordsPromoDismissed">
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Reported when the Save Passwords tip promo is dismissed or stopped. iOS
+    only.
   </description>
 </action>
 
