@@ -81,10 +81,62 @@ TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Enabled_DseNotGoogle) {
   // Arrange.
   base::android::device_info::set_is_desktop_for_testing(true);
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chrome::android::kUseWebUiNtpAndroid);
+  scoped_feature_list.InitWithFeatures({chrome::android::kUseWebUiNtpAndroid,
+                                        chrome::android::kUseWebUiNtp3PDSE},
+                                       {});
 
-  // DSE is NOT Google
+  // DSE is NOT Google and provides a new tab URL
+  TemplateURLData data;
+  data.SetShortName(u"bing");
+  data.SetKeyword(u"bing");
+  data.SetURL("https://www.bing.com/search?q={searchTerms}");
+  data.new_tab_url = "https://www.bing.com/newtab";
+  TemplateURL* added_turl = model()->Add(std::make_unique<TemplateURL>(data));
+  model()->SetUserSelectedDefaultSearchProvider(added_turl);
+  test_util_->ChangeModelToLoadState();
+
+  GURL url(chrome::kChromeUINewTabURL);
+
+  // Act and assert.
+  EXPECT_TRUE(HandleAndroidNativePageURL(&url, profile()));
+  EXPECT_EQ("https://www.bing.com/newtab", url.spec());
+}
+
+TEST_F(NewTabPageUrlHandlerTest,
+       TestWebUiNtpRedirection_Enabled_DseNotGoogle_3pDseDisabled) {
+  // Arrange.
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({chrome::android::kUseWebUiNtpAndroid},
+                                       {chrome::android::kUseWebUiNtp3PDSE});
+
+  // DSE is NOT Google and provides a new tab URL
+  TemplateURLData data;
+  data.SetShortName(u"bing");
+  data.SetKeyword(u"bing");
+  data.SetURL("https://www.bing.com/search?q={searchTerms}");
+  data.new_tab_url = "https://www.bing.com/newtab";
+  TemplateURL* added_turl = model()->Add(std::make_unique<TemplateURL>(data));
+  model()->SetUserSelectedDefaultSearchProvider(added_turl);
+  test_util_->ChangeModelToLoadState();
+
+  GURL url(chrome::kChromeUINewTabURL);
+
+  // Act and assert.
+  EXPECT_TRUE(HandleAndroidNativePageURL(&url, profile()));
+  EXPECT_EQ(chrome::kChromeUINativeNewTabURL, url.spec());
+}
+
+TEST_F(NewTabPageUrlHandlerTest,
+       TestWebUiNtpRedirection_Enabled_DseNotGoogle_NoNewTabUrl) {
+  // Arrange.
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({chrome::android::kUseWebUiNtpAndroid,
+                                        chrome::android::kUseWebUiNtp3PDSE},
+                                       {});
+
+  // DSE is NOT Google and does not provide a new tab URL
   std::unique_ptr<TemplateURL> bing_turl = CreateTestTemplateURL(
       u"bing", "http://www.bing.com/search?q={searchTerms}");
   TemplateURL* added_turl = model()->Add(std::move(bing_turl));
@@ -95,7 +147,7 @@ TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Enabled_DseNotGoogle) {
 
   // Act and assert.
   EXPECT_TRUE(HandleAndroidNativePageURL(&url, profile()));
-  EXPECT_EQ(chrome::kChromeUINativeNewTabURL, url.spec());
+  EXPECT_EQ(chrome::kChromeUINewTabPageURL, url.spec());
 }
 
 TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Disabled) {
@@ -130,6 +182,57 @@ TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Enabled_DseGoogle_Mobil
   std::unique_ptr<TemplateURL> google_turl = CreateTestTemplateURL(
       u"google", "https://www.google.com/search?q={searchTerms}");
   TemplateURL* added_turl = model()->Add(std::move(google_turl));
+  model()->SetUserSelectedDefaultSearchProvider(added_turl);
+  test_util_->ChangeModelToLoadState();
+
+  GURL url(chrome::kChromeUINewTabURL);
+
+  // Act and assert.
+  EXPECT_TRUE(HandleAndroidNativePageURL(&url, profile()));
+  EXPECT_EQ(chrome::kChromeUINativeNewTabURL, url.spec());
+}
+
+TEST_F(NewTabPageUrlHandlerTest,
+       TestWebUiNtpRedirection_Enabled_DseNotGoogle_Mobile) {
+  // Arrange.
+  base::android::device_info::set_is_desktop_for_testing(false);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({chrome::android::kUseWebUiNtpAndroid,
+                                        chrome::android::kUseWebUiNtp3PDSE},
+                                       {});
+
+  // DSE is NOT Google and provides a new tab URL
+  TemplateURLData data;
+  data.SetShortName(u"bing");
+  data.SetKeyword(u"bing");
+  data.SetURL("https://www.bing.com/search?q={searchTerms}");
+  data.new_tab_url = "https://www.bing.com/newtab";
+  TemplateURL* added_turl = model()->Add(std::make_unique<TemplateURL>(data));
+  model()->SetUserSelectedDefaultSearchProvider(added_turl);
+  test_util_->ChangeModelToLoadState();
+
+  GURL url(chrome::kChromeUINewTabURL);
+
+  // Act and assert.
+  EXPECT_TRUE(HandleAndroidNativePageURL(&url, profile()));
+  EXPECT_EQ(chrome::kChromeUINativeNewTabURL, url.spec());
+}
+
+TEST_F(NewTabPageUrlHandlerTest,
+       TestWebUiNtpRedirection_Disabled_3pDseEnabled) {
+  // Arrange.
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({chrome::android::kUseWebUiNtp3PDSE},
+                                       {chrome::android::kUseWebUiNtpAndroid});
+
+  // DSE is NOT Google and provides a new tab URL
+  TemplateURLData data;
+  data.SetShortName(u"bing");
+  data.SetKeyword(u"bing");
+  data.SetURL("https://www.bing.com/search?q={searchTerms}");
+  data.new_tab_url = "https://www.bing.com/newtab";
+  TemplateURL* added_turl = model()->Add(std::make_unique<TemplateURL>(data));
   model()->SetUserSelectedDefaultSearchProvider(added_turl);
   test_util_->ChangeModelToLoadState();
 

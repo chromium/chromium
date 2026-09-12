@@ -27,7 +27,7 @@ public class UrlOverrideUtils {
      * when it's a desktop platform, the WebUI NTP feature is enabled, and the user's DSE is Google.
      *
      * <p>In case the user's DSE changes to a 3P DSE at runtime, then the WebUI NTP override
-     * eligibility evaluates to false, and the native NTP is used instead. As of today, the WebUI
+     * eligibility evaluates to whether the WebUI 3P NTP feature is enabled. As of today, the WebUI
      * NTP override only applies to desktop Android platforms.
      */
     public static boolean isWebUiNtpOverrideEnabled() {
@@ -37,8 +37,11 @@ public class UrlOverrideUtils {
         if (!ChromeFeatureList.sUseWebUiNtpAndroid.isEnabled()) {
             return false;
         }
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+        if (ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true)) {
+            return true;
+        }
+        return ChromeFeatureList.sUseWebUiNtp3PDSE.isEnabled();
     }
 
     /** Returns true if the bookmarks page is overridden. */

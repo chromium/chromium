@@ -1436,8 +1436,7 @@ public class ChromeTabbedActivityTest {
                                     UrlConstantResolverFactory.getForProfile(
                                             mActivity.getCurrentTabModel().getProfile());
                             Assert.assertEquals(
-                                    UrlConstantResolver.getOriginalWebUiNtpUrl(),
-                                    resolver.getNtpUrl());
+                                    UrlConstantResolver.getOriginalNtpUrl(), resolver.getNtpUrl());
                             Assert.assertNotEquals(
                                     UrlConstantResolver.getOriginalNativeNtpUrl(),
                                     resolver.getNtpUrl());

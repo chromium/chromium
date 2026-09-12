@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalWebUiNtpUrl;
 import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isBookmarksPageOverrideEnabled;
 import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isHistoryPageOverrideEnabled;
 import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isIncognitoBookmarksPageOverrideEnabled;
@@ -75,11 +74,9 @@ public class UrlConstantResolverFactory {
                 getOriginalNativeNtpUrl(),
                 () -> {
                     // Returns 'chrome://newtab' even when WebUI NTP is enabled in order to respect
-                    // extensions/NTP location overrides.
-                    if (isNtpOverrideEnabled()) {
+                    // extensions/NTP location overrides and delegate to C++ URL rewrite handler.
+                    if (isNtpOverrideEnabled() || isWebUiNtpOverrideEnabled()) {
                         return getOriginalNtpUrl();
-                    } else if (isWebUiNtpOverrideEnabled()) {
-                        return getOriginalWebUiNtpUrl();
                     } else {
                         return null;
                     }

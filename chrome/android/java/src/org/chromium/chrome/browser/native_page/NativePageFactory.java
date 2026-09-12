@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isHisto
 import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isIncognitoBookmarksPageOverrideEnabled;
 import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isIncognitoNtpOverrideEnabled;
 import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isNtpOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isWebUiNtpOverrideEnabled;
 
 import android.app.Activity;
 import android.content.Context;
@@ -575,7 +576,9 @@ public class NativePageFactory {
         String host = url.getHost();
         return switch (host) {
             case UrlConstants.NTP_HOST ->
-                    isIncognito ? isIncognitoNtpOverrideEnabled() : isNtpOverrideEnabled();
+                    isIncognito
+                            ? isIncognitoNtpOverrideEnabled()
+                            : (isNtpOverrideEnabled() || isWebUiNtpOverrideEnabled());
             case UrlConstants.BOOKMARKS_HOST ->
                     isIncognito
                             ? isIncognitoBookmarksPageOverrideEnabled()

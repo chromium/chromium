@@ -15,7 +15,6 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalWebUiNtpUrl;
 
 import org.junit.After;
 import org.junit.Before;
@@ -247,12 +246,52 @@ public class UrlConstantResolverFactoryUnitTest {
                 .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true);
 
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
-        assertEquals(getOriginalWebUiNtpUrl(), resolver.getNtpUrl());
+        assertEquals(getOriginalNtpUrl(), resolver.getNtpUrl());
     }
 
     @Test
     @EnableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
     public void testOriginalResolver_WebUiNtpEnabled_DseNotGoogle() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false);
+
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.USE_WEB_UI_NTP_ANDROID,
+        ChromeFeatureList.USE_WEB_UI_NTP_3P_DSE
+    })
+    public void testOriginalResolver_WebUiNtpEnabled_DseNotGoogle_3pDseEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false);
+
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+        assertEquals(getOriginalNtpUrl(), resolver.getNtpUrl());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.USE_WEB_UI_NTP_ANDROID,
+        ChromeFeatureList.USE_WEB_UI_NTP_3P_DSE
+    })
+    public void testOriginalResolver_WebUiNtpEnabled_DseNotGoogle_3pDseEnabled_Mobile() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false);
+
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_3P_DSE})
+    @DisableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
+    public void testOriginalResolver_WebUiNtpDisabled_3pDseEnabled() {
         DeviceInfo.setIsDesktopForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false);

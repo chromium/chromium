@@ -45,7 +45,7 @@ public class RegularNewTabPageStation extends CtaPageStation {
                 config.withIncognito(false)
                         .withExpectedUrlSubstring(
                                 UrlOverrideUtils.isWebUiNtpOverrideEnabled()
-                                        ? UrlConstantResolver.getOriginalWebUiNtpUrl()
+                                        ? UrlConstantResolver.getOriginalNtpUrl()
                                         : UrlConstantResolver.getOriginalNativeNtpUrl()));
 
         declareElementFactory(

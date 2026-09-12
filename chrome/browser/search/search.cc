@@ -172,10 +172,25 @@ struct NewTabURLDetails {
       return NewTabURLDetails(GURL(), NEW_TAB_URL_INCOGNITO);
     }
 
-#if BUILDFLAG(IS_ANDROID)
-    const GURL local_url;
-#else
     const bool default_is_google = DefaultSearchProviderIsGoogle(profile);
+
+#if BUILDFLAG(IS_ANDROID)
+    const bool is_desktop_android = IsWebUiNtpEnabledForDesktopAndroid();
+    const GURL local_url(
+        is_desktop_android ? chrome::ChromeUINewTabPageURLAsGURL() : GURL());
+    if (is_desktop_android) {
+      if (default_is_google) {
+        return NewTabURLDetails(local_url, NEW_TAB_URL_VALID);
+      } else {
+        // If the WebUI NTP 3PDSE flag is not enabled, then fallback to using
+        // the native Java NTP.
+        if (!base::FeatureList::IsEnabled(chrome::android::kUseWebUiNtp3PDSE)) {
+          return NewTabURLDetails(GURL(chrome::kChromeUINativeNewTabURL),
+                                  NEW_TAB_URL_VALID);
+        }
+      }
+    }
+#else
     const GURL local_url(default_is_google
                              ? chrome::ChromeUINewTabPageURLAsGURL()
                              : GURL(chrome::kChromeUINewTabPageThirdPartyURL));
