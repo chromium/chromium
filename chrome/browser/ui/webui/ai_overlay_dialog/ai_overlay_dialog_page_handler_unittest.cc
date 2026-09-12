@@ -105,7 +105,22 @@ class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
     return handler_remote_;
   }
 
- private:
+  void RecreateHandler() {
+    handler_.reset();
+    controller_.reset();
+    handler_remote_.reset();
+    page_receiver_.reset();
+
+    controller_ = std::make_unique<AiOverlayDialogControllerViews>(
+        &browser_window_interface_);
+    mojo::PendingRemote<ai_overlay_dialog::mojom::Page> page_remote;
+    page_receiver_.Bind(page_remote.InitWithNewPipeAndPassReceiver());
+    handler_ = std::make_unique<AiOverlayDialogPageHandler>(
+        handler_remote_.BindNewPipeAndPassReceiver(), std::move(page_remote),
+        &browser_window_interface_);
+  }
+
+ protected:
   const tabs::TabModel::PreventFeatureInitializationForTesting
       prevent_tab_features_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
@@ -189,6 +204,21 @@ TEST_F(AiOverlayDialogPageHandlerTest, RememberedNotesDictionaryStorage) {
     handler_remote()->SetRememberedNote(std::move(update_note),
                                         update_future.GetCallback());
     EXPECT_TRUE(update_future.Get());
+
+    base::test::TestFuture<
+        std::vector<ai_overlay_dialog::mojom::RememberedNotePtr>>
+        get_future;
+    handler_remote()->GetRememberedNotes(get_future.GetCallback());
+    auto notes = get_future.Take();
+    ASSERT_EQ(1u, notes.size());
+    EXPECT_EQ("test_key", notes[0]->key);
+    EXPECT_EQ("updated_val", notes[0]->value);
+  }
+
+  // 3c. Verify persistence across resets / controller re-creations.
+  {
+    // Re-create controller and handler to simulate overlay reset.
+    RecreateHandler();
 
     base::test::TestFuture<
         std::vector<ai_overlay_dialog::mojom::RememberedNotePtr>>

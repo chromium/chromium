@@ -6,13 +6,17 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/notimplemented.h"
+#include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
@@ -97,12 +101,50 @@ void AiOverlayDialogController::SetUsePersona(bool use_persona) {
   }
 }
 
+// static
+void AiOverlayDialogController::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterDictionaryPref(prefs::kAiOverlayRememberedNotes);
+}
+
+std::vector<std::pair<std::string, std::string>>
+AiOverlayDialogController::GetRememberedNotes() const {
+  std::vector<std::pair<std::string, std::string>> result;
+  if (!browser_ || !browser_->GetProfile()) {
+    return result;
+  }
+  PrefService* prefs = browser_->GetProfile()->GetPrefs();
+  if (!prefs) {
+    return result;
+  }
+  const base::DictValue& dict =
+      prefs->GetDict(prefs::kAiOverlayRememberedNotes);
+  result.reserve(dict.size());
+  for (const auto [key, value] : dict) {
+    if (value.is_string()) {
+      result.emplace_back(key, value.GetString());
+    }
+  }
+  return result;
+}
+
 void AiOverlayDialogController::SetRememberedNote(const std::string& key,
                                                   const std::string& value) {
+  if (key.empty()) {
+    return;
+  }
+  if (!browser_ || !browser_->GetProfile()) {
+    return;
+  }
+  PrefService* prefs = browser_->GetProfile()->GetPrefs();
+  if (!prefs) {
+    return;
+  }
+  ScopedDictPrefUpdate update(prefs, prefs::kAiOverlayRememberedNotes);
   if (value.empty()) {
-    remembered_notes_.erase(key);
+    update->Remove(key);
   } else {
-    remembered_notes_[key] = value;
+    update->Set(key, value);
   }
 }
 

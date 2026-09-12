@@ -359,8 +359,6 @@ void AiOverlayDialogPageHandler::CaptureRawViewportRegion(
           scale, std::move(callback)));
 }
 
-// TODO(crbug.com/542590634): Determine product and architecture requirements
-// for long-term storage and persistence of remembered notes across restarts.
 void AiOverlayDialogPageHandler::SetRememberedNote(
     ai_overlay_dialog::mojom::RememberedNotePtr note,
     SetRememberedNoteCallback callback) {
@@ -386,8 +384,9 @@ void AiOverlayDialogPageHandler::GetRememberedNotes(
   }
 
   std::vector<ai_overlay_dialog::mojom::RememberedNotePtr> result;
-  result.reserve(controller->remembered_notes().size());
-  for (const auto& [key, value] : controller->remembered_notes()) {
+  auto notes = controller->GetRememberedNotes();
+  result.reserve(notes.size());
+  for (const auto& [key, value] : notes) {
     auto note = ai_overlay_dialog::mojom::RememberedNote::New();
     note->key = key;
     note->value = value;

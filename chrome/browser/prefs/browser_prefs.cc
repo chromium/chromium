@@ -341,6 +341,10 @@
 #include "components/live_caption/live_translate_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)  // nocheck
+#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
+#endif
+
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 #include "chrome/browser/devtools/devtools_window.h"
 #endif  // BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
@@ -1746,6 +1750,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   AccessibilityLabelsService::RegisterProfilePrefs(registry);
   registry->RegisterBooleanPref(prefs::kRendererAccessibilityEnabled, true);
   AccessibilityUIMessageHandler::RegisterProfilePrefs(registry);
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)  // nocheck
+  ttc::AiOverlayDialogController::RegisterProfilePrefs(registry);
+#endif
   AimEligibilityService::RegisterProfilePrefs(registry);
   AnnouncementNotificationService::RegisterProfilePrefs(registry);
   autofill::prefs::RegisterProfilePrefs(registry);

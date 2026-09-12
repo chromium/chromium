@@ -30,6 +30,8 @@ source_set("ai_overlay_dialog") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//components/content_settings/core/browser",
+    "//components/pref_registry",
+    "//components/prefs",
     "//components/vector_icons",
     "//ui/gfx/geometry",
     "//ui/menus",
