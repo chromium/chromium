@@ -12,7 +12,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -1053,5 +1056,25 @@ public class ActorNotificationServiceTest {
         assertFalse(
                 "After demotion, notification should not request promoted ongoing",
                 demoted.extras.getBoolean(ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+    }
+
+    @Test
+    public void testMaybeDismissNotificationFromIntent_CallsServiceBeforeCancel() {
+        int taskId = 105;
+        ActorForegroundServiceManager mockManager = mock(ActorForegroundServiceManager.class);
+        ActorForegroundServiceManager.setInstanceForTesting(mockManager);
+
+        MockNotificationManagerProxy spyNotificationManager = spy(mMockNotificationManager);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(spyNotificationManager);
+
+        Intent intent = new Intent();
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, ActorTaskState.FINISHED);
+
+        ActorNotificationService.maybeDismissNotificationFromIntent(intent, null);
+
+        InOrder inOrder = inOrder(mockManager, spyNotificationManager);
+        inOrder.verify(mockManager).onNotificationDismissed(taskId);
+        inOrder.verify(spyNotificationManager).cancel(taskId);
     }
 }

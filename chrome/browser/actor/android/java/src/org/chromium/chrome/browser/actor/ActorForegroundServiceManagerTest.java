@@ -442,6 +442,30 @@ public class ActorForegroundServiceManagerTest {
 
         verify(mNotificationService).clearTaskData(taskId);
         assertFalse(mManager.isServiceBoundForTesting());
+        verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
+        verify(mServiceController).unbindService();
+    }
+
+    @Test
+    public void testOnNotificationDismissed_NotPinnedTask_StopsServiceWithDetach() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        int pinnedTaskId = 1;
+        int otherTaskId = 2;
+
+        mManager.onTaskStateChanged(pinnedTaskId, ActorTaskState.ACTING);
+        assertTrue(mManager.isServiceBoundForTesting());
+        ShadowLooper.idleMainLooper();
+
+        when(mTask.isCompleted()).thenReturn(true);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+        when(mNotificationService.hasPendingDemotions()).thenReturn(false);
+        mManager.onTaskStateChanged(pinnedTaskId, ActorTaskState.FINISHED);
+
+        // Dismiss a different task (not the pinned one)
+        mManager.onNotificationDismissed(otherTaskId);
+
+        verify(mNotificationService).clearTaskData(otherTaskId);
+        assertFalse(mManager.isServiceBoundForTesting());
         verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
         verify(mServiceController).unbindService();
     }

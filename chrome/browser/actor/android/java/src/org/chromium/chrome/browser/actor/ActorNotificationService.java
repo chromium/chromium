@@ -226,11 +226,11 @@ public class ActorNotificationService {
         }
 
         if (state != INVALID_TASK_STATE && ActorUtils.isCompletedState(state)) {
-            BaseNotificationManagerProxyFactory.create().cancel(taskId);
             ActorForegroundServiceManager manager = ActorForegroundServiceManager.getInstance();
             if (manager != null) {
                 manager.onNotificationDismissed(taskId);
             }
+            BaseNotificationManagerProxyFactory.create().cancel(taskId);
         }
     }
 
