@@ -16,12 +16,6 @@
 
 namespace ntp_features {
 
-// If enabled, shows a confirm dialog before removing search suggestions from
-// the New Tab page real search box ("realbox").
-BASE_FEATURE(kConfirmSuggestionRemovals,
-             "ConfirmNtpSuggestionRemovals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, shows an extension card within the Customize Chrome Side
 // Panel for access to the Chrome Web Store extensions.
 BASE_FEATURE(kCustomizeChromeSidePanelExtensionsCard,
