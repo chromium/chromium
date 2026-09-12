@@ -539,7 +539,7 @@ InotifyReader::Watch InotifyReader::AddWatch(const base::FilePath& path,
                                                 base::BlockingType::WILL_BLOCK);
   const int watch_int = inotify_add_watch(
       inotify_fd_, path.value().c_str(),
-      IN_CREATE | IN_DELETE | IN_CLOSE_WRITE | IN_MOVE | IN_ONLYDIR);
+      IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVE | IN_ONLYDIR);
   if (watch_int == -1) {
     return kInvalidWatch;
   }
@@ -710,7 +710,7 @@ void FilePathWatcherImpl::OnFilePathChanged(
   } else if (event_mask & (IN_DELETE | IN_MOVED_FROM)) {
     // A non-paired IN_MOVED_FROM event is considered as created.
     change_type = FilePathWatcher::ChangeType::kDeleted;
-  } else if (event_mask & (IN_MODIFY | IN_CLOSE_WRITE)) {
+  } else if (event_mask & IN_MODIFY) {
     change_type = FilePathWatcher::ChangeType::kModified;
   } else {
     // Ignore other types of events.

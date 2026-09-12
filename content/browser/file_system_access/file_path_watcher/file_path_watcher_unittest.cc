@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -2632,6 +2634,32 @@ TEST_P(FilePathWatcherWithChangeInfoTest, ModifiedFile) {
   ASSERT_TRUE(WriteFile(test_file(), "new content"));
   delegate.RunUntilEventsMatch(matcher);
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+TEST_P(FilePathWatcherWithChangeInfoTest, ModifiedFileWhileOpen) {
+  const auto matcher = ModifiedMatcher(test_file(), test_file());
+
+  ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  ASSERT_TRUE(SetupWatchWithChangeInfo(test_file(), &watcher, &delegate,
+                                       GetWatchOptions()));
+
+  base::File writer(test_file(),
+                    base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+  ASSERT_TRUE(writer.IsValid());
+  ASSERT_TRUE(writer.WriteAtCurrentPosAndCheck(
+      base::byte_span_from_cstring("new content")));
+
+  // The notification must arrive while the writer is still open.
+  delegate.RunUntilEventsMatch(matcher);
+
+  delegate.SpinAndDiscardAllReceivedEvents();
+  writer.Close();
+  delegate.SpinAndExpectNoEvents();
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(FilePathWatcherWithChangeInfoTest, MovedFile) {
   EventExpecterWithChangeInfo event_expecter;
