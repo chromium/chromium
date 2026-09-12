@@ -53,6 +53,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
@@ -98,6 +99,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter.ToolbarInMotionStage;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -339,6 +341,7 @@ public class ToolbarControlContainerTest {
 
     @After
     public void after() {
+        VerticalTabUtils.resetSharedPrefsForTesting();
         mActivity.finish();
     }
 
@@ -695,10 +698,13 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
     public void testToolbarRightOffsetInDesktopWindow() {
         initControlContainer(R.layout.toolbar_tablet);
         mControlContainer.setToolbarRightMarginCallback(mRightMarginCallback);
 
+        VerticalTabUtils.setVerticalTabsEnabled(true);
         SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
                 ObservableSuppliers.createNonNull(true);
         mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
@@ -720,8 +726,13 @@ public class ToolbarControlContainerTest {
         verify(mRightMarginCallback).onResult(20);
         assertTrue(mControlContainer.isToolbarInAppHeader());
 
-        // Disable vertical tabs while tab strip height is 0. Callback should be called with 0.
+        // Disable vertical tabs while tab strip height is 0. Shifting is retained.
+        VerticalTabUtils.setVerticalTabsEnabled(false);
         isVerticalTabsActiveSupplier.set(false);
+        verify(mRightMarginCallback, never()).onResult(0);
+
+        // Tab strip expands. Shifting is undone.
+        mControlContainer.onHeightChanged(80, 20, false);
         verify(mRightMarginCallback).onResult(0);
         assertFalse(mControlContainer.isToolbarInAppHeader());
 
@@ -751,6 +762,90 @@ public class ToolbarControlContainerTest {
 
         assertEquals(0, mControlContainer.getRightMarginForTesting());
         verify(mRightMarginCallback, never()).onResult(0);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testToolbarRightOffset_ActiveWhileTabStripVisible() {
+        initControlContainer(R.layout.toolbar_tablet);
+        mControlContainer.setToolbarRightMarginCallback(mRightMarginCallback);
+
+        var appHeaderState =
+                new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+
+        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
+                ObservableSuppliers.createNonNull(false);
+        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
+
+        // Tab strip is visible (height 80). Margin is 0.
+        mControlContainer.onHeightChanged(80, 20, false);
+        assertEquals(0, mControlContainer.getRightMarginForTesting());
+        verify(mRightMarginCallback, never()).onResult(anyInt());
+
+        // Vertical tabs becomes active. Right margin is updated immediately even while
+        // tab strip is still visible.
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+        mControlContainer.updateToolbarRightOffset();
+        assertEquals(20, mControlContainer.getRightMarginForTesting());
+        verify(mRightMarginCallback).onResult(20);
+
+        // Intermediate animation height update preserves the right margin.
+        mControlContainer.onHeightChanged(40, 20, false);
+        assertEquals(20, mControlContainer.getRightMarginForTesting());
+
+        // Tab strip finishes collapse to height 0.
+        mControlContainer.onHeightChanged(0, 20, false);
+        assertEquals(20, mControlContainer.getRightMarginForTesting());
+        verify(mRightMarginCallback, times(1)).onResult(20);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testToolbarRightOffset_StartupWithVerticalTabsOn() {
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+        initControlContainer(R.layout.toolbar_tablet);
+
+        var appHeaderState =
+                new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+
+        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
+                ObservableSuppliers.createNonNull(true);
+        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
+        mControlContainer.setToolbarRightMarginCallback(mRightMarginCallback);
+
+        assertEquals(20, mControlContainer.getRightMarginForTesting());
+        verify(mRightMarginCallback).onResult(20);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testToolbarRightOffset_VerticalTabsEnabledViaPref() {
+        initControlContainer(R.layout.toolbar_tablet);
+        mControlContainer.setToolbarRightMarginCallback(mRightMarginCallback);
+
+        var appHeaderState =
+                new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+
+        // Supplier is false (e.g. animation hasn't completed yet).
+        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
+                ObservableSuppliers.createNonNull(false);
+        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
+        assertEquals(0, mControlContainer.getRightMarginForTesting());
+
+        // Enable vertical tabs via preference.
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+        mControlContainer.updateToolbarRightOffset();
+
+        // Right offset is applied immediately because VerticalTabUtils.isVerticalTabsEnabled is
+        // true.
+        assertEquals(20, mControlContainer.getRightMarginForTesting());
+        verify(mRightMarginCallback).onResult(20);
     }
 
     @Test

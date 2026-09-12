@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
@@ -430,7 +431,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             findToolbar.setLayoutParams(layoutParams);
         }
         maybeUpdateTempTabStripDrawableBackground(mIncognito, getAppHeaderState());
-        updateToolbarRightOffset(tabStripHeight);
+        updateToolbarRightOffset();
         updateSystemGestureExclusions();
         updateTopLeftCornerOverlay();
     }
@@ -1363,7 +1364,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     @Override
     public void onAppHeaderStateChanged(AppHeaderState newState) {
-        updateToolbarRightOffset(mTabStripHeight);
+        updateToolbarRightOffset();
         updateSystemGestureExclusions();
         updateTopLeftCornerOverlay();
         updateToolbarContainerTopMargin();
@@ -1388,7 +1389,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     private void onVerticalTabsActiveChanged() {
         updateTopLeftCornerOverlay();
-        updateToolbarRightOffset(mTabStripHeight);
+        updateToolbarRightOffset();
         updateSystemGestureExclusions();
         updateToolbarContainerTopMargin();
     }
@@ -1482,6 +1483,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     public void setToolbarRightMarginCallback(Callback<Integer> callback) {
         mToolbarRightMarginCallback = callback;
+        if (mToolbarRightMarginCallback != null) {
+            updateToolbarRightOffset();
+        }
     }
 
     /**
@@ -1500,10 +1504,15 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         updateToolbarContainerTopMargin();
     }
 
-    private void updateToolbarRightOffset(int currentTabStripHeight) {
+    /** Updates the toolbar right offset for the current tab strip height. */
+    public void updateToolbarRightOffset() {
         int rightMargin = 0;
-        if (isVerticalTabsInDesktopWindow() && currentTabStripHeight == 0) {
-            rightMargin = assertNonNull(getAppHeaderState()).getRightPadding();
+        AppHeaderState appHeaderState = getAppHeaderState();
+        boolean isVerticalTabsActive = VerticalTabUtils.isVerticalTabsEnabled(getContext());
+        if (appHeaderState != null
+                && appHeaderState.isInDesktopWindow()
+                && (isVerticalTabsActive || (mTabStripHeight == 0 && mRightMargin > 0))) {
+            rightMargin = appHeaderState.getRightPadding();
         }
         if (mToolbarRightMarginCallback != null && mRightMargin != rightMargin) {
             mRightMargin = rightMargin;

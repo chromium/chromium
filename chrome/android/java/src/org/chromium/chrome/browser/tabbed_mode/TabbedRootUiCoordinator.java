@@ -2502,6 +2502,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 maybeClearPendingTabStripUnsuppression();
                                 showVerticalTabs(true);
                             }
+                            if (mControlContainer != null) {
+                                mControlContainer.updateToolbarRightOffset();
+                            }
                             var transitionCoord =
                                     assumeNonNull(mToolbarManager)
                                             .getTabStripTransitionCoordinator();
