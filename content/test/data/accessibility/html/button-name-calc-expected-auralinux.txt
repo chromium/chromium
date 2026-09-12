@@ -18,3 +18,8 @@
 ++++[section]
 ++++++[section]
 ++++++++[static] name='grandchild'
+++[push button] name='My Image My Text'
+++++[document frame]
+++++++[section]
+++++++++[image] name='My Image. To get missing image descriptions, open the context menu.' explicit-name:true
+++++++++[static] name='My Text'

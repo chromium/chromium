@@ -18,3 +18,8 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++IA2_ROLE_SECTION
 ++++++IA2_ROLE_SECTION
 ++++++++ROLE_SYSTEM_STATICTEXT name='grandchild'
+++ROLE_SYSTEM_PUSHBUTTON name='My Image My Text' FOCUSABLE
+++++ROLE_SYSTEM_GRAPHIC
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_GRAPHIC name='My Image. To get missing image descriptions, open the context menu.' READONLY explicit-name:true
+++++++++ROLE_SYSTEM_STATICTEXT name='My Text'

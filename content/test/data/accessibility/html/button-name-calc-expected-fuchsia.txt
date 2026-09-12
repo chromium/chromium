@@ -38,3 +38,11 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='grandchild'
 ++++++++++++++UNKNOWN label='grandchild'
+++++++BUTTON focusable label='My Image My Text' actions='{DEFAULT}'
+++++++++UNKNOWN
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN
+++++++++++++++IMAGE label='My Image'
+++++++++++++++STATIC_TEXT label='My Text'
+++++++++++++++++UNKNOWN label='My '
+++++++++++++++++UNKNOWN label='Text'

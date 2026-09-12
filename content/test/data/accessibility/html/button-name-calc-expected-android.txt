@@ -8,3 +8,4 @@ android.webkit.WebView focusable focused
 ++android.widget.Button clickable focusable interesting name='Outer inner'
 ++android.widget.Button clickable focusable interesting name='Outer inner1'
 ++android.widget.Button clickable focusable interesting name='Outer grandchild'
+++android.widget.Button clickable focusable interesting name='My Image My Text'

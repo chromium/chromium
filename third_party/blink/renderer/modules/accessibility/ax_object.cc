@@ -125,6 +125,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_desc_element.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
@@ -8643,7 +8644,6 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kPluginObject:
     case ax::mojom::blink::Role::kRootWebArea:
     case ax::mojom::blink::Role::kScrollView:
-    case ax::mojom::blink::Role::kSvgRoot:
     case ax::mojom::blink::Role::kVideo:
       return false;
 
@@ -8657,7 +8657,14 @@ bool AXObject::SupportsNameFromContents(bool recursive,
       // objects should return false for now.
       // TODO(crbug.com/443106926): investigate whether other Group objects
       // should be eligible in the future.
-      if (!GetNode()->HasTagName(html_names::kAddressTag)) {
+      if (GetNode()) {
+        if (!GetNode()->HasTagName(html_names::kAddressTag) &&
+            !IsA<SVGForeignObjectElement>(GetNode()) &&
+            !GetNode()->IsSVGElement()) {
+          return false;
+        }
+      } else if (!GetLayoutObject() ||
+                 !GetLayoutObject()->IsSVGForeignObject()) {
         return false;
       }
       [[fallthrough]];
@@ -8696,6 +8703,7 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kStrong:
     case ax::mojom::blink::Role::kSubscript:
     case ax::mojom::blink::Role::kSuperscript:
+    case ax::mojom::blink::Role::kSvgRoot:
     case ax::mojom::blink::Role::kTime: {
       // Usually these items don't have a name, but Blink provides one if they
       // are tabbable, as a repair, so that if a user navigates to one, screen

@@ -881,4 +881,64 @@ TEST_F(AccessibilityTest, NoDetachDuringAddChildrenViaAriaOwns) {
   EXPECT_FALSE(target->IsDetached());
 }
 
+// Regression test for crbug.com/495481395. Verifies that content inside an SVG
+// foreignObject (including text and image alt text) contributes to an ancestor
+// button's accessible name calculation when computed recursively.
+TEST_F(AccessibilityTest, ButtonWithSVGForeignObject) {
+  SetBodyInnerHTML(R"HTML(
+    <button id="btn-text">
+      <svg>
+        <foreignObject>
+          <div>
+            <span>Promo Headline</span>
+            <p>Offer details</p>
+          </div>
+        </foreignObject>
+      </svg>
+    </button>
+    <button id="btn-img">
+      <svg>
+        <foreignObject>
+          <div>
+            <img alt="Brand Logo" src="logo.png">
+            <span>Special Deal</span>
+          </div>
+        </foreignObject>
+      </svg>
+    </button>
+    <svg id="standalone-svg">
+      <foreignObject>
+        <div><span>Inner text</span></div>
+      </foreignObject>
+    </svg>
+    <button id="btn-svg-title">
+      <svg>
+        <title>SVG Title Override</title>
+        <foreignObject>
+          <div><span>Inner text</span></div>
+        </foreignObject>
+      </svg>
+    </button>
+  )HTML");
+
+  const AXObject* btn_text = GetAXObjectByElementId("btn-text");
+  ASSERT_NE(nullptr, btn_text);
+  EXPECT_EQ("Promo Headline Offer details", btn_text->ComputedName());
+
+  const AXObject* btn_img = GetAXObjectByElementId("btn-img");
+  ASSERT_NE(nullptr, btn_img);
+  EXPECT_EQ("Brand Logo Special Deal", btn_img->ComputedName());
+
+  // Standalone SVG without title or aria-label should not compute name from
+  // contents.
+  const AXObject* standalone_svg = GetAXObjectByElementId("standalone-svg");
+  ASSERT_NE(nullptr, standalone_svg);
+  EXPECT_EQ("", standalone_svg->ComputedName());
+
+  // Explicit title on SVG takes precedence.
+  const AXObject* btn_svg_title = GetAXObjectByElementId("btn-svg-title");
+  ASSERT_NE(nullptr, btn_svg_title);
+  EXPECT_EQ("SVG Title Override", btn_svg_title->ComputedName());
+}
+
 }  // namespace blink

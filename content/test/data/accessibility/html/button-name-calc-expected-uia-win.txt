@@ -18,3 +18,8 @@ Document
 ++++Group IsControlElement=false
 ++++++Group IsControlElement=false
 ++++++++Text Name='grandchild' IsControlElement=false
+++Button Name='My Image My Text'
+++++Image
+++++++Group IsControlElement=false
+++++++++Image Name='My Image. To get missing image descriptions, open the context menu.'
+++++++++Text Name='My Text' IsControlElement=false

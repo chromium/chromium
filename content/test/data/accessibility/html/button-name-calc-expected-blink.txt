@@ -38,3 +38,11 @@ rootWebArea
 ++++++++++genericContainer
 ++++++++++++staticText name='grandchild'
 ++++++++++++++inlineTextBox name='grandchild'
+++++++button name='My Image My Text'
+++++++++svgRoot
+++++++++++group ignored
+++++++++++++genericContainer
+++++++++++++++image name='My Image'
+++++++++++++++staticText name='My Text'
+++++++++++++++++inlineTextBox name='My '
+++++++++++++++++inlineTextBox name='Text'

@@ -8,6 +8,7 @@ AXWebArea
 ++AXButton AXTitle='Outer inner'
 ++AXButton AXTitle='Outer inner1'
 ++AXButton AXTitle='Outer grandchild'
+++AXButton AXTitle='My Image My Text'
 ++AXGroup
 ++++AXGroup
 ++++++AXStaticText
