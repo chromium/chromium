@@ -1246,14 +1246,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="STOP"/>
 </enum>
 
-<enum name="DownloadNotificationInteractions">
-  <int value="0" label="CLICKED"/>
-  <int value="1" label="OPEN"/>
-  <int value="2" label="CANCEL"/>
-  <int value="3" label="PAUSE"/>
-  <int value="4" label="RESUME"/>
-</enum>
-
 <enum name="DownloadNotificationServiceStopped">
   <int value="0" label="STOPPED"/>
   <int value="1" label="DESTROYED"/>

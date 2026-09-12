@@ -271,7 +271,6 @@ public class DownloadBroadcastManagerImpl extends SplitCompatService.Impl {
     void propagateInteraction(Intent intent) {
         String action = intent.getAction();
         assertNonNull(action);
-        DownloadNotificationUmaHelper.recordNotificationInteractionHistogram(action);
         final ContentId id = getContentIdFromIntent(intent);
         final DownloadSharedPreferenceEntry entry = getDownloadEntryFromIntent(intent);
         boolean isOffTheRecord =
