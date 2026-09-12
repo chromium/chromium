@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
@@ -300,6 +301,13 @@ class CONTENT_EXPORT RenderFrameProxyHost
   base::SafeRef<RenderFrameProxyHost> GetSafeRef();
 
  private:
+  // Verifies that cross_process_frame_connector_ is non-null. If it is null,
+  // it terminates the renderer process with the specified `reason` and returns
+  // false. A CrossProcessFrameConnector is only valid for proxies to the parent
+  // or to an outer delegate.
+  bool VerifyHasCrossProcessFrameConnector(
+      bad_message::BadMessageReason reason);
+
   // These interceptors need access to frame_host_receiver_for_testing().
   friend class InitiatorClosingOpenURLInterceptor;
   friend class RemoteFrameHostInterceptor;

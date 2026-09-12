@@ -345,6 +345,21 @@ AgentSchedulingGroupHost& RenderFrameProxyHost::GetAgentSchedulingGroup() {
   return site_instance_group_->agent_scheduling_group();
 }
 
+bool RenderFrameProxyHost::VerifyHasCrossProcessFrameConnector(
+    bad_message::BadMessageReason reason) {
+  if (!cross_process_frame_connector_) {
+    bad_message::ReceivedBadMessage(GetProcess(), reason);
+    return false;
+  }
+  // A CrossProcessFrameConnector is only created for a proxy representing a
+  // subframe in its parent's SiteInstance, or for an outer delegate proxy.
+  CHECK((!frame_tree_node_->IsMainFrame() &&
+         frame_tree_node_->parent()->GetSiteInstance()->group() ==
+             site_instance_group_.get()) ||
+        frame_tree_node_->render_manager()->IsMainFrameForInnerDelegate());
+  return true;
+}
+
 bool RenderFrameProxyHost::IsRelatedToCurrentFrameHost(
     CrossBrowsingInstanceExemption exemption) const {
   if (!base::FeatureList::IsEnabled(kEnforceCrossBrowsingInstanceChecks)) {
@@ -414,6 +429,11 @@ RenderFrameProxyHost::GetAssociatedRemoteMainFrame() {
 
 void RenderFrameProxyHost::SetInheritedEffectiveTouchAction(
     cc::TouchAction touch_action) {
+  if (!VerifyHasCrossProcessFrameConnector(
+          bad_message::
+              RFPH_SET_INHERITED_EFFECTIVE_TOUCH_ACTION_WITHOUT_CPFC)) {
+    return;
+  }
   cross_process_frame_connector_->OnSetInheritedEffectiveTouchAction(
       touch_action);
 }
@@ -421,12 +441,20 @@ void RenderFrameProxyHost::SetInheritedEffectiveTouchAction(
 void RenderFrameProxyHost::UpdateRenderThrottlingStatus(bool is_throttled,
                                                         bool subtree_throttled,
                                                         bool display_locked) {
+  if (!VerifyHasCrossProcessFrameConnector(
+          bad_message::RFPH_UPDATE_RENDER_THROTTLING_STATUS_WITHOUT_CPFC)) {
+    return;
+  }
   cross_process_frame_connector_->UpdateRenderThrottlingStatus(
       is_throttled, subtree_throttled, display_locked);
 }
 
 void RenderFrameProxyHost::VisibilityChanged(
     blink::mojom::FrameVisibility visibility) {
+  if (!VerifyHasCrossProcessFrameConnector(
+          bad_message::RFPH_VISIBILITY_CHANGED_WITHOUT_CPFC)) {
+    return;
+  }
   cross_process_frame_connector_->OnVisibilityChanged(visibility);
 }
 
@@ -567,6 +595,10 @@ void RenderFrameProxyHost::CapturePaintPreviewOfCrossProcessSubframe(
 }
 
 void RenderFrameProxyHost::SetIsInert(bool inert) {
+  if (!VerifyHasCrossProcessFrameConnector(
+          bad_message::RFPH_SET_IS_INERT_WITHOUT_CPFC)) {
+    return;
+  }
   cross_process_frame_connector_->SetIsInert(inert);
 }
 
@@ -829,6 +861,10 @@ void RenderFrameProxyHost::PrintCrossProcessSubframe(const gfx::Rect& rect,
 
 void RenderFrameProxyHost::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& frame_visual_properties) {
+  if (!VerifyHasCrossProcessFrameConnector(
+          bad_message::RFPH_SYNCHRONIZE_VISUAL_PROPERTIES_WITHOUT_CPFC)) {
+    return;
+  }
   cross_process_frame_connector_->OnSynchronizeVisualProperties(
       frame_visual_properties);
 }
@@ -1021,6 +1057,10 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 void RenderFrameProxyHost::UpdateViewportIntersection(
     blink::mojom::ViewportIntersectionStatePtr intersection_state,
     const std::optional<blink::FrameVisualProperties>& visual_properties) {
+  if (!VerifyHasCrossProcessFrameConnector(
+          bad_message::RFPH_UPDATE_VIEWPORT_INTERSECTION_WITHOUT_CPFC)) {
+    return;
+  }
   cross_process_frame_connector_->UpdateViewportIntersection(
       *intersection_state, visual_properties);
 }

@@ -576,6 +576,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="392" label="RFHI_INVALID_INITIATOR_STATE_TOKEN_UPDATE"/>
   <int value="393" label="RFHI_WEBMCP_INVALID_TOOL_NAME"/>
   <int value="394" label="MSDH_REQUEST_ALL_SCREENS_WITH_INVALID_STREAM_TYPE"/>
+  <int value="395"
+      label="RFPH_SET_INHERITED_EFFECTIVE_TOUCH_ACTION_WITHOUT_CPFC"/>
+  <int value="396" label="RFPH_UPDATE_RENDER_THROTTLING_STATUS_WITHOUT_CPFC"/>
+  <int value="397" label="RFPH_VISIBILITY_CHANGED_WITHOUT_CPFC"/>
+  <int value="398" label="RFPH_SET_IS_INERT_WITHOUT_CPFC"/>
+  <int value="399" label="RFPH_SYNCHRONIZE_VISUAL_PROPERTIES_WITHOUT_CPFC"/>
+  <int value="400" label="RFPH_UPDATE_VIEWPORT_INTERSECTION_WITHOUT_CPFC"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
