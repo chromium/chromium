@@ -1,0 +1,52 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/md_select_lit.css.js
+ * #import=../settings_columned_section_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-icons-lit cr-shared-style-lit settings-columned-section-lit settings-shared-lit md-select-lit
+ * #css_wrapper_metadata_end */
+
+.keyboard-shortcut-setting {
+  align-items: center;
+}
+
+.keyboard-shortcut-setting .md-select {
+  --md-select-width: fit-content;
+  line-height: 22px;
+  margin-inline-end: var(--cr-section-padding);
+  margin-inline-start: var(--cr-section-padding);
+  min-width: 120px;
+}
+
+#mainShortcutSetting {
+  /* Remove the separator. */
+  border-top: none;
+}
+
+.shortcut-input {
+  margin-top: 2px;
+}
+
+.section {
+  padding: 0 var(--cr-section-padding);
+}
+
+.separator {
+  margin-inline-end: 4px;
+  margin-inline-start: 0;
+}
+
+.toggle-actions-container {
+  align-items: center;
+  display: flex;
+}
+
+.learn-more-label[href=''] {
+  display: none;
+}

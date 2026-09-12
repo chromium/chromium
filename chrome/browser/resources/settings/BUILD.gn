@@ -525,6 +525,7 @@ build_webui("build") {
     "downloads_page/downloads_page.css",
     "glic_page/glic_login_permissions_page.css",
     "glic_page/glic_page.css",
+    "glic_page/glic_subpage.css",
     "languages_page/add_languages_dialog.css",
     "languages_page/edit_dictionary_page.css",
     "languages_page/languages_page.css",

@@ -9,7 +9,6 @@ import type {SettingsGlicSubpageElement, SettingsToggleButtonElement} from 'chro
 import {GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {Shortcut, TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
@@ -27,7 +26,7 @@ suite('GlicPageFocusTest', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   function $<T extends HTMLElement = HTMLElement>(id: string): T|null {
-    return page.shadowRoot!.querySelector<T>(`#${id}`);
+    return page.shadowRoot.querySelector<T>(`#${id}`);
   }
 
   suiteSetup(function() {
@@ -53,12 +52,11 @@ suite('GlicPageFocusTest', function() {
 
     page = document.createElement('settings-glic-subpage');
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
 
     // Ensure the launcher toggle is enabled so the shortcut edit is shown.
     await prefService.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
     await microtasksFinished();
-    await flushTasks();
   }
 
   test('ShortcutInputSuspends', async () => {
