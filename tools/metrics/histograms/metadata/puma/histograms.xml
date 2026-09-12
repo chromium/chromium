@@ -22,38 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="PUMA.RegionalCapabilities.FunnelStage.Eligibility"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2027-03-17">
-  <owner>dgn@chromium.org</owner>
-  <owner>ljjlee@chromium.org</owner>
-  <owner>chrome-regionalcapabilities@google.com</owner>
-  <summary>
-    PUMA.RegionalCapabilities.FunnelStage.Eligibility is a version of histogram
-    RegionalCapabilities.FunnelStage.Eligibility that is reported for PUMA.
-  </summary>
-</histogram>
-
-<histogram name="PUMA.RegionalCapabilities.FunnelStage.Reported"
-    enum="RegionalCapabilitiesFunnelStage" expires_after="2027-03-17">
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-regionalcapabilities@google.com</owner>
-  <summary>
-    PUMA.RegionalCapabilities.FunnelStage.Reported is a version of histogram
-    RegionalCapabilities.FunnelStage.Reported that is reported for PUMA.
-  </summary>
-</histogram>
-
-<histogram name="PUMA.RegionalCapabilities.FunnelStage.Triggering"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2027-03-17">
-  <owner>dgn@chromium.org</owner>
-  <owner>ljjlee@chromium.org</owner>
-  <owner>chrome-regionalcapabilities@google.com</owner>
-  <summary>
-    PUMA.RegionalCapabilities.FunnelStage.Triggering is a version of histogram
-    RegionalCapabilities.FunnelStage.Triggering that is reported for PUMA.
-  </summary>
-</histogram>
-
 <histogram
     name="PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType"
     enum="OmniboxSearchEngineType" expires_after="2027-03-17">

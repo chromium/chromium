@@ -35,7 +35,6 @@ static_library("regional_capabilities") {
     "//base/version_info",
     "//components/country_codes",
     "//components/metrics",
-    "//components/metrics/private_metrics",
     "//components/pref_registry",
     "//components/prefs",
     "//components/search_engines:search_engine_pref_names",
