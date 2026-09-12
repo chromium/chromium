@@ -5,7 +5,11 @@
 package org.chromium.chrome.browser.actor;
 
 import android.content.pm.PackageManager;
+import android.util.DisplayMetrics;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -16,7 +20,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -37,6 +43,7 @@ public class OffscreenRenderingManager {
     private long mNativePtr;
     private @Nullable WindowAndroid mOffscreenWindow;
     private final Set<Tab> mOffscreenTabs = new HashSet<>();
+    private final Set<WebContents> mOffscreenWebContents = new HashSet<>();
     private final ManagerTabObserver mTabObserver = new ManagerTabObserver(this);
 
     private static class ManagerTabObserver implements TabObserver {
@@ -61,6 +68,30 @@ public class OffscreenRenderingManager {
     }
 
     private OffscreenRenderingManager() {}
+
+    /**
+     * Starts offscreen rendering for a standalone WebContents (e.g. Glic WebContents).
+     *
+     * @param webContents The WebContents to render offscreen.
+     */
+    @CalledByNative
+    public static void startOffscreenRenderingForWebContents(WebContents webContents) {
+        DisplayMetrics displayMetrics =
+                ContextUtils.getApplicationContext().getResources().getDisplayMetrics();
+        getInstance()
+                .startOffscreenRenderingForWebContents(
+                        webContents, displayMetrics.widthPixels, displayMetrics.heightPixels);
+    }
+
+    /**
+     * Stops offscreen rendering for a standalone WebContents.
+     *
+     * @param webContents The WebContents to stop rendering offscreen.
+     */
+    @CalledByNative
+    public static void stopOffscreenRenderingForWebContents(WebContents webContents) {
+        getInstance().stopOffscreenRendering(webContents);
+    }
 
     private void ensureNativeInitialized() {
         if (mNativePtr != 0) return;
@@ -134,6 +165,65 @@ public class OffscreenRenderingManager {
     }
 
     /**
+     * Starts offscreen rendering for a standalone WebContents (e.g. Glic WebContents).
+     *
+     * @param webContents The WebContents to render offscreen.
+     * @param width The width of the offscreen surface.
+     * @param height The height of the offscreen surface.
+     */
+    // TODO(b/560179581): Refactor to deduplicate logic with startOffscreenRendering(Tab).
+    public void startOffscreenRenderingForWebContents(
+            WebContents webContents, int width, int height) {
+        ensureNativeInitialized();
+        if (mNativePtr == 0
+                || webContents.isDestroyed()
+                || mOffscreenWebContents.contains(webContents)) {
+            return;
+        }
+
+        if (webContents.getViewAndroidDelegate() == null) {
+            ViewGroup containerView = new FrameLayout(ContextUtils.getApplicationContext());
+            webContents.setDelegates(
+                    "",
+                    ViewAndroidDelegate.createBasicDelegate(containerView),
+                    /* accessDelegate= */ null,
+                    /* windowAndroid= */ mOffscreenWindow,
+                    WebContents.createDefaultInternalsHolder());
+        }
+
+        webContents.setSize(width, height);
+        OffscreenRenderingManagerJni.get()
+                .startOffscreenRendering(mNativePtr, webContents, width, height);
+        webContents.setTopLevelNativeWindow(mOffscreenWindow);
+        webContents.updateWebContentsVisibility(Visibility.VISIBLE);
+
+        mOffscreenWebContents.add(webContents);
+    }
+
+    /**
+     * Stops offscreen rendering for a standalone WebContents.
+     *
+     * @param webContents The WebContents to stop rendering offscreen.
+     */
+    public void stopOffscreenRendering(WebContents webContents) {
+        if (!mOffscreenWebContents.contains(webContents)) {
+            return;
+        }
+
+        if (!webContents.isDestroyed()) {
+            if (mNativePtr != 0) {
+                OffscreenRenderingManagerJni.get().stopOffscreenRendering(mNativePtr, webContents);
+            }
+            webContents.setTopLevelNativeWindow(null);
+        }
+        mOffscreenWebContents.remove(webContents);
+
+        if (mOffscreenTabs.isEmpty() && mOffscreenWebContents.isEmpty()) {
+            destroy();
+        }
+    }
+
+    /**
      * Stops offscreen rendering for the given Tab.
      *
      * @param tab The Tab to stop rendering offscreen.
@@ -167,6 +257,10 @@ public class OffscreenRenderingManager {
         HashSet<Tab> remainingOffscreenTabs = new HashSet<>(mOffscreenTabs);
         for (Tab tab : remainingOffscreenTabs) {
             stopOffscreenRendering(tab);
+        }
+        HashSet<WebContents> remainingWebContents = new HashSet<>(mOffscreenWebContents);
+        for (WebContents webContents : remainingWebContents) {
+            stopOffscreenRendering(webContents);
         }
 
         if (mNativePtr != 0) {

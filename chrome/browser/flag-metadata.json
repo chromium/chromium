@@ -5708,6 +5708,14 @@
     "expiry_milestone": 170
   },
   {
+    "name": "glic-android-offscreen-rendering",
+    "owners": [
+      "ritikagup@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "glic-android-side-panel",
     "owners": [
       "bryantchandler@chromium.org",

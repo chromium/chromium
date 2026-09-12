@@ -25,6 +25,12 @@ class WindowAndroid;
 }
 namespace actor {
 
+// Starts offscreen rendering for a standalone WebContents (e.g. Glic).
+void StartOffscreenRenderingForWebContents(content::WebContents* web_contents);
+
+// Stops offscreen rendering for a standalone WebContents.
+void StopOffscreenRenderingForWebContents(content::WebContents* web_contents);
+
 // Manages an offscreen compositor and window for rendering WebContents
 // outside of the normal view hierarchy. This is primarily used for Actor
 // tasks that need to continue rendering while the activity is in a

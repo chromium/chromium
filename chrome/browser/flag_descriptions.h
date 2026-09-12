@@ -8767,6 +8767,13 @@ inline constexpr char kGlicAndroidTabletName[] = "Glic Android Tablet";
 inline constexpr char kGlicAndroidTabletDescription[] =
     "Enables testing of the Glic feature on Android tablet devices.";
 
+inline constexpr char kGlicAndroidOffscreenRenderingName[] =
+    "Glic Android Offscreen Rendering";
+inline constexpr char kGlicAndroidOffscreenRenderingDescription[] =
+    "Attaches the Glic WebUI WebContents to the offscreen rendering manager on "
+    "Android so that it keeps executing JavaScript, servicing Mojo IPC and "
+    "scheduling frames while Chrome is not in the foreground.";
+
 inline constexpr char kGlicSelectionPromptName[] = "Glic Selection Prompt";
 inline constexpr char kGlicSelectionPromptDescription[] =
     "Enables the Glic prompt suggestion when text is selected.";

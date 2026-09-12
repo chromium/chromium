@@ -665,6 +665,7 @@ source_set("impl") {
 
     deps += [
       ":actor_types_for_migration",
+      "//chrome/browser/actor/android",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android",
       "//chrome/browser/glic/android",
       "//chrome/browser/glic/browser_ui:impl",

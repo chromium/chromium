@@ -19,6 +19,24 @@ using base::android::ScopedJavaLocalRef;
 
 namespace actor {
 
+void StartOffscreenRenderingForWebContents(content::WebContents* web_contents) {
+  if (web_contents && base::android::IsJavaAvailable() &&
+      web_contents->GetJavaWebContents()) {
+    Java_OffscreenRenderingManager_startOffscreenRenderingForWebContents(
+        base::android::AttachCurrentThread(),
+        web_contents->GetJavaWebContents());
+  }
+}
+
+void StopOffscreenRenderingForWebContents(content::WebContents* web_contents) {
+  if (web_contents && base::android::IsJavaAvailable() &&
+      web_contents->GetJavaWebContents()) {
+    Java_OffscreenRenderingManager_stopOffscreenRenderingForWebContents(
+        base::android::AttachCurrentThread(),
+        web_contents->GetJavaWebContents());
+  }
+}
+
 OffscreenRenderingManagerAndroid::OffscreenRenderingManagerAndroid(
     ui::WindowAndroid* window,
     int width,

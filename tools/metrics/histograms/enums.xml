@@ -9677,6 +9677,7 @@ from previous Chrome versions.
   <int value="-1573043947" label="MaliciousApkDownloadCheck:disabled"/>
   <int value="-1572374515"
       label="SafeSitesFilterBehaviorPolicyAndroid:disabled"/>
+  <int value="-1572262424" label="GlicAndroidOffscreenRendering:disabled"/>
   <int value="-1572246329" label="TabDragDropAndroid:enabled"/>
   <int value="-1572010356" label="enable-privet-v3"/>
   <int value="-1571841513" label="enable-devtools-experiments"/>
@@ -17164,6 +17165,7 @@ from previous Chrome versions.
   <int value="732081309" label="ReadAloudLanguagePackDownloading:disabled"/>
   <int value="732703958" label="enable-gesture-tap-highlight"/>
   <int value="733484229" label="PrivacyGuide3:disabled"/>
+  <int value="733651380" label="GlicAndroidOffscreenRendering:enabled"/>
   <int value="734892932" label="ToastFramework:enabled"/>
   <int value="734900932" label="RecurrentInterstitialFeature:enabled"/>
   <int value="735180038"

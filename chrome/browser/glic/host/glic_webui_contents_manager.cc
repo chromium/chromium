@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
@@ -37,6 +39,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#else
+#include "chrome/browser/actor/android/offscreen_rendering_manager_android.h"
 #endif
 
 namespace glic {
@@ -71,6 +75,10 @@ GlicWebUIContentsManager::GlicWebUIContentsManager(Profile* profile,
 #if !BUILDFLAG(IS_ANDROID)
   web_modal::WebContentsModalDialogManager::CreateForWebContents(
       web_contents_.get());
+#else
+  if (base::FeatureList::IsEnabled(features::kGlicAndroidOffscreenRendering)) {
+    actor::StartOffscreenRenderingForWebContents(web_contents_.get());
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -85,6 +93,12 @@ GlicWebUIContentsManager::GlicWebUIContentsManager(Profile* profile,
 GlicWebUIContentsManager::~GlicWebUIContentsManager() {
   SetContentsManagerForWebContents(web_contents(), nullptr);
   Observe(nullptr);
+#if BUILDFLAG(IS_ANDROID)
+  if (web_contents_ &&
+      base::FeatureList::IsEnabled(features::kGlicAndroidOffscreenRendering)) {
+    actor::StopOffscreenRenderingForWebContents(web_contents_.get());
+  }
+#endif
   if (web_contents_) {
     web_contents_->ClosePage();
     web_contents_.reset();

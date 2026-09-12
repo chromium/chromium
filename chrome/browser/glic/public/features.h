@@ -17,6 +17,11 @@ namespace features {
 BASE_DECLARE_FEATURE(kGlicAndroidSidePanel);
 BASE_DECLARE_FEATURE(kGlicDragAndDropFileUploadAndroid);
 
+// Enables attaching the Glic WebUI WebContents to the offscreen rendering
+// manager on Android, so it keeps executing JavaScript, servicing Mojo IPC and
+// scheduling frames while Chrome is not in the foreground.
+BASE_DECLARE_FEATURE(kGlicAndroidOffscreenRendering);
+
 BASE_DECLARE_FEATURE(kGlicClearTurnIdOnPanelWillOpen);
 BASE_DECLARE_FEATURE(kGlicChromeStatusIcon);
 extern const base::FeatureParam<int> kGlicChromeStatusIconSizePx;
