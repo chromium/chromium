@@ -414,6 +414,21 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
       base::android::android_info::SDK_VERSION_P) {
     WebRuntimeFeatures::EnableDisplayCutoutAPI(false);
   }
+  // Unbounded elements rely on
+  // AttachedSurfaceControl.buildReparentTransaction(), which requires Android U
+  // (API level 34) or higher. Disable the feature entirely below that instead
+  // of exposing an API that can only ever reject, so that
+  // 'showUnboundedElement' in HTMLElement.prototype remains a valid feature
+  // detect. This also drops the @supports blink-feature(UnboundedElement) block
+  // from the UA stylesheet, so a stray 'unbounded' attribute cannot hide
+  // content. See HTMLElement::showUnboundedElement().
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
+    // UnboundedElement is implied_by UnboundedElementOnTheOpenWeb, so both have
+    // to be disabled for UnboundedElementEnabled() to return false.
+    WebRuntimeFeatures::EnableUnboundedElementOnTheOpenWeb(false);
+    WebRuntimeFeatures::EnableUnboundedElement(false);
+  }
 #endif
 
   // These checks are custom wrappers around base::FeatureList::IsEnabled
