@@ -29,6 +29,7 @@
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "skia/ext/skia_utils_base.h"
@@ -340,6 +341,9 @@ class ClipboardHostImplWriteTest : public RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    // Close the pipe before destroying what it is bound to, otherwise a message
+    // still in flight dispatches into freed memory when the loop is pumped.
+    receiver_.reset();
     fake_clipboard_host_impl_ = nullptr;
     RenderViewHostTestHarness::TearDown();
   }
@@ -352,11 +356,13 @@ class ClipboardHostImplWriteTest : public RenderViewHostTestHarness {
   // created pointer.
   ClipboardHostImpl* clipboard_host_impl() {
     if (!fake_clipboard_host_impl_) {
-      fake_clipboard_host_impl_ =
-          new ClipboardHostImpl(*web_contents()->GetPrimaryMainFrame(),
-                                remote_.BindNewPipeAndPassReceiver());
+      fake_clipboard_host_impl_ = std::make_unique<ClipboardHostImpl>(
+          *web_contents()->GetPrimaryMainFrame());
+      receiver_ = std::make_unique<mojo::Receiver<blink::mojom::ClipboardHost>>(
+          fake_clipboard_host_impl_.get(),
+          remote_.BindNewPipeAndPassReceiver());
     }
-    return fake_clipboard_host_impl_;
+    return fake_clipboard_host_impl_.get();
   }
 
   mojo::Remote<blink::mojom::ClipboardHost>& mojo_clipboard() {
@@ -383,9 +389,8 @@ class ClipboardHostImplWriteTest : public RenderViewHostTestHarness {
 
  private:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
-  // `ClipboardHostImpl` is a `DocumentService` and manages its own
-  // lifetime.
-  raw_ptr<ClipboardHostImpl> fake_clipboard_host_impl_;
+  std::unique_ptr<ClipboardHostImpl> fake_clipboard_host_impl_;
+  std::unique_ptr<mojo::Receiver<blink::mojom::ClipboardHost>> receiver_;
 };
 
 TEST_F(ClipboardHostImplWriteTest, NoSourceWithoutDataWrite) {
@@ -421,11 +426,11 @@ TEST_F(ClipboardHostImplWriteTest, MainFrameURL) {
                      "grandchild"));
 
   mojo::Remote<blink::mojom::ClipboardHost> remote_grandchild;
-  // `ClipboardHostImpl` is a `DocumentService` and manages its own
-  // lifetime.
-  raw_ptr<ClipboardHostImpl> fake_clipboard_host_impl_grandchild =
-      new ClipboardHostImpl(*grandchild_rfh,
-                            remote_grandchild.BindNewPipeAndPassReceiver());
+  auto fake_clipboard_host_impl_grandchild =
+      std::make_unique<ClipboardHostImpl>(*grandchild_rfh);
+  mojo::Receiver<blink::mojom::ClipboardHost> receiver_grandchild(
+      fake_clipboard_host_impl_grandchild.get(),
+      remote_grandchild.BindNewPipeAndPassReceiver());
 
   bool is_policy_callback_called = false;
   ClipboardHostImpl::ClipboardPasteData clipboard_paste_data;
@@ -689,10 +694,8 @@ class ClipboardHostImplAsyncWriteTest : public RenderViewHostTestHarness {
  protected:
   class AsyncWriteClipboardHostImpl : public ClipboardHostImpl {
    public:
-    AsyncWriteClipboardHostImpl(
-        RenderFrameHost& render_frame_host,
-        mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
-        : ClipboardHostImpl(render_frame_host, std::move(receiver)) {}
+    explicit AsyncWriteClipboardHostImpl(RenderFrameHost& render_frame_host)
+        : ClipboardHostImpl(render_frame_host) {}
 
     void OnCopyAllowedResult(
         const ui::ClipboardFormatType& data_type,
@@ -767,12 +770,16 @@ class ClipboardHostImplAsyncWriteTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
     NavigateAndCommit(GURL("https://google.com/"));
-    fake_clipboard_host_impl_ =
-        new AsyncWriteClipboardHostImpl(*web_contents()->GetPrimaryMainFrame(),
-                                        remote_.BindNewPipeAndPassReceiver());
+    fake_clipboard_host_impl_ = std::make_unique<AsyncWriteClipboardHostImpl>(
+        *web_contents()->GetPrimaryMainFrame());
+    receiver_ = std::make_unique<mojo::Receiver<blink::mojom::ClipboardHost>>(
+        fake_clipboard_host_impl_.get(), remote_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
+    // Close the pipe before destroying what it is bound to, otherwise a message
+    // still in flight dispatches into freed memory when the loop is pumped.
+    receiver_.reset();
     fake_clipboard_host_impl_ = nullptr;
     RenderViewHostTestHarness::TearDown();
   }
@@ -784,14 +791,13 @@ class ClipboardHostImplAsyncWriteTest : public RenderViewHostTestHarness {
   mojo::Remote<blink::mojom::ClipboardHost>& remote() { return remote_; }
 
   AsyncWriteClipboardHostImpl* async_write_clipboard_host_impl() {
-    return fake_clipboard_host_impl_;
+    return fake_clipboard_host_impl_.get();
   }
 
  private:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
-  // `ClipboardHostImpl` is a `DocumentService` and manages its own
-  // lifetime.
-  raw_ptr<AsyncWriteClipboardHostImpl> fake_clipboard_host_impl_;
+  std::unique_ptr<AsyncWriteClipboardHostImpl> fake_clipboard_host_impl_;
+  std::unique_ptr<mojo::Receiver<blink::mojom::ClipboardHost>> receiver_;
 };
 
 TEST_F(ClipboardHostImplAsyncWriteTest, WriteText) {
@@ -1169,6 +1175,9 @@ class ClipboardHostImplChangeTest : public RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    // Close the pipe before destroying what it is bound to, otherwise a message
+    // still in flight dispatches into freed memory when the loop is pumped.
+    receiver_.reset();
     fake_clipboard_host_impl_ = nullptr;
     RenderViewHostTestHarness::TearDown();
   }
@@ -1181,20 +1190,21 @@ class ClipboardHostImplChangeTest : public RenderViewHostTestHarness {
   // created pointer.
   ClipboardHostImpl* clipboard_host_impl() {
     if (!fake_clipboard_host_impl_) {
-      fake_clipboard_host_impl_ =
-          new ClipboardHostImpl(*web_contents()->GetPrimaryMainFrame(),
-                                remote_.BindNewPipeAndPassReceiver());
+      fake_clipboard_host_impl_ = std::make_unique<ClipboardHostImpl>(
+          *web_contents()->GetPrimaryMainFrame());
+      receiver_ = std::make_unique<mojo::Receiver<blink::mojom::ClipboardHost>>(
+          fake_clipboard_host_impl_.get(),
+          remote_.BindNewPipeAndPassReceiver());
     }
-    return fake_clipboard_host_impl_;
+    return fake_clipboard_host_impl_.get();
   }
 
  protected:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
 
  private:
-  // `ClipboardHostImpl` is a `DocumentService` and manages its own
-  // lifetime.
-  raw_ptr<ClipboardHostImpl> fake_clipboard_host_impl_;
+  std::unique_ptr<ClipboardHostImpl> fake_clipboard_host_impl_;
+  std::unique_ptr<mojo::Receiver<blink::mojom::ClipboardHost>> receiver_;
 };
 
 class MockClipboardListener : public blink::mojom::ClipboardListener {

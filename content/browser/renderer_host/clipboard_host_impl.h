@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -19,7 +20,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/disallow_activation_reason.h"
-#include "content/public/browser/document_service.h"
 #include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -39,10 +39,10 @@ class BrowserContext;
 class ClipboardHostImplTest;
 class StoragePartitionImpl;
 
-class CONTENT_EXPORT ClipboardHostImpl
-    : public DocumentService<blink::mojom::ClipboardHost>,
-      public ui::ClipboardObserver {
+class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
+                                         public ui::ClipboardObserver {
  public:
+  explicit ClipboardHostImpl(RenderFrameHost& render_frame_host);
   ~ClipboardHostImpl() override;
 
   // Override for ui::ClipboardObserver
@@ -54,15 +54,60 @@ class CONTENT_EXPORT ClipboardHostImpl
 
   using ClipboardPasteData = content::ClipboardPasteData;
 
+  // mojom::ClipboardHost
+  void RegisterClipboardListener(
+      mojo::PendingRemote<blink::mojom::ClipboardListener> listener) override;
+  void GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
+                         GetSequenceNumberCallback callback) override;
+  void IsFormatAvailable(blink::mojom::ClipboardFormat format,
+                         ui::ClipboardBuffer clipboard_buffer,
+                         IsFormatAvailableCallback callback) override;
+  void ReadAvailableTypes(ui::ClipboardBuffer clipboard_buffer,
+                          ReadAvailableTypesCallback callback) override;
+  void ReadText(ui::ClipboardBuffer clipboard_buffer,
+                ReadTextCallback callback) override;
+  void ReadHtml(ui::ClipboardBuffer clipboard_buffer,
+                ReadHtmlCallback callback) override;
+  void ReadSvg(ui::ClipboardBuffer clipboard_buffer,
+               ReadSvgCallback callback) override;
+  void ReadRtf(ui::ClipboardBuffer clipboard_buffer,
+               ReadRtfCallback callback) override;
+  void ReadPng(ui::ClipboardBuffer clipboard_buffer,
+               ReadPngCallback callback) override;
+  void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
+                 ReadFilesCallback callback) override;
+  void ReadDataTransferCustomData(
+      ui::ClipboardBuffer clipboard_buffer,
+      const std::u16string& type,
+      ReadDataTransferCustomDataCallback callback) override;
+  void ReadAvailableCustomAndStandardFormats(
+      ReadAvailableCustomAndStandardFormatsCallback callback) override;
+  void ReadUnsanitizedCustomFormat(
+      const std::u16string& format,
+      ReadUnsanitizedCustomFormatCallback callback) override;
+  void WriteUnsanitizedCustomFormat(const std::u16string& format,
+                                    mojo_base::BigBuffer data) override;
+  void WriteText(const std::u16string& text) override;
+  void WriteHtml(const std::u16string& markup, const GURL& url) override;
+  void WriteSvg(const std::u16string& markup) override;
+  void WriteSmartPasteMarker() override;
+  void WriteDataTransferCustomData(
+      const base::flat_map<std::u16string, std::u16string>& data) override;
+  void WriteBookmark(const std::string& url,
+                     const std::u16string& title) override;
+  void WriteImage(const SkBitmap& unsafe_bitmap) override;
+  void CommitWrite() override;
+#if BUILDFLAG(IS_MAC)
+  void WriteStringToFindPboard(const std::u16string& text) override;
+  void GetPlatformPermissionState(
+      GetPlatformPermissionStateCallback callback) override;
+#endif
+
  protected:
   // These types and methods are protected for testing.
 
   using IsClipboardPasteAllowedCallback =
       RenderFrameHostImpl::IsClipboardPasteAllowedCallback;
-
-  explicit ClipboardHostImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
 
   // Performs a check to see if pasting `data` is allowed by data transfer
   // policies and invokes FinishPasteIfAllowed upon completion.
@@ -115,54 +160,6 @@ class CONTENT_EXPORT ClipboardHostImpl
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplChangeTest,
                            NoNotificationWhenListenerDisconnectsDuringRead);
 
-  // mojom::ClipboardHost
-  void RegisterClipboardListener(
-      mojo::PendingRemote<blink::mojom::ClipboardListener> listener) override;
-  void GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
-                         GetSequenceNumberCallback callback) override;
-  void IsFormatAvailable(blink::mojom::ClipboardFormat format,
-                         ui::ClipboardBuffer clipboard_buffer,
-                         IsFormatAvailableCallback callback) override;
-  void ReadAvailableTypes(ui::ClipboardBuffer clipboard_buffer,
-                          ReadAvailableTypesCallback callback) override;
-  void ReadText(ui::ClipboardBuffer clipboard_buffer,
-                ReadTextCallback callback) override;
-  void ReadHtml(ui::ClipboardBuffer clipboard_buffer,
-                ReadHtmlCallback callback) override;
-  void ReadSvg(ui::ClipboardBuffer clipboard_buffer,
-               ReadSvgCallback callback) override;
-  void ReadRtf(ui::ClipboardBuffer clipboard_buffer,
-               ReadRtfCallback callback) override;
-  void ReadPng(ui::ClipboardBuffer clipboard_buffer,
-               ReadPngCallback callback) override;
-  void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
-                 ReadFilesCallback callback) override;
-  void ReadDataTransferCustomData(
-      ui::ClipboardBuffer clipboard_buffer,
-      const std::u16string& type,
-      ReadDataTransferCustomDataCallback callback) override;
-  void ReadAvailableCustomAndStandardFormats(
-      ReadAvailableCustomAndStandardFormatsCallback callback) override;
-  void ReadUnsanitizedCustomFormat(
-      const std::u16string& format,
-      ReadUnsanitizedCustomFormatCallback callback) override;
-  void WriteUnsanitizedCustomFormat(const std::u16string& format,
-                                    mojo_base::BigBuffer data) override;
-  void WriteText(const std::u16string& text) override;
-  void WriteHtml(const std::u16string& markup, const GURL& url) override;
-  void WriteSvg(const std::u16string& markup) override;
-  void WriteSmartPasteMarker() override;
-  void WriteDataTransferCustomData(
-      const base::flat_map<std::u16string, std::u16string>& data) override;
-  void WriteBookmark(const std::string& url,
-                     const std::u16string& title) override;
-  void WriteImage(const SkBitmap& unsafe_bitmap) override;
-  void CommitWrite() override;
-#if BUILDFLAG(IS_MAC)
-  void WriteStringToFindPboard(const std::u16string& text) override;
-  void GetPlatformPermissionState(
-      GetPlatformPermissionStateCallback callback) override;
-#endif
 
   absl::uint128 GetSequenceNumberImpl(ui::ClipboardBuffer clipboard_buffer);
 
@@ -318,6 +315,8 @@ class CONTENT_EXPORT ClipboardHostImpl
   BrowserContext* GetBrowserContext();
   std::optional<ui::DataTransferEndpoint> CreateDataEndpoint();
   ClipboardEndpoint CreateClipboardEndpoint();
+
+  const raw_ref<RenderFrameHostImpl> render_frame_host_;
 
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 
