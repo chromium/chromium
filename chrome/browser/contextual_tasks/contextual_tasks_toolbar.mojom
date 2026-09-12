@@ -4,6 +4,10 @@
 
 module contextual_tasks_toolbar.mojom;
 
+import "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom";
+import "components/browser_apis/ui_controllers/toolbar/icon_handle.mojom";
+import "mojo/public/mojom/base/error.mojom";
+
 // Used by the WebUI page to bootstrap bi-directional communication between
 // the browser process and the toolbar WebUI.
 interface PageHandlerFactory {
@@ -14,7 +18,7 @@ interface PageHandlerFactory {
 };
 
 // Browser-side handler for requests from the Toolbar WebUI page.
-// (TypeScript -> C++)
+// (TypeScript -> C++ (browser process))
 interface PageHandler {
 };
 
@@ -23,4 +27,57 @@ interface PageHandler {
 interface Page {
 };
 
+// Observer interface (page) implemented by WebUI to receive push
+// updates from browser process.
+interface ContextualTasksToolbarUIObserver {
+  // Pushes changes to the permission dashboard state.
+  OnPermissionDashboardStateChanged(
+      toolbar_ui_api.mojom.PermissionDashboardState state);
+};
 
+// Initial state returned to WebUI. Contains permission dashboard
+// state and an observer update stream which the client can subscribe
+// to for all updates since the state snapshot.
+struct InitialState {
+  toolbar_ui_api.mojom.PermissionDashboardState state;
+  pending_receiver<ContextualTasksToolbarUIObserver> update_stream;
+};
+
+// Main service interface (page handler) implemented by the browser
+// process (C++) to receive UI updates from WebUI (TS).
+interface ContextualTasksToolbarUIService {
+  // Retrieves the initial state for the dashboard and returns
+  // the observer for push updates from browser process for WebUI
+  // to use.
+  GetInitialState() => result<InitialState, mojo_base.mojom.Error>;
+
+  // Notifies the browser that the mouse button was pressed down on a chip.
+  // Useful for triggering pre-click logic, ripples, or tracking gestures.
+  // Happens before click is registered + blur/focus events happen.
+  OnChipMousePressed(
+      toolbar_ui_api.mojom.LhsChipIdentifier identifier);
+
+  // Notifies the browser that a chip was clicked
+  // or activated (mouse down then up). `is_mouse_interaction` distinguishes
+  // between mouse clicks and keyboard/touch events.
+  OnChipClicked(toolbar_ui_api.mojom.LhsChipIdentifier identifier,
+                bool is_mouse_interaction);
+
+  // Notifies the browser that the pointer (mouse/stylus)
+  // entered the bounds of a chip (e.g., to trigger hover
+  // effects, pre-fetching, or tooltips).
+  OnChipPointerEntered(
+      toolbar_ui_api.mojom.LhsChipIdentifier identifier);
+
+  // Notifies the browser that the pointer left the bounds of a chip.
+  OnChipPointerExited(
+      toolbar_ui_api.mojom.LhsChipIdentifier identifier);
+
+  // Notifies the browser that the chip has finished its expand animation.
+  OnChipExpandAnimationEnded(
+      toolbar_ui_api.mojom.LhsChipIdentifier identifier);
+
+  // Notifies the browser that the chip has finished its collapse animation.
+  OnChipCollapseAnimationEnded(
+      toolbar_ui_api.mojom.LhsChipIdentifier identifier);
+};

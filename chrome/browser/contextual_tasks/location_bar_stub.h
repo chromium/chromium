@@ -42,6 +42,9 @@ class LocationBarStub : public LocationBar {
   LocationBarStub();
   ~LocationBarStub() override;
 
+  LocationBarStub(const LocationBarStub&) = delete;
+  LocationBarStub& operator=(const LocationBarStub&) = delete;
+
   // LocationBar:
   void FocusLocation(bool is_user_initiated,
                      bool clear_focus_if_failed) override;

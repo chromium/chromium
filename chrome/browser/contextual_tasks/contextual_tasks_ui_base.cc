@@ -4,13 +4,18 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/contextual_tasks_resources.h"
 #include "chrome/grit/contextual_tasks_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/buildflags/buildflags.h"
+#include "mojo/public/mojom/base/error.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
 
@@ -103,5 +108,93 @@ void ContextualTasksUIBase::BindInterface(
   toolbar_page_factory_receiver_.reset();
   toolbar_page_factory_receiver_.Bind(std::move(pending_receiver));
 }
+
+void ContextualTasksUIBase::BindInterface(
+    mojo::PendingReceiver<
+        contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService>
+        pending_receiver) {
+  receiver_.reset();
+  receiver_.Bind(std::move(pending_receiver));
+}
+
+ContextualTasksPermissionController*
+ContextualTasksUIBase::GetActiveController() {
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
+  if (!browser) {
+    return nullptr;
+  }
+  auto* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::Get(
+          browser->GetUnownedUserDataHost());
+  if (!coordinator) {
+    return nullptr;
+  }
+  content::WebContents* main_contents = coordinator->GetActiveWebContents();
+  return main_contents ? contextual_tasks::ContextualTasksPermissionController::
+                             FromWebContents(main_contents)
+                       : nullptr;
+}
+
+// TODO(crbug.com/558849041): Observe ContextualTasksPermissionController and
+// active task changes, and dashboard push state updates via
+// toolbar_ui_observers_.Notify(
+//    &ContextualTasksToolbarUIObserver::OnPermissionDashboardStateChanged).
+void ContextualTasksUIBase::GetInitialState(GetInitialStateCallback callback) {
+  auto* controller = GetActiveController();
+  if (!controller) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kFailedPrecondition,
+        "ContextualTasksToolbarUIService: no active controller")));
+    return;
+  }
+
+  auto initial_state = contextual_tasks_toolbar::mojom::InitialState::New();
+  mojo::PendingRemote<
+      contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIObserver>
+      observer_remote;
+  initial_state->update_stream =
+      observer_remote.InitWithNewPipeAndPassReceiver();
+  toolbar_ui_observers_.Add(std::move(observer_remote));
+
+  initial_state->state = controller->GetState();
+
+  std::move(callback).Run(std::move(initial_state));
+}
+
+// TODO(crbug.com/558848727): Fix race condition where active task changes while
+// IPC is in flight. The WebUI should pass the target task ID (or generation
+// token), and the click should be dropped if the targeted task is no longer
+// active.
+void ContextualTasksUIBase::OnChipClicked(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+    bool is_mouse_interaction) {
+  if (auto* controller = GetActiveController()) {
+    controller->OnChipClicked(identifier, is_mouse_interaction);
+  }
+}
+
+void ContextualTasksUIBase::OnChipExpandAnimationEnded(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (auto* controller = GetActiveController()) {
+    controller->OnChipExpandAnimationEnded(identifier);
+  }
+}
+
+void ContextualTasksUIBase::OnChipCollapseAnimationEnded(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (auto* controller = GetActiveController()) {
+    controller->OnChipCollapseAnimationEnded(identifier);
+  }
+}
+
+void ContextualTasksUIBase::OnChipMousePressed(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {}
+
+void ContextualTasksUIBase::OnChipPointerEntered(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {}
+
+void ContextualTasksUIBase::OnChipPointerExited(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {}
 
 }  // namespace contextual_tasks

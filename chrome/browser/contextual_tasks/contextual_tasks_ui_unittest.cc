@@ -6,11 +6,14 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
@@ -170,6 +173,45 @@ std::unique_ptr<content::MockNavigationHandle> CreateMockNavigationHandle(
   nav_handle->set_url(url);
   return nav_handle;
 }
+
+class FakeContextualTasksPermissionController
+    : public ContextualTasksPermissionController {
+ public:
+  FakeContextualTasksPermissionController() = default;
+  ~FakeContextualTasksPermissionController() override = default;
+
+  toolbar_ui_api::mojom::PermissionDashboardStatePtr GetState() override {
+    auto state = toolbar_ui_api::mojom::PermissionDashboardState::New();
+    state->indicator_chip = toolbar_ui_api::mojom::PermissionChipState::New();
+    state->request_chip = toolbar_ui_api::mojom::PermissionChipState::New();
+    return state;
+  }
+  void OnChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+                     bool is_mouse_interaction) override {}
+  void OnChipExpandAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override {}
+  void OnChipCollapseAnimationEnded(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override {}
+};
+
+class TestContextualTasksUIBase : public ContextualTasksUIBase {
+ public:
+  explicit TestContextualTasksUIBase(content::WebUI* web_ui)
+      : ContextualTasksUIBase(web_ui) {}
+  ~TestContextualTasksUIBase() override = default;
+
+  void set_controller(ContextualTasksPermissionController* controller) {
+    controller_ = controller;
+  }
+
+ protected:
+  ContextualTasksPermissionController* GetActiveController() override {
+    return controller_;
+  }
+
+ private:
+  raw_ptr<ContextualTasksPermissionController> controller_ = nullptr;
+};
 
 }  // namespace
 
@@ -1682,42 +1724,83 @@ TEST_F(ContextualTasksUiTest, OnRestoredTabsFetched) {
   controller.SetComposeboxHandler(nullptr);
 }
 
-TEST_F(ContextualTasksUiTest, MultipleBindInterfaceToolbarPageHandlerFactory) {
+TEST_F(ContextualTasksUiTest,
+       MultipleBindInterfaceContextualTasksToolbarUIService) {
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());
   ContextualTasksUI controller(&web_ui);
 
   for (int i = 0; i < 50; ++i) {
-    mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory> remote;
+    mojo::Remote<
+        contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService>
+        remote;
     controller.BindInterface(remote.BindNewPipeAndPassReceiver());
     EXPECT_TRUE(remote.is_bound());
   }
 }
 
-TEST_F(ContextualTasksUiTest, CreateToolbarPageHandlerRebindTest) {
+TEST_F(ContextualTasksUiTest, ContextualTasksToolbarUIServiceRebindTest) {
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());
   ContextualTasksUI controller(&web_ui);
 
-  // First call to CreatePageHandler
-  mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> page_remote1;
-  auto page_receiver1 = page_remote1.InitWithNewPipeAndPassReceiver();
-  mojo::PendingRemote<contextual_tasks_toolbar::mojom::PageHandler>
-      handler_remote1;
-  auto handler_receiver1 = handler_remote1.InitWithNewPipeAndPassReceiver();
+  mojo::Remote<contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService>
+      remote1;
+  controller.BindInterface(remote1.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(remote1.is_bound());
 
-  controller.CreatePageHandler(std::move(page_remote1),
-                               std::move(handler_receiver1));
+  // Second call (simulating refresh/rebind)
+  mojo::Remote<contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService>
+      remote2;
+  controller.BindInterface(remote2.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(remote2.is_bound());
+}
 
-  // Second call to CreatePageHandler (simulating refresh/rebind)
-  mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> page_remote2;
-  auto page_receiver2 = page_remote2.InitWithNewPipeAndPassReceiver();
-  mojo::PendingRemote<contextual_tasks_toolbar::mojom::PageHandler>
-      handler_remote2;
-  auto handler_receiver2 = handler_remote2.InitWithNewPipeAndPassReceiver();
+TEST_F(ContextualTasksUiTest, ContextualTasksToolbarUIServiceBindTest) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
 
-  controller.CreatePageHandler(std::move(page_remote2),
-                               std::move(handler_receiver2));
+  mojo::Remote<contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService>
+      remote;
+  controller.BindInterface(remote.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(remote.is_bound());
+
+  // Binding without an active controller fails with `kFailedPrecondition`.
+  {
+    base::test::TestFuture<
+        base::expected<contextual_tasks_toolbar::mojom::InitialStatePtr,
+                       mojo_base::mojom::ErrorPtr>>
+        future;
+    remote->GetInitialState(future.GetCallback());
+
+    auto result = future.Take();
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error()->code,
+              mojo_base::mojom::Code::kFailedPrecondition);
+  }
+
+  // Binding with an active controller succeeds.
+  FakeContextualTasksPermissionController fake_controller;
+  controller.set_controller(&fake_controller);
+
+  {
+    base::test::TestFuture<
+        base::expected<contextual_tasks_toolbar::mojom::InitialStatePtr,
+                       mojo_base::mojom::ErrorPtr>>
+        future;
+    remote->GetInitialState(future.GetCallback());
+
+    auto result = future.Take();
+    ASSERT_TRUE(result.has_value());
+    EXPECT_TRUE(result.value()->state);
+    EXPECT_TRUE(result.value()->update_stream.is_valid());
+  }
+
+  remote->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true);
+  remote.FlushForTesting();
 }
 
 TEST_F(ContextualTasksUiTest,

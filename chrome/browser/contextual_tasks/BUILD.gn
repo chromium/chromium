@@ -238,6 +238,7 @@ source_set("ui") {
     "contextual_tasks_internals_page_handler.h",
     "contextual_tasks_navigation_throttle.h",
     "contextual_tasks_page_handler.h",
+    "contextual_tasks_permission_controller.h",
     "contextual_tasks_side_panel_coordinator.h",
     "contextual_tasks_ui.h",
     "contextual_tasks_ui_base.h",
@@ -320,6 +321,7 @@ source_set("ui") {
       "//chrome/browser/ui/views/permissions/chip",
       "//chrome/browser/ui/views/permissions/chip:impl",
       "//chrome/browser/ui/views/side_panel",
+      "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
     ]
   }
 
@@ -538,6 +540,7 @@ mojom("mojo_bindings") {
   ]
   webui_module_path = "/"
   public_deps = [
+    "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
     "//mojo/public/mojom/base",
     "//mojo/public/mojom/base:protobuf_support",
     "//ui/base/mojom",
