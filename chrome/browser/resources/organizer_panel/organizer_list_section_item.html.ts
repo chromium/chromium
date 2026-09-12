@@ -9,12 +9,21 @@ import type {OrganizerListSectionItemElement} from './organizer_list_section_ite
 export function getHtml(this: OrganizerListSectionItemElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<!-- TODO(b/549796273): Use custom title and description element. -->
-<cr-url-list-item id="crUrlListItem" .title="${this.item.title}"
-    .description="${this.getDescription_()}"
+<cr-url-list-item id="crUrlListItem"
+    .itemAriaLabel="${this.getAriaLabel_()}"
+    .itemAriaDescription="${this.getAriaDescription_() || nothing}"
     .url="${this.item.prefixIcon?.url || nothing}"
     ?always-show-suffix="${this.hasSuffix_()}"
     .size="${this.item.size || nothing}">
+  <div id="content" slot="content">
+    <organizer-list-section-item-title id="title"
+        .titleParts="${this.item.title}">
+    </organizer-list-section-item-title>
+    <organizer-list-section-item-description id="description"
+        ?hidden="${!this.hasDescription_()}"
+        .descriptionParts="${this.item.description || []}">
+    </organizer-list-section-item-description>
+  </div>
   ${this.item.prefixIcon?.element ? html`
     <div slot="customIcon">
       ${this.item.prefixIcon.element}

@@ -11,6 +11,19 @@
   display: block;
 }
 
+#content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+}
+
+#crUrlListItem[size=compact] #content {
+  align-items: center;
+  flex-direction: row;
+}
+
 #trailingIcon {
   --iron-icon-height: 16px;
   --iron-icon-width: 16px;

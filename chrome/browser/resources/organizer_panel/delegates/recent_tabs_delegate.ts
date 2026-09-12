@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
-import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
+import type {OrganizerListSectionItem, OrganizerListSectionItemDescriptionPart} from '../organizer_list_section_item.js';
 import type {BrowserProxy, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 
@@ -127,20 +127,28 @@ export class RecentTabsDelegate implements
 
   private tabToSectionItem_(tab: RecentlyClosedTab):
       OrganizerListSectionItem<RecentlyClosedItem> {
-    const description: string[] = [];
+    const description: OrganizerListSectionItemDescriptionPart[] = [];
     try {
       const url = new URL(tab.url);
-      description.push(url.hostname);
+      description.push({
+        text: url.hostname,
+        elideFromStart: true,
+      });
     } catch {
-      description.push(tab.url);
+      description.push({
+        text: tab.url,
+        elideFromStart: true,
+      });
     }
 
     if (tab.lastActiveElapsedText) {
-      description.push(tab.lastActiveElapsedText);
+      description.push({
+        text: tab.lastActiveElapsedText,
+      });
     }
 
     return {
-      title: tab.title,
+      title: [tab.title],
       description,
       prefixIcon: {
         url: tab.url,
@@ -151,17 +159,21 @@ export class RecentTabsDelegate implements
 
   private tabGroupToSectionItem_(tabGroup: RecentlyClosedTabGroup):
       OrganizerListSectionItem<RecentlyClosedItem> {
-    const description: string[] = [];
+    const description: OrganizerListSectionItemDescriptionPart[] = [];
     const tabCount = tabGroup.tabCount;
-    description.push(loadTimeData.getStringF(
-        tabCount === 1 ? 'oneTab' : 'tabCount', tabCount));
+    description.push({
+      text: loadTimeData.getStringF(
+          tabCount === 1 ? 'oneTab' : 'tabCount', tabCount),
+    });
 
     if (tabGroup.lastActiveElapsedText) {
-      description.push(tabGroup.lastActiveElapsedText);
+      description.push({
+        text: tabGroup.lastActiveElapsedText,
+      });
     }
 
     return {
-      title: tabGroup.title,
+      title: [tabGroup.title],
       description,
       data: tabGroup,
     };

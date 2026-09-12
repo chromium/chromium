@@ -5,7 +5,7 @@
 import {browserProxyFactory, PageHandlerRemote, RecentTabsDelegate} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -119,24 +119,33 @@ suite('RecentTabsDelegateTest', () => {
     assertEquals(3, items.length);
 
     // Most recent tab.
-    assertEquals(youtubeTab.title, items[0]!.title);
+    assertDeepEquals([youtubeTab.title], items[0]!.title);
     assertEquals(2, items[0]!.description?.length);
-    assertEquals('www.youtube.com', items[0]!.description?.[0]);
-    assertEquals(youtubeTab.lastActiveElapsedText, items[0]!.description?.[1]);
+    assertDeepEquals(
+        {text: 'www.youtube.com', elideFromStart: true},
+        items[0]!.description?.[0]);
+    assertDeepEquals(
+        {text: youtubeTab.lastActiveElapsedText}, items[0]!.description?.[1]);
     assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
 
     // Second most recent tab.
-    assertEquals(chromiumTab.title, items[1]!.title);
+    assertDeepEquals([chromiumTab.title], items[1]!.title);
     assertEquals(2, items[1]!.description?.length);
-    assertEquals('www.chromium.org', items[1]!.description?.[0]);
-    assertEquals(chromiumTab.lastActiveElapsedText, items[1]!.description?.[1]);
+    assertDeepEquals(
+        {text: 'www.chromium.org', elideFromStart: true},
+        items[1]!.description?.[0]);
+    assertDeepEquals(
+        {text: chromiumTab.lastActiveElapsedText}, items[1]!.description?.[1]);
     assertEquals(chromiumTab.url, items[1]!.prefixIcon?.url);
 
     // Least recent tab.
-    assertEquals(googleTab.title, items[2]!.title);
+    assertDeepEquals([googleTab.title], items[2]!.title);
     assertEquals(2, items[2]!.description?.length);
-    assertEquals('www.google.com', items[2]!.description?.[0]);
-    assertEquals(googleTab.lastActiveElapsedText, items[2]!.description?.[1]);
+    assertDeepEquals(
+        {text: 'www.google.com', elideFromStart: true},
+        items[2]!.description?.[0]);
+    assertDeepEquals(
+        {text: googleTab.lastActiveElapsedText}, items[2]!.description?.[1]);
     assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
   });
 
@@ -161,23 +170,24 @@ suite('RecentTabsDelegateTest', () => {
     assertEquals(4, items.length);
 
     // Most recent: youtubeTab (300n)
-    assertEquals(youtubeTab.title, items[0]!.title);
+    assertDeepEquals([youtubeTab.title], items[0]!.title);
     assertEquals(youtubeTab, items[0]!.data);
 
     // Second: tabGroup (250n)
-    assertEquals(tabGroup.title, items[1]!.title);
+    assertDeepEquals([tabGroup.title], items[1]!.title);
     assertEquals(2, items[1]!.description?.length);
-    assertEquals('3 tabs', items[1]!.description?.[0]);
-    assertEquals(tabGroup.lastActiveElapsedText, items[1]!.description?.[1]);
+    assertDeepEquals({text: '3 tabs'}, items[1]!.description?.[0]);
+    assertDeepEquals(
+        {text: tabGroup.lastActiveElapsedText}, items[1]!.description?.[1]);
     assertEquals(undefined, items[1]!.prefixIcon);
     assertEquals(tabGroup, items[1]!.data);
 
     // Third: chromiumTab (200n)
-    assertEquals(chromiumTab.title, items[2]!.title);
+    assertDeepEquals([chromiumTab.title], items[2]!.title);
     assertEquals(chromiumTab, items[2]!.data);
 
     // Fourth: googleTab (100n)
-    assertEquals(googleTab.title, items[3]!.title);
+    assertDeepEquals([googleTab.title], items[3]!.title);
     assertEquals(googleTab, items[3]!.data);
   });
 
@@ -241,9 +251,9 @@ suite('RecentTabsDelegateTest', () => {
         // groupedTab1 and groupedTab2 are filtered out, leaving tabGroup,
         // standaloneTab, otherGroupTab
         assertEquals(3, items.length);
-        assertEquals(tabGroup.title, items[0]!.title);
-        assertEquals(standaloneTab.title, items[1]!.title);
-        assertEquals(otherGroupTab.title, items[2]!.title);
+        assertDeepEquals([tabGroup.title], items[0]!.title);
+        assertDeepEquals([standaloneTab.title], items[1]!.title);
+        assertDeepEquals([otherGroupTab.title], items[2]!.title);
       });
 
   test('notifies client when tabs are changed', async () => {
@@ -266,8 +276,8 @@ suite('RecentTabsDelegateTest', () => {
     await microtasksFinished();
 
     assertEquals(2, client.items.length);
-    assertEquals(gmailTab.title, client.items[0]!.title);
-    assertEquals(googleTab.title, client.items[1]!.title);
+    assertDeepEquals([gmailTab.title], client.items[0]!.title);
+    assertDeepEquals([googleTab.title], client.items[1]!.title);
   });
 
   test('notifies client when tab groups are changed', async () => {
@@ -297,8 +307,8 @@ suite('RecentTabsDelegateTest', () => {
     await microtasksFinished();
 
     assertEquals(2, client.items.length);
-    assertEquals(tabGroup.title, client.items[0]!.title);
-    assertEquals(googleTab.title, client.items[1]!.title);
+    assertDeepEquals([tabGroup.title], client.items[0]!.title);
+    assertDeepEquals([googleTab.title], client.items[1]!.title);
   });
 
   test(
@@ -354,9 +364,9 @@ suite('RecentTabsDelegateTest', () => {
 
         // tabInGroup is filtered out because it belongs to Group 77
         assertEquals(3, client.items.length);
-        assertEquals(newStandaloneTab.title, client.items[0]!.title);
-        assertEquals(tabGroup.title, client.items[1]!.title);
-        assertEquals(googleTab.title, client.items[2]!.title);
+        assertDeepEquals([newStandaloneTab.title], client.items[0]!.title);
+        assertDeepEquals([tabGroup.title], client.items[1]!.title);
+        assertDeepEquals([googleTab.title], client.items[2]!.title);
       });
 
   test('opens tab when an item is clicked', async () => {
@@ -397,7 +407,7 @@ suite('RecentTabsDelegateTest', () => {
 
         const items = await delegate.getItems();
         assertEquals(1, items.length);
-        assertEquals('1 tab', items[0]!.description?.[0]);
+        assertDeepEquals({text: '1 tab'}, items[0]!.description?.[0]);
 
         delegate.onItemClick(items[0]!);
 

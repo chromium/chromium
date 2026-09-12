@@ -7,7 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Token} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
-import type {OrganizerListSectionItem, OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
+import type {OrganizerListSectionItem, OrganizerListSectionItemDescriptionPart, OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
 import type {BrowserProxy, ProfileData, Tab, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory, SplitTabLayout} from '../tab_search.mojom-webui.js';
 
@@ -205,12 +205,12 @@ export class OpenTabsDelegate implements
 
   private toSectionItem_(item: OpenTabsItem):
       OrganizerListSectionItem<OpenTabsItem> {
-    let title: string;
+    let title: string[];
     let tabs: Tab[];
     let prefixIcon: OrganizerListSectionItemIcon;
 
     if (isSplitTab(item)) {
-      title = loadTimeData.getString('splitView');
+      title = [loadTimeData.getString('splitView')];
       tabs = item.tabs;
       prefixIcon = {
         stackedFavicons: {
@@ -219,15 +219,19 @@ export class OpenTabsDelegate implements
         },
       };
     } else {
-      title = item.tab.title;
+      title = [item.tab.title];
       tabs = [item.tab];
       prefixIcon = {url: item.tab.url};
     }
 
-    const description = tabs.map(tab => getHostnameOrUrl(tab.url));
+    const description: OrganizerListSectionItemDescriptionPart[] =
+        tabs.map(tab => ({
+                   text: getHostnameOrUrl(tab.url),
+                   elideFromStart: true,
+                 }));
     const elapsedText = getMostRecentTab(item).lastActiveElapsedText;
     if (elapsedText) {
-      description.push(elapsedText);
+      description.push({text: elapsedText});
     }
 
     return {

@@ -5,6 +5,8 @@
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import './organizer_list_section_item_description.js';
+import './organizer_list_section_item_title.js';
 import './stacked_favicons.js';
 
 import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
@@ -16,6 +18,10 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './organizer_list_section_item.css.js';
 import {getHtml} from './organizer_list_section_item.html.js';
+import type {OrganizerListSectionItemDescriptionElement, OrganizerListSectionItemDescriptionPart} from './organizer_list_section_item_description.js';
+import type {OrganizerListSectionItemTitleElement} from './organizer_list_section_item_title.js';
+
+export type {OrganizerListSectionItemDescriptionPart};
 
 // Stacked favicons configuration for an organizer list section item.
 export interface OrganizerListSectionItemStackedFavicons {
@@ -51,10 +57,10 @@ export interface OrganizerListSectionItemActionButton {
 // Model for a single item in an organizer list section.
 export interface OrganizerListSectionItem<T> {
   // Title (main line) of the item.
-  title: string;
+  title: string[];
 
   // Description (secondary line) of the item.
-  description?: string[];
+  description?: OrganizerListSectionItemDescriptionPart[];
 
   // Icon displayed at the beginning of the item.
   prefixIcon?: OrganizerListSectionItemIcon;
@@ -78,6 +84,8 @@ export interface OrganizerListSectionItemElement {
   $: {
     actionButton: CrIconButtonElement,
     crUrlListItem: CrUrlListItemElement,
+    description: OrganizerListSectionItemDescriptionElement,
+    title: OrganizerListSectionItemTitleElement,
     trailingIcon: CrIconElement,
   };
 }
@@ -106,11 +114,21 @@ export class OrganizerListSectionItemElement extends
   }
 
   accessor item: OrganizerListSectionItem<unknown> = {
-    title: '',
+    title: [],
   };
 
-  protected getDescription_(): string {
-    return this.item.description?.join(' · ') || '';
+  protected getAriaLabel_(): string {
+    // TODO(crbug.com/560308768): Update to use a GRD string.
+    return this.item.title.join(' | ');
+  }
+
+  protected getAriaDescription_(): string {
+    // TODO(crbug.com/560308768): Update to use a GRD string.
+    return this.item.description?.map(d => d.text).join(' · ') || '';
+  }
+
+  protected hasDescription_(): boolean {
+    return !!this.item.description && this.item.description.length > 0;
   }
 
   protected hasSuffix_(): boolean {

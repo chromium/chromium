@@ -70,12 +70,12 @@ export class OrganizerListSectionElement extends CrLitElement implements
         [
           {
             name: 'title',
-            getter: item => item.title,
+            getter: item => item.title.join(' '),
             weight: 2,
           },
           {
             name: 'description',
-            getter: item => item.description?.join(' '),
+            getter: item => item.description?.map(d => d.text).join(' '),
             weight: 1,
           },
         ],

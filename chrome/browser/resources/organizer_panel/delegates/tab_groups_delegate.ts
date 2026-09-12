@@ -48,7 +48,7 @@ export class TabGroupsDelegate implements
       OrganizerListSectionItem<TabGroup> {
     // TODO(crbug.com/556738439): Share color logic with tab search.
     return {
-      title: group.title,
+      title: [group.title],
       prefixIcon: {
         element: html`
           <svg viewBox="-5 -5 10 10"

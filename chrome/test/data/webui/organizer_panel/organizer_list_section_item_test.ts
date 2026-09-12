@@ -7,12 +7,12 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionItemElement, StackedFaviconsElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-const TEST_TITLE = 'Google Search';
-const TEST_DESCRIPTION = ['google.com', '5 mins ago'];
-const EXPECTED_DESCRIPTION = 'google.com · 5 mins ago';
+const TEST_TITLE_PARTS = ['Google Search'];
+const TEST_DESCRIPTION_PARTS = [{text: 'google.com'}, {text: '5 mins ago'}];
+const EXPECTED_ARIA_DESCRIPTION = 'google.com · 5 mins ago';
 const TEST_URL_1 = 'https://google.com';
 const TEST_URL_2 = 'https://youtube.com';
 
@@ -34,20 +34,41 @@ suite('OrganizerListSectionItemTest', () => {
 
   test('renders title and description', async () => {
     listItem.item = {
-      title: TEST_TITLE,
-      description: TEST_DESCRIPTION,
+      title: TEST_TITLE_PARTS,
+      description: TEST_DESCRIPTION_PARTS,
     };
     await microtasksFinished();
 
     const crUrlListItem = listItem.$.crUrlListItem;
     assertTrue(!!crUrlListItem);
-    assertEquals(TEST_TITLE, crUrlListItem.title);
-    assertEquals(EXPECTED_DESCRIPTION, crUrlListItem.description);
+    assertEquals(TEST_TITLE_PARTS[0], crUrlListItem.itemAriaLabel);
+    assertEquals(EXPECTED_ARIA_DESCRIPTION, crUrlListItem.itemAriaDescription);
+
+    const titleElement = listItem.$.title;
+    assertTrue(!!titleElement);
+    assertDeepEquals(TEST_TITLE_PARTS, titleElement.titleParts);
+
+    const descriptionElement = listItem.$.description;
+    assertTrue(!!descriptionElement);
+    assertFalse(descriptionElement.hidden);
+    assertDeepEquals(
+        TEST_DESCRIPTION_PARTS, descriptionElement.descriptionParts);
+  });
+
+  test('hides description element when description is absent', async () => {
+    listItem.item = {
+      title: TEST_TITLE_PARTS,
+    };
+    await microtasksFinished();
+
+    const descriptionElement = listItem.$.description;
+    assertTrue(!!descriptionElement);
+    assertTrue(descriptionElement.hidden);
   });
 
   test('renders prefix icon with URL', async () => {
     listItem.item = {
-      title: TEST_TITLE,
+      title: TEST_TITLE_PARTS,
       prefixIcon: {
         url: TEST_URL_1,
       },
@@ -61,7 +82,7 @@ suite('OrganizerListSectionItemTest', () => {
 
   test('renders prefix icon with custom element', async () => {
     listItem.item = {
-      title: 'Tab Group',
+      title: ['Tab Group'],
       prefixIcon: {
         element: html`<span id="${TEST_CUSTOM_ICON_ID}">${
             TEST_CUSTOM_ICON_TEXT}</span>`,
@@ -78,7 +99,7 @@ suite('OrganizerListSectionItemTest', () => {
 
   test('renders trailing icon only', async () => {
     listItem.item = {
-      title: 'Starred Tab',
+      title: ['Starred Tab'],
       trailingIcon: 'cr:star',
     };
     await microtasksFinished();
@@ -103,7 +124,7 @@ suite('OrganizerListSectionItemTest', () => {
 
   test('renders hovered action button only', async () => {
     listItem.item = {
-      title: 'Tab',
+      title: ['Tab'],
       hoveredActionButton: {
         icon: 'cr:close',
         ariaLabel: 'Close tab',
@@ -133,7 +154,7 @@ suite('OrganizerListSectionItemTest', () => {
 
   test('switches from trailing icon to action button on hover', async () => {
     listItem.item = {
-      title: 'Pinned Tab Group',
+      title: ['Pinned Tab Group'],
       trailingIcon: 'cr:star',
       hoveredActionButton: {
         icon: 'cr:star-border',
@@ -172,7 +193,7 @@ suite('OrganizerListSectionItemTest', () => {
       'clicking action button dispatches event and stops propagation',
       async () => {
         const item = {
-          title: 'Closeable Tab',
+          title: ['Closeable Tab'],
           hoveredActionButton: {
             icon: 'cr:close',
             ariaLabel: 'Close tab',
@@ -206,7 +227,7 @@ suite('OrganizerListSectionItemTest', () => {
       'renders prefix icon with multiple URLs as stacked favicons',
       async () => {
         listItem.item = {
-          title: 'Split View',
+          title: ['Split View'],
           prefixIcon: {
             stackedFavicons: {
               urls: [TEST_URL_1, TEST_URL_2],
@@ -238,7 +259,7 @@ suite('OrganizerListSectionItemTest', () => {
 
   test('forwards stacking orientation to stacked favicons', async () => {
     listItem.item = {
-      title: 'Split View Vertical',
+      title: ['Split View Vertical'],
       prefixIcon: {
         stackedFavicons: {
           urls: [TEST_URL_1, TEST_URL_2],
@@ -260,7 +281,7 @@ suite('OrganizerListSectionItemTest', () => {
       'does not render stacked favicons when single URL is provided',
       async () => {
         listItem.item = {
-          title: 'Single URL',
+          title: ['Single URL'],
           prefixIcon: {
             url: TEST_URL_1,
           },

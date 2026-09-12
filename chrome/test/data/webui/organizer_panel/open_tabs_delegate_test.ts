@@ -137,10 +137,13 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals(3, items.length);
 
     // Most recent tab.
-    assertEquals(youtubeTab.title, items[0]!.title);
+    assertDeepEquals([youtubeTab.title], items[0]!.title);
     assertEquals(2, items[0]!.description?.length);
-    assertEquals('www.youtube.com', items[0]!.description?.[0]);
-    assertEquals(youtubeTab.lastActiveElapsedText, items[0]!.description?.[1]);
+    assertDeepEquals(
+        {text: 'www.youtube.com', elideFromStart: true},
+        items[0]!.description?.[0]);
+    assertDeepEquals(
+        {text: youtubeTab.lastActiveElapsedText}, items[0]!.description?.[1]);
     assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
     assertEquals('cr:close', items[0]!.hoveredActionButton?.icon);
     assertEquals('Close tab', items[0]!.hoveredActionButton?.ariaLabel);
@@ -148,19 +151,25 @@ suite('OpenTabsDelegateTest', () => {
         {type: OpenTabsItemType.TAB, tab: youtubeTab}, items[0]!.data);
 
     // Second most recent tab.
-    assertEquals(chromiumTab.title, items[1]!.title);
+    assertDeepEquals([chromiumTab.title], items[1]!.title);
     assertEquals(2, items[1]!.description?.length);
-    assertEquals('www.chromium.org', items[1]!.description?.[0]);
-    assertEquals(chromiumTab.lastActiveElapsedText, items[1]!.description?.[1]);
+    assertDeepEquals(
+        {text: 'www.chromium.org', elideFromStart: true},
+        items[1]!.description?.[0]);
+    assertDeepEquals(
+        {text: chromiumTab.lastActiveElapsedText}, items[1]!.description?.[1]);
     assertEquals(chromiumTab.url, items[1]!.prefixIcon?.url);
     assertDeepEquals(
         {type: OpenTabsItemType.TAB, tab: chromiumTab}, items[1]!.data);
 
     // Least recent tab.
-    assertEquals(googleTab.title, items[2]!.title);
+    assertDeepEquals([googleTab.title], items[2]!.title);
     assertEquals(2, items[2]!.description?.length);
-    assertEquals('www.google.com', items[2]!.description?.[0]);
-    assertEquals(googleTab.lastActiveElapsedText, items[2]!.description?.[1]);
+    assertDeepEquals(
+        {text: 'www.google.com', elideFromStart: true},
+        items[2]!.description?.[0]);
+    assertDeepEquals(
+        {text: googleTab.lastActiveElapsedText}, items[2]!.description?.[1]);
     assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
     assertDeepEquals(
         {type: OpenTabsItemType.TAB, tab: googleTab}, items[2]!.data);
@@ -193,8 +202,8 @@ suite('OpenTabsDelegateTest', () => {
     await microtasksFinished();
 
     assertEquals(2, client.items.length);
-    assertEquals(gmailTab.title, client.items[0]!.title);
-    assertEquals(googleTab.title, client.items[1]!.title);
+    assertDeepEquals([gmailTab.title], client.items[0]!.title);
+    assertDeepEquals([googleTab.title], client.items[1]!.title);
   });
 
   test('notifies client when a tab is updated', async () => {
@@ -219,9 +228,10 @@ suite('OpenTabsDelegateTest', () => {
     await microtasksFinished();
 
     assertEquals(3, client.items.length);
-    assertEquals(updatedTab.title, client.items[2]!.title);
-    assertEquals(
-        updatedTab.lastActiveElapsedText, client.items[2]!.description?.[1]);
+    assertDeepEquals([updatedTab.title], client.items[2]!.title);
+    assertDeepEquals(
+        {text: updatedTab.lastActiveElapsedText},
+        client.items[2]!.description?.[1]);
   });
 
   test('notifies client when tabs are removed', async () => {
@@ -237,8 +247,8 @@ suite('OpenTabsDelegateTest', () => {
     await microtasksFinished();
 
     assertEquals(2, client.items.length);
-    assertEquals(chromiumTab.title, client.items[0]!.title);
-    assertEquals(googleTab.title, client.items[1]!.title);
+    assertDeepEquals([chromiumTab.title], client.items[0]!.title);
+    assertDeepEquals([googleTab.title], client.items[1]!.title);
   });
 
   test('switches to tab when an item is clicked', async () => {
@@ -322,11 +332,15 @@ suite('OpenTabsDelegateTest', () => {
         assertEquals(1, items.length);
 
         const item = items[0]!;
-        assertEquals(splitViewTitle, item.title);
+        assertDeepEquals([splitViewTitle], item.title);
         assertEquals(3, item.description?.length);
-        assertEquals(splitTab1Hostname, item.description?.[0]);
-        assertEquals(splitTab2Hostname, item.description?.[1]);
-        assertEquals(splitTab1ElapsedText, item.description?.[2]);
+        assertDeepEquals(
+            {text: splitTab1Hostname, elideFromStart: true},
+            item.description?.[0]);
+        assertDeepEquals(
+            {text: splitTab2Hostname, elideFromStart: true},
+            item.description?.[1]);
+        assertDeepEquals({text: splitTab1ElapsedText}, item.description?.[2]);
         assertEquals(2, item.prefixIcon?.stackedFavicons?.urls?.length);
         assertEquals(
             SPLIT_TAB_1_URL, item.prefixIcon?.stackedFavicons?.urls?.[0]);
