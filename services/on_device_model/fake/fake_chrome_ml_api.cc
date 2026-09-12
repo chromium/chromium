@@ -4,6 +4,7 @@
 
 #include "services/on_device_model/fake/fake_chrome_ml_api.h"
 
+#include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -524,18 +525,41 @@ TfLiteDelegate* CreateGpuDelegateWithPrecision(GpuDelegatePrecision precision) {
 
 void DestroyGpuDelegate(TfLiteDelegate* delegate) {}
 
+struct FakeASRStream {
+  ChromeMLASRStreamOutputFn output_fn;
+};
+
 ChromeMLASRStream ASRCreateStream(ChromeMLSession session,
                                   const ChromeMLASRStreamOptions* options) {
   if (options->sample_rate_hz == 0) {
     return 0;
   }
-  return 1;
+  auto* stream = new FakeASRStream();
+  if (options->output_fn) {
+    stream->output_fn = *options->output_fn;
+  }
+  return reinterpret_cast<ChromeMLASRStream>(stream);
 }
 
 void ASRAddAudioChunk(ChromeMLASRStream stream, ml::AudioBuffer* audio_buffer) {
+  auto* fake_stream = reinterpret_cast<FakeASRStream*>(stream);
+  CHECK(fake_stream);
+  if (fake_stream->output_fn) {
+    ChromeMLASRStreamOutput output;
+    ChromeMLASRStreamOutputTranscript transcript{
+        .transcript = kFakeAsrTranscript,
+        .is_final = true,
+        .from_timestamp_micros = kFakeAsrStartTimeMicros,
+        .to_timestamp_micros = kFakeAsrEndTimeMicros,
+    };
+    output.push_back(transcript);
+    fake_stream->output_fn(output);
+  }
 }
 
-void ASRDestroyStream(ChromeMLASRStream stream) {}
+void ASRDestroyStream(ChromeMLASRStream stream) {
+  delete reinterpret_cast<FakeASRStream*>(stream);
+}
 
 const ChromeMLAPI g_api = {
     .InitDawnProcs = &InitDawnProcs,

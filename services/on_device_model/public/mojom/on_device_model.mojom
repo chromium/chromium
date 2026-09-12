@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "skia/public/mojom/bitmap.mojom";
 
@@ -473,6 +474,11 @@ struct AudioData {
 struct SpeechRecognitionResult {
   string transcript;
   bool is_final;
+
+  [MinVersion=8]
+  mojo_base.mojom.TimeDelta? audio_start_time;
+  [MinVersion=8]
+  mojo_base.mojom.TimeDelta? audio_end_time;
 };
 
 // Errors yielded by `AsrStream()`, a `Session` may provide these values as a

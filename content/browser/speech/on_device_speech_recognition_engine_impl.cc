@@ -144,6 +144,8 @@ void OnDeviceSpeechRecognitionEngine::OnResponse(
   for (const auto& r : result) {
     auto web_speech_result = media::mojom::WebSpeechRecognitionResult::New();
     web_speech_result->is_provisional = !r->is_final;
+    web_speech_result->audio_start_time = r->audio_start_time;
+    web_speech_result->audio_end_time = r->audio_end_time;
 
     constexpr float kSpeechRecognitionConfidence = 1.0f;
     web_speech_result->hypotheses.emplace_back(

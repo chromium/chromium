@@ -438,6 +438,8 @@ enum class GpuDelegatePrecision { kFp16, kFp32 };
 struct ChromeMLASRStreamOutputTranscript {
   const char* transcript;
   bool is_final;
+  int64_t from_timestamp_micros = 0;
+  int64_t to_timestamp_micros = 0;
 };
 using ChromeMLASRStreamOutput = std::vector<ChromeMLASRStreamOutputTranscript>;
 

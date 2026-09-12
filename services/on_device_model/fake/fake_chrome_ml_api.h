@@ -20,6 +20,12 @@ inline constexpr char kToolDeclPrefix[] = "[ToolDecl:";
 inline constexpr char kToolCallPrefix[] = "[ToolCall:";
 inline constexpr char kToolRespPrefix[] = "[ToolResp:";
 
+// Fake ASR stream output values returned by the fake ChromeML API.
+inline constexpr char kFakeAsrTranscript[] = "test";
+// Test audio start and end timestamps in microseconds (1.0s and 2.5s).
+inline constexpr int64_t kFakeAsrStartTimeMicros = 1000000;
+inline constexpr int64_t kFakeAsrEndTimeMicros = 2500000;
+
 const ChromeMLAPI* GetFakeMlApi();
 
 // TODO(crbug.com/540118700): Remove once the legacy engine has been removed and

@@ -34,6 +34,10 @@ namespace {
 
 using ::testing::ElementsAre;
 
+// Standard sample rate (in Hz) used for ASR stream and audio chunk inputs in
+// tests.
+constexpr uint32_t kDefaultAsrSampleRateHz = 16000;
+
 // Creates a test tool declaration matching the fake's tool call name.
 ml::ToolDeclaration MakeToolDeclaration() {
   ml::ToolDeclaration decl;
@@ -358,7 +362,7 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamIdleTimeout) {
       &responder_impl, responder_remote.InitWithNewPipeAndPassReceiver());
 
   auto options = mojom::AsrStreamOptions::New();
-  options->sample_rate_hz = 16000;
+  options->sample_rate_hz = kDefaultAsrSampleRateHz;
   mojo::Remote<mojom::AsrStreamInput> asr_input;
   session->AsrStream(std::move(options), asr_input.BindNewPipeAndPassReceiver(),
                      std::move(responder_remote));
@@ -369,7 +373,7 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamIdleTimeout) {
 
   // An ASR chunk should reset timeout.
   auto audio_data = mojom::AudioData::New();
-  audio_data->sample_rate = 16000;
+  audio_data->sample_rate = kDefaultAsrSampleRateHz;
   audio_data->channel_count = 1;
   audio_data->frame_count = 1;
   audio_data->data = {0};
@@ -403,7 +407,7 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamDisconnectDoesNotDisconnectSession) {
       &responder_impl, responder_remote.InitWithNewPipeAndPassReceiver());
 
   auto options = mojom::AsrStreamOptions::New();
-  options->sample_rate_hz = 16000;
+  options->sample_rate_hz = kDefaultAsrSampleRateHz;
   mojo::Remote<mojom::AsrStreamInput> asr_input;
   session->AsrStream(std::move(options), asr_input.BindNewPipeAndPassReceiver(),
                      std::move(responder_remote));
@@ -443,7 +447,7 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamReuseOnExistingSession) {
   receiver1.set_disconnect_handler(receiver1_disconnect.GetCallback());
 
   auto options1 = mojom::AsrStreamOptions::New();
-  options1->sample_rate_hz = 16000;
+  options1->sample_rate_hz = kDefaultAsrSampleRateHz;
   mojo::Remote<mojom::AsrStreamInput> asr_input1;
   session->AsrStream(std::move(options1),
                      asr_input1.BindNewPipeAndPassReceiver(),
@@ -451,7 +455,7 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamReuseOnExistingSession) {
   task_environment_.RunUntilIdle();
 
   auto audio_data1 = mojom::AudioData::New();
-  audio_data1->sample_rate = 16000;
+  audio_data1->sample_rate = kDefaultAsrSampleRateHz;
   audio_data1->channel_count = 1;
   audio_data1->frame_count = 1;
   audio_data1->data = {0};
@@ -466,7 +470,7 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamReuseOnExistingSession) {
       &responder_impl2, responder_remote2.InitWithNewPipeAndPassReceiver());
 
   auto options2 = mojom::AsrStreamOptions::New();
-  options2->sample_rate_hz = 16000;
+  options2->sample_rate_hz = kDefaultAsrSampleRateHz;
   mojo::Remote<mojom::AsrStreamInput> asr_input2;
   session->AsrStream(std::move(options2),
                      asr_input2.BindNewPipeAndPassReceiver(),
@@ -479,13 +483,70 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamReuseOnExistingSession) {
   EXPECT_TRUE(receiver1_disconnect.IsReady());
 
   auto audio_data2 = mojom::AudioData::New();
-  audio_data2->sample_rate = 16000;
+  audio_data2->sample_rate = kDefaultAsrSampleRateHz;
   audio_data2->channel_count = 1;
   audio_data2->frame_count = 1;
   audio_data2->data = {0};
   asr_input2->AddAudioChunk(std::move(audio_data2));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(session.is_connected());
+}
+
+TEST_F(OnDeviceModelServiceTest, AsrStreamTimestamps) {
+  auto model = LoadModel();
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  base::test::TestFuture<std::vector<mojom::SpeechRecognitionResultPtr>> future;
+  class TimestampResponder : public mojom::AsrStreamResponder {
+   public:
+    explicit TimestampResponder(
+        base::OnceCallback<void(std::vector<mojom::SpeechRecognitionResultPtr>)>
+            callback)
+        : callback_(std::move(callback)) {}
+    void OnResponse(
+        std::vector<mojom::SpeechRecognitionResultPtr> result) override {
+      if (callback_) {
+        std::move(callback_).Run(std::move(result));
+      }
+    }
+
+   private:
+    base::OnceCallback<void(std::vector<mojom::SpeechRecognitionResultPtr>)>
+        callback_;
+  };
+
+  TimestampResponder responder_impl(future.GetCallback());
+  mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote;
+  mojo::Receiver<mojom::AsrStreamResponder> receiver(
+      &responder_impl, responder_remote.InitWithNewPipeAndPassReceiver());
+
+  auto options = mojom::AsrStreamOptions::New();
+  options->sample_rate_hz = kDefaultAsrSampleRateHz;
+  mojo::Remote<mojom::AsrStreamInput> asr_input;
+  session->AsrStream(std::move(options),
+                     asr_input.BindNewPipeAndPassReceiver(),
+                     std::move(responder_remote));
+
+  auto audio_data = mojom::AudioData::New();
+  audio_data->sample_rate = kDefaultAsrSampleRateHz;
+  audio_data->channel_count = 1;
+  audio_data->frame_count = 1;
+  audio_data->data = {0};
+  asr_input->AddAudioChunk(std::move(audio_data));
+
+  auto results = future.Take();
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0]->transcript, fake_ml::kFakeAsrTranscript);
+  EXPECT_TRUE(results[0]->is_final);
+  // Expected audio start and end timestamps matching the fake ASR engine output
+  // (1.0s and 2.5s).
+  constexpr base::TimeDelta kExpectedStartTime =
+      base::Microseconds(fake_ml::kFakeAsrStartTimeMicros);
+  constexpr base::TimeDelta kExpectedEndTime =
+      base::Microseconds(fake_ml::kFakeAsrEndTimeMicros);
+  EXPECT_EQ(results[0]->audio_start_time, kExpectedStartTime);
+  EXPECT_EQ(results[0]->audio_end_time, kExpectedEndTime);
 }
 
 TEST_F(OnDeviceModelServiceTest, Responds) {
