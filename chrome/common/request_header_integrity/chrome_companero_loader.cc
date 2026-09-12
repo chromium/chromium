@@ -32,26 +32,23 @@ ChromeCompaneroLoader::ChromeCompaneroLoader()
                      base::BindRepeating(&ChromeCompaneroLoader::RefreshValue,
                                          base::Unretained(this))) {}
 
-ChromeCompaneroLoader::~ChromeCompaneroLoader() = default;
+ChromeCompaneroLoader::~ChromeCompaneroLoader() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void ChromeCompaneroLoader::SetMojoRemote(
     mojo::PendingRemote<mojom::ChromeCompanero> pending_remote) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kProcessType));
-  base::AutoLock lock(cache_lock_);
-  companero_remote_ =
-      mojo::SharedRemote<mojom::ChromeCompanero>(std::move(pending_remote));
-  RefreshValueLocked();
+  companero_remote_.Bind(std::move(pending_remote));
+  RefreshValue();
 }
 
 void ChromeCompaneroLoader::RefreshValue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kProcessType));
-  base::AutoLock lock(cache_lock_);
-  RefreshValueLocked();
-}
-
-void ChromeCompaneroLoader::RefreshValueLocked() {
   refresh_timer_.Reset();
   if (!companero_remote_.is_bound()) {
     return;
@@ -63,6 +60,7 @@ void ChromeCompaneroLoader::RefreshValueLocked() {
 
 void ChromeCompaneroLoader::OnValueReceived(
     network::mojom::HttpRequestHeaderKeyValuePairPtr result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result) {
     return;
   }

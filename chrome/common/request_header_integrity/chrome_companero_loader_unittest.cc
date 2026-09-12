@@ -23,12 +23,16 @@ class ChromeCompaneroLoaderTest : public testing::Test {
  protected:
   static void ResetLoaderForTesting() {
     auto& instance = ChromeCompaneroLoader::GetInstance();
-    base::AutoLock lock(instance.cache_lock_);
-    instance.cached_header_name_.clear();
-    instance.cached_value_.clear();
-    instance.cached_value_time_ = base::TimeTicks();
+    DCHECK_CALLED_ON_VALID_SEQUENCE(instance.sequence_checker_);
     instance.companero_remote_.reset();
     instance.refresh_timer_.Stop();
+    {
+      base::AutoLock lock(instance.cache_lock_);
+      instance.cached_header_name_.clear();
+      instance.cached_value_.clear();
+      instance.cached_value_time_ = base::TimeTicks();
+    }
+    DETACH_FROM_SEQUENCE(instance.sequence_checker_);
   }
 
   static void SetCacheForTesting(const std::string& name,
