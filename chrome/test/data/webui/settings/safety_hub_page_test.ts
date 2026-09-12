@@ -373,8 +373,8 @@ suite('SafetyHubPage', function() {
     assertTrue(relaunchConfirmationDialogElement.$.dialog.open);
 
     // Ensure the confirmation dialog shows a correct description.
-    const dialog = relaunchConfirmationDialogElement.shadowRoot!.querySelector(
-        'cr-dialog');
+    const dialog =
+        relaunchConfirmationDialogElement.shadowRoot.querySelector('cr-dialog');
     assertTrue(!!dialog);
     const description =
         dialog.shadowRoot.querySelector<HTMLSlotElement>('slot[name=body]');

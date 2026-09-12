@@ -9,9 +9,9 @@ import {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './relaunch_confirmation_dialog.html.js';
+import {getHtml} from './relaunch_confirmation_dialog.html.js';
 import {RestartType} from './relaunch_mixin.js';
 
 export interface RelaunchConfirmationDialogElement {
@@ -41,33 +41,29 @@ export interface RelaunchConfirmationDialogElement {
  * inherit from RelaunchMixin and invoke the member method
  * RelaunchMixin#performRestart where required.
  */
-export class RelaunchConfirmationDialogElement extends PolymerElement {
+export class RelaunchConfirmationDialogElement extends CrLitElement {
   static get is() {
     return 'relaunch-confirmation-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      relaunchConfirmationDialogDesc: String,
-
-      restartType: Object,
+      relaunchConfirmationDialogDesc: {type: String},
+      restartType: {type: Number},
 
       //  Boolean that defines if the confirmation dialog is opened for browser
       //  version update.
-      isVersionUpdate: {
-        type: Boolean,
-        value: false,
-      },
+      isVersionUpdate: {type: Boolean},
     };
   }
 
-  declare relaunchConfirmationDialogDesc: string|null;
-  declare restartType: RestartType;
-  declare isVersionUpdate: boolean;
+  accessor relaunchConfirmationDialogDesc: string|null = null;
+  accessor restartType: RestartType = RestartType.RESTART;
+  accessor isVersionUpdate: boolean = false;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -76,11 +72,11 @@ export class RelaunchConfirmationDialogElement extends PolymerElement {
             .getRelaunchConfirmationDialogDescription(this.isVersionUpdate);
   }
 
-  private onDialogCancel_() {
+  protected onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  private onDialogConfirm_() {
+  protected onConfirmClick_() {
     if (RestartType.RELAUNCH === this.restartType) {
       LifetimeBrowserProxyImpl.getInstance().relaunch();
     } else if (RestartType.RESTART === this.restartType) {

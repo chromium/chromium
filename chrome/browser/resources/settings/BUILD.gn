@@ -208,9 +208,7 @@ build_webui("build") {
     "site_settings/zoom_levels.ts",
   ]
 
-  if (!is_chromeos) {
-    web_component_files += [ "relaunch_confirmation_dialog.ts" ]
-  } else {
+  if (is_chromeos) {
     web_component_files += [ "site_settings/smart_card_readers_page.ts" ]
   }
 
@@ -453,6 +451,8 @@ build_webui("build") {
       "people_page/manage_profile.html.ts",
       "people_page/manage_profile.ts",
       "people_page/manage_profile_browser_proxy.ts",
+      "relaunch_confirmation_dialog.html.ts",
+      "relaunch_confirmation_dialog.ts",
       "system_page/system_page.html.ts",
       "system_page/system_page.ts",
       "system_page/system_page_browser_proxy.ts",
