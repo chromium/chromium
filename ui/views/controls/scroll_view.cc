@@ -711,11 +711,17 @@ void ScrollView::ClipHeightTo(int min_height, int max_height) {
 }
 
 int ScrollView::GetScrollBarLayoutWidth() const {
-  return vert_sb_->OverlapsContent() ? 0 : vert_sb_->GetThickness();
+  return (vertical_scroll_bar_mode_ != ScrollBarMode::kEnabled ||
+          vert_sb_->OverlapsContent())
+             ? 0
+             : vert_sb_->GetThickness();
 }
 
 int ScrollView::GetScrollBarLayoutHeight() const {
-  return horiz_sb_->OverlapsContent() ? 0 : horiz_sb_->GetThickness();
+  return (horizontal_scroll_bar_mode_ != ScrollBarMode::kEnabled ||
+          horiz_sb_->OverlapsContent())
+             ? 0
+             : horiz_sb_->GetThickness();
 }
 
 ScrollBar* ScrollView::SetHorizontalScrollBar(
