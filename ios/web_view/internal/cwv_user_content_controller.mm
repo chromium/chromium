@@ -70,6 +70,9 @@ NSDictionary* NSDictionaryFromDictValue(const base::DictValue& value) {
 // Updates the early page script associated with the BrowserState with the
 // content of _userScripts.
 - (void)updatePageScripts {
+  if (!_configuration.browserState) {
+    return;
+  }
   NSMutableString* joinedAllFramesScript = [[NSMutableString alloc] init];
   NSMutableString* joinedMainFrameScript = [[NSMutableString alloc] init];
   NSMutableString* joinedAllFramesDocEndScript = [[NSMutableString alloc] init];
@@ -102,6 +105,9 @@ NSDictionary* NSDictionaryFromDictValue(const base::DictValue& value) {
 
 - (void)addMessageHandler:(void (^)(NSDictionary* payload))handler
                forCommand:(NSString*)nsCommand {
+  if (!_configuration.browserState) {
+    return;
+  }
   DCHECK(handler);
   std::string command = base::SysNSStringToUTF8(nsCommand);
   WebViewMessageHandlerJavaScriptFeature::FromBrowserState(
@@ -113,6 +119,9 @@ NSDictionary* NSDictionaryFromDictValue(const base::DictValue& value) {
 }
 
 - (void)removeMessageHandlerForCommand:(NSString*)nsCommand {
+  if (!_configuration.browserState) {
+    return;
+  }
   std::string command = base::SysNSStringToUTF8(nsCommand);
   WebViewMessageHandlerJavaScriptFeature::FromBrowserState(
       _configuration.browserState)
@@ -120,6 +129,9 @@ NSDictionary* NSDictionaryFromDictValue(const base::DictValue& value) {
 }
 
 - (BOOL)isMessageHandlerRegisteredForCommand:(NSString*)nsCommand {
+  if (!_configuration.browserState) {
+    return NO;
+  }
   std::string command = base::SysNSStringToUTF8(nsCommand);
   return WebViewMessageHandlerJavaScriptFeature::FromBrowserState(
              _configuration.browserState)

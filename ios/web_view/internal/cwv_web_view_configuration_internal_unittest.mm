@@ -13,6 +13,8 @@
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/browser_state_keyed_service_factories.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
+#import "ios/web_view/public/cwv_user_content_controller.h"
+#import "ios/web_view/public/cwv_user_script.h"
 #import "ios/web_view/test/test_with_locale_and_resources.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -72,6 +74,31 @@ TEST_F(CWVWebViewConfigurationTest, ShutDownAllConfigurations) {
   EXPECT_FALSE(defaultConfiguration.browserState);
   EXPECT_FALSE(nonPersistentConfigurationA.browserState);
   EXPECT_FALSE(nonPersistentConfigurationB.browserState);
+}
+
+// Test CWVUserContentController handles operations after shutdown safely.
+TEST_F(CWVWebViewConfigurationTest, UserContentControllerShutDown) {
+  std::unique_ptr<WebViewBrowserState> browser_state =
+      std::make_unique<WebViewBrowserState>(/*off_the_record=*/false);
+  CWVWebViewConfiguration* configuration = [[CWVWebViewConfiguration alloc]
+      initWithBrowserState:std::move(browser_state)];
+  CWVUserContentController* user_content_controller =
+      configuration.userContentController;
+  [configuration shutDown];
+  EXPECT_FALSE(configuration.browserState);
+
+  // Verifies these do not crash when browserState is null or after shutdown.
+  [user_content_controller
+      addMessageHandler:^(NSDictionary* payload) {
+      }
+             forCommand:@"testCommand"];
+  EXPECT_FALSE([user_content_controller
+      isMessageHandlerRegisteredForCommand:@"testCommand"]);
+  [user_content_controller removeMessageHandlerForCommand:@"testCommand"];
+  CWVUserScript* user_script =
+      [[CWVUserScript alloc] initWithSource:@"document.title = 'test';"];
+  [user_content_controller addUserScript:user_script];
+  [user_content_controller removeAllUserScripts];
 }
 
 }  // namespace ios_web_view
