@@ -23,10 +23,7 @@ template("mac_toolchain") {
       current_os = "mac"
       if (target_os == "ios") {
         # Use LLD for the host part of a chrome/ios build.
-        # TODO(crbug.com/559560868): Xcode 27 adds arm64e.x1 to MacOSX.sdk .tbd
-        # files, which ld64.lld cannot parse. Disable lld for host tools on
-        # Xcode 27+.
-        use_lld = xcode_version_int < 2700
+        use_lld = true
 
         # Override `is_component_build` for the host toolchain.
         # See https://crbug.com/gn/286 for details why this is

@@ -26,10 +26,6 @@ if (is_apple) {
   import("//build/config/apple/symbols.gni")
 }
 
-if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
-}
-
 declare_args() {
   if (!is_win && !is_mac && !is_ios) {
     # Link using a non-lld linker (e.g., mold or wild). See https://crbug.com/40208899
@@ -77,18 +73,12 @@ declare_args() {
   # - On zos.
   # - When `experimental_linker_path` is set.
   # - On iOS for arm64e (not yet supported by lld).
-  # - On iOS for Xcode 27+ when target_environment != simulator (arm64e.x1
-  #   targets in device/catalyst SDK .tbd files are not supported by ld64.lld;
-  #   see crbug.com/559560868).
   #
   # On ARM Macs, set to false to use the Apple linker instead of LLD.
   # This is currently opt-in while we decide the rollout plan and scope.
   # TODO(crbug.com/502338406): See https://crbug.com/502338406 for benchmarking results.
   use_lld = is_clang && current_os != "zos" && linker_path == "" &&
-            !(is_ios &&
-              (current_cpu == "arm64e" || (target_environment != "simulator" &&
-                                           xcode_version_int >= 2700))) &&
-            !use_mold
+            !(is_ios && current_cpu == "arm64e") && !use_mold
 }
 
 declare_args() {
