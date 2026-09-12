@@ -4,10 +4,10 @@
 
 package org.chromium.ui.dragdrop;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.CACHE_METHOD_NAME;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.ON_DRAG_END_METHOD_NAME;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.SET_INTERVAL_METHOD_NAME;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.URI_PARAM;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,13 +30,13 @@ public class DropDataProviderUtils {
      */
     static boolean clearImageCache(boolean imageIsInUse) {
         Bundle bundle = new Bundle();
-        bundle.putBoolean("imageIsInUse", imageIsInUse);
+        bundle.putBoolean(DropDataProviderImpl.IMAGE_USAGE_PARAM, imageIsInUse);
         try {
             ContextUtils.getApplicationContext()
                     .getContentResolver()
                     .call(DropDataProviderImpl.FULL_AUTH_URI, ON_DRAG_END_METHOD_NAME, "", bundle);
             return true;
-        } catch (NullPointerException | IllegalArgumentException exception) {
+        } catch (NullPointerException | IllegalArgumentException | SecurityException exception) {
             return false;
         }
     }
@@ -50,7 +50,7 @@ public class DropDataProviderUtils {
                     .getContentResolver()
                     .call(DropDataProviderImpl.FULL_AUTH_URI, SET_INTERVAL_METHOD_NAME, "", bundle);
             return true;
-        } catch (NullPointerException | IllegalArgumentException exception) {
+        } catch (NullPointerException | IllegalArgumentException | SecurityException exception) {
             return false;
         }
     }
@@ -60,11 +60,15 @@ public class DropDataProviderUtils {
      * call the content provider.
      */
     static @Nullable Uri cacheImageData(DropDataAndroid dropData) {
+        if (dropData.imageContent == null
+                || dropData.imageContentExtension == null
+                || dropData.imageFilename == null) {
+            return null;
+        }
         Bundle bundle = new Bundle();
-        bundle.putSerializable(DropDataProviderImpl.BYTES_PARAM, dropData.imageContent);
+        bundle.putByteArray(DropDataProviderImpl.BYTES_PARAM, dropData.imageContent);
         bundle.putString(
                 DropDataProviderImpl.IMAGE_CONTENT_EXTENSION_PARAM, dropData.imageContentExtension);
-
         bundle.putString(DropDataProviderImpl.IMAGE_FILE_PARAM, dropData.imageFilename);
         try {
             Bundle cachedUriBundle =
@@ -75,9 +79,11 @@ public class DropDataProviderUtils {
                                     CACHE_METHOD_NAME,
                                     "",
                                     bundle);
-            assumeNonNull(cachedUriBundle);
-            return cachedUriBundle.getParcelable("uri");
-        } catch (NullPointerException | IllegalArgumentException exception) {
+            if (cachedUriBundle == null) {
+                return null;
+            }
+            return cachedUriBundle.getParcelable(URI_PARAM);
+        } catch (NullPointerException | IllegalArgumentException | SecurityException exception) {
             return null;
         }
     }

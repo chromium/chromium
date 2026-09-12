@@ -12,10 +12,12 @@ import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
+import android.os.Process;
 import android.os.SystemClock;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
@@ -50,6 +52,7 @@ public class DropDataProviderImpl {
     public static final String BYTES_PARAM = "bytes";
     public static final String IMAGE_CONTENT_EXTENSION_PARAM = "imageContentExtension";
     public static final String IMAGE_FILE_PARAM = "imageFilename";
+    public static final String URI_PARAM = "uri";
     public static final int DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS = 60_000;
 
     /**
@@ -251,9 +254,12 @@ public class DropDataProviderImpl {
         }
 
         int idx1 = mimeType.indexOf('/');
+        int idx2 = mimeTypeFilter.indexOf('/');
+        if (idx1 == -1 || idx2 == -1) {
+            return false;
+        }
         String type = mimeType.substring(0, idx1);
         String subtype = mimeType.substring(idx1 + 1);
-        int idx2 = mimeTypeFilter.indexOf('/');
         String typeFilter = mimeTypeFilter.substring(0, idx2);
         String subtypeFilter = mimeTypeFilter.substring(idx2 + 1);
         if (!typeFilter.equals("*") && !typeFilter.equals(type)) {
@@ -357,35 +363,49 @@ public class DropDataProviderImpl {
 
     /**
      * @see ContentProvider#call(String, String, Bundle)
+     *     <p>Note: Although ContentProvider#call specifies `method` as @NonNull, it is
+     *     marked @Nullable here to defensively handle crafted IPC calls. A malicious app bypassing
+     *     the ContentResolver could send a null method via Binder, which would otherwise cause a
+     *     NullPointerException when switching on the method name.
      */
-    public @Nullable Bundle call(String method, @Nullable String arg, @Nullable Bundle extras) {
+    public @Nullable Bundle call(
+            @Nullable String method, @Nullable String arg, @Nullable Bundle extras) {
+        if (Binder.getCallingUid() != Process.myUid()) {
+            throw new SecurityException("Calling UID does not match process UID.");
+        }
+        if (method == null || extras == null) {
+            return null;
+        }
         switch (method) {
             case CACHE_METHOD_NAME:
-                assumeNonNull(extras);
-                byte[] imageBytes = (byte[]) extras.getSerializable(BYTES_PARAM);
+                byte[] imageBytes = extras.getByteArray(BYTES_PARAM);
                 String encodingFormat = extras.getString(IMAGE_CONTENT_EXTENSION_PARAM);
                 String filename = extras.getString(IMAGE_FILE_PARAM);
-                assert imageBytes != null;
-                assert encodingFormat != null;
-                assert filename != null;
+                if (imageBytes == null || encodingFormat == null || filename == null) {
+                    return null;
+                }
                 Uri uri = cache(imageBytes, encodingFormat, filename);
                 Bundle bundleToReturn = new Bundle();
-                bundleToReturn.putParcelable("uri", uri);
+                bundleToReturn.putParcelable(URI_PARAM, uri);
                 return bundleToReturn;
             case SET_INTERVAL_METHOD_NAME:
-                assumeNonNull(extras);
                 setClearCachedDataIntervalMs(
                         extras.getInt(
                                 CLEAR_CACHE_PARAM,
                                 DropDataProviderImpl.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS));
                 break;
             case ON_DRAG_END_METHOD_NAME:
-                assumeNonNull(extras);
                 onDragEnd(extras.getBoolean(IMAGE_USAGE_PARAM));
                 break;
         }
 
         return null;
+    }
+
+    int getClearCachedDataIntervalMsForTesting() {
+        synchronized (LOCK) {
+            return mClearCachedDataIntervalMs;
+        }
     }
 
     byte @Nullable [] getImageBytesForTesting() {

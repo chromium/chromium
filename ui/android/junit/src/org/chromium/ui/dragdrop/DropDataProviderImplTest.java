@@ -6,8 +6,22 @@ package org.chromium.ui.dragdrop;
 
 import static org.robolectric.Shadows.shadowOf;
 
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.BYTES_PARAM;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.CACHE_METHOD_NAME;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.CLEAR_CACHE_PARAM;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.IMAGE_CONTENT_EXTENSION_PARAM;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.IMAGE_FILE_PARAM;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.IMAGE_USAGE_PARAM;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.ON_DRAG_END_METHOD_NAME;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.SET_INTERVAL_METHOD_NAME;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.URI_PARAM;
+
+import android.content.Context;
+import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Process;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 
@@ -18,8 +32,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.shadows.ShadowBinder;
+import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -48,11 +65,21 @@ public class DropDataProviderImplTest {
         shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("jpg", "image/jpeg");
         shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("gif", "image/gif");
         shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("png", "image/png");
+
+        Context context = ContextUtils.getApplicationContext();
+        DropDataContentProvider provider = new DropDataContentProvider();
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = DropDataProviderImpl.FULL_AUTH_URI.getAuthority();
+        provider.attachInfo(context, providerInfo);
+        provider.setDropDataProviderImpl(mDropDataProviderImpl);
+        ShadowContentResolver.registerProviderInternal(
+                DropDataProviderImpl.FULL_AUTH_URI.getAuthority(), provider);
     }
 
     @After
     public void tearDown() {
         mDropDataProviderImpl.clearCache();
+        ShadowBinder.reset();
     }
 
     @Test
@@ -91,6 +118,12 @@ public class DropDataProviderImplTest {
 
         res = mDropDataProviderImpl.getStreamTypes(uri, "*/gif");
         Assert.assertNull("res should be null when uri does not match the filter", res);
+
+        res = mDropDataProviderImpl.getStreamTypes(uri, "invalid");
+        Assert.assertNull("res should be null for filter without slash", res);
+
+        res = mDropDataProviderImpl.getStreamTypes(uri, "*");
+        Assert.assertNull("res should be null for wildcard without slash", res);
     }
 
     @Test
@@ -216,5 +249,167 @@ public class DropDataProviderImplTest {
         final String errorMsg = "<" + histogram + "> is not recorded properly.";
         Assert.assertEquals(
                 errorMsg, expectedCnt, RecordHistogram.getHistogramTotalCountForTesting(histogram));
+    }
+
+    @Test
+    @SmallTest
+    public void testCall_mismatchedCallingUid() {
+        ShadowBinder.setCallingUid(Process.myUid() + 1);
+
+        Bundle cacheBundle = new Bundle();
+        cacheBundle.putByteArray(BYTES_PARAM, IMAGE_DATA_A);
+        cacheBundle.putString(IMAGE_CONTENT_EXTENSION_PARAM, EXTENSION_A);
+        cacheBundle.putString(IMAGE_FILE_PARAM, IMAGE_FILENAME_A);
+
+        Assert.assertThrows(
+                SecurityException.class,
+                () -> mDropDataProviderImpl.call(CACHE_METHOD_NAME, null, cacheBundle));
+
+        Bundle intervalBundle = new Bundle();
+        intervalBundle.putInt(CLEAR_CACHE_PARAM, CLEAR_CACHED_DATA_INTERVAL_MS);
+        Assert.assertThrows(
+                SecurityException.class,
+                () -> mDropDataProviderImpl.call(SET_INTERVAL_METHOD_NAME, null, intervalBundle));
+
+        Bundle dragEndBundle = new Bundle();
+        dragEndBundle.putBoolean(IMAGE_USAGE_PARAM, false);
+        Assert.assertThrows(
+                SecurityException.class,
+                () -> mDropDataProviderImpl.call(ON_DRAG_END_METHOD_NAME, null, dragEndBundle));
+    }
+
+    @Test
+    @SmallTest
+    public void testCall_cache_valid() {
+        Bundle bundle = new Bundle();
+        bundle.putByteArray(BYTES_PARAM, IMAGE_DATA_A);
+        bundle.putString(IMAGE_CONTENT_EXTENSION_PARAM, EXTENSION_A);
+        bundle.putString(IMAGE_FILE_PARAM, IMAGE_FILENAME_A);
+
+        Bundle result = mDropDataProviderImpl.call(CACHE_METHOD_NAME, null, bundle);
+        Assert.assertNotNull("Result bundle should not be null.", result);
+        Uri uri = result.getParcelable(URI_PARAM);
+        Assert.assertNotNull("URI should not be null.", uri);
+        Assert.assertEquals(
+                "MIME type should match.", "image/jpeg", mDropDataProviderImpl.getType(uri));
+        Assert.assertArrayEquals(
+                "Image bytes should match.",
+                IMAGE_DATA_A,
+                mDropDataProviderImpl.getImageBytesForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testCall_setClearCachedDataIntervalMs_valid() throws FileNotFoundException {
+        Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
+        Bundle bundle = new Bundle();
+        bundle.putInt(CLEAR_CACHE_PARAM, CLEAR_CACHED_DATA_INTERVAL_MS);
+
+        mDropDataProviderImpl.call(SET_INTERVAL_METHOD_NAME, null, bundle);
+        Assert.assertEquals(
+                "Clear cache interval should be updated.",
+                CLEAR_CACHED_DATA_INTERVAL_MS,
+                mDropDataProviderImpl.getClearCachedDataIntervalMsForTesting());
+
+        mDropDataProviderImpl.onDragEnd(true);
+
+        ShadowLooper.idleMainLooper(CLEAR_CACHED_DATA_INTERVAL_MS - 1, TimeUnit.MILLISECONDS);
+        Assert.assertNotNull(
+                "Image bytes should not be null before interval elapsed.",
+                mDropDataProviderImpl.getImageBytesForTesting());
+
+        ShadowLooper.idleMainLooper(1, TimeUnit.MILLISECONDS);
+        Assert.assertNull(
+                "Image bytes should be null after interval elapsed.",
+                mDropDataProviderImpl.getImageBytesForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testCall_onDragEnd_valid() {
+        mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
+        Assert.assertNotNull(
+                "Image bytes should not be null before drag end.",
+                mDropDataProviderImpl.getImageBytesForTesting());
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(IMAGE_USAGE_PARAM, false);
+
+        mDropDataProviderImpl.call(ON_DRAG_END_METHOD_NAME, null, bundle);
+        Assert.assertNull(
+                "Image bytes should be null after immediate drag end.",
+                mDropDataProviderImpl.getImageBytesForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testCall_nullOrInvalidParameters() {
+        Assert.assertNull(
+                "Result should be null for null method.",
+                mDropDataProviderImpl.call(null, null, new Bundle()));
+        Assert.assertNull(
+                "Result should be null for unknown method.",
+                mDropDataProviderImpl.call("unknownMethod", null, new Bundle()));
+        Assert.assertNull(
+                "Result should be null for null extras.",
+                mDropDataProviderImpl.call(CACHE_METHOD_NAME, null, null));
+        Assert.assertNull(
+                "Result should be null for null extras.",
+                mDropDataProviderImpl.call(SET_INTERVAL_METHOD_NAME, null, null));
+        Assert.assertNull(
+                "Result should be null for null extras.",
+                mDropDataProviderImpl.call(ON_DRAG_END_METHOD_NAME, null, null));
+
+        Bundle bundleNoBytes = new Bundle();
+        bundleNoBytes.putString(IMAGE_CONTENT_EXTENSION_PARAM, EXTENSION_A);
+        bundleNoBytes.putString(IMAGE_FILE_PARAM, IMAGE_FILENAME_A);
+        Assert.assertNull(
+                "Result should be null when byte array is missing.",
+                mDropDataProviderImpl.call(CACHE_METHOD_NAME, null, bundleNoBytes));
+
+        Bundle bundleNoExtension = new Bundle();
+        bundleNoExtension.putByteArray(BYTES_PARAM, IMAGE_DATA_A);
+        bundleNoExtension.putString(IMAGE_FILE_PARAM, IMAGE_FILENAME_A);
+        Assert.assertNull(
+                "Result should be null when extension is missing.",
+                mDropDataProviderImpl.call(CACHE_METHOD_NAME, null, bundleNoExtension));
+
+        Bundle bundleNoFilename = new Bundle();
+        bundleNoFilename.putByteArray(BYTES_PARAM, IMAGE_DATA_A);
+        bundleNoFilename.putString(IMAGE_CONTENT_EXTENSION_PARAM, EXTENSION_A);
+        Assert.assertNull(
+                "Result should be null when filename is missing.",
+                mDropDataProviderImpl.call(CACHE_METHOD_NAME, null, bundleNoFilename));
+    }
+
+    @Test
+    @SmallTest
+    public void testDropDataProviderUtils_cacheAndClear() {
+        DropDataAndroid dropData =
+                DropDataAndroid.create(
+                        null, null, IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A, null, null);
+        Uri uri = DropDataProviderUtils.cacheImageData(dropData);
+        Assert.assertNotNull("Cached URI should not be null.", uri);
+        Assert.assertEquals(
+                "MIME type should match.", "image/jpeg", mDropDataProviderImpl.getType(uri));
+
+        boolean setIntervalResult =
+                DropDataProviderUtils.setClearCachedDataIntervalMs(CLEAR_CACHED_DATA_INTERVAL_MS);
+        Assert.assertTrue("setClearCachedDataIntervalMs should succeed.", setIntervalResult);
+        Assert.assertEquals(
+                "Interval should match.",
+                CLEAR_CACHED_DATA_INTERVAL_MS,
+                mDropDataProviderImpl.getClearCachedDataIntervalMsForTesting());
+
+        boolean clearResult = DropDataProviderUtils.clearImageCache(false);
+        Assert.assertTrue("clearImageCache should succeed.", clearResult);
+        Assert.assertNull(
+                "Image bytes should be cleared.", mDropDataProviderImpl.getImageBytesForTesting());
+
+        DropDataAndroid invalidDropData =
+                DropDataAndroid.create(null, null, null, null, null, null, null);
+        Assert.assertNull(
+                "cacheImageData should return null for invalid drop data.",
+                DropDataProviderUtils.cacheImageData(invalidDropData));
     }
 }
