@@ -109,11 +109,9 @@ public class TabSearchOverlayViewBinder {
         int width =
                 view.panel.getResources().getDimensionPixelSize(R.dimen.tab_search_overlay_width);
         view.panel.setTranslationX(-width);
-        view.panel.setAlpha(1f);
         view.panel
                 .animate()
                 .translationX(0)
-                .alpha(1f)
                 .setDuration(TRANSITION_DURATION_MS)
                 .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                 .setListener(null)
@@ -129,7 +127,6 @@ public class TabSearchOverlayViewBinder {
         view.panel
                 .animate()
                 .translationX(-width)
-                .alpha(0f)
                 .setDuration(TRANSITION_DURATION_MS)
                 .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                 .setListener(
@@ -145,7 +142,6 @@ public class TabSearchOverlayViewBinder {
                             public void onAnimationEnd(Animator animation) {
                                 if (!mCancelled) {
                                     view.panelContainer.setVisibility(View.GONE);
-                                    view.panel.setAlpha(1f);
                                     Runnable onHideFinished =
                                             model.get(TabSearchOverlayProperties.ON_HIDE_FINISHED);
                                     if (onHideFinished != null) {

@@ -641,15 +641,7 @@ class AutocompleteMediator
     }
 
     private void installAutocompleteObservers() {
-        if (mAutocomplete == null) return;
-        // Hub and Tab Search overlays can be invoked in multi-window / split-screen before the
-        // target window acquires system focus. Allow attaching observers so suggestions can
-        // populate.
-        boolean isHubOrTabSearch =
-                mAutocompleteInput != null
-                        && PageClassificationUtils.isHubOrTabSearch(
-                                mAutocompleteInput.getPageClassification());
-        if (!mActivityWindowFocused && !isHubOrTabSearch) return;
+        if (mAutocomplete == null || !mActivityWindowFocused) return;
         mAutocomplete.addOnSuggestionsReceivedListener(this);
     }
 
@@ -2225,17 +2217,14 @@ class AutocompleteMediator
             // dropdown container persists when search activity is dismissed.
             // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
             // exiting hub search that dismisses the URL bar and suggestions list together.
-            boolean isHubOrTabSearch =
+            showSuggestionsContainer |=
                     PageClassificationUtils.isHubOrTabSearch(
                             mAutocompleteInput.getPageClassification());
-            showSuggestionsContainer |= isHubOrTabSearch;
 
             if (isTopResumedActivity) {
                 installAutocompleteObservers();
                 onInputChanged();
-            } else if (!isHubOrTabSearch) {
-                // Hub and Tab Search manage their own dismissal lifecycle and retain observers
-                // and requests when inactive in multi-window mode or across window transitions.
+            } else {
                 dismissDeleteDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
                 stopAutocomplete(AutocompleteStopReason.CLOBBERED);
                 removeAutocompleteObservers();
