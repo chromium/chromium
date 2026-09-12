@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -80,6 +81,10 @@ omnibox::ChromeAimEntryPoint AimEntryPointFromInvocationSource(
     if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAskGAboutThisPage)) {
       return omnibox::DESKTOP_CHROME_COBROWSE_OMNIBOX_CONTEXTUAL_SUGGESTION;
     }
+    return omnibox::DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT;
+  }
+  if (invocation_source ==
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery) {
     return omnibox::DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT;
   }
   return omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
@@ -1055,10 +1060,26 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
   lens::AppendLensOverlaySidePanelParams(additional_search_query_params,
                                          gen204_id_, has_text, has_image);
 
-  request_info->additional_params = additional_search_query_params;
   request_info->invocation_source = invocation_source;
   request_info->aim_entry_point =
       AimEntryPointFromInvocationSource(invocation_source);
+
+  // Extract and preserve any explicit AIM entry point from the query parameters
+  // for Omnibox queries (e.g. from page classification like SRP or NTP).
+  if (lens::IsOmniboxInvocationSource(invocation_source)) {
+    if (auto it = additional_search_query_params.find("aep");
+        it != additional_search_query_params.end()) {
+      int aep_val;
+      if (base::StringToInt(it->second, &aep_val) &&
+          omnibox::ChromeAimEntryPoint_IsValid(aep_val)) {
+        request_info->aim_entry_point =
+            static_cast<omnibox::ChromeAimEntryPoint>(aep_val);
+      }
+      additional_search_query_params.erase(it);
+    }
+  }
+
+  request_info->additional_params = additional_search_query_params;
 
   if (region) {
     auto client_logs =
