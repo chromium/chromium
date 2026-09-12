@@ -22,7 +22,8 @@ SandboxStatusService::~SandboxStatusService() = default;
 
 void SandboxStatusService::GetSandboxStatus(GetSandboxStatusCallback callback) {
   std::move(callback).Run(
-      sandbox::policy::SandboxLinux::GetInstance()->GetStatus());
+      sandbox::policy::SandboxLinux::GetInstance()->GetStatus(),
+      sandbox::policy::SandboxLinux::GetInstance()->seccomp_bpf_started());
 }
 
 }  // namespace content

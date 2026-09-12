@@ -24,6 +24,7 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/buildflags.h"
@@ -75,11 +76,18 @@ class UtilityProcessSandboxBrowserTest
     done_closure_ =
         base::BindOnce(&UtilityProcessSandboxBrowserTest::DoneRunning,
                        base::Unretained(this), run_loop.QuitClosure());
+    std::string metrics_name = kTestProcessName;
+    if (GetParam() == Sandbox::kOnDeviceModelExecution) {
+      // Matching the production utility process subtype ensures
+      // `on_device_model::PreSandboxInit` is called on all platforms.
+      metrics_name = on_device_model::mojom::OnDeviceModelService::Name_;
+    }
+
     EXPECT_TRUE(UtilityProcessHost::Start(
         UtilityProcessHost::Options()
             .WithSandboxType(GetParam())
             .WithName(u"SandboxTestProcess")
-            .WithMetricsName(kTestProcessName)
+            .WithMetricsName(metrics_name)
             .WithBoundReceiverOnChildProcessForTesting(
                 service_.BindNewPipeAndPassReceiver())
             .Pass()));
@@ -92,11 +100,20 @@ class UtilityProcessSandboxBrowserTest
   }
 
  private:
-  void OnGotSandboxStatus(int32_t sandbox_status) {
+  void OnGotSandboxStatus(int32_t sandbox_status, bool seccomp_bpf_started) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     // Aside from kNoSandbox, every utility process launched explicitly with a
     // sandbox type should always end up with a sandbox.
+    //
+    // Note: Sandbox::kOnDeviceModelExecution is currently skipped because
+    // background driver threads created during PreSandboxInit() prevent
+    // Seccomp-BPF from starting (crbug.com/499278708).
+    if (GetParam() != Sandbox::kNoSandbox &&
+        GetParam() != Sandbox::kOnDeviceModelExecution) {
+      EXPECT_TRUE(seccomp_bpf_started);
+    }
+
     switch (GetParam()) {
       case Sandbox::kNoSandbox:
         EXPECT_EQ(sandbox_status, 0);
