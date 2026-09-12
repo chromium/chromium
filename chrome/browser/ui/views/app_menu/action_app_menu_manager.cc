@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
+#include "chrome/browser/ui/views/app_menu/profile_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/send_tab_to_self_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/tab_group_dynamic_menu.h"
@@ -277,6 +278,15 @@ class AppMenuBuilder {
     return *this;
   }
 
+  // Adds a dynamic section directly into the current parent item via callback.
+  AppMenuBuilder& AddDynamicSection(
+      base::FunctionRef<void(actions::BaseAction*)> build_section) {
+    if (parent_) {
+      build_section(parent_);
+    }
+    return *this;
+  }
+
  private:
   raw_ptr<actions::BaseAction> parent_;
   std::optional<ui::ColorId> bg_color_;
@@ -385,8 +395,10 @@ ActionAppMenuManager::ActionAppMenuManager(
           std::make_unique<BookmarksDynamicMenu>(browser_window_interface)),
       tab_groups_menu_(
           std::make_unique<TabGroupDynamicMenu>(browser_window_interface)),
-      send_tab_to_self_menu_(std::make_unique<SendTabToSelfDynamicMenu>(
-          browser_window_interface)) {}
+      send_tab_to_self_menu_(
+          std::make_unique<SendTabToSelfDynamicMenu>(browser_window_interface)),
+      profile_menu_(
+          std::make_unique<ProfileDynamicMenu>(browser_window_interface)) {}
 
 ActionAppMenuManager::~ActionAppMenuManager() = default;
 
@@ -462,13 +474,15 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
         std::u16string profile_name = GetProfileName(profile);
         section.AddSubmenu(
             kActionProfileSubmenu,
-            [profile](AppMenuBuilder& sub) {
+            [this, profile](AppMenuBuilder& sub) {
               sub.AddAction(kActionManageGoogleAccount)
                   .AddAction(kActionCustomizeChrome)
                   .AddAction(kActionCloseProfile, /*type=*/std::nullopt,
                              l10n_util::GetPluralStringFUTF16(
                                  IDS_CLOSE_PROFILE, CountBrowsersFor(profile)))
-                  .AddDivider()
+                  .AddDynamicSection([this](actions::BaseAction* parent) {
+                    profile_menu_->BuildOtherProfiles(parent);
+                  })
                   .AddAction(kActionAddNewProfile)
                   .AddAction(kActionOpenGuestProfile)
                   .AddAction(kActionManageChromeProfiles);

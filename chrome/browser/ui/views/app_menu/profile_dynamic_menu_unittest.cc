@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -213,4 +214,82 @@ TEST_F(ProfileDynamicMenuTest, BuildProfileActions_MultipleProfiles) {
   // With multiple profiles managed by ProfileManager, Other Profiles section
   // should have header, profile entry, and separator.
   EXPECT_GT(parent_item->GetChildren().children().size(), 0u);
+}
+
+TEST_F(ProfileDynamicMenuTest, BuildOtherProfiles_MultipleProfiles) {
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+
+  TestingProfile* profile1 = profile_manager.CreateTestingProfile("Profile 1");
+  profile_manager.CreateTestingProfile("Profile 2");
+
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(profile1));
+
+  ProfileDynamicMenu menu(&mock_window_interface_);
+  auto parent_item = actions::ActionItem::Builder().Build();
+
+  menu.BuildOtherProfiles(parent_item.get());
+
+  const auto& children = parent_item->GetChildren().children();
+  ASSERT_EQ(children.size(), 4u);
+  EXPECT_EQ(children[0]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kDivider);
+  EXPECT_EQ(children[1]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kHeader);
+  EXPECT_EQ(children[1]->GetActionItem()->GetText(),
+            l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
+  EXPECT_EQ(children[2]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kRow);
+  EXPECT_EQ(children[2]->GetActionItem()->GetText(), u"Profile 2");
+  EXPECT_EQ(children[3]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kDivider);
+}
+
+TEST_F(ProfileDynamicMenuTest, BuildOtherProfiles_SingleProfile) {
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+
+  TestingProfile* profile1 = profile_manager.CreateTestingProfile("Profile 1");
+
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(profile1));
+
+  ProfileDynamicMenu menu(&mock_window_interface_);
+  auto parent_item = actions::ActionItem::Builder().Build();
+
+  menu.BuildOtherProfiles(parent_item.get());
+
+  // With a single profile, divider and header are present, but no entries and
+  // no trailing separator.
+  const auto& children = parent_item->GetChildren().children();
+  ASSERT_EQ(children.size(), 2u);
+  EXPECT_EQ(children[0]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kDivider);
+  EXPECT_EQ(children[1]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kHeader);
+  EXPECT_EQ(children[1]->GetActionItem()->GetText(),
+            l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
+}
+
+TEST_F(ProfileDynamicMenuTest, BuildOtherProfiles_GuestProfile) {
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
+
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(guest_profile.get()));
+
+  ProfileDynamicMenu menu(&mock_window_interface_);
+  auto parent_item = actions::ActionItem::Builder().Build();
+
+  menu.BuildOtherProfiles(parent_item.get());
+
+  EXPECT_TRUE(parent_item->GetChildren().children().empty());
 }

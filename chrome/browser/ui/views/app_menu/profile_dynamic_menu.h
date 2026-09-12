@@ -28,6 +28,7 @@ class ProfileDynamicMenu {
   }
 
   void BuildProfileActions(actions::BaseAction* parent_item);
+  void BuildOtherProfiles(actions::BaseAction* parent_item);
 
  private:
   bool BuildSyncSection(actions::BaseAction* parent_item, Profile* profile);

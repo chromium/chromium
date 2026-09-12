@@ -130,6 +130,17 @@ void ProfileDynamicMenu::BuildProfileActions(actions::BaseAction* parent_item) {
   }
 
   // 2. Other Profiles (omitted for guest & incognito).
+  BuildOtherProfiles(parent_item);
+}
+
+void ProfileDynamicMenu::BuildOtherProfiles(actions::BaseAction* parent_item) {
+  if (!parent_item || !browser_window_interface_) {
+    return;
+  }
+  Profile* profile = browser_window_interface_->GetProfile();
+  if (!profile) {
+    return;
+  }
   const ui::ColorProvider* color_provider = GetColorProvider();
   BuildOtherProfilesSection(parent_item, profile, color_provider);
 }
@@ -365,7 +376,7 @@ void ProfileDynamicMenu::BuildOtherProfilesSection(
 
         auto action_item = std::move(builder).Build();
         if (has_ai_ring && !display_name.empty()) {
-          action_item->SetText(l10n_util::GetStringFUTF16(
+          action_item->SetAccessibleName(l10n_util::GetStringFUTF16(
               IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, display_name));
         }
         parent_item->AddChild(std::move(action_item));

@@ -10,8 +10,11 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -89,12 +92,23 @@ TEST_F(ActionAppMenuManagerTest, BlockActionsGuestSessionExcludesIncognito) {
 // Profile submenu is disabled for ChromeOS
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ProfileSubmenu DISABLED_ProfileSubmenu
+#define MAYBE_ProfileSubmenuSingleProfile DISABLED_ProfileSubmenuSingleProfile
 #else
 #define MAYBE_ProfileSubmenu ProfileSubmenu
+#define MAYBE_ProfileSubmenuSingleProfile ProfileSubmenuSingleProfile
 #endif
 TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+
+  TestingProfile* profile1 = profile_manager.CreateTestingProfile("Profile 1");
+  profile_manager.CreateTestingProfile("Profile 2");
+
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(profile1));
+
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_.get());
+      IdentityManagerFactory::GetForProfile(profile1);
   signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
                                       signin::ConsentLevel::kSignin);
 
@@ -122,9 +136,10 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
                 ActionAppMenuManager::kDisplayTypeKey),
             ActionAppMenuManager::DisplayType::kRow);
 
-  // It should contain the primary actions, divider, and footer actions.
+  // It should contain primary actions, divider, header, other profiles,
+  // divider, and footer actions.
   const auto& children = profile_submenu->GetChildren().children();
-  ASSERT_EQ(children.size(), 7u);
+  ASSERT_EQ(children.size(), 10u);
   EXPECT_EQ(children[0]->GetActionItem()->GetActionId(),
             kActionManageGoogleAccount);
   EXPECT_EQ(children[0]->GetActionItem()->GetProperty(
@@ -145,20 +160,84 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
   EXPECT_EQ(children[3]->GetActionItem()->GetProperty(
                 ActionAppMenuManager::kDisplayTypeKey),
             ActionAppMenuManager::DisplayType::kDivider);
-  EXPECT_EQ(children[4]->GetActionItem()->GetActionId(), kActionAddNewProfile);
   EXPECT_EQ(children[4]->GetActionItem()->GetProperty(
                 ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kRow);
-  EXPECT_EQ(children[5]->GetActionItem()->GetActionId(),
-            kActionOpenGuestProfile);
+            ActionAppMenuManager::DisplayType::kHeader);
+  EXPECT_EQ(children[4]->GetActionItem()->GetText(),
+            l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
   EXPECT_EQ(children[5]->GetActionItem()->GetProperty(
                 ActionAppMenuManager::kDisplayTypeKey),
             ActionAppMenuManager::DisplayType::kRow);
-  EXPECT_EQ(children[6]->GetActionItem()->GetActionId(),
-            kActionManageChromeProfiles);
+  EXPECT_EQ(children[5]->GetActionItem()->GetText(), u"Profile 2");
   EXPECT_EQ(children[6]->GetActionItem()->GetProperty(
                 ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kDivider);
+  EXPECT_EQ(children[7]->GetActionItem()->GetActionId(), kActionAddNewProfile);
+  EXPECT_EQ(children[7]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
             ActionAppMenuManager::DisplayType::kRow);
+  EXPECT_EQ(children[8]->GetActionItem()->GetActionId(),
+            kActionOpenGuestProfile);
+  EXPECT_EQ(children[8]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kRow);
+  EXPECT_EQ(children[9]->GetActionItem()->GetActionId(),
+            kActionManageChromeProfiles);
+  EXPECT_EQ(children[9]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kRow);
+}
+
+TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenuSingleProfile) {
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+
+  TestingProfile* profile1 = profile_manager.CreateTestingProfile("Profile 1");
+
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(profile1));
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  actions::ActionItem* your_chrome_section =
+      root->GetChildren().children()[1]->GetActionItem();
+  ASSERT_NE(your_chrome_section, nullptr);
+
+  actions::BaseAction* profile_submenu = nullptr;
+  for (const auto& child : your_chrome_section->GetChildren().children()) {
+    if (child->GetActionItem()->GetActionId() == kActionProfileSubmenu) {
+      profile_submenu = child.get();
+      break;
+    }
+  }
+  ASSERT_NE(profile_submenu, nullptr);
+
+  // With a single profile, the header and divider are present, but no other
+  // profiles and no trailing divider.
+  const auto& children = profile_submenu->GetChildren().children();
+  ASSERT_EQ(children.size(), 8u);
+  EXPECT_EQ(children[0]->GetActionItem()->GetActionId(),
+            kActionManageGoogleAccount);
+  EXPECT_EQ(children[1]->GetActionItem()->GetActionId(),
+            kActionCustomizeChrome);
+  EXPECT_EQ(children[2]->GetActionItem()->GetActionId(), kActionCloseProfile);
+  EXPECT_EQ(children[3]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kDivider);
+  EXPECT_EQ(children[4]->GetActionItem()->GetProperty(
+                ActionAppMenuManager::kDisplayTypeKey),
+            ActionAppMenuManager::DisplayType::kHeader);
+  EXPECT_EQ(children[4]->GetActionItem()->GetText(),
+            l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
+  EXPECT_EQ(children[5]->GetActionItem()->GetActionId(), kActionAddNewProfile);
+  EXPECT_EQ(children[6]->GetActionItem()->GetActionId(),
+            kActionOpenGuestProfile);
+  EXPECT_EQ(children[7]->GetActionItem()->GetActionId(),
+            kActionManageChromeProfiles);
 }
 
 TEST_F(ActionAppMenuManagerTest,
