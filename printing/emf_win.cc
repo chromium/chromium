@@ -11,6 +11,8 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "printing/mojom/print.mojom.h"
@@ -91,6 +93,23 @@ base::span<const uint8_t> GetBitmapBits(base::span<const uint8_t> record_span,
   }
 
   return record_span.subspan(sdib_record->offBitsSrc, sdib_record->cbBitsSrc);
+}
+
+base::span<const uint8_t> GetGdiCommentData(
+    base::span<const uint8_t> record_span) {
+  if (record_span.size() < sizeof(EMRGDICOMMENT)) {
+    return {};
+  }
+
+  const auto* comment =
+      reinterpret_cast<const EMRGDICOMMENT*>(record_span.data());
+  base::CheckedNumeric<uint32_t> end_data = offsetof(EMRGDICOMMENT, Data);
+  end_data += comment->cbData;
+  if (!end_data.IsValid() || end_data.ValueOrDie() > record_span.size()) {
+    return {};
+  }
+
+  return record_span.subspan(offsetof(EMRGDICOMMENT, Data), comment->cbData);
 }
 
 }  // namespace
@@ -238,21 +257,31 @@ bool PostScriptMetaFile::SafePlayback(HDC hdc) const {
       continue;
     }
 
-    const auto* comment = reinterpret_cast<const EMRGDICOMMENT*>(emf_record);
-    const char* data = reinterpret_cast<const char*>(comment->Data);
+    // SAFETY: `Emf::Enumerator::EnhMetaFileProc()` verified that `nSize` fits
+    // within the remaining metafile buffer.
+    base::span<const uint8_t> record_span = UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<const uint8_t*>(emf_record), emf_record->nSize));
+    base::span<const uint8_t> data_span = GetGdiCommentData(record_span);
+    if (data_span.size() < sizeof(uint16_t)) {
+      continue;
+    }
+
     // First uint16_t element in `data` holds the size of the rest of `data`,
     // which is the actual PostScript data. Windows requires this payload size +
     // PS data structure.
-    const uint16_t ps_payload_size = *reinterpret_cast<const uint16_t*>(data);
+    const uint16_t ps_payload_size =
+        base::U16FromNativeEndian(data_span.first<sizeof(uint16_t)>());
     const uint32_t data_size = 2 + ps_payload_size;
     // Assume value used in PDFium's core/fxge/win32/cpsoutput.cpp is not going
     // to change.
     static constexpr uint16_t kExpectedPdfiumMax = 1024 + 2;
-    if (data_size != comment->cbData || data_size > kExpectedPdfiumMax) {
+    if (data_size != data_span.size() || data_size > kExpectedPdfiumMax) {
       continue;
     }
 
-    int ret = ExtEscape(hdc, PASSTHROUGH, data_size, data, 0, nullptr);
+    int ret =
+        ExtEscape(hdc, PASSTHROUGH, static_cast<int>(data_size),
+                  reinterpret_cast<const char*>(data_span.data()), 0, nullptr);
     DCHECK_EQ(ps_payload_size, ret);
   }
   return true;

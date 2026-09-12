@@ -203,4 +203,33 @@ TEST(EmfTest, RemainingMetafileSize) {
   EXPECT_EQ(remaining_size, 0u);
 }
 
+TEST(PostScriptMetaFileTest, SafePlaybackUndersizedComment) {
+  std::vector<char> data;
+  {
+    PostScriptMetaFile emf;
+    EXPECT_TRUE(emf.Init());
+    EXPECT_TRUE(emf.context());
+    // Add `EMR_GDICOMMENT` records where the comment size field is deliberately
+    // wrong/undersized (< sizeof(uint16_t)). A valid PostScript comment
+    // requires at least 2 bytes for the payload size header, so a size of 0 or
+    // 1 cannot hold a valid payload size.
+    EXPECT_TRUE(::GdiComment(emf.context(), 0, nullptr));
+    uint8_t byte = 0;
+    EXPECT_TRUE(::GdiComment(emf.context(), 1, &byte));
+    ::Rectangle(emf.context(), 10, 10, 190, 190);
+    EXPECT_TRUE(emf.FinishDocument());
+    uint32_t size = emf.GetDataSize();
+    EXPECT_GT(size, 0u);
+    EXPECT_TRUE(emf.GetDataAsVector(&data));
+  }
+
+  PostScriptMetaFile emf;
+  EXPECT_TRUE(emf.InitFromData(base::as_byte_span(data)));
+  base::win::ScopedCreateDC hdc(CreateCompatibleDC(nullptr));
+  ASSERT_TRUE(hdc.is_valid());
+  // `SafePlayback()` should safely skip the undersized comment records and must
+  // not crash from an out-of-bounds read.
+  EXPECT_TRUE(emf.SafePlayback(hdc.get()));
+}
+
 }  // namespace printing
