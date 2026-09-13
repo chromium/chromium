@@ -272,8 +272,7 @@ StringImpl* StringImpl::CreateStatic(base::span<const char> string) {
   DCHECK(!string.empty());
   DCHECK(string.data());
 
-  uint32_t hash =
-      StringHasher::ComputeHashAndMaskTop8Bits(base::as_bytes(string));
+  uint32_t hash = HashString24(base::as_bytes(string));
 
   StaticStringsTable::const_iterator it = StaticStrings().find(hash);
   if (it != StaticStrings().end()) {

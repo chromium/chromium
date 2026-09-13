@@ -201,7 +201,7 @@ ALWAYS_INLINE static bool IsOnly8Bit(base::span<const UChar> chars) {
 
 class UCharBuffer {
  public:
-  ALWAYS_INLINE static unsigned ComputeHashAndMaskTop8Bits(
+  ALWAYS_INLINE static uint32_t HashString24(
       base::span<const UChar> chars,
       AtomicStringUCharEncoding encoding) {
     base::span<const uint8_t> bytes = base::as_bytes(chars);
@@ -212,10 +212,9 @@ class UCharBuffer {
       case AtomicStringUCharEncoding::kIs8Bit:
         // This is a very common case from HTML parsing, so we take
         // the size penalty from inlining.
-        return StringHasher::ComputeHashAndMaskTop8BitsInline<
-            ConvertTo8BitHashReader>(bytes);
+        return HashString24Inline<ConvertTo8BitHashReader>(bytes);
       case AtomicStringUCharEncoding::kIs16Bit:
-        return StringHasher::ComputeHashAndMaskTop8Bits(bytes);
+        return blink::HashString24(bytes);
     }
   }
 
@@ -227,10 +226,10 @@ class UCharBuffer {
                              ? AtomicStringUCharEncoding::kIs8Bit
                              : AtomicStringUCharEncoding::kIs16Bit)
                       : encoding),
-        hash_(ComputeHashAndMaskTop8Bits(chars, encoding_)) {}
+        hash_(HashString24(chars, encoding_)) {}
 
   ALWAYS_INLINE UCharBuffer(base::span<const UChar> chars,
-                            unsigned hash,
+                            uint32_t hash,
                             AtomicStringUCharEncoding encoding)
       : characters_(chars),
         encoding_(encoding == AtomicStringUCharEncoding::kUnknown
@@ -241,7 +240,7 @@ class UCharBuffer {
         hash_(hash) {}
 
   base::span<const UChar> characters() const { return characters_; }
-  unsigned hash() const { return hash_; }
+  uint32_t hash() const { return hash_; }
   AtomicStringUCharEncoding encoding() const { return encoding_; }
 
   scoped_refptr<StringImpl> CreateStringImpl() const {
@@ -259,7 +258,7 @@ class UCharBuffer {
  private:
   const base::span<const UChar> characters_;
   const AtomicStringUCharEncoding encoding_;
-  const unsigned hash_;
+  const uint32_t hash_;
 };
 
 struct UCharBufferTranslator {
@@ -271,7 +270,7 @@ struct UCharBufferTranslator {
 
   static void Store(StringImpl*& location,
                     const UCharBuffer& buf,
-                    unsigned hash) {
+                    uint32_t hash) {
     location = buf.CreateStringImpl().release();
     location->SetHash(hash);
     location->SetIsAtomic();
@@ -287,12 +286,11 @@ struct StringViewLookupTranslator {
 
     base::span<const uint8_t> bytes = buf.RawByteSpan();
     if (buf.Is8Bit()) {
-      return StringHasher::ComputeHashAndMaskTop8Bits(bytes);
+      return HashString24(bytes);
     } else if (IsOnly8Bit(buf.Span16())) {
-      return StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
-          bytes);
+      return HashString24<ConvertTo8BitHashReader>(bytes);
     } else {
-      return StringHasher::ComputeHashAndMaskTop8Bits(bytes);
+      return HashString24(bytes);
     }
   }
 
@@ -314,16 +312,12 @@ class HashTranslatorLowercaseBuffer {
     DCHECK(!impl_->ContainsNoAsciiUpper());
     base::span<const uint8_t> bytes = impl->RawByteSpan();
     if (impl_->Is8Bit()) {
-      hash_ =
-          StringHasher::ComputeHashAndMaskTop8Bits<AsciiLowerHashReader<LChar>>(
-              bytes);
+      hash_ = HashString24<AsciiLowerHashReader<LChar>>(bytes);
     } else {
       if (IsOnly8Bit(impl_->Span16())) {
-        hash_ = StringHasher::ComputeHashAndMaskTop8Bits<
-            AsciiConvertTo8AndLowerHashReader>(bytes);
+        hash_ = HashString24<AsciiConvertTo8AndLowerHashReader>(bytes);
       } else {
-        hash_ = StringHasher::ComputeHashAndMaskTop8Bits<
-            AsciiLowerHashReader<UChar>>(bytes);
+        hash_ = HashString24<AsciiLowerHashReader<UChar>>(bytes);
       }
     }
   }
@@ -447,7 +441,7 @@ class LCharBuffer {
   ALWAYS_INLINE explicit LCharBuffer(base::span<const LChar> chars)
       : characters_(chars),
         // This is a common path from V8 strings, so inlining is worth it.
-        hash_(StringHasher::ComputeHashAndMaskTop8BitsInline(chars)) {}
+        hash_(HashString24Inline(chars)) {}
 
   ALWAYS_INLINE LCharBuffer(base::span<const LChar> chars, uint32_t hash)
       : characters_(chars), hash_(hash) {}

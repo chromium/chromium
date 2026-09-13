@@ -73,8 +73,7 @@ struct HashTraits<String> : SimpleClassHashTraits<String> {
   // implicit conversion operators both to String and one of the others,
   // which would cause ambiguous overloads.
   static uint32_t GetHash(const char* key) {
-    return StringHasher::ComputeHashAndMaskTop8Bits(
-        base::as_byte_span(std::string_view(key)));
+    return HashString24(base::as_byte_span(std::string_view(key)));
   }
   static uint32_t GetHash(const LChar* key) {
     return GetHash(reinterpret_cast<const char*>(key));

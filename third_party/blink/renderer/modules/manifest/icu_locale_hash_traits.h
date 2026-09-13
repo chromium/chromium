@@ -18,8 +18,7 @@ namespace blink {
 template <>
 struct HashTraits<icu::Locale> : GenericHashTraits<icu::Locale> {
   static uint32_t GetHash(const icu::Locale& key) {
-    return StringHasher::ComputeHashAndMaskTop8Bits(
-        base::as_byte_span(std::string_view(key.getName())));
+    return HashString24(base::as_byte_span(std::string_view(key.getName())));
   }
 
   // We use Root locale ("") as our empty value, as it is an invalid key.

@@ -433,11 +433,11 @@ inline StringImpl* FindStringIfStatic(base::span<const CharType> characters) {
     return nullptr;
   }
   const auto bytes = base::as_bytes(characters);
-  // ComputeHashAndMaskTop8Bits is the function StringImpl::Hash() uses.
+  // HashString24() is the function StringImpl::Hash() uses.
   // Note: The following code computes incorrect hash values for UChar
   // strings, but this doesn't matter because static strings contain no 16-bit
   // strings, and we have Equal() below.
-  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(bytes);
+  uint32_t hash = HashString24(bytes);
   const StaticStringsTable& table = StringImpl::AllStaticStrings();
   DCHECK(!table.empty());
 

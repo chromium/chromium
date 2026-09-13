@@ -246,11 +246,10 @@ class WTF_EXPORT StringImpl {
   // access.  So, we shift left and right when setting and getting our hash
   // code.
   void SetHash(uint32_t hash) const {
-    // Multiple clients assume that StringHasher is the canonical string
-    // hash function.
-    DCHECK_EQ(hash,
-              (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(Span8())
-                        : ComputeHashForWideString(Span16())));
+    // Multiple clients assume that blink::HashString24() and
+    // ComputeHashForWideString() are the canonical string hash functions.
+    DCHECK_EQ(hash, (Is8Bit() ? HashString24(Span8())
+                              : ComputeHashForWideString(Span16())));
     DCHECK(hash);  // Verify that 0 is a valid sentinel hash value.
     SetHashRaw(hash);
   }
@@ -652,8 +651,7 @@ class WTF_EXPORT StringImpl {
 #if DCHECK_IS_ON()
   void AssertHashIsCorrect() {
     DCHECK(HasHash());
-    DCHECK_EQ(ExistingHash(),
-              StringHasher::ComputeHashAndMaskTop8Bits(Span8()));
+    DCHECK_EQ(ExistingHash(), HashString24(Span8()));
   }
 #endif
 

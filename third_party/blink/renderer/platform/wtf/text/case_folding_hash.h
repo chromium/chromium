@@ -97,8 +97,7 @@ class DeprecatedCaseFoldingHash {
 
  public:
   static uint32_t GetHash(base::span<const UChar> span) {
-    return StringHasher::ComputeHashAndMaskTop8Bits<
-        CaseFoldingHashReader<UChar>>(base::as_bytes(span));
+    return HashString24<CaseFoldingHashReader<UChar>>(base::as_bytes(span));
   }
 
   static uint32_t GetHash(StringImpl* str) {
@@ -108,8 +107,7 @@ class DeprecatedCaseFoldingHash {
   }
 
   static uint32_t GetHash(base::span<const LChar> span) {
-    return StringHasher::ComputeHashAndMaskTop8Bits<
-        CaseFoldingHashReader<LChar>>(span);
+    return HashString24<CaseFoldingHashReader<LChar>>(span);
   }
 
   static inline uint32_t GetHash(base::span<const char> span) {

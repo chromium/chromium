@@ -22,15 +22,12 @@ struct IgnoringAsciiCaseHash {
     }
     auto bytes = string.RawByteSpan();
     if (string.Is8Bit()) {
-      return StringHasher::ComputeHashAndMaskTop8Bits<
-          AsciiLowerHashReader<LChar>>(bytes);
+      return HashString24<AsciiLowerHashReader<LChar>>(bytes);
     }
     if (string.ContainsOnlyLatin1OrEmpty()) {
-      return StringHasher::ComputeHashAndMaskTop8Bits<
-          AsciiConvertTo8AndLowerHashReader>(bytes);
+      return HashString24<AsciiConvertTo8AndLowerHashReader>(bytes);
     }
-    return StringHasher::ComputeHashAndMaskTop8Bits<
-        AsciiLowerHashReader<UChar>>(bytes);
+    return HashString24<AsciiLowerHashReader<UChar>>(bytes);
   }
 
   static uint32_t GetHash(const AtomicString& string) {
@@ -72,15 +69,12 @@ struct IgnoringAsciiCaseHashTranslator {
     }
     auto bytes = string.RawByteSpan();
     if (string.Is8Bit()) {
-      return StringHasher::ComputeHashAndMaskTop8Bits<
-          AsciiLowerHashReader<LChar>>(bytes);
+      return HashString24<AsciiLowerHashReader<LChar>>(bytes);
     }
     if (string.ContainsOnlyLatin1OrEmpty()) {
-      return StringHasher::ComputeHashAndMaskTop8Bits<
-          AsciiConvertTo8AndLowerHashReader>(bytes);
+      return HashString24<AsciiConvertTo8AndLowerHashReader>(bytes);
     }
-    return StringHasher::ComputeHashAndMaskTop8Bits<
-        AsciiLowerHashReader<UChar>>(bytes);
+    return HashString24<AsciiLowerHashReader<UChar>>(bytes);
   }
 
   static bool Equal(const String& a, StringView b) {
