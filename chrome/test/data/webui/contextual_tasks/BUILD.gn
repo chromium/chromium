@@ -43,7 +43,7 @@ build_webui_tests("build") {
 
   if (!is_android) {
     files += [
-      "extension_post_message_handler_test.ts",
+      "input_plate_test.ts",
       "info_tooltip_test.ts",
       "lens_button_test.ts",
       "unbounded_menu_test.ts",
@@ -77,6 +77,7 @@ build_webui_tests("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+
   if (enable_extensions_core) {
     ts_deps +=
         [ "//chrome/browser/resources/contextual_tasks/extension:build_ts" ]

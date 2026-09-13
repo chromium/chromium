@@ -387,7 +387,7 @@ interface ExtensionPageHandlerFactory {
 
 // Browser-side handler for requests from the extension frame.
 // Implemented in C++ (ContextualTasksExtensionHandler) and called from
-// HTML/TS client in the extension context.
+// HTML/TS client (input_plate.ts) in the extension context.
 // Provides APIs to bootstrap communication and send messages from the webview
 // back to the browser.
 interface ExtensionPageHandler {
@@ -419,7 +419,7 @@ interface ExtensionPageHandler {
 };
 
 // Extension-side handler for requests from the browser process.
-// Implemented in HTML/TS and called from C++
+// Implemented in HTML/TS (input_plate.ts) and called from C++
 // (ContextualTasksExtensionHandler) to control the extension UI and forward
 // messages from the browser to the webview.
 interface ExtensionPage {

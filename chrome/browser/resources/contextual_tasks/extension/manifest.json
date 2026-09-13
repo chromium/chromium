@@ -31,6 +31,7 @@
     {
       "resources": [
         "chip.html",
+        "input_plate.html",
         "lens_button.html"
       ],
       "matches": [
