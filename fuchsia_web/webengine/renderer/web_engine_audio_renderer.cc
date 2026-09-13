@@ -6,8 +6,9 @@
 
 #include <lib/sys/cpp/component_context.h>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -90,22 +91,25 @@ scoped_refptr<media::DecoderBuffer> PreparePcm24Buffer(
   size_t samples = buffer_span.size() / 3;
   scoped_refptr<media::DecoderBuffer> result =
       base::MakeRefCounted<media::DecoderBuffer>(samples * 4);
-  for (size_t i = 0; i < samples - 1; ++i) {
-    UNSAFE_TODO(reinterpret_cast<uint32_t*>(result->writable_data())[i]) =
-        *reinterpret_cast<const uint32_t*>(buffer_span.subspan(i * 3).data()) &
-        0x00ffffff;
+
+  base::SpanReader reader(buffer_span);
+  auto result_writer = base::SpanWriter(result->writable_span());
+
+  for (size_t i = 0; i < samples; ++i) {
+    auto sample = reader.Read<3u>();
+    CHECK(sample);
+    uint32_t val = static_cast<uint32_t>((*sample)[0]) |
+                   (static_cast<uint32_t>((*sample)[1]) << 8) |
+                   (static_cast<uint32_t>((*sample)[2]) << 16);
+    CHECK(result_writer.WriteU32LittleEndian(val));
   }
-  size_t last_sample = samples - 1;
-  UNSAFE_TODO(
-      reinterpret_cast<uint32_t*>(result->writable_data())[last_sample]) =
-      buffer_span[last_sample * 3] | (buffer_span[last_sample * 3 + 1] << 8) |
-      (buffer_span[last_sample * 3 + 2] << 16);
 
   result->set_timestamp(buffer->timestamp());
   result->set_duration(buffer->duration());
 
-  if (buffer->decrypt_config())
+  if (buffer->decrypt_config()) {
     result->set_decrypt_config(buffer->decrypt_config()->Clone());
+  }
 
   return result;
 }
