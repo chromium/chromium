@@ -321,6 +321,9 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
   ASSERT_TRUE(bookmarks_item);
   EXPECT_TRUE(bookmarks_item->HasSubmenu());
 
+  // Trigger lazy loading of the dynamic bookmarks submenu.
+  menu.WillShowMenu(bookmarks_item);
+
   // Verify static items like Bookmark This Tab and Bookmark Manager exist.
   EXPECT_NE(root->GetMenuItemByID(kActionBookmarkThisTab), nullptr);
   EXPECT_NE(root->GetMenuItemByID(kActionBookmarkAllTabs), nullptr);
@@ -456,6 +459,9 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenuWithManagedFolder) {
   ASSERT_TRUE(bookmarks_item);
   EXPECT_TRUE(bookmarks_item->HasSubmenu());
 
+  // Trigger lazy loading of the dynamic bookmarks submenu.
+  menu.WillShowMenu(bookmarks_item);
+
   views::SubmenuView* bookmarks_submenu = bookmarks_item->GetSubmenu();
   ASSERT_TRUE(bookmarks_submenu);
 
@@ -519,6 +525,9 @@ TEST_F(ActionAppMenuTest, PopulatesTabGroupsSubmenu) {
       root->GetMenuItemByID(kActionSavedTabGroupsSubmenu);
   ASSERT_TRUE(tab_groups_item);
   EXPECT_TRUE(tab_groups_item->HasSubmenu());
+
+  // Trigger lazy loading of the dynamic tab groups submenu.
+  menu.WillShowMenu(tab_groups_item);
 
   // Verify the static action item for creating a new group exists.
   views::MenuItemView* new_group_item =
@@ -1273,6 +1282,7 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   views::MenuItemView* tab_groups_item =
       root->GetMenuItemByID(kActionSavedTabGroupsSubmenu);
   ASSERT_TRUE(tab_groups_item);
+  menu.WillShowMenu(tab_groups_item);
   views::SubmenuView* tab_groups_submenu = tab_groups_item->GetSubmenu();
   ASSERT_TRUE(tab_groups_submenu);
 

@@ -47,6 +47,7 @@ class ActionAppMenu : public views::MenuDelegate {
   // views::MenuDelegate:
   void ExecuteCommand(int id, int mouse_event_flags) override;
   void OnMenuClosed(views::MenuItemView* menu) override;
+  void WillShowMenu(views::MenuItemView* menu) override;
   const gfx::FontList* GetLabelFontList(int id) const override;
   std::optional<SkColor> GetLabelColor(int id) const override;
 
@@ -93,8 +94,8 @@ class ActionAppMenu : public views::MenuDelegate {
   // Callback run when the menu is closed to notify the menu button.
   base::RepeatingClosure on_menu_closed_callback_;
 
-  // Maps command/menu item IDs back to their corresponding ActionItem.
-  base::flat_map<int, raw_ptr<actions::ActionItem>> command_to_action_map_;
+  // Maps command/menu item IDs back to their corresponding BaseAction.
+  base::flat_map<int, raw_ptr<actions::BaseAction>> command_to_action_map_;
 
   // Manages ActionItem and MenuItemView relationships.
   views::ActionViewController action_view_controller_;

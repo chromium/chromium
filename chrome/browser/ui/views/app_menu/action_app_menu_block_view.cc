@@ -22,7 +22,7 @@
 ActionAppMenuBlockView::ActionAppMenuBlockView(
     actions::ActionItem* block_action_item,
     views::ActionViewController* action_view_controller,
-    base::flat_map<int, raw_ptr<actions::ActionItem>>* command_to_action_map,
+    base::flat_map<int, raw_ptr<actions::BaseAction>>* command_to_action_map,
     base::RepeatingCallback<void(actions::ActionId)> execute_command_callback) {
   CHECK(block_action_item);
   CHECK(action_view_controller);
@@ -44,7 +44,7 @@ ActionAppMenuBlockView::ActionAppMenuBlockView(
     auto button = std::make_unique<ActionAppMenuBlockButton>();
     action_view_controller->CreateActionViewRelationship(
         button.get(), block_child_ptr->GetAsWeakPtr());
-    (*command_to_action_map)[action_id.value()] = block_child_ptr;
+    (*command_to_action_map)[action_id.value()] = block_child.get();
 
     button->SetCallback(
         base::BindRepeating(execute_command_callback, action_id.value()));

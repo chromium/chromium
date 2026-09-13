@@ -58,7 +58,7 @@ std::unique_ptr<views::Background> CreateZoomButtonBackground() {
 ActionAppMenuZoomView::ActionAppMenuZoomView(
     BrowserWindowInterface* browser_window_interface,
     views::ActionViewController* action_view_controller,
-    base::flat_map<int, raw_ptr<actions::ActionItem>>& command_to_action_map,
+    base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map,
     actions::BaseAction* zoom_row_action_item)
     : browser_window_interface_(browser_window_interface) {
   CHECK(browser_window_interface_);
@@ -86,7 +86,7 @@ ActionAppMenuZoomView::~ActionAppMenuZoomView() = default;
 void ActionAppMenuZoomView::BuildZoomChildControls(
     actions::BaseAction* zoom_row_action_item,
     views::ActionViewController* action_view_controller,
-    base::flat_map<int, raw_ptr<actions::ActionItem>>& command_to_action_map) {
+    base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map) {
   for (auto& zoom_child_holder :
        zoom_row_action_item->GetChildren().children()) {
     actions::ActionItem* zoom_child = zoom_child_holder->GetActionItem();
@@ -97,7 +97,7 @@ void ActionAppMenuZoomView::BuildZoomChildControls(
 
     action_view_controller->CreateActionViewRelationship(
         zoom_child_button, zoom_child->GetAsWeakPtr());
-    command_to_action_map[zoom_action_id] = zoom_child;
+    command_to_action_map[zoom_action_id] = zoom_child_holder.get();
 
     if (zoom_action_id == kActionZoomPlus) {
       zoom_plus_button_ = zoom_child_button;

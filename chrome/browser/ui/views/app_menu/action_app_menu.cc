@@ -176,6 +176,18 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   }
 }
 
+void ActionAppMenu::WillShowMenu(views::MenuItemView* menu) {
+  if (!menu->HasSubmenu() || !menu->GetSubmenu()->GetMenuItems().empty()) {
+    return;
+  }
+
+  auto action_iterator = command_to_action_map_.find(menu->GetCommand());
+  if (action_iterator != command_to_action_map_.end() &&
+      action_iterator->second->HasPopulateChildActionsCallback()) {
+    PopulateMenu(menu, action_iterator->second);
+  }
+}
+
 const gfx::FontList* ActionAppMenu::GetLabelFontList(int id) const {
   if (id == ui::MenuModel::kTitleId) {
     return &views::TypographyProvider::Get().GetFont(
@@ -237,8 +249,10 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
                         round_bottom_corners);
       if (display_type == ActionAppMenuManager::DisplayType::kCustom) {
         PopulateCustomRow(menu_item, child_base);
-      } else {
-        // Recursively populate the menu with the base action item's children.
+      } else if (!child_base->HasPopulateChildActionsCallback()) {
+        // Recursively populate static items and static submenus immediately.
+        // Dynamic submenus are deferred and populated on demand in
+        // WillShowMenu().
         PopulateMenu(menu_item, child_base);
       }
     }
@@ -271,7 +285,7 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
 
   action_view_controller_.CreateActionViewRelationship(
       menu_item, action_item->GetAsWeakPtr());
-  command_to_action_map_[command_id] = action_item;
+  command_to_action_map_[command_id] = base_action_item;
   return menu_item;
 }
 

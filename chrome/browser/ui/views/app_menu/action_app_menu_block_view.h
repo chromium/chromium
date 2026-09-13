@@ -29,7 +29,7 @@ class ActionAppMenuBlockView : public views::BoxLayoutView {
   ActionAppMenuBlockView(
       actions::ActionItem* block_action_item,
       views::ActionViewController* action_view_controller,
-      base::flat_map<int, raw_ptr<actions::ActionItem>>* command_to_action_map,
+      base::flat_map<int, raw_ptr<actions::BaseAction>>* command_to_action_map,
       base::RepeatingCallback<void(actions::ActionId)>
           execute_command_callback);
   ActionAppMenuBlockView(const ActionAppMenuBlockView&) = delete;

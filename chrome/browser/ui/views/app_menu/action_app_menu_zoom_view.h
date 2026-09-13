@@ -43,7 +43,7 @@ class ActionAppMenuZoomView : public views::BoxLayoutView,
   ActionAppMenuZoomView(
       BrowserWindowInterface* browser_window_interface,
       views::ActionViewController* action_view_controller,
-      base::flat_map<int, raw_ptr<actions::ActionItem>>& command_to_action_map,
+      base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map,
       actions::BaseAction* zoom_row_action_item);
 
   ActionAppMenuZoomView(const ActionAppMenuZoomView&) = delete;
@@ -64,7 +64,7 @@ class ActionAppMenuZoomView : public views::BoxLayoutView,
   void BuildZoomChildControls(
       actions::BaseAction* zoom_row_action_item,
       views::ActionViewController* action_view_controller,
-      base::flat_map<int, raw_ptr<actions::ActionItem>>& command_to_action_map);
+      base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map);
 
   // Helper function that creates and returns a button for the zoom menu item
   // with the appropriate stylings.
