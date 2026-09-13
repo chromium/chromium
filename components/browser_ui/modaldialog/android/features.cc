@@ -9,7 +9,7 @@
 
 namespace browser_ui {
 
-BASE_FEATURE(kDialogsOnLargeFormFactors, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDialogsOnLargeFormFactors, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kModalDialogLayoutWithSystemInsets,
              base::FEATURE_ENABLED_BY_DEFAULT);

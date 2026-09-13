@@ -642,6 +642,7 @@ public class AppModalPresenterUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS)
     public void addDialogView_LargeFormFactorUi_Tablet_VerticalMargin24dpAndDimAmount() {
         mAppModalPresenter.setInsetObserver(null);
 
@@ -665,6 +666,7 @@ public class AppModalPresenterUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS)
     public void addDialogView_LargeFormFactorUi_Desktop_VerticalMargin24dpAndDimAmount() {
         DeviceInfo.setIsDesktopForTesting(true);
         mAppModalPresenter.setInsetObserver(null);
