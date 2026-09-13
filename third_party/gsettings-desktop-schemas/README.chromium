@@ -1,8 +1,8 @@
 Name: gsettings-desktop-schemas
 URL: https://gitlab.gnome.org/GNOME/gsettings-desktop-schemas
-Version: 50.1
-Revision: ea4bd542cfd931be783667fb84e02414f04e3ba9
-Update Mechanism: Manual
+Version: 51.0
+Revision: 1db238b6a349ea7fae6f1c0713afe04d1bb7ea5c
+Update Mechanism: Autoroll
 License: LGPL-2.1
 License File: src/COPYING
 Shipped: no
