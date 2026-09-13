@@ -113,12 +113,13 @@ void SubmenuView::UpdateMenuPartSizes() {
   const MenuConfig& config = MenuConfig::instance();
 
   const auto get_metrics = [&] {
-    return std::tie(icon_area_width_, label_start_, trailing_padding_);
+    return std::tie(icon_area_width_, label_start_, trailing_padding_,
+                    content_start_, item_horizontal_border_);
   };
   const auto old_metrics = get_metrics();
 
-  trailing_padding_ = config.item_horizontal_padding +
-                      parent_menu_item_->GetItemHorizontalBorder();
+  item_horizontal_border_ = parent_menu_item_->GetItemHorizontalBorder();
+  trailing_padding_ = config.item_horizontal_padding + item_horizontal_border_;
   const auto& menu_items = GetMenuItems();
   if (config.reserve_dedicated_arrow_column &&
       std::ranges::any_of(menu_items, &MenuItemView::HasSubmenu)) {
@@ -163,7 +164,8 @@ void SubmenuView::UpdateMenuPartSizes() {
     icon_area_width_ = std::max(icon_area_width_, max_icon_width);
   }
 
-  label_start_ = parent_menu_item_->GetContentStart() + icon_area_width_;
+  content_start_ = parent_menu_item_->GetContentStart();
+  label_start_ = content_start_ + icon_area_width_;
   if (icon_area_width_) {
     const auto* const controller = parent_menu_item_->GetMenuController();
     label_start_ += (controller && controller->use_ash_system_ui_layout())

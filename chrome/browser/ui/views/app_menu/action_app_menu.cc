@@ -114,9 +114,7 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
       provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM)));
   root_->set_children_use_full_width(true);
 
-  views::SubmenuView* submenu = root_->CreateSubmenu();
-  submenu->SetBorder(views::CreateEmptyBorder(
-      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_POPUP)));
+  root_->CreateSubmenu();
 
   PopulateMenu(root_, menu_manager_->GetAppMenuRoot());
 
@@ -315,9 +313,6 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
 
   const auto* provider = ChromeLayoutProvider::Get();
 
-  menu_item->SetBorder(views::CreateEmptyBorder(
-      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM)));
-
   const bool use_expanded_height =
       action_item->GetActionId() == kActionZoomSubmenu;
 
@@ -347,7 +342,10 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
             : 0;
 
     menu_item->SetMenuItemBackground(views::MenuItemView::MenuItemBackground(
-        container_color, top_radius, bottom_radius, /*horizontal_margin=*/0));
+        container_color, top_radius, bottom_radius,
+        /*horizontal_margin=*/
+        provider->GetDistanceMetric(
+            DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN)));
 
     // Apply darker hover selection states matching section theme.
     menu_item->SetSelectedColorId(ui::kColorSysStateHoverOnSubtle);
@@ -395,7 +393,9 @@ void ActionAppMenu::PopulateHeader(views::MenuItemView* view_parent,
   header_menu_item->set_vertical_margin(default_margin);
   header_menu_item->SetEnabled(false);
   if (header_menu_item->GetParentMenuItem() == root_) {
-    header_menu_item->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+    header_menu_item->SetBorder(
+        views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
+            INSETS_ACTION_APP_MENU_HEADER)));
     if (header_count_++ > 0) {
       header_menu_item->set_top_margin(default_margin * 2);
     }
@@ -410,10 +410,14 @@ void ActionAppMenu::PopulateBlockSection(
   block_item->set_children_use_full_width(true);
   block_item->set_vertical_margin(0);
 
-  block_item->AddChildView(std::make_unique<ActionAppMenuBlockView>(
+  auto block_view = std::make_unique<ActionAppMenuBlockView>(
       block_action_item, &action_view_controller_, &command_to_action_map_,
       base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
-                          base::Unretained(this))));
+                          base::Unretained(this)));
+  block_view->SetProperty(views::kMarginsKey,
+                          ChromeLayoutProvider::Get()->GetInsetsMetric(
+                              INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
+  block_item->AddChildView(std::move(block_view));
 }
 
 void ActionAppMenu::PopulateCustomRow(views::MenuItemView* view_parent,

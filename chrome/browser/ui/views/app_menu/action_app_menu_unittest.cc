@@ -158,15 +158,23 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   ASSERT_TRUE(clear_browsing_item->GetMenuItemBackground().has_value());
   ASSERT_TRUE(zoom_item->GetMenuItemBackground().has_value());
 
-  // Check horizontal margins on card backgrounds are explicitly 0.
+  // Check horizontal margins on card backgrounds match container margin.
+  const int container_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN);
 #if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(profile_item->GetMenuItemBackground()->horizontal_margin, 0);
+  EXPECT_EQ(profile_item->GetMenuItemBackground()->horizontal_margin,
+            container_margin);
 #endif
-  EXPECT_EQ(password_item->GetMenuItemBackground()->horizontal_margin, 0);
-  EXPECT_EQ(print_item->GetMenuItemBackground()->horizontal_margin, 0);
-  EXPECT_EQ(downloads_item->GetMenuItemBackground()->horizontal_margin, 0);
-  EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->horizontal_margin, 0);
-  EXPECT_EQ(zoom_item->GetMenuItemBackground()->horizontal_margin, 0);
+  EXPECT_EQ(password_item->GetMenuItemBackground()->horizontal_margin,
+            container_margin);
+  EXPECT_EQ(print_item->GetMenuItemBackground()->horizontal_margin,
+            container_margin);
+  EXPECT_EQ(downloads_item->GetMenuItemBackground()->horizontal_margin,
+            container_margin);
+  EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->horizontal_margin,
+            container_margin);
+  EXPECT_EQ(zoom_item->GetMenuItemBackground()->horizontal_margin,
+            container_margin);
 
   // Check corner radiuses for section cards (first item has top radius, last
   // has bottom radius, middle items have neither).
@@ -989,13 +997,6 @@ TEST_F(ActionAppMenuTest, SearchBarDisabledByDefault) {
 
   EXPECT_EQ(menu.search_bar_for_testing(), nullptr);
 
-  views::MenuItemView* root = menu.root_menu_item_for_testing();
-  ASSERT_TRUE(root);
-  ASSERT_TRUE(root->HasSubmenu());
-  EXPECT_EQ(root->GetSubmenu()->GetInsets(),
-            ChromeLayoutProvider::Get()->GetInsetsMetric(
-                INSETS_ACTION_APP_MENU_POPUP));
-
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
@@ -1019,11 +1020,6 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
 
   const auto* provider = ChromeLayoutProvider::Get();
 
-  // Check padding on submenu matches popup insets metric.
-  EXPECT_EQ(root->GetSubmenu()->GetInsets(),
-            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_POPUP));
-  EXPECT_EQ(root->GetSubmenu()->GetInsets(), gfx::Insets::VH(4, 16));
-
   // Search bar is hosted inside the first MenuItemView of submenu.
   views::MenuItemView* search_item = root->GetSubmenu()->GetMenuItemAt(0);
   ASSERT_NE(search_item, nullptr);
@@ -1036,7 +1032,23 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   ASSERT_TRUE(search_bar_margins);
   EXPECT_EQ(*search_bar_margins, provider->GetInsetsMetric(
                                      INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
-  EXPECT_EQ(*search_bar_margins, gfx::Insets::TLBR(0, 0, 16, 0));
+  EXPECT_EQ(*search_bar_margins, gfx::Insets::TLBR(4, 16, 16, 16));
+
+  // The block section item follows the search bar and has 0dp top margin.
+  views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(1);
+  ASSERT_NE(block_item, nullptr);
+  EXPECT_EQ(block_item->GetInsets(), gfx::Insets());
+  EXPECT_EQ(block_item->GetTopMargin(), 0);
+  ASSERT_EQ(block_item->children().size(), 1u);
+  auto* block_view =
+      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+  ASSERT_TRUE(block_view);
+  const gfx::Insets* block_margins =
+      block_view->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(block_margins);
+  EXPECT_EQ(*block_margins,
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
+  EXPECT_EQ(*block_margins, gfx::Insets::TLBR(0, 16, 8, 16));
 
   // Check initial empty state.
   views::ImageView* icon = search_bar->search_icon_for_testing();
@@ -1123,42 +1135,44 @@ TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
   const auto* provider = ChromeLayoutProvider::Get();
 
   // Outer popup insets.
-  EXPECT_EQ(submenu->GetInsets(),
-            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_POPUP));
-  EXPECT_EQ(submenu->GetInsets(), gfx::Insets::VH(4, 16));
+  EXPECT_EQ(submenu->GetInsets(), gfx::Insets());
 
-  // The block section item has 0 vertical margin, and the block view has 0
-  // horizontal insets.
+  // The block section item has no border. Margins are applied to the child
+  // block view (4px top margin adjusting for menu top margin and 16px
+  // horizontal insets).
   views::MenuItemView* block_item = submenu->GetMenuItemAt(0);
   ASSERT_NE(block_item, nullptr);
+  EXPECT_EQ(block_item->GetInsets(), gfx::Insets());
   EXPECT_EQ(block_item->GetTopMargin(), 0);
   ASSERT_EQ(block_item->children().size(), 1u);
   auto* block_view =
       views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
   ASSERT_TRUE(block_view);
-  EXPECT_EQ(block_view->GetInsideBorderInsets(),
-            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_ROW));
-  EXPECT_EQ(block_view->GetInsideBorderInsets(), gfx::Insets::TLBR(0, 0, 8, 0));
+  const gfx::Insets* block_margins =
+      block_view->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(block_margins);
+  EXPECT_EQ(*block_margins,
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
+  EXPECT_EQ(*block_margins, gfx::Insets::TLBR(4, 16, 8, 16));
+  EXPECT_EQ(block_view->GetInsideBorderInsets(), gfx::Insets());
 
-  // The footer item has 0 vertical margin, and the footer view has 0 horizontal
-  // insets.
+  // The footer item has 0 vertical margin, 0 insets (border removed).
   views::MenuItemView* footer_item =
       submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
   ASSERT_NE(footer_item, nullptr);
+  EXPECT_EQ(footer_item->GetInsets(), gfx::Insets());
   EXPECT_EQ(footer_item->GetTopMargin(), 0);
   ASSERT_EQ(footer_item->children().size(), 1u);
   auto* footer_view =
       views::AsViewClass<ActionAppMenuFooterView>(footer_item->children()[0]);
   ASSERT_TRUE(footer_view);
-  EXPECT_EQ(footer_view->GetInsets(),
-            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER));
-  EXPECT_EQ(footer_view->GetInsets(), gfx::Insets::VH(0, 0));
+  EXPECT_EQ(footer_view->GetInsets(), gfx::Insets());
   const gfx::Insets* footer_margins =
       footer_view->GetProperty(views::kMarginsKey);
   ASSERT_TRUE(footer_margins);
   EXPECT_EQ(*footer_margins,
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
-  EXPECT_EQ(*footer_margins, gfx::Insets::TLBR(8, 0, 0, 0));
+  EXPECT_EQ(*footer_margins, gfx::Insets::TLBR(8, 16, 0, 16));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -1202,25 +1216,27 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   ASSERT_TRUE(root->GetBorder());
   EXPECT_EQ(root->GetInsets(),
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM));
-  EXPECT_EQ(root->GetInsets(), gfx::Insets::TLBR(0, 16, 0, 12));
-  EXPECT_EQ(root->GetContentStart(), 16);
+  EXPECT_EQ(root->GetInsets(), gfx::Insets::TLBR(0, 32, 0, 28));
+  EXPECT_EQ(root->GetContentStart(), 32);
+  EXPECT_EQ(root->GetItemHorizontalBorder(), 20);
+  EXPECT_EQ(submenu->content_start(), 32);
+  EXPECT_EQ(submenu->item_horizontal_border(), 20);
+  EXPECT_EQ(submenu->trailing_padding(), 28);
 
-  // 2. Regular card menu items border and content start.
+  // 2. Regular card menu items do not set an individual border, avoiding
+  // leaking a custom content start to child submenus. Instead, trailing
+  // padding and icon/label positioning are inherited from the root menu.
   views::MenuItemView* password_item =
       root->GetMenuItemByID(kActionPasswordsAndAutofillSubmenu);
   ASSERT_TRUE(password_item);
-  ASSERT_TRUE(password_item->GetBorder());
-  EXPECT_EQ(password_item->GetInsets(),
-            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM));
-  EXPECT_EQ(password_item->GetContentStart(), 16);
+  EXPECT_FALSE(password_item->GetBorder());
+  EXPECT_EQ(password_item->GetContentStart(), 20);
 
   views::MenuItemView* downloads_item =
       root->GetMenuItemByID(kActionShowDownloads);
   ASSERT_TRUE(downloads_item);
-  ASSERT_TRUE(downloads_item->GetBorder());
-  EXPECT_EQ(downloads_item->GetInsets(),
-            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM));
-  EXPECT_EQ(downloads_item->GetContentStart(), 16);
+  EXPECT_FALSE(downloads_item->GetBorder());
+  EXPECT_EQ(downloads_item->GetContentStart(), 20);
 
   // 3. Headers directly under root.
   std::vector<views::MenuItemView*> root_titles;
@@ -1232,21 +1248,25 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   ASSERT_GE(root_titles.size(), 2u);
 
   // First header ("Your Chrome"):
-  // - Starts flush with the card (0dp insets, content start 0)
+  // - Starts flush with the card (16dp horizontal insets, content start 16)
   // - Standard top margin (8dp).
   EXPECT_EQ(root_titles[0]->GetParentMenuItem(), root);
   ASSERT_TRUE(root_titles[0]->GetBorder());
-  EXPECT_EQ(root_titles[0]->GetInsets(), gfx::Insets());
-  EXPECT_EQ(root_titles[0]->GetContentStart(), 0);
+  EXPECT_EQ(root_titles[0]->GetInsets(),
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_HEADER));
+  EXPECT_EQ(root_titles[0]->GetInsets(), gfx::Insets::VH(0, 16));
+  EXPECT_EQ(root_titles[0]->GetContentStart(), 16);
   EXPECT_EQ(root_titles[0]->GetTopMargin(), 8);
 
   // Second header ("Tools and Actions"):
-  // - Starts flush with the card (0dp insets, content start 0)
+  // - Starts flush with the card (16dp horizontal insets, content start 16)
   // - Doubled top margin (16dp).
   EXPECT_EQ(root_titles[1]->GetParentMenuItem(), root);
   ASSERT_TRUE(root_titles[1]->GetBorder());
-  EXPECT_EQ(root_titles[1]->GetInsets(), gfx::Insets());
-  EXPECT_EQ(root_titles[1]->GetContentStart(), 0);
+  EXPECT_EQ(root_titles[1]->GetInsets(),
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_HEADER));
+  EXPECT_EQ(root_titles[1]->GetInsets(), gfx::Insets::VH(0, 16));
+  EXPECT_EQ(root_titles[1]->GetContentStart(), 16);
   EXPECT_EQ(root_titles[1]->GetTopMargin(), 16);
 
   // 4. Headers in submenus (not under root).
@@ -1281,6 +1301,53 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   EXPECT_EQ(submenu_header->GetBorder(), nullptr);
   EXPECT_NE(submenu_header->GetContentStart(), 0);
   EXPECT_EQ(submenu_header->GetTopMargin(), 8);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, BlockSectionAndMenuHostWidth) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  // 1. Verify SubmenuView (the menu host content) preferred width and laid-out
+  // width is 366dp.
+  EXPECT_EQ(submenu->GetPreferredSize({}).width(), 366);
+  EXPECT_EQ(submenu->width(), 366);
+
+  // 2. Verify block container row MenuItemView width is 366dp.
+  views::MenuItemView* block_item = submenu->GetMenuItemAt(0);
+  ASSERT_NE(block_item, nullptr);
+  EXPECT_EQ(block_item->GetDimensions().children_width, 366);
+  EXPECT_EQ(block_item->width(), 366);
+
+  // 3. Verify ActionAppMenuBlockView preferred width (334dp = 3 * 106dp + 2 *
+  // 8dp) and laid-out width (366dp - 32dp margins = 334dp).
+  ASSERT_EQ(block_item->children().size(), 1u);
+  auto* block_view =
+      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+  ASSERT_TRUE(block_view);
+  EXPECT_EQ(block_view->GetPreferredSize({}).width(), 334);
+  EXPECT_EQ(block_view->width(), 334);
+
+  // 4. Verify each of the 3 block buttons has preferred width and laid-out
+  // width of 106dp.
+  ASSERT_EQ(block_view->children().size(), 3u);
+  for (views::View* child : block_view->children()) {
+    auto* button = views::AsViewClass<ActionAppMenuBlockButton>(child);
+    ASSERT_TRUE(button);
+    EXPECT_EQ(button->GetPreferredSize({}).width(), 106);
+    EXPECT_EQ(button->width(), 106);
+  }
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

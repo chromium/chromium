@@ -32,8 +32,6 @@ ActionAppMenuFooterView::ActionAppMenuFooterView(
   // The outer footer view arranges the subcontainers and an expanding spacer.
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-  SetInsideBorderInsets(
-      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER));
 
   // Left sub-container: holds the Settings and Help action items.
   auto* left_container = AddChildView(std::make_unique<views::BoxLayoutView>());

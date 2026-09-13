@@ -32,8 +32,6 @@ ActionAppMenuBlockView::ActionAppMenuBlockView(
   const auto* provider = ChromeLayoutProvider::Get();
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch);
-  SetInsideBorderInsets(
-      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_ROW));
   SetBetweenChildSpacing(
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ROW_SPACING));
   SetDefaultFlex(1);

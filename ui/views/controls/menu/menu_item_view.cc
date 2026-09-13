@@ -918,11 +918,10 @@ ProposedLayout MenuItemView::CalculateProposedLayout(
 
     if (submenu_arrow_image_view_) {
       const int right_border =
-          GetBorder() ? GetInsets().right()
-                      : (GetItemHorizontalBorder() +
-                         (type_ == Type::kActionableSubMenu
-                              ? config.actionable_submenu_arrow_to_edge_padding
-                              : config.arrow_to_edge_padding));
+          submenu->item_horizontal_border() +
+          (type_ == Type::kActionableSubMenu
+               ? config.actionable_submenu_arrow_to_edge_padding
+               : config.arrow_to_edge_padding);
       const int x = layout.host_size.width() - right_border - config.arrow_size;
       const int y = (layout.host_size.height() - config.arrow_size) / 2;
       layout.child_layouts.emplace_back(
@@ -976,6 +975,9 @@ bool MenuItemView::IsTraversableByKeyboard() const {
 }
 
 int MenuItemView::GetItemHorizontalBorder() const {
+  if (GetBorder()) {
+    return GetInsets().right() - MenuConfig::instance().item_horizontal_padding;
+  }
   const auto* const controller = GetMenuController();
   const MenuConfig& config = MenuConfig::instance();
   return (controller && controller->use_ash_system_ui_layout())
@@ -1813,7 +1815,7 @@ int MenuItemView::CalculateIconX(const ImageView* icon_view) const {
   if (icon_view == radio_check_image_view_) {
     // The check/radio icon is always placed at the start of the content area
     // (the gutter), aligned left.
-    return GetContentStart();
+    return submenu->content_start();
   }
 
   // Case 2: The standard icon (icon_view_).
@@ -1837,7 +1839,7 @@ int MenuItemView::CalculateIconX(const ImageView* icon_view) const {
     icon_area_start_x = submenu->label_start();
   } else {
     // Icons start at the beginning of the content area (the gutter).
-    icon_area_start_x = GetContentStart();
+    icon_area_start_x = submenu->content_start();
   }
 
   // Center the icon within the designated icon area width for the submenu.
