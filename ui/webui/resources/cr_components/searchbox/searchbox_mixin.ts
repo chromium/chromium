@@ -363,6 +363,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.clearAutocompleteMatches();
     }
 
+    openContextMenu(): void {
+      // Overridden by embedders with contextual entrypoints (e.g. Full WebUI
+      // popup).
+    }
+
     isAutocompleteResultStale(result: AutocompleteResult): boolean {
       return result.queryId !== this.activeQueryId;
     }
@@ -625,6 +630,13 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         return true;
       }
 
+      if (this.selection.state ===
+          SelectionLineState.kFocusedButtonContextEntrypoint) {
+        e.preventDefault();
+        this.openContextMenu();
+        return true;
+      }
+
       if (this.selection.state === SelectionLineState.kKeywordMode) {
         e.preventDefault();
         this.getInputElement().focus();
@@ -751,6 +763,16 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         }));
       }
 
+      // Do not handle the following keys if inside an IME composition session.
+      if (e.isComposing) {
+        return;
+      }
+
+      if (this.virtualFocusEnabled && e.key === 'Enter' &&
+          this.handleVirtualFocusEnter_(e)) {
+        return;
+      }
+
       // Do not handle the following keys if there are no matches available.
       if (!this.result || this.result.matches.length === 0) {
         return;
@@ -769,16 +791,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         return;
       }
 
-      // Do not handle the following keys if inside an IME composition session.
-      if (e.isComposing) {
-        return;
-      }
-
       if (this.virtualFocusEnabled) {
-        if (e.key === 'Enter' && this.handleVirtualFocusEnter_(e)) {
-          return;
-        }
-
         let step = SelectionStep.kStateOrLine;
         let direction = SelectionDirection.kForward;
         let valid = false;
@@ -1047,6 +1060,7 @@ export interface SearchboxMixinInterface extends
   onMatchClick(): void;
   onMatchFocusin(e: CustomEvent<number>): void;
   onKeywordClick(e: Event): void;
+  openContextMenu(): void;
   openCtrlEnterMatch(matchIndex: number): void;
   onSearchboxInputTextUpdated(
       e: CustomEvent<{value: string, isComposing: boolean}>): void;

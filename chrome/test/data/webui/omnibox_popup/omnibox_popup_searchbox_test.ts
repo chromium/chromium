@@ -134,30 +134,43 @@ suite('OmniboxPopupSearchboxTest', function() {
   });
 
   test('EnterKeySubmitsVerbatimMatchWhenNoMatchSelected', async () => {
-    callbackRouter.setInputState(createDefaultOmniboxInputState({
-      text: 'chrome://version',
-    }));
-    await microtasksFinished();
+    for (const virtualFocus of [false, true]) {
+      loadTimeData.overrideValues(
+          {realboxVirtualFocusNavigation: virtualFocus});
+      searchbox.virtualFocusEnabled = virtualFocus;
+      testProxy.handler.resetResolver('openAutocompleteMatch');
 
-    assertEquals(-1, searchbox.selectedMatchIndex);
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: 'chrome://version',
+      }));
+      await microtasksFinished();
 
-    await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
-      key: 'Enter',
-      cancelable: true,
-    }));
-    await microtasksFinished();
+      assertEquals(-1, searchbox.selectedMatchIndex);
 
-    const [line, url, areMatchesShowing, mouseButton, modifiers, viaKeyboard] =
-        await testProxy.handler.whenCalled('openAutocompleteMatch');
-    assertEquals(-1, line);
-    assertEquals('', url);
-    assertFalse(areMatchesShowing);
-    assertEquals(0, mouseButton);
-    assertFalse(modifiers.altKey);
-    assertFalse(modifiers.ctrlKey);
-    assertFalse(modifiers.metaKey);
-    assertFalse(modifiers.shiftKey);
-    assertTrue(viaKeyboard);
+      await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+        key: 'Enter',
+        cancelable: true,
+      }));
+      await microtasksFinished();
+
+      const [
+        line,
+        url,
+        areMatchesShowing,
+        mouseButton,
+        modifiers,
+        viaKeyboard,
+      ] = await testProxy.handler.whenCalled('openAutocompleteMatch');
+      assertEquals(-1, line);
+      assertEquals('', url);
+      assertFalse(areMatchesShowing);
+      assertEquals(0, mouseButton);
+      assertFalse(modifiers.altKey);
+      assertFalse(modifiers.ctrlKey);
+      assertFalse(modifiers.metaKey);
+      assertFalse(modifiers.shiftKey);
+      assertTrue(viaKeyboard);
+    }
   });
 
   test('HandlesSelectionChange', async () => {
@@ -2506,4 +2519,64 @@ suite('OmniboxPopupSearchboxTest', function() {
    await microtasksFinished();
    assertTrue(composeButton.hasAttribute('has-user-input'));
  });
+
+ test('EnterKeyWithVirtualFocusOnRemoveSuggestionDeletesMatch', async () => {
+   loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
+   searchbox.virtualFocusEnabled = true;
+
+   const match = createSearchMatchForTesting({
+     destinationUrl: 'https://example.com/delete',
+     supportsDeletion: true,
+   });
+   searchbox.activeQueryId = 0;
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: 0,
+     input: 'delete query',
+     matches: [match],
+   }));
+   await microtasksFinished();
+
+   searchbox.setSelection({
+     line: 0,
+     state: SelectionLineState.kFocusedButtonRemoveSuggestion,
+     actionIndex: 0,
+   });
+   await microtasksFinished();
+
+   const enterEvent =
+       new KeyboardEvent('keydown', {key: 'Enter', cancelable: true});
+   await searchbox.handleKeyNavigation(enterEvent);
+   await microtasksFinished();
+
+   assertTrue(enterEvent.defaultPrevented);
+   assertEquals(1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
+   const [line, url] =
+       await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+   assertEquals(0, line);
+   assertEquals('https://example.com/delete', url);
+   assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+ });
+
+ test(
+     'EnterKeyWithVirtualFocusOnContextualEntrypointOpensContextMenu',
+     async () => {
+       loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
+       searchbox.virtualFocusEnabled = true;
+       searchbox.dropdownIsVisible = true;
+       testProxy.initVisibilityPrefs();
+       testProxy.page.updateAimPopupEligibility(true);
+       searchbox.setSelection({
+         line: -1,
+         state: SelectionLineState.kFocusedButtonContextEntrypoint,
+         actionIndex: 0,
+       });
+       await microtasksFinished();
+
+       await searchbox.handleKeyNavigation(
+           new KeyboardEvent('keydown', {key: 'Enter', cancelable: true}));
+       await microtasksFinished();
+
+       assertEquals(1, handler.getCallCount('showContextMenu'));
+       assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+     });
 });
