@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -71,7 +70,6 @@ public class TabModalPresenterUnitTest {
     }
 
     @Test
-    @EnableFeatures(ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS)
     public void addDialogView_LargeFormFactorUi_SetsLayoutMargins() {
         int expectedHorizontalMargin =
                 mActivity
@@ -92,7 +90,6 @@ public class TabModalPresenterUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @EnableFeatures(ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS)
     public void addDialogView_Phone_NoLayoutMargins() {
         // The flag is on; the form factor alone keeps the margins off.
         MarginLayoutParams params = showDialogAndGetLayoutParams();
