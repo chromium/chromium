@@ -316,6 +316,11 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
   if (startup_id.empty()) {
     startup_id = command_line_->GetSwitchValueASCII("desktop-startup-id");
   }
+  if (startup_id.empty()) {
+    if (auto token = base::nix::TakeXdgActivationToken()) {
+      startup_id = *token;
+    }
+  }
 #endif
 
   const bool create_new_browser =

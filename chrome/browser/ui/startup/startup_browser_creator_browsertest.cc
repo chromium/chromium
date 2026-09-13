@@ -163,6 +163,10 @@
 using testing::Return;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
@@ -2039,6 +2043,26 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(BrowserInitState::From(new_browser)->create_params().startup_id,
             "test-token-123");
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       ColdStartActivationTokenPropagation) {
+  base::nix::SetActivationToken("cold-start-token-456");
+
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  StartupProfilePathInfo path_info = {browser()->GetProfile()->GetPath(),
+                                      StartupProfileMode::kBrowserWindow};
+
+  ui_test_utils::BrowserCreatedObserver observer;
+
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(cmd_line, {},
+                                                          path_info);
+
+  BrowserWindowInterface* new_browser = observer.Wait();
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(BrowserInitState::From(new_browser)->create_params().startup_id,
+            "cold-start-token-456");
+  EXPECT_FALSE(base::nix::TakeXdgActivationToken().has_value());
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
