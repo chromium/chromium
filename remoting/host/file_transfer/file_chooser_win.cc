@@ -98,7 +98,6 @@ FileChooserWindows::~FileChooserWindows() {
 
 void FileChooserWindows::Show() {
   FileTransferResult<std::monostate> result = LaunchChooserProcess();
-
   if (!result) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -108,6 +107,7 @@ void FileChooserWindows::Show() {
 
 void FileChooserWindows::OnFileChooserResult(
     const FileChooser::Result& result) {
+  LOG(INFO) << "File chooser result received, success=" << result.is_success();
   file_chooser_.reset();
   process_.Close();
   if (callback_) {
@@ -116,6 +116,7 @@ void FileChooserWindows::OnFileChooserResult(
 }
 
 void FileChooserWindows::OnDisconnected() {
+  LOG(WARNING) << "File chooser Mojo channel disconnected.";
   file_chooser_.reset();
   process_.Close();
   if (callback_) {
@@ -130,12 +131,16 @@ FileTransferResult<std::monostate> FileChooserWindows::LaunchChooserProcess() {
   FileTransferResult<ScopedHandle> current_user =
       GetCurrentUserToken(FROM_HERE);
   if (!current_user) {
+    LOG(ERROR) << "Failed to query current user token.";
     return current_user.error();
   }
   launch_options.as_user = current_user->Get();
+  launch_options.force_breakaway_from_job_ = true;
+  launch_options.grant_foreground_privilege = true;
 
   FileTransferResult<base::FilePath> exe_path = GetExePath(FROM_HERE);
   if (!exe_path) {
+    LOG(ERROR) << "Failed to get file chooser executable path.";
     return exe_path.error();
   }
   base::CommandLine command_line(*exe_path);
@@ -147,6 +152,7 @@ FileTransferResult<std::monostate> FileChooserWindows::LaunchChooserProcess() {
                                       &command_line);
 
   mojo::OutgoingInvitation invitation;
+  invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
   mojo::ScopedMessagePipeHandle pipe = invitation.AttachMessagePipe(0);
   file_chooser_.Bind(
       mojo::PendingRemote<mojom::FileChooser>(std::move(pipe), 0));
@@ -155,11 +161,12 @@ FileTransferResult<std::monostate> FileChooserWindows::LaunchChooserProcess() {
 
   process_ = base::LaunchProcess(command_line, launch_options);
   if (!process_.IsValid()) {
-    LOG(ERROR) << "Failed to launch process.";
+    LOG(ERROR) << "Failed to launch file chooser process.";
     file_chooser_.reset();
     return MakeFileTransferError(
         FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR);
   }
+  LOG(INFO) << "Launched file chooser process with PID " << process_.Pid();
 
   channel.RemoteProcessLaunchAttempted();
   mojo::OutgoingInvitation::Send(std::move(invitation), process_.Handle(),
