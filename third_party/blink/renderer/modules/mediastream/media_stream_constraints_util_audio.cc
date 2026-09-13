@@ -215,27 +215,42 @@ class SourceInfo {
         source->GetAudioProcessingProperties();
     CHECK(properties);
 
-    return SourceInfo(*properties, source_parameters.channels(),
+    std::optional<AudioProcessingProperties> initial_properties =
+        source->GetInitialAudioProcessingProperties();
+    bool voice_isolation_available =
+        initial_properties &&
+        initial_properties->voice_isolation ==
+            AudioProcessingProperties::VoiceIsolationType::
+                kVoiceIsolationEnabled;
+
+    return SourceInfo(*properties, voice_isolation_available,
+                      source_parameters.channels(),
                       source_parameters.sample_rate(),
                       source_parameters.GetBufferDuration().InSecondsF());
   }
 
   const AudioProcessingProperties& properties() const { return properties_; }
+  bool voice_isolation_available() const { return voice_isolation_available_; }
   int channels() const { return channels_; }
   int sample_rate() const { return sample_rate_; }
   double latency() const { return latency_; }
 
  private:
   SourceInfo(const AudioProcessingProperties& properties,
+             bool voice_isolation_available,
              int channels,
              int sample_rate,
              double latency)
       : properties_(properties),
+        voice_isolation_available_(voice_isolation_available),
         channels_(std::move(channels)),
         sample_rate_(std::move(sample_rate)),
         latency_(latency) {}
 
   const AudioProcessingProperties properties_;
+
+  // Voice isolation is available if it was enabled when the source was created.
+  const bool voice_isolation_available_;
   const int channels_;
   const int sample_rate_;
   const double latency_;
@@ -888,8 +903,16 @@ class ProcessingBasedContainer {
     BoolSet voice_isolation_set(
         GetSupportedVoiceIsolationValues(device_parameters.effects()));
 
-    // Apply specific source/track restriction if we haven't already
-    // disabled it due to lack of system support.
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    // Voice isolation can only be dynamically reconfigured if it was enabled
+    // when the source was initially started.
+    if (source_info && !source_info->voice_isolation_available()) {
+      voice_isolation_set = BoolSet({false});
+    }
+#endif
+
+    // Apply sibling track restriction if another track sharing the same source
+    // has an exact voice isolation constraint.
     if (voice_isolation_set.Contains(true) &&
         voice_isolation_value.has_value()) {
       voice_isolation_set = BoolSet({*voice_isolation_value});

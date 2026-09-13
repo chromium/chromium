@@ -183,6 +183,8 @@ class MockLocalMediaStreamAudioSource : public blink::MediaStreamAudioSource {
     StopSourceOnError(media::AudioCapturerSource::ErrorCode::kSystemPermissions,
                       "");
   }
+  std::optional<AudioProcessingProperties> GetInitialAudioProcessingProperties()
+      const override;
   std::optional<AudioProcessingProperties> GetAudioProcessingProperties()
       const override;
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
@@ -738,6 +740,14 @@ void MockLocalMediaStreamAudioSource::SetVoiceIsolation(bool enabled) {
   voice_isolation_enabled_ = enabled;
 }
 #endif
+
+std::optional<AudioProcessingProperties>
+MockLocalMediaStreamAudioSource::GetInitialAudioProcessingProperties() const {
+  if (properties_cb_) {
+    return properties_cb_.Run();
+  }
+  return std::nullopt;
+}
 
 std::optional<AudioProcessingProperties>
 MockLocalMediaStreamAudioSource::GetAudioProcessingProperties() const {
@@ -2571,6 +2581,55 @@ TEST_F(UserMediaClientTest,
       ->Stop();
   blink::WebHeap::CollectGarbageForTesting();
 }
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+TEST_F(
+    UserMediaClientTest,
+    ApplyConstraintsAudioDeviceTrackStartedWithoutVoiceIsolationFailsExactTrue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
+  // Configure both the media devices dispatcher (used during capability
+  // selection) and the mock dispatcher host (used when opening the device)
+  // to support voice isolation.
+  media_devices_dispatcher_.AudioParameters().set_effects(
+      media_devices_dispatcher_.AudioParameters().effects() |
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  mock_dispatcher_host_.SetAudioDeviceEffects(
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+
+  // 1. Request Track with voiceIsolation = false (disabled at stream startup).
+  MediaStreamTrack* track =
+      RequestLocalAudioTrackWithVoiceIsolationExact(false);
+  ASSERT_TRUE(track);
+  MediaStreamComponent* component = track->Component();
+  MediaStreamAudioTrack* platform_track =
+      MediaStreamAudioTrack::From(component);
+  EXPECT_EQ(platform_track->VoiceIsolationExactConstraint(), false);
+  EXPECT_EQ(track->getSettings()->voiceIsolation(), false);
+
+  // 2. Try to change constraint to voiceIsolation = true exact via
+  // applyConstraints. This must FAIL because the source was initialized without
+  // voice isolation.
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().voice_isolation.SetExact(true);
+    auto* apply_constraints_request =
+        MakeGarbageCollected<ApplyConstraintsRequest>(
+            track, factory.CreateMediaConstraints(), nullptr);
+    user_media_client_impl_->ApplyConstraints(apply_constraints_request);
+    test::RunPendingTasks();
+  }
+  // Verify that the constraint was rejected and settings remain unchanged.
+  EXPECT_EQ(platform_track->VoiceIsolationExactConstraint(), false);
+  EXPECT_EQ(track->getSettings()->voiceIsolation(), false);
+
+  // Stop tracks and GC to ensure a clean slate.
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #endif
 
 }  // namespace blink

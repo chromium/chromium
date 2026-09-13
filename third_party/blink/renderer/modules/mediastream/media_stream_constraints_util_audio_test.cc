@@ -1865,19 +1865,36 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 class TestAudioSource : public blink::MediaStreamAudioSource {
  public:
-  TestAudioSource()
+  explicit TestAudioSource(bool voice_isolation_enabled = false)
       : blink::MediaStreamAudioSource(
             blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-            true /* is_local_source */) {}
+            true /* is_local_source */) {
+    initial_properties_.voice_isolation =
+        voice_isolation_enabled
+            ? AudioProcessingProperties::VoiceIsolationType::
+                  kVoiceIsolationEnabled
+            : AudioProcessingProperties::VoiceIsolationType::
+                  kVoiceIsolationDisabled;
+    audio_properties_ = initial_properties_;
+  }
 
+  std::optional<AudioProcessingProperties> GetInitialAudioProcessingProperties()
+      const override {
+    return initial_properties_;
+  }
   std::optional<AudioProcessingProperties> GetAudioProcessingProperties()
       const override {
     return audio_properties_;
   }
-  void SetAudioProcessingProperties(
-      const AudioProcessingProperties& properties) {
-    audio_properties_ = properties;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  void SetVoiceIsolation(bool enabled) override {
+    audio_properties_.voice_isolation =
+        enabled ? AudioProcessingProperties::VoiceIsolationType::
+                      kVoiceIsolationEnabled
+                : AudioProcessingProperties::VoiceIsolationType::
+                      kVoiceIsolationDisabled;
   }
+#endif
   void SetFormatForTesting(const media::AudioParameters& params) {
     SetFormat(params);
   }
@@ -1885,7 +1902,8 @@ class TestAudioSource : public blink::MediaStreamAudioSource {
   void SetIsApmProcessed(bool is_processed) { is_processed_ = is_processed; }
 
  private:
-  std::optional<AudioProcessingProperties> audio_properties_;
+  AudioProcessingProperties initial_properties_;
+  AudioProcessingProperties audio_properties_;
   bool is_processed_ = false;
 };
 
@@ -1895,10 +1913,10 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
     return;
   }
 
-  // 1. Create a running source.
-  auto platform_source_unique = std::make_unique<TestAudioSource>();
+  // 1. Create a running source with voice isolation enabled.
+  auto platform_source_unique =
+      std::make_unique<TestAudioSource>(/*voice_isolation_enabled=*/true);
   TestAudioSource* platform_source = platform_source_unique.get();
-  platform_source->SetAudioProcessingProperties(AudioProcessingProperties());
   platform_source->SetIsApmProcessed(true);
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::ChannelLayoutConfig::Stereo(),
@@ -1962,12 +1980,74 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
       AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
 }
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       ActiveProcessedSourceVoiceIsolationDisabledCannotReconfigureToEnabled) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
+
+  // 1. Create a running processed source with voice isolation disabled.
+  auto platform_source_unique =
+      std::make_unique<TestAudioSource>(/*voice_isolation_enabled=*/false);
+  TestAudioSource* platform_source = platform_source_unique.get();
+  platform_source->SetIsApmProcessed(true);
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::ChannelLayoutConfig::Stereo(),
+                                media::AudioParameters::kAudioCDSampleRate,
+                                1000);
+  params.set_effects(media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  platform_source->SetFormatForTesting(params);
+  MediaStreamDevice device(mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+                           "processed_source", "processed_source_name");
+  device.input = params;
+  platform_source->SetDevice(device);
+
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "processed_source", MediaStreamSource::kTypeAudio,
+      "processed_source_name", false /* remote */,
+      std::move(platform_source_unique));
+
+  auto platform_track =
+      std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>(source->Id(), source,
+                                                     std::move(platform_track));
+  EXPECT_TRUE(platform_source->ConnectToInitializedTrack(component));
+
+  AudioDeviceCaptureCapabilities capabilities = {
+      AudioDeviceCaptureCapability(platform_source)};
+
+  // 2. Applying voice isolation = true exact on an active source that was
+  // started with voice isolation disabled should FAIL.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  AudioCaptureSettings settings = SelectSettings(false, capabilities);
+  EXPECT_FALSE(settings.HasValue());
+  EXPECT_EQ(settings.failed_constraint_name(),
+            constraint_factory_.basic().voice_isolation.GetName());
+
+  // 3. Applying voice isolation = false exact should SUCCEED.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetExact(false);
+  settings = SelectSettings(false, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+}
+
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+
 TEST_P(MediaStreamConstraintsUtilAudioTest,
        UnprocessedRequestWithActiveProcessedSource) {
   // 1. Create a processed active source.
   auto platform_source_unique = std::make_unique<TestAudioSource>();
   TestAudioSource* platform_source = platform_source_unique.get();
-  platform_source->SetAudioProcessingProperties(AudioProcessingProperties());
   platform_source->SetIsApmProcessed(true);
   platform_source->SetFormatForTesting(
       media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
