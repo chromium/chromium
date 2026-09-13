@@ -101,7 +101,11 @@ async def test_consoleLog_textAndArgs(websocket, context_id):
         "params": {
             # BaseLogEntry
             "level": "info",
-            "source": {"realm": ANY_STR, "context": context_id},
+            "source": {
+                "realm": ANY_STR,
+                "context": context_id,
+                "userContext": "default",
+            },
             "text": "window "
             "undefined "
             "null "
@@ -313,7 +317,11 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id, 
         "params": {
             # BaseLogEntry
             "level": "error",
-            "source": {"realm": ANY_STR, "context": context_id},
+            "source": {
+                "realm": ANY_STR,
+                "context": context_id,
+                "userContext": "default",
+            },
             "text": "Error: some error",
             "timestamp": ANY_TIMESTAMP,
             "stackTrace": {
@@ -409,7 +417,7 @@ async def test_runtimeException_emitted(websocket, context_id):
         "method": "log.entryAdded",
         "params": {
             "level": "error",
-            "source": {"realm": ANY_STR, "context": ANY_STR},
+            "source": {"realm": ANY_STR, "context": ANY_STR, "userContext": "default"},
             "text": f"Error: {error_message}",
             "timestamp": ANY_TIMESTAMP,
             "stackTrace": ANY,
@@ -464,7 +472,7 @@ async def test_runtimeException_buffered(websocket, context_id):
         "method": "log.entryAdded",
         "params": {
             "level": "error",
-            "source": {"realm": ANY_STR, "context": ANY_STR},
+            "source": {"realm": ANY_STR, "context": ANY_STR, "userContext": "default"},
             "text": f"Error: {error_message}",
             "timestamp": ANY_TIMESTAMP,
             "stackTrace": ANY,

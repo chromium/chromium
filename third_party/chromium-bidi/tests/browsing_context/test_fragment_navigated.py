@@ -54,6 +54,7 @@ async def test_browsingContext_fragmentNavigated_event(websocket, context_id, ur
             "navigation": ANY_UUID,
             "timestamp": ANY_TIMESTAMP,
             "url": url_base + "#test",
+            "userContext": "default",
         },
     }
 
@@ -92,6 +93,7 @@ async def test_browsing_context_fragment_navigated_not_emitted_on_push_state(
                 "context": context_id,
                 "timestamp": ANY_TIMESTAMP,
                 "url": f"{url_example}#foo",
+                "userContext": "default",
             },
             "type": "event",
         },

@@ -153,7 +153,10 @@ export class BrowsingContextProcessor {
     // Details: https://github.com/web-platform-tests/wpt/issues/35846
     await context.lifecycleLoaded();
 
-    return {context: context.id};
+    return {
+      context: context.id,
+      userContext: context.userContext,
+    };
   }
 
   navigate(

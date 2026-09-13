@@ -260,6 +260,7 @@ async def test_continue_with_auth_completes(websocket, context_id, url_auth_requ
             "request": ANY_DICT,
             "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -471,6 +472,7 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
             "request": ANY_DICT,
             "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }

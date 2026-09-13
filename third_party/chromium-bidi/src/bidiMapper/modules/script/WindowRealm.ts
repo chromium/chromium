@@ -100,6 +100,7 @@ export class WindowRealm extends Realm {
       type: this.realmType,
       context: this.#browsingContextId,
       sandbox: this.sandbox,
+      userContext: this.browsingContext.userContext,
     };
   }
 
@@ -107,6 +108,7 @@ export class WindowRealm extends Realm {
     return {
       realm: this.realmId,
       context: this.browsingContext.id,
+      userContext: this.browsingContext.userContext,
     };
   }
 

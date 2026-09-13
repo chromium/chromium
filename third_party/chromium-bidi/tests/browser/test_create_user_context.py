@@ -316,6 +316,7 @@ async def test_browser_create_user_context_unhandled_prompt_behavior(
             "type": prompt_type,
             "handler": expected_handler,
             "message": PROMPT_MESSAGE,
+            "userContext": user_context["userContext"],
             **({"defaultValue": ""} if prompt_type == "prompt" else {}),
         },
     }
@@ -337,5 +338,6 @@ async def test_browser_create_user_context_unhandled_prompt_behavior(
             "context": context_id,
             "accepted": expected_handler == "accept",
             "type": prompt_type,
+            "userContext": user_context["userContext"],
         },
     }

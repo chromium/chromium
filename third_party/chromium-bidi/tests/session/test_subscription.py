@@ -450,7 +450,11 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
         "method": "log.entryAdded",
         "params": {
             "level": "info",
-            "source": {"realm": ANY, "context": context_id},
+            "source": {
+                "realm": ANY,
+                "context": context_id,
+                "userContext": "default",
+            },
             "text": "SOME_MESSAGE",
             "timestamp": ANY_TIMESTAMP,
             "stackTrace": ANY,

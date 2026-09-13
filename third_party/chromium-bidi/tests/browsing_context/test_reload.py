@@ -68,6 +68,7 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
             "navigation": reload_navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -81,6 +82,7 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
             "navigation": reload_navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -115,6 +117,7 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id, htm
             "navigation": ANY_STR,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -135,6 +138,7 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id, htm
             "navigation": ANY_STR,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -177,6 +181,7 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id, html):
             "navigation": ANY_STR,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -190,6 +195,7 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id, html):
             "navigation": ANY_STR,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -254,5 +260,6 @@ async def test_browsingContext_reload_ignoreCache(
             "request": ANY_DICT,
             "response": AnyExtending({"status": 200 if ignore_cache else 304}),
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
     }

@@ -417,6 +417,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                 },
             ),
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }

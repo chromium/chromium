@@ -56,6 +56,7 @@ async def test_file_dialog_show_file_event(
         "params": {
             "context": context_id,
             "multiple": multiple,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -88,6 +89,7 @@ async def test_file_dialog_show_directory_event(websocket, context_id, url_examp
         "params": {
             "context": context_id,
             "multiple": False,
+            "userContext": "default",
         },
         "type": "event",
     }

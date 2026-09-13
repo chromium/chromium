@@ -78,6 +78,7 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
     assert browsing_context_load == {
@@ -88,6 +89,7 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -115,6 +117,7 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -150,6 +153,7 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -161,6 +165,7 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 

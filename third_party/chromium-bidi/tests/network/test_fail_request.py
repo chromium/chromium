@@ -331,6 +331,7 @@ async def test_fail_request_completes(websocket, context_id, url_example):
                 },
             ),
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -381,6 +382,7 @@ async def test_fail_request_completes_new_request_still_blocks(
                 },
             ),
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -566,6 +568,7 @@ async def test_fail_request_multiple_contexts(
                 },
             ),
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -601,6 +604,7 @@ async def test_fail_request_multiple_contexts(
                 },
             ),
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -712,6 +716,7 @@ async def test_fail_request_remove_intercept_inflight_request(
                 },
             ),
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }

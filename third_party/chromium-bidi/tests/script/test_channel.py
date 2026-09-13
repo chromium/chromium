@@ -66,6 +66,7 @@ async def test_channel_twoMessageEvents(websocket, context_id):
             "source": {
                 "context": context_id,
                 "realm": ANY_STR,
+                "userContext": "default",
             },
         },
     }
@@ -80,6 +81,7 @@ async def test_channel_twoMessageEvents(websocket, context_id):
             "source": {
                 "context": context_id,
                 "realm": ANY_STR,
+                "userContext": "default",
             },
         },
     }
@@ -127,6 +129,7 @@ async def test_channel_beforeAndAfterExecutionFinished(websocket, context_id):
             "source": {
                 "context": context_id,
                 "realm": ANY_STR,
+                "userContext": "default",
             },
         },
     }
@@ -145,6 +148,7 @@ async def test_channel_beforeAndAfterExecutionFinished(websocket, context_id):
             "source": {
                 "context": context_id,
                 "realm": ANY_STR,
+                "userContext": "default",
             },
         },
     }
@@ -197,6 +201,7 @@ async def test_channel_and_another_channel(websocket, context_id):
             "source": {
                 "context": context_id,
                 "realm": ANY_STR,
+                "userContext": "default",
             },
         },
     }
@@ -210,6 +215,7 @@ async def test_channel_and_another_channel(websocket, context_id):
             "source": {
                 "context": context_id,
                 "realm": ANY_STR,
+                "userContext": "default",
             },
         },
     }
@@ -383,6 +389,7 @@ async def test_channel_serialization_options(
             "source": {
                 "context": context_id,
                 "realm": ANY_STR,
+                "userContext": "default",
             },
         },
     }

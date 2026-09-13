@@ -68,6 +68,7 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
                 "navigation": "stable_0",
                 "timestamp": ANY_TIMESTAMP,
                 "url": initial_url,
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -110,6 +111,7 @@ async def test_browsingContext_navigateWaitNone_navigated(websocket, context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -123,6 +125,7 @@ async def test_browsingContext_navigateWaitNone_navigated(websocket, context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -156,6 +159,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -199,6 +203,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -212,6 +217,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
+            "userContext": "default",
         },
     }
 
@@ -282,6 +288,7 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
                 "navigation": ANY_UUID,
                 "timestamp": ANY_TIMESTAMP,
                 "url": url,
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -293,6 +300,7 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
                 "navigation": ANY_UUID,
                 "timestamp": ANY_TIMESTAMP,
                 "url": "",
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -303,6 +311,7 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
                 "navigation": ANY_UUID,
                 "timestamp": ANY_TIMESTAMP,
                 "url": oopif_url,
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -313,6 +322,7 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
                 "navigation": ANY_UUID,
                 "timestamp": ANY_TIMESTAMP,
                 "url": oopif_url,
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -323,6 +333,7 @@ async def test_browsingContext_navigateWaitComplete_oopif_navigated(
                 "navigation": ANY_UUID,
                 "timestamp": ANY_TIMESTAMP,
                 "url": url,
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -513,6 +524,7 @@ async def test_browsingContext_navigationStartedEvent_viaScript(
                 "navigation": ANY_UUID,
                 "timestamp": ANY_TIMESTAMP,
                 "url": url_base,
+                "userContext": "default",
             },
         },
     ]
@@ -557,6 +569,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
                 "navigation": "stable_0",
                 "timestamp": ANY_TIMESTAMP,
                 "url": page_url,
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -567,6 +580,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
                 "navigation": "stable_1",
                 "timestamp": ANY_TIMESTAMP,
                 "url": iframe_url,
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -614,6 +628,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
                 "navigation": "stable_0",
                 "timestamp": ANY_TIMESTAMP,
                 "url": page_url,
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -624,6 +639,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
                 "navigation": "stable_1",
                 "timestamp": ANY_TIMESTAMP,
                 "url": iframe_url,
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -670,6 +686,7 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
                 "navigation": "stable_0",
                 "timestamp": ANY_TIMESTAMP,
                 "url": url,
+                "userContext": "default",
             },
             "type": "event",
         },
@@ -752,6 +769,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
             "navigation": ANY_UUID,
             "timestamp": ANY_TIMESTAMP,
             "url": url_base,
+            "userContext": "default",
         },
     }
     navigation_id = response["params"]["navigation"]

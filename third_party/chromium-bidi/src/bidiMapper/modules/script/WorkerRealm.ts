@@ -80,6 +80,7 @@ export class WorkerRealm extends Realm {
       // This is a hack to make Puppeteer able to track workers.
       // TODO: remove after Puppeteer tracks workers by owners and use the base version.
       context: this.associatedBrowsingContexts[0]?.id,
+      userContext: this.associatedBrowsingContexts[0]?.userContext,
     };
   }
 

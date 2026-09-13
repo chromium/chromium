@@ -30,6 +30,7 @@ async def test_scriptGetRealms(websocket, context_id, another_context_id):
                 "origin": "null",
                 "type": "window",
                 "context": context_id,
+                "userContext": "default",
             }
         ]
     } == result
@@ -71,6 +72,7 @@ async def test_scriptGetRealms(websocket, context_id, another_context_id):
                 "origin": "null",
                 "type": "window",
                 "context": context_id,
+                "userContext": "default",
             },
             {
                 "realm": sandbox_realm,
@@ -78,6 +80,7 @@ async def test_scriptGetRealms(websocket, context_id, another_context_id):
                 "type": "window",
                 "sandbox": "some_sandbox",
                 "context": context_id,
+                "userContext": "default",
             },
         ],
         key=realm_key,

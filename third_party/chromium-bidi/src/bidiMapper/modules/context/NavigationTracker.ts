@@ -19,6 +19,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {
+  type Browser,
   type BrowsingContext,
   ChromiumBidi,
 } from '../../../protocol/protocol.js';
@@ -49,6 +50,7 @@ export class NavigationResult {
 export class NavigationState {
   readonly navigationId = uuidv4();
   readonly #browsingContextId: string;
+  readonly #userContext: Browser.UserContext;
 
   #started = false;
   #finished = new Deferred<NavigationResult>();
@@ -68,11 +70,13 @@ export class NavigationState {
     browsingContextId: string,
     isInitial: boolean,
     eventManager: EventManager,
+    userContext: Browser.UserContext,
   ) {
     this.#browsingContextId = browsingContextId;
     this.url = url;
     this.#isInitial = isInitial;
     this.#eventManager = eventManager;
+    this.#userContext = userContext;
   }
 
   navigationInfo(): BrowsingContext.NavigationInfo {
@@ -81,6 +85,7 @@ export class NavigationState {
       navigation: this.navigationId,
       timestamp: getTimestamp(),
       url: this.url,
+      userContext: this.#userContext,
     };
   }
 
@@ -171,6 +176,7 @@ export class NavigationTracker {
   readonly #loaderIdToNavigationsMap = new Map<string, NavigationState>();
 
   readonly #browsingContextId: string;
+  readonly #userContext: Browser.UserContext;
   /**
    * Last committed navigation is committed, but is not guaranteed to be finished, as it
    * can still wait for `load` or `DOMContentLoaded` events.
@@ -189,10 +195,12 @@ export class NavigationTracker {
     browsingContextId: string,
     eventManager: EventManager,
     logger?: LoggerFn,
+    userContext: Browser.UserContext = 'default',
   ) {
     this.#browsingContextId = browsingContextId;
     this.#eventManager = eventManager;
     this.#logger = logger;
+    this.#userContext = userContext;
 
     this.#isInitialNavigation = true;
     // The initial navigation is always committed.
@@ -201,6 +209,7 @@ export class NavigationTracker {
       browsingContextId,
       urlMatchesAboutBlank(url),
       this.#eventManager,
+      this.#userContext,
     );
   }
 
@@ -257,6 +266,7 @@ export class NavigationTracker {
       this.#browsingContextId,
       this.#isInitialNavigation,
       this.#eventManager,
+      this.#userContext,
     );
     this.#pendingNavigation = navigation;
     return navigation;
@@ -361,6 +371,7 @@ export class NavigationTracker {
             this.#browsingContextId,
             false,
             this.#eventManager,
+            this.#userContext,
           );
 
     // Finish ongoing navigation.

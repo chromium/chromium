@@ -272,6 +272,7 @@ async def test_continue_request_completes(websocket, context_id, url_example):
             "request": ANY_DICT,
             "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -478,6 +479,7 @@ async def test_continue_request_remove_intercept_inflight_request(
             "request": ANY_DICT,
             "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }

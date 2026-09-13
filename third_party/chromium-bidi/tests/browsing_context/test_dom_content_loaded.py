@@ -32,6 +32,7 @@ async def test_browsingContext_domContentLoaded_create_notReceived(
         "id": command_id,
         "result": {
             "context": ANY_STR,
+            "userContext": "default",
         },
         "type": "success",
     }
@@ -73,6 +74,7 @@ async def test_browsingContext_domContentLoaded_navigate_received(
                 "navigation": "stable_0",
                 "timestamp": ANY_TIMESTAMP,
                 "url": url_example,
+                "userContext": "default",
             },
             "type": "event",
         },

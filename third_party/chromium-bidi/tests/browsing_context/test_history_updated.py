@@ -50,5 +50,6 @@ async def test_browsingContext_historyUpdated_event(websocket, context_id, url_b
             "context": context_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url_base + "#test",
+            "userContext": "default",
         },
     }

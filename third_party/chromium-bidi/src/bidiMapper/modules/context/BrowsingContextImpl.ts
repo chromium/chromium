@@ -125,6 +125,7 @@ export class BrowsingContextImpl {
       id,
       eventManager,
       logger,
+      this.userContext,
     );
   }
 
@@ -459,6 +460,7 @@ export class BrowsingContextImpl {
             context: this.id,
             multiple: params.mode === 'selectMultiple',
             element,
+            userContext: this.userContext,
           },
         },
         this.id,
@@ -513,6 +515,7 @@ export class BrowsingContextImpl {
               context: this.id,
               timestamp: getTimestamp(),
               url: this.#navigationTracker.url,
+              userContext: this.userContext,
             },
           },
           this.id,
@@ -562,6 +565,7 @@ export class BrowsingContextImpl {
                   navigation: this.#navigationTracker.currentNavigationId,
                   timestamp: getTimestamp(),
                   url: this.#navigationTracker.url,
+                  userContext: this.userContext,
                 },
               },
               this.id,
@@ -582,6 +586,7 @@ export class BrowsingContextImpl {
                   navigation: this.#navigationTracker.currentNavigationId,
                   timestamp: getTimestamp(),
                   url: this.#navigationTracker.url,
+                  userContext: this.userContext,
                 },
               },
               this.id,
@@ -732,6 +737,7 @@ export class BrowsingContextImpl {
             type:
               this.#lastUserPromptType ??
               ('UNKNOWN' as BrowsingContext.UserPromptType),
+            userContext: this.userContext,
             userText:
               accepted && params.userInput ? params.userInput : undefined,
           },
@@ -774,6 +780,7 @@ export class BrowsingContextImpl {
             handler: promptHandler,
             type: promptType,
             message: params.message,
+            userContext: this.userContext,
             ...(params.type === 'prompt'
               ? {defaultValue: params.defaultPrompt}
               : {}),
@@ -816,6 +823,7 @@ export class BrowsingContextImpl {
               navigation: params.guid,
               timestamp: getTimestamp(),
               url: params.url,
+              userContext: this.userContext,
             },
           },
           this.id,
@@ -851,6 +859,7 @@ export class BrowsingContextImpl {
                   navigation: params.guid,
                   timestamp: getTimestamp(),
                   url,
+                  userContext: this.userContext,
                 },
               },
               this.id,
@@ -869,6 +878,7 @@ export class BrowsingContextImpl {
                   navigation: params.guid,
                   timestamp: getTimestamp(),
                   url,
+                  userContext: this.userContext,
                 },
               },
               this.id,

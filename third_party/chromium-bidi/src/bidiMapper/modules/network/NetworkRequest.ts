@@ -976,6 +976,7 @@ export class NetworkRequest {
       request: this.#getRequestData(),
       // Timestamp should be in milliseconds, while CDP provides it in seconds.
       timestamp: Math.round(getTiming(this.#request.info?.wallTime) * 1000),
+      userContext: this.#cdpTarget.userContext,
       // Contains isBlocked and intercepts
       ...interceptProps,
     };

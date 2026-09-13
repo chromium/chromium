@@ -65,6 +65,7 @@ describe('NavigationTracker', () => {
           navigation: navigationId,
           timestamp: sinon.match.any,
           url,
+          userContext: 'default',
         },
       }),
       sinon.match(BROWSING_CONTEXT_ID),

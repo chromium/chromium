@@ -299,6 +299,7 @@ async def test_provide_response_completes(websocket, context_id, url_example):
             },
             "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -356,6 +357,7 @@ async def test_provide_response_completes(websocket, context_id, url_example):
                 }
             ),
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -525,6 +527,7 @@ async def test_provide_response_remove_intercept_inflight_request(
                 "timings": ANY_DICT,
             },
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }
@@ -563,6 +566,7 @@ async def test_provide_response_remove_intercept_inflight_request(
             "request": ANY_DICT,
             "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
+            "userContext": "default",
         },
         "type": "event",
     }
