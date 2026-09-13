@@ -195,7 +195,7 @@ AudioSystemToServiceAdapter::AudioSystemToServiceAdapter(
     : system_info_binder_(std::move(system_info_binder)),
       disconnect_timeout_(disconnect_timeout) {
   DCHECK(system_info_binder_);
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 AudioSystemToServiceAdapter::AudioSystemToServiceAdapter(
@@ -204,7 +204,7 @@ AudioSystemToServiceAdapter::AudioSystemToServiceAdapter(
                                   base::TimeDelta()) {}
 
 AudioSystemToServiceAdapter::~AudioSystemToServiceAdapter() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (system_info_.is_bound()) {
     TRACE_EVENT_END("audio",
                     perfetto::NamedTrack::FromPointer(
@@ -290,7 +290,7 @@ void AudioSystemToServiceAdapter::GetInputDeviceInfo(
 }
 
 mojom::SystemInfo* AudioSystemToServiceAdapter::GetSystemInfo() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!system_info_) {
     TRACE_EVENT_BEGIN("audio", "AudioSystemToServiceAdapter bound",
                       perfetto::NamedTrack::FromPointer(
@@ -307,7 +307,7 @@ mojom::SystemInfo* AudioSystemToServiceAdapter::GetSystemInfo() {
 }
 
 void AudioSystemToServiceAdapter::OnConnectionError() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT_END("audio",
                   perfetto::NamedTrack::FromPointer(
                       "audio::AudioSystemToServiceAdapter", this),

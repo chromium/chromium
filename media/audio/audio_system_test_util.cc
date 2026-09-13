@@ -65,7 +65,7 @@ void AudioSystemCallbackExpectations::OnAudioParams(
     base::OnceClosure on_cb_received,
     const std::optional<AudioParameters>& expected,
     const std::optional<AudioParameters>& received) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_, from_here);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (expected) {
     EXPECT_TRUE(received) << from_here;
     EXPECT_EQ(expected->AsHumanReadableString(),
@@ -81,7 +81,7 @@ void AudioSystemCallbackExpectations::OnBool(const std::string& from_here,
                                              base::OnceClosure on_cb_received,
                                              bool expected,
                                              bool result) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_, from_here);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EXPECT_EQ(expected, result) << from_here;
   std::move(on_cb_received).Run();
 }
@@ -91,7 +91,7 @@ void AudioSystemCallbackExpectations::OnDeviceDescriptions(
     base::OnceClosure on_cb_received,
     const AudioDeviceDescriptions& expected_descriptions,
     AudioDeviceDescriptions descriptions) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EXPECT_EQ(expected_descriptions, descriptions);
   std::move(on_cb_received).Run();
 }
@@ -103,7 +103,7 @@ void AudioSystemCallbackExpectations::OnInputDeviceInfo(
     const std::optional<std::string>& expected_associated_device_id,
     const std::optional<AudioParameters>& input,
     const std::optional<std::string>& associated_device_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_, from_here);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EXPECT_TRUE(!input || input->IsValid());
   if (expected_input) {
     EXPECT_TRUE(input) << from_here;
@@ -128,7 +128,7 @@ void AudioSystemCallbackExpectations::OnDeviceId(
     base::OnceClosure on_cb_received,
     const std::optional<std::string>& expected_id,
     const std::optional<std::string>& result_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_, from_here);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EXPECT_TRUE(!result_id || !result_id->empty());
   if (expected_id) {
     EXPECT_TRUE(result_id) << from_here;

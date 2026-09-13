@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "media/audio/audio_system.h"
 #include "media/audio/audio_system_helper.h"
 
@@ -57,7 +57,7 @@ class MEDIA_EXPORT AudioSystemImpl : public AudioSystem {
   base::OnceCallback<void(Args...)> MaybeBindToCurrentLoop(
       base::OnceCallback<void(Args...)> callback);
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
   const raw_ptr<AudioManager> audio_manager_;
 };
 

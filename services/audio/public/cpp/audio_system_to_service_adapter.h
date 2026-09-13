@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_system.h"
@@ -67,14 +67,14 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioSystemToServiceAdapter
   mojom::SystemInfo* GetSystemInfo();
   void OnConnectionError();
 
-  // Will be bound to the thread AudioSystemToServiceAdapter is used on.
+  // Will be bound to the sequence AudioSystemToServiceAdapter is used on.
   const SystemInfoBinder system_info_binder_;
   mojo::Remote<mojom::SystemInfo> system_info_;
 
   // To disconnect from the audio service when not in use.
   const base::TimeDelta disconnect_timeout_;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace audio

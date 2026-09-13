@@ -86,7 +86,7 @@ template <typename... Args>
 inline base::OnceCallback<void(Args...)>
 AudioSystemImpl::MaybeBindToCurrentLoop(
     base::OnceCallback<void(Args...)> callback) {
-  return audio_manager_->GetTaskRunner()->BelongsToCurrentThread()
+  return audio_manager_->GetTaskRunner()->RunsTasksInCurrentSequence()
              ? std::move(callback)
              : base::BindPostTaskToCurrentDefault(std::move(callback));
 }
@@ -99,13 +99,13 @@ std::unique_ptr<AudioSystem> AudioSystemImpl::CreateInstance() {
 
 AudioSystemImpl::AudioSystemImpl(AudioManager* audio_manager)
     : audio_manager_(audio_manager) {
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 void AudioSystemImpl::GetInputStreamParameters(
     const std::string& device_id,
     OnAudioParamsCallback on_params_cb) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetInputStreamParametersOnAudioThread,
@@ -116,7 +116,7 @@ void AudioSystemImpl::GetInputStreamParameters(
 void AudioSystemImpl::GetOutputStreamParameters(
     const std::string& device_id,
     OnAudioParamsCallback on_params_cb) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetOutputStreamParametersOnAudioThread,
@@ -125,7 +125,7 @@ void AudioSystemImpl::GetOutputStreamParameters(
 }
 
 void AudioSystemImpl::HasInputDevices(OnBoolCallback on_has_devices_cb) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&HasInputDevicesOnAudioThread,
@@ -134,7 +134,7 @@ void AudioSystemImpl::HasInputDevices(OnBoolCallback on_has_devices_cb) {
 }
 
 void AudioSystemImpl::HasOutputDevices(OnBoolCallback on_has_devices_cb) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&HasOutputDevicesOnAudioThread,
@@ -145,7 +145,7 @@ void AudioSystemImpl::HasOutputDevices(OnBoolCallback on_has_devices_cb) {
 void AudioSystemImpl::GetDeviceDescriptions(
     bool for_input,
     OnDeviceDescriptionsCallback on_descriptions_cb) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&GetDeviceDescriptionsOnAudioThread,
                                 base::Unretained(audio_manager_), for_input,
@@ -157,7 +157,7 @@ void AudioSystemImpl::GetDeviceDescriptions(
 void AudioSystemImpl::GetAssociatedOutputDeviceID(
     const std::string& input_device_id,
     OnDeviceIdCallback on_device_id_cb) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetAssociatedOutputDeviceIDOnAudioThread,
@@ -168,7 +168,7 @@ void AudioSystemImpl::GetAssociatedOutputDeviceID(
 void AudioSystemImpl::GetInputDeviceInfo(
     const std::string& input_device_id,
     OnInputDeviceInfoCallback on_input_device_info_cb) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(

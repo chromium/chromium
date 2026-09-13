@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system.h"
 #include "media/audio/mock_audio_manager.h"
@@ -20,7 +20,7 @@
 namespace media {
 
 // For tests only. Creates AudioSystem callbacks to be passed to AudioSystem
-// methods. When AudioSystem calls such a callback, it verifies treading
+// methods. When AudioSystem calls such a callback, it verifies sequence
 // expectations and checks received parameters against expected values passed
 // during its creation. After that it calls |on_cb_received| closure.
 // Note AudioSystemCallbackExpectations object must outlive all the callbacks
@@ -90,7 +90,7 @@ class AudioSystemCallbackExpectations {
                   const std::optional<std::string>& expected_id,
                   const std::optional<std::string>& result_id);
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Template test case to test AudioSystem implementations.
