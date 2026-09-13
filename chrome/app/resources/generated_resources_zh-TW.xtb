@@ -4068,7 +4068,7 @@
 <translation id="4085298594534903246">系統已封鎖此網頁的 JavaScript。</translation>
 <translation id="4085620044235559093">選擇用來開啟 <ph name="FILE_TYPE" /> 檔案的應用程式</translation>
 <translation id="4086565736678483233">你可以在「付款方式」中存取這項資訊</translation>
-<translation id="4086790464420017258">正在準備啟動工作…</translation>
+<translation id="4086790464420017258">正在準備啟動任務…</translation>
 <translation id="4087089424473531098">已建立以下擴充功能：
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4871,7 +4871,7 @@
 使用 Ctrl + Alt+ 調低亮度鍵則可縮小畫面。</translation>
 <translation id="4726710629007580002">嘗試安裝這項擴充功能時顯示警告訊息：</translation>
 <translation id="4728558894243024398">平台</translation>
-<translation id="4729379213940929490">接收工作最新消息</translation>
+<translation id="4729379213940929490">接收任務最新消息</translation>
 <translation id="4730254775893450875">開啟時，資料會儲存到 Google 帳戶，且所有裝置皆可使用。如果關閉，資料只會儲存到這部裝置。如要查看 ChromeOS 同步選項，請前往 <ph name="LINK_BEGIN" />ChromeOS 設定<ph name="LINK_END" />。</translation>
 <translation id="4730888769809690665">你已允許 <ph name="SITE" /> 傳送通知</translation>
 <translation id="4732799736617504962">連接的麥克風僅支援降噪功能</translation>
@@ -5599,7 +5599,7 @@
 <translation id="5280426389926346830">要建立捷徑嗎？</translation>
 <translation id="5280966903879030278">使用日常用語搜尋瀏覽記錄，找出造訪過的網站。這項設定已關閉。</translation>
 <translation id="5281013262333731149">在 <ph name="OPEN_BROWSER" /> 中開啟</translation>
-<translation id="5284107433515104664">變更密碼期間，系統會將網頁內容和相關資訊傳送給 Google，並可能交由專人審查，以提升這項功能。你的密碼會加密處理，任何人都無法看到。</translation>
+<translation id="5284107433515104664">系統變更密碼時，會將網頁內容和相關資訊傳送給 Google，並可能交由專人審查，以提升這項功能。你的密碼會加密處理，任何人都無法看到。</translation>
 <translation id="5284445933715251131">繼續下載</translation>
 <translation id="5285635972691565180">螢幕 <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">掃描中</translation>
@@ -6589,7 +6589,7 @@
 <translation id="609174145569509836">清理儲存空間</translation>
 <translation id="6091761513005122595">已成功共用掛接的裝置。</translation>
 <translation id="6093803049406781019">刪除設定檔</translation>
-<translation id="6094172114910013425">你可以與 Google 分享螢幕截圖，讓系統在搜尋時參考截圖中的內容。分享整個螢幕畫面的螢幕截圖時，Google 只會看到你目前所見的內容。</translation>
+<translation id="6094172114910013425">你可以與 Google 分享螢幕截圖，讓系統在搜尋時參考截圖中的內容。分享整個螢幕畫面的截圖時，Google 只會看到你目前所見的內容。</translation>
 <translation id="6095696531220637741">馬卡龍</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">最大化開啟</translation>
@@ -7408,7 +7408,7 @@
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723946439672043591">選擇其他設定檔</translation>
 <translation id="6725206449694821596">網際網路列印通訊協定 (IPP)</translation>
-<translation id="6725250112230872513">媒體解讀</translation>
+<translation id="6725250112230872513">影音解讀</translation>
 <translation id="6725970970008349185">每頁顯示的候選字個數</translation>
 <translation id="672609503628871915">查看新功能</translation>
 <translation id="6728528977475057549">末四碼為 <ph name="LAST_FOUR_DIGITS" /> 的 IBAN</translation>

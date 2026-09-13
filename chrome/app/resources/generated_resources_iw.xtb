@@ -132,7 +132,7 @@
 אפשר לבדוק את הסיסמאות שלך בכל שלב ב<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">העתקת כתו&amp;בת קישור</translation>
 <translation id="1085064499066015002">פועל כל הזמן בכל האתרים</translation>
-<translation id="1085340215550339505">‏כדי להציע לך בזמן לשנות את הסיסמה, התוכן וכתובות ה-URL של הדפים שביקרת בהם עשויים לעבור עיבוד במרחב פרטי בענן</translation>
+<translation id="1085340215550339505">‏כדי להציע לך לשנות את הסיסמה בזמן, לפעמים התוכן וכתובות ה-URL של הדפים שביקרת בהם עוברים עיבוד במרחב פרטי בענן</translation>
 <translation id="1085558727130096638">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד משתמש אחד (<ph name="NUM_OTHER_MEMBERS" />)</translation>
 <translation id="1085618740036066768">‫<ph name="ITEM" /> לא נבחר. ‫<ph name="INDEX" /> מתוך <ph name="COUNT" />. כדי לבחור, יש ללחוץ על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="1086486568852410168">‏חיפוש באמצעות Google Lens</translation>
@@ -1138,7 +1138,7 @@
 <translation id="1871131409931646355">היסטוריית ההורדות המלאה</translation>
 <translation id="187145082678092583">פחות אפליקציות</translation>
 <translation id="1871615898038944731">ה-<ph name="DEVICE_TYPE" /> שלך מעודכן</translation>
-<translation id="1872846000961079826">‏במהלך שינוי הסיסמה, תוכן מדפי סיסמאות ומידע קשור נשלחים אל Google, ויכול להיות שבודקים אנושיים יבדקו אותם כדי לשפר את האיכות של התכונה הזו</translation>
+<translation id="1872846000961079826">‏במהלך שינוי הסיסמה, Google מקבלת תוכן מדפי סיסמאות ופרטים קשורים ולפעמים מעבירה את המידע הזה לבדיקה אנושית כדי לשפר את הפיצ'ר</translation>
 <translation id="1873513359268939357">‏יומן Outlook</translation>
 <translation id="1873920700418191231">צריך לאשר שוב את ההרשאות עבור <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">מורשים להציג מודעות מכל סוג</translation>
@@ -2943,7 +2943,7 @@
 <translation id="3241680850019875542">יש לבחור את ספריית הבסיס של התוסף שיש לארוז. כדי לעדכן תוסף, יש לבחור גם את קובץ המפתח הפרטי שבו ניתן להשתמש שוב.</translation>
 <translation id="3241810535741601486">השינוי הזה הוא קבוע ואי אפשר לבטל אותו. העדכונים המורחבים יחולו על כל המשתמשים במכשיר הזה. <ph name="LINK_START" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">הדמות שלך</translation>
-<translation id="3242764115495920926">הצעה לשינוי סיסמאות באופן אוטומטי</translation>
+<translation id="3242764115495920926">הצעות אוטומטית לשינוי סיסמה</translation>
 <translation id="3243017971870859287">‏קריאת מספרים סידוריים של מכשירי ChromeOS Flex והרכיבים</translation>
 <translation id="324366796737464147">סינון רעשים</translation>
 <translation id="3243680258677029936">{0,plural, =1{חלון מבודד}one{(#) חלונות מבודדים}two{(#) חלונות מבודדים}other{(#) חלונות מבודדים}}</translation>
@@ -4479,7 +4479,7 @@
 <translation id="4401912261345737180">‏התחברות עם קוד כדי להפעיל Cast</translation>
 <translation id="4403012369005671154">‏המרת דיבור לטקסט (STT)</translation>
 <translation id="4403775189117163360">בחירת תיקייה אחרת</translation>
-<translation id="440411460180511551">‏אם Chromium יגלה שאחת מהסיסמאות שלך נכללת במידע שדלף כתוצאה מפרצה באבטחת מידע, מנהל הסיסמאות של Google יוכל להציע לשנות אותה בשבילך אם החשבון יהיה מחובר.</translation>
+<translation id="440411460180511551">‏כשהחשבון מחובר, אם Chromium גילה שאחת מהסיסמאות שלך נכללת במידע שדלף בפרצה באבטחת מידע, מנהל הסיסמאות של Google יציע לשנות אותה בשבילך.</translation>
 <translation id="4404843640767531781">האפליקציה <ph name="APP_NAME" /> נחסמה על ידי ההורה שלך. יש לבקש רשות מההורה כדי להשתמש באפליקציה הזו.</translation>
 <translation id="4405117686468554883">‏‎*.jpeg‏, ‎‏‎*.jpg‏, ‎*.png</translation>
 <translation id="4405224443901389797">העברה אל…</translation>
@@ -6627,7 +6627,7 @@
 <translation id="6099766472403716061">‏יש להתיר תמיד ל-<ph name="HOST" /> לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש.</translation>
 <translation id="6100736666660498114">תפריט התחלה</translation>
 <translation id="6100737823178787570">כדי להמשיך במשימה צריך להגדיל את החלון</translation>
-<translation id="6101170451607354234">‏אם Chrome יגלה שאחת מהסיסמאות שלך נכללת במידע שדלף כתוצאה מפרצה באבטחת מידע, מנהל הסיסמאות של Google יוכל להציע לך לשנות אותה בשבילך כשהחשבון יהיה מחובר.</translation>
+<translation id="6101170451607354234">‏כשהחשבון מחובר, אם Chrome גילה שאחת מהסיסמאות שלך נכללת במידע שדלף בפרצה באבטחת מידע, מנהל הסיסמאות של Google יציע לשנות אותה בשבילך.</translation>
 <translation id="6101226222197207147">יישום חדש נוסף (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">הקובץ הזה נחסם על-ידי ההגנה המתקדמת.</translation>
 <translation id="6103681770816982672">‏אזהרה: מתבצע מעבר ל-developer channel</translation>
@@ -6834,7 +6834,7 @@
 <translation id="6254892857036829079">מושלם</translation>
 <translation id="6257602895346497974">הפעלת סנכרון...</translation>
 <translation id="625827534921607067">אם יש יותר מרשת אחת שכבר חוברה או הוגדרה, הרשת הזו תקבל עדיפות</translation>
-<translation id="6258818697161346451">אפשר להשתמש במפתחות הגישה במכשיר הזה</translation>
+<translation id="6258818697161346451">רוצה להשתמש במפתחות הגישה שלך במכשיר הזה?</translation>
 <translation id="6259776178973198997">‏רענון פרטי הבעלים של Wi-Fi ישיר</translation>
 <translation id="6261688934280090835">‏רישומים של אפליקציות קיוסק של ChromeOS</translation>
 <translation id="6263082573641595914">‏גרסת רשות אישורים של Microsoft</translation>
