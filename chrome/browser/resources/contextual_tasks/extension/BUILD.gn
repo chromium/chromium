@@ -64,12 +64,10 @@ build_webui("build") {
   grd_resource_path_prefix = "contextual_tasks_extension"
   ts_composite = true
 
-  # Refer to parent directory for composebox.ts and other UI files.
   in_folder = "."
 
   static_files = [
     "chip.html",
-    "input_plate.html",
     "lens_button.html",
     "manifest.json",
   ]
@@ -78,9 +76,9 @@ build_webui("build") {
   extra_grdp_files = [ "$target_gen_dir/background_resources.grdp" ]
 
   ts_files = [
-    "input_plate.ts",
     "lens_button_app.html.ts",
     "lens_button_app.ts",
+    "post_message_handler.ts",
   ]
 
   css_files = [ "lens_button_app.css" ]
@@ -123,8 +121,8 @@ build_webui("build") {
   optimize = true
   optimize_webui_host = "chrome-extension://glbjnfimcajjenihimblfaponejbkoph"
   optimize_webui_in_files = [
-    "input_plate.js",
     "lens_button_app.js",
+    "post_message_handler.js",
   ]
 
   optimize_webui_external_paths =
