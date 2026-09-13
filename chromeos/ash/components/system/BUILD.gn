@@ -51,5 +51,8 @@ source_set("unit_tests") {
 
 fuzzer_test("name_value_pairs_parser_fuzzer") {
   sources = [ "name_value_pairs_parser_fuzzer.cc" ]
-  deps = [ ":system" ]
+  deps = [
+    ":system",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
+  ]
 }
