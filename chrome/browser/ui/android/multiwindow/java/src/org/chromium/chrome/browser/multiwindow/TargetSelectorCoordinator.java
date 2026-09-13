@@ -89,7 +89,10 @@ public class TargetSelectorCoordinator {
                 TYPE_ENTRY,
                 parentView ->
                         LayoutInflater.from(mContext)
-                                .inflate(R.layout.instance_switcher_item, null),
+                                .inflate(
+                                        R.layout.instance_switcher_item,
+                                        parentView,
+                                        /* attachToRoot= */ false),
                 TargetSelectorItemViewBinder::bind);
 
         mDialogView = LayoutInflater.from(context).inflate(R.layout.target_selector_dialog, null);

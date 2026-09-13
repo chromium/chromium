@@ -249,7 +249,10 @@ public class InstanceSwitcherCoordinator {
                 TYPE_INSTANCE,
                 parentView ->
                         LayoutInflater.from(mContext)
-                                .inflate(R.layout.instance_switcher_item, null),
+                                .inflate(
+                                        R.layout.instance_switcher_item,
+                                        parentView,
+                                        /* attachToRoot= */ false),
                 InstanceSwitcherItemViewBinder::bind);
         return adapter;
     }

@@ -6,11 +6,16 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
+<!-- This dialog's rows span the full width of the list and position
+     their own favicon via instance_switcher_dialog_favicon_start_margin,
+     matching instance_switcher_cmd_item, so the row opts out of the start
+     margin ListItemContainer would otherwise contribute. -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content"
-    style="@style/ListItemContainer" >
+    style="@style/ListItemContainer"
+    android:layout_marginStart="0dp" >
 
     <ImageView
         android:id="@+id/favicon"
