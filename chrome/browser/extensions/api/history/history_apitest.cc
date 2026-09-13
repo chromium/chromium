@@ -415,4 +415,43 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, Incognito) {
                                "countItemsInHistory()"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(HistoryApiTest, AddUrl_IsolatedAppRejected) {
+  static constexpr char kManifest[] =
+      R"({
+        "name": "chrome.history",
+        "version": "0.1",
+        "manifest_version": 3,
+        "permissions": ["history"],
+        "background": {
+          "service_worker": "add_url_iwa.js"
+        }
+      })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+        function addIwaUrl() {
+          const iwaUrl = 'isolated-app://aerugq4wfqsayeaaxxxxxxxxxx/path';
+          chrome.history.addUrl({url: iwaUrl}, function() {
+            chrome.test.assertLastError('Url is invalid.');
+            chrome.history.getVisits({url: iwaUrl}, function() {
+              chrome.test.assertLastError('Url is invalid.');
+              chrome.history.deleteUrl({url: iwaUrl}, function() {
+                chrome.test.assertLastError('Url is invalid.');
+                chrome.history.search({text: ''}, function(results) {
+                  chrome.test.assertEq(0, results.length);
+                  chrome.test.succeed();
+                });
+              });
+            });
+          });
+        }
+      ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("add_url_iwa.js"), kBackgroundJs);
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+#endif
+
 }  // namespace extensions

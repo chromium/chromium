@@ -4,9 +4,14 @@
 
 #include "chrome/browser/history/history_utils.h"
 
+#include "build/build_config.h"
 #include "chrome/common/url_constants.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif
 
 bool CanAddURLToHistory(const GURL& url) {
   if (!url.is_valid())
@@ -26,6 +31,14 @@ bool CanAddURLToHistory(const GURL& url) {
       url.SchemeIs(chrome::kChromeSearchScheme) ||
       url.SchemeIs(dom_distiller::kDomDistillerScheme))
     return false;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Isolated Web Apps are isolated applications and must not be registered in
+  // browsing history.
+  if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
+    return false;
+  }
+#endif
 
   return true;
 }

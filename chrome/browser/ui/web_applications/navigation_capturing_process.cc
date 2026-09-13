@@ -294,14 +294,16 @@ bool IsCrossIwaNavigation(
     return true;
   }
 
-  // Any links: window.open(), anchor link, meta tag redirect. Cancel
+  // Any links or browser UI navigations (bookmarks, history): Cancel
   // navigations that do not originate from a browser belonging to the target
   // app's family (the app itself, its parent app, or a sibling sub-app),
   // regardless of disposition, before falling through to the
   // disposition-specific handling. With sub-apps, navigations are allowed in
   // all directions as long as both apps are in the same family.
-  if (ui::PageTransitionCoreTypeIs(params.transition,
-                                   ui::PAGE_TRANSITION_LINK) &&
+  if ((ui::PageTransitionCoreTypeIs(params.transition,
+                                    ui::PAGE_TRANSITION_LINK) ||
+       ui::PageTransitionCoreTypeIs(params.transition,
+                                    ui::PAGE_TRANSITION_AUTO_BOOKMARK)) &&
       (!source_browser_app_id ||
        registrar.GetParentAppId(*source_browser_app_id)
                .value_or(*source_browser_app_id) !=

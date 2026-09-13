@@ -216,6 +216,28 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
             browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest,
+                       AutoBookmarkNavigationCancelled) {
+  ASSERT_NO_FATAL_FAILURE(InstallBundles());
+
+  const size_t browsers_before =
+      GlobalBrowserCollection::GetInstance()->GetSize();
+
+  // Navigating to an IWA via PAGE_TRANSITION_AUTO_BOOKMARK from a non-app
+  // context (e.g. History menu, History clusters, bookmarks) must be cancelled
+  // as a cross-IWA navigation.
+  NavigateParams params = MakeNavigateParams(browser());
+  params.url = url_info1_->origin().GetURL().Resolve("/deep-link.html");
+  params.transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  EXPECT_EQ(nullptr, handle);
+
+  EXPECT_EQ(browsers_before, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_FALSE(web_app::AppBrowserController::FindForWebApp(
+      *profile(), url_info1_->app_id()));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocol) {
   ASSERT_NO_FATAL_FAILURE(InstallBundles());

@@ -29,4 +29,8 @@ source_set("history") {
     "//extensions/browser",
     "//extensions/buildflags",
   ]
+
+  if (!is_android) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
 }
