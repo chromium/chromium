@@ -143,6 +143,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/components/browser_ui/modaldialog/AppModalPresenterUnitTest.java",
     "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogViewUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/modaldialog/TabModalPresenterUnitTest.java",
   ]
   deps = [
     ":java",

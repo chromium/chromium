@@ -189,6 +189,9 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                     };
             ViewCompat.setOnApplyWindowInsetsListener(
                     getWindow().getDecorView().getRootView(), mWindowInsetsListener);
+        } else {
+            // No listener to apply the margins, so apply them once here.
+            applyWindowInsets();
         }
 
         mModelChangeProcessor =

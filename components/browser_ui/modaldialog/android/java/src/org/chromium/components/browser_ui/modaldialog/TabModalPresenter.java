@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.View;
@@ -250,6 +251,18 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         Gravity.CENTER);
+        if (ModalDialogFeatureMap.isLargeFormFactorUiEnabled(mContext)) {
+            // Real layout margins, so the container reserves the space. Its bounds already
+            // exclude browser controls and side UI (e.g. Vertical Tabs / Side Panel).
+            Resources resources = mContext.getResources();
+            int horizontalMargin =
+                    resources.getDimensionPixelSize(
+                            R.dimen.modal_dialog_view_horizontal_margin_lff);
+            int verticalMargin =
+                    resources.getDimensionPixelSize(R.dimen.modal_dialog_view_vertical_margin_lff);
+            params.setMargins(horizontalMargin, verticalMargin, horizontalMargin, verticalMargin);
+        }
+
         assumeNonNull(mDialogView).setBackgroundResource(R.drawable.dialog_bg_no_shadow);
         mDialogContainer.addView(mDialogView, params);
         mDialogContainer.setAlpha(0f);
