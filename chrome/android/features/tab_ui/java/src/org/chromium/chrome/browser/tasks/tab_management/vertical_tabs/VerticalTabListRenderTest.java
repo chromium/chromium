@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoord
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
@@ -164,6 +165,12 @@ public class VerticalTabListRenderTest {
 
     @Before
     public void setUp() throws Exception {
+        // ClankGlicContextMenu is force-enabled on desktop Android (see
+        // chrome_browser_field_trials.cc), and the tab context menu tests below build the menu
+        // with a mock Profile. Short-circuit the Glic enablement checks so the menu code never
+        // calls into native with a Profile that has no native counterpart, which would crash the
+        // test process.
+        GlicEnabling.setEnabledForTesting(false);
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(
