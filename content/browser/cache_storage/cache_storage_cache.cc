@@ -2428,11 +2428,13 @@ void CacheStorageCache::KeysDidQueryCache(
 }
 
 void CacheStorageCache::CloseImpl(base::OnceClosure callback) {
-  // TODO(crbug.com/554523653): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK_EQ(BACKEND_OPEN, backend_state_);
-
   CHECK(scheduler_->IsRunningExclusiveOperation(), base::NotFatalUntil::M158);
+
+  if (backend_state_ != BACKEND_OPEN) {
+    std::move(callback).Run();
+    return;
+  }
+
   backend_.reset();
   post_backend_closed_callback_ = std::move(callback);
 }
