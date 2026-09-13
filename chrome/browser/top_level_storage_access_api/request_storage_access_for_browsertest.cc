@@ -74,9 +74,6 @@ constexpr char kSameSiteNoneSecure[] = ";SameSite=None;Secure";
 constexpr char kRequestOutcomeHistogram[] =
     "API.TopLevelStorageAccess.RequestOutcome";
 
-constexpr char kAllowedByStorageAccessTypeHistogram[] =
-    "API.EffectiveStorageAccess.AllowedByStorageAccessType.Subsampled";
-
 constexpr char kRequestStorageAccessUkmEntryName[] =
     "RequestStorageAccessFor.RequestStorageResult";
 
@@ -1352,81 +1349,6 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
       ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
                                          kRequestStorageResultMetricName),
       testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
-}
-
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
-                       AllowedByStorageAccessTypeUma_kNone) {
-  base::HistogramTester histogram_tester;
-  SetBlockThirdPartyCookies(true);
-
-  SetCrossSiteCookieOnHost(kHostA);
-
-  NavigateToPageWithFrame(kHostA);
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  EXPECT_THAT(histogram_tester.GetBucketCount(
-                  kAllowedByStorageAccessTypeHistogram,
-                  /*sample=*/content_settings::CookieSettingsBase::
-                      AllowedByStorageAccessType::kNone),
-              Gt(0));
-}
-
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
-                       AllowedByStorageAccessTypeUma_kTopLevelAccessOnly) {
-  base::HistogramTester histogram_tester;
-  SetBlockThirdPartyCookies(true);
-
-  NavigateToPageWithFrame(kHostA);
-
-  SetCrossSiteCookieOnHost(kHostB);
-  NavigateFrameTo(kHostB, "/empty.html");
-
-  // kHostA can request storage access on behalf of kHostB, and it is granted
-  // (by an implicit grant) through the test framework's related website set.
-  EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
-      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
-
-  EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
-                                            /*cors_enabled=*/true),
-            "cross-site=b.test");
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  EXPECT_THAT(histogram_tester.GetBucketCount(
-                  kAllowedByStorageAccessTypeHistogram,
-                  /*sample=*/content_settings::CookieSettingsBase::
-                      AllowedByStorageAccessType::kTopLevelOnly),
-              Gt(0));
-}
-
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
-                       AllowedByStorageAccessTypeUma_kStorageAccessOnly) {
-  base::HistogramTester histogram_tester;
-  permissions::MockPermissionPromptFactory prompt_factory =
-      MakePromptFactory(*browser());
-  prompt_factory.set_response_type(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
-
-  SetBlockThirdPartyCookies(true);
-
-  SetCrossSiteCookieOnHost(kHostA);
-
-  NavigateToPageWithFrame(kHostA);
-
-  NavigateFrameTo(kHostB, "/empty.html");
-
-  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
-
-  ASSERT_EQ(ReadCookiesViaJS(GetFrame()), "");
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  EXPECT_THAT(histogram_tester.GetBucketCount(
-                  kAllowedByStorageAccessTypeHistogram,
-                  /*sample=*/content_settings::CookieSettingsBase::
-                      AllowedByStorageAccessType::kStorageAccessOnly),
-              Gt(0));
 }
 
 enum class CookieSetMechanism {

@@ -118,30 +118,6 @@ class CookieSettingsBase {
     kMaxValue = kAllowBySandboxValue,
   };
 
-  // Enum for recording what type of storage permissions or overrides are
-  // present on allowed cookies. These values are persisted to logs. Entries
-  // should not be renumbered and numeric values should never be reused.
-  enum class AllowedByStorageAccessType {
-    // The cookie was not accessible through TopLevelStorageAccess or
-    // StorageAccess.
-    kNone = 0,
-
-    // The cookie was accessible via TopLevelStorageAccess.
-    kTopLevelOnly = 1,
-
-    // The cookie was accessible via StorageAccess.
-    kStorageAccessOnly = 2,
-
-    // The cookie was accessible via TopLevelStorageAccess and StorageAccess
-    //
-    // This value should not be hit but is here for type completeness and to
-    // allow metrics to accurately report the unexpected case where both
-    // permissions are present, if it does occur.
-    kTopLevelAndStorageAccess = 3,
-
-    kMaxValue = kTopLevelAndStorageAccess,
-  };
-
   class CookieSettingWithMetadata {
    public:
     CookieSettingWithMetadata() = default;
@@ -151,9 +127,7 @@ class CookieSettingsBase {
         bool allow_partitioned_cookies,
         bool is_explicit_setting,
         ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism,
-        bool is_third_party_request,
-        AllowedByStorageAccessType allowed_by_storage_access_type =
-            AllowedByStorageAccessType::kNone);
+        bool is_third_party_request);
 
     // Returns true iff the setting is "block" due to the user's
     // third-party-cookie-blocking setting.
@@ -173,10 +147,6 @@ class CookieSettingsBase {
 
     bool is_third_party_request() const { return is_third_party_request_; }
 
-    AllowedByStorageAccessType allowed_by_storage_access_type() const {
-      return allowed_by_storage_access_type_;
-    }
-
    private:
     // The setting itself.
     ContentSetting cookie_setting_ = ContentSetting::CONTENT_SETTING_ALLOW;
@@ -193,13 +163,6 @@ class CookieSettingsBase {
 
     // Whether the request is considered third-party.
     bool is_third_party_request_;
-
-    // TODO( https://crbug.com/378872426): remove value when
-    // `API.TopLevelStorageAccess.AllowedByStorageAccessType` is no longer being
-    // collected. Evaluation of if the metric should be removed should occur no
-    // earlier than 6 months after https://crbug.com/issues/379892196 is
-    // completed.
-    AllowedByStorageAccessType allowed_by_storage_access_type_;
   };
 
   // Set of types relevant for CookieSettings.
@@ -428,16 +391,9 @@ class CookieSettingsBase {
                                const GURL& first_party_url,
                                net::CookieSettingOverrides overrides) const;
 
-  // TODO(https://crbug.com/378872426): remove `storage_access_permissions` when
-  // `API.TopLevelStorageAccess.AllowedByStorageAccessType` is no longer being
-  // collected. Evaluation of if the metric should be removed should occur no
-  // earlier than 6 months after https://crbug.com/issues/379892196 is
-  // completed.
   struct AllowAllCookies {
     ThirdPartyCookieAllowMechanism mechanism =
         ThirdPartyCookieAllowMechanism::kNone;
-    AllowedByStorageAccessType allowed_by_storage_access_type =
-        AllowedByStorageAccessType::kNone;
   };
   struct AllowPartitionedCookies {};
   struct BlockAllCookies {};

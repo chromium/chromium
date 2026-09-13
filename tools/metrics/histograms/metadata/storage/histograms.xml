@@ -101,20 +101,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Under100KB" summary="DB size under 100KB."/>
 </variants>
 
-<histogram
-    name="API.EffectiveStorageAccess.AllowedByStorageAccessType.Subsampled"
-    enum="AllowedByStorageAccessType" expires_after="2027-02-10">
-  <owner>selya@google.com</owner>
-  <owner>cfredric@chromium.org</owner>
-  <summary>
-    Records whether storage-access or top-level-storage-access allow access to
-    cookies in a given context. This will be recorded every time cookies are
-    read or set.
-
-    Subsampled to 1% of all cases.
-  </summary>
-</histogram>
-
 <histogram name="API.StorageAccess.AllowedRequests4.Subsampled"
     enum="StorageAccessResult" expires_after="2026-10-25">
   <owner>mkwst@chromium.org</owner>
