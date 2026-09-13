@@ -14,6 +14,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_view_delegate.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill {
@@ -30,6 +33,12 @@ class Controller final : public CreditCardScannerViewDelegate {
     view_ = CreditCardScannerView::Create(weak_ptr_factory_.GetWeakPtr(),
                                           web_contents);
     DCHECK(view_);
+    if (auto* client = ContentAutofillClient::FromWebContents(web_contents)) {
+      user_has_cards = !client->GetPersonalDataManager()
+                         .payments_data_manager()
+                         .GetCreditCards()
+                         .empty();
+    }
   }
   Controller(const Controller&) = delete;
   Controller& operator=(const Controller&) = delete;
@@ -54,6 +63,8 @@ class Controller final : public CreditCardScannerViewDelegate {
   void ScanCompleted(const CreditCard& card) override {
     AutofillMetrics::LogScanCreditCardCompleted(
         base::TimeTicks::Now() - show_time_, true);
+    AutofillMetrics::LogScanCreditCardCompletedNewUser(
+        /*is_new_user=*/!user_has_cards);
     std::move(callback_).Run(card);
     delete this;
   }
@@ -66,6 +77,9 @@ class Controller final : public CreditCardScannerViewDelegate {
 
   // The time when the UI was shown.
   base::TimeTicks show_time_;
+
+  // Whether the user has any saved credit cards.
+  bool user_has_cards = false;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

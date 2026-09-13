@@ -21,6 +21,10 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_util.h"
@@ -178,6 +182,19 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
     if (!IsSuggestionTypeEligibleForKeyboardAccessory(suggestion.type)) {
       continue;
     }
+    if (suggestion.type == SuggestionType::kScanCreditCard) {
+      bool is_new_user = true;
+      if (auto* client = ContentAutofillClient::FromWebContents(
+              controller_->GetWebContents())) {
+        is_new_user = client->GetPersonalDataManager()
+                          .payments_data_manager()
+                          .GetCreditCards()
+                          .empty();
+      }
+      AutofillMetrics::LogScanCreditCardPromptShown(
+          AutofillMetrics::ScanCreditCardPromptEntryPoint::kKeyboardAccessory,
+          is_new_user);
+    }
     int android_icon_id = 0;
     if (suggestion.icon != Suggestion::Icon::kNoIcon) {
       android_icon_id = ResourceMapper::MapToJavaDrawableId(
@@ -274,6 +291,22 @@ void AutofillKeyboardAccessoryViewImpl::ShowAutofillAiSuggestionDetails(
 void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(JNIEnv* env,
                                                            int32_t list_index) {
   if (controller_) {
+    if (list_index >= 0 && list_index < controller_->GetLineCount()) {
+      const Suggestion& suggestion = controller_->GetSuggestionAt(list_index);
+      if (suggestion.type == SuggestionType::kScanCreditCard) {
+        bool is_new_user = true;
+        if (auto* client = ContentAutofillClient::FromWebContents(
+                controller_->GetWebContents())) {
+          is_new_user = client->GetPersonalDataManager()
+                            .payments_data_manager()
+                            .GetCreditCards()
+                            .empty();
+        }
+        AutofillMetrics::LogScanCreditCardPromptSelected(
+            AutofillMetrics::ScanCreditCardPromptEntryPoint::kKeyboardAccessory,
+            is_new_user);
+      }
+    }
     controller_->AcceptSuggestion(
         list_index, AutofillMetrics::SuggestionAcceptedMethod::kTap);
   }

@@ -245,6 +245,8 @@ class AutofillMetrics {
   // Entry points for the scan credit card prompt.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
   enum class ScanCreditCardPromptEntryPoint {
     kKeyboardAccessory = 0,
     kBottomsheet = 1,

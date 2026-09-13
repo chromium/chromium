@@ -22,11 +22,14 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_payment_method_delegate.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
@@ -338,7 +341,8 @@ class TouchToFillPaymentMethodControllerImplTest
 };
 
 TEST_F(TouchToFillPaymentMethodControllerImplTest,
-       ShowPaymentMethodsPassesCreditCardsToTheView) {
+       ShowPaymentMethodsPassesCreditCardsToTheView_NewUser) {
+  base::HistogramTester histogram_tester;
   // Test that the cards have propagated to the view.
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(
@@ -349,6 +353,32 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest,
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   OnAfterAskForValuesToFill();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ScanCreditCardPrompt.NewUser.Shown.EntryPoint",
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kBottomsheet, 1);
+}
+
+TEST_F(TouchToFillPaymentMethodControllerImplTest,
+       ShowPaymentMethodsPassesCreditCardsToTheView_ExistingUser) {
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(test::GetCreditCard());
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_view_,
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  OnAfterAskForValuesToFill();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ScanCreditCardPrompt.ExistingUser.Shown.EntryPoint",
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kBottomsheet, 1);
 }
 
 TEST_F(TouchToFillPaymentMethodControllerImplTest,
@@ -379,13 +409,38 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest,
   OnAfterAskForValuesToFill();
 }
 
-TEST_F(TouchToFillPaymentMethodControllerImplTest, ScanCreditCardIsCalled) {
+TEST_F(TouchToFillPaymentMethodControllerImplTest,
+       ScanCreditCardIsCalled_NewUser) {
+  base::HistogramTester histogram_tester;
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   OnAfterAskForValuesToFill();
   EXPECT_CALL(ttf_delegate(), ScanCreditCard);
   payment_method_controller().ScanCreditCard(nullptr);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ScanCreditCardPrompt.NewUser.Selected.EntryPoint",
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kBottomsheet, 1);
+}
+
+TEST_F(TouchToFillPaymentMethodControllerImplTest,
+       ScanCreditCardIsCalled_ExistingUser) {
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(test::GetCreditCard());
+  base::HistogramTester histogram_tester;
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  OnAfterAskForValuesToFill();
+  EXPECT_CALL(ttf_delegate(), ScanCreditCard);
+  payment_method_controller().ScanCreditCard(nullptr);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ScanCreditCardPrompt.ExistingUser.Selected.EntryPoint",
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kBottomsheet, 1);
 }
 
 TEST_F(TouchToFillPaymentMethodControllerImplTest,

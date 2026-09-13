@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.FieldType;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.components.autofill.ScanCreditCardPromptEntryPoint;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -179,7 +180,26 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         mScannerManager = new CreditCardScannerManager(this);
         if (mScannerManager.canScan()) {
             mScanButton.setVisibility(View.VISIBLE);
-            mScanButton.setOnClickListener(v1 -> mScannerManager.scan(getIntentRequestTracker()));
+            boolean isNewUser =
+                    PersonalDataManagerFactory.getForProfile(getProfile())
+                            .getCreditCardsForSettings()
+                            .isEmpty();
+            mScanButton.setOnClickListener(
+                    v1 -> {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "Autofill.ScanCreditCardPrompt."
+                                        + (isNewUser ? "NewUser" : "ExistingUser")
+                                        + ".Selected.EntryPoint",
+                                ScanCreditCardPromptEntryPoint.SETTINGS_PAGE,
+                                ScanCreditCardPromptEntryPoint.MAX_VALUE + 1);
+                        mScannerManager.scan(getIntentRequestTracker());
+                    });
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Autofill.ScanCreditCardPrompt."
+                            + (isNewUser ? "NewUser" : "ExistingUser")
+                            + ".Shown.EntryPoint",
+                    ScanCreditCardPromptEntryPoint.SETTINGS_PAGE,
+                    ScanCreditCardPromptEntryPoint.MAX_VALUE + 1);
         }
 
         addCardDataToEditFields();

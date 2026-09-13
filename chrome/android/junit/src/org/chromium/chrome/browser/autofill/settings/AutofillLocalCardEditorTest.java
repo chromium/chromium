@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.ScanCreditCardPromptEntryPoint;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -861,27 +862,81 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    public void scanButtonIsVisible() {
+    public void scanButtonIsVisible_newUser() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Autofill.ScanCreditCardPrompt.NewUser.Shown.EntryPoint",
+                                ScanCreditCardPromptEntryPoint.SETTINGS_PAGE)
+                        .build();
         initFragment(null);
         assertEquals(View.VISIBLE, mScanButton.getVisibility());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void scanButtonIsVisible_existingUser() {
+        when(mMockPersonalDataManager.getCreditCardsForSettings())
+                .thenReturn(List.of(getSampleLocalCard()));
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Autofill.ScanCreditCardPrompt.ExistingUser.Shown.EntryPoint",
+                                ScanCreditCardPromptEntryPoint.SETTINGS_PAGE)
+                        .build();
+        initFragment(null);
+        assertEquals(View.VISIBLE, mScanButton.getVisibility());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void scannerCannotScan_scanButtonIsHidden() {
         when(mMockScanner.canScan()).thenReturn(false);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Autofill.ScanCreditCardPrompt.NewUser.Shown.EntryPoint")
+                        .build();
         initFragment(null);
 
         assertEquals(View.GONE, mScanButton.getVisibility());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
-    public void scannerButtonClicked_scanIsCalled() {
+    public void scannerButtonClicked_scanIsCalled_newUser() {
         initFragment(null);
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Autofill.ScanCreditCardPrompt.NewUser.Selected.EntryPoint",
+                                ScanCreditCardPromptEntryPoint.SETTINGS_PAGE)
+                        .build();
         mScanButton.performClick();
         verify(mMockScanner).scan(mSettingsActivity.getIntentRequestTracker());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void scannerButtonClicked_scanIsCalled_existingUser() {
+        when(mMockPersonalDataManager.getCreditCardsForSettings())
+                .thenReturn(List.of(getSampleLocalCard()));
+        initFragment(null);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Autofill.ScanCreditCardPrompt.ExistingUser.Selected.EntryPoint",
+                                ScanCreditCardPromptEntryPoint.SETTINGS_PAGE)
+                        .build();
+        mScanButton.performClick();
+        verify(mMockScanner).scan(mSettingsActivity.getIntentRequestTracker());
+        histogramWatcher.assertExpected();
     }
 
     @Test
