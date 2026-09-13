@@ -46,25 +46,22 @@ testing::Matcher<const JourneyRow&> MatchesJourney(const JourneyRow& expected) {
 JourneyRow CreateTestJourney(const std::string& journey_id,
                              const std::string& title,
                              int64_t creation_time_micros) {
-  JourneyRow journey;
-  journey.journey_id = journey_id;
-  journey.title = title;
-  journey.emoji = "✈️";
-  journey.overview = "Trip overview";
-  journey.short_overview = "Short overview";
-  journey.creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(creation_time_micros));
-
-  journey.history_entries.emplace_back(
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000)));
-  journey.history_entries.emplace_back(
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000)));
-
-  journey.continuation_queries.emplace_back("Next flights",
-                                            "Find more flights");
-  journey.continuation_queries.emplace_back("Hotels", "Find hotels in Paris");
-
-  return journey;
+  return JourneyRow(
+      journey_id, title,
+      /*creation_time=*/
+      base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(creation_time_micros)),
+      /*emoji=*/"✈️",
+      /*overview=*/"Trip overview",
+      /*short_overview=*/"Short overview",
+      /*history_entries=*/
+      {JourneyHistoryEntry(
+           base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000))),
+       JourneyHistoryEntry(
+           base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000)))},
+      /*continuation_queries=*/
+      {JourneyContinuationQuery("Next flights", "Find more flights"),
+       JourneyContinuationQuery("Hotels", "Find hotels in Paris")});
 }
 
 class JourneysDatabaseTest : public testing::Test, public JourneysDatabase {
@@ -89,9 +86,8 @@ class JourneysDatabaseTest : public testing::Test, public JourneysDatabase {
 };
 
 TEST_F(JourneysDatabaseTest, DropJourneysTables) {
-  JourneyRow journey = CreateTestJourney(
-      /*journey_id=*/"journey_1", /*title=*/"Trip to Paris",
-      /*creation_time_micros=*/5000);
+  JourneyRow journey = CreateTestJourney("journey_1", "Trip to Paris",
+                                         /*creation_time_micros=*/5000);
   EXPECT_TRUE(AddOrUpdateJourneys({journey}));
   EXPECT_TRUE(GetJourney("journey_1").has_value());
 
@@ -102,8 +98,7 @@ TEST_F(JourneysDatabaseTest, DropJourneysTables) {
 }
 
 TEST_F(JourneysDatabaseTest, EmptyDatabase) {
-  EXPECT_FALSE(
-      journeys_db()->GetJourney(/*journey_id=*/"non_existent").has_value());
+  EXPECT_FALSE(journeys_db()->GetJourney("non_existent").has_value());
   EXPECT_THAT(journeys_db()->GetAllJourneys(), IsEmpty());
 }
 
@@ -113,39 +108,35 @@ TEST_F(JourneysDatabaseTest, EmptyBatchNoOp) {
 }
 
 TEST_F(JourneysDatabaseTest, AddAndGetJourneysBatch) {
-  JourneyRow journey1 = CreateTestJourney(
-      /*journey_id=*/"journey_1", /*title=*/"Trip to Paris",
-      /*creation_time_micros=*/5000);
-  JourneyRow journey2 = CreateTestJourney(
-      /*journey_id=*/"journey_2", /*title=*/"Trip to London",
-      /*creation_time_micros=*/6000);
+  JourneyRow journey1 = CreateTestJourney("journey_1", "Trip to Paris",
+                                          /*creation_time_micros=*/5000);
+  JourneyRow journey2 = CreateTestJourney("journey_2", "Trip to London",
+                                          /*creation_time_micros=*/6000);
 
   EXPECT_TRUE(journeys_db()->AddOrUpdateJourneys({journey1, journey2}));
 
-  EXPECT_THAT(journeys_db()->GetJourney(/*journey_id=*/"journey_1"),
+  EXPECT_THAT(journeys_db()->GetJourney("journey_1"),
               Optional(MatchesJourney(journey1)));
-  EXPECT_THAT(journeys_db()->GetJourney(/*journey_id=*/"journey_2"),
+  EXPECT_THAT(journeys_db()->GetJourney("journey_2"),
               Optional(MatchesJourney(journey2)));
 }
 
 TEST_F(JourneysDatabaseTest, AddAndGetMinimalJourney) {
-  JourneyRow minimal;
-  minimal.journey_id = "minimal_1";
-  minimal.title = "Minimal Title";
-  minimal.creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(12345));
+  JourneyRow minimal(
+      "minimal_1", "Minimal Title",
+      /*creation_time=*/
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(12345)));
 
   EXPECT_TRUE(journeys_db()->AddOrUpdateJourneys({minimal}));
-  EXPECT_THAT(journeys_db()->GetJourney(/*journey_id=*/"minimal_1"),
+  EXPECT_THAT(journeys_db()->GetJourney("minimal_1"),
               Optional(MatchesJourney(minimal)));
 }
 
 TEST_F(JourneysDatabaseTest, UpdateJourneysBatch) {
-  JourneyRow journey = CreateTestJourney(
-      /*journey_id=*/"journey_1", /*title=*/"Initial Title",
-      /*creation_time_micros=*/5000);
+  JourneyRow journey = CreateTestJourney("journey_1", "Initial Title",
+                                         /*creation_time_micros=*/5000);
   EXPECT_TRUE(journeys_db()->AddOrUpdateJourneys({journey}));
-  EXPECT_THAT(journeys_db()->GetJourney(/*journey_id=*/"journey_1"),
+  EXPECT_THAT(journeys_db()->GetJourney("journey_1"),
               Optional(MatchesJourney(journey)));
 
   // Update with completely different history entries and continuation queries.
@@ -163,7 +154,7 @@ TEST_F(JourneysDatabaseTest, UpdateJourneysBatch) {
 
   // Verify outdated history entries (1000, 2000) and continuation queries
   // ("Next flights", "Hotels") are no longer present.
-  EXPECT_THAT(journeys_db()->GetJourney(/*journey_id=*/"journey_1"),
+  EXPECT_THAT(journeys_db()->GetJourney("journey_1"),
               Optional(MatchesJourney(journey)));
   EXPECT_THAT(journeys_db()->GetAllJourneys(),
               ElementsAre(MatchesJourney(journey)));
@@ -172,40 +163,34 @@ TEST_F(JourneysDatabaseTest, UpdateJourneysBatch) {
   journey.history_entries.clear();
   journey.continuation_queries.clear();
   EXPECT_TRUE(journeys_db()->AddOrUpdateJourneys({journey}));
-  EXPECT_THAT(journeys_db()->GetJourney(/*journey_id=*/"journey_1"),
+  EXPECT_THAT(journeys_db()->GetJourney("journey_1"),
               Optional(MatchesJourney(journey)));
 }
 
 TEST_F(JourneysDatabaseTest, DeleteJourneysBatch) {
-  JourneyRow journey1 = CreateTestJourney(
-      /*journey_id=*/"journey_1", /*title=*/"Trip 1",
-      /*creation_time_micros=*/5000);
-  JourneyRow journey2 = CreateTestJourney(
-      /*journey_id=*/"journey_2", /*title=*/"Trip 2",
-      /*creation_time_micros=*/6000);
-  JourneyRow journey3 = CreateTestJourney(
-      /*journey_id=*/"journey_3", /*title=*/"Trip 3",
-      /*creation_time_micros=*/7000);
+  JourneyRow journey1 =
+      CreateTestJourney("journey_1", "Trip 1", /*creation_time_micros=*/5000);
+  JourneyRow journey2 =
+      CreateTestJourney("journey_2", "Trip 2", /*creation_time_micros=*/6000);
+  JourneyRow journey3 =
+      CreateTestJourney("journey_3", "Trip 3", /*creation_time_micros=*/7000);
   EXPECT_TRUE(
       journeys_db()->AddOrUpdateJourneys({journey1, journey2, journey3}));
 
   // Delete journey_1 and a non-existent ID in a single batch.
   EXPECT_TRUE(journeys_db()->DeleteJourneys({"journey_1", "non_existent"}));
-  EXPECT_FALSE(
-      journeys_db()->GetJourney(/*journey_id=*/"journey_1").has_value());
-  EXPECT_THAT(journeys_db()->GetJourney(/*journey_id=*/"journey_2"),
+  EXPECT_FALSE(journeys_db()->GetJourney("journey_1").has_value());
+  EXPECT_THAT(journeys_db()->GetJourney("journey_2"),
               Optional(MatchesJourney(journey2)));
-  EXPECT_THAT(journeys_db()->GetJourney(/*journey_id=*/"journey_3"),
+  EXPECT_THAT(journeys_db()->GetJourney("journey_3"),
               Optional(MatchesJourney(journey3)));
 }
 
 TEST_F(JourneysDatabaseTest, DeleteAllJourneys) {
-  JourneyRow journey1 = CreateTestJourney(
-      /*journey_id=*/"journey_1", /*title=*/"Trip 1",
-      /*creation_time_micros=*/5000);
-  JourneyRow journey2 = CreateTestJourney(
-      /*journey_id=*/"journey_2", /*title=*/"Trip 2",
-      /*creation_time_micros=*/6000);
+  JourneyRow journey1 =
+      CreateTestJourney("journey_1", "Trip 1", /*creation_time_micros=*/5000);
+  JourneyRow journey2 =
+      CreateTestJourney("journey_2", "Trip 2", /*creation_time_micros=*/6000);
   EXPECT_TRUE(journeys_db()->AddOrUpdateJourneys({journey1, journey2}));
 
   EXPECT_TRUE(journeys_db()->DeleteAllJourneys());
@@ -213,15 +198,12 @@ TEST_F(JourneysDatabaseTest, DeleteAllJourneys) {
 }
 
 TEST_F(JourneysDatabaseTest, GetAllJourneysSorted) {
-  JourneyRow journey1 = CreateTestJourney(
-      /*journey_id=*/"journey_1", /*title=*/"Older Trip",
-      /*creation_time_micros=*/1000);
-  JourneyRow journey2 = CreateTestJourney(
-      /*journey_id=*/"journey_2", /*title=*/"Newer Trip",
-      /*creation_time_micros=*/3000);
-  JourneyRow journey3 = CreateTestJourney(
-      /*journey_id=*/"journey_3", /*title=*/"Middle Trip",
-      /*creation_time_micros=*/2000);
+  JourneyRow journey1 = CreateTestJourney("journey_1", "Older Trip",
+                                          /*creation_time_micros=*/1000);
+  JourneyRow journey2 = CreateTestJourney("journey_2", "Newer Trip",
+                                          /*creation_time_micros=*/3000);
+  JourneyRow journey3 = CreateTestJourney("journey_3", "Middle Trip",
+                                          /*creation_time_micros=*/2000);
 
   EXPECT_TRUE(
       journeys_db()->AddOrUpdateJourneys({journey1, journey2, journey3}));
@@ -234,26 +216,24 @@ TEST_F(JourneysDatabaseTest, GetAllJourneysSorted) {
 }
 
 TEST_F(JourneysDatabaseTest, DuplicateHistoryEntriesHandledGracefully) {
-  JourneyRow journey = CreateTestJourney(
-      /*journey_id=*/"journey_1", /*title=*/"Trip with Duplicates",
-      /*creation_time_micros=*/5000);
+  JourneyRow journey = CreateTestJourney("journey_1", "Trip with Duplicates",
+                                         /*creation_time_micros=*/5000);
+  base::Time visit_time_1 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  base::Time visit_time_2 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
   // Add duplicate visit timestamp 1000 (already in CreateTestJourney).
-  journey.history_entries.emplace_back(
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000)));
+  journey.history_entries.emplace_back(visit_time_1);
 
   EXPECT_TRUE(journeys_db()->AddOrUpdateJourneys({journey}));
 
   // The retrieved journey should contain only distinct timestamps.
-  std::optional<JourneyRow> retrieved =
-      journeys_db()->GetJourney(/*journey_id=*/"journey_1");
+  std::optional<JourneyRow> retrieved = journeys_db()->GetJourney("journey_1");
   ASSERT_TRUE(retrieved.has_value());
   EXPECT_EQ(retrieved->history_entries.size(), 2u);
   EXPECT_THAT(retrieved->history_entries,
-              UnorderedElementsAre(
-                  JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
-                      base::Microseconds(1000))),
-                  JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
-                      base::Microseconds(2000)))));
+              UnorderedElementsAre(JourneyHistoryEntry(visit_time_1),
+                                   JourneyHistoryEntry(visit_time_2)));
 }
 
 }  // namespace

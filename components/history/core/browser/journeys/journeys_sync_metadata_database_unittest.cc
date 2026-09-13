@@ -45,7 +45,8 @@ class JourneysSyncMetadataDatabaseTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(db_.OpenInMemory());
     ASSERT_TRUE(metadata_db_.Init());
-    ASSERT_TRUE(meta_table_.Init(&db_, 1, 1));
+    ASSERT_TRUE(
+        meta_table_.Init(&db_, /*version=*/1, /*compatible_version=*/1));
   }
   void TearDown() override { db_.Close(); }
 
@@ -59,9 +60,9 @@ class JourneysSyncMetadataDatabaseTest : public testing::Test {
 TEST_F(JourneysSyncMetadataDatabaseTest, EmptyStateIsValid) {
   MetadataBatch metadata_batch;
   EXPECT_TRUE(metadata_db()->GetAllSyncMetadata(&metadata_batch));
-  EXPECT_EQ(0u, metadata_batch.TakeAllMetadata().size());
-  EXPECT_EQ(DataTypeState().SerializeAsString(),
-            metadata_batch.GetDataTypeState().SerializeAsString());
+  EXPECT_EQ(metadata_batch.TakeAllMetadata().size(), 0u);
+  EXPECT_EQ(metadata_batch.GetDataTypeState().SerializeAsString(),
+            DataTypeState().SerializeAsString());
 }
 
 TEST_F(JourneysSyncMetadataDatabaseTest, StoresAndReturnsMetadata) {
@@ -144,12 +145,12 @@ TEST_F(JourneysSyncMetadataDatabaseTest, DeletesSyncMetadata) {
   EXPECT_EQ(metadata_batch.GetAllMetadata().size(), 0u);
 
   // Now delete the data type state and make sure it's gone.
-  ASSERT_NE(DataTypeState().SerializeAsString(),
-            metadata_batch.GetDataTypeState().SerializeAsString());
+  ASSERT_NE(metadata_batch.GetDataTypeState().SerializeAsString(),
+            DataTypeState().SerializeAsString());
   ASSERT_TRUE(metadata_db()->ClearDataTypeState(syncer::JOURNEY));
   ASSERT_TRUE(metadata_db()->GetAllSyncMetadata(&metadata_batch));
-  EXPECT_EQ(DataTypeState().SerializeAsString(),
-            metadata_batch.GetDataTypeState().SerializeAsString());
+  EXPECT_EQ(metadata_batch.GetDataTypeState().SerializeAsString(),
+            DataTypeState().SerializeAsString());
 }
 
 TEST_F(JourneysSyncMetadataDatabaseTest, ClearAllEntityMetadata) {

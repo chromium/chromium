@@ -23,9 +23,9 @@ namespace history::journeys {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Optional;
-using ::testing::UnorderedElementsAre;
 
 }  // namespace
 
@@ -34,7 +34,7 @@ class JourneysBackendUtilTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_file_ = temp_dir_.GetPath().AppendASCII("JourneysBackendUtilTest.db");
-    ASSERT_EQ(sql::INIT_OK, db_.Init(db_file_));
+    ASSERT_EQ(db_.Init(db_file_), sql::INIT_OK);
   }
 
   URLID AddTestURL(const GURL& url, const std::u16string& title) {
@@ -108,16 +108,12 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SuccessWithMetadata) {
 }
 
 TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_EmptyVisits) {
-  JourneyRow journey(
-      "empty_journey", "Empty",
-      /*creation_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)));
+  base::Time creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  JourneyRow journey("empty_journey", "Empty", creation_time);
 
-  std::optional<Journey> resolved = ResolveJourneyVisits(db_, journey);
-  ASSERT_TRUE(resolved.has_value());
-  EXPECT_EQ(resolved->journey_id, "empty_journey");
-  EXPECT_EQ(resolved->title, "Empty");
-  EXPECT_THAT(resolved->visits, IsEmpty());
+  Journey expected_journey("empty_journey", "Empty", creation_time);
+  EXPECT_THAT(ResolveJourneyVisits(db_, journey), Optional(expected_journey));
 }
 
 TEST_F(JourneysBackendUtilTest,
@@ -194,27 +190,24 @@ TEST_F(JourneysBackendUtilTest,
   ASSERT_NE(AddTestVisit(url_id, visit_time), 0);
 
   // Older resolved journey (creation_time = 5000).
-  JourneyRow older_journey = CreateJourneyRow(
-      "journey_older", "Older Resolved",
-      /*creation_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
-      /*visit_times=*/{visit_time});
+  base::Time creation_time_older =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  JourneyRow older_journey =
+      CreateJourneyRow("journey_older", "Older Resolved", creation_time_older,
+                       /*visit_times=*/{visit_time});
 
   // Newer resolved journey (creation_time = 8000).
-  JourneyRow newer_journey = CreateJourneyRow(
-      "journey_newer", "Newer Resolved",
-      /*creation_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(8000)),
-      /*visit_times=*/{visit_time});
+  base::Time creation_time_newer =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(8000));
+  JourneyRow newer_journey =
+      CreateJourneyRow("journey_newer", "Newer Resolved", creation_time_newer,
+                       /*visit_times=*/{visit_time});
 
   ASSERT_TRUE(db_.AddOrUpdateJourneys({older_journey, newer_journey}));
 
-  std::vector<Journey> all_journeys = GetAllJourneysWithResolvedVisits(db_);
-  ASSERT_EQ(all_journeys.size(), 2u);
-  EXPECT_EQ(all_journeys[0].journey_id, "journey_newer");
-  EXPECT_EQ(all_journeys[0].title, "Newer Resolved");
-  EXPECT_EQ(all_journeys[1].journey_id, "journey_older");
-  EXPECT_EQ(all_journeys[1].title, "Older Resolved");
+  EXPECT_THAT(GetAllJourneysWithResolvedVisits(db_),
+              ElementsAre(Field(&Journey::journey_id, "journey_newer"),
+                          Field(&Journey::journey_id, "journey_older")));
 }
 
 TEST_F(JourneysBackendUtilTest,
@@ -225,11 +218,11 @@ TEST_F(JourneysBackendUtilTest,
       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
   ASSERT_NE(AddTestVisit(url_id, visit_time), 0);
 
-  JourneyRow complete_journey = CreateJourneyRow(
-      "journey_complete", "Complete",
-      /*creation_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
-      /*visit_times=*/{visit_time});
+  base::Time creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  JourneyRow complete_journey =
+      CreateJourneyRow("journey_complete", "Complete", creation_time,
+                       /*visit_times=*/{visit_time});
 
   // Incomplete journey (creation_time = 9000, has missing visit timestamp
   // 9999).
@@ -243,10 +236,8 @@ TEST_F(JourneysBackendUtilTest,
 
   ASSERT_TRUE(db_.AddOrUpdateJourneys({complete_journey, incomplete_journey}));
 
-  std::vector<Journey> all_journeys = GetAllJourneysWithResolvedVisits(db_);
-  ASSERT_EQ(all_journeys.size(), 1u);
-  EXPECT_EQ(all_journeys[0].journey_id, "journey_complete");
-  EXPECT_EQ(all_journeys[0].title, "Complete");
+  EXPECT_THAT(GetAllJourneysWithResolvedVisits(db_),
+              ElementsAre(Field(&Journey::journey_id, "journey_complete")));
 }
 
 }  // namespace history::journeys
