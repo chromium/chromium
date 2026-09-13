@@ -732,7 +732,8 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           return;
         }
 
-        if (!this.virtualFocusEnabled || !this.isVirtualFocusEventTarget_(e)) {
+        if (!this.virtualFocusEnabled || !this.dropdownIsVisible ||
+            !this.isVirtualFocusEventTarget_(e)) {
           return;
         }
       }
@@ -797,7 +798,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         let valid = false;
 
         if (!e.altKey && !e.ctrlKey && !e.metaKey) {
-          if (e.key === 'Tab') {
+          if (e.key === 'Tab' && this.dropdownIsVisible) {
             step = SelectionStep.kStateOrLine;
             direction = e.shiftKey ? SelectionDirection.kBackward :
                                      SelectionDirection.kForward;
