@@ -13694,25 +13694,6 @@
             ]
         }
     ],
-    "NtpNextConversationStarters": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NtpNextCanvasChip",
-                        "NtpStarterChip"
-                    ]
-                }
-            ]
-        }
-    ],
     "NtpRealboxCyclingPlaceholders": [
         {
             "platforms": [
