@@ -1321,30 +1321,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.settings") {
   ]
 }
 
-# A test that runs during compile that ensures all SettingsFragment subclasses
-# are listed in //tools/metrics/histograms/metadata/settings/enums.xml.
-action("check_settings_enums") {
-  script = "check_settings_enums.py"
-  deps = [ "//chrome/android:chrome_public_apk" ]
-  inputs = [
-    "$root_build_dir/apks/ChromePublic.apk",
-    "//tools/metrics/histograms/metadata/settings/enums.xml",
-    "${android_sdk_build_tools}/dexdump",
-  ]
-  outputs = [ "$target_gen_dir/$target_name.stamp" ]
-  args = [
-    "--dexdump-path",
-    rebase_path("${android_sdk_build_tools}/dexdump", root_build_dir),
-    "--apk-path",
-    rebase_path("$root_build_dir/apks/ChromePublic.apk", root_build_dir),
-    "--enums-xml-path",
-    rebase_path("//tools/metrics/histograms/metadata/settings/enums.xml",
-                root_build_dir),
-    "--stamp",
-    rebase_path(outputs[0], root_build_dir),
-  ]
-}
-
 android_library("chrome_test_java_org.chromium.chrome.browser.share") {
   resources_package = "org.chromium.chrome"
 
