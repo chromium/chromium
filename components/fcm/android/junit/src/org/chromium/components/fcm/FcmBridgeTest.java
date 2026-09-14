@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -25,7 +24,6 @@ import java.util.Map;
 
 /** Unit tests for {@link FcmBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FcmBridgeTest {
     private static final long NATIVE_DRIVER_PTR = 12345L;
     private static final String TEST_MESSAGE_ID = "test_message_id";
