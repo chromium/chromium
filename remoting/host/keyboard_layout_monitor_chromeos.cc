@@ -4,6 +4,8 @@
 
 #include "remoting/host/keyboard_layout_monitor.h"
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -33,8 +35,9 @@ namespace {
 
 using protocol::LayoutKeyFunction;
 
-constexpr int kShiftLevelFlags[] = {0, ui::EF_SHIFT_DOWN, ui::EF_ALTGR_DOWN,
-                                    ui::EF_SHIFT_DOWN | ui::EF_ALTGR_DOWN};
+constexpr std::array<int, 4> kShiftLevelFlags = {
+    0, ui::EF_SHIFT_DOWN, ui::EF_ALTGR_DOWN,
+    ui::EF_SHIFT_DOWN | ui::EF_ALTGR_DOWN};
 
 class Core : private ash::input_method::ImeKeyboard::Observer {
  public:
@@ -124,7 +127,7 @@ void Core::QueryLayout() {
     for (int shift_level = 0; shift_level < shift_levels; shift_level++) {
       ui::DomKey key;
       ui::KeyboardCode key_code;
-      int event_flags = UNSAFE_TODO(kShiftLevelFlags[shift_level]);
+      int event_flags = kShiftLevelFlags[shift_level];
       if (!keyboard_layout_engine->Lookup(code, event_flags, &key, &key_code)) {
         continue;
       }

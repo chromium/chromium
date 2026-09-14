@@ -7,6 +7,8 @@
 #import <Cocoa/Cocoa.h>
 #include <sys/stat.h>
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/mac/authorization_util.h"
 #include "base/mac/scoped_authorizationref.h"
@@ -14,14 +16,14 @@
 #include "remoting/host/mac/constants_mac.h"
 
 void logOutput(FILE* pipe) {
-  char readBuffer[128];
+  std::array<char, 128> readBuffer = {};
   for (;;) {
-    long bytesRead =
-        UNSAFE_TODO(read(fileno(pipe), readBuffer, sizeof(readBuffer) - 1));
+    long bytesRead = UNSAFE_TODO(
+        read(fileno(pipe), readBuffer.data(), readBuffer.size() - 1));
     if (bytesRead < 1)
       break;
-    UNSAFE_TODO(readBuffer[bytesRead]) = '\0';
-    NSLog(@"%s", readBuffer);
+    readBuffer[bytesRead] = '\0';
+    NSLog(@"%s", readBuffer.data());
   }
 }
 

@@ -9,9 +9,12 @@
 #include <Security/Security.h>
 #include <unistd.h>
 
+#include <array>
+
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -37,19 +40,19 @@ const CGDirectDisplayID kVirtualDisplayID = 0x76697274;
 // physical monitors attached.  In those two scenarios, the online display will
 // be marked as virtual.
 bool IsRunningHeadless() {
-  CGDirectDisplayID online_displays[kMaxDisplaysToQuery];
+  std::array<CGDirectDisplayID, kMaxDisplaysToQuery> online_displays = {};
   UInt32 online_display_count = 0;
   CGError return_code = CGGetOnlineDisplayList(
-      kMaxDisplaysToQuery, online_displays, &online_display_count);
+      kMaxDisplaysToQuery, online_displays.data(), &online_display_count);
   if (return_code != kCGErrorSuccess) {
     LOG(ERROR) << "CGGetOnlineDisplayList() failed: " << return_code;
     // If this fails, assume machine is headless to err on the side of caution.
     return true;
   }
 
-  for (UInt32 i = 0; i < online_display_count; i++) {
-    if (CGDisplayModelNumber(UNSAFE_TODO(online_displays[i])) !=
-        kVirtualDisplayID) {
+  for (CGDirectDisplayID display :
+       base::span(online_displays).first(online_display_count)) {
+    if (CGDisplayModelNumber(display) != kVirtualDisplayID) {
       // At least one monitor is attached so the machine is not headless.
       return false;
     }
