@@ -71,8 +71,14 @@ template("chrome_bundle") {
   # Determine whether the bundle has native libraries for both the primary and
   # the secondary ABI. This is the case if we package WebView with the
   # complementary ABI of the browser.
-  if (_is_trichrome) {
+  if (defined(invoker.is_64_bit_browser)) {
     _is_64_bit_browser = android_64bit_target_cpu && invoker.is_64_bit_browser
+  } else {
+    _is_64_bit_browser = android_64bit_target_cpu
+  }
+  not_needed([ "_is_64_bit_browser" ])
+
+  if (_is_trichrome) {
     _include_64_bit_webview =
         android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
                                      invoker.include_64_bit_webview)
@@ -93,6 +99,8 @@ template("chrome_bundle") {
   } else {
     if (_is_trichrome) {
       _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+    } else if (android_64bit_target_cpu && !_is_64_bit_browser) {
+      _version_code = chrome_32_version_code
     } else {
       _version_code = chrome_version_code
     }

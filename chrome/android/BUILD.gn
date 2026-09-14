@@ -2129,6 +2129,24 @@ if (_is_default_toolchain) {
     bundle_name = "ChromePublic"
   }
 
+  if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
+    chrome_public_apk_or_module_tmpl("chrome_public_32_apk") {
+      target_type = "android_apk"
+      apk_name = "ChromePublic32"
+      is_64_bit_browser = false
+    }
+
+    chrome_public_bundle("chrome_public_32_bundle") {
+      bundle_name = "ChromePublic32"
+      is_64_bit_browser = false
+    }
+
+    create_app_bundle_minimal_apks("chrome_public_32_minimal_apks") {
+      deps = [ ":chrome_public_32_bundle" ]
+      bundle_path = "$root_build_dir/apks/ChromePublic32.aab"
+    }
+  }
+
   generate_jni("base_module_jni") {
     sources = [
       "java/src/org/chromium/chrome/browser/init/InitializeFeatureList.java",
@@ -3357,36 +3375,6 @@ if (_is_default_toolchain) {
       java_targets += [ "//chrome/android:chrome_public_test_vr_apk__test_apk" ]
     }
   }
-
-  # Chrome APK's native library.
-  template("libchrome_impl") {
-    chrome_common_shared_library(target_name) {
-      sources = [ "../browser/android/chrome_entry_point.cc" ]
-      deps = [ "//base:jni_onload" ]
-      if (defined(invoker.deps)) {
-        deps += invoker.deps
-      }
-
-      java_targets = [ "//chrome/android:chrome_public_apk" ]
-      forward_variables_from(invoker, "*", [ "deps" ])
-    }
-  }
-
-  if (enable_resource_allowlist_generation) {
-    libchrome_impl("libchrome_inputs") {
-      collect_inputs_only = true
-    }
-  }
-
-  libchrome_impl("libchrome") {
-    define_unwind_table_target =
-        add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
-
-    # Java and native targets form two independent compile graphs. Deps from
-    # java targets onto native ones (or vice versa) are unnecessary and reduce
-    # parallelism. This prevents deps from native -> java.
-    assert_no_deps = [ "//build/android:build_java" ]
-  }
 } else {  # _is_default_toolchain
   group("chrome_jni_headers") {
     public_deps = [ ":chrome_jni_headers($default_toolchain)" ]
@@ -3395,6 +3383,36 @@ if (_is_default_toolchain) {
   group("jni_headers") {
     public_deps = [ ":jni_headers($default_toolchain)" ]
   }
+}
+
+# Chrome APK's native library.
+template("libchrome_impl") {
+  chrome_common_shared_library(target_name) {
+    sources = [ "../browser/android/chrome_entry_point.cc" ]
+    deps = [ "//base:jni_onload" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+
+    java_targets = [ "//chrome/android:chrome_public_apk" ]
+    forward_variables_from(invoker, "*", [ "deps" ])
+  }
+}
+
+if (_is_default_toolchain && enable_resource_allowlist_generation) {
+  libchrome_impl("libchrome_inputs") {
+    collect_inputs_only = true
+  }
+}
+
+libchrome_impl("libchrome") {
+  define_unwind_table_target =
+      add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm"
+
+  # Java and native targets form two independent compile graphs. Deps from
+  # java targets onto native ones (or vice versa) are unnecessary and reduce
+  # parallelism. This prevents deps from native -> java.
+  assert_no_deps = [ "//build/android:build_java" ]
 }
 
 # Trichrome equivalent of Chrome's APK or bundle library template.
@@ -3481,12 +3499,18 @@ if (_is_default_toolchain && add_unwind_tables_in_chrome_32bit_apk) {
     libname = "libmonochrome"
   }
 
-  # We create fat apks only with libmonochrome.
-  if (target_cpu == "arm") {
-    chrome_unwind_assets("libchrome_unwind_table_assets") {
-      libname = "libchrome"
-    }
+  # No condition needed: add_unwind_tables_in_chrome_32bit_apk already implies
+  # that a 32-bit libchrome exists, since it requires target_cpu to be "arm",
+  # or "arm64" with a secondary ABI.
+  chrome_unwind_assets("libchrome_unwind_table_assets") {
+    libname = "libchrome"
+  }
 
+  # Unlike libchrome, libchromefortest is declared only in the default
+  # toolchain, so its unwind table exists only when the default toolchain is
+  # the 32-bit one. chrome_unwind_assets() otherwise looks for the library in
+  # android_secondary_abi_toolchain.
+  if (target_cpu == "arm") {
     chrome_unwind_assets("libchromefortest_unwind_table_assets") {
       testonly = true
       libname = "libchromefortest"
