@@ -778,12 +778,20 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
 
     AutocompleteMatch match(this, score, false,
                             AutocompleteMatchType::DOCUMENT_SUGGESTION);
+    // Only allow valid HTTP or HTTPS URLs.
+    GURL destination_url = GURL(url);
+    if (!destination_url.is_valid() ||
+        !destination_url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    match.destination_url = destination_url;
+
     // Use full URL for navigation. If present, use "originalUrl" for display &
     // deduping, as it's shorter.
     const std::string short_url =
         FindStringKeyOrFallback(result, "originalUrl", url);
     match.fill_into_edit = base::UTF8ToUTF16(short_url);
-    match.destination_url = GURL(url);
+
     // `AutocompleteMatch::GURLToStrippedGURL()` will try to use
     // `GetURLForDeduping()` to extract a doc ID and generate a canonical doc
     // URL; this is ideal as it handles different URL formats pointing to the

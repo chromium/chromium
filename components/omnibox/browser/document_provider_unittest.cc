@@ -35,6 +35,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -98,7 +99,7 @@ class DocumentProviderTest : public testing::Test,
   static std::string MakeTestResponse(const std::vector<std::string>& doc_ids,
                                       int scores) {
     std::string results = "";
-    for (auto doc_id : doc_ids)
+    for (auto doc_id : doc_ids) {
       results += base::StringPrintf(
           R"({
               "title": "Document %s longer title",
@@ -107,6 +108,7 @@ class DocumentProviderTest : public testing::Test,
               "originalUrl": "https://drive.google.com/open?id=%s",
             },)",
           doc_id.c_str(), scores, doc_id.c_str(), doc_id.c_str());
+    }
     return base::StringPrintf(R"({"results": [%s]})", results.c_str());
   }
 
@@ -354,6 +356,82 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResults) {
             "http://sites.google.com/google.com/abc/def");
   EXPECT_EQ(matches[2].fill_into_edit,
             u"http://sites.google.com/google.com/abc/def");
+}
+
+TEST_F(DocumentProviderTest,
+       ParseDocumentSearchResultsDiscardNonHttpAndInvalidUrls) {
+  const std::string kJSONResponse = R"({
+    "results": [
+      {
+        "title": "Valid HTTPS Document",
+        "url": "https://documentprovider.tld/doc?id=1",
+        "score": 1000
+      },
+      {
+        "title": "JavaScript URL",
+        "url": "javascript:alert(1);",
+        "score": 900
+      },
+      {
+        "title": "Valid HTTP Document",
+        "url": "http://documentprovider.tld/doc?id=2",
+        "score": 800
+      },
+      {
+        "title": "Invalid URL Not A URL",
+        "url": "not a valid url",
+        "score": 700
+      },
+      {
+        "title": "Data URL",
+        "url": "data:text/html,Hello",
+        "score": 600
+      },
+      {
+        "title": "FTP URL",
+        "url": "ftp://example.com/file",
+        "score": 500
+      },
+      {
+        "title": "File URL",
+        "url": "file:///path/to/file",
+        "score": 400
+      },
+      {
+        "title": "Invalid URL Bad Scheme",
+        "url": "http:://google.com",
+        "score": 300
+      },
+      {
+        "title": "Another Valid HTTPS Document",
+        "url": "https://documentprovider.tld/doc?id=3",
+        "score": 200
+      }
+    ]
+  })";
+
+  std::optional<base::Value> response = base::JSONReader::Read(
+      kJSONResponse, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->is_dict());
+
+  provider_->input_.UpdateText(u"Document", 0, {});
+  ACMatches matches = provider_->ParseDocumentSearchResults(*response);
+
+  // Only the 3 valid HTTP/HTTPS URLs should produce matches.
+  // All non-HTTP and invalid URLs should be discarded.
+  ASSERT_EQ(matches.size(), 3u);
+  EXPECT_EQ(matches[0].destination_url,
+            GURL("https://documentprovider.tld/doc?id=1"));
+  EXPECT_EQ(matches[0].contents, u"Valid HTTPS Document");
+
+  EXPECT_EQ(matches[1].destination_url,
+            GURL("http://documentprovider.tld/doc?id=2"));
+  EXPECT_EQ(matches[1].contents, u"Valid HTTP Document");
+
+  EXPECT_EQ(matches[2].destination_url,
+            GURL("https://documentprovider.tld/doc?id=3"));
+  EXPECT_EQ(matches[2].contents, u"Another Valid HTTPS Document");
 }
 
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
@@ -1098,65 +1176,180 @@ TEST_F(DocumentProviderTest, LowQualitySuggestions) {
     ACMatches matches = provider_->ParseDocumentSearchResults(*response);
 
     ASSERT_EQ(matches.size(), expected_scores.size());
-    for (size_t i = 0; i < matches.size(); i++)
+    for (size_t i = 0; i < matches.size(); i++) {
       EXPECT_EQ(matches[i].relevance, expected_scores[i]) << "Match " << i;
+    }
   };
 
   {
     SCOPED_TRACE(
         "Unowned and non-title matching docs are limited. Title matching docs "
         "are not limited.");
-    test(R"({"results": [
-          {"title": "bad title1 title2",  "score": 1000, "url": "good url isn't sufficient"},
-          {"title": "bad title1 title2",  "score": 999,  "url": "url"},
-          {"title": "bad title1 title2",  "score": 998,  "url": "url"},
-          {"title": "goOd tItLE1 title2", "score": 997,  "url": "url"},
-          {"title": "good title1 title2", "score": 996,  "url": "url"},
-          {"title": "good title1 title2", "score": 995,  "url": "url"},
-          {"title": "good title1 title2", "score": 994,  "url": "url"}
-        ]})",
-         // - 'goo': prefix matches are ok.
-         // - 'title1': all input terms must be in the title or owner, but not
-         //   all title terms must be in the input (e.g. 'title2').
-         // - "goOd tItLE1 title2": Case insensitive.
-         "gOo Title1", {1000, 0, 0, 997, 996, 995, 994});
+    test(
+        R"({
+      "results": [
+        {
+          "title": "bad title1 title2",
+          "score": 1000,
+          "url": "https://documentprovider.tld/doc?id=1"
+        },
+        {
+          "title": "bad title1 title2",
+          "score": 999,
+          "url": "https://documentprovider.tld/doc?id=2"
+        },
+        {
+          "title": "bad title1 title2",
+          "score": 998,
+          "url": "https://documentprovider.tld/doc?id=3"
+        },
+        {
+          "title": "goOd tItLE1 title2",
+          "score": 997,
+          "url": "https://documentprovider.tld/doc?id=4"
+        },
+        {
+          "title": "good title1 title2",
+          "score": 996,
+          "url": "https://documentprovider.tld/doc?id=5"
+        },
+        {
+          "title": "good title1 title2",
+          "score": 995,
+          "url": "https://documentprovider.tld/doc?id=6"
+        },
+        {
+          "title": "good title1 title2",
+          "score": 994,
+          "url": "https://documentprovider.tld/doc?id=7"
+        }
+      ]
+    })",
+        // - 'goo': prefix matches are ok.
+        // - 'title1': all input terms must be in the title or owner, but not
+        //   all title terms must be in the input (e.g. 'title2').
+        // - "goOd tItLE1 title2": Case insensitive.
+        "gOo Title1", {1000, 0, 0, 997, 996, 995, 994});
   }
 
   {
     SCOPED_TRACE("Owned docs are not limited.");
     test(
-        R"({"results": [
-          {"title": "bad title1 title2",  "score": 1000, "url": "good url isn't sufficient"},
-          {"title": "bad title1 title2",  "score": 999,  "url": "url"},
-          {"title": "bad title1 title2",  "score": 998,  "url": "url", "metadata": {"owner": {"emailAddresses": [{"emailAddress": "badEmail1@gmail.com"}, {"emailAddress": "gOOdemaIl@gmail.com"}]}}},
-          {"title": "bad title1 title2",  "score": 997,  "url": "url", "metadata": {"owner": {"emailAddresses": [{"emailAddress": "badEmail2@gmail.com"}]}}},
-          {"title": "good title1 title2", "score": 996,  "url": "url"},
-          {"title": "good title1 title2", "score": 995,  "url": "url"},
-          {"title": "good title1 title2", "score": 994,  "url": "url"}
-        ]})",
+        R"({
+      "results": [
+        {
+          "title": "bad title1 title2",
+          "score": 1000,
+          "url": "https://documentprovider.tld/doc?id=1"
+        },
+        {
+          "title": "bad title1 title2",
+          "score": 999,
+          "url": "https://documentprovider.tld/doc?id=2"
+        },
+        {
+          "title": "bad title1 title2",
+          "score": 998,
+          "url": "https://documentprovider.tld/doc?id=3",
+          "metadata": {
+            "owner": {
+              "emailAddresses": [
+                {"emailAddress": "badEmail1@gmail.com"},
+                {"emailAddress": "gOOdemaIl@gmail.com"}
+              ]
+            }
+          }
+        },
+        {
+          "title": "bad title1 title2",
+          "score": 997,
+          "url": "https://documentprovider.tld/doc?id=4",
+          "metadata": {
+            "owner": {
+              "emailAddresses": [
+                {"emailAddress": "badEmail2@gmail.com"}
+              ]
+            }
+          }
+        },
+        {
+          "title": "good title1 title2",
+          "score": 996,
+          "url": "https://documentprovider.tld/doc?id=5"
+        },
+        {
+          "title": "good title1 title2",
+          "score": 995,
+          "url": "https://documentprovider.tld/doc?id=6"
+        },
+        {
+          "title": "good title1 title2",
+          "score": 994,
+          "url": "https://documentprovider.tld/doc?id=7"
+        }
+      ]
+    })",
         "goo title1", {1000, 0, 998, 0, 996, 995, 994});
   }
 
   {
     SCOPED_TRACE("Responses with missing owner don't crash and are limited.");
-    test(R"({"results": [
-            {"title": "title", "score": 1000,  "url": "url", "metadata":
-              { "owner": { "emailAddresses": [{}] } }
-            },
-            {"title": "title", "score": 999,  "url": "url", "metadata":
-              { "owner": { "emailAddresses": [{}] } }
-            },
-            {"title": "title", "score": 998,  "url": "url", "metadata":
-              { "owner": { "emailAddresses": [] } }
-            },
-            {"title": "title", "score": 997,  "url": "url", "metadata":
-              { "owner": {} }
-            },
-            {"title": "title", "score": 996,  "url": "url", "metadata": {}},
-            {"title": "title", "score": 995,  "url": "url"},
-            {}
-          ]})",
-         "input", {1000, 0, 0, 0, 0, 0});
+    test(
+        R"({
+      "results": [
+        {
+          "title": "title",
+          "score": 1000,
+          "url": "https://documentprovider.tld/doc?id=1",
+          "metadata": {
+            "owner": {
+              "emailAddresses": [{}]
+            }
+          }
+        },
+        {
+          "title": "title",
+          "score": 999,
+          "url": "https://documentprovider.tld/doc?id=2",
+          "metadata": {
+            "owner": {
+              "emailAddresses": [{}]
+            }
+          }
+        },
+        {
+          "title": "title",
+          "score": 998,
+          "url": "https://documentprovider.tld/doc?id=3",
+          "metadata": {
+            "owner": {
+              "emailAddresses": []
+            }
+          }
+        },
+        {
+          "title": "title",
+          "score": 997,
+          "url": "https://documentprovider.tld/doc?id=4",
+          "metadata": {
+            "owner": {}
+          }
+        },
+        {
+          "title": "title",
+          "score": 996,
+          "url": "https://documentprovider.tld/doc?id=5",
+          "metadata": {}
+        },
+        {
+          "title": "title",
+          "score": 995,
+          "url": "https://documentprovider.tld/doc?id=6"
+        },
+        {}
+      ]
+    })",
+        "input", {1000, 0, 0, 0, 0, 0});
   }
 }
 
