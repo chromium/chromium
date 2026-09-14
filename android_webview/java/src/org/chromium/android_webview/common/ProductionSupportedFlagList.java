@@ -1482,6 +1482,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 PaymentFeatureList.THREE_D_SECURE_TELEMETRY,
                 "When enabled, collect telemetry for 3D Secure challenge flow."),
+        Flag.baseFeature(
+                BlinkFeatures.XSLT,
+                "Controls whether XSLT is supported by the browser. Disabling this flag disables"
+                        + " all XSLT processing."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
