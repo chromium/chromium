@@ -27,8 +27,6 @@ import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
-import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -39,9 +37,8 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
+import org.chromium.chrome.browser.glic.ActorTaskRowData;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
-import org.chromium.chrome.browser.glic.GlicButtonStateController;
-import org.chromium.chrome.browser.glic.GlicButtonStateController.ButtonState;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
@@ -158,7 +155,6 @@ public class StripLayoutTrailingButtonsCoordinator {
     private @Nullable TintedCompositorTextButton mGlicActorButton;
     private @Nullable GlicButtonContextMenuCoordinator mGlicButtonContextMenuCoordinator;
     private @Nullable GlicTaskMenuCoordinator mGlicTaskMenuCoordinator;
-    private @Nullable GlicButtonStateController mStateController;
     private final View mToolbarControlContainer;
     private final Callback<Boolean> mGlicPanelStateObserver;
 
@@ -217,6 +213,67 @@ public class StripLayoutTrailingButtonsCoordinator {
                     // This allows VT and HT to share one GlicSplitButtonDelegate and Bridge.
                     mGlicPanelStateObserver.onResult(open);
                 }
+
+                @Override
+                public void showGlicActorTaskIcon() {
+                    mIsGlicActorButtonShowing = true;
+                    updateTrailingButtonsState(
+                            /* animate= */ true, /* forceLayoutChanged= */ false);
+                }
+
+                @Override
+                public void hideGlicActorTaskIcon() {
+                    mIsGlicActorButtonShowing = false;
+                    mActorNudgeLabel = null;
+                    updateTrailingButtonsState(
+                            /* animate= */ true, /* forceLayoutChanged= */ false);
+                }
+
+                @Override
+                public boolean getIsShowingGlicActorTaskIconNudge() {
+                    return shouldGlicActorBeVisible() && mActorNudgeLabel != null;
+                }
+
+                @Override
+                public void setGlicActorNudgeLabel(String nudgeLabel) {
+                    assert mIsGlicActorButtonShowing;
+                    mActorNudgeLabel = nudgeLabel;
+                    updateTrailingButtonsState(
+                            /* animate= */ true, /* forceLayoutChanged= */ false);
+                }
+
+                @Override
+                public void triggerGlicActorNudge(String nudgeText) {
+                    mIsGlicActorButtonShowing = true;
+                    mActorNudgeLabel = nudgeText;
+                    updateTrailingButtonsState(
+                            /* animate= */ true, /* forceLayoutChanged= */ false);
+                }
+
+                @Override
+                public void setGlicActorNudgePressedState(boolean pressed) {
+                    if (mGlicActorButton != null) {
+                        mGlicActorButton.setHighlighted(pressed);
+                        mRenderHost.requestRender();
+                    }
+                }
+
+                @Override
+                public void showActorTaskListBubble(List<ActorTaskRowData> rows) {
+                    showGlicTaskMenu(rows);
+                }
+
+                @Override
+                public void closeActorTaskListBubble() {
+                    if (mGlicTaskMenuCoordinator != null && mGlicTaskMenuCoordinator.isShowing()) {
+                        mGlicTaskMenuCoordinator.dismiss();
+                    }
+                }
+
+                @Override
+                public boolean isActorTaskListBubbleShowing() {
+                    return mGlicTaskMenuCoordinator != null && mGlicTaskMenuCoordinator.isShowing();
+                }
             };
     private final GlicSplitButtonDelegateBridge mGlicSplitButtonDelegateBridge =
             new GlicSplitButtonDelegateBridge(mGlicSplitButtonDelegate);
@@ -230,7 +287,8 @@ public class StripLayoutTrailingButtonsCoordinator {
     private boolean mIsInMultiWindowMode;
     private boolean mIsGlicUiVisible;
     private @Nullable String mNudgeLabel;
-    private int mLastGlicActorButtonState = ButtonState.DEFAULT;
+    private boolean mIsGlicActorButtonShowing;
+    private @Nullable String mActorNudgeLabel;
 
     // Animations
     private static final int ANIM_BUTTONS_FADE_MS = 150;
@@ -530,10 +588,6 @@ public class StripLayoutTrailingButtonsCoordinator {
             mSideUiStateProvider.removeObserver(mSideUiObserver);
             mSideUiStateProvider = null;
         }
-        if (mStateController != null) {
-            mStateController.destroy();
-            mStateController = null;
-        }
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
@@ -577,11 +631,6 @@ public class StripLayoutTrailingButtonsCoordinator {
         mPrefChangeRegistrar = new PrefChangeRegistrar(UserPrefs.get(profile));
         mPrefChangeRegistrar.addObserver(
                 GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, this::onGlicPrefChanged);
-
-        GlicButtonStateController stateController = getOrCreateStateController();
-        if (stateController != null) {
-            stateController.updateObservations(profile);
-        }
     }
 
     @VisibleForTesting
@@ -687,22 +736,17 @@ public class StripLayoutTrailingButtonsCoordinator {
     }
 
     private void handleGlicActorButtonClick() {
-        GlicButtonStateController stateController = getOrCreateStateController();
-        if (stateController != null) {
-            stateController.setPersistDoneState(false);
-        }
-
         if (mGlicTaskMenuCoordinator != null && mGlicTaskMenuCoordinator.isShowing()) {
             mGlicTaskMenuCoordinator.dismiss();
             return;
         }
 
-        if (mProfile == null || mGlicActorButton == null) return;
-        var actorService = ActorKeyedServiceFactory.getForProfile(mProfile);
-        if (actorService == null) return;
+        mGlicSplitButtonDelegateBridge.onGlicActorButtonClicked();
+    }
 
-        List<ActorTask> tasks = actorService.getActiveTasks();
-        if (tasks.isEmpty()) {
+    private void showGlicTaskMenu(List<ActorTaskRowData> rows) {
+        if (mProfile == null || mGlicActorButton == null) return;
+        if (rows.isEmpty()) {
             handleGlicButtonClick(/* preventClose= */ true);
             return;
         }
@@ -724,6 +768,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                             mContext,
                             mTabModelSelectorSupplier,
                             mGlicClickHandler,
+                            mGlicSplitButtonDelegateBridge,
                             GlicInvocationSource.TOP_CHROME_BUTTON,
                             GlicTaskMenuCoordinator.ButtonSource.TAB_STRIP);
             mGlicTaskMenuCoordinator.setOnDismiss(
@@ -734,8 +779,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                         }
                     });
         }
-        mGlicTaskMenuCoordinator.show(
-                anchorRectProvider, mToolbarControlContainer.getRootView(), tasks);
+        mGlicTaskMenuCoordinator.showFromRowData(
+                anchorRectProvider, mToolbarControlContainer.getRootView(), rows);
         mGlicActorButton.setHighlighted(true);
         mRenderHost.requestRender();
     }
@@ -1035,16 +1080,11 @@ public class StripLayoutTrailingButtonsCoordinator {
             String targetActorText = null;
             if (targetActorVisible) {
                 // Glic button collapses its text to let the actor button take focus.
-                if (mLastGlicActorButtonState == ButtonState.DONE) {
-                    String taskCompleteText =
-                            mContext.getResources()
-                                    .getQuantityString(
-                                            R.plurals.actor_task_nudge_task_complete_label, 1);
-                    if (mGlicButtonsAvailableSpaceSupplier.get()
-                            >= calculateMinRequiredWidthForGlicButton(
-                                    taskCompleteText, /* showDismissButton= */ false)) {
-                        targetActorText = taskCompleteText;
-                    }
+                if (mActorNudgeLabel != null
+                        && mGlicButtonsAvailableSpaceSupplier.get()
+                                >= calculateMinRequiredWidthForGlicButton(
+                                        mActorNudgeLabel, /* showDismissButton= */ false)) {
+                    targetActorText = mActorNudgeLabel;
                 }
             } else {
                 // When actor is not visible, Glic button keeps its custom text if a nudge is
@@ -1523,47 +1563,10 @@ public class StripLayoutTrailingButtonsCoordinator {
 
     /** Returns whether the Glic actor button should be visible. */
     public boolean shouldGlicActorBeVisible() {
-        GlicButtonStateController stateController = getOrCreateStateController();
-        if (!shouldGlicBeVisible()
-                || mGlicActorButton == null
-                || stateController == null
-                || mIsIncognito) {
-            return false;
-        }
-
-        // TODO(crbug.com/507213867): Change to check for all tasks (active, recently finished).
-        if (stateController.getButtonState() == ButtonState.DONE) {
-            return true;
-        }
-        List<ActorTask> tasks = stateController.getActiveTasks();
-        return tasks != null && !tasks.isEmpty();
-    }
-
-    @VisibleForTesting
-    /* package */ void onGlicActorButtonStateChanged(@ButtonState int state, boolean isPanelOpen) {
-        if (mStateController == null || mGlicActorButton == null || mGlicButton == null) return;
-        if (mLastGlicActorButtonState == state) return;
-        mLastGlicActorButtonState = state;
-
-        updateTrailingButtonsState(/* animate= */ true, /* forceLayoutChanged= */ false);
-    }
-
-    private @Nullable GlicButtonStateController getOrCreateStateController() {
-        if (mStateController != null) return mStateController;
-
-        Activity activity = mWindowAndroid.getActivity().get();
-        if (activity == null || mIsIncognito) return null;
-
-        mStateController =
-                new GlicButtonStateController(
-                        activity,
-                        this::onGlicActorButtonStateChanged,
-                        () -> mTaskTracker.get(activity.getTaskId()),
-                        /* browserControlsVisibilityManager= */ null);
-        if (mProfile != null) {
-            mStateController.updateObservations(mProfile);
-        }
-        return mStateController;
+        return shouldGlicBeVisible()
+                && mGlicActorButton != null
+                && !mIsIncognito
+                && mIsGlicActorButtonShowing;
     }
 
     private float getGlicButtonBgWidthDp() {
@@ -1822,6 +1825,15 @@ public class StripLayoutTrailingButtonsCoordinator {
     /* package */ void setNudgeLabelForTesting(@Nullable String label) {
         mNudgeLabel = label;
         updateTrailingButtonsState(/* animate= */ true, /* forceLayoutChanged= */ false);
+    }
+
+    /* package */ void setActorNudgeLabelForTesting(@Nullable String label) {
+        mActorNudgeLabel = label;
+        updateTrailingButtonsState(/* animate= */ true, /* forceLayoutChanged= */ false);
+    }
+
+    /* package */ void setIsActorTaskIconVisibleForTesting(boolean visible) {
+        mIsGlicActorButtonShowing = visible;
     }
 
     /** Returns the model selector button. */

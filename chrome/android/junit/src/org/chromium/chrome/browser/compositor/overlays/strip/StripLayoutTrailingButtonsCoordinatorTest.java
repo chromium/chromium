@@ -12,6 +12,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +22,7 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -49,9 +52,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.actor.ActorKeyedService;
-import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
-import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -59,8 +59,8 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTrailingButtonsCoordinator.StripLayoutTrailingButtonsObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.ActorTaskRowData;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
-import org.chromium.chrome.browser.glic.GlicButtonStateController.ButtonState;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
@@ -74,6 +74,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiShowability;
@@ -90,6 +92,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
@@ -112,8 +115,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private StripLayoutTrailingButtonsObserver mObserver;
     @Mock private ChromeAndroidTaskTracker mTaskTracker;
     @Mock private ChromeAndroidTask mTask;
-    @Mock private ActorKeyedService mActorKeyedService;
-    @Mock private ActorTask mActorTask;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private GlicSplitButtonDelegateBridge.Natives mGlicSplitButtonDelegateBridgeJniMock;
@@ -141,6 +142,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         GlicEnabling.setEnabledForTesting(ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC));
         GlicSplitButtonDelegateBridgeJni.setInstanceForTesting(
                 mGlicSplitButtonDelegateBridgeJniMock);
+        when(mGlicSplitButtonDelegateBridgeJniMock.create(anyLong(), any())).thenReturn(1L);
         CompositorAnimationHandler.setTestingMode(true);
         when(mUpdateHost.getAnimationHandler())
                 .thenReturn(new CompositorAnimationHandler(CallbackUtils.emptyRunnable()));
@@ -152,8 +154,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
 
-        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.emptyList());
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
@@ -164,6 +164,22 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         when(mToolbarContainerView.getResources()).thenReturn(mActivity.getResources());
         when(mTaskTracker.get(anyInt())).thenReturn(mTask);
         when(mTask.getNativeBrowserWindowPtr(any(), any())).thenReturn(mBwiPtr);
+        doAnswer(
+                        invocation -> {
+                            Supplier<ChromeAndroidTaskFeature> factory = invocation.getArgument(1);
+                            ChromeAndroidTaskFeature feature = factory.get();
+                            InitInfo info =
+                                    new InitInfo(
+                                            mBwiPtr,
+                                            /* isVisible= */ true,
+                                            new Rect(),
+                                            new Rect(),
+                                            /* displayId= */ 0);
+                            feature.onAddedToTask(info);
+                            return null;
+                        })
+                .when(mTask)
+                .addFeature(any(), any());
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mSideUiStateProvider.canShowSideUi(SideUiId.SIDE_PANEL)).thenReturn(true);
@@ -566,14 +582,25 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 "Glic Actor button should not be highlighted initially.",
                 mGlicActorButton.isHighlighted());
 
-        // Mock active tasks to ensure the menu actually opens
-        when(mActorTask.getTitle()).thenReturn("Test Task");
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
+        ActorTaskRowData rowData =
+                new ActorTaskRowData(
+                        /* taskId= */ 1,
+                        "Test Task",
+                        "Working on your task…",
+                        /* isEnabled= */ true,
+                        /* needsReview= */ false,
+                        /* tabId= */ 123);
 
-        // Simulate clicking the actor button to open the task menu
+        // Simulate clicking the actor button to trigger native click handler
         float actorX = mGlicActorButton.getDrawX() + mGlicActorButton.getWidth() / 2;
         float actorY = mGlicActorButton.getDrawY() + mGlicActorButton.getHeight() / 2;
         mCoordinator.click(0L, actorX, actorY, 0, 0);
+
+        verify(mGlicSplitButtonDelegateBridgeJniMock).onGlicActorButtonClicked(anyLong());
+
+        // Simulate native showing the actor task list bubble / menu
+        GlicSplitButtonDelegate delegate = mCoordinator.getGlicSplitButtonDelegateForTesting();
+        delegate.showActorTaskListBubble(Collections.singletonList(rowData));
 
         // Verify button is in highlighted state and task menu is showing
         assertTrue(
@@ -581,13 +608,48 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 mGlicActorButton.isHighlighted());
         assertTrue("Glic task menu should be showing.", mCoordinator.isMenuShowing());
 
-        // Simulate dismissing the task menu
-        mCoordinator.dismissTrailingButtonsMenu();
+        // Simulate native dismissing the task menu
+        delegate.closeActorTaskListBubble();
 
         // Verify button returns to non-highlighted state
         assertFalse(
                 "Glic Actor button should not be highlighted after task menu is dismissed.",
                 mGlicActorButton.isHighlighted());
+    }
+
+    @Test
+    public void testGlicSplitButtonDelegate_ActorTaskIcon() {
+        GlicSplitButtonDelegate delegate = mCoordinator.getGlicSplitButtonDelegateForTesting();
+        assertNotNull("Glic split button delegate should be created.", delegate);
+
+        // Initially actor button is hidden.
+        assertFalse(
+                "Actor button should be hidden initially.",
+                mCoordinator.shouldGlicActorBeVisible());
+
+        // Show actor icon and trigger actor nudge text.
+        delegate.showGlicActorTaskIcon();
+        delegate.triggerGlicActorNudge("Acting on 1 tab");
+        assertTrue(
+                "Actor button should be visible after showGlicActorTaskIcon.",
+                mCoordinator.shouldGlicActorBeVisible());
+        assertTrue("Actor nudge should be showing.", delegate.getIsShowingGlicActorTaskIconNudge());
+        assertEquals(
+                "Actor button text should match nudge.",
+                "Acting on 1 tab",
+                mGlicActorButton.getText());
+        assertNull(
+                "Glic button text should collapse while actor button is showing.",
+                mGlicButton.getText());
+
+        // Hide actor icon: actor button hides, nudge clears, and Glic button text restores.
+        delegate.hideGlicActorTaskIcon();
+        assertFalse(
+                "Actor button should be hidden after hideGlicActorTaskIcon.",
+                mCoordinator.shouldGlicActorBeVisible());
+        assertFalse(
+                "Actor nudge should not be showing after hide.",
+                delegate.getIsShowingGlicActorTaskIconNudge());
     }
 
     @Test
@@ -755,8 +817,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
         // 2. An actor task starts: actor button should appear, and nudge / dismiss button should
         // hide.
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
-        mCoordinator.onGlicActorButtonStateChanged(ButtonState.WORKING, false);
+        mCoordinator.getGlicSplitButtonDelegateForTesting().showGlicActorTaskIcon();
         ShadowLooper.idleMainLooper();
 
         assertTrue("Actor button should become visible.", mGlicActorButton.isVisible());
@@ -951,20 +1012,16 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
     @Test
     public void testGlicActorButton_DegradationOnNarrowScreen() {
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
         showGlicActorButton();
 
-        String actorNudgeText =
-                mActivity
-                        .getResources()
-                        .getQuantityString(R.plurals.actor_task_nudge_task_complete_label, 1);
+        String actorNudgeText = "Task done";
         float minActorNudgeWidth =
                 mCoordinator.calculateMinRequiredWidthForGlicButton(
                         actorNudgeText, /* showDismissButton= */ false);
 
-        // 1. Transition to DONE state on a wide screen >= minActorNudgeWidth
+        // 1. Trigger actor nudge on a wide screen >= minActorNudgeWidth
         onSizeChanged(minActorNudgeWidth);
-        mCoordinator.onGlicActorButtonStateChanged(ButtonState.DONE, false);
+        mCoordinator.getGlicSplitButtonDelegateForTesting().triggerGlicActorNudge(actorNudgeText);
         ShadowLooper.idleMainLooper();
 
         assertTrue("Actor button should be visible.", mGlicActorButton.isVisible());
@@ -1017,13 +1074,12 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
     @Test
     public void testSetGlicActorButtonText() {
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
         showGlicActorButton();
         float initialWidth = mGlicActorButton.getWidth();
 
-        // Transition to DONE state on wide screen
+        // Trigger actor nudge on wide screen
         onSizeChanged(DEFAULT_AVAILABLE_SPACE_DP);
-        mCoordinator.onGlicActorButtonStateChanged(ButtonState.DONE, false);
+        mCoordinator.getGlicSplitButtonDelegateForTesting().triggerGlicActorNudge("Task done");
 
         verify(mLayerTitleCache, Mockito.atLeastOnce())
                 .getUpdatedGlicButtonText(any(), Mockito.eq(true), anyBoolean());
@@ -1031,8 +1087,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 "Actor button width should increase to accommodate text.",
                 mGlicActorButton.getWidth() > initialWidth);
 
-        // Transition back to DEFAULT state
-        mCoordinator.onGlicActorButtonStateChanged(ButtonState.DEFAULT, false);
+        // Clear actor nudge label
+        mCoordinator.getGlicSplitButtonDelegateForTesting().setGlicActorNudgeLabel(null);
         assertEquals(
                 "Actor button width should return to original singular icon width.",
                 initialWidth,
@@ -1042,6 +1098,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
     @Test
     public void testActorButtonStateChangedLifecycle() {
+        GlicSplitButtonDelegate delegate = mCoordinator.getGlicSplitButtonDelegateForTesting();
+
         // --- 1. Start State: Inactive ---
         assertFalse("Initially, Glic Actor button should be hidden.", mGlicActorButton.isVisible());
         assertEquals(
@@ -1050,9 +1108,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 mGlicButton.getText());
 
         // --- 2. Transition: Active (task starts acting) ---
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
-
-        mCoordinator.onGlicActorButtonStateChanged(ButtonState.WORKING, false);
+        delegate.showGlicActorTaskIcon();
         ShadowLooper.idleMainLooper();
 
         // Verify actor button is shown (with no text) and primary button text is cleared.
@@ -1063,25 +1119,22 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 mGlicButton.getText());
 
         // --- 3. Transition: Done (task finishes) ---
-        mCoordinator.onGlicActorButtonStateChanged(ButtonState.DONE, false);
+        String taskCompleteText = "Task done";
+        delegate.triggerGlicActorNudge(taskCompleteText);
         ShadowLooper.idleMainLooper();
 
         // Verify actor button is still visible and text becomes "Done".
         assertTrue("Actor button should remain visible.", mGlicActorButton.isVisible());
         assertEquals(
                 "Actor button text should become 'Task done'.",
-                mActivity
-                        .getResources()
-                        .getQuantityString(R.plurals.actor_task_nudge_task_complete_label, 1),
+                taskCompleteText,
                 mGlicActorButton.getText());
         assertNull(
                 "Primary Glic button text should remain null in done state.",
                 mGlicButton.getText());
 
         // --- 4. Transition: Return to Inactive (task is dismissed/cancelled) ---
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.emptyList());
-
-        mCoordinator.onGlicActorButtonStateChanged(ButtonState.DEFAULT, false);
+        delegate.hideGlicActorTaskIcon();
         ShadowLooper.idleMainLooper();
 
         // Verify actor button hides and primary Glic button text is restored.
@@ -1203,7 +1256,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Test
     public void testGlicButtons_VisibleInIncognito() {
         // Setup an active actor task so shouldGlicActorBeVisible() would normally return true.
-        when(mActorKeyedService.getActiveTasks()).thenReturn(List.of(mActorTask));
+        mCoordinator.getGlicSplitButtonDelegateForTesting().showGlicActorTaskIcon();
         assertTrue("Glic button should be visible initially.", mCoordinator.shouldGlicBeVisible());
         assertTrue(
                 "Glic Actor button should be visible initially when tasks are active.",
@@ -1415,9 +1468,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         Mockito.clearInvocations(coordinatorSpy);
 
         // 3. Test Glic Actor Button Expansion Transition (Simulating actor task nudge)
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
         showGlicActorButton();
-        coordinatorSpy.onGlicActorButtonStateChanged(ButtonState.DONE, false);
+        coordinatorSpy.setActorNudgeLabelForTesting("Tasks need attention");
         Mockito.verify(coordinatorSpy, Mockito.atLeastOnce())
                 .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());
         assertEquals(
@@ -1499,6 +1551,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     }
 
     private void showGlicActorButton() {
+        mCoordinator.setIsActorTaskIconVisibleForTesting(true);
         mCoordinator.setGlicActorButtonVisible(true, /* animate= */ false);
         mGlicActorButton.setWidth(
                 getDimensionDp(mActivity, R.dimen.tab_strip_glic_button_bg_width));
@@ -1516,8 +1569,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         DeviceInfo.setIsDesktopForTesting(isDesktopDensity);
         initializeCoordinator();
         if (isActor) {
-            when(mActorKeyedService.getActiveTasks())
-                    .thenReturn(Collections.singletonList(mActorTask));
             showGlicActorButton();
         }
         TintedCompositorTextButton button = isActor ? mGlicActorButton : mGlicButton;
