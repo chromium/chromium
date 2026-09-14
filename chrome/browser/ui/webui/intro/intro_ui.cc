@@ -41,6 +41,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -119,7 +120,7 @@ IntroUI::IntroUI(content::WebUI* web_ui)
   // ends up being the URL) when we try to get it on startup for a11y purposes.
   web_ui->OverrideTitle(l10n_util::GetStringUTF16(title_id));
 
-  constexpr webui::LocalizedString localized_strings[] = {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"pageSubtitle", IDS_FRE_SIGN_IN_SUBTITLE_0},
       {"devicesCardTitle", IDS_FRE_DEVICES_CARD_TITLE},
       {"devicesCardDescription", IDS_FRE_DEVICES_CARD_DESCRIPTION},
@@ -153,7 +154,7 @@ IntroUI::IntroUI(content::WebUI* web_ui)
       {"startBrowsingButtonLabel",
        IDS_FRE_FINISH_OR_CONTINUE_START_BROWSING_BUTTON_LABEL},
   };
-  source->AddLocalizedStrings(localized_strings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   // Metrics popup on welcome page is only shown for branded builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -269,12 +270,13 @@ IntroUI::IntroUI(content::WebUI* web_ui)
         chrome::kChromeUIIntroFinishOrContinueSubPage,
         IDR_INTRO_FINISH_OR_CONTINUE_FINISH_OR_CONTINUE_HTML);
 
-    source->AddLocalizedString(
-        "seeMoreTipsButtonLabel",
-        IDS_FRE_FINISH_OR_CONTINUE_SEE_MORE_TIPS_BUTTON_LABEL);
-    source->AddLocalizedString(
-        "seeWhatsNewButtonLabel",
-        IDS_FRE_FINISH_OR_CONTINUE_SEE_WHATS_NEW_BUTTON_LABEL);
+    static constexpr webui::LocalizedString kRevampStrings[] = {
+        {"seeMoreTipsButtonLabel",
+         IDS_FRE_FINISH_OR_CONTINUE_SEE_MORE_TIPS_BUTTON_LABEL},
+        {"seeWhatsNewButtonLabel",
+         IDS_FRE_FINISH_OR_CONTINUE_SEE_WHATS_NEW_BUTTON_LABEL},
+    };
+    source->AddLocalizedStrings(kRevampStrings);
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -38,6 +38,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
@@ -106,38 +107,35 @@ void CreateAndAddBrowserSwitchUIHTMLSource(content::WebUI* web_ui) {
   std::string alt_browser_name = service->driver()->GetBrowserName();
   source->AddString("altBrowserName", alt_browser_name);
 
-  source->AddLocalizedString("browserName", IDS_PRODUCT_NAME);
-
   if (alt_browser_name.empty()) {
     // Browser name could not be auto-detected. Say "alternative browser"
     // instead of naming the browser.
-    source->AddLocalizedString(
-        "countdownTitle",
-        IDS_ABOUT_BROWSER_SWITCH_COUNTDOWN_TITLE_UNKNOWN_BROWSER);
-    source->AddLocalizedString(
-        "description", IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER);
-    source->AddLocalizedString(
-        "errorTitle", IDS_ABOUT_BROWSER_SWITCH_ERROR_TITLE_UNKNOWN_BROWSER);
-    source->AddLocalizedString(
-        "genericError", IDS_ABOUT_BROWSER_SWITCH_GENERIC_ERROR_UNKNOWN_BROWSER);
-    source->AddLocalizedString(
-        "openingTitle", IDS_ABOUT_BROWSER_SWITCH_OPENING_TITLE_UNKNOWN_BROWSER);
+    static constexpr webui::LocalizedString kUnknownBrowserStrings[] = {
+        {"countdownTitle",
+         IDS_ABOUT_BROWSER_SWITCH_COUNTDOWN_TITLE_UNKNOWN_BROWSER},
+        {"description", IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER},
+        {"errorTitle", IDS_ABOUT_BROWSER_SWITCH_ERROR_TITLE_UNKNOWN_BROWSER},
+        {"genericError",
+         IDS_ABOUT_BROWSER_SWITCH_GENERIC_ERROR_UNKNOWN_BROWSER},
+        {"openingTitle",
+         IDS_ABOUT_BROWSER_SWITCH_OPENING_TITLE_UNKNOWN_BROWSER},
+    };
+    source->AddLocalizedStrings(kUnknownBrowserStrings);
   } else {
     // Browser name was auto-detected. Name it in the text.
-    source->AddLocalizedString(
-        "countdownTitle",
-        IDS_ABOUT_BROWSER_SWITCH_COUNTDOWN_TITLE_KNOWN_BROWSER);
-    source->AddLocalizedString(
-        "description", IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_KNOWN_BROWSER);
-    source->AddLocalizedString(
-        "errorTitle", IDS_ABOUT_BROWSER_SWITCH_ERROR_TITLE_KNOWN_BROWSER);
-    source->AddLocalizedString(
-        "genericError", IDS_ABOUT_BROWSER_SWITCH_GENERIC_ERROR_KNOWN_BROWSER);
-    source->AddLocalizedString(
-        "openingTitle", IDS_ABOUT_BROWSER_SWITCH_OPENING_TITLE_KNOWN_BROWSER);
+    static constexpr webui::LocalizedString kKnownBrowserStrings[] = {
+        {"countdownTitle",
+         IDS_ABOUT_BROWSER_SWITCH_COUNTDOWN_TITLE_KNOWN_BROWSER},
+        {"description", IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_KNOWN_BROWSER},
+        {"errorTitle", IDS_ABOUT_BROWSER_SWITCH_ERROR_TITLE_KNOWN_BROWSER},
+        {"genericError", IDS_ABOUT_BROWSER_SWITCH_GENERIC_ERROR_KNOWN_BROWSER},
+        {"openingTitle", IDS_ABOUT_BROWSER_SWITCH_OPENING_TITLE_KNOWN_BROWSER},
+    };
+    source->AddLocalizedStrings(kKnownBrowserStrings);
   }
 
   static constexpr webui::LocalizedString kStrings[] = {
+      {"browserName", IDS_PRODUCT_NAME},
       {"switchInternalDescription", IDS_ABOUT_BROWSER_SWITCH_INTERNALS_DESC},
       {"switchInternalTitle", IDS_ABOUT_BROWSER_SWITCH_INTERNALS_TITLE},
       {"nothingShown", IDS_ABOUT_BROWSER_SWITCH_INTERNALS_NOTHING_SHOWN},
@@ -193,12 +191,10 @@ void CreateAndAddBrowserSwitchUIHTMLSource(content::WebUI* web_ui) {
        IDS_ABOUT_BROWSER_SWITCH_INTERNALS_IGNORE_TABLE_COLUMN_SOURCE},
       {"exportToJsonButton",
        IDS_ABOUT_BROWSER_SWITCH_INTERNALS_POLICIES_DOWNLOAD_BUTTON},
+      {"protocolError", IDS_ABOUT_BROWSER_SWITCH_PROTOCOL_ERROR},
+      {"title", IDS_ABOUT_BROWSER_SWITCH_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
-
-  source->AddLocalizedString("protocolError",
-                             IDS_ABOUT_BROWSER_SWITCH_PROTOCOL_ERROR);
-  source->AddLocalizedString("title", IDS_ABOUT_BROWSER_SWITCH_TITLE);
 
   webui::SetupWebUIDataSource(source, kBrowserSwitchResources,
                               IDR_BROWSER_SWITCH_BROWSER_SWITCH_HTML);

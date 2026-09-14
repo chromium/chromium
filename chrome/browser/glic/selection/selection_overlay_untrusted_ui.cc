@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
 namespace glic {
@@ -42,9 +43,21 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
   CHECK(html_source);
   webui::SetupWebUIDataSource(html_source, kGlicUntrustedResources,
                               IDR_GLIC_UNTRUSTED_SELECTION_OVERLAY_HTML);
-  html_source->AddLocalizedString(
-      "searchScreenshot",
-      IDS_LENS_OVERLAY_SEARCH_SCREENSHOT_ACCESSIBILITY_LABEL);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"searchScreenshot",
+       IDS_LENS_OVERLAY_SEARCH_SCREENSHOT_ACCESSIBILITY_LABEL},
+      {"topLeftSliderAriaLabel",
+       IDS_LENS_OVERLAY_TOP_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
+      {"topRightSliderAriaLabel",
+       IDS_LENS_OVERLAY_TOP_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
+      {"bottomRightSliderAriaLabel",
+       IDS_LENS_OVERLAY_BOTTOM_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
+      {"bottomLeftSliderAriaLabel",
+       IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
+      {"close", IDS_CLOSE},
+      {"askGemini", IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean("enableShimmer", true);
   html_source->AddBoolean("enableBorderGlow", true);
   html_source->AddBoolean("enableKeyboardSelection", false);
@@ -81,22 +94,7 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
                           lens::kColorFallbackSurfaceContainerHighestDark);
   html_source->AddInteger("colorFallbackSelectionElement",
                           lens::kColorFallbackSelectionElement);
-  html_source->AddLocalizedString(
-      "topLeftSliderAriaLabel",
-      IDS_LENS_OVERLAY_TOP_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
-  html_source->AddLocalizedString(
-      "topRightSliderAriaLabel",
-      IDS_LENS_OVERLAY_TOP_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
-  html_source->AddLocalizedString(
-      "bottomRightSliderAriaLabel",
-      IDS_LENS_OVERLAY_BOTTOM_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
-  html_source->AddLocalizedString(
-      "bottomLeftSliderAriaLabel",
-      IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
   html_source->AddBoolean("enableMultiRegionSelection", true);
-  html_source->AddLocalizedString("close", IDS_CLOSE);
-  html_source->AddLocalizedString("askGemini",
-                                  IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL);
   html_source->AddResourcePath("glic_region_selection_cursor_icon.svg",
                                IDR_GLIC_REGION_SELECTION_CURSOR_ICON);
   html_source->AddBoolean(

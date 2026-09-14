@@ -22,6 +22,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/base/url_util.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
 VisualGuidedSetterUI::VisualGuidedSetterUI(content::WebUI* web_ui)
@@ -38,28 +39,22 @@ VisualGuidedSetterUI::VisualGuidedSetterUI(content::WebUI* web_ui)
       profile, chrome::kChromeUIDefaultBrowserVisualGuidedSetterHost);
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
-  source->AddLocalizedString(
-      "title", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_PAGE_TITLE);
-  source->AddLocalizedString(
-      "headerTitle", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_HEADER_TITLE);
-  source->AddLocalizedString(
-      "contentTitle", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_CONTENT_TITLE);
-  source->AddLocalizedString(
-      "contentDescription",
-      IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_CONTENT_DESCRIPTION);
-  source->AddLocalizedString(
-      "instructionStep1",
-      IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_INSTRUCTION_STEP_1);
-  source->AddLocalizedString(
-      "instructionStep2",
-      IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_INSTRUCTION_STEP_2);
-  source->AddLocalizedString(
-      "resizedToFit", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_RESIZED_TO_FIT);
-  source->AddLocalizedString(
-      "didntWork", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_DIDNT_WORK);
-  source->AddLocalizedString(
-      "openWindowsSettings",
-      IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_OPEN_WINDOWS_SETTINGS);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"title", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_PAGE_TITLE},
+      {"headerTitle", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_HEADER_TITLE},
+      {"contentTitle", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_CONTENT_TITLE},
+      {"contentDescription",
+       IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_CONTENT_DESCRIPTION},
+      {"instructionStep1",
+       IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_INSTRUCTION_STEP_1},
+      {"instructionStep2",
+       IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_INSTRUCTION_STEP_2},
+      {"resizedToFit", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_RESIZED_TO_FIT},
+      {"didntWork", IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_DIDNT_WORK},
+      {"openWindowsSettings",
+       IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_OPEN_WINDOWS_SETTINGS},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddBoolean("canPinToTaskbar", can_pin_to_taskbar);
 

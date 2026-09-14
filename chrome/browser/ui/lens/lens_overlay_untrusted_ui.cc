@@ -31,6 +31,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 
@@ -57,75 +58,77 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUILensOverlayUntrustedURL);
-  html_source->AddLocalizedString("backButton", IDS_ACCNAME_BACK);
-  html_source->AddLocalizedString("close", IDS_CLOSE);
-  html_source->AddLocalizedString("copy", IDS_LENS_OVERLAY_COPY);
-  html_source->AddLocalizedString("copyAsImage",
-                                  IDS_LENS_OVERLAY_COPY_AS_IMAGE);
-  html_source->AddLocalizedString("copyAsImageToastMessage",
-                                  IDS_LENS_OVERLAY_COPY_AS_IMAGE_TOAST_MESSAGE);
-  html_source->AddLocalizedString("copyText", IDS_LENS_OVERLAY_COPY_TEXT);
-  html_source->AddLocalizedString("copyToastMessage",
-                                  IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE);
-  html_source->AddLocalizedString("dismiss",
-                                  IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE);
-  html_source->AddLocalizedString("learnMore", IDS_LENS_OVERLAY_LEARN_MORE);
-  html_source->AddLocalizedString("moreOptions",
-                                  IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL);
-  html_source->AddLocalizedString("myActivity", IDS_LENS_OVERLAY_MY_ACTIVITY);
-  html_source->AddLocalizedString("saveAsImage",
-                                  IDS_LENS_OVERLAY_SAVE_AS_IMAGE);
-  html_source->AddLocalizedString("sendFeedback", IDS_LENS_SEND_FEEDBACK);
-  html_source->AddLocalizedString("cursorTooltipDragMessage",
-                                  IDS_LENS_OVERLAY_CURSOR_TOOLTIP_DRAG_MESSAGE);
-  html_source->AddLocalizedString(
-      "cursorTooltipTextHighlightMessage",
-      IDS_LENS_OVERLAY_CURSOR_TOOLTIP_TEXT_HIGHLIGHT_MESSAGE);
-  html_source->AddLocalizedString(
-      "cursorTooltipClickMessage",
-      IDS_LENS_OVERLAY_CURSOR_TOOLTIP_CLICK_MESSAGE);
-  html_source->AddLocalizedString(
-      "cursorTooltipLivePageMessage",
-      IDS_LENS_OVERLAY_CURSOR_TOOLTIP_LIVE_PAGE_MESSAGE);
-  html_source->AddLocalizedString("translate", IDS_LENS_OVERLAY_TRANSLATE);
-  html_source->AddLocalizedString("translateButtonLabel",
-                                  IDS_LENS_OVERLAY_TRANSLATE_BUTTON_LABEL);
-  html_source->AddLocalizedString(
-      "searchScreenshot",
-      IDS_LENS_OVERLAY_SEARCH_SCREENSHOT_ACCESSIBILITY_LABEL);
-  html_source->AddLocalizedString("selectText", IDS_LENS_OVERLAY_SELECT_TEXT);
-  html_source->AddLocalizedString(
-      "networkErrorPageTopLine",
-      IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_FIRST_LINE);
-  html_source->AddLocalizedString(
-      "networkErrorPageBottomLine",
-      IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_SECOND_LINE);
-  html_source->AddLocalizedString(
-      "protectedErrorPageTopLine",
-      IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE);
-  html_source->AddLocalizedString(
-      "protectedErrorPageBottomLine",
-      IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE);
-  html_source->AddLocalizedString("detectLanguage",
-                                  IDS_LENS_OVERLAY_DETECT_LANGUAGE_LABEL);
-  html_source->AddLocalizedString(
-      "translateFrom", IDS_LENS_OVERLAY_SOURCE_LANGUAGE_PICKER_MENU_TITLE);
-  html_source->AddLocalizedString(
-      "translateTo", IDS_LENS_OVERLAY_TARGET_LANGUAGE_PICKER_MENU_TITLE);
-  html_source->AddLocalizedString("allLanguages",
-                                  IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL);
-  html_source->AddLocalizedString("recentLanguages",
-                                  IDS_LENS_OVERLAY_RECENT_LANGUAGES_LABEL);
-  html_source->AddLocalizedString("languagePickerAriaLabel",
-                                  IDS_LENS_OVERLAY_LANGUAGE_PICKER_LABEL);
-  html_source->AddLocalizedString(
-      "translateCloseAriaLabel", IDS_LENS_OVERLAY_CLOSE_TRANSLATE_SCREEN_LABEL);
-  html_source->AddLocalizedString(
-      "sourceLanguageAriaLabel",
-      IDS_LENS_OVERLAY_SOURCE_LANGUAGE_ACCESSIBILITY_LABEL);
-  html_source->AddLocalizedString(
-      "targetLanguageAriaLabel",
-      IDS_LENS_OVERLAY_TARGET_LANGUAGE_ACCESSIBILITY_LABEL);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"backButton", IDS_ACCNAME_BACK},
+      {"close", IDS_CLOSE},
+      {"copy", IDS_LENS_OVERLAY_COPY},
+      {"copyAsImage", IDS_LENS_OVERLAY_COPY_AS_IMAGE},
+      {"copyAsImageToastMessage", IDS_LENS_OVERLAY_COPY_AS_IMAGE_TOAST_MESSAGE},
+      {"copyText", IDS_LENS_OVERLAY_COPY_TEXT},
+      {"copyToastMessage", IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE},
+      {"dismiss", IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE},
+      {"learnMore", IDS_LENS_OVERLAY_LEARN_MORE},
+      {"moreOptions", IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL},
+      {"myActivity", IDS_LENS_OVERLAY_MY_ACTIVITY},
+      {"saveAsImage", IDS_LENS_OVERLAY_SAVE_AS_IMAGE},
+      {"sendFeedback", IDS_LENS_SEND_FEEDBACK},
+      {"cursorTooltipDragMessage",
+       IDS_LENS_OVERLAY_CURSOR_TOOLTIP_DRAG_MESSAGE},
+      {"cursorTooltipTextHighlightMessage",
+       IDS_LENS_OVERLAY_CURSOR_TOOLTIP_TEXT_HIGHLIGHT_MESSAGE},
+      {"cursorTooltipClickMessage",
+       IDS_LENS_OVERLAY_CURSOR_TOOLTIP_CLICK_MESSAGE},
+      {"cursorTooltipLivePageMessage",
+       IDS_LENS_OVERLAY_CURSOR_TOOLTIP_LIVE_PAGE_MESSAGE},
+      {"translate", IDS_LENS_OVERLAY_TRANSLATE},
+      {"translateButtonLabel", IDS_LENS_OVERLAY_TRANSLATE_BUTTON_LABEL},
+      {"searchScreenshot",
+       IDS_LENS_OVERLAY_SEARCH_SCREENSHOT_ACCESSIBILITY_LABEL},
+      {"selectText", IDS_LENS_OVERLAY_SELECT_TEXT},
+      {"networkErrorPageTopLine",
+       IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_FIRST_LINE},
+      {"networkErrorPageBottomLine",
+       IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_SECOND_LINE},
+      {"protectedErrorPageTopLine",
+       IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE},
+      {"protectedErrorPageBottomLine",
+       IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE},
+      {"detectLanguage", IDS_LENS_OVERLAY_DETECT_LANGUAGE_LABEL},
+      {"translateFrom", IDS_LENS_OVERLAY_SOURCE_LANGUAGE_PICKER_MENU_TITLE},
+      {"translateTo", IDS_LENS_OVERLAY_TARGET_LANGUAGE_PICKER_MENU_TITLE},
+      {"allLanguages", IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL},
+      {"recentLanguages", IDS_LENS_OVERLAY_RECENT_LANGUAGES_LABEL},
+      {"languagePickerAriaLabel", IDS_LENS_OVERLAY_LANGUAGE_PICKER_LABEL},
+      {"translateCloseAriaLabel",
+       IDS_LENS_OVERLAY_CLOSE_TRANSLATE_SCREEN_LABEL},
+      {"sourceLanguageAriaLabel",
+       IDS_LENS_OVERLAY_SOURCE_LANGUAGE_ACCESSIBILITY_LABEL},
+      {"targetLanguageAriaLabel",
+       IDS_LENS_OVERLAY_TARGET_LANGUAGE_ACCESSIBILITY_LABEL},
+      {"searchboxGhostLoaderHintTextSecondary",
+       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_SECONDARY},
+      {"searchboxGhostLoaderErrorText",
+       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT},
+      {"searchboxGhostLoaderNoSuggestText",
+       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT},
+      {"searchButton", IDS_LENS_OVERLAY_SEARCH_LANGUAGE_PICKER_LABEL},
+      {"topLeftSliderAriaLabel",
+       IDS_LENS_OVERLAY_TOP_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
+      {"topRightSliderAriaLabel",
+       IDS_LENS_OVERLAY_TOP_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
+      {"bottomRightSliderAriaLabel",
+       IDS_LENS_OVERLAY_BOTTOM_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
+      {"bottomLeftSliderAriaLabel",
+       IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL},
+      {"privacyNoticeHeader", IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE},
+      {"privacyNoticeCancel",
+       IDS_LENS_PERMISSION_BUBBLE_DIALOG_REMIND_ME_LATER},
+      {"privacyNoticeContinue", IDS_LENS_PERMISSION_BUBBLE_DIALOG_GOT_IT},
+      {"tabToContinue", IDS_LENS_PERMISSION_BUBBLE_DIALOG_TAB_TO_CONTINUE},
+      {"searchBoxHintDefault", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL},
+      {"searchBoxHintPdf", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL_PDF},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString(
       "searchboxGhostLoaderHintTextPrimaryDefault",
       lens::features::ShouldUseAltLoadingHintWeb()
@@ -136,31 +139,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       lens::features::ShouldUseAltLoadingHintPdf()
           ? IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY_ALT
           : IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY_PDF);
-  html_source->AddLocalizedString(
-      "searchboxGhostLoaderHintTextSecondary",
-      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_SECONDARY);
-  html_source->AddLocalizedString("searchboxGhostLoaderErrorText",
-                                  IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT);
-  html_source->AddLocalizedString(
-      "searchboxGhostLoaderNoSuggestText",
-      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT);
-  html_source->AddLocalizedString("close", IDS_CLOSE);
-  html_source->AddLocalizedString(
-      "searchButton", IDS_LENS_OVERLAY_SEARCH_LANGUAGE_PICKER_LABEL);
-  html_source->AddLocalizedString(
-      "topLeftSliderAriaLabel",
-      IDS_LENS_OVERLAY_TOP_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
-  html_source->AddLocalizedString(
-      "topRightSliderAriaLabel",
-      IDS_LENS_OVERLAY_TOP_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
-  html_source->AddLocalizedString(
-      "bottomRightSliderAriaLabel",
-      IDS_LENS_OVERLAY_BOTTOM_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
-  html_source->AddLocalizedString(
-      "bottomLeftSliderAriaLabel",
-      IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
-  html_source->AddLocalizedString("privacyNoticeHeader",
-                                  IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE);
   html_source->AddString(
       "privacyNoticeBody",
       l10n_util::GetStringFUTF16(
@@ -172,12 +150,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                    IDS_LENS_PERMISSION_BUBBLE_DIALOG_LEARN_MORE_ABOUT_GOOGLE_LENS_LINK),
                u"\">", l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_LEARN_MORE),
                u"</a>"})));
-  html_source->AddLocalizedString(
-      "privacyNoticeCancel", IDS_LENS_PERMISSION_BUBBLE_DIALOG_REMIND_ME_LATER);
-  html_source->AddLocalizedString("privacyNoticeContinue",
-                                  IDS_LENS_PERMISSION_BUBBLE_DIALOG_GOT_IT);
-  html_source->AddLocalizedString(
-      "tabToContinue", IDS_LENS_PERMISSION_BUBBLE_DIALOG_TAB_TO_CONTINUE);
 
 
   // Add finch flags
@@ -327,10 +299,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "enableVisualSelectionUpdates",
       lens::features::IsLensOverlayVisualSelectionUpdatesEnabled());
   html_source->AddBoolean("reportMetrics", false);
-  html_source->AddLocalizedString("searchBoxHintDefault",
-                                  IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL);
-  html_source->AddLocalizedString(
-      "searchBoxHintPdf", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL_PDF);
   html_source->AddBoolean("isLensSearchbox", true);
   html_source->AddBoolean(
       "forceHideEllipsis",

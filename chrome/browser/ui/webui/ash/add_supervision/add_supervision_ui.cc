@@ -36,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/webui/webui_util.h"
@@ -237,17 +238,16 @@ void AddSupervisionUI::SetUpResources(const std::string& app_locale) {
   source->AddResourcePaths(kAddSupervisionResources);
   source->AddResourcePaths(kSupervisionResources);
 
-  source->AddLocalizedString("pageTitle", IDS_ADD_SUPERVISION_PAGE_TITLE);
-  source->AddLocalizedString("webviewLoadingMessage",
-                             IDS_ADD_SUPERVISION_WEBVIEW_LOADING_MESSAGE);
-  source->AddLocalizedString("supervisedUserErrorDescription",
-                             IDS_SUPERVISED_USER_ERROR_DESCRIPTION);
-  source->AddLocalizedString("supervisedUserErrorTitle",
-                             IDS_SUPERVISED_USER_ERROR_TITLE);
-  source->AddLocalizedString("supervisedUserOfflineDescription",
-                             IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION);
-  source->AddLocalizedString("supervisedUserOfflineTitle",
-                             IDS_SUPERVISED_USER_OFFLINE_TITLE);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"pageTitle", IDS_ADD_SUPERVISION_PAGE_TITLE},
+      {"webviewLoadingMessage", IDS_ADD_SUPERVISION_WEBVIEW_LOADING_MESSAGE},
+      {"supervisedUserErrorDescription", IDS_SUPERVISED_USER_ERROR_DESCRIPTION},
+      {"supervisedUserErrorTitle", IDS_SUPERVISED_USER_ERROR_TITLE},
+      {"supervisedUserOfflineDescription",
+       IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION},
+      {"supervisedUserOfflineTitle", IDS_SUPERVISED_USER_OFFLINE_TITLE},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   source->UseStringsJs();
   source->SetDefaultResource(IDR_ADD_SUPERVISION_ADD_SUPERVISION_HTML);

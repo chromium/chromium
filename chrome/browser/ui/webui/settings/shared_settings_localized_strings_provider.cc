@@ -117,6 +117,10 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CAPTIONS_MAKE_DEFAULT_LANGUAGE_LABEL},
       {"moreActionsFor", IDS_SETTINGS_MORE_ACTIONS_BUTTON_ARIA_LABEL},
       {"defaultLanguageLabel", IDS_SETTINGS_CAPTIONS_DEFAULT_LANGUAGE_LABEL},
+#if !BUILDFLAG(IS_CHROMEOS)
+      {"captionsManageLanguagesSubtitle",
+       IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_SUBTITLE},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   // Add the caption subtitle string conditionally so that non-cbx chromebooks
@@ -127,10 +131,6 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(media::kFeatureManagementLiveTranslateCrOS)
           ? IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_SUBTITLE
           : IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_SUBTITLE_LIVE_CAPTION_ONLY);
-#else
-  html_source->AddLocalizedString(
-      "captionsManageLanguagesSubtitle",
-      IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_SUBTITLE);
 #endif
 
   AddLiveCaptionSectionStrings(html_source);
@@ -138,24 +138,22 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
 
 
 void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
-  html_source->AddLocalizedString(
-      "captionsEnableLiveCaptionTitle",
-      IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE);
-  html_source->AddLocalizedString(
-      "captionsEnableLiveTranslateTitle",
-      IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_TITLE);
-  html_source->AddLocalizedString(
-      "captionsEnableLiveTranslateSubtitle",
-      IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_SUBTITLE);
-  html_source->AddLocalizedString(
-      "captionsMaskOffensiveWordsTitle",
-      IDS_SETTINGS_CAPTIONS_MASK_OFFENSIVE_WORDS_TITLE);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"captionsEnableLiveCaptionTitle",
+       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE},
+      {"captionsEnableLiveTranslateTitle",
+       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_TITLE},
+      {"captionsEnableLiveTranslateSubtitle",
+       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_SUBTITLE},
+      {"captionsMaskOffensiveWordsTitle",
+       IDS_SETTINGS_CAPTIONS_MASK_OFFENSIVE_WORDS_TITLE},
+      {"captionsEnableLiveCaptionSubtitle",
+       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   const bool liveTranslateEnabled = media::IsLiveTranslateEnabled();
 
-  html_source->AddLocalizedString(
-      "captionsEnableLiveCaptionSubtitle",
-      IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE);
   html_source->AddBoolean("enableLiveCaption",
                           captions::IsLiveCaptionFeatureSupported());
   html_source->AddBoolean("enableLiveCaptionMultiLanguage", true);

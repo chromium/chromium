@@ -74,46 +74,38 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS)
 void AddEduStrings(content::WebUIDataSource* source,
                    const std::u16string& username) {
-  source->AddLocalizedString("okButton", IDS_APP_OK);
-  source->AddLocalizedString("backButton", IDS_EDU_LOGIN_BACK);
-  source->AddLocalizedString("nextButton", IDS_EDU_LOGIN_NEXT);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"okButton", IDS_APP_OK},
+      {"backButton", IDS_EDU_LOGIN_BACK},
+      {"nextButton", IDS_EDU_LOGIN_NEXT},
+      {"parentsListTitle", IDS_EDU_LOGIN_WELCOME_TITLE_2},
+      {"parentsListBody", IDS_EDU_LOGIN_WELCOME_BODY_2},
+      {"reauthBody", IDS_EDU_LOGIN_WELCOME_REAUTH_BODY},
+      {"parentSigninTitle", IDS_EDU_LOGIN_PARENT_SIGNIN_TITLE},
+      {"parentSigninPasswordLabel", IDS_EDU_LOGIN_PARENT_SIGNIN_PASSWORD_LABEL},
+      {"parentSigninPasswordError",
+       IDS_EDU_LOGIN_PARENT_SIGNIN_PASSWORD_ERROR_MESSAGE},
+      {"parentSigninAccountRecoveryText",
+       IDS_EDU_LOGIN_PARENT_SIGNIN_ACCOUNT_RECOVERY_LINK_TEXT},
+      {"parentSigninPasswordShow", IDS_EDU_LOGIN_PARENT_SIGNIN_PASSWORD_SHOW},
+      {"parentSigninPasswordHide", IDS_EDU_LOGIN_PARENT_SIGNIN_PASSWORD_HIDE},
+      // Strings for server based EDU Coexistence flow.
+      {"supervisedUserOfflineTitle", IDS_SUPERVISED_USER_OFFLINE_TITLE},
+      {"supervisedUserOfflineDescription",
+       IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION},
+      {"supervisedUserErrorTitle", IDS_SUPERVISED_USER_ERROR_TITLE},
+      {"supervisedUserErrorDescription", IDS_SUPERVISED_USER_ERROR_DESCRIPTION},
+      {"loadingMessage", IDS_LOGIN_GAIA_LOADING_MESSAGE},
+      {"addSchoolAccountLabel",
+       IDS_ACCOUNT_MANAGER_DIALOG_ADD_SCHOOL_ACCOUNT_LABEL},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
 
-  source->AddLocalizedString("parentsListTitle", IDS_EDU_LOGIN_WELCOME_TITLE_2);
-  source->AddLocalizedString("parentsListBody", IDS_EDU_LOGIN_WELCOME_BODY_2);
-  source->AddLocalizedString("reauthBody", IDS_EDU_LOGIN_WELCOME_REAUTH_BODY);
-  source->AddLocalizedString("parentSigninTitle",
-                             IDS_EDU_LOGIN_PARENT_SIGNIN_TITLE);
   source->AddString(
       "parentSigninBody",
       l10n_util::GetStringFUTF16(IDS_EDU_LOGIN_PARENT_SIGNIN_BODY, username));
-  source->AddLocalizedString("parentSigninPasswordLabel",
-                             IDS_EDU_LOGIN_PARENT_SIGNIN_PASSWORD_LABEL);
-  source->AddLocalizedString(
-      "parentSigninPasswordError",
-      IDS_EDU_LOGIN_PARENT_SIGNIN_PASSWORD_ERROR_MESSAGE);
-  source->AddLocalizedString(
-      "parentSigninAccountRecoveryText",
-      IDS_EDU_LOGIN_PARENT_SIGNIN_ACCOUNT_RECOVERY_LINK_TEXT);
-  source->AddLocalizedString("parentSigninPasswordShow",
-                             IDS_EDU_LOGIN_PARENT_SIGNIN_PASSWORD_SHOW);
-  source->AddLocalizedString("parentSigninPasswordHide",
-                             IDS_EDU_LOGIN_PARENT_SIGNIN_PASSWORD_HIDE);
   source->AddString("parentSigninAccountRecoveryUrl",
                     chrome::kAccountRecoveryURL);
-
-  // Strings for server based EDU Coexistence flow.
-  source->AddLocalizedString("supervisedUserOfflineTitle",
-                             IDS_SUPERVISED_USER_OFFLINE_TITLE);
-  source->AddLocalizedString("supervisedUserOfflineDescription",
-                             IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION);
-  source->AddLocalizedString("supervisedUserErrorTitle",
-                             IDS_SUPERVISED_USER_ERROR_TITLE);
-  source->AddLocalizedString("supervisedUserErrorDescription",
-                             IDS_SUPERVISED_USER_ERROR_DESCRIPTION);
-  source->AddLocalizedString("loadingMessage", IDS_LOGIN_GAIA_LOADING_MESSAGE);
-  source->AddLocalizedString(
-      "addSchoolAccountLabel",
-      IDS_ACCOUNT_MANAGER_DIALOG_ADD_SCHOOL_ACCOUNT_LABEL);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

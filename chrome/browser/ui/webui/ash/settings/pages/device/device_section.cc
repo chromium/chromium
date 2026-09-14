@@ -638,93 +638,67 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"deviceNameLabel", IDS_SETTINGS_PER_DEVICE_NAME},
       {"deviceBatteryLabel",
        IDS_SETTINGS_PER_DEVICE_BATTERY_PERCENTAGE_A11Y_LABEL},
+      {"perDeviceKeyboardKeyQuickInsert", IDS_KEYBOARD_QUICK_INSERT_LABEL},
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 
-  html_source->AddLocalizedString("perDeviceKeyboardKeyQuickInsert",
-                                  IDS_KEYBOARD_QUICK_INSERT_LABEL);
-
   if (Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
-    html_source->AddLocalizedString(
-        "keyboardBlockMetaFunctionKeyRewrites",
-        IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_LAUNCHER);
-    html_source->AddLocalizedString(
-        "keyboardBlockMetaFunctionKeyRewritesDescription",
-        IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_LAUNCHER);
-    html_source->AddLocalizedString(
-        "perDeviceKeyboardKeySearch",
-        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LAUNCHER);
-    html_source->AddLocalizedString("keyboardKeySearch",
-                                    IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER);
-    html_source->AddLocalizedString(
-        "keyboardSendFunctionKeysDescription",
-        IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT2_DESCRIPTION);
-    html_source->AddLocalizedString(
-        "splitModifierKeyboardSendFunctionKeysDescription",
-        IDS_SETTINGS_SPLIT_MODIFIER_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT_DESCRIPTION);
-    html_source->AddLocalizedString("sixPackKeyDeleteSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_DELETE_LAUNCHER);
-    html_source->AddLocalizedString("sixPackKeyHomeSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_HOME_LAUNCHER);
-    html_source->AddLocalizedString("sixPackKeyEndSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_END_LAUNCHER);
-    html_source->AddLocalizedString("sixPackKeyPageUpSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_LAUNCHER);
-    html_source->AddLocalizedString(
-        "sixPackKeyPageDownSearch",
-        IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_LAUNCHER);
-    html_source->AddLocalizedString("sixPackKeyInsertSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_INSERT_LAUNCHER);
-    html_source->AddLocalizedString(
-        "touchpadSimulateRightClickOptionSearch",
-        IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_LAUNCHER);
-    html_source->AddLocalizedString(
-        "fKeyShiftOptionSearch",
-        IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_LAUNCHER);
-    html_source->AddLocalizedString(
-        "fKeyCtrlShiftOptionSearch",
-        IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_LAUNCHER);
-    html_source->AddLocalizedString(
-        "fKeyAltOptionSearch", IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_LAUNCHER);
-
+    static constexpr webui::LocalizedString kLauncherStrings[] = {
+        {"keyboardBlockMetaFunctionKeyRewrites",
+         IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_LAUNCHER},
+        {"keyboardBlockMetaFunctionKeyRewritesDescription",
+         IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_LAUNCHER},
+        {"perDeviceKeyboardKeySearch",
+         IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LAUNCHER},
+        {"keyboardKeySearch", IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER},
+        {"keyboardSendFunctionKeysDescription",
+         IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT2_DESCRIPTION},
+        {"splitModifierKeyboardSendFunctionKeysDescription",
+         IDS_SETTINGS_SPLIT_MODIFIER_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT_DESCRIPTION},
+        {"sixPackKeyDeleteSearch", IDS_SETTINGS_SIX_PACK_KEY_DELETE_LAUNCHER},
+        {"sixPackKeyHomeSearch", IDS_SETTINGS_SIX_PACK_KEY_HOME_LAUNCHER},
+        {"sixPackKeyEndSearch", IDS_SETTINGS_SIX_PACK_KEY_END_LAUNCHER},
+        {"sixPackKeyPageUpSearch", IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_LAUNCHER},
+        {"sixPackKeyPageDownSearch",
+         IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_LAUNCHER},
+        {"sixPackKeyInsertSearch", IDS_SETTINGS_SIX_PACK_KEY_INSERT_LAUNCHER},
+        {"touchpadSimulateRightClickOptionSearch",
+         IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_LAUNCHER},
+        {"fKeyShiftOptionSearch",
+         IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_LAUNCHER},
+        {"fKeyCtrlShiftOptionSearch",
+         IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_LAUNCHER},
+        {"fKeyAltOptionSearch",
+         IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_LAUNCHER},
+    };
+    html_source->AddLocalizedStrings(kLauncherStrings);
   } else {
-    html_source->AddLocalizedString(
-        "keyboardBlockMetaFunctionKeyRewrites",
-        IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_SEARCH);
-    html_source->AddLocalizedString(
-        "keyboardBlockMetaFunctionKeyRewritesDescription",
-        IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_SEARCH);
-    html_source->AddLocalizedString(
-        "perDeviceKeyboardKeySearch",
-        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH);
-    html_source->AddLocalizedString("keyboardKeySearch",
-                                    IDS_SETTINGS_KEYBOARD_KEY_SEARCH);
-    html_source->AddLocalizedString(
-        "keyboardSendFunctionKeysDescription",
-        IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_DESCRIPTION);
-    html_source->AddLocalizedString("sixPackKeyDeleteSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH);
-    html_source->AddLocalizedString("sixPackKeyHomeSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_HOME_SEARCH);
-    html_source->AddLocalizedString("sixPackKeyEndSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_END_SEARCH);
-    html_source->AddLocalizedString("sixPackKeyPageUpSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH);
-    html_source->AddLocalizedString("sixPackKeyPageDownSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH);
-    html_source->AddLocalizedString("sixPackKeyInsertSearch",
-                                    IDS_SETTINGS_SIX_PACK_KEY_INSERT_SEARCH);
-    html_source->AddLocalizedString(
-        "touchpadSimulateRightClickOptionSearch",
-        IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH);
-    html_source->AddLocalizedString(
-        "fKeyShiftOptionSearch",
-        IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_SEARCH);
-    html_source->AddLocalizedString(
-        "fKeyCtrlShiftOptionSearch",
-        IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_SEARCH);
-    html_source->AddLocalizedString(
-        "fKeyAltOptionSearch", IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_SEARCH);
+    static constexpr webui::LocalizedString kSearchStrings[] = {
+        {"keyboardBlockMetaFunctionKeyRewrites",
+         IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_SEARCH},
+        {"keyboardBlockMetaFunctionKeyRewritesDescription",
+         IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_SEARCH},
+        {"perDeviceKeyboardKeySearch",
+         IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH},
+        {"keyboardKeySearch", IDS_SETTINGS_KEYBOARD_KEY_SEARCH},
+        {"keyboardSendFunctionKeysDescription",
+         IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_DESCRIPTION},
+        {"sixPackKeyDeleteSearch", IDS_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH},
+        {"sixPackKeyHomeSearch", IDS_SETTINGS_SIX_PACK_KEY_HOME_SEARCH},
+        {"sixPackKeyEndSearch", IDS_SETTINGS_SIX_PACK_KEY_END_SEARCH},
+        {"sixPackKeyPageUpSearch", IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH},
+        {"sixPackKeyPageDownSearch",
+         IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH},
+        {"sixPackKeyInsertSearch", IDS_SETTINGS_SIX_PACK_KEY_INSERT_SEARCH},
+        {"touchpadSimulateRightClickOptionSearch",
+         IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH},
+        {"fKeyShiftOptionSearch",
+         IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_SEARCH},
+        {"fKeyCtrlShiftOptionSearch",
+         IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_SEARCH},
+        {"fKeyAltOptionSearch", IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_SEARCH},
+    };
+    html_source->AddLocalizedStrings(kSearchStrings);
   }
 }
 
@@ -1613,12 +1587,10 @@ void DeviceSection::AddDeviceDisplayStrings(
       {"displayZoomLabel", IDS_OS_SETTINGS_DISPLAY_ZOOM_LABEL},
       {"displayZoomDescription", IDS_OS_SETTINGS_DISPLAY_ZOOM_DESCRIPTION},
       {"displayZoomValue", IDS_SETTINGS_DISPLAY_ZOOM_VALUE},
+      {"displayArrangementText",
+       IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT},
   };
   html_source->AddLocalizedStrings(kDisplayStrings);
-
-  html_source->AddLocalizedString(
-      "displayArrangementText",
-      IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT);
 
   html_source->AddBoolean(
       "isCryptohomeDataEphemeral",

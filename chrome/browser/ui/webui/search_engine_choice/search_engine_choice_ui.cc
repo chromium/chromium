@@ -30,6 +30,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -91,28 +92,22 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
       "subtitleInfoLinkA11yLabel",
       choice_screen_design->subtitle_1_learn_more_a11y_string_id);
   CHECK(!choice_screen_design->subtitle_2_string_id.has_value());
-  source->AddLocalizedString("submitButtonText",
-                             IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE);
-  source->AddLocalizedString("infoDialogTitle",
-                             IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE);
-  source->AddLocalizedString(
-      "infoDialogFirstParagraph",
-      IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_FIRST_PARAGRAPH);
-  source->AddLocalizedString(
-      "infoDialogSecondParagraph",
-      IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_SECOND_PARAGRAPH);
-  source->AddLocalizedString(
-      "infoDialogThirdParagraph",
-      IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH);
-  source->AddLocalizedString("choiceListA11yLabel",
-                             IDS_SEARCH_ENGINE_CHOICE_LIST_A11Y_LABEL);
-  source->AddLocalizedString("infoDialogButtonText", IDS_CLOSE);
-  source->AddLocalizedString("productLogoAltText",
-                             IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
-  source->AddLocalizedString("moreButtonText",
-                             IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON);
-  source->AddLocalizedString("guestCheckboxText",
-                             IDS_SEARCH_ENGINE_CHOICE_GUEST_SESSION_CHECKBOX);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"submitButtonText", IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE},
+      {"infoDialogTitle", IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE},
+      {"infoDialogFirstParagraph",
+       IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_FIRST_PARAGRAPH},
+      {"infoDialogSecondParagraph",
+       IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_SECOND_PARAGRAPH},
+      {"infoDialogThirdParagraph",
+       IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH},
+      {"choiceListA11yLabel", IDS_SEARCH_ENGINE_CHOICE_LIST_A11Y_LABEL},
+      {"infoDialogButtonText", IDS_CLOSE},
+      {"productLogoAltText", IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
+      {"moreButtonText", IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON},
+      {"guestCheckboxText", IDS_SEARCH_ENGINE_CHOICE_GUEST_SESSION_CHECKBOX},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
   source->AddResourcePath("images/left_illustration_dark.svg",

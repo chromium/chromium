@@ -23,6 +23,7 @@
 #include "components/account_manager_core/account_manager_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/webui_util.h"
 
@@ -101,15 +102,14 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
   webui::EnableTrustedTypesCSP(html_source);
 
   // Add localized strings.
-  html_source->AddLocalizedString("welcomePageTitle",
-                                  IDS_ACCOUNT_MIGRATION_WELCOME_PAGE_TITLE);
-  html_source->AddLocalizedString("welcomeTitle",
-                                  IDS_ACCOUNT_MIGRATION_WELCOME_TITLE);
-  html_source->AddLocalizedString("welcomeMessage",
-                                  IDS_ACCOUNT_MIGRATION_WELCOME_TEXT);
-  html_source->AddLocalizedString("cancelButton", IDS_APP_CANCEL);
-  html_source->AddLocalizedString("migrateButton",
-                                  IDS_ACCOUNT_MIGRATION_UPDATE_BUTTON);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"welcomePageTitle", IDS_ACCOUNT_MIGRATION_WELCOME_PAGE_TITLE},
+      {"welcomeTitle", IDS_ACCOUNT_MIGRATION_WELCOME_TITLE},
+      {"welcomeMessage", IDS_ACCOUNT_MIGRATION_WELCOME_TEXT},
+      {"cancelButton", IDS_APP_CANCEL},
+      {"migrateButton", IDS_ACCOUNT_MIGRATION_UPDATE_BUTTON},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString("accountManagerLearnMoreUrl",
                          ash::external_urls::kAccountManagerLearnMoreURL);
 

@@ -32,6 +32,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
@@ -47,22 +48,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUILensUntrustedSidePanelURL);
-  html_source->AddLocalizedString("backButton", IDS_ACCNAME_BACK);
-  html_source->AddLocalizedString("close", IDS_CLOSE);
-  html_source->AddLocalizedString("dismiss",
-                                  IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE);
-  html_source->AddLocalizedString(
-      "networkErrorPageTopLine",
-      IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_FIRST_LINE);
-  html_source->AddLocalizedString(
-      "networkErrorPageBottomLine",
-      IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_SECOND_LINE);
-  html_source->AddLocalizedString(
-      "protectedErrorPageTopLine",
-      IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE);
-  html_source->AddLocalizedString(
-      "protectedErrorPageBottomLine",
-      IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE);
   html_source->AddLocalizedString(
       "searchboxGhostLoaderHintTextPrimaryDefault",
       lens::features::ShouldUseAltLoadingHintWeb()
@@ -74,22 +59,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
           ? IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY_ALT
           : IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY_PDF);
   html_source->AddLocalizedString(
-      "searchboxGhostLoaderHintTextSecondary",
-      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_SECONDARY);
-  html_source->AddLocalizedString("searchboxGhostLoaderErrorText",
-                                  IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT);
-  html_source->AddLocalizedString(
-      "searchboxGhostLoaderNoSuggestText",
-      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT);
-  html_source->AddLocalizedString(
       "feedbackToastMessage", lens::features::IsLensUpdatedFeedbackEnabled()
                                   ? IDS_LENS_OVERLAY_FEEDBACK_TOAST_MESSAGE_ALT
                                   : IDS_LENS_OVERLAY_FEEDBACK_TOAST_MESSAGE);
-  html_source->AddLocalizedString("sendFeedbackButtonText",
-                                  IDS_LENS_OVERLAY_SEND_FEEDBACK_BUTTON_LABEL);
-  html_source->AddLocalizedString(
-      "closeFeedbackToastAccessibilityLabel",
-      IDS_LENS_OVERLAY_CLOSE_FEEDBACK_TOAST_ACCESSIBILITY_LABEL);
   const bool dark_mode = lens::LensOverlayShouldUseDarkMode(
       ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui)));
 
@@ -106,11 +78,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "showContextualSearchboxLoadingState",
       lens::features::ShowContextualSearchboxGhostLoaderLoadingState());
-  html_source->AddLocalizedString("searchBoxHintContextualDefault",
-                                  IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL);
-  html_source->AddLocalizedString(
-      "searchBoxHintContextualPdf",
-      IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL_PDF);
   html_source->AddBoolean(
       "newFeedbackEnabled",
       lens::features::IsLensSearchSidePanelNewFeedbackEnabled());
@@ -217,6 +184,37 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   // Add required resources for the searchbox.
   html_source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
       Profile::FromWebUI(web_ui), {.is_lens = true}));
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"backButton", IDS_ACCNAME_BACK},
+      {"close", IDS_CLOSE},
+      {"dismiss", IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE},
+      {"networkErrorPageTopLine",
+       IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_FIRST_LINE},
+      {"networkErrorPageBottomLine",
+       IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_SECOND_LINE},
+      {"protectedErrorPageTopLine",
+       IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE},
+      {"protectedErrorPageBottomLine",
+       IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE},
+      {"searchboxGhostLoaderHintTextSecondary",
+       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_SECONDARY},
+      {"searchboxGhostLoaderErrorText",
+       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT},
+      {"searchboxGhostLoaderNoSuggestText",
+       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT},
+      {"sendFeedbackButtonText", IDS_LENS_OVERLAY_SEND_FEEDBACK_BUTTON_LABEL},
+      {"closeFeedbackToastAccessibilityLabel",
+       IDS_LENS_OVERLAY_CLOSE_FEEDBACK_TOAST_ACCESSIBILITY_LABEL},
+      {"searchBoxHintContextualDefault",
+       IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL},
+      {"searchBoxHintContextualPdf",
+       IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL_PDF},
+      {"lensSearchButtonLabel",
+       IDS_TOOLTIP_LENS_REINVOKE_VISUAL_SELECTION_A11Y_LABEL},
+      {"searchBoxHint", IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT},
+      {"searchBoxHintMultimodal", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString(
       "searchboxDefaultIcon",
       lens::features::GetVisualSelectionUpdatesEnableGradientSuperG()
@@ -225,13 +223,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
           ? "//resources/cr_components/searchbox/icons/google_g_cr23.svg"
           : "//resources/cr_components/searchbox/icons/google_g.svg");
   html_source->AddBoolean("reportMetrics", false);
-  html_source->AddLocalizedString(
-      "lensSearchButtonLabel",
-      IDS_TOOLTIP_LENS_REINVOKE_VISUAL_SELECTION_A11Y_LABEL);
-  html_source->AddLocalizedString("searchBoxHint",
-                                  IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT);
-  html_source->AddLocalizedString("searchBoxHintMultimodal",
-                                  IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);
   html_source->AddBoolean("isLensSearchbox", true);
   html_source->AddBoolean(
       "forceHideEllipsis",
