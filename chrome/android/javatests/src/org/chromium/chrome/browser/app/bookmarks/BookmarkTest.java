@@ -169,7 +169,10 @@ import java.util.stream.IntStream;
 @ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
 // TODO(crbug.com/40899175): Investigate batching.
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
-@DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
+})
 public class BookmarkTest {
     private static final String TEST_PAGE_URL_GOOGLE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";

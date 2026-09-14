@@ -121,7 +121,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                             recordOutcome(BookmarkFolderPickerOutcome.MOVED);
                             setResult(RESULT_OK);
                             finish();
-                            if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+                            if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
                                 overridePendingTransition(0, 0);
                             }
                         },
@@ -148,7 +148,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator);
 
         Toolbar toolbar = mCoordinator.getToolbar();
-        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             toolbar.inflateMenu(R.menu.bookmark_folder_picker_menu_desktop);
             toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
             setFinishOnTouchOutside(true);
@@ -180,14 +180,14 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
     void onBackPressFromRoot() {
         recordOutcome(BookmarkFolderPickerOutcome.DISMISSED);
         finish();
-        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             overridePendingTransition(0, 0);
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (!BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             getMenuInflater().inflate(R.menu.bookmark_folder_picker_menu, menu);
             assumeNonNull(mCoordinator).updateToolbarButtons();
             return super.onCreateOptionsMenu(menu);
@@ -201,7 +201,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
             recordOutcome(BookmarkFolderPickerOutcome.CLOSED);
             setResult(RESULT_DISMISS_ALL);
             finish();
-            if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
                 overridePendingTransition(0, 0);
             }
             return true;
@@ -220,7 +220,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN
-                && BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                && BookmarkUtils.isDesktopBookmarksDialogEnabled()
                 && isOutOfBounds(event)) {
             recordOutcome(BookmarkFolderPickerOutcome.DISMISSED);
             setResult(RESULT_DISMISS_ALL);

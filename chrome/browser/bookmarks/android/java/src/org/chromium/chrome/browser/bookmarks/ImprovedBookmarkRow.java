@@ -160,7 +160,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
         Resources res = getContext().getResources();
         int dimenRes =
-                BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                (BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                                || BookmarkUtils.isDesktopBookmarksDialogEnabled())
                         ? R.dimen.improved_bookmark_start_image_corner_radius_desktop
                         : (isVisual
                                 ? R.dimen.improved_bookmark_row_outer_corner_radius
@@ -170,7 +171,9 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     }
 
     void setStartImageSize() {
-        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled() && mStartImageView != null) {
+        if ((BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                        || BookmarkUtils.isDesktopBookmarksDialogEnabled())
+                && mStartImageView != null) {
             Resources res = getContext().getResources();
             int size =
                     res.getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_desktop);

@@ -41,7 +41,10 @@ import org.chromium.url.GURL;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "SyncTestRule doesn't support batching.")
-@DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
+})
 public class BookmarkBatchUploadCardRenderTest {
     private static final int RENDER_TEST_REVISION = 2;
 

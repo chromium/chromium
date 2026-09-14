@@ -56,7 +56,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         int layoutId =
-                BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                BookmarkUtils.isDesktopBookmarksDialogEnabled()
                         ? R.layout.bookmark_folder_picker_desktop
                         : R.layout.bookmark_folder_picker;
         mView = LayoutInflater.from(mContext).inflate(layoutId, null);
@@ -95,7 +95,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                         shoppingService,
                         isFromBookmarkDialog);
 
-        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             Toolbar toolbar = mView.findViewById(R.id.toolbar);
             toolbar.setNavigationOnClickListener(
                     (v) -> {
@@ -175,7 +175,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
 
     @Override
     public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             return mMediator.getHandleBackPressChangedSupplier();
         }
         return ObservableSuppliers.alwaysTrue();

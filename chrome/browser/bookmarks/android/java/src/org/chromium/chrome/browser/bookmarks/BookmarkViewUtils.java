@@ -47,7 +47,8 @@ public class BookmarkViewUtils {
 
         boolean useOutline =
                 displayPref == BookmarkRowDisplayPref.VISUAL
-                        || BookmarkUtils.isDesktopBookmarksLayoutEnabled();
+                        || BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                        || BookmarkUtils.isDesktopBookmarksDialogEnabled();
         return UiUtils.getTintedDrawable(
                 context,
                 useOutline ? R.drawable.ic_folder_outline_24dp : R.drawable.ic_folder_blue_24dp,
@@ -127,7 +128,8 @@ public class BookmarkViewUtils {
     /** Returns the size to use when displaying an image. */
     public static int getImageIconSize(
             Resources resources, @BookmarkRowDisplayPref int displayPref) {
-        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                || BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             return resources.getDimensionPixelSize(
                     R.dimen.improved_bookmark_start_image_size_desktop);
         }

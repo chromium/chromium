@@ -78,7 +78,10 @@ import java.util.Collection;
     ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN
 })
-@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
+})
 public class BookmarkPageUnitTest {
 
     @Rule(order = Rule.DEFAULT_ORDER - 1)

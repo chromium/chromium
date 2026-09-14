@@ -134,15 +134,15 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mInitialParentId = item.getParentId();
         mIsFolder = item.isFolder();
 
-        boolean isDesktopLayout = BookmarkUtils.isDesktopBookmarksLayoutEnabled();
-        int layoutId = isDesktopLayout ? R.layout.bookmark_edit_desktop : R.layout.bookmark_edit;
+        boolean isDesktopDialog = BookmarkUtils.isDesktopBookmarksDialogEnabled();
+        int layoutId = isDesktopDialog ? R.layout.bookmark_edit_desktop : R.layout.bookmark_edit;
         setContentView(layoutId);
         mTitleEditText = findViewById(R.id.title_text);
         mUrlEditText = findViewById(R.id.url_text);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(!isDesktopLayout);
+        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(!isDesktopDialog);
 
         View shadow = findViewById(R.id.shadow);
         View scrollView = findViewById(R.id.scroll_view);
@@ -179,7 +179,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
         mFolderPickerRowContainer = findViewById(R.id.folder_row_container);
 
-        if (isDesktopLayout) {
+        if (isDesktopDialog) {
             View removeButton = findViewById(R.id.remove_button);
             removeButton.setOnClickListener(
                     (v) -> {
@@ -201,7 +201,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
                         scrollView, getEdgeToEdgeSupplier());
         updateViewContent(false);
 
-        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (isDesktopDialog) {
             setFinishOnTouchOutside(true);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             int scrimColor = ContextCompat.getColor(this, R.color.modal_dialog_scrim_color_lff);
@@ -227,7 +227,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             mCloseButton =
                     menu.add(R.string.close)
                             .setIcon(
@@ -308,7 +308,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     @Override
     protected void onStop() {
-        if (!BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (!BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             if (isFinishing() && !mOutcomeRecorded) {
                 recordOutcome(
                         isBookmarkModified()
@@ -325,7 +325,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
     protected void onDestroy() {
         if (!mOutcomeRecorded) {
             recordOutcome(
-                    BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                    BookmarkUtils.isDesktopBookmarksDialogEnabled()
                             ? BookmarkEditOutcome.DISMISSED
                             : (isBookmarkModified()
                                     ? BookmarkEditOutcome.SAVED
@@ -419,7 +419,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
      * RESULT_DISMISS_ALL}), the edit dialog finishes without a brief visual flash.
      */
     private void setDialogContentVisible(boolean visible) {
-        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             findViewById(android.R.id.content)
                     .setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
@@ -431,7 +431,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
         if (requestCode == FOLDER_PICKER_REQUEST_CODE
                 && resultCode == BookmarkFolderPickerActivity.RESULT_DISMISS_ALL) {
             finish();
-            if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
                 overridePendingTransition(0, 0);
             }
         }

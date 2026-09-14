@@ -63,7 +63,8 @@ import java.util.function.DoubleConsumer;
 @EnableFeatures({ChromeFeatureList.BOOKMARK_PANE_ANDROID, SigninFeatures.ENABLE_SEAMLESS_SIGNIN})
 @DisableFeatures({
     ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
-    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })
 public class BookmarkPaneUnitTest {
     @Rule(order = Rule.DEFAULT_ORDER - 1)

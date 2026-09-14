@@ -944,6 +944,13 @@ public class BookmarkUtils {
     }
 
     /**
+     * @return Whether the desktop bookmarks dialog is enabled.
+     */
+    public static boolean isDesktopBookmarksDialogEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG);
+    }
+
+    /**
      * @return Whether the desktop bookmarks layout is enabled.
      */
     public static boolean isDesktopBookmarksLayoutEnabled() {

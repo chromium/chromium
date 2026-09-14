@@ -62,7 +62,10 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link ImprovedBookmarkRowCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
+})
 public class ImprovedBookmarkRowCoordinatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
