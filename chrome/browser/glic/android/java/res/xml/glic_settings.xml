@@ -72,6 +72,12 @@ found in the LICENSE file.
         <extra android:name="supports_precise" android:value="true" />
     </org.chromium.components.browser_ui.settings.ChromeSwitchPreference>
 
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="permissions_microphone"
+        android:title="@string/settings_glic_permissions_microphone_toggle"
+        android:summary="@string/settings_glic_permissions_microphone_toggle_sublabel_data_protected"
+        android:defaultValue="false" />
+
     <org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference
         android:key="glic_permissions_default_tab_access"
         android:title="@string/settings_glic_permissions_default_tab_access_toggle"

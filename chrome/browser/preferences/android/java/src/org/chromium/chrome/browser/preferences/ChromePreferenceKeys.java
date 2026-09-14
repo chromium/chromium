@@ -421,6 +421,10 @@ public final class ChromePreferenceKeys {
     public static final String GLIC_PRECISE_LOCATION_SETTING_ENABLED =
             "Chrome.Glic.PreciseLocationSettingEnabled";
 
+    /** Whether the microphone setting is enabled for Glic */
+    public static final String GLIC_MICROPHONE_SETTING_ENABLED =
+            "Chrome.Glic.MicrophoneSettingEnabled";
+
     /** Whether the share current tab default access is enabled for Glic */
     public static final String GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED =
             "Chrome.Glic.ShareCurrentTabDefaultAccessEnabled";
@@ -1239,6 +1243,7 @@ public final class ChromePreferenceKeys {
                 FIRST_CTA_START_TIMESTAMP,
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 GLIC_PRECISE_LOCATION_SETTING_ENABLED,
+                GLIC_MICROPHONE_SETTING_ENABLED,
                 GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED,
                 GLIC_AUTO_BROWSE_SETTING_ENABLED,
                 GLIC_PROMO_ACCEPTED,

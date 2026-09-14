@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_MICROPHONE_SETTING_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_PRECISE_LOCATION_SETTING_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED;
 
@@ -289,6 +290,28 @@ public class GlicSettingsUnitTest {
                 GLIC_PRECISE_LOCATION_SETTING_ENABLED,
                 GlicPrefNames.GLIC_GEOLOCATION_ENABLED,
                 "permissions_location");
+    }
+
+    @Test
+    public void testMicrophonePermissionInitialState_Enabled() {
+        doTestInitialState(
+                GlicPrefNames.GLIC_MICROPHONE_ENABLED, GlicSettings.PERMISSION_MICROPHONE, true);
+    }
+
+    @Test
+    public void testMicrophonePermissionInitialState_Disabled() {
+        doTestInitialState(
+                GlicPrefNames.GLIC_MICROPHONE_ENABLED, GlicSettings.PERMISSION_MICROPHONE, false);
+    }
+
+    @Test
+    public void testMicrophonePermissionToggle() {
+        doTestToggle(
+                GLIC_MICROPHONE_SETTING_ENABLED,
+                GlicPrefNames.GLIC_MICROPHONE_ENABLED,
+                GlicSettings.PERMISSION_MICROPHONE);
+        assertEquals(1, mUserActionTester.getActionCount("Glic.Settings.Microphone.Enabled"));
+        assertEquals(1, mUserActionTester.getActionCount("Glic.Settings.Microphone.Disabled"));
     }
 
     @Test

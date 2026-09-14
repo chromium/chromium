@@ -73,6 +73,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     static final String PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE = "glic_bottom_bar_button_toggle";
 
     @VisibleForTesting static final String PERMISSION_LOCATION = "permissions_location";
+    @VisibleForTesting static final String PERMISSION_MICROPHONE = "permissions_microphone";
     private static final String PERMISSION_DEFAULT_TAB_ACCESS =
             "glic_permissions_default_tab_access";
     private static final String PERMISSION_AUTO_BROWSE = "glic_permissions_auto_browse";
@@ -283,6 +284,20 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             ensureFineLocationPermissionGranted();
         }
 
+        setupSwitchPreference(
+                PERMISSION_MICROPHONE,
+                ChromePreferenceKeys.GLIC_MICROPHONE_SETTING_ENABLED,
+                GlicPrefNames.GLIC_MICROPHONE_ENABLED,
+                (preference, newValue) -> {
+                    boolean enabled = (boolean) newValue;
+                    if (enabled) {
+                        RecordUserAction.record("Glic.Settings.Microphone.Enabled");
+                    } else {
+                        RecordUserAction.record("Glic.Settings.Microphone.Disabled");
+                    }
+                    return true;
+                });
+
         ChromeExpandableSwitchPreference tabAccessPref =
                 setupSwitchPreference(
                         PERMISSION_DEFAULT_TAB_ACCESS,
@@ -409,6 +424,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 PREFERENCE_BUTTON_TOGGLE,
                 PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE,
                 PERMISSION_LOCATION,
+                PERMISSION_MICROPHONE,
                 PREF_KEY_GLIC_PERMISSIONS_ACTIVITY,
                 PREF_KEY_GLIC_EXTENSIONS,
                 PREF_LAUNCHER_ENABLED,
@@ -559,6 +575,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP);
             mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_GEOLOCATION_ENABLED);
+            mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_MICROPHONE_ENABLED);
             mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_DEFAULT_TAB_CONTEXT_ENABLED);
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
