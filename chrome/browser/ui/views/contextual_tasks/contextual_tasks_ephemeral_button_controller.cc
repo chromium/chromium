@@ -231,7 +231,7 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
     return false;
   }
 
-  if (aim_eligibility_service_ && !aim_eligibility_service_->IsAimEligible()) {
+  if (!contextual_tasks::IsContextualTasksUIEnabled()) {
     return false;
   }
 
