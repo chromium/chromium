@@ -27,6 +27,12 @@ struct TableBreakTokenData final : BreakTokenAlgorithmData {
         consumed_table_box_block_size(consumed_table_box_block_size),
         has_entered_table_box(has_entered_table_box),
         is_past_table_box(is_past_table_box) {}
+
+  // Completes tracing for this data type.
+  void TraceAfterDispatch(Visitor* visitor) const {
+    BreakTokenAlgorithmData::TraceAfterDispatch(visitor);
+  }
+
   // Table layout information that will be the same for all fragments to be
   // generated (but potentially very expensive to calculate).
   TableTypes::Rows rows;

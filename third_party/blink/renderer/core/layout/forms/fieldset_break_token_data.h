@@ -12,6 +12,11 @@ namespace blink {
 struct FieldsetBreakTokenData final : BreakTokenAlgorithmData {
   FieldsetBreakTokenData() : BreakTokenAlgorithmData(kFieldsetData) {}
 
+  // Completes tracing for this data type.
+  void TraceAfterDispatch(Visitor* visitor) const {
+    BreakTokenAlgorithmData::TraceAfterDispatch(visitor);
+  }
+
   LayoutUnit legend_block_size_contribution;
 };
 

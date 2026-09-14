@@ -8,10 +8,11 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
-#include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_intersection.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
@@ -268,7 +269,14 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     const BreakTokenAlgorithmData* first_fragment_data =
         GetFirstFragmentBreakTokenData(box_fragment_);
     CHECK(first_fragment_data);
-    gap_slot_count = first_fragment_data->GetTotalRowGapCount();
+    // Other token types keep the fragment-local gap count.
+    if (const auto* grid_data =
+            DynamicTo<GridBreakTokenData>(first_fragment_data)) {
+      gap_slot_count = grid_data->GetTotalRowGapCount();
+    } else if (const auto* flex_data =
+                   DynamicTo<FlexBreakTokenData>(first_fragment_data)) {
+      gap_slot_count = flex_data->GetTotalRowGapCount();
+    }
   }
 
   // When `overlap-join` is specified, the decoration extends to meet the

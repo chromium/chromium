@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 
-#include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 
 namespace blink {
@@ -169,10 +169,9 @@ const GridLayoutData* LayoutGrid::LayoutData() const {
   return GetGridLayoutDataFromFragments(this);
 }
 
-wtf_size_t LayoutGrid::StitchedRowGapIndex(
-    const PhysicalBoxFragment& fragment,
-    wtf_size_t gap_index,
-    std::optional<wtf_size_t> line_index) const {
+wtf_size_t LayoutGrid::StitchedRowGapIndex(const PhysicalBoxFragment& fragment,
+                                           wtf_size_t gap_index,
+                                           std::optional<wtf_size_t>) const {
   NOT_DESTROYED();
   // This should only be reached when painting gap decorations in a fragmented
   // context.
@@ -184,8 +183,8 @@ wtf_size_t LayoutGrid::StitchedRowGapIndex(
   if (!previous_break_token) {
     return gap_index;
   }
-  return previous_break_token->TokenData()->GetFirstUnprocessedRowGapIndex(
-             line_index) +
+  return To<GridBreakTokenData>(previous_break_token->TokenData())
+             ->GetFirstUnprocessedRowGapIndex() +
          gap_index;
 }
 

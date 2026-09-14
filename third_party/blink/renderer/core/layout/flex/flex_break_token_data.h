@@ -76,18 +76,21 @@ struct FlexBreakTokenData final : BreakTokenAlgorithmData {
         break_before_row(break_before_row),
         gap_data(std::move(gap_data)) {}
 
-  void Trace(Visitor* visitor) const override {
+  // Traces references after the type tag is checked.
+  void TraceAfterDispatch(Visitor* visitor) const {
     visitor->Trace(flex_lines);
     visitor->Trace(oof_children);
-    BreakTokenAlgorithmData::Trace(visitor);
+    BreakTokenAlgorithmData::TraceAfterDispatch(visitor);
   }
 
-  wtf_size_t GetTotalRowGapCount() const override {
+  // Counts all row gaps, including gaps suppressed by fragmentation.
+  wtf_size_t GetTotalRowGapCount() const {
     return gap_data.total_row_gap_count;
   }
 
+  // Returns the starting row-gap index for the requested flex line.
   wtf_size_t GetFirstUnprocessedRowGapIndex(
-      std::optional<wtf_size_t> line_index) const override {
+      std::optional<wtf_size_t> line_index) const {
     CHECK(!gap_data.gap_data_for_rows.empty());
     // Row flex has a single row-gap sequence and passes no `line_index`
     // (defaulting to line 0). Column flex passes its owning absolute flex line.

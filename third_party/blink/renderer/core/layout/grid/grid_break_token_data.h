@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -17,7 +18,6 @@
 
 namespace blink {
 
-class GridItems;
 class GridLayoutSubtree;
 class LayoutBox;
 
@@ -70,21 +70,23 @@ struct GridBreakTokenData final : BreakTokenAlgorithmData {
         cumulative_gap_offset_adjustment(cumulative_gap_offset_adjustment),
         first_unprocessed_row_gap_idx(first_unprocessed_row_gap_idx) {}
 
-  void Trace(Visitor* visitor) const override {
+  // Traces references after the type tag is checked.
+  void TraceAfterDispatch(Visitor* visitor) const {
     visitor->Trace(grid_items);
     visitor->Trace(grid_layout_subtree);
     visitor->Trace(oof_children);
     visitor->Trace(full_gap_geometry);
-    BreakTokenAlgorithmData::Trace(visitor);
+    BreakTokenAlgorithmData::TraceAfterDispatch(visitor);
   }
 
-  wtf_size_t GetTotalRowGapCount() const override {
+  // Counts all row gaps, including gaps suppressed by fragmentation.
+  wtf_size_t GetTotalRowGapCount() const {
     CHECK(full_gap_geometry);
     return full_gap_geometry->GetMainGaps().size();
   }
 
-  wtf_size_t GetFirstUnprocessedRowGapIndex(
-      std::optional<wtf_size_t> line_index) const override {
+  // Returns the first unprocessed row-gap index in the unfragmented grid.
+  wtf_size_t GetFirstUnprocessedRowGapIndex() const {
     return first_unprocessed_row_gap_idx;
   }
 

@@ -14,6 +14,11 @@ struct MulticolBreakTokenData final : BreakTokenAlgorithmData {
       : BreakTokenAlgorithmData(kMulticolData),
         consumed_row_block_size(consumed_row_block_size) {}
 
+  // Completes tracing for this data type.
+  void TraceAfterDispatch(Visitor* visitor) const {
+    BreakTokenAlgorithmData::TraceAfterDispatch(visitor);
+  }
+
   // In nested block fragmentation, when a column row (specified by the
   // `column-height` property) is too tall to fit in one outer fragmentainer,
   // the remainder needs to be handled in subsequent outer fragmentainers.

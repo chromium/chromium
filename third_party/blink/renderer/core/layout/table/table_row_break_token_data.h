@@ -14,6 +14,11 @@ struct TableRowBreakTokenData final : BreakTokenAlgorithmData {
       : BreakTokenAlgorithmData(kTableRowData),
         previous_consumed_row_block_size(previous_consumed_row_block_size) {}
 
+  // Completes tracing for this data type.
+  void TraceAfterDispatch(Visitor* visitor) const {
+    BreakTokenAlgorithmData::TraceAfterDispatch(visitor);
+  }
+
   // Similar to |consumed_block_size| however it will stop increasing once it
   // reaches the total block-size rather than keep expanding based on its
   // content.

@@ -22,11 +22,12 @@ struct GridLanesBreakTokenData final : BreakTokenAlgorithmData {
         grid_lanes(grid_lanes),
         oof_children(oof_children) {}
 
-  void Trace(Visitor* visitor) const override {
+  // Traces references after the type tag is checked.
+  void TraceAfterDispatch(Visitor* visitor) const {
     visitor->Trace(grid_lanes);
     visitor->Trace(grid_layout_subtree);
     visitor->Trace(oof_children);
-    BreakTokenAlgorithmData::Trace(visitor);
+    BreakTokenAlgorithmData::TraceAfterDispatch(visitor);
   }
 
   LayoutUnit total_intrinsic_block_size;
