@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -56,6 +57,7 @@ public class MediaCapturePickerInvokerTest {
         private Intent mIntent;
         private Tab mTab;
         private boolean mShouldShareAudio;
+        private WebContents mStoppedWebContents;
 
         @Override
         public Intent createScreenCaptureIntent(Context context, Params params, Delegate delegate) {
@@ -70,6 +72,15 @@ public class MediaCapturePickerInvokerTest {
         @Override
         public boolean shouldShareAudio() {
             return mShouldShareAudio;
+        }
+
+        @Override
+        public void stopAppContentMediaProjection(WebContents webContents) {
+            mStoppedWebContents = webContents;
+        }
+
+        private WebContents getStoppedWebContents() {
+            return mStoppedWebContents;
         }
 
         private void setIntent(Intent intent) {
@@ -167,23 +178,27 @@ public class MediaCapturePickerInvokerTest {
     @SmallTest
     public void testShow_window() {
         mPickerDelegate.setIntent(new Intent());
-        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
         MediaCapturePickerHeadlessFragment fragment =
                 MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
         fragment.mNextDelegate.onPicked(
                 CaptureAction.CAPTURE_WINDOW, new ActivityResult(Activity.RESULT_OK, new Intent()));
         verify(mDelegate).onPickWindow();
+        assertEquals(params.webContents, mPickerDelegate.getStoppedWebContents());
     }
 
     @Test
     @SmallTest
     public void testShow_screen() {
         mPickerDelegate.setIntent(new Intent());
-        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
         MediaCapturePickerHeadlessFragment fragment =
                 MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
         fragment.mNextDelegate.onPicked(
                 CaptureAction.CAPTURE_SCREEN, new ActivityResult(Activity.RESULT_OK, new Intent()));
         verify(mDelegate).onPickScreen();
+        assertEquals(params.webContents, mPickerDelegate.getStoppedWebContents());
     }
 }

@@ -56,6 +56,15 @@ public interface MediaCapturePickerDelegate {
     default void startAppContentMediaProjection(WebContents webContents, ActivityResult result) {}
 
     /**
+     * Called before starting window or screen sharing. This detaches any active tab (app content)
+     * projection session for {@code webContents} so its MediaProjection callback will not treat the
+     * replacement projection as a user-initiated stop.
+     *
+     * @param webContents The webContents of the capturer tab.
+     */
+    default void stopAppContentMediaProjection(WebContents webContents) {}
+
+    /**
      * Called when the screen capture picker is done i.e. after user has picked a tab/ window/
      * screen, or cancel the dialog.
      */

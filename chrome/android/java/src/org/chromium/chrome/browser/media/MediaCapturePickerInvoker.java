@@ -88,8 +88,8 @@ public class MediaCapturePickerInvoker {
         if (action == CaptureAction.CAPTURE_CANCELLED) {
             delegate.onCancel();
             MediaCapturePickerManager.recordResult(MediaCapturePickerManager.Result.CANCELLED);
-        } else if (action == CaptureAction.CAPTURE_WINDOW) {
-            Tab tab = impl.getPickedTab();
+        } else {
+            Tab tab = (action == CaptureAction.CAPTURE_WINDOW) ? impl.getPickedTab() : null;
             if (tab != null) {
                 // User selected from app provided contents, i.e. a tab.
                 Log.d(
@@ -116,15 +116,21 @@ public class MediaCapturePickerInvoker {
             } else {
                 // User selected a window or screen.
                 Log.d(TAG, "PickerInvoker: A window or screen was picked");
-                ScreenCapture.onPick(webContents, result);
-                delegate.onPickWindow();
-                MediaCapturePickerManager.recordResult(
-                        MediaCapturePickerManager.Result.WINDOW_SELECTED);
+                // Detach any active tab projection session for this WebContents before starting
+                // the new window/screen MediaProjection, so the old MediaProjection's onStop()
+                // callback will not treat the replacement as a user-initiated stop.
+                impl.stopAppContentMediaProjection(webContents);
+                if (action == CaptureAction.CAPTURE_SCREEN) {
+                    delegate.onPickScreen();
+                    MediaCapturePickerManager.recordResult(
+                            MediaCapturePickerManager.Result.SCREEN_SELECTED);
+                } else {
+                    ScreenCapture.onPick(webContents, result);
+                    delegate.onPickWindow();
+                    MediaCapturePickerManager.recordResult(
+                            MediaCapturePickerManager.Result.WINDOW_SELECTED);
+                }
             }
-        } else if (action == CaptureAction.CAPTURE_SCREEN) {
-            delegate.onPickScreen();
-            MediaCapturePickerManager.recordResult(
-                    MediaCapturePickerManager.Result.SCREEN_SELECTED);
         }
         impl.onFinish(webContents);
     }
