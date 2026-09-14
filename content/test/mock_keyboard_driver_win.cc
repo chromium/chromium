@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <array>
+
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "content/test/mock_keyboard.h"
@@ -21,22 +23,23 @@ MockKeyboardDriverWin::MockKeyboardDriverWin() {
   // destroyed.
   original_keyboard_layout_ = GetKeyboardLayout(0);
   active_keyboard_layout_ = original_keyboard_layout_;
-  GetKeyboardState(&original_keyboard_states_[0]);
+  GetKeyboardState(original_keyboard_states_.data());
 
   const UINT num_keyboard_layouts = GetKeyboardLayoutList(0, NULL);
   DCHECK(num_keyboard_layouts > 0);
 
   orig_keyboard_layouts_list_.resize(num_keyboard_layouts);
-  GetKeyboardLayoutList(num_keyboard_layouts, &orig_keyboard_layouts_list_[0]);
+  GetKeyboardLayoutList(num_keyboard_layouts,
+                        orig_keyboard_layouts_list_.data());
 
-  UNSAFE_TODO(memset(&keyboard_states_[0], 0, sizeof(keyboard_states_)));
+  keyboard_states_.fill(0);
 }
 
 MockKeyboardDriverWin::~MockKeyboardDriverWin() {
   // Unload the keyboard-layout driver, restore the keyboard state, and reset
   // the keyboard layout for succeeding tests.
   MaybeUnloadActiveLayout();
-  SetKeyboardState(&original_keyboard_states_[0]);
+  SetKeyboardState(original_keyboard_states_.data());
   ActivateKeyboardLayout(original_keyboard_layout_, KLF_RESET);
 }
 
@@ -128,28 +131,29 @@ bool MockKeyboardDriverWin::SetModifiers(int modifiers) {
   // modifier-key status. So, we update the modifier-key status with this
   // SetKeyboardState() call before creating NativeWebKeyboardEvent
   // instances.
-  UNSAFE_TODO(memset(&keyboard_states_[0], 0, sizeof(keyboard_states_)));
-  static const struct {
+  keyboard_states_.fill(0);
+  struct ModifierMask {
     int key_code;
     int mask;
-  } kModifierMasks[] = {
-    {VK_SHIFT,    MockKeyboard::LEFT_SHIFT | MockKeyboard::RIGHT_SHIFT},
-    {VK_CONTROL,  MockKeyboard::LEFT_CONTROL | MockKeyboard::RIGHT_CONTROL},
-    {VK_MENU,     MockKeyboard::LEFT_ALT | MockKeyboard::RIGHT_ALT},
-    {VK_LSHIFT,   MockKeyboard::LEFT_SHIFT},
-    {VK_LCONTROL, MockKeyboard::LEFT_CONTROL},
-    {VK_LMENU,    MockKeyboard::LEFT_ALT},
-    {VK_RSHIFT,   MockKeyboard::RIGHT_SHIFT},
-    {VK_RCONTROL, MockKeyboard::RIGHT_CONTROL},
-    {VK_RMENU,    MockKeyboard::RIGHT_ALT},
   };
-  for (size_t i = 0; i < std::size(kModifierMasks); ++i) {
+  static constexpr std::array<ModifierMask, 9> kModifierMasks = {{
+      {VK_SHIFT, MockKeyboard::LEFT_SHIFT | MockKeyboard::RIGHT_SHIFT},
+      {VK_CONTROL, MockKeyboard::LEFT_CONTROL | MockKeyboard::RIGHT_CONTROL},
+      {VK_MENU, MockKeyboard::LEFT_ALT | MockKeyboard::RIGHT_ALT},
+      {VK_LSHIFT, MockKeyboard::LEFT_SHIFT},
+      {VK_LCONTROL, MockKeyboard::LEFT_CONTROL},
+      {VK_LMENU, MockKeyboard::LEFT_ALT},
+      {VK_RSHIFT, MockKeyboard::RIGHT_SHIFT},
+      {VK_RCONTROL, MockKeyboard::RIGHT_CONTROL},
+      {VK_RMENU, MockKeyboard::RIGHT_ALT},
+  }};
+  for (const auto& modifier : kModifierMasks) {
     const int kKeyDownMask = 0x80;
-    if (modifiers & UNSAFE_TODO(kModifierMasks[i]).mask) {
-      UNSAFE_TODO(keyboard_states_[kModifierMasks[i]).key_code] = kKeyDownMask;
+    if (modifiers & modifier.mask) {
+      keyboard_states_[modifier.key_code] = kKeyDownMask;
     }
   }
-  SetKeyboardState(&keyboard_states_[0]);
+  SetKeyboardState(keyboard_states_.data());
 
   return true;
 }
@@ -159,12 +163,12 @@ int MockKeyboardDriverWin::GetCharacters(int key_code,
   // Retrieve Unicode characters composed from the input key-code and
   // the mofifiers.
   CHECK(output);
-  wchar_t code[16];
+  std::array<wchar_t, 16> code;
   int length =
-      ToUnicodeEx(key_code, MapVirtualKey(key_code, 0), &keyboard_states_[0],
-                  &code[0], std::size(code), 0, active_keyboard_layout_);
+      ToUnicodeEx(key_code, MapVirtualKey(key_code, 0), keyboard_states_.data(),
+                  code.data(), code.size(), 0, active_keyboard_layout_);
   if (length > 0)
-    output->assign(code);
+    output->assign(code.data(), length);
   return length;
 }
 

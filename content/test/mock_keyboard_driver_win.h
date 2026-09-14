@@ -7,6 +7,7 @@
 
 #include <windows.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -36,9 +37,9 @@ class MockKeyboardDriverWin {
   HKL original_keyboard_layout_;
   // The currently active driver.
   HKL active_keyboard_layout_;
-  BYTE original_keyboard_states_[256];
+  std::array<BYTE, 256> original_keyboard_states_ = {};
 
-  BYTE keyboard_states_[256];
+  std::array<BYTE, 256> keyboard_states_ = {};
 };
 
 }  // namespace content
