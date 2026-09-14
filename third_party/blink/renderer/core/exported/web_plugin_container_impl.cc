@@ -867,8 +867,8 @@ void WebPluginContainerImpl::Dispose() {
   }
 
   if (web_plugin_) {
-    // Plugins may execute script on being detached during the lifecycle update.
-    ScriptForbiddenScope::AllowUserAgentScript allow_script;
+    // Plugins must not execute script while being detached.
+    ScriptForbiddenScope forbid_script;
     CHECK(web_plugin_->Container() == this);
     web_plugin_->Destroy();
     web_plugin_ = nullptr;
