@@ -21,6 +21,9 @@
 
 #include "third_party/blink/renderer/core/paint/theme_painter.h"
 
+#include <algorithm>
+#include <cmath>
+
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -369,16 +372,24 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
   const float tick_inline_size = kSliderTickInlineSize * zoom_factor;
   const float tick_block_size = kSliderTickBlockSize * zoom_factor;
   const float tick_offset_from_center = kSliderTickOffset * zoom_factor;
+  // The painted size is floored to whole pixels to keep the ticks crisp, but it
+  // has to stay at least one pixel. kSliderTickInlineSize is 1, so any zoom
+  // factor below 1 (e.g. 90% page zoom on a 1x display) would otherwise floor
+  // to zero and no ticks would be painted at all.
+  const float snapped_tick_inline_size =
+      std::max(1.0f, std::floor(tick_inline_size));
+  const float snapped_tick_block_size =
+      std::max(1.0f, std::floor(tick_block_size));
   const auto writing_direction = style.GetWritingDirection();
   if (is_horizontal) {
-    tick_rect.set_size({floor(tick_inline_size), floor(tick_block_size)});
+    tick_rect.set_size({snapped_tick_inline_size, snapped_tick_block_size});
     tick_rect.set_y(
         floor(rect.y() + rect.height() / 2.0 + tick_offset_from_center));
     tick_region_side_margin =
         track_bounds.x() + (thumb_size.width() - tick_inline_size) / 2.0;
     tick_region_width = track_bounds.width() - thumb_size.width();
   } else {
-    tick_rect.set_size({floor(tick_block_size), floor(tick_inline_size)});
+    tick_rect.set_size({snapped_tick_block_size, snapped_tick_inline_size});
     const float slider_center = rect.x() + rect.width() / 2.0;
     const float tick_x =
         (style.IsHorizontalTypographicMode() &&

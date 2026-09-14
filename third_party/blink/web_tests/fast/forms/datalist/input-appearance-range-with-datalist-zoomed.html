@@ -19,6 +19,14 @@
     <input type=range list=foo style="writing-mode: vertical-lr; height: 100px; width: 30px; direction: rtl" />
 </div>
 
+<!-- crbug.com/558945743: the ticks must not disappear just below 100%. -->
+<div style="zoom: 0.9;">
+    <input type=range list=foo style="width: 100px;" />
+    <input type=range list=foo style="width: 100px; direction: rtl" />
+    <input type=range list=foo style="writing-mode: vertical-lr; height: 100px; width: 30px" />
+    <input type=range list=foo style="writing-mode: vertical-lr; height: 100px; width: 30px; direction: rtl" />
+</div>
+
 <datalist id=foo>
     <option>0</option>
     <option>10</option>
