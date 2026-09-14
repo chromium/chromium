@@ -59,6 +59,7 @@ DeviceTrustConnectorServiceFactory::DeviceTrustConnectorServiceFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
               .Build()) {}
 
 DeviceTrustConnectorServiceFactory::~DeviceTrustConnectorServiceFactory() =
@@ -69,12 +70,16 @@ DeviceTrustConnectorServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
   // Disallow service for Incognito except for the sign-in profile of ChromeOS
-  // (on the login screen).
+  // (on the login screen) or Enterprise Isolated Mode profile.
   if (context->IsOffTheRecord()) {
     bool unsupported_profile = true;
 #if BUILDFLAG(IS_CHROMEOS)
     unsupported_profile = !ash::ProfileHelper::IsSigninProfile(profile);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+    if (profile->IsEnterpriseIsolatedModeProfile()) {
+      unsupported_profile = false;
+    }
 
     if (unsupported_profile) {
       return nullptr;
@@ -85,10 +90,17 @@ DeviceTrustConnectorServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<DeviceTrustConnectorService>(profile->GetPrefs());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  auto* key_manager = g_browser_process->browser_policy_connector()
-                          ->chrome_browser_cloud_management_controller()
-                          ->GetDeviceTrustKeyManager();
-  service->AddObserver(std::make_unique<SigningKeyPolicyObserver>(key_manager));
+  // `system_network_context_manager` can be null in unit test environments
+  // (e.g. `TestingBrowserProcess`) where the network service and Chrome Browser
+  // Cloud Management (CBCM) are not initialized. In that case, avoid
+  // initializing the device trust key manager and observer.
+  if (g_browser_process->system_network_context_manager()) {
+    auto* key_manager = g_browser_process->browser_policy_connector()
+                            ->chrome_browser_cloud_management_controller()
+                            ->GetDeviceTrustKeyManager();
+    service->AddObserver(
+        std::make_unique<SigningKeyPolicyObserver>(key_manager));
+  }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   return service;

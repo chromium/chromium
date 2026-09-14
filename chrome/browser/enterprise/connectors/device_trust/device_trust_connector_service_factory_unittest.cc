@@ -12,6 +12,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -59,12 +61,37 @@ class DeviceTrustConnectorServiceFactoryTest
     : public DeviceTrustConnectorServiceFactoryBaseTest,
       public ::testing::Test {};
 
-#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DeviceTrustConnectorServiceFactoryTest, CreateForRegularProfile) {
   EXPECT_FALSE(profile()->IsOffTheRecord());
   EXPECT_TRUE(DeviceTrustConnectorServiceFactory::GetForProfile(profile()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(DeviceTrustConnectorServiceFactoryTest, CreatedForIsolatedModeProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  profile()->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+
+  Profile* isolated_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(isolated_profile);
+  EXPECT_TRUE(isolated_profile->IsOffTheRecord());
+  EXPECT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+
+  RedirectTestingFactoryToRealFactory(isolated_profile);
+
+  DeviceTrustConnectorService* isolated_service =
+      DeviceTrustConnectorServiceFactory::GetForProfile(isolated_profile);
+  EXPECT_TRUE(isolated_service);
+
+  DeviceTrustConnectorService* regular_service =
+      DeviceTrustConnectorServiceFactory::GetForProfile(profile());
+  EXPECT_TRUE(regular_service);
+  EXPECT_NE(regular_service, isolated_service);
+}
 
 TEST_F(DeviceTrustConnectorServiceFactoryTest, NullForIncognitoProfile) {
   Profile* incognito_profile =
