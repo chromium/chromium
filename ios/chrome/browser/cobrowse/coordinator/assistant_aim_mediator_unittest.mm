@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -74,8 +75,8 @@ class AssistantAIMMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    browser_ = std::make_unique<TestBrowser>(profile_);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
@@ -88,13 +89,13 @@ class AssistantAIMMediatorTest : public PlatformTest {
     fake_web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     fake_web_state_ = fake_web_state.get();
-    fake_web_state->SetBrowserState(profile_.get());
+    fake_web_state->SetBrowserState(profile_);
     auto manager = std::make_unique<web::FakeWebFramesManager>();
     fake_web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
                                         std::move(manager));
     AssistantAimTabHelper::CreateForWebState(fake_web_state.get());
     web::test::OverrideJavaScriptFeatures(
-        profile_.get(), {AimCobrowseJavaScriptFeature::GetInstance()});
+        profile_, {AimCobrowseJavaScriptFeature::GetInstance()});
 
     mock_container_handler_ =
         OCMProtocolMock(@protocol(AssistantContainerCommands));
@@ -111,7 +112,7 @@ class AssistantAIMMediatorTest : public PlatformTest {
         contextualTasksService:nullptr
                      URLLoader:url_loader_
          authenticationService:AuthenticationServiceFactory::GetForProfile(
-                                   profile_.get())];
+                                   profile_)];
     mediator_.sceneHandler = mock_scene_handler_;
 
     mock_delegate_ = OCMProtocolMock(@protocol(AssistantAIMMediatorDelegate));
@@ -125,6 +126,9 @@ class AssistantAIMMediatorTest : public PlatformTest {
     fake_web_state_ = nullptr;
     [mediator_ disconnect];
     mediator_ = nil;
+    url_loader_ = nullptr;
+    browser_.reset();
+    profile_ = nullptr;
     PlatformTest::TearDown();
   }
 
@@ -133,7 +137,8 @@ class AssistantAIMMediatorTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   raw_ptr<web::FakeWebState> fake_web_state_ = nullptr;
@@ -388,7 +393,7 @@ TEST_F(AssistantAIMMediatorTest, HandshakeTimerNotStartedOnNonAimURL) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://www.google.com/")));
   auto* main_frame_ptr = main_frame.get();
-  main_frame_ptr->set_browser_state(profile_.get());
+  main_frame_ptr->set_browser_state(profile_);
 
   web::FakeWebFramesManager* frames_manager =
       static_cast<web::FakeWebFramesManager*>(
@@ -409,7 +414,7 @@ TEST_F(AssistantAIMMediatorTest, HandshakeTimerStartedOnAimURL) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://www.google.com/")));
   auto* main_frame_ptr = main_frame.get();
-  main_frame_ptr->set_browser_state(profile_.get());
+  main_frame_ptr->set_browser_state(profile_);
 
   web::FakeWebFramesManager* frames_manager =
       static_cast<web::FakeWebFramesManager*>(
@@ -435,7 +440,7 @@ TEST_F(AssistantAIMMediatorTest, HandshakeTimerNotStartedOnNonMainFrame) {
   auto child_frame = web::FakeWebFrame::CreateChildWebFrame(
       url::Origin::Create(GURL("https://www.google.com/")));
   auto* child_frame_ptr = child_frame.get();
-  child_frame_ptr->set_browser_state(profile_.get());
+  child_frame_ptr->set_browser_state(profile_);
 
   web::FakeWebFramesManager* frames_manager =
       static_cast<web::FakeWebFramesManager*>(
@@ -455,7 +460,7 @@ TEST_F(AssistantAIMMediatorTest, HandshakeTimerStoppedOnNavigationToNonAimURL) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://www.google.com/")));
   auto* main_frame_ptr = main_frame.get();
-  main_frame_ptr->set_browser_state(profile_.get());
+  main_frame_ptr->set_browser_state(profile_);
 
   web::FakeWebFramesManager* frames_manager =
       static_cast<web::FakeWebFramesManager*>(
@@ -475,7 +480,7 @@ TEST_F(AssistantAIMMediatorTest, HandshakeTimerStoppedOnNavigationToNonAimURL) {
   auto non_aim_main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://www.google.com/")));
   auto* non_aim_main_frame_ptr = non_aim_main_frame.get();
-  non_aim_main_frame_ptr->set_browser_state(profile_.get());
+  non_aim_main_frame_ptr->set_browser_state(profile_);
 
   frames_manager->RemoveWebFrame(main_frame_ptr->GetFrameId());
   frames_manager->AddWebFrame(std::move(non_aim_main_frame));
@@ -495,7 +500,7 @@ TEST_F(AssistantAIMMediatorTest,
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://www.google.com/")));
   auto* main_frame_ptr = main_frame.get();
-  main_frame_ptr->set_browser_state(profile_.get());
+  main_frame_ptr->set_browser_state(profile_);
 
   web::FakeWebFramesManager* frames_manager =
       static_cast<web::FakeWebFramesManager*>(
@@ -533,7 +538,7 @@ TEST_F(AssistantAIMMediatorTest,
   auto next_main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://www.google.com/")));
   auto* next_main_frame_ptr = next_main_frame.get();
-  next_main_frame_ptr->set_browser_state(profile_.get());
+  next_main_frame_ptr->set_browser_state(profile_);
 
   frames_manager->RemoveWebFrame(main_frame_ptr->GetFrameId());
   frames_manager->AddWebFrame(std::move(next_main_frame));
@@ -596,7 +601,7 @@ TEST_F(AssistantAIMMediatorTest, HandshakeCapabilitiesResetOnNavigation) {
   // Simulate main frame becoming available.
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://www.google.com/")));
-  main_frame->set_browser_state(profile_.get());
+  main_frame->set_browser_state(profile_);
   web::FakeWebFramesManager* frames_manager =
       static_cast<web::FakeWebFramesManager*>(
           fake_web_state_->GetWebFramesManager(
@@ -698,8 +703,8 @@ TEST_F(AssistantAIMMediatorTest,
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
   system_identity_manager->AddIdentity(identity);
-  AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
+  AuthenticationServiceFactory::GetForProfile(profile_)->SignIn(
+      identity, signin_metrics::AccessPoint::kStartPage);
 
   [[mock_delegate_ expect] assistantAIMMediatorDidStartNewThread:mediator_];
 
