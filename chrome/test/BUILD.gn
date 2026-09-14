@@ -815,13 +815,7 @@ source_set("platform_browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "../browser/chrome_content_browser_client_platform_browsertest.cc",
-    "../browser/loadtimes_extension_bindings_browsertest.cc",
-    "../browser/no_best_effort_tasks_browsertest.cc",
-    "../browser/safe_browsing/client_side_detection_service_browsertest.cc",
-    "../renderer/chrome_content_renderer_client_browsertest.cc",
-  ]
+  sources = [ "../renderer/chrome_content_renderer_client_browsertest.cc" ]
 
   deps = [
     "//base",
@@ -833,6 +827,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser:chrome_browser_main",
     "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser:platform_browser_tests",
     "//chrome/browser/autocomplete",
     "//chrome/browser/bookmarks",
     "//chrome/browser/browsing_data:constants",
@@ -973,22 +968,6 @@ source_set("platform_browser_tests") {
     "//media/test/data/webaudio_oscillator.html",
   ]
 
-  if (enable_allocation_trace_recorder_integration_tests) {
-    sources += [ "../browser/allocation_recorder_browsertest.cc" ]
-    deps += [
-      "//components/allocation_recorder/testing",
-      "//components/memory_system",
-    ]
-
-    if (is_mac) {
-      deps += [ "//chrome/app_shim" ]
-    }
-
-    if (is_posix && !is_mac) {
-      deps += [ "//chrome/app:chrome_crash_reporter_client" ]
-    }
-  }
-
   if (!is_android && !is_chromeos) {
     deps += [ "//chrome/browser/download/bubble" ]
   }
@@ -1051,6 +1030,7 @@ source_set("platform_browser_tests") {
     deps += [
       "//chrome/browser/safe_browsing:blocking_page_platform_test_support",
       "//chrome/browser/safe_browsing:metrics_collector",
+      "//chrome/browser/safe_browsing:platform_browser_tests",
       "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
       "//components/enterprise/connectors/core",
       "//components/safe_browsing/content/browser",

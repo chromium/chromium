@@ -1200,6 +1200,27 @@ if (safe_browsing_mode != 0) {
   }
 }
 
+if (safe_browsing_mode != 0) {
+  source_set("platform_browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "client_side_detection_service_browsertest.cc" ]
+
+    deps = [
+      ":safe_browsing",
+      "//chrome/test:test_support",
+      "//components/metrics:content",
+      "//components/safe_browsing/content/browser:client_side_detection",
+      "//components/safe_browsing/content/browser:client_side_detection_service",
+      "//components/safe_browsing/content/common:interfaces",
+      "//components/safe_browsing/core/browser:client_side_detection_service_base",
+      "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//testing/gtest",
+    ]
+  }
+}
+
 source_set("browser_tests") {
   testonly = true
 
