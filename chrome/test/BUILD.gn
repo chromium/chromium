@@ -4323,6 +4323,7 @@ if (!is_android) {
       sources += [
         "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils_browsertest.cc",
         "//chrome/browser/enterprise/data_protection/data_protection_navigation_controller_browsertest.cc",
+        "//chrome/browser/enterprise/data_protection/data_protection_telemetry_browsertest.cc",
       ]
       deps += [ "//components/enterprise/connectors/core:test_support" ]
     }
