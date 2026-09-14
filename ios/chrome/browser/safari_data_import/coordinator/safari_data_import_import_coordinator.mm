@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/safari_data_import/public/metrics.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -59,6 +60,7 @@ constexpr NSInteger kExpectedItemsCount = 4;
 @interface SafariDataImportImportCoordinator () <
     DataImportCredentialConflictResolutionViewControllerDelegate,
     DataImportImportStageTransitionHandler,
+    LocalReauthenticationCoordinatorDelegate,
     PromoStyleViewControllerDelegate,
     UITableViewDelegate>
 
@@ -80,6 +82,9 @@ constexpr NSInteger kExpectedItemsCount = 4;
   UIDocumentPickerViewController* _documentProvider;
   /// Table view  that displays the import status of Safari data.
   ImportDataItemTableView* _tableView;
+  /// Coordinator for shielding credential conflict resolution when the app is
+  /// backgrounded or when multitasking App Switcher is opened.
+  LocalReauthenticationCoordinator* _reauthCoordinator;
 }
 
 @synthesize mediator = _mediator;
@@ -112,6 +117,7 @@ constexpr NSInteger kExpectedItemsCount = 4;
 }
 
 - (void)stop {
+  [self stopReauthCoordinator];
   [self.mediator disconnect];
   self.delegate = nil;
   _containerViewController = nil;
@@ -302,11 +308,31 @@ constexpr NSInteger kExpectedItemsCount = 4;
 #pragma mark - DataImportCredentialConflictResolutionViewControllerDelegate
 
 - (void)cancelledConflictResolution {
+  [self stopReauthCoordinator];
   [_containerViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)resolvedCredentialConflicts {
+  [self stopReauthCoordinator];
   [_containerViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - LocalReauthenticationCoordinatorDelegate
+
+- (void)successfulReauthenticationWithCoordinator:
+    (LocalReauthenticationCoordinator*)coordinator {
+}
+
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (LocalReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+  [self stopReauthCoordinator];
+  // Dismiss only the modal conflict resolution screen, returning the user to
+  // the ready-for-import stage without losing progress in the import flow.
+  [_containerViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)willPushReauthenticationViewController {
 }
 
 #pragma mark - Private
@@ -357,7 +383,9 @@ constexpr NSInteger kExpectedItemsCount = 4;
       initWithRootViewController:conflictResolutionViewController];
   wrapper.toolbarHidden = NO;
   wrapper.modalInPresentation = YES;
-  [self presentViewController:wrapper];
+  if ([self presentViewController:wrapper]) {
+    [self startReauthCoordinatorWithNavigationController:wrapper];
+  }
 }
 
 /// Handler for actions in `self.fileDeletionAlert`.
@@ -421,6 +449,27 @@ constexpr NSInteger kExpectedItemsCount = 4;
                              handler:nil];
   [alert addAction:dismiss];
   return alert;
+}
+
+/// Starts `_reauthCoordinator` with `navigationController`. Once started, it
+/// observes scene state changes and pushes a shield view controller when the
+/// scene is backgrounded or foreground inactive (e.g. App Switcher).
+- (void)startReauthCoordinatorWithNavigationController:
+    (UINavigationController*)navigationController {
+  [self stopReauthCoordinator];
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
+      initWithBaseNavigationController:navigationController
+                               browser:self.browser
+                           authOnStart:NO];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
+}
+
+/// Stops `_reauthCoordinator` and cleans up its delegate.
+- (void)stopReauthCoordinator {
+  [_reauthCoordinator stop];
+  _reauthCoordinator.delegate = nil;
+  _reauthCoordinator = nil;
 }
 
 @end

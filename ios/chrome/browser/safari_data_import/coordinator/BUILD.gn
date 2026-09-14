@@ -94,6 +94,7 @@ source_set("import_coordinator") {
     "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/ui",
+    "//ios/chrome/browser/settings/ui_bundled/password/reauthentication",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

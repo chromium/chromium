@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -44,6 +45,12 @@ NSString* const kPassword2 = @"LouisLane";
 
 /// User name for the invalid password.
 NSString* const kInvalidPasswordUsername = @"Superman";
+
+/// Matcher for the "Import" button on the import screen.
+id<GREYMatcher> ImportButton() {
+  return ImportScreenButtonWithTextId(
+      IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT);
+}
 
 }  // namespace
 
@@ -255,9 +262,7 @@ NSString* const kInvalidPasswordUsername = @"Superman";
     /// Check that the items table has displayed.
     ExpectImportTableHasRowCount(4);
     /// Import the data and wait until completion.
-    [[EarlGrey selectElementWithMatcher:
-                   ImportScreenButtonWithTextId(
-                       IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT)]
+    [[EarlGrey selectElementWithMatcher:ImportButton()]
         performAction:grey_tap()];
     [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                         ImportScreenButtonWithTextId(
@@ -314,9 +319,7 @@ NSString* const kInvalidPasswordUsername = @"Superman";
     LoadFile(SafariDataImportTestFile::kValid);
     ExpectImportTableHasRowCount(4);
     /// Import the data and check conflict resolution page.
-    [[EarlGrey selectElementWithMatcher:
-                   ImportScreenButtonWithTextId(
-                       IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT)]
+    [[EarlGrey selectElementWithMatcher:ImportButton()]
         performAction:grey_tap()];
     id<GREYMatcher> conflictResolutionTable = grey_accessibilityID(
         GetCredentialConflictResolutionTableViewAccessibilityIdentifier());
@@ -397,15 +400,72 @@ NSString* const kInvalidPasswordUsername = @"Superman";
   }
 }
 
+/// Tests that the password conflict resolution surface is shielded by the local
+/// reauthentication view controller when the app is backgrounded, preventing
+/// plaintext passwords from leaking into multitasking snapshots.
+- (void)testPasswordConflictResolutionShieldedOnBackground {
+  if (@available(iOS 18.2, *)) {
+    [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                      ReauthenticationResult::kFailure];
+    [ReauthenticationAppInterface
+        mockReauthenticationModuleShouldSkipReAuth:NO];
+
+    /// Store some password that will result in a conflict.
+    NSString* existingPassword = @"Google!Password)";
+    NSURL* url = [NSURL URLWithString:kURL];
+    [PasswordManagerAppInterface storeCredentialWithUsername:kUsername1
+                                                    password:existingPassword
+                                                         URL:url];
+    [PasswordManagerAppInterface storeCredentialWithUsername:kUsername2
+                                                    password:existingPassword
+                                                         URL:url];
+
+    /// Start the flow.
+    GoToImportScreen();
+    LoadFile(SafariDataImportTestFile::kValid);
+    ExpectImportTableHasRowCount(4);
+
+    /// Import the data and check conflict resolution page.
+    [[EarlGrey selectElementWithMatcher:ImportButton()]
+        performAction:grey_tap()];
+    id<GREYMatcher> conflictResolutionTable = grey_accessibilityID(
+        GetCredentialConflictResolutionTableViewAccessibilityIdentifier());
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:conflictResolutionTable];
+
+    /// Background and return to foreground. Reauth UI should shield the screen.
+    [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+    id<GREYMatcher> reauthController = grey_accessibilityID(
+        password_manager::
+            kReauthenticationViewControllerAccessibilityIdentifier);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:reauthController];
+    [[EarlGrey selectElementWithMatcher:conflictResolutionTable]
+        assertWithMatcher:grey_notVisible()];
+
+    /// Return mock failure result. The coordinator should dismiss the conflict
+    /// resolution view controller upon failed authentication.
+    [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
+
+    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:reauthController];
+    [ChromeEarlGrey
+        waitForUIElementToDisappearWithMatcher:conflictResolutionTable];
+
+    /// Verify that the user is returned to the ready-to-import stage without
+    /// losing progress.
+    ExpectImportTableHasRowCount(4);
+    [[EarlGrey selectElementWithMatcher:ImportButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+}
+
 /// Tests uploading a file that only contains potential "history" items.
 - (void)testUploadPartiallyValidFile {
   if (@available(iOS 18.2, *)) {
     GoToImportScreen();
     LoadFile(SafariDataImportTestFile::kPartiallyValid);
     ExpectImportTableHasRowCount(4);
-    [[EarlGrey selectElementWithMatcher:
-                   ImportScreenButtonWithTextId(
-                       IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT)]
+    [[EarlGrey selectElementWithMatcher:ImportButton()]
         performAction:grey_tap()];
     [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                         ImportScreenButtonWithTextId(

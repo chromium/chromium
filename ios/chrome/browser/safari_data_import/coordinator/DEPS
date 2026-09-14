@@ -13,6 +13,7 @@ include_rules = [
   "+ios/chrome/browser/promos_manager",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+  "+ios/chrome/browser/settings/ui_bundled/password/reauthentication",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/webauthn/model",
   # keep-sorted end

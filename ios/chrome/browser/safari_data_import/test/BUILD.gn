@@ -17,6 +17,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled/password/reauthentication:reauthentication_constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/confirmation_alert:constants",
