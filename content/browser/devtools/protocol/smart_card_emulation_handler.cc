@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "content/browser/devtools/protocol/smart_card_emulation.h"
@@ -407,6 +408,13 @@ DispatchResponse SmartCardEmulationHandler::Enable() {
   factory_ = std::make_unique<EmulatedSmartCardContextFactory>(*this);
 
   UpdateEmulationOverride(web_contents()->GetPrimaryMainFrame());
+
+  static bool has_recorded_in_session = false;
+  if (!has_recorded_in_session) {
+    has_recorded_in_session = true;
+    base::UmaHistogramBoolean("SmartCard.Emulation.Enabled", true);
+  }
+
   return DispatchResponse::Success();
 }
 

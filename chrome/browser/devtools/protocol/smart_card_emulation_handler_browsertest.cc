@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -472,17 +473,29 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
 };
 
 IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, EnableDisableEmulation) {
+  base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectTotalCount("SmartCard.Emulation.Enabled", 0);
+
   // Disable (Should be successful even if already disabled - Idempotency).
   EXPECT_THAT(SendCommand("SmartCardEmulation.disable"), IsSuccess());
 
   // Enable (Should activate the override).
   EXPECT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  histogram_tester.ExpectUniqueSample("SmartCard.Emulation.Enabled", true, 1);
 
   // Re-Enable (Should be successful - Idempotency).
   EXPECT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  histogram_tester.ExpectTotalCount("SmartCard.Emulation.Enabled", 1);
 
-  // Disable (Should clean up).
+  // Disable (Should clean up and not record any sample).
   EXPECT_THAT(SendCommand("SmartCardEmulation.disable"), IsSuccess());
+  histogram_tester.ExpectTotalCount("SmartCard.Emulation.Enabled", 1);
+
+  // Re-Enable after disable (Should not record another sample in the same
+  // browser session).
+  EXPECT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  histogram_tester.ExpectUniqueSample("SmartCard.Emulation.Enabled", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,

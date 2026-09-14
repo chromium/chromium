@@ -32,6 +32,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SmartCard.Emulation.Enabled" enum="BooleanEnabled"
+    expires_after="2027-09-01">
+  <owner>paulinagacek@google.com</owner>
+  <owner>zgroza@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/smart_card/OWNERS</owner>
+  <summary>
+    Recorded when Smart Card emulation is enabled via the SmartCardEmulation
+    domain in Chrome DevTools Protocol (CDP). Only 'Enabled' is recorded, at
+    most once per browser session upon first activation. Redundant calls and
+    re-enabling are ignored. 'Disabled' is never recorded.
+  </summary>
+</histogram>
+
 <histogram name="SmartCard.OneTimePermissionExpiryReason"
     enum="SmartCardOneTimePermissionExpiryReason" expires_after="2027-01-31">
   <owner>zgroza@chromium.org</owner>
