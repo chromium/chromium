@@ -52,11 +52,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.KeyUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.omnibox.TextSelection;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.Collections;
@@ -825,7 +826,7 @@ public class UrlBarUiTest {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    @DisabledTest(message = "Disabled because of crbug.com/477262537")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/477262537
     public void testAutocorrectionChangesTriggerCorrectSuggestions() {
         requestFocus();
         setComposingText("test", /* composingRegionStart= */ 0, /* composingRegionEnd= */ 4);
@@ -952,7 +953,6 @@ public class UrlBarUiTest {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    @DisabledTest(message = "Disabled because of b/333536371")
     public void testUrlTextChangeListener() {
         @SuppressWarnings("unchecked")
         Callback<String> listener = Mockito.mock(Callback.class);
