@@ -37,7 +37,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
-import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -110,8 +109,8 @@ class BottomSheet extends BottomSheetView
     /** A flag to force the small screen state of the bottom sheet. */
     private static @Nullable Boolean sIsSmallScreenForTesting;
 
-    /** The list of observers of this sheet. */
-    private final ObserverList<BottomSheetObserver> mObservers = new ObserverList<>();
+    /** Coordinates sheet state transitions, lifecycle, and event dispatch. */
+    private final BottomSheetMediator mMediator;
 
     /** The visible rect for the screen taking the keyboard into account. */
     private final Rect mVisibleViewportRect = new Rect();
@@ -158,7 +157,7 @@ class BottomSheet extends BottomSheetView
     /** For detecting scroll and fling events on the bottom sheet. */
     private final BottomSheetSwipeDetector mGestureDetector;
 
-    /** PropertyModel for MVC presentation layer. */
+    /** The model managing presentation properties of the bottom sheet. */
     private final PropertyModel mModel;
 
     /** The animator used to move the sheet to a fixed state when released by the user. */
@@ -282,6 +281,7 @@ class BottomSheet extends BottomSheetView
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
 
         mModel = new PropertyModel.Builder(BottomSheetProperties.ALL_KEYS).build();
+        mMediator = new BottomSheetMediator(mModel);
         PropertyModelChangeProcessor.create(mModel, this, BottomSheetViewBinder::bind);
     }
 
@@ -294,7 +294,7 @@ class BottomSheet extends BottomSheetView
     void destroy() {
         mIsDestroyed = true;
         mIsTouchEnabled = false;
-        mObservers.clear();
+        mMediator.destroy();
         endAnimations();
     }
 
@@ -465,9 +465,7 @@ class BottomSheet extends BottomSheetView
                             invalidateContentDesiredHeight();
                             sizeAndPositionSheetInParent();
 
-                            for (BottomSheetObserver obs : mObservers) {
-                                obs.onContainerSizeChanged(mContainerWidth, mContainerHeight);
-                            }
+                            mMediator.notifyContainerSizeChanged(mContainerWidth, mContainerHeight);
                         }
 
                         updateContentContainerHeight();
@@ -501,9 +499,7 @@ class BottomSheet extends BottomSheetView
                     @Override
                     public void onPrepare(WindowInsetsAnimationCompat animation) {
                         maybeCacheStateForImeAnimation(animation);
-                        for (BottomSheetObserver obs : mObservers) {
-                            obs.beforeInsetAnimationStart();
-                        }
+                        mMediator.notifyBeforeInsetAnimationStart();
                     }
 
                     @Override
@@ -522,9 +518,7 @@ class BottomSheet extends BottomSheetView
                     @Override
                     public void onEnd(WindowInsetsAnimationCompat animation) {
                         onInsetChanged();
-                        for (BottomSheetObserver obs : mObservers) {
-                            obs.onInsetAnimationEnd();
-                        }
+                        mMediator.notifyInsetAnimationEnd();
                     }
                 });
 
@@ -762,7 +756,7 @@ class BottomSheet extends BottomSheetView
 
         mIsSheetOpen = true;
 
-        for (BottomSheetObserver o : mObservers) o.onSheetOpened(reason);
+        mMediator.notifySheetOpened(reason);
         setFocusable(true);
         setFocusableInTouchMode(true);
     }
@@ -776,7 +770,7 @@ class BottomSheet extends BottomSheetView
         if (!mIsSheetOpen) return;
         mIsSheetOpen = false;
 
-        for (BottomSheetObserver o : mObservers) o.onSheetClosed(reason);
+        mMediator.notifySheetClosed(reason);
 
         clearFocus();
         setFocusable(false);
@@ -1165,9 +1159,7 @@ class BottomSheet extends BottomSheetView
         }
 
         updateBackgroundColor();
-        for (BottomSheetObserver o : mObservers) {
-            o.onSheetOffsetChanged(mLastOffsetRatioSent, getCurrentOffsetPx());
-        }
+        mMediator.notifySheetOffsetChanged(mLastOffsetRatioSent, getCurrentOffsetPx());
     }
 
     /** @see #setSheetState(int, boolean, int) */
@@ -1358,9 +1350,7 @@ class BottomSheet extends BottomSheetView
 
         sendPaneChangeAccessibilityEvent(mCurrentState != SheetState.HIDDEN);
 
-        for (BottomSheetObserver o : mObservers) {
-            o.onSheetStateChanged(mCurrentState, reason);
-        }
+        mMediator.notifySheetStateChanged(mCurrentState, reason);
     }
 
     /**
@@ -1517,18 +1507,24 @@ class BottomSheet extends BottomSheetView
 
     /**
      * Adds an observer to the bottom sheet.
+     *
      * @param observer The observer to add.
      */
     void addObserver(BottomSheetObserver observer) {
-        mObservers.addObserver(observer);
+        mMediator.addObserver(observer);
     }
 
     /**
      * Removes an observer to the bottom sheet.
+     *
      * @param observer The observer to remove.
      */
     void removeObserver(BottomSheetObserver observer) {
-        mObservers.removeObserver(observer);
+        mMediator.removeObserver(observer);
+    }
+
+    BottomSheetMediator getMediatorForTesting() {
+        return mMediator;
     }
 
     /**
@@ -1718,9 +1714,7 @@ class BottomSheet extends BottomSheetView
         mModel.set(BottomSheetProperties.SHEET_LAYOUT_MODE, mode);
         updateCloseButton(mode == SheetLayoutMode.DESKTOP_POPUP, content);
         mModel.set(BottomSheetProperties.GLOW_SPEC, getGlowSpecOrDefault());
-        for (BottomSheetObserver o : mObservers) {
-            o.onSheetContentChanged(content);
-        }
+        mMediator.notifySheetContentChanged(content);
         mToolbarHolder.setBackgroundColor(Color.TRANSPARENT);
     }
 
@@ -1975,16 +1969,12 @@ class BottomSheet extends BottomSheetView
         mSheetContainer.setLayoutParams(layoutParams);
 
         if (!bottomMarginChanged) return;
-        for (BottomSheetObserver obs : mObservers) {
-            obs.onContainerBottomMarginChanged(bottomMargin);
-        }
+        mMediator.notifyContainerBottomMarginChanged(bottomMargin);
     }
 
     void onSheetBackgroundColorOverrideChanged() {
         updateBackgroundColor();
-        for (BottomSheetObserver o : mObservers) {
-            o.onSheetBackgroundColorOverrideChanged();
-        }
+        mMediator.notifySheetBackgroundColorOverrideChanged();
     }
 
     @VisibleForTesting
