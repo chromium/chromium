@@ -4028,7 +4028,8 @@
                         "MigratedObsoleteSystem": "true",
                         "MigratedPageInfo": "true",
                         "MigratedPdf": "true",
-                        "MigratedPinInfoBar": "true"
+                        "MigratedPinInfoBar": "true",
+                        "MigratedSessionRestore": "true"
                     },
                     "enable_features": [
                         "CentralizedInfoBarFramework"
