@@ -13,6 +13,7 @@
 #include "chrome/browser/ntp_customization/ntp_android_background_service_factory.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service_factory.h"
+#include "chrome/browser/ntp_customization/ntp_customization_utils.h"
 #include "components/themes/ntp_background_data.h"
 #include "components/themes/ntp_background_service.h"
 #include "url/android/gurl_android.h"
@@ -184,9 +185,13 @@ ScopedJavaLocalRef<jobject> NtpThemeCollectionBridge::GetCustomBackgroundInfo(
   ScopedJavaLocalRef<jstring> j_collection_id =
       base::android::ConvertUTF8ToJavaString(env, background->collection_id);
 
+  ScopedJavaLocalRef<jstring> j_attribution =
+      base::android::ConvertUTF8ToJavaString(
+          env, ntp_customization::GetCustomBackgroundAttribution(*background));
+
   return Java_NtpThemeCollectionBridge_createCustomBackgroundInfo(
       env, j_url, j_collection_id, background->is_uploaded_image,
-      background->daily_refresh_enabled);
+      background->daily_refresh_enabled, j_attribution);
 }
 
 void NtpThemeCollectionBridge::OnCustomBackgroundImageUpdated() {

@@ -29,12 +29,15 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataGroup;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -196,5 +199,41 @@ public class CrossDeviceThemeTrackerUnitTest {
         // Passing null should pass empty string ("") to native.
         assertEquals(remoteColor, tracker.getThemeForDeviceGuid(mActivity, null));
         verify(mNatives).getThemeForDeviceGuid(1L, mActivity, "");
+    }
+
+    @Test
+    public void testCreateThemeCollectionData() {
+        testCreateThemeCollectionDataImpl("Attribution 1,Attribution 2");
+    }
+
+    @Test
+    public void testCreateThemeCollectionData_nullAttribution() {
+        testCreateThemeCollectionDataImpl(null);
+    }
+
+    private void testCreateThemeCollectionDataImpl(@Nullable String attribution) {
+        String testUrl = "https://www.example.com/image.png";
+        String collectionId = "test_collection";
+        NtpBackgroundDataThemeCollection data =
+                CrossDeviceThemeTracker.createThemeCollectionData(
+                        mActivity,
+                        PlatformType.DESKTOP,
+                        testUrl,
+                        collectionId,
+                        /* isDailyRefresh= */ false,
+                        attribution,
+                        /* hasChromeColor= */ false,
+                        /* chromeColorId= */ 0,
+                        /* hasUserColor= */ false,
+                        /* userPrimaryColor= */ 0);
+        assertNotNull(data);
+        CustomBackgroundInfo bgInfo = data.getCustomBackgroundInfo();
+        assertNotNull(bgInfo);
+        assertEquals(testUrl, bgInfo.backgroundUrl.getSpec());
+        assertEquals(collectionId, bgInfo.collectionId);
+        assertFalse(bgInfo.isUploadedImage);
+        assertFalse(bgInfo.isDailyRefreshEnabled);
+        assertEquals(attribution, bgInfo.attribution);
+        assertEquals(attribution, data.getContentDescription());
     }
 }

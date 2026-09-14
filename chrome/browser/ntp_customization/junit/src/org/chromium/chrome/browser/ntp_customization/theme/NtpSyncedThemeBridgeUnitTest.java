@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ntp_customization.theme;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -107,5 +108,22 @@ public class NtpSyncedThemeBridgeUnitTest {
 
         bridge.onDefaultThemeSynced();
         verify(observer).onDefaultThemeSynced();
+    }
+
+    @Test
+    public void testCreateCustomBackgroundInfo() {
+        String attribution = "Attribution 1,Attribution 2";
+        CustomBackgroundInfo info =
+                NtpSyncedThemeBridge.createCustomBackgroundInfo(
+                        BACKGROUND_URL,
+                        COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false,
+                        attribution);
+        assertEquals(BACKGROUND_URL, info.backgroundUrl);
+        assertEquals(COLLECTION_ID, info.collectionId);
+        assertFalse(info.isUploadedImage);
+        assertFalse(info.isDailyRefreshEnabled);
+        assertEquals(attribution, info.attribution);
     }
 }

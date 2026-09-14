@@ -12,6 +12,7 @@
 #include "chrome/browser/ntp_customization/jni_headers/NtpSyncedThemeBridge_jni.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service_factory.h"
+#include "chrome/browser/ntp_customization/ntp_customization_utils.h"
 #include "url/android/gurl_android.h"
 
 using base::android::JavaRef;
@@ -75,9 +76,13 @@ ScopedJavaLocalRef<jobject> NtpSyncedThemeBridge::GetCustomBackgroundInfo(
   ScopedJavaLocalRef<jstring> j_collection_id =
       base::android::ConvertUTF8ToJavaString(env, background->collection_id);
 
+  ScopedJavaLocalRef<jstring> j_attribution =
+      base::android::ConvertUTF8ToJavaString(
+          env, ntp_customization::GetCustomBackgroundAttribution(*background));
+
   return Java_NtpSyncedThemeBridge_createCustomBackgroundInfo(
       env, j_url, j_collection_id, background->is_uploaded_image,
-      background->daily_refresh_enabled);
+      background->daily_refresh_enabled, j_attribution);
 }
 
 bool NtpSyncedThemeBridge::IsProcessingSyncUpdate(JNIEnv* env) {

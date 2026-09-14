@@ -95,7 +95,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
 
         assertEquals(data1, data2);
         assertNotEquals(data1, data3);
-        assertEquals(data1, data4);
+        assertNotEquals(data1, data4);
         assertEquals(data1.hashCode(), data2.hashCode());
 
         // isBitmapSaved should not affect equality.
@@ -337,5 +337,42 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isDailyRefreshEnabled= */ false,
                         /* attribution= */ null);
         assertNull(infoNull.attribution);
+    }
+
+    @Test
+    public void testCustomBackgroundInfo_equalsAndHashCode() {
+        CustomBackgroundInfo info1 =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false,
+                        TEST_ATTRIBUTION);
+        CustomBackgroundInfo info2 =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false,
+                        TEST_ATTRIBUTION);
+        CustomBackgroundInfo infoNullAttribution =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false,
+                        /* attribution= */ null);
+        CustomBackgroundInfo infoDifferentAttribution =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false,
+                        "Different Attribution");
+
+        assertEquals(info1, info2);
+        assertEquals(info1.hashCode(), info2.hashCode());
+        assertNotEquals(info1, infoNullAttribution);
+        assertNotEquals(info1, infoDifferentAttribution);
     }
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ntp_customization/ntp_customization_utils.h"
+
 #include <cstdint>
 #include <vector>
 
@@ -10,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ntp_customization/jni_headers/NtpCustomizationUtils_jni.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
@@ -78,6 +81,24 @@ void OnImageDecoded(base::android::ScopedJavaGlobalRef<jobject> j_callback,
 // halving dimensions to prevent Android Canvas/GPU texture rendering crashes.
 SkBitmap DownsampleImageIfNeeded(const SkBitmap& bitmap, int max_dimension) {
   return DownsampleImageIfNeededImpl(bitmap, max_dimension);
+}
+
+std::string GetCustomBackgroundAttribution(const std::string& line_1,
+                                           const std::string& line_2) {
+  std::vector<std::string> attributions;
+  if (!line_1.empty()) {
+    attributions.push_back(line_1);
+  }
+  if (!line_2.empty()) {
+    attributions.push_back(line_2);
+  }
+  return base::JoinString(attributions, ",");
+}
+
+std::string GetCustomBackgroundAttribution(const CustomBackground& background) {
+  return GetCustomBackgroundAttribution(
+      background.custom_background_attribution_line_1,
+      background.custom_background_attribution_line_2);
 }
 
 // Decodes raw image bytes safely in an isolated utility sandbox process to

@@ -2,22 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ntp_customization/ntp_customization_utils.h"
+
+#include "components/themes/ntp_background_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ntp_customization {
 
-SkBitmap DownsampleImageIfNeeded(const SkBitmap& bitmap, int max_dimension);
+namespace {
 
 constexpr int kMaxDimension = 2556;
+constexpr char kAttributionLine1[] = "Attribution Line 1";
+constexpr char kAttributionLine2[] = "Attribution Line 2";
 
-static SkBitmap CreateTestBitmap(int width, int height) {
+SkBitmap CreateTestBitmap(int width, int height) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(SK_ColorBLUE);
   return bitmap;
 }
+
+void TestGetCustomBackgroundAttributionImpl(const std::string& line_1,
+                                            const std::string& line_2,
+                                            const std::string& expected);
 
 TEST(NtpCustomizationUtilsTest, DownsampleImageIfNeeded_SmallImage) {
   SkBitmap small_bitmap = CreateTestBitmap(500, 500);
@@ -55,5 +64,38 @@ TEST(NtpCustomizationUtilsTest, DownsampleImageIfNeeded_PanoramicImage) {
   EXPECT_EQ(result.width(), 4000);
   EXPECT_EQ(result.height(), 500);
 }
+
+TEST(NtpCustomizationUtilsTest, GetCustomBackgroundAttribution_BothLines) {
+  TestGetCustomBackgroundAttributionImpl(
+      kAttributionLine1, kAttributionLine2,
+      "Attribution Line 1,Attribution Line 2");
+}
+
+TEST(NtpCustomizationUtilsTest, GetCustomBackgroundAttribution_Line1Only) {
+  TestGetCustomBackgroundAttributionImpl(kAttributionLine1, "",
+                                         kAttributionLine1);
+}
+
+TEST(NtpCustomizationUtilsTest, GetCustomBackgroundAttribution_Line2Only) {
+  TestGetCustomBackgroundAttributionImpl("", kAttributionLine2,
+                                         kAttributionLine2);
+}
+
+TEST(NtpCustomizationUtilsTest, GetCustomBackgroundAttribution_Empty) {
+  TestGetCustomBackgroundAttributionImpl("", "", "");
+}
+
+void TestGetCustomBackgroundAttributionImpl(const std::string& line_1,
+                                            const std::string& line_2,
+                                            const std::string& expected) {
+  EXPECT_EQ(GetCustomBackgroundAttribution(line_1, line_2), expected);
+
+  CustomBackground background;
+  background.custom_background_attribution_line_1 = line_1;
+  background.custom_background_attribution_line_2 = line_2;
+  EXPECT_EQ(GetCustomBackgroundAttribution(background), expected);
+}
+
+}  // namespace
 
 }  // namespace ntp_customization

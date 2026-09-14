@@ -21,12 +21,15 @@ public class CustomBackgroundInfo {
     public final @Nullable String attribution;
 
     /**
+     * TODO(https://crbug.com/488439751): Cleans up this method.
+     *
      * @param backgroundUrl The URL of the currently set background image.
      * @param collectionId The identifier for the theme collection, if the image is from one.
      * @param isUploadedImage True if the image was uploaded by the user from their local device.
      * @param isDailyRefreshEnabled True if the "Refresh daily" option is enabled for the
      *     collection.
      */
+    @Deprecated
     public CustomBackgroundInfo(
             GURL backgroundUrl,
             String collectionId,
@@ -91,13 +94,15 @@ public class CustomBackgroundInfo {
             return Objects.equals(backgroundUrl, other.backgroundUrl)
                     && Objects.equals(collectionId, other.collectionId)
                     && isUploadedImage == other.isUploadedImage
-                    && isDailyRefreshEnabled == other.isDailyRefreshEnabled;
+                    && isDailyRefreshEnabled == other.isDailyRefreshEnabled
+                    && Objects.equals(attribution, other.attribution);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled);
+        return Objects.hash(
+                backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled, attribution);
     }
 }

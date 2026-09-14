@@ -14,6 +14,7 @@ source_set("ntp_customization") {
     "ntp_android_custom_background_service.h",
     "ntp_android_custom_background_service_factory.h",
     "ntp_android_theme_sync_bridge.h",
+    "ntp_customization_utils.h",
     "ntp_synced_theme_bridge.h",
     "ntp_theme_collection_bridge.h",
   ]

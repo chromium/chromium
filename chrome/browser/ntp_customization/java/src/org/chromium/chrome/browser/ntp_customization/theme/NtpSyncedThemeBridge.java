@@ -118,15 +118,18 @@ public class NtpSyncedThemeBridge {
      * @param isUploadedImage True if the image was uploaded by the user from their local device.
      * @param isDailyRefreshEnabled True if the "Refresh daily" option is enabled for the
      *     collection.
+     * @param attribution The attribution string of the background image.
      */
     @CalledByNative
-    private static CustomBackgroundInfo createCustomBackgroundInfo(
+    @VisibleForTesting
+    static CustomBackgroundInfo createCustomBackgroundInfo(
             GURL backgroundUrl,
             String collectionId,
             boolean isUploadedImage,
-            boolean isDailyRefreshEnabled) {
+            boolean isDailyRefreshEnabled,
+            @Nullable String attribution) {
         return new CustomBackgroundInfo(
-                backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled);
+                backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled, attribution);
     }
 
     @NativeMethods

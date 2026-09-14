@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/ntp_customization/jni_headers/CrossDeviceThemeTracker_jni.h"
+#include "chrome/browser/ntp_customization/ntp_customization_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/cross_device_theme_tracker_factory.h"
 #include "third_party/jni_zero/default_conversions.h"
@@ -81,11 +82,14 @@ CrossDeviceThemeTrackerAndroid::CreateJavaTheme(
   std::string bg_url;
   std::string bg_collection_id;
   bool is_bg_daily_refresh = false;
+  std::string bg_attribution;
   if (has_background) {
     const sync_pb::NtpCustomBackground& bg = specifics.ntp_background();
     bg_url = bg.url();
     bg_collection_id = bg.collection_id();
     is_bg_daily_refresh = bg.has_refresh_timestamp_unix_epoch_seconds();
+    bg_attribution = ntp_customization::GetCustomBackgroundAttribution(
+        bg.attribution_line_1(), bg.attribution_line_2());
   }
 
   // 2. Extract color data if present.
@@ -155,8 +159,8 @@ CrossDeviceThemeTrackerAndroid::CreateJavaTheme(
   if (has_background) {
     return CrossDeviceThemeTrackerJni::createThemeCollectionData(
         env, jcontext, platform_type, bg_url, bg_collection_id,
-        is_bg_daily_refresh, has_chrome_color, chrome_color_id, has_user_color,
-        static_cast<int32_t>(primary_light));
+        is_bg_daily_refresh, bg_attribution, has_chrome_color, chrome_color_id,
+        has_user_color, static_cast<int32_t>(primary_light));
   } else if (has_chrome_color) {
     return CrossDeviceThemeTrackerJni::createColorData(
         env, jcontext, platform_type, chrome_color_id, is_color_daily_refresh);

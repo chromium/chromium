@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -204,12 +206,14 @@ public class CrossDeviceThemeTracker {
     }
 
     @CalledByNative
-    private static NtpBackgroundDataThemeCollection createThemeCollectionData(
+    @VisibleForTesting
+    static NtpBackgroundDataThemeCollection createThemeCollectionData(
             Context context,
             @PlatformType int platformType,
             @JniType("std::string") String url,
             @JniType("std::string") String collectionId,
             boolean isDailyRefresh,
+            @JniType("std::string") @Nullable String attribution,
             boolean hasChromeColor,
             int chromeColorId,
             boolean hasUserColor,
@@ -217,7 +221,11 @@ public class CrossDeviceThemeTracker {
         GURL gurl = new GURL(url);
         CustomBackgroundInfo customBgInfo =
                 new CustomBackgroundInfo(
-                        gurl, collectionId, /* isUploadedImage= */ false, isDailyRefresh);
+                        gurl,
+                        collectionId,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ isDailyRefresh,
+                        attribution);
 
         Integer primaryColor = null;
         if (hasChromeColor) {

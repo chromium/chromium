@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -22,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
@@ -187,7 +190,11 @@ public class NtpThemeCollectionBridgeUnitTest {
     @Test
     public void onCustomBackgroundImageUpdated() {
         CustomBackgroundInfo info =
-                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "collection_id", false, true);
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        "collection_id",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
         when(mNatives.getCustomBackgroundInfo(NATIVE_NTP_THEME_COLLECTION_BRIDGE)).thenReturn(info);
 
         mNtpThemeCollectionBridge.onCustomBackgroundImageUpdated();
@@ -228,5 +235,31 @@ public class NtpThemeCollectionBridgeUnitTest {
     public void testResetCustomBackgroundInfo() {
         mNtpThemeCollectionBridge.resetCustomBackgroundInfo();
         verify(mNatives).resetCustomBackgroundInfo(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
+    }
+
+    @Test
+    public void testCreateCustomBackgroundInfo() {
+        testCreateCustomBackgroundInfoImpl("Attribution 1,Attribution 2");
+    }
+
+    @Test
+    public void testCreateCustomBackgroundInfo_nullAttribution() {
+        testCreateCustomBackgroundInfoImpl(null);
+    }
+
+    private void testCreateCustomBackgroundInfoImpl(@Nullable String attribution) {
+        String collectionId = "collection_id";
+        CustomBackgroundInfo info =
+                NtpThemeCollectionBridge.createCustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        collectionId,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true,
+                        attribution);
+        assertEquals(JUnitTestGURLs.URL_1, info.backgroundUrl);
+        assertEquals(collectionId, info.collectionId);
+        assertFalse(info.isUploadedImage);
+        assertTrue(info.isDailyRefreshEnabled);
+        assertEquals(attribution, info.attribution);
     }
 }
