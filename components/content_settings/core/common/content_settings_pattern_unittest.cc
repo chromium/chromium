@@ -344,19 +344,12 @@ TEST(ContentSettingsPatternTest, Wildcard) {
                 ContentSettingsPattern::Wildcard()));
 }
 
-TEST(ContentSettingsPatternTest, TrimTrailingDotsFromHost) {
+TEST(ContentSettingsPatternTest, TrimEndingDotFromHost) {
   EXPECT_TRUE(Pattern("www.example.com").IsValid());
   EXPECT_TRUE(
       Pattern("www.example.com").Matches(GURL("http://www.example.com")));
   EXPECT_TRUE(
       Pattern("www.example.com").Matches(GURL("http://www.example.com.")));
-  EXPECT_TRUE(
-      Pattern("www.example.com").Matches(GURL("http://www.example.com..")));
-
-  EXPECT_TRUE(
-      Pattern("https://example.com..").Matches(GURL("https://example.com")));
-  EXPECT_TRUE(
-      Pattern("https://example.com").Matches(GURL("https://example.com..")));
 
   EXPECT_TRUE(Pattern("www.example.com.").IsValid());
   EXPECT_STREQ("www.example.com",
@@ -364,9 +357,6 @@ TEST(ContentSettingsPatternTest, TrimTrailingDotsFromHost) {
 
   EXPECT_TRUE(Pattern("www.example.com.") == Pattern("www.example.com"));
   EXPECT_TRUE(Pattern("www.example.com.") == Pattern("www.example.com."));
-  EXPECT_TRUE(Pattern("www.example.com..") == Pattern("www.example.com"));
-  EXPECT_TRUE(Pattern("http://www.example.com..") ==
-              Pattern("http://www.example.com"));
 
   EXPECT_TRUE(Pattern(".").IsValid());
   EXPECT_STREQ(".", Pattern(".").ToString().c_str());
@@ -380,19 +370,8 @@ TEST(ContentSettingsPatternTest, TrimTrailingDotsFromHost) {
   EXPECT_STREQ("a..b", Pattern("a..b.").ToString().c_str());
   EXPECT_TRUE(Pattern("a..b.").Matches(GURL("http://a..b.")));
 
-  EXPECT_TRUE(Pattern("..").IsValid());   // Equivalent to Pattern(".").
-  EXPECT_TRUE(Pattern("a..").IsValid());  // Equivalent to Pattern("a").
-
-  // Hosts that end in a numeric label (or punycode resulting in one) are
-  // treated as IPv4 addresses per WHATWG URL spec. When preceding labels are
-  // non-numeric, they are broken IPv4 addresses and must be rejected even when
-  // multiple trailing dots are present.
-  EXPECT_FALSE(Pattern("example.2").IsValid());
-  EXPECT_FALSE(Pattern("example.2.").IsValid());
-  EXPECT_FALSE(Pattern("example.2..").IsValid());
-  EXPECT_FALSE(Pattern("9127.xn-91ԵxhԸ.0chr-Ὲ.2").IsValid());
-  EXPECT_FALSE(Pattern("9127.xn-91ԵxhԸ.0chr-Ὲ.2.").IsValid());
-  EXPECT_FALSE(Pattern("9127.xn-91ԵxhԸ.0chr-Ὲ.2..").IsValid());
+  EXPECT_FALSE(Pattern("..").IsValid());
+  EXPECT_FALSE(Pattern("a..").IsValid());
 }
 
 TEST(ContentSettingsPatternTest, FromString_WithNoWildcards) {
@@ -764,6 +743,10 @@ TEST(ContentSettingsPatternTest, InvalidPatterns) {
   // Invalid file pattern strings.
   EXPECT_FALSE(Pattern("file://").IsValid());
   EXPECT_STREQ("", Pattern("file://").ToString().c_str());
+
+  // Host having multiple ending dots.
+  EXPECT_FALSE(Pattern("www.example.com..").IsValid());
+  EXPECT_STREQ("", Pattern("www.example.com..").ToString().c_str());
 }
 
 TEST(ContentSettingsPatternTest, UnequalOperator) {
