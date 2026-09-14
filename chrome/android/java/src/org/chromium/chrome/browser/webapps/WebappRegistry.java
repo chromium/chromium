@@ -307,24 +307,53 @@ public class WebappRegistry {
     }
 
     /**
-     * Returns true if a WebAPK is found whose scope matches |origin|.
-     * @param origin The origin to search a WebAPK for.
+     * Returns true if an installed WebAPK is found whose scope has the same origin as
+     * |targetOrigin|.
+     *
+     * @param targetOrigin The origin to search a WebAPK for.
      */
-    public boolean hasAtLeastOneWebApkForOrigin(String origin) {
+    public boolean hasAtLeastOneWebApkForOrigin(@Nullable Origin targetOrigin) {
+        if (targetOrigin == null) {
+            return false;
+        }
+
         for (WebappDataStorage storage : mStorages.values()) {
             String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
+            if (storage.getWebApkUninstallTimestamp() > 0) continue;
+
+            Origin scopeOrigin = Origin.create(scope);
+            if (scopeOrigin == null) continue;
+
+            if (!targetOrigin.equals(scopeOrigin)) continue;
 
             String webApkPackageName = storage.getWebApkPackageName();
-            assumeNonNull(webApkPackageName);
-            if (scope.startsWith(origin) && PackageUtils.isPackageInstalled(webApkPackageName)) {
+            if (webApkPackageName != null && PackageUtils.isPackageInstalled(webApkPackageName)) {
                 return true;
             }
         }
         return false;
     }
 
-    /** Returns a Set of all origins that have an installed WebAPK. */
+    /**
+     * Returns true if an installed WebAPK is found whose scope has the same origin as |origin|.
+     *
+     * @param origin The origin to search a WebAPK for.
+     */
+    public boolean hasAtLeastOneWebApkForOrigin(@Nullable String origin) {
+        if (TextUtils.isEmpty(origin)) {
+            return false;
+        }
+        return hasAtLeastOneWebApkForOrigin(Origin.create(origin));
+    }
+
+    /**
+     * Returns a Set of all origins that have an installed WebAPK.
+     *
+     * <p>Note: Unlike {@link #hasAtLeastOneWebApkForOrigin}, this method checks only the uninstall
+     * timestamp and avoids verifying {@link PackageUtils#isPackageInstalled} for each storage entry
+     * to avoid repetitive PackageManager IPCs across all registered WebAPKs.
+     */
     private Set<String> getOriginsWithWebApk() {
         Set<String> origins = new HashSet<>();
         for (WebappDataStorage storage : mStorages.values()) {
@@ -333,8 +362,9 @@ public class WebappRegistry {
             if (storage.getWebApkUninstallTimestamp() > 0) continue;
 
             Origin origin = Origin.create(scope);
-            assumeNonNull(origin);
-            origins.add(origin.toString());
+            if (origin != null) {
+                origins.add(origin.toString());
+            }
         }
         return origins;
     }
@@ -423,7 +453,7 @@ public class WebappRegistry {
         if (origin == null) {
             return false;
         }
-        if (hasAtLeastOneWebApkForOrigin(origin.toString())) {
+        if (hasAtLeastOneWebApkForOrigin(origin)) {
             return true;
         }
         return TwaValidator.isTwaInstalledForUrl(url);

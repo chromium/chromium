@@ -37,7 +37,6 @@ import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebappsUtils;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -311,8 +310,7 @@ public class ShortcutHelper {
     @VisibleForTesting
     public static boolean doesOriginContainAnyInstalledWebApk(
             @JniType("std::string") String origin) {
-        return WebappRegistry.getInstance()
-                .hasAtLeastOneWebApkForOrigin(origin.toLowerCase(Locale.getDefault()));
+        return WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(origin);
     }
 
     /**
@@ -322,7 +320,7 @@ public class ShortcutHelper {
     @CalledByNative
     @VisibleForTesting
     public static boolean doesOriginContainAnyInstalledTwa(@JniType("std::string") String origin) {
-        Origin parsedOrigin = Origin.create(origin.toLowerCase(Locale.getDefault()));
+        Origin parsedOrigin = Origin.create(origin);
         if (parsedOrigin == null) {
             return false;
         }

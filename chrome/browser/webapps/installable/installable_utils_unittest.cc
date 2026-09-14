@@ -28,6 +28,10 @@ TEST_F(InstallableUtilsTest, DoesOriginContainAnyInstalledWebApp) {
       profile(), GURL("https://www.example.com")));
   EXPECT_FALSE(DoesOriginContainAnyInstalledWebApp(
       profile(), GURL("https://www.example2.com")));
+  EXPECT_FALSE(DoesOriginContainAnyInstalledWebApp(
+      profile(), GURL("https://www.example.co")));
+  EXPECT_FALSE(DoesOriginContainAnyInstalledWebApp(
+      profile(), GURL("https://www.example.com.other.com")));
 }
 
 TEST_F(InstallableUtilsTest, GetOriginsWithInstalledWebApps) {
