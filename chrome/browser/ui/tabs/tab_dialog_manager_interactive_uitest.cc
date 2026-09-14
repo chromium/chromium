@@ -119,11 +119,15 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
       ObserveState(
           views::test::kCurrentFocusedViewId,
           BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
-      // Click on the omnibox and check that it has focus (Omnibox is a random
-      // choice, the focus can be on anything as long as it is not the contents
-      // views::WebView).
-      MoveMouseTo(kOmniboxElementId), ClickMouse(),
-      WaitForState(views::test::kCurrentFocusedViewId, kOmniboxElementId),
+      // Focus the new tab button and check that it has focus (the new tab
+      // button is a random choice, the focus can be on anything as long as it
+      // is not the contents views::WebView). Note that `kCurrentFocusedViewId`
+      // only tracks views::Views, so the focused element must be a views::View
+      // in every toolbar configuration; this rules out the whole toolbar
+      // (omnibox, avatar button, app menu button, ...), which is a single
+      // WebUI surface when the WebUIToolbar feature is enabled.
+      FocusElement(kNewTabButtonElementId),
+      WaitForState(views::test::kCurrentFocusedViewId, kNewTabButtonElementId),
       // Show a dialog.
       Do([&]() { widget = CreateAndShowTestDialog(); }),
       // Wait for the dialog to be visible and focused.
