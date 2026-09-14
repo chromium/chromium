@@ -10,19 +10,7 @@ import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, IconTable, IconType, LhsChipIdentifier, PointerProxyImpl, SecurityChipRole} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {IconFromTableElement, LocationIconElement, PointerProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
 
-class TestToolbarUiHandler extends TestBrowserProxy {
-  constructor() {
-    super(['onLhsChipMousePressed', 'onLhsChipClicked']);
-  }
-
-  onLhsChipMousePressed(id: LhsChipIdentifier, isMiddleClick: boolean) {
-    this.methodCalled('onLhsChipMousePressed', [id, isMiddleClick]);
-  }
-
-  onLhsChipClicked(id: LhsChipIdentifier, isMouseInteraction: boolean) {
-    this.methodCalled('onLhsChipClicked', [id, isMouseInteraction]);
-  }
-}
+import {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
 
 class TestPointerProxy extends TestBrowserProxy implements PointerProxy {
   constructor() {

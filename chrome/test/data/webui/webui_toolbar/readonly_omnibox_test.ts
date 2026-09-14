@@ -6,43 +6,16 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, OmniboxTextColor, SearchboxBrowserProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {OmniboxAction, ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, OmniboxTextColor, SearchboxBrowserProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 
-class MockToolbarUiHandler extends TestBrowserProxy {
-  constructor() {
-    super(['onOmniboxAction', 'adjustOmniboxTextForCopy']);
-  }
-
-  onOmniboxAction(action: OmniboxAction) {
-    this.methodCalled('onOmniboxAction', action);
-  }
-
-  adjustOmniboxTextForCopy(text: string, _selectionStart: number) {
-    this.methodCalled('adjustOmniboxTextForCopy', text);
-    return Promise.resolve({
-      adjustedText: text,
-      adjustedUrl: null,
-      pageTitle: null,
-    });
-  }
-}
-
-class MockBrowserProxy extends TestBrowserProxy {
-  toolbarUIHandler: MockToolbarUiHandler = new MockToolbarUiHandler();
-
-  addFocusRequestListener() {
-    return INVALID_FOCUS_REQUEST_HANDLE;
-  }
-
-  removeFocusRequestListener() {}
-}
+import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
+import type {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
 
 suite('ReadonlyOmnibox', function() {
   let omnibox: ReadonlyOmniboxElement;
-  let uiHandler: MockToolbarUiHandler;
+  let uiHandler: TestToolbarUiHandler;
 
   const initialState = {
     browserVersion: 0,
@@ -167,9 +140,9 @@ suite('ReadonlyOmnibox', function() {
   }
 
   setup(() => {
-    const browserProxy = new MockBrowserProxy();
+    const browserProxy = new TestToolbarBrowserProxy();
     uiHandler = browserProxy.toolbarUIHandler;
-    BrowserProxyImpl.setInstance(browserProxy as any);
+    BrowserProxyImpl.setInstance(browserProxy);
     SearchboxBrowserProxy.setInstance(new TestSearchboxBrowserProxy());
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

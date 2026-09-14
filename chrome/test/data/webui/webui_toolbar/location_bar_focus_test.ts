@@ -6,40 +6,18 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, SearchboxBrowserProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {LocationBarElement, LocationBarState, OmniboxAction} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, SearchboxBrowserProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {LocationBarElement, LocationBarState} from 'chrome://webui-toolbar.top-chrome/app.js';
 
-class MockToolbarUiHandler extends TestBrowserProxy {
-  constructor() {
-    super(['onLocationBarFocusWithinChanged', 'onOmniboxAction']);
-  }
-
-  onLocationBarFocusWithinChanged(focused: boolean) {
-    this.methodCalled('onLocationBarFocusWithinChanged', focused);
-  }
-
-  onOmniboxAction(action: OmniboxAction) {
-    this.methodCalled('onOmniboxAction', action);
-  }
-}
-
-class MockBrowserProxy extends TestBrowserProxy {
-  toolbarUIHandler: MockToolbarUiHandler = new MockToolbarUiHandler();
-
-  addFocusRequestListener() {
-    return INVALID_FOCUS_REQUEST_HANDLE;
-  }
-
-  removeFocusRequestListener() {}
-}
+import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
+import type {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
 
 suite('LocationBarFocus', function() {
   let locationBar: LocationBarElement;
   let other: HTMLInputElement;  // A focusable sibling element.
   let initialState: LocationBarState;
-  let uiHandler: MockToolbarUiHandler;
+  let uiHandler: TestToolbarUiHandler;
 
   const colorLocationBarBackground = 'rgb(0, 0, 255)';
   const colorOmniboxResultsBackground = 'rgb(0, 0, 200)';
@@ -55,9 +33,9 @@ suite('LocationBarFocus', function() {
   }
 
   setup(() => {
-    const browserProxy = new MockBrowserProxy();
+    const browserProxy = new TestToolbarBrowserProxy();
     uiHandler = browserProxy.toolbarUIHandler;
-    BrowserProxyImpl.setInstance(browserProxy as any);
+    BrowserProxyImpl.setInstance(browserProxy);
     SearchboxBrowserProxy.setInstance(new TestSearchboxBrowserProxy());
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
