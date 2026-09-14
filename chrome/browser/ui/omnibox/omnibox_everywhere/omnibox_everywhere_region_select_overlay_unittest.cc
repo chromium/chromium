@@ -535,6 +535,62 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       InvertedClippingPreservesSelectionAndDimsBackground) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 200, 200))});
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(200, 200);
+  bitmap.eraseColor(SK_ColorGREEN);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(overlay->GetActiveWidgetForTesting());
+
+  views::View* contents_view =
+      overlay->GetActiveWidgetForTesting()->GetContentsView();
+  ASSERT_TRUE(contents_view);
+
+  // Drag select a 100x100 region from (20, 20) to (120, 120).
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(20, 20),
+                             gfx::Point(20, 20), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  contents_view->OnMousePressed(press_event);
+
+  ui::MouseEvent drag_event(ui::EventType::kMouseDragged, gfx::Point(120, 120),
+                            gfx::Point(120, 120), base::TimeTicks::Now(),
+                            ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  contents_view->OnMouseDragged(drag_event);
+
+  // Paint the view hierarchy to an SkBitmap.
+  SkBitmap painted = views::test::PaintViewToBitmap(
+      overlay->GetActiveWidgetForTesting()->GetRootView());
+  ASSERT_FALSE(painted.empty());
+
+  // 1. Center of selection (70, 70): Inverted clipping punches out the
+  // selection, leaving pixels untouched with the pristine screenshot color.
+  EXPECT_EQ(painted.getColor(70, 70), SK_ColorGREEN);
+
+  // 2. Far outside the selection (5, 5): The dark scrim and rainbow gradient
+  // wash are painted, dimming and tinting the unselected background.
+  EXPECT_NE(painted.getColor(5, 5), SK_ColorGREEN);
+
+  // 3. Selection corner (21, 21): Because the selection has a 14px rounded
+  // corner radius, the sharp corner (21, 21) lies outside the rounded
+  // punch-out and is dimmed by the scrim, verifying the rounded clip path.
+  EXPECT_NE(painted.getColor(21, 21), SK_ColorGREEN);
+
+  // 4. Perimeter border (top-edge center at 70, 20): DrawSelectionBorder()
+  // strokes a white border (R=255, G=255, B=255), introducing high red and
+  // blue components over the green background.
+  SkColor border_pixel = painted.getColor(70, 20);
+  EXPECT_GT(SkColorGetR(border_pixel), 100u);
+  EXPECT_GT(SkColorGetB(border_pixel), 100u);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
        ChildViewsAndToastPositioning) {
   SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600))});
   SkBitmap bitmap;

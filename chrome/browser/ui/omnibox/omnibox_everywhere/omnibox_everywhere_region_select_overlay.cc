@@ -73,9 +73,10 @@ namespace {
 using RegionCaptureSource =
     OmniboxEverywhereRegionSelectOverlay::RegionCaptureSource;
 
-// Lens dark slate scrim.
-constexpr SkColor kChromnientSlateScrim =
-    SkColorSetA(SkColorSetRGB(0x18, 0x1C, 0x22), 165);
+// Lens dark slate base color and derived alphas.
+constexpr SkColor kSlateBaseColor = SkColorSetRGB(0x18, 0x1C, 0x22);
+constexpr SkColor kChromnientSlateScrim = SkColorSetA(kSlateBaseColor, 165);
+constexpr SkColor kToastBackgroundColor = SkColorSetA(kSlateBaseColor, 220);
 
 constexpr float kSelectionRectStrokeWidth = 2.5f;
 
@@ -194,7 +195,7 @@ class InstructionToastChipView : public views::View {
   void OnPaintBackground(gfx::Canvas* canvas) override {
     gfx::RectF chip_rect(GetLocalBounds());
     cc::PaintFlags fill_flags;
-    fill_flags.setColor(SkColorSetA(SkColorSetRGB(0x18, 0x1C, 0x22), 220));
+    fill_flags.setColor(kToastBackgroundColor);
     fill_flags.setStyle(cc::PaintFlags::kFill_Style);
     fill_flags.setAntiAlias(true);
     canvas->DrawRoundRect(chip_rect, height() * 0.5f, fill_flags);
@@ -351,15 +352,25 @@ class RegionSelectOverlayView : public views::View {
     // 1. Draw base un-dimmed screenshot.
     DrawScreenshotImage(canvas);
 
-    // 2. Apply dark scrim over the screen.
+    const bool has_selection = !selection_rect_.IsEmpty();
+    if (has_selection) {
+      canvas->Save();
+      // Clip out the selection so the scrim and rainbow wash are applied only
+      // to unselected regions.
+      ClipSelection(canvas);
+    }
+
+    // 2. Apply dark scrim over the unselected area.
     canvas->FillRect(GetLocalBounds(), kChromnientSlateScrim);
 
-    // 3. GLIF rainbow gradient wash.
+    // 3. GLIF rainbow gradient wash over the unselected area.
     DrawRainbowGradientWash(canvas);
 
-    if (!selection_rect_.IsEmpty()) {
-      // 4. Selection perimeter.
-      DrawSelectionRegion(canvas);
+    if (has_selection) {
+      canvas->Restore();
+
+      // 4. Perimeter border with rounded corners.
+      DrawSelectionBorder(canvas);
     }
   }
 
@@ -533,11 +544,10 @@ class RegionSelectOverlayView : public views::View {
     canvas->DrawRect(gfx::RectF(GetLocalBounds()), gradient_flags);
   }
 
-  void DrawSelectionRegion(gfx::Canvas* canvas) {
+  SkPath GetSelectionPath() const {
     if (selection_rect_.IsEmpty()) {
-      return;
+      return SkPath();
     }
-
     constexpr float kIdealCornerRadius = 14.0f;
     const float corner_radius =
         std::min({kIdealCornerRadius, selection_rect_.width() / 2.0f,
@@ -546,22 +556,31 @@ class RegionSelectOverlayView : public views::View {
     SkRect sk_sel_rect =
         SkRect::MakeXYWH(selection_rect_.x(), selection_rect_.y(),
                          selection_rect_.width(), selection_rect_.height());
-    SkPath sel_path = SkPath::RRect(
+    return SkPath::RRect(
         SkRRect::MakeRectXY(sk_sel_rect, corner_radius, corner_radius));
+  }
 
-    // Re-draw full-clarity screenshot inside rounded selection path.
-    canvas->Save();
-    canvas->ClipPath(sel_path, true);
-    DrawScreenshotImage(canvas);
-    canvas->Restore();
+  void ClipSelection(gfx::Canvas* canvas) {
+    if (selection_rect_.IsEmpty()) {
+      return;
+    }
+    // Clip out the selection so the scrim and rainbow wash are applied only
+    // to unselected regions.
+    canvas->ClipPath(GetSelectionPath(), /*do_anti_alias=*/true,
+                     SkClipOp::kDifference);
+  }
 
+  void DrawSelectionBorder(gfx::Canvas* canvas) {
+    if (selection_rect_.IsEmpty()) {
+      return;
+    }
     // Perimeter border with rounded corners.
     cc::PaintFlags stroke_flags;
     stroke_flags.setColor(SK_ColorWHITE);
     stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
     stroke_flags.setStrokeWidth(kSelectionRectStrokeWidth);
     stroke_flags.setAntiAlias(true);
-    canvas->DrawPath(sel_path, stroke_flags);
+    canvas->DrawPath(GetSelectionPath(), stroke_flags);
   }
 
   void UpdateSelectionRect(const gfx::Rect& new_rect) {
