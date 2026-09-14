@@ -57,8 +57,10 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   using IconLabelBubbleView::GetAnimationValue;
   using IconLabelBubbleView::GetCrossfadeImageView;
   using IconLabelBubbleView::image_container_view;
+  using IconLabelBubbleView::IsShrinking;
   using IconLabelBubbleView::RemoveLayerFromRegions;
   using IconLabelBubbleView::ResetSlideAnimation;
+  using IconLabelBubbleView::SetUpForInOutAnimation;
   using IconLabelBubbleView::UpdateAnimationProgress;
   using IconLabelBubbleView::UpdateBackground;
 
@@ -206,6 +208,8 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
   void FastForwardLabelAnimationBy(base::TimeDelta delta) {
     label_animation_->Step(base::TimeTicks::Now() + delta);
   }
+
+  gfx::AnimationTestApi* label_animation() { return label_animation_.get(); }
 
   TestIconLabelBubbleView* view() { return view_; }
 
@@ -1069,4 +1073,58 @@ TEST_F(IconLabelBubbleViewTest,
   // ShouldShowLabel should stay false.
   EXPECT_FALSE(view()->is_animating_label());
   EXPECT_FALSE(view()->ShouldShowLabel());
+}
+
+TEST_F(IconLabelBubbleViewTest, SetUpForInOutAnimationDurationAndFraction) {
+  // Default static hold duration is 1800ms. With 600ms fade-in and 600ms
+  // fade-out, the total animation slide duration should be
+  // 1800ms + 2 * 600ms = 3000ms.
+  // The fraction of the animation spent in the fade-in (and fade-out) phase is
+  // 600ms / 3000ms = 0.2.
+  view()->SetUpForInOutAnimation();
+  EXPECT_EQ(view()->slide_animation_for_testing().GetSlideDuration(),
+            base::Milliseconds(3000));
+  EXPECT_DOUBLE_EQ(view()->open_state_fraction_for_testing(), 0.2);
+
+  // Custom static hold duration of 1200ms.
+  // Total slide duration: 1200ms + 2 * 600ms = 2400ms.
+  // Fraction: 600ms / 2400ms = 0.25.
+  view()->SetUpForInOutAnimation(base::Milliseconds(1200));
+  EXPECT_EQ(view()->slide_animation_for_testing().GetSlideDuration(),
+            base::Milliseconds(2400));
+  EXPECT_DOUBLE_EQ(view()->open_state_fraction_for_testing(), 0.25);
+}
+
+TEST_F(IconLabelBubbleViewTest, InOutAnimationShrinkingThreshold) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  view()->SetUpForInOutAnimation();
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  label_animation()->SetStartTime(start_time);
+  view()->slide_animation_for_testing().Show();
+  ASSERT_TRUE(view()->slide_animation_for_testing().is_animating());
+
+  // At 600ms (progress = 600/3000 = 0.2, end of fade-in), it is not shrinking.
+  label_animation()->Step(start_time + base::Milliseconds(600));
+  EXPECT_DOUBLE_EQ(view()->slide_animation_for_testing().GetCurrentValue(),
+                   0.2);
+  EXPECT_FALSE(view()->IsShrinking());
+
+  // At 2100ms (progress = 2100/3000 = 0.7, steady hold phase), it is not
+  // shrinking.
+  // With the old bug (open_state_fraction_ = 600 / 1800 = 1/3), 1 - fraction
+  // was 2/3 (~0.667), which erroneously caused IsShrinking() to return true at
+  // progress 0.7.
+  label_animation()->Step(start_time + base::Milliseconds(2100));
+  EXPECT_DOUBLE_EQ(view()->slide_animation_for_testing().GetCurrentValue(),
+                   0.7);
+  EXPECT_FALSE(view()->IsShrinking());
+
+  // At 2700ms (progress = 2700/3000 = 0.9, in the fade-out phase past 0.8),
+  // it is shrinking.
+  label_animation()->Step(start_time + base::Milliseconds(2700));
+  EXPECT_DOUBLE_EQ(view()->slide_animation_for_testing().GetCurrentValue(),
+                   0.9);
+  EXPECT_TRUE(view()->IsShrinking());
 }

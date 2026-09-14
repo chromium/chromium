@@ -204,6 +204,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
     return slide_animation_;
   }
 
+  double open_state_fraction_for_testing() const {
+    return open_state_fraction_;
+  }
+
  protected:
   static constexpr int kOpenTimeMS = 150;
 

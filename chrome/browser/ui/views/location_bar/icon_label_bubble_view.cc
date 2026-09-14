@@ -683,12 +683,14 @@ void IconLabelBubbleView::SetUpForInOutAnimation(base::TimeDelta duration) {
   // statically showing the label (1800ms), and hiding the label (600ms). The
   // proportion of time spent in each portion of the animation is controlled by
   // open_state_fraction_.
-  slide_animation_.SetSlideDuration(
-      duration + 2 * base::Milliseconds(kIconLabelFadeAnimationDurationMs));
+  const base::TimeDelta fade_duration =
+      base::Milliseconds(kIconLabelFadeAnimationDurationMs);
+  const base::TimeDelta total_duration = duration + 2 * fade_duration;
+  slide_animation_.SetSlideDuration(total_duration);
   // The tween is calculated in GetWidthBetween().
   slide_animation_.SetTweenType(gfx::Tween::LINEAR);
-  open_state_fraction_ = static_cast<float>(kIconLabelFadeAnimationDurationMs) /
-                         duration.InMilliseconds();
+  open_state_fraction_ =
+      total_duration.is_positive() ? (fade_duration / total_duration) : 0.0;
 }
 
 void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
