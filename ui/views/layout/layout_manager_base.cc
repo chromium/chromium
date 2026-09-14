@@ -140,7 +140,7 @@ LayoutManagerBase::GetChildViewsInPaintOrder(const View* host) const {
   return LayoutManager::GetChildViewsInPaintOrder(host);
 }
 
-ProposedLayout LayoutManagerBase::GetProposedLayout(
+const ProposedLayout& LayoutManagerBase::GetProposedLayout(
     const gfx::Size& host_size) const {
   if (cached_layout_size_ != host_size) {
 #if (DCHECK_IS_ON())

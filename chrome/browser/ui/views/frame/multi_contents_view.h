@@ -252,13 +252,13 @@ class MultiContentsView
   // available space after the layout.
   gfx::Rect CalculateDropTargetLayout(
       const gfx::Rect& available_space,
-      std::vector<views::ChildLayout>& child_layouts) const;
+      views::ProposedLayout::ChildLayoutList& child_layouts) const;
 
   // Adds separator layouts to the given list and returns the remaining
   // space after the layout.
   gfx::Rect CalculateSeparatorLayouts(
       const gfx::Rect& available_space,
-      std::vector<views::ChildLayout>& child_layouts) const;
+      views::ProposedLayout::ChildLayoutList& child_layouts) const;
 
   int GetInactiveIndex() const;
 

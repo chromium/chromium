@@ -239,8 +239,9 @@ gfx::Rect WebAppFrameToolbarView::GetCenterContainerForSize(
     const gfx::Size& available_size) const {
   // This value should be cached from/for the current size so amortizes to zero
   // cost.
-  const auto layout = static_cast<const views::FlexLayout*>(GetLayoutManager())
-                          ->GetProposedLayout(available_size);
+  const auto& layout =
+      static_cast<const views::LayoutManagerBase*>(GetLayoutManager())
+          ->GetProposedLayout(available_size);
   for (const auto& child : layout.child_layouts) {
     if (child.child_view == center_container_) {
       return child.visible ? child.bounds : gfx::Rect();

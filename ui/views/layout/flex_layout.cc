@@ -160,7 +160,11 @@ class FlexLayout::ChildViewSpacing {
 
   GetViewSpacingCallback get_view_spacing_;
   // Maps from view index to the leading spacing for that index.
-  std::map<size_t, int> leading_spacings_;
+  base::flat_map<size_t,
+                 int,
+                 std::less<>,
+                 absl::InlinedVector<std::pair<size_t, int>, 8>>
+      leading_spacings_;
   // The trailing space (space preceding the trailing margin).
   int trailing_space_;
 };
@@ -315,7 +319,7 @@ struct FlexLayout::FlexLayoutData {
   ProposedLayout layout;
 
   // Holds additional information about the child views of this layout.
-  std::vector<FlexChildData> child_data;
+  absl::InlinedVector<FlexChildData, 8> child_data;
 
   // The total size of the layout (minus parent insets).
   NormalizedSize total_size;
@@ -485,7 +489,7 @@ ProposedLayout FlexLayout::CalculateProposedLayout(
   // the preferred size. To ensure that subsequent views have a chance to reach
   // the preferred size
   if (order_to_view_index.size() > 1) {
-    std::vector<NormalizedSize> backup_size(data.num_children());
+    absl::InlinedVector<NormalizedSize, 8> backup_size(data.num_children());
     for (size_t i = 0; i < data.num_children(); ++i) {
       FlexChildData& flex_child = data.child_data[i];
       backup_size[i] = flex_child.maximum_size;
@@ -515,7 +519,7 @@ ProposedLayout FlexLayout::CalculateProposedLayout(
   // Size and position the children in screen space.
   CalculateChildBounds(size_bounds, data);
 
-  return data.layout;
+  return std::move(data.layout);
 }
 
 int FlexLayout::CalculateMainAxisSpaceAvailableToView(
@@ -892,7 +896,7 @@ void FlexLayout::UpdateLayoutFromChildren(
                                data.interior_margin.cross_trailing(), 0));
   data.total_size = NormalizedSize(0, min_cross_size);
 
-  std::vector<Inset1D> cross_spacings(data.num_children());
+  absl::InlinedVector<Inset1D, 8> cross_spacings(data.num_children());
   for (size_t i = 0; i < data.num_children(); ++i) {
     FlexChildData& flex_child = data.child_data[i];
 
@@ -1032,13 +1036,10 @@ SizeBound FlexLayout::AllocateZeroWeightFlex(
 
   // Allocate space to views with zero flex weight. They get first priority at
   // this priority order.
-  auto it = child_list.begin();
-  while (it != child_list.end()) {
-    const size_t child_index = *it;
+  for (size_t child_index : child_list) {
     FlexChildData& flex_child = data.child_data[child_index];
     // We don't care about weighted flex in this step.
     if (flex_child.flex.weight() > 0) {
-      ++it;
       continue;
     }
     ChildLayout& child_layout = data.layout.child_layouts[child_index];
@@ -1059,8 +1060,11 @@ SizeBound FlexLayout::AllocateZeroWeightFlex(
         child_spacing.AddViewIndex(child_index);
       }
     }
-    it = child_list.erase(it);
   }
+
+  absl::erase_if(child_list, [&](size_t child_index) {
+    return data.child_data[child_index].flex.weight() <= 0;
+  });
 
   return remaining;
 }
@@ -1102,7 +1106,7 @@ void FlexLayout::FilterZeroSizeChildreIfNeeded(
   // allocated at least 1dp of space. That doesn't mean the child's flex
   // rule will allow it to take up that space (see note below).
   if (delta + flex_total > to_allocate) {
-    child_list.remove_if([&child_spacing, &data](size_t index) {
+    absl::erase_if(child_list, [&child_spacing, &data](size_t index) {
       return !child_spacing.HasViewIndex(index) &&
              data.child_data[index].preferred_size.main() == 0;
     });
@@ -1206,22 +1210,22 @@ bool FlexLayout::FreezeViolations(ChildIndices& child_list,
                                   ChildViewSpacing& child_spacing,
                                   FlexLayoutData& data) const {
   ChildViewSpacing new_spacing(child_spacing);
-  auto it = child_list.rbegin();
   bool force_relayout = false;
-  while (!freeze_child_list.empty() && it != child_list.rend()) {
-    const size_t view_index = *it;
-    if (view_index != freeze_child_list.back()) {
-      ++it;
+  absl::InlinedVector<size_t, 8> to_remove;
+  for (auto it = child_list.rbegin();
+       it != child_list.rend() && !freeze_child_list.empty(); ++it) {
+    if (*it != freeze_child_list.back()) {
       continue;
     }
+    const size_t view_index = *it;
+    to_remove.push_back(view_index);
+    freeze_child_list.pop_back();
 
-    child_list.erase(--it.base());
     ChildLayout& child_layout = data.layout.child_layouts[view_index];
     FlexChildData& flex_child = data.child_data[view_index];
     NormalizedSize old_size = flex_child.current_size;
     flex_child.current_size = flex_child.pending_size;
     child_layout.visible = flex_child.current_size.main() > 0;
-    freeze_child_list.pop_back();
 
     // If the view is not visible, the empty space itself is not given at this
     // time. Just make the difference directly.
@@ -1237,6 +1241,10 @@ bool FlexLayout::FreezeViolations(ChildIndices& child_list,
       new_spacing.AddViewIndex(view_index);
     }
   }
+
+  absl::erase_if(child_list, [&to_remove](size_t idx) {
+    return std::ranges::contains(to_remove, idx);
+  });
 
   child_spacing = new_spacing;
   return force_relayout;

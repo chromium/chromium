@@ -658,17 +658,15 @@ views::View* PinnedToolbarActionsContainer::GetContainerView() {
 
 bool PinnedToolbarActionsContainer::ShouldAnyButtonsOverflow(
     gfx::Size available_size) const {
-  views::ProposedLayout proposed_layout;
-  if (GetAnimatingLayoutManager()->is_animating()) {
-    proposed_layout = GetAnimatingLayoutManager()->target_layout();
-  } else {
-    proposed_layout =
-        GetAnimatingLayoutManager()->target_layout_manager()->GetProposedLayout(
-            available_size);
-  }
+  const views::ProposedLayout& proposed_layout =
+      GetAnimatingLayoutManager()->is_animating()
+          ? GetAnimatingLayoutManager()->target_layout()
+          : GetAnimatingLayoutManager()
+                ->target_layout_manager()
+                ->GetProposedLayout(available_size);
 
   auto is_button_overflowing = [&](PinnedActionToolbarButton* button) {
-    if (views::ChildLayout* child_layout =
+    if (const views::ChildLayout* child_layout =
             proposed_layout.GetLayoutFor(button)) {
       if (GetAnimatingLayoutManager()->target_layout_manager()->CanBeVisible(
               button) &&
