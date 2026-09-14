@@ -810,8 +810,7 @@ void HelpBubbleView::OnThemeChanged() {
   const SkColor foreground_color =
       color_provider->GetColor(delegate_->GetHelpBubbleForegroundColorId());
   if (icon_view_) {
-    icon_view_->SetBackground(views::CreateRoundedRectBackground(
-        foreground_color, icon_view_->GetPreferredSize({}).height() / 2));
+    icon_view_->SetBackground(views::CreatePillBackground(foreground_color));
   }
 
   const SkColor background_color =

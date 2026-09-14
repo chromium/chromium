@@ -264,8 +264,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
           : media_message_center::kPlayArrowOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   play_pause_button_->SetBackground(
-      views::CreateRoundedRectBackground(theme_.play_button_container_color_id,
-                                         kPlayPauseButtonSize.height() / 2));
+      views::CreatePillBackground(theme_.play_button_container_color_id));
 
   // `controls_row` holds all the available media action buttons and the
   // progress view.
@@ -423,9 +422,8 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
             : media_message_center::kPauseOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE,
         theme_.pause_button_foreground_color_id);
-    play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
-        theme_.pause_button_container_color_id,
-        kPlayPauseButtonSize.height() / 2));
+    play_pause_button_->SetBackground(
+        views::CreatePillBackground(theme_.pause_button_container_color_id));
   } else {
     play_pause_button_->Update(
         static_cast<int>(MediaSessionAction::kPlay),
@@ -434,9 +432,8 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
             : media_message_center::kPlayArrowOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY,
         theme_.play_button_foreground_color_id);
-    play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
-        theme_.play_button_container_color_id,
-        kPlayPauseButtonSize.height() / 2));
+    play_pause_button_->SetBackground(
+        views::CreatePillBackground(theme_.play_button_container_color_id));
   }
 
   in_picture_in_picture_ =
