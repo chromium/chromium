@@ -4164,7 +4164,7 @@ LayoutUnit BlockLayoutAlgorithm::ComputeInitialBlockStartAnnotationSpace()
                         Style().HasMarginBlockStartQuirk());
     LayoutUnit annotation_space = margin_strut.Sum() + padding_start;
     annotation_space += space.PreviousSiblingBlockEndAnnotationSpace();
-    return annotation_space;
+    return std::max(padding_start, annotation_space);
   }
   return padding_start;
 }

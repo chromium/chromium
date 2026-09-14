@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/ahem.js"></script>
+<style>
+p {
+  font: 20px/40px Ahem;
+  margin: 0;
+}
+.trim::before {
+  content: "";
+  display: block;
+  overflow: hidden;
+  margin-bottom: -10px;
+}
+</style>
+<p><ruby>base<rt>ruby</rt></ruby></p>
+<p id="target" class="trim">Text</p>
+<script>
+test(() => {
+  const target = document.getElementById('target');
+  // With font: 20px/40px Ahem, the line height is 40px.
+  // ::before has height: 0 and margin-bottom: -10px.
+  // The anonymous block containing 'Text' has height 40px.
+  // Total height of #target should be 40 - 10 = 30px.
+  // If the bug occurs, the line inside the anonymous block is erroneously
+  // shifted up by 10px, reducing target height to 20px.
+  assert_equals(target.offsetHeight, 30);
+}, 'Ruby in a preceding paragraph should not reduce the height of a non-ruby paragraph with negative margin');
+</script>
