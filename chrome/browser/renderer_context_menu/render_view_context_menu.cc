@@ -5168,9 +5168,11 @@ void RenderViewContextMenu::ExecSaveAs() {
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   if (!target_frame_host) {
-    target_frame_host = is_plugin
-                            ? source_web_contents_->GetOuterWebContentsFrame()
-                            : frame_host;
+    target_frame_host =
+        is_plugin && extensions::MimeHandlerViewGuest::FromRenderFrameHost(
+                         frame_host)
+            ? source_web_contents_->GetOuterWebContentsFrame()
+            : frame_host;
     if (!target_frame_host) {
       return;
     }

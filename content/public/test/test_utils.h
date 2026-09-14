@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_TEST_UTILS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/fetch/fetch_api_request_headers_map.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-forward.h"
@@ -146,7 +148,9 @@ std::string GetWebUIURLString(const std::string& host);
 // Returns a pointer to the inner WebContents, which is now owned by the outer
 // WebContents. The caller should be careful when retaining the pointer, as the
 // inner WebContents will be deleted if the frame it's attached to goes away.
-WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh);
+WebContents* CreateAndAttachInnerContents(
+    RenderFrameHost* rfh,
+    std::optional<WebContents::CreateParams> create_params = std::nullopt);
 
 // Spins a run loop until IsDocumentOnLoadCompletedInPrimaryMainFrame() is true.
 void AwaitDocumentOnLoadCompleted(WebContents* web_contents);

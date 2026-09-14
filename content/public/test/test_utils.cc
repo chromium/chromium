@@ -258,12 +258,19 @@ std::string GetWebUIURLString(const std::string& host) {
          host;
 }
 
-WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh) {
+WebContents* CreateAndAttachInnerContents(
+    RenderFrameHost* rfh,
+    std::optional<WebContents::CreateParams> create_params) {
   auto* outer_contents = WebContents::FromRenderFrameHost(rfh);
-  if (!outer_contents)
+  if (!outer_contents) {
     return nullptr;
+  }
 
-  WebContents::CreateParams inner_params(outer_contents->GetBrowserContext());
+  CHECK(!create_params ||
+        create_params->browser_context == outer_contents->GetBrowserContext());
+
+  WebContents::CreateParams inner_params = create_params.value_or(
+      WebContents::CreateParams(outer_contents->GetBrowserContext()));
 
   std::unique_ptr<WebContents> inner_contents_ptr =
       WebContents::Create(inner_params);

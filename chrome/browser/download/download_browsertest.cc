@@ -116,6 +116,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -132,6 +133,7 @@
 #include "content/public/test/test_download_http_response.h"
 #include "content/public/test/test_file_error_injector.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
@@ -2773,6 +2775,91 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
 
   download_waiter->WaitForFinished();
 
+  EXPECT_EQ(1u,
+            download_waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
+}
+
+// Regression test for https://crbug.com/501790682
+// PDF plugin downloads are treated as initiated by the embedder. This should
+// not apply to other forms of inner WebContents embedding, especially when the
+// embedder uses another StoragePartition.
+IN_PROC_BROWSER_TEST_F(DownloadTest,
+                       SpoofedSavePluginFromNonPluginInnerWebContents) {
+  https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(https_test_server()->Start());
+  EnableFileChooser(true);
+
+  const url::Origin inner_origin =
+      url::Origin::Create(https_test_server()->GetURL("b.test", "/"));
+  const url::Origin expected_request_initiator = inner_origin;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  const GURL url =
+      https_test_server()->GetURL("a.test", "/iframe_about_blank.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  // Do a second navigation so that there's an initiator.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, url));
+
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+
+  const content::StoragePartitionConfig inner_partition_config =
+      content::StoragePartitionConfig::Create(browser()->GetProfile(), "b.test",
+                                              "partition",
+                                              /*in_memory=*/true);
+  scoped_refptr<content::SiteInstance> inner_site_instance =
+      content::SiteInstance::CreateForGuest(browser()->GetProfile(),
+                                            inner_partition_config);
+  content::WebContents::CreateParams inner_params(browser()->GetProfile(),
+                                                  inner_site_instance);
+  content::WebContents* inner_contents =
+      content::CreateAndAttachInnerContents(subframe, inner_params);
+  ASSERT_TRUE(inner_contents);
+
+  const GURL inner_url = https_test_server()->GetURL("b.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(inner_contents, inner_url));
+  // Do a second navigation so that there's an initiator to check on the
+  // download.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(inner_contents, inner_url));
+  ASSERT_EQ(inner_origin,
+            inner_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  const GURL download_url =
+      https_test_server()->GetURL("b.test", "/downloads/image.jpg");
+
+  std::optional<url::Origin> request_initiator;
+  base::RunLoop request_waiter;
+  content::URLLoaderInterceptor request_listener(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url == download_url) {
+          request_initiator = params->url_request.request_initiator;
+          request_waiter.Quit();
+        }
+        return false;
+      }));
+
+  std::unique_ptr<content::DownloadTestObserver> download_waiter(
+      CreateWaiter(browser(), 1));
+
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.media_type =
+      blink::mojom::ContextMenuDataMediaType::kPlugin;
+  context_menu_params.src_url = download_url;
+  context_menu_params.page_url = inner_contents->GetLastCommittedURL();
+  TestRenderViewContextMenu menu(*inner_contents->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEPLUGINAS, 0);
+
+  request_waiter.Run();
+
+  ASSERT_TRUE(request_initiator.has_value());
+  EXPECT_EQ(*request_initiator, expected_request_initiator);
+
+  download_waiter->WaitForFinished();
   EXPECT_EQ(1u,
             download_waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
 }
