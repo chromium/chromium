@@ -328,7 +328,6 @@ ci/fuchsia-angle-builder
 ci/fuchsia-fyi-arm64-dbg
 ci/fuchsia-fyi-x64-asan
 ci/fuchsia-fyi-x64-dbg-persistent-emulator
-ci/fuchsia-netstack2-x64-cast-receiver-rel
 ci/fuchsia-x64-cast-receiver-dbg
 ci/fuchsia-x64-cast-receiver-rel
 ci/fuchsia-x64-perf-cast-receiver-rel
@@ -515,7 +514,6 @@ try/fuchsia-binary-size
 try/fuchsia-fyi-arm64-dbg
 try/fuchsia-fyi-x64-asan
 try/fuchsia-fyi-x64-dbg-persistent-emulator
-try/fuchsia-netstack2-x64-cast-receiver-rel
 try/fuchsia-x64-accessibility-rel
 try/fuchsia-x64-cast-receiver-dbg
 try/fuchsia-x64-cast-receiver-dbg-compile

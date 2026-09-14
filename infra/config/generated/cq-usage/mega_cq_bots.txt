@@ -72,7 +72,6 @@ chromium/try/chromeos-x64-libfuzzer-asan-rel-tests
 chromium/try/fuchsia-fyi-arm64-dbg
 chromium/try/fuchsia-fyi-x64-asan
 chromium/try/fuchsia-fyi-x64-dbg-persistent-emulator
-chromium/try/fuchsia-netstack2-x64-cast-receiver-rel
 chromium/try/fuchsia-x64-cast-receiver-dbg
 chromium/try/fuchsia-x64-cast-receiver-dbg-compile
 chromium/try/fuchsia-x64-cast-receiver-rel
