@@ -761,16 +761,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayMagicCursorTest,
   EXPECT_FALSE(has_class);
 }
 
-// TODO(crbug.com/544197164): Re-enable when no longer flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OverlayWebViewIsTransparentAfterNavigation \
-  DISABLED_OverlayWebViewIsTransparentAfterNavigation
-#else
-#define MAYBE_OverlayWebViewIsTransparentAfterNavigation \
-  OverlayWebViewIsTransparentAfterNavigation
-#endif
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
-                       MAYBE_OverlayWebViewIsTransparentAfterNavigation) {
+                       OverlayWebViewIsTransparentAfterNavigation) {
   Profile* const profile = browser()->GetProfile();
   ActorUiStateManagerInterface* state_manager =
       ActorKeyedService::Get(profile)->GetActorUiStateManager();
@@ -812,6 +804,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
   // on all platforms. Without web_contents()->SetPageBaseBackgroundColor(
   // SK_ColorTRANSPARENT) in ShowUI, Blink renders a solid white document
   // canvas (SK_ColorWHITE).
+  // Wait for the renderer to produce a frame and send the background color to
+  // the browser process before asserting.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_web_contents->GetBackgroundColor().has_value();
+  }));
   EXPECT_EQ(overlay_web_contents->GetBackgroundColor(), SK_ColorTRANSPARENT);
 
   // 4. Assert that the RenderWidgetHostView background color remains as
