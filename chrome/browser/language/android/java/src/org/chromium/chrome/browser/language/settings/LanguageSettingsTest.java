@@ -39,13 +39,14 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -93,7 +94,12 @@ public class LanguageSettingsTest {
         // Back to "Language" screen.
         acceptLanguageList = mActivity.findViewById(R.id.language_list);
         RecyclerViewTestUtils.waitForStableRecyclerView(acceptLanguageList);
-        Assert.assertEquals(mActivity.getString(R.string.language_settings), mActivity.getTitle());
+        if (!SettingsInTab.isEnabled()) {
+            // Settings in a tab shows the page title in the multi-column header, not in the
+            // activity title.
+            Assert.assertEquals(
+                    mActivity.getString(R.string.language_settings), mActivity.getTitle());
+        }
         Assert.assertEquals(
                 "Failed to add a new language.",
                 originalAcceptLanguageCount + 1,

@@ -142,6 +142,7 @@ android_library("javatests") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
+    "//chrome/browser/settings:settings_in_tab_java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/messages/android:java",
