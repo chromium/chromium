@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_delegate.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
@@ -54,6 +55,7 @@
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
@@ -577,4 +579,31 @@ TEST_F(BrowserCoordinatorTest, ShowBookmarksLimitExceededHelp) {
   EXPECT_OCMOCK_VERIFY((OCMockObject*)mock_scene_handler_);
 
   [browser_coordinator stop];
+}
+
+// Tests that stopping BrowserCoordinator also stops the child
+// ReaderModeCoordinator so that deallocating BrowserCoordinator does not crash.
+TEST_F(BrowserCoordinatorTest, StopChildCoordinatorsStopsReaderMode) {
+  @autoreleasepool {
+    BrowserCoordinator* browser_coordinator = [[BrowserCoordinator alloc]
+        initWithBaseViewController:base_view_controller_
+                           browser:browser_.get()];
+    [browser_coordinator start];
+
+    id<ReaderModeBrowserAgentDelegate> reader_mode_delegate =
+        static_cast<id<ReaderModeBrowserAgentDelegate>>(browser_coordinator);
+    [reader_mode_delegate readerModeBrowserAgent:nil showContentAnimated:NO];
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    EXPECT_TRUE([dispatcher
+        dispatchingForProtocol:@protocol(ReaderModeOptionsCommands)]);
+
+    [browser_coordinator stop];
+
+    EXPECT_FALSE([dispatcher
+        dispatchingForProtocol:@protocol(ReaderModeOptionsCommands)]);
+
+    WebNavigationBrowserAgent::FromBrowser(browser_.get())->SetDelegate(nil);
+    browser_coordinator = nil;
+  }
 }
