@@ -316,3 +316,11 @@ TEST_F(WebUILocationBarTest, PermissionChipMouseEvents) {
   permission_dashboard()->request_chip()->RemoveObserver(&request_observer);
   permission_dashboard()->indicator_chip()->RemoveObserver(&indicator_observer);
 }
+
+TEST_F(WebUILocationBarTest, TeardownWithActivePermissionChip) {
+  ASSERT_TRUE(permission_dashboard());
+  // Leave a permission chip visible to verify that WebUILocationBar teardown
+  // correctly handles chip hiding without accessing an already destroyed
+  // `weak_ptr_factory_`.
+  permission_dashboard()->request_chip()->SetVisible(true);
+}

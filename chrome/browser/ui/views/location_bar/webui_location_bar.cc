@@ -117,7 +117,18 @@ WebUILocationBar::WebUILocationBar(BrowserWindowInterface* browser,
           permission_dashboard_.get());
 }
 
-WebUILocationBar::~WebUILocationBar() = default;
+WebUILocationBar::~WebUILocationBar() {
+  // Disconnect from delegate to prevent any notifications (e.g.
+  // UpdateLhsChipsState() or UpdateLocationIcon()) during teardown.
+  toolbar_delegate_ = nullptr;
+
+  // Explicitly destroy the controllers and views before member destruction.
+  // Otherwise, ~ChipController() -> HideChip() -> InvalidateLayout() attempts
+  // to acquire a weak pointer from `weak_ptr_factory_`, which is declared last
+  // and destroyed first in reverse member declaration order.
+  permission_dashboard_controller_.reset();
+  permission_dashboard_.reset();
+}
 
 void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
   toolbar_delegate_ = delegate;
