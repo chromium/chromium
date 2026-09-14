@@ -288,7 +288,7 @@ public class TabGroupListBottomSheetTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @Restriction({DeviceFormFactor.ONLY_TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
     @RequiresRestart("Multi-window state cannot be cleanly reset for batched tests")
     public void testMoveTabToOtherWindowGroup_viaGtsContextMenu() {
