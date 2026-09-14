@@ -56,6 +56,9 @@ namespace {
 constexpr char kSessionIdHeaderName[] = "Sec-Secure-Session-Id";
 constexpr char kJwtSessionHeaderName[] = "Secure-Session-Response";
 
+constexpr base::TimeDelta kInteractiveFetchTimeout = base::Seconds(20);
+constexpr base::TimeDelta kBackgroundFetchTimeout = base::Seconds(30);
+
 void RecordHttpResponseOrErrorCode(std::string_view metric_name,
                                    int net_error,
                                    int http_response_code) {
@@ -556,7 +559,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     // once the tests are fixed.
     url_fetcher_ = std::make_unique<URLFetcher>(
         context_, well_known_url, referring_origin_, net_log_source_,
-        IsForRefreshRequest());
+        IsForRefreshRequest(), GetTimeout());
     ConfigureWellKnownRequest(url_fetcher_->request());
     url_fetcher_->Start(base::BindOnce(
         &RegistrationFetcherImpl::OnProviderWellKnownRequestComplete,
@@ -586,6 +589,12 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   }
 
  private:
+  base::TimeDelta GetTimeout() const {
+    return priority_ == unexportable_keys::BackgroundTaskPriority::kUserBlocking
+               ? kInteractiveFetchTimeout
+               : kBackgroundFetchTimeout;
+  }
+
   // Consolidates common URLRequest initialization, credential isolation, and
   // W3C Resource-Isolation 'no-cors'/'empty' Fetch-Metadata parameters utilized
   // uniformly across both Discovery (GET) and Registration (POST) DBSC
@@ -619,14 +628,14 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   void StartFetcherEndpointRequest() {
     url_fetcher_ = std::make_unique<URLFetcher>(
         context_, fetcher_endpoint_, referring_origin_, net_log_source_,
-        IsForRefreshRequest());
+        IsForRefreshRequest(), GetTimeout());
     ConfigureRequest(url_fetcher_->request());
     if (last_registration_token_.has_value()) {
       url_fetcher_->request().SetExtraRequestHeaderByName(
           kJwtSessionHeaderName, last_registration_token_.value(),
           /*overwrite=*/true);
     }
-    // `this` owns `url_fetcher_`, so it's safe to use `base::Unretained`
+    // `this` owns `url_fetcher_`, so it's safe to use `base::Unretained`.
     url_fetcher_->Start(base::BindOnce(
         &RegistrationFetcherImpl::OnRequestComplete, base::Unretained(this)));
   }
@@ -646,7 +655,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         CreateWellKnownUrl(url::Origin::Create(fetcher_endpoint_));
     url_fetcher_ = std::make_unique<URLFetcher>(
         context_, well_known_url, referring_origin_, net_log_source_,
-        IsForRefreshRequest());
+        IsForRefreshRequest(), GetTimeout());
     ConfigureWellKnownRequest(url_fetcher_->request());
     url_fetcher_->Start(base::BindOnce(
         &RegistrationFetcherImpl::OnRelyingPartyWellKnownRequestComplete,
@@ -1025,7 +1034,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       GURL well_known_url = CreateWellKnownUrl(session->origin());
       url_fetcher_ = std::make_unique<URLFetcher>(
           context_, well_known_url, referring_origin_, net_log_source_,
-          /*is_refresh=*/false);
+          /*is_refresh=*/false, GetTimeout());
       ConfigureWellKnownRequest(url_fetcher_->request());
       url_fetcher_->Start(base::BindOnce(
           &RegistrationFetcherImpl::
