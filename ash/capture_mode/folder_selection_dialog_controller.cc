@@ -10,7 +10,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/files/file_path.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"

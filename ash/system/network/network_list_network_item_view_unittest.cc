@@ -12,7 +12,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/system/network/fake_network_detailed_network_view.h"
 #include "ash/system/network/network_icon.h"
@@ -370,7 +369,8 @@ TEST_F(NetworkListNetworkItemViewTest, HasEnterpriseIconWhenBlockedByPolicy) {
 
   const gfx::Image expected_image(CreateVectorIcon(
       kSystemMenuBusinessIcon,
-      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary)));
+      network_list_network_item_view()->GetColorProvider()->GetColor(
+          cros_tokens::kIconColorPrimary)));
   const gfx::Image actual_image(
       static_cast<views::ImageView*>(
           network_list_network_item_view()->right_view())

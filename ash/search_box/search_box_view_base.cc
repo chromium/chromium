@@ -13,6 +13,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -189,8 +190,7 @@ class SearchBoxImageButton : public views::ImageButton {
 
   void UpdateInkDropColorAndOpacity(SkColor background_color) {
     const std::pair<SkColor, float> base_color_and_opacity =
-        ash::ColorProvider::Get()->GetInkDropBaseColorAndOpacity(
-            background_color);
+        StyleUtil::GetInkDropBaseColorAndOpacity(background_color);
     auto* ink_drop = views::InkDrop::Get(this);
     ink_drop->SetBaseColor(base_color_and_opacity.first);
     ink_drop->SetVisibleOpacity(base_color_and_opacity.second);

@@ -24,7 +24,6 @@
 #include "ash/quick_insert/views/quick_insert_submenu_controller.h"
 #include "ash/quick_insert/views/quick_insert_traversable_item_container.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -814,10 +813,7 @@ struct QuickInsertSearchResultTestCase {
 
 class QuickInsertSearchResultsViewResultSelectionTest
     : public QuickInsertSearchResultsViewTest,
-      public testing::WithParamInterface<QuickInsertSearchResultTestCase> {
- private:
-  AshColorProvider ash_color_provider_;
-};
+      public testing::WithParamInterface<QuickInsertSearchResultTestCase> {};
 
 TEST_P(QuickInsertSearchResultsViewResultSelectionTest,
        LeftClickSelectsResult) {

@@ -5,7 +5,6 @@
 #include "ash/system/bluetooth/bluetooth_device_list_item_multiple_battery_view.h"
 
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/unfocusable_label.h"

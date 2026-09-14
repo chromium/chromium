@@ -5,8 +5,6 @@
 #include "chromeos/ash/experiences/arc/compat_mode/arc_splash_screen_dialog_view.h"
 
 #include <memory>
-
-#include "ash/style/ash_color_provider.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -67,7 +65,6 @@ class ArcSplashScreenDialogViewTest : public CompatModeTestBase {
   views::Widget* parent_widget() { return parent_widget_.get(); }
 
  private:
-  ash::AshColorProvider ash_color_provider_;
   std::unique_ptr<views::Widget> parent_widget_;
   raw_ptr<views::View, DanglingUntriaged> anchor_{nullptr};
 };

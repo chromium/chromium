@@ -48,7 +48,14 @@ class ASH_EXPORT StyleUtil {
   static constexpr float kLightInkDropOpacity = 0.08f;
   static constexpr float kDarkInkDropOpacity = 0.06f;
 
+  // Returns the color provider for native theme.
+  static ui::ColorProvider* GetColorProviderForNativeTheme();
+
   static float GetInkDropOpacity();
+
+  // Gets the ink drop base color and opacity based on `background_color`.
+  static std::pair<SkColor, float> GetInkDropBaseColorAndOpacity(
+      SkColor background_color = gfx::kPlaceholderColor);
 
   // Creates an InkDrop instance for `host`. All styles are configured to show
   // the highlight when the ripple is visible.

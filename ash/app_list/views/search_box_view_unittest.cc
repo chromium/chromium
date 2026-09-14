@@ -49,7 +49,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_mixer.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
@@ -311,7 +310,6 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override {}
   bool CanSelectSearchResults() override { return true; }
 
-  AshColorProvider ash_color_provider_;
   raw_ptr<AppListSearchView> search_view_ = nullptr;
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<views::Widget> widget_ = nullptr;

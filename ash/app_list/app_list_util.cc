@@ -13,7 +13,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/events/event.h"

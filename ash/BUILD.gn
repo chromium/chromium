@@ -3304,6 +3304,7 @@ component("ash") {
     "//ash/quick_pair/repository",
     "//ash/quick_pair/scanning",
     "//ash/quick_pair/ui",
+    "//ash/search_box",
     "//ash/style",
     "//ash/system/mahi/resources:mahi_resources_grit",
     "//ash/system/video_conference/resources:vc_resources_grit",
@@ -3565,6 +3566,7 @@ component("ash") {
     "//ash/quick_pair/repository",
     "//ash/quick_pair/ui",
     "//ash/quick_pair/scanning",
+    "//ash/search_box",
     "//chromeos/ash/components/auth_panel/impl",
   ]
 

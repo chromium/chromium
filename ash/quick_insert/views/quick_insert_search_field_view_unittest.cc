@@ -12,7 +12,6 @@
 #include "ash/quick_insert/views/quick_insert_key_event_handler.h"
 #include "ash/quick_insert/views/quick_insert_search_bar_textfield.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -50,9 +49,6 @@ class QuickInsertSearchFieldViewTest : public views::ViewsTestBase {
   QuickInsertSearchFieldViewTest()
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
- private:
-  AshColorProvider ash_color_provider_;
 };
 
 TEST_F(QuickInsertSearchFieldViewTest, HasTextFieldRole) {

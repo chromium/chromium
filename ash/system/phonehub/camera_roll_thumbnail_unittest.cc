@@ -7,7 +7,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -178,8 +177,6 @@ class CameraRollThumbnailTest : public views::ViewsTestBase {
     return gfx::Image::CreateFrom1xBitmap(bitmap);
   }
 
-  // This is required in order for the context to find color provider
-  AshColorProvider color_provider_;
   raw_ptr<views::Widget> widget_ = nullptr;
   std::unique_ptr<CameraRollThumbnail> camera_roll_thumbnail_;
   std::unique_ptr<phonehub::FakeUserActionRecorder> fake_user_action_recorder_;

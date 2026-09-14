@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"

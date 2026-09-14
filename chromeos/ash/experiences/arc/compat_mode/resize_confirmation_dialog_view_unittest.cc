@@ -5,8 +5,6 @@
 #include "chromeos/ash/experiences/arc/compat_mode/resize_confirmation_dialog_view.h"
 
 #include <memory>
-
-#include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/experiences/arc/compat_mode/test/compat_mode_test_base.h"
@@ -74,9 +72,6 @@ class ResizeConfirmationDialogViewTest : public CompatModeTestBase {
 
   // A LayoutProvider must exist in scope in order to set up views.
   views::LayoutProvider layout_provider;
-
-  // An AshColorProvider must exist in scope in order to set up views.
-  ash::AshColorProvider ash_color_provider_;
 
   raw_ptr<ResizeConfirmationDialogView, DanglingUntriaged> dialog_view_;
   std::unique_ptr<views::Widget> widget_;

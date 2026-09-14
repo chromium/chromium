@@ -15,7 +15,6 @@
 #include "ash/quick_insert/views/quick_insert_emoji_item_view.h"
 #include "ash/quick_insert/views/quick_insert_pseudo_focus.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/test/scoped_feature_list.h"
@@ -68,11 +67,7 @@ class MockEmojiBarViewDelegate : public QuickInsertEmojiBarViewDelegate {
   MOCK_METHOD(void, ShowEmojiPicker, (ui::EmojiPickerCategory), (override));
 };
 
-class QuickInsertEmojiBarViewTest : public views::ViewsTestBase {
- private:
-  // Needed to create icon button ripples.
-  AshColorProvider ash_color_provider_;
-};
+using QuickInsertEmojiBarViewTest = views::ViewsTestBase;
 
 TEST_F(QuickInsertEmojiBarViewTest, HasGridRole) {
   MockEmojiBarViewDelegate mock_delegate;

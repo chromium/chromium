@@ -14,7 +14,6 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/search_result_view.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -297,8 +296,6 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   void DoUpdate() { default_view()->DoUpdate(); }
 
  private:
-  // Needed by SearchResultInlineIconView.
-  AshColorProvider ash_color_provider_;
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> default_view_;
   std::unique_ptr<SearchResultListView> answer_card_view_;

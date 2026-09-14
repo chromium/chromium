@@ -5,7 +5,6 @@
 #include "ash/system/media/unified_media_controls_detailed_view.h"
 
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tri_view.h"

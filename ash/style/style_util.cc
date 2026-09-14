@@ -4,15 +4,21 @@
 
 #include "ash/style/style_util.h"
 
-#include "ash/style/ash_color_provider.h"
+#include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/color_palette_controller.h"
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
+#include "base/check_is_test.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -96,10 +102,42 @@ class RoundedCornerHighlightPathGenerator
 }  // namespace
 
 // static
+ui::ColorProvider* StyleUtil::GetColorProviderForNativeTheme() {
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      native_theme->GetColorProviderKey(nullptr));
+}
+
+// static
 float StyleUtil::GetInkDropOpacity() {
   return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
              ? kDarkInkDropOpacity
              : kLightInkDropOpacity;
+}
+
+// static
+std::pair<SkColor, float> StyleUtil::GetInkDropBaseColorAndOpacity(
+    SkColor background_color) {
+  auto* color_provider = GetColorProviderForNativeTheme();
+
+  if (background_color == gfx::kPlaceholderColor) {
+    const auto default_color =
+        color_provider->GetColor(kColorAshShieldAndBaseOpaque);
+    if (!Shell::HasInstance()) {
+      CHECK_IS_TEST();
+      background_color = default_color;
+    } else {
+      background_color = Shell::Get()
+                             ->color_palette_controller()
+                             ->GetUserWallpaperColorOrDefault(default_color);
+    }
+  }
+
+  const bool is_dark = color_utils::IsDark(background_color);
+  const SkColor base_color =
+      color_provider->GetColor(kColorAshInkDropOpaqueColor);
+  const float opacity = is_dark ? kLightInkDropOpacity : kDarkInkDropOpacity;
+  return std::make_pair(base_color, opacity);
 }
 
 // static
@@ -117,7 +155,7 @@ std::unique_ptr<views::InkDropRipple> StyleUtil::CreateInkDropRipple(
     const views::View* host,
     SkColor background_color) {
   const std::pair<SkColor, float> base_color_and_opacity =
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(background_color);
+      GetInkDropBaseColorAndOpacity(background_color);
   return std::make_unique<views::FloodFillInkDropRipple>(
       const_cast<views::InkDropHost*>(views::InkDrop::Get(host)), host->size(),
       insets, views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
@@ -129,7 +167,7 @@ std::unique_ptr<views::InkDropHighlight> StyleUtil::CreateInkDropHighlight(
     const views::View* host,
     SkColor background_color) {
   const std::pair<SkColor, float> base_color_and_opacity =
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(background_color);
+      GetInkDropBaseColorAndOpacity(background_color);
   auto highlight = std::make_unique<views::InkDropHighlight>(
       gfx::SizeF(host->size()), base_color_and_opacity.first);
   highlight->set_visible_opacity(base_color_and_opacity.second);
@@ -167,7 +205,7 @@ void StyleUtil::ConfigureInkDropAttributes(views::View* view,
                                            uint32_t ripple_config_attributes,
                                            SkColor background_color) {
   const std::pair<SkColor, float> base_color_and_opacity =
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(background_color);
+      GetInkDropBaseColorAndOpacity(background_color);
 
   auto* host = views::InkDrop::Get(view);
   if (ripple_config_attributes & kBaseColor)

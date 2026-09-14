@@ -15,7 +15,6 @@
 #include "ash/quick_insert/views/quick_insert_shortcut_hint_view.h"
 #include "ash/quick_insert/views/quick_insert_submenu_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -49,10 +48,7 @@ base::OnceCallback<std::optional<base::File::Info>()> GetFileInfoCallback(
   return base::ReturnValueOnce<std::optional<base::File::Info>>(file_info);
 }
 
-class QuickInsertListItemViewTest : public views::ViewsTestBase {
- private:
-  AshColorProvider provider_;
-};
+using QuickInsertListItemViewTest = views::ViewsTestBase;
 
 TEST_F(QuickInsertListItemViewTest, SetsPrimaryText) {
   QuickInsertListItemView item_view(base::DoNothing());

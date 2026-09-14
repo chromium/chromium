@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"

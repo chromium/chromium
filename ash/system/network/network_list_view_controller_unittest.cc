@@ -12,7 +12,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/switch.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_detailed_network_view.h"
@@ -397,7 +396,7 @@ class NetworkListViewControllerTest : public AshTestBase {
     }
     const gfx::ImageSkia managed_icon = gfx::CreateVectorIcon(
         kSystemTrayManagedIcon,
-        AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary));
+        icon->GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary));
     return gfx::BitmapsAreEqual(*icon->GetImage().bitmap(),
                                 *managed_icon.bitmap());
   }
@@ -411,7 +410,7 @@ class NetworkListViewControllerTest : public AshTestBase {
     }
     const gfx::ImageSkia system_icon = gfx::CreateVectorIcon(
         kSystemMenuInfoIcon,
-        AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary));
+        icon->GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary));
     return gfx::BitmapsAreEqual(*icon->GetImage().bitmap(),
                                 *system_icon.bitmap());
   }

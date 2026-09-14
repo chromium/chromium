@@ -10,7 +10,6 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"

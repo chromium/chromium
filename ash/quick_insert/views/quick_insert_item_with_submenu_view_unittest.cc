@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/quick_insert/views/quick_insert_submenu_controller.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -27,10 +26,7 @@
 namespace ash {
 namespace {
 
-class QuickInsertItemWithSubmenuViewTest : public views::ViewsTestBase {
- private:
-  AshColorProvider provider_;
-};
+using QuickInsertItemWithSubmenuViewTest = views::ViewsTestBase;
 
 TEST_F(QuickInsertItemWithSubmenuViewTest, HasAccessibilityAttributes) {
   QuickInsertItemWithSubmenuView view;

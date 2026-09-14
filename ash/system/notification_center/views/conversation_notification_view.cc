@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/rounded_image_view.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/notification_center/ash_notification_control_button_factory.h"
 #include "ash/system/notification_center/message_center_constants.h"

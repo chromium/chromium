@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_expand_button.h"
 
 #include "ash/public/cpp/ash_typography.h"
-#include "ash/style/ash_color_provider.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/grit/generated_resources.h"

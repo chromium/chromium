@@ -8,7 +8,6 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_app_count_icon.h"
 #include "ash/system/phonehub/phone_hub_app_icon.h"
 #include "ash/system/phonehub/phone_hub_app_loading_icon.h"

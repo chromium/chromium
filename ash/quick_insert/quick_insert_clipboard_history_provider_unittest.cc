@@ -13,7 +13,6 @@
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/quick_insert/views/quick_insert_list_item_view.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"

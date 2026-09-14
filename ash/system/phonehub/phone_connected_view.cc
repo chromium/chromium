@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/app_stream_connection_error_dialog.h"
 #include "ash/system/phonehub/camera_roll_view.h"
 #include "ash/system/phonehub/multidevice_feature_opt_in_view.h"

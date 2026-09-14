@@ -28,7 +28,6 @@
 #include "ash/quick_insert/views/quick_insert_submenu_controller.h"
 #include "ash/quick_insert/views/quick_insert_zero_state_view_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/containers/span.h"
@@ -128,9 +127,6 @@ class QuickInsertZeroStateViewTest : public views::ViewsTestBase {
   MockQuickInsertAssetFetcher asset_fetcher_;
   QuickInsertSubmenuController submenu_controller_;
   QuickInsertPreviewBubbleController preview_controller_;
-
- private:
-  AshColorProvider ash_color_provider_;
 };
 
 TEST_F(QuickInsertZeroStateViewTest, CreatesCategorySections) {
