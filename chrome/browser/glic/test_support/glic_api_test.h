@@ -199,7 +199,6 @@ class GlicApiBrowserTestMixin : public T {
   explicit GlicApiBrowserTestMixin(GlicTestJsPath js_source_path,
                                    Args&&... args)
       : Base(std::forward<Args>(args)...) {
-    Base::SetUseHttpsForGlicUrl(true);
     Base::AddMockGlicQueryParam(
         "test",
         ::testing::UnitTest::GetInstance()->current_test_info()->name());

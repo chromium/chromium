@@ -111,8 +111,7 @@ class GlicTestEnvironment : public ProfileObserver {
   // This must be called in SetUpOnMainThread().
   [[nodiscard]] bool SetupEmbeddedTestServers(
       net::test_server::EmbeddedTestServer* http_server,
-      net::test_server::EmbeddedTestServer* https_server = nullptr,
-      bool use_https_for_glic_url = false);
+      net::test_server::EmbeddedTestServer* https_server);
 
   void SetGlicPagePath(const std::string& path);
   void AddMockGlicQueryParam(const std::string_view& key,

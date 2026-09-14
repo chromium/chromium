@@ -185,7 +185,6 @@ class ExecutionEngineOriginGatingBrowserTestBase
     embedded_https_test_server().ServeFilesFromSourceDirectory(
         "components/test/data");
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_https_test_server().Start());
     host_resolver()->AddRule("*", "127.0.0.1");
 
     // Optimization guide uses this histogram to signal initialization in tests.

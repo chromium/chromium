@@ -64,7 +64,6 @@ void ClickOverlayElement(content::WebContents* overlay_contents,
 class GlicNoWebviewContentsManagerBrowserTest : public GlicBrowserTest {
  public:
   GlicNoWebviewContentsManagerBrowserTest() {
-    SetUseHttpsForGlicUrl(true);
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicNoWebview,
                               pwc::mojom::features::kPrivilegedWebContents},

@@ -38,10 +38,11 @@ class GlicTestEnvironmentAndroid {
     // cleartext HTTP traffic by default on Android
     // (ERR_CLEARTEXT_NOT_PERMITTED). We run the test server over HTTPS to
     // bypass this restriction.
-    http_server_ = std::make_unique<net::test_server::EmbeddedTestServer>(
+    https_server_ = std::make_unique<net::test_server::EmbeddedTestServer>(
         net::test_server::EmbeddedTestServer::TYPE_HTTPS);
     env_.SetGlicPagePath("/glic/browser_tests/glic_browser_test_android.html");
-    bool success = env_.SetupEmbeddedTestServers(http_server_.get(), nullptr);
+    bool success = env_.SetupEmbeddedTestServers(/*http_server=*/nullptr,
+                                                 https_server_.get());
     CHECK(success);
   }
   ~GlicTestEnvironmentAndroid() = default;
@@ -49,7 +50,7 @@ class GlicTestEnvironmentAndroid {
   ScopedJavaLocalRef<jstring> GetURL(JNIEnv* env,
                                      const JavaRef<jstring>& j_path) {
     std::string path = ConvertJavaStringToUTF8(env, j_path);
-    return ConvertUTF8ToJavaString(env, http_server_->GetURL(path).spec());
+    return ConvertUTF8ToJavaString(env, https_server_->GetURL(path).spec());
   }
 
   GlicInstanceImpl* GetGlicInstance() {
@@ -85,7 +86,7 @@ class GlicTestEnvironmentAndroid {
 
  private:
   GlicTestEnvironment env_;
-  std::unique_ptr<net::test_server::EmbeddedTestServer> http_server_;
+  std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
 };
 
 static int64_t JNI_GlicTestEnvironmentAndroid_Init(JNIEnv* env) {

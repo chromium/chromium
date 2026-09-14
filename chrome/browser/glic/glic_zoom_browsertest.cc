@@ -30,7 +30,6 @@ class GlicZoomBrowserTest : public GlicBrowserTest,
  public:
   GlicZoomBrowserTest() {
     if (IsNoWebview()) {
-      SetUseHttpsForGlicUrl(true);
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{features::kGlicNoWebview,
                                 pwc::mojom::features::kPrivilegedWebContents},

@@ -32,7 +32,6 @@ class GlicInitializationBenchmark
     std::vector<base::test::FeatureRef> enabled;
     std::vector<base::test::FeatureRef> disabled;
 
-    SetUseHttpsForGlicUrl(true);
     if (IsNoWebview()) {
       enabled.push_back(features::kGlicNoWebview);
       enabled.push_back(pwc::mojom::features::kPrivilegedWebContents);

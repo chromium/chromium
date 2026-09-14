@@ -358,7 +358,6 @@ class GlicInteractiveContextMenuTestBase
 
   void SetUpOnMainThread() override {
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_https_test_server().Start());
     host_resolver()->AddRule("*", "127.0.0.1");
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->GetProfile());

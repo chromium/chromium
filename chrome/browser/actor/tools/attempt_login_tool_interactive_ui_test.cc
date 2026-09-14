@@ -192,7 +192,6 @@ class AttemptLoginToolInteractiveUiTest
   void SetUpOnMainThread() override {
     glic::test::InteractiveGlicTestMixin<
         AttemptLoginToolInteractiveUiTestBase>::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_https_test_server().Start());
 
     // Open glic window and track instance.
     RunTestSequence(OpenGlic());
