@@ -394,11 +394,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public boolean showHandlebar() {
-        return true;
-    }
-
-    @Override
     public boolean handleBackPress() {
         return mBackPressListener.onBackPressed();
     }
