@@ -46,7 +46,7 @@ class TouchToFillPaymentMethodView {
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
       std::optional<int64_t> extracted_amount,
       bool is_amount_supported_by_any_issuer,
-      const std::optional<std::string>& app_locale);
+      const std::optional<std::string>& app_locale) = 0;
   virtual bool ShowProgressScreen(
       TouchToFillPaymentMethodViewController* controller) = 0;
   virtual bool ShowBnplIssuers(
