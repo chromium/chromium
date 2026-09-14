@@ -31,11 +31,11 @@ class DeviceAuthorizationClient {
   virtual bool StoreKeys(const GaiaId& gaia_id,
                          const DeviceAuthorizationKeys& keys) = 0;
 
-  // Asynchronously creates the device authorization request with
-  // embedder-specific parameters (e.g. device integrity signals).
-  // TODO(crbug.com/405036154): Allow specifying which params are needed.
-  virtual void CreateDeviceAuthorizationRequest(
-      CreateDeviceAuthRequestCallback callback) = 0;
+  // Asynchronously populates embedder-specific platform data (e.g. device
+  // integrity signals) into `request`.
+  virtual void PopulatePlatformData(
+      sync_pb::GetDeviceAuthorizationKeyRequest request,
+      PopulatePlatformDataCallback callback) = 0;
 };
 
 }  // namespace webauthn

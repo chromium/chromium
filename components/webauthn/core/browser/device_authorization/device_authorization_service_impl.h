@@ -55,11 +55,17 @@ class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
 
   // DeviceAuthorizationService:
   void GetOrFetchKeys(FetchDeviceAuthKeysCallback callback) override;
+  void FetchKeysWithReAuthToken(std::string reauth_proof_token,
+                                FetchDeviceAuthKeysCallback callback) override;
 
  private:
-  // Callback invoked when the client finishes creating the request.
-  void OnRequestCreated(const GaiaId& gaia_id,
-                        sync_pb::GetDeviceAuthorizationKeyRequest request);
+  void FetchKeysImpl(std::optional<std::string> reauth_proof_token,
+                     FetchDeviceAuthKeysCallback callback);
+
+  // Callback invoked when the client finishes populating platform data.
+  void OnPlatformDataPopulated(
+      const GaiaId& gaia_id,
+      sync_pb::GetDeviceAuthorizationKeyRequest request);
 
   // Callback invoked when the network fetch completes.
   void OnFetchCompleted(

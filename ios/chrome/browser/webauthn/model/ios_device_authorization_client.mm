@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/webauthn/model/ios_device_authorization_client.h"
 
+#import <utility>
+
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/common/credential_provider/device_authorization_key_store.h"
 
@@ -22,7 +24,9 @@ bool IOSDeviceAuthorizationClient::StoreKeys(
   return StoreDeviceAuthorizationKeys(gaia_id.ToString(), keys);
 }
 
-void IOSDeviceAuthorizationClient::CreateDeviceAuthorizationRequest(
-    webauthn::CreateDeviceAuthRequestCallback callback) {
+void IOSDeviceAuthorizationClient::PopulatePlatformData(
+    sync_pb::GetDeviceAuthorizationKeyRequest request,
+    webauthn::PopulatePlatformDataCallback callback) {
   // TODO(crbug.com/405036154): Implement.
+  std::move(callback).Run(std::move(request));
 }

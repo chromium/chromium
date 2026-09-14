@@ -40,7 +40,7 @@ void DeviceAuthorizationServiceImpl::Shutdown() {
   is_fetching_ = false;
   weak_ptr_factory_.InvalidateWeakPtrs();
   if (pending_callback_) {
-    std::move(pending_callback_).Run(std::nullopt);
+    std::move(pending_callback_).Run(DeviceAuthFetchResult{});
   }
   fetcher_.reset();
   client_.reset();
@@ -50,47 +50,68 @@ void DeviceAuthorizationServiceImpl::Shutdown() {
 
 void DeviceAuthorizationServiceImpl::GetOrFetchKeys(
     FetchDeviceAuthKeysCallback callback) {
+  FetchKeysImpl(/*reauth_proof_token=*/std::nullopt, std::move(callback));
+}
+
+void DeviceAuthorizationServiceImpl::FetchKeysWithReAuthToken(
+    std::string reauth_proof_token,
+    FetchDeviceAuthKeysCallback callback) {
+  CHECK(!reauth_proof_token.empty());
+  FetchKeysImpl(std::move(reauth_proof_token), std::move(callback));
+}
+
+void DeviceAuthorizationServiceImpl::FetchKeysImpl(
+    std::optional<std::string> reauth_proof_token,
+    FetchDeviceAuthKeysCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback);
 
   // TODO(crbug.com/405036154): Consider caching multiple requests for same
   // gaia_id.
   if (is_fetching_) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(DeviceAuthFetchResult{});
     return;
   }
 
   if (!identity_manager_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(DeviceAuthFetchResult{});
     return;
   }
 
   const GaiaId gaia_id =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
-  std::optional<DeviceAuthorizationKeys> cached_keys =
-      client_->GetCachedKeys(gaia_id);
-  // TODO(crbug.com/405036154): Implement cache version logic invalidation.
-  if (cached_keys.has_value() && cached_keys->keys_size() > 0) {
-    std::move(callback).Run(std::move(*cached_keys));
-    return;
+  if (!reauth_proof_token.has_value()) {
+    std::optional<DeviceAuthorizationKeys> cached_keys =
+        client_->GetCachedKeys(gaia_id);
+    // TODO(crbug.com/405036154): Implement cache version logic invalidation.
+    if (cached_keys.has_value() && cached_keys->keys_size() > 0) {
+      std::move(callback).Run(DeviceAuthFetchResult{*std::move(cached_keys)});
+      return;
+    }
   }
 
   is_fetching_ = true;
   pending_callback_ = std::move(callback);
 
-  client_->CreateDeviceAuthorizationRequest(
-      base::BindOnce(&DeviceAuthorizationServiceImpl::OnRequestCreated,
+  sync_pb::GetDeviceAuthorizationKeyRequest request;
+  if (reauth_proof_token.has_value()) {
+    request.set_reauth_proof_token(*std::move(reauth_proof_token));
+  }
+
+  client_->PopulatePlatformData(
+      std::move(request),
+      base::BindOnce(&DeviceAuthorizationServiceImpl::OnPlatformDataPopulated,
                      weak_ptr_factory_.GetWeakPtr(), gaia_id));
 }
 
-void DeviceAuthorizationServiceImpl::OnRequestCreated(
+void DeviceAuthorizationServiceImpl::OnPlatformDataPopulated(
     const GaiaId& gaia_id,
     sync_pb::GetDeviceAuthorizationKeyRequest request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fetcher_->FetchDeviceAuthorizationKeys(
-      request, url_loader_factory_, identity_manager_,
+      std::move(request), url_loader_factory_, identity_manager_,
       base::BindOnce(&DeviceAuthorizationServiceImpl::OnFetchCompleted,
                      weak_ptr_factory_.GetWeakPtr(), gaia_id));
 }
@@ -107,22 +128,31 @@ void DeviceAuthorizationServiceImpl::OnFetchCompleted(
     return;
   }
 
-  // TODO(crbug.com/405036154): Handle returned ReAuth params.
-  if (!response.has_value() || !response->has_device_authorization_keys()) {
-    std::move(callback).Run(std::nullopt);
+  if (!response.has_value()) {
+    std::move(callback).Run(DeviceAuthFetchResult{});
     return;
   }
 
-  // TODO(crbug.com/405036154): Check if `gaia_id` is still the identity
-  // manager's current primary account gaia_id before storing keys.
-  // TODO(crbug.com/405036154): Handle key validation (e.g. expected count).
-  DeviceAuthorizationKeys keys = response->device_authorization_keys();
-  if (!client_->StoreKeys(gaia_id, keys)) {
-    std::move(callback).Run(std::nullopt);
+  if (response->has_device_authorization_keys()) {
+    // TODO(crbug.com/405036154): Check if `gaia_id` is still the identity
+    // manager's current primary account gaia_id before storing keys.
+    // TODO(crbug.com/405036154): Handle key validation (e.g. expected count).
+    DeviceAuthorizationKeys keys = response->device_authorization_keys();
+    if (!client_->StoreKeys(gaia_id, keys)) {
+      std::move(callback).Run(DeviceAuthFetchResult{});
+      return;
+    }
+
+    std::move(callback).Run(DeviceAuthFetchResult{std::move(keys)});
     return;
   }
 
-  std::move(callback).Run(std::move(keys));
+  if (response->has_re_auth_params()) {
+    std::move(callback).Run(DeviceAuthFetchResult{response->re_auth_params()});
+    return;
+  }
+
+  std::move(callback).Run(DeviceAuthFetchResult{});
 }
 
 }  // namespace webauthn
