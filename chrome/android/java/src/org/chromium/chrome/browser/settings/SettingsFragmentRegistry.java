@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.settings.search.SearchResultsPreferenceFragme
 import org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
+import org.chromium.chrome.browser.sync.settings.PersonalizeGoogleServicesSettings;
 import org.chromium.chrome.browser.tasks.tab_management.TabArchiveSettingsFragment;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
@@ -130,6 +131,7 @@ public class SettingsFragmentRegistry {
         // TODO(crbug.com/542745585): Handle /account differently based on local state
         // since it's not a static page which is always available.
         registerMapping("/account", ManageSyncSettings.class);
+        registerMapping("/account/personalize", PersonalizeGoogleServicesSettings.class);
         registerMapping("/googleServices", GoogleServicesSettings.class);
 
         // Basics

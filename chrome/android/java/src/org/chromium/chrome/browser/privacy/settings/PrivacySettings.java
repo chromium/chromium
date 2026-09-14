@@ -119,7 +119,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     public static void onJavascriptOptimizerLinkClicked(Context context) {
         Bundle extras = new Bundle();
         extras.putString(SingleCategorySettings.EXTRA_CATEGORY, "javascript_optimizer");
-        SettingsNavigation navigation = SettingsNavigationFactory.createSettingsNavigation();
+        SettingsNavigation navigation = SettingsNavigationFactory.createSettingsNavigation(context);
         navigation.startSettings(
                 context, SingleCategorySettings.class, extras, /* addToBackStack= */ true);
     }

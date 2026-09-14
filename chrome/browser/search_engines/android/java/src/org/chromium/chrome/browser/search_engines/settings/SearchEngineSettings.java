@@ -141,7 +141,7 @@ public class SearchEngineSettings extends ListFragment
     }
 
     private void openSiteSearchSettings() {
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(getContext())
                 .startSettings(
                         getContext(),
                         SiteSearchSettings.class,

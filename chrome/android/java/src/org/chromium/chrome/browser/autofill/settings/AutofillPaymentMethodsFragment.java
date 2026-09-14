@@ -182,7 +182,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             disabledSettingsInfoPref.setOnButtonClick(
                     () -> {
                         SettingsNavigation settingsNavigation =
-                                SettingsNavigationFactory.createSettingsNavigation();
+                                SettingsNavigationFactory.createSettingsNavigation(
+                                        getPreferenceManager().getContext());
                         settingsNavigation.startSettings(
                                 getPreferenceManager().getContext(),
                                 AutofillOptionsFragment.class,
@@ -778,7 +779,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     /** Show the page for managing non-card payment methods. */
     private boolean showNonCardPaymentMethodsManagementFragment(Preference preference) {
         SettingsNavigation settingsNavigation =
-                SettingsNavigationFactory.createSettingsNavigation();
+                SettingsNavigationFactory.createSettingsNavigation(getActivity());
         settingsNavigation.startSettings(
                 getActivity(),
                 NonCardPaymentMethodsManagementFragment.class,

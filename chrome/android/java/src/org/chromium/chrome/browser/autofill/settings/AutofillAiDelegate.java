@@ -416,7 +416,7 @@ public class AutofillAiDelegate {
         disabledSettingsInfoPref.setOnButtonClick(
                 () -> {
                     SettingsNavigation settingsNavigation =
-                            SettingsNavigationFactory.createSettingsNavigation();
+                            SettingsNavigationFactory.createSettingsNavigation(getStyledContext());
                     settingsNavigation.startSettings(
                             getStyledContext(),
                             AutofillOptionsFragment.class,

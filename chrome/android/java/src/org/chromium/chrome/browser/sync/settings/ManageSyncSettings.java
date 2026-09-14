@@ -719,7 +719,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private void onGoogleActivityControlsClicked(String signedInAccountName) {
         if (isEeaChoiceCountry()) {
-            SettingsNavigationFactory.createSettingsNavigation()
+            SettingsNavigationFactory.createSettingsNavigation(getContext())
                     .startSettings(
                             getContext(),
                             PersonalizeGoogleServicesSettings.class,
