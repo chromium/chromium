@@ -2265,7 +2265,10 @@
     },
     {
       name: "DesktopPWAsAdditionalWindowingControls",
-      status: "experimental",
+      status: {
+        "ChromeOS": "stable",
+        "default": "experimental",
+      },
     },
     {
       name: "DesktopPWAsAdditionalWindowingControlsOnMove",
