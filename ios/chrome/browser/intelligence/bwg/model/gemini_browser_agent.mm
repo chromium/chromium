@@ -381,6 +381,14 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
                              weak_factory_.GetWeakPtr(),
                              /*is_visible=*/false))];
 
+  application_foregrounding_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationWillEnterForegroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:ClosureToNotificationCenterBlock(base::BindRepeating(
+                             &GeminiBrowserAgent::OnAppWillEnterForeground,
+                             weak_factory_.GetWeakPtr()))];
+
   SceneState* scene_state = browser_->GetSceneState();
   if (scene_state) {
     scene_state_observer_ =
@@ -522,6 +530,11 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
     [[NSNotificationCenter defaultCenter]
         removeObserver:keyboard_hide_observer_];
     keyboard_hide_observer_ = nil;
+  }
+  if (application_foregrounding_observer_) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:application_foregrounding_observer_];
+    application_foregrounding_observer_ = nil;
   }
   [scene_state_observer_ disconnect];
   scene_state_observer_ = nil;
@@ -718,6 +731,15 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
     ShowFloatyIfInvoked(/*animated=*/false,
                         gemini::FloatyUpdateSource::Keyboard);
     is_hidden_by_keyboard_ = false;
+  }
+}
+
+void GeminiBrowserAgent::OnAppWillEnterForeground() {
+  if (IsGeminiAureusForegroundQuotaRefreshEnabled()) {
+    // Refresh quota info to ensure that if the user exhausts their quota in
+    // another app and returns to Chrome, Chrome will have the updated info so
+    // it can disable relevant features accordingly.
+    ios::provider::ForceRefreshQuotaInfo();
   }
 }
 

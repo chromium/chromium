@@ -86,6 +86,11 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 }
 }  // namespace
 
+namespace ios::provider {
+bool WasForceRefreshQuotaInfoCalled();
+void ResetForceRefreshQuotaInfoCalled();
+}  // namespace ios::provider
+
 // Test fixture for GeminiBrowserAgent.
 class GeminiBrowserAgentTest : public PlatformTest {
  protected:
@@ -1971,4 +1976,41 @@ TEST_F(GeminiBrowserAgentTest,
       1, user_action_tester.GetActionCount("MobileGeminiLiveSessionStarted"));
 
   [mock_device stopMocking];
+}
+
+// Tests that Gemini quota info is refreshed when the app enters the foreground
+// and foreground quota refresh is enabled.
+TEST_F(GeminiBrowserAgentTest,
+       TestForceRefreshQuotaInfoOnForegroundWhenEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{base::test::FeatureRefAndParams(
+          kGeminiAureus, {{kGeminiAureusForegroundQuotaRefreshParam, "true"}})},
+      /*disabled_features=*/{});
+
+  ios::provider::ResetForceRefreshQuotaInfoCalled();
+  EXPECT_FALSE(ios::provider::WasForceRefreshQuotaInfoCalled());
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil];
+
+  EXPECT_TRUE(ios::provider::WasForceRefreshQuotaInfoCalled());
+}
+
+// Tests that Gemini quota info is not refreshed when the app enters the
+// foreground foreground quota refresh is not enabled.
+TEST_F(GeminiBrowserAgentTest,
+       TestForceRefreshQuotaInfoOnForegroundWhenParamDefaultDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGeminiAureus);
+
+  ios::provider::ResetForceRefreshQuotaInfoCalled();
+  EXPECT_FALSE(ios::provider::WasForceRefreshQuotaInfoCalled());
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil];
+
+  EXPECT_FALSE(ios::provider::WasForceRefreshQuotaInfoCalled());
 }

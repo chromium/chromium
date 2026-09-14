@@ -620,11 +620,24 @@ PageActionMenuIconVariations GetPageActionMenuIcon() {
 
 BASE_FEATURE(kGeminiAureus, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(bool,
+                   kGeminiAureusForegroundQuotaRefresh,
+                   &kGeminiAureus,
+                   kGeminiAureusForegroundQuotaRefreshParam,
+                   false);
+
 bool IsGeminiAureusEnabled() {
   if (!IsPageActionMenuEnabled()) {
     return false;
   }
   return base::FeatureList::IsEnabled(kGeminiAureus);
+}
+
+bool IsGeminiAureusForegroundQuotaRefreshEnabled() {
+  if (!IsGeminiAureusEnabled()) {
+    return false;
+  }
+  return kGeminiAureusForegroundQuotaRefresh.Get();
 }
 
 BASE_FEATURE(kGeminiActor, base::FEATURE_DISABLED_BY_DEFAULT);

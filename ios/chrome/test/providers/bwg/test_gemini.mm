@@ -61,6 +61,7 @@ static BOOL g_last_update_prompt_action_should_auto_submit = NO;
 
 static bool g_mock_feature_mode_disabled_by_quota = false;
 static NSDate* g_mock_refill_date = nil;
+static bool g_force_refresh_quota_info_called = false;
 
 void ResetGemini() {
   g_current_mode = GeminiViewMode::kUnknown;
@@ -71,6 +72,7 @@ void ResetGemini() {
   g_last_update_prompt_action_should_auto_submit = NO;
   g_mock_feature_mode_disabled_by_quota = false;
   g_mock_refill_date = nil;
+  g_force_refresh_quota_info_called = false;
 }
 
 void UpdatePageAttachmentState(
@@ -212,6 +214,18 @@ bool IsFeatureModeDisabledByQuota(GeminiFeatureMode feature_mode) {
 
 NSDate* GetRefillDateForFeatureMode(GeminiFeatureMode feature_mode) {
   return g_mock_refill_date;
+}
+
+void ForceRefreshQuotaInfo() {
+  g_force_refresh_quota_info_called = true;
+}
+
+bool WasForceRefreshQuotaInfoCalled() {
+  return g_force_refresh_quota_info_called;
+}
+
+void ResetForceRefreshQuotaInfoCalled() {
+  g_force_refresh_quota_info_called = false;
 }
 
 }  // namespace ios::provider

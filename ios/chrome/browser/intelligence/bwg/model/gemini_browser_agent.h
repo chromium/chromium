@@ -376,6 +376,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Called when keyboard state changes.
   void OnKeyboardStateChanged(bool is_visible);
 
+  // Called when the application enters the foreground.
+  void OnAppWillEnterForeground();
+
   // Handles an generated page context by updating the floaty.
   void OnPageContextGenerated(GeminiPageContext* gemini_page_context);
 
@@ -457,6 +460,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Observers for keyboard events.
   id keyboard_show_observer_ = nil;
   id keyboard_hide_observer_ = nil;
+
+  // Observer for application foregrounding events.
+  id application_foregrounding_observer_ = nil;
 
   // Observer for scene state activation changes.
   __strong GeminiSceneStateObserver* scene_state_observer_ = nil;

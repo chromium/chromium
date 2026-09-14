@@ -881,6 +881,12 @@ const FeatureEntry::FeatureParam kGeminiActorBackgroundingDisabled[] = {
 const FeatureEntry::FeatureVariation kGeminiActorVariations[] = {
     {"Backgrounding Disabled", kGeminiActorBackgroundingDisabled, nullptr}};
 
+const FeatureEntry::FeatureParam kGeminiAureusForegroundQuotaRefreshEnabled[] =
+    {{kGeminiAureusForegroundQuotaRefreshParam, "true"}};
+const FeatureEntry::FeatureVariation kGeminiAureusVariations[] = {
+    {"Foreground Quota Refresh Enabled",
+     kGeminiAureusForegroundQuotaRefreshEnabled, nullptr}};
+
 const FeatureEntry::FeatureParam kGeminiFREExperimentVisualRich[] = {
     {kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}};
 const FeatureEntry::FeatureParam kGeminiFREExperimentLightweightConvenience[] =
@@ -1835,7 +1841,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeneralizedGeminiEntryFlow)},
     {"gemini-aureus", flag_descriptions::kGeminiAureusName,
      flag_descriptions::kGeminiAureusDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kGeminiAureus)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiAureus,
+                                    kGeminiAureusVariations,
+                                    "GeminiAureus")},
     {"gemini-luminous", flag_descriptions::kGeminiLuminousName,
      flag_descriptions::kGeminiLuminousDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiLuminous)},

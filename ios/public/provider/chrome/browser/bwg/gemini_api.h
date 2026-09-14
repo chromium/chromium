@@ -296,6 +296,9 @@ bool IsFeatureModeDisabledByQuota(GeminiFeatureMode feature_mode);
 // or nil if it is not disabled or does not have a refill date.
 NSDate* GetRefillDateForFeatureMode(GeminiFeatureMode feature_mode);
 
+// Forces a refresh of the Gemini quota information.
+void ForceRefreshQuotaInfo();
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_GEMINI_API_H_

@@ -290,6 +290,15 @@ PageActionMenuIconVariations GetPageActionMenuIcon();
 BASE_DECLARE_FEATURE(kGeminiAureus);
 bool IsGeminiAureusEnabled();
 
+// Parameter to enable or disable refreshing Gemini quota when the app enters
+// the foreground.
+inline constexpr char kGeminiAureusForegroundQuotaRefreshParam[] =
+    "foreground_quota_refresh_enabled";
+
+// Returns true if Project Aureus is enabled and refreshing quota on foreground
+// is enabled.
+bool IsGeminiAureusForegroundQuotaRefreshEnabled();
+
 // Feature flag for enabling Gemini actor.
 BASE_DECLARE_FEATURE(kGeminiActor);
 bool IsGeminiActorEnabled();
