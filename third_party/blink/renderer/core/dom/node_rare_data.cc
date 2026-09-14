@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 
+#include "third_party/blink/renderer/core/ad_tracker/display_ad_element_monitor.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
@@ -35,7 +36,6 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
-#include "third_party/blink/renderer/core/html/display_ad_element_monitor.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/unbounded_event_data.h"
 #include "third_party/blink/renderer/core/html_names.h"

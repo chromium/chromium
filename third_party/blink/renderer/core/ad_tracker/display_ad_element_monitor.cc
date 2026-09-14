@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/html/display_ad_element_monitor.h"
+#include "third_party/blink/renderer/core/ad_tracker/display_ad_element_monitor.h"
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
