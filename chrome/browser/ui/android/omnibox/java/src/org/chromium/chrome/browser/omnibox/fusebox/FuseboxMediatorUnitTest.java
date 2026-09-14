@@ -60,8 +60,10 @@ import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -172,6 +174,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     @Mock private Tab mTab;
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
+    @Mock private DriveFilePickerClient mDriveFilePickerClient;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
@@ -264,6 +267,12 @@ public class FuseboxMediatorUnitTest {
                         mComposeboxQueryControllerBridge.addTabContextFromCache(
                                 anyLong(), anyBoolean()))
                 .thenAnswer(i -> "token-" + i.getArgument(0));
+        DriveFilePickerClient.setInstanceForTesting(mDriveFilePickerClient);
+        lenient().doReturn(true).when(mDriveFilePickerClient).isAvailable(any());
+        lenient()
+                .doReturn(Promise.fulfilled(null))
+                .when(mDriveFilePickerClient)
+                .launchPicker(any(), any());
 
         recreateMediator();
 
@@ -1269,6 +1278,42 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void onDrivePickerClicked_pickerSuccess_attachesDriveFile() {
+        DriveAttachmentMetadata metadata =
+                new DriveAttachmentMetadata(
+                        "drive_id",
+                        /* resourceKey= */ null,
+                        "Test Doc",
+                        DriveIconUtils.MIME_TYPE_GOOGLE_DOCS);
+        doReturn(Promise.fulfilled(metadata))
+                .when(mDriveFilePickerClient)
+                .launchPicker(mWindowAndroid, null);
+        doReturn("token123")
+                .when(mComposeboxQueryControllerBridge)
+                .addDriveFile("drive_id", null, "Test Doc", DriveIconUtils.MIME_TYPE_GOOGLE_DOCS);
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
+        ShadowLooper.idleMainLooper();
+
+        assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
+        assertEquals(1, mAttachments.size());
+        assertEquals("Test Doc", mAttachments.get(0).title);
+    }
+
+    @Test
+    public void onDrivePickerClicked_pickerCanceled_handlesPickerCanceled() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
+        assertEquals(0, mAttachments.size());
+        verify(mOnFirstPickerInteractionCanceledCallback).run();
+    }
+
+    @Test
     public void requestTypeButtonClicked_activatesSearchMode() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
@@ -2240,6 +2285,21 @@ public class FuseboxMediatorUnitTest {
         mInputStateSupplier.set(new InputState.Builder().build());
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED));
+    }
+
+    @Test
+    public void onInputStateChange_driveNotAvailable_hidesDriveButton() {
+        FeatureOverrides.overrideFlag(
+                OmniboxFeatureList.COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION, true);
+        doReturn(false).when(mDriveFilePickerClient).isAvailable(any());
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE)
+                        .build();
+
+        mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE));
     }
 
     @Test

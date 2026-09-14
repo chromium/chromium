@@ -27,6 +27,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -1121,7 +1122,30 @@ import java.util.function.Supplier;
         mPopupItemSelected = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.DRIVE_FILES);
-        // TODO(b/548629516): Implement Drive picker.
+        launchDrivePicker();
+    }
+
+    private void launchDrivePicker() {
+        long startTime = TimeUtils.elapsedRealtimeMillis();
+        DriveFilePickerClient.getInstance()
+                .launchPicker(mWindowAndroid, /* mimeTypes= */ null)
+                .then(
+                        metadata -> {
+                            if (metadata == null) {
+                                handlePickerCanceled();
+                                return;
+                            }
+                            if (!isInInputSession()) return;
+
+                            var attachment =
+                                    FuseboxAttachment.forDrive(
+                                            mContext,
+                                            metadata,
+                                            startTime,
+                                            FuseboxAttachmentButtonType.DRIVE_FILES);
+                            uploadAndAddAttachment(attachment);
+                        },
+                        exception -> handlePickerCanceled());
     }
 
     private void onFilePickerClicked() {
@@ -1248,10 +1272,12 @@ import java.util.function.Supplier;
                 !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_LENS_IMAGE_VALUE);
         boolean filesEnabled =
                 !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_LENS_FILE_VALUE);
-        // Drive button only visible if the flag is enabled and it is in allowedInputTypes.
+        // Drive button only visible if the flag is enabled, it is in allowedInputTypes, and
+        // the Drive picker is available on device.
         boolean driveVisible =
                 OmniboxFeatures.sComposeboxDriveContextMenuOption.isEnabled()
-                        && inputState.allowedInputTypes.contains(InputType.INPUT_TYPE_DRIVE_VALUE);
+                        && inputState.allowedInputTypes.contains(InputType.INPUT_TYPE_DRIVE_VALUE)
+                        && DriveFilePickerClient.getInstance().isAvailable(mContext);
         boolean driveEnabled =
                 !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_DRIVE_VALUE);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, tabsEnabled);
