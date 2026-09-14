@@ -845,6 +845,17 @@ export const ComposeboxEmbedderMixin =
 
           const allowedTypes = this.inputState.allowedInputTypes;
           this.attachedContext.forEach((file, uuid) => {
+            // Ghost files are placeholders created from an upload status
+            // update before the frontend learned what the context actually is.
+            // Their `inputType` is a placeholder value, so they must not be
+            // evaluated against the allowed input types; doing so would delete
+            // context that is still being attached and tear down its
+            // browser-side upload. They are re-evaluated once hydrated.
+            // TODO(b/537852029): Remove once ghost files carry a real input
+            // type.
+            if (file.isGhost) {
+              return;
+            }
             if (!allowedTypes.includes(file.inputType)) {
               this.deleteFile(uuid);
             }
@@ -2704,6 +2715,7 @@ export const ComposeboxEmbedderMixin =
               isDeletable: true,
               iconName: null,
               supportsUnimodal: true,
+              isGhost: true,
             };
             // Update pending uploads in 'composebox.ts' to disable
             // submit button.
