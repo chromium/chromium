@@ -7,8 +7,10 @@
 #include <optional>
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
@@ -17,6 +19,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/metrics/metrics_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -65,10 +68,13 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     return &test_profile_manager_;
   }
 
-  Profile* CreateTestingProfile(const std::string& test_email,
-                                const std::string& test_profile,
-                                bool is_subject_to_parental_controls,
-                                bool is_opted_in_to_parental_supervision) {
+  Profile* CreateTestingProfile(
+      const std::string& test_email,
+      const std::string& test_profile,
+      bool is_subject_to_parental_controls,
+      bool is_opted_in_to_parental_supervision,
+      std::optional<bool> is_subject_to_parental_controls_via_bundle =
+          std::nullopt) {
     Profile* profile = test_profile_manager()->CreateTestingProfile(
         test_profile, /*prefs=*/nullptr, base::UTF8ToUTF16(test_profile),
         /*avatar_id=*/0, GetTestingFactories(),
@@ -91,6 +97,10 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
         is_subject_to_parental_controls);
     mutator.set_is_opted_in_to_parental_supervision(
         is_opted_in_to_parental_supervision);
+    if (is_subject_to_parental_controls_via_bundle.has_value()) {
+      mutator.set_is_subject_to_parental_controls_via_bundle(
+          *is_subject_to_parental_controls_via_bundle);
+    }
     account = AccountInfo::Builder(account)
                   .SetIsChildAccount(
                       signin::TriboolFromBool(is_subject_to_parental_controls))
@@ -196,6 +206,104 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   histogram_tester.ExpectUniqueSample(
       kFamilyLinkUserLogSegmentHistogramName,
       SupervisedUserLogRecord::Segment::kUnsupervised,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       FamilyLinkAccountType_MonolithicSupervision) {
+  CreateTestingProfile(kTestEmail, kTestProfile,
+                       /*is_subject_to_parental_controls=*/true,
+                       /*is_opted_in_to_parental_supervision=*/false,
+                       /*is_subject_to_parental_controls_via_bundle=*/false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectUniqueSample(
+      kFamilyLinkAccountTypeHistogramName,
+      FamilyLinkAccountType::kMonolithicSupervision,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       FamilyLinkAccountType_ChromeSupervisionBundle) {
+  CreateTestingProfile(kTestEmail, kTestProfile,
+                       /*is_subject_to_parental_controls=*/true,
+                       /*is_opted_in_to_parental_supervision=*/false,
+                       /*is_subject_to_parental_controls_via_bundle=*/true);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectUniqueSample(
+      kFamilyLinkAccountTypeHistogramName,
+      FamilyLinkAccountType::kChromeSupervisionBundle,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       FamilyLinkAccountType_NotSubjectToParentalControlsDoesNotEmit) {
+  CreateTestingProfile(kTestEmail, kTestProfile,
+                       /*is_subject_to_parental_controls=*/false,
+                       /*is_opted_in_to_parental_supervision=*/false,
+                       /*is_subject_to_parental_controls_via_bundle=*/false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectTotalCount(kFamilyLinkAccountTypeHistogramName,
+                                    /*expected_count=*/0);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       FamilyLinkAccountType_UnknownBundleCapabilityDoesNotEmit) {
+  CreateTestingProfile(
+      kTestEmail, kTestProfile,
+      /*is_subject_to_parental_controls=*/true,
+      /*is_opted_in_to_parental_supervision=*/false,
+      /*is_subject_to_parental_controls_via_bundle=*/std::nullopt);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectTotalCount(kFamilyLinkAccountTypeHistogramName,
+                                    /*expected_count=*/0);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       FamilyLinkAccountType_PerProfileMetrics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      metrics::features::kPerProfileMetrics);
+
+  CreateTestingProfile(kTestEmail1, "Profile 1",
+                       /*is_subject_to_parental_controls=*/true,
+                       /*is_opted_in_to_parental_supervision=*/false,
+                       /*is_subject_to_parental_controls_via_bundle=*/true);
+  CreateTestingProfile(kTestEmail2, "Profile 2",
+                       /*is_subject_to_parental_controls=*/true,
+                       /*is_opted_in_to_parental_supervision=*/false,
+                       /*is_subject_to_parental_controls_via_bundle=*/false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectBucketCount(
+      kFamilyLinkAccountTypeHistogramName,
+      FamilyLinkAccountType::kChromeSupervisionBundle,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kFamilyLinkAccountTypeHistogramName,
+      FamilyLinkAccountType::kMonolithicSupervision,
+      /*expected_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kFamilyLinkAccountTypeHistogramName, ".Profile1"}),
+      FamilyLinkAccountType::kChromeSupervisionBundle,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kFamilyLinkAccountTypeHistogramName, ".Profile2"}),
+      FamilyLinkAccountType::kMonolithicSupervision,
       /*expected_bucket_count=*/1);
 }
 

@@ -8,12 +8,14 @@
 #include <optional>
 #include <ostream>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
 #include "build/buildflag.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -86,14 +88,30 @@ class SupervisedUserLogRecordTest : public ::testing::Test {
     return &identity_test_env_;
   }
 
+  SupervisedUserLogRecord CreateLogRecord(
+      const metrics::ProfileMetricsService& profile_metrics_service) {
+    return SupervisedUserLogRecord::Create(
+        identity_test_env_.identity_manager(),
+        *supervised_user_test_environment_.pref_service(),
+        *host_content_settings_map_,
+        supervised_user_test_environment_.url_filtering_service(),
+        supervised_user_test_environment_.device_parental_controls(),
+        profile_metrics_service);
+  }
+
+  std::unique_ptr<SupervisedUserLogRecord> CreateSupervisedUserLogRecord(
+      const metrics::ProfileMetricsService& profile_metrics_service) {
+    return std::make_unique<SupervisedUserLogRecord>(
+        CreateLogRecord(profile_metrics_service));
+  }
+
   std::unique_ptr<SupervisedUserLogRecord> CreateSupervisedUserLogRecord() {
     return std::make_unique<SupervisedUserLogRecord>(
-        SupervisedUserLogRecord::Create(
-            identity_test_env_.identity_manager(),
-            *supervised_user_test_environment_.pref_service(),
-            *host_content_settings_map_,
-            supervised_user_test_environment_.url_filtering_service(),
-            supervised_user_test_environment_.device_parental_controls()));
+        CreateLogRecord(profile_metrics_service_));
+  }
+
+  const DeviceParentalControls& device_parental_controls() {
+    return supervised_user_test_environment_.device_parental_controls();
   }
 
   // Creates a regular user account (most likely, an adult) with the given email
@@ -143,13 +161,7 @@ class SupervisedUserLogRecordTest : public ::testing::Test {
                          /*is_opted_in_to_parental_supervision=*/false);
     supervised_user_test_environment_.SetWebFilterType(web_filter_type);
 
-    return std::make_unique<SupervisedUserLogRecord>(
-        SupervisedUserLogRecord::Create(
-            identity_test_env_.identity_manager(),
-            *supervised_user_test_environment_.pref_service(),
-            *host_content_settings_map_,
-            supervised_user_test_environment_.url_filtering_service(),
-            supervised_user_test_environment_.device_parental_controls()));
+    return CreateSupervisedUserLogRecord();
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -169,6 +181,7 @@ class SupervisedUserLogRecordTest : public ::testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   SupervisedUserTestEnvironment supervised_user_test_environment_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
+  metrics::ProfileMetricsService profile_metrics_service_;
 };
 
 TEST_F(SupervisedUserLogRecordTest, SignedOutIsUnsupervised) {
@@ -251,6 +264,79 @@ TEST_F(SupervisedUserLogRecordTest, NotSupervised) {
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
   EXPECT_THAT(supervision_status,
               Optional(SupervisedUserLogRecord::Segment::kUnsupervised));
+}
+
+TEST_F(SupervisedUserLogRecordTest,
+       FamilyLinkAccountType_MonolithicSupervision) {
+  AccountInfo account_info = GetIdentityTestEnv()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_parental_controls(true);
+  mutator.set_is_subject_to_parental_controls_via_bundle(false);
+  GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
+
+  metrics::ProfileMetricsService profile_metrics_service;
+  SupervisedUserLogRecord record = CreateLogRecord(profile_metrics_service);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(SupervisedUserLogRecord::EmitHistograms(
+      {record}, device_parental_controls()));
+  histogram_tester.ExpectUniqueSample(
+      kFamilyLinkAccountTypeHistogramName,
+      FamilyLinkAccountType::kMonolithicSupervision, 1);
+}
+
+TEST_F(SupervisedUserLogRecordTest,
+       FamilyLinkAccountType_ChromeSupervisionBundle) {
+  AccountInfo account_info = GetIdentityTestEnv()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_parental_controls(true);
+  mutator.set_is_subject_to_parental_controls_via_bundle(true);
+  GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
+
+  metrics::ProfileMetricsService profile_metrics_service;
+  SupervisedUserLogRecord record = CreateLogRecord(profile_metrics_service);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(SupervisedUserLogRecord::EmitHistograms(
+      {record}, device_parental_controls()));
+  histogram_tester.ExpectUniqueSample(
+      kFamilyLinkAccountTypeHistogramName,
+      FamilyLinkAccountType::kChromeSupervisionBundle, 1);
+}
+
+TEST_F(SupervisedUserLogRecordTest,
+       FamilyLinkAccountType_NotSubjectToParentalControls) {
+  AccountInfo account_info = GetIdentityTestEnv()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_parental_controls(false);
+  mutator.set_is_subject_to_parental_controls_via_bundle(false);
+  GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
+
+  metrics::ProfileMetricsService profile_metrics_service;
+  SupervisedUserLogRecord record = CreateLogRecord(profile_metrics_service);
+
+  base::HistogramTester histogram_tester;
+  SupervisedUserLogRecord::EmitHistograms({record}, device_parental_controls());
+  histogram_tester.ExpectTotalCount(kFamilyLinkAccountTypeHistogramName, 0);
+}
+
+TEST_F(SupervisedUserLogRecordTest,
+       FamilyLinkAccountType_UnknownBundleCapability) {
+  AccountInfo account_info = GetIdentityTestEnv()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_parental_controls(true);
+  GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
+
+  metrics::ProfileMetricsService profile_metrics_service;
+  SupervisedUserLogRecord record = CreateLogRecord(profile_metrics_service);
+
+  base::HistogramTester histogram_tester;
+  SupervisedUserLogRecord::EmitHistograms({record}, device_parental_controls());
+  histogram_tester.ExpectTotalCount(kFamilyLinkAccountTypeHistogramName, 0);
 }
 
 TEST_F(SupervisedUserLogRecordTest, SignedOutHasNoWebFilter) {

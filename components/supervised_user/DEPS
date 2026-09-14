@@ -6,6 +6,7 @@ include_rules = [
   "+components/grit",
   "+components/history/core/common",
   "+components/keyed_service",
+  "+components/metrics",
   "+components/policy/core/common",
   "+components/prefs",
   "+components/pref_registry",

@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/metrics/model/ios_family_link_user_metrics_provider.h"
 
+#import "base/check_deref.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/supervised_user/core/browser/supervised_user_log_record.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -27,7 +29,8 @@ bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
         *ios::HostContentSettingsMapFactory::GetForProfile(profile),
         supervised_user::SupervisedUserUrlFilteringServiceFactory::
             GetForProfile(profile),
-        GetApplicationContext()->GetDeviceParentalControls()));
+        GetApplicationContext()->GetDeviceParentalControls(),
+        CHECK_DEREF(IOSProfileMetricsServiceFactory::GetForProfile(profile))));
   }
   return supervised_user::SupervisedUserLogRecord::EmitHistograms(
       records, GetApplicationContext()->GetDeviceParentalControls());

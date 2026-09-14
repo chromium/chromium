@@ -13,8 +13,12 @@
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
@@ -287,6 +291,31 @@ std::optional<ToggleState> GetExtensionsToggleStateForHistogram(
   }
   return GetMergedRecord(extensions_toggle_states, ToggleState::kMixed);
 }
+
+std::optional<FamilyLinkAccountType> GetFamilyLinkAccountType(
+    signin::IdentityManager* identity_manager) {
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return std::nullopt;
+  }
+
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  const AccountCapabilities& capabilities =
+      account_info.GetAccountCapabilities();
+  if (capabilities.is_subject_to_parental_controls() !=
+          signin::Tribool::kTrue ||
+      capabilities.is_subject_to_parental_controls_via_bundle() ==
+          signin::Tribool::kUnknown) {
+    return std::nullopt;
+  }
+
+  return capabilities.is_subject_to_parental_controls_via_bundle() ==
+                 signin::Tribool::kTrue
+             ? FamilyLinkAccountType::kChromeSupervisionBundle
+             : FamilyLinkAccountType::kMonolithicSupervision;
+}
+
 }  // namespace
 
 SupervisedUserLogRecord SupervisedUserLogRecord::Create(
@@ -294,7 +323,8 @@ SupervisedUserLogRecord SupervisedUserLogRecord::Create(
     const PrefService& pref_service,
     const HostContentSettingsMap& content_settings_map,
     SupervisedUserUrlFilteringService* url_filtering_service,
-    const DeviceParentalControls& device_parental_controls) {
+    const DeviceParentalControls& device_parental_controls,
+    const metrics::ProfileMetricsService& profile_metrics_service) {
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       GetSupervisionStatus(identity_manager, pref_service);
   return SupervisedUserLogRecord(
@@ -303,7 +333,8 @@ SupervisedUserLogRecord SupervisedUserLogRecord::Create(
                        device_parental_controls),
       GetPermissionsToggleState(supervision_status, pref_service,
                                 content_settings_map),
-      GetExtensionToggleState(supervision_status, pref_service));
+      GetExtensionToggleState(supervision_status, pref_service),
+      GetFamilyLinkAccountType(identity_manager), profile_metrics_service);
 }
 
 // static
@@ -311,6 +342,14 @@ bool SupervisedUserLogRecord::EmitHistograms(
     const std::vector<SupervisedUserLogRecord>& records,
     const DeviceParentalControls& device_parental_controls) {
   bool did_emit_histogram = false;
+
+  for (const SupervisedUserLogRecord& record : records) {
+    if (record.account_type_.has_value()) {
+      record.profile_metrics_service_->UmaHistogramEnumeration(
+          kFamilyLinkAccountTypeHistogramName, record.account_type_.value());
+      did_emit_histogram = true;
+    }
+  }
 
   if (device_parental_controls.IsEnabled()) {
     base::UmaHistogramEnumeration(
@@ -359,11 +398,15 @@ SupervisedUserLogRecord::SupervisedUserLogRecord(
     std::optional<SupervisedUserLogRecord::Segment> supervision_status,
     std::optional<WebFilterType> web_filter_type,
     std::optional<ToggleState> permissions_toggle_state,
-    std::optional<ToggleState> extensions_toggle_state)
+    std::optional<ToggleState> extensions_toggle_state,
+    std::optional<FamilyLinkAccountType> account_type,
+    const metrics::ProfileMetricsService& profile_metrics_service)
     : supervision_status_(supervision_status),
       web_filter_type_(web_filter_type),
       permissions_toggle_state_(permissions_toggle_state),
-      extensions_toggle_state_(extensions_toggle_state) {}
+      extensions_toggle_state_(extensions_toggle_state),
+      account_type_(account_type),
+      profile_metrics_service_(profile_metrics_service) {}
 
 std::optional<SupervisedUserLogRecord::Segment>
 SupervisedUserLogRecord::GetSupervisionStatusForPrimaryAccount() const {

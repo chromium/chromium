@@ -106,6 +106,19 @@ enum class ToggleState {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserToggleState)
 
+// Used for metrics to record the Family Link account type. Those values are
+// logged to UMA. Entries should not be renumbered and numeric values should
+// never be reused.
+// This distinction only exists for metrics: Chrome applies supervision in the
+// same way for all of these account types.
+// LINT.IfChange(FamilyLinkAccountType)
+enum class FamilyLinkAccountType {
+  kMonolithicSupervision = 0,
+  kChromeSupervisionBundle = 1,
+  kMaxValue = kChromeSupervisionBundle,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkAccountType)
+
 // These values corresponds to SupervisedUserSafetyFilterResult in
 // tools/metrics/histograms/enums.xml. If you change anything here, make
 // sure to also update enums.xml accordingly.
@@ -198,6 +211,9 @@ extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
 
 // Histogram name to log FamilyLink user type segmentation.
 extern const char kFamilyLinkUserLogSegmentHistogramName[];
+
+// Histogram name to log the Family Link account type.
+extern const char kFamilyLinkAccountTypeHistogramName[];
 
 // Histogram name to log Family Link user web filter type segmentation.
 // This filter only applies to supervised user accounts.

@@ -109,6 +109,9 @@ const base::FilePath::CharType kSupervisedUserSettingsFilename[] =
 const char kFamilyLinkUserLogSegmentHistogramName[] =
     "FamilyLinkUser.LogSegment";
 
+const char kFamilyLinkAccountTypeHistogramName[] =
+    "SupervisedUsers.FamilyLinkAccountType";
+
 const char kFamilyLinkUserLogSegmentWebFilterHistogramName[] =
     "FamilyUser.WebFilterType.PerRecord";
 

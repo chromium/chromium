@@ -934,6 +934,17 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
+<histogram name="SupervisedUsers.FamilyLinkAccountType{Profile}"
+    enum="FamilyLinkAccountType" expires_after="2027-01-10">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the type of Family Link account. Recorded per profile, for
+    supervised Family Link accounts.
+  </summary>
+  <token key="Profile" variants="ProfileIndex"/>
+</histogram>
+
 <histogram name="SupervisedUsers.ParentPermissionDialog"
     enum="SupervisedUserParentPermissionDialog" expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>

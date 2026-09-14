@@ -4,10 +4,12 @@
 
 #include "chrome/browser/supervised_user/chrome_supervised_user_service_platform_delegate_base.h"
 
+#include "base/check_deref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -63,7 +65,9 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
               *HostContentSettingsMapFactory::GetForProfile(&profile_.get()),
               supervised_user::SupervisedUserUrlFilteringServiceFactory::
                   GetForProfileIfExists(&profile_.get()),
-              g_browser_process->device_parental_controls())
+              g_browser_process->device_parental_controls(),
+              CHECK_DEREF(
+                  ProfileMetricsServiceFactory::GetForProfile(&profile_.get())))
               .GetSupervisionStatusForPrimaryAccount();
   if (!user_log_segment.has_value()) {
     return;

@@ -73,6 +73,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/feedback/system_logs/log_sources/family_info_log_source.h:FetchStatus) -->
 
+<!-- LINT.IfChange(FamilyLinkAccountType) -->
+
+<enum name="FamilyLinkAccountType">
+  <summary>The type of account used for family link.</summary>
+  <int value="0" label="Monolithic supervision">
+    The account is supervised as a whole, with supervision applying to all
+    supported Google services (this includes Unicorn/Geller/Griffin/ULP
+    accounts). See go/supervised-accounts for more details.
+  </int>
+  <int value="1" label="Chrome supervision bundle">
+    The account is supervised through the Chrome supervision bundle. See
+    go/chrome-supervision-bundle for more details.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:FamilyLinkAccountType) -->
+
 <enum name="FamilyLinkFilteringSubdomainConflictType">
   <int value="0" label="Only trivial subdomain conflict">
     Recorded when, for an input host, the matching conflicting entries from the

@@ -4,9 +4,13 @@
 
 #include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 
+#include <vector>
+
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -29,10 +33,11 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
 #if !BUILDFLAG(IS_ANDROID)
     auto* profile_browser_collection =
-      ProfileBrowserCollection::GetForProfile(profile);
+        ProfileBrowserCollection::GetForProfile(profile);
     if (!FamilyLinkUserMetricsProvider::
             skip_active_browser_count_for_unittesting_ &&
-        (!profile_browser_collection || profile_browser_collection->IsEmpty())) {
+        (!profile_browser_collection ||
+         profile_browser_collection->IsEmpty())) {
       // The profile is loaded, but there's no opened browser for this
       // profile.
       continue;
@@ -43,7 +48,8 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
         *HostContentSettingsMapFactory::GetForProfile(profile),
         supervised_user::SupervisedUserUrlFilteringServiceFactory::
             GetForProfile(profile),
-        g_browser_process->device_parental_controls()));
+        g_browser_process->device_parental_controls(),
+        CHECK_DEREF(ProfileMetricsServiceFactory::GetForProfile(profile))));
   }
   return supervised_user::SupervisedUserLogRecord::EmitHistograms(
       records, g_browser_process->device_parental_controls());

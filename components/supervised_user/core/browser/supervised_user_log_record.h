@@ -9,10 +9,15 @@
 #include <ostream>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 class HostContentSettingsMap;
 class PrefService;
+
+namespace metrics {
+class ProfileMetricsService;
+}  // namespace metrics
 
 namespace signin {
 class IdentityManager;
@@ -64,7 +69,8 @@ class SupervisedUserLogRecord {
       const PrefService& pref_service,
       const HostContentSettingsMap& content_settings_map,
       SupervisedUserUrlFilteringService* url_filtering_service,
-      const DeviceParentalControls& device_parental_controls);
+      const DeviceParentalControls& device_parental_controls,
+      const metrics::ProfileMetricsService& profile_metrics_service);
 
   // Given a list of records that map to the supervision state of primary
   // accounts on the user's device, emits metrics that reflect the supervision
@@ -91,15 +97,20 @@ class SupervisedUserLogRecord {
   std::optional<ToggleState> GetExtensionsToggleStateForPrimaryAccount() const;
 
  private:
-  SupervisedUserLogRecord(std::optional<Segment> supervision_status,
-                          std::optional<WebFilterType> web_filter_type,
-                          std::optional<ToggleState> permissions_toggle_state,
-                          std::optional<ToggleState> extensions_toggle_state);
+  SupervisedUserLogRecord(
+      std::optional<Segment> supervision_status,
+      std::optional<WebFilterType> web_filter_type,
+      std::optional<ToggleState> permissions_toggle_state,
+      std::optional<ToggleState> extensions_toggle_state,
+      std::optional<FamilyLinkAccountType> account_type,
+      const metrics::ProfileMetricsService& profile_metrics_service);
 
   std::optional<Segment> supervision_status_;
   std::optional<WebFilterType> web_filter_type_;
   std::optional<ToggleState> permissions_toggle_state_;
   std::optional<ToggleState> extensions_toggle_state_;
+  std::optional<FamilyLinkAccountType> account_type_;
+  raw_ref<const metrics::ProfileMetricsService> profile_metrics_service_;
 };
 
 // Declaration for gtest: defining in prod code is not required.
