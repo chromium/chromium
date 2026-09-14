@@ -7,11 +7,30 @@
 
 #include <unicode/utf16.h>
 
+#include <ranges>
+#include <type_traits>
+
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace blink {
+
+namespace internal {
+
+// A helper for ContainsOnlyLatin1().
+// The compiler will conveniently combine this into a single 64-bit load for us,
+// as long as it is reasonably obvious that it can elide the bounds checks.
+ALWAYS_INLINE uint64_t Read4Chars(base::span<const UChar> chars, size_t start) {
+  static_assert(std::is_unsigned_v<UChar>);
+  return static_cast<uint64_t>(chars[start]) |
+         (static_cast<uint64_t>(chars[start + 1]) << 16) |
+         (static_cast<uint64_t>(chars[start + 2]) << 32) |
+         (static_cast<uint64_t>(chars[start + 3]) << 48);
+}
+
+}  // namespace internal
 
 // U16_GET() for base::span.
 //  - If text[offset] is a leading surrogate and text[offset + 1] is a
@@ -60,9 +79,22 @@ UChar32 CodePointAtAndPrevious(base::span<const UChar> text,
   return code_point;
 }
 
-// True if `text` only contains Latin1 characters [0,255].
-WTF_EXPORT
-bool ContainsOnlyLatin1(base::span<const UChar> text);
+// True if `text` only contains Latin1 characters [0,255], or is empty.
+ALWAYS_INLINE bool ContainsOnlyLatin1(base::span<const UChar> text) {
+  if (text.size() >= 4) {
+    constexpr uint64_t kNonLatin1Mask = UINT64_C(0xFF00FF00FF00FF00);
+    for (size_t i = 0; i + 3 < text.size(); i += 4) {
+      if (internal::Read4Chars(text, i) & kNonLatin1Mask) {
+        return false;
+      }
+    }
+    // NOTE: The tail will overlap already-tested characters,
+    // but that is completely OK.
+    return !(internal::Read4Chars(text, text.size() - 4) & kNonLatin1Mask);
+  } else {
+    return !std::ranges::any_of(text, [](UChar ch) { return ch & 0xFF00; });
+  }
+}
 
 // True if `text` is well-formed UTF-16, i.e. it contains no unpaired
 // surrogates: every leading surrogate is immediately followed by a trailing

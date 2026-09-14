@@ -173,32 +173,6 @@ ALWAYS_INLINE static std::pair<uint64_t, uint64_t> ComputeSmallStringSignature(
   return {static_cast<uint8_t>(chars[0]), 0};
 }
 
-// The compiler will conveniently combine this into a single 64-bit load for us,
-// as long as it is reasonably obvious that it can elide the bounds checks.
-ALWAYS_INLINE static uint64_t Read4Chars(base::span<const UChar> chars,
-                                         size_t start) {
-  static_assert(std::is_unsigned_v<UChar>);
-  return static_cast<uint64_t>(chars[start]) |
-         (static_cast<uint64_t>(chars[start + 1]) << 16) |
-         (static_cast<uint64_t>(chars[start + 2]) << 32) |
-         (static_cast<uint64_t>(chars[start + 3]) << 48);
-}
-
-ALWAYS_INLINE static bool IsOnly8Bit(base::span<const UChar> chars) {
-  if (chars.size() >= 4) {
-    for (size_t i = 0; i + 3 < chars.size(); i += 4) {
-      if (Read4Chars(chars, i) & 0xFF00FF00FF00FF00ULL) {
-        return false;
-      }
-    }
-    // NOTE: The tail will overlap already-tested characters,
-    // but that is completely OK.
-    return !(Read4Chars(chars, chars.size() - 4) & 0xFF00FF00FF00FF00ULL);
-  } else {
-    return !std::ranges::any_of(chars, [](UChar ch) { return ch & 0xFF00; });
-  }
-}
-
 class UCharBuffer {
  public:
   ALWAYS_INLINE static uint32_t HashString24(
@@ -222,7 +196,7 @@ class UCharBuffer {
                             AtomicStringUCharEncoding encoding)
       : characters_(chars),
         encoding_(encoding == AtomicStringUCharEncoding::kUnknown
-                      ? (IsOnly8Bit(chars)
+                      ? (ContainsOnlyLatin1(chars)
                              ? AtomicStringUCharEncoding::kIs8Bit
                              : AtomicStringUCharEncoding::kIs16Bit)
                       : encoding),
@@ -233,7 +207,7 @@ class UCharBuffer {
                             AtomicStringUCharEncoding encoding)
       : characters_(chars),
         encoding_(encoding == AtomicStringUCharEncoding::kUnknown
-                      ? (IsOnly8Bit(chars)
+                      ? (ContainsOnlyLatin1(chars)
                              ? AtomicStringUCharEncoding::kIs8Bit
                              : AtomicStringUCharEncoding::kIs16Bit)
                       : encoding),
@@ -287,7 +261,7 @@ struct StringViewLookupTranslator {
     base::span<const uint8_t> bytes = buf.RawByteSpan();
     if (buf.Is8Bit()) {
       return HashString24(bytes);
-    } else if (IsOnly8Bit(buf.Span16())) {
+    } else if (ContainsOnlyLatin1(buf.Span16())) {
       return HashString24<ConvertTo8BitHashReader>(bytes);
     } else {
       return HashString24(bytes);
@@ -314,7 +288,7 @@ class HashTranslatorLowercaseBuffer {
     if (impl_->Is8Bit()) {
       hash_ = HashString24<AsciiLowerHashReader<LChar>>(bytes);
     } else {
-      if (IsOnly8Bit(impl_->Span16())) {
+      if (ContainsOnlyLatin1(impl_->Span16())) {
         hash_ = HashString24<AsciiConvertTo8AndLowerHashReader>(bytes);
       } else {
         hash_ = HashString24<AsciiLowerHashReader<UChar>>(bytes);
@@ -416,8 +390,8 @@ String AtomicStringTable::Add(base::span<const UChar> chars,
   }
 
   if (encoding == AtomicStringUCharEncoding::kUnknown) {
-    encoding = IsOnly8Bit(chars) ? AtomicStringUCharEncoding::kIs8Bit
-                                 : AtomicStringUCharEncoding::kIs16Bit;
+    encoding = ContainsOnlyLatin1(chars) ? AtomicStringUCharEncoding::kIs8Bit
+                                         : AtomicStringUCharEncoding::kIs16Bit;
   }
 
   const auto length = chars.size();

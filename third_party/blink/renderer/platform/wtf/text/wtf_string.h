@@ -678,15 +678,6 @@ template <wtf_size_t kInlineCapacity>
 String::String(const Vector<UChar, kInlineCapacity>& vector)
     : impl_(vector.size() ? StringImpl::Create(vector) : StringImpl::empty_) {}
 
-inline bool String::ContainsOnlyLatin1OrEmpty() const {
-  if (empty())
-    return true;
-
-  if (Is8Bit())
-    return true;
-
-  return std::ranges::all_of(Span16(), [](UChar ch) { return ch < 0x0100; });
-}
 
 #ifdef __OBJC__
 // This is for situations in WebKit where the long standing behavior has been

@@ -121,6 +121,10 @@ UChar32 String::CodePointAtAndNext(size_type& i) const {
   return blink::CodePointAtAndNext(Span16(), i);
 }
 
+bool String::ContainsOnlyLatin1OrEmpty() const {
+  return empty() || Is8Bit() || ContainsOnlyLatin1(Span16());
+}
+
 CodePointIterator String::begin() const {
   return CodePointIterator(*this);
 }
