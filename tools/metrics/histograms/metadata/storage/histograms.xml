@@ -336,6 +336,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.BackingStore.SizeOnDisk" units="KiB"
+    expires_after="2027-09-11">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the total size of an on-disk backing store. This is logged every time
+    the size is calculated *by looking at the disk*, which can happen for
+    reasons such as some non-IndexedDB quota client wanting to know how much
+    space is left in a bucket. This is primarily due to the desire to avoid
+    extra work to calculate usage at a time such as IDBFactory shutdown.
+  </summary>
+</histogram>
+
 <histogram
     name="IndexedDB.BackingStore.{Operation}.{IndexedDBBackingStoreType}"
     enum="IndexedDbStatusType" expires_after="2027-03-07">

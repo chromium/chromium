@@ -356,13 +356,18 @@ uint64_t BucketContext::ReadUsageFromDisk(
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& data_path) {
   CHECK(!data_path.empty());
-  return ShouldUseSqlite(GetSqliteRolloutStage(/*in_memory=*/false),
-                         bucket_locator, data_path)
-             ? sqlite::BackingStoreImpl::SumSizesOfDatabaseFiles(
-                   data_path.Append(GetSqliteDbDirectory(bucket_locator)))
-             : level_db::BackingStore::ReadSizeFromDisk(
-                   data_path.Append(GetLevelDBFileName(bucket_locator)),
-                   data_path.Append(GetBlobStoreFileName(bucket_locator)));
+  uint64_t result =
+      ShouldUseSqlite(GetSqliteRolloutStage(/*in_memory=*/false),
+                      bucket_locator, data_path)
+          ? sqlite::BackingStoreImpl::SumSizesOfDatabaseFiles(
+                data_path.Append(GetSqliteDbDirectory(bucket_locator)))
+          : level_db::BackingStore::ReadSizeFromDisk(
+                data_path.Append(GetLevelDBFileName(bucket_locator)),
+                data_path.Append(GetBlobStoreFileName(bucket_locator)));
+  base::UmaHistogramCustomCounts("IndexedDB.BackingStore.SizeOnDisk",
+                                 base::saturated_cast<int>(result / 1024), 1,
+                                 base::GiB(6).InKiB(), 150);
+  return result;
 }
 
 void BucketContext::ForceClose(bool doom) {

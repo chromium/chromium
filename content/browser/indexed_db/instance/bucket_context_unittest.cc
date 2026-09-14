@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -69,6 +70,23 @@ TEST_F(BucketContextTest, CanUseDiskSpaceQueuing) {
   EXPECT_FALSE(success_future3.Get());
 
   tester.ExpectTotalCount("IndexedDB.QuotaCheckTime2.Success", 1);
+}
+
+TEST_F(BucketContextTest, ReadUsageFromDiskRecordsSizeHistograms) {
+  constexpr uint64_t kFileSize = base::MiB(2).InBytes();
+  const storage::BucketLocator& bucket_locator =
+      bucket_context_->bucket_locator();
+  const base::FilePath database_path = GetFilePathForTesting(bucket_locator);
+  ASSERT_TRUE(base::CreateDirectory(database_path));
+  ASSERT_TRUE(base::WriteFile(database_path.AppendASCII("data"),
+                              std::string(kFileSize, 'a')));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(
+      BucketContext::ReadUsageFromDisk(bucket_locator, database_path.DirName()),
+      kFileSize);
+  histogram_tester.ExpectUniqueSample("IndexedDB.BackingStore.SizeOnDisk",
+                                      kFileSize / 1024, 1);
 }
 
 TEST_F(BucketContextTest, CanUseDiskSpaceCaching) {
