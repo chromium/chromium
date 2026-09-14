@@ -17,10 +17,10 @@ static_library("diagnostics_dialog") {
     "//ash/webui/diagnostics_ui",
     "//ash/webui/diagnostics_ui:url_constants",
     "//base",
-    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chromeos/ash/components/browser_delegate",
     "//ui/display",
   ]
 }

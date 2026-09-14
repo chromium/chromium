@@ -26,7 +26,6 @@ static_library("tablet_mode") {
 
   deps = [
     "//base",
-    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
@@ -34,6 +33,7 @@ static_library("tablet_mode") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
+    "//chromeos/ash/components/browser_delegate",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/common:common_constants",

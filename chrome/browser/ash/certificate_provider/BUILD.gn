@@ -32,12 +32,12 @@ source_set("impl") {
   ]
   deps = [
     ":certificate_provider",
-    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/views/notifications",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/browser_delegate",
     "//chromeos/ui/wm",
     "//extensions/browser",
     "//extensions/common",

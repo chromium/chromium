@@ -15,7 +15,7 @@ static_library("boca") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/ash/browser_delegate",
+    "//chromeos/ash/components/browser_delegate",
     "//components/app_constants",
     "//components/app_restore",
     "//components/sessions",

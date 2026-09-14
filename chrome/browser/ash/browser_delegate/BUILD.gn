@@ -4,13 +4,6 @@
 
 assert(is_chromeos)
 
-# Forwarding group for staged migration to
-# //chromeos/ash/components/browser_delegate.
-# TODO(crbug.com/369689187): Remove once all uses are migrated.
-group("browser_delegate") {
-  public_deps = [ "//chromeos/ash/components/browser_delegate" ]
-}
-
 static_library("impl") {
   sources = [
     "browser_controller_impl.cc",
@@ -22,9 +15,9 @@ static_library("impl") {
   ]
 
   public_deps = [
-    ":browser_delegate",
     "//base",
     "//chrome/browser/ui/browser_window",
+    "//chromeos/ash/components/browser_delegate",
   ]
 
   deps = [

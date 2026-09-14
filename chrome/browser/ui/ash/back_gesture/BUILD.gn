@@ -14,7 +14,7 @@ static_library("back_gesture") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/browser_delegate",
+    "//chromeos/ash/components/browser_delegate",
     "//content/public/browser",
     "//ui/aura",
   ]
