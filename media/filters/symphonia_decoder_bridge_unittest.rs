@@ -471,16 +471,16 @@ fn test_error_mapping() {
     );
 }
 
-// Verify that FFI packets are correctly converted to Symphonia packets.
+// Verify that FFI packets are correctly converted to Symphonia packet refs.
 #[gtest(SymphoniaDecoderBridgeTest, PacketConversion)]
 fn test_packet_conversion() {
     let ffi_packet =
         ffi::SymphoniaPacket { timestamp_us: 12345, duration_us: 6789, data: &[0xAA, 0xBB, 0xCC] };
-    let sym_packet = symphonia::core::packet::Packet::from(&ffi_packet);
+    let packet_ref = symphonia::core::packet::PacketRef::from(&ffi_packet);
 
-    expect_eq!(sym_packet.pts, 12345_i64.into());
-    expect_eq!(sym_packet.dur, 6789u64.into());
-    expect_eq!(&*sym_packet.data, &[0xAA, 0xBB, 0xCC]);
+    expect_eq!(packet_ref.pts, 12345_i64.into());
+    expect_eq!(packet_ref.dur, 6789u64.into());
+    expect_eq!(packet_ref.data, &[0xAA, 0xBB, 0xCC]);
 }
 
 // Verify that we handle zero frames correctly.

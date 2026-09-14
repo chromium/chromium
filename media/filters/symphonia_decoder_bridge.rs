@@ -45,7 +45,7 @@
 use symphonia::core::audio::{Audio, Channels, GenericAudioBufferRef, Position};
 use symphonia::core::codecs::audio::{AudioCodecParameters, AudioDecoder};
 use symphonia::core::errors::Error;
-use symphonia::core::packet::Packet;
+use symphonia::core::packet::PacketRef;
 
 /// This module defines the FFI boundary using the `cxx` crate.
 ///
@@ -445,15 +445,10 @@ fn to_symphonia_codec_id(
     }
 }
 
-/// Converts an FFI `SymphoniaPacket` to a Symphonia `Packet`.
-impl<'a> From<&ffi::SymphoniaPacket<'a>> for Packet {
+/// Converts an FFI `SymphoniaPacket` to a zero-copy Symphonia `PacketRef`.
+impl<'a> From<&ffi::SymphoniaPacket<'a>> for PacketRef<'a> {
     fn from(value: &ffi::SymphoniaPacket<'a>) -> Self {
-        Packet::new(
-            0,
-            (value.timestamp_us as i64).into(),
-            value.duration_us.into(),
-            value.data.to_vec(),
-        )
+        PacketRef::new(0, (value.timestamp_us as i64).into(), value.duration_us.into(), value.data)
     }
 }
 
@@ -810,10 +805,10 @@ impl SymphoniaDecoder {
 
         decoder_impl.maybe_update_mpeg_decoder(packet.data);
 
-        let symphonia_packet = Packet::from(packet);
+        let packet_ref = PacketRef::from(packet);
         let buffer = decoder_impl
             .decoder
-            .decode(&symphonia_packet)
+            .decode_ref(&packet_ref)
             .map_err(|e| ((&e).into(), e.to_string()))?;
 
         let sample_buffer = SymphoniaRawSampleBuffer::new_buffer_for(
