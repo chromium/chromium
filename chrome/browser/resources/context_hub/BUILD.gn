@@ -10,6 +10,7 @@ build_webui("build") {
   static_files = [
     "context_hub.html",
     "save_to_memory_bank.html",
+    "topic_details.html",
   ]
 
   ts_files = [
@@ -36,6 +37,8 @@ build_webui("build") {
     "taskbox/todo_item.ts",
     "topics/topic_card.html.ts",
     "topics/topic_card.ts",
+    "topics/topic_details.html.ts",
+    "topics/topic_details.ts",
     "topics/topics_view.html.ts",
     "topics/topics_view.ts",
   ]
@@ -51,6 +54,7 @@ build_webui("build") {
     "taskbox/ai_taskbox.css",
     "taskbox/todo_item.css",
     "topics/topic_card.css",
+    "topics/topic_details.css",
     "topics/topics_view.css",
   ]
 

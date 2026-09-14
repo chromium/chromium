@@ -1,0 +1,31 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}"
+    $i18n{webuiRoundedIconsAttribute}>
+  <head>
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+    <title>Topic Details</title>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: var(--cr-fallback-color-surface1, #ffffff);
+        overflow: hidden;
+      }
+      topic-details {
+        display: block;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <topic-details></topic-details>
+    <script type="module" src="./topics/topic_details.js"></script>
+  </body>
+</html>
+

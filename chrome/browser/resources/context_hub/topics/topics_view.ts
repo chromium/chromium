@@ -13,7 +13,8 @@ import {getHtml} from './topics_view.html.js';
 
 export type {TopicItem} from './topic_card.js';
 
-// TODO(crbug.com/558572977): Use internationalized strings once GRD strings are added.
+// TODO(crbug.com/558572977): Use internationalized strings once GRD
+// strings are added.
 export class TopicsViewElement extends CrLitElement {
   static get is() {
     return 'topics-view';
@@ -41,10 +42,31 @@ export class TopicsViewElement extends CrLitElement {
   }
 
   protected onJumpBackIn_(e: CustomEvent<{topic: TopicItem}>) {
-    const destinationUrl = e.detail.topic.destinationUrl;
-    if (destinationUrl) {
-      OpenWindowProxyImpl.getInstance().openUrl(destinationUrl);
+    const topic = e.detail.topic;
+    try {
+      // TODO(crbug.com/558572977): Fetch the topic directly by id over Mojo
+      // from C++ once connected to HistoryService KeyedService.
+      sessionStorage.setItem('active_topic', JSON.stringify(topic));
+      if (topic.id) {
+        sessionStorage.setItem(
+            `context_hub_topic_${topic.id}`, JSON.stringify(topic));
+      }
+    } catch {
+      // Ignore storage errors.
     }
+
+    const params = new URLSearchParams();
+    if (topic.id) {
+      params.set('id', topic.id);
+    }
+    if (topic.badgeShape) {
+      params.set('shape', topic.badgeShape);
+    }
+    const queryString = params.toString();
+    const topicUrl = queryString ?
+        `chrome://context-hub/topic_details.html?${queryString}` :
+        'chrome://context-hub/topic_details.html';
+    OpenWindowProxyImpl.getInstance().openUrl(topicUrl);
   }
 }
 

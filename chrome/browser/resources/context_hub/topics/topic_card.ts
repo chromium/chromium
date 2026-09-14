@@ -16,9 +16,10 @@ export interface TopicItem {
   id: string;
   title: string;
   description: string;
+  longDescription?: string;
   icon?: string;
   backgroundColor?: string;
-  destinationUrl?: string;
+  badgeShape?: BadgeShape;
 }
 
 export type BadgeShape = 'cloud' | 'flower' | 'circle' | 'diamond';
@@ -30,12 +31,12 @@ const BADGE_SHAPES: readonly BadgeShape[] = [
   'diamond',
 ];
 
-const DEFAULT_BACKGROUND_COLOR =
+export const DEFAULT_BACKGROUND_COLOR =
     'var(--topic-card-fallback-bg, var(--google-blue-100))';
 
-const DEFAULT_ICON = 'cr:insert-drive-file';
+export const DEFAULT_ICON = 'cr:insert-drive-file';
 
-const FLOWER_PATH =
+export const FLOWER_PATH =
     'M28 2C31.5 2 34 5.5 37.5 6.5C41 7.5 44.5 7 47.5 9.5C50.5 12 50.5 15.5 ' +
     '52.5 18.5C54.5 21.5 56 24.5 56 28C56 31.5 54.5 34.5 52.5 37.5C50.5 40.5 ' +
     '50.5 44 47.5 46.5C44.5 49 41 48.5 37.5 49.5C34 50.5 31.5 54 28 54C24.5 ' +
@@ -43,17 +44,26 @@ const FLOWER_PATH =
     '37.5C1.5 34.5 0 31.5 0 28C0 24.5 1.5 21.5 3.5 18.5C5.5 15.5 5.5 12 8.5 ' +
     '9.5C11.5 7 15 7.5 18.5 6.5C22 5.5 24.5 2 28 2Z';
 
-const CLOUD_PATH =
+export const CLOUD_PATH =
     'M28 2C34.5 2 39 6.5 43.5 10.5C47.5 14.5 54 19 54 28C54 37 47.5 41.5 ' +
     '43.5 45.5C39 49.5 34.5 54 28 54C21.5 54 17 49.5 12.5 45.5C8.5 41.5 2 ' +
     '37 2 28C2 19 8.5 14.5 12.5 10.5C17 6.5 21.5 2 28 2Z';
+
+export const CIRCLE_PATH =
+    'M28 2C42.36 2 54 13.64 54 28C54 42.36 42.36 54 28 54C13.64 54 2 ' +
+    '42.36 2 28C2 13.64 13.64 2 28 2Z';
+
+export const DIAMOND_PATH =
+    'M28 4C29.5 2.5 32.5 2.5 34 4L52 22C53.5 23.5 53.5 26.5 52 28L34 ' +
+    '46C32.5 47.5 29.5 47.5 28 46L10 28C8.5 26.5 8.5 23.5 10 22Z';
 
 // Cycles through badge shapes by index rotation.
 function getBadgeShapeForIndex(index: number): BadgeShape {
   return BADGE_SHAPES[index % BADGE_SHAPES.length]!;
 }
 
-// TODO(crbug.com/558572977): Use internationalized strings once GRD strings are added.
+// TODO(crbug.com/558572977): Use internationalized strings once GRD
+// strings are added.
 export class TopicCardElement extends CrLitElement {
   static get is() {
     return 'topic-card';
@@ -127,7 +137,11 @@ export class TopicCardElement extends CrLitElement {
     if (!this.topic) {
       return;
     }
-    this.fire('jump-back-in', {topic: this.topic});
+    const topicWithShape: TopicItem = {
+      ...this.topic,
+      badgeShape: this.getBadgeShape_(),
+    };
+    this.fire('jump-back-in', {topic: topicWithShape});
   }
 }
 
