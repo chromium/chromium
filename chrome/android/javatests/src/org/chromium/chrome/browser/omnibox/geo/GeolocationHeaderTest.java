@@ -141,6 +141,7 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
+    @DisabledTest(message = "Flaky. See crbug.com/561645347")
     public void testGeolocationHeaderPrimingEnabledPermissionAllow() {
         setPermission(ContentSetting.ALLOW);
         GeolocationHeader.setAppPermissionsForTesting(true, true);
