@@ -49,6 +49,7 @@ test("cast_media_unittests") {
     "audio/cast_audio_output_stream_unittest.cc",
     "base/slew_volume_unittest.cc",
     "base/supported_codec_profile_levels_memo_unittest.cc",
+    "cdm/chromecast_init_data_unittest.cc",
     "common/audio_decoder_software_wrapper_unittest.cc",
     "common/media_resource_tracker_unittest.cc",
     "test/run_all_unittests.cc",

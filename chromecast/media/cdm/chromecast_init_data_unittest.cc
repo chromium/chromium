@@ -8,6 +8,7 @@
 
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromecast {
@@ -27,10 +28,9 @@ TEST(ChromecastInitDataTest, TestPsshCustomData) {
   };
 
   ChromecastInitData init_data;
-  EXPECT_TRUE(FindChromecastInitData(
-      std::vector<uint8_t>(kInitDataBlob,
-                           kInitDataBlob + sizeof(kInitDataBlob)),
-      InitDataMessageType::CUSTOM_DATA, &init_data));
+  EXPECT_TRUE(FindChromecastInitData(base::ToVector(kInitDataBlob),
+                                     InitDataMessageType::CUSTOM_DATA,
+                                     &init_data));
 
   EXPECT_EQ(InitDataMessageType::CUSTOM_DATA, init_data.type);
   EXPECT_EQ(16u, init_data.data.size());
@@ -52,10 +52,9 @@ TEST(ChromecastInitDataTest, TestPsshCustomData_NoSize) {
   };
 
   ChromecastInitData init_data;
-  EXPECT_FALSE(FindChromecastInitData(
-      std::vector<uint8_t>(kInitDataBlob,
-                           kInitDataBlob + sizeof(kInitDataBlob)),
-      InitDataMessageType::CUSTOM_DATA, &init_data));
+  EXPECT_FALSE(FindChromecastInitData(base::ToVector(kInitDataBlob),
+                                      InitDataMessageType::CUSTOM_DATA,
+                                      &init_data));
 }
 
 TEST(ChromecastInitDataTest, TestPsshSecureStop) {
@@ -70,10 +69,9 @@ TEST(ChromecastInitDataTest, TestPsshSecureStop) {
   };
 
   ChromecastInitData init_data;
-  EXPECT_TRUE(FindChromecastInitData(
-      std::vector<uint8_t>(kInitDataBlob,
-                           kInitDataBlob + sizeof(kInitDataBlob)),
-      InitDataMessageType::ENABLE_SECURE_STOP, &init_data));
+  EXPECT_TRUE(FindChromecastInitData(base::ToVector(kInitDataBlob),
+                                     InitDataMessageType::ENABLE_SECURE_STOP,
+                                     &init_data));
 
   EXPECT_EQ(InitDataMessageType::ENABLE_SECURE_STOP, init_data.type);
   EXPECT_EQ(0u, init_data.data.size());
@@ -91,10 +89,9 @@ TEST(ChromecastInitDataTest, TestPsshSecureStop_NoSize) {
   };
 
   ChromecastInitData init_data;
-  EXPECT_FALSE(FindChromecastInitData(
-      std::vector<uint8_t>(kInitDataBlob,
-                           kInitDataBlob + sizeof(kInitDataBlob)),
-      InitDataMessageType::ENABLE_SECURE_STOP, &init_data));
+  EXPECT_FALSE(FindChromecastInitData(base::ToVector(kInitDataBlob),
+                                      InitDataMessageType::ENABLE_SECURE_STOP,
+                                      &init_data));
 }
 
 }  // namespace media
