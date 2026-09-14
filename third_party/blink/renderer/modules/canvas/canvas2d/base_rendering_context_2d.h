@@ -84,6 +84,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
   void RecordingCleared() override;
 
+  bool clear_frame() const { return clear_frame_; }
+
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
 
   // Try to restore context 4 times in the event that the context is lost. If
@@ -327,9 +329,6 @@ class MODULES_EXPORT BaseRenderingContext2D
   virtual void DidFlushRecording(const cc::PaintRecord& recording,
                                  bool clear_frame,
                                  FlushReason reason) {}
-
-  bool clear_frame() const { return clear_frame_; }
-  void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }
 
   bool context_restorable_{true};
   Canvas2DColorParams color_params_;

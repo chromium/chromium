@@ -2141,6 +2141,74 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
             painting_layer->SelfNeedsRepaint());
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ClearFramePreservedAcrossHibernation) {
+  base::test::ScopedFeatureList enable_hibernation{
+      features::kCanvas2DHibernation};
+  CreateContext(kNonOpaque);
+  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasElement().SetSize(gfx::Size(300, 300));
+
+  // A new context starts with clear_frame() == true.
+  EXPECT_TRUE(Context2D()->clear_frame());
+
+  // Draw something and flush it.
+  Context2D()->fillRect(3, 3, 1, 1);
+  Context2D()->FlushCanvas(FlushReason::kOther);
+  EXPECT_FALSE(Context2D()->clear_frame());
+
+  // Hide element to trigger hibernation.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+  WaitForHibernation();
+
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  EXPECT_TRUE(handler.IsHibernating());
+  EXPECT_FALSE(Context2D()->clear_frame());
+
+  // Wake up again.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
+  EXPECT_FALSE(handler.IsHibernating());
+
+  // After waking up, clear_frame() must remain false because the backbuffer
+  // was restored from the pre-hibernation image.
+  EXPECT_FALSE(Context2D()->clear_frame());
+
+  // Explicit clear resets clear_frame() to true.
+  Context2D()->clearRect(0, 0, 300, 300);
+  EXPECT_TRUE(Context2D()->clear_frame());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ClearFrameSetOnResetDuringHibernation) {
+  base::test::ScopedFeatureList enable_hibernation{
+      features::kCanvas2DHibernation};
+  CreateContext(kNonOpaque);
+  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasElement().SetSize(gfx::Size(300, 300));
+
+  // Draw something and flush it so clear_frame() is false.
+  Context2D()->fillRect(3, 3, 1, 1);
+  Context2D()->FlushCanvas(FlushReason::kOther);
+  EXPECT_FALSE(Context2D()->clear_frame());
+
+  // Hide element to trigger hibernation.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+  WaitForHibernation();
+
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  EXPECT_TRUE(handler.IsHibernating());
+  EXPECT_FALSE(Context2D()->clear_frame());
+
+  // Resizing the canvas resets the context and clears the frame.
+  CanvasElement().SetSize(gfx::Size(400, 400));
+  EXPECT_FALSE(handler.IsHibernating());
+
+  // After reset, clear_frame() must be true.
+  EXPECT_TRUE(Context2D()->clear_frame());
+}
+
 TEST_P(CanvasRenderingContext2DTestAccelerated, NoHibernationForSmallCanvas) {
   base::test::ScopedFeatureList enable_hibernation{
       features::kCanvas2DHibernation};

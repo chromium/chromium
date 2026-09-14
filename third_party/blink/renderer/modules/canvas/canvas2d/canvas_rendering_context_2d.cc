@@ -1264,7 +1264,6 @@ void CanvasRenderingContext2D::CreateProvider() {
     if (shared_image_provider_ && shared_image_provider_->IsGraphite()) {
       recorder_->DisableLineDrawingAsPaths();
     }
-    set_clear_frame(true);
   }
 }
 
@@ -1508,7 +1507,6 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
     if (shared_image_provider_->IsGraphite()) {
       recorder_->DisableLineDrawingAsPaths();
     }
-    set_clear_frame(true);
   }
 }
 
@@ -1522,7 +1520,6 @@ void CanvasRenderingContext2D::SetBitmapProviderForTesting(
   bitmap_provider_ = std::move(provider);
   if (bitmap_provider_) {
     recorder_ = std::make_unique<MemoryManagedPaintRecorder>(size, this);
-    set_clear_frame(true);
   }
 }
 

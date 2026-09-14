@@ -281,7 +281,6 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
   if (shared_image_provider_ || bitmap_provider_) {
     recorder_ =
         std::make_unique<MemoryManagedPaintRecorder>(host->Size(), this);
-    set_clear_frame(true);
   }
 
   Host()->UpdateMemoryUsage();
