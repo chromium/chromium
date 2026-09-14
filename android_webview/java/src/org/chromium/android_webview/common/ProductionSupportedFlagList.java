@@ -537,6 +537,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("MojoIpcz"),
         Flag.baseFeature("MojoFixGeometricBufferGrowth"),
         Flag.baseFeature(
+                "MojoDirectSharedMemoryAllocation",
+                "Enables direct shared memory allocation in Mojo without brokering."),
+        Flag.baseFeature(
                 "FixDataPipeTrapBug",
                 "Used to disable a specific bug fix for a long-standing bug that may"
                         + " have affected performance. Brief experiment for data collection"),
