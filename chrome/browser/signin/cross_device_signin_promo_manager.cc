@@ -213,7 +213,7 @@ bool HasMobileDevice(Profile* profile) {
   CHECK(device_info_tracker);
 
   return std::ranges::any_of(
-      device_info_tracker->GetAllDeviceInfo(),
+      device_info_tracker->GetAllChromeDeviceInfo(),
       [device_info_tracker](const syncer::DeviceInfo* device_info) {
         if (device_info_tracker->IsRecentLocalCacheGuid(device_info->guid())) {
           return false;
