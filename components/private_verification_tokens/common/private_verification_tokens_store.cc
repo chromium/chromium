@@ -83,6 +83,12 @@ PrivateVerificationTokensStore::tokens() const {
   return tokens_;
 }
 
+void PrivateVerificationTokensStore::GetAllTokens(
+    base::OnceCallback<void(std::vector<TokenWithId>)> callback) {
+  database_.AsyncCall(&PrivateVerificationTokensDatabase::GetAllTokens)
+      .Then(std::move(callback));
+}
+
 void PrivateVerificationTokensStore::DeleteAllTokens() {
   DeleteTokens(base::Time(), base::Time::Max(), std::nullopt,
                base::DoNothing());

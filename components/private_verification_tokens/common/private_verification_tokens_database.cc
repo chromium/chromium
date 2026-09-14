@@ -54,7 +54,11 @@ static constexpr char kGetTokenSql[] =
     "SELECT id,issuer,key_id,expiration,token,version,creation_time "
     "FROM tokens WHERE issuer = ?";
 
-static constexpr char kGetAllTokensSql[] =
+static constexpr char kGetAllStoredTokensSql[] =
+    "SELECT id,issuer,key_id,expiration,token,version,creation_time "
+    "FROM tokens ORDER BY issuer, id";
+
+static constexpr char kGetTokensFromEachSql[] =
     "SELECT id,issuer,key_id,expiration,token,version,creation_time,COUNT(*) "
     "FROM tokens "
     "GROUP BY issuer";
@@ -68,6 +72,24 @@ static constexpr char kDeleteTokenSql[] =
 static constexpr size_t kDeleteMaximumOriginsPerQuery = 16384;
 
 // clang-format on
+
+private_verification_tokens::TokenWithId ReadTokenFromStatement(
+    sql::Statement& statement) {
+  int64_t id = statement.ColumnInt64(0);
+  url::Origin issuer = url::Origin::Create(GURL(statement.ColumnString(1)));
+  uint32_t key_id = static_cast<uint32_t>(statement.ColumnInt64(2));
+  int64_t expiration = statement.ColumnInt64(3);
+  private_verification_tokens::SerializedToken token =
+      statement.ColumnBlobAsVector(4);
+  uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(5));
+  int64_t creation_time = statement.ColumnInt64(6);
+
+  return private_verification_tokens::TokenWithId{
+      id, private_verification_tokens::PrivateVerificationTokensToken(
+              std::move(issuer), std::move(token), key_id,
+              base::Time::UnixEpoch() + base::Seconds(expiration), version,
+              base::Time::UnixEpoch() + base::Seconds(creation_time))};
+}
 
 }  // namespace
 
@@ -186,26 +208,29 @@ std::optional<TokenWithId> PrivateVerificationTokensDatabase::GetToken(
   statement.BindString(0, issuer.Serialize());
 
   if (statement.Step()) {
-    int64_t id = statement.ColumnInt64(0);
-    std::string issuer_str = statement.ColumnString(1);
-    uint32_t key_id = static_cast<uint32_t>(statement.ColumnInt64(2));
-    int64_t expiration = statement.ColumnInt64(3);
-    SerializedToken token = statement.ColumnBlobAsVector(4);
-    uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(5));
-    int64_t creation_time = statement.ColumnInt64(6);
-
-    url::Origin read_issuer = url::Origin::Create(GURL(issuer_str));
-
-    return TokenWithId{
-        id, PrivateVerificationTokensToken(
-                std::move(read_issuer), std::move(token), key_id,
-                base::Time::UnixEpoch() + base::Seconds(expiration), version,
-                base::Time::UnixEpoch() + base::Seconds(creation_time))};
-  }
-  if (!statement.Succeeded()) {
-    return std::nullopt;
+    return ReadTokenFromStatement(statement);
   }
   return std::nullopt;
+}
+
+std::vector<TokenWithId> PrivateVerificationTokensDatabase::GetAllTokens() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return {};
+  }
+
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kGetAllStoredTokensSql));
+  DCHECK(statement.is_valid());
+
+  std::vector<TokenWithId> tokens;
+  while (statement.Step()) {
+    tokens.push_back(ReadTokenFromStatement(statement));
+  }
+  if (!statement.Succeeded()) {
+    return {};
+  }
+  return tokens;
 }
 
 TokensAndCounts PrivateVerificationTokensDatabase::GetTokensFromEach() {
@@ -215,29 +240,17 @@ TokensAndCounts PrivateVerificationTokensDatabase::GetTokensFromEach() {
   }
 
   sql::Statement statement(
-      database_->GetCachedStatement(SQL_FROM_HERE, kGetAllTokensSql));
+      database_->GetCachedStatement(SQL_FROM_HERE, kGetTokensFromEachSql));
   DCHECK(statement.is_valid());
 
   std::map<url::Origin, TokenWithId> tokens;
   std::map<url::Origin, size_t> counts;
   while (statement.Step()) {
-    int64_t id = statement.ColumnInt64(0);
-    std::string issuer_str = statement.ColumnString(1);
-    uint32_t key_id = static_cast<uint32_t>(statement.ColumnInt64(2));
-    int64_t expiration = statement.ColumnInt64(3);
-    SerializedToken token = statement.ColumnBlobAsVector(4);
-    uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(5));
-    int64_t creation_time = statement.ColumnInt64(6);
+    TokenWithId token_with_id = ReadTokenFromStatement(statement);
+    url::Origin issuer = token_with_id.token.issuer();
     int64_t count = statement.ColumnInt64(7);
-
-    url::Origin issuer = url::Origin::Create(GURL(issuer_str));
-    tokens.try_emplace(
-        issuer, id,
-        PrivateVerificationTokensToken(
-            issuer, std::move(token), key_id,
-            base::Time::UnixEpoch() + base::Seconds(expiration), version,
-            base::Time::UnixEpoch() + base::Seconds(creation_time)));
-    counts.emplace(issuer, static_cast<size_t>(count));
+    tokens.try_emplace(issuer, std::move(token_with_id));
+    counts.emplace(std::move(issuer), static_cast<size_t>(count));
   }
   if (!statement.Succeeded()) {
     return {};

@@ -42,6 +42,9 @@ class PrivateVerificationTokensStore {
   size_t TokenCountForIssuer(const url::Origin& issuer) const;
   bool is_initialized() const { return initialized_; }
 
+  void GetAllTokens(
+      base::OnceCallback<void(std::vector<TokenWithId>)> callback);
+
   void DeleteAllTokens();
   void DeleteTokens(base::Time delete_begin,
                     base::Time delete_end,

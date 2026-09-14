@@ -97,6 +97,9 @@ class PrivateVerificationTokensDatabase {
   // exist.
   std::optional<TokenWithId> GetToken(const url::Origin& issuer);
 
+  // Returns all stored tokens across all issuers.
+  std::vector<TokenWithId> GetAllTokens();
+
   // Get one token and the total token count from each distinct issuer.
   TokensAndCounts GetTokensFromEach();
 

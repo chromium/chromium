@@ -822,6 +822,34 @@ TEST_F(PrivateVerificationTokensDatabaseTest, DeleteTokens_TimeRange) {
   }
 }
 
+TEST_F(PrivateVerificationTokensDatabaseTest, GetAllTokens) {
+  CreateDatabase(db_path_);
+  const url::Origin kOriginA = url::Origin::Create(GURL("https://a.com"));
+  const url::Origin kOriginB = url::Origin::Create(GURL("https://b.com"));
+  uint32_t key_id = 678;
+  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(7);
+  uint32_t version = 1;
+
+  std::vector<PrivateVerificationTokensToken> tokens = {
+      PrivateVerificationTokensToken(kOriginB, {7, 8, 9}, key_id, expiration,
+                                     version),
+      PrivateVerificationTokensToken(kOriginA, {1, 2, 3}, key_id, expiration,
+                                     version),
+      PrivateVerificationTokensToken(kOriginA, {4, 5, 6}, key_id, expiration,
+                                     version),
+  };
+  EXPECT_TRUE(pvt_database_->StoreTokens(tokens));
+
+  std::vector<TokenWithId> all_tokens = pvt_database_->GetAllTokens();
+  ASSERT_EQ(all_tokens.size(), 3u);
+  EXPECT_EQ(all_tokens[0].token.issuer(), kOriginA);
+  EXPECT_EQ(all_tokens[0].token.token(), (SerializedToken{1, 2, 3}));
+  EXPECT_EQ(all_tokens[1].token.issuer(), kOriginA);
+  EXPECT_EQ(all_tokens[1].token.token(), (SerializedToken{4, 5, 6}));
+  EXPECT_EQ(all_tokens[2].token.issuer(), kOriginB);
+  EXPECT_EQ(all_tokens[2].token.token(), (SerializedToken{7, 8, 9}));
+}
+
 }  // namespace
 
 }  // namespace private_verification_tokens
