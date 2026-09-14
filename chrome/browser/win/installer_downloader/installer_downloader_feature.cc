@@ -9,7 +9,7 @@
 namespace installer_downloader {
 
 BASE_FEATURE(kInstallerDownloaderReengagement,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int, kMaxCycleCount, &kInstallerDownloaderReengagement, 3);
 

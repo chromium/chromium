@@ -12384,21 +12384,6 @@
             ]
         }
     ],
-    "InstallerDownloaderReengagement": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InstallerDownloaderReengagement"
-                    ]
-                }
-            ]
-        }
-    ],
     "InstantHandoffPhase1": [
         {
             "platforms": [

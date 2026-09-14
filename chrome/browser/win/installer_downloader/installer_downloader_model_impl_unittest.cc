@@ -79,6 +79,9 @@ TEST_F(InstallerDownloaderModelTest, MaxShowCountNotExceeded) {
 }
 
 TEST_F(InstallerDownloaderModelTest, MaxShowCountExactlyAtLimit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kInstallerDownloaderReengagement);
+
   GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
                              false);
   GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount,
@@ -87,6 +90,9 @@ TEST_F(InstallerDownloaderModelTest, MaxShowCountExactlyAtLimit) {
 }
 
 TEST_F(InstallerDownloaderModelTest, MaxShowCountAboveLimit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kInstallerDownloaderReengagement);
+
   GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
                              false);
   GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount,
@@ -140,6 +146,9 @@ TEST_F(InstallerDownloaderModelTest,
 }
 
 TEST_F(InstallerDownloaderModelTest, PreventFutureDisplayPrefBlocksInfobar) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kInstallerDownloaderReengagement);
+
   GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
                              true);
   GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 0);
