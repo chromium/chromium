@@ -84,7 +84,7 @@ import java.util.Map;
 @Batch(Batch.PER_CLASS)
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class MultiColumnSettingsUnitTest {
+public class MultiColumnSettingsTest {
 
     @ClassParameter
     private static final List<ParameterSet> sClassParams =
@@ -134,14 +134,14 @@ public class MultiColumnSettingsUnitTest {
     }
 
     // Stub fragment instance of EmbeddableSettingsPage providing a fake page title instance.
-    @UsedByReflection("MultiColumnSettingsUnitTest.java")
+    @UsedByReflection("MultiColumnSettingsTest.java")
     public static class TestFragment extends Fragment implements EmbeddableSettingsPage {
         // Tests use reference equality to test for different fragments, so cannot use
         // ObservableSuppliers.alwaysNull().
         private final MonotonicObservableSupplier<String> mTitleSupplier =
                 ObservableSuppliers.createMonotonic();
 
-        @UsedByReflection("MultiColumnSettingsUnitTest.java")
+        @UsedByReflection("MultiColumnSettingsTest.java")
         public TestFragment() {}
 
         @Override
@@ -157,7 +157,7 @@ public class MultiColumnSettingsUnitTest {
 
     private final boolean mIsIdentityManagerSourceOfAccounts;
 
-    public MultiColumnSettingsUnitTest(boolean isIdentityManagerSourceOfAccounts) {
+    public MultiColumnSettingsTest(boolean isIdentityManagerSourceOfAccounts) {
         mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
     }
 
