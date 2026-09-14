@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_TASK_LIST_BUBBLE_ACTOR_TASK_LIST_BUBBLE_ROW_BUTTON_H_
 #define CHROME_BROWSER_ACTOR_UI_TASK_LIST_BUBBLE_ACTOR_TASK_LIST_BUBBLE_ROW_BUTTON_H_
 
-#include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+
+namespace actor::ui {
+struct ActorTaskRowData;
+}
 
 // Button representing a task entry in the ActorTaskListBubble.
 class ActorTaskListBubbleRowButton : public views::Button {
@@ -17,14 +19,7 @@ class ActorTaskListBubbleRowButton : public views::Button {
 
  public:
   ActorTaskListBubbleRowButton(views::Button::PressedCallback on_row_clicked,
-                               actor::ActorTask::State state,
-                               std::u16string title_text,
-                               bool requires_processing,
-                               bool has_tab,
-                               glic::mojom::FeatureMode feature_mode =
-                                   glic::mojom::FeatureMode::kUnspecified,
-                               std::optional<actor::ActorTask::InterruptReason>
-                                   interrupt_reason = std::nullopt);
+                               const actor::ui::ActorTaskRowData& row_data);
   ActorTaskListBubbleRowButton(const ActorTaskListBubbleRowButton&) = delete;
   ActorTaskListBubbleRowButton& operator=(const ActorTaskListBubbleRowButton&) =
       delete;
@@ -38,9 +33,6 @@ class ActorTaskListBubbleRowButton : public views::Button {
   views::ImageButton* GetRedirectIconForTesting() { return redirect_icon_; }
 
  private:
-  // Update row to reflect an unclickable state.
-  void MaybeSetDisabledRowUi(actor::ActorTask::State state);
-
   // Forwards clicks on the redirect icon to the row button.
   void OnRedirectIconPressed(const ui::Event& event);
 
@@ -49,9 +41,7 @@ class ActorTaskListBubbleRowButton : public views::Button {
   void UpdateAccessibleName();
 
   // Whether the task in this row has an existing tab or not.
-  bool has_tab_;
-  // Whether the row has been processed (clicked) or not yet.
-  bool requires_processing_;
+  bool has_tab_ = false;
 
   raw_ptr<views::ImageView> row_icon_ = nullptr;
   raw_ptr<views::ImageButton> redirect_icon_ = nullptr;

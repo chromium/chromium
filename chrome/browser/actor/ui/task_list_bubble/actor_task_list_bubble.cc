@@ -142,9 +142,7 @@ std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView() {
   // Create rows in order of priority.
   for (const auto& row_data : rows) {
     contents_view->AddChildView(std::make_unique<ActorTaskListBubbleRowButton>(
-        base::BindRepeating(on_row_clicked_, row_data.task_id), row_data.state,
-        base::UTF8ToUTF16(row_data.title), row_data.requires_processing,
-        row_data.has_tab, row_data.feature_mode, row_data.interrupt_reason));
+        base::BindRepeating(on_row_clicked_, row_data.task_id), row_data));
   }
   return contents_view;
 }

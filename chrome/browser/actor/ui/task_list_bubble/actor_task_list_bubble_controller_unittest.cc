@@ -14,7 +14,6 @@
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -35,6 +35,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -512,14 +513,30 @@ TEST_F(ActorTaskListBubbleControllerTest,
   EXPECT_EQ("Test Task", rows[0].title);
   EXPECT_EQ(actor::ActorTask::State::kPausedByActor, rows[0].state);
   EXPECT_TRUE(rows[0].requires_processing);
+  EXPECT_FALSE(rows[0].has_tab);
+  EXPECT_EQ(l10n_util::GetStringUTF8(
+                IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
+            rows[0].subtitle);
+  EXPECT_TRUE(rows[0].is_enabled);
+  EXPECT_TRUE(rows[0].needs_review);
 
+  // id_2 does not have an associated tab and displays "Tab closed".
   EXPECT_EQ(id_2, rows[1].task_id);
+  EXPECT_FALSE(rows[1].has_tab);
+  EXPECT_EQ(l10n_util::GetStringUTF8(
+                IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
+            rows[1].subtitle);
 
   // Experimental triggering overrides has_tab to true.
   EXPECT_EQ(id_exp, rows[2].task_id);
   EXPECT_EQ(glic::mojom::FeatureMode::kExperimentalTriggering,
             rows[2].feature_mode);
   EXPECT_TRUE(rows[2].has_tab);
+  EXPECT_EQ(l10n_util::GetStringUTF8(
+                IDS_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE),
+            rows[2].subtitle);
+  EXPECT_TRUE(rows[2].is_enabled);
+  EXPECT_FALSE(rows[2].needs_review);
 }
 
 class ActorTaskListBubbleControllerOsNotificationTest

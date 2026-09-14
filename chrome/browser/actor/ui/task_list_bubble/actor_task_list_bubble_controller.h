@@ -42,6 +42,9 @@ struct ActorTaskRowData {
   int tab_id = -1;
   glic::mojom::FeatureMode feature_mode;
   std::optional<actor::ActorTask::InterruptReason> interrupt_reason;
+  std::string subtitle;
+  bool is_enabled = true;
+  bool needs_review = false;
 };
 
 }  // namespace actor::ui

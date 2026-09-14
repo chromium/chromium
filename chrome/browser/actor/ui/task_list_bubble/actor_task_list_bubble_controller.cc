@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -49,6 +50,67 @@ int GetPriorityForTaskState(actor::ActorTask::State task_state,
                                                                   feature_mode)
              ? 3
              : 4;
+}
+
+bool ShouldShowConsentOverride(
+    actor::ActorTask::State state,
+    bool has_tab,
+    std::optional<actor::ActorTask::InterruptReason> interrupt_reason) {
+  if (!has_tab && !(state == actor::ActorTask::State::kActing ||
+                    state == actor::ActorTask::State::kReflecting)) {
+    return false;
+  }
+  return glic::GlicActorTaskIconManager::RequiresAttention(state) &&
+         interrupt_reason == actor::ActorTask::InterruptReason::
+                                 kWaitingForExperimentalTriggeringConsent;
+}
+
+bool IsProcessedTabClosedRow(actor::ActorTask::State state,
+                             bool has_tab,
+                             bool requires_processing) {
+  if (state == actor::ActorTask::State::kActing ||
+      state == actor::ActorTask::State::kReflecting) {
+    return false;
+  }
+  return !has_tab && !requires_processing;
+}
+
+std::string GetRowSubtitle(
+    actor::ActorTask::State state,
+    bool has_tab,
+    glic::mojom::FeatureMode feature_mode,
+    std::optional<actor::ActorTask::InterruptReason> interrupt_reason) {
+  if (ShouldShowConsentOverride(state, has_tab, interrupt_reason)) {
+    return l10n_util::GetStringUTF8(IDS_GLIC_TASK_WAITING_FOR_CONSENT_SUBTITLE);
+  }
+  // If the task does not have a tab, show the "Tab closed" subtitle *unless*
+  // the task is active (kActing or kReflecting). Active tasks may start with no
+  // associated tab yet, so we avoid displaying "Tab closed" on them.
+  if (!has_tab && !(state == actor::ActorTask::State::kActing ||
+                    state == actor::ActorTask::State::kReflecting)) {
+    return l10n_util::GetStringUTF8(
+        IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE);
+  }
+  if (glic::GlicActorTaskIconManager::RequiresAttention(state)) {
+    return l10n_util::GetStringUTF8(
+        IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE);
+  }
+  if (state == actor::ActorTask::State::kFinished) {
+    if (feature_mode == glic::mojom::FeatureMode::kExperimentalTriggering) {
+      return l10n_util::GetStringUTF8(
+          IDS_EXPERIMENTAL_TRIGGERING_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE);
+    }
+    return l10n_util::GetStringUTF8(
+        IDS_ACTOR_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE);
+  } else if (state == actor::ActorTask::State::kFailed) {
+    return l10n_util::GetStringUTF8(
+        IDS_ACTOR_TASK_LIST_BUBBLE_ROW_FAILED_TASK_SUBTITLE);
+  } else if (state == actor::ActorTask::State::kPausedByUser) {
+    return l10n_util::GetStringUTF8(
+        IDS_ACTOR_TASK_LIST_BUBBLE_ROW_PAUSED_TASK_SUBTITLE);
+  }
+  return l10n_util::GetStringUTF8(
+      IDS_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE);
 }
 
 }  // namespace
@@ -113,16 +175,33 @@ ActorTaskListBubbleController::GetActorTaskRowsForBubble(
       has_tab = true;
     }
 
+    bool is_waiting_for_consent = ShouldShowConsentOverride(
+        task_state.value(), has_tab, task_interrupt_reason);
+    bool is_enabled = !IsProcessedTabClosedRow(task_state.value(), has_tab,
+                                               requires_processing);
+    std::string subtitle = GetRowSubtitle(task_state.value(), has_tab,
+                                          feature_mode, task_interrupt_reason);
+    bool needs_review =
+        glic::GlicActorTaskIconManager::RequiresAttention(task_state.value());
+
+    std::string title =
+        is_waiting_for_consent
+            ? l10n_util::GetStringUTF8(IDS_GLIC_TASK_WAITING_FOR_CONSENT_TITLE)
+            : task_title.value();
+
     prioritized_rows.emplace_back(
         priority, actor::ui::ActorTaskRowData{
                       .task_id = task_id,
-                      .title = task_title.value(),
+                      .title = std::move(title),
                       .state = task_state.value(),
                       .requires_processing = requires_processing,
                       .has_tab = has_tab,
                       .tab_id = tab_id,
                       .feature_mode = feature_mode,
                       .interrupt_reason = task_interrupt_reason,
+                      .subtitle = std::move(subtitle),
+                      .is_enabled = is_enabled,
+                      .needs_review = needs_review,
                   });
   }
 

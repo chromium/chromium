@@ -33,6 +33,7 @@ source_set("controller_impl") {
     ":controller",
     ":delegate",
     "//base",
+    "//chrome/app:generated_resources",
     "//chrome/browser/actor",
     "//chrome/browser/actor/resources:grit",
     "//chrome/browser/actor/ui:metrics",

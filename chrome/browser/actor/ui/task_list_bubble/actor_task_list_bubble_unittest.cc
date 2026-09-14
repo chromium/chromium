@@ -333,17 +333,18 @@ TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasksInOrder) {
           ->GetSubtitleText());
 }
 
-TEST_F(ActorTaskListBubbleTest,
-       ExperimentalTriggeringCompletedTaskSubtitleText) {
+TEST_F(ActorTaskListBubbleTest, RowButtonDisplaysTitleAndSubtitle) {
+  actor::ui::ActorTaskRowData row_data{
+      .title = "Custom Task Title",
+      .state = actor::ActorTask::State::kFinished,
+      .has_tab = true,
+      .subtitle = "Custom Subtitle",
+  };
   auto button = std::make_unique<ActorTaskListBubbleRowButton>(
-      views::Button::PressedCallback(), actor::ActorTask::State::kFinished,
-      u"Experimental Triggering Task", /*requires_processing=*/false,
-      /*has_tab=*/true, glic::mojom::FeatureMode::kExperimentalTriggering);
+      views::Button::PressedCallback(), row_data);
 
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_EXPERIMENTAL_TRIGGERING_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE),
-      button->GetSubtitleText());
+  EXPECT_EQ(u"Custom Task Title", button->GetTitleText());
+  EXPECT_EQ(u"Custom Subtitle", button->GetSubtitleText());
 }
 
 // The bubble is shown activated in response to a task update. It has no dialog
