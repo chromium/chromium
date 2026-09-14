@@ -543,16 +543,6 @@ if (!is_win && !is_android) {
   }
 }
 
-if (is_android) {
-  # Header-only target so downstream targets can include
-  # profile_key_startup_accessor.h without depending on :browser. The .cc
-  # file remains in //chrome/browser:browser.
-  source_set("profile_key_startup_accessor") {
-    public = [ "android/profile_key_startup_accessor.h" ]
-    deps = [ "//base" ]
-  }
-}
-
 if (is_mac) {
   source_set("chrome_browser_main_mac") {
     public = [ "chrome_browser_main_mac.h" ]
@@ -1664,9 +1654,9 @@ source_set("core") {
       "shell_integration_android.cc",
     ]
     deps += [
-      ":profile_key_startup_accessor",
       "//chrome/android:jni_headers",
       "//chrome/browser/android",
+      "//chrome/browser/android:profile_key_startup_accessor",
       "//chrome/browser/autocomplete",
       "//chrome/browser/bookmarks",
       "//chrome/browser/commerce",
