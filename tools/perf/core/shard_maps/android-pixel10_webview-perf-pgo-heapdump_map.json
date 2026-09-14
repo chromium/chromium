@@ -7,7 +7,7 @@
                     "--wpr=crossbench_android_loading_000.wprgo",
                     "--embedder=webview_embedder",
                     "--splashscreen=skip",
-                    "--probe-config=../../third_party/crossbench/config/team/woa/wv_shell_memory.probe.config.hjson",
+                    "--probe-config=../../third_party/crossbench/config/team/woa/wv_shell_heapdump.probe.config.hjson",
                     "--cuj-config=../../third_party/crossbench/config/team/woa/staggered_wv_startup_cuj_config.hjson",
                     "--android-activity=ManuallyTriggeredStartupActivity",
                     "--repetitions=25",
