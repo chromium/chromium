@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_tab_helper_delegate.h"
@@ -68,6 +69,25 @@
 #endif
 
 namespace tabs {
+
+namespace {
+
+// The data protection controller drives all per-navigation enterprise data
+// protection work on Android: screenshot restrictions and tab title reporting
+// for URL filtering events. It is only useful for managed profiles, and only
+// when at least one of the features it powers is enabled.
+bool ShouldCreateDataProtectionController(Profile* profile) {
+  if (!enterprise_util::IsBrowserManaged(profile)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+             enterprise_data_protection::
+                 kEnableAndroidEnterpriseScreenshotProtection) ||
+         base::FeatureList::IsEnabled(
+             enterprise_data_protection::kEnterpriseTabTitleReporting);
+}
+
+}  // namespace
 
 TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   TabInterface* const tab = TabInterface::GetFromContents(web_contents);
@@ -155,10 +175,7 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(
           *tab, tab);
 
-  if (base::FeatureList::IsEnabled(
-          enterprise_data_protection::
-              kEnableAndroidEnterpriseScreenshotProtection) &&
-      enterprise_util::IsBrowserManaged(profile)) {
+  if (ShouldCreateDataProtectionController(profile)) {
     data_protection_tab_controller_ = std::make_unique<
         enterprise_data_protection::DataProtectionNavigationController>(tab);
   }
