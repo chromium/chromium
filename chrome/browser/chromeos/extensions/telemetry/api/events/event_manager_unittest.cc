@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -143,6 +144,7 @@ class TelemetryExtensionEventManagerTest : public BrowserWithTestWindowTest {
   EventRouter& event_router() { return event_manager()->event_router_; }
 
  private:
+  ash::BrowserControllerImpl browser_controller_;
   ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 

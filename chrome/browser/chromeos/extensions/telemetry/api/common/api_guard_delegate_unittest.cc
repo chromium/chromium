@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
@@ -249,6 +250,7 @@ class ApiGuardDelegateTest
             .Build();
   }
 
+  ash::BrowserControllerImpl browser_controller_;
   ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
   scoped_refptr<const extensions::Extension> extension_;
 };

@@ -19,6 +19,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -148,6 +149,7 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
   }
 
  private:
+  ash::BrowserControllerImpl browser_controller_;
   ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 

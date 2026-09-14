@@ -17,9 +17,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_management_test_util.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
-  "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/web_applications/test",
   "+chrome/common",
   "+chrome/test",
@@ -28,9 +25,14 @@ include_rules = [
 
 specific_include_rules = {
    "api_guard_delegate_unittest\\.cc": [
+      "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
+      "+chrome/browser/ui/tabs/tab_strip_model.h",
       "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
    ],
    "base_telemetry_extension_api_guard_function_browsertest\\.cc": [
       "+chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h",
+   ],
+   "base_telemetry_extension_browser_test\\.cc": [
+      "+chrome/browser/ui/tabs/tab_strip_model.h",
    ],
 }

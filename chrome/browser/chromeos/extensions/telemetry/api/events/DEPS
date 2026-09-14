@@ -28,6 +28,7 @@ include_rules = [
 
 specific_include_rules = {
    'event_manager_unittest\\.cc': [
+      '+chrome/browser/ash/browser_delegate/browser_controller_impl.h',
       '+chrome/browser/web_applications/test/web_app_install_test_utils.h',
    ],
 }

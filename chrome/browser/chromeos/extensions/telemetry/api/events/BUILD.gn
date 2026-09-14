@@ -124,6 +124,7 @@ source_set("unit_tests") {
     ":event_converters",
     ":event_manager",
     ":event_router",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications:web_applications_test_support",

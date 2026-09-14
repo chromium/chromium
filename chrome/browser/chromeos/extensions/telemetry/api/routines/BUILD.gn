@@ -58,6 +58,7 @@ source_set("unit_tests") {
   deps = [
     ":routine_manager",
     ":routines",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/common/chromeos/extensions",

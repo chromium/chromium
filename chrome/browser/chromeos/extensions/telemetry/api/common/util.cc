@@ -8,10 +8,11 @@
 #include "ash/webui/shimless_rma/backend/external_app_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
@@ -67,11 +68,10 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
   // A focused UI must be:
   // 1. In a browser that is front-most;
   // 2. In a tab that is active.
-  BrowserWindowInterface* const last_active_bwi =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  if (last_active_bwi && last_active_bwi->GetProfile() == profile) {
-    content::WebContents* const contents =
-        last_active_bwi->GetTabStripModel()->GetActiveWebContents();
+  ash::BrowserDelegate* const last_active =
+      ash::BrowserController::GetInstance()->GetLastUsedBrowser();
+  if (last_active && last_active->GetBrowser().GetProfile() == profile) {
+    content::WebContents* const contents = last_active->GetActiveWebContents();
     if (contents && IsWebContentsSecureAppUi(pattern_set, contents)) {
       return contents;
     }
@@ -81,22 +81,21 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
   }
 
   content::WebContents* found_contents = nullptr;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* target_bwi) {
-        if (target_bwi->GetProfile() != profile) {
-          return true;  // Continue iteration
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& target_browser) {
+        if (target_browser.GetBrowser().GetProfile() != profile) {
+          return ash::BrowserController::kContinueIteration;
         }
 
-        TabStripModel* const target_tab_strip = target_bwi->GetTabStripModel();
-        for (int i = 0; i < target_tab_strip->count(); ++i) {
-          content::WebContents* const contents =
-              target_tab_strip->GetWebContentsAt(i);
+        for (tabs::TabInterface* const tab : target_browser.GetTabIterator()) {
+          content::WebContents* const contents = tab->GetContents();
           if (IsWebContentsSecureAppUi(pattern_set, contents)) {
             found_contents = contents;
-            return false;  // Stop iteration
+            return ash::BrowserController::kBreakIteration;
           }
         }
-        return true;  // Continue iteration
+        return ash::BrowserController::kContinueIteration;
       });
   return found_contents;
 }

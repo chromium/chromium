@@ -45,19 +45,15 @@ source_set("util") {
     "//ash/constants",
     "//ash/webui/shimless_rma/backend",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
+    "//chromeos/ash/components/browser_delegate",
     "//chromeos/constants",
     "//components/security_state/content",
     "//components/security_state/core",
+    "//components/webapps/isolated_web_apps:scheme",
     "//extensions/common",
   ]
-
-  if (is_mac || is_win || is_linux || is_chromeos) {
-    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
-  }
 }
 
 source_set("hardware_info_delegate") {
@@ -144,6 +140,7 @@ source_set("unit_tests") {
     "//ash/webui/shimless_rma/backend",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
