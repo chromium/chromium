@@ -163,7 +163,7 @@ source_set("platform_browser_tests") {
   deps = [
     ":extensions",
     "//base",
-    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_test",
     "//content/public/renderer",
     "//content/test:test_support",
     "//extensions:test_support",

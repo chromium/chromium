@@ -263,6 +263,7 @@ source_set("unit_tests") {
       "tab_restore_service_unittest.cc",
     ]
     deps += [
+      "//chrome/test/base:chrome_render_view_test",
       "//components/policy/core/browser",
       "//components/policy/core/common:common_constants",
     ]
