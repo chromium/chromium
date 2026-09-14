@@ -10,6 +10,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_proto_loader.h"
 #include "base/token.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
@@ -460,5 +461,25 @@ TEST_F(TracesInternalsHandlerTest, DisableSystemTracing) {
   handler_->DisableSystemTracing({});
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST(BackgroundTracingManagerImplEarlyStartupTest,
+     InitializeFieldScenariosWithoutBrowserThread) {
+  tracing::TraceStartupConfig startup_config;
+  base::test::TaskEnvironment task_environment;
+  auto mock_tracing_delegate =
+      std::make_unique<testing::NiceMock<MockTracingDelegate>>();
+  BackgroundTracingManagerImpl manager(std::move(mock_tracing_delegate));
+
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  auto* scenario = config.add_scenarios();
+  scenario->set_scenario_name("TestScenario");
+  auto* trace_config = scenario->mutable_trace_config();
+  auto* buffer = trace_config->add_buffers();
+  buffer->set_size_kb(1024);
+
+  EXPECT_TRUE(manager.InitializeFieldScenarios(
+      config, tracing::BackgroundTracingManager::NO_DATA_FILTERING,
+      /*force_upload=*/false, /*upload_limit_kb=*/0));
+}
 
 }  // namespace content

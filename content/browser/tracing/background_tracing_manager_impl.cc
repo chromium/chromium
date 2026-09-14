@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/sequence_checker.h"
 #include "base/trace_event/named_trigger.h"
 #include "components/tracing/common/background_tracing_utils.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
@@ -128,7 +129,7 @@ BackgroundTracingManagerImpl::GetAllScenarios() const {
 
 void BackgroundTracingManagerImpl::AddAgent(
     tracing::mojom::BackgroundTracingAgent* agent) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   agents_.insert(agent);
 
   for (AgentObserver* observer : agent_observers_) {
@@ -138,7 +139,7 @@ void BackgroundTracingManagerImpl::AddAgent(
 
 void BackgroundTracingManagerImpl::RemoveAgent(
     tracing::mojom::BackgroundTracingAgent* agent) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (AgentObserver* observer : agent_observers_) {
     observer->OnAgentRemoved(agent);
   }
@@ -148,7 +149,7 @@ void BackgroundTracingManagerImpl::RemoveAgent(
 
 void BackgroundTracingManagerImpl::AddAgentObserver(
     tracing::TracingAgentObserverManager::AgentObserver* observer) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   agent_observers_.insert(observer);
 
   MaybeConstructPendingAgents();
@@ -160,7 +161,7 @@ void BackgroundTracingManagerImpl::AddAgentObserver(
 
 void BackgroundTracingManagerImpl::RemoveAgentObserver(
     tracing::TracingAgentObserverManager::AgentObserver* observer) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   agent_observers_.erase(observer);
 
   for (tracing::mojom::BackgroundTracingAgent* agent : agents_) {
@@ -173,7 +174,7 @@ void BackgroundTracingManagerImpl::AddPendingAgent(
     int child_process_id,
     mojo::PendingRemote<tracing::mojom::BackgroundTracingAgentProvider>
         pending_provider) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(GetInstance().sequence_checker_);
   // Delay agent initialization until we have an interested AgentObserver.
   // We set disconnect handler for cleanup when the tracing target is closed.
   mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider> provider(
@@ -188,12 +189,12 @@ void BackgroundTracingManagerImpl::AddPendingAgent(
 
 // static
 void BackgroundTracingManagerImpl::ClearPendingAgent(int child_process_id) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(GetInstance().sequence_checker_);
   GetInstance().pending_agents_.erase(child_process_id);
 }
 
 void BackgroundTracingManagerImpl::MaybeConstructPendingAgents() {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (agent_observers_.empty() && enabled_scenarios_.empty()) {
     return;
