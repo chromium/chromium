@@ -1,7 +1,7 @@
 Name: fontconfig
 URL: http://www.freedesktop.org/wiki/Software/fontconfig/
 Version: 2.18.3
-Revision: d17ee184e436712c2abbe14a9c0ec02fb6acf5c5
+Revision: 478e7774a514244469424eda870ad2c029bf62a6
 Update Mechanism: Manual
 CPEPrefix: cpe:/a:fontconfig_project:fontconfig:2.18.3
 License: HPND-sell-variant, MIT, MIT-Modern-Variant, Public-Domain-MD5, Public-Domain-ftglue, Unicode-TOU
