@@ -8,12 +8,18 @@
 #include <memory>
 
 #include "base/android/android_info.h"
+#include "base/barrier_closure.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/function_ref.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "content/browser/font_unique_name_lookup/name_table_ffi.rs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
@@ -79,6 +85,7 @@ class FontUniqueNameLookupTest : public ::testing::Test {
         std::make_unique<FontUniqueNameLookup>(temp_dir_.GetPath());
   }
 
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
 };
@@ -311,6 +318,7 @@ class FaultInjectingFontUniqueNameLookupTest : public ::testing::Test {
         font_file_corruptor_.GetFontFilesList());
   }
 
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   FontFileCorruptor font_file_corruptor_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
@@ -343,6 +351,7 @@ class FontUniqueNameLookupUpdateTest : public ::testing::Test {
     font_unique_name_lookup_->SetAndroidBuildFingerprintForTesting("A");
   }
 
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir lookup_table_storage_dir;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
 };
@@ -362,6 +371,96 @@ TEST_F(FontUniqueNameLookupUpdateTest, CompareSets) {
       font_unique_name_lookup_->DuplicateMemoryRegion().Map());
   ASSERT_GT(matcher_initial.AvailableFonts(), 0u);
   ASSERT_TRUE(matcher_initial.FontListIsDisjointFrom(matcher_second_half));
+}
+
+class TestFontUniqueNameLookup : public FontUniqueNameLookup {
+ public:
+  using FontUniqueNameLookup::FontUniqueNameLookup;
+  using FontUniqueNameLookup::ScheduleLoadOrUpdateTable;
+};
+
+class FontUniqueNameLookupCallbackTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    lookup_ = std::make_unique<TestFontUniqueNameLookup>(temp_dir_.GetPath());
+    std::vector<base::FilePath> font_files = AndroidFontFilesList();
+    ASSERT_FALSE(font_files.empty());
+    // Restrict to a single font to minimize test execution time and CPU load.
+    lookup_->SetFontFilePathsForTesting({font_files.front()});
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<TestFontUniqueNameLookup> lookup_;
+};
+
+TEST_F(FontUniqueNameLookupCallbackTest, ConcurrentCallbackQueuing) {
+  constexpr size_t kPreQueueCount = 10;
+  constexpr size_t kConcurrentThreads = 4;
+  constexpr size_t kPerThreadQueueCount = 5;
+  constexpr size_t kTotalCallbacks =
+      kPreQueueCount + (kConcurrentThreads * kPerThreadQueueCount);
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(kTotalCallbacks, run_loop.QuitClosure());
+
+  auto make_callback = [&]() {
+    return base::BindLambdaForTesting(
+        [&, barrier](base::ReadOnlySharedMemoryRegion region) {
+          EXPECT_TRUE(region.IsValid());
+          base::ReadOnlySharedMemoryMapping mapping = region.Map();
+          EXPECT_TRUE(mapping.IsValid());
+          blink::FontTableMatcher matcher(mapping);
+          EXPECT_GT(matcher.AvailableFonts(), 0u);
+          barrier.Run();
+        });
+  };
+
+  // Phase A: Pre-queue callbacks before table build starts.
+  // proto_storage_ready_ is guaranteed to be unsignaled, ensuring all callbacks
+  // are routed to callback_access_runner_ and enqueued in pending_callbacks_.
+  for (size_t i = 0; i < kPreQueueCount; ++i) {
+    scoped_refptr<base::SequencedTaskRunner> caller_runner =
+        base::ThreadPool::CreateSequencedTaskRunner({});
+    lookup_->QueueShareMemoryRegionWhenReady(caller_runner, make_callback());
+  }
+
+  // Start asynchronous table build on ThreadPool.
+  lookup_->ScheduleLoadOrUpdateTable();
+
+  // Phase B: Concurrently queue callbacks from multiple threads while table
+  // build and drain are in-flight.
+  for (size_t i = 0; i < kConcurrentThreads; ++i) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          for (size_t j = 0; j < kPerThreadQueueCount; ++j) {
+            scoped_refptr<base::SequencedTaskRunner> caller_runner =
+                base::ThreadPool::CreateSequencedTaskRunner({});
+            lookup_->QueueShareMemoryRegionWhenReady(caller_runner,
+                                                     make_callback());
+          }
+        }));
+  }
+
+  // Wait for all pre-queued and concurrently queued callbacks to complete.
+  run_loop.Run();
+
+  // Phase C: Late / fast-path queueing verification.
+  // Callbacks queued after the table is built should be dispatched directly.
+  base::RunLoop late_run_loop;
+  lookup_->QueueShareMemoryRegionWhenReady(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindLambdaForTesting([&](base::ReadOnlySharedMemoryRegion region) {
+        EXPECT_TRUE(region.IsValid());
+        base::ReadOnlySharedMemoryMapping mapping = region.Map();
+        EXPECT_TRUE(mapping.IsValid());
+        blink::FontTableMatcher matcher(mapping);
+        EXPECT_GT(matcher.AvailableFonts(), 0u);
+        late_run_loop.Quit();
+      }));
+  late_run_loop.Run();
 }
 
 }  // namespace content

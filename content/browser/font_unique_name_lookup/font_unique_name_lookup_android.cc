@@ -124,7 +124,13 @@ FontUniqueNameLookup& FontUniqueNameLookup::GetInstance() {
 
 FontUniqueNameLookup::FontUniqueNameLookup(
     const base::FilePath& cache_directory)
-    : cache_directory_(cache_directory) {
+    : callback_access_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      cache_directory_(cache_directory) {
+  CHECK(callback_access_runner_);
+  DETACH_FROM_SEQUENCE(callback_sequence_checker_);
+
   if (!DirectoryExists(cache_directory_) ||
       !base::PathIsWritable(cache_directory_)) {
     DCHECK(false) << "Error accessing cache directory for writing: "
@@ -145,6 +151,32 @@ void FontUniqueNameLookup::QueueShareMemoryRegionWhenReady(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     blink::mojom::FontUniqueNameLookup::GetUniqueNameLookupTableCallback
         callback) {
+  if (proto_storage_ready_.IsSignaled()) {
+    task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
+                                                    DuplicateMemoryRegion()));
+    return;
+  }
+
+  CHECK(callback_access_runner_);
+  callback_access_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FontUniqueNameLookup::EnqueueCallbackOnSequence,
+                     base::Unretained(this), std::move(task_runner),
+                     std::move(callback)));
+}
+
+void FontUniqueNameLookup::EnqueueCallbackOnSequence(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    blink::mojom::FontUniqueNameLookup::GetUniqueNameLookupTableCallback
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(callback_sequence_checker_);
+
+  if (proto_storage_ready_.IsSignaled()) {
+    task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
+                                                    DuplicateMemoryRegion()));
+    return;
+  }
+
   pending_callbacks_.emplace_back(std::move(task_runner), std::move(callback));
 }
 
@@ -210,6 +242,7 @@ bool FontUniqueNameLookup::PersistToFile() {
 }
 
 void FontUniqueNameLookup::ScheduleLoadOrUpdateTable() {
+  CHECK(callback_access_runner_);
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -229,7 +262,11 @@ void FontUniqueNameLookup::ScheduleLoadOrUpdateTable() {
               instance->PersistToFile();
             }
             instance->proto_storage_ready_.Signal();
-            instance->PostCallbacks();
+            // Safe to use base::Unretained(instance) here because instance
+            // is a never-deleted singleton.
+            instance->callback_access_runner_->PostTask(
+                FROM_HERE, base::BindOnce(&FontUniqueNameLookup::PostCallbacks,
+                                          base::Unretained(instance)));
           },
           base::Unretained(this)));
 }
@@ -283,6 +320,9 @@ FontUniqueNameLookup::CallbackOnTaskRunner::CallbackOnTaskRunner(
 FontUniqueNameLookup::CallbackOnTaskRunner::~CallbackOnTaskRunner() = default;
 
 void FontUniqueNameLookup::PostCallbacks() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(callback_sequence_checker_);
+  CHECK(proto_storage_ready_.IsSignaled());
+
   for (auto& pending_callback : pending_callbacks_) {
     pending_callback.task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(pending_callback.mojo_callback),
