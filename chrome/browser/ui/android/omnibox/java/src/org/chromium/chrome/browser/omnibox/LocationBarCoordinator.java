@@ -1383,13 +1383,13 @@ public class LocationBarCoordinator
             return;
         }
 
-        assert mUserEducationHelper != null;
         mOptionalButtonData = buttonData;
 
         View optionalButtonView = mLocationBarLayout.findViewById(R.id.optional_button);
         if (optionalButtonView == null) return;
 
         if (mOptionalButtonCoordinator == null) {
+            assert mUserEducationHelper != null;
             mOptionalButtonCoordinator =
                     new OptionalButtonCoordinator(
                             optionalButtonView,

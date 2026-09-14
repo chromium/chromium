@@ -130,6 +130,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
@@ -5741,5 +5742,110 @@ public class LocationBarMediatorUnitTest {
         assertEquals("preview", mSessionState.getAutocompleteInput().getUserText());
         assertEquals(TextSelection.SELECT_ALL, mSessionState.getAutocompleteInput().getSelection());
         verify(mUrlCoordinator).selectAllText();
+    }
+
+    @Test
+    public void testBeginInput_searchQuery() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        mMediator.beginInput(
+                new AutocompleteInput()
+                        .setUserText(TEST_USER_TEXT)
+                        .setFocusReason(OmniboxFocusReason.SEARCH_QUERY));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mUrlCoordinator).requestFocus();
+        assertUserText(TEST_USER_TEXT);
+        assertEquals(
+                OmniboxFocusReason.SEARCH_QUERY,
+                mSessionState.getAutocompleteInput().getFocusReason());
+    }
+
+    @Test
+    public void testFinishUrlFocusChange_afterDestroy_isNoOp() {
+        mMediator.onFinishNativeInitialization();
+        mMediator.destroy();
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.setUrlFocusChangeInProgress(false);
+        mMediator.finishUrlFocusChange(
+                /* showExpandedState= */ true, /* shouldShowKeyboard= */ true);
+
+        verify(mUrlCoordinator, never()).setKeyboardVisibility(anyBoolean(), anyBoolean());
+    }
+
+    @Test
+    public void testSetUrlFocusChangeFraction_updatesButtonVisibilityOnlyOnFocusFlip() {
+        mMediator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
+        mMediator.onFinishNativeInitialization();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        clearInvocations(mVoiceRecognitionHandler);
+
+        // The first non-zero fraction focuses the location bar from NTP scroll...
+        mMediator.setUrlFocusChangeFraction(0.5f, 0.5f);
+        verify(mVoiceRecognitionHandler, atLeastOnce()).isVoiceSearchEnabled();
+        clearInvocations(mVoiceRecognitionHandler);
+
+        // ... subsequent fractions don't change the focus state, so buttons aren't recomputed.
+        mMediator.setUrlFocusChangeFraction(0.6f, 0.6f);
+        verify(mVoiceRecognitionHandler, never()).isVoiceSearchEnabled();
+    }
+
+    @Test
+    public void testOnIncognitoStateChanged_updatesLensButtonAndIncognitoColors() {
+        setUpFocusedOmniboxWithLens();
+
+        doReturn(false).when(mLensController).isLensEnabled(any());
+        doReturn(true).when(mLocationBarDataProvider).isIncognitoBranded();
+        mMediator.onIncognitoStateChanged();
+
+        verify(mLocationBarLayout, atLeastOnce()).setLensButtonVisibility(false);
+        verify(mUrlCoordinator).setIncognitoColorsEnabled(true);
+        clearInvocations(mLocationBarLayout, mUrlCoordinator);
+
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        doReturn(false).when(mLocationBarDataProvider).isIncognitoBranded();
+        mMediator.onIncognitoStateChanged();
+
+        verify(mLocationBarLayout, atLeastOnce()).setLensButtonVisibility(true);
+        verify(mUrlCoordinator).setIncognitoColorsEnabled(false);
+    }
+
+    @Test
+    public void testOnTemplateURLServiceChanged_updatesLensButtonOnNextVisibilityUpdate() {
+        setUpFocusedOmniboxWithLens();
+
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        mMediator.onTemplateURLServiceChanged();
+        // Note: the search engine change only refreshes the cached Lens eligibility; the buttons
+        // themselves are only repainted by the next visibility update.
+        verify(mLocationBarLayout, never()).setLensButtonVisibility(true);
+
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout, atLeastOnce()).setLensButtonVisibility(true);
+    }
+
+    @Test
+    public void testHandleBackPress_reflectedByBackPressChangedSupplier() {
+        assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
+        assertEquals(BackPressHandler.BackPressResult.FAILURE, mMediator.handleBackPress());
+
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+        assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
+        assertEquals(BackPressHandler.BackPressResult.SUCCESS, mMediator.handleBackPress());
+
+        mMediator.onUrlFocusChange(/* hasFocus= */ false);
+        assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
+    }
+
+    /** Focuses the phone Omnibox with an empty query and a freshly evaluated Lens eligibility. */
+    private void setUpFocusedOmniboxWithLens() {
+        mMediator.setLensControllerForTesting(mLensController);
+        mMediator.resetLastCachedIsLensOnOmniboxEnabledForTesting();
+        mMediator.onFinishNativeInitialization();
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+        clearInvocations(mLocationBarLayout, mUrlCoordinator);
     }
 }

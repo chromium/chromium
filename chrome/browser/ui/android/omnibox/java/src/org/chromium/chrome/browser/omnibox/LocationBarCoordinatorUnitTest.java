@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
@@ -13,6 +14,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 
 import org.junit.Before;
@@ -36,6 +39,9 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 
@@ -56,6 +62,8 @@ public class LocationBarCoordinatorUnitTest {
     @Mock private OptionalButtonCoordinator mOptionalButtonCoordinator;
     @Mock private LocationBarMediator mLocationBarMediator;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
+    @Mock private LocationBarPhone mLocationBarPhone;
+    @Mock private View mOptionalButtonView;
 
     // LocationBarCoordinator takes a lot of dependencies and a very busy constructor.
     // This allows us to set up tests to verify logic we need to protect without overwhelming test
@@ -201,5 +209,57 @@ public class LocationBarCoordinatorUnitTest {
         verify(mFuseboxCoordinator).onFuseboxTextWrappingChanged(/* isTextWrapping= */ true);
         verify(mLocationBarMediator).setIsTextWrapping(true);
         verify(mLocationBarMediator).updateButtonVisibility();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testOptionalButton_shownThenHidden() {
+        ButtonData buttonData = setUpPhoneLayoutWithOptionalButton();
+
+        mCoordinator.updateOptionalButton(buttonData);
+        verify(mOptionalButtonCoordinator).updateButton(buttonData, /* isIncognito= */ false);
+
+        mCoordinator.hideOptionalButton();
+        verify(mOptionalButtonCoordinator).hideButton();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testOptionalButton_hiddenWhenUrlBarFocused() {
+        ButtonData buttonData = setUpPhoneLayoutWithOptionalButton();
+        when(mLocationBarMediator.isUrlBarFocused()).thenReturn(true);
+
+        mCoordinator.updateOptionalButton(buttonData);
+
+        verify(mOptionalButtonCoordinator).hideButton();
+        verify(mOptionalButtonCoordinator, never()).updateButton(any(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testOptionalButton_hiddenOnNtp() {
+        ButtonData buttonData = setUpPhoneLayoutWithOptionalButton();
+        when(mNewTabPageDelegate.isCurrentlyVisible()).thenReturn(true);
+
+        mCoordinator.updateOptionalButton(buttonData);
+
+        verify(mOptionalButtonCoordinator).hideButton();
+        verify(mOptionalButtonCoordinator, never()).updateButton(any(), anyBoolean());
+    }
+
+    /**
+     * Switches the coordinator to a phone layout hosting an optional button, as the optional button
+     * is phone-only, and returns button data eligible to be shown.
+     */
+    private ButtonData setUpPhoneLayoutWithOptionalButton() {
+        mCoordinator.setLocationBarLayoutForTesting(mLocationBarPhone);
+        when(mLocationBarPhone.getContext()).thenReturn(RuntimeEnvironment.getApplication());
+        when(mLocationBarPhone.findViewById(R.id.optional_button)).thenReturn(mOptionalButtonView);
+        return new ButtonDataImpl(
+                /* canShow= */ true,
+                /* isEnabled= */ true,
+                new ButtonSpec.Builder(
+                                new ColorDrawable(Color.RED), "test", /* supportsTinting= */ true)
+                        .build());
     }
 }
