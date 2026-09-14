@@ -283,6 +283,10 @@ void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,
   if (!masker) {
     return;
   }
+  if ((paint_flags & PaintFlag::kPrivacyPreserving) &&
+      !masker->GetElement()->IsInCanvasSubtree()) {
+    return;
+  }
   const AffineTransform content_transformation =
       MaskToContentTransform(*masker, reference_box, zoom);
   SubtreeContentTransformScope content_transform_scope(content_transformation);
