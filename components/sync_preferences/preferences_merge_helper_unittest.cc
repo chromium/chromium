@@ -21,10 +21,11 @@ const char kMergeableListPref[] = "mergeable.list.pref";
 const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
     {kMergeableListPref,
      {/*syncable_pref_id=*/1, syncer::PREFERENCES, PrefSensitivity::kNone,
-      MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+      MergeBehavior::kMergeableListWithRewriteOnUpdate,
+      WriteBehavior::kWriteToBoth}},
     {kMergeableDictPref,
      {/*syncable_pref_id=*/2, syncer::PREFERENCES, PrefSensitivity::kNone,
-      MergeBehavior::kMergeableDict}},
+      MergeBehavior::kMergeableDict, WriteBehavior::kWriteToBoth}},
 };
 
 TEST(PreferencesMergeHelperTest, MergeListValues) {

@@ -66,13 +66,11 @@ enum class WriteBehavior {
 // This class represents the metadata corresponding to a syncable preference.
 class SyncablePrefMetadata {
  public:
-  constexpr SyncablePrefMetadata(
-      int syncable_pref_id,
-      syncer::DataType data_type,
-      PrefSensitivity pref_sensitivity,
-      MergeBehavior merge_behavior,
-      // TODO(crbug.com/441437179): Make this a required field.
-      WriteBehavior write_behavior = WriteBehavior::kWriteToBoth)
+  constexpr SyncablePrefMetadata(int syncable_pref_id,
+                                 syncer::DataType data_type,
+                                 PrefSensitivity pref_sensitivity,
+                                 MergeBehavior merge_behavior,
+                                 WriteBehavior write_behavior)
       : syncable_pref_id_(syncable_pref_id),
         data_type_(data_type),
         pref_sensitivity_(pref_sensitivity),
