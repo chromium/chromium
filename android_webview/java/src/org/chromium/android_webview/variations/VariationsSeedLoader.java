@@ -34,6 +34,7 @@ import org.chromium.android_webview.common.services.ServiceConnectionDelayRecord
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
 import org.chromium.android_webview.common.variations.VariationsUtils;
+import org.chromium.android_webview.metrics.NonembeddedMetricsCollector;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -405,7 +406,7 @@ public class VariationsSeedLoader {
                 }
                 // Connect to nonembedded metrics Service at the same time we connect to variation
                 // service.
-                AwBrowserProcess.collectNonembeddedMetrics();
+                NonembeddedMetricsCollector.collectNonembeddedMetrics();
             } catch (NameNotFoundException e) {
                 Log.e(
                         TAG,
