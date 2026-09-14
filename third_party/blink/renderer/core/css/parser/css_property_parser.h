@@ -103,7 +103,7 @@ CSSPropertyID CORE_EXPORT
 UnresolvedCSSPropertyID(const ExecutionContext*,
                         StringView,
                         CSSParserMode mode = kHTMLStandardMode);
-CSSValueID CssValueKeywordID(StringView);
+CSSValueID CORE_EXPORT CssValueKeywordID(StringView);
 
 }  // namespace blink
 

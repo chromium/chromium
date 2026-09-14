@@ -252,15 +252,40 @@ static inline bool IsExposedInMode(const ExecutionContext* execution_context,
 // the buffer together with a zero terminator. The string and zero terminator
 // is assumed to fit.
 //
-// Returns false if the string is outside the allowed range of ASCII, so that
-// it could never match any CSS properties or values.
+// Returns false if the string contains a code unit outside ASCII (>= 0x80),
+// so that it could never match any CSS properties or values. (ASCII
+// characters that cannot occur in a property or value name are copied like
+// in the LChar version and simply fail the lookup.)
 static inline bool QuasiLowercaseIntoBuffer(base::span<const UChar> chars,
                                             char* dst) {
-  for (unsigned i = 0; UChar c : chars) {
-    if (c == 0 || c >= 0x7F) {  // illegal character
-      return false;
+  // This is hot even for pure-ASCII CSS, since a single non-Latin-1
+  // character anywhere in a stylesheet makes the whole sheet a 16-bit
+  // string. So process four code units at a time: if none has a bit above
+  // 0x7F set, narrow them to bytes and use the same trick as the LChar
+  // version below (see the comments there); otherwise fall through to the
+  // per-character loop, which rejects them.
+  const UChar* src = chars.data();
+  const unsigned length = static_cast<unsigned>(chars.size());
+  unsigned i;
+  for (i = 0; i < (length & ~3); i += 4) {
+    uint64_t x;
+    UNSAFE_BUFFERS(memcpy(&x, src + i, sizeof(x)));
+    if (x & 0xFF80FF80FF80FF80ULL) {
+      break;  // Some code unit >= 0x80; handled (rejected) below.
     }
-    UNSAFE_BUFFERS(dst[i++]) = ToAsciiLower(c);
+    uint32_t narrowed = static_cast<uint32_t>(x & 0xFF) |
+                        static_cast<uint32_t>((x >> 8) & 0xFF00) |
+                        static_cast<uint32_t>((x >> 16) & 0xFF0000) |
+                        static_cast<uint32_t>((x >> 24) & 0xFF000000);
+    narrowed |= (narrowed & 0x40404040) >> 1;
+    UNSAFE_BUFFERS(memcpy(dst + i, &narrowed, sizeof(narrowed)));
+  }
+  for (; i < length; ++i) {
+    const UChar c = UNSAFE_BUFFERS(src[i]);
+    if (c & 0xFF80) {
+      return false;  // Not ASCII.
+    }
+    UNSAFE_BUFFERS(dst[i]) = static_cast<char>(c | ((c & 0x40) >> 1));
   }
   return true;
 }

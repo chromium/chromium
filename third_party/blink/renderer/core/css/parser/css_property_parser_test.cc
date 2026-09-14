@@ -1279,4 +1279,78 @@ TEST(CSSPropertyParserTest, ScrollMarkerGroupModesParsing) {
   }
 }
 
+// Property and keyword lookups lowercase and narrow their input before the
+// hash lookup, with separate code for 8-bit and 16-bit strings; both must
+// agree, and characters outside ASCII must never match (e.g. U+0130, whose
+// lowercase is "i", or U+212A KELVIN SIGN).
+TEST(CSSPropertyParserTest, PropertyAndKeywordLookup16Bit) {
+  struct {
+    const char* name;
+    CSSPropertyID property;
+  } properties[] = {
+      {"color", CSSPropertyID::kColor},
+      {"COLOR", CSSPropertyID::kColor},
+      {"Background-Color", CSSPropertyID::kBackgroundColor},
+      {"-webkit-Box-ORIENT", CSSPropertyID::kWebkitBoxOrient},
+      {"z-index", CSSPropertyID::kZIndex},
+      {"--x", CSSPropertyID::kVariable},
+      {"colour", CSSPropertyID::kInvalid},
+      {"col_or", CSSPropertyID::kInvalid},
+      {"col@or", CSSPropertyID::kInvalid},
+  };
+  for (const auto& test : properties) {
+    String name(test.name);
+    SCOPED_TRACE(test.name);
+    EXPECT_EQ(UnresolvedCSSPropertyID(/*execution_context=*/nullptr, name),
+              test.property);
+    name.Ensure16Bit();
+    EXPECT_EQ(UnresolvedCSSPropertyID(/*execution_context=*/nullptr, name),
+              test.property);
+  }
+  // Non-ASCII look-alikes, DEL and NUL, both within a block of four
+  // characters (handled by the four-at-a-time loop) and in the trailing
+  // characters after the last full block (handled one at a time).
+  const UChar kDottedI[] = {'w', 0x0130, 'd', 't', 'h', 0};    // "wİdth"
+  const UChar kKelvin[] = {'m', 'a', 's', 0x212A, 0};          // "masK"
+  const UChar kLatin1[] = {'c', 'o', 'l', 'o', 0xF6, 'r', 0};  // "coloör"
+  const UChar kDelInBlock[] = {'c', 0x7F, 'l', 'o', 'r', 0};
+  const UChar kDelTrailing[] = {'c', 'o', 'l', 'o', 'r', 0x7F, 0};
+  const UChar kNulInBlock[] = {'t', 'o', 'p', 0, 'x'};
+  const UChar kNulTrailing[] = {'l', 'e', 'f', 't', 0};
+  EXPECT_EQ(UnresolvedCSSPropertyID(nullptr, String(kDottedI)),
+            CSSPropertyID::kInvalid);
+  EXPECT_EQ(UnresolvedCSSPropertyID(nullptr, String(kKelvin)),
+            CSSPropertyID::kInvalid);
+  EXPECT_EQ(UnresolvedCSSPropertyID(nullptr, String(kLatin1)),
+            CSSPropertyID::kInvalid);
+  EXPECT_EQ(UnresolvedCSSPropertyID(nullptr, String(kDelInBlock)),
+            CSSPropertyID::kInvalid);
+  EXPECT_EQ(UnresolvedCSSPropertyID(nullptr, String(kDelTrailing)),
+            CSSPropertyID::kInvalid);
+  EXPECT_EQ(UnresolvedCSSPropertyID(nullptr, String(base::span(kNulInBlock))),
+            CSSPropertyID::kInvalid);
+  EXPECT_EQ(UnresolvedCSSPropertyID(nullptr, String(base::span(kNulTrailing))),
+            CSSPropertyID::kInvalid);
+
+  struct {
+    const char* name;
+    CSSValueID value;
+  } keywords[] = {
+      {"block", CSSValueID::kBlock},
+      {"BLOCK", CSSValueID::kBlock},
+      {"Inline-Block", CSSValueID::kInlineBlock},
+      {"-webkit-box", CSSValueID::kWebkitBox},
+      {"blok", CSSValueID::kInvalid},
+  };
+  for (const auto& test : keywords) {
+    String name(test.name);
+    SCOPED_TRACE(test.name);
+    EXPECT_EQ(CssValueKeywordID(name), test.value);
+    name.Ensure16Bit();
+    EXPECT_EQ(CssValueKeywordID(name), test.value);
+  }
+  const UChar kBlockKelvin[] = {'b', 'l', 'o', 'c', 0x212A, 0};
+  EXPECT_EQ(CssValueKeywordID(String(kBlockKelvin)), CSSValueID::kInvalid);
+}
+
 }  // namespace blink
