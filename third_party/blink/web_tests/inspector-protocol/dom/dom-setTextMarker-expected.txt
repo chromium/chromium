@@ -1,0 +1,114 @@
+Tests DOM.setTextMarker and DOM.clearTextMarkers.
+Unforced spelling marker on #t [10, 15): "The quick brown fox" spelling=1[10,15) grammar=0
+After spelling marker on #t [4, 9): "The quick brown fox" spelling=2[4,9)[10,15) grammar=0
+After grammar marker on #t [4, 9): "The quick brown fox" spelling=2[4,9)[10,15) grammar=1[4,9)
+After spelling marker on input value [0, 3): "teh lazy dog" spelling=1[0,3) grammar=0
+After spelling marker spanning <b> on #cross [4, 9): "The " spelling=0 grammar=0 | "quick" spelling=1[0,5) grammar=0 | " fox" spelling=0 grammar=0
+After spelling marker on textarea value "ab\ncd" [3, 5): "ab" spelling=0 grammar=0 | "cd" spelling=1[0,2) grammar=0
+After spelling marker on element inside shadow root [0, 6): "shadow text" spelling=1[0,6) grammar=0
+After clearTextMarkers:
+  #t: "The quick brown fox" spelling=1[10,15) grammar=0
+  input: "teh lazy dog" spelling=0 grammar=0
+  #cross: "The " spelling=0 grammar=0 | "quick" spelling=0 grammar=0 | " fox" spelling=0 grammar=0
+  textarea: "ab" spelling=0 grammar=0 | "cd" spelling=0 grammar=0
+  shadow root: "shadow text" spelling=0 grammar=0
+Set single marker before disabling: "The quick brown fox" spelling=2[0,6)[10,15) grammar=0
+Markers after DOM disable: "The quick brown fox" spelling=1[10,15) grammar=0
+Set by a session without DOM.enable: "The quick brown fox" spelling=2[0,6)[10,15) grammar=0
+After that session detached: "The quick brown fox" spelling=1[10,15) grammar=0
+After spelling marker on #t [8, 12): "The quick brown fox" spelling=1[8,15) grammar=0
+After clearTextMarkers with overlap, #t: "The quick brown fox" spelling=0 grammar=0
+After grammar marker on #gone [6, 12): "to be removed" spelling=0 grammar=1[6,12)
+Unforced spelling marker on #t [10, 15): "The quick brown fox" spelling=1[10,15) grammar=0
+After clearTextMarkers with the marked node removed, #t: "The quick brown fox" spelling=1[10,15) grammar=0
+End before start
+{
+    error : {
+        code : -32602
+        message : Start must be non-negative and less than end
+    }
+    id : <number>
+    sessionId : <string>
+}
+Negative start
+{
+    error : {
+        code : -32602
+        message : Start must be non-negative and less than end
+    }
+    id : <number>
+    sessionId : <string>
+}
+Start beyond end of text
+{
+    error : {
+        code : -32602
+        message : Start is beyond the element's text
+    }
+    id : <number>
+    sessionId : <string>
+}
+End beyond end of text
+{
+    error : {
+        code : -32602
+        message : End is beyond the element's text
+    }
+    id : <number>
+    sessionId : <string>
+}
+End one past textarea value
+{
+    error : {
+        code : -32602
+        message : End is beyond the element's text
+    }
+    id : <number>
+    sessionId : <string>
+}
+Shadow content addressed through the host
+{
+    error : {
+        code : -32602
+        message : Start is beyond the element's text
+    }
+    id : <number>
+    sessionId : <string>
+}
+display:none element
+{
+    error : {
+        code : -32602
+        message : Start is beyond the element's text
+    }
+    id : <number>
+    sessionId : <string>
+}
+Detached element
+{
+    error : {
+        code : -32000
+        message : Node is detached from document
+    }
+    id : <number>
+    sessionId : <string>
+}
+Text node instead of element
+{
+    error : {
+        code : -32602
+        message : Node is not an element
+    }
+    id : <number>
+    sessionId : <string>
+}
+Unknown marker type
+{
+    error : {
+        code : -32602
+        message : Unknown marker type
+    }
+    id : <number>
+    sessionId : <string>
+}
+

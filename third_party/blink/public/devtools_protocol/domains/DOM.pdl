@@ -845,6 +845,37 @@ domain DOM
       # If true, opens and holds interest. If false, releases forced interest.
       boolean enable
 
+  # Sets a spelling or grammar error marker on the given range of text.
+  # See https://github.com/Igalia/explainers/blob/main/force-spelling-grammar-markers/README.md
+  # Note: exactly one between nodeId, backendNodeId and objectId should be passed
+  # to identify the node.
+  experimental command setTextMarker
+    parameters
+      # Identifier of the node.
+      optional NodeId nodeId
+      # Identifier of the backend node.
+      optional BackendNodeId backendNodeId
+      # JavaScript object id of the node wrapper.
+      optional Runtime.RemoteObjectId objectId
+      # The type of marker to set on the given range of text.
+      enum type
+        # A spelling error marker, rendered as ::spelling-error
+        spelling
+        # A grammar error marker, rendered as ::grammar-error
+        grammar
+      # Start offset into the element's rendered text in UTF-16 code units.
+      # For a text control, an offset into the control's value.
+      # Offsets count text in DOM order and do not enter shadow trees.
+      # To mark text inside a shadow tree, pass the element inside the shadow tree.
+      integer start
+      # End offset (exclusive) in the same units and space as start.
+      integer end
+
+  # Clears the spelling and grammar error text markers overlapping the ranges
+  # set by setTextMarker in this session. These markers are also removed when
+  # the DOM domain is disabled or the session ends.
+  experimental command clearTextMarkers
+
   # Fired when `Element`'s attribute is modified.
   event attributeModified
     parameters

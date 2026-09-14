@@ -31,16 +31,19 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_DOM_AGENT_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener_map.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/dom.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -66,6 +69,7 @@ class Node;
 class QualifiedName;
 class PseudoElement;
 class InspectorRevalidateDOMTask;
+class Range;
 class ShadowRoot;
 
 class CORE_EXPORT InspectorDOMAgent final
@@ -288,6 +292,15 @@ class CORE_EXPORT InspectorDOMAgent final
   void WillLoseInterest(Element* element, bool* force_interest);
   void ReleaseForcedInterestInvokers();
 
+  protocol::Response setTextMarker(std::optional<int> node_id,
+                                   std::optional<int> backend_node_id,
+                                   std::optional<String> object_id,
+                                   const String& type,
+                                   int start,
+                                   int end) override;
+
+  protocol::Response clearTextMarkers() override;
+
   bool Enabled() const;
   IncludeWhitespaceEnum IncludeWhitespace() const;
   void ReleaseDanglingNodes();
@@ -423,6 +436,8 @@ class CORE_EXPORT InspectorDOMAgent final
 
   void DiscardFrontendBindings();
   void ReleaseForcedPopovers();
+  void ReleaseForcedTextMarkers();
+  void PruneInactiveForcedTextMarkers();
 
   InspectorRevalidateDOMTask* RevalidateTask();
 
@@ -443,6 +458,8 @@ class CORE_EXPORT InspectorDOMAgent final
   HashSet<int> distributed_nodes_requested_;
   HashMap<int, int> cached_child_count_;
   HeapHashSet<WeakMember<Node>> forced_popovers_;
+  HeapVector<std::pair<Member<Range>, DocumentMarker::MarkerTypes>>
+      forced_text_markers_;
   HeapHashSet<WeakMember<Node>> forced_interest_invokers_;
   int last_node_id_;
   Member<Document> document_;

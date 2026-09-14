@@ -64,10 +64,14 @@
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/plain_text_range.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
@@ -79,6 +83,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -755,6 +760,7 @@ protocol::Response InspectorDOMAgent::disable() {
     return protocol::Response::ServerError("DOM agent hasn't been enabled");
   ReleaseForcedPopovers();
   ReleaseForcedInterestInvokers();
+  ReleaseForcedTextMarkers();
   include_whitespace_.Clear();
   enabled_.Clear();
   instrumenting_agents_->RemoveInspectorDOMAgent(this);
@@ -2315,6 +2321,102 @@ void InspectorDOMAgent::WillLoseInterest(Element* element,
   }
 }
 
+protocol::Response InspectorDOMAgent::setTextMarker(
+    std::optional<int> node_id,
+    std::optional<int> backend_node_id,
+    std::optional<String> object_id,
+    const String& type,
+    int start,
+    int end) {
+  PruneInactiveForcedTextMarkers();
+
+  Node* node = nullptr;
+  protocol::Response response =
+      AssertNode(node_id, backend_node_id, object_id, node);
+
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  node->GetDocument().UpdateStyleAndLayoutForNode(
+      node, DocumentUpdateReason::kInspector);
+
+  if (!node->isConnected()) {
+    return protocol::Response::ServerError("Node is detached from document");
+  }
+
+  auto* element = DynamicTo<Element>(node);
+
+  if (!element) {
+    return protocol::Response::InvalidParams("Node is not an element");
+  }
+
+  if (start < 0 || end <= start) {
+    return protocol::Response::InvalidParams(
+        "Start must be non-negative and less than end");
+  }
+
+  ContainerNode* scope = element;
+  if (IsTextControl(*element)) {
+    scope = ToTextControl(element)->InnerEditorElement();
+    if (!scope) {
+      return protocol::Response::ServerError(
+          "Text control has no inner editor");
+    }
+  }
+
+  EphemeralRange range = PlainTextRange(start, end).CreateRange(*scope);
+  if (range.IsNull()) {
+    return protocol::Response::InvalidParams(
+        "Start is beyond the element's text");
+  }
+
+  if (PlainTextRange::Create(*scope, range).End() !=
+      static_cast<wtf_size_t>(end)) {
+    return protocol::Response::InvalidParams(
+        "End is beyond the element's text");
+  }
+
+  DocumentMarker::MarkerTypes types;
+  if (type == protocol::DOM::SetTextMarker::TypeEnum::Spelling) {
+    types = DocumentMarker::MarkerTypes::Spelling();
+    node->GetDocument().Markers().AddSpellingMarker(range);
+  } else if (type == protocol::DOM::SetTextMarker::TypeEnum::Grammar) {
+    types = DocumentMarker::MarkerTypes::Grammar();
+    node->GetDocument().Markers().AddGrammarMarker(range);
+  } else {
+    return protocol::Response::InvalidParams("Unknown marker type");
+  }
+  forced_text_markers_.emplace_back(CreateRange(range), types);
+
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorDOMAgent::clearTextMarkers() {
+  ReleaseForcedTextMarkers();
+  return protocol::Response::Success();
+}
+
+void InspectorDOMAgent::PruneInactiveForcedTextMarkers() {
+  EraseIf(forced_text_markers_, [](const auto& entry) {
+    return !entry.first->OwnerDocument().IsActive();
+  });
+}
+
+void InspectorDOMAgent::ReleaseForcedTextMarkers() {
+  for (const auto& [range, types] : forced_text_markers_) {
+    Document& document = range->OwnerDocument();
+    // Skip documents that have already shut down (Dispose can run during frame
+    // teardown) and ranges on nodes that were removed.
+    if (!document.IsActive() || !range->IsConnected()) {
+      continue;
+    }
+    document.UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
+    document.Markers().RemoveMarkersInRange(EphemeralRange(range), types);
+  }
+  forced_text_markers_.clear();
+}
+
 // static
 const HeapVector<Member<Element>>
 InspectorDOMAgent::GetContainerQueryingDescendants(Element* container) {
@@ -2812,6 +2914,8 @@ void InspectorDOMAgent::InvalidateFrameOwnerElement(
 void InspectorDOMAgent::DidCommitLoad(LocalFrame*, DocumentLoader* loader) {
   Document* document = loader->GetFrame()->GetDocument();
   NotifyDidAddDocument(document);
+
+  PruneInactiveForcedTextMarkers();
 
   LocalFrame* inspected_frame = inspected_frames_->Root();
   if (loader->GetFrame() != inspected_frame) {
@@ -3525,10 +3629,12 @@ void InspectorDOMAgent::Trace(Visitor* visitor) const {
   visitor->Trace(node_to_creation_source_location_map_);
   visitor->Trace(forced_popovers_);
   visitor->Trace(forced_interest_invokers_);
+  visitor->Trace(forced_text_markers_);
   InspectorBaseAgent::Trace(visitor);
 }
 
 void InspectorDOMAgent::Dispose() {
+  ReleaseForcedTextMarkers();
   InspectorBaseAgent<protocol::DOM::Metainfo>::Dispose();
   isolate_ = nullptr;
 }
