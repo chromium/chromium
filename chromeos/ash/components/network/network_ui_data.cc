@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/network_ui_data.h"
 
+#include <array>
 #include <utility>
 
 #include "base/check.h"
@@ -27,21 +28,24 @@ struct StringEnumEntry {
   const char* string;
   Enum enum_value;
 };
+template <typename Enum>
+StringEnumEntry(const char*, Enum) -> StringEnumEntry<Enum>;
 
-const StringEnumEntry<::onc::ONCSource> kONCSourceTable[] = {
-    {kONCSourceUserImport, ::onc::ONC_SOURCE_USER_IMPORT},
-    {kONCSourceDevicePolicy, ::onc::ONC_SOURCE_DEVICE_POLICY},
-    {kONCSourceUserPolicy, ::onc::ONC_SOURCE_USER_POLICY}};
+constexpr std::array kONCSourceTable = {
+    StringEnumEntry{kONCSourceUserImport, ::onc::ONC_SOURCE_USER_IMPORT},
+    StringEnumEntry{kONCSourceDevicePolicy, ::onc::ONC_SOURCE_DEVICE_POLICY},
+    StringEnumEntry{kONCSourceUserPolicy, ::onc::ONC_SOURCE_USER_POLICY},
+};
 
 // Converts |enum_value| to the corresponding string according to |table|. If no
 // enum value of the table matches (which can only occur if incorrect casting
 // was used to obtain |enum_value|), returns an empty string instead.
-template <typename Enum, int N>
-std::string EnumToString(const StringEnumEntry<Enum> (&table)[N],
+template <typename Enum, size_t N>
+std::string EnumToString(const std::array<StringEnumEntry<Enum>, N>& table,
                          Enum enum_value) {
-  for (int i = 0; i < N; ++i) {
-    if (UNSAFE_TODO(table[i]).enum_value == enum_value) {
-      return UNSAFE_TODO(table[i]).string;
+  for (const auto& entry : table) {
+    if (entry.enum_value == enum_value) {
+      return entry.string;
     }
   }
   return std::string();
@@ -49,13 +53,13 @@ std::string EnumToString(const StringEnumEntry<Enum> (&table)[N],
 
 // Converts |str| to the corresponding enum value according to |table|. If no
 // string of the table matches, returns |fallback| instead.
-template <typename Enum, int N>
-Enum StringToEnum(const StringEnumEntry<Enum> (&table)[N],
+template <typename Enum, size_t N>
+Enum StringToEnum(const std::array<StringEnumEntry<Enum>, N>& table,
                   const std::string& str,
                   Enum fallback) {
-  for (int i = 0; i < N; ++i) {
-    if (UNSAFE_TODO(table[i]).string == str) {
-      return UNSAFE_TODO(table[i]).enum_value;
+  for (const auto& entry : table) {
+    if (entry.string == str) {
+      return entry.enum_value;
     }
   }
   return fallback;

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -38,45 +39,45 @@ std::string MatchHit(const std::u16string& text,
 }  // namespace
 
 TEST(TokenizedStringMatchTest, NotMatch) {
-  struct {
+  struct TestCase {
     const char* text;
     const char* query;
-  } kTestCases[] = {
-      {"", ""},        {"", "query"},
-      {"text", ""},    {"!", "!@#$%^&*()<<<**>>>"},
-      {"abd", "abcd"}, {"cd", "abcd"},
+  };
+  constexpr std::array kTestCases = {
+      TestCase{"", ""},        TestCase{"", "query"},
+      TestCase{"text", ""},    TestCase{"!", "!@#$%^&*()<<<**>>>"},
+      TestCase{"abd", "abcd"}, TestCase{"cd", "abcd"},
   };
 
   TokenizedStringMatch match;
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    const std::u16string text(
-        base::UTF8ToUTF16(UNSAFE_TODO(kTestCases[i]).text));
-    UNSAFE_TODO(EXPECT_FALSE(
-        match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text)))
-        << "Test case " << i << " : text=" << UNSAFE_TODO(kTestCases[i]).text
-        << ", query=" << UNSAFE_TODO(kTestCases[i]).query;
+    const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
+    EXPECT_FALSE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text))
+        << "Test case " << i << " : text=" << kTestCases[i].text
+        << ", query=" << kTestCases[i].query;
   }
 }
 
 TEST(TokenizedStringMatchTest, Match) {
-  struct {
+  struct TestCase {
     const char* text;
     const char* query;
     const char* expect;
-  } kTestCases[] = {
-      {"ScratchPad", "pad", "Scratch[Pad]"},
-      {"Chess2", "che", "[Che]ss2"},
-      {"John Doe", "john d", "[John D]oe"},
-      {"Cut the rope", "cut ro", "[Cut] the [ro]pe"},
-      {"Secure Shell", "she", "Secure [She]ll"},
-      {"Netflix", "flix", "Net[flix]"},
-      {"John Doe", "johnd", "[John D]oe"},
-      {"John Doe", "doe john", "[John] [Doe]"},
-      {"John Doe", "doe joh", "[Joh]n [Doe]"},
+  };
+  constexpr std::array kTestCases = {
+      TestCase{"ScratchPad", "pad", "Scratch[Pad]"},
+      TestCase{"Chess2", "che", "[Che]ss2"},
+      TestCase{"John Doe", "john d", "[John D]oe"},
+      TestCase{"Cut the rope", "cut ro", "[Cut] the [ro]pe"},
+      TestCase{"Secure Shell", "she", "Secure [She]ll"},
+      TestCase{"Netflix", "flix", "Net[flix]"},
+      TestCase{"John Doe", "johnd", "[John D]oe"},
+      TestCase{"John Doe", "doe john", "[John] [Doe]"},
+      TestCase{"John Doe", "doe joh", "[Joh]n [Doe]"},
   };
 
   TokenizedStringMatch match;
-  for (auto& test_case : kTestCases) {
+  for (const auto& test_case : kTestCases) {
     const std::u16string text(base::UTF8ToUTF16(test_case.text));
     EXPECT_TRUE(match.Calculate(base::UTF8ToUTF16(test_case.query), text));
     EXPECT_EQ(test_case.expect, MatchHit(text, match));
@@ -84,19 +85,20 @@ TEST(TokenizedStringMatchTest, Match) {
 }
 
 TEST(TokenizedStringMatchTest, AcronymMatchNotAllowed) {
-  struct {
+  struct TestCase {
     const char* text;
     const char* query;
     const char* expect;
-  } kTestCases[] = {
-      {"ScratchPad", "sp", "ScratchPad"},
-      {"Chess2", "c2", "Chess2"},
-      {"John Doe", "jdoe", "John Doe"},
-      {"hello John Doe", "jdoe", "hello John Doe"},
+  };
+  constexpr std::array kTestCases = {
+      TestCase{"ScratchPad", "sp", "ScratchPad"},
+      TestCase{"Chess2", "c2", "Chess2"},
+      TestCase{"John Doe", "jdoe", "John Doe"},
+      TestCase{"hello John Doe", "jdoe", "hello John Doe"},
   };
 
   TokenizedStringMatch match;
-  for (auto& test_case : kTestCases) {
+  for (const auto& test_case : kTestCases) {
     const std::u16string text(base::UTF8ToUTF16(test_case.text));
     EXPECT_FALSE(match.Calculate(base::UTF8ToUTF16(test_case.query), text));
     EXPECT_EQ(test_case.expect, MatchHit(text, match));
@@ -104,37 +106,37 @@ TEST(TokenizedStringMatchTest, AcronymMatchNotAllowed) {
 }
 
 TEST(TokenizedStringMatchTest, Relevance) {
-  struct {
+  struct TestCase {
     const char* text;
     const char* query_low;
     const char* query_high;
-  } kTestCases[] = {
+  };
+  constexpr std::array kTestCases = {
       // More matched chars are better.
-      {"Google Chrome", "g", "go"},
-      {"Google Chrome", "go", "goo"},
-      {"Google Chrome", "goo", "goog"},
-      {"Google Chrome", "c", "ch"},
-      {"Google Chrome", "ch", "chr"},
+      TestCase{"Google Chrome", "g", "go"},
+      TestCase{"Google Chrome", "go", "goo"},
+      TestCase{"Google Chrome", "goo", "goog"},
+      TestCase{"Google Chrome", "c", "ch"},
+      TestCase{"Google Chrome", "ch", "chr"},
       // Prefix match is better than middle match.
-      {"Google Chrome", "ch", "go"},
+      TestCase{"Google Chrome", "ch", "go"},
       // Substring match has the lowest score.
-      {"Google Chrome", "oo", "go"},
-      {"Google Chrome", "oo", "ch"},
+      TestCase{"Google Chrome", "oo", "go"},
+      TestCase{"Google Chrome", "oo", "ch"},
   };
 
   TokenizedStringMatch match_low;
   TokenizedStringMatch match_high;
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    const std::u16string text(
-        base::UTF8ToUTF16(UNSAFE_TODO(kTestCases[i]).text));
-    UNSAFE_TODO(EXPECT_TRUE(
-        match_low.Calculate(base::UTF8ToUTF16(kTestCases[i].query_low), text)));
-    UNSAFE_TODO(EXPECT_TRUE(match_high.Calculate(
-        base::UTF8ToUTF16(kTestCases[i].query_high), text)));
+    const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
+    EXPECT_TRUE(
+        match_low.Calculate(base::UTF8ToUTF16(kTestCases[i].query_low), text));
+    EXPECT_TRUE(match_high.Calculate(
+        base::UTF8ToUTF16(kTestCases[i].query_high), text));
     EXPECT_LT(match_low.relevance(), match_high.relevance())
-        << "Test case " << i << " : text=" << UNSAFE_TODO(kTestCases[i]).text
-        << ", query_low=" << UNSAFE_TODO(kTestCases[i]).query_low
-        << ", query_high=" << UNSAFE_TODO(kTestCases[i]).query_high;
+        << "Test case " << i << " : text=" << kTestCases[i].text
+        << ", query_low=" << kTestCases[i].query_low
+        << ", query_high=" << kTestCases[i].query_high;
   }
 }
 
@@ -143,32 +145,31 @@ TEST(TokenizedStringMatchTest, Relevance) {
 // require updating this test.)
 TEST(TokenizedStringMatchTest, AbsoluteRelevance) {
   const double kEpsilon = 0.006;
-  struct {
+  struct TestCase {
     const char* text;
     const char* query;
     double expected_score;
-  } kTestCases[] = {
+  };
+  constexpr std::array kTestCases = {
       // The first few chars should increase the score extremely high. After
       // that, they should count less.
       // NOTE: 0.87 is a magic number, as it is the Omnibox score for a "pretty
       // good" match. We want a 3-letter prefix match to be slightly above 0.87.
-      {"Google Chrome", "g", 0.5},
-      {"Google Chrome", "go", 0.75},
-      {"Google Chrome", "goo", 0.88},
-      {"Google Chrome", "goog", 0.94},
+      TestCase{"Google Chrome", "g", 0.5},
+      TestCase{"Google Chrome", "go", 0.75},
+      TestCase{"Google Chrome", "goo", 0.88},
+      TestCase{"Google Chrome", "goog", 0.94},
   };
 
   TokenizedStringMatch match;
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    const std::u16string text(
-        base::UTF8ToUTF16(UNSAFE_TODO(kTestCases[i]).text));
-    UNSAFE_TODO(EXPECT_TRUE(
-        match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text)));
-    UNSAFE_TODO(
-        EXPECT_NEAR(match.relevance(), kTestCases[i].expected_score, kEpsilon))
-        << "Test case " << i << " : text=" << UNSAFE_TODO(kTestCases[i]).text
-        << ", query=" << UNSAFE_TODO(kTestCases[i]).query
-        << ", expected_score=" << UNSAFE_TODO(kTestCases[i]).expected_score;
+    const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
+    EXPECT_TRUE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text));
+
+    EXPECT_NEAR(match.relevance(), kTestCases[i].expected_score, kEpsilon)
+        << "Test case " << i << " : text=" << kTestCases[i].text
+        << ", query=" << kTestCases[i].query
+        << ", expected_score=" << kTestCases[i].expected_score;
   }
 }
 

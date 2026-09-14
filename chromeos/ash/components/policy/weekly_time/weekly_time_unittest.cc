@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <tuple>
@@ -38,7 +39,7 @@ enum {
   kSunday = 7,
 };
 
-constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
+constexpr std::array kWeekdays = {
     em::WeeklyTimeProto::DAY_OF_WEEK_UNSPECIFIED,
     em::WeeklyTimeProto::MONDAY,
     em::WeeklyTimeProto::TUESDAY,
@@ -46,7 +47,8 @@ constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
     em::WeeklyTimeProto::THURSDAY,
     em::WeeklyTimeProto::FRIDAY,
     em::WeeklyTimeProto::SATURDAY,
-    em::WeeklyTimeProto::SUNDAY};
+    em::WeeklyTimeProto::SUNDAY,
+};
 
 constexpr int kMinutesInHour = 60;
 constexpr int kMillisecondsInHour = 3600000;
@@ -97,7 +99,7 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromProto_InvalidDay) {
 
 TEST_P(SingleWeeklyTimeTest, ExtractFromProto_InvalidTime) {
   em::WeeklyTimeProto proto;
-  proto.set_day_of_week(UNSAFE_TODO(kWeekdays[day_of_week()]));
+  proto.set_day_of_week(kWeekdays[day_of_week()]);
   proto.set_time(-1);
   auto result = WeeklyTime::ExtractFromProto(proto, timezone_offset());
   ASSERT_FALSE(result);
@@ -106,7 +108,7 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromProto_InvalidTime) {
 TEST_P(SingleWeeklyTimeTest, ExtractFromProto_Valid) {
   int milliseconds = minutes() * kMinute.InMilliseconds();
   em::WeeklyTimeProto proto;
-  proto.set_day_of_week(UNSAFE_TODO(kWeekdays[day_of_week()]));
+  proto.set_day_of_week(kWeekdays[day_of_week()]);
   proto.set_time(milliseconds);
   auto result = WeeklyTime::ExtractFromProto(proto, timezone_offset());
   ASSERT_TRUE(result);

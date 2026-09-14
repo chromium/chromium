@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/tether/network_list_sorter.h"
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -23,7 +24,7 @@ const char kGuid0[] = "guid0";
 const char kGuid1[] = "guid1";
 const char kGuid2[] = "guid2";
 
-const char* const kGuidArray[] = {kGuid0, kGuid1, kGuid2};
+constexpr std::array kGuidArray = {kGuid0, kGuid1, kGuid2};
 
 }  // namespace
 
@@ -69,9 +70,9 @@ class NetworkListSorterTest : public testing::Test {
   void SortAndVerifySortOrder(int el0, int el1, int el2) {
     network_list_sorter_->SortTetherNetworkList(list_.get());
 
-    UNSAFE_TODO(EXPECT_EQ(NetworkAtIndex(0)->guid(), kGuidArray[el0]));
-    UNSAFE_TODO(EXPECT_EQ(NetworkAtIndex(1)->guid(), kGuidArray[el1]));
-    UNSAFE_TODO(EXPECT_EQ(NetworkAtIndex(2)->guid(), kGuidArray[el2]));
+    EXPECT_EQ(NetworkAtIndex(0)->guid(), kGuidArray[el0]);
+    EXPECT_EQ(NetworkAtIndex(1)->guid(), kGuidArray[el1]);
+    EXPECT_EQ(NetworkAtIndex(2)->guid(), kGuidArray[el2]);
   }
 
   std::unique_ptr<NetworkStateHandler::ManagedStateList> list_;

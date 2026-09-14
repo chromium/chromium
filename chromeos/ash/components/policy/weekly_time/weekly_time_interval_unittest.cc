@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 
+#include <array>
 #include <tuple>
 #include <utility>
 
@@ -33,7 +34,7 @@ const int kMinutesInHour = 60;
 
 constexpr base::TimeDelta kMinute = base::Minutes(1);
 
-constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
+constexpr std::array kWeekdays = {
     em::WeeklyTimeProto::DAY_OF_WEEK_UNSPECIFIED,
     em::WeeklyTimeProto::MONDAY,
     em::WeeklyTimeProto::TUESDAY,
@@ -41,7 +42,8 @@ constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
     em::WeeklyTimeProto::THURSDAY,
     em::WeeklyTimeProto::FRIDAY,
     em::WeeklyTimeProto::SATURDAY,
-    em::WeeklyTimeProto::SUNDAY};
+    em::WeeklyTimeProto::SUNDAY,
+};
 
 }  // namespace
 
@@ -92,7 +94,7 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_Empty) {
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_NoEnd) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* start = interval_proto.mutable_start();
-  start->set_day_of_week(UNSAFE_TODO(kWeekdays[start_day_of_week()]));
+  start->set_day_of_week(kWeekdays[start_day_of_week()]);
   start->set_time(start_time());
   auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
   ASSERT_FALSE(result);
@@ -101,7 +103,7 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_NoEnd) {
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_NoStart) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
-  end->set_day_of_week(UNSAFE_TODO(kWeekdays[end_day_of_week()]));
+  end->set_day_of_week(kWeekdays[end_day_of_week()]);
   end->set_time(end_time());
   auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
   ASSERT_FALSE(result);
@@ -113,7 +115,7 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_InvalidStart) {
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
   start->set_day_of_week(kWeekdays[0]);
   start->set_time(start_time());
-  end->set_day_of_week(UNSAFE_TODO(kWeekdays[end_day_of_week()]));
+  end->set_day_of_week(kWeekdays[end_day_of_week()]);
   end->set_time(end_time());
   auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
   ASSERT_FALSE(result);
@@ -123,7 +125,7 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_InvalidEnd) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* start = interval_proto.mutable_start();
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
-  start->set_day_of_week(UNSAFE_TODO(kWeekdays[start_day_of_week()]));
+  start->set_day_of_week(kWeekdays[start_day_of_week()]);
   start->set_time(start_time());
   end->set_day_of_week(kWeekdays[0]);
   end->set_time(end_time());
@@ -135,9 +137,9 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_InvalidStartEqualsEnd) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* start = interval_proto.mutable_start();
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
-  start->set_day_of_week(UNSAFE_TODO(kWeekdays[start_day_of_week()]));
+  start->set_day_of_week(kWeekdays[start_day_of_week()]);
   start->set_time(start_time());
-  end->set_day_of_week(UNSAFE_TODO(kWeekdays[start_day_of_week()]));
+  end->set_day_of_week(kWeekdays[start_day_of_week()]);
   end->set_time(start_time());
   auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
   ASSERT_FALSE(result);
@@ -147,9 +149,9 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_Valid) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* start = interval_proto.mutable_start();
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
-  start->set_day_of_week(UNSAFE_TODO(kWeekdays[start_day_of_week()]));
+  start->set_day_of_week(kWeekdays[start_day_of_week()]);
   start->set_time(start_time());
-  end->set_day_of_week(UNSAFE_TODO(kWeekdays[end_day_of_week()]));
+  end->set_day_of_week(kWeekdays[end_day_of_week()]);
   end->set_time(end_time());
   auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
   ASSERT_TRUE(result);
