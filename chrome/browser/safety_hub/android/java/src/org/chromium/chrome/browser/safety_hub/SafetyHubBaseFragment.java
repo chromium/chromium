@@ -80,7 +80,7 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
     }
 
     protected void startSettings(Class<? extends Fragment> fragment) {
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(getContext())
                 .startSettings(
                         getContext(),
                         fragment,
@@ -97,7 +97,7 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
                 SingleCategorySettings.EXTRA_TITLE,
                 getContext().getString(ContentSettingsResources.getTitleForCategory(category)));
 
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(getContext())
                 .startSettings(getContext(), SingleCategorySettings.class, extras);
     }
 }

@@ -176,7 +176,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    SettingsNavigationFactory.createSettingsNavigation()
+                    SettingsNavigationFactory.createSettingsNavigation(mContext)
                             .startSettings(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
                 });
@@ -206,7 +206,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    SettingsNavigationFactory.createSettingsNavigation()
+                    SettingsNavigationFactory.createSettingsNavigation(mContext)
                             .startSettings(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
                 });
@@ -235,7 +235,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    SettingsNavigationFactory.createSettingsNavigation()
+                    SettingsNavigationFactory.createSettingsNavigation(mContext)
                             .startSettings(mContext, SafeBrowsingSettingsFragment.class);
                     recordExternalInteractions(
                             ExternalInteractions.OPEN_SAFE_BROWSING_FROM_MAGIC_STACK);

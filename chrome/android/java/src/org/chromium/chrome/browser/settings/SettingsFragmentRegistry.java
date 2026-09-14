@@ -49,8 +49,9 @@ import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.EnhancedProtectionSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSettingsFragment;
-import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubNotificationsFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubPermissionsFragment;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
 import org.chromium.chrome.browser.settings.search.SearchResultsPreferenceFragment;
@@ -154,7 +155,8 @@ public class SettingsFragmentRegistry {
 
         // Safety Check / Safety Hub
         registerMapping("/safetyCheck", SafetyHubFragment.class);
-        registerMapping("/notifications", SafetyCheckSettingsFragment.class);
+        registerMapping("/safetyCheck/permissions", SafetyHubPermissionsFragment.class);
+        registerMapping("/safetyCheck/notifications", SafetyHubNotificationsFragment.class);
 
         // Autofill & Passwords
         registerMapping("/autofill", AutofillAndPasswordsFragment.class);

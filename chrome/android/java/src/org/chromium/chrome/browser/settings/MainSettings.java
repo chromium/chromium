@@ -727,7 +727,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private static void openAutofillOptions(Context context) {
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(context)
                 .startSettings(
                         context,
                         AutofillOptionsFragment.class,

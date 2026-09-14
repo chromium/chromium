@@ -72,7 +72,7 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
                     @Override
                     public void onClick(View view) {
                         mBulkActionConfirmed = true;
-                        SettingsNavigationFactory.createSettingsNavigation()
+                        SettingsNavigationFactory.createSettingsNavigation(getContext())
                                 .finishCurrentSettings(SafetyHubSubpageFragment.this);
                     }
                 });
