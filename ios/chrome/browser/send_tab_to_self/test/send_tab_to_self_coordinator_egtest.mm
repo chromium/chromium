@@ -135,6 +135,15 @@ void RelaunchAppWithIdentity(AppLaunchConfiguration base_config,
       ensureAppLaunchedWithConfiguration:base_config];
 }
 
+// Dismisses the Send Tab to Self modal bottom sheet.
+void DismissSendTabToSelfModal() {
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalCancelButton)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kSendTabToSelfModalCancelButton)];
+}
+
 }  // namespace
 
 @interface SendTabToSelfCoordinatorTestCase : ChromeTestCase
@@ -203,9 +212,7 @@ void RelaunchAppWithIdentity(AppLaunchConfiguration base_config,
                                                        kTargetDeviceName)];
 
   // Clean up the promo sheet.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalCancelButton)]
-      performAction:grey_tap()];
+  DismissSendTabToSelfModal();
 }
 
 - (void)testTapManageDevicesOpensMyAccountDevicesPage {
@@ -273,9 +280,7 @@ void RelaunchAppWithIdentity(AppLaunchConfiguration base_config,
                                                        kTargetDeviceName)];
 
   // Clean up.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalCancelButton)]
-      performAction:grey_tap()];
+  DismissSendTabToSelfModal();
 }
 
 // Tests that when kSendTabToSelfPostSendToast is enabled, sending a tab to a
@@ -678,11 +683,7 @@ void RelaunchAppWithIdentity(AppLaunchConfiguration base_config,
                                                        kTargetDeviceName)];
 
   // Clean up.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalCancelButton)]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(kSendTabToSelfModalCancelButton)];
+  DismissSendTabToSelfModal();
 }
 
 // Tests that when the "Send to your device" bottom sheet is opened from the tab
@@ -776,11 +777,7 @@ void RelaunchAppWithIdentity(AppLaunchConfiguration base_config,
                                                        kTargetDeviceName)];
 
   // Clean up.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalCancelButton)]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(kSendTabToSelfModalCancelButton)];
+  DismissSendTabToSelfModal();
 }
 
 // Tests that long-pressing the defocused location view shows "Send to your
@@ -820,11 +817,7 @@ void RelaunchAppWithIdentity(AppLaunchConfiguration base_config,
                                                        kTargetDeviceName)];
 
   // Clean up.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalCancelButton)]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(kSendTabToSelfModalCancelButton)];
+  DismissSendTabToSelfModal();
 }
 
 @end
