@@ -77,6 +77,7 @@ TEST_F(BackForwardCacheDisablingFeatureHandleTest, MoveConstructor) {
   EXPECT_TRUE(rfh->GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth));
 
+  // NOLINTBEGIN(bugprone-use-after-move)
   BackForwardCacheDisablingFeatureHandle handle2(std::move(handle1));
   EXPECT_FALSE(handle1.IsValid());
   EXPECT_TRUE(handle2.IsValid());
@@ -88,6 +89,7 @@ TEST_F(BackForwardCacheDisablingFeatureHandleTest, MoveConstructor) {
   EXPECT_TRUE(handle2.IsValid());
   EXPECT_TRUE(rfh->GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth));
+  // NOLINTEND(bugprone-use-after-move)
 
   handle2.Reset();
   EXPECT_FALSE(handle2.IsValid());
@@ -104,8 +106,10 @@ TEST_F(BackForwardCacheDisablingFeatureHandleTest,
   BackForwardCacheDisablingFeatureHandle handle2;
   EXPECT_FALSE(handle2.IsValid());
 
+  // NOLINTBEGIN(bugprone-use-after-move)
   handle2 = std::move(handle1);
   EXPECT_FALSE(handle1.IsValid());
+  // NOLINTEND(bugprone-use-after-move)
   EXPECT_TRUE(handle2.IsValid());
   EXPECT_TRUE(rfh->GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth));
@@ -136,8 +140,10 @@ TEST_F(BackForwardCacheDisablingFeatureHandleTest,
   // Move-assign `handle2` into `handle1` while `handle1` already holds an
   // active handle. `handle1` calls `Reset()` first, releasing `kWebBluetooth`,
   // then takes ownership of `kWebHID`.
+  // NOLINTBEGIN(bugprone-use-after-move)
   handle1 = std::move(handle2);
   EXPECT_FALSE(handle2.IsValid());
+  // NOLINTEND(bugprone-use-after-move)
   EXPECT_TRUE(handle1.IsValid());
   EXPECT_FALSE(rfh->GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth));
@@ -162,6 +168,7 @@ TEST_F(BackForwardCacheDisablingFeatureHandleTest, SelfMoveAssignment) {
   EXPECT_TRUE(rfh->GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth));
 
+  // NOLINTBEGIN(bugprone-use-after-move)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wself-move"
   handle = std::move(handle);
@@ -170,6 +177,7 @@ TEST_F(BackForwardCacheDisablingFeatureHandleTest, SelfMoveAssignment) {
   EXPECT_TRUE(handle.IsValid());
   EXPECT_TRUE(rfh->GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth));
+  // NOLINTEND(bugprone-use-after-move)
 }
 
 }  // namespace content
