@@ -125,12 +125,14 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
 
     @Override
     public boolean takeFocus(boolean reverse) {
-        int direction =
+        // Try sequential Tab navigation first (standard Android contract for Tab / Shift+Tab):
+        int direction = reverse ? View.FOCUS_BACKWARD : View.FOCUS_FORWARD;
+        if (tryToMoveFocus(direction)) return true;
+        // Fall back to directional spatial navigation if sequential navigation found no candidates:
+        direction =
                 (reverse == (mContainerView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL))
                         ? View.FOCUS_RIGHT
                         : View.FOCUS_LEFT;
-        if (tryToMoveFocus(direction)) return true;
-        direction = reverse ? View.FOCUS_BACKWARD : View.FOCUS_FORWARD;
         return tryToMoveFocus(direction);
     }
 
