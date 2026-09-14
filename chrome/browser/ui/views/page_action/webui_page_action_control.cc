@@ -7,6 +7,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
@@ -215,6 +216,7 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   toolbar_ui_api::mojom::PageActionStatePtr old_state_;
   bool was_chip_visible_ = false;
   bool was_showing_bubble_ = false;
+  bool was_anchored_message_showing_ = false;
 
   WebUIBubbleReopenSuppressor bubble_reopen_suppressor_;
 
@@ -253,6 +255,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
   controller_ = controller;
   was_chip_visible_ = false;
   was_showing_bubble_ = false;
+  was_anchored_message_showing_ = false;
 
   if (controller_) {
     controller_->RegisterCallbacks(page_actions::PageActionPassKey(),
@@ -297,9 +300,21 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
   }
   was_chip_visible_ = is_chip_visible;
 
+  const bool is_anchored_message_showing =
+      visible &&
+      (model.ShouldShowAnchoredMessage() || IsAnchoredMessageVisible());
+  const bool anchored_message_changed =
+      (was_anchored_message_showing_ != is_anchored_message_showing);
+  was_anchored_message_showing_ = is_anchored_message_showing;
+
   toolbar_ui_api::mojom::PageActionStatePtr new_state = GetState();
 
-  if (!old_state_.Equals(new_state)) {
+  // An anchored message change alters the relative ordering of page action
+  // icons in GetPageActionStates(), even though the individual icon's
+  // PageActionState fields do not change (unlike chips, which update
+  // `should_show_chip`). Therefore, notify the owner when the anchored message
+  // state changes to re-order icons.
+  if (!old_state_.Equals(new_state) || anchored_message_changed) {
     old_state_ = std::move(new_state);
     owner_->NotifyPageActionStateChanged();
   }
@@ -330,6 +345,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
   controller_ = nullptr;
   was_chip_visible_ = false;
   was_showing_bubble_ = false;
+  was_anchored_message_showing_ = false;
   if (old_state_) {
     old_state_ = nullptr;
     owner_->NotifyPageActionStateChanged();
@@ -361,25 +377,35 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   auto* view = owner_->webui_delegate_->GetView();
   const ui::ColorProvider* color_provider =
       view ? view->GetColorProvider() : nullptr;
-  if (model->GetColorSource() ==
-          page_actions::PageActionColorSource::kCascadingAccent &&
-      image_model.IsVectorIcon()) {
-    const auto& vector_icon_model = image_model.GetVectorIcon();
-    const SkColor default_color =
-        color_provider->GetColor(ui::kColorFocusableBorderFocused);
-    // Page actions are displayed on the toolbar, so `kColorToolbar` is used as
-    // the background color for contrast calculations (matching what
-    // `views::GetCascadingBackgroundColor()` resolves in native Views via
-    // `ToolbarView`).
-    const SkColor background_color = color_provider->GetColor(kColorToolbar);
-    const SkColor blended_color =
-        color_utils::BlendForMinContrast(
-            default_color, background_color, std::nullopt,
-            color_utils::kMinimumVisibleContrastRatio)
-            .color;
-    image_model = ui::ImageModel::FromVectorIcon(
-        *vector_icon_model.vector_icon(), blended_color,
-        vector_icon_model.icon_size(), vector_icon_model.badge_icon());
+  if (color_provider && image_model.IsVectorIcon()) {
+    if (model->GetColorSource() ==
+        page_actions::PageActionColorSource::kCascadingAccent) {
+      const auto& vector_icon_model = image_model.GetVectorIcon();
+      const SkColor default_color =
+          color_provider->GetColor(ui::kColorFocusableBorderFocused);
+      // Page actions are displayed on the toolbar, so `kColorToolbar` is used
+      // as the background color for contrast calculations (matching what
+      // `views::GetCascadingBackgroundColor()` resolves in native Views via
+      // `ToolbarView`).
+      const SkColor background_color = color_provider->GetColor(kColorToolbar);
+      const SkColor blended_color =
+          color_utils::BlendForMinContrast(
+              default_color, background_color, std::nullopt,
+              color_utils::kMinimumVisibleContrastRatio)
+              .color;
+      image_model = ui::ImageModel::FromVectorIcon(
+          *vector_icon_model.vector_icon(), blended_color,
+          vector_icon_model.icon_size(), vector_icon_model.badge_icon());
+    } else if (model->GetColorSource() ==
+                   page_actions::PageActionColorSource::kForeground &&
+               model->ShouldShowSuggestionChip()) {
+      const auto& vector_icon_model = image_model.GetVectorIcon();
+      const SkColor tonal_color =
+          color_provider->GetColor(kColorOmniboxIconForegroundTonal);
+      image_model = ui::ImageModel::FromVectorIcon(
+          *vector_icon_model.vector_icon(), tonal_color,
+          vector_icon_model.icon_size(), vector_icon_model.badge_icon());
+    }
   }
   state->icon = cached_icon_ =
       owner_->webui_delegate_->GetIconTable().RegisterImageModelTryReuse(
@@ -716,15 +742,45 @@ void WebUIPageActionControl::SetShouldHidePageActions(
 
 std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
 WebUIPageActionControl::GetPageActionStates() {
-  std::vector<toolbar_ui_api::mojom::PageActionStatePtr> states;
+  // Three possible states of page actions: anchored message, chip, icon.
+  // There can be multiple chips and/or icons, but at most one anchored message.
+  // We place the anchored message action (if any) first, followed by chips in
+  // initial-order, then all other icons in initial-order. This matches the
+  // behavior of PageActionContainerView::NormalizePageActionViewOrder().
+  toolbar_ui_api::mojom::PageActionStatePtr anchored_message_state;
+  std::vector<toolbar_ui_api::mojom::PageActionStatePtr> chip_states;
+  std::vector<toolbar_ui_api::mojom::PageActionStatePtr> icon_states;
+
   for (actions::ActionId action_id : page_actions::kActionIds) {
     auto it = delegates_.find(action_id);
     if (it != delegates_.end()) {
       auto state = it->second->GetState();
       if (state) {
-        states.push_back(std::move(state));
+        if (it->second->IsAnchoredMessageVisible() ||
+            (it->second->GetObservedModel() &&
+             it->second->GetObservedModel()->ShouldShowAnchoredMessage())) {
+          CHECK(!anchored_message_state);
+          anchored_message_state = std::move(state);
+        } else if (state->should_show_chip) {
+          chip_states.push_back(std::move(state));
+        } else {
+          icon_states.push_back(std::move(state));
+        }
       }
     }
+  }
+
+  std::vector<toolbar_ui_api::mojom::PageActionStatePtr> states;
+  states.reserve((anchored_message_state ? 1 : 0) + chip_states.size() +
+                 icon_states.size());
+  if (anchored_message_state) {
+    states.push_back(std::move(anchored_message_state));
+  }
+  for (auto& s : chip_states) {
+    states.push_back(std::move(s));
+  }
+  for (auto& s : icon_states) {
+    states.push_back(std::move(s));
   }
   return states;
 }

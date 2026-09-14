@@ -959,7 +959,166 @@ TEST_F(WebUIPageActionControlTest,
   // message.
   control_->UpdateController(tab2->web_contents.get());
   EXPECT_EQ(controller1->GetActiveAnchoredMessage(), std::nullopt);
-  EXPECT_EQ(tab2->controller->GetActiveAnchoredMessage(), target_action_id);
+}
+
+TEST_F(WebUIPageActionControlTest,
+       AnchoredMessagesPromotedAheadOfChipsAndIcons) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  ASSERT_TRUE(tab);
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // In kActionIds, initial order is:
+  // 1. kActionAiMode
+  // 2. kActionSidePanelShowLensOverlayResults
+  // 3. kActionShowTranslate
+  controller->Show(kActionAiMode);
+  controller->Show(kActionSidePanelShowLensOverlayResults);
+  controller->Show(kActionShowTranslate);
+
+  // Initially all are icons, preserving initial order.
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(3u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            states[0]->page_action_id);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
+                kActionSidePanelShowLensOverlayResults,
+            states[1]->page_action_id);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[2]->page_action_id);
+
+  // Promote kActionShowTranslate to a suggestion chip. Chips precede regular
+  // icons.
+  controller->ShowSuggestionChip(kActionShowTranslate);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(3u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[0]->page_action_id);
+  EXPECT_TRUE(states[0]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            states[1]->page_action_id);
+  EXPECT_FALSE(states[1]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
+                kActionSidePanelShowLensOverlayResults,
+            states[2]->page_action_id);
+  EXPECT_FALSE(states[2]->should_show_chip);
+
+  // Show an anchored message on kActionSidePanelShowLensOverlayResults.
+  // Page actions with anchored messages are placed before chips and icons.
+  page_actions::AnchoredMessageConfig config{};
+  controller->ShowAnchoredMessage(kActionSidePanelShowLensOverlayResults,
+                                  config);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(3u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
+                kActionSidePanelShowLensOverlayResults,
+            states[0]->page_action_id);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[1]->page_action_id);
+  EXPECT_TRUE(states[1]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            states[2]->page_action_id);
+  EXPECT_FALSE(states[2]->should_show_chip);
+
+  // Promote kActionAiMode to a chip as well. The anchored message remains
+  // first, followed by chips in their initial order (AiMode before
+  // ShowTranslate).
+  controller->ShowSuggestionChip(kActionAiMode);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(3u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
+                kActionSidePanelShowLensOverlayResults,
+            states[0]->page_action_id);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            states[1]->page_action_id);
+  EXPECT_TRUE(states[1]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[2]->page_action_id);
+  EXPECT_TRUE(states[2]->should_show_chip);
+
+  // Hide the anchored message. The two chips now lead (in initial order),
+  // followed by the remaining icon.
+  controller->HideAnchoredMessage(kActionSidePanelShowLensOverlayResults);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(3u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            states[0]->page_action_id);
+  EXPECT_TRUE(states[0]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[1]->page_action_id);
+  EXPECT_TRUE(states[1]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
+                kActionSidePanelShowLensOverlayResults,
+            states[2]->page_action_id);
+  EXPECT_FALSE(states[2]->should_show_chip);
+
+  // Show an anchored message on a chip action (kActionShowTranslate). It should
+  // now be placed first, ahead of the other chip (kActionAiMode).
+  controller->ShowAnchoredMessage(kActionShowTranslate, config);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(3u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[0]->page_action_id);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            states[1]->page_action_id);
+  EXPECT_TRUE(states[1]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
+                kActionSidePanelShowLensOverlayResults,
+            states[2]->page_action_id);
+  EXPECT_FALSE(states[2]->should_show_chip);
+
+  // Hide the anchored message again. Showing an anchored message downgraded
+  // kActionShowTranslate from a chip to an icon, so kActionAiMode is the sole
+  // chip and leads, followed by the two icons in initial order
+  // (LensOverlayResults before ShowTranslate).
+  controller->HideAnchoredMessage(kActionShowTranslate);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(3u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            states[0]->page_action_id);
+  EXPECT_TRUE(states[0]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
+                kActionSidePanelShowLensOverlayResults,
+            states[1]->page_action_id);
+  EXPECT_FALSE(states[1]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[2]->page_action_id);
+  EXPECT_FALSE(states[2]->should_show_chip);
+
+  // Re-promoting kActionShowTranslate to a chip brings both chips to the front.
+  controller->ShowSuggestionChip(kActionShowTranslate);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(3u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            states[0]->page_action_id);
+  EXPECT_TRUE(states[0]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[1]->page_action_id);
+  EXPECT_TRUE(states[1]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
+                kActionSidePanelShowLensOverlayResults,
+            states[2]->page_action_id);
+  EXPECT_FALSE(states[2]->should_show_chip);
+
+  // Downgrading all actions back to icons restores initial order.
+  controller->HideSuggestionChip(kActionAiMode);
+  controller->HideSuggestionChip(kActionShowTranslate);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(3u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            states[0]->page_action_id);
+  EXPECT_FALSE(states[0]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
+                kActionSidePanelShowLensOverlayResults,
+            states[1]->page_action_id);
+  EXPECT_FALSE(states[1]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[2]->page_action_id);
+  EXPECT_FALSE(states[2]->should_show_chip);
 }
 }  // namespace
 

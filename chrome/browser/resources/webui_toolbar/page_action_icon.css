@@ -24,9 +24,12 @@
   /* Matches the C++ slide duration in PageActionView. */
   --toolbar-chip-expand-duration: 600ms;
 
-  /* Native LocationBarLayout forces chips to be exactly 24px
-   * (location_bar_height - 10) */
-  --toolbar-chip-height: calc(var(--location-bar-height) - 10px);
+  /* toolbar-chip-button's own :host defines --toolbar-chip-height to
+   * --toolbar-button-height, which breaks default inheritance from
+   * page-action-icons. Explicitly setting 'inherit' here forces it to
+   * inherit --toolbar-chip-height from page-action-icons instead of using
+   * the toolbar button default. */
+  --toolbar-chip-height: inherit;
 
   /* Standard C++ PageActions use 20px icons natively. */
   --toolbar-chip-icon-size: var(--location-bar-trailing-icon-size);

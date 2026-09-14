@@ -7,6 +7,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 import type {HelpBubbleOptions} from '//resources/cr_components/help_bubble/help_bubble_controller.js';
 import {hexColorToSkColor} from '//resources/js/color_utils.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -793,5 +794,71 @@ suite('PageActionIconTest', function() {
         // Verify it remains on static icon and no animated icon is rendered
         assertTrue(!!icon.shadowRoot.querySelector('icon-from-table'));
         assertTrue(!icon.shadowRoot.querySelector('#animatedIcon'));
+      });
+});
+
+suite('PageActionIconsTest', function() {
+  function createState(id: PageActionId): PageActionState {
+    return {
+      pageActionId: id,
+      accessibleName: 'Action',
+      tooltipText: 'Tooltip',
+      icon: {handleId: 0n},
+      text: '',
+      shouldShowChip: false,
+      shouldAnimateChipIn: false,
+      shouldAnimateChipOut: false,
+      backgroundColorOverride: null,
+      identifier: {
+        nativeIdentifier: '',
+        secondaryIdentifier: '',
+      },
+      isActive: false,
+      iconAnimationToken: 0,
+    };
+  }
+
+  test(
+      'is-capsule attribute reflects when pageActionStates has more than 1 ' +
+          'item and elevated toolbar is enabled',
+      async () => {
+        loadTimeData.overrideValues({enablePageActionsElevatedToolbar: false});
+        const container = document.createElement('page-action-icons');
+        document.body.appendChild(container);
+
+        assertEquals(0, container.pageActionStates.length);
+        assertFalse(container.isCapsule);
+        assertFalse(container.hasAttribute('is-capsule'));
+
+        // Flag is disabled, so isCapsule remains false even with > 1 items.
+        container.pageActionStates = [
+          createState(PageActionId.kActionAiMode),
+          createState(PageActionId.kActionShowTranslate),
+        ];
+        await microtasksFinished();
+        assertFalse(container.isCapsule);
+        assertFalse(container.hasAttribute('is-capsule'));
+
+        // When flag is enabled, isCapsule reflects when > 1 items.
+        loadTimeData.overrideValues({enablePageActionsElevatedToolbar: true});
+        container.pageActionStates = [createState(PageActionId.kActionAiMode)];
+        await microtasksFinished();
+        assertFalse(container.isCapsule);
+        assertFalse(container.hasAttribute('is-capsule'));
+
+        container.pageActionStates = [
+          createState(PageActionId.kActionAiMode),
+          createState(PageActionId.kActionShowTranslate),
+        ];
+        await microtasksFinished();
+        assertTrue(container.isCapsule);
+        assertTrue(container.hasAttribute('is-capsule'));
+
+        container.pageActionStates = [createState(PageActionId.kActionAiMode)];
+        await microtasksFinished();
+        assertFalse(container.isCapsule);
+        assertFalse(container.hasAttribute('is-capsule'));
+
+        container.remove();
       });
 });

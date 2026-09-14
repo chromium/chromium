@@ -8,8 +8,24 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --toolbar-chip-height: calc(
+      var(--location-bar-trailing-icon-size) +
+      var(--location-bar-page-action-icon-padding-top) +
+      var(--location-bar-page-action-icon-padding-bottom));
   display: flex;
   align-items: center;
   /* Matches LocationBarView::kBetweenIconSpacing (8px) natively. */
   gap: 8px;
+}
+
+:host([is-capsule]) {
+  background: var(
+      --color-sys-base-container-elevated,
+      var(--color-toolbar-background-subtle-emphasis));
+  border-radius: calc(var(--toolbar-chip-height) / 2);
+  /* Matches kIconSpacing (2px) in page_action_container_view.cc natively. */
+  gap: 2px;
+  /* Matches kCapsuleInteriorPadding (2px) in page_action_container_view.cc
+   * natively. */
+  padding: 2px;
 }

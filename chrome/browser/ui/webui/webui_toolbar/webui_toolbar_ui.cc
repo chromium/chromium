@@ -259,6 +259,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
                      features::IsWebUIExtensionsContainerEnabled());
   source->AddBoolean("enablePerformanceInterventionButton",
                      features::IsWebUIPerformanceInterventionButtonEnabled());
+  source->AddBoolean("enablePageActionsElevatedToolbar",
+                     features::IsPageActionsElevatedToolbarEnabled());
 
   // Omnibox config:
   source->AddBoolean("reportMetrics", true);
