@@ -393,15 +393,15 @@ class PeerConnectionStaticDeps {
  public:
   PeerConnectionStaticDeps()
       : chrome_signaling_thread_("WebRTC_Signaling"),
-        chrome_worker_thread_("WebRTC_W_and_N") {}
+        chrome_network_thread_("WebRTC_W_and_N") {}
 
   ~PeerConnectionStaticDeps() {
-    if (chrome_worker_thread_.IsRunning()) {
-      chrome_worker_thread_.task_runner()->DeleteSoon(
+    if (chrome_network_thread_.IsRunning()) {
+      chrome_network_thread_.task_runner()->DeleteSoon(
           FROM_HERE, std::move(decode_metronome_source_));
 
       if (encode_metronome_source_) {
-        chrome_worker_thread_.task_runner()->DeleteSoon(
+        chrome_network_thread_.task_runner()->DeleteSoon(
             FROM_HERE, std::move(encode_metronome_source_));
       }
     }
@@ -431,7 +431,7 @@ class PeerConnectionStaticDeps {
               .GetFrameSinkId(To<LocalDOMWindow>(context).GetFrame())
               .client_id());
       vsync_tick_provider_ = VSyncTickProvider::Create(
-          *vsync_provider_, chrome_worker_thread_.task_runner(),
+          *vsync_provider_, chrome_network_thread_.task_runner(),
           base::MakeRefCounted<TimerBasedTickProvider>(
               features::kVSyncDecodingHiddenOccludedTickDuration.Get()));
     }
@@ -443,13 +443,13 @@ class PeerConnectionStaticDeps {
           base::Thread::Options(base::ThreadType::kDefault));
     }
 
-    if (!chrome_worker_thread_.IsRunning()) {
-      chrome_worker_thread_.StartWithOptions(base::Thread::Options(
+    if (!chrome_network_thread_.IsRunning()) {
+      chrome_network_thread_.StartWithOptions(base::Thread::Options(
           base::FeatureList::IsEnabled(features::kWebRtcUseMediaThreadTypes)
               ? base::ThreadType::kAudioProcessing
               : base::ThreadType::kDefault));
     }
-    // To allow sending to the signaling/worker threads.
+    // To allow sending to the signaling/network threads.
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
     if (!decode_metronome_source_) {
@@ -472,46 +472,53 @@ class PeerConnectionStaticDeps {
     }
   }
 
-  base::WaitableEvent& InitializeWorkerThread() {
-    if (!worker_thread_) {
+  // Kicks off asynchronous initialization of the network thread wrapper. Does
+  // not wait for completion; subsequent initialization tasks posted to
+  // `chrome_network_thread_.task_runner()` (such as constructing
+  // `network_manager_` via `create_network_manager_event.Wait()`) run
+  // sequentially after this task, providing the necessary synchronization.
+  void InitializeNetworkThread() {
+    if (!network_thread_) {
       PostCrossThreadTask(
-          *chrome_worker_thread_.task_runner(), FROM_HERE,
+          *chrome_network_thread_.task_runner(), FROM_HERE,
           CrossThreadBindOnce(
               &PeerConnectionStaticDeps::InitializeOnThread,
-              CrossThreadUnretained(&worker_thread_),
-              CrossThreadUnretained(&init_worker_event),
+              CrossThreadUnretained(&network_thread_),
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                   PeerConnectionStaticDeps::LogTaskLatencyWorker)),
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                   PeerConnectionStaticDeps::LogTaskDurationWorker))));
     }
-    return init_worker_event;
   }
 
-  base::WaitableEvent& InitializeSignalingThread() {
+  // Kicks off asynchronous initialization of the signaling thread wrapper.
+  // Does not wait for completion; subsequent tasks posted to
+  // `chrome_signaling_thread_.task_runner()` (specifically
+  // `InitializeSignalingThread` synchronized via
+  // `start_signaling_event.Wait()`) run sequentially after this task.
+  void InitializeSignalingThread() {
     if (!signaling_thread_) {
       PostCrossThreadTask(
           *chrome_signaling_thread_.task_runner(), FROM_HERE,
           CrossThreadBindOnce(
               &PeerConnectionStaticDeps::InitializeOnThread,
               CrossThreadUnretained(&signaling_thread_),
-              CrossThreadUnretained(&init_signaling_event),
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                   PeerConnectionStaticDeps::LogTaskLatencySignaling)),
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                   PeerConnectionStaticDeps::LogTaskDurationSignaling))));
     }
-    return init_signaling_event;
   }
 
   webrtc::Thread* GetSignalingThread() { return signaling_thread_; }
-  webrtc::Thread* GetWorkerThread() { return worker_thread_; }
-  webrtc::Thread* GetNetworkThread() { return worker_thread_; }
+  webrtc::Thread* GetNetworkThread() { return network_thread_; }
   base::Thread& GetChromeSignalingThread() { return chrome_signaling_thread_; }
-  base::Thread& GetChromeWorkerThread() { return chrome_worker_thread_; }
-  base::Thread& GetChromeNetworkThread() { return chrome_worker_thread_; }
+  base::Thread& GetChromeNetworkThread() { return chrome_network_thread_; }
 
  private:
+  // Note: These log to "WebRTC.PeerConnection.*.Worker" for historical reasons
+  // and dashboard continuity, as this thread originally hosted the worker
+  // thread before worker and network were merged.
   static void LogTaskLatencyWorker(base::TimeDelta sample) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "WebRTC.PeerConnection.Latency.Worker", sample, base::Microseconds(1),
@@ -520,16 +527,6 @@ class PeerConnectionStaticDeps {
   static void LogTaskDurationWorker(base::TimeDelta sample) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "WebRTC.PeerConnection.Duration.Worker", sample, base::Microseconds(1),
-        base::Seconds(10), 50);
-  }
-  static void LogTaskLatencyNetwork(base::TimeDelta sample) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "WebRTC.PeerConnection.Latency.Network", sample, base::Microseconds(1),
-        base::Seconds(10), 50);
-  }
-  static void LogTaskDurationNetwork(base::TimeDelta sample) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "WebRTC.PeerConnection.Duration.Network", sample, base::Microseconds(1),
         base::Seconds(10), 50);
   }
   static void LogTaskLatencySignaling(base::TimeDelta sample) {
@@ -545,7 +542,6 @@ class PeerConnectionStaticDeps {
 
   static void InitializeOnThread(
       raw_ptr<webrtc::Thread>* thread,
-      base::WaitableEvent* event,
       base::RepeatingCallback<void(base::TimeDelta)> latency_callback,
       base::RepeatingCallback<void(base::TimeDelta)> duration_callback) {
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
@@ -554,32 +550,21 @@ class PeerConnectionStaticDeps {
         std::move(latency_callback), std::move(duration_callback));
     if (!*thread) {
       *thread = webrtc::ThreadWrapper::current();
-      event->Signal();
     }
   }
 
   // PeerConnection threads. signaling_thread_ is created from the "current"
   // (main) chrome thread.
   raw_ptr<webrtc::Thread> signaling_thread_ = nullptr;
-  raw_ptr<webrtc::Thread> worker_thread_ = nullptr;
+  raw_ptr<webrtc::Thread> network_thread_ = nullptr;
   base::Thread chrome_signaling_thread_;
-  base::Thread chrome_worker_thread_;
+  base::Thread chrome_network_thread_;
 
   // Metronome source used for driving decoding and encoding, created from
-  // renderer main thread, always used and destroyed on `chrome_worker_thread_`.
+  // renderer main thread, always used and destroyed on
+  // `chrome_network_thread_`.
   std::unique_ptr<MetronomeSource> decode_metronome_source_;
   std::unique_ptr<MetronomeSource> encode_metronome_source_;
-
-  // WaitableEvents for observing thread initialization.
-  base::WaitableEvent init_signaling_event{
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED};
-  base::WaitableEvent init_worker_event{
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED};
-  base::WaitableEvent init_network_event{
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED};
 
   // Generates VSync ticks, these two are always allocated together.
   std::optional<VSyncProviderImpl> vsync_provider_;
@@ -596,17 +581,11 @@ PeerConnectionStaticDeps& StaticDeps() {
 webrtc::Thread* GetSignalingThread() {
   return StaticDeps().GetSignalingThread();
 }
-webrtc::Thread* GetWorkerThread() {
-  return StaticDeps().GetWorkerThread();
-}
 webrtc::Thread* GetNetworkThread() {
   return StaticDeps().GetNetworkThread();
 }
 base::Thread& GetChromeSignalingThread() {
   return StaticDeps().GetChromeSignalingThread();
-}
-base::Thread& GetChromeWorkerThread() {
-  return StaticDeps().GetChromeWorkerThread();
 }
 base::Thread& GetChromeNetworkThread() {
   return StaticDeps().GetChromeNetworkThread();
@@ -764,8 +743,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
 
   StaticDeps().EnsureChromeThreadsStarted(
       *ExecutionContextLifecycleObserver::GetExecutionContext());
-  base::WaitableEvent& worker_thread_started_event =
-      StaticDeps().InitializeWorkerThread();
+  StaticDeps().InitializeNetworkThread();
   StaticDeps().InitializeSignalingThread();
 
   if (!::features::IsOpenH264SoftwareEncoderEnabledForWebRTC()) {
@@ -806,16 +784,6 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
 
   create_network_manager_event.Wait();
   CHECK(GetNetworkThread());
-
-  // Wait for the worker thread, since `InitializeSignalingThread` needs to
-  // refer to `worker_thread_`.
-  {
-    TRACE_EVENT("latency",
-                "PeerConnectionDependencyFactory::CreatePeerConnectionFactory "
-                "- Wait for worker thread started");
-    worker_thread_started_event.Wait();
-  }
-  CHECK(GetWorkerThread());
 
   // Only the JS main thread can establish mojo connection with a browser
   // process against RendererFrameHost. RTCVideoEncoderFactory and
@@ -948,12 +916,9 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   }
 
   webrtc::PeerConnectionFactoryDependencies pcf_deps;
-  pcf_deps.worker_thread = GetWorkerThread();
+  // `worker_thread` is left null so WebRTC defaults to `network_thread`.
   pcf_deps.signaling_thread = GetSignalingThread();
   pcf_deps.network_thread = GetNetworkThread();
-  if (pcf_deps.worker_thread == pcf_deps.network_thread) {
-    LOG(INFO) << "Running WebRTC with a combined Network and Worker thread.";
-  }
   pcf_deps.env = WebRtcEnvironment();
   pcf_deps.decode_metronome = StaticDeps().CreateDecodeMetronome();
   pcf_deps.encode_metronome = StaticDeps().MaybeCreateEncodeMetronome();
@@ -1273,14 +1238,6 @@ PeerConnectionDependencyFactory::GetWebRtcNetworkTaskRunner() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return GetChromeNetworkThread().IsRunning()
              ? GetChromeNetworkThread().task_runner()
-             : nullptr;
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-PeerConnectionDependencyFactory::GetWebRtcWorkerTaskRunner() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return GetChromeWorkerThread().IsRunning()
-             ? GetChromeWorkerThread().task_runner()
              : nullptr;
 }
 

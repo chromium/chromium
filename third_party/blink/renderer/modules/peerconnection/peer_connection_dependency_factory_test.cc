@@ -90,6 +90,36 @@ TEST_F(PeerConnectionDependencyFactoryTest, CreateRTCPeerConnectionHandler) {
   EXPECT_TRUE(pc_handler);
 }
 
+TEST_F(PeerConnectionDependencyFactoryTest,
+       InitializePeerConnectionWithDefaultConfiguration) {
+  V8TestingScope scope;
+  EnsureDependencyFactory(*scope.GetExecutionContext());
+
+  std::unique_ptr<RTCPeerConnectionHandler> pc_handler =
+      CreateRTCPeerConnectionHandler();
+  ASSERT_TRUE(pc_handler);
+
+  // Verify native PeerConnection was successfully created and has valid
+  // signaling thread.
+  webrtc::PeerConnectionInterface* native_pc =
+      pc_handler->NativePeerConnection();
+  ASSERT_TRUE(native_pc);
+  EXPECT_TRUE(native_pc->signaling_thread());
+
+  // Verify network and signaling task runners are running.
+  scoped_refptr<base::SingleThreadTaskRunner> network_task_runner =
+      dependency_factory_->GetWebRtcNetworkTaskRunner();
+  EXPECT_TRUE(network_task_runner);
+  scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner =
+      dependency_factory_->GetWebRtcSignalingTaskRunner();
+  EXPECT_TRUE(signaling_task_runner);
+
+  // Verify basic operations like DataChannel creation succeed.
+  webrtc::DataChannelInit init;
+  auto data_channel = pc_handler->CreateDataChannel("test-channel", init);
+  EXPECT_TRUE(data_channel);
+}
+
 struct ShouldRequestPermissionTestCase {
   IPAddressSpace originator_address_space;
   IPAddressSpace candidate_address_space;

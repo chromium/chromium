@@ -152,10 +152,9 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   void EnsureInitialized();
 
-  // Returns the SingleThreadTaskRunner corresponding to the WebRTC worker or
-  // network threads (webrtc::Thread), if they exist. These threads are ensured
-  // to exist after an RTCPeerConnectionHandler has been Initialized().
-  scoped_refptr<base::SingleThreadTaskRunner> GetWebRtcWorkerTaskRunner();
+  // Returns the SingleThreadTaskRunner corresponding to the WebRTC network
+  // thread (webrtc::Thread), if it exists. The thread is ensured to exist
+  // after an RTCPeerConnectionHandler has been Initialized().
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   GetWebRtcNetworkTaskRunner();
 
