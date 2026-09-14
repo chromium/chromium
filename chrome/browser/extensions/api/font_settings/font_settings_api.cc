@@ -8,6 +8,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -59,6 +60,7 @@ const char kScriptKey[] = "script";
 
 const char kSetFromIncognitoError[] =
     "Can't modify regular settings from an incognito context.";
+const char kInvalidFontIdError[] = "Invalid font ID.";
 
 // Gets the font name preference path for |generic_family| and |script|. If
 // |script| is NULL, uses prefs::kWebKitCommonScript.
@@ -102,6 +104,33 @@ void MaybeUnlocalizeFontName(std::string* font_name) {
 }
 
 }  // namespace
+
+bool IsValidFontName(std::string_view font_name) {
+  if (font_name.empty()) {
+    return true;
+  }
+
+  if (font_name.size() > 256) {
+    return false;
+  }
+
+  if (!base::IsStringUTF8(font_name)) {
+    return false;
+  }
+
+  for (char c : font_name) {
+    if (static_cast<unsigned char>(c) >= 0x80) {
+      continue;
+    }
+
+    if (!(base::IsAsciiAlphaNumeric(c) || c == ' ' || c == '-' || c == '_' ||
+          c == '.' || c == '+')) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 // This class observes pref changed events on a profile and dispatches the
 // corresponding extension API events to extensions.
@@ -327,6 +356,10 @@ ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
   std::optional<fonts::SetFont::Params> params =
       fonts::SetFont::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (!IsValidFontName(params->details.font_id)) {
+    return RespondNow(Error(kInvalidFontIdError));
+  }
 
   std::string pref_path = GetFontNamePrefPath(params->details.generic_family,
                                               params->details.script);

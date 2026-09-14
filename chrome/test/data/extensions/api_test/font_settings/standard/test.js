@@ -268,4 +268,40 @@ chrome.test.runTests([
 
     fs.clearMinimumFontSize({}, chrome.test.callbackPass());
   },
+
+  function setInvalidFontNames() {
+    const invalidNames = [
+      'invalid\'font;--x:',
+      'test"font',
+      'test{font}',
+      'test<font>',
+      'test\\font',
+      'test/font',
+      'test:font',
+      'test;font',
+      'test!font',
+      'test@font',
+      'test`font',
+      'test=font',
+      'test,font',
+      'test\nfont',
+      'test\rfont',
+      'a'.repeat(300),
+    ];
+    function testNext(index) {
+      if (index >= invalidNames.length) {
+        chrome.test.succeed();
+        return;
+      }
+      fs.setFont(
+          {
+            genericFamily: 'standard',
+            fontId: invalidNames[index],
+          },
+          chrome.test.callbackFail('Invalid font ID.', () => {
+            testNext(index + 1);
+          }));
+    }
+    testNext(0);
+  },
 ]);

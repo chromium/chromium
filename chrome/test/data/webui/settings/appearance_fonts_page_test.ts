@@ -241,4 +241,24 @@ suite('AppearanceFontHandler', function() {
           `math preview contains element <${tagName}>`);
     });
   });
+
+  test('font preview special characters', async () => {
+    // Verify that special characters in font names do not modify other CSS
+    // properties.
+    prefsBrowserProxy.fakeApi.sendPrefChanges([
+      {
+        key: 'webkit.webprefs.fonts.standard.Zyyy',
+        value: 'sample\'; position: fixed; inset: 0; --custom:\'',
+      },
+    ]);
+    await microtasksFinished();
+
+    const element = fontsPage.$.standardFontPreview;
+    assertFalse(element.style.position === 'fixed');
+    assertEquals('', element.style.position);
+    assertEquals('', element.style.inset);
+    assertEquals(
+        `"sample'; position: fixed; inset: 0; --custom:'"`,
+        element.style.fontFamily);
+  });
 });

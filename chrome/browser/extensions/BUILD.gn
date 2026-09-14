@@ -1923,6 +1923,7 @@ source_set("unit_tests") {
     "api/developer_private/extension_info_generator_unittest.cc",
     "api/enterprise_hardware_platform/enterprise_hardware_platform_api_unittest.cc",
     "api/extension_action/extension_action_api_unittest.cc",
+    "api/font_settings/font_settings_api_unittest.cc",
     "api/gcm/extension_gcm_app_handler_unittest.cc",
     "api/identity/extension_token_key_unittest.cc",
     "api/identity/identity_api_unittest.cc",

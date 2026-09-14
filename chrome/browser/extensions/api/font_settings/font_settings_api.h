@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -24,6 +25,10 @@ class BrowserContext;
 }
 
 namespace extensions {
+
+// Returns true if the given font name contains only valid characters and valid
+// UTF-8 encoding.
+bool IsValidFontName(std::string_view font_name);
 
 class FontSettingsEventRouter;
 

@@ -32,7 +32,7 @@ export function getHtml(this: SettingsAppearanceFontsPageElement) {
       </settings-slider>
       <div id="minimumSizeFontPreview"
           style="font-size:${this.getMinimumFontSize_()}px;
-              font-family:'${this.standardFontPref_?.value || ''}';"
+              font-family:${this.computeFontFamilyStyle_(this.standardFontPref_?.value)};"
           ?hidden="${this.getMinimumSizeHidden_()}">
         ${this.getMinimumFontSize_()}:
         $i18n{quickBrownFox}
@@ -52,7 +52,7 @@ export function getHtml(this: SettingsAppearanceFontsPageElement) {
     </div>
     <div id="standardFontPreview" class="list-item cr-padded-text"
         style="font-size:${this.defaultFontSizePref_?.value || 0}px;
-            font-family:'${this.standardFontPref_?.value || ''}';">
+            font-family:${this.computeFontFamilyStyle_(this.standardFontPref_?.value)};">
       ${this.defaultFontSizePref_?.value || 0}:
       $i18n{quickBrownFox}
     </div>
@@ -70,7 +70,7 @@ export function getHtml(this: SettingsAppearanceFontsPageElement) {
     </div>
     <div id="serifFontPreview" class="list-item cr-padded-text"
         style="font-size:${this.defaultFontSizePref_?.value || 0}px;
-            font-family:'${this.serifFontPref_?.value || ''}';">
+            font-family:${this.computeFontFamilyStyle_(this.serifFontPref_?.value)};">
       ${this.defaultFontSizePref_?.value || 0}:
       $i18n{quickBrownFox}
     </div>
@@ -88,7 +88,7 @@ export function getHtml(this: SettingsAppearanceFontsPageElement) {
     </div>
     <div id="sansSerifFontPreview" class="list-item cr-padded-text"
         style="font-size:${this.defaultFontSizePref_?.value || 0}px;
-            font-family:'${this.sansSerifFontPref_?.value || ''}';">
+            font-family:${this.computeFontFamilyStyle_(this.sansSerifFontPref_?.value)};">
       ${this.defaultFontSizePref_?.value || 0}:
       $i18n{quickBrownFox}
     </div>
@@ -106,7 +106,7 @@ export function getHtml(this: SettingsAppearanceFontsPageElement) {
     </div>
     <div id="fixedFontPreview" class="list-item cr-padded-text"
         style="font-size: ${this.defaultFixedFontSizePref_?.value || 0}px;
-            font-family: '${this.fontFamilyValueForFixed_()}';">
+            font-family:${this.computeFontFamilyStyle_(this.fontFamilyValueForFixed_())};">
       ${this.defaultFixedFontSizePref_?.value || 0}:
       $i18n{quickBrownFox}
     </div>
@@ -129,7 +129,7 @@ export function getHtml(this: SettingsAppearanceFontsPageElement) {
          layout constants. This is what the formula below tries to do. -->
     <div id="mathFontPreview" class="list-item cr-padded-text"
         style="font-size:${this.defaultFontSizePref_?.value || 0}px;
-            font-family:'${this.mathFontPref_?.value || ''}';">
+            font-family:${this.computeFontFamilyStyle_(this.mathFontPref_?.value)};">
       ${this.defaultFontSizePref_?.value || 0}:
       <math style="font: inherit;" displaystyle="true">
         <mrow>

@@ -161,6 +161,10 @@ export class SettingsAppearanceFontsPageElement extends
     return this.fixedFontPref_.value;
   }
 
+  protected computeFontFamilyStyle_(fontFamily?: string): string {
+    return fontFamily ? JSON.stringify(fontFamily) : 'inherit';
+  }
+
   // SettingsViewMixinLit implementation.
   override focusBackButton() {
     this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
