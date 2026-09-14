@@ -749,9 +749,7 @@ SessionsRestoreFunction::RestoreMostRecentlyClosed(
   }
   std::vector<sessions::LiveTab*> restored_tabs =
       tab_restore_service->RestoreMostRecentEntry(context);
-  if (restored_tabs.empty()) {
-    return RespondNow(Error(kNoActiveTabError));
-  }
+  DCHECK(restored_tabs.size());
 
   sessions::ContentLiveTab* first_tab =
       static_cast<sessions::ContentLiveTab*>(restored_tabs[0]);
@@ -928,19 +926,17 @@ ExtensionFunction::ResponseAction SessionsRestoreFunction::RestoreLocalSession(
   if (!context) {
     return RespondNow(Error(kNoLiveTabContextError));
   }
-  std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
+  std::vector<sessions::LiveTab*> restored_tabs =
       tab_restore_service->RestoreEntryById(
           context, SessionID::FromSerializedValue(session_id.id()),
           WindowOpenDisposition::UNKNOWN);
-  if (!restored_tabs.has_value()) {
+  // If the ID is invalid, restored_tabs will be empty.
+  if (restored_tabs.empty()) {
     return RespondNow(Error(kInvalidSessionIdError, session_id.ToString()));
-  }
-  if (restored_tabs->empty()) {
-    return RespondNow(Error(kNoActiveTabError));
   }
 
   sessions::ContentLiveTab* first_tab =
-      static_cast<sessions::ContentLiveTab*>((*restored_tabs)[0]);
+      static_cast<sessions::ContentLiveTab*>(restored_tabs[0]);
 
   // Retrieve the window through any of the tabs in restored_tabs.
   if (is_window) {

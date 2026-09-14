@@ -68,10 +68,6 @@ IOSWebStateLiveTab::GetUserAgentOverride() {
   return sessions::SerializedUserAgentOverride();
 }
 
-base::WeakPtr<LiveTab> IOSWebStateLiveTab::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 const web::WebState* IOSWebStateLiveTab::GetWebState() const {
   return web_state_;
 }
