@@ -169,7 +169,12 @@ std::string DictationConnectorComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 DictationConnectorComponentInstallerPolicy::GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
+  update_client::InstallerAttributes attributes;
+  std::string tag = dictation::kDictationConnectorTag.Get();
+  if (!tag.empty()) {
+    attributes["connector_tag"] = tag;
+  }
+  return attributes;
 }
 
 void RegisterDictationConnectorComponent(ComponentUpdateService* cus) {

@@ -4932,6 +4932,8 @@ const FeatureEntry::FeatureParam
     kDictationWebSpeechApiBackendWithPartialsParam[] = {
         {"web_speech_api_backend", "true"},
         {"show_partials", "true"}};
+const FeatureEntry::FeatureParam kDictationConnectorSmoketestParam[] = {
+    {"connector_tag", "smoketest"}};
 const FeatureEntry::FeatureVariation kDictationVariations[] = {
     {"with close UI after output", kDictationSessionEndsOnStreamEndParam,
      nullptr},
@@ -4940,7 +4942,9 @@ const FeatureEntry::FeatureVariation kDictationVariations[] = {
     {"with Web Speech API backend", kDictationWebSpeechApiBackendParam,
      nullptr},
     {"with Web Speech API backend and partials",
-     kDictationWebSpeechApiBackendWithPartialsParam, nullptr}};
+     kDictationWebSpeechApiBackendWithPartialsParam, nullptr},
+    {"with smoketest connector tag", kDictationConnectorSmoketestParam,
+     nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
