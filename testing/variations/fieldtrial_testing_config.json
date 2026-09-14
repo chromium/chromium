@@ -6520,31 +6520,6 @@
             ]
         }
     ],
-    "DeferSpeculativeRFHCreation": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithPrewarmAndDelay",
-                    "params": {
-                        "create_speculative_rfh_delay_ms": "1",
-                        "create_speculative_rfh_filter_restore": "true",
-                        "warmup_spare_process": "true"
-                    },
-                    "enable_features": [
-                        "DeferSpeculativeRFHCreation"
-                    ]
-                }
-            ]
-        }
-    ],
     "DelayMainJobStudy": [
         {
             "platforms": [
