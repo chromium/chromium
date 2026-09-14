@@ -113,4 +113,28 @@ public class MediaCaptureDevicesDispatcherAndroidTest {
         MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mWebContents, false);
         verify(mObserver).onIsCapturingTabChanged(mWebContents, false);
     }
+
+    @Test
+    public void testNotifyTabCapturingStopped_WithActiveBridge() {
+        TabSharingUIManager manager = new TabSharingUIManager();
+        TabSharingUIManager.setInstanceForTesting(manager);
+        TabSharingUIBridge bridge = mock(TabSharingUIBridge.class);
+        when(bridge.getCapturer()).thenReturn(mWebContents);
+        manager.addBridge(bridge);
+
+        MediaCaptureDevicesDispatcherAndroid.notifyTabCapturingStopped(mWebContents);
+
+        verify(bridge).stopSharing();
+        verify(mNativeMock, never()).notifyDisplayMediaStopped(mWebContents);
+    }
+
+    @Test
+    public void testNotifyTabCapturingStopped_FallbackWithoutBridge() {
+        TabSharingUIManager manager = new TabSharingUIManager();
+        TabSharingUIManager.setInstanceForTesting(manager);
+
+        MediaCaptureDevicesDispatcherAndroid.notifyTabCapturingStopped(mWebContents);
+
+        verify(mNativeMock).notifyDisplayMediaStopped(mWebContents);
+    }
 }
