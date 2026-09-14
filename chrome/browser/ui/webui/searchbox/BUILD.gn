@@ -248,6 +248,7 @@ source_set("unit_tests") {
       "//components/omnibox/common:features",
       "//components/omnibox/composebox:mojo_bindings",
       "//components/prefs",
+      "//components/sessions",
       "//third_party/webrtc_overrides:webrtc_component",
       "//ui/base:test_support",
       "//ui/gfx/codec",
@@ -268,6 +269,7 @@ source_set("unit_tests") {
     deps += [
       ":searchbox",
       "//chrome/browser/bookmarks",
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/omnibox:test_support",
@@ -275,6 +277,7 @@ source_set("unit_tests") {
       "//chrome/test:test_support",
       "//components/bookmarks/browser",
       "//components/contextual_search:public",
+      "//components/omnibox/common:features",
       "//components/variations",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     ]
