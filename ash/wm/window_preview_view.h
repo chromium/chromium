@@ -11,13 +11,10 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/transient_window_client_observer.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
-
-namespace aura {
-class Window;
-}
 
 namespace ash {
 
@@ -30,7 +27,7 @@ class ASH_EXPORT WindowPreviewView
   METADATA_HEADER(WindowPreviewView, views::View)
 
  public:
-  explicit WindowPreviewView(aura::Window* window, bool exclude_shadow = true);
+  explicit WindowPreviewView(aura::Window* window);
 
   WindowPreviewView(const WindowPreviewView&) = delete;
   WindowPreviewView& operator=(const WindowPreviewView&) = delete;
@@ -78,8 +75,6 @@ class ASH_EXPORT WindowPreviewView
   // them to the view once they're parented.
   base::flat_set<raw_ptr<aura::Window, CtnExperimental>>
       unparented_transient_children_;
-
-  const bool exclude_shadow_;
 };
 
 }  // namespace ash

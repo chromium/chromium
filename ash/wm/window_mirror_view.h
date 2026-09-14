@@ -32,8 +32,7 @@ class ASH_EXPORT WindowMirrorView : public views::View,
  public:
   explicit WindowMirrorView(aura::Window* source,
                             bool show_non_client_view = false,
-                            bool sync_bounds = true,
-                            bool exclude_shadow = false);
+                            bool sync_bounds = true);
 
   WindowMirrorView(const WindowMirrorView&) = delete;
   WindowMirrorView& operator=(const WindowMirrorView&) = delete;
@@ -57,7 +56,6 @@ class ASH_EXPORT WindowMirrorView : public views::View,
   void OnVisibleBoundsChanged() override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-  std::unique_ptr<ui::Layer> RecreateLayer() override;
 
   ui::Layer* GetMirrorLayerForTesting();
 
@@ -88,9 +86,6 @@ class ASH_EXPORT WindowMirrorView : public views::View,
 
   // If true, synchronize the bounds from the source to the mirrored layers.
   const bool sync_bounds_;
-
-  // If true, excludes the shadow / nine-patch layers from the mirrored tree.
-  const bool exclude_shadow_;
 
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_occlusion_tracker_visible_;

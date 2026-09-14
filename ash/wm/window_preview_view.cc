@@ -10,7 +10,6 @@
 #include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
-#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -43,9 +42,8 @@ gfx::Rect GetClientAreaBoundsInScreen(aura::Window* window) {
 
 }  // namespace
 
-WindowPreviewView::WindowPreviewView(aura::Window* window, bool exclude_shadow)
-    : window_(window), exclude_shadow_(exclude_shadow) {
-  CHECK(window);
+WindowPreviewView::WindowPreviewView(aura::Window* window) : window_(window) {
+  DCHECK(window);
   aura::client::GetTransientWindowClient()->AddObserver(this);
 
   for (auto* transient_window : GetTransientTreeIterator(window_))
@@ -53,17 +51,11 @@ WindowPreviewView::WindowPreviewView(aura::Window* window, bool exclude_shadow)
 }
 
 WindowPreviewView::~WindowPreviewView() {
-  if (window_) {
-    window_->RemoveObserver(this);
-    window_ = nullptr;
-  }
   for (aura::Window* window : unparented_transient_children_) {
     window->RemoveObserver(this);
   }
-  unparented_transient_children_.clear();
-  while (!mirror_views_.empty()) {
-    RemoveWindow(mirror_views_.begin()->first);
-  }
+  for (auto entry : mirror_views_)
+    entry.first->RemoveObserver(this);
   aura::client::GetTransientWindowClient()->RemoveObserver(this);
 }
 
@@ -141,14 +133,7 @@ void WindowPreviewView::OnTransientChildWindowRemoved(
 }
 
 void WindowPreviewView::OnWindowDestroying(aura::Window* window) {
-  if (window_ == window) {
-    window_ = nullptr;
-    while (!mirror_views_.empty()) {
-      RemoveWindow(mirror_views_.begin()->first);
-    }
-  } else {
-    RemoveWindow(window);
-  }
+  RemoveWindow(window);
 }
 
 void WindowPreviewView::OnWindowParentChanged(aura::Window* window,
@@ -175,9 +160,7 @@ void WindowPreviewView::AddWindow(aura::Window* window) {
 
   auto mirror_view = window_util::IsArcPipWindow(window)
                          ? std::make_unique<WindowMirrorViewPip>(window)
-                         : std::make_unique<WindowMirrorView>(
-                               window, /*show_non_client_view=*/false,
-                               /*sync_bounds=*/true, exclude_shadow_);
+                         : std::make_unique<WindowMirrorView>(window);
   mirror_views_[window] = mirror_view.get();
   AddChildView(std::move(mirror_view));
 }
@@ -195,11 +178,11 @@ void WindowPreviewView::RemoveWindow(aura::Window* window) {
   if (it == mirror_views_.end())
     return;
 
-  aura::Window* observed_window = it->first;
-  WindowMirrorView* view = it->second.ExtractAsDangling();
-  mirror_views_.erase(it);
-  observed_window->RemoveObserver(this);
+  auto* view = it->second.get();
   RemoveChildViewT(view);
+  it->first->RemoveObserver(this);
+
+  mirror_views_.erase(it);
 }
 
 gfx::RectF WindowPreviewView::GetUnionRect() const {
