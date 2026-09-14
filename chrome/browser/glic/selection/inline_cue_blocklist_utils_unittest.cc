@@ -59,7 +59,7 @@ TEST_F(InlineCueBlocklistUtilsTest, IsSiteBlockedByDefault) {
 
 TEST_F(InlineCueBlocklistUtilsTest, UserExplicitBlockTakesPrecedence) {
   GURL allowed_url("https://allowed-site.com/page1");
-  EXPECT_FALSE(IsSiteBlockedForInlineCue(profile(), allowed_url));
+  ASSERT_FALSE(IsSiteBlockedForInlineCue(profile(), allowed_url));
 
   settings_map()->SetContentSettingDefaultScope(
       allowed_url, allowed_url, ContentSettingsType::INLINE_CUE_MENU,
@@ -70,14 +70,49 @@ TEST_F(InlineCueBlocklistUtilsTest, UserExplicitBlockTakesPrecedence) {
 
 TEST_F(InlineCueBlocklistUtilsTest, UnblockDefaultSite) {
   GURL blocked_url("https://blocked-site-a.com/page1");
-  EXPECT_TRUE(IsSiteBlockedForInlineCue(profile(), blocked_url));
+  ASSERT_TRUE(IsSiteBlockedForInlineCue(profile(), blocked_url));
 
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       UnblockDefaultSiteForInlineCue(profile(), "https://blocked-site-a.com"));
   EXPECT_FALSE(IsSiteBlockedForInlineCue(profile(), blocked_url));
 
   EXPECT_FALSE(
       UnblockDefaultSiteForInlineCue(profile(), "https://allowed-site.com"));
+}
+
+TEST_F(InlineCueBlocklistUtilsTest, GlobalDefaultBlockBlocksEverySite) {
+  GURL allowed_url("https://allowed-site.com/page1");
+  ASSERT_FALSE(IsSiteBlockedForInlineCue(profile(), allowed_url));
+
+  settings_map()->SetDefaultContentSetting(ContentSettingsType::INLINE_CUE_MENU,
+                                           CONTENT_SETTING_BLOCK);
+
+  EXPECT_TRUE(IsSiteBlockedForInlineCue(profile(), allowed_url));
+}
+
+TEST_F(InlineCueBlocklistUtilsTest, GlobalDefaultBlockOutranksSiteAllow) {
+  GURL blocked_url("https://blocked-site-a.com/page1");
+  ASSERT_TRUE(
+      UnblockDefaultSiteForInlineCue(profile(), "https://blocked-site-a.com"));
+  ASSERT_FALSE(IsSiteBlockedForInlineCue(profile(), blocked_url));
+
+  settings_map()->SetDefaultContentSetting(ContentSettingsType::INLINE_CUE_MENU,
+                                           CONTENT_SETTING_BLOCK);
+
+  // The ALLOW recorded by `UnblockDefaultSiteForInlineCue()` only opts the site
+  // out of the default blocklist, so it must not survive the global toggle
+  // being turned off.
+  EXPECT_TRUE(IsSiteBlockedForInlineCue(profile(), blocked_url));
+}
+
+TEST_F(InlineCueBlocklistUtilsTest, GlobalDefaultAllowKeepsBlocklistActive) {
+  settings_map()->SetDefaultContentSetting(ContentSettingsType::INLINE_CUE_MENU,
+                                           CONTENT_SETTING_ALLOW);
+
+  EXPECT_TRUE(IsSiteBlockedForInlineCue(
+      profile(), GURL("https://blocked-site-a.com/page1")));
+  EXPECT_FALSE(IsSiteBlockedForInlineCue(
+      profile(), GURL("https://allowed-site.com/page1")));
 }
 
 TEST_F(InlineCueBlocklistUtilsTest,
@@ -90,7 +125,7 @@ TEST_F(InlineCueBlocklistUtilsTest,
   EXPECT_TRUE(std::ranges::find(active_sites, "https://blocked-site-b.com") !=
               active_sites.end());
 
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       UnblockDefaultSiteForInlineCue(profile(), "https://blocked-site-a.com"));
 
   EXPECT_EQ(GetActiveDefaultBlockedSitePatternsForInlineCue(profile()),

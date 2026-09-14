@@ -29,10 +29,21 @@ bool IsSiteBlockedForInlineCue(Profile* profile, const GURL& url) {
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
+
+  // The global toggle outranks every per-site rule. A site may carry
+  // CONTENT_SETTING_ALLOW only to opt out of the default blocklist, which must
+  // not resurrect the inline cue once the user has turned it off.
+  if (settings_map->GetDefaultContentSetting(
+          ContentSettingsType::INLINE_CUE_MENU) == CONTENT_SETTING_BLOCK) {
+    return true;
+  }
+
   content_settings::SettingInfo info;
   ContentSetting setting = settings_map->GetContentSetting(
       url, url, ContentSettingsType::INLINE_CUE_MENU, &info);
 
+  // A non-wildcard pattern means the user has a rule for this specific
+  // site. Honor it and skip the default blocklist.
   if (!info.primary_pattern.MatchesAllHosts()) {
     return setting == CONTENT_SETTING_BLOCK;
   }
