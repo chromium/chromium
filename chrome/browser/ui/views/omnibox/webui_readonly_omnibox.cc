@@ -117,7 +117,7 @@ void WebUIReadOnlyOmnibox::OnTabChanged(content::WebContents* web_contents) {
   if (toolbar_delegate_) {  // null in some unit tests.
     if (toolbar_delegate_->GetInternalWebView()->HasFocus()) {
       SetFocusWithTarget(
-          toolbar_ui_api::mojom::FocusRequestTarget::kLocationBarFocusRestore);
+          toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);
     } else {
       OnBlur();
     }
@@ -623,20 +623,23 @@ WebUIReadOnlyOmnibox::OnFocusChange(
     const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change) {
   if (focus_change.has_focus) {
     has_focus_ = true;
-    if (focus_change.selection) {
-      selection_ = *focus_change.selection;
-    }
+
     // TODO(crbug.com/500653057): Key state, though Views impl doesn't have it.
     controller()->edit_model()->OnSetFocus(/*control_down=*/false);
 
-    if (focus_change.request_clear_keyword) {
-      controller()->edit_model()->ClearKeyword();
-    }
-    if (focus_change.start_zero_suggest) {
-      controller()->edit_model()->StartZeroSuggestRequest();
-    }
-    if (focus_change.activate_default_search) {
-      EnterKeywordModeForDefaultSearchProvider();
+    // We ignore anything beyond focus update if the request is stale.
+    if (focus_change.browser_version == browser_version_) {
+      selection_ = focus_change.selection;
+
+      if (focus_change.request_clear_keyword) {
+        controller()->edit_model()->ClearKeyword();
+      }
+      if (focus_change.start_zero_suggest) {
+        controller()->edit_model()->StartZeroSuggestRequest();
+      }
+      if (focus_change.activate_default_search) {
+        EnterKeywordModeForDefaultSearchProvider();
+      }
     }
     RequestUpdateWebUI();
   } else {

@@ -454,9 +454,10 @@ TEST_F(WebUIReadOnlyOmniboxTest, ContextualTasksFocusBlur) {
   omnibox_view_->Update();  // Pull initial state
 
   // Initially not focused, should show display URL, but input NOT in progress.
+  toolbar_ui_api::mojom::OmniboxViewStatePtr mojo_state;
   EXPECT_EQ(display_url, omnibox_view_->GetText());
   {
-    auto mojo_state = update_propagator_.TakeState();
+    mojo_state = update_propagator_.TakeState();
     ASSERT_TRUE(mojo_state);
     EXPECT_FALSE(mojo_state->user_input_in_progress);
   }
@@ -470,13 +471,14 @@ TEST_F(WebUIReadOnlyOmniboxTest, ContextualTasksFocusBlur) {
                               /*request_clear_keyword=*/false,
                               /*activate_default_search=*/false,
                               /*start_zero_suggest=*/false,
+                              /*browser_version=*/mojo_state->browser_version,
                               /*selection=*/gfx::Range(0))))
                   .has_value());
 
   // Should still show display URL, and user input is NOT in progress.
   EXPECT_EQ(display_url, omnibox_view_->GetText());
   {
-    auto mojo_state = update_propagator_.TakeState();
+    mojo_state = update_propagator_.TakeState();
     ASSERT_TRUE(mojo_state);
     EXPECT_FALSE(mojo_state->user_input_in_progress);
   }
@@ -490,13 +492,14 @@ TEST_F(WebUIReadOnlyOmniboxTest, ContextualTasksFocusBlur) {
                               /*request_clear_keyword=*/false,
                               /*activate_default_search=*/false,
                               /*start_zero_suggest=*/false,
+                              /*browser_version=*/mojo_state->browser_version,
                               /*selection=*/gfx::Range(0))))
                   .has_value());
 
   // Should still show display URL, and user input is NOT in progress again.
   EXPECT_EQ(display_url, omnibox_view_->GetText());
   {
-    auto mojo_state = update_propagator_.TakeState();
+    mojo_state = update_propagator_.TakeState();
     ASSERT_TRUE(mojo_state);
     EXPECT_FALSE(mojo_state->user_input_in_progress);
   }

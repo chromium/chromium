@@ -856,6 +856,20 @@ class WebUILocationBarInteractiveUiTest
     });
   }
 
+  gfx::Range GetBrowserSideSelection() {
+    auto* location_bar = browser()->GetFeatures().location_bar();
+    if (mode() == Mode::kFull) {
+      // Full popup stores the selection it saves on tab switch in
+      // PopupHandler rather than the OmniboxView.
+      return static_cast<OmniboxPopupViewFullWebUI*>(
+                 location_bar->GetOmniboxPopupView())
+          ->popup_handler_for_testing()
+          ->latest_selection();
+    } else {
+      return location_bar->GetOmniboxView()->GetSelectionBounds();
+    }
+  }
+
  private:
   static bool HandleRequest(
       content::URLLoaderInterceptor::RequestParams* params) {
@@ -1564,21 +1578,46 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
       WaitTillOmniboxViewSelection("nk", gfx::Range(11, 9)),
       PollUntil(
           [&]() {
-            auto* location_bar = browser()->GetFeatures().location_bar();
-            gfx::Range selection;
-            if (mode() == Mode::kFull) {
-              // Full popup stores the selection it saves on tab switch in
-              // PopupHandler rather than the OmniboxView.
-              selection = static_cast<OmniboxPopupViewFullWebUI*>(
-                              location_bar->GetOmniboxPopupView())
-                              ->popup_handler_for_testing()
-                              ->latest_selection();
-            } else {
-              selection = location_bar->GetOmniboxView()->GetSelectionBounds();
-            }
+            gfx::Range selection = GetBrowserSideSelection();
             return selection.GetMin() == 9 && selection.GetMax() == 11;
           },
           "selection propagated"));
+}
+
+IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
+                       RestoreSelectionTabSwitch) {
+  FAILS_IN_MODE(Mode::kFull,
+                "Our behavior on autofocus of location bar (since no restore) "
+                "overwrites full's restore of selection");
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      HandleAutofocus(), WaitTillOmniboxViewText("about:blank"),
+      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
+      // Clear selection, and set a different one.
+      InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_RIGHT)),
+      InAnyContext(
+          SendKeyPress(InputWebContents(), ui::VKEY_LEFT, ui::EF_SHIFT_DOWN)),
+      InAnyContext(
+          SendKeyPress(InputWebContents(), ui::VKEY_LEFT, ui::EF_SHIFT_DOWN)),
+      WaitTillOmniboxViewSelection("nk", gfx::Range(11, 9)),
+      PollUntil(
+          [&]() {
+            gfx::Range selection = GetBrowserSideSelection();
+            return selection.GetMin() == 9 && selection.GetMax() == 11;
+          },
+          "selection propagated"),
+      AddInstrumentedTab(kSecondTabId, GURL("https://local.test")),
+      If([&]() { return mode() == Mode::kFull; },
+         Then(InAnyContext(WaitForHide(kClassicPopupWebViewId)))),
+      WaitTillOmniboxViewText("local.test", View::kStatic),
+      SelectTab(kTabStripElementId, 0),
+      // Make sure the element for popup WebContents shows up so again we can
+      // poll it.
+      If([&]() { return mode() == Mode::kFull; },
+         Then(InAnyContext(WaitForShow(kClassicPopupWebViewId)))),
+      WaitTillOmniboxViewFocus(), WaitTillOmniboxViewText("about:blank"),
+      WaitTillOmniboxViewSelection("nk", gfx::Range(11, 9)));
 }
 
 // Tests that if initial interaction just selected-all and didn't unelide
