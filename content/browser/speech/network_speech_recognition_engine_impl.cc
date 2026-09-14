@@ -605,7 +605,9 @@ NetworkSpeechRecognitionEngineImpl::ProcessDownstreamResponse(
       } else if (ws_result.has_stability()) {
         hypothesis->confidence = ws_result.stability();
       }
-      CHECK(ws_alternative.has_transcript(), base::NotFatalUntil::M159);
+      // TODO(crbug.com/560180444): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(ws_alternative.has_transcript());
       // TODO(hans): Perhaps the transcript should be required in the proto?
       if (ws_alternative.has_transcript()) {
         hypothesis->utterance = base::UTF8ToUTF16(ws_alternative.transcript());
