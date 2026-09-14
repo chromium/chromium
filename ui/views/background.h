@@ -140,12 +140,17 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedVectorIconBackground(
     const ui::ThemedVectorIcon& icon);
 
-// Creates a background that fills the canvas in a pill/capsule shape,
-// where the corner radius is dynamically computed as half of the minimum
-// of the view's height and width.
+// Creates a background that fills the canvas in a pill/capsule shape, where
+// the corner radius is dynamically computed as half of the minimum of the
+// height and width of the region being filled.
 VIEWS_EXPORT std::unique_ptr<Background> CreatePillBackground(
     ui::ColorVariant color,
     int for_border_thickness = 0);
+
+// Same as above except the background is inset by the specified insets.
+VIEWS_EXPORT std::unique_ptr<Background> CreatePillBackground(
+    ui::ColorVariant color,
+    const gfx::Insets& insets);
 
 }  // namespace views
 

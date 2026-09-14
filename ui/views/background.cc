@@ -61,11 +61,11 @@ class SolidBackground : public Background {
   }
 };
 
-// Shared class for RoundedRectBackground and ThemedRoundedRectBackground.
+// Fills the view with a rounded rect.
 class RoundedRectBackground : public Background {
  public:
   RoundedRectBackground(ui::ColorVariant color,
-                        const gfx::RoundedCornersF& radii,
+                        const std::optional<gfx::RoundedCornersF>& radii,
                         const gfx::Insets& insets)
       : radii_(radii), insets_(insets) {
     SetColor(color);
@@ -75,14 +75,17 @@ class RoundedRectBackground : public Background {
   RoundedRectBackground& operator=(const RoundedRectBackground&) = delete;
 
   void Paint(gfx::Canvas* canvas, View* view) const override {
-    gfx::Rect rect(view->GetLocalBounds());
-    rect.Inset(insets_);
-    const SkVector radii[4] = {{radii_.upper_left(), radii_.upper_left()},
-                               {radii_.upper_right(), radii_.upper_right()},
-                               {radii_.lower_right(), radii_.lower_right()},
-                               {radii_.lower_left(), radii_.lower_left()}};
-    const SkPath path =
-        SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
+    gfx::Rect bounds(view->GetLocalBounds());
+    bounds.Inset(insets_);
+
+    const gfx::RoundedCornersF radii = radii_.value_or(
+        gfx::RoundedCornersF(std::min(bounds.width(), bounds.height()) / 2.0f));
+    const SkVector sk_radii[4] = {{radii.upper_left(), radii.upper_left()},
+                                  {radii.upper_right(), radii.upper_right()},
+                                  {radii.lower_right(), radii.lower_right()},
+                                  {radii.lower_left(), radii.lower_left()}};
+    const SkPath path = SkPath::RRect(
+        SkRRect::MakeRectRadii(gfx::RectToSkRect(bounds), sk_radii));
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
@@ -102,7 +105,9 @@ class RoundedRectBackground : public Background {
   }
 
  private:
-  const gfx::RoundedCornersF radii_;
+  // std::nullopt requests a pill, whose radius is computed at paint time as
+  // half the filled region's minor axis.
+  const std::optional<gfx::RoundedCornersF> radii_;
   const gfx::Insets insets_;
 };
 
@@ -206,40 +211,6 @@ class BackgroundPainter : public Background {
   std::unique_ptr<Painter> painter_;
 };
 
-class PillBackground : public Background {
- public:
-  PillBackground(ui::ColorVariant color, int for_border_thickness)
-      : for_border_thickness_(for_border_thickness) {
-    SetColor(color);
-  }
-
-  PillBackground(const PillBackground&) = delete;
-  PillBackground& operator=(const PillBackground&) = delete;
-  ~PillBackground() override = default;
-
-  // Background:
-  void Paint(gfx::Canvas* canvas, View* view) const override {
-    const float radius = std::min(view->height(), view->width()) / 2.0f;
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
-    flags.setAntiAlias(true);
-
-    gfx::RectF fill_bounds(view->GetLocalBounds());
-    fill_bounds.Inset(for_border_thickness_ / 2.0f);
-    canvas->DrawRoundRect(fill_bounds, radius, flags);
-  }
-
-  void OnViewThemeChanged(View* view) override {
-    if (color().IsLogical()) {
-      view->SchedulePaint();
-    }
-  }
-
- private:
-  const int for_border_thickness_;
-};
-
 Background::Background() = default;
 
 Background::~Background() = default;
@@ -317,7 +288,13 @@ std::unique_ptr<Background> CreateRoundedRectBackground(
 
 std::unique_ptr<Background> CreatePillBackground(ui::ColorVariant color,
                                                  int for_border_thickness) {
-  return std::make_unique<PillBackground>(color, for_border_thickness);
+  return CreatePillBackground(color, gfx::Insets(for_border_thickness / 2.0f));
+}
+
+std::unique_ptr<Background> CreatePillBackground(ui::ColorVariant color,
+                                                 const gfx::Insets& insets) {
+  return std::make_unique<RoundedRectBackground>(color, /*radii=*/std::nullopt,
+                                                 insets);
 }
 
 std::unique_ptr<Background> CreateThemedVectorIconBackground(
