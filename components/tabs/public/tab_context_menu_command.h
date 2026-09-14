@@ -38,6 +38,7 @@ enum TabContextMenuCommand {
   CommandGlicCreateNewChat,
   CommandGlicSwitchToRecentConversation,
   CommandGlicUnshare,
+  CommandToggleFocusGroup,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabContextMenuCommand)
 

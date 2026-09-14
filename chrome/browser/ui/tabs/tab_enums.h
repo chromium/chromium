@@ -124,7 +124,8 @@ enum class VerticalTabStripCollapseState {
 // LINT.IfChange(TabGroupFocusEntryPoint)
 enum class TabGroupFocusEntryPoint {
   kEditorBubble = 0,
-  kMaxValue = kEditorBubble,
+  kTabContextMenu = 1,
+  kMaxValue = kTabContextMenu,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupFocusEntryPoint)
 
@@ -141,7 +142,8 @@ enum class TabGroupFocusExitReason {
   kGroupHeaderDraggedIn = 6,
   kActiveTabGroupOperation = 7,
   kTabOutsideGroupClosed = 8,
-  kMaxValue = kTabOutsideGroupClosed,
+  kTabContextMenu = 9,
+  kMaxValue = kTabContextMenu,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupFocusExitReason)
 

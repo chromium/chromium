@@ -37995,6 +37995,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabContextMenu_FocusTabGroup">
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User selected Focus Tab Group from the tab context menu.
+  </description>
+</action>
+
 <action name="TabContextMenu_MoveTabToNewWindow">
   <owner>lgrey@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -38051,6 +38058,13 @@ should be able to be added at any place in this file.
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>User selected Pin/Unpin from tab context menu.</description>
+</action>
+
+<action name="TabContextMenu_UnfocusTabGroup">
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User selected Unfocus Tab Group from the tab context menu.
+  </description>
 </action>
 
 <action name="TabContextMenu_UnmuteTabs">

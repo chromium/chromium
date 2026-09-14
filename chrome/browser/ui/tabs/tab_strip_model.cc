@@ -2651,6 +2651,11 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandRemoveFromGroup:
       return SupportsTabGroups();
 
+    case CommandToggleFocusGroup:
+      return SupportsTabGroups() &&
+             base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
+             GetTabGroupForTab(context_index).has_value();
+
     case CommandMoveToExistingWindow:
       return true;
 
@@ -2974,6 +2979,32 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
                                                       std::move(callback));
       } else {
         std::move(callback).Run();
+      }
+      break;
+    }
+
+    case CommandToggleFocusGroup: {
+      base::UmaHistogramCounts1000(
+          "Tab.ContextMenu.ToggleFocusGroup.SelectedTabsCount",
+          selection_model_.size());
+      if (!group_model_) {
+        break;
+      }
+      std::optional<tab_groups::TabGroupId> group_id =
+          GetTabGroupForTab(context_index);
+      if (!group_id.has_value()) {
+        break;
+      }
+      if (GetFocusedGroup() == group_id) {
+        base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
+                                      TabGroupFocusExitReason::kTabContextMenu);
+        base::RecordAction(UserMetricsAction("TabContextMenu_UnfocusTabGroup"));
+        SetFocusedGroup(std::nullopt);
+      } else {
+        base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint",
+                                      TabGroupFocusEntryPoint::kTabContextMenu);
+        base::RecordAction(UserMetricsAction("TabContextMenu_FocusTabGroup"));
+        SetFocusedGroup(group_id);
       }
       break;
     }

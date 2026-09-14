@@ -84,6 +84,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kArrangeSplitTabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kSwapSplitTabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kAddNewTabAdjacentMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kDuplicateMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kFocusTabGroupMenuItem);
 
 TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                            TabMenuModelDelegate* tab_menu_model_delegate,
@@ -405,6 +406,19 @@ void TabMenuModel::Build(int index) {
                                            : kSplitSceneOldIcon,
                                        ui::kColorMenuIcon, kTabMenuIconSize));
     SetElementIdentifierAt(GetItemCount() - 1, kArrangeSplitTabsMenuItem);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
+      tab_strip_->SupportsTabGroups()) {
+    std::optional<tab_groups::TabGroupId> group_id =
+        tab_strip_->GetTabGroupForTab(index);
+    if (group_id.has_value()) {
+      const bool is_focused = tab_strip_->GetFocusedGroup() == group_id;
+      AddItemWithStringId(TabStripModel::CommandToggleFocusGroup,
+                          is_focused ? IDS_TAB_CXMENU_UNFOCUS_TAB_GROUP
+                                     : IDS_TAB_CXMENU_FOCUS_TAB_GROUP);
+      SetElementIdentifierAt(GetItemCount() - 1, kFocusTabGroupMenuItem);
+    }
   }
 
   if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(

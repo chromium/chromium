@@ -434,6 +434,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="TabGroupFocusEntryPoint">
   <int value="0" label="Editor bubble ('Focus group')"/>
+  <int value="1" label="Tab context menu ('Focus tab group')"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_enums.h:TabGroupFocusEntryPoint) -->
@@ -450,6 +451,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Tab group header dragged into window"/>
   <int value="7" label="Active tab group changed or ungrouped"/>
   <int value="8" label="Tab outside focused group closed"/>
+  <int value="9" label="Tab context menu ('Unfocus tab group')"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_enums.h:TabGroupFocusExitReason) -->

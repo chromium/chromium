@@ -99,6 +99,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SendTabToSelf" summary="the Send to your device command"/>
   <variant name="SwapWithActiveSplit"
       summary="the Swap with Active Split command"/>
+  <variant name="ToggleFocusGroup"
+      summary="the Toggle focus tab group command"/>
   <variant name="ToggleGrouped" summary="the Toggle group command"/>
   <variant name="ToggleMuted" summary="the Toggle muted command"/>
   <variant name="TogglePinned" summary="the Toggle Pinned command"/>

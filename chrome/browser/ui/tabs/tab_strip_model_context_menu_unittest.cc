@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -155,4 +159,99 @@ TEST_F(TabStripModelContextMenuTest,
   // Execute close command on the tab.
   tab_strip_model()->ExecuteContextMenuCommand(0,
                                                TabStripModel::CommandCloseTab);
+}
+
+TEST_F(TabStripModelContextMenuTest, CommandToggleFocusGroupEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), true);
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), false);
+
+  // Tab 0 is not in a group -> command disabled.
+  EXPECT_FALSE(tab_strip_model()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleFocusGroup));
+
+  // Add tab 0 to a group -> command enabled.
+  tab_strip_model()->AddToNewGroup({0});
+  EXPECT_TRUE(tab_strip_model()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleFocusGroup));
+
+  // Tab 1 is not in a group -> command disabled.
+  EXPECT_FALSE(tab_strip_model()->IsContextMenuCommandEnabled(
+      1, TabStripModel::CommandToggleFocusGroup));
+}
+
+TEST_F(TabStripModelContextMenuTest, CommandToggleFocusGroupLogsMetrics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), true);
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), false);
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), false);
+
+  // Tab 0 is not in a group. Executing command should not focus or log
+  // entry/exit metrics.
+  tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandToggleFocusGroup);
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Tab.ContextMenu.ToggleFocusGroup.SelectedTabsCount", 1, 1);
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.EntryPoint", 0);
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
+  EXPECT_EQ(user_action_tester.GetActionCount("TabContextMenu_FocusTabGroup"),
+            0);
+  EXPECT_EQ(user_action_tester.GetActionCount("TabContextMenu_UnfocusTabGroup"),
+            0);
+
+  tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0, 1});
+
+  // Focus the group from tab 0.
+  tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandToggleFocusGroup);
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group);
+  histogram_tester.ExpectBucketCount(
+      "Tab.ContextMenu.ToggleFocusGroup.SelectedTabsCount", 1, 2);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.EntryPoint",
+                                      TabGroupFocusEntryPoint::kTabContextMenu,
+                                      1);
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
+  EXPECT_EQ(user_action_tester.GetActionCount("TabContextMenu_FocusTabGroup"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount("TabContextMenu_UnfocusTabGroup"),
+            0);
+
+  // Unfocus the group from tab 0.
+  tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandToggleFocusGroup);
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  histogram_tester.ExpectBucketCount(
+      "Tab.ContextMenu.ToggleFocusGroup.SelectedTabsCount", 1, 3);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.ExitReason",
+                                      TabGroupFocusExitReason::kTabContextMenu,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("TabContextMenu_FocusTabGroup"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount("TabContextMenu_UnfocusTabGroup"),
+            1);
+
+  // Select multiple tabs and focus the group.
+  ui::ListSelectionModel selection;
+  selection.SetSelectedIndex(0);
+  selection.AddIndexToSelection(1);
+  tab_strip_model()->SetSelectionFromModel(selection);
+  ASSERT_EQ(2u, tab_strip_model()->selection_model().size());
+
+  tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandToggleFocusGroup);
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group);
+  histogram_tester.ExpectBucketCount(
+      "Tab.ContextMenu.ToggleFocusGroup.SelectedTabsCount", 2, 1);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.EntryPoint",
+                                      TabGroupFocusEntryPoint::kTabContextMenu,
+                                      2);
+  EXPECT_EQ(user_action_tester.GetActionCount("TabContextMenu_FocusTabGroup"),
+            2);
 }
