@@ -145,9 +145,6 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
                     bool is_initiated_by_source) override;
   void SendMessageToSink(RemotingBridge* bridge,
                          const std::vector<uint8_t>& message) override;
-  void EstimateTransmissionCapacity(
-      media::mojom::Remoter::EstimateTransmissionCapacityCallback callback)
-      override;
   void OnClientActivated(RemotingBridge* bridge) override;
   void OnClientDeactivated(RemotingBridge* bridge) override;
 

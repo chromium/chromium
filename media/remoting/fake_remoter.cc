@@ -186,11 +186,6 @@ void FakeRemoter::SendMessageToSink(const std::vector<uint8_t>& message) {
   }
 }
 
-void FakeRemoter::EstimateTransmissionCapacity(
-    mojom::Remoter::EstimateTransmissionCapacityCallback callback) {
-  std::move(callback).Run(10000000 / 8.0);
-}
-
 void FakeRemoter::Started() {
   source_->OnStarted();
 }

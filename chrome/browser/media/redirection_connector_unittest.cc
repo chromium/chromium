@@ -88,10 +88,6 @@ class FakeRemoter final : public media::mojom::Remoter {
   void SendMessageToSink(const std::vector<uint8_t>& message) override {
     messages_to_sink_.push_back(message);
   }
-  void EstimateTransmissionCapacity(
-      EstimateTransmissionCapacityCallback callback) override {
-    std::move(callback).Run(0);
-  }
 
   int start_count_ = 0;
   std::vector<RemotingStopReason> stop_reasons_;

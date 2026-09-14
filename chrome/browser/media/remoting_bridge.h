@@ -53,9 +53,6 @@ class RemotingBridge final : public media::mojom::Remoter {
                               bool is_initiated_by_source) = 0;
     virtual void SendMessageToSink(RemotingBridge* bridge,
                                    const std::vector<uint8_t>& message) = 0;
-    virtual void EstimateTransmissionCapacity(
-        media::mojom::Remoter::EstimateTransmissionCapacityCallback
-            callback) = 0;
 
     // Called when this Client starts or stops serving |bridge|.
     virtual void OnClientActivated(RemotingBridge* bridge) {}
@@ -131,9 +128,6 @@ class RemotingBridge final : public media::mojom::Remoter {
           video_sender) final;
   void Stop(media::mojom::RemotingStopReason reason) final;
   void SendMessageToSink(const std::vector<uint8_t>& message) final;
-  void EstimateTransmissionCapacity(
-      media::mojom::Remoter::EstimateTransmissionCapacityCallback callback)
-      final;
 
   // Returns the entry for |client|, which must be one of |clients_|.
   ClientEntry& GetEntry(Client* client);

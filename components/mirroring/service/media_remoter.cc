@@ -166,12 +166,6 @@ void MediaRemoter::SendMessageToSink(const std::vector<uint8_t>& message) {
   rpc_dispatcher_->SendOutboundMessage(message);
 }
 
-void MediaRemoter::EstimateTransmissionCapacity(
-    media::mojom::Remoter::EstimateTransmissionCapacityCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(0);
-}
-
 void MediaRemoter::OnRemotingDataStreamError() {
   if (state_ != REMOTING_STARTED) {
     return;

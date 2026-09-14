@@ -108,9 +108,6 @@ class MockMediaRemoter final : public media::mojom::Remoter {
   MOCK_METHOD0(StartWithPermissionAlreadyGranted, void());
   MOCK_METHOD1(Stop, void(RemotingStopReason));
   MOCK_METHOD1(SendMessageToSink, void(const std::vector<uint8_t>&));
-  MOCK_METHOD1(
-      EstimateTransmissionCapacity,
-      void(media::mojom::Remoter::EstimateTransmissionCapacityCallback));
   void Start() override {
     RequestStart();
     if (source_)

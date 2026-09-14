@@ -338,11 +338,6 @@ void CastRemotingConnector::OnMessageFromSink(
   active_bridge_->OnMessageFromSink(this, message);
 }
 
-void CastRemotingConnector::EstimateTransmissionCapacity(
-    media::mojom::Remoter::EstimateTransmissionCapacityCallback callback) {
-  std::move(callback).Run(0);
-}
-
 bool CastRemotingConnector::HasSinkMetadata() const {
   return sink_metadata_ != RemotingSinkMetadata();
 }

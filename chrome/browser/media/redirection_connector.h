@@ -77,9 +77,6 @@ class RedirectionConnector final : public RemotingBridge::Client {
                     bool is_initiated_by_source) final;
   void SendMessageToSink(RemotingBridge* bridge,
                          const std::vector<uint8_t>& message) final;
-  void EstimateTransmissionCapacity(
-      media::mojom::Remoter::EstimateTransmissionCapacityCallback callback)
-      final;
   void OnClientActivated(RemotingBridge* bridge) final;
   void OnClientDeactivated(RemotingBridge* bridge) final;
 

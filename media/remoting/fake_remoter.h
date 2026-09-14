@@ -86,8 +86,6 @@ class FakeRemoter final : public mojom::Remoter {
                             video_sender_receiver) override;
   void Stop(mojom::RemotingStopReason reason) override;
   void SendMessageToSink(const std::vector<uint8_t>& message) override;
-  void EstimateTransmissionCapacity(
-      mojom::Remoter::EstimateTransmissionCapacityCallback callback) override;
 
  private:
   void Started();

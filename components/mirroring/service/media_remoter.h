@@ -104,9 +104,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
       mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
           video_sender_receiver) override;
   void SendMessageToSink(const std::vector<uint8_t>& message) override;
-  void EstimateTransmissionCapacity(
-      media::mojom::Remoter::EstimateTransmissionCapacityCallback callback)
-      override;
   // Called by RemotingDataStreamSender when error occurred. Will stop this
   // remoting session and fallback to mirroring.
   void OnRemotingDataStreamError();

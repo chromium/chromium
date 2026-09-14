@@ -69,10 +69,6 @@ interface Remoter {
   // Sends |message| to the sink. |message| is a serialized protobuf from
   // src/media/remoting/proto.
   SendMessageToSink(array<uint8> message);
-
-  // Estimates the transmission capacity. Returns the result in
-  // bytes per second.
-  EstimateTransmissionCapacity() => (double rate);
 };
 
 // Interface used for sending notifications back to the local source's control

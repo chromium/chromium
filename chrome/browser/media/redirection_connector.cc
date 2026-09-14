@@ -141,11 +141,6 @@ void RedirectionConnector::SendMessageToSink(
   }
 }
 
-void RedirectionConnector::EstimateTransmissionCapacity(
-    media::mojom::Remoter::EstimateTransmissionCapacityCallback callback) {
-  std::move(callback).Run(0);
-}
-
 void RedirectionConnector::OnClientActivated(RemotingBridge* bridge) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(create_session_callback_);

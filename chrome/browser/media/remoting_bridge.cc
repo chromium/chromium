@@ -202,12 +202,3 @@ void RemotingBridge::SendMessageToSink(const std::vector<uint8_t>& message) {
   }
 }
 
-void RemotingBridge::EstimateTransmissionCapacity(
-    media::mojom::Remoter::EstimateTransmissionCapacityCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (active_client_) {
-    active_client_->EstimateTransmissionCapacity(std::move(callback));
-  } else {
-    std::move(callback).Run(0);
-  }
-}

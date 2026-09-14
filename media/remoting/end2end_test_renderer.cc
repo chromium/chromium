@@ -147,11 +147,6 @@ class TestRemoter final : public mojom::Remoter {
       send_message_to_sink_cb_.Run(message);
   }
 
-  void EstimateTransmissionCapacity(
-      mojom::Remoter::EstimateTransmissionCapacityCallback callback) override {
-    std::move(callback).Run(0);
-  }
-
   // Called when receives RPC messages from receiver.
   void OnMessageFromSink(const std::vector<uint8_t>& message) {
     source_->OnMessageFromSink(message);
