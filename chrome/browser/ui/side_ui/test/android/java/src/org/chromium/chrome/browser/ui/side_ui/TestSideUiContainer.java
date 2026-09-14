@@ -72,20 +72,35 @@ public final class TestSideUiContainer implements SideUiContainer {
      */
     public boolean mRequestUiUpdateOnWillAutoClose;
 
+    /** Number of times {@link #onUiUpdateStarting} is called. */
+    public int mNumOnUiUpdateStartingReceived;
+
+    /** The last {@code oldWidth} received by {@link #onUiUpdateStarting}. */
+    public @Nullable @Px Integer mLastOldWidthOnUpdateStarting;
+
+    /** The last {@code newWidth} received by {@link #onUiUpdateStarting}. */
+    public @Nullable @Px Integer mLastNewWidthOnUpdateStarting;
+
+    /** The last {@code oldHeightType} received by {@link #onUiUpdateStarting}. */
+    public @HeightType int mLastOldHeightTypeOnUpdateStarting;
+
+    /** The last {@code newHeightType} received by {@link #onUiUpdateStarting}. */
+    public @HeightType int mLastNewHeightTypeOnUpdateStarting;
+
     /** Number of times {@link #onUiUpdateCompleted} is called. */
     public int mNumOnUiUpdateCompletedReceived;
 
     /** The last {@code oldWidth} received by {@link #onUiUpdateCompleted}. */
-    public @Nullable @Px Integer mLastOldWidth;
+    public @Nullable @Px Integer mLastOldWidthOnUpdateCompleted;
 
     /** The last {@code newWidth} received by {@link #onUiUpdateCompleted}. */
-    public @Nullable @Px Integer mLastNewWidth;
+    public @Nullable @Px Integer mLastNewWidthOnUpdateCompleted;
 
     /** The last {@code oldHeightType} received by {@link #onUiUpdateCompleted}. */
-    public @HeightType int mLastOldHeightType;
+    public @HeightType int mLastOldHeightTypeOnUpdateCompleted;
 
     /** The last {@code newHeightType} received by {@link #onUiUpdateCompleted}. */
-    public @HeightType int mLastNewHeightType;
+    public @HeightType int mLastNewHeightTypeOnUpdateCompleted;
 
     private final SideUiCoordinator mSideUiCoordinator;
     private final View mSideUiContainerView;
@@ -158,16 +173,29 @@ public final class TestSideUiContainer implements SideUiContainer {
     }
 
     @Override
+    public void onUiUpdateStarting(
+            @Px int oldWidth,
+            @Px int newWidth,
+            @HeightType int oldHeightType,
+            @HeightType int newHeightType) {
+        mNumOnUiUpdateStartingReceived++;
+        mLastOldWidthOnUpdateStarting = oldWidth;
+        mLastNewWidthOnUpdateStarting = newWidth;
+        mLastOldHeightTypeOnUpdateStarting = oldHeightType;
+        mLastNewHeightTypeOnUpdateStarting = newHeightType;
+    }
+
+    @Override
     public void onUiUpdateCompleted(
             @Px int oldWidth,
             @Px int newWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
         mNumOnUiUpdateCompletedReceived++;
-        mLastOldWidth = oldWidth;
-        mLastNewWidth = newWidth;
-        mLastOldHeightType = oldHeightType;
-        mLastNewHeightType = newHeightType;
+        mLastOldWidthOnUpdateCompleted = oldWidth;
+        mLastNewWidthOnUpdateCompleted = newWidth;
+        mLastOldHeightTypeOnUpdateCompleted = oldHeightType;
+        mLastNewHeightTypeOnUpdateCompleted = newHeightType;
     }
 
     @Override

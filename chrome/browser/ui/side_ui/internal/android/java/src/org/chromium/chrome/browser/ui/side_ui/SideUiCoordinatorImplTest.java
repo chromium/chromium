@@ -348,8 +348,10 @@ public class SideUiCoordinatorImplTest {
 
         // Assert: Only the right container should receive onUiUpdateCompleted notification.
         assertEquals(1, rightUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(0), rightUiContainer.mLastOldWidth);
-        assertEquals(Integer.valueOf(expectedRightSideUiWidth), rightUiContainer.mLastNewWidth);
+        assertEquals(Integer.valueOf(0), rightUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(
+                Integer.valueOf(expectedRightSideUiWidth),
+                rightUiContainer.mLastNewWidthOnUpdateCompleted);
         assertEquals(0, leftUiContainer.mNumOnUiUpdateCompletedReceived);
 
         // Assert: The observer is notified with both containers being showable.
@@ -390,11 +392,15 @@ public class SideUiCoordinatorImplTest {
 
         // Assert: Both containers should receive onUiUpdateCompleted notification.
         assertEquals(2, rightUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(expectedRightSideUiWidth), rightUiContainer.mLastOldWidth);
-        assertEquals(Integer.valueOf(0), rightUiContainer.mLastNewWidth);
+        assertEquals(
+                Integer.valueOf(expectedRightSideUiWidth),
+                rightUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(0), rightUiContainer.mLastNewWidthOnUpdateCompleted);
         assertEquals(1, leftUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(0), leftUiContainer.mLastOldWidth);
-        assertEquals(Integer.valueOf(expectedLeftSideUiWidth), leftUiContainer.mLastNewWidth);
+        assertEquals(Integer.valueOf(0), leftUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(
+                Integer.valueOf(expectedLeftSideUiWidth),
+                leftUiContainer.mLastNewWidthOnUpdateCompleted);
 
         // Assert: The observer is notified that the right (low-priority) container is no longer
         // showable.
@@ -427,11 +433,15 @@ public class SideUiCoordinatorImplTest {
 
         // Assert: Both containers should receive onUiUpdateCompleted notification.
         assertEquals(3, rightUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(0), rightUiContainer.mLastOldWidth);
-        assertEquals(Integer.valueOf(expectedRightSideUiWidth), rightUiContainer.mLastNewWidth);
+        assertEquals(Integer.valueOf(0), rightUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(
+                Integer.valueOf(expectedRightSideUiWidth),
+                rightUiContainer.mLastNewWidthOnUpdateCompleted);
         assertEquals(2, leftUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(expectedLeftSideUiWidth), leftUiContainer.mLastOldWidth);
-        assertEquals(Integer.valueOf(0), leftUiContainer.mLastNewWidth);
+        assertEquals(
+                Integer.valueOf(expectedLeftSideUiWidth),
+                leftUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(0), leftUiContainer.mLastNewWidthOnUpdateCompleted);
 
         // Assert: The observer is notified that both containers are showable.
         verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
@@ -546,7 +556,7 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
-    public void testUpdateUi_noUiChange_onUiUpdateCompletedNotCalled() {
+    public void testUpdateUi_noUiChange_doesNotCallOnUiUpdateStartingOrCompleted() {
         // Arrange: Register and show a SideUiContainer.
         var sideUiContainer =
                 new TestSideUiContainer(
@@ -557,16 +567,39 @@ public class SideUiCoordinatorImplTest {
 
         // Assert:
         @Px int sideUiWidth = mSideUiContainerView.getWidth();
+        assertEquals(1, sideUiContainer.mNumOnUiUpdateStartingReceived);
+        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidthOnUpdateStarting);
+        assertEquals(Integer.valueOf(sideUiWidth), sideUiContainer.mLastNewWidthOnUpdateStarting);
         assertEquals(1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidth);
-        assertEquals(Integer.valueOf(sideUiWidth), sideUiContainer.mLastNewWidth);
+        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(sideUiWidth), sideUiContainer.mLastNewWidthOnUpdateCompleted);
 
         // Act: Trigger another UI update. This update should be a no-op.
         mCoordinator.updateUi(
                 new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
 
-        // Assert: onUiUpdateCompleted shouldn't be called again.
+        // Assert: onUiUpdateStarting and onUiUpdateCompleted shouldn't be called again.
+        assertEquals(1, sideUiContainer.mNumOnUiUpdateStartingReceived);
         assertEquals(1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
+    }
+
+    @Test
+    public void testUpdateUi_notifiesOnUiUpdateStarting() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+
+        assertEquals(1, sideUiContainer.mNumOnUiUpdateStartingReceived);
+        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidthOnUpdateStarting);
+        assertEquals(
+                Integer.valueOf(mSideUiContainerView.getWidth()),
+                sideUiContainer.mLastNewWidthOnUpdateStarting);
+        assertEquals(HeightType.NOT_APPLICABLE, sideUiContainer.mLastOldHeightTypeOnUpdateStarting);
+        assertEquals(
+                sideUiContainer.mHeightType, sideUiContainer.mLastNewHeightTypeOnUpdateStarting);
     }
 
     @Test
@@ -833,8 +866,9 @@ public class SideUiCoordinatorImplTest {
         @Px int expectedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
         assertEquals(expectedWidth, mSideUiContainerView.getWidth());
         assertEquals(1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidth);
-        assertEquals(Integer.valueOf(expectedWidth), sideUiContainer.mLastNewWidth);
+        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(
+                Integer.valueOf(expectedWidth), sideUiContainer.mLastNewWidthOnUpdateCompleted);
 
         // Assert: SideUiObserver received onTransitionBegun() and onTransitionEnded().
         SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(0, expectedWidth);
@@ -1007,8 +1041,9 @@ public class SideUiCoordinatorImplTest {
         assertEquals(
                 HeightType.TOOLBAR,
                 mCoordinator.getCurrentSideUiSpecs().getHeightType(AnchorSide.RIGHT));
-        assertEquals(HeightType.NOT_APPLICABLE, sideUiContainer.mLastOldHeightType);
-        assertEquals(HeightType.TOOLBAR, sideUiContainer.mLastNewHeightType);
+        assertEquals(
+                HeightType.NOT_APPLICABLE, sideUiContainer.mLastOldHeightTypeOnUpdateCompleted);
+        assertEquals(HeightType.TOOLBAR, sideUiContainer.mLastNewHeightTypeOnUpdateCompleted);
         assertEquals(1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
 
         // Simulate TopControlsStacker changing heights before updateUi is called (e.g., when
@@ -1025,8 +1060,8 @@ public class SideUiCoordinatorImplTest {
         assertEquals(
                 HeightType.WEB_CONTENTS,
                 mCoordinator.getCurrentSideUiSpecs().getHeightType(AnchorSide.RIGHT));
-        assertEquals(HeightType.TOOLBAR, sideUiContainer.mLastOldHeightType);
-        assertEquals(HeightType.WEB_CONTENTS, sideUiContainer.mLastNewHeightType);
+        assertEquals(HeightType.TOOLBAR, sideUiContainer.mLastOldHeightTypeOnUpdateCompleted);
+        assertEquals(HeightType.WEB_CONTENTS, sideUiContainer.mLastNewHeightTypeOnUpdateCompleted);
         assertEquals(2, sideUiContainer.mNumOnUiUpdateCompletedReceived);
     }
 

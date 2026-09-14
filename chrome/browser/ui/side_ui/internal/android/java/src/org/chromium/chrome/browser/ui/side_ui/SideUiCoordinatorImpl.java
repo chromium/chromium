@@ -406,6 +406,20 @@ final class SideUiCoordinatorImpl
         return null;
     }
 
+    private void notifyContainersOnUiUpdateStarting(
+            SideUiSpecs oldSideUiSpecs, SideUiSpecs newSideUiSpecs) {
+        for (var container : mSideUiContainers) {
+            @AnchorSide int anchorSide = container.getAnchorSide();
+            @Px int oldWidth = oldSideUiSpecs.getWidth(anchorSide);
+            @Px int newWidth = newSideUiSpecs.getWidth(anchorSide);
+            @HeightType int oldHeightType = oldSideUiSpecs.getHeightType(anchorSide);
+            @HeightType int newHeightType = newSideUiSpecs.getHeightType(anchorSide);
+            if (newWidth != oldWidth || oldHeightType != newHeightType) {
+                container.onUiUpdateStarting(oldWidth, newWidth, oldHeightType, newHeightType);
+            }
+        }
+    }
+
     private void notifyContainersOnUiUpdateCompleted(
             SideUiSpecs oldSideUiSpecs, SideUiSpecs newSideUiSpecs) {
         for (var container : mSideUiContainers) {
@@ -750,6 +764,8 @@ final class SideUiCoordinatorImpl
      */
     private void commitNewSideUiSpecs(
             SideUiUpdateSpecs uiUpdateSpecs, @Nullable TransitionSet transitionSet) {
+        notifyContainersOnUiUpdateStarting(uiUpdateSpecs.mCurrentSpecs, uiUpdateSpecs.mNewSpecs);
+
         // Whether both the width and height gets updated. The animation will be suppressed if true.
         boolean willUpdateBothWidthHeight = false;
         for (var marginDiff : uiUpdateSpecs.mTopMarginDiff.entrySet()) {

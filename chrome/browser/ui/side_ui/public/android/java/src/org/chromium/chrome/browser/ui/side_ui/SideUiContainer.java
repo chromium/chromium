@@ -101,6 +101,24 @@ public interface SideUiContainer {
     boolean shouldLockTopControls();
 
     /**
+     * Called after {@link SideUiCoordinator} starts a UI update that will change this {@link
+     * SideUiContainer}. This is after {@link SideUiCoordinator} computes the upcoming {@link
+     * SideUiUpdateSpecs}, but before these specs have been committed or used to update view state.
+     *
+     * @param oldWidth The stable width of this {@link SideUiContainer} before the UI update.
+     * @param newWidth The stable width of this {@link SideUiContainer} after the UI update.
+     * @param oldHeightType The stable {@link HeightType} of this {@link SideUiContainer} before the
+     *     UI update.
+     * @param newHeightType The stable {@link HeightType} of this {@link SideUiContainer} after the
+     *     UI update.
+     */
+    default void onUiUpdateStarting(
+            @Px int oldWidth,
+            @Px int newWidth,
+            @HeightType int oldHeightType,
+            @HeightType int newHeightType) {}
+
+    /**
      * Called after {@link SideUiCoordinator} completes a UI update <i>and</i> that update changed
      * this {@link SideUiContainer}.
      *
