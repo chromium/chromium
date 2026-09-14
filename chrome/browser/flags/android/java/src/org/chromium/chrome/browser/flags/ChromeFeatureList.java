@@ -918,7 +918,8 @@ public abstract class ChromeFeatureList {
                     : Map.ofEntries(
                             Map.entry(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, true),
                             Map.entry(ANDROID_THEME_MODULE, true),
-                            Map.entry(ANDROID_THEME_RESOURCE_PROVIDER, false));
+                            Map.entry(ANDROID_THEME_RESOURCE_PROVIDER, false),
+                            Map.entry(UNIVERSAL_KEYBOARD_HANDLING, true));
 
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
     public static final CachedFlag sAccountPickerDialog =

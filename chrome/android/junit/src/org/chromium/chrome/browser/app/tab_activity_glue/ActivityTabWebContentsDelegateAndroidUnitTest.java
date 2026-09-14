@@ -23,6 +23,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.graphics.Rect;
+import android.view.KeyEvent;
 import android.view.View;
 
 import org.junit.Assert;
@@ -737,5 +738,41 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         assertEquals(
                 DisplayMode.BROWSER,
                 mTabWebContentsDelegateAndroid.getDisplayModeCheckedForTesting());
+    }
+
+    @Test
+    public void testHandleKeyboardEvent_escapeStopsLoadingWhenRepeatCountZero() {
+        when(mWebContents.isLoading()).thenReturn(true);
+        KeyEvent escapeEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+
+        mTabWebContentsDelegateAndroid.handleKeyboardEvent(escapeEvent);
+
+        verify(mWebContents).stop();
+    }
+
+    @Test
+    public void testHandleKeyboardEvent_escapeIgnoredWhenRepeatCountNonZero() {
+        when(mWebContents.isLoading()).thenReturn(true);
+        KeyEvent escapeRepeatEvent =
+                new KeyEvent(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_ESCAPE,
+                        /* repeat= */ 1);
+
+        mTabWebContentsDelegateAndroid.handleKeyboardEvent(escapeRepeatEvent);
+
+        verify(mWebContents, never()).stop();
+    }
+
+    @Test
+    public void testHandleKeyboardEvent_escapeIgnoredWhenNotLoading() {
+        when(mWebContents.isLoading()).thenReturn(false);
+        KeyEvent escapeEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+
+        mTabWebContentsDelegateAndroid.handleKeyboardEvent(escapeEvent);
+
+        verify(mWebContents, never()).stop();
     }
 }
