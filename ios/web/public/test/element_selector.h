@@ -9,6 +9,9 @@
 
 #include <string>
 
+// Delimiter used in CSS selectors to traverse shadow roots.
+inline constexpr char kElementSelectorShadowDelimiter[] = ".%CR_SHADOW%.";
+
 // An ElementSelector is used to generate the proper javascript to retrieve an
 // element on a web page. It encapsulates the various means of finding an
 // element and is intended to be passed around.
@@ -23,14 +26,17 @@
 // Returns an ElementSelector to retrieve an element by ID.
 + (ElementSelector*)selectorWithElementID:(const std::string&)elementID;
 
-// Returns an ElementSelector to retrieve an element in iframe by ID. iframe
-// is an immediate child of the main frame with the given index. The script of
-// this selector will throw an exception if target iframe has a different
-// origin from the main frame.
+// Returns an ElementSelector to retrieve an element in iframe by ID. iframe is
+// an immediate child of the main frame with the given index. The script of this
+// selector will throw an exception if target iframe has a different origin from
+// the main frame.
 + (ElementSelector*)selectorWithElementID:(const std::string&)elementID
                          inFrameWithIndex:(int)frameIndex;
 
 // Returns an ElementSelector to retrieve an element by a CSS selector.
+// Shadow DOM can be traversed by separating selectors with
+// `kElementSelectorShadowDelimiter` (".%CR_SHADOW%.").
+// Example: "custom-element.%CR_SHADOW%.#child-id".
 + (ElementSelector*)selectorWithCSSSelector:(const std::string&)selector;
 
 // Returns an ElementSelector to retrieve an element by a xpath query.

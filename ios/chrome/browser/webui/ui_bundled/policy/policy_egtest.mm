@@ -42,17 +42,16 @@
 
 namespace {
 // Ids of elements in chrome://policy
-NSString* const kReloadPoliciesButton = @"reload-policies";
-NSString* const kExportPoliciesButton = @"export-policies";
-NSString* const kViewLogsButton = @"view-logs";
-NSString* const kMoreActionsButton = @"more-actions-button";
+const char kReloadPoliciesButton[] = "reload-policies";
+const char kViewLogsButton[] = "view-logs";
+const char kMoreActionsButton[] = "more-actions-button";
 
 // Ids of elements in chrome://policy/logs
-NSString* const kRefreshLogsButton = @"logs-refresh";
-NSString* const kExportLogsButton = @"logs-dump";
+const char kRefreshLogsButton[] = "logs-refresh";
+const char kExportLogsButton[] = "logs-dump";
 
 // Ids of elements in chrome://policy/test
-NSString* const kApplyPoliciesButton = @"apply-policies";
+const char kApplyPoliciesButton[] = "apply-policies";
 
 std::vector<std::string> PopulateExpectedPolicy(const std::string& name,
                                                 const std::string& value) {
@@ -129,59 +128,42 @@ void VerifyPolicies(
 }
 
 ElementSelector* ReloadPoliciesButton() {
-  NSString* script = @"(function() {"
-                      "  var app = document.querySelector('policy-app');"
-                      "  return app && app.shadowRoot ? "
-                      "app.shadowRoot.querySelector('#reload-policies') : null;"
-                      "})()";
-  return [ElementSelector selectorWithScript:script
-                         selectorDescription:@"reload policies button"];
+  return [ElementSelector
+      selectorWithCSSSelector:base::StringPrintf(
+          "policy-app%s#%s", kElementSelectorShadowDelimiter,
+          kReloadPoliciesButton)];
 }
 
 ElementSelector* MoreActionsButton() {
-  NSString* script =
-      @"(function() {"
-       "  var app = document.querySelector('policy-app');"
-       "  return app && app.shadowRoot ? "
-       "app.shadowRoot.querySelector('#more-actions-button') : null;"
-       "})()";
-  return [ElementSelector selectorWithScript:script
-                         selectorDescription:@"more actions button"];
+  return [ElementSelector
+      selectorWithCSSSelector:base::StringPrintf(
+          "policy-app%s#%s", kElementSelectorShadowDelimiter,
+          kMoreActionsButton)];
 }
 
 ElementSelector* ViewLogsButton() {
-  NSString* script = @"(function() {"
-                      "  var app = document.querySelector('policy-app');"
-                      "  return app && app.shadowRoot ? "
-                      "app.shadowRoot.querySelector('#view-logs') : null;"
-                      "})()";
-  return [ElementSelector selectorWithScript:script
-                         selectorDescription:@"view logs button"];
+  return [ElementSelector
+      selectorWithCSSSelector:base::StringPrintf(
+          "policy-app%s#%s", kElementSelectorShadowDelimiter,
+          kViewLogsButton)];
 }
 
 ElementSelector* RefreshLogsButton() {
-  NSString* script =
-      @"(function() {"
-       "  var app = document.querySelector('policy-logs-app');"
-       "  return app ? app.shadowRoot.getElementById('logs-refresh') : null;"
-       "})()";
-  return [ElementSelector selectorWithScript:script
-                         selectorDescription:@"'logs-refresh' button"];
+  return [ElementSelector
+      selectorWithCSSSelector:base::StringPrintf(
+          "policy-logs-app%s#%s", kElementSelectorShadowDelimiter,
+          kRefreshLogsButton)];
 }
 
 ElementSelector* ExportLogsButton() {
-  NSString* script =
-      @"(function() {"
-       "  var app = document.querySelector('policy-logs-app');"
-       "  return app ? app.shadowRoot.getElementById('logs-dump') : null;"
-       "})()";
-  return [ElementSelector selectorWithScript:script
-                         selectorDescription:@"'logs-dump' button"];
+  return [ElementSelector
+      selectorWithCSSSelector:base::StringPrintf(
+          "policy-logs-app%s#%s", kElementSelectorShadowDelimiter,
+          kExportLogsButton)];
 }
 
 ElementSelector* ApplyPoliciesButton() {
-  return [ElementSelector
-      selectorWithElementID:base::SysNSStringToUTF8(kApplyPoliciesButton)];
+  return [ElementSelector selectorWithElementID:kApplyPoliciesButton];
 }
 
 // Matcher for "Download" button on Download Manager UI.
@@ -270,14 +252,8 @@ id<GREYMatcher> DownloadButton() {
 - (void)testPolicyLogsPageLoadsCorrectly {
   [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyLogsURL)];
   [ChromeEarlGrey waitForWebStateContainingElement:RefreshLogsButton()];
-  [ChromeEarlGrey
-      evaluateJavaScriptForSideEffect:
-          @"(function() {"
-           "  var app = document.querySelector('policy-logs-app');"
-           "  if (app && app.shadowRoot) {"
-           "    app.shadowRoot.getElementById('logs-refresh').click();"
-           "  }"
-           "})()"];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement(RefreshLogsButton())];
 
   // Open in new incognito tab.
   [ChromeEarlGrey openNewIncognitoTab];
@@ -290,7 +266,8 @@ id<GREYMatcher> DownloadButton() {
 - (void)testPolicyTestPageLoadsCorrectly {
   [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyTestURL)];
   [ChromeEarlGrey waitForWebStateContainingElement:ApplyPoliciesButton()];
-  [ChromeEarlGrey tapWebStateElementWithID:kApplyPoliciesButton];
+  [ChromeEarlGrey
+      tapWebStateElementWithID:base::SysUTF8ToNSString(kApplyPoliciesButton)];
 
   // Open in new incognito tab.
   [ChromeEarlGrey openNewIncognitoTab];
@@ -416,13 +393,8 @@ id<GREYMatcher> DownloadButton() {
   [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyLogsURL)];
   [ChromeEarlGrey waitForWebStateContainingElement:ExportLogsButton()];
   // Click "Export Logs to JSON" button
-  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
-                      @"(function() {"
-                       "  var app = document.querySelector('policy-logs-app');"
-                       "  if (app && app.shadowRoot) {"
-                       "    app.shadowRoot.getElementById('logs-dump').click();"
-                       "  }"
-                       "})()"];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement(ExportLogsButton())];
   // Verify the download button at the bottom shows.
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
@@ -466,14 +438,8 @@ id<GREYMatcher> DownloadButton() {
   [PolicyAppInterface logErrorPolicy:testMessage];
 
   // Click refresh button in WebUI.
-  [ChromeEarlGrey
-      evaluateJavaScriptForSideEffect:
-          @"(function() {"
-           "  var app = document.querySelector('policy-logs-app');"
-           "  if (app && app.shadowRoot) {"
-           "    app.shadowRoot.getElementById('logs-refresh').click();"
-           "  }"
-           "})()"];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement(RefreshLogsButton())];
 
   [ChromeEarlGrey
       waitForWebStateContainingText:base::SysNSStringToUTF8(testMessage)];

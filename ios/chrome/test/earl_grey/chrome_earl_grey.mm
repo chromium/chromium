@@ -2257,9 +2257,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 - (void)openSendTabToSelfNewBackgroundTabWithURL:(NSString*)url
                                     textFragment:(NSString*)textFragment
                                        entryGUID:(NSString*)guid {
-  [ChromeEarlGreyAppInterface openSendTabToSelfNewBackgroundTabWithURL:url
-                                                          textFragment:textFragment
-                                                             entryGUID:guid];
+  [ChromeEarlGreyAppInterface
+      openSendTabToSelfNewBackgroundTabWithURL:url
+                                  textFragment:textFragment
+                                     entryGUID:guid];
 }
 
 - (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID {

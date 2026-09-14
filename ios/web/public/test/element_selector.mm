@@ -4,6 +4,8 @@
 
 #import "ios/web/public/test/element_selector.h"
 
+#import "base/json/string_escape.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 
 @interface ElementSelector ()
@@ -37,12 +39,36 @@
 }
 
 + (ElementSelector*)selectorWithCSSSelector:(const std::string&)selector {
-  NSString* script = [NSString
-      stringWithFormat:@"document.querySelector(\"%s\")", selector.c_str()];
   NSString* description =
       [NSString stringWithFormat:@"with CSS selector '%s'", selector.c_str()];
-  return [[ElementSelector alloc] initWithSelectorScript:script
-                                     selectorDescription:description];
+
+  if (selector.find(kElementSelectorShadowDelimiter) == std::string::npos) {
+    NSString* script = [NSString
+        stringWithFormat:@"document.querySelector(\"%s\")", selector.c_str()];
+    return [[ElementSelector alloc] initWithSelectorScript:script
+                                       selectorDescription:description];
+  }
+
+  // Traverses through one or more open shadow roots in JavaScript.
+  std::string script_string = base::StringPrintf(
+      "((function() {"
+      "  const parts = %s.split(%s);"
+      "  let element = null;"
+      "  let root = document;"
+      "  let index = 0;"
+      "  while (root && index < parts.length) {"
+      "    element = root.querySelector(parts[index]);"
+      "    root = element ? element.shadowRoot : null;"
+      "    index++;"
+      "  }"
+      "  return index === parts.length ? element : null;"
+      "})())",
+      base::GetQuotedJSONString(selector).c_str(),
+      base::GetQuotedJSONString(kElementSelectorShadowDelimiter).c_str());
+
+  return [[ElementSelector alloc]
+      initWithSelectorScript:base::SysUTF8ToNSString(script_string)
+         selectorDescription:description];
 }
 
 + (ElementSelector*)selectorWithXPathQuery:(const std::string&)query {
