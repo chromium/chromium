@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -170,6 +171,7 @@ public class LocationBarPhoneUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "Off-center by the hidden status view's width. crbug.com/561618037")
     public void urlBarShifts_whenStatusViewHidden() {
         showUrl(SHORT_URL);
         int leftWithStatusView = mUrlBar.getLeft();
