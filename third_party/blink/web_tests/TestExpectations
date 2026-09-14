@@ -124,13 +124,6 @@ crbug.com/1339285 [ Mac ] fast/loader/iframe-window-open-stealing-focus.html [ P
 
 crbug.com/340949930 virtual/fenced-frame-mparch/external/wpt/fenced-frame/intersection-observer.https.html [ Failure Timeout ]
 
-# WPT Test harness doesn't deal with finding an about:blank ref test
-crbug.com/895777 external/wpt/infrastructure/assumptions/blank.html [ Timeout ]
-crbug.com/895777 external/wpt/css/css-transforms/text-perspective-001.html [ Timeout ]
-crbug.com/895777 external/wpt/css/css-transforms/transform-flattening-001.html [ Timeout ]
-crbug.com/895777 external/wpt/mathml/relations/html5-tree/dynamic-mozilla-162063.xhtml [ Timeout ]
-crbug.com/895777 external/wpt/css/css-break/ink-overflow-001-print.html [ Skip Timeout ]
-
 crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 
 # The following tests need to remove the assumption that user activation is
@@ -4362,6 +4355,7 @@ crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/box-d
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/firefox-bug-2021187-crash.html [ Crash ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/flexbox/* [ Crash Failure Pass Skip Timeout ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/grid/* [ Crash Failure Pass Skip Timeout ]
+crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/ink-overflow-001-print.html [ Timeout ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-001.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-004.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-010.html [ Failure ]
