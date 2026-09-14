@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/drm/common/drm_util.h"
 
+#include <drm_fourcc.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
@@ -1255,5 +1256,47 @@ TEST(TileCrtcOffset, NotOrigin) {
   TileProperty property = {.tile_size = gfx::Size(1000, 2000),
                            .location = gfx::Point(1, 2)};
   EXPECT_EQ(GetTileCrtcOffset(property), gfx::Point(1000, 4000));
+}
+
+TEST(GetFourCCFormatForOpaqueFramebufferTest, SupportedFormats) {
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::SinglePlaneFormat::kRGBA_8888)),
+            DRM_FORMAT_XBGR8888);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::SinglePlaneFormat::kRGBX_8888)),
+            DRM_FORMAT_XBGR8888);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::SinglePlaneFormat::kBGRA_8888)),
+            DRM_FORMAT_XRGB8888);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::SinglePlaneFormat::kBGRX_8888)),
+            DRM_FORMAT_XRGB8888);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::SinglePlaneFormat::kBGRA_1010102)),
+            DRM_FORMAT_XRGB2101010);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::SinglePlaneFormat::kRGBA_1010102)),
+            DRM_FORMAT_XBGR2101010);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::SinglePlaneFormat::kBGR_565)),
+            DRM_FORMAT_RGB565);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::MultiPlaneFormat::kNV12)),
+            DRM_FORMAT_NV12);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::MultiPlaneFormat::kYV12)),
+            DRM_FORMAT_YVU420);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::MultiPlaneFormat::kP010)),
+            DRM_FORMAT_P010);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::SinglePlaneFormat::kRGBA_F16)),
+            DRM_FORMAT_XBGR16161616F);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::SinglePlaneFormat::kR_8)),
+            DRM_FORMAT_R8);
+  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
+                viz::SinglePlaneFormat::kRG_88)),
+            DRM_FORMAT_GR88);
 }
 }  // namespace ui

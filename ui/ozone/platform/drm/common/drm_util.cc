@@ -1047,6 +1047,16 @@ int GetFourCCFormatForOpaqueFramebuffer(viz::SharedImageFormat format) {
   if (format == viz::MultiPlaneFormat::kP010) {
     return DRM_FORMAT_P010;
   }
+  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return DRM_FORMAT_XBGR16161616F;
+  }
+  // R and RG formats are opaque by definition.
+  if (format == viz::SinglePlaneFormat::kR_8) {
+    return DRM_FORMAT_R8;
+  }
+  if (format == viz::SinglePlaneFormat::kRG_88) {
+    return DRM_FORMAT_GR88;
+  }
   NOTREACHED();
 }
 
