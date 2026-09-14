@@ -106,6 +106,10 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private static final String PREF_LAUNCHER_HOTKEY = "glic_launcher_hotkey";
     @VisibleForTesting static final String PREF_NAVIGATION_SHORTCUT = "glic_navigation_shortcut";
 
+    // Request codes for runtime permissions requested from this fragment.
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    @VisibleForTesting static final int MICROPHONE_PERMISSION_REQUEST_CODE = 2;
+
     private final SharedPreferencesManager mSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
@@ -284,19 +288,25 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             ensureFineLocationPermissionGranted();
         }
 
-        setupSwitchPreference(
-                PERMISSION_MICROPHONE,
-                ChromePreferenceKeys.GLIC_MICROPHONE_SETTING_ENABLED,
-                GlicPrefNames.GLIC_MICROPHONE_ENABLED,
-                (preference, newValue) -> {
-                    boolean enabled = (boolean) newValue;
-                    if (enabled) {
-                        RecordUserAction.record("Glic.Settings.Microphone.Enabled");
-                    } else {
-                        RecordUserAction.record("Glic.Settings.Microphone.Disabled");
-                    }
-                    return true;
-                });
+        ChromeSwitchPreference microphonePref =
+                setupSwitchPreference(
+                        PERMISSION_MICROPHONE,
+                        ChromePreferenceKeys.GLIC_MICROPHONE_SETTING_ENABLED,
+                        GlicPrefNames.GLIC_MICROPHONE_ENABLED,
+                        (preference, newValue) -> {
+                            boolean enabled = (boolean) newValue;
+                            if (enabled) {
+                                RecordUserAction.record("Glic.Settings.Microphone.Enabled");
+                                ensureRecordAudioPermissionGranted();
+                            } else {
+                                RecordUserAction.record("Glic.Settings.Microphone.Disabled");
+                            }
+                            return true;
+                        });
+
+        if (microphonePref.isChecked()) {
+            ensureRecordAudioPermissionGranted();
+        }
 
         ChromeExpandableSwitchPreference tabAccessPref =
                 setupSwitchPreference(
@@ -604,7 +614,18 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         if (ContextCompat.checkSelfPermission(
                         getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            requestPermissions(
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    private void ensureRecordAudioPermissionGranted() {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                    new String[] {Manifest.permission.RECORD_AUDIO},
+                    MICROPHONE_PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -669,16 +690,26 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     @Override
     public void onRequestPermissionsResult(
             int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode != 1) return;
+        String preferenceKey;
+        String profilePreferenceKey;
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            preferenceKey = PERMISSION_LOCATION;
+            profilePreferenceKey = GlicPrefNames.GLIC_GEOLOCATION_ENABLED;
+        } else if (requestCode == MICROPHONE_PERMISSION_REQUEST_CODE) {
+            preferenceKey = PERMISSION_MICROPHONE;
+            profilePreferenceKey = GlicPrefNames.GLIC_MICROPHONE_ENABLED;
+        } else {
+            return;
+        }
         boolean granted =
                 grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
         if (granted) return;
 
-        ChromeSwitchPreference locationPref = findPreference(PERMISSION_LOCATION);
-        if (locationPref != null) {
-            locationPref.setChecked(false);
+        ChromeSwitchPreference preference = findPreference(preferenceKey);
+        if (preference != null) {
+            preference.setChecked(false);
         }
-        UserPrefs.get(getProfile()).setBoolean(GlicPrefNames.GLIC_GEOLOCATION_ENABLED, false);
+        UserPrefs.get(getProfile()).setBoolean(profilePreferenceKey, false);
     }
 
     private void setupDisabledPreference(

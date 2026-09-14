@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_
 
 import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.fragment.app.FragmentManager;
@@ -520,6 +521,37 @@ public class GlicSettingsUnitTest {
         // Simulate toggle On
         locationPref.getOnPreferenceChangeListener().onPreferenceChange(locationPref, true);
         verify(mPrefServiceMock).setBoolean("glic.geolocation_enabled", true);
+    }
+
+    @Test
+    public void testMicrophoneStartupSync_PermissionDenied() {
+        when(mPrefServiceMock.getBoolean("glic.microphone_enabled")).thenReturn(true);
+        Shadows.shadowOf(RuntimeEnvironment.getApplication())
+                .denyPermissions(Manifest.permission.RECORD_AUDIO);
+
+        GlicSettings fragment = launchFragment();
+
+        // Verifies startup validation does NOT turn it off.
+        verify(mPrefServiceMock, never()).setBoolean("glic.microphone_enabled", false);
+        ChromeSwitchPreference microphonePref = fragment.findPreference("permissions_microphone");
+        assertEquals(true, microphonePref.isChecked());
+    }
+
+    @Test
+    public void testMicrophonePermissionDenied_TurnsToggleOff() {
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference microphonePref = fragment.findPreference("permissions_microphone");
+        microphonePref.getOnPreferenceChangeListener().onPreferenceChange(microphonePref, true);
+        verify(mPrefServiceMock).setBoolean("glic.microphone_enabled", true);
+
+        // The user refuses the OS permission prompt.
+        fragment.onRequestPermissionsResult(
+                GlicSettings.MICROPHONE_PERMISSION_REQUEST_CODE,
+                new String[] {Manifest.permission.RECORD_AUDIO},
+                new int[] {PackageManager.PERMISSION_DENIED});
+
+        verify(mPrefServiceMock).setBoolean("glic.microphone_enabled", false);
+        assertFalse(microphonePref.isChecked());
     }
 
     @Test
