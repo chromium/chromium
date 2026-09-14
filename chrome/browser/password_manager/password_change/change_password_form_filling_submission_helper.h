@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -29,9 +28,10 @@ class PasswordFormManager;
 class PasswordManagerClient;
 }  // namespace password_manager
 
-class ModelQualityLogsUploader;
 class AnnotatedPageContentCapturer;
 class ChangePasswordFormFiller;
+class ModelQualityLogsUploader;
+class OptimizationGuideKeyedService;
 
 // Helper class which fills a form, submits it and verifies submission result.
 // Upon completion invokes `result_callback` to notify the result of submission.

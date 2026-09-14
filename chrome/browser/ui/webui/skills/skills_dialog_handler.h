@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/skills/public/skill.h"
@@ -20,6 +19,12 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace optimization_guide {
+class ModelQualityLogEntry;
+struct OptimizationGuideModelExecutionResult;
+}  // namespace optimization_guide
+
+class OptimizationGuideKeyedService;
 class Profile;
 
 namespace skills {

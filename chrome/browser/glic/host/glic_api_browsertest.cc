@@ -56,8 +56,6 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/system/mock_platform_handle.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"

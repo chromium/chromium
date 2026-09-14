@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/strong_alias.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "content/public/browser/web_contents_observer.h"

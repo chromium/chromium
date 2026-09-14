@@ -6,8 +6,6 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/digital_credentials/digital_credentials_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_frame_host.h"
 #include "url/gurl.h"

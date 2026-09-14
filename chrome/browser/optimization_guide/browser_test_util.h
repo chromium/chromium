@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 class Profile;

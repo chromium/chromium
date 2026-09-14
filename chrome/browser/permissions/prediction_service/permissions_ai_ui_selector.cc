@@ -10,8 +10,6 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/prediction_service/passage_embedder_delegate.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
