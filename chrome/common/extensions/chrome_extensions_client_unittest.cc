@@ -26,18 +26,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
-class ChromeExtensionsClientTest : public testing::Test {
- public:
-  void SetUp() override {
-    extensions_client_ = std::make_unique<ChromeExtensionsClient>();
-    ExtensionsClient::Set(extensions_client_.get());
-  }
-
-  void TearDown() override { ExtensionsClient::Set(nullptr); }
-
- private:
-  std::unique_ptr<ChromeExtensionsClient> extensions_client_;
-};
+class ChromeExtensionsClientTest : public testing::Test {};
 
 base::span<const char* const> GetFeatureList() {
   static constexpr const char* feature_list[] = {"AllowedFeature",
@@ -67,11 +56,11 @@ CreateFeatureDelegatedAvailabilityCheckMap() {
 }
 
 TEST_F(ChromeExtensionsClientTest, FeatureDelegatedAvailabilityCheckMap) {
-  auto* client = ExtensionsClient::Get();
-  client->SetFeatureDelegatedAvailabilityCheckMap(
+  ChromeExtensionsClient client;
+  client.SetFeatureDelegatedAvailabilityCheckMap(
       CreateFeatureDelegatedAvailabilityCheckMap());
   {
-    const auto& map = client->GetFeatureDelegatedAvailabilityCheckMap();
+    const auto& map = client.GetFeatureDelegatedAvailabilityCheckMap();
     EXPECT_EQ(2u, map.size());
 
     ASSERT_EQ(1u, map.count("AllowedFeature"));

@@ -305,8 +305,8 @@ static_library("common_lib") {
       # platforms that don't support it (e.g. Android).
       "controlled_frame/controlled_frame.cc",
       "controlled_frame/controlled_frame.h",
-      "initialize_extensions_client.cc",
-      "initialize_extensions_client.h",
+      "scoped_chrome_extensions_client.cc",
+      "scoped_chrome_extensions_client.h",
     ]
 
     # Add controlled frame dependencies on platforms that support it.

@@ -54,7 +54,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/common/initialize_extensions_client.h"
+#include "chrome/common/scoped_chrome_extensions_client.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -139,6 +139,8 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
 ChromeUnitTestSuite::ChromeUnitTestSuite(int argc, char** argv)
     : ChromeTestSuite(argc, argv) {}
 
+ChromeUnitTestSuite::~ChromeUnitTestSuite() = default;
+
 void ChromeUnitTestSuite::Initialize() {
   // Add an additional listener to do the extra initialization for unit tests.
   // It will be started before the base class listeners and ended after the
@@ -152,6 +154,10 @@ void ChromeUnitTestSuite::Initialize() {
     ChromeContentClient content_client;
     RegisterContentSchemes(&content_client);
   }
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions_client_ =
+      std::make_unique<extensions::ScopedChromeExtensionsClient>();
+#endif
   InitializeProviders();
   RegisterInProcessThreads();
 
@@ -175,6 +181,9 @@ void ChromeUnitTestSuite::Initialize() {
 }
 
 void ChromeUnitTestSuite::Shutdown() {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions_client_.reset();
+#endif
   ui::ResourceBundle::CleanupSharedInstance();
   ChromeTestSuite::Shutdown();
 }
@@ -198,9 +207,6 @@ void ChromeUnitTestSuite::InitializeProviders() {
   extensions::RegisterPathProvider();
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  EnsureExtensionsClientInitialized();
-#endif
 
   content::WebUIControllerFactory::RegisterFactory(
       ChromeWebUIControllerFactory::GetInstance());

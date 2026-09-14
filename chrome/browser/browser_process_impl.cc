@@ -221,7 +221,7 @@ void OnLocalStatePrefsLoaded();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
-#include "chrome/common/initialize_extensions_client.h"
+#include "chrome/common/scoped_chrome_extensions_client.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -392,7 +392,8 @@ void BrowserProcessImpl::Init() {
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  EnsureExtensionsClientInitialized();
+  extensions_client_ =
+      std::make_unique<extensions::ScopedChromeExtensionsClient>();
 
   // Initialize the ExtensionsBrowserClient. This isn't in extension-specific
   // code because a number of external concepts that extensions shouldn't know

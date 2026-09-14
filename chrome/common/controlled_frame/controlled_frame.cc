@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/initialize_extensions_client.h"
 #include "components/version_info/version_info.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"

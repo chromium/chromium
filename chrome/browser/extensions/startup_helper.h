@@ -19,6 +19,13 @@ class CommandLine;
 namespace extensions {
 
 // Initialization helpers for various Extension startup actions.
+//
+// Note: Callers of `PackExtension()` are responsible for ensuring an
+// `ExtensionsClient` is initialized (e.g. via `ScopedChromeExtensionsClient` in
+// standalone CLI handlers like `HandlePackExtensionSwitches()`, or via
+// `ChromeUnitTestSuite` in tests). `StartupHelper` does not own an
+// `ExtensionsClient` to prevent duplicate client initializations within the
+// same process.
 class StartupHelper : public PackExtensionJob::Client {
  public:
   StartupHelper();

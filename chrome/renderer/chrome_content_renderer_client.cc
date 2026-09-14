@@ -219,7 +219,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/common/initialize_extensions_client.h"
+#include "chrome/common/scoped_chrome_extensions_client.h"
 #include "chrome/renderer/extensions/api/chrome_extensions_renderer_api_provider.h"
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "extensions/common/constants.h"
@@ -383,7 +383,8 @@ ChromeContentRendererClient::ChromeContentRendererClient()
       sampling_profiler::ThreadProfiler::CreateAndStartOnMainThread();
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  EnsureExtensionsClientInitialized();
+  extensions_client_ =
+      std::make_unique<extensions::ScopedChromeExtensionsClient>();
   ChromeExtensionsRendererClient::Create();
 #endif
 }

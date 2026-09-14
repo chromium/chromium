@@ -43,6 +43,7 @@ class ExtensionsClient {
   static ExtensionsClient* Get();
 
   // Initialize the extensions system with this extensions client.
+  // When |client| is null, resets the extensions client.
   static void Set(ExtensionsClient* client);
 
   ExtensionsClient();

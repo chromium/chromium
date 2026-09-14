@@ -235,6 +235,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/startup_helper.h"  // nogncheck
+#include "chrome/common/scoped_chrome_extensions_client.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
@@ -501,6 +502,12 @@ std::optional<int> HandlePackExtensionSwitches(
   // localized string resource accesses.
   ui::ScopedStartupResourceBundle ensure_startup_resource_bundle;
 
+  // Packing an extension requires an ExtensionsClient to validate and parse
+  // extension manifests. In production, --pack-extension runs as a standalone
+  // command-line action that exits immediately afterwards, so this
+  // ScopedChromeExtensionsClient is scoped to this function and will not
+  // coexist with or be recreated before BrowserProcessImpl.
+  extensions::ScopedChromeExtensionsClient scoped_extensions_client;
   extensions::StartupHelper extension_startup_helper;
   std::u16string error_message;
   if (!extension_startup_helper.PackExtension(command_line, &error_message)) {

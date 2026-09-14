@@ -63,6 +63,8 @@ struct Environment : public content::ContentTestSuiteBase {
     ExtensionsClient::Set(extensions_client.get());
   }
 
+  ~Environment() override { ExtensionsClient::Set(nullptr); }
+
   // Singleton objects needed for the tested code.
   base::AtExitManager at_exit;
   FakeContentClient content_client;

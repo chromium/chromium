@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/initialize_extensions_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -37,9 +36,7 @@ void PrintPackExtensionMessage(const std::u16string& message) {
 
 }  // namespace
 
-StartupHelper::StartupHelper() {
-  EnsureExtensionsClientInitialized();
-}
+StartupHelper::StartupHelper() = default;
 
 StartupHelper::~StartupHelper() = default;
 

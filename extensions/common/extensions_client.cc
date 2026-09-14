@@ -31,9 +31,11 @@ ExtensionsClient* ExtensionsClient::Get() {
 }
 
 void ExtensionsClient::Set(ExtensionsClient* client) {
-  // This can happen in unit tests, where the utility thread runs in-process.
-  if (g_client)
+  if (!client) {
+    g_client = nullptr;
     return;
+  }
+  CHECK(!g_client);
   g_client = client;
   g_client->DoInitialize();
 }

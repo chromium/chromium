@@ -76,6 +76,12 @@ namespace web_cache {
 class WebCacheImpl;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+namespace extensions {
+class ScopedChromeExtensionsClient;
+}
+#endif
+
 class ChromeContentRendererClient
     : public content::ContentRendererClient,
       public service_manager::LocalInterfaceProvider {
@@ -268,6 +274,9 @@ class ChromeContentRendererClient
       phishing_model_setter_;
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::unique_ptr<extensions::ScopedChromeExtensionsClient> extensions_client_;
+#endif
   scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_;
 };

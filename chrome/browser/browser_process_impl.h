@@ -76,6 +76,7 @@ class OriginTrialsSettingsStorage;
 
 namespace extensions {
 class ExtensionsBrowserClient;
+class ScopedChromeExtensionsClient;
 }
 
 namespace gcm {
@@ -360,6 +361,7 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<GpuModeManager> gpu_mode_manager_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::unique_ptr<extensions::ScopedChromeExtensionsClient> extensions_client_;
   std::unique_ptr<extensions::ExtensionsBrowserClient>
       extensions_browser_client_;
 #endif

@@ -5,8 +5,17 @@
 #ifndef CHROME_TEST_BASE_CHROME_UNIT_TEST_SUITE_H_
 #define CHROME_TEST_BASE_CHROME_UNIT_TEST_SUITE_H_
 
+#include <memory>
+
 #include "base/test/test_discardable_memory_allocator.h"
 #include "chrome/test/base/chrome_test_suite.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+namespace extensions {
+class ScopedChromeExtensionsClient;
+}
+#endif
 
 // Test suite for unit tests. Creates additional stub services that are not
 // needed for browser tests (e.g. a TestingBrowserProcess).
@@ -15,7 +24,7 @@ class ChromeUnitTestSuite : public ChromeTestSuite {
   ChromeUnitTestSuite(int argc, char** argv);
   ChromeUnitTestSuite(const ChromeUnitTestSuite&) = delete;
   ChromeUnitTestSuite& operator=(const ChromeUnitTestSuite&) = delete;
-  ~ChromeUnitTestSuite() override = default;
+  ~ChromeUnitTestSuite() override;
 
   // base::TestSuite overrides:
   void Initialize() override;
@@ -29,6 +38,9 @@ class ChromeUnitTestSuite : public ChromeTestSuite {
 
  private:
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::unique_ptr<extensions::ScopedChromeExtensionsClient> extensions_client_;
+#endif
 };
 
 #endif  // CHROME_TEST_BASE_CHROME_UNIT_TEST_SUITE_H_

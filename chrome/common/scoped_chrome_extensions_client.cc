@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/initialize_extensions_client.h"
+#include "chrome/common/scoped_chrome_extensions_client.h"
 
 #include <map>
 #include <memory>
 
 #include "base/check.h"
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/common/controlled_frame/controlled_frame.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
@@ -34,20 +33,21 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+namespace extensions {
+
 namespace {
 
 // Helper method to merge all the FeatureDelegatedAvailabilityCheckMaps into a
 // single map.
-extensions::Feature::FeatureDelegatedAvailabilityCheckMap
+Feature::FeatureDelegatedAvailabilityCheckMap
 CombineAllAvailabilityCheckMaps() {
-  extensions::Feature::FeatureDelegatedAvailabilityCheckMap map_list[] = {
+  Feature::FeatureDelegatedAvailabilityCheckMap map_list[] = {
       controlled_frame::CreateAvailabilityCheckMap(),
-      extensions::mime_handler_availability::CreateAvailabilityCheckMap(),
-      extensions::user_scripts_availability::CreateAvailabilityCheckMap(),
-      extensions::webstore_override::CreateAvailabilityCheckMap(),
-
+      mime_handler_availability::CreateAvailabilityCheckMap(),
+      user_scripts_availability::CreateAvailabilityCheckMap(),
+      webstore_override::CreateAvailabilityCheckMap(),
   };
-  extensions::Feature::FeatureDelegatedAvailabilityCheckMap result;
+  Feature::FeatureDelegatedAvailabilityCheckMap result;
 
   for (auto& map : map_list) {
     result.merge(map);
@@ -60,38 +60,30 @@ CombineAllAvailabilityCheckMaps() {
 
 }  // namespace
 
-void EnsureExtensionsClientInitialized() {
-  static bool initialized = false;
-
-  static base::NoDestructor<extensions::ChromeExtensionsClient>
-      extensions_client;
-
-  if (!initialized) {
-    initialized = true;
-
-    extensions_client->SetFeatureDelegatedAvailabilityCheckMap(
-        CombineAllAvailabilityCheckMaps());
+ScopedChromeExtensionsClient::ScopedChromeExtensionsClient()
+    : client_(std::make_unique<ChromeExtensionsClient>()) {
+  client_->SetFeatureDelegatedAvailabilityCheckMap(
+      CombineAllAvailabilityCheckMaps());
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
-    extensions_client->AddAPIProvider(
-        std::make_unique<chrome_apps::ChromeAppsAPIProvider>());
+  client_->AddAPIProvider(
+      std::make_unique<chrome_apps::ChromeAppsAPIProvider>());
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    extensions_client->AddAPIProvider(
-        std::make_unique<controlled_frame::ControlledFrameAPIProvider>());
+  client_->AddAPIProvider(
+      std::make_unique<controlled_frame::ControlledFrameAPIProvider>());
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    extensions_client->AddAPIProvider(
-        std::make_unique<ash::ChromeOSExtensionsAPIProvider>());
-    extensions_client->AddAPIProvider(
-        std::make_unique<chromeos::ChromeOSSystemExtensionsAPIProvider>());
+  client_->AddAPIProvider(
+      std::make_unique<ash::ChromeOSExtensionsAPIProvider>());
+  client_->AddAPIProvider(
+      std::make_unique<chromeos::ChromeOSSystemExtensionsAPIProvider>());
 #endif
-    extensions::ExtensionsClient::Set(extensions_client.get());
-  }
-
-  // ExtensionsClient::Set() will early-out if the client was already set, so
-  // this allows us to check that this was the only site setting it.
-  DCHECK_EQ(extensions_client.get(), extensions::ExtensionsClient::Get())
-      << "ExtensionsClient should only be initialized through "
-      << "EnsureExtensionsClientInitialized() when using "
-      << "ChromeExtensionsClient.";
+  ExtensionsClient::Set(client_.get());
 }
+
+ScopedChromeExtensionsClient::~ScopedChromeExtensionsClient() {
+  DCHECK_EQ(ExtensionsClient::Get(), client_.get());
+  ExtensionsClient::Set(nullptr);
+}
+
+}  // namespace extensions
