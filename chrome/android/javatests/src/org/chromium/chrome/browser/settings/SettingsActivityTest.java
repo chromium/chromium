@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Build;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -28,6 +29,7 @@ import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -156,18 +158,29 @@ public class SettingsActivityTest {
     }
 
     /** Regression test for https://crbug.com/548848118. */
-    // TODO(crbug.com/561400736): Fix orientation rotation failure and
-    // re-enable on android-14-tablet-landscape-arm64-rel.
     @Test
     @MediumTest
     @Restriction({
         DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     })
     public void testSearchBoxAlignmentInPortrait_Rtl() {
         LocalizationUtils.setRtlForTesting(true);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-        ActivityTestUtils.rotateActivityToOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
+
+        // Skip the test on landscape devices running Android 14 or earlier. See
+        // crbug.com/561400736 and the similar workaround in SettingsPageTest.
+        boolean isLandscape =
+                activity.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
+        Assume.assumeFalse(
+                "Rotating to portrait letterboxes the activity on landscape-oriented devices,"
+                        + " which moves the window on screen and pops Android 14's letterbox"
+                        + " education dialog.",
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && isLandscape);
+
+        ensureActivityOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -211,10 +224,9 @@ public class SettingsActivityTest {
                 backArrowBounds.left);
 
         // Change orientation to landscape and then back to portrait.
-        ActivityTestUtils.rotateActivityToOrientation(
-                activity, Configuration.ORIENTATION_LANDSCAPE);
+        ensureActivityOrientation(activity, Configuration.ORIENTATION_LANDSCAPE);
 
-        ActivityTestUtils.rotateActivityToOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
+        ensureActivityOrientation(activity, Configuration.ORIENTATION_PORTRAIT);
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
 
         Rect searchBoxBoundsAfterRotate = getViewScreenBounds(R.id.search_box);
@@ -236,6 +248,19 @@ public class SettingsActivityTest {
                 "Search icon should align horizontally after rotating back in RTL",
                 searchIconBounds.left,
                 searchIconBoundsAfterRotate.left);
+    }
+
+    /** Rotates the activity and waits for the window to be laid out in the new orientation. */
+    private void ensureActivityOrientation(SettingsActivity activity, int orientation) {
+        ActivityTestUtils.rotateActivityToOrientation(activity, orientation);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View decorView = activity.getWindow().getDecorView();
+                    return orientation == Configuration.ORIENTATION_LANDSCAPE
+                            ? decorView.getWidth() > decorView.getHeight()
+                            : decorView.getHeight() > decorView.getWidth();
+                },
+                "Window should be laid out in the target orientation.");
     }
 
     private Rect getViewScreenBounds(int viewId) {
