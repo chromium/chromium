@@ -19,6 +19,8 @@ BASE_FEATURE(kWebAuthnAndroidCredManForDev, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kWebAuthnAndroidCredManForDevMode{
     &kWebAuthnAndroidCredManForDev, "mode", ""};
 
+BASE_FEATURE(kWebAuthnFilterSmartCardTransport,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

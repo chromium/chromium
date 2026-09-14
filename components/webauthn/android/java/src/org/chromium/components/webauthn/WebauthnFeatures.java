@@ -15,4 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public abstract class WebauthnFeatures {
     public static final String WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV = "WebAuthnAndroidCredManForDev";
+    // This is a temporary workaround for crbug.com/555599813.
+    public static final String WEBAUTHN_FILTER_SMART_CARD_TRANSPORT =
+            "WebAuthnFilterSmartCardTransport";
 }
