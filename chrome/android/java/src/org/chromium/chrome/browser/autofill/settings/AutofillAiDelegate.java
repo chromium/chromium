@@ -10,9 +10,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
+import android.widget.TextView;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
+import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.TimeUtils;
@@ -518,7 +521,17 @@ public class AutofillAiDelegate {
             screen.addPreference(category);
 
             for (EntityInstanceWithLabels entity : entities) {
-                Preference pref = new ChromeBasePreference(getStyledContext());
+                Preference pref =
+                        new ChromeBasePreference(getStyledContext()) {
+                            @Override
+                            public void onBindViewHolder(PreferenceViewHolder holder) {
+                                super.onBindViewHolder(holder);
+                                TextView summaryView =
+                                        (TextView) holder.findViewById(android.R.id.summary);
+                                summaryView.setSingleLine(true);
+                                summaryView.setEllipsize(TextUtils.TruncateAt.END);
+                            }
+                        };
                 pref.setTitle(entity.getEntityInstanceLabel());
                 pref.setSummary(entity.getEntityInstanceSubLabel());
                 pref.setKey(entity.getGuid());
