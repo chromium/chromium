@@ -1426,7 +1426,7 @@ BASE_FEATURE(kIsolatedWebAppBundleCache, base::FEATURE_ENABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 // Controls whether Chromium requests a delay shutdown inhibitor and listens
 // for session end events via D-Bus on Linux to allow flushing state cleanly.
-BASE_FEATURE(kLinuxLogindShutdownInhibitor, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLinuxLogindShutdownInhibitor, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLinuxLowMemoryMonitor, base::FEATURE_DISABLED_BY_DEFAULT);
 // Values taken from the low-memory-monitor documentation and also apply to the
