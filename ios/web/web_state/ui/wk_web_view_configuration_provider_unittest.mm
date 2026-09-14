@@ -87,6 +87,7 @@ TEST_F(WKWebViewConfigurationProviderTest, OffTheRecordConfiguration) {
 
 // Tests that SetUniversalOptOutEnabled updates defaultWebpagePreferences for
 // iOS 27+.
+#if defined(__IPHONE_27_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_0
 TEST_F(WKWebViewConfigurationProviderTest, UniversalOptOutConfiguration)
 API_AVAILABLE(ios(27)) {
   if (@available(iOS 27, *)) {
@@ -100,6 +101,7 @@ API_AVAILABLE(ios(27)) {
                     .defaultWebpagePreferences.globalPrivacyControlEnabled);
   }
 }
+#endif
 
 // Tests that internal configuration object can not be changed by clients.
 TEST_F(WKWebViewConfigurationProviderTest, ConfigurationProtection) {
