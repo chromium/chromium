@@ -1,6 +1,6 @@
 Name: Robolectric
 URL: http://robolectric.org
-Version: 15-robolectric-12650502
+Version: 17-robolectric-15733970
 Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
@@ -14,12 +14,13 @@ How To Update:
   - Add new version and URL to 3pp/fetch.py for the android_all jar.
   - Update the old versions to the latest instrumented versioned files
     for backwards compatibility.
-  - Upload a CL without DEPS and BUILD.gn changes.
+  - Check for a newer version of nativeruntime-dist-compat.jar
+  - Upload & submit a CL without DEPS and BUILD.gn changes.
 - Kickoff 3pp run:
-  - Open ci.chromium.org
-  - Click "Scheduler", find the 3pp linux bot and start it.
-  - Once finished get the instance hash from
-    https://chrome-infra-packages.appspot.com/p/chromium/third_party/robolectric
+  - Trigger: https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+  - Trigger: https://luci-scheduler.appspot.com/jobs/chromium/3pp-mac-arm64-packager
 - Second CL:
   - Add new version(s) as data to third_party/robolectric/BUILD.gn.
-  - Update DEPS to point to new cipd instance.
+  - Update DEPS to point to new version tag (found from:
+    https://chrome-infra-packages.appspot.com/p/chromium/third_party/robolectric/linux-amd64)
+  - Update Version: in this README.chromium

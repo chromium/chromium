@@ -125,6 +125,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
     def _CreateJvmArgsList(self, for_listing=False, allow_debugging=True):
         # Creates a list of jvm_args (robolectric, code coverage, etc...)
+        libs_dir = self._test_instance.robolectric_runtime_deps_dir
         jvm_args = [
             # JDK 17+ requires explicit opens for Robolectric reflection on
             # internal fields:
@@ -139,9 +140,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
             # Disable warning about mockito/bytebuddy dynamically adding an
             # agent.
             '-XX:+EnableDynamicAgentLoading',
-            '-Drobolectric.dependency.dir=%s'
-            % self._test_instance.robolectric_runtime_deps_dir,
-            '-Ddir.source.root=%s' % constants.DIR_SOURCE_ROOT,
+            f'-Drobolectric.dependency.dir={libs_dir}',
+            f'-Ddir.source.root={constants.DIR_SOURCE_ROOT}',
             # Set the default to @ConscryptMode(ConscryptMode.Mode.OFF)
             # Saves ~60ms of start-up time.
             '-Drobolectric.conscryptMode=OFF',
@@ -150,8 +150,15 @@ class LocalMachineJunitTestRun(test_run.TestRun):
             '-Drobolectric.resourcesMode=binary',
             '-Drobolectric.logging=stdout',
             '-Drobolectric.enforceViewMethodsCalledOnMainThread=true',
-            '-Djava.library.path=%s' % self._test_instance.native_libs_dir,
+            f'-Djava.library.path={self._test_instance.native_libs_dir}',
         ]
+        extracted_dir = os.path.join(os.path.dirname(libs_dir), 'pre-extracted')
+        # Check for existence to not break checkouts that have not
+        # updated to the pre-extracted CIPD instances.
+        if os.path.isdir(extracted_dir):
+            jvm_args.append(
+                f'-Dchromium.robolectric.extractedDir={extracted_dir}'
+            )
         if self._test_instance.run_disabled:
             jvm_args += ['-Dchromium.run_disabled=1']
         if self._test_instance.debug_socket and allow_debugging:
