@@ -1100,3 +1100,50 @@ source_set("system_menu_model_builder_impl") {
     deps += [ "//ui/ozone" ]
   }
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = []
+
+  deps = []
+
+  if (is_chromeos) {
+    sources += [
+      "browser_frame_ash_browsertest.cc",
+      "browser_frame_view_chromeos_browsertest.cc",
+      "immersive_mode_browser_view_browsertest.cc",
+      "immersive_mode_controller_chromeos_browsertest.cc",
+      "system_menu_model_builder_browsertest_chromeos.cc",
+      "top_controls_slide_controller_chromeos_browsertest.cc",
+    ]
+
+    deps += [
+      ":frame",
+      ":immersive_mode_tester",
+      ":top_controls_slide_controller",
+      "//chrome/browser/ash/boca/on_task",
+      "//chrome/browser/ash/login:test_support",
+      "//chrome/browser/ash/system_web_apps/test_support",
+      "//chrome/browser/prefs:util",
+      "//chrome/browser/ui/ash:test_support",
+      "//chrome/browser/ui/ash/multi_user",
+      "//chrome/browser/ui/ash/session",
+      "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/views/fullscreen_control",
+      "//chrome/browser/ui/views/page_info",
+      "//chrome/browser/ui/views/profiles:profile_indicator_icon",
+      "//chrome/browser/ui/window_metadata",
+      "//chrome/browser/web_applications:prevent_close_test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chromeos/ui/frame",
+      "//chromeos/ui/frame:test_support",
+      "//components/account_id:test_support",
+      "//ui/events:test_support",
+    ]
+  }
+}
