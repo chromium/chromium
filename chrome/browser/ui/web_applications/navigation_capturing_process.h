@@ -11,6 +11,7 @@
 #include <tuple>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
@@ -322,6 +323,8 @@ class NavigationCapturingProcess
   // Stores the exact time when the navigation capturing process starts
   // "handling" the current navigation when asked from Navigate().
   base::TimeTicks time_navigation_started_{base::TimeTicks::Now()};
+
+  base::WeakPtrFactory<NavigationCapturingProcess> weak_ptr_factory_{this};
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
