@@ -963,14 +963,27 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
     base::UmaHistogramCounts100("Net.DeviceBoundSessions.RequestDeferralCount",
                                 device_bound_session_deferral_count_);
-    base::UmaHistogramEnumeration(
-        "Net.DeviceBoundSessions.RequestDeferralDecision3",
+    device_bound_sessions::SessionUsage max_usage =
         net::device_bound_sessions::GetMaxUsage(
-            request_->device_bound_session_usage()));
+            request_->device_bound_session_usage());
+    base::UmaHistogramEnumeration(
+        "Net.DeviceBoundSessions.RequestDeferralDecision3", max_usage);
     if (device_bound_session_deferral_count_ > 0) {
       base::UmaHistogramTimes(
           "Net.DeviceBoundSessions.TotalRequestDeferredDuration",
           base::TimeTicks::Now() - device_bound_session_first_deferral_);
+    }
+
+    if (device_bound_sessions::IsInScope(max_usage)) {
+      bool was_deferred =
+          (max_usage == device_bound_sessions::SessionUsage::kDeferred);
+      base::UmaHistogramBoolean(
+          "Net.DeviceBoundSessions.InScopeRequestWasDeferred", was_deferred);
+      if (request_info_.is_main_frame_navigation) {
+        base::UmaHistogramBoolean(
+            "Net.DeviceBoundSessions.InScopeNavigationRequestWasDeferred",
+            was_deferred);
+      }
     }
   }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)

@@ -40,4 +40,15 @@ TEST(SessionUsageTest, GetMaxUsage) {
   EXPECT_EQ(GetMaxUsage(usage_map), SessionUsage::kDeferred);
 }
 
+TEST(SessionUsageTest, IsInScope) {
+  EXPECT_FALSE(IsInScope(SessionUsage::kUnknown));
+  EXPECT_FALSE(IsInScope(SessionUsage::kNoSiteMatchNotInScope));
+  EXPECT_FALSE(IsInScope(SessionUsage::kSiteMatchNotInScope));
+  EXPECT_TRUE(IsInScope(SessionUsage::kInScopeRefreshNotYetNeeded));
+  EXPECT_TRUE(IsInScope(SessionUsage::kInScopeRefreshNotAllowed));
+  EXPECT_TRUE(IsInScope(SessionUsage::kInScopeProactiveRefreshNotPossible));
+  EXPECT_TRUE(IsInScope(SessionUsage::kInScopeProactiveRefreshAttempted));
+  EXPECT_TRUE(IsInScope(SessionUsage::kDeferred));
+}
+
 }  // namespace net::device_bound_sessions

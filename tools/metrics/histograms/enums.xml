@@ -1384,6 +1384,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Zero"/>
 </enum>
 
+<enum name="BooleanWasDeferred">
+  <int value="0" label="Was not deferred"/>
+  <int value="1" label="Was deferred"/>
+</enum>
+
 <enum name="BooleanWasted">
   <int value="0" label="Not wasted"/>
   <int value="1" label="Wasted"/>

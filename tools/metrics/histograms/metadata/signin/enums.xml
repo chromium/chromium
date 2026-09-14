@@ -340,11 +340,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Continue with sign-out"/>
 </enum>
 
-<enum name="BooleanWasDeferred">
-  <int value="0" label="Was not deferred"/>
-  <int value="1" label="Was deferred"/>
-</enum>
-
 <enum name="BoundSessionCredentialsCookieRotationGenerateAssertionResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to load the key"/>

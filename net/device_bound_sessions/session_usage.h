@@ -42,6 +42,9 @@ enum class SessionUsage {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionUsage)
 
+// Returns true if `usage` indicates that the request was in scope of a session.
+bool NET_EXPORT IsInScope(SessionUsage usage);
+
 // Determines the max usage of the usages contained in the map. Defaults
 // to `kNoSiteMatchNotInScope` when the map is empty.
 SessionUsage NET_EXPORT GetMaxUsage(

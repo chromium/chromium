@@ -2437,6 +2437,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.InScope{Type}RequestWasDeferred"
+    enum="BooleanWasDeferred" expires_after="2027-02-07">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a request in scope of an active Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) was deferred for
+    cookie refresh.
+
+    Logged right before starting the HTTP transaction (or restarting after a
+    redirect or authentication challenge), after cookies are attached and any
+    deferral for cookie refresh has completed. Only recorded for requests that
+    allow credentials and have not explicitly opted out of DBSC deferrals.
+    {Type}
+  </summary>
+  <token key="Type">
+    <variant name="" summary="Includes all in-scope requests."/>
+    <variant name="Navigation"
+        summary="Includes only in-scope main frame navigation requests."/>
+  </token>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.MinimumBoundCookieLifetime" units="ms"
     expires_after="2027-02-07">
   <owner>drubery@chromium.org</owner>
@@ -2630,10 +2652,13 @@ chromium-metrics-reviews@google.com.
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    This records how many times a request was deferred due to a Device Bound
-    Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is
-    logged once for each round trip of a network requests that can add a cookie
-    header; requests that attempt to refresh but fail are omitted.
+    Records how many times a request was deferred due to a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md).
+
+    Logged right before starting the HTTP transaction (or restarting after a
+    redirect or authentication challenge), after cookies are attached and any
+    deferral for cookie refresh has completed. Recorded for all requests that
+    allow credentials.
   </summary>
 </histogram>
 
@@ -2642,11 +2667,14 @@ chromium-metrics-reviews@google.com.
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    This records whether a request was deferred due to a Device Bound Session
+    Records whether a request was deferred due to a Device Bound Session
     (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) and the reason
-    for that decision. This is logged once for each round trip of most network
-    requests that can add a cookie header; requests that attempt to refresh but
-    fail are omitted.
+    for that decision.
+
+    Logged right before starting the HTTP transaction (or restarting after a
+    redirect or authentication challenge), after cookies are attached and any
+    deferral for cookie refresh has completed. Recorded for all requests that
+    allow credentials.
   </summary>
 </histogram>
 

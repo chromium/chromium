@@ -6,6 +6,10 @@
 
 namespace net::device_bound_sessions {
 
+bool IsInScope(SessionUsage usage) {
+  return usage >= SessionUsage::kInScopeRefreshNotYetNeeded;
+}
+
 SessionUsage GetMaxUsage(const base::flat_map<SessionKey, SessionUsage>&
                              device_bound_session_usage) {
   auto max_usage = SessionUsage::kNoSiteMatchNotInScope;
