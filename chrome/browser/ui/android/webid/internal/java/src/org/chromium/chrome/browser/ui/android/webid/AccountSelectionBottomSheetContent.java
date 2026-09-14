@@ -21,6 +21,8 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 
 import java.util.function.Supplier;
 
@@ -42,6 +44,8 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     private static final float MAX_VISIBLE_ACCOUNTS_BUTTON_MODE = 3.5f;
 
     private static final int MIN_NUM_ACCOUNTS_FOR_SCROLL = 3;
+
+    private final BottomSheetType mBottomSheetType;
 
     private final View mContentView;
     private final BottomSheetController mBottomSheetController;
@@ -66,6 +70,12 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
         mBottomSheetController = bottomSheetController;
         mScrollOffsetSupplier = scrollOffsetSupplier;
         mRpMode = rpMode;
+        mBottomSheetType =
+                new BottomSheetType.Builder()
+                        .setUserInitiated(mRpMode != RpMode.PASSIVE)
+                        .setModal(mRpMode != RpMode.PASSIVE)
+                        .setUserCritical(UserCriticalFeature.FEDERATED_ACCOUNT_SELECTION)
+                        .build();
     }
 
     /**
@@ -215,6 +225,11 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     @Override
     public int getVerticalScrollOffset() {
         return mScrollOffsetSupplier.get();
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return mBottomSheetType;
     }
 
     @Override
