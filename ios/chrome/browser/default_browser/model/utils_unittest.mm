@@ -14,15 +14,19 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
+#import "ios/chrome/browser/default_browser/promo/contextual/public/contextual_default_browser_promo_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_default_browser_promo_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -504,5 +508,56 @@ TEST_F(DefaultBrowserUtilsTest,
               kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature)))
       .Times(1);
   DismissDefaultBrowserPromoOverflowMenu(&mock_tracker);
+}
+
+// Tests MaybeShowContextualDefaultBrowserPromo under various conditions.
+TEST_F(DefaultBrowserUtilsTest, TestMaybeShowContextualDefaultBrowserPromo) {
+  testing::NiceMock<feature_engagement::test::MockTracker> mock_tracker;
+  id mock_handler =
+      OCMProtocolMock(@protocol(ContextualDefaultBrowserPromoCommands));
+
+  // Should not trigger when tracker or handler is nil.
+  MaybeShowContextualDefaultBrowserPromo(nullptr, mock_handler);
+  MaybeShowContextualDefaultBrowserPromo(&mock_tracker, nil);
+
+  // Should not trigger when Chrome is likely default browser.
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime,
+                             (base::Time::Now() - base::Days(2)).ToNSDate());
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowser());
+  OCMReject([mock_handler showContextualDefaultBrowserPromoWithType:
+                              ContextualDefaultBrowserPromoType::kGemini]);
+  MaybeShowContextualDefaultBrowserPromo(&mock_tracker, mock_handler);
+
+  // Clear HTTP URL open time so Chrome is not default.
+  ClearDefaultBrowserPromoData();
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowser());
+
+  // Should not trigger when feature flag is disabled.
+  MaybeShowContextualDefaultBrowserPromo(&mock_tracker, mock_handler);
+
+  // Enable feature flag.
+  feature_list_.InitAndEnableFeature(kIOSDefaultBrowserContextualPromo);
+
+  // Should not trigger handler when FET returns false.
+  EXPECT_CALL(mock_tracker,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::
+                      kIPHiOSPromoContextualDefaultBrowserGeminiFeature)))
+      .WillOnce(testing::Return(false));
+  MaybeShowContextualDefaultBrowserPromo(&mock_tracker, mock_handler);
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+
+  // Should trigger handler when FET returns true.
+  mock_handler =
+      OCMProtocolMock(@protocol(ContextualDefaultBrowserPromoCommands));
+  EXPECT_CALL(mock_tracker,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::
+                      kIPHiOSPromoContextualDefaultBrowserGeminiFeature)))
+      .WillOnce(testing::Return(true));
+  OCMExpect([mock_handler showContextualDefaultBrowserPromoWithType:
+                              ContextualDefaultBrowserPromoType::kGemini]);
+  MaybeShowContextualDefaultBrowserPromo(&mock_tracker, mock_handler);
+  EXPECT_OCMOCK_VERIFY(mock_handler);
 }
 }  // namespace

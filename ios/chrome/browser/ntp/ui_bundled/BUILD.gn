@@ -176,6 +176,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/ui:commands",
     "//ios/chrome/browser/content_suggestions/ui:ui_util",
     "//ios/chrome/browser/context_menu/ui_bundled/link_preview",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",

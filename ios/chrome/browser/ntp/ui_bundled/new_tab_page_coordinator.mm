@@ -59,6 +59,7 @@
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_coordinator.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
@@ -129,6 +130,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_default_browser_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -639,6 +641,7 @@
   [self restoreNTPScrollPosition];
   [self updateNTPIsVisible:YES];
   [self updateStartForVisibilityChange:YES];
+  [self maybeShowContextualDefaultBrowserPromo];
 }
 
 - (void)didNavigateAwayFromNTP {
@@ -1785,6 +1788,22 @@
 }
 
 #pragma mark - Private
+
+// Evaluates and triggers a contextual default browser promo if eligible.
+- (void)maybeShowContextualDefaultBrowserPromo {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  if (![dispatcher
+          dispatchingForProtocol:@protocol(
+                                     ContextualDefaultBrowserPromoCommands)]) {
+    return;
+  }
+
+  id<ContextualDefaultBrowserPromoCommands> promoHandler =
+      HandlerForProtocol(dispatcher, ContextualDefaultBrowserPromoCommands);
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  MaybeShowContextualDefaultBrowserPromo(tracker, promoHandler);
+}
 
 // Opens the AIM web page.
 - (void)openAIMWeb {

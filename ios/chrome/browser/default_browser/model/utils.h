@@ -15,6 +15,7 @@ class Tracker;
 namespace base {
 class TimeDelta;
 }  // namespace base
+@protocol ContextualDefaultBrowserPromoCommands;
 @protocol PictureInPictureCommands;
 
 enum class DefaultBrowserPromoOverflowMenuType;
@@ -253,5 +254,11 @@ void OpenIOSDefaultBrowserSettingsPage(
     bool force_default_apps_if_available = false,
     UIApplication* ui_application_to_use = nil,
     id<PictureInPictureCommands> pip_handler = nil);
+
+// Evaluates whether the contextual default browser promo is eligible with
+// `tracker`, and if so, triggers it using `promo_handler`.
+void MaybeShowContextualDefaultBrowserPromo(
+    feature_engagement::Tracker* tracker,
+    id<ContextualDefaultBrowserPromoCommands> promo_handler);
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_

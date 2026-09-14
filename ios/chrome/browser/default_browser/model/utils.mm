@@ -21,11 +21,13 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
+#import "ios/chrome/browser/default_browser/promo/contextual/public/contextual_default_browser_promo_constants.h"
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_default_browser_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
@@ -549,4 +551,27 @@ void OpenIOSDefaultBrowserSettingsPage(
     ui_application_to_use = [UIApplication sharedApplication];
   }
   [ui_application_to_use openURL:url options:{} completionHandler:nil];
+}
+
+void MaybeShowContextualDefaultBrowserPromo(
+    feature_engagement::Tracker* tracker,
+    id<ContextualDefaultBrowserPromoCommands> promo_handler) {
+  if (!tracker || !promo_handler) {
+    return;
+  }
+
+  if (IsChromeLikelyDefaultBrowser()) {
+    return;
+  }
+
+  if (!IsIOSDefaultBrowserContextualPromoEnabled()) {
+    return;
+  }
+
+  if (tracker->ShouldTriggerHelpUI(
+          feature_engagement::
+              kIPHiOSPromoContextualDefaultBrowserGeminiFeature)) {
+    [promo_handler showContextualDefaultBrowserPromoWithType:
+                       ContextualDefaultBrowserPromoType::kGemini];
+  }
 }
