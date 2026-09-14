@@ -24,7 +24,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_H_
 
 #include <cmath>
-#include <cstring>
 #include <optional>
 
 #include "base/check_op.h"
@@ -151,23 +150,35 @@ class PLATFORM_EXPORT Length {
 
   Length(double v, Length::Type t) : type_(t) {
     DCHECK(std::isfinite(v));
+    DCHECK_NE(t, kCalculated);
     value_ = ClampTo<float>(v);
   }
 
   explicit Length(const CalculationValue*);
 
-  Length(const Length& length) {
-    UNSAFE_TODO(memcpy(this, &length, sizeof(Length)));
-    if (IsCalculated())
+  Length(const Length& length) : quirk_(length.quirk_), type_(length.type_) {
+    if (IsCalculated()) {
+      calculation_handle_ = length.calculation_handle_;
       IncrementCalculatedCount();
+    } else {
+      value_ = length.value_;
+    }
   }
 
   Length& operator=(const Length& length) {
-    if (length.IsCalculated())
+    if (length.IsCalculated()) {
       length.IncrementCalculatedCount();
-    if (IsCalculated())
+    }
+    if (IsCalculated()) {
       DecrementCalculatedCount();
-    UNSAFE_TODO(memcpy(this, &length, sizeof(Length)));
+    }
+    type_ = length.type_;
+    quirk_ = length.quirk_;
+    if (length.IsCalculated()) {
+      calculation_handle_ = length.calculation_handle_;
+    } else {
+      value_ = length.value_;
+    }
     return *this;
   }
 
