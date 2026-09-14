@@ -330,10 +330,10 @@ void FcpHttpRequestRunner::OnDownloadProgress(uint64_t current) {
 }
 
 FcpHttpRequestHandle::FcpHttpRequestHandle(
-    FcpHttpRequestManager* manager,
+    scoped_refptr<FcpHttpRequestManager> manager,
     uint64_t request_id,
     std::unique_ptr<fcp::client::http::HttpRequest> request)
-    : manager_(manager),
+    : manager_(std::move(manager)),
       request_id_(request_id),
       request_(std::move(request)) {}
 
@@ -356,24 +356,14 @@ void FcpHttpRequestHandle::Cancel() {
 FcpHttpRequestManager::FcpHttpRequestManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
-    : ui_task_runner_(std::move(ui_task_runner)),
+    : base::RefCountedDeleteOnSequence<FcpHttpRequestManager>(ui_task_runner),
+      ui_task_runner_(std::move(ui_task_runner)),
       url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 }
 
 FcpHttpRequestManager::~FcpHttpRequestManager() {
-  if (url_loader_factory_ || !runners_.empty()) {
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](scoped_refptr<network::SharedURLLoaderFactory> factory,
-               std::map<uint64_t, std::unique_ptr<FcpHttpRequestRunner>>
-                   runners) {
-              // Body is intentionally empty; factory and active runners will be
-              // destructed here on the UI thread sequence.
-            },
-            std::move(url_loader_factory_), std::move(runners_)));
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 }
 
 void FcpHttpRequestManager::StartRequest(
@@ -383,10 +373,7 @@ void FcpHttpRequestManager::StartRequest(
     CountdownLatch* latch) {
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FcpHttpRequestManager::StartRequestOnUI,
-                                // Note: using base::Unretained(this) is safe
-                                // because the manager outlives all network
-                                // requests initiated through it.
-                                base::Unretained(this), handle,
+                                base::WrapRefCounted(this), handle,
                                 std::move(upload_body), callback, latch));
 }
 
@@ -394,16 +381,14 @@ void FcpHttpRequestManager::CancelRequest(uint64_t request_id) {
   ui_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](FcpHttpRequestManager* manager, uint64_t req_id) {
+          [](scoped_refptr<FcpHttpRequestManager> manager, uint64_t req_id) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(manager->ui_sequence_checker_);
             auto it = manager->runners_.find(req_id);
             if (it != manager->runners_.end()) {
               it->second->Cancel();
             }
           },
-          // Note: using base::Unretained(this) is safe because the manager
-          // outlives all network requests initiated through it.
-          base::Unretained(this), request_id));
+          base::WrapRefCounted(this), request_id));
 }
 
 void FcpHttpRequestManager::StartRequestOnUI(
@@ -417,10 +402,8 @@ void FcpHttpRequestManager::StartRequestOnUI(
       url_loader_factory_.get(), handle, std::move(upload_body), callback);
   FcpHttpRequestRunner* runner_ptr = runner.get();
   runner->set_on_complete_callback(base::BindOnce(
-      &FcpHttpRequestManager::OnRequestComplete,
-      // Note: using base::Unretained(this) is safe because the manager outlives
-      // all network requests initiated through it.
-      base::Unretained(this), request_id, runner_ptr, latch));
+      &FcpHttpRequestManager::OnRequestComplete, base::WrapRefCounted(this),
+      request_id, runner_ptr, latch));
   runners_[request_id] = std::move(runner);
   base::UmaHistogramCounts100(kFcpHttpClientRunnerCountHistogram,
                               runners_.size());
@@ -432,17 +415,18 @@ void FcpHttpRequestManager::OnRequestComplete(uint64_t request_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
   DCHECK(runner);
 
-  latch->CountDown();
-
   auto it = runners_.find(request_id);
   if (it != runners_.end()) {
     ui_task_runner_->DeleteSoon(FROM_HERE, std::move(it->second));
     runners_.erase(it);
   }
+
+  latch->CountDown();
 }
 
-FcpHttpClient::FcpHttpClient(FcpHttpRequestManager* request_manager)
-    : request_manager_(request_manager) {}
+FcpHttpClient::FcpHttpClient(
+    scoped_refptr<FcpHttpRequestManager> request_manager)
+    : request_manager_(std::move(request_manager)) {}
 
 FcpHttpClient::~FcpHttpClient() = default;
 

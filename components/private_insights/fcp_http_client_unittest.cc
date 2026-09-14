@@ -28,8 +28,9 @@ namespace private_insights {
 class FcpHttpClientTest : public testing::Test {
  public:
   FcpHttpClientTest()
-      : request_manager_(test_url_loader_factory_.GetSafeWeakWrapper(),
-                         task_environment_.GetMainThreadTaskRunner()) {}
+      : request_manager_(base::MakeRefCounted<FcpHttpRequestManager>(
+            test_url_loader_factory_.GetSafeWeakWrapper(),
+            task_environment_.GetMainThreadTaskRunner())) {}
   ~FcpHttpClientTest() override = default;
 
  protected:
@@ -72,16 +73,16 @@ class FcpHttpClientTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  FcpHttpRequestManager request_manager_;
+  scoped_refptr<FcpHttpRequestManager> request_manager_;
 };
 
 TEST_F(FcpHttpClientTest, PerformRequestsEmpty) {
-  FcpHttpClient client(&request_manager_);
+  FcpHttpClient client(request_manager_);
   EXPECT_TRUE(client.PerformRequests({}).ok());
 }
 
 TEST_F(FcpHttpClientTest, PerformRequestsCanceledRequest) {
-  FcpHttpClient client(&request_manager_);
+  FcpHttpClient client(request_manager_);
   auto request =
       fcp::client::http::InMemoryHttpRequest::Create(
           "https://example.com", fcp::client::http::HttpRequest::Method::kGet,
@@ -103,7 +104,7 @@ TEST_F(FcpHttpClientTest, PerformRequestsCanceledRequest) {
 }
 
 TEST_F(FcpHttpClientTest, TotalSentReceivedBytesInitial) {
-  FcpHttpClient client(&request_manager_);
+  FcpHttpClient client(request_manager_);
   auto request =
       fcp::client::http::InMemoryHttpRequest::Create(
           "https://example.com", fcp::client::http::HttpRequest::Method::kGet,
@@ -117,7 +118,7 @@ TEST_F(FcpHttpClientTest, TotalSentReceivedBytesInitial) {
 }
 
 TEST_F(FcpHttpClientTest, TotalSentReceivedBytesUpdate) {
-  FcpHttpClient client(&request_manager_);
+  FcpHttpClient client(request_manager_);
   auto request =
       fcp::client::http::InMemoryHttpRequest::Create(
           "https://example.com", fcp::client::http::HttpRequest::Method::kPost,
@@ -214,7 +215,7 @@ class ErrorHttpRequest : public fcp::client::http::HttpRequest {
 };
 
 TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulSingle) {
-  FcpHttpClient client(&request_manager_);
+  FcpHttpClient client(request_manager_);
   auto request = fcp::client::http::InMemoryHttpRequest::Create(
                      "https://example.com/test",
                      fcp::client::http::HttpRequest::Method::kGet,
@@ -250,7 +251,7 @@ TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulSingle) {
 }
 
 TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulBatch) {
-  FcpHttpClient client(&request_manager_);
+  FcpHttpClient client(request_manager_);
   auto request1 = fcp::client::http::InMemoryHttpRequest::Create(
                       "https://example.com/req1",
                       fcp::client::http::HttpRequest::Method::kGet,
@@ -288,7 +289,7 @@ TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulBatch) {
 }
 
 TEST_F(FcpHttpClientTest, PerformRequestsNetError) {
-  FcpHttpClient client(&request_manager_);
+  FcpHttpClient client(request_manager_);
   auto request = fcp::client::http::InMemoryHttpRequest::Create(
                      "https://example.com/failed",
                      fcp::client::http::HttpRequest::Method::kGet,
@@ -315,7 +316,7 @@ TEST_F(FcpHttpClientTest, PerformRequestsNetError) {
 }
 
 TEST_F(FcpHttpClientTest, PerformRequestsReadBodyError) {
-  FcpHttpClient client(&request_manager_);
+  FcpHttpClient client(request_manager_);
   auto handle = client.EnqueueRequest(std::make_unique<ErrorHttpRequest>());
   TestHttpRequestCallback callback;
 
@@ -329,7 +330,7 @@ TEST_F(FcpHttpClientTest, PerformRequestsReadBodyError) {
 }
 
 TEST_F(FcpHttpClientTest, PerformRequestsCancelViaHandle) {
-  FcpHttpClient client(&request_manager_);
+  FcpHttpClient client(request_manager_);
   auto request = fcp::client::http::InMemoryHttpRequest::Create(
                      "https://example.com/pending",
                      fcp::client::http::HttpRequest::Method::kGet,
