@@ -4633,6 +4633,7 @@ bool Document::DispatchBeforeUnloadEvent(
   }
 
   String text = before_unload_event.returnValue();
+  UseCounter::Count(*this, WebFeature::kBeforeUnloadShowedDialog);
   RecordBeforeUnloadUse(BeforeUnloadUse::kShowDialog);
   out_before_unload_dialog_opened_time = base::TimeTicks::Now();
   did_allow_navigation =
@@ -4647,6 +4648,8 @@ bool Document::DispatchBeforeUnloadEvent(
             out_before_unload_dialog_opened_time);
     return true;
   }
+
+  UseCounter::Count(*this, WebFeature::kBeforeUnloadDialogBlockedUnload);
 
   return false;
 }

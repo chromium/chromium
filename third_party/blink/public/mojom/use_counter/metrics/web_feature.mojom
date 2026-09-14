@@ -5332,6 +5332,8 @@ enum WebFeature {
   kVideoAdDetected = 6015,
   kElementTimingEntryEmitted = 6016,
   kContainerTimingEntryEmitted = 6017,
+  kBeforeUnloadShowedDialog = 6018,
+  kBeforeUnloadDialogBlockedUnload = 6019,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
