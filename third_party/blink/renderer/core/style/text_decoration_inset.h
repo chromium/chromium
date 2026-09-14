@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_TEXT_DECORATION_INSET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_TEXT_DECORATION_INSET_H_
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 
@@ -19,6 +21,10 @@ class CORE_EXPORT TextDecorationInset {
 
   const Length& GetStart() const { return start_; }
   const Length& GetEnd() const { return end_; }
+
+  static float ResolveAutoInset(float decoration_thickness) {
+    return std::clamp(decoration_thickness / 2.0f, 1.0f, 2.0f);
+  }
 
   bool operator==(const TextDecorationInset&) const = default;
 

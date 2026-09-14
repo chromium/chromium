@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/animation/css_shape_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_size_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_superellipse_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_text_decoration_inset_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_text_indent_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_time_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_transform_interpolation_type.h"
@@ -423,6 +424,11 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kFontSizeAdjust:
         applicable_types->push_back(
             MakeGarbageCollected<CSSFontSizeAdjustInterpolationType>(property));
+        break;
+      case CSSPropertyID::kTextDecorationInset:
+        applicable_types->push_back(
+            MakeGarbageCollected<CSSTextDecorationInsetInterpolationType>(
+                property));
         break;
       case CSSPropertyID::kTextIndent:
         applicable_types->push_back(

@@ -116,35 +116,6 @@ bool NeedsFragmentContextForDecoration(
   return !inset.GetStart().IsZero() || !inset.GetEnd().IsZero();
 }
 
-float ComputeDecorationThickness(
-    const TextDecorationThickness& text_decoration_thickness,
-    const UsedFont& used_font) {
-  float used_font_size = used_font.UsedSize();
-  const float auto_underline_thickness = used_font_size / 10.f;
-
-  if (text_decoration_thickness.IsAuto())
-    return auto_underline_thickness;
-
-  // In principle we would not need to test for PrimaryFont() if
-  // |text_decoration_thickness.Thickness()| is fixed, but a null PrimaryFont()
-  // here would be a rare / error situation anyway, so practically, we can
-  // early out here.
-  if (!used_font.PrimaryFont()) {
-    return auto_underline_thickness;
-  }
-
-  if (text_decoration_thickness.IsFromFont()) {
-    return used_font.UnderlineThickness().value_or(auto_underline_thickness);
-  }
-
-  DCHECK(!text_decoration_thickness.IsFromFont());
-
-  const Length& thickness_length = text_decoration_thickness.Thickness();
-  const float text_decoration_thickness_pixels =
-      FloatValueForLength(thickness_length, used_font_size);
-  return roundf(text_decoration_thickness_pixels);
-}
-
 static enum StrokeStyle TextDecorationStyleToStrokeStyle(
     ETextDecorationStyle decoration_style) {
   switch (decoration_style) {
@@ -500,7 +471,7 @@ void TextDecorationInfo::ResolveDecorationInsets(
     // Keep adjacent automatic underlines visually distinct, but avoid
     // disproportionately large trims for very thick decorations.
     const float auto_inset =
-        std::clamp(decoration.resolved_thickness / 2.0f, 1.0f, 2.0f);
+        TextDecorationInset::ResolveAutoInset(decoration.resolved_thickness);
     start_inset = auto_inset;
     end_inset = auto_inset;
   } else if (applied_text_decoration.BoxDecorationBreak() ==
@@ -675,8 +646,10 @@ float TextDecorationInfo::ComputeThickness(
     return 1.f * decoration.effective_zoom;
 #endif
   }
-  const float thickness = ComputeDecorationThickness(
-      decoration.applied_text_decoration->Thickness(), decoration.used_font);
+  const float thickness =
+      decoration.applied_text_decoration->Thickness().Resolve(
+          decoration.used_font.UsedSize(), decoration.used_font.PrimaryFont(),
+          decoration.used_font.ScalingFactor());
   return std::max(is_svg_text_ ? 0.0f : 1.0f, thickness);
 }
 

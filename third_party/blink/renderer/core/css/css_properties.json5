@@ -6369,6 +6369,7 @@
       invalidate: ["text-decoration"],
       affected_by_zoom: true,
       percentages_depend_on_used_value: true,
+      interpolable: true,
     },
     {
       name: "text-decoration-skip-ink",

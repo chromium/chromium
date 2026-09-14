@@ -11,6 +11,8 @@
 
 namespace blink {
 
+class SimpleFontData;
+
 class TextDecorationThickness {
   DISALLOW_NEW();
 
@@ -27,6 +29,12 @@ class TextDecorationThickness {
     return thickness_;
   }
   bool IsAuto() const { return !thickness_from_font_ && thickness_.IsAuto(); }
+
+  // Resolves the used thickness in CSS pixels. `font_size` includes any
+  // paint-time scaling; `font_scale` applies the same scaling to font metrics.
+  CORE_EXPORT float Resolve(float font_size,
+                            const SimpleFontData* primary_font,
+                            float font_scale = 1.0f) const;
 
   CORE_EXPORT bool operator==(const TextDecorationThickness&) const;
 
