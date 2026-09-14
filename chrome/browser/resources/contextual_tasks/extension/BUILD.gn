@@ -59,26 +59,55 @@ generate_grd("build_background_grdp") {
   deps = [ ":build_background_ts" ]
 }
 
+ts_library("build_post_message_handler_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/post_message_handler"
+  in_files = [ "post_message_handler.ts" ]
+  composite = true
+  deps = [
+    "//chrome/browser/resources/contextual_tasks:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  path_mappings =
+      [ "chrome://contextual-tasks/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/contextual_tasks/tsc/*",
+            target_gen_dir) ]
+}
+
+generate_grd("build_post_message_handler_grdp") {
+  grd_prefix = "contextual_tasks_extension"
+  out_grd = "$target_gen_dir/post_message_handler_resources.grdp"
+  manifest_files =
+      [ "$target_gen_dir/build_post_message_handler_ts_manifest.json" ]
+  resource_path_prefix = "contextual_tasks_extension"
+  deps = [ ":build_post_message_handler_ts" ]
+}
+
 build_webui("build") {
   grd_prefix = "contextual_tasks_extension"
   grd_resource_path_prefix = "contextual_tasks_extension"
   ts_composite = true
 
-  # Refer to parent directory for composebox.ts and other UI files.
   in_folder = "."
 
   static_files = [
     "chip.html",
-    "input_plate.html",
     "lens_button.html",
     "manifest.json",
   ]
 
-  extra_grdp_deps = [ ":build_background_grdp" ]
-  extra_grdp_files = [ "$target_gen_dir/background_resources.grdp" ]
+  extra_grdp_deps = [
+    ":build_background_grdp",
+    ":build_post_message_handler_grdp",
+  ]
+  extra_grdp_files = [
+    "$target_gen_dir/background_resources.grdp",
+    "$target_gen_dir/post_message_handler_resources.grdp",
+  ]
 
   ts_files = [
-    "input_plate.ts",
     "lens_button_app.html.ts",
     "lens_button_app.ts",
   ]
@@ -122,10 +151,7 @@ build_webui("build") {
   # package all parent UI files individually in the extension.
   optimize = true
   optimize_webui_host = "chrome-extension://glbjnfimcajjenihimblfaponejbkoph"
-  optimize_webui_in_files = [
-    "input_plate.js",
-    "lens_button_app.js",
-  ]
+  optimize_webui_in_files = [ "lens_button_app.js" ]
 
   optimize_webui_external_paths =
       [ "chrome://contextual-tasks/|" +
