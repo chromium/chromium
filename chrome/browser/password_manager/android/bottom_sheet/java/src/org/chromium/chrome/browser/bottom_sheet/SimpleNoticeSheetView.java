@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
@@ -31,11 +31,11 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     private static final BottomSheetType BOTTOM_SHEET_TYPE =
             new BottomSheetType.Builder().build();
 
-    private final RelativeLayout mContentView;
+    private final ScrollView mContentView;
 
     SimpleNoticeSheetView(Context context) {
         mContentView =
-                (RelativeLayout)
+                (ScrollView)
                         LayoutInflater.from(context).inflate(R.layout.simple_notice_sheet, null);
         mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
         ImageView sheetHeaderImage = mContentView.findViewById(R.id.sheet_header_image);
@@ -135,5 +135,10 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     @Override
     public float getFullHeightRatio() {
         return HeightMode.WRAP_CONTENT;
+    }
+
+    @Override
+    public boolean showHandlebar() {
+        return true;
     }
 }
