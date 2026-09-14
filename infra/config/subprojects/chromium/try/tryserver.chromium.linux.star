@@ -1036,6 +1036,13 @@ try_.builder(
     ssd = True,
     execution_timeout = 5 * time.hour,
     notifies = ["chrome-rust-toolchain"],
+    properties = {
+        "$build/chromium_toolchain": {
+            "toolchain": "CLANG",
+            "trusted_build_instance_pool": "high-cpu",
+            "config_path": "build/lexan/configs/tbi/linux-patched-fix-strict-deps.textproto",
+        },
+    },
 )
 
 try_.builder(
