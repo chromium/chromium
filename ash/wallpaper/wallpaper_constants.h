@@ -5,9 +5,8 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_CONSTANTS_H_
 #define ASH_WALLPAPER_WALLPAPER_CONSTANTS_H_
 
+#include <cstdint>
 #include <string_view>
-
-#include "ash/public/cpp/style/color_provider.h"
 
 namespace ash::wallpaper_constants {
 
@@ -16,7 +15,7 @@ inline constexpr float kClear = 0.f;
 // Blur sigma in lock/login screen.
 inline constexpr float kLockLoginBlur = 30.0f;
 // Blur sigma used in oobe.
-inline constexpr float kOobeBlur = ColorProvider::kBackgroundBlurSigma;
+inline constexpr float kOobeBlur = 30.0f;
 
 // File path suffix of resized small wallpapers.
 inline constexpr char kSmallWallpaperSuffix[] = "_small";

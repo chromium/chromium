@@ -316,8 +316,6 @@ component("cpp") {
     "smartlock_state.cc",
     "smartlock_state.h",
     "style/color_mode_observer.h",
-    "style/color_provider.cc",
-    "style/color_provider.h",
     "style/dark_light_mode_controller.cc",
     "style/dark_light_mode_controller.h",
     "stylus_utils.cc",

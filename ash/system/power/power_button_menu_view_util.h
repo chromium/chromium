@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_POWER_POWER_BUTTON_MENU_VIEW_UTIL_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"

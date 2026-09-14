@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/power/power_button_menu_view_util.h"
 #include "base/check_deref.h"
@@ -93,8 +93,8 @@ PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
   layer()->SetIsFastRoundedCorner(true);
   if (chromeos::features::IsSystemBlurEnabled()) {
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
     layer()->SetFillsBoundsOpaquely(false);
   }
 

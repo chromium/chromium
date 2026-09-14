@@ -19,7 +19,6 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_control_button.h"
@@ -29,6 +28,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
 #include "base/check_op.h"
@@ -207,7 +207,7 @@ class HomeButton::ButtonImageView : public views::View {
   void UpdateForShelfConfigChange() {
     layer()->SetBackgroundBlur(
         ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
     UpdateBackground();
     UpdateIconImageModel();
   }

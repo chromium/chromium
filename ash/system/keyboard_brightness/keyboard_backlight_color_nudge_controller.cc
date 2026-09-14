@@ -9,10 +9,10 @@
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -97,8 +97,8 @@ void KeyboardBacklightColorNudgeController::MaybeShowEducationNudge(
 
   if (chromeos::features::IsSystemBlurEnabled()) {
     ui::Layer* layer = education_nudge_->layer();
-    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
   gfx::Rect anchor_rect =

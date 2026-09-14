@@ -19,10 +19,10 @@
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/public/cpp/session/user_info.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/style/style_util.h"
 #include "ash/system/time/calendar_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -86,8 +86,8 @@ class TimeManagementContainer : public views::FlexLayoutView {
     SetPaintToLayer();
     if (chromeos::features::IsSystemBlurEnabled()) {
       layer()->SetFillsBoundsOpaquely(false);
-      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+      layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
     }
 
     layer()->SetRoundedCornerRadius(

@@ -6,7 +6,6 @@
 
 #include <iostream>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "chrome/app/vector_icons/vector_icons.h"

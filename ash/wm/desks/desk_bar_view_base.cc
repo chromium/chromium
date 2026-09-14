@@ -13,13 +13,13 @@
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_button.h"
@@ -126,8 +126,8 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   }
 
   if (chromeos::features::IsSystemBlurEnabled()) {
-    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
   const int corner_radius = type_is_desk_button

@@ -15,7 +15,6 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -112,8 +111,8 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
   if (tablet_mode) {
     if (chromeos::features::IsSystemBlurEnabled()) {
       layer()->SetFillsBoundsOpaquely(false);
-      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+      layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
     }
 
     layer()->SetRoundedCornerRadius(

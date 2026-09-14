@@ -9,7 +9,6 @@
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/public/cpp/ash_typography.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"

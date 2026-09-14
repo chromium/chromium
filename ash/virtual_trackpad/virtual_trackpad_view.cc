@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/blurred_background_shield.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/window_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -254,7 +254,7 @@ VirtualTrackpadView::VirtualTrackpadView() {
       views::CreateSolidBackground(kTrackpadContainerBackgroundColor));
 
   blurred_background_ = std::make_unique<BlurredBackgroundShield>(
-      this, SK_ColorTRANSPARENT, ColorProvider::kBackgroundBlurSigma,
+      this, SK_ColorTRANSPARENT, StyleUtil::kBackgroundBlurSigma,
       gfx::RoundedCornersF(
           static_cast<float>(chromeos::kRoundedWindowSmallCornerRadius)));
 }

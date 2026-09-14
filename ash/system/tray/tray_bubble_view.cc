@@ -13,11 +13,11 @@
 #include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -370,8 +370,8 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
                        : cros_tokens::kCrosSysSystemBaseElevatedOpaque));
     layer()->SetFillsBoundsOpaquely(!is_translucent);
     if (is_translucent) {
-      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+      layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
     }
   }
 

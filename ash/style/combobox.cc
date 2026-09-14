@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/blurred_background_shield.h"
 #include "ash/style/radio_button_group.h"
@@ -177,7 +176,7 @@ class Combobox::ComboboxMenuView : public views::View {
       : combobox_(combobox),
         background_shield_(this,
                            kMenuBackgroundColorId,
-                           ColorProvider::kBackgroundBlurSigma,
+                           StyleUtil::kBackgroundBlurSigma,
                            kMenuRoundedCorners) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 

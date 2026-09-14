@@ -4,7 +4,6 @@
 
 #include "ash/system/notification_center/views/ash_notification_input_container.h"
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/system/notification_center/message_center_constants.h"

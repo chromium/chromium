@@ -5,7 +5,7 @@
 #include "ash/wm/desks/desk_action_view.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -33,7 +33,7 @@ DeskActionView::DeskActionView(const std::u16string& combine_desks_target_name,
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
   blurred_background_ = std::make_unique<BlurredBackgroundShield>(
-      this, kColorAshShieldAndBase80, ColorProvider::kBackgroundBlurSigma,
+      this, kColorAshShieldAndBase80, StyleUtil::kBackgroundBlurSigma,
       gfx::RoundedCornersF(kCornerRadius));
 
   // The "Save desk as template" and "Save desk for later" buttons are being

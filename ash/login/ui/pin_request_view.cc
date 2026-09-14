@@ -8,11 +8,11 @@
 #include "ash/login/ui/login_pin_view.h"
 #include "ash/login/ui/pin_request_widget.h"
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/style_util.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/functional/bind.h"
@@ -189,7 +189,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   SetPaintToLayer();
   if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
   const ui::ColorId background_color_id =

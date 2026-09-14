@@ -11,12 +11,12 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/bubble/bubble_utils.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -217,8 +217,8 @@ AppListToastView::AppListToastView(const std::u16string& title,
     SetPaintToLayer();
     if (chromeos::features::IsSystemBlurEnabled()) {
       layer()->SetFillsBoundsOpaquely(false);
-      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+      layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
     }
 
     layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));

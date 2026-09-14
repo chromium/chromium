@@ -28,10 +28,10 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/public/cpp/metrics_util.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/style/system_shadow.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
@@ -666,9 +666,9 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   if (chromeos::features::IsSystemBlurEnabled()) {
     background_view_->layer()->SetFillsBoundsOpaquely(false);
     background_view_->layer()->SetBackgroundBlur(
-        ColorProvider::kBackgroundBlurSigma);
+        StyleUtil::kBackgroundBlurSigma);
     background_view_->layer()->SetBackdropFilterQuality(
-        ColorProvider::kBackgroundBlurQuality);
+        StyleUtil::kBackgroundBlurQuality);
   }
 
   background_view_->layer()->SetRoundedCornerRadius(
@@ -689,9 +689,9 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   animating_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   if (chromeos::features::IsSystemBlurEnabled()) {
     animating_background_->layer()->SetBackgroundBlur(
-        ColorProvider::kBackgroundBlurSigma);
+        StyleUtil::kBackgroundBlurSigma);
     animating_background_->layer()->SetBackdropFilterQuality(
-        ColorProvider::kBackgroundBlurQuality);
+        StyleUtil::kBackgroundBlurQuality);
   }
 
   animating_background_->SetVisible(false);

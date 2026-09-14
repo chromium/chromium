@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"

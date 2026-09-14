@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"

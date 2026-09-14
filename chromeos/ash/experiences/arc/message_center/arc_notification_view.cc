@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
@@ -118,8 +118,8 @@ ArcNotificationView::ArcNotificationView(
         gfx::RoundedCornersF{kMessagePopupCornerRadius});
     if (chromeos::features::IsSystemBlurEnabled()) {
       layer()->SetFillsBoundsOpaquely(false);
-      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+      layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
     }
   }
 

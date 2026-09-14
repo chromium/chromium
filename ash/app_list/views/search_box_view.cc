@@ -33,7 +33,6 @@
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_metrics.h"
@@ -41,6 +40,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_util.h"
@@ -945,8 +945,8 @@ void SearchBoxView::UpdateBackground(AppListState target_state) {
   if (!is_app_list_bubble_ && (!search_result_page_visible_ ||
                                target_state == AppListState::kStateApps)) {
     layer()->SetClipRect(GetContentsBounds());
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
     layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
     highlight_border_changed = !should_paint_highlight_border_;
     should_paint_highlight_border_ = true;

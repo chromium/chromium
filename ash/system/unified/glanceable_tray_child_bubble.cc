@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -37,8 +37,8 @@ GlanceableTrayChildBubble::GlanceableTrayChildBubble(
       // TODO(b:286941809): Setting blur here, can break the rounded corners
       // applied to the parent scroll view.
       layer()->SetFillsBoundsOpaquely(false);
-      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+      layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
     }
 
     const ui::ColorId background_color_id =

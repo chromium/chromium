@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_image_view.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/style_util.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -108,9 +108,8 @@ AppDragIconProxy::AppDragIconProxy(
 
     blurred_layer->SetRoundedCornerRadius(
         {corner_radius, corner_radius, corner_radius, corner_radius});
-    blurred_layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    blurred_layer->SetBackdropFilterQuality(
-        ColorProvider::kBackgroundBlurQuality);
+    blurred_layer->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    blurred_layer->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
   drag_image_widget_->SetVisibilityAnimationTransition(

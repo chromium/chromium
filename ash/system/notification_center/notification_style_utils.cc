@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/style_util.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -173,8 +173,8 @@ void StyleNotificationPopup(message_center::MessageView* notification_view) {
   auto* layer = notification_view->layer();
   if (chromeos::features::IsSystemBlurEnabled()) {
     layer->SetFillsBoundsOpaquely(false);
-    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
   layer->SetRoundedCornerRadius(

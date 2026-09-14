@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/blurred_background_shield.h"
 #include "ash/style/color_util.h"
@@ -246,7 +245,7 @@ void PillButton::UpdateBackgroundColor() {
 
     if (!blurred_background_) {
       blurred_background_ = std::make_unique<BlurredBackgroundShield>(
-          this, background_color, ColorProvider::kBackgroundBlurSigma,
+          this, background_color, StyleUtil::kBackgroundBlurSigma,
           gfx::RoundedCornersF(corner_radius),
           /*add_layer_to_region=*/false);
       return;

@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/public/cpp/ash_view_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"

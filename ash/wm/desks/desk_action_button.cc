@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/desk_action_button.h"
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"

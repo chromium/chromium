@@ -10,7 +10,6 @@
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -257,9 +256,9 @@ DeskMiniView::DeskMiniView(
     if (chromeos::features::IsSystemBlurEnabled()) {
       desk_shortcut_view_->layer()->SetFillsBoundsOpaquely(false);
       desk_shortcut_view_->layer()->SetBackgroundBlur(
-          ColorProvider::kBackgroundBlurSigma);
+          StyleUtil::kBackgroundBlurSigma);
       desk_shortcut_view_->layer()->SetBackdropFilterQuality(
-          ColorProvider::kBackgroundBlurQuality);
+          StyleUtil::kBackgroundBlurQuality);
     }
 
     desk_shortcut_view_->layer()->SetRoundedCornerRadius(

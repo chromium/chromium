@@ -4,7 +4,7 @@
 
 #include "ash/style/blurred_background_shield.h"
 
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/style_util.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
@@ -110,7 +110,7 @@ void BlurredBackgroundShield::UpdateBackgroundColor() {
   if (SkColorGetA(background_color) != SK_AlphaOPAQUE && blur_sigma_) {
     background_layer_.SetBackgroundBlur(blur_sigma_);
     background_layer_.SetBackdropFilterQuality(
-        ColorProvider::kBackgroundBlurQuality);
+        StyleUtil::kBackgroundBlurQuality);
   } else {
     background_layer_.SetBackgroundBlur(0.0f);
   }

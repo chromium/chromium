@@ -6,7 +6,6 @@
 
 #include <variant>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/blurred_background_shield.h"
 #include "ash/style/style_util.h"
 #include "ash/style/text_image.h"
@@ -620,7 +619,7 @@ void IconButton::UpdateBlurredBackgroundShield() {
   // Create a new blurred background shield if needed.
   if (!blurred_background_shield_) {
     blurred_background_shield_ = std::make_unique<BlurredBackgroundShield>(
-        this, background_color_, ColorProvider::kBackgroundBlurSigma,
+        this, background_color_, StyleUtil::kBackgroundBlurSigma,
         gfx::RoundedCornersF(GetButtonSizeOnType(type_) / 2));
   }
 

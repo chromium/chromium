@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/style_util.h"
 #include "base/check_op.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -80,10 +80,9 @@ PulsingBlockView::PulsingBlockView(const gfx::Size& size,
           .Build());
 
   stacked_views->layer()->SetMasksToBounds(true);
-  stacked_views->layer()->SetBackgroundBlur(
-      ColorProvider::kBackgroundBlurSigma);
+  stacked_views->layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
   stacked_views->layer()->SetBackdropFilterQuality(
-      ColorProvider::kBackgroundBlurQuality);
+      StyleUtil::kBackgroundBlurQuality);
   stacked_views->layer()->SetRoundedCornerRadius(
       {corner_radius, corner_radius, corner_radius, corner_radius});
 

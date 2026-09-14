@@ -7,10 +7,10 @@
 #include <math.h>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -255,8 +255,8 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
   maximize_cue_widget->Init(std::move(params));
 
   ui::Layer* layer = maximize_cue_widget->GetLayer();
-  layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  layer->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+  layer->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kMaximizeCueHeight / 2.f));
 
   aura::Window* maximize_cue_widget_window =

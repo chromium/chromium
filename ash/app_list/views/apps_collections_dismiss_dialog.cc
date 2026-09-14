@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -58,8 +58,8 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
 
   if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetFillsBoundsOpaquely(false);
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
   view_shadow_ =

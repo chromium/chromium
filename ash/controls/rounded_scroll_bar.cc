@@ -6,7 +6,6 @@
 
 #include <limits>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"

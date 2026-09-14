@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
@@ -126,8 +126,7 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
 
   if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetBackgroundBlur(kBubbleBlurRadius);
-    layer()->SetBackdropFilterQuality(
-        ash::ColorProvider::kBackgroundBlurQuality);
+    layer()->SetBackdropFilterQuality(ash::StyleUtil::kBackgroundBlurQuality);
   }
 
   // Add the managed icon.

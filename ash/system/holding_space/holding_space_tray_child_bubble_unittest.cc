@@ -11,8 +11,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_section.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/system/holding_space/holding_space_ash_test_base.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
@@ -94,7 +94,7 @@ TEST_F(HoldingSpaceTrayChildBubbleTest, HasExpectedBubbleTreatment) {
   auto* background = child_bubble()->GetBackground();
   ASSERT_TRUE(background);
   EXPECT_EQ(background->color(), cros_tokens::kCrosSysSystemBaseElevated);
-  EXPECT_EQ(layer->background_blur(), ColorProvider::kBackgroundBlurSigma);
+  EXPECT_EQ(layer->background_blur(), StyleUtil::kBackgroundBlurSigma);
 
   // Border.
   EXPECT_TRUE(child_bubble()->GetBorder());

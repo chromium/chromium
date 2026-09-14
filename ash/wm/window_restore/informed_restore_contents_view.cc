@@ -6,13 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/rounded_rect_cutout_path_builder.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
@@ -153,8 +153,8 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
   layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kContentsRounding));
   layer->SetIsFastRoundedCorner(true);
   if (chromeos::features::IsSystemBlurEnabled()) {
-    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
   return widget;

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_view_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -18,6 +17,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/keyboard_shortcut_view.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/style_util.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/nudge_constants.h"
@@ -194,8 +194,8 @@ SystemNudgeView::SystemNudgeView(
   SetPaintToLayer();
   if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetFillsBoundsOpaquely(false);
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
   const ui::ColorId default_background_color_id =

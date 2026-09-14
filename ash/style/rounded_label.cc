@@ -4,8 +4,8 @@
 
 #include "ash/style/rounded_label.h"
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -40,8 +40,8 @@ RoundedLabel::RoundedLabel(int horizontal_padding,
 
   if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetFillsBoundsOpaquely(false);
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 }
 
