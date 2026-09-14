@@ -1479,6 +1479,11 @@ public class SettingsSearchCoordinator
 
     @VisibleForTesting(otherwise = PRIVATE)
     void onConfigurationChangedInternal() {
+        // This may run after the Activity has been destroyed, for example from a pending layout
+        // pass on the old view hierarchy during a theme switch. The fragments are already detached
+        // at that point, so there is nothing to update. https://crbug.com/561275965
+        if (mActivity.isFinishing() || mActivity.isDestroyed() || mIsDestroyed) return;
+
         boolean useMultiColumn = mUseMultiColumnSupplier.getAsBoolean();
 
         // Changing the layout restarts the activity, and in which case the help icon should remain

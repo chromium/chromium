@@ -736,6 +736,12 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     /** Returns whether the current layout is in two-column mode. */
     boolean isTwoColumn() {
+        // The fragment may already be detached from its host when this is called, for example from
+        // a pending layout pass on the old view hierarchy while the activity is being recreated by
+        // a theme change. Nothing is visible in that case, so report single-column mode instead of
+        // letting getResources() throw. https://crbug.com/561275965
+        if (getContext() == null) return false;
+
         SlidingPaneLayout slidingPane = getSlidingPaneLayoutOrNull();
         // If SlidingPaneLayout has already completed layout, use its computed slideable state.
         if (slidingPane != null

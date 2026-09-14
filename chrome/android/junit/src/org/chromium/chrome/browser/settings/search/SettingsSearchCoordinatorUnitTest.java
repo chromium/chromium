@@ -73,6 +73,7 @@ public class SettingsSearchCoordinatorUnitTest {
 
     private SettingsSearchCoordinator mCoordinator;
     private boolean mUseMultiColumn = true;
+    private boolean mMultiColumnSettingsDetached;
 
     @Before
     public void setUp() {
@@ -116,12 +117,24 @@ public class SettingsSearchCoordinatorUnitTest {
                 new SettingsSearchCoordinator(
                         mActivity,
                         mToolbar,
-                        () -> mUseMultiColumn,
+                        this::isTwoColumnSettingsVisible,
                         mMultiColumnSettings,
                         new HashMap<>(),
                         mProfile,
                         (index) -> {},
                         modalDialogSupplier);
+    }
+
+    /**
+     * Mimics {@code SettingsActivity.isTwoColumnSettingsVisible()}, which queries the {@link
+     * MultiColumnSettings} fragment and throws if the fragment is no longer attached to a context.
+     */
+    private boolean isTwoColumnSettingsVisible() {
+        if (mMultiColumnSettingsDetached) {
+            throw new IllegalStateException(
+                    "Fragment MultiColumnSettings not attached to a context.");
+        }
+        return mUseMultiColumn;
     }
 
     @After
@@ -615,6 +628,31 @@ public class SettingsSearchCoordinatorUnitTest {
 
         // Flush the looper. The posted task should exit early without crashing on methods that
         // require views that are no longer present.
+        ShadowLooper.idleMainLooper();
+    }
+
+    /**
+     * Regression test for crbug.com/561275965: A theme change destroys the activity and detaches
+     * its fragments, but the old view hierarchy can still run a layout pass which notifies the
+     * layout listener registered by onConfigurationChanged().
+     */
+    @Test
+    public void testOnConfigurationChanged_layoutAfterDestroy_doesNotQueryDetachedFragment() {
+        setUpMultiColumnSettings();
+        mCoordinator.initializeSearchUi(null);
+
+        // The settings content view is observed for the layout pass following the config change.
+        FrameLayout contentView = new FrameLayout(mActivity);
+        contentView.setId(R.id.settings_content);
+        ((ViewGroup) mActivity.findViewById(R.id.settings_activity)).addView(contentView);
+
+        mCoordinator.onConfigurationChanged(mActivity.getResources().getConfiguration());
+
+        // The activity is destroyed and its fragments are detached before the layout pass runs.
+        mCoordinator.destroy();
+        mMultiColumnSettingsDetached = true;
+
+        contentView.getViewTreeObserver().dispatchOnGlobalLayout();
         ShadowLooper.idleMainLooper();
     }
 
