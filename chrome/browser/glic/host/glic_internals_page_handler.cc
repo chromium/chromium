@@ -800,6 +800,9 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
     case mojom::FreCompletionWaitMode::kNever:
       options.fre_completion_wait_mode = FreCompletionWaitMode::kNever;
       break;
+    case mojom::FreCompletionWaitMode::kAlways:
+      options.fre_completion_wait_mode = FreCompletionWaitMode::kAlways;
+      break;
   }
   options.target.actuation_target = mojo_options->actuation_target;
 

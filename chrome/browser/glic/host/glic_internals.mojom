@@ -166,6 +166,7 @@ struct InternalsDebugInfo {
 enum FreCompletionWaitMode {
   kDefault,
   kNever,
+  kAlways,
 };
 
 struct ScreenshotTestKeyConfiguration {

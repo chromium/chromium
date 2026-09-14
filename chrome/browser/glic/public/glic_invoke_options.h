@@ -231,10 +231,12 @@ struct TabSharingOptions {
 
 // Specifies how to wait for the First Run Experience (FRE) to complete.
 enum class FreCompletionWaitMode {
-  // Whether or not we wait depends on the FRE override.
+  // Whether or not we wait depends on the FRE override and context.
   kDefault,
   // We do not wait for the FRE to complete, regardless of the FRE override.
   kNever,
+  // Always wait for the FRE to complete before proceeding.
+  kAlways,
 };
 
 // Configuration options for invoking Glic.
