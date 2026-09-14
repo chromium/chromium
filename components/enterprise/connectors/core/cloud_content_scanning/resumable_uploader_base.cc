@@ -204,6 +204,106 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
 
 ResumableUploadRequestBase::~ResumableUploadRequestBase() = default;
 
+// static
+std::unique_ptr<ConnectorUploadRequest>
+ResumableUploadRequestBase::CreateStringRequest(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    const std::string& data,
+    ConnectorUploadRequest::DataSource data_source,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    VerdictReceivedCallback verdict_received_callback,
+    ContentUploadedCallback content_uploaded_callback,
+    bool force_sync_upload,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
+  if (factory_) {
+    return factory_->CreateStringRequest(
+        url_loader_factory, base_url, metadata, data, data_source,
+        histogram_suffix, traffic_annotation,
+        std::move(verdict_received_callback)
+            .Then(std::move(content_uploaded_callback)));
+  }
+  return std::make_unique<ResumableUploadRequestBase>(
+      url_loader_factory, base_url, metadata, data, data_source,
+      histogram_suffix, traffic_annotation,
+      std::move(verdict_received_callback),
+      std::move(content_uploaded_callback), force_sync_upload,
+      std::move(ui_task_runner));
+}
+
+// static
+std::unique_ptr<ConnectorUploadRequest>
+ResumableUploadRequestBase::CreateFileRequest(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    ScanRequestUploadResult get_data_result,
+    const base::FilePath& path,
+    uint64_t file_size,
+    bool is_obfuscated,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    VerdictReceivedCallback verdict_received_callback,
+    ContentUploadedCallback content_uploaded_callback,
+    bool force_sync_upload,
+    OnceRegisterOnGotHashCallback register_on_got_hash_callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
+  if (factory_) {
+    // ConnectorUploadRequestFactory only supports one callback and does not
+    // register a callback for hash computation.
+    // For mock testing, wrap register_on_got_hash_callback, so that three input
+    // parameter callbacks can be chained into one, in the right order.
+    auto register_on_got_hash_closure =
+        register_on_got_hash_callback.is_null()
+            ? base::DoNothing()
+            : base::BindOnce(std::move(register_on_got_hash_callback),
+                             base::DoNothing());
+    return factory_->CreateFileRequest(
+        url_loader_factory, base_url, metadata, get_data_result, path,
+        file_size, is_obfuscated, histogram_suffix, traffic_annotation,
+        std::move(verdict_received_callback)
+            .Then(std::move(register_on_got_hash_closure))
+            .Then(std::move(content_uploaded_callback)));
+  }
+  return std::make_unique<ResumableUploadRequestBase>(
+      url_loader_factory, base_url, metadata, get_data_result, path, file_size,
+      is_obfuscated, histogram_suffix, traffic_annotation,
+      std::move(verdict_received_callback),
+      std::move(content_uploaded_callback), force_sync_upload,
+      std::move(register_on_got_hash_callback), std::move(ui_task_runner));
+}
+
+// static
+std::unique_ptr<ConnectorUploadRequest>
+ResumableUploadRequestBase::CreatePageRequest(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    ScanRequestUploadResult get_data_result,
+    base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    VerdictReceivedCallback verdict_received_callback,
+    ContentUploadedCallback content_uploaded_callback,
+    bool force_sync_upload,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
+  if (factory_) {
+    return factory_->CreatePageRequest(
+        url_loader_factory, base_url, metadata, get_data_result,
+        std::move(page_region), histogram_suffix, traffic_annotation,
+        std::move(verdict_received_callback)
+            .Then(std::move(content_uploaded_callback)));
+  }
+  return std::make_unique<ResumableUploadRequestBase>(
+      url_loader_factory, base_url, metadata, get_data_result,
+      std::move(page_region), histogram_suffix, traffic_annotation,
+      std::move(verdict_received_callback),
+      std::move(content_uploaded_callback), force_sync_upload,
+      std::move(ui_task_runner));
+}
+
 void ResumableUploadRequestBase::OnSendContentCompleted(
     base::TimeTicks start_time,
     std::optional<std::string> response_body) {

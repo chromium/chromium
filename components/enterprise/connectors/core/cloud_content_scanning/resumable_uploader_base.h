@@ -5,11 +5,31 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_BASE_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_BASE_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
+#include "components/file_access/scoped_file_access.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
 
 namespace enterprise_connectors {
 
+// This class encapsulates the upload of a file with metadata using the
+// resumable protocol. This class is neither movable nor copyable.
 class ResumableUploadRequestBase : public ConnectorUploadRequest {
  public:
   using ContentUploadedCallback = base::OnceClosure;
@@ -100,6 +120,48 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   ResumableUploadRequestBase& operator=(ResumableUploadRequestBase&&) = delete;
 
   ~ResumableUploadRequestBase() override;
+
+  static std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      const std::string& data,
+      ConnectorUploadRequest::DataSource data_source,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      VerdictReceivedCallback verdict_received_callback,
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
+  static std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      ScanRequestUploadResult get_data_result,
+      const base::FilePath& file,
+      uint64_t file_size,
+      bool is_obfuscated,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      VerdictReceivedCallback verdict_received_callback,
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload,
+      OnceRegisterOnGotHashCallback register_on_got_hash_callback,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
+  static std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      ScanRequestUploadResult get_data_result,
+      base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      VerdictReceivedCallback verdict_received_callback,
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // Called whenever a content request finishes (on success or failure).
   void OnSendContentCompleted(base::TimeTicks start_time,
