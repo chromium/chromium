@@ -40,10 +40,6 @@ include_rules = [
 
 specific_include_rules = {
   # Production:
-  "kiosk_browser_logs_collector\\.cc": [
-    "+chrome/browser/ui/tabs/tab_strip_model.h",
-    "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
-  ],
   "kiosk_troubleshooting_controller_ash\\.cc": [
     "+ash/accelerators/accelerator_commands.h",
     "+ash/accelerators/accelerator_controller_impl.h",

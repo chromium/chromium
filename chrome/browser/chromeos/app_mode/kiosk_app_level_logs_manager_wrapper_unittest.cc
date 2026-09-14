@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
@@ -64,11 +65,9 @@ class KioskAppLevelLogsManagerWrapperTest
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
+  ash::BrowserControllerImpl browser_controller_;
   TestingProfile profile_;
-
   ash::KioskAppId kiosk_app_id_;
-
   std::unique_ptr<KioskAppLevelLogsManagerWrapper> wrapper_;
 };
 

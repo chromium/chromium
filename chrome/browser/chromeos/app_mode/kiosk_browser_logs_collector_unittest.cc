@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/repeating_test_future.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -86,6 +87,7 @@ class KioskBrowserLogsCollectorTest : public BrowserWithTestWindowTest {
   }
 
  private:
+  ash::BrowserControllerImpl browser_controller_;
   std::vector<std::unique_ptr<BrowserWindowInterface>> browsers_;
   std::unique_ptr<KioskBrowserLogsCollector> logs_collector_;
 };

@@ -5,152 +5,52 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_logs_collector.h"
 
 #include <memory>
-#include <unordered_map>
+#include <utility>
 
-#include "base/functional/bind.h"
-#include "base/syslog_logging.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_contents_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 namespace chromeos {
 
-class KioskBrowserLogsCollector::KioskTabStripModelObserver
-    : public TabStripModelObserver {
- public:
-  KioskTabStripModelObserver(
-      TabStripModel* tab_strip_model,
-      KioskWebContentsObserver::LoggerCallback logger_callback)
-      : logger_callback_(logger_callback) {
-    tab_strip_model_observer_.Observe(tab_strip_model);
-    ObserveWebContentsFromTabStripModel(tab_strip_model);
-  }
-
-  // `TabStripModelObserver` implementation:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override {
-    switch (change.type()) {
-      case TabStripModelChange::kInserted: {
-        const TabStripModelChange::Insert* insert = change.GetInsert();
-        if (insert == nullptr) {
-          return;
-        }
-
-        for (const TabStripModelChange::ContentsWithIndex& content_with_index :
-             insert->contents) {
-          ObserveWebContents(content_with_index.contents);
-        }
-        break;
-      }
-      case TabStripModelChange::kRemoved: {
-        for (const TabStripModelChange::RemovedTab& removed_tab :
-             change.GetRemove()->contents) {
-          StopObservingWebContents(removed_tab.contents);
-        }
-        break;
-      }
-      case TabStripModelChange::kReplaced: {
-        const TabStripModelChange::Replace* replace = change.GetReplace();
-        if (replace == nullptr) {
-          return;
-        }
-
-        StopObservingWebContents(replace->old_contents);
-        ObserveWebContents(replace->new_contents);
-        break;
-      }
-      case TabStripModelChange::kSelectionOnly:
-      case TabStripModelChange::kMoved:
-        // Not need to be handled as the web contents are not updated.
-        break;
-    }
-  }
-
- private:
-  void ObserveWebContentsFromTabStripModel(TabStripModel* tab_strip_model) {
-    for (int i = 0; i < tab_strip_model->count(); ++i) {
-      ObserveWebContents(tab_strip_model->GetWebContentsAt(i));
-    }
-  }
-
-  void ObserveWebContents(content::WebContents* web_contents) {
-    if (!web_contents) {
-      return;
-    }
-    if (web_contents_map_.contains(web_contents)) {
-      return;
-    }
-
-    web_contents_map_.emplace(
-        web_contents, std::make_unique<KioskWebContentsObserver>(
-                          web_contents, base::BindRepeating(logger_callback_)));
-  }
-
-  void StopObservingWebContents(content::WebContents* web_contents) {
-    if (!web_contents) {
-      return;
-    }
-
-    web_contents_map_.erase(web_contents);
-  }
-
-  KioskWebContentsObserver::LoggerCallback logger_callback_;
-  std::unordered_map<content::WebContents*,
-                     std::unique_ptr<KioskWebContentsObserver>>
-      web_contents_map_;
-
-  base::ScopedObservation<TabStripModel, KioskTabStripModelObserver>
-      tab_strip_model_observer_{this};
-};
-
 KioskBrowserLogsCollector::KioskBrowserLogsCollector(
     KioskWebContentsObserver::LoggerCallback logger_callback)
-    : logger_callback_(logger_callback) {
-  browser_collection_observer_.Observe(GlobalBrowserCollection::GetInstance());
-  ObserveAlreadyOpenBrowsers();
+    : logger_callback_(std::move(logger_callback)) {
+  tab_observation_.Observe(ash::BrowserController::GetInstance());
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        for (tabs::TabInterface* tab : browser.GetTabIterator()) {
+          OnTabInserted(&browser, tab->GetContents());
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
 }
 
 KioskBrowserLogsCollector::~KioskBrowserLogsCollector() = default;
 
-void KioskBrowserLogsCollector::OnBrowserCreated(
-    BrowserWindowInterface* browser) {
-  ObserveBrowser(browser);
-}
-
-void KioskBrowserLogsCollector::OnBrowserClosed(
-    BrowserWindowInterface* browser) {
-  if (!browser) {
-    return;
+void KioskBrowserLogsCollector::OnTabInserted(ash::BrowserDelegate* browser,
+                                              content::WebContents* contents) {
+  if (!web_contents_map_.contains(contents)) {
+    web_contents_map_.emplace(
+        contents,
+        std::make_unique<KioskWebContentsObserver>(contents, logger_callback_));
   }
-
-  tab_strip_model_observers_.erase(browser);
 }
 
-void KioskBrowserLogsCollector::ObserveAlreadyOpenBrowsers() {
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        ObserveBrowser(browser);
-        return true;
-      });
+void KioskBrowserLogsCollector::OnTabRemoved(ash::BrowserDelegate* browser,
+                                             content::WebContents* contents,
+                                             bool will_delete) {
+  web_contents_map_.erase(contents);
 }
 
-void KioskBrowserLogsCollector::ObserveBrowser(
-    BrowserWindowInterface* browser) {
-  if (!browser || !browser->GetTabStripModel() ||
-      tab_strip_model_observers_.contains(browser)) {
-    return;
-  }
-
-  tab_strip_model_observers_.emplace(
-      browser,
-      std::make_unique<KioskTabStripModelObserver>(
-          browser->GetTabStripModel(), base::BindRepeating(logger_callback_)));
+void KioskBrowserLogsCollector::OnTabReplaced(
+    ash::BrowserDelegate* browser,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  OnTabRemoved(browser, old_contents, /*will_delete=*/false);
+  OnTabInserted(browser, new_contents);
 }
 
 }  // namespace chromeos

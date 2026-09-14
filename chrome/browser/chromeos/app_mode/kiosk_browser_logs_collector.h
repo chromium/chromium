@@ -6,41 +6,51 @@
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_BROWSER_LOGS_COLLECTOR_H_
 
 #include <memory>
-#include <unordered_map>
 
+#include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_contents_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 
-class BrowserWindowInterface;
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace ash {
+class BrowserDelegate;
+}  // namespace ash
 
 namespace chromeos {
 
 // Collects and observes logs from web content in browser tabs.
-class KioskBrowserLogsCollector : public BrowserCollectionObserver {
+class KioskBrowserLogsCollector : public ash::BrowserController::TabObserver {
  public:
   explicit KioskBrowserLogsCollector(
       KioskWebContentsObserver::LoggerCallback logger_callback);
+  KioskBrowserLogsCollector(const KioskBrowserLogsCollector&) = delete;
+  KioskBrowserLogsCollector& operator=(const KioskBrowserLogsCollector&) =
+      delete;
   ~KioskBrowserLogsCollector() override;
 
-  class KioskTabStripModelObserver;
-
-  // `BrowserCollectionObserver` implementation:
-  void OnBrowserCreated(BrowserWindowInterface* browser) override;
-  void OnBrowserClosed(BrowserWindowInterface* browser) override;
-
  private:
-  void ObserveAlreadyOpenBrowsers();
-  void ObserveBrowser(BrowserWindowInterface* browser);
+  // `ash::BrowserController::TabObserver` implementation:
+  void OnTabInserted(ash::BrowserDelegate* browser,
+                     content::WebContents* contents) override;
+  void OnTabRemoved(ash::BrowserDelegate* browser,
+                    content::WebContents* contents,
+                    bool will_delete) override;
+  void OnTabReplaced(ash::BrowserDelegate* browser,
+                     content::WebContents* old_contents,
+                     content::WebContents* new_contents) override;
 
   KioskWebContentsObserver::LoggerCallback logger_callback_;
-  std::unordered_map<BrowserWindowInterface*,
-                     std::unique_ptr<KioskTabStripModelObserver>>
-      tab_strip_model_observers_;
+  base::flat_map<content::WebContents*,
+                 std::unique_ptr<KioskWebContentsObserver>>
+      web_contents_map_;
 
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observer_{this};
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::TabObserver>
+      tab_observation_{this};
 };
 
 }  // namespace chromeos
