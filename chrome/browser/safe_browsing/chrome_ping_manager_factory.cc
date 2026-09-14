@@ -79,7 +79,7 @@ ChromePingManagerFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<ChromeSafeBrowsingHatsDelegateDesktop>(profile);
 #endif
   return PingManager::Create(
-      GetV4ProtocolConfig(),
+      GetSBProtocolConfig(),
       g_browser_process->safe_browsing_service()->GetURLLoaderFactory(profile),
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),

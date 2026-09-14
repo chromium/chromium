@@ -41,10 +41,10 @@ TestSafeBrowsingService::TestSafeBrowsingService()
 
 TestSafeBrowsingService::~TestSafeBrowsingService() = default;
 
-SBProtocolConfig TestSafeBrowsingService::GetV4ProtocolConfig() const {
+SBProtocolConfig TestSafeBrowsingService::GetSBProtocolConfig() const {
   if (v4_protocol_config_)
     return *v4_protocol_config_;
-  return SafeBrowsingService::GetV4ProtocolConfig();
+  return SafeBrowsingService::GetSBProtocolConfig();
 }
 
 void TestSafeBrowsingService::UseSBLocalDatabaseManager() {

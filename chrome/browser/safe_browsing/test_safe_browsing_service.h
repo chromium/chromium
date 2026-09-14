@@ -53,7 +53,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   TestSafeBrowsingService& operator=(const TestSafeBrowsingService&) = delete;
 
   // SafeBrowsingService overrides
-  SBProtocolConfig GetV4ProtocolConfig() const override;
+  SBProtocolConfig GetSBProtocolConfig() const override;
 
   std::string serialized_download_report();
   void ClearDownloadReport();

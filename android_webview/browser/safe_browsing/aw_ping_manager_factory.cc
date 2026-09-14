@@ -44,7 +44,7 @@ AwPingManagerFactory::BuildServiceInstanceForBrowserContext(
   auto get_should_send_persisted_report =
       base::BindRepeating([]() { return false; });
   return PingManager::Create(
-      safe_browsing::GetV4ProtocolConfig(GetProtocolConfigClientName(),
+      safe_browsing::GetSBProtocolConfig(GetProtocolConfigClientName(),
                                          /*disable_auto_update=*/false),
       GetURLLoaderFactory(), /*token_fetcher=*/nullptr,
       get_should_fetch_access_token,

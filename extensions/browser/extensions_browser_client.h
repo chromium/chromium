@@ -613,8 +613,8 @@ class ExtensionsBrowserClient {
   virtual scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() const;
 
-  // Get the default v4 protocol config struct from the safe browsing service.
-  virtual std::optional<safe_browsing::SBProtocolConfig> GetV4ProtocolConfig()
+  // Get the default SB protocol config struct from the safe browsing service.
+  virtual std::optional<safe_browsing::SBProtocolConfig> GetSBProtocolConfig()
       const;
 
   // Notifies the ExtensionActionRunner that an extension has been granted

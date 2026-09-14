@@ -65,7 +65,7 @@ WebViewV5GetHashProtocolManagerFactory::BuildServiceInstanceFor(
       WebViewBrowserState::FromBrowserState(context);
   return std::make_unique<safe_browsing::V5GetHashProtocolManager>(
       safe_browsing_service->GetURLLoaderFactory(),
-      safe_browsing::GetV4ProtocolConfig(
+      safe_browsing::GetSBProtocolConfig(
           /*client_name=*/std::string(kClientName),
           /*disable_auto_update=*/false),
       WebViewV5SearchHashesCacheFactory::GetForBrowserState(browser_state));

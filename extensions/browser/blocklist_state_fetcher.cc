@@ -42,7 +42,7 @@ void BlocklistStateFetcher::Request(const std::string& id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!safe_browsing_config_) {
     std::optional<safe_browsing::SBProtocolConfig> config =
-        ExtensionsBrowserClient::Get()->GetV4ProtocolConfig();
+        ExtensionsBrowserClient::Get()->GetSBProtocolConfig();
     if (config) {
       SetSafeBrowsingConfig(*config);
     } else {

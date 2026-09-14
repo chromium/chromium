@@ -24,7 +24,7 @@ SBProtocolConfig::SBProtocolConfig(const SBProtocolConfig& other) = default;
 
 SBProtocolConfig::~SBProtocolConfig() = default;
 
-SBProtocolConfig GetV4ProtocolConfig(const std::string& client_name,
+SBProtocolConfig GetSBProtocolConfig(const std::string& client_name,
                                      bool disable_auto_update) {
   return SBProtocolConfig(client_name, disable_auto_update,
                           google_apis::GetAPIKey(),

@@ -506,8 +506,8 @@ void SafeBrowsingServiceImpl::RegisterAllDelayedAnalysis() {
 #endif
 }
 
-SBProtocolConfig SafeBrowsingServiceImpl::GetV4ProtocolConfig() const {
-  return safe_browsing::GetV4ProtocolConfig();
+SBProtocolConfig SafeBrowsingServiceImpl::GetSBProtocolConfig() const {
+  return safe_browsing::GetSBProtocolConfig();
 }
 
 void SafeBrowsingServiceImpl::SetDatabaseManagerForTest(
@@ -521,7 +521,7 @@ void SafeBrowsingServiceImpl::Start() {
   if (!enabled_) {
     enabled_ = true;
     services_delegate_->StartOnUIThread(
-        g_browser_process->shared_url_loader_factory(), GetV4ProtocolConfig());
+        g_browser_process->shared_url_loader_factory(), GetSBProtocolConfig());
   }
 }
 

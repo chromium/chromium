@@ -291,7 +291,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   void CheckManagementPolicy(content::BrowserContext* context) override;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() const override;
-  std::optional<safe_browsing::SBProtocolConfig> GetV4ProtocolConfig()
+  std::optional<safe_browsing::SBProtocolConfig> GetSBProtocolConfig()
       const override;
   void OnActiveTabPermissionGranted(
       const Extension* extension,

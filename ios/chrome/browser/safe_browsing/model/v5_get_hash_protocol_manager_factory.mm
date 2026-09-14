@@ -56,7 +56,7 @@ V5GetHashProtocolManagerFactory::BuildServiceInstanceFor(
   // TODO(crbug.com/362791941): handle v4 references
   return std::make_unique<safe_browsing::V5GetHashProtocolManager>(
       safe_browsing_service->GetURLLoaderFactory(),
-      safe_browsing::GetV4ProtocolConfig(std::string(kClientName),
+      safe_browsing::GetSBProtocolConfig(std::string(kClientName),
                                          /*disable_auto_update=*/false),
       V5SearchHashesCacheFactory::GetForProfile(profile));
 }

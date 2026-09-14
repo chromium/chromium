@@ -410,7 +410,7 @@ void SafeBrowsingServiceImpl::UpdateSafeBrowsingEnabledState() {
   if (enabled_) {
     safe_browsing_db_manager_->StartOnUIThread(
         shared_url_loader_factory_,
-        safe_browsing::GetV4ProtocolConfig(std::string(kClientName),
+        safe_browsing::GetSBProtocolConfig(std::string(kClientName),
                                            /*disable_auto_update=*/false));
   } else {
     safe_browsing_db_manager_->StopOnUIThread(false);

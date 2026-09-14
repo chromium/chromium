@@ -41,9 +41,9 @@ std::string GetProtocolConfigClientName() {
   return client_name;
 }
 
-SBProtocolConfig GetV4ProtocolConfig() {
+SBProtocolConfig GetSBProtocolConfig() {
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  return ::safe_browsing::GetV4ProtocolConfig(
+  return ::safe_browsing::GetSBProtocolConfig(
       GetProtocolConfigClientName(),
       cmdline->HasSwitch(::switches::kDisableBackgroundNetworking));
 }

@@ -32,9 +32,9 @@ struct SBProtocolConfig {
   ~SBProtocolConfig();
 };
 
-// Get the v4 protocol config struct with a given client name, and ability to
+// Get the SB protocol config struct with a given client name, and ability to
 // enable/disable database auto update.
-SBProtocolConfig GetV4ProtocolConfig(const std::string& client_name,
+SBProtocolConfig GetSBProtocolConfig(const std::string& client_name,
                                      bool disable_auto_update);
 
 }  // namespace safe_browsing
