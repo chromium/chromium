@@ -18,7 +18,6 @@
     android:layout_width="0dp"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/side_panel_container_bg"
     android:clipToOutline="true">
 
     <!-- Header -->

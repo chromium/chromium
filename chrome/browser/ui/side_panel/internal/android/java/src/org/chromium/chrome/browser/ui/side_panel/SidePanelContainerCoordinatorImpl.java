@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.side_panel;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
@@ -466,6 +468,15 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
+    public void onUiUpdateStarting(
+            @Px int oldWidth,
+            @Px int newWidth,
+            @HeightType int oldHeightType,
+            @HeightType int newHeightType) {
+        updateContainerBackground(newHeightType);
+    }
+
+    @Override
     public void onUiUpdateCompleted(
             @Px int oldWidth,
             @Px int newWidth,
@@ -574,6 +585,26 @@ final class SidePanelContainerCoordinatorImpl
             heightType = isTabStripShowing ? HeightType.TOOLBAR : HeightType.WEB_CONTENTS;
         }
         return heightType;
+    }
+
+    @VisibleForTesting
+    static @DrawableRes int getContainerBackgroundResId(@HeightType int heightType) {
+        return switch (heightType) {
+            case HeightType.TOOLBAR -> R.drawable.side_panel_container_toolbar_height_bg;
+            case HeightType.WEB_CONTENTS -> R.drawable.side_panel_container_webcontent_height_bg;
+            default ->
+                    // includes HeightType.NOT_APPLICABLE. This is expected to be called even when
+                    // the container will be hidden, so do not throw an exception.
+                    Resources.ID_NULL;
+        };
+    }
+
+    private void updateContainerBackground(@HeightType int heightType) {
+        @DrawableRes int bgResId = getContainerBackgroundResId(heightType);
+        // Expected if the container is hiding. In that case, no-op.
+        if (bgResId == Resources.ID_NULL) return;
+
+        mContainerView.setBackgroundResource(bgResId);
     }
 
     private @Nullable ThinWebView findThinWebView(View view) {

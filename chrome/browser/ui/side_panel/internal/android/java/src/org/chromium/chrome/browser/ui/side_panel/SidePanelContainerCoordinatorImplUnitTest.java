@@ -12,6 +12,8 @@ import static org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordi
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator.WIDE_SIDE_PANEL_WIDTH_DP;
 import static org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP;
 
+import android.content.res.Resources;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -80,5 +82,20 @@ public class SidePanelContainerCoordinatorImplUnitTest {
                 SidePanelContainerCoordinatorImpl.determineHeightType(
                         /* showableWidthDp= */ WIDE_SIDE_PANEL_WIDTH_DP,
                         /* isTabStripShowing= */ false));
+    }
+
+    @Test
+    public void getContainerBackgroundResId_returnsExpectedDrawableForHeightType() {
+        assertEquals(
+                R.drawable.side_panel_container_toolbar_height_bg,
+                SidePanelContainerCoordinatorImpl.getContainerBackgroundResId(HeightType.TOOLBAR));
+        assertEquals(
+                R.drawable.side_panel_container_webcontent_height_bg,
+                SidePanelContainerCoordinatorImpl.getContainerBackgroundResId(
+                        HeightType.WEB_CONTENTS));
+        assertEquals(
+                Resources.ID_NULL,
+                SidePanelContainerCoordinatorImpl.getContainerBackgroundResId(
+                        HeightType.NOT_APPLICABLE));
     }
 }

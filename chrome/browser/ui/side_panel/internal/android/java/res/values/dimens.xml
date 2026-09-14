@@ -8,4 +8,5 @@ found in the LICENSE file.
 <resources>
     <dimen name="side_panel_corner_radius">12dp</dimen>
     <dimen name="side_ui_container_padding">6dp</dimen>
+    <dimen name="side_ui_container_web_content_height_top_padding">0dp</dimen>
 </resources>

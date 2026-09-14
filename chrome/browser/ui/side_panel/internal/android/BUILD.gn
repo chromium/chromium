@@ -46,7 +46,8 @@ source_set("android") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/side_panel_container_bg.xml",
+    "java/res/drawable/side_panel_container_toolbar_height_bg.xml",
+    "java/res/drawable/side_panel_container_webcontent_height_bg.xml",
     "java/res/layout/side_panel_container.xml",
     "java/res/layout/side_panel_dev_feature.xml",
     "java/res/values/dimens.xml",
