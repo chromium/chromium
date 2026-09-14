@@ -183,6 +183,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.screenshot_protection.ScreenshotProtectionController;
 import org.chromium.chrome.browser.selection.SelectionPopupBackPressHandler;
 import org.chromium.chrome.browser.settings.SettingsInTab;
+import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.SettingsTabUtil;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -242,7 +243,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.webapps.AppInstallMenuHandler;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -2993,9 +2993,20 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             .createNewTab(params, TabLaunchType.FROM_CHROME_UI, getActivityTab());
                 }
             } else {
-                SettingsNavigation settingsNavigation =
-                        SettingsNavigationFactory.createSettingsNavigation();
-                settingsNavigation.startSettings(this);
+                // Don't use SettingsNavigation.startSettings() here. On foldables
+                // SettingsInTab.isEnabled() is true even while folded (so that an already-open
+                // settings tab survives folding), and SettingsNavigationImpl re-derives the
+                // tab-vs-activity decision from it, which would reverse the choice made above.
+                // Build the intent directly to force SettingsActivity. See crbug.com/561692651.
+                Intent intent =
+                        SettingsIntentUtil.createIntent(
+                                this,
+                                /* fragmentName= */ null,
+                                /* fragmentArgs= */ null,
+                                /* addToBackStack= */ false,
+                                /* tag= */ null,
+                                /* useSettingsInTab= */ false);
+                IntentUtils.safeStartActivity(this, intent);
             }
             RecordUserAction.record("MobileMenuSettings");
             RecordHistogram.recordEnumeratedHistogram(

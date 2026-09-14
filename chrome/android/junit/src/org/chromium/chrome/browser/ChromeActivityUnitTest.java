@@ -9,7 +9,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -20,6 +22,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.app.PictureInPictureUiState;
 import android.app.assist.AssistContent;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,6 +49,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -70,7 +74,7 @@ import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureControll
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
-import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
@@ -85,7 +89,6 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.EnterpriseInfo;
@@ -111,7 +114,6 @@ public class ChromeActivityUnitTest {
     @Mock Tab mActivityTab;
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabCreator mTabCreator;
-    @Mock SettingsNavigation mSettingsNavigation;
     @Mock ReadAloudController mReadAloudController;
     @Mock ReaderModeManager mReaderModeManager;
     @Mock FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
@@ -510,18 +512,17 @@ public class ChromeActivityUnitTest {
     @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testPreferencesMenuItem_SettingsInTabDisabled() {
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        stubStartActivity(chromeActivity);
 
         doReturn(mTabModel).when(chromeActivity).getCurrentTabModel();
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
-        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
-
         assertTrue(
                 chromeActivity.onMenuOrKeyboardAction(R.id.preferences_id, /* fromMenu= */ true));
 
         // Verify that the standard settings activity was launched.
-        verify(mSettingsNavigation).startSettings(chromeActivity);
+        assertSettingsActivityStarted(chromeActivity);
     }
 
     @Test
@@ -529,19 +530,41 @@ public class ChromeActivityUnitTest {
     public void testPreferencesMenuItem_SettingsInTabFoldable_PhoneMode() {
         DeviceInfo.setIsFoldableForTesting(true);
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        stubStartActivity(chromeActivity);
         doReturn(false).when(chromeActivity).isTablet();
 
         doReturn(mTabModel).when(chromeActivity).getCurrentTabModel();
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
-        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
-
         assertTrue(
                 chromeActivity.onMenuOrKeyboardAction(R.id.preferences_id, /* fromMenu= */ true));
 
-        // Verify that the standard settings activity was launched.
-        verify(mSettingsNavigation).startSettings(chromeActivity);
+        // Verify that the standard settings activity was launched. SettingsInTab.isEnabled() is
+        // true on foldables even in phone mode, so this asserts that the activity-vs-tab decision
+        // made by ChromeActivity is honored. Regression test for crbug.com/561692651.
+        assertSettingsActivityStarted(chromeActivity);
+    }
+
+    /**
+     * Allows {@code chromeActivity} to build and "start" an Intent even though it was constructed
+     * directly and therefore has no base Context.
+     */
+    private void stubStartActivity(TestChromeActivity chromeActivity) {
+        doReturn(ContextUtils.getApplicationContext().getPackageName())
+                .when(chromeActivity)
+                .getPackageName();
+        doNothing().when(chromeActivity).startActivity(any(Intent.class), nullable(Bundle.class));
+    }
+
+    /** Asserts that {@code chromeActivity} started SettingsActivity, not a settings tab. */
+    private void assertSettingsActivityStarted(TestChromeActivity chromeActivity) {
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(chromeActivity).startActivity(intentCaptor.capture(), nullable(Bundle.class));
+        assertNotNull(intentCaptor.getValue().getComponent());
+        assertEquals(
+                SettingsActivity.class.getName(),
+                intentCaptor.getValue().getComponent().getClassName());
     }
 
     @Test
