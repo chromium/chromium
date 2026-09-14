@@ -64,6 +64,7 @@ import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.StartupController;
+import org.chromium.android_webview.StartupTasks;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
@@ -77,6 +78,7 @@ import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.safe_mode.BrowserSafeModeActionList;
+import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.BaseFeatures;
@@ -637,7 +639,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                                                 .WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT_THREAD_POOL)) {
                     PostTask.postTask(
                             TaskTraits.USER_VISIBLE,
-                            startupController::runNonUiThreadCapableStartupTasks);
+                            () -> StartupTasks.runNonUiThreadCapableStartupTasks(mStartupDelegate));
                 }
 
                 boolean enableSystemTracing =
@@ -722,14 +724,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             // This must happen after pref value has been read and SafeMode setup has completed.
             setupStartupTasksRunMode(androidXConfig);
 
-            AwBrowserProcess.startVariationsInit();
+            VariationsSeedLoader.startInit();
 
             if (WebViewCachedFlags.get()
                             .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)
                     && !WebViewCachedFlags.get()
                             .isCachedFeatureEnabled(
                                     AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT_THREAD_POOL)) {
-                startupController.runNonUiThreadCapableStartupTasks();
+                StartupTasks.runNonUiThreadCapableStartupTasks(mStartupDelegate);
             }
 
             FlagOverrideHelper helper =

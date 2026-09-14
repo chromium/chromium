@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.ContextUtils;
@@ -82,6 +83,18 @@ public class AwSupervisedUserUrlClassifier {
                                 });
                     }
                 });
+    }
+
+    /** Sets up supervised user filtering if supervision is active. */
+    public static void checkRestrictedContentBlocking() {
+        try (DualTraceEvent ignored =
+                DualTraceEvent.scoped(
+                        "AwSupervisedUserUrlClassifier.checkRestrictedContentBlocking")) {
+            AwSupervisedUserUrlClassifier classifier = getInstance();
+            if (classifier != null && AwSupervisedUserSafeModeAction.isSupervisionEnabled()) {
+                classifier.checkIfNeedRestrictedContentBlocking();
+            }
+        }
     }
 
     @CalledByNative

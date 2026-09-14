@@ -97,8 +97,8 @@ public final class StartupTasksRunner {
 
     /** Delegate interface for communicating back with the startup coordinator. */
     public interface Delegate {
-        /** Called when all tasks are complete to record metrics and notify listeners. */
-        void onStartupComplete(StartupTimings timings);
+        /** Called when all tasks are complete to provide startup timing information. */
+        void onStartupTimingsReady(StartupTimings timings);
 
         /** Called when a startup task throws a runtime exception. */
         void onStartupFailed(RuntimeException e);
@@ -308,7 +308,7 @@ public final class StartupTasksRunner {
 
     private void onStartupComplete() {
         assert ThreadUtils.runningOnUiThread();
-        mDelegate.onStartupComplete(new StartupTimings(this));
+        mDelegate.onStartupTimingsReady(new StartupTimings(this));
     }
 
     // To determine the startup mode, we track:

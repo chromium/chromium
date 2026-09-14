@@ -1,0 +1,271 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.android_webview;
+
+import android.content.Context;
+import android.os.Build;
+
+import org.chromium.android_webview.accessibility.AwAccessibilityStateVisibilityManager;
+import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.android_webview.common.PlatformServiceBridge;
+import org.chromium.android_webview.common.WebViewCachedFlags;
+import org.chromium.android_webview.gfx.AwDrawFnImpl;
+import org.chromium.android_webview.metrics.AwMetricsLogUploader;
+import org.chromium.android_webview.metrics.TrackExitReasons;
+import org.chromium.android_webview.policy.AwPolicyProvider;
+import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
+import org.chromium.android_webview.supervised_user.AwSupervisedUserUrlClassifier;
+import org.chromium.android_webview.variations.VariationsSeedLoader;
+import org.chromium.base.ApkInfo;
+import org.chromium.base.CommandLine;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.PowerMonitor;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.policy.CombinedPolicyProvider;
+import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.ChildProcessCreationParams;
+import org.chromium.content_public.browser.ChildProcessLauncherHelper;
+import org.chromium.ui.base.ResourceBundle;
+import org.chromium.ui.display.DisplayAndroidManager;
+
+import java.util.concurrent.CountDownLatch;
+
+/**
+ * Utility class containing stateless top-level scheduling-unit tasks executed during Chromium
+ * initialization in WebView.
+ *
+ * <p>Each method corresponds to a distinct phase or scheduling unit coordinated by {@link
+ * StartupController} and executed by {@link StartupTasksRunner}.
+ */
+@NullMarked
+public final class StartupTasks {
+
+    // TODO(crbug.com/444217485): StartupTasks is intended to be stateless. Remove this latch once
+    // the WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT experiment is concluded.
+    private static final CountDownLatch sNonUiThreadCapableStartupTasksLatch =
+            new CountDownLatch(1);
+
+    /**
+     * Prepares the Java environment and prerequisites on the UI thread before native browser
+     * process initialization begins.
+     */
+    public static void preBrowserProcessStartStepOne(StartupController.Delegate delegate) {
+        if (WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
+            PostTask.postTask(
+                    TaskTraits.USER_VISIBLE,
+                    () -> {
+                        PlatformServiceBridge.getInstance();
+                    });
+        }
+        // Disable java-side PostTask scheduling. The native-side task runners
+        // are also disabled in the native code. The unscheduled prenative tasks
+        // are migrated to the native task runner. The native task runner is
+        // enabled when we are done with startup.
+        PostTask.disablePreNativeUiTasks(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            TrackExitReasons.startTrackingStartup();
+        }
+
+        if (WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
+            waitForNonUiThreadCapableStartupTasks();
+        } else {
+            runNonUiThreadCapableStartupTasks(delegate);
+        }
+        delegate.waitForJavaResourcesSetup();
+        // NOTE: Finished writing Java resources. From this point on, it's safe
+        // to use them.
+
+        ChildProcessCreationParams.set(
+                AwBrowserProcess.getWebViewPackageName(),
+                AwBrowserProcess.getWebViewPackageName(),
+                /* isExternalSandboxedService= */ true,
+                LibraryProcessType.PROCESS_WEBVIEW_CHILD,
+                /* bindToCallerCheck= */ true,
+                /* ignoreVisibilityForImportance= */ true,
+                delegate.shouldForceNativeSandboxedServices());
+        ChildProcessLauncherHelper.initialize();
+
+        // finishInit() must precede native initialization so
+        // the seed is available when AwFeatureListCreator::SetUpFieldTrials()
+        // runs.
+        VariationsSeedLoader.finishInit();
+    }
+
+    /**
+     * Start the process of initializing the process, up to the point of starting the browser
+     * process.
+     */
+    public static void preBrowserProcessStartStepTwo() {
+        ThreadUtils.assertOnUiThread();
+        try (DualTraceEvent e1 =
+                DualTraceEvent.scoped("StartupTasks.preBrowserProcessStartStepTwo")) {
+            final Context appContext = ContextUtils.getApplicationContext();
+            AwBrowserProcess.setProcessNameCrashKey(ContextUtils.getProcessName());
+            AwDataDirLock.lock(appContext);
+
+            if (isMultiProcess()) {
+                PostTask.postTask(
+                        TaskTraits.BEST_EFFORT,
+                        () -> {
+                            ChildProcessLauncherHelper.warmUpOnAnyThread(appContext);
+                        });
+            }
+            DisplayAndroidManager.disableHdrSdrRatioCallback();
+            // The policies are used by browser startup, so we need to register the
+            // policy providers before starting the browser process. This only registers
+            // java objects and doesn't need the native library.
+            CombinedPolicyProvider.get().registerProvider(new AwPolicyProvider(appContext));
+
+            // Check android settings but only when safebrowsing is enabled.
+            try (DualTraceEvent e2 =
+                    DualTraceEvent.scoped("StartupTasks.maybeEnableSafeBrowsingFromManifest")) {
+                AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest();
+            }
+        }
+    }
+
+    /**
+     * Runs immediate post-browser process startup tasks on the UI thread right after native browser
+     * process startup completes.
+     */
+    public static void postBrowserProcessStartStepOne() {
+        ThreadUtils.assertOnUiThread();
+        try (DualTraceEvent e1 =
+                DualTraceEvent.scoped("StartupTasks.postBrowserProcessStartStepOne")) {
+            finishBrowserProcessStart();
+
+            // TODO(crbug.com/332706093): See if this can be moved before loading native.
+            if (!WebViewCachedFlags.get()
+                    .isCachedFeatureEnabled(AwFeatures.WEBVIEW_BACKGROUND_CLASS_PRELOADING)) {
+                AwClassPreloader.preloadClasses();
+            }
+
+            AwBrowserProcess.doNetworkInitializations(ContextUtils.getApplicationContext());
+        }
+    }
+
+    /**
+     * Runs the final UI-thread initialization steps before transitioning WebView startup state to
+     * finished.
+     */
+    public static void postBrowserProcessStartStepTwo(StartupController.Delegate delegate) {
+        ThreadUtils.assertOnUiThread();
+
+        AwMetricsLogUploader.initializeUploader();
+
+        int targetSdkVersion =
+                ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
+        RecordHistogram.recordSparseHistogram("Android.WebView.TargetSdkVersion", targetSdkVersion);
+
+        if (ApkInfo.isDebugAndroidOrApp()) {
+            AwDevToolsServer.setRemoteDebuggingEnabled(true);
+        }
+
+        if (CompatQuirks.isEnabled(CompatQuirks.Quirk.LEGACY_DARK_MODE)) {
+            AwDarkMode.enableLegacyDarkMode();
+        }
+
+        AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromGms();
+        AwSupervisedUserUrlClassifier.checkRestrictedContentBlocking();
+        AwMinidumpUploader.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
+        AwAccessibilityStateVisibilityManager.initializeOnStartup();
+        AwTracingController.getInstance();
+
+        AwBrowserProcess.postBackgroundTasks();
+
+        AwContentsStatics.setSelectionActionMenuClient(delegate.getSelectionActionMenuClient());
+
+        AwCrashyClassUtils.maybeCrashIfEnabled();
+    }
+
+    /**
+     * Runs startup tasks that do not require the UI thread and can run in parallel on a background
+     * thread.
+     */
+    public static void runNonUiThreadCapableStartupTasks(StartupController.Delegate delegate) {
+        try {
+            ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
+
+            try (DualTraceEvent ignored =
+                    DualTraceEvent.scoped("LibraryLoader.ensureInitialized")) {
+                LibraryLoader.getInstance().ensureInitialized();
+            }
+
+            try (DualTraceEvent e =
+                    DualTraceEvent.scoped("StartupTasks.configureDrawingFunctions")) {
+                AwDrawFnImpl.setDrawFnFunctionTable(delegate.getDrawFnFunctionTable());
+                AwContents.setAwDrawSWFunctionTable(delegate.getDrawSWFunctionTable());
+            }
+
+            AwContentsStatics.setCheckClearTextPermitted(
+                    ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
+                            >= Build.VERSION_CODES.O);
+        } finally {
+            sNonUiThreadCapableStartupTasksLatch.countDown();
+        }
+    }
+
+    // TODO(crbug.com/544990736): This is only a separate package-private method because it is used
+    // by AwBrowserProcess.startForTesting(). Inline this into postBrowserProcessStartStepOne once
+    // test startup is migrated.
+    /* package */ static void finishBrowserProcessStart() {
+        ThreadUtils.assertOnUiThread();
+        try (DualTraceEvent e1 = DualTraceEvent.scoped("StartupTasks.finishBrowserProcessStart")) {
+            if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
+                BrowserStartupController.getInstance()
+                        .startBrowserProcessesSync(
+                                LibraryProcessType.PROCESS_WEBVIEW,
+                                !isMultiProcess(),
+                                /* startGpuProcess= */ false);
+            }
+            try (DualTraceEvent ignored =
+                    DualTraceEvent.scoped(
+                            "StartupTasks.finishBrowserProcessStart.createPowerMonitor")) {
+                PowerMonitor.create();
+            }
+            try (DualTraceEvent ignored =
+                    DualTraceEvent.scoped(
+                            "StartupTasks.finishBrowserProcessStart.setSafeBrowsingHandler")) {
+                PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                AwContentsLifecycleNotifier.initialize();
+            }
+
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT,
+                    () -> {
+                        RecordHistogram.recordSparseHistogram(
+                                "Android.PlayServices.Version",
+                                PlatformServiceBridge.getInstance().getGmsVersionCode());
+                    });
+        }
+    }
+
+    private static void waitForNonUiThreadCapableStartupTasks() {
+        try (DualTraceEvent e2 =
+                DualTraceEvent.scoped("StartupTasks.waitForNonUiThreadCapableStartupTasks")) {
+            sNonUiThreadCapableStartupTasksLatch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static boolean isMultiProcess() {
+        return CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
+    }
+
+    private StartupTasks() {}
+}

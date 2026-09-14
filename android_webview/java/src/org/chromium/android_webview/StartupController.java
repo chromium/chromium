@@ -4,30 +4,23 @@
 
 package org.chromium.android_webview;
 
-import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.annotation.GuardedBy;
 
-import org.chromium.android_webview.common.AwFeatures;
-import org.chromium.android_webview.common.PlatformServiceBridge;
-import org.chromium.android_webview.common.WebViewCachedFlags;
-import org.chromium.android_webview.gfx.AwDrawFnImpl;
-import org.chromium.android_webview.metrics.TrackExitReasons;
-import org.chromium.base.ApkInfo;
-import org.chromium.base.ContextUtils;
+import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.SelectionActionMenuClientWrapper;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
-import org.chromium.ui.base.ResourceBundle;
 
 import java.util.ArrayDeque;
 import java.util.concurrent.CountDownLatch;
@@ -72,7 +65,6 @@ public class StartupController {
 
     private final Delegate mDelegate;
 
-    private final CountDownLatch mNonUiThreadCapableStartupTasksLatch = new CountDownLatch(1);
     private final CountDownLatch mStartupFinished = new CountDownLatch(1);
     private final AtomicInteger mInitState = new AtomicInteger(INIT_NOT_STARTED);
 
@@ -123,44 +115,6 @@ public class StartupController {
         mStartupDiagnostics.setProviderInitOnMainLooperLocation(t);
     }
 
-    /**
-     * Runs startup tasks that do not require the UI thread.
-     *
-     * <p>These tasks can either run early during provider initialization (when {@code
-     * WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT} is enabled) or later on the UI thread during {@link
-     * #preBrowserProcessStartStepOne()}.
-     */
-    public void runNonUiThreadCapableStartupTasks() {
-        assert mDelegate != null;
-        try {
-            ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
-
-            try (DualTraceEvent ignored2 =
-                    DualTraceEvent.scoped("LibraryLoader.ensureInitialized")) {
-                LibraryLoader.getInstance().ensureInitialized();
-            }
-
-            configureDrawingFunctions();
-            AwContentsStatics.setCheckClearTextPermitted(
-                    ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
-                            >= Build.VERSION_CODES.O);
-        } finally {
-            mNonUiThreadCapableStartupTasksLatch.countDown();
-        }
-    }
-
-    /**
-     * Sets up the native function tables for hardware-accelerated ({@link AwDrawFnImpl}) and
-     * software ({@link AwContents}) drawing.
-     */
-    private void configureDrawingFunctions() {
-        try (DualTraceEvent e =
-                DualTraceEvent.scoped("StartupController.configureDrawingFunctions")) {
-            AwDrawFnImpl.setDrawFnFunctionTable(mDelegate.getDrawFnFunctionTable());
-            AwContents.setAwDrawSWFunctionTable(mDelegate.getDrawSWFunctionTable());
-        }
-    }
-
     /** Returns the post-startup task queue. */
     public WebViewChromiumRunQueue getRunQueue() {
         return mRunQueue;
@@ -174,6 +128,7 @@ public class StartupController {
         mStartupCallbackQueue.addTask(() -> callback.onSuccess(getStartupDiagnostics()));
         postChromiumStartupIfNeeded(StartupCallSite.ASYNC_WEBVIEW_STARTUP);
     }
+
     public void maybeSetChromiumUiThread(Looper looper) {
         synchronized (mThreadSettingLock) {
             if (mThreadIsSet) {
@@ -332,16 +287,21 @@ public class StartupController {
         ArrayDeque<Runnable> preBrowserProcessStartTasks = new ArrayDeque<>();
         ArrayDeque<Runnable> postBrowserProcessStartTasks = new ArrayDeque<>();
 
-        preBrowserProcessStartTasks.addLast(this::preBrowserProcessStartStepOne);
-        preBrowserProcessStartTasks.addLast(AwBrowserProcess::runPreBrowserProcessStart);
-        postBrowserProcessStartTasks.addLast(this::postBrowserProcessStartStepOne);
-        postBrowserProcessStartTasks.addLast(this::postBrowserProcessStartStepTwo);
+        preBrowserProcessStartTasks.addLast(
+                () -> StartupTasks.preBrowserProcessStartStepOne(mDelegate));
+        preBrowserProcessStartTasks.addLast(StartupTasks::preBrowserProcessStartStepTwo);
+        postBrowserProcessStartTasks.addLast(StartupTasks::postBrowserProcessStartStepOne);
+        postBrowserProcessStartTasks.addLast(
+                () -> {
+                    StartupTasks.postBrowserProcessStartStepTwo(mDelegate);
+                    finishStartup();
+                });
 
         mStartupTasksRunner =
                 new StartupTasksRunner(
                         new StartupTasksRunner.Delegate() {
                             @Override
-                            public void onStartupComplete(
+                            public void onStartupTimingsReady(
                                     StartupTasksRunner.StartupTimings timings) {
                                 mStartupDiagnostics.setStartupTimings(timings);
                                 mStartupCallbackQueue.notifyChromiumStarted();
@@ -365,7 +325,22 @@ public class StartupController {
 
                             @Override
                             public void doAsyncBrowserStartup(StartupCallback callback) {
-                                AwBrowserProcess.triggerAsyncBrowserProcess(callback);
+                                ThreadUtils.assertOnUiThread();
+                                try (DualTraceEvent e2 =
+                                        DualTraceEvent.scoped(
+                                                "StartupController.doAsyncBrowserStartup")) {
+                                    boolean singleProcess =
+                                            !CommandLine.getInstance()
+                                                    .hasSwitch(
+                                                            AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
+                                    BrowserStartupController.getInstance()
+                                            .startBrowserProcessesAsync(
+                                                    LibraryProcessType.PROCESS_WEBVIEW,
+                                                    /* startGpuProcess= */ false,
+                                                    /* startMinimalBrowser= */ false,
+                                                    singleProcess,
+                                                    callback);
+                                }
                             }
                         },
                         preBrowserProcessStartTasks,
@@ -374,108 +349,9 @@ public class StartupController {
         return mStartupTasksRunner;
     }
 
-    /**
-     * Prepares the Java environment and prerequisites on the UI thread before native browser
-     * process initialization begins.
-     */
-    private void preBrowserProcessStartStepOne() {
-        if (WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
-            PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
-                    () -> {
-                        PlatformServiceBridge.getInstance();
-                    });
-        }
-        // Disable java-side PostTask scheduling. The native-side task runners
-        // are also disabled in the native code. The unscheduled prenative tasks
-        // are migrated to the native task runner. The native task runner is
-        // enabled when we are done with startup.
-        PostTask.disablePreNativeUiTasks(true);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            TrackExitReasons.startTrackingStartup();
-        }
-
-        if (WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
-            waitForNonUiThreadCapableStartupTasks();
-        } else {
-            runNonUiThreadCapableStartupTasks();
-        }
-        mDelegate.waitForJavaResourcesSetup();
-        // NOTE: Finished writing Java resources. From this point on, it's safe
-        // to use them.
-
-        AwBrowserProcess.configureChildProcessLauncher(
-                mDelegate.shouldForceNativeSandboxedServices());
-
-        // finishVariationsInit() must precede native initialization so
-        // the seed is available when AwFeatureListCreator::SetUpFieldTrials()
-        // runs.
-        AwBrowserProcess.finishVariationsInit();
-    }
-
-    /**
-     * Blocks until {@link #runNonUiThreadCapableStartupTasks()} has completed on its background
-     * thread.
-     */
-    private void waitForNonUiThreadCapableStartupTasks() {
-        try (DualTraceEvent e2 =
-                DualTraceEvent.scoped("StartupController.waitForNonUiThreadCapableStartupTasks")) {
-            mNonUiThreadCapableStartupTasksLatch.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Runs immediate post-browser process startup tasks on the UI thread right after native browser
-     * process startup completes.
-     */
-    private void postBrowserProcessStartStepOne() {
-        AwBrowserProcess.finishBrowserProcessStart();
-        // TODO(crbug.com/332706093): See if this can be moved before loading native.
-        if (!WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_BACKGROUND_CLASS_PRELOADING)) {
-            AwClassPreloader.preloadClasses();
-        }
-
-        AwBrowserProcess.doNetworkInitializations(ContextUtils.getApplicationContext());
-    }
-
-    /**
-     * Runs the final UI-thread initialization steps and transitions WebView startup state to
-     * finished.
-     */
-    private void postBrowserProcessStartStepTwo() {
+    /** Transitions WebView startup state to finished and drains post-startup queues. */
+    private void finishStartup() {
         ThreadUtils.assertOnUiThread();
-
-        AwBrowserProcess.initializeMetricsLogUploader();
-
-        int targetSdkVersion =
-                ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
-        RecordHistogram.recordSparseHistogram("Android.WebView.TargetSdkVersion", targetSdkVersion);
-
-        if (ApkInfo.isDebugAndroidOrApp()) {
-            AwDevToolsServer.setRemoteDebuggingEnabled(true);
-        }
-
-        if (CompatQuirks.isEnabled(CompatQuirks.Quirk.LEGACY_DARK_MODE)) {
-            AwDarkMode.enableLegacyDarkMode();
-        }
-
-        AwBrowserProcess.maybeEnableSafeBrowsingFromGms();
-        AwBrowserProcess.setupSupervisedUser();
-        AwMinidumpUploader.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
-        AwBrowserProcess.startObservingOsAccessibilitySettingChanges();
-        AwTracingController.getInstance();
-
-        AwBrowserProcess.postBackgroundTasks();
-
-        AwContentsStatics.setSelectionActionMenuClient(mDelegate.getSelectionActionMenuClient());
-
-        AwCrashyClassUtils.maybeCrashIfEnabled();
 
         mInitState.set(INIT_FINISHED);
         mStartupFinished.countDown();

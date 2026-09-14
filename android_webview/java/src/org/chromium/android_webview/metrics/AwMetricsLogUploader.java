@@ -14,7 +14,11 @@ import android.os.RemoteException;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.AwBrowserProcess;
+import org.chromium.android_webview.DualTraceEvent;
+import org.chromium.android_webview.common.AwFeatureMap;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.services.IMetricsUploadService;
 import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
@@ -39,6 +43,41 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     private static final String TAG = "AwMetricsLogUploader";
     private static final long SERVICE_CONNECTION_TIMEOUT_MS = 10_000;
+
+    /** Initializes the metrics log uploader service consumer. */
+    public static void initializeUploader() {
+        try (DualTraceEvent e = DualTraceEvent.scoped("AwMetricsLogUploader.initializeUploader")) {
+            boolean metricServiceEnabledOnlySdkRuntime =
+                    ContextUtils.isSdkSandboxProcess()
+                            && AwFeatureMap.isEnabled(
+                                    AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME);
+
+            boolean useCppFiltering =
+                    AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CPP_METRICS_FILTERING);
+
+            if (metricServiceEnabledOnlySdkRuntime) {
+                AwMetricsLogUploader uploader = new AwMetricsLogUploader();
+                // Open a connection during startup while connecting to other services such as
+                // VariationSeedServer to try to avoid spinning the nonembedded ":webview_service"
+                // twice.
+                uploader.initialize();
+                AndroidMetricsLogConsumer consumer =
+                        useCppFiltering ? uploader : new MetricsFilteringDecorator(uploader);
+                AndroidMetricsLogUploader.setConsumer(consumer);
+            } else {
+                AndroidMetricsLogConsumer directUploader =
+                        data -> {
+                            PlatformServiceBridge.getInstance().logMetrics(data);
+                            return HttpURLConnection.HTTP_OK;
+                        };
+                AndroidMetricsLogConsumer consumer =
+                        useCppFiltering
+                                ? directUploader
+                                : new MetricsFilteringDecorator(directUploader);
+                AndroidMetricsLogUploader.setConsumer(consumer);
+            }
+        }
+    }
 
     private final AtomicReference<@Nullable MetricsLogUploaderServiceConnection>
             mInitialConnection = new AtomicReference<>();

@@ -9,13 +9,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.os.storage.StorageManager;
 
-import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -29,30 +27,17 @@ import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.common.services.IMetricsBridgeService;
 import org.chromium.android_webview.common.services.ServiceConnectionDelayRecorder;
 import org.chromium.android_webview.common.services.ServiceNames;
-import org.chromium.android_webview.metrics.AndroidMetricsLogConsumer;
-import org.chromium.android_webview.metrics.AndroidMetricsLogUploader;
-import org.chromium.android_webview.metrics.AwMetricsLogUploader;
 import org.chromium.android_webview.metrics.AwNonembeddedUmaReplayer;
-import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
-import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
-import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
-import org.chromium.android_webview.supervised_user.AwSupervisedUserSafeModeAction;
-import org.chromium.android_webview.supervised_user.AwSupervisedUserUrlClassifier;
-import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
-import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FieldTrialList;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
-import org.chromium.base.PowerMonitor;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryPrefetcher;
@@ -61,16 +46,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.policy.CombinedPolicyProvider;
-import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
-import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.display.DisplayAndroidManager;
 
-import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -89,41 +67,6 @@ public final class AwBrowserProcess {
     private static String sWebViewPackageName;
     private static @Nullable String sProcessDataDirSuffix;
     private static boolean sDataDirBasePathOverridden;
-
-    private static final Object sSeedLoaderLock = new Object();
-
-    @GuardedBy("sSeedLoaderLock")
-    private static @Nullable VariationsSeedLoader sSeedLoader;
-
-    // See comments in VariationsSeedLoader.java on when it's safe to call this.
-    public static void startVariationsInit() {
-        if (FastVariationsSeedSafeModeAction.hasRun()) {
-            return;
-        }
-        synchronized (sSeedLoaderLock) {
-            if (sSeedLoader == null) {
-                sSeedLoader = new VariationsSeedLoader();
-                sSeedLoader.startVariationsInit();
-            }
-        }
-    }
-
-    public static void finishVariationsInit() {
-        if (FastVariationsSeedSafeModeAction.hasRun()) {
-            return;
-        }
-        try (DualTraceEvent e =
-                DualTraceEvent.scoped("AwBrowserProcess.finishVariationsInit")) {
-            synchronized (sSeedLoaderLock) {
-                if (sSeedLoader == null) {
-                    Log.e(TAG, "finishVariationsInit() called before startVariationsInit()");
-                    startVariationsInit();
-                }
-                sSeedLoader.finishVariationsInit();
-                sSeedLoader = null; // Allow this to be GC'd after its background thread finishes.
-            }
-        }
-    }
 
     /**
      * Loads the native library, and performs basic static construction of objects needed to run
@@ -183,26 +126,6 @@ public final class AwBrowserProcess {
     }
 
     /**
-     * Configures child process launcher. This is required only if child services are used in
-     * WebView.
-     */
-    public static void configureChildProcessLauncher(boolean forceNativeSandboxedServices) {
-        final boolean isExternalService = true;
-        final boolean bindToCaller = true;
-        final boolean ignoreVisibilityForImportance = true;
-        ChildProcessCreationParams.set(
-                getWebViewPackageName(),
-                getWebViewPackageName(),
-                isExternalService,
-                LibraryProcessType.PROCESS_WEBVIEW_CHILD,
-                bindToCaller,
-                ignoreVisibilityForImportance,
-                forceNativeSandboxedServices);
-
-        ChildProcessLauncherHelper.initialize();
-    }
-
-    /**
      * Configures child process launcher for tests. This is required for multiprocess mode to ensure
      * the process type of the child process is WebView, but many of the other fields from
      * configureChildProcessLauncher do not work in testing, so tests need a customized version of
@@ -224,131 +147,14 @@ public final class AwBrowserProcess {
     }
 
     /**
-     * Asynchronously triggers the chromium browser process initialization. Creates threads and
-     * performs other per-app resource allocations; must not be called from zygote.
-     *
-     * <p>Note: it is up to the caller to ensure this is only called once.
-     *
-     * @param callback This is triggered when the async startup completes.
-     */
-    public static void triggerAsyncBrowserProcess(StartupCallback callback) {
-        ThreadUtils.assertOnUiThread();
-        try (DualTraceEvent e2 =
-                DualTraceEvent.scoped("AwBrowserProcess.startBrowserProcessAsync")) {
-            BrowserStartupController.getInstance()
-                    .startBrowserProcessesAsync(
-                            LibraryProcessType.PROCESS_WEBVIEW,
-                            /* startGpuProcess= */ false,
-                            /* startMinimalBrowser= */ false,
-                            /* singleProcess= */ !isMultiProcess(),
-                            callback);
-        }
-    }
-
-    /**
-     * Finishes the chromium browser process initialization. Starts the browser process
-     * synchronously if not already started.
-     *
-     * <p>Note: it is up to the caller to ensure this is only called once.
-     */
-    public static void finishBrowserProcessStart() {
-        ThreadUtils.assertOnUiThread();
-        try (DualTraceEvent e1 =
-                DualTraceEvent.scoped("AwBrowserProcess.finishBrowserProcessStart")) {
-            if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
-                BrowserStartupController.getInstance()
-                        .startBrowserProcessesSync(
-                                LibraryProcessType.PROCESS_WEBVIEW,
-                                !isMultiProcess(),
-                                /* startGpuProcess= */ false);
-            }
-            try (DualTraceEvent ignored =
-                    DualTraceEvent.scoped(
-                            "AwBrowserProcess.finishBrowserProcessStart.createPowerMonitor")) {
-                PowerMonitor.create();
-            }
-            try (DualTraceEvent ignored =
-                    DualTraceEvent.scoped(
-                            "AwBrowserProcess.finishBrowserProcessStart.setSafeBrowsingHandler")) {
-                PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                AwContentsLifecycleNotifier.initialize();
-            }
-
-            PostTask.postTask(
-                    TaskTraits.BEST_EFFORT,
-                    () -> {
-                        RecordHistogram.recordSparseHistogram(
-                                "Android.PlayServices.Version",
-                                PlatformServiceBridge.getInstance().getGmsVersionCode());
-                    });
-        }
-    }
-
-    /**
-     * Runs parts of browser process start that precede starting the browser process via the
-     * BrowserStartupController.
-     */
-    public static void runPreBrowserProcessStart() {
-        ThreadUtils.assertOnUiThread();
-        try (DualTraceEvent e1 =
-                DualTraceEvent.scoped("AwBrowserProcess.runPreBrowserProcessStart")) {
-            final Context appContext = ContextUtils.getApplicationContext();
-            AwBrowserProcessJni.get().setProcessNameCrashKey(ContextUtils.getProcessName());
-            AwDataDirLock.lock(appContext);
-
-            if (isMultiProcess()) {
-                PostTask.postTask(
-                        TaskTraits.BEST_EFFORT,
-                        () -> {
-                            ChildProcessLauncherHelper.warmUpOnAnyThread(appContext);
-                        });
-            }
-            configureDisplayAndroidManager();
-            // The policies are used by browser startup, so we need to register the
-            // policy providers before starting the browser process. This only registers
-            // java objects and doesn't need the native library.
-            CombinedPolicyProvider.get().registerProvider(new AwPolicyProvider(appContext));
-
-            // Check android settings but only when safebrowsing is enabled.
-            try (DualTraceEvent e2 =
-                    DualTraceEvent.scoped("AwBrowserProcess.maybeEnableSafeBrowsingFromManifest")) {
-                AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest();
-            }
-        }
-    }
-
-    public static void setupSupervisedUser() {
-        try (DualTraceEvent ignored =
-                DualTraceEvent.scoped("AwBrowserProcess.setupSupervisedUser")) {
-            AwSupervisedUserUrlClassifier classifier = AwSupervisedUserUrlClassifier.getInstance();
-            if (classifier != null && AwSupervisedUserSafeModeAction.isSupervisionEnabled()) {
-                classifier.checkIfNeedRestrictedContentBlocking();
-            }
-        }
-    }
-
-    public static void maybeEnableSafeBrowsingFromGms() {
-        try (DualTraceEvent e2 =
-                DualTraceEvent.scoped("AwBrowserProcess.maybeEnableSafeBrowsingFromGms")) {
-            AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromGms();
-        }
-    }
-
-    private static boolean isMultiProcess() {
-        return CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
-    }
-
-    /**
      * onStartupComplete performs the final steps of Chromium startup, e.g enabling the task
      * runners. It's called when WebViewChromiumAwInit startup tasks are done. Tests that start the
      * browser process directly should use this.
      */
     public static void startForTesting() {
-        runPreBrowserProcessStart();
-        finishBrowserProcessStart();
-        startObservingOsAccessibilitySettingChanges();
+        StartupTasks.preBrowserProcessStartStepTwo();
+        StartupTasks.finishBrowserProcessStart();
+        AwAccessibilityStateVisibilityManager.initializeOnStartup();
         onStartupComplete();
     }
 
@@ -359,6 +165,10 @@ public final class AwBrowserProcess {
 
     public static void setNativeWebViewZygoteEnabled(boolean enabled) {
         AwBrowserProcessJni.get().setNativeWebViewZygoteEnabled(enabled);
+    }
+
+    public static void setProcessNameCrashKey(String processName) {
+        AwBrowserProcessJni.get().setProcessNameCrashKey(processName);
     }
 
     public static String getWebViewPackageName() {
@@ -493,42 +303,6 @@ public final class AwBrowserProcess {
         }
     }
 
-    /** Initialize the metrics uploader. */
-    public static void initializeMetricsLogUploader() {
-        try (DualTraceEvent e =
-                DualTraceEvent.scoped("AwBrowserProcess.initializeMetricsLogUploader")) {
-            boolean metricServiceEnabledOnlySdkRuntime =
-                    ContextUtils.isSdkSandboxProcess()
-                            && AwFeatureMap.isEnabled(
-                                    AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME);
-
-            boolean useCppFiltering =
-                    AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CPP_METRICS_FILTERING);
-
-            if (metricServiceEnabledOnlySdkRuntime) {
-                AwMetricsLogUploader uploader = new AwMetricsLogUploader();
-                // Open a connection during startup while connecting to other services such as
-                // VariationSeedServer to try to avoid spinning the nonembedded ":webview_service"
-                // twice.
-                uploader.initialize();
-                AndroidMetricsLogConsumer consumer =
-                        useCppFiltering ? uploader : new MetricsFilteringDecorator(uploader);
-                AndroidMetricsLogUploader.setConsumer(consumer);
-            } else {
-                AndroidMetricsLogConsumer directUploader =
-                        data -> {
-                            PlatformServiceBridge.getInstance().logMetrics(data);
-                            return HttpURLConnection.HTTP_OK;
-                        };
-                AndroidMetricsLogConsumer consumer =
-                        useCppFiltering
-                                ? directUploader
-                                : new MetricsFilteringDecorator(directUploader);
-                AndroidMetricsLogUploader.setConsumer(consumer);
-            }
-        }
-    }
-
     public static void doNetworkInitializations(Context applicationContext) {
         try (DualTraceEvent e =
                 DualTraceEvent.scoped("AwBrowserProcess.doNetworkInitializations")) {
@@ -538,14 +312,6 @@ public final class AwBrowserProcess {
                 NetworkChangeNotifier.setAutoDetectConnectivityState(
                         new AwNetworkChangeNotifierRegistrationPolicy());
             }
-        }
-    }
-
-    /** Starts observing Android OS accessibility setting changes. */
-    public static void startObservingOsAccessibilitySettingChanges() {
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_OBSERVE_ACCESSIBILITY_STATE)) {
-            AccessibilityState.registerObservers();
-            AccessibilityState.initializeOnStartup(new AwAccessibilityStateVisibilityManager());
         }
     }
 
@@ -559,8 +325,7 @@ public final class AwBrowserProcess {
                     TaskTraits.BEST_EFFORT,
                     () -> {
                         // TODO(ntfschr): CommandLine can change at any time. For simplicity, only
-                        // log
-                        // it once during startup.
+                        // log it once during startup.
                         AwContentsStatics.logCommandLineForDebugging();
                         // Field trials can be activated at any time. We'll continue logging them as
                         // they're activated.
@@ -704,10 +469,6 @@ public final class AwBrowserProcess {
      */
     public static void disableTracingInitDuringBrowserMain() {
         AwBrowserProcessJni.get().disableTracingInitDuringBrowserMain();
-    }
-
-    private static void configureDisplayAndroidManager() {
-        DisplayAndroidManager.disableHdrSdrRatioCallback();
     }
 
     // Do not instantiate this class.
