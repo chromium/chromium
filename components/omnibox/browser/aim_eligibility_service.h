@@ -222,6 +222,9 @@ class AimEligibilityService
   // Checks if the user is eligible for AIM Fuseboxes.
   virtual bool IsFuseboxEligible() const;
 
+  // Checks if the user is eligible for Contextual Search Box (CSB).
+  virtual bool IsCsbEligible() const;
+
   // Returns whether `url` is a valid AIM URL (i.e. would navigate a user to the
   // AIM feature). All of the host, path, and URL params are checked to
   // determine this. This method does not incorporate checks for params that
