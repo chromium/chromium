@@ -1120,6 +1120,7 @@ void Widget::Show() {
   ui::mojom::WindowShowState preferred_show_state =
       CanActivate() ? ui::mojom::WindowShowState::kNormal
                     : ui::mojom::WindowShowState::kInactive;
+  auto weak_this = GetWeakPtr();
   if (non_client_view_) {
     // While initializing, the kiosk mode will go to full screen before the
     // widget gets shown. In that case we stay in full screen mode, regardless
@@ -1131,12 +1132,14 @@ void Widget::Show() {
     } else {
       native_widget_->Show(saved_show_state_, gfx::Rect());
     }
+    CHECK(weak_this);
     // |saved_show_state_| only applies the first time the window is shown.
     // If we don't reset the value the window may be shown maximized every time
     // it is subsequently shown after being hidden.
     saved_show_state_ = preferred_show_state;
   } else {
     native_widget_->Show(preferred_show_state, gfx::Rect());
+    CHECK(weak_this);
   }
 
   HandleShowRequested();
@@ -1146,7 +1149,9 @@ void Widget::Hide() {
   if (!native_widget_) {
     return;
   }
+  auto weak_this = GetWeakPtr();
   native_widget_->Hide();
+  CHECK(weak_this);
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetHidden(this);
 }
 
@@ -1154,6 +1159,7 @@ void Widget::ShowInactive() {
   if (!native_widget_) {
     return;
   }
+  auto weak_this = GetWeakPtr();
   // If this gets called with saved_show_state_ ==
   // ui::mojom::WindowShowState::kMaximized, call SetBounds()with the restored
   // bounds to set the correct size. This normally should not happen, but if it
@@ -1161,9 +1167,11 @@ void Widget::ShowInactive() {
   if (saved_show_state_ == ui::mojom::WindowShowState::kMaximized &&
       !initial_restored_bounds_.IsEmpty()) {
     SetBounds(initial_restored_bounds_);
+    CHECK(weak_this);
     saved_show_state_ = ui::mojom::WindowShowState::kNormal;
   }
   native_widget_->Show(ui::mojom::WindowShowState::kInactive, gfx::Rect());
+  CHECK(weak_this);
 
   HandleShowRequested();
 }
