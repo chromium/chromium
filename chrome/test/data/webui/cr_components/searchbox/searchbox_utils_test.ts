@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {markOnce, sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
+import {announce, markOnce, sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
+import type {AriaNotificationOptions} from '//resources/cr_components/searchbox/utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('SearchboxUtilsTest', () => {
   suite('stripJavascriptSchemas', () => {
@@ -93,5 +95,56 @@ suite('SearchboxUtilsTest', () => {
       assertEquals(1, performance.getEntriesByName(markA).length);
       assertEquals(1, performance.getEntriesByName(markB).length);
     });
+  });
+
+  suite('announce', () => {
+    let testEl: HTMLElement;
+
+    setup(() => {
+      testEl = document.createElement('div');
+      document.body.appendChild(testEl);
+    });
+
+    teardown(() => {
+      testEl.remove();
+    });
+
+    test('calls ariaNotify with high priority when available', () => {
+      const calls: Array<{message: string, options?: AriaNotificationOptions}> =
+          [];
+      testEl.ariaNotify =
+          (message: string, options: AriaNotificationOptions) => {
+            calls.push({message, options});
+          };
+
+      announce(testEl, 'Hello world');
+      assertEquals(1, calls.length);
+      assertEquals('Hello world', calls[0]!.message);
+      assertEquals('high', calls[0]!.options?.priority);
+    });
+
+    test('does not announce empty messages', () => {
+      let called = false;
+      testEl.ariaNotify = () => {
+        called = true;
+      };
+
+      announce(testEl, '');
+      assertFalse(called);
+    });
+
+    test(
+        'falls back to cr-a11y-announcer when ariaNotify is unavailable',
+        async () => {
+          Object.defineProperty(
+              testEl, 'ariaNotify', {value: undefined, configurable: true});
+          const announcementPromise =
+              eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+
+          announce(testEl, 'Fallback announcement');
+          const event =
+              await announcementPromise as CustomEvent<{messages: string[]}>;
+          assertTrue(event.detail.messages.includes('Fallback announcement'));
+        });
   });
 });
