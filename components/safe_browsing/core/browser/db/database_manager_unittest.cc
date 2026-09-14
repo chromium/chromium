@@ -92,7 +92,7 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
     db_manager_ = base::MakeRefCounted<TestSafeBrowsingDatabaseManager>(
         base::SequencedTaskRunner::GetCurrentDefault());
     db_manager_->StartOnUIThread(test_shared_loader_factory_,
-                                 GetTestV4ProtocolConfig());
+                                 GetTestSBProtocolConfig());
   }
 
   void TearDown() override {
@@ -135,7 +135,7 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
     v5_cache_ =
         std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
     v5_manager_ = std::make_unique<V5GetHashProtocolManager>(
-        test_shared_loader_factory_, GetTestV4ProtocolConfig(),
+        test_shared_loader_factory_, GetTestSBProtocolConfig(),
         v5_cache_.get());
     client.SetV5GetHashProtocolManager(v5_manager_->GetWeakPtr());
   }

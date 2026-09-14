@@ -23,7 +23,7 @@ namespace safe_browsing {
 struct ThreatMetadata;
 struct SBProtocolConfig;
 
-SBProtocolConfig GetTestV4ProtocolConfig(bool disable_auto_update = false);
+SBProtocolConfig GetTestSBProtocolConfig(bool disable_auto_update = false);
 
 std::ostream& operator<<(std::ostream& os, const ThreatMetadata& meta);
 

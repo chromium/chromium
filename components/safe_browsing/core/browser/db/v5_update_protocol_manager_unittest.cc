@@ -129,7 +129,7 @@ class V5UpdateProtocolManagerTest : public PlatformTest {
       bool disable_auto_update = false) {
     return std::make_unique<V5UpdateProtocolManager>(
         test_shared_loader_factory_,
-        GetTestV4ProtocolConfig(disable_auto_update),
+        GetTestSBProtocolConfig(disable_auto_update),
         base::BindRepeating(
             &V5UpdateProtocolManagerTest::ValidateV5UpdateResults,
             base::Unretained(this), expected_updates));

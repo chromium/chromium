@@ -6125,7 +6125,7 @@ class AndroidDownloadProtectionTest
             sb_service_->GetTestURLLoaderFactory(profile()));
     sb_service_->database_manager()->StopOnUIThread(/*shutdown=*/false);
     sb_service_->database_manager()->StartOnUIThread(
-        test_shared_loader_factory_, GetTestV4ProtocolConfig());
+        test_shared_loader_factory_, GetTestSBProtocolConfig());
   }
 
   bool ShouldAndroidDownloadProtectionBeActive() const {

@@ -302,7 +302,7 @@ class SafeBrowsingServiceTest : public PlatformTest,
     v5_get_hash_protocol_manager_ =
         std::make_unique<safe_browsing::V5GetHashProtocolManager>(
             safe_browsing_service_->GetURLLoaderFactory(),
-            safe_browsing::GetTestV4ProtocolConfig(), v5_cache_.get());
+            safe_browsing::GetTestSBProtocolConfig(), v5_cache_.get());
     safe_browsing_client_->set_v5_get_hash_protocol_manager(
         v5_get_hash_protocol_manager_.get());
 

@@ -46,9 +46,8 @@ class V5GetHashProtocolManagerTest : public ::testing::Test {
   }
 
   std::unique_ptr<V5GetHashProtocolManager> CreateProtocolManager() {
-    // TODO(crbug.com/362791941): Handle v4 references.
     return std::make_unique<V5GetHashProtocolManager>(
-        test_shared_loader_factory_, GetTestV4ProtocolConfig(), cache_.get());
+        test_shared_loader_factory_, GetTestSBProtocolConfig(), cache_.get());
   }
 
   std::string GetExpectedRequestUrl(std::vector<std::string> prefixes) {

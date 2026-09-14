@@ -106,7 +106,7 @@ TEST_F(SBProtocolManagerUtilTest, TestGetRequestUrlAndUpdateHeaders) {
   net::HttpRequestHeaders headers;
   GURL gurl;
   SBProtocolManagerUtil::GetRequestUrlAndHeaders("request_base64", "someMethod",
-                                                 GetTestV4ProtocolConfig(),
+                                                 GetTestSBProtocolConfig(),
                                                  &gurl, &headers);
   std::string expectedUrl =
       "https://safebrowsing.googleapis.com/v4/someMethod?"

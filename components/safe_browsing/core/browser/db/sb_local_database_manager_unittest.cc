@@ -649,7 +649,7 @@ class SBLocalDatabaseManagerTest : public PlatformTest {
 
   void StartLocalDatabaseManager() {
     sb_local_database_manager_->StartOnUIThread(test_shared_loader_factory_,
-                                                GetTestV4ProtocolConfig());
+                                                GetTestSBProtocolConfig());
   }
 
   void StopLocalDatabaseManager() {
@@ -712,7 +712,7 @@ class SBLocalDatabaseManagerTest : public PlatformTest {
       v5_cache_ =
           std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
       v5_fake_manager_ = std::make_unique<FakeV5GetHashProtocolManager>(
-          test_shared_loader_factory_, GetTestV4ProtocolConfig(),
+          test_shared_loader_factory_, GetTestSBProtocolConfig(),
           v5_cache_.get(), threat_type, metadata);
     }
     client.SetV5GetHashProtocolManager(v5_fake_manager_->GetWeakPtr());

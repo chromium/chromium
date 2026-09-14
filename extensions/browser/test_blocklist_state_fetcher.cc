@@ -53,7 +53,7 @@ class DummySharedURLLoaderFactory : public network::SharedURLLoaderFactory {
 TestBlocklistStateFetcher::TestBlocklistStateFetcher(
     BlocklistStateFetcher* fetcher)
     : fetcher_(fetcher) {
-  fetcher_->SetSafeBrowsingConfig(safe_browsing::GetTestV4ProtocolConfig());
+  fetcher_->SetSafeBrowsingConfig(safe_browsing::GetTestSBProtocolConfig());
 
   url_loader_factory_ = base::MakeRefCounted<DummySharedURLLoaderFactory>();
   fetcher_->url_loader_factory_ = url_loader_factory_.get();

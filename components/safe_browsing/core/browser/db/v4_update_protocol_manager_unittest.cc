@@ -88,7 +88,7 @@ class V4UpdateProtocolManagerTest : public PlatformTest {
       ExtendedReportingLevel erl = SBER_LEVEL_OFF) {
     return std::make_unique<V4UpdateProtocolManager>(
         test_shared_loader_factory_,
-        GetTestV4ProtocolConfig(disable_auto_update),
+        GetTestSBProtocolConfig(disable_auto_update),
         base::BindRepeating(
             &V4UpdateProtocolManagerTest::ValidateGetUpdatesResults,
             base::Unretained(this), expected_lurs),

@@ -55,7 +55,7 @@ class V4GetHashProtocolManagerTest : public PlatformTest {
          ListIdentifier(CHROME_PLATFORM, URL, SUBRESOURCE_FILTER)});
     return V4GetHashProtocolManager::Create(test_shared_loader_factory_,
                                             stores_to_check,
-                                            GetTestV4ProtocolConfig());
+                                            GetTestSBProtocolConfig());
   }
 
   static void SetupFetcherToReturnResponse(V4GetHashProtocolManager* pm,

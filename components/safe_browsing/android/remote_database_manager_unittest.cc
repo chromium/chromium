@@ -111,7 +111,7 @@ class RemoteDatabaseManagerTest
             &test_url_loader_factory_);
     db_ = base::MakeRefCounted<RemoteSafeBrowsingDatabaseManager>();
     db_->StartOnUIThread(test_shared_loader_factory_,
-                         GetTestV4ProtocolConfig());
+                         GetTestSBProtocolConfig());
 
     url_interceptor_ = std::make_unique<TestUrlCheckInterceptor>();
     SafeBrowsingApiHandlerBridge::GetInstance().SetInterceptorForTesting(

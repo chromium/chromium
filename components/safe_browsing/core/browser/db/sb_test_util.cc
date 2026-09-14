@@ -24,7 +24,7 @@ const int kDefaultStoreFileSizeInBytes = 320000;
 
 }  // namespace
 
-SBProtocolConfig GetTestV4ProtocolConfig(bool disable_auto_update) {
+SBProtocolConfig GetTestSBProtocolConfig(bool disable_auto_update) {
   return SBProtocolConfig(kClient, disable_auto_update, kKeyParam, kAppVer);
 }
 

@@ -143,7 +143,7 @@ void PingManagerTest::SetNewPingManager(
     std::optional<base::RepeatingCallback<bool()>>
         get_should_send_persisted_report) {
   ping_manager_.reset(new PingManager(
-      safe_browsing::GetTestV4ProtocolConfig(), nullptr, nullptr,
+      safe_browsing::GetTestSBProtocolConfig(), nullptr, nullptr,
       get_should_fetch_access_token.value_or(
           base::BindRepeating([]() { return false; })),
       webui_delegate_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
