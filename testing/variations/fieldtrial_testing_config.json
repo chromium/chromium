@@ -11369,6 +11369,21 @@
             ]
         }
     ],
+    "IOSDefaultBrowserContextualPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSDefaultBrowserContextualPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDefaultBrowserPromoPropensityStudy": [
         {
             "platforms": [
