@@ -69,7 +69,8 @@ class OtpMetricsTrackerTest : public testing::Test,
 
  protected:
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_{features::kAutofillGmailOtp};
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillGmailOtpPreLaunchMetrics};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service_;
@@ -219,7 +220,8 @@ TEST_F(OtpMetricsTrackerTest,
 TEST_F(OtpMetricsTrackerTest,
        FieldDetectionToTickleLatency_NotLoggedIfFeatureDisabled) {
   base::test::ScopedFeatureList disabled_feature_list;
-  disabled_feature_list.InitAndDisableFeature(features::kAutofillGmailOtp);
+  disabled_feature_list.InitAndDisableFeature(
+      features::kAutofillGmailOtpPreLaunchMetrics);
 
   OtpMetricsTracker tracker(&mock_ott_service_, autofill_client());
   tracker.OnOtpFieldDetected(FormGlobalId{}, {}, autofill_manager());
@@ -321,7 +323,8 @@ TEST_F(OtpMetricsTrackerTest,
 TEST_F(OtpMetricsTrackerTest,
        TickleToFieldDetectionLatency_NotLoggedIfFeatureDisabled) {
   base::test::ScopedFeatureList disabled_feature_list;
-  disabled_feature_list.InitAndDisableFeature(features::kAutofillGmailOtp);
+  disabled_feature_list.InitAndDisableFeature(
+      features::kAutofillGmailOtpPreLaunchMetrics);
 
   OtpMetricsTracker tracker(&mock_ott_service_, autofill_client());
 
@@ -492,7 +495,8 @@ TEST_F(OtpMetricsTrackerTest,
 
 TEST_F(OtpMetricsTrackerTest, TickleArrival_FeatureDisabled) {
   base::test::ScopedFeatureList disabled_feature_list;
-  disabled_feature_list.InitAndDisableFeature(features::kAutofillGmailOtp);
+  disabled_feature_list.InitAndDisableFeature(
+      features::kAutofillGmailOtpPreLaunchMetrics);
 
   OtpMetricsTracker tracker(&mock_ott_service_, autofill_client());
 
@@ -681,7 +685,8 @@ TEST_F(OtpMetricsTrackerTest,
 
 TEST_F(OtpMetricsTrackerTest, FormOutcome_FeatureDisabled) {
   base::test::ScopedFeatureList disabled_feature_list;
-  disabled_feature_list.InitAndDisableFeature(features::kAutofillGmailOtp);
+  disabled_feature_list.InitAndDisableFeature(
+      features::kAutofillGmailOtpPreLaunchMetrics);
 
   OtpMetricsTracker tracker(&mock_ott_service_, autofill_client());
   const FormStructure* form = AddFormWithOtpField();
@@ -932,7 +937,8 @@ TEST_F(OtpMetricsTrackerTest,
 
 TEST_F(OtpMetricsTrackerTest, PageLanguage_FeatureDisabled) {
   base::test::ScopedFeatureList disabled_feature_list;
-  disabled_feature_list.InitAndDisableFeature(features::kAutofillGmailOtp);
+  disabled_feature_list.InitAndDisableFeature(
+      features::kAutofillGmailOtpPreLaunchMetrics);
 
   autofill_client().GetLanguageState()->SetCurrentLanguage("en");
   OtpMetricsTracker tracker(&mock_ott_service_, autofill_client());

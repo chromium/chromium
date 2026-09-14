@@ -8025,6 +8025,7 @@ from previous Chrome versions.
       label="UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning:enabled"/>
   <int value="-2069193978"
       label="ExperimentalAccessibilityColorEnhancementSettings:enabled"/>
+  <int value="-2068749979" label="AutofillGmailOtpPreLaunchMetrics:enabled"/>
   <int value="-2068490665" label="PasswordChange:enabled"/>
   <int value="-2068448181" label="PageActionsElevatedToolbar:enabled"/>
   <int value="-2067596114" label="WebAuthenticationCableDisco:enabled"/>
@@ -14393,6 +14394,7 @@ from previous Chrome versions.
   <int value="-124405552" label="PermissionsAIP92:disabled"/>
   <int value="-124291249" label="HistoryOptInEducationalTip:disabled"/>
   <int value="-124235074" label="IOSPromoPaymentBubble:enabled"/>
+  <int value="-123989533" label="AutofillGmailOtpPreLaunchMetrics:disabled"/>
   <int value="-123682210" label="WebUIOmniboxAimPopup:disabled"/>
   <int value="-123599761" label="IncludeIpcOverheadInNavigationStart:disabled"/>
   <int value="-123103820" label="RefactorMinWidthContextOverride:enabled"/>

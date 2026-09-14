@@ -119,7 +119,8 @@ OtpMetricsTracker::~OtpMetricsTracker() = default;
 void OtpMetricsTracker::OnOtpFieldDetected(FormGlobalId form_id,
                                            std::vector<FieldGlobalId> field_ids,
                                            AutofillManager& autofill_manager) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillGmailOtp)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillGmailOtpPreLaunchMetrics)) {
     return;
   }
   // Ignore subsequent detections for a form that has already completed its
@@ -160,7 +161,8 @@ void OtpMetricsTracker::OnOtpFieldDetected(FormGlobalId form_id,
 
 void OtpMetricsTracker::OnTickleReceived(
     one_time_tokens::OneTimeTokenSource source) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillGmailOtp)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillGmailOtpPreLaunchMetrics)) {
     return;
   }
   bool matched_existing_field = TryRecordTickleMetrics(

@@ -13977,9 +13977,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRemoteActorCredentialSharingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRemoteActorCredentialSharing)},
 
-    {"autofill-gmail-otp", flag_descriptions::kAutofillGmailOtpName,
-     flag_descriptions::kAutofillGmailOtpDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillGmailOtp)},
+    {"autofill-gmail-otp",
+     flag_descriptions::kAutofillGmailOtpPreLaunchMetricsName,
+     flag_descriptions::kAutofillGmailOtpPreLaunchMetricsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillGmailOtpPreLaunchMetrics)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

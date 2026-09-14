@@ -198,7 +198,8 @@ TEST_F(OtpManagerImplTest, OtpForm_QueryIssued) {
 // Tests that the FieldDetectionToTickleLatency metric is recorded when an OTP
 // field is detected and a tickle arrives.
 TEST_F(OtpManagerImplTest, FieldDetectionToTickleLatency_OtpFormLogsMetric) {
-  base::test::ScopedFeatureList feature_list(features::kAutofillGmailOtp);
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillGmailOtpPreLaunchMetrics);
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
   one_time_tokens::ExpiringSubscriptionManager<void(
       one_time_tokens::OneTimeTokenSource)>
@@ -246,7 +247,8 @@ TEST_F(OtpManagerImplTest,
 // OTP field is detected.
 TEST_F(OtpManagerImplTest,
        TickleReceivedBeforeOtpForm_NotifiesOtpMetricsTracker) {
-  base::test::ScopedFeatureList feature_list(features::kAutofillGmailOtp);
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillGmailOtpPreLaunchMetrics);
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
   one_time_tokens::ExpiringSubscriptionManager<void(
       one_time_tokens::OneTimeTokenSource)>
