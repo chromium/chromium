@@ -45,6 +45,7 @@ source_set("download") {
       # Download bubble UI is not used on ChromeOS.
       "bubble/download_bubble_contents_view.cc",
       "bubble/download_bubble_contents_view.h",
+      "bubble/download_bubble_mode.h",
       "bubble/download_bubble_navigation_handler.h",
       "bubble/download_bubble_partial_view.cc",
       "bubble/download_bubble_partial_view.h",
