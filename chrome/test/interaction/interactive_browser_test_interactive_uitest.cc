@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
@@ -49,6 +48,7 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -499,20 +499,37 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, SendKeyToWebContents) {
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, FocusElement) {
-  RunTestSequence(
-      FocusElement(kToolbarAppMenuButtonElementId),
-      CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
-                        true),
-      FocusElement(kOmniboxElementId),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
+  RunTestSequence(FocusElement(kToolbarAppMenuButtonElementId),
+                  CheckViewProperty(kToolbarAppMenuButtonElementId,
+                                    &views::View::HasFocus, true),
+                  FocusElement(kTabSearchButtonElementId),
+                  CheckViewProperty(kTabSearchButtonElementId,
+                                    &views::View::HasFocus, true));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, SendKeyPress) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTextfieldId);
+
+  auto delegate = std::make_unique<views::BubbleDialogDelegate>(
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar(),
+      views::BubbleBorder::TOP_LEFT);
+  auto textfield = std::make_unique<views::Textfield>();
+  textfield->SetProperty(views::kElementIdentifierKey, kTextfieldId);
+  textfield->SetAccessibleName(u"Test Textfield");
+  textfield->SetPreferredSize(gfx::Size(100, 30));
+  delegate->SetContentsView(std::move(textfield));
+
+  auto bubble_widget =
+      views::BubbleDialogDelegate::CreateBubble(delegate.get());
+  bubble_widget->Show();
+
   RunTestSequence(
-      FocusElement(kOmniboxElementId),
-      SendKeyPress(kOmniboxElementId, ui::VKEY_A),
-      SendKeyPress(kOmniboxElementId, ui::VKEY_B, ui::EF_SHIFT_DOWN),
-      CheckViewProperty(kOmniboxElementId, &OmniboxViewViews::GetText, u"aB"));
+      WaitForShow(kTextfieldId), FocusElement(kTextfieldId),
+      SendKeyPress(kTextfieldId, ui::VKEY_A),
+      SendKeyPress(kTextfieldId, ui::VKEY_B, ui::EF_SHIFT_DOWN),
+      CheckViewProperty(kTextfieldId, &views::Textfield::GetText, u"aB"));
+
+  bubble_widget->CloseNow();
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
