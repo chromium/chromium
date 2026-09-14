@@ -69,6 +69,7 @@
 <translation id="1793486931176048546">झटपट अ‍ॅक्सेस करण्याकरिता Chrome तुमच्या टास्कबारवर पिन करण्यासाठी Windows नोटिफिकेशनमध्ये <ph name="BEGIN_BOLD" />होय<ph name="END_BOLD" /> वर क्लिक करा.</translation>
 <translation id="1808667845054772817">Chromium पुनर्स्थापित करा</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> याचा प्रयत्न करत आहे</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> यांनी आधीच साइन इन केले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, तुमच्या स्वतःच्या प्रोफाइलमधील Chromium मध्ये <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन करा. तुम्हाला <ph name="DEVICE" /> कडून तुमची एक्स्टेंशन आणि आणखी बऱ्याच गोष्टीदेखील मिळतील.</translation>
 <translation id="183031085822326697">तुम्ही पुढील वेळी तुमच्या <ph name="DEVICE_TYPE" /> वर Chromium उघडल्यावर, तुम्हाला Google Password Manager वापरण्यासाठी प्रॉम्प्ट दिसेल.</translation>
 <translation id="1838374766361614909">शोध साफ करा</translation>
 <translation id="18552579716432081">तुमच्या Google खाते मध्ये ब्राउझिंग डेटा राखून ठेवून, तो फक्त या डिव्हाइसवरून हटवण्यासाठी, <ph name="BEGIN_LINK" />Chromium मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>
@@ -191,6 +192,7 @@
 <translation id="3038232873781883849">इंस्टॉल करण्यासाठी प्रतीक्षा करत आहे...</translation>
 <translation id="3045032126857188731">भाषांतराची भाषा: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">फीडबॅक डायलॉग बंद करा</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> यांनी आधीच साइन इन केले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, तुमच्या स्वतःच्या प्रोफाइलमधील Chromium मध्ये <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन करा. तुम्हाला <ph name="DEVICE" /> कडून तुमची वाचन सूची आणि आणखी बऱ्याच गोष्टीदेखील मिळतील.</translation>
 <translation id="3068187312562070417">इतर Chromium प्रोफाइल</translation>
 <translation id="3068290154869370196">एक्स्टेंशन ही अ‍ॅड-ऑन असतात, ज्यांद्वारे तुम्ही Chromium कस्टमाइझ करू शकता. एक्स्टेंशन वापरून तुम्ही Chromium ला तुम्हाला हवे तसे कस्टमाइझ करू शकता. यामुळे तुम्हाला सुव्यवस्थित राहण्यापासून तुमची दैनंदिन कामे सुलभ करण्यापर्यंत मदत मिळते.</translation>
 <translation id="3068515742935458733">Google कडे क्रॅश अहवाल आणि <ph name="UMA_LINK" /> पाठवून Chromium अधिक चांगले करण्यात मदत करा</translation>
@@ -292,6 +294,7 @@
 <translation id="4147856324248078748">तुमचे Chromium कस्टमाइझ करा</translation>
 <translation id="4148957013307229264">स्थापना करत आहे...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> यांनी आधीच साइन इन केले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, तुमच्या स्वतःच्या प्रोफाइलमधील Chromium मध्ये <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन करा. तुम्हाला तुमच्या सर्व डिव्हाइसवर तुमची वाचन सूची आणि आणखी बऱ्याच गोष्टीदेखील मिळतील.</translation>
 <translation id="421369550622382712">Chromium साठी उत्कृष्ट ॲप्स, गेम, विस्तार आणि थीम शोधा</translation>
 <translation id="4217080900579554343">तुमच्या सर्व काँप्युटरवर हे एक्स्टेंशन आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी, Chromium मध्ये साइन इन करा</translation>
 <translation id="4217972271355023382">तुमच्या पालकांच्या निवडींसह ऑनलाइन अधिक सुरक्षित राहण्यासाठी, तुमच्या Chromium प्रोफाइलवर स्विच करा, जिथे तुम्ही आधीच <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन केले आहे</translation>
@@ -391,6 +394,7 @@
 <translation id="5382964351116519680">Chromium वापरून शोध उघडा</translation>
 <translation id="5383439451358640070">Chromium काही फाइल का ब्लॉक करते हे जाणून घ्या</translation>
 <translation id="5386450000063123300">Chromium अपडेट करीत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> यांनी आधीच साइन इन केले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, तुमच्या स्वतःच्या प्रोफाइलमधील Chromium मध्ये <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन करा. तुम्हाला तुमच्या सर्व डिव्हाइसवर तुमची एक्स्टेंशन आणि आणखी बऱ्याच गोष्टीदेखील मिळतील.</translation>
 <translation id="538767207339317086">Chromium मध्ये साइन इन करण्यासाठी अनुमती द्या</translation>
 <translation id="5405650547142096840">Chromium मधून काढा</translation>
 <translation id="5424544524441439284">परफॉर्मन्स कमी करते, पण त्यामुळे Chromium ची हल्ले रोखण्याची क्षमता वाढते</translation>

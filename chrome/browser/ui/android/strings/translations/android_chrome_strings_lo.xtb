@@ -516,6 +516,7 @@
 <translation id="2996682533106928201">ແຕະເພື່ອປິດ</translation>
 <translation id="2996809686854298943">ຕ້ອງມີ URL.</translation>
 <translation id="3024215143424744261">ປິດຄ່າກຳນົດໂໝດການອ່ານແລ້ວ</translation>
+<translation id="3024277805447899099">ຮູບຕົວຢ່າງ</translation>
 <translation id="3026955690410463085">ຮວມລິ້ງ</translation>
 <translation id="3027950907978057636">ຈາກ <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">ບໍ່ມີການໂຫຼດກ່ອນລ່ວງໜ້າ</translation>
@@ -1030,6 +1031,7 @@
 <translation id="5040262127954254034">ຄວາມ​ເປັນ​ສ່ວນ​ຕົວ</translation>
 <translation id="504456571576643789">ສິ່ງທີ່ຕ້ອງພິຈາລະນາ</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{ເລືອກ <ph name="WINDOW_COUNT_ONE" /> ໜ້າຈໍໄວ້}other{ເລືອກ <ph name="WINDOW_COUNT_NORMAL" /> ໜ້າຈໍໄວ້}}</translation>
+<translation id="5058506215037547387">ສະແດງຕົວຢ່າງໜ້າ</translation>
 <translation id="506254248375231072">ບໍ່ມີແຖບ</translation>
 <translation id="5075939510584558547">ບັນທຶກໂດຍບໍ່ມີການເຂົ້າລະຫັດ</translation>
 <translation id="5078638979202084724">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ</translation>

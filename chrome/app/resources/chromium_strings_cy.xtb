@@ -70,6 +70,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1793486931176048546">Cliciwch <ph name="BEGIN_BOLD" />Ie<ph name="END_BOLD" /> yn yr hysbysiad Windows i binio Chromium i'ch bar tasgau i gael mynediad cyflym.</translation>
 <translation id="1808667845054772817">Ailosod Chromium</translation>
 <translation id="1820835682567584003">Mae Chromium yn ceisio <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi. I gadw'ch pori ar wahân, mewngofnodwch i Chromium yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />. Byddwch hefyd yn cael eich estyniadau a rhagor o <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Y tro nesaf y byddwch yn agor Chromium ar eich <ph name="DEVICE_TYPE" />, byddwch yn gweld anogwr i ddefnyddio Rheolwr Cyfrineiriau Google.</translation>
 <translation id="1838374766361614909">Clirio'r blwch chwilio</translation>
 <translation id="18552579716432081">I ddileu data pori o'r ddyfais hon yn unig, tra'n eu cadw yn eich Cyfrif Google, <ph name="BEGIN_LINK" />allgofnodwch o Chromium<ph name="END_LINK" />.</translation>
@@ -192,6 +193,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3038232873781883849">Wrthi'n aros i osod...</translation>
 <translation id="3045032126857188731">Iaith a gyfieithwyd: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Cau'r deialog adborth</translation>
+<translation id="3064717200427679322">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi. I gadw'ch pori ar wahân, mewngofnodwch i Chromium yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />. Byddwch hefyd yn cael eich rhestr ddarllen a rhagor o <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Proffiliau Chromium eraill</translation>
 <translation id="3068290154869370196">Mae estyniadau yn ychwanegion sy'n gadael i chi addasu Chromium. O aros yn drefnus, i symleiddio tasgau bob dydd, mae estyniadau yn eich helpu i wneud Chromium yn fwy personol i chi.</translation>
 <translation id="3068515742935458733">Helpwch i wneud Chromium yn well drwy anfon adroddiadau damweiniau a <ph name="UMA_LINK" /> at Google</translation>
@@ -293,6 +295,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4147856324248078748">A&amp;ddasu eich Chromium</translation>
 <translation id="4148957013307229264">Wrthi’n gosod...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Mewngofnodi Rhwydwaith - Chromium</translation>
+<translation id="4208652172235621272">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi. I gadw'ch pori ar wahân, mewngofnodwch i Chromium yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />. Byddwch hefyd yn cael eich rhestr ddarllen a rhagor ar eich holl ddyfeisiau.</translation>
 <translation id="421369550622382712">Darganfyddwch apiau, gemau, estyniadau a themâu gwych ar gyfer Chromium.</translation>
 <translation id="4217080900579554343">I gael yr estyniad hwn a rhagor ar eich holl gyfrifiaduron, mewngofnodwch i Chromium</translation>
 <translation id="4217972271355023382">I aros yn fwy diogel ar-lein gyda dewisiadau eich rhiant, newidiwch i'ch proffil Chromium lle rydych eisoes wedi mewngofnodi fel <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -392,6 +395,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="5382964351116519680">Agor chwilio gyda Chromium</translation>
 <translation id="5383439451358640070">Dysgu pam fod Chromium yn rhwystro rhai ffeiliau</translation>
 <translation id="5386450000063123300">Wrthi'n Diweddaru Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi. I gadw'ch pori ar wahân, mewngofnodwch i Chromium yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />. Byddwch hefyd yn cael eich estyniadau a rhagor ar eich holl ddyfeisiau.</translation>
 <translation id="538767207339317086">Caniatáu Mewngofnodi drwy Chromium</translation>
 <translation id="5405650547142096840">Tynnu o Chromium</translation>
 <translation id="5424544524441439284">Yn lleihau perfformiad ond yn gwneud Chromium yn fwy ymwrthol i ymosodiadau</translation>

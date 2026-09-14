@@ -677,6 +677,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1523978563989812243">Teksto į kalbą varikliai</translation>
 <translation id="1524563461097350801">Ačiū, ne</translation>
 <translation id="1525740877599838384">Naudoti tik „Wi‑Fi“ vietovei nustatyti</translation>
+<translation id="1526274304859009691">Prisijunkite, kad gautumėte plėtinius ir kitus duomenis iš <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Dokumentas be pavadinimo</translation>
 <translation id="1527336312600375509">Monitoriaus atnaujinimo dažnis</translation>
 <translation id="152913213824448541">Bendrinimo netoliese kontaktai</translation>
@@ -6388,6 +6389,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5902400038326841449">„Google“ slaptažodžių tvarkyklė išjungta</translation>
 <translation id="5902892210366342391">Rodyti perspėjimus prieš apsilankant nesaugiose svetainėse inkognito režimu</translation>
 <translation id="5906457147959147328">Toliau leisti šiai svetainei naudoti identifikatorius apsaugotam turiniui leisti</translation>
+<translation id="5906549184882174190">Izoliuota</translation>
 <translation id="5906655207909574370">Beveik įdiegta naujausia versija! Paleiskite įrenginį iš naujo, kad būtų užbaigtas naujinimas.</translation>
 <translation id="5906732635754427568">Su šia programa susieti duomenys bus pašalinti iš šio įrenginio.</translation>
 <translation id="5906974869830879618">Įveskite PIN kodą</translation>
@@ -6613,6 +6615,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6088475950266477163">Nustatymai</translation>
 <translation id="608912389580139775">Kad pridėtumėte puslapį prie skaitymo sąrašo, spustelėkite žymės piktogramą</translation>
 <translation id="6089289670051481345">Tritanomalija</translation>
+<translation id="6090068946774422711">Prisijunkite, kad gautumėte skaitymo sąrašą ir kitus duomenis iš <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Perspėjimai, kurių atsisakyta</translation>
 <translation id="609174145569509836">Išvalyti saugyklą</translation>
 <translation id="6091761513005122595">Bendrinamas objektas įdėtas sėkmingai.</translation>
@@ -7971,6 +7974,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7124712201233930202">Nesilaikoma organizacijos politikos</translation>
 <translation id="7125148293026877011">Ištrinti „Crostini“</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Prisijunkite, kad visuose įrenginiuose gautumėte plėtinius ir kitus duomenis</translation>
 <translation id="7125932261198019860">Įsitikinkite, kad spausdintuvas prijungtas prie to paties „Wi-Fi“ tinklo kaip „Chromebook“ įrenginys, arba naudokite USB laidą. <ph name="LINK_BEGIN" />Sužinokite daugiau apie suderinamumą<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Atsisiuntimų istorija</translation>
 <translation id="7130438335435247835">Prieigos taško pavadinimas (APN)</translation>
@@ -8824,6 +8828,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7780992949171378848">Siųsti atsisakymo užklausą svetainėms dėl jūsų duomenų naudojimo</translation>
 <translation id="7782102568078991263">Daugiau „Google“ pasiūlymų nėra</translation>
 <translation id="7782717250816686129">Išsaugoti nuolatinius duomenis prisijungimo ekrane ir įvesti prisijungimo pradedant seansą.</translation>
+<translation id="7782885970382585765">Prisijunkite, kad visuose įrenginiuose gautumėte skaitymo sąrašą ir kitus duomenis</translation>
 <translation id="7784020347632229094">Sužinokite daugiau apie spartųjį klavišą</translation>
 <translation id="7784067724422331729">Kompiuterio saugos nustatymai užblokavo šį failą.</translation>
 <translation id="7784796923038949829">Nepavyko nuskaityti arba pakeisti svetainės duomenų</translation>

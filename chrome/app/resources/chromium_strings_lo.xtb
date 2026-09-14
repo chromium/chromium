@@ -148,6 +148,7 @@
 <translation id="2575822587468774919">ເລືອກຫຍັງກໍໄດ້ເພື່ອຊອກຫາດ້ວຍການຊອກຫາຮູບ</translation>
 <translation id="2576118232315942160">ເພື່ອຮັບລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="2587622539943955767">ສະແກນລະຫັດ QR ດ້ວຍໂທລະສັບຂອງທ່ານເພື່ອດາວໂຫຼດ Chromium ແລະ ເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານ.</translation>
+<translation id="2587885422541096572">ເພື່ອຊອກຫາດ້ວຍ Chromium.</translation>
 <translation id="2592940277904433508">ສືບຕໍ່ນຳໃຊ້ Chromium</translation>
 <translation id="259935314519650377">ການແຄສຕົວຕິດຕັ້ງທີ່ດາວໂຫຼດໄວ້ບໍ່ສຳເລັດ. ຂໍ້ຜິດພາດ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">ລະ​ບົບ</translation>
@@ -772,6 +773,7 @@ Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອ�
 <translation id="897581876605952338">ໂລໂກ້ Chromium Enterprise</translation>
 <translation id="8980139959902937527">ນຳຄວາມປອດໄພຂອງ Google ໄປໄດ້ທຸກບ່ອນທຸກເວລາດ້ວຍແອັບ Chromium ຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="8981150672034878610">ບໍ່ສາມາດເລີ່ມ Chromium ໄດ້ເນື່ອງຈາກມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນເມື່ອເປີດໂປຣໄຟລ໌ຂອງທ່ານ. ລອງຣີສະຕາດ Chromium.</translation>
+<translation id="8981886272598860786">ເພື່ອຊອກຫາດ້ວຍ Chromium ຫຼື ປັບແຕ່ງໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">ຈັດການໂປຣໄຟລ໌ Chromium</translation>
 <translation id="8993855408334954620">ໃຊ້ແປ້ນພິມຂອງທ່ານເພື່ອນຳທາງລະຫວ່າງ Gemini ໃນ Chromium ແລະ ແຖບທີ່ເປີດຢູ່ຂອງທ່ານ.</translation>
 <translation id="9018218886431812662">ສຳເລັດການຕິດຕັ້ງແລ້ວ</translation>

@@ -96,6 +96,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1873233029667955273">Google Chrome defolt brauzeriniz deyil</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome'un vaxtı keçib</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> artıq daxil olub. Axtarışı ayrı saxlamaq üçün öz profilinizdə Chrome-a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olun. Bütün cihazlarınızda artırmalarınızı və daha çoxunu da əldə edəcəksiniz.</translation>
 <translation id="1880677175115548835">Mətn seçin</translation>
 <translation id="1896602904211344018">Chrome tətbiqini əldə edin</translation>
 <translation id="1919130412786645364">Chrome girişinə icazə verin</translation>
@@ -544,6 +545,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6334815226785304306">Chrome-u defolt brauzer edin və tapşırıqlar panelinə bərkidin</translation>
 <translation id="63540178978900677">Chrome artıq defolt brauzeriniz deyil. Chrome defolt brauzer edilsin?</translation>
 <translation id="6360449101159168105">Bu tab deaktiv olduqda Chrome-u sürətli saxlamaq üçün yaddaş boşaldıldı. Bu saytın deaktiv olmasını həmişə istisna edə bilərsiniz.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> artıq daxil olub. Axtarışı ayrı saxlamaq üçün öz profilinizdə Chrome-a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olun. Bütün cihazlarınızda oxu siyahınızı və daha çoxunu da əldə edəcəksiniz.</translation>
 <translation id="6388799252195623474">bununla bağlı mənə kömək edin</translation>
 <translation id="6412673304250309937">URL'ləri Chrome'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır. Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chrome səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Chrome 1 dəqiqə istifadə edilmədikdə təşkilat onu avtomatik bağlayır. Baxış datası silinir. Bura tarixçə, avto doldurma və endirmələr daxil ola bilər.}other{Chrome # dəqiqə istifadə edilmədikdə təşkilat onu avtomatik bağlayır. Baxış datası silinir. Bura tarixçə, avto doldurma və endirmələr daxil ola bilər.}}</translation>
@@ -704,6 +706,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7845233973568007926">Quraşdırdığınız üçün təşəkkür edirik. <ph name="BUNDLE_NAME" /> istifadə etməzdən əvvəl kompüterinizi yenidən başlatmalısınız.</translation>
 <translation id="7847170235260850604">Windows işə başladıqda Chrome-u işə salın</translation>
 <translation id="7849037457735762883">Qaldığınız yerdən davam edin: Chrome hər dəfə yenidən başladıldıqda tablarınızı bərpa edə bilər. Bunu aktiv etmək üçün keçin:</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> artıq daxil olub. Axtarışı ayrı saxlamaq üçün öz profilinizdə Chrome-a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olun. <ph name="DEVICE" /> cihazından artırmalarınızı və daha çoxunu da əldə edəcəksiniz.</translation>
 <translation id="7869620795354551924">Yadda saxlanmış parolları istifadə etmək üçün QR kodunu skanlayın, iOS üçün Chrome endirin və Google Hesabına daxil olun</translation>
 <translation id="7872446069773932638">Endirilir... <ph name="SECONDS" /> saniyə qalıb</translation>
 <translation id="7886087451482920026">Google Linza ilə mətn seçin</translation>
@@ -801,6 +804,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8679801911857917785">O, həmçinin, Chrome açılanda hansı səhifənin göstərildiyini idarə edir.</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8712767363896337380">Güncəllənmək üzrədir! Güncəlləməni tamamlamaq üçün Chrome'u yenidən başladın.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> artıq daxil olub. Axtarışı ayrı saxlamaq üçün öz profilinizdə Chrome-a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olun. <ph name="DEVICE" /> cihazından oxu siyahınızı və daha çoxunu da əldə edəcəksiniz.</translation>
 <translation id="8718062187489036808">Chrome'dan çıxın</translation>
 <translation id="873133009373065397">Google Chrome defolt brauzeri müəyyən edə və ya ayarlaya bilmir</translation>
 <translation id="8747073452963259673">axtarış sahəsinin aşağı sol küncü: <ph name="LEFT" />% sol, <ph name="BOTTOM" />% aşağı</translation>

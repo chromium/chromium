@@ -677,6 +677,7 @@
 <translation id="1523978563989812243">टेक्‍स्‍ट टू स्‍पीच इंजिने</translation>
 <translation id="1524563461097350801">नाही, नको</translation>
 <translation id="1525740877599838384">स्थान निर्धारित करण्‍यासाठी फक्त वाय-फाय वापरा</translation>
+<translation id="1526274304859009691"><ph name="DEVICE" /> वरून तुमची एक्स्टेंशन आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="1526560967942511387">अशीर्षकांकित दस्तऐवज</translation>
 <translation id="1527336312600375509">मॉनिटर रिफ्रेश रेट</translation>
 <translation id="152913213824448541">Nearby सह शेअरिंग चे संपर्क</translation>
@@ -6385,6 +6386,7 @@
 <translation id="5902400038326841449">Google Password Manager बंद केले आहे</translation>
 <translation id="5902892210366342391">गुप्त मोडमध्ये असुरक्षित साइटवर जाण्यापूर्वी चेतावण्या पहा</translation>
 <translation id="5906457147959147328">संरक्षित आशय प्ले करण्यासाठी या साइटला आयडेंटिफायर वापरण्याची अनुमती देणे पुढे सुरू ठेवा</translation>
+<translation id="5906549184882174190">वेगळा ठेवलेला</translation>
 <translation id="5906655207909574370">अद्ययावत करणे जवळजवळ पूर्ण झाले! अपडेट करणे समाप्त करण्यासाठी तुमचे डिव्हाइस रीस्टार्ट करा.</translation>
 <translation id="5906732635754427568">या डिव्हाइस वरून या ॲपसह संबद्ध असलेला डेटा काढला जाईल.</translation>
 <translation id="5906974869830879618">कृपया पिन एंटर करा</translation>
@@ -6612,6 +6614,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6088475950266477163">सेटिंग्ज</translation>
 <translation id="608912389580139775">हे पेज तुमच्या वाचन सूचीमध्ये जोडण्यासाठी, बुकमार्क आयकनवर क्लिक करा</translation>
 <translation id="6089289670051481345">तृतीयवर्ण दृष्टिक्षीणता</translation>
+<translation id="6090068946774422711"><ph name="DEVICE" /> वरून तुमची वाचन सूची आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="6090760257419195752">डिसमिस केलेल्या चेतावण्या</translation>
 <translation id="609174145569509836">स्टोरेज साफ करा</translation>
 <translation id="6091761513005122595">शेअर यशस्वीरीत्‍‍‍‍या माउंट केले आहे.</translation>
@@ -7964,6 +7967,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7124712201233930202">तुमच्या संस्थेच्या धोरणांची पूर्तता झालेली नाही</translation>
 <translation id="7125148293026877011">Crostini हटवा</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">तुमच्या सर्व डिव्हाइसवर तुमची एक्स्टेंशन आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="7125932261198019860">तुमचा प्रिंटर तुमचे Chromebook कनेक्ट केलेले आहे त्याच वाय-फाय नेटवर्कशी कनेक्ट केला आहे याची खात्री करा किंवा USB केबल वापरा. <ph name="LINK_BEGIN" />कंपॅटिबिलिटीबद्दल अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">इतिहास डाउनलोड करा</translation>
 <translation id="7130438335435247835">अ‍ॅक्सेस पॉइंट नाव (APN)</translation>
@@ -8817,6 +8821,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7780992949171378848">तुमच्या डेटाच्या वापराबाबत साइटना निवड रद्द करण्याची विनंती पाठवा</translation>
 <translation id="7782102568078991263">Google कडून कोणत्याही आणखी सूचना नाहीत</translation>
 <translation id="7782717250816686129">लॉगिन स्क्रीनवर सतत वापरात असलेला डेटा स्टोअर करा आणि सेशनमध्ये क्रेडेंशियल घाला.</translation>
+<translation id="7782885970382585765">तुमच्या सर्व डिव्हाइसवर तुमची वाचन सूची आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="7784020347632229094">कीबोर्ड शॉर्टकटबद्दल अधिक जाणून घ्या</translation>
 <translation id="7784067724422331729">तुमच्या कॉंप्युटरवरील सुरक्षितता सेटिंग्जने ही फाइल ब्लॉक केली.</translation>
 <translation id="7784796923038949829">साइटचा डेटा रीड करू किंवा बदलू शकत नाही</translation>

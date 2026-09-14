@@ -1349,6 +1349,7 @@
 <translation id="2026367923222947564">ໜ້າເຕັມ</translation>
 <translation id="2026377162111110983">ສຽງໃນພື້ນທີ່</translation>
 <translation id="2028449514182362831">ຄຸນສົມບັດທີ່ຕ້ອງການໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວຈະໃຊ້ບໍ່ໄດ້</translation>
+<translation id="2029064269235798707">ເລືອກຄີລັດ</translation>
 <translation id="202918510990975568">ປ້ອນລະຫັດຜ່ານຂອງທ່ານເພື່ອຕັ້ງຄ່າຄວາມປອດໄພ ແລະ ການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2030455719695904263">ແທຣັກແຜດ</translation>
 <translation id="2030803782168502207">ລຶບການສະໝັກສະມາຊິກອອກຈາກອຸປະກອນ</translation>
@@ -2280,6 +2281,7 @@
 <translation id="2740531572673183784">ຕົກລົງ</translation>
 <translation id="2740876196999178364">ກະແຈຜ່ານເຫຼົ່ານີ້ຖືກບັນທຶກໄວ້ຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ. ພວກມັນບໍ່ໄດ້ຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="2741912629735277980">ສະແດງສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ໃນໜ້າຈໍເຂົ້າສູ່ລະບົບ</translation>
+<translation id="274229007420507506">ປ່ຽນທາງລັດໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ບໍ່ພ້ອມໃຫ້ນຳໃຊ້ໃນຕອນນີ້.</translation>
 <translation id="2743301740238894839">ເລີ່ມ</translation>
 <translation id="2743378970365831481">ເພື່ອບັນທຶກລະຫັດຜ່ານຂອງທ່ານໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google, ໃຫ້ໄປຫາໄອຄອນຕົວຈັດການລະຫັດຜ່ານໃນແຖບສະຖານທີ່</translation>
@@ -2629,6 +2631,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{ບໍ່ມີປຸ່ມທີ່ປັບແຕ່ງ}=1{ມີປຸ່ມທີ່ປັບແຕ່ງ 1 ລາຍການ}other{ມີປຸ່ມທີ່ປັບແຕ່ງ {COUNT} ລາຍການ}}</translation>
 <translation id="3002864108328203174">ຊີດລຸ່ມສຸດຂອງ Gemini ແບບເຄິ່ງໜ້າຈໍ.</translation>
 <translation id="3003144360685731741">ເຄືອ​ຂ່າຍ​ທີ່ມັກ</translation>
+<translation id="3003152206838282768">ກຳລັງເຮັດໜ້າວຽກ Gemini App ຂອງທ່ານໃນ Chrome. ກວດສອບ Chrome ສຳລັບຂໍ້ມູນອັບເດດເພີ່ມເຕີມ</translation>
 <translation id="3003253259757197230">ລະບົບຈະສົ່ງ URL ທີ່ທ່ານໄດ້ເຂົ້າເບິ່ງໄປຫາ Google ເພື່ອຄາດເດົາເວັບໄຊຕໍ່ໄປທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງ ແລະ ສະແດງຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບໜ້າທີ່ທ່ານກຳລັງເຂົ້າເບິ່ງ</translation>
 <translation id="3003623123441819449">ແຄຊ໌ CSS</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> ຂອງທ່ານຈະສ້າງການເຊື່ອມຕໍ່ Wi-Fi ສ່ວນບຸກຄົນ.</translation>
@@ -5078,6 +5081,7 @@
 <translation id="4864805589453749318">ເລືອກພໍ່ແມ່ທີ່ກຳລັງໃຫ້ການອະນຸຍາດໃຫ້ເພີ່ມບັນຊີໂຮງຮຽນ.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ບລັອກແລ້ວ)</translation>
 <translation id="486505726797718946">ປະຢັດໜ່ວຍຄວາມຈຳແລ້ວ</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: ກຳລັງເຮັດໜ້າວຽກແອັບ Gemini ຂອງທ່ານໃນ Chrome. ກວດສອບ Chrome ສຳລັບຂໍ້ມູນອັບເດດເພີ່ມເຕີມ</translation>
 <translation id="486635084936119914">ເປີດໄຟລ໌ປະເພດສະເພາະໂດຍອັດຕະໂນມັດຫຼັງຈາກດາວໂຫຼດແລ້ວ</translation>
 <translation id="4868284252360267853">ຕອນນີ້ບໍ່ໄດ້ໂຟກັສກ່ອງໂຕ້​ຕອບນີ້. ກົດ Command-Shift-Option ເພື່ອໂຟກັສກ່ອງໂຕ້ຕອບນີ້.</translation>
 <translation id="4869170227080975044">ອ່ານຂໍ້ມູນເຄືອຂ່າຍ ChromeOS</translation>
@@ -7706,6 +7710,7 @@
 <translation id="6916818963747321523">ຂະຫຍາຍທັງໝົດ</translation>
 <translation id="6917873303492266709">ເພື່ອແບ່ງປັນ, ເຂົ້າຮ່ວມ ແລະ ຮ່ວມມືໃນກຸ່ມແຖບ, ໃຫ້ເປີດການຕັ້ງຄ່າ ແລະ ເປີດ ອະນຸຍາດໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="6919354101107095996">ກະລຸນາລອງເຂົ້າສູ່ລະບົບຫາເວັບໄຊ. ຈາກນັ້ນ, ລອງດາວໂຫຼດໃໝ່</translation>
+<translation id="6919461818524183254">ເລືອກທາງລັດ</translation>
 <translation id="6919952941889172531">ເປີດໃຊ້ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນສຳລັບໂປຣໄຟລ໌ Chrome ນີ້ນຳບໍ?</translation>
 <translation id="6920989436227028121">ເປີດເປັນແຖບທໍາມະດາ</translation>
 <translation id="6921104647315081813">ລຶບລ້າງກິດຈະກຳ</translation>

@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Tawaran untuk menyimpan kata laluan &amp; kunci laluan</translation>
 <translation id="1794893174442046596">Kumpulan tab</translation>
 <translation id="1807893857950749072">Benarkan pemberitahuan penjejakan harga…</translation>
+<translation id="1808142805674973090">Tukar mod</translation>
 <translation id="1809929083618343438">Langkah ini mengalih keluar maklumat yang dipilih daripada Chrome tetapi tidak memadamkan maklumat ini daripada Google Account anda.</translation>
 <translation id="1810976980198522421">Batal</translation>
 <translation id="1815941218935345331">Kod laluan</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">Tiada sambungan Internet.</translation>
 <translation id="3782614601387961027">Ketepikan amaran</translation>
 <translation id="3789841737615482174">Pasang</translation>
+<translation id="3793603310364129123">Kurang langkah, pautan lebih pantas</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803696231112616155">Tawarkan untuk menterjemahkan tapak ini</translation>
 <translation id="3810973564298564668">Urus</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Matikan Pratonton Peta</translation>
 <translation id="5474397204728336997">Kata laluan keluarga, penyesuaian baharu dan pelbagai lagi. Ketik untuk mengetahui maklumat lanjut.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Tiada kata laluan diimport}=1{{count} kata laluan diimport}other{{count} kata laluan diimport}}</translation>
+<translation id="5477188385487393357">Langkau salin &amp; tampal</translation>
 <translation id="5478327362747197944">Buat acara Kalendar secara terus dengan mengklik pada tarikh dalam halaman web.</translation>
 <translation id="5482922178977937393">Adakah anda mahu mendapatkan pemberitahuan untuk berita, sukan dan pelbagai lagi berdasarkan minat anda?</translation>
 <translation id="5483838506518938965">Anda sudah sedia</translation>
@@ -1747,6 +1750,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6585618849026997638">Anda boleh kembali ke halaman yang penting bagi anda dengan menambah penanda halaman</translation>
 <translation id="6589001036857939353">Gabungkan pendua</translation>
 <translation id="659407965921887085">Kad ini menunjukkan penurunan harga merentas web untuk produk yang anda jejaki pada masa ini</translation>
+<translation id="6596324345367949437">Gemini tidak tersedia dalam Mod inkognito</translation>
 <translation id="6596481460663245319">Cari Imej dengan Google</translation>
 <translation id="6601302169302852717">Imej disimpan dalam Google Photos untuk <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Autolengkap dan kata laluan</translation>

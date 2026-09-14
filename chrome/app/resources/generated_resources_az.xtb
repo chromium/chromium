@@ -676,6 +676,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1523978563989812243">Mətndən-nitqə mexanizmləri</translation>
 <translation id="1524563461097350801">Xeyr, təşəkkürlər</translation>
 <translation id="1525740877599838384">Məkanı müəyyən etmək üçün yalnız Wi-Fi istifadə edin</translation>
+<translation id="1526274304859009691"><ph name="DEVICE" /> cihazından artırmaları və daha çoxunu əldə etmək üçün daxil olun</translation>
 <translation id="1526560967942511387">Başlıqsız Sənəd</translation>
 <translation id="1527336312600375509">Monitorun yenilənmə sürəti</translation>
 <translation id="152913213824448541">Yaxındakılarla Paylaşma kontaktları</translation>
@@ -6375,6 +6376,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5902400038326841449">Google Parol Meneceri deaktiv edilib</translation>
 <translation id="5902892210366342391">Anonim rejimdə təhlükəli saytlara keçməzdən əvvəl xəbərdarlıqlara baxın</translation>
 <translation id="5906457147959147328">Bu sayta qorunan kontenti oxutmaq üçün identifikatorlardan istifadə imkanı verməyə davam edin</translation>
+<translation id="5906549184882174190">İzolə edilmiş</translation>
 <translation id="5906655207909574370">Güncəllənmək üzrədir! Güncəlləməni tamamlamaq üçün cihazı yenidən başladın.</translation>
 <translation id="5906732635754427568">Bu tətbiqlə bağlı data cihazdan silinəcək.</translation>
 <translation id="5906974869830879618">Pin daxil edin</translation>
@@ -6600,6 +6602,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6088475950266477163">Ayarlar</translation>
 <translation id="608912389580139775">Bu səhifəni oxu siyahınıza əlavə etmək üçün Əlfəcin ikonasına toxunun</translation>
 <translation id="6089289670051481345">Tritanomaliya</translation>
+<translation id="6090068946774422711"><ph name="DEVICE" /> cihazından oxu siyahısı və daha çoxunu əldə etmək üçün daxil olun</translation>
 <translation id="6090760257419195752">Qapadılmış xəbərdarlıqlar</translation>
 <translation id="609174145569509836">Yaddaşı təmizləyin</translation>
 <translation id="6091761513005122595">Paylaşım başladı.</translation>
@@ -7951,6 +7954,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7124712201233930202">Təşkilatınızın siyasətlərinə cavab verilmir</translation>
 <translation id="7125148293026877011">Crostini'ni silin</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Daxil olaraq bütün cihazlarda artırmaları və daha çoxunu əldə edin</translation>
 <translation id="7125932261198019860">Printeri Chromebook ilə eyni Wi-Fi şəbəkəsinə qoşun, yaxud USB kabeli istifadə edin. <ph name="LINK_BEGIN" />Uyğunluq haqqında ətraflı<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Endirmə tarixi</translation>
 <translation id="7130438335435247835">Giriş nöqtəsi adı (APN)</translation>
@@ -8804,6 +8808,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7780992949171378848">Datanızın istifadəsi ilə bağlı saytlara imtina sorğusu göndərin</translation>
 <translation id="7782102568078991263">Google'dan daha təklif yoxdur</translation>
 <translation id="7782717250816686129">Daimi datanı giriş ekranında saxlayıb kredensialları sessiyaya daxil edin.</translation>
+<translation id="7782885970382585765">Daxil olaraq bütün cihazlarda oxu siyahısı və daha çoxunu əldə edin</translation>
 <translation id="7784020347632229094">Klaviatura qısayolu haqqında ətraflı məlumat</translation>
 <translation id="7784067724422331729">Kompüterinizdəki güvənlik ayarları bu faylı blokladı.</translation>
 <translation id="7784796923038949829">Saytın datasını oxumaq yaxud dəyişmək mümkün deyil</translation>

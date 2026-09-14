@@ -338,6 +338,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4621240073146040695">Hampir terkini! Lancarkan semula Chromium untuk menyelesaikan kemas kini.</translation>
 <translation id="4625064703209785397">Mempercepat laman dengan enjin V8 Chromium tetapi Chromium menjadi kurang tahan terhadap serangan</translation>
 <translation id="4626321472657185181">Buka Carian dengan Chromium</translation>
+<translation id="4654639495249754755">Profil Chromium</translation>
 <translation id="4665829708273112819">Amaran: Chromium tidak dapat menghalang sambungan daripada merakam sejarah penyemakan imbas anda. Untuk melumpuhkan sambungan ini dalam mod Inkognito, nyahpilih pilihan ini.</translation>
 <translation id="4673151026126227699">Jika anda turut berkongsi laporan penggunaan Chromium, laporan tersebut menyertakan URL yang anda lawati</translation>
 <translation id="4673710618874938871">Log masuk sebagai <ph name="USER_NAME" />, keahlian. Buka menu akaun</translation>
@@ -470,6 +471,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6174920971222007286">Fail ini mungkin berbahaya<ph name="LINE_BREAK" />Chromium boleh menyemak muat turun ini untuk anda jika anda memberikan kata laluan. Maklumat tentang fail itu akan dihantar kepada Penyemakan Imbas Selamat Google tetapi kandungan dan kata laluan fail akan kekal pada peranti anda.</translation>
 <translation id="6182736845697986886">Pemasangan gagal akibat ralat dalaman pelayan kemaskinian.</translation>
 <translation id="6183079672144801177">Pastikan anda telah log masuk ke Chromium pada <ph name="TARGET_DEVICE_NAME" /> anda, kemudian cuba hantar lagi.</translation>
+<translation id="6192070012454216182">Buat carian dan kemukakan pertanyaan dari mana-mana sahaja, walaupun Chromium diminimumkan. Membenarkan Chromium dijalankan pada latar.</translation>
 <translation id="6212496753309875659">Komputer ini telah mempunyai versi Chromium yang lebih baharu. Jika perisian tidak berfungsi, sila nyahpasang Chromium dan cuba lagi.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium akan dilancarkan semula sekarang}=1{Chromium akan dilancarkan semula dalam masa sesaat}other{Chromium akan dilancarkan semula dalam masa # saat}}</translation>
 <translation id="6241367896540709610">Chromium memerlukan kebenaran akses storan untuk memuat turun fail</translation>
@@ -596,6 +598,7 @@ Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memad
 <translation id="7288567540154601580">Tab &amp; sambungan</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium mengesyorkan supaya anda mengalih keluar sambungan tersebut}other{Chromium mengesyorkan supaya anda mengalih keluar sambungan tersebut}}</translation>
 <translation id="7296334833518879294">Untuk berkongsi audio sistem, buka Tetapan Sistem dan benarkan 'Rakaman Audio Sistem Sahaja' untuk Chromium. Kemudian, anda perlu memulakan semula Chromium.</translation>
+<translation id="7299899569525778554">Buat carian daripada desktop</translation>
 <translation id="731795002583552498">Mengemas kini Chromium</translation>
 <translation id="7318036098707714271">Fail pilihan anda rosak atau tidak sah.
 
@@ -651,6 +654,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Jadikan lebih sukar untuk pengguna dengan akses kepada trafik Internet anda untuk melihat laman yang anda lawati. Chromium menggunakan sambungan selamat untuk mencari alamat IP laman dalam DNS (Sistem Nama Domain).</translation>
 <translation id="7810005234485217901">Anda boleh menyematkan Carian Imej untuk akses mudah</translation>
+<translation id="7813626943009612327">Tanya tentang kandungan di luar Chromium, seperti apl atau fail lain yang anda buka</translation>
 <translation id="7828527096541974699">Pilih perkara yang mahu dikongsi dengan Chromium</translation>
 <translation id="7828947555739565424">Profil Chromium dengan akaun ini telah pun wujud pada peranti ini</translation>
 <translation id="7845233973568007926">Terima kasih kerana memasang. Anda perlu memulakan semula komputer anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
@@ -741,6 +745,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8619360774459241877">Melancarkan Chromium...</translation>
 <translation id="8624541899164515475">Tetapan, dibuka dalam tab baharu.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing tidak boleh dijadikan penyemak imbas lalai anda.</translation>
+<translation id="8676101123715131330">Buat carian dengan Chromium dari mana-mana sahaja</translation>
 <translation id="8697124171261953979">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chromium atau membuat carian dari Kotak Omni.</translation>
 <translation id="8704119203788522458">Ini Chromium anda</translation>
 <translation id="8712637175834984815">Faham</translation>

@@ -1442,6 +1442,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2111670510994270194">Tab baharu ke kanan</translation>
 <translation id="2111778868023567359">Anda tidak akan melihat Kumpulan Tab pada halaman ini lagi</translation>
 <translation id="2112554630428445878">Selamat datang, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Lihat sijil yang diimport daripada macOS</translation>
 <translation id="21133533946938348">Pin Tab</translation>
 <translation id="2113479184312716848">Buka &amp;Fail...</translation>
@@ -1997,6 +1998,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="252513908494776481">Tanya tentang tab ini</translation>
 <translation id="2525746158911982776">Kemaskinian gagal kerana sistem kekurangan ruang storan yang mencukupi.</translation>
 <translation id="2525842906387880861">Anda tidak akan melihat cadangan pada halaman ini lagi</translation>
+<translation id="2526346836766369775">&amp;Tab Terasing Baharu</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Semak kemaskinian</translation>
 <translation id="2527167509808613699">Mana-mana jenis sambungan</translation>
@@ -8550,6 +8552,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7578137152457315135">Tetapan cap jari</translation>
 <translation id="7578692661782707876">Sila masukkan kod pengesahan anda.</translation>
 <translation id="757941033127302446">Dilog masuk</translation>
+<translation id="7580311608678791180">Buka daripada bar tugas Windows</translation>
 <translation id="7581462281756524039">Pembersih</translation>
 <translation id="7582582252461552277">Lebih suka rangkaian ini</translation>
 <translation id="7582844466922312471">Data Mudah Alih</translation>
@@ -8563,6 +8566,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7590883480672980941">Tetapan input</translation>
 <translation id="7592060599656252486">Sedikit</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (kod ralat <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Buka daripada bar menu Mac</translation>
 <translation id="7600054753482800821">&amp;Urus enjin carian dan carian laman</translation>
 <translation id="7600218158048761260">Google Drive dilumpuhkan untuk jenis akaun ini.</translation>
 <translation id="7600965453749440009">Jangan sekali-kali terjemahkan <ph name="LANGUAGE" /></translation>
@@ -9248,6 +9252,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8102139037507939978">Buang Maklumat Peribadi yang Boleh Dikenal Pasti daripada system_logs.txt.</translation>
 <translation id="810362914482827094">Cari kunci laluan</translation>
 <translation id="8104088837833760645">Muat turun profil eSIM</translation>
+<translation id="8104388155778519213">Kongsi kandungan yang dipaparkan pada skrin anda dengan Google Lens</translation>
 <translation id="8104778744208707085">Memerlukan perhatian anda</translation>
 <translation id="8105273883928376822">Sila log masuk untuk meneruskan proses.</translation>
 <translation id="8106114112474206597">Gunakan “i” untuk menekan butang tetikus</translation>
