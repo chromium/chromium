@@ -267,6 +267,18 @@ class ContextualTasksUiService : public KeyedService {
           session_handle,
       StartTaskUiOptions options = {});
 
+  // Resets the open side panel with a new zero-state task in-place. This
+  // creates a new task, associates it with the active tab, initializes the
+  // session, signals the WebUI to reset its state, and refreshes the active
+  // tab context.
+  void ResetZeroStateInOpenSidePanel(
+      content::WebContents* panel_contents,
+      tabs::TabInterface* tab_interface,
+      const GURL& url,
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session_handle,
+      omnibox::ChromeAimEntryPoint entry_point);
+
   // Opens the contextual tasks side panel showing a ghost loader while waiting
   // for the initial thread URL to be provided for that task. This creates an
   // empty task. If the panel is already open for a task, this is a no-op.
@@ -622,16 +634,6 @@ class ContextualTasksUiService : public KeyedService {
       const contextual_search::ContextualSearchSessionHandle* session_handle,
       const base::Uuid& task_id);
 
-  // Re-initializes the open side panel with a new zero-state task. This
-  // provides a clean start by creating a new task, attaching the entry point,
-  // and reloading the parent WebUI.
-  void ReloadZeroStateInOpenSidePanel(
-      content::WebContents* panel_contents,
-      tabs::TabInterface* tab_interface,
-      const GURL& url,
-      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          session_handle,
-      omnibox::ChromeAimEntryPoint entry_point);
 
   // Sets the initial thread URL for a given task and runs any pending
   // callbacks.

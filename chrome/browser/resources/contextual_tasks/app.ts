@@ -532,6 +532,8 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         this.composebox_?.deleteFile(fileToken);
       }),
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
+      callbackRouter.resetForNewThread.addListener(
+          this.resetForNewThread.bind(this)),
       callbackRouter.onZeroStateChange.addListener(isZeroState => {
         const wasZeroState = this.isZeroState_;
         this.isZeroState_ = isZeroState;
@@ -1544,6 +1546,18 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       composebox.startExpandAnimation();
       composebox.clearInputAndFocus();
     }
+  }
+
+  resetForNewThread(taskId: Uuid, threadUrl: Url) {
+    this.browserProxy_.handler.setTaskId(taskId);
+
+    const composebox = this.composebox_;
+    if (composebox) {
+      composebox.startExpandAnimation();
+      composebox.clearInputAndFocus(/*querySubmitted=*/ true);
+    }
+
+    this.$.threadFrame.src = threadUrl;
   }
 
   get isLoadErrorForTesting() {

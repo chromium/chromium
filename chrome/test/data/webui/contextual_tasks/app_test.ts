@@ -232,6 +232,22 @@ suite('ContextualTasksAppTest', function() {
     assertEquals(initialHistoryLength, window.history.length);
   });
 
+  test('resetForNewThread resets frame src and updates task id', async () => {
+    const {appElement, proxy} =
+        await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+
+    const newTaskId = {value: 'new-task-uuid-456'};
+    const newThreadUrl = 'http://example.com/new_thread?aep=1';
+
+    proxy.callbackRouterRemote.resetForNewThread(newTaskId, newThreadUrl);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertEquals(
+        'http://example.com/new_thread?aep=1', appElement.$.threadFrame.src);
+    assertDeepEquals(newTaskId, await proxy.handler.whenCalled('setTaskId'));
+  });
+
   test('back navigation fetches previous task url', async () => {
     window.history.replaceState(
         {}, '', `?chrome_task_id=111&thread=222&turn=333&title=wrong`);

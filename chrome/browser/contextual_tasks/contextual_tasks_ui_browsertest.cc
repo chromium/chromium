@@ -136,6 +136,10 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
               InjectInput,
               (contextual_tasks::mojom::InjectedInputPtr input),
               (override));
+  MOCK_METHOD(void,
+              ResetForNewThread,
+              (const base::Uuid&, const GURL&),
+              (override));
 
   mojo::PendingRemote<contextual_tasks::mojom::Page> BindAndGetRemote() {
     return receiver_.BindNewPipeAndPassRemote();

@@ -248,7 +248,7 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-bool ShouldReloadZeroStateForOmniboxAction(
+bool ShouldResetZeroStateForOmniboxAction(
     const GURL& url,
     ContextualTasksUiService* service,
     omnibox::ChromeAimEntryPoint entry_point) {
@@ -259,7 +259,7 @@ bool ShouldReloadZeroStateForOmniboxAction(
          ContextualTasksUI::IsZeroState(url, service);
 }
 #else
-bool ShouldReloadZeroStateForOmniboxAction(
+bool ShouldResetZeroStateForOmniboxAction(
     const GURL& url,
     ContextualTasksUiService* service,
     omnibox::ChromeAimEntryPoint entry_point) {
@@ -1170,26 +1170,27 @@ void ContextualTasksUiService::InitializeTaskInSidePanel(
   }
 }
 
-void ContextualTasksUiService::ReloadZeroStateInOpenSidePanel(
+void ContextualTasksUiService::ResetZeroStateInOpenSidePanel(
     content::WebContents* panel_contents,
     tabs::TabInterface* tab_interface,
     const GURL& url,
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle,
     omnibox::ChromeAimEntryPoint entry_point) {
-  // Cleanly start over: Create a new task, record entry point, and reload the
-  // parent WebUI.
+  // Cleanly start over with an in-place reset. Creates a new task, records
+  // entry point, and adds the active tab.
   ContextualTask task = contextual_tasks_service_->CreateTaskFromUrl(url);
   SetInitialEntryPointForTask(task.GetTaskId(), entry_point);
   task_id_to_creation_url_[task.GetTaskId()] = url;
   AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
 
-  content::NavigationController::LoadURLParams load_params(
-      GetContextualTaskUrlForTask(task.GetTaskId()));
-  panel_contents->GetController().LoadURLWithParams(load_params);
-
   InitializeTaskInSidePanel(panel_contents, task.GetTaskId(),
                             std::move(session_handle));
+
+  if (auto* web_ui_interface = GetWebUiInterface(panel_contents)) {
+    web_ui_interface->ResetForNewThread(task.GetTaskId(), url);
+    web_ui_interface->OnActiveTabContextStatusChanged();
+  }
 }
 
 void ContextualTasksUiService::OnNonThreadNavigationInTab(
@@ -3032,6 +3033,17 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
     return;
   }
 
+  // If the side panel is already open and an Omnibox page action triggers an
+  // in-place zero-state reset, reset the panel with the new task and forward
+  // the session handle directly to it.
+  if (!IsContextualTasksSidePanelRearchitectureEnabled() &&
+      ShouldResetZeroStateForOmniboxAction(url, this, options.entry_point)) {
+    ResetZeroStateInOpenSidePanel(panel_contents, tab_interface, url,
+                                  std::move(session_handle),
+                                  options.entry_point);
+    return;
+  }
+
   // If the side panel contents already exist, get the WebUI controller to
   // load the URL into the already loaded contextual tasks UI.
   auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
@@ -3054,7 +3066,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
   }
 
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
-    if (ShouldReloadZeroStateForOmniboxAction(url, this, options.entry_point)) {
+    if (ShouldResetZeroStateForOmniboxAction(url, this, options.entry_point)) {
       // TODO(crbug.com/537842795): Understand if this flow is possible in the
       // rearchitecture and handle accordingly. For now, just load the URL.
     }
@@ -3066,13 +3078,6 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
   // navigation directly to the embedded page.
   if (ContextualTasksUIInterface* web_ui_interface =
           GetWebUiInterface(panel_contents)) {
-    if (ShouldReloadZeroStateForOmniboxAction(url, this, options.entry_point)) {
-      ReloadZeroStateInOpenSidePanel(panel_contents, tab_interface, url,
-                                     std::move(session_handle),
-                                     options.entry_point);
-      return;
-    }
-
     if (IsContextualTasksSidePanelRearchitectureEnabled()) {
       panel_contents->GetController().LoadURL(url, content::Referrer(),
                                               ui::PAGE_TRANSITION_AUTO_TOPLEVEL,

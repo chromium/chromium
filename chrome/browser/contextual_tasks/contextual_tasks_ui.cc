@@ -1482,6 +1482,14 @@ void ContextualTasksUI::SyncAutoSuggestedTabContext() {
   }
 }
 
+void ContextualTasksUI::ResetForNewThread(const base::Uuid& task_id,
+                                          const GURL& url) {
+  SetTaskId(task_id);
+  if (page_) {
+    page_->ResetForNewThread(task_id, url);
+  }
+}
+
 void ContextualTasksUI::OnActiveTabContextStatusChanged() {
   if (contextual_tasks::GetIsProtectedPageErrorEnabled() && page_) {
     page_->HideErrorPage();

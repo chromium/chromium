@@ -78,6 +78,12 @@ class ContextualTasksUIInterface : public TaskInfoDelegate,
   // Re-syncs the current auto-suggested tab context to the WebUI composebox.
   virtual void SyncAutoSuggestedTabContext() = 0;
 
+  // Resets the contextual tasks side panel UI state for an in-place fresh
+  // thread (e.g. triggered by omnibox page action on an already-open side
+  // panel).
+  virtual void ResetForNewThread(const base::Uuid& task_id,
+                                 const GURL& url) = 0;
+
   // Notifies the UI that the Lens overlay state has changed.
   virtual void OnLensOverlayStateChanged(
       bool is_showing,

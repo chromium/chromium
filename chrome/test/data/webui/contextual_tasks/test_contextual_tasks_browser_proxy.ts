@@ -47,6 +47,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'showSmartTabSharingTryItIph',
       'showSmartTabSharingDefaultOnIph',
       'onWindowClosed',
+      'resetForNewThread',
     ]);
   }
 
@@ -182,6 +183,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   onWindowClosed(windowId: ContextualWindowId) {
     this.methodCalled('onWindowClosed', windowId);
+  }
+
+  resetForNewThread(taskId: Uuid, threadUrl: Url) {
+    this.methodCalled('resetForNewThread', taskId, threadUrl);
   }
 }
 

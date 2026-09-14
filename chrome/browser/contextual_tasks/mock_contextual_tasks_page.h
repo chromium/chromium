@@ -79,6 +79,10 @@ class MockContextualTasksPage : public mojom::Page {
               OnWindowClosed,
               (const ContextualWindowId& window_id),
               (override));
+  MOCK_METHOD(void,
+              ResetForNewThread,
+              (const base::Uuid& task_id, const GURL& url),
+              (override));
 
  private:
   mojo::Receiver<mojom::Page> receiver_{this};

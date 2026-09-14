@@ -368,6 +368,12 @@ interface Page {
   // Called by the browser process (C++) to notify the UI that a tracked window
   // was closed.
   OnWindowClosed(ContextualWindowId window_id);
+
+  // Requests the side panel UI to reset its state for an in-place fresh thread
+  // (e.g. triggered by an omnibox page action on an already-open side panel).
+  // Navigates the embedded webview in-place to `thread_url`, clears composebox
+  // inputs, and resets active tab context to get contextual suggestions.
+  ResetForNewThread(mojo_base.mojom.Uuid task_id, url.mojom.Url thread_url);
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.

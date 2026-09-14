@@ -199,6 +199,7 @@ class ContextualTasksUI
   void OnSidePanelStateChanged() override;
   void OnActiveTabContextStatusChanged() override;
   void SyncAutoSuggestedTabContext() override;
+  void ResetForNewThread(const base::Uuid& task_id, const GURL& url) override;
   void OnLensOverlayStateChanged(
       bool is_showing,
       std::optional<lens::LensOverlayInvocationSource> invocation_source)
