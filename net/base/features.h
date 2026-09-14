@@ -363,12 +363,6 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // See spec changes in https://github.com/httpwg/http-extensions/pull/1348
 NET_EXPORT BASE_DECLARE_FEATURE(kCookieSameSiteConsidersRedirectChain);
 
-// When this feature is enabled, servers can include an
-// allow-same-site-none-cookies value that notifies the browser that same-site
-// SameSite=None cookies should be allowed in sandboxed contexts with 3PC
-// restrictions.
-NET_EXPORT BASE_DECLARE_FEATURE(kAllowSameSiteNoneCookiesInSandbox);
-
 // Controls whether static key pinning is enforced.
 NET_EXPORT BASE_DECLARE_FEATURE(kStaticKeyPinningEnforcement);
 

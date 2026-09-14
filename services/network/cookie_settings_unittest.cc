@@ -2332,19 +2332,13 @@ TEST_F(CookieSettingsTest,
       kAllowedRequestsHistogram,
       net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
 
-  // Set overrides and enable feature.
-  const net::CookieSettingOverrides overrides(
-      {net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox});
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kAllowSameSiteNoneCookiesInSandbox);
-
   // Override should allow cookie access despite null SiteForCookies due to the
   // sandboxed context.
   net::CookieInclusionStatus status;
-  EXPECT_TRUE(settings.IsCookieAccessible(*cookie, url, net::SiteForCookies(),
-                                          origin, net::FirstPartySetMetadata(),
-                                          overrides, &status));
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *cookie, url, net::SiteForCookies(), origin, net::FirstPartySetMetadata(),
+      {net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox},
+      &status));
   EXPECT_EQ(status.exemption_reason(),
             net::CookieInclusionStatus::ExemptionReason::
                 kSameSiteNoneCookiesInSandbox);
@@ -2365,19 +2359,14 @@ TEST_F(CookieSettingsTest,
   std::unique_ptr<net::CanonicalCookie> cookie =
       MakeCanonicalSameSiteNoneCookie("name", cross_site_url.spec());
 
-  // Set overrides and enable feature.
-  const net::CookieSettingOverrides overrides(
-      {net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox});
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kAllowSameSiteNoneCookiesInSandbox);
-
   // Override should not allow cookie that is cross-site with the top-level to
   // be included in cross-site request
   net::CookieInclusionStatus status;
   EXPECT_FALSE(settings.IsCookieAccessible(
       *cookie, cross_site_url, net::SiteForCookies(), origin,
-      net::FirstPartySetMetadata(), overrides, &status));
+      net::FirstPartySetMetadata(),
+      {net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox},
+      &status));
   EXPECT_EQ(status.exemption_reason(),
             net::CookieInclusionStatus::ExemptionReason::kNone);
   histogram_tester.ExpectUniqueSample(

@@ -508,11 +508,8 @@ class AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest
  public:
   AllowSameSiteNoneCookiesContentSecurityPolicyBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatures(
-        {net::features::kForceThirdPartyCookieBlocking,
-         net::features::kAllowSameSiteNoneCookiesInSandbox},
-        /*disabled_features=*/{});
-
+    feature_list_.InitAndEnableFeature(
+        net::features::kForceThirdPartyCookieBlocking);
     if (include_allow_same_site_none_cookies()) {
       sandbox_iframe_policy_ = "allow-scripts allow-same-site-none-cookies";
       sandbox_csp_path_ = kAllowSameSiteNoneCookiesSandboxPath;

@@ -249,8 +249,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
       runtime_feature_name_to_chromium_feature_mapping[] = {
           {"AllowContentInitiatedDataUrlNavigations",
            features::kAllowContentInitiatedDataUrlNavigations},
-          {"AllowSameSiteNoneCookiesInSandbox",
-           net::features::kAllowSameSiteNoneCookiesInSandbox},
           {"AllowURNsInIframes", blink::features::kAllowURNsInIframes},
           {"AllowURNsInIframes", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},

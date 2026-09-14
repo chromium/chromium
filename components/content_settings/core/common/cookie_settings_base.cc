@@ -23,7 +23,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
@@ -336,9 +335,7 @@ bool CookieSettingsBase::IsAllowedBySandboxValue(
     const GURL& first_party_url,
     net::CookieSettingOverrides overrides) const {
   if (!overrides.Has(
-          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox) ||
-      !base::FeatureList::IsEnabled(
-          net::features::kAllowSameSiteNoneCookiesInSandbox)) {
+          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox)) {
     return false;
   }
 
