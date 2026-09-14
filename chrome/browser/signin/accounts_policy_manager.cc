@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/debug/stack_trace.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -323,7 +322,6 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
           << profile->GetPrefs()->IsManagedPreference(prefs::kSigninAllowed)
           << "), SigninLevel=" << signin_level << ", ProfileType="
           << static_cast<int>(profile_metrics::GetBrowserProfileType(profile));
-      LOG(WARNING) << base::debug::StackTrace().ToString();
     }
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
