@@ -172,6 +172,15 @@ EXCLUDED_FUNCTION: list[ExcludedFunction] = [
     ],
   ),
   ExcludedFunction(
+    reason=(
+      "BoringSSL CBS functions expand into raw pointer arithmetic on some"
+      " configurations"
+    ),
+    strings=[
+      "CBS_data",
+    ],
+  ),
+  ExcludedFunction(
     reason="Standard C library functions inherently unsafe with buffers",
     strings=[
       "atof",
