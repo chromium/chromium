@@ -1739,4 +1739,41 @@ TEST_F(GlicSelectionObserverTest, OnAskGeminiWithSmallChipDismissesUI) {
   EXPECT_TRUE(observer->show_selection_overlay_called());
 }
 
+TEST_F(GlicSelectionObserverTest,
+       OnAskGeminiWithSmallChipAndOverlayPromptDismissesUI) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kGlicSelectionSmallChip,
+                                 features::kGlicSelectionOverlayPrompt},
+                                {});
+
+  TestGlicSelectionObserver* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  CallOnAskGemini();
+
+  EXPECT_TRUE(observer->dismiss_ui_called());
+  EXPECT_EQ(GlicSelectionObserver::DismissReason::kActionTaken,
+            observer->dismiss_ui_reason());
+  EXPECT_TRUE(observer->show_selection_overlay_called());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       OnAskGeminiWithSmallChipWhenSidePanelClosedShowsOverlay) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kGlicSelectionSmallChip,
+                                 features::kGlicSelectionOverlayPrompt},
+                                {});
+
+  TestGlicSelectionObserver* observer = GetObserver();
+  ASSERT_TRUE(observer);
+  observer->set_mock_side_panel_open(false);
+
+  CallOnAskGemini();
+
+  EXPECT_TRUE(observer->dismiss_ui_called());
+  EXPECT_EQ(GlicSelectionObserver::DismissReason::kActionTaken,
+            observer->dismiss_ui_reason());
+  EXPECT_TRUE(observer->show_selection_overlay_called());
+}
+
 }  // namespace glic

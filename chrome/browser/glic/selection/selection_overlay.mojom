@@ -10,6 +10,8 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 
 union RegionShape {
   // A rectangular region.
+  // Note that `x` and `y` denote the center of the rectangle instead of
+  // the top-left corner.
   gfx.mojom.RectF rect;
   // A polyline shape.
   array<gfx.mojom.PointF> polyline;

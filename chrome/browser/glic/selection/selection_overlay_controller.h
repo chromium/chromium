@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_SELECTION_SELECTION_OVERLAY_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_SELECTION_SELECTION_OVERLAY_CONTROLLER_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -19,6 +21,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
 namespace content {
@@ -80,6 +83,9 @@ class SelectionOverlayController
       mojom::TabContextOptionsPtr options);
 
   void Show(mojom::TabContextOptionsPtr options);
+  // Shows the overlay with a region pre-selected around `selection_bounds`,
+  // which is in screen coordinates.
+  void ShowWithSelection(const gfx::Rect& selection_bounds);
   void Close();
 
   // `selection::SelectionOverlayPageHandler`:

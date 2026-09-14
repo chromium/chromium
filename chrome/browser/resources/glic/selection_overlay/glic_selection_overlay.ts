@@ -188,6 +188,10 @@ export class SelectionOverlayElementElement extends
           this.activeSelection = e.detail;
           if (this.currentGesture?.state === GestureState.NOT_STARTED ||
               this.currentGesture?.state === undefined) {
+            // Activate the dark scrim on the region selection layer, which
+            // normally only activates at the end of a manual drag gesture.
+            this.selectionElements.regionSelectionLayer
+                .handlePostSelectionDragGestureEnd();
             this.updateFloatingPromptPosition();
             this.fetchSuggestedActions();
           }

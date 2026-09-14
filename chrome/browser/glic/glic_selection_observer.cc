@@ -1207,8 +1207,22 @@ void GlicSelectionObserver::ShowSelectionOverlay() {
   if (!tab_interface) {
     return;
   }
-  if (auto* controller =
-          SelectionOverlayController::FromTabWebContents(web_contents())) {
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents());
+  if (!controller) {
+    return;
+  }
+
+  std::optional<gfx::Rect> bounds;
+  if (last_selection_frame_token_.has_value()) {
+    if (auto* selected_frame = content::RenderFrameHost::FromFrameToken(
+            *last_selection_frame_token_)) {
+      bounds = web_contents()->GetTextSelectionBounds(selected_frame);
+    }
+  }
+  if (bounds.has_value() && !bounds->IsEmpty()) {
+    controller->ShowWithSelection(*bounds);
+  } else {
     controller->Show(/*options=*/nullptr);
   }
 }

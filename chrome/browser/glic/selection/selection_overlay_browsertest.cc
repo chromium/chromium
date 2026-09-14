@@ -181,4 +181,49 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   EXPECT_NE(actions[1]->id, actions[2]->id);
 }
 
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       ShowWithSelectionPopulatesSelection) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(selection_bounds);
+
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+
+  controller->Close();
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       SubmitPromptWithSelectedRegion) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(selection_bounds);
+
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->SubmitPrompt("Explain this selection");
+
+  // The browser started this session, so it dismisses the overlay itself.
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+
+  controller->Close();
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+}
+
 }  // namespace glic

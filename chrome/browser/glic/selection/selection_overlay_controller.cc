@@ -84,6 +84,53 @@ bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
          event.windows_key_code == ui::VKEY_ESCAPE;
 }
 
+constexpr int kSelectionPaddingDip = 5;
+
+selection::SelectedRegionPtr CreateRegionFromBounds(
+    gfx::Rect selection_bounds,
+    const gfx::Rect& tab_bounds) {
+  if (selection_bounds.IsEmpty() || tab_bounds.IsEmpty()) {
+    return nullptr;
+  }
+
+  selection_bounds.Outset(kSelectionPaddingDip);
+
+  float left = static_cast<float>(selection_bounds.x() - tab_bounds.x()) /
+               tab_bounds.width();
+  float right = static_cast<float>(selection_bounds.right() - tab_bounds.x()) /
+                tab_bounds.width();
+  float top = static_cast<float>(selection_bounds.y() - tab_bounds.y()) /
+              tab_bounds.height();
+  float bottom =
+      static_cast<float>(selection_bounds.bottom() - tab_bounds.y()) /
+      tab_bounds.height();
+
+  // Clip to remain inside tab bounds.
+  left = std::max(0.0f, left);
+  right = std::min(1.0f, right);
+  top = std::max(0.0f, top);
+  bottom = std::min(1.0f, bottom);
+
+  float width = right - left;
+  float height = bottom - top;
+  if (width <= 0.0f || height <= 0.0f) {
+    return nullptr;
+  }
+
+  float center_x = (left + right) / 2.0f;
+  float center_y = (top + bottom) / 2.0f;
+
+  auto region = selection::SelectedRegion::New();
+  region->id = base::UnguessableToken::Create();
+  // Note that the rect is normalized against the tab's view bounds, and its
+  // `(x, y)` is the center of the region rather than the top-left corner.
+  // Both `GetRectForRegion()` and `post_selection_renderer.ts` convert back
+  // from the center, so the center needs to be stored here.
+  region->shape = selection::RegionShape::NewRect(
+      gfx::RectF(center_x, center_y, width, height));
+  return region;
+}
+
 class SelectionOverlayFetchPageProgressListener
     : public page_content_annotations::FetchPageProgressListener {
  public:
@@ -294,6 +341,18 @@ void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options) {
   ShowModalUI();
 }
 
+void SelectionOverlayController::ShowWithSelection(
+    const gfx::Rect& selection_bounds) {
+  selected_regions_.clear();
+  if (tab_ && tab_->GetContents()) {
+    if (auto region = CreateRegionFromBounds(
+            selection_bounds, tab_->GetContents()->GetViewBounds())) {
+      selected_regions_[region->id] = std::move(region);
+    }
+  }
+  Show(/*options=*/nullptr);
+}
+
 void SelectionOverlayController::Close() {
   CloseUI();
 }
@@ -352,6 +411,17 @@ void SelectionOverlayController::InitializeOverlay() {
 
   CHECK(page_);
   page_->ScreenshotReceived(initial_rgb_screenshot_);
+
+  // Forward any pre-existing selections (e.g. from a text selection prompt) to
+  // the WebUI so they are rendered immediately upon initialization.
+  if (!selected_regions_.empty()) {
+    std::vector<selection::SelectedRegionPtr> regions;
+    regions.reserve(selected_regions_.size());
+    for (const auto& [id, region] : selected_regions_) {
+      regions.push_back(region.Clone());
+    }
+    page_->SetPostRegionSelections(std::move(regions));
+  }
 }
 
 bool SelectionOverlayController::HandleKeyboardEvent(
@@ -559,9 +629,15 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
     GlicInvokeOptions options(glic::Target(*tab_),
                               mojom::InvocationSource::kTextSelectionWidget);
     options.prompts.push_back(prompt);
-    // Once the invoke fires that will close the selection overlay.
+    // TODO(b/556786015): Fix issue when side panel is not open.
     service->InvokeWithAutoSubmit(
         InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
+    // Only dismiss the overlay for sessions that the browser started itself.
+    // `capture_region_observer_` is bound only when the web client started the
+    // session and will close it.
+    if (!capture_region_observer_.is_bound()) {
+      Close();
+    }
   }
 }
 
