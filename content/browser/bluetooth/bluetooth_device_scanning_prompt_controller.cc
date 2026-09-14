@@ -34,13 +34,34 @@ void BluetoothDeviceScanningPromptController::ShowPermissionPrompt() {
                               OnBluetoothScanningPromptEvent,
                           weak_ptr_factory_.GetWeakPtr());
 
-  if (auto* delegate = GetContentClient()->browser()->GetBluetoothDelegate()) {
-    // non-active RFHs can't show UI elements like prompts to the user.
-    if (!render_frame_host_->IsActive())
-      return;
-    prompt_ = delegate->ShowBluetoothScanningPrompt(
-        &*render_frame_host_, std::move(prompt_event_handler));
+  // Non-active RFHs can't show UI elements like prompts to the user.
+  if (!render_frame_host_->IsActive()) {
+    return;
   }
+
+  auto* delegate = GetContentClient()->browser()->GetBluetoothDelegate();
+  if (!delegate) {
+    return;
+  }
+
+  // The delegate's prompt implementation may spin a nested message loop (e.g.
+  // to drop fullscreen), during which the frame may be detached and the
+  // controller destroyed. In addition, the prompt event handler could be
+  // invoked synchronously. Check that the controller is still alive and that
+  // the event hasn't already been handled before assigning `prompt_`.
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  auto prompt = delegate->ShowBluetoothScanningPrompt(
+      &*render_frame_host_, std::move(prompt_event_handler));
+  if (!weak_this || prompt_event_received_) {
+    return;
+  }
+  // If the delegate fails to create a prompt or prompt UI is unsupported,
+  // cancel immediately so the request does not hang.
+  if (!prompt) {
+    OnBluetoothScanningPromptEvent(BluetoothScanningPrompt::Event::kCanceled);
+    return;
+  }
+  prompt_ = std::move(prompt);
 }
 
 void BluetoothDeviceScanningPromptController::OnBluetoothScanningPromptEvent(
