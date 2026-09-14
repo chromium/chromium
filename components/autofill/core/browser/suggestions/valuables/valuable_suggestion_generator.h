@@ -19,6 +19,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace autofill {
 
 class ValuablesDataManager;
@@ -51,7 +55,8 @@ void MergeLoyaltyCardsAndAddressSuggestions(
 // launched.
 std::vector<Suggestion> CreateLoyaltyCardSuggestionsForMerge(
     const ValuablesDataManager& valuables_manager,
-    const GURL& url);
+    const GURL& main_frame_url,
+    const url::Origin& trigger_field_origin);
 
 class LoyaltyCardSuggestionGenerator : public SuggestionGenerator {
  public:

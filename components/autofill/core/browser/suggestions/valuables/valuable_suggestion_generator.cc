@@ -42,6 +42,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 namespace {
@@ -177,7 +178,11 @@ std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
 
 std::vector<Suggestion> CreateLoyaltyCardSuggestionsForMerge(
     const ValuablesDataManager& valuables_manager,
-    const GURL& url) {
+    const GURL& main_frame_url,
+    const url::Origin& trigger_field_origin) {
+  if (url::Origin::Create(main_frame_url) != trigger_field_origin) {
+    return {};
+  }
   std::vector<LoyaltyCard> all_loyalty_cards =
       valuables_manager.GetLoyaltyCardsToSuggest();
   if (all_loyalty_cards.empty()) {
@@ -188,7 +193,7 @@ std::vector<Suggestion> CreateLoyaltyCardSuggestionsForMerge(
   std::copy_if(all_loyalty_cards.begin(), all_loyalty_cards.end(),
                std::back_inserter(affiliated_cards),
                [&](const LoyaltyCard& card) {
-                 return card.GetAffiliationCategory(url) ==
+                 return card.GetAffiliationCategory(main_frame_url) ==
                         LoyaltyCard::AffiliationCategory::kAffiliated;
                });
   if (affiliated_cards.empty()) {

@@ -3193,7 +3193,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
             std::vector<Suggestion> loyalty_cards_suggestions_for_merge =
                 CreateLoyaltyCardSuggestionsForMerge(
                     *valuables_manager,
-                    client().GetLastCommittedPrimaryMainFrameURL());
+                    client().GetLastCommittedPrimaryMainFrameURL(),
+                    field.origin());
             MergeLoyaltyCardsAndAddressSuggestions(
                 suggestions, std::move(loyalty_cards_suggestions_for_merge));
           }
