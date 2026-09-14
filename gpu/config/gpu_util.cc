@@ -937,6 +937,9 @@ gl::GLDisplay* InitializeGLThreadSafe(base::CommandLine* command_line,
   } else {
     gl_display = gl::GetDefaultDisplayEGL();
   }
+  out_gpu_info->gl_implementation_parts = gl::GetGLImplementationParts();
+  out_gpu_info->passthrough_cmd_decoder =
+      gpu_preferences.use_passthrough_cmd_decoder;
   CollectContextGraphicsInfo(out_gpu_info);
   *out_gpu_feature_info = ComputeGpuFeatureInfo(*out_gpu_info, gpu_preferences,
                                                 command_line, nullptr);
