@@ -181,6 +181,7 @@ def ParseGTestOutput(output, symbolizer, device_abi):
     result_type = None
     results = []
     test_name = None
+    skipping_failure_summary = False
 
     def symbolize_stack_and_merge_with_log():
         log_string = '\n'.join(log or [])
@@ -209,6 +210,10 @@ def ParseGTestOutput(output, symbolizer, device_abi):
     for l in output:
         matcher = _RE_TEST_STATUS.match(l)
         launcher_main_start_match = _RE_LAUNCHER_MAIN_START.match(l)
+        if skipping_failure_summary:
+            if not launcher_main_start_match:
+                continue
+            skipping_failure_summary = False
         if matcher:
             if matcher.group(1) == 'RUN':
                 handle_possibly_unknown_test()
@@ -252,7 +257,10 @@ def ParseGTestOutput(output, symbolizer, device_abi):
                 stack.append(l)
 
         if _RE_ANY_TESTS_FAILED.match(l):
-            break
+            # Android browser tests concatenate multiple launcher invocations.
+            # Ignore this invocation's summary without dropping later results.
+            skipping_failure_summary = True
+            continue
 
         if result_type and test_name:
             # Don't bother symbolizing output if the test passed.
@@ -268,10 +276,7 @@ def ParseGTestOutput(output, symbolizer, device_abi):
             )
             test_name = None
 
-    else:
-        # Executing this after tests have finished with a failure causes a
-        # duplicate test entry to be added to results. crbug/1380825
-        handle_possibly_unknown_test()
+    handle_possibly_unknown_test()
 
     return results
 

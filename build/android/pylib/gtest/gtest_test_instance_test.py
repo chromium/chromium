@@ -122,6 +122,27 @@ class GtestTestInstanceTests(unittest.TestCase):
         self.assertEqual(1, actual[0].GetDuration())
         self.assertEqual(base_test_result.ResultType.FAIL, actual[0].GetType())
 
+    def testParseGTestOutput_failureSummaryBetweenInvocations(self):
+        raw_output = [
+            '>>ScopedMainEntryLogger',
+            '[ RUN      ] FooTest.Fails',
+            '[   FAILED ] FooTest.Fails (1 ms)',
+            '[  FAILED  ] 1 test, listed below:',
+            '[  FAILED  ] FooTest.Fails',
+            '<<ScopedMainEntryLogger',
+            '>>ScopedMainEntryLogger',
+            '[ RUN      ] FooTest.Passes',
+            '[       OK ] FooTest.Passes (2 ms)',
+            '<<ScopedMainEntryLogger',
+        ]
+        actual = gtest_test_instance.ParseGTestOutput(raw_output, None, None)
+
+        self.assertEqual(2, len(actual))
+        self.assertEqual('FooTest.Fails', actual[0].GetName())
+        self.assertEqual(base_test_result.ResultType.FAIL, actual[0].GetType())
+        self.assertEqual('FooTest.Passes', actual[1].GetName())
+        self.assertEqual(base_test_result.ResultType.PASS, actual[1].GetType())
+
     def testParseGTestOutput_crash(self):
         raw_output = [
             '[ RUN      ] FooTest.Bar',
