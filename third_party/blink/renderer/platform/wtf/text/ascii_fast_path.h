@@ -82,11 +82,11 @@ struct AsciiStringAttributes {
   AsciiStringAttributes(bool contains_only_ascii, bool is_lower_ascii)
       : contains_only_ascii(contains_only_ascii),
         is_lower_ascii(is_lower_ascii) {}
-  unsigned contains_only_ascii : 1;
+  uint32_t contains_only_ascii : 1;
 
   // True if there are no upper-case ascii characters in the string.
   // Only valid if contains_only_ascii is true.
-  unsigned is_lower_ascii : 1;
+  uint32_t is_lower_ascii : 1;
 };
 
 // Note: This function assumes the input is likely all ASCII, and

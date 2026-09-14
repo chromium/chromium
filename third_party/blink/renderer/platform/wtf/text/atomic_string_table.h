@@ -35,7 +35,7 @@ class WTF_EXPORT AtomicStringTable final {
 
   // Used by system initialization to preallocate enough storage for all of
   // the static strings.
-  void ReserveCapacity(unsigned size);
+  void ReserveCapacity(wtf_size_t size);
 
   // Inserting strings into the table. Note that the return value from adding
   // a UChar string may be an LChar string as the table will attempt to

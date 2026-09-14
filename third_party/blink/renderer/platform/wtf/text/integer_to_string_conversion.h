@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -82,7 +83,7 @@ class IntegerToStringConverter {
       }
     }
 
-    length_ = static_cast<unsigned>(buffer_.size() - pos);
+    length_ = static_cast<wtf_size_t>(buffer_.size() - pos);
   }
 
   base::span<const LChar> Span() const {
@@ -97,7 +98,7 @@ class IntegerToStringConverter {
                         std::numeric_limits<IntegerType>::is_signed);
 
   std::array<LChar, kBufferSize> buffer_;
-  unsigned length_;
+  wtf_size_t length_;
 };
 
 }  // namespace blink

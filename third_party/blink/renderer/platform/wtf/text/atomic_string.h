@@ -83,7 +83,7 @@ class WTF_EXPORT AtomicString {
     return AtomicString(converter.Span());
   }
 
-  static AtomicString Number(double, unsigned precision = 6);
+  static AtomicString Number(double, wtf_size_t precision = 6);
 
   // [string.cons] --------------------------------------------------
 

@@ -108,7 +108,7 @@ scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
         string_with_previous.subspan(1u).copy_from(source16);
 
         // Add a space of the previous character at the start.
-        unsigned data_with_previous_length =
+        wtf_size_t data_with_previous_length =
             (target_length ? target_length : source_length) + 1;
         StringBuffer<UChar> data_buffer(data_with_previous_length);
         base::span<UChar> data_with_previous = data_buffer.Span();

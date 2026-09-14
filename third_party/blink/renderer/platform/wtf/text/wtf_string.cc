@@ -269,7 +269,7 @@ String String::Number(float number) {
   return Number(static_cast<double>(number));
 }
 
-String String::Number(double number, unsigned precision) {
+String String::Number(double number, wtf_size_t precision) {
   DoubleToStringConverter converter;
   return String(converter.ToStringWithFixedPrecision(number, precision));
 }
@@ -280,7 +280,7 @@ String String::NumberToStringEcmaScript(double number) {
 }
 
 String String::NumberToStringFixedWidth(double number,
-                                        unsigned decimal_places) {
+                                        wtf_size_t decimal_places) {
   DoubleToStringConverter converter;
   return String(converter.ToStringWithFixedWidth(number, decimal_places));
 }

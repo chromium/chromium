@@ -71,10 +71,10 @@ class NumberParsingOptions final {
   }
 
  private:
-  unsigned accept_trailing_garbage_ : 1;
-  unsigned accept_leading_plus_ : 1;
-  unsigned accept_leading_trailing_whitespace_ : 1;
-  unsigned accept_minus_zero_for_unsigned_ : 1;
+  uint32_t accept_trailing_garbage_ : 1;
+  uint32_t accept_leading_plus_ : 1;
+  uint32_t accept_leading_trailing_whitespace_ : 1;
+  uint32_t accept_minus_zero_for_unsigned_ : 1;
 };
 
 }  // namespace blink

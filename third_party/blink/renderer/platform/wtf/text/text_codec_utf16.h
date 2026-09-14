@@ -50,7 +50,7 @@ class TextCodecUtf16 final : public TextCodec {
  private:
   bool little_endian_;
   bool have_lead_byte_ = false;
-  unsigned char lead_byte_;
+  uint8_t lead_byte_;
   bool have_lead_surrogate_ = false;
   UChar lead_surrogate_;
 };

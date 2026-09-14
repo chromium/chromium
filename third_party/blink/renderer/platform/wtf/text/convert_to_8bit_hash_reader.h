@@ -43,8 +43,8 @@ namespace blink {
 // every high byte; they must all be zero) and hashed using PlainHashReader.
 // See the comment on PlainHashReader in rapidhash.h for more information.
 struct ConvertTo8BitHashReader {
-  static constexpr unsigned kCompressionFactor = 2;
-  static constexpr unsigned kExpansionFactor = 1;
+  static constexpr size_t kCompressionFactor = 2;
+  static constexpr size_t kExpansionFactor = 1;
 
   // SAFETY: rapidhash callback.
   UNSAFE_BUFFER_USAGE ALWAYS_INLINE static uint64_t Read64(const uint8_t* ptr) {

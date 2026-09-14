@@ -16,8 +16,8 @@ namespace blink {
 // on performance.
 template <typename CharType>
 struct AsciiLowerHashReader {
-  static constexpr unsigned kCompressionFactor = 1;
-  static constexpr unsigned kExpansionFactor = 1;
+  static constexpr size_t kCompressionFactor = 1;
+  static constexpr size_t kExpansionFactor = 1;
 
   ALWAYS_INLINE static uint64_t Lowercase(CharType ch) {
     return ToAsciiLower(ch);
@@ -94,8 +94,8 @@ struct AsciiLowerHashReader {
 // This is an obscure case that we only need for completeness,
 // so it is fine that it's not all that optimized.
 struct AsciiConvertTo8AndLowerHashReader {
-  static constexpr unsigned kCompressionFactor = 2;
-  static constexpr unsigned kExpansionFactor = 1;
+  static constexpr size_t kCompressionFactor = 2;
+  static constexpr size_t kExpansionFactor = 1;
 
   static uint64_t Lowercase(uint16_t ch) { return ToAsciiLower(ch); }
 

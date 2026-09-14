@@ -153,16 +153,16 @@ static inline std::optional<IntegralType> ToIntegralType(
                                                  : std::nullopt;
 }
 
-unsigned CharactersToUInt(base::span<const LChar> data,
+uint32_t CharactersToUInt(base::span<const LChar> data,
                           NumberParsingOptions options,
                           NumberParsingResult* result) {
-  return ToIntegralType<unsigned, 10>(data, options, result);
+  return ToIntegralType<uint32_t, 10>(data, options, result);
 }
 
-unsigned CharactersToUInt(base::span<const UChar> data,
+uint32_t CharactersToUInt(base::span<const UChar> data,
                           NumberParsingOptions options,
                           NumberParsingResult* result) {
-  return ToIntegralType<unsigned, 10>(data, options, result);
+  return ToIntegralType<uint32_t, 10>(data, options, result);
 }
 
 std::optional<uint32_t> HexCharactersToUInt(base::span<const LChar> data,

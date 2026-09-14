@@ -50,9 +50,9 @@ const uint64_t kTestAHash = 0xE9422771E0A5DDE6;
 const uint64_t kTestBHash = 0x4A2DA770EEA75C1E;
 
 bool EqualCaseFoldingHash(StringView a, StringView b) {
-  unsigned hash_a = a.Is8Bit() ? DeprecatedCaseFoldingHash::GetHash(a.Span8())
+  uint32_t hash_a = a.Is8Bit() ? DeprecatedCaseFoldingHash::GetHash(a.Span8())
                                : DeprecatedCaseFoldingHash::GetHash(a.Span16());
-  unsigned hash_b = b.Is8Bit() ? DeprecatedCaseFoldingHash::GetHash(b.Span8())
+  uint32_t hash_b = b.Is8Bit() ? DeprecatedCaseFoldingHash::GetHash(b.Span8())
                                : DeprecatedCaseFoldingHash::GetHash(b.Span16());
   return hash_a == hash_b;
 }
@@ -89,7 +89,7 @@ TEST(StringHasherTest, HashString24) {
       base::span_from_cstring("A quick browñ föx jumps over thé lazy dog");
   std::array<UChar, kStr.size()> wide_str;
   std::ranges::copy(base::as_bytes(kStr), wide_str.begin());
-  unsigned expected_hash = HashString24(base::as_byte_span(kStr));
+  uint32_t expected_hash = HashString24(base::as_byte_span(kStr));
   using Reader = ConvertTo8BitHashReader;
   EXPECT_EQ(expected_hash, HashString24<Reader>(base::as_byte_span(wide_str)));
   EXPECT_NE(expected_hash,
@@ -121,7 +121,7 @@ TEST(StringHasherTest, ContractionAndExpansion) {
   // that's long enough that we will hit most of the paths.
   String str =
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_!?'$";
-  for (unsigned i = 0; i < str.length(); ++i) {
+  for (wtf_size_t i = 0; i < str.length(); ++i) {
     String s8 = str.substr(0, i);
     String s16 = s8;
     s16.Ensure16Bit();

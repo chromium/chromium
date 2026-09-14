@@ -194,7 +194,7 @@ TEST(StringToNumberTest, HexCharactersToUInt) {
 #undef EXPECT_INVALID
 }
 
-NumberParsingResult ParseUInt(const String str, unsigned* value) {
+NumberParsingResult ParseUInt(const String str, uint32_t* value) {
   NumberParsingResult result;
   *value =
       CharactersToUInt(str.Span8(), NumberParsingOptions::Strict(), &result);
@@ -202,7 +202,7 @@ NumberParsingResult ParseUInt(const String str, unsigned* value) {
 }
 
 TEST(StringToNumberTest, NumberParsingState) {
-  unsigned value;
+  uint32_t value;
   EXPECT_EQ(NumberParsingResult::kOverflowMax,
             ParseUInt("10000000000", &value));
   EXPECT_EQ(NumberParsingResult::kError, ParseUInt("10000000000abc", &value));

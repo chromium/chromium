@@ -35,7 +35,7 @@ std::unique_ptr<Vector<wtf_size_t>> GetLineEndings(const String& text) {
   std::unique_ptr<Vector<wtf_size_t>> result(
       std::make_unique<Vector<wtf_size_t>>());
 
-  unsigned start = 0;
+  wtf_size_t start = 0;
   while (start < text.length()) {
     wtf_size_t line_end = text.find('\n', start);
     if (line_end == kNotFound)
@@ -49,8 +49,8 @@ std::unique_ptr<Vector<wtf_size_t>> GetLineEndings(const String& text) {
   return result;
 }
 
-OrdinalNumber TextPosition::ToOffset(const Vector<unsigned>& line_endings) {
-  unsigned line_start_offset =
+OrdinalNumber TextPosition::ToOffset(const Vector<wtf_size_t>& line_endings) {
+  wtf_size_t line_start_offset =
       line_ != OrdinalNumber::First()
           ? line_endings.at(line_.ZeroBasedInt() - 1) + 1
           : 0;
@@ -59,13 +59,13 @@ OrdinalNumber TextPosition::ToOffset(const Vector<unsigned>& line_endings) {
 }
 
 TextPosition TextPosition::FromOffsetAndLineEndings(
-    unsigned offset,
-    const Vector<unsigned>& line_endings) {
+    wtf_size_t offset,
+    const Vector<wtf_size_t>& line_endings) {
   const auto found_line_ending =
       std::lower_bound(line_endings.begin(), line_endings.end(), offset);
   wtf_size_t line_index =
       CheckedDistance(line_endings.begin(), found_line_ending);
-  unsigned line_start_offset =
+  wtf_size_t line_start_offset =
       line_index > 0 ? line_endings.at(line_index - 1) + 1 : 0;
   int column = offset - line_start_offset;
   return TextPosition(OrdinalNumber::FromZeroBasedInt(line_index),

@@ -49,10 +49,10 @@ template <class T>
   requires std::is_same_v<T, LChar> || std::is_same_v<T, UChar>
 struct CaseFoldingHashReader {
   // We never contract 16 to 8 bits, so this must always be 1.
-  static constexpr unsigned kCompressionFactor = 1;
+  static constexpr size_t kCompressionFactor = 1;
 
   // We always produce UTF-16 output, even if we take in Latin1.
-  static constexpr unsigned kExpansionFactor = sizeof(UChar) / sizeof(T);
+  static constexpr size_t kExpansionFactor = sizeof(UChar) / sizeof(T);
 
   static inline uint64_t Read64(const uint8_t* ptr) {
     const T* p = reinterpret_cast<const T*>(ptr);

@@ -62,9 +62,10 @@ inline void CopyLCharsFromUCharSource(base::span<LChar> destination,
     const size_t end_length = length - kUcharsPerLoop + 1;
     for (; i < end_length; i += kUcharsPerLoop) {
 #if DCHECK_IS_ON()
-      for (unsigned check_index = 0; check_index < kUcharsPerLoop;
-           ++check_index)
+      for (size_t check_index = 0; check_index < kUcharsPerLoop;
+           ++check_index) {
         DCHECK(!(source[i + check_index] & 0xff00));
+      }
 #endif
       __m128i first8u_chars =
           _mm_load_si128(reinterpret_cast<const __m128i*>(&source[i]));

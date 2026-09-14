@@ -59,7 +59,7 @@ namespace {
 
 struct SameSizeAsStringImpl {
 #if DCHECK_IS_ON()
-  unsigned int ref_count_change_count;
+  wtf_size_t ref_count_change_count;
 #endif
   int fields[3];
 };
@@ -167,7 +167,7 @@ void StringImpl::DestroyIfNeeded() {
   }
 }
 
-unsigned StringImpl::ComputeAsciiFlags() const {
+uint32_t StringImpl::ComputeAsciiFlags() const {
   AsciiStringAttributes ascii_attributes = VisitCharacters(
       *this, [](auto chars) { return CharacterAttributes(chars); });
   uint32_t new_flags = AsciiStringAttributesToFlags(ascii_attributes);

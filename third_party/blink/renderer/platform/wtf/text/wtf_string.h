@@ -121,12 +121,13 @@ class WTF_EXPORT String {
   [[nodiscard]] static String Number(unsigned long long value);
   [[nodiscard]] static String Number(float);
 
-  [[nodiscard]] static String Number(double, unsigned precision = 6);
+  [[nodiscard]] static String Number(double, wtf_size_t precision = 6);
 
   // Number to String conversion following the ECMAScript definition.
   [[nodiscard]] static String NumberToStringEcmaScript(double);
-  [[nodiscard]] static String NumberToStringFixedWidth(double,
-                                                       unsigned decimal_places);
+  [[nodiscard]] static String NumberToStringFixedWidth(
+      double,
+      wtf_size_t decimal_places);
 
   // Serializes an unsigned 64-bit integer in hex. This adds no padding,
   // uses lowercase letters for a-f, and adds no "0x" prefix.

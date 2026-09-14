@@ -84,7 +84,7 @@ class TextPosition final {
   bool operator==(const TextPosition& other) const {
     return line_ == other.line_ && column_ == other.column_;
   }
-  WTF_EXPORT OrdinalNumber ToOffset(const Vector<unsigned>&);
+  WTF_EXPORT OrdinalNumber ToOffset(const Vector<wtf_size_t>& line_endings);
 
   // A 'minimum' value of position, used as a default value.
   static TextPosition MinimumPosition() {
@@ -101,8 +101,8 @@ class TextPosition final {
   // A value corresponding to a position with given offset within text having
   // the specified line ending offsets.
   WTF_EXPORT static TextPosition FromOffsetAndLineEndings(
-      unsigned,
-      const Vector<unsigned>&);
+      wtf_size_t offset,
+      const Vector<wtf_size_t>& line_endings);
 
   OrdinalNumber line_;
   OrdinalNumber column_;

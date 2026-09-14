@@ -104,7 +104,7 @@ AtomicString AtomicString::ToAsciiUpper() const {
   return AtomicString(impl->ToAsciiUpper());
 }
 
-AtomicString AtomicString::Number(double number, unsigned precision) {
+AtomicString AtomicString::Number(double number, wtf_size_t precision) {
   DoubleToStringConverter converter;
   return AtomicString(converter.ToStringWithFixedPrecision(number, precision));
 }

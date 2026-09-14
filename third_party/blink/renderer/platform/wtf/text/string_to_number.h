@@ -29,7 +29,7 @@ WTF_EXPORT std::optional<int32_t> CharactersToInt(base::span<const LChar>,
 WTF_EXPORT std::optional<int32_t> CharactersToInt(base::span<const UChar>,
                                                   NumberParsingOptions);
 
-// string -> unsigned.
+// string -> uint32_t.
 WTF_EXPORT std::optional<uint32_t> HexCharactersToUInt(base::span<const LChar>,
                                                        NumberParsingOptions);
 WTF_EXPORT std::optional<uint32_t> HexCharactersToUInt(base::span<const UChar>,
@@ -47,10 +47,10 @@ WTF_EXPORT std::optional<uint32_t> CharactersToUInt(base::span<const UChar>,
 
 // NumberParsingResult versions of CharactersToUInt. They can detect
 // overflow. |NumberParsingResult*| should not be nullptr;
-WTF_EXPORT unsigned CharactersToUInt(base::span<const LChar>,
+WTF_EXPORT uint32_t CharactersToUInt(base::span<const LChar>,
                                      NumberParsingOptions,
                                      NumberParsingResult*);
-WTF_EXPORT unsigned CharactersToUInt(base::span<const UChar>,
+WTF_EXPORT uint32_t CharactersToUInt(base::span<const UChar>,
                                      NumberParsingOptions,
                                      NumberParsingResult*);
 

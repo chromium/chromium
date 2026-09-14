@@ -359,7 +359,7 @@ AtomicStringTable::AtomicStringTable() {
   }
 }
 
-void AtomicStringTable::ReserveCapacity(unsigned size) {
+void AtomicStringTable::ReserveCapacity(wtf_size_t size) {
   base::AutoLock auto_lock(lock_);
   table_.ReserveCapacityForSize(size);
 }
@@ -543,7 +543,7 @@ String AtomicStringTable::AddUtf8(base::span<const uint8_t> characters_span) {
   bool seen_non_ascii = false;
   bool seen_non_latin1 = false;
 
-  unsigned utf16_length = blink::unicode::CalculateStringLengthFromUtf8(
+  wtf_size_t utf16_length = unicode::CalculateStringLengthFromUtf8(
       characters_span, seen_non_ascii, seen_non_latin1);
   if (!seen_non_ascii) {
     return Add(characters_span);

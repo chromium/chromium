@@ -68,7 +68,7 @@ class WTF_EXPORT StringBuilder {
   StringBuilder& operator=(const StringBuilder&) = delete;
   ~StringBuilder() { ClearBuffer(); }
 
-  bool DoesAppendCauseOverflow(unsigned length) const;
+  bool DoesAppendCauseOverflow(wtf_size_t length) const;
 
   void Append(base::span<const UChar> chars);
   void Append(base::span<const LChar> chars);
@@ -94,8 +94,8 @@ class WTF_EXPORT StringBuilder {
   // length) in that an invalid offset or invalid length is a no-op instead of
   // an error.
   // TODO(esprehn): We should probably unify the semantics instead.
-  void Append(const StringView& string, unsigned offset, unsigned length) {
-    unsigned extent = offset + length;
+  void Append(const StringView& string, wtf_size_t offset, wtf_size_t length) {
+    wtf_size_t extent = offset + length;
     if (extent < offset || extent > string.length())
       return;
 
@@ -191,7 +191,7 @@ class WTF_EXPORT StringBuilder {
 
   void AppendNumber(float);
 
-  void AppendNumber(double, unsigned precision = 6);
+  void AppendNumber(double, wtf_size_t precision = 6);
 
   // Append each elements in a collection `range`, separated by `delimiter`.
   // This adds nothing if `range` is empty.
@@ -250,7 +250,9 @@ class WTF_EXPORT StringBuilder {
     return *this;
   }
 
-  void erase(unsigned);
+  // Remove the code unit at `index`. Does nothing if `index` is out of bounds.
+  // Note that this causes a copy of a substring after `index`.
+  void erase(wtf_size_t index);
 
   // ReleaseString is similar to ToString but releases the string_ object
   // to the caller, preventing refcount trashing. Prefer it over ToString()
@@ -258,8 +260,8 @@ class WTF_EXPORT StringBuilder {
   String ReleaseString();
   String ToString();
   AtomicString ToAtomicString();
-  String Substring(unsigned start, unsigned length) const;
-  StringView SubstringView(unsigned start, unsigned length) const;
+  String Substring(wtf_size_t start, wtf_size_t length) const;
+  StringView SubstringView(wtf_size_t start, wtf_size_t length) const;
 
   // Returns a UTF-8 encoded std::string. This is more efficient than
   // ReleaseString().Utf8() or ToString().Utf8() because it avoids creating
@@ -275,10 +277,10 @@ class WTF_EXPORT StringBuilder {
     }
   }
 
-  unsigned length() const { return length_; }
+  wtf_size_t length() const { return length_; }
   bool empty() const { return !length_; }
 
-  unsigned Capacity() const;
+  wtf_size_t Capacity() const;
   // Increase the capacity of the backing buffer to at least |new_capacity|. The
   // behavior is the same as |Vector::ReserveCapacity|:
   // * Increase the capacity even when there are existing characters or a
@@ -287,16 +289,16 @@ class WTF_EXPORT StringBuilder {
   // * This function does not shrink the size of the backing buffer, even if
   //   |new_capacity| is small.
   // * This function may cause a reallocation.
-  void ReserveCapacity(unsigned new_capacity);
+  void ReserveCapacity(wtf_size_t new_capacity);
   // This is analogous to |Ensure16Bit| and |ReserveCapacity|, but can avoid
   // double reallocations when the current buffer is 8 bits and is smaller than
   // |new_capacity|.
-  void Reserve16BitCapacity(unsigned new_capacity);
+  void Reserve16BitCapacity(wtf_size_t new_capacity);
 
   // TODO(esprehn): Rename to shrink().
-  void Resize(unsigned new_size);
+  void Resize(wtf_size_t new_size);
 
-  UChar operator[](unsigned i) const {
+  UChar operator[](wtf_size_t i) const {
     if (is_8bit_)
       return Span8()[i];
     return Span16()[i];
@@ -333,25 +335,25 @@ class WTF_EXPORT StringBuilder {
   void Swap(StringBuilder&);
 
  private:
-  static const unsigned kInlineBufferSize = 256;
-  static unsigned InitialBufferSize() { return kInlineBufferSize; }
+  static const wtf_size_t kInlineBufferSize = 256;
+  static wtf_size_t InitialBufferSize() { return kInlineBufferSize; }
 
   typedef Vector<LChar, kInlineBufferSize / sizeof(LChar)> Buffer8;
   typedef Vector<UChar, kInlineBufferSize / sizeof(UChar)> Buffer16;
 
-  void EnsureBuffer8(unsigned added_size) {
+  void EnsureBuffer8(wtf_size_t added_size) {
     DCHECK(is_8bit_);
     if (!HasBuffer())
       CreateBuffer8(added_size);
   }
 
-  void EnsureBuffer16(unsigned added_size) {
+  void EnsureBuffer16(wtf_size_t added_size) {
     if (is_8bit_ || !HasBuffer())
       CreateBuffer16(added_size);
   }
 
-  void CreateBuffer8(unsigned added_size);
-  void CreateBuffer16(unsigned added_size);
+  void CreateBuffer8(wtf_size_t added_size);
+  void CreateBuffer16(wtf_size_t added_size);
   void ClearBuffer();
   bool HasBuffer() const { return has_buffer_; }
 
@@ -400,7 +402,7 @@ class WTF_EXPORT StringBuilder {
     Buffer8 buffer8_;
     Buffer16 buffer16_;
   };
-  unsigned length_ = 0;
+  wtf_size_t length_ = 0;
   bool is_8bit_ = true;
   bool has_buffer_ = false;
 };

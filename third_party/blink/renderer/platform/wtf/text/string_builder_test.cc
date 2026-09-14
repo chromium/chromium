@@ -251,7 +251,7 @@ TEST(StringBuilderTest, ExtendSharedViewCharByChar) {
   String source("abcdefghij");
   StringBuilder builder;
   builder.Append(StringView(source, 0, 1));  // "a"
-  for (unsigned i = 1; i < source.length(); ++i) {
+  for (wtf_size_t i = 1; i < source.length(); ++i) {
     builder.Append(static_cast<LChar>(source[i]));
   }
   EXPECT_EQ(source, builder.ToString());
@@ -438,7 +438,7 @@ TEST(StringBuilderTest, ReleaseString) {
   EXPECT_EQ(string2.Impl()->RefCountChangeCountForTesting(), 1u);
   String string3 = builder.ToString();
   EXPECT_EQ(string3.Impl()->RefCountChangeCountForTesting(), 2u);
-  unsigned refcount = string2.Impl()->RefCountChangeCountForTesting();
+  wtf_size_t refcount = string2.Impl()->RefCountChangeCountForTesting();
 #endif
 
   // StringImpl of the copied and released string should match

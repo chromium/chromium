@@ -441,16 +441,16 @@ ConversionResult<UChar> ConvertUtf8ToUtf16(base::span<const uint8_t> source,
   };
 }
 
-unsigned CalculateStringLengthFromUtf8(base::span<const uint8_t> data,
-                                       bool& seen_non_ascii,
-                                       bool& seen_non_latin1) {
+wtf_size_t CalculateStringLengthFromUtf8(base::span<const uint8_t> data,
+                                         bool& seen_non_ascii,
+                                         bool& seen_non_latin1) {
   seen_non_ascii = false;
   seen_non_latin1 = false;
   if (data.empty()) {
     return 0;
   }
 
-  unsigned utf16_length = 0;
+  wtf_size_t utf16_length = 0;
 
   size_t data_cursor = 0;
   size_t data_end = data.size();
