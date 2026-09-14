@@ -448,6 +448,28 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/default_browser/model/utils.h:IOSDefaultBrowserBannerPromoPromoSessionEndedReason) -->
 
+<!-- LINT.IfChange(IOSDefaultBrowserContextualPromoAction) -->
+
+<enum name="IOSDefaultBrowserContextualPromoAction">
+  <summary>
+    The action taken by the user on a contextual default browser promo.
+  </summary>
+  <int value="0" label="Primary Action Button"/>
+  <int value="1" label="Secondary Action Button"/>
+  <int value="2" label="Swipe down"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/default_browser/promo/contextual/public/contextual_default_browser_promo_metrics.h:IOSDefaultBrowserContextualPromoAction) -->
+
+<!-- LINT.IfChange(IOSDefaultBrowserContextualPromoType) -->
+
+<enum name="IOSDefaultBrowserContextualPromoType">
+  <summary>The type of contextual default browser promo.</summary>
+  <int value="0" label="Gemini"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/default_browser/promo/contextual/public/contextual_default_browser_promo_constants.h:IOSDefaultBrowserContextualPromoType) -->
+
 <enum name="IOSDefaultBrowserFullscreenPromoAction">
   <int value="0" label="Action Button"/>
   <int value="1" label="Cancel"/>

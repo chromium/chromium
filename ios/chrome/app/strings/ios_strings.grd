@@ -2498,6 +2498,15 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_DEEPLINK_SIGNIN_TITLE" desc="Title of the screen asking user confirmation for signing-in with the selected account. The user may see this after scanning the QR code in desktop Chrome to continue sign-in in iOS.">
         Sign in as <ph name="FIRST_NAME">$1<ex>john</ex></ph>?
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_CONTEXTUAL_GEMINI_TITLE" desc="Title for the contextual default browser promo for Gemini [iOS only].">
+        Bring Gemini intelligence to every link
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_CONTEXTUAL_PRIMARY_BUTTON_TEXT" desc="Primary button text for the contextual default browser promo [iOS only].">
+        Set as default
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_CONTEXTUAL_SECONDARY_BUTTON_TEXT" desc="Secondary button text for the contextual default browser promo [iOS only].">
+        No thanks
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE" desc="Title for the non-modal default browser promotion banner when Chrome is opened from a first-party app.">
         Better browsing by default
       </message>

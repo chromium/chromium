@@ -1,0 +1,9 @@
+include_rules = [
+  "+ios/chrome/browser/default_browser/promo/contextual/public",
+  "+ios/chrome/browser/shared/ui/animated_promo",
+  "+ios/chrome/common/ui/button_stack",
+  "+ios/chrome/common/ui/colors",
+  "+ios/chrome/common/ui/confirmation_alert",
+  "+ios/chrome/common/ui/util",
+  "+ios/public/provider/chrome/browser/lottie",
+]

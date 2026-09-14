@@ -15451,6 +15451,35 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.DefaultBrowserContextualPromo.Gemini.Dismiss">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Recorded when the user dismisses the Gemini contextual default browser
+    promo, either by tapping the secondary (&quot;No thanks&quot;) button or by
+    swiping the promo sheet down.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserContextualPromo.Gemini.Impression">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Recorded when the Gemini contextual default browser promo is presented to
+    the user.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserContextualPromo.Gemini.OpenSettingsTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Recorded when the user taps the primary button of the Gemini contextual
+    default browser promo, which opens the iOS Settings app so that Chrome can
+    be set as the default browser.
+  </description>
+</action>
+
 <action name="IOS.DefaultBrowserFullscreenPromo.Cancel">
   <owner>gayane@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>

@@ -1497,6 +1497,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserContextualPromo.Shown"
+    enum="IOSDefaultBrowserContextualPromoType" expires_after="2027-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the type of contextual default browser promo that was presented to
+    the user. Recorded each time a contextual default browser promo is shown.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserContextualPromo.{PromoType}.Action"
+    enum="IOSDefaultBrowserContextualPromoAction" expires_after="2027-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the action taken by the user on the {PromoType} contextual default
+    browser promo. Recorded once per promo presentation, when the promo is
+    dismissed or its primary action is taken.
+  </summary>
+  <token key="PromoType">
+    <variant name="Gemini" summary="Gemini contextual promo"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserContextualPromo.{PromoType}.Opportunity"
     enum="Boolean" expires_after="2027-03-01">
   <owner>cheickcisse@google.com</owner>
