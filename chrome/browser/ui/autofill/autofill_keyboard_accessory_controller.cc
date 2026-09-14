@@ -9,6 +9,16 @@ namespace autofill {
 AutofillKeyboardAccessoryController::RemovalConfirmationText::
     RemovalConfirmationText() = default;
 AutofillKeyboardAccessoryController::RemovalConfirmationText::
+    RemovalConfirmationText(const RemovalConfirmationText&) = default;
+AutofillKeyboardAccessoryController::RemovalConfirmationText&
+AutofillKeyboardAccessoryController::RemovalConfirmationText::operator=(
+    const RemovalConfirmationText&) = default;
+AutofillKeyboardAccessoryController::RemovalConfirmationText::
+    RemovalConfirmationText(RemovalConfirmationText&&) = default;
+AutofillKeyboardAccessoryController::RemovalConfirmationText&
+AutofillKeyboardAccessoryController::RemovalConfirmationText::operator=(
+    RemovalConfirmationText&&) = default;
+AutofillKeyboardAccessoryController::RemovalConfirmationText::
     ~RemovalConfirmationText() = default;
 
 }  // namespace autofill

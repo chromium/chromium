@@ -345,7 +345,10 @@ void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(JNIEnv* env,
 void AutofillKeyboardAccessoryViewImpl::AutofillAiSuggestionDetailsRequested(
     JNIEnv* env,
     int32_t list_index) {
-  // TODO(crbug.com/556058028): Forward to controller_ once implemented.
+  if (controller_ && list_index >= 0) {
+    controller_->ShowAutofillAiSuggestionDetails(
+        base::checked_cast<size_t>(list_index));
+  }
 }
 
 void AutofillKeyboardAccessoryViewImpl::OnAutofillAiSuppressionDialogClosed(

@@ -13,12 +13,15 @@
 
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -31,13 +34,17 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -68,7 +75,7 @@ bool HasPointerAndHoverSupport() {
          (hover_types & ui::HOVER_TYPE_HOVER);
 }
 
-constexpr std::u16string_view kLabelSeparator = u" ";
+constexpr std::u16string_view kPasswordLabelSeparator = u" ";
 constexpr size_t kMaxBulletCount = 8;
 
 constexpr std::u16string_view kHomeAddressManagementUrl =
@@ -97,7 +104,7 @@ Suggestion::Text FormatLabelsByFillingProduct(
       return Suggestion::Text(
           additional_label.empty()
               ? ExtractPassword(label)
-              : base::StrCat({additional_label, kLabelSeparator,
+              : base::StrCat({additional_label, kPasswordLabelSeparator,
                               ExtractPassword(label)}));
     case FillingProduct::kAddress:
     case FillingProduct::kCreditCard:
@@ -256,6 +263,80 @@ std::u16string GetAccountEmail(content::WebContents* web_contents) {
     }
   }
   return true;
+}
+
+struct AutofillAiSuggestionDetailsText {
+  std::u16string title;
+  std::u16string body;
+  std::u16string confirm_button_text;
+  std::u16string primary_button_text;
+};
+
+std::u16string GetAutofillAiSuggestionTitle(const EntityInstance& entity,
+                                            std::string_view app_locale) {
+  const std::vector<EntityLabel> labels =
+      GetLabelsForEntities({&entity},
+                           /*attribute_types_to_ignore=*/{},
+                           /*only_disambiguating_types=*/true,
+                           /*obfuscate_sensitive_types=*/false, app_locale);
+  const std::u16string first_disambiguating_label =
+      (!labels.empty() && !labels[0].empty()) ? labels[0][0] : std::u16string();
+
+  if (first_disambiguating_label.empty()) {
+    return entity.type().GetNameForI18n();
+  }
+  if (base::i18n::IsRTL()) {
+    return base::StrCat({first_disambiguating_label, autofill::kLabelSeparator,
+                         entity.type().GetNameForI18n()});
+  }
+  return base::StrCat({entity.type().GetNameForI18n(),
+                       autofill::kLabelSeparator, first_disambiguating_label});
+}
+
+// Gets the text for a dialog to confirm suppressing an Autofill AI suggestion.
+[[nodiscard]] AutofillAiSuggestionDetailsText
+GetAutofillAiSuggestionDetailsText(const EntityInstance& entity,
+                                   std::string_view app_locale) {
+  return AutofillAiSuggestionDetailsText{
+      .title = GetAutofillAiSuggestionTitle(entity, app_locale),
+      .body =
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_BODY),
+      .confirm_button_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_SECONDARY_BUTTON),
+      .primary_button_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_PRIMARY_BUTTON),
+  };
+}
+
+base::optional_ref<const EntityInstance> GetPersonalContextEntityForSuggestion(
+    const Suggestion& suggestion,
+    const ContentAutofillClient& client) {
+  const EntityDataManager* edm = client.GetEntityDataManager();
+  if (!edm) {
+    return std::nullopt;
+  }
+  const auto* ai_payload =
+      std::get_if<Suggestion::AutofillAiPayload>(&suggestion.payload);
+  if (!ai_payload) {
+    return std::nullopt;
+  }
+  base::optional_ref<const EntityInstance> entity =
+      edm->GetEntityInstance(ai_payload->guid);
+  if (!entity.has_value()) {
+    return std::nullopt;
+  }
+  switch (entity->record_type()) {
+    case EntityInstance::RecordType::kPersonalContext:
+      return entity;
+    case EntityInstance::RecordType::kLocal:
+    case EntityInstance::RecordType::kServerWallet:
+      // Suppression confirmation is only supported for ambient Personal
+      // Context entities suggested by Gemini. Local entities and Wallet
+      // passes are managed through settings/Wallet and do not support
+      // suppression.
+      return std::nullopt;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -795,6 +876,68 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   }
 
   return false;
+}
+
+bool AutofillKeyboardAccessoryControllerImpl::ShowAutofillAiSuggestionDetails(
+    size_t index) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillSuppressionUI)) {
+    return false;
+  }
+  if (index >= suggestions_.size()) {
+    return false;
+  }
+  if (!std::holds_alternative<Suggestion::AutofillAiPayload>(
+          suggestions_[index].payload)) {
+    return false;
+  }
+  ContentAutofillClient* client =
+      ContentAutofillClient::FromWebContents(web_contents_.get());
+  if (!client) {
+    return false;
+  }
+  if (base::optional_ref<const EntityInstance> entity =
+          GetPersonalContextEntityForSuggestion(suggestions_[index], *client)) {
+    AutofillAiSuggestionDetailsText details_text =
+        GetAutofillAiSuggestionDetailsText(*entity, client->GetAppLocale());
+    view_->ShowAutofillAiSuggestionDetails(
+        details_text.title, details_text.body, details_text.confirm_button_text,
+        details_text.primary_button_text,
+        base::BindOnce(&AutofillKeyboardAccessoryControllerImpl::
+                           OnAutofillAiSuppressionDialogClosed,
+                       GetWeakPtr(), suggestions_[index]));
+    return true;
+  }
+  return false;
+}
+
+void AutofillKeyboardAccessoryControllerImpl::
+    OnAutofillAiSuppressionDialogClosed(const Suggestion& suggestion,
+                                        bool confirmed) {
+  if (!confirmed) {
+    return;
+  }
+  auto it = std::ranges::find(suggestions_, suggestion);
+  if (it == suggestions_.end()) {
+    return;
+  }
+  CHECK_EQ(suggestions_.size(), labels_.size());
+
+  // TODO(crbug.com/556058028): Call the suppression code.
+
+  // Remove the suppressed element.
+  const size_t index = std::distance(suggestions_.begin(), it);
+  suggestions_.erase(it);
+  labels_.erase(labels_.begin() + index);
+
+  if (HasSuggestions()) {
+    if (delegate_) {
+      delegate_->ClearPreviewedForm();
+    }
+    OnSuggestionsChanged();
+  } else {
+    Hide(SuggestionHidingReason::kNoSuggestions);
+  }
 }
 
 void AutofillKeyboardAccessoryControllerImpl::OpenSettingsForEntityType(
