@@ -20,6 +20,8 @@ using DeviceAuthorizationKeys =
     sync_pb::GetDeviceAuthorizationKeyResponse::DeviceAuthorizationKeys;
 using DeviceAuthorizationReAuthParams =
     sync_pb::GetDeviceAuthorizationKeyResponse::ReAuthParams;
+using TrustedVaultKeyAvailability =
+    sync_pb::GetDeviceAuthorizationKeyRequest::TrustedVaultKeyAvailability;
 
 // Describes the result of a device authorization key fetch operation.
 // TODO(crbug.com/405036154): Define more granular errors if needed by callers.

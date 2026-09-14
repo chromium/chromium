@@ -32,8 +32,9 @@ class DeviceAuthorizationClient {
                          const DeviceAuthorizationKeys& keys) = 0;
 
   // Asynchronously populates embedder-specific platform data (e.g. device
-  // integrity signals) into `request`.
+  // integrity signals) for the given `gaia_id` into `request`.
   virtual void PopulatePlatformData(
+      const GaiaId& gaia_id,
       sync_pb::GetDeviceAuthorizationKeyRequest request,
       PopulatePlatformDataCallback callback) = 0;
 };

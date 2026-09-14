@@ -13,6 +13,7 @@
 #import "components/webauthn/core/browser/device_authorization/device_authorization_client.h"
 #import "components/webauthn/core/browser/device_authorization/proto/device_authorization_key.pb.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -52,6 +53,7 @@ class IOSDeviceAuthorizationClientTest : public PlatformTest {
   }
 
  protected:
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   IOSDeviceAuthorizationClient client_;
 };
 

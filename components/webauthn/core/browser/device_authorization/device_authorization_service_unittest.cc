@@ -73,7 +73,8 @@ class TestDeviceAuthorizationClient : public DeviceAuthorizationClient {
     return true;
   }
 
-  void PopulatePlatformData(sync_pb::GetDeviceAuthorizationKeyRequest request,
+  void PopulatePlatformData(const GaiaId& gaia_id,
+                            sync_pb::GetDeviceAuthorizationKeyRequest request,
                             PopulatePlatformDataCallback callback) override {
     request.MergeFrom(request_);
     std::move(callback).Run(std::move(request));

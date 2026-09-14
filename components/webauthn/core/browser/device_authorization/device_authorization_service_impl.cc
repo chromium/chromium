@@ -101,7 +101,7 @@ void DeviceAuthorizationServiceImpl::FetchKeysImpl(
   }
 
   client_->PopulatePlatformData(
-      std::move(request),
+      gaia_id, std::move(request),
       base::BindOnce(&DeviceAuthorizationServiceImpl::OnPlatformDataPopulated,
                      weak_ptr_factory_.GetWeakPtr(), gaia_id));
 }
