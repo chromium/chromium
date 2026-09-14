@@ -28,7 +28,6 @@ source_set("coordinator") {
   ]
 
   deps = [
-    ":promo",
     ":view_models",
     "//base",
     "//components/prefs/ios",
@@ -41,6 +40,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/bubble/ui_bundled:bubble_view",
     "//ios/chrome/browser/level_up/model",
     "//ios/chrome/browser/level_up/ui",
+    "//ios/chrome/browser/level_up/ui:promo",
     "//ios/chrome/browser/popup_menu/overflow_menu/public:overflow_menu_constants",
     "//ios/chrome/browser/popup_menu/public",
     "//ios/chrome/browser/settings/ui_bundled/password:password_constants",
@@ -65,21 +65,7 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
-    "//ios/chrome/common/ui/util",
-  ]
-}
-
-source_set("promo") {
-  sources = [
-    "level_up_promo_coordinator.h",
-    "level_up_promo_coordinator.mm",
-    "level_up_promo_coordinator_delegate.h",
-  ]
-
-  deps = [
-    "//base",
-    "//ios/chrome/browser/level_up/ui:promo",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
   ]
 }

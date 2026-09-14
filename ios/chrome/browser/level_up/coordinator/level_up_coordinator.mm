@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/level_up/model/task_info.h"
 #import "ios/chrome/browser/level_up/ui/level_up_all_tasks_view_controller.h"
+#import "ios/chrome/browser/level_up/ui/level_up_promo_view_controller.h"
 #import "ios/chrome/browser/level_up/ui/level_up_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -68,10 +70,12 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 @interface LevelUpCoordinator () <ConfirmationAlertActionHandler,
                                   LevelUpAllTasksViewControllerDelegate,
                                   LevelUpMediatorDelegate,
-                                  LevelUpViewControllerDelegate>
+                                  LevelUpViewControllerDelegate,
+                                  PromoStyleViewControllerDelegate,
+                                  UIAdaptivePresentationControllerDelegate>
 
 @property(nonatomic, strong) LevelUpMediator* mediator;
-@property(nonatomic, strong) LevelUpViewController* viewController;
+@property(nonatomic, strong) UIViewController* viewController;
 @property(nonatomic, strong) UINavigationController* navigationController;
 
 @end
@@ -79,57 +83,26 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 @implementation LevelUpCoordinator {
   TaskInfo::NavigationAction _pendingNavigationAction;
   ConfirmationAlertViewController* _optOutConfirmationViewController;
+  raw_ptr<PrefService> _prefService;
+  raw_ptr<AuthenticationService> _authService;
 }
 
 - (void)start {
   [super start];
-
-  AuthenticationService* authService =
+  _authService =
       AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
-  if (!authService->HasPrimaryIdentity()) {
+  if (!_authService->HasPrimaryIdentity()) {
     [self showSignedOutSnackbarAndDismiss];
     return;
   }
-
-  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
-  if (!prefService->GetBoolean(prefs::kLevelUpOptIn)) {
-    // TODO(crbug.com/546095156): Show the promo when the user didn't opt in to
-    // Level Up.
-    prefService->SetBoolean(prefs::kLevelUpOptIn, true);
+  _prefService = self.browser->GetProfile()->GetPrefs();
+  // Display level up promo if user has not opted in.
+  if (!_prefService->GetBoolean(prefs::kLevelUpOptIn)) {
+    [self showLevelUpPromo];
+    return;
   }
 
-  self.viewController = [[LevelUpViewController alloc] init];
-  self.viewController.handler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands);
-  [self.viewController setDelegate:self];
-
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
-  LevelUpService* levelUpService =
-      LevelUpServiceFactory::GetForProfile(self.browser->GetProfile());
-  self.mediator =
-      [[LevelUpMediator alloc] initWithAuthenticationService:authService
-                                             identityManager:identityManager
-                                              levelUpService:levelUpService
-                                                 prefService:prefService];
-
-  self.mediator.delegate = self;
-  self.mediator.profileConsumer = self.viewController;
-  self.mediator.consumer = self.viewController;
-
-  self.navigationController = [[UINavigationController alloc]
-      initWithRootViewController:self.viewController];
-  [self.navigationController
-      setModalPresentationStyle:UIModalPresentationPageSheet];
-
-  UISheetPresentationController* sheetPresentationController =
-      self.navigationController.sheetPresentationController;
-  sheetPresentationController.detents =
-      @[ [UISheetPresentationControllerDetent largeDetent] ];
-
-  [self.baseViewController presentViewController:self.navigationController
-                                        animated:YES
-                                      completion:nil];
+  [self showLevelUp];
 }
 
 - (void)stop {
@@ -142,20 +115,14 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
   TaskInfo::NavigationAction pendingAction = _pendingNavigationAction;
   base::WeakPtr<Browser> weakBrowser =
       self.browser ? self.browser->AsWeakPtr() : nullptr;
-
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           RunPendingAction(pendingAction, weakBrowser);
-                         }];
-  self.viewController = nil;
+  [self stopLevelUpNavigationController:^{
+    RunPendingAction(pendingAction, weakBrowser);
+  }];
   self.mediator.delegate = nil;
   self.mediator.profileConsumer = nil;
   self.mediator.consumer = nil;
   [self.mediator disconnect];
   self.mediator = nil;
-  self.navigationController = nil;
-
   [super stop];
 }
 
@@ -290,6 +257,34 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
   [self didTapTask:task];
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands)
+      dismissLevelUp];
+}
+
+#pragma mark - PromoStyleViewControllerDelegate
+
+- (void)didTapPrimaryActionButton {
+  _prefService->SetBoolean(prefs::kLevelUpOptIn, true);
+  __weak __typeof(self) weakSelf = self;
+  [self stopLevelUpNavigationController:^{
+    [weakSelf showLevelUp];
+  }];
+}
+
+- (void)didTapSecondaryActionButton {
+  [self didTapDismissButton];
+}
+
+- (void)didTapDismissButton {
+  id<LevelUpCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands);
+  [handler dismissLevelUp];
+}
+
 #pragma mark - Private
 
 // Handles a task tap by closing the level up screen and preparing to navigate
@@ -337,6 +332,66 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
   id<LevelUpCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands);
   [handler dismissLevelUp];
+}
+
+// Displays the viewController in the navigationController.
+- (void)presentViewController:(UIViewController*)viewController
+    withModalPresentationStyle:(UIModalPresentationStyle)presentationStyle {
+  self.viewController = viewController;
+  self.navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.viewController];
+  self.navigationController.modalPresentationStyle = presentationStyle;
+  self.navigationController.presentationController.delegate = self;
+
+  [self.baseViewController presentViewController:self.navigationController
+                                        animated:YES
+                                      completion:nil];
+}
+
+// Displays the Level Up main UIpage.
+- (void)showLevelUp {
+  LevelUpViewController* viewController = [[LevelUpViewController alloc] init];
+  viewController.handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands);
+  viewController.delegate = self;
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+  LevelUpService* levelUpService =
+      LevelUpServiceFactory::GetForProfile(self.browser->GetProfile());
+
+  self.mediator =
+      [[LevelUpMediator alloc] initWithAuthenticationService:_authService
+                                             identityManager:identityManager
+                                              levelUpService:levelUpService
+                                                 prefService:_prefService];
+
+  self.mediator.delegate = self;
+  self.mediator.profileConsumer = viewController;
+  self.mediator.consumer = viewController;
+
+  [self presentViewController:viewController
+      withModalPresentationStyle:UIModalPresentationPageSheet];
+}
+
+// Displays the Level Up Promo Screen.
+- (void)showLevelUpPromo {
+  LevelUpPromoViewController* promoViewController =
+      [[LevelUpPromoViewController alloc] init];
+  promoViewController.delegate = self;
+  [self presentViewController:promoViewController
+      withModalPresentationStyle:UIModalPresentationFormSheet];
+}
+
+// Dismisses and cleans up the navigation controller.
+- (void)stopLevelUpNavigationController:(void (^)())completion {
+  self.navigationController.presentationController.delegate = nil;
+  [(id)self.viewController setDelegate:nil];
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:completion];
+  self.navigationController = nil;
+  self.viewController = nil;
 }
 
 @end
