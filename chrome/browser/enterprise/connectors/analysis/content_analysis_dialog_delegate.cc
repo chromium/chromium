@@ -803,6 +803,11 @@ void ContentAnalysisDialogDelegate::AddJustificationTextAreaToDialog() {
   bypass_justification_->GetViewAccessibility().SetName(
       *justification_text_label_);
   bypass_justification_->SetController(this);
+  if (!GetWidget()) {
+    SetInitiallyFocusedView(bypass_justification_);
+  } else {
+    bypass_justification_->RequestFocus();
+  }
 }
 
 void ContentAnalysisDialogDelegate::AddJustificationTextLengthToDialog() {

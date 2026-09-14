@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/copy_warning_delegate_tracker.h"
 #include "chrome/browser/enterprise/connectors/test/active_user_test_mixin.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -33,6 +36,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -68,6 +72,9 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/textarea/textarea.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace enterprise_data_protection {
@@ -93,6 +100,38 @@ content::ClipboardPasteData MakeClipboardPasteData(
   clipboard_paste_data.file_paths = std::move(file_paths);
   return clipboard_paste_data;
 }
+
+class DialogObserver : public enterprise_connectors::
+                           ContentAnalysisDialogController::TestObserver {
+ public:
+  DialogObserver() {
+    enterprise_connectors::ContentAnalysisDialogController::
+        SetObserverForTesting(this);
+  }
+  ~DialogObserver() override {
+    enterprise_connectors::ContentAnalysisDialogController::
+        SetObserverForTesting(nullptr);
+  }
+  void ViewsFirstShown(
+      enterprise_connectors::ContentAnalysisDialogDelegate* dialog,
+      base::TimeTicks timestamp) override {
+    dialog_ = dialog;
+    run_loop_.Quit();
+  }
+  enterprise_connectors::ContentAnalysisDialogDelegate* WaitForDialog() {
+    if (!dialog_) {
+      run_loop_.Run();
+    }
+    auto* dialog = dialog_.get();
+    dialog_ = nullptr;
+    return dialog;
+  }
+
+ private:
+  raw_ptr<enterprise_connectors::ContentAnalysisDialogDelegate> dialog_ =
+      nullptr;
+  base::RunLoop run_loop_;
+};
 
 // TODO(crbug.com/387484337): Set up equivalent browser tests for Clank.
 // Tests for functions and classes declared in data_protection_clipboard_utils.h
@@ -216,11 +255,12 @@ class DataControlsClipboardUtilsBrowserTestBase
   }
 
   void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+
+    ASSERT_TRUE(browser());
     event_report_validator_helper_ = std::make_unique<
         enterprise_connectors::test::EventReportValidatorHelper>(
         browser()->GetProfile(), /*browser_test=*/true);
-
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
@@ -2643,6 +2683,120 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
       text_future.GetCallback());
   EXPECT_EQ(text_future.Get(), data.text);
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       CopyContentAnalysisWarning_BypassRequiresJustification) {
+  active_user_test_mixin_->SetFakeCookieValue();
+  SetupDMToken();
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "require_justification_tags": ["dlp"],
+          "block_until_verdict": 1
+        })",
+      machine_scope());
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::WARN);
+          }),
+          "dm_token"));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  auto source = content::ClipboardEndpoint(
+      ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
+        return contents()->GetBrowserContext();
+      }),
+      *contents()->GetPrimaryMainFrame());
+
+  ui::ClipboardMetadata metadata = {
+      .size = 100,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  content::ClipboardPasteData data;
+  data.text = std::u16string(100, 'a');
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+
+  data_controls::GetLastReplacedClipboardData() = {};
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  IsClipboardCopyAllowedByPolicy(source, metadata, data, future.GetCallback());
+
+  auto* toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+
+  // Wait until the warning creates the Toast.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return toast_controller->IsShowingToast(); }));
+
+  EXPECT_EQ(toast_controller->GetCurrentToastId(),
+            ToastId::kEnterpriseCopyWarning);
+
+  toasts::ToastView* toast_view = toast_controller->GetToastViewForTesting();
+  ASSERT_TRUE(toast_view);
+  views::MdTextButton* action_button = toast_view->action_button_for_testing();
+  ASSERT_TRUE(action_button);
+
+  DialogObserver dialog_observer;
+
+  // Click the "Copy anyway" button on the toast.
+  views::test::ButtonTestApi(action_button)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON,
+                                  ui::EF_LEFT_MOUSE_BUTTON));
+
+  auto* dialog = dialog_observer.WaitForDialog();
+  ASSERT_TRUE(dialog);
+  views::Widget* dialog_widget = dialog->GetWidget();
+  ASSERT_TRUE(dialog_widget);
+
+  // Wait until the toast has finished closing.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !toast_controller->IsShowingToast(); }));
+
+  views::Textarea* textarea =
+      dialog->GetBypassJustificationTextareaForTesting();
+  ASSERT_TRUE(textarea);
+
+  // The justification textarea must be focused to receive keyboard input.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return textarea->HasFocus(); }));
+
+  textarea->InsertText(
+      u"a",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+
+  EXPECT_EQ(textarea->GetText(), u"a");
+  ASSERT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  dialog->AcceptDialog();
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<1>().text, data.text);
 }
 
 IN_PROC_BROWSER_TEST_P(

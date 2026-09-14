@@ -153,6 +153,7 @@ void ContentAnalysisDialogController::ShowDialogNow() {
     widget_->MakeCloseSynchronous(
         base::BindOnce(&ContentAnalysisDialogController::CloseDialog,
                        weak_ptr_factory_.GetWeakPtr()));
+    widget_->Activate();
     if (observer_for_testing) {
       observer_for_testing->ViewsFirstShown(dialog_delegate_.get(),
                                             first_shown_timestamp_);
