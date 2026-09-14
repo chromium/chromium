@@ -83,7 +83,7 @@ GenerateMockRelatedSearchExtractorResults(
 }  // namespace
 
 const TemplateURLService::Initializer kTemplateURLData[] = {
-    {"default-engine.com", "http://default-engine.com/search?q={searchTerms}",
+    {"default-engine.com", "https://default-engine.com/search?q={searchTerms}",
      "Default"},
     {"non-default-engine.com", "http://non-default-engine.com?q={searchTerms}",
      "Not Default"},
@@ -192,7 +192,7 @@ class PageContentAnnotationsWebContentsObserverTest
 
     // Overwrite Google base URL.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        ::switches::kGoogleBaseURL, "http://default-engine.com/");
+        ::switches::kGoogleBaseURL, "https://default-engine.com/");
 
     HistoryServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildTestHistoryService));
@@ -273,9 +273,9 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   // Expect a request to be sent since extracting related searches is enabled.
   {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
-        web_contents(), GURL("http://default-engine.com/search?q=a"));
+        web_contents(), GURL("https://default-engine.com/search?q=a"));
 
-    OnRelatedSearchesExtracted(GURL("http://default-engine.com/search?q=a"),
+    OnRelatedSearchesExtracted(GURL("https://default-engine.com/search?q=a"),
                                {"mountain view"});
 
     histogram_tester()->ExpectTotalCount(
@@ -284,7 +284,7 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
         1);
     auto last_request = service()->last_related_searches_extraction_request();
     EXPECT_TRUE(last_request.has_value());
-    EXPECT_EQ(*last_request, GURL("http://default-engine.com/search?q=a"));
+    EXPECT_EQ(*last_request, GURL("https://default-engine.com/search?q=a"));
 
     auto last_results = service()->last_related_searches_extraction_results();
     EXPECT_TRUE(last_results.has_value());
@@ -372,7 +372,7 @@ TEST_F(PageContentAnnotationsWebContentsObserverRelatedSearchesFromZPSCacheTest,
   // Verify proper behavior when navigating to Google SRP.
   {
     const GURL google_srp_url =
-        GURL("http://default-engine.com/search?q=a+b+c");
+        GURL("https://default-engine.com/search?q=a+b+c");
 
     // Trigger ZPS prefetching on Google SRP.
     StoreMockZeroSuggestResponse(zero_suggest_cache_service(),
