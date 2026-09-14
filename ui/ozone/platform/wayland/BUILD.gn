@@ -607,6 +607,7 @@ source_set("wayland_unittests") {
 
   if (use_wayland_gbm) {
     sources += [
+      "common/drm_render_node_path_finder_unittest.cc",
       "gpu/wayland_surface_factory_unittest.cc",
       "wayland_buffer_manager_unittest.cc",
     ]
