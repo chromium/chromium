@@ -77,6 +77,7 @@
 #include "content/browser/service_host/utility_process_host.h"
 #include "content/browser/startup_data_impl.h"
 #include "content/browser/startup_helper.h"
+#include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/memory_instrumentation_util.h"
 #include "content/child/field_trial.h"
 #include "content/child/memory_coordinator/child_memory_coordinator.h"
@@ -120,6 +121,7 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/features.h"
+#include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -1359,6 +1361,8 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
           /*enable_consumer=*/true, /*will_trace_thread_restart=*/false,
           base::BindRepeating(&ShouldAllowSystemTracingConsumer));
     }
+    background_tracing_manager_ =
+        CreateBackgroundTracingManagerAndInitializeScenarios();
 
     if (!delegate_->IsInitFeatureListEarly()) {
       // The FeatureList needs to be created before starting the ThreadPool.
@@ -1432,7 +1436,10 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
   }
 
   is_browser_main_loop_started_ = true;
-  main_params.startup_data = mojo_ipc_support_->CreateBrowserStartupData();
+  auto startup_data = mojo_ipc_support_->CreateBrowserStartupData();
+  startup_data->background_tracing_manager =
+      std::move(background_tracing_manager_);
+  main_params.startup_data = std::move(startup_data);
   return RunBrowserProcessMain(std::move(main_params), delegate_);
 }
 

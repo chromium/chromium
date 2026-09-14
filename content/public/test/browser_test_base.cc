@@ -713,6 +713,8 @@ void BrowserTestBase::SetUp() {
       std::make_unique<MojoIpcSupport>(BrowserTaskExecutor::CreateIOThread());
   std::unique_ptr<StartupDataImpl> startup_data =
       ipc_support->CreateBrowserStartupData();
+  startup_data->background_tracing_manager =
+      CreateBackgroundTracingManagerAndInitializeScenarios();
 
   // ContentMain would normally call RunProcess() on the delegate and fallback
   // to BrowserMain() if it did not run it (or equivalent) itself. On Android,

@@ -4,6 +4,8 @@
 
 #include "content/browser/startup_data_impl.h"
 
+#include "content/browser/tracing/background_tracing_manager_impl.h"
+
 namespace content {
 
 StartupDataImpl::StartupDataImpl() = default;

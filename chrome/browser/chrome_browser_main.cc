@@ -25,7 +25,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/hang_watcher.h"
 #include "base/time/time.h"
-#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -120,7 +119,6 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
-#include "components/tracing/common/background_tracing_utils.h"
 #include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
@@ -1506,12 +1504,6 @@ int ChromeBrowserMainParts::PostCreateThreads() {
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   ChromeProcessSingleton::GetInstance()->StartWatching();
 #endif
-
-  tracing::SetupSystemTracingFromFieldTrial();
-  tracing::SetupBackgroundTracingFromCommandLine();
-  tracing::SetupPresetTracingFromFieldTrial();
-  base::trace_event::EmitNamedTrigger(
-      base::trace_event::kStartupTracingTriggerName);
 
   for (auto& chrome_extra_part : chrome_extra_parts_) {
     chrome_extra_part->PostCreateThreads();

@@ -20,10 +20,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/metrics/version_utils.h"
-#include "components/tracing/common/background_tracing_utils.h"
-#include "components/tracing/common/tracing_scenarios_config.h"
 #include "content/public/browser/network_service_instance.h"
-#include "services/tracing/public/cpp/trace_startup_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
@@ -75,10 +72,6 @@ ChromeBackgroundTracingMetricsProvider::
     ~ChromeBackgroundTracingMetricsProvider() = default;
 
 void ChromeBackgroundTracingMetricsProvider::Init() {
-  tracing::TraceStartupConfig::SetBackgroundStartupTracingEnabled(
-      tracing::kStartupFieldTracing.Get());
-  SetupFieldTracingFromFieldTrial();
-
   // Metrics service can be null in some testing contexts.
   if (g_browser_process->metrics_service() != nullptr) {
     variations::SyntheticTrialRegistry* registry =

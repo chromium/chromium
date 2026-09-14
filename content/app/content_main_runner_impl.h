@@ -28,6 +28,7 @@ class DiscardableSharedMemoryManager;
 
 namespace content {
 
+class BackgroundTracingManagerImpl;
 class BrowserMemoryCoordinator;
 class MojoIpcSupport;
 
@@ -68,6 +69,7 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
   std::unique_ptr<MojoIpcSupport> mojo_ipc_support_;
+  std::unique_ptr<BackgroundTracingManagerImpl> background_tracing_manager_;
 
   // True if the runner has been initialized.
   bool is_initialized_ = false;

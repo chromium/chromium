@@ -112,6 +112,7 @@ component("background_tracing_utils") {
     ":tracing_config",
     "//base",
     "//build:blink_buildflags",
+    "//services/tracing/public/cpp",
     "//services/tracing/public/cpp/background_tracing",
   ]
 }

@@ -186,6 +186,7 @@ source_set("browser") {
     "//components/services/storage/public/mojom",
     "//components/sqlite_proto",
     "//components/system_media_controls",
+    "//components/tracing:background_tracing_utils",
     "//components/tracing:tracing_config",
     "//components/ukm",
     "//components/ukm/debug:util",

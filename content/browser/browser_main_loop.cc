@@ -517,6 +517,10 @@ void BrowserMainLoop::Init() {
     CHECK(!mojo_ipc_support_, base::NotFatalUntil::M159);
     mojo_ipc_support_ = std::move(startup_data->mojo_ipc_support);
 
+    CHECK(!background_tracing_manager_);
+    background_tracing_manager_ =
+        std::move(startup_data->background_tracing_manager);
+
     // The StartupDataImpl was destined to BrowserMainLoop, do not pass it
     // forward.
     parameters_.startup_data.reset();
@@ -779,11 +783,8 @@ int BrowserMainLoop::PreCreateThreads() {
   // This must occur before metrics recording initialization in
   // ChromeBrowserMainParts::PreCreateThreads() because it's used in
   // BackgroundTracingMetricsProvider.
-  auto delegate = GetContentClient()->browser()->CreateTracingDelegate();
-  CHECK(delegate);
-  tracing_controller_ = std::make_unique<TracingControllerImpl>(*delegate);
-  background_tracing_manager_ =
-      std::make_unique<BackgroundTracingManagerImpl>(std::move(delegate));
+  tracing_controller_ = std::make_unique<TracingControllerImpl>(
+      *background_tracing_manager_->delegate());
 
   // Make sure no accidental call to initialize GpuDataManager earlier.
   CHECK(!GpuDataManagerImpl::Initialized(), base::NotFatalUntil::M159);

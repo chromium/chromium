@@ -21,6 +21,7 @@
 #include "components/tracing/common/tracing_scenarios_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 
 namespace tracing {
 namespace {
@@ -153,6 +154,9 @@ bool SetupFieldTracingFromFieldTrial() {
   if (IsBackgroundTracingEnabledFromCommandLine()) {
     return false;
   }
+
+  tracing::TraceStartupConfig::SetBackgroundStartupTracingEnabled(
+      tracing::kStartupFieldTracing.Get());
 
   bool local_scenarios = false;
   if (tracing::HasBackgroundTracingOutputPath()) {

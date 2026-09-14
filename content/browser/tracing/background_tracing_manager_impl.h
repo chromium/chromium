@@ -114,6 +114,9 @@ class BackgroundTracingManagerImpl
   base::WeakPtrFactory<BackgroundTracingManagerImpl> weak_factory_{this};
 };
 
+CONTENT_EXPORT std::unique_ptr<BackgroundTracingManagerImpl>
+CreateBackgroundTracingManagerAndInitializeScenarios();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_TRACING_BACKGROUND_TRACING_MANAGER_IMPL_H_

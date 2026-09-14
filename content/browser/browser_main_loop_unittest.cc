@@ -17,9 +17,11 @@
 #include "content/browser/scheduler/browser_task_executor.h"
 #include "content/browser/startup_data_impl.h"
 #include "content/browser/startup_helper.h"
+#include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
@@ -126,6 +128,11 @@ TEST_F(BrowserMainLoopTest, PostCreateThreadsResultAbortsStartup) {
       &post_create_threads_called, &pre_main_message_loop_run_called);
   ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
   MainFunctionParams main_function_params(GetProcessCommandLine());
+  auto startup_data = std::make_unique<StartupDataImpl>();
+  startup_data->background_tracing_manager =
+      std::make_unique<BackgroundTracingManagerImpl>(
+          browser_client.CreateTracingDelegate());
+  main_function_params.startup_data = std::move(startup_data);
 
   BrowserMainLoop browser_main_loop(
       std::move(main_function_params),

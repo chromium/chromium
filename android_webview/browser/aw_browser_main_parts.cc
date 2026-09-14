@@ -43,7 +43,6 @@
 #include "base/path_service.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
-#include "base/trace_event/named_trigger.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
@@ -56,7 +55,6 @@
 #include "components/metrics/metrics_service.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
-#include "components/tracing/common/background_tracing_utils.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/synthetic_trials.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
@@ -437,12 +435,6 @@ int AwBrowserMainParts::PostCreateThreads() {
   performance_manager_lifetime_ =
       std::make_unique<performance_manager::PerformanceManagerLifetime>(
           performance_manager::GraphFeatures::WithNone(), base::DoNothing());
-
-  tracing::SetupSystemTracingFromFieldTrial();
-  tracing::SetupBackgroundTracingFromCommandLine();
-  tracing::SetupPresetTracingFromFieldTrial();
-  base::trace_event::EmitNamedTrigger(
-      base::trace_event::kStartupTracingTriggerName);
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 

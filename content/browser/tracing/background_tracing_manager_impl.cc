@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/trace_event/named_trigger.h"
+#include "components/tracing/common/background_tracing_utils.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/browser/browser_thread.h"
@@ -203,6 +205,19 @@ void BackgroundTracingManagerImpl::MaybeConstructPendingAgents() {
                                              std::move(pending_agent.second));
   }
   pending_agents_.clear();
+}
+
+std::unique_ptr<BackgroundTracingManagerImpl>
+CreateBackgroundTracingManagerAndInitializeScenarios() {
+  auto manager = std::make_unique<BackgroundTracingManagerImpl>(
+      GetContentClient()->browser()->CreateTracingDelegate());
+  tracing::SetupFieldTracingFromFieldTrial();
+  tracing::SetupSystemTracingFromFieldTrial();
+  tracing::SetupBackgroundTracingFromCommandLine();
+  tracing::SetupPresetTracingFromFieldTrial();
+  base::trace_event::EmitNamedTrigger(
+      base::trace_event::kStartupTracingTriggerName);
+  return manager;
 }
 
 }  // namespace content

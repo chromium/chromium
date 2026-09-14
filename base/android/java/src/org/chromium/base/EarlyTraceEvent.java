@@ -284,6 +284,10 @@ public class EarlyTraceEvent {
     /** Sets the background startup tracing enabled in app preferences for next startup. */
     @CalledByNative
     static void setBackgroundStartupTracingFlag(boolean enabled) {
+        if (sCachedBackgroundStartupTracingFlag == enabled) {
+            return;
+        }
+        sCachedBackgroundStartupTracingFlag = enabled;
         // Setting preferences might cause a disk write
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             ContextUtils.getAppSharedPreferences()

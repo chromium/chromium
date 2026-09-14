@@ -14,6 +14,8 @@
 
 namespace content {
 
+class BackgroundTracingManagerImpl;
+
 // The browser implementation of StartupData.
 struct CONTENT_EXPORT StartupDataImpl : public StartupData {
   StartupDataImpl();
@@ -21,6 +23,7 @@ struct CONTENT_EXPORT StartupDataImpl : public StartupData {
 
   std::unique_ptr<BrowserProcessIOThread> io_thread;
   std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support;
+  std::unique_ptr<BackgroundTracingManagerImpl> background_tracing_manager;
 };
 
 }  // namespace content
