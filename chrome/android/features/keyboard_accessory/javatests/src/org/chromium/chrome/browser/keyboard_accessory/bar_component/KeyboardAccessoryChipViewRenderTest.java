@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DismissBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.TestProfile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.AutofillProfilePayload;
@@ -105,10 +105,11 @@ public class KeyboardAccessoryChipViewRenderTest {
                     .setRevision(8)
                     .build();
 
+    private final TestProfile mProfile = TestProfile.createRegular();
+
     @Mock private KeyboardAccessoryView mKeyboardAccessoryView;
     @Mock private AutofillImageFetcher mMockImageFetcher;
     @Mock private FillingProductBridgeJni mMockFillingProductBridgeJni;
-    @Mock private Profile mMockProfile;
     @Mock private PersonalDataManager mMockPersonalDataManager;
 
     private final boolean mUseRtlLayout;
@@ -297,9 +298,9 @@ public class KeyboardAccessoryChipViewRenderTest {
                         mKeyboardAccessoryView,
                         mUiConfiguration,
                         mContentView,
-                        AutofillBarItem.getBarItemType(suggestion, mMockProfile));
+                        AutofillBarItem.getBarItemType(suggestion, mProfile));
         ChipView chipView = (ChipView) viewHolder.itemView;
-        AutofillBarItem item = new AutofillBarItem(suggestion, action, mMockProfile);
+        AutofillBarItem item = new AutofillBarItem(suggestion, action, mProfile);
         item.setEnabled(enabled);
         viewHolder.bind(item, chipView);
         chipView.setLayoutParams(
