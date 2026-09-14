@@ -6,8 +6,8 @@ import 'chrome://contextual-tasks/strings.m.js';
 import './test_composebox_mixin.js';
 
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {VoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
+import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -19,7 +19,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {installMock, MockInputState} from './composebox_test_utils.js';
+import {assertStyle, installMock, MockInputState} from './composebox_test_utils.js';
 import type {TestComposeboxMixinElement} from './test_composebox_mixin.js';
 
 enum Attributes {
@@ -324,6 +324,66 @@ suite('ComposeboxAutocomplete', () => {
           assertTrue(composeboxDropdown.hidden);
         });
 
+    test('composebox does not show verbatim match', async () => {
+      loadTimeData.overrideValues(
+          {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+      element = createTestElement();
+      await microtasksFinished();
+
+      // Add zps input.
+      setInputValue(element.getInputElement().inputElement, '');
+      element.getInputElement().inputElement.dispatchEvent(new Event('input'));
+      await microtasksFinished();
+
+      const matches = [
+        createSearchMatchForTesting(),
+        createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+      ];
+      searchboxCallbackRouterRemote.autocompleteResultChanged(
+          createAutocompleteResultForTesting({
+            queryId: element.activeQueryId,
+            matches,
+          }));
+      await microtasksFinished();
+      assertTrue(
+          await areMatchesShowing(element, searchboxCallbackRouterRemote));
+
+      let matchEls =
+          element.$.matches.shadowRoot.querySelectorAll('cr-composebox-match');
+      assertEquals(2, matchEls.length);
+      let matchEl = matchEls[0];
+      assertTrue(!!matchEl);
+      // First match shows for zps.
+      assertStyle(matchEl, 'display', 'block');
+
+      // Add typed input.
+      setInputValue(element.getInputElement().inputElement, 'awesome');
+      element.getInputElement().inputElement.dispatchEvent(new Event('input'));
+      await microtasksFinished();
+
+      const typedMatches = [
+        createSearchMatchForTesting({allowedToBeDefaultMatch: true}),
+        createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+      ];
+      searchboxCallbackRouterRemote.autocompleteResultChanged(
+          createAutocompleteResultForTesting({
+            queryId: element.activeQueryId,
+            input: 'awesome',
+            matches: typedMatches,
+          }));
+      await microtasksFinished();
+      assertTrue(
+          await areMatchesShowing(element, searchboxCallbackRouterRemote));
+
+      matchEls =
+          element.$.matches.shadowRoot.querySelectorAll('cr-composebox-match');
+      assertEquals(2, matchEls.length);
+      matchEl = matchEls[0];
+      assertTrue(!!matchEl);
+      // Verbatim match does not show for typed suggest.
+      assertStyle(matchEl, 'display', 'none');
+    });
+
     test('dropdown does not flash after clicking ZPS suggestion', async () => {
       loadTimeData.overrideValues(
           {composeboxShowZps: true, composeboxShowTypedSuggest: true});
@@ -520,6 +580,98 @@ suite('ComposeboxAutocomplete', () => {
       loadTimeData.overrideValues({composeboxShowZps: false});
     });
 
+    test('arrow keys work for typed suggest', async () => {
+      loadTimeData.overrideValues(
+          {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+      element = createTestElement();
+      await microtasksFinished();
+
+      // Add typed input.
+      setInputValue(element.getInputElement().inputElement, 'Test');
+      element.getInputElement().inputElement.dispatchEvent(new Event('input'));
+      await microtasksFinished();
+
+      const composeboxDropdown = element.$.matches;
+
+      const matches = [
+        createSearchMatchForTesting(
+            {fillIntoEdit: 'hello world 1', allowedToBeDefaultMatch: true}),
+        createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+        createSearchMatchForTesting({fillIntoEdit: 'hello world 3'}),
+        createSearchMatchForTesting({fillIntoEdit: 'hello world 4'}),
+      ];
+      searchboxCallbackRouterRemote.autocompleteResultChanged(
+          createAutocompleteResultForTesting({
+            queryId: element.activeQueryId,
+            matches: matches,
+            input: 'Test',
+          }));
+      await microtasksFinished();
+
+      // Dropdown should show when matches are available.
+      assertFalse(composeboxDropdown.hidden);
+
+      const matchEls =
+          element.$.matches.shadowRoot.querySelectorAll('cr-composebox-match');
+      assertEquals(4, matchEls.length);
+      const matchEl = matchEls[0];
+      assertTrue(!!matchEl);
+      // Verbatim match does not show for typed suggest.
+      assertStyle(matchEl, 'display', 'none');
+
+      // Arrow down should do default action.
+      const arrowDownEvent = new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        key: 'ArrowDown',
+      });
+
+      element.getInputElement().inputElement.dispatchEvent(arrowDownEvent);
+      await microtasksFinished();
+      assertTrue(arrowDownEvent.defaultPrevented);
+
+      // First SHOWN match (second match) is selected.
+      assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+      assertEquals(
+          'hello world 2',
+          getInputValue(element.getInputElement().inputElement));
+
+      // Arrow up should do default action.
+      const arrowUpEvent = new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        key: 'ArrowUp',
+      });
+
+      element.getInputElement().inputElement.dispatchEvent(arrowUpEvent);
+      await microtasksFinished();
+      assertTrue(arrowUpEvent.defaultPrevented);
+      // Last match gets selected when arrowing up from the first shown match.
+      assertTrue(matchEls[3]!.hasAttribute(Attributes.SELECTED));
+      assertEquals(
+          'hello world 4',
+          getInputValue(element.getInputElement().inputElement));
+
+      // When arrowing down from last match, first SHOWN match should be
+      // selected.
+      const secondArrowDownEvent = new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        key: 'ArrowDown',
+      });
+      element.getInputElement().inputElement.dispatchEvent(
+          secondArrowDownEvent);
+      await microtasksFinished();
+      assertTrue(secondArrowDownEvent.defaultPrevented);
+      assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+      assertEquals(
+          'hello world 2',
+          getInputValue(element.getInputElement().inputElement));
+    });
+
     test(
         'arrow up/down enables submit for suggestion with no query',
         async () => {
@@ -620,6 +772,7 @@ suite('ComposeboxAutocomplete', () => {
           await searchboxHandler.whenCalled('deleteAutocompleteMatch');
       assertEquals(0, args[0]);
       assertEquals(1, searchboxHandler.getCallCount('deleteAutocompleteMatch'));
+      assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
 
       searchboxHandler.reset();
 
@@ -673,6 +826,7 @@ suite('ComposeboxAutocomplete', () => {
       await microtasksFinished();
       assertEquals(0, keydownArgs[0]);
       assertEquals(1, searchboxHandler.getCallCount('deleteAutocompleteMatch'));
+      assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
 
       matches = [createSearchMatchForTesting({
         supportsDeletion: true,
