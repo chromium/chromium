@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/service_worker/service_worker_usb_delegate_observer.h"
+
 #include <cstddef>
 #include <memory>
 #include <vector>
@@ -10,12 +12,12 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_device_delegate_observer_unittest.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
-#include "content/browser/service_worker/service_worker_usb_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/usb/usb_test_utils.h"
 #include "content/browser/usb/web_usb_service_impl.h"
@@ -425,20 +427,19 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceManagerConnectionError) {
     auto* version = context()->GetLiveVersion(version_ids[idx]);
     ASSERT_NE(version, nullptr);
     EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
-    EXPECT_EQ(context()
-                  ->usb_delegate_observer()
-                  ->GetUsbServiceForTesting(registrations[idx]->id())
-                  ->clients()
-                  .size(),
-              1u);
+    auto services =
+        context()->usb_delegate_observer()->GetUsbServicesForTesting(
+            registrations[idx]->id());
+    ASSERT_EQ(services.size(), 1u);
+    EXPECT_EQ(services[0]->clients().size(), 1u);
   }
   usb_delegate().OnDeviceManagerConnectionError();
   for (size_t idx = 0; idx < num_workers; ++idx) {
-    EXPECT_TRUE(context()
-                    ->usb_delegate_observer()
-                    ->GetUsbServiceForTesting(registrations[idx]->id())
-                    ->clients()
-                    .empty());
+    auto services =
+        context()->usb_delegate_observer()->GetUsbServicesForTesting(
+            registrations[idx]->id());
+    ASSERT_EQ(services.size(), 1u);
+    EXPECT_TRUE(services[0]->clients().empty());
   }
 }
 
@@ -498,6 +499,85 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnPermissionRevoked) {
 }
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest,
+       OnPermissionRevokedMultipleServicesForSameRegistration) {
+  device::MockUsbMojoDevice mock_device1;
+  device::MockUsbMojoDevice mock_device2;
+  auto fake_device_info1 = CreateFakeDevice();
+  auto fake_device_info2 = CreateFakeDevice();
+  auto device_info1 = ConnectDevice(fake_device_info1, &mock_device1);
+  auto device_info2 = ConnectDevice(fake_device_info2, &mock_device2);
+
+  const GURL origin_url(kTestUrl);
+  auto registration = InstallServiceWorker(origin_url);
+  auto* version1 = registration->active_version();
+  ASSERT_NE(version1, nullptr);
+  StartServiceWorker(version1);
+  auto usb_service1 = CreateUsbService(version1);
+
+  // Create an installing version for the same registration to simulate a
+  // service worker update where both versions are simultaneously running.
+  auto version2 =
+      CreateNewServiceWorkerVersion(context()->registry(), registration,
+                                    GURL("https://www.google.com/worker2.js"),
+                                    blink::mojom::ScriptType::kClassic);
+  version2->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+  version2->SetStatus(ServiceWorkerVersion::Status::INSTALLING);
+  registration->SetInstallingVersion(version2);
+  StartServiceWorker(version2.get());
+  auto usb_service2 = CreateUsbService(version2.get());
+
+  EXPECT_EQ(context()
+                ->usb_delegate_observer()
+                ->GetUsbServicesForTesting(registration->id())
+                .size(),
+            2u);
+
+  // Both versions open a USB device connection.
+  mojo::Remote<device::mojom::UsbDevice> device1;
+  usb_service1->GetDevice(device_info1->guid,
+                          device1.BindNewPipeAndPassReceiver());
+  EXPECT_CALL(mock_device1, Open)
+      .WillOnce(base::test::RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future1;
+  device1->Open(open_future1.GetCallback());
+  EXPECT_TRUE(open_future1.Get()->is_success());
+
+  mojo::Remote<device::mojom::UsbDevice> device2;
+  usb_service2->GetDevice(device_info2->guid,
+                          device2.BindNewPipeAndPassReceiver());
+  EXPECT_CALL(mock_device2, Open)
+      .WillOnce(base::test::RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future2;
+  device2->Open(open_future2.GetCallback());
+  EXPECT_TRUE(open_future2.Get()->is_success());
+
+  // When permission is revoked for the origin, BOTH WebUsbServiceImpl
+  // instances must be notified and close their open device connections.
+  auto origin = url::Origin::Create(origin_url);
+  TestFuture<void> close_future1;
+  TestFuture<void> close_future2;
+  EXPECT_CALL(usb_delegate(), GetDeviceInfo(_, device_info1->guid))
+      .WillOnce(Return(device_info1.get()));
+  EXPECT_CALL(usb_delegate(), GetDeviceInfo(_, device_info2->guid))
+      .WillOnce(Return(device_info2.get()));
+  EXPECT_CALL(usb_delegate(),
+              HasDevicePermission(_, nullptr, origin, Ref(*device_info1)))
+      .WillOnce(Return(false));
+  EXPECT_CALL(usb_delegate(),
+              HasDevicePermission(_, nullptr, origin, Ref(*device_info2)))
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_device1, Close)
+      .WillOnce(RunClosure(close_future1.GetRepeatingCallback()));
+  EXPECT_CALL(mock_device2, Close)
+      .WillOnce(RunClosure(close_future2.GetRepeatingCallback()));
+
+  usb_delegate().OnPermissionRevoked(origin);
+  EXPECT_TRUE(close_future1.Wait());
+  EXPECT_TRUE(close_future2.Wait());
+}
+
+TEST_F(ServiceWorkerUsbDelegateObserverTest,
        RemovedFromUsbDelegateObserverWhenNoRegistration) {
   const GURL origin(kTestUrl);
   EXPECT_TRUE(usb_delegate().observer_list().empty());
@@ -506,7 +586,19 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest,
   ASSERT_NE(version, nullptr);
   StartServiceWorker(version);
   auto usb_service = CreateUsbService(version);
+  MockDeviceManagerClient device_manager_client;
+  RegisterUsbManagerClient(usb_service, device_manager_client);
+  auto services = context()->usb_delegate_observer()->GetUsbServicesForTesting(
+      registration->id());
+  ASSERT_EQ(services.size(), 1u);
+  base::WeakPtr<WebUsbServiceImpl> service_impl = services[0];
+  ASSERT_TRUE(service_impl);
+  EXPECT_EQ(service_impl->clients().size(), 1u);
   EXPECT_FALSE(usb_delegate().observer_list().empty());
+
+  TestFuture<void> connection_error_future;
+  EXPECT_CALL(device_manager_client, ConnectionError())
+      .WillOnce(RunClosure(connection_error_future.GetRepeatingCallback()));
 
   TestFuture<blink::ServiceWorkerStatusCode> unregister_future;
   context()->UnregisterServiceWorker(
@@ -514,14 +606,83 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest,
       /*is_immediate=*/true, ServiceWorkerRegistration::DeleteInitiator::kTest,
       unregister_future.GetCallback());
   EXPECT_EQ(unregister_future.Get<0>(), blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_TRUE(connection_error_future.Wait());
   // Wait until all of the
   // ServiceWorkerDeviceDelegateObserver::OnRegistrationDeleted are called.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(usb_delegate().observer_list().empty());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return usb_delegate().observer_list().empty(); }));
+  ASSERT_TRUE(service_impl);
+  EXPECT_TRUE(service_impl->clients().empty());
 }
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest,
-       HasLatestUsbServiceAfterServiceWorkerStopThenStart) {
+       ActivatingWorkerNotDoubleNotified) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->active_version();
+  ASSERT_NE(version, nullptr);
+  StartServiceWorker(version);
+  version->SetStatus(ServiceWorkerVersion::Status::ACTIVATING);
+
+  auto usb_service = CreateUsbService(version);
+  MockDeviceManagerClient device_manager_client;
+  RegisterUsbManagerClient(usb_service, device_manager_client);
+
+  device::MockUsbMojoDevice mock_device;
+  auto fake_device_info = CreateFakeDevice();
+  TestFuture<device::mojom::UsbDeviceInfoPtr> device_added_future;
+  EXPECT_CALL(device_manager_client, OnDeviceAdded)
+      .Times(1)
+      .WillOnce([&](auto d) { device_added_future.SetValue(std::move(d)); });
+
+  ConnectDevice(fake_device_info, &mock_device);
+  EXPECT_EQ(device_added_future.Get()->guid, fake_device_info->guid());
+
+  // Transitioning from ACTIVATING to ACTIVATED should not notify a second time.
+  version->SetStatus(ServiceWorkerVersion::Status::ACTIVATED);
+  FlushUsbServicePipe(usb_service);
+}
+
+TEST_F(ServiceWorkerUsbDelegateObserverTest,
+       RunningWorkerWithoutClientQueuesPendingCallback) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->active_version();
+  ASSERT_NE(version, nullptr);
+  StartServiceWorker(version);
+  EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
+  EXPECT_EQ(version->status(), ServiceWorkerVersion::Status::ACTIVATED);
+
+  // Create WebUsbServiceImpl while the worker is kRunning, but do not register
+  // the client yet (simulating SetClient Mojo call still in flight).
+  auto usb_service = CreateUsbService(version);
+
+  device::MockUsbMojoDevice mock_device;
+  auto fake_device_info = CreateFakeDevice();
+  ConnectDevice(fake_device_info, &mock_device);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return context()
+        ->usb_delegate_observer()
+        ->GetPendingCallbacksForTesting()
+        .contains(version->version_id());
+  }));
+
+  // When SetClient completes, the queued event should be delivered.
+  MockDeviceManagerClient device_manager_client;
+  TestFuture<device::mojom::UsbDeviceInfoPtr> device_added_future;
+  EXPECT_CALL(device_manager_client, OnDeviceAdded).WillOnce([&](auto d) {
+    device_added_future.SetValue(std::move(d));
+  });
+  RegisterUsbManagerClient(usb_service, device_manager_client);
+  EXPECT_EQ(device_added_future.Get()->guid, fake_device_info->guid());
+  EXPECT_FALSE(context()
+                   ->usb_delegate_observer()
+                   ->GetPendingCallbacksForTesting()
+                   .contains(version->version_id()));
+}
+
+TEST_F(ServiceWorkerUsbDelegateObserverTest,
+       PrunesStoppedUsbServiceAfterServiceWorkerStopThenStart) {
   device::MockUsbMojoDevice mock_device;
   auto fake_device_info = CreateFakeDevice();
   auto device_info = ConnectDevice(fake_device_info, &mock_device);
@@ -532,8 +693,10 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest,
   ASSERT_NE(version, nullptr);
   StartServiceWorker(version);
   auto usb_service = CreateUsbService(version);
-  EXPECT_TRUE(context()->usb_delegate_observer()->GetUsbServiceForTesting(
-      registration->id()));
+  EXPECT_FALSE(context()
+                   ->usb_delegate_observer()
+                   ->GetUsbServicesForTesting(registration->id())
+                   .empty());
 
   // Create a connection so that we can get to the point when the UsbService is
   // destroyed by expecting DecrementConnectionCount being called.
@@ -557,14 +720,19 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest,
   StopServiceWorker(version);
   usb_service.reset();
   run_loop.Run();
-  EXPECT_FALSE(context()->usb_delegate_observer()->GetUsbServiceForTesting(
-      registration->id()));
+  EXPECT_TRUE(context()
+                  ->usb_delegate_observer()
+                  ->GetUsbServicesForTesting(registration->id())
+                  .empty());
 
   // Then start the worker and create a new UsbService.
   StartServiceWorker(version);
   usb_service = CreateUsbService(version);
-  EXPECT_TRUE(context()->usb_delegate_observer()->GetUsbServiceForTesting(
-      registration->id()));
+  EXPECT_EQ(context()
+                ->usb_delegate_observer()
+                ->GetUsbServicesForTesting(registration->id())
+                .size(),
+            1u);
 }
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest,
@@ -801,6 +969,35 @@ TEST_F(ServiceWorkerUsbDelegateObserverNoEventHandlersTest,
       context()->usb_delegate_observer()->registration_id_map().empty());
 }
 
+TEST_F(ServiceWorkerUsbDelegateObserverNoEventHandlersTest,
+       DeviceRemovedClosesOpenDeviceConnection) {
+  device::MockUsbMojoDevice mock_device;
+  auto fake_device_info = CreateFakeDevice();
+  auto device_info = ConnectDevice(fake_device_info, &mock_device);
+
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+  StartServiceWorker(version);
+  auto usb_service = CreateUsbService(version);
+
+  mojo::Remote<device::mojom::UsbDevice> device;
+  usb_service->GetDevice(device_info->guid,
+                         device.BindNewPipeAndPassReceiver());
+  EXPECT_CALL(mock_device, Open)
+      .WillOnce(base::test::RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
+  device->Open(open_future.GetCallback());
+  EXPECT_TRUE(open_future.Get()->is_success());
+
+  TestFuture<void> disconnect_future;
+  EXPECT_CALL(mock_device, Close)
+      .WillOnce(RunClosure(disconnect_future.GetRepeatingCallback()));
+  DisconnectDevice(fake_device_info);
+  EXPECT_TRUE(disconnect_future.Wait());
+}
+
 // Shutdown the service worker context and make sure that
 // ServiceWorkerUsbDelegateObserver removes itself from the usb delegate
 // properly.
@@ -810,9 +1007,11 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, ShutdownServiceWorkerContext) {
   auto* version = registration->newest_installed_version();
   ASSERT_NE(version, nullptr);
   StartServiceWorker(version);
-  CreateUsbService(version);
-  EXPECT_TRUE(context()->usb_delegate_observer()->GetUsbServiceForTesting(
-      registration->id()));
+  auto usb_service = CreateUsbService(version);
+  EXPECT_FALSE(context()
+                   ->usb_delegate_observer()
+                   ->GetUsbServicesForTesting(registration->id())
+                   .empty());
 
   EXPECT_FALSE(usb_delegate().observer_list().empty());
   helper()->ShutdownContext();

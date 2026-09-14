@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_USB_DELEGATE_OBSERVER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_USB_DELEGATE_OBSERVER_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation_traits.h"
 #include "content/browser/service_worker/service_worker_device_delegate_observer.h"
@@ -43,13 +45,15 @@ class CONTENT_EXPORT ServiceWorkerUsbDelegateObserver
   void OnDeviceManagerConnectionError() override;
   void OnPermissionRevoked(const url::Origin& origin) override;
 
-  // Register the `usb_service` to be the latest WebUsbService for
-  // `registraiton_id`.
+  // Register the `usb_service` for `registration_id`. There can be multiple
+  // live WebUsbServiceImpl instances for a registration (e.g., when a waiting
+  // service worker version starts while the active version is still running).
   void RegisterUsbService(int64_t registration_id,
                           base::WeakPtr<WebUsbServiceImpl> usb_service);
 
-  WebUsbServiceImpl* GetUsbServiceForTesting(int64_t registration_id) {
-    return GetUsbService(registration_id);
+  std::vector<base::WeakPtr<WebUsbServiceImpl>> GetUsbServicesForTesting(
+      int64_t registration_id) {
+    return GetUsbServices(registration_id);
   }
 
  private:
@@ -73,12 +77,13 @@ class CONTENT_EXPORT ServiceWorkerUsbDelegateObserver
                      scoped_refptr<ServiceWorkerVersion> version,
                      blink::ServiceWorkerStatusCode service_worker_status);
 
-  // Get UsbService for the `registration_id`. It can be null if no live
-  // UsbService for the `registration_id`.
-  WebUsbServiceImpl* GetUsbService(int64_t registration_id);
+  // Get all live UsbServices for the `registration_id`.
+  std::vector<base::WeakPtr<WebUsbServiceImpl>> GetUsbServices(
+      int64_t registration_id);
 
-  // The map for registration id to the latest registered UsbService.
-  base::flat_map<int64_t, base::WeakPtr<WebUsbServiceImpl>> usb_services_;
+  // The map for registration id to the list of live registered UsbServices.
+  base::flat_map<int64_t, std::vector<base::WeakPtr<WebUsbServiceImpl>>>
+      usb_services_;
 
   base::ScopedObservation<UsbDelegate, ServiceWorkerUsbDelegateObserver>
       usb_delegate_observation{this};

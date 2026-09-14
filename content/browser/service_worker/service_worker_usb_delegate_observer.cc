@@ -60,9 +60,10 @@ void ServiceWorkerUsbDelegateObserver::OnDeviceRemoved(
 
 void ServiceWorkerUsbDelegateObserver::OnDeviceManagerConnectionError() {
   for (auto const& [id, info] : registration_id_map()) {
-    auto* usb_service = GetUsbService(id);
-    if (usb_service) {
-      usb_service->OnDeviceManagerConnectionError();
+    for (auto const& usb_service : GetUsbServices(id)) {
+      if (usb_service) {
+        usb_service->OnDeviceManagerConnectionError();
+      }
     }
   }
 }
@@ -70,9 +71,10 @@ void ServiceWorkerUsbDelegateObserver::OnDeviceManagerConnectionError() {
 void ServiceWorkerUsbDelegateObserver::OnPermissionRevoked(
     const url::Origin& origin) {
   for (auto const& [id, info] : registration_id_map()) {
-    auto* usb_service = GetUsbService(id);
-    if (usb_service) {
-      usb_service->OnPermissionRevoked(origin);
+    for (auto const& usb_service : GetUsbServices(id)) {
+      if (usb_service) {
+        usb_service->OnPermissionRevoked(origin);
+      }
     }
   }
 }
@@ -81,13 +83,14 @@ void ServiceWorkerUsbDelegateObserver::RegisterUsbService(
     int64_t registration_id,
     base::WeakPtr<WebUsbServiceImpl> usb_service) {
   Register(registration_id);
-  // `usb_services_` may already have an entry for `registration_id` in a case
-  // where the service worker went to sleep and now is worken up. In that
-  // case, the WebUsbServiceImpl from `usb_services_[registration_id]` is the
-  // weak ptr of previous WebUsbServiceImpl before the service worker went to
-  // sleep. We don't care about the previous WebUsbServiceImpl, so here just
-  // overwrite it with `usb_service`, which is the latest one.
-  usb_services_[registration_id] = usb_service;
+  // Multiple WebUsbServiceImpl instances can exist for the same
+  // `registration_id` (e.g., an installing version evaluating top-level
+  // `navigator.usb` listeners creates a new instance while the active version
+  // is still running). Prune invalidated weak pointers and append `usb_service`
+  // so all live instances are notified on permission revocation.
+  auto& services = usb_services_[registration_id];
+  std::erase_if(services, [](const auto& service) { return !service; });
+  services.push_back(std::move(usb_service));
 }
 
 void ServiceWorkerUsbDelegateObserver::RegistrationAdded(
@@ -102,6 +105,12 @@ void ServiceWorkerUsbDelegateObserver::RegistrationAdded(
 
 void ServiceWorkerUsbDelegateObserver::RegistrationRemoved(
     int64_t registration_id) {
+  for (auto const& usb_service : GetUsbServices(registration_id)) {
+    if (usb_service) {
+      usb_service->OnDeviceManagerConnectionError();
+    }
+  }
+  usb_services_.erase(registration_id);
   if (registration_id_map().empty()) {
     usb_delegate_observation.Reset();
   }
@@ -111,20 +120,45 @@ void ServiceWorkerUsbDelegateObserver::DispatchUsbDeviceEventToWorkers(
     const device::mojom::UsbDeviceInfo& device_info,
     UsbServiceDeviceEventCallback callback) {
   for (auto const& [id, info] : registration_id_map()) {
-    // No need to proceed if the registration doesn't have any event listeners.
-    if (!info.has_event_handlers) {
-      continue;
-    }
-    // Forward it to UsbService if the service worker is running, UsbService is
-    // available, and it has clients registered.
-    auto* usb_service = GetUsbService(id);
-    if (usb_service) {
+    // Forward the event to all currently running (kRunning) WebUsbServiceImpl
+    // instances so that open device connections are cleaned up immediately
+    // (e.g. on device removal), even if no JS event listeners were registered.
+    // Track whether the event was delivered to an already-running ACTIVATED or
+    // ACTIVATING version whose client is ready so we know if we need to wake it
+    // up below.
+    bool delivered_to_active_version = false;
+    for (auto const& usb_service : GetUsbServices(id)) {
+      if (!usb_service) {
+        continue;
+      }
       auto version = usb_service->service_worker_version();
       if (version &&
           version->running_status() == blink::EmbeddedWorkerStatus::kRunning) {
-        callback.Run(device_info, usb_service);
-        continue;
+        auto status = version->status();
+        callback.Run(device_info, usb_service.get());
+        // Mark as delivered only if the active version (ACTIVATING or
+        // ACTIVATED) already has a registered client. If `clients()` is empty
+        // (SetClient Mojo call still in flight), leave this false so
+        // DispatchEventToWorker queues a pending callback rather than losing
+        // the event. Checking ACTIVATING prevents double-notifying when it
+        // transitions to ACTIVATED in DispatchEventToWorker.
+        if ((status == ServiceWorkerVersion::ACTIVATED ||
+             status == ServiceWorkerVersion::ACTIVATING) &&
+            !usb_service->clients().empty()) {
+          delivered_to_active_version = true;
+        }
       }
+    }
+    if (delivered_to_active_version) {
+      continue;
+    }
+
+    // Check `has_event_handlers` after notifying running services above, since
+    // running workers must clean up open device connections (e.g. on device
+    // removal) even without JS listeners, whereas a stopped/sleeping ACTIVATED
+    // worker should only be woken up if it registered JS event listeners.
+    if (!info.has_event_handlers) {
+      continue;
     }
 
     // Avoid waking up the worker if eventually the device event won't be
@@ -153,33 +187,46 @@ void ServiceWorkerUsbDelegateObserver::WorkerStarted(
   }
 
   auto registration_id = version->registration_id();
-  auto* usb_service = GetUsbService(registration_id);
-  // Even when the service worker is in the running state, the WebUsbService may
-  // not be available or the render-side DeviceManagerClient may not have yet
-  // registered. This is because the service worker is set to running state
-  // after the script is evaluated, but the inter-process request that creates
-  // the WebUsbService or gets the DeviceManagerClient registered may still be
-  // in progress. In order to handle this case, the callback is stored and will
-  // be processed when the WebUsbService is ready and the DeviceManagerClient is
-  // registered with the WebUsbService.
-  if (!usb_service || usb_service->clients().empty()) {
+  // Deliver the event only to WebUsbServiceImpl instances belonging to the
+  // woken `version` (ignoring services from other versions of the same
+  // registration) that already have a registered render-side
+  // DeviceManagerClient.
+  bool has_ready_service = false;
+  for (auto const& usb_service : GetUsbServices(registration_id)) {
+    if (usb_service &&
+        usb_service->service_worker_version().get() == version.get() &&
+        !usb_service->clients().empty()) {
+      callback.Run(*device_info, usb_service.get());
+      has_ready_service = true;
+    }
+  }
+  // Even when `version` is in the running state, its WebUsbServiceImpl may not
+  // yet be created or its render-side DeviceManagerClient may not yet be
+  // registered (since the worker enters kRunning after script evaluation while
+  // the Mojo requests to create WebUsbServiceImpl / register
+  // DeviceManagerClient are still in flight). Store the callback to be run once
+  // `version`'s WebUsbServiceImpl client is registered.
+  if (!has_ready_service) {
     AddPendingCallback(
         version.get(),
         base::BindOnce(&ServiceWorkerUsbDelegateObserver::WorkerStarted,
                        base::Unretained(this), std::move(device_info),
                        std::move(callback), version, service_worker_status));
-    return;
   }
-  callback.Run(*device_info, usb_service);
 }
 
-WebUsbServiceImpl* ServiceWorkerUsbDelegateObserver::GetUsbService(
-    int64_t registration_id) {
+std::vector<base::WeakPtr<WebUsbServiceImpl>>
+ServiceWorkerUsbDelegateObserver::GetUsbServices(int64_t registration_id) {
   auto it = usb_services_.find(registration_id);
   if (it == usb_services_.end()) {
-    return nullptr;
+    return {};
   }
-  return it->second.get();
+  std::erase_if(it->second, [](const auto& service) { return !service; });
+  if (it->second.empty()) {
+    usb_services_.erase(it);
+    return {};
+  }
+  return it->second;
 }
 
 }  // namespace content
