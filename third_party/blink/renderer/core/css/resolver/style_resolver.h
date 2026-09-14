@@ -142,7 +142,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   void LoadPaginationResources();
 
   const ComputedStyle* StyleForText(Text*);
-  const ComputedStyle* StyleForViewport();
+  const ComputedStyle& StyleForViewport();
   // Returns `ComputedStyle` for rendering initial letter text.
   // `initial_letter_box_style` should have non-normal `initial-letter`
   // property.

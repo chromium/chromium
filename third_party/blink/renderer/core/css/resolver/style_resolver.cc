@@ -1311,7 +1311,7 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
   }
 }
 
-const ComputedStyle* StyleResolver::StyleForViewport() {
+const ComputedStyle& StyleResolver::StyleForViewport() {
   ComputedStyleBuilder builder = InitialStyleBuilderForElement();
 
   builder.SetZIndex(0);
@@ -1327,7 +1327,7 @@ const ComputedStyle* StyleResolver::StyleForViewport() {
 
   GetDocument().GetStyleEngine().ApplyVisionDeficiencyStyle(builder);
 
-  return builder.TakeStyle();
+  return *builder.TakeStyle();
 }
 
 static StyleBaseData* GetBaseData(const StyleResolverState& state) {

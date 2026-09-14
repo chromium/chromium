@@ -4752,7 +4752,7 @@ void StyleEngine::UpdateViewportStyle() {
     return;
   }
 
-  const ComputedStyle& viewport_style = *resolver_->StyleForViewport();
+  const ComputedStyle& viewport_style = resolver_->StyleForViewport();
   if (ComputedStyle::ComputeDifference(
           &viewport_style, &GetDocument().GetLayoutView()->StyleRef()) !=
       ComputedStyle::Difference::kEqual) {
