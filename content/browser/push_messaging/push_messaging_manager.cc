@@ -404,8 +404,9 @@ void PushMessagingManager::DidRequestPermissionInIncognito(
     PermissionResult permission_result) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Notification permission should always be denied in incognito.
-  CHECK_EQ(blink::mojom::PermissionStatus::DENIED, permission_result.status,
-           base::NotFatalUntil::M159);
+  // TODO(crbug.com/560302146): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(blink::mojom::PermissionStatus::DENIED, permission_result.status);
   SendSubscriptionError(
       std::move(data),
       blink::mojom::PushRegistrationStatus::INCOGNITO_PERMISSION_DENIED);
