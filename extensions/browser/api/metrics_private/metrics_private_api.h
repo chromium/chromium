@@ -5,11 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_API_METRICS_PRIVATE_METRICS_PRIVATE_API_H_
 #define EXTENSIONS_BROWSER_API_METRICS_PRIVATE_METRICS_PRIVATE_API_H_
 
-#include <stddef.h>
-
 #include <string>
 
-#include "base/metrics/histogram.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -80,19 +77,7 @@ class MetricsPrivateRecordExtensionUsageUkmFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class MetricsHistogramHelperFunction : public ExtensionFunction {
- protected:
-  ~MetricsHistogramHelperFunction() override {}
-  void RecordValue(const std::string& name,
-                   base::HistogramType type,
-                   int min,
-                   int max,
-                   size_t buckets,
-                   int sample);
-};
-
-class MetricsPrivateRecordValueFunction
-    : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordValueFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordValue",
                              METRICSPRIVATE_RECORDVALUE)
@@ -104,8 +89,7 @@ class MetricsPrivateRecordValueFunction
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordBooleanFunction
-    : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordBooleanFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordBoolean",
                              METRICSPRIVATE_RECORDBOOLEAN)
@@ -117,8 +101,7 @@ class MetricsPrivateRecordBooleanFunction
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordEnumerationValueFunction
-    : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordEnumerationValueFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordEnumerationValue",
                              METRICSPRIVATE_RECORDENUMERATIONVALUE)
@@ -131,7 +114,7 @@ class MetricsPrivateRecordEnumerationValueFunction
 };
 
 class MetricsPrivateRecordSparseValueWithHashMetricNameFunction
-    : public MetricsHistogramHelperFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION(
       "metricsPrivate.recordSparseValueWithHashMetricName",
@@ -146,7 +129,7 @@ class MetricsPrivateRecordSparseValueWithHashMetricNameFunction
 };
 
 class MetricsPrivateRecordSparseValueWithPersistentHashFunction
-    : public MetricsHistogramHelperFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION(
       "metricsPrivate.recordSparseValueWithPersistentHash",
@@ -160,8 +143,7 @@ class MetricsPrivateRecordSparseValueWithPersistentHashFunction
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordSparseValueFunction
-    : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordSparseValueFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordSparseValue",
                              METRICSPRIVATE_RECORDSPARSEVALUE)
@@ -173,8 +155,7 @@ class MetricsPrivateRecordSparseValueFunction
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordPercentageFunction
-    : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordPercentageFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordPercentage",
                              METRICSPRIVATE_RECORDPERCENTAGE)
@@ -186,8 +167,7 @@ class MetricsPrivateRecordPercentageFunction
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordCountFunction
-    : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordCountFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordCount",
                              METRICSPRIVATE_RECORDCOUNT)
@@ -199,8 +179,7 @@ class MetricsPrivateRecordCountFunction
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordSmallCountFunction
-    : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordSmallCountFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordSmallCount",
                              METRICSPRIVATE_RECORDSMALLCOUNT)
@@ -212,8 +191,7 @@ class MetricsPrivateRecordSmallCountFunction
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordMediumCountFunction
-    : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordMediumCountFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordMediumCount",
                              METRICSPRIVATE_RECORDMEDIUMCOUNT)
@@ -225,7 +203,7 @@ class MetricsPrivateRecordMediumCountFunction
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordTimeFunction : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordTimeFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordTime",
                              METRICSPRIVATE_RECORDTIME)
@@ -237,8 +215,7 @@ class MetricsPrivateRecordTimeFunction : public MetricsHistogramHelperFunction {
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordMediumTimeFunction
-    : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordMediumTimeFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordMediumTime",
                              METRICSPRIVATE_RECORDMEDIUMTIME)
@@ -250,8 +227,7 @@ class MetricsPrivateRecordMediumTimeFunction
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordLongTimeFunction
-    : public MetricsHistogramHelperFunction {
+class MetricsPrivateRecordLongTimeFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordLongTime",
                              METRICSPRIVATE_RECORDLONGTIME)
