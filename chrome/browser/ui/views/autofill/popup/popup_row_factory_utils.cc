@@ -187,8 +187,8 @@ std::unique_ptr<views::BoxLayoutView> GetAlternativePaymentMethodBadge(
               .SetBorder(views::CreateRoundedRectBorder(
                   /*thickness=*/0, /*corner_radius=*/100,
                   kPopupBadgeBorderInsets, ui::kColorSysNeutralContainer))
-              .SetBackground(views::CreateRoundedRectBackground(
-                  ui::kColorSysNeutralContainer, 100)))
+              .SetBackground(
+                  views::CreatePillBackground(ui::kColorSysNeutralContainer)))
       .Build();
 }
 

@@ -99,13 +99,12 @@ void PlaybackImageButton::UpdateImageAndText() {
 }
 
 void PlaybackImageButton::SetPlayButtonBackground() {
-  SetBackground(views::CreateRoundedRectBackground(
-      ui::kColorSysSecondaryContainer, kCenterButtonSize / 2));
+  SetBackground(views::CreatePillBackground(ui::kColorSysSecondaryContainer));
 }
 
 void PlaybackImageButton::SetPauseButtonBackground() {
-  SetBackground(views::CreateRoundedRectBackground(
-      SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF), kCenterButtonSize / 2));
+  SetBackground(
+      views::CreatePillBackground(SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF)));
 }
 
 BEGIN_METADATA(PlaybackImageButton)

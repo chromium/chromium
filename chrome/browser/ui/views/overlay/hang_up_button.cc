@@ -19,6 +19,7 @@ HangUpButton::HangUpButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_HANG_UP_TEXT));
+  SetBackground(views::CreatePillBackground(ui::kColorSysError));
   UpdateImage();
 
   // We use a solid background color in the UI, and that ends up sitting above
@@ -36,9 +37,6 @@ void HangUpButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void HangUpButton::UpdateImage() {
   const int icon_size = std::max(0, width() - (2 * kPipWindowIconPadding));
-
-  SetBackground(
-      views::CreateRoundedRectBackground(ui::kColorSysError, width() / 2));
 
   SetImageModel(
       views::Button::STATE_NORMAL,

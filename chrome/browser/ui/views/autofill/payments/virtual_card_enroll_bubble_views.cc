@@ -43,8 +43,7 @@ std::unique_ptr<views::Label> GetBadgeView() {
       .SetBorder(views::CreateRoundedRectBorder(
           /*thickness=*/0, /*corner_radius=*/100, gfx::Insets::VH(2, 8),
           ui::kColorSysNeutralContainer))
-      .SetBackground(views::CreateRoundedRectBackground(
-          ui::kColorSysNeutralContainer, 100))
+      .SetBackground(views::CreatePillBackground(ui::kColorSysNeutralContainer))
       .Build();
 }
 

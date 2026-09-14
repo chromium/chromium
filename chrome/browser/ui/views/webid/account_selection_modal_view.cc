@@ -227,8 +227,8 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
   placeholder_account_icon->SetPreferredSize(
       gfx::Size(webid::kModalAvatarSize, webid::kModalAvatarSize));
   placeholder_account_icon->SizeToPreferredSize();
-  placeholder_account_icon->SetBackground(views::CreateRoundedRectBackground(
-      kPlaceholderColor, webid::kModalAvatarSize));
+  placeholder_account_icon->SetBackground(
+      views::CreatePillBackground(kPlaceholderColor));
 
   constexpr int kPlaceholderAccountRowPadding = 16;
   auto row = std::make_unique<views::View>();
