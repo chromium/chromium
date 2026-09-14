@@ -12,15 +12,23 @@
 #include <string_view>
 #include <unordered_set>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/table_model.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace content {
 class WebContents;
+}
+
+namespace ui {
+class ColorProvider;
 }
 
 namespace task_manager {
@@ -171,7 +179,39 @@ class TaskManagerTableModel : public TaskManagerObserver,
                    std::u16string_view search_term);
 
  private:
+  friend class TaskManagerTableModelTest;
   friend class TaskManagerTester;
+
+  // The theme colors a themeable task icon is recolored for by
+  // favicon::ThemeFavicon().
+  struct TaskIconThemeColors {
+    static TaskIconThemeColors FromColorProvider(
+        const ui::ColorProvider& color_provider);
+    friend bool operator==(const TaskIconThemeColors&,
+                           const TaskIconThemeColors&) = default;
+    SkColor icon_color = SK_ColorTRANSPARENT;
+    SkColor icon_background_color = SK_ColorTRANSPARENT;
+    SkColor row_background_color = SK_ColorTRANSPARENT;
+  };
+
+  // A themeable task icon recolored by favicon::ThemeFavicon() for one set of
+  // theme colors, along with the inputs it was generated from.
+  struct ThemedIcon {
+    gfx::ImageSkia source;
+    TaskIconThemeColors colors;
+    gfx::ImageSkia themed;
+  };
+
+  // Rasterizes the ui::ImageModel that GetIcon() returns for a themeable
+  // icon: |icon|, the icon of the task with |task_id|, recolored for the theme
+  // of |color_provider|. |model| is the model the icon belongs to, or null once
+  // it has been destroyed. It caches the result so the color analysis behind
+  // the recoloring doesn't rerun on every paint.
+  static gfx::ImageSkia RasterizeThemedIcon(
+      base::WeakPtr<const TaskManagerTableModel> model,
+      TaskId task_id,
+      const gfx::ImageSkia& icon,
+      const ui::ColorProvider* color_provider);
 
   // Start / stop observing the task manager.
   void StartUpdating();
@@ -249,6 +289,15 @@ class TaskManagerTableModel : public TaskManagerObserver,
   base::TimeDelta tabs_and_ex_total_time_;
   base::TimeDelta system_total_time_;
   base::TimeDelta all_total_time_;
+
+  // Themeable icons recolored for the current theme, keyed by task id. Filled
+  // lazily by RasterizeThemedIcon(); an entry is regenerated when its task's
+  // icon or the theme colors change, and dropped when the task is removed.
+  // Mutable: it is a cache filled while rasterizing the icons handed out by
+  // GetIcon(), a const accessor.
+  mutable base::flat_map<TaskId, ThemedIcon> themed_icons_;
+
+  base::WeakPtrFactory<TaskManagerTableModel> weak_ptr_factory_{this};
 };
 
 }  // namespace task_manager

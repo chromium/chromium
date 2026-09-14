@@ -21,14 +21,19 @@ if (!is_android) {
     deps = [
       "//base:i18n",
       "//chrome/browser:browser_process",
+      "//chrome/browser/favicon",
       "//chrome/browser/task_manager/common",
+      "//chrome/browser/ui/color:color_headers",
       "//chrome/common:constants",
       "//components/prefs",
       "//content/public/common",
       "//content/public/common:result_codes",
+      "//skia",
       "//third_party/icu:icui18n",
       "//third_party/icu:icui18n_hidden_visibility",
       "//third_party/icu:icuuc_public",
+      "//ui/color",
+      "//ui/gfx",
     ]
   }
 
@@ -37,7 +42,11 @@ if (!is_android) {
     sources = [ "task_manager_table_model_unittest.cc" ]
     deps = [
       ":task_manager",
+      "//chrome/browser/ui/color:color_headers",
+      "//skia",
       "//testing/gtest",
+      "//ui/color",
+      "//ui/gfx",
     ]
   }
 }

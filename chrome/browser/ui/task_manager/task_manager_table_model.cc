@@ -13,6 +13,7 @@
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
@@ -29,11 +30,13 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/sampling/task_group.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -45,6 +48,8 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 
 namespace task_manager {
 
@@ -335,6 +340,21 @@ TableSortDescriptor::TableSortDescriptor(int col_id, bool ascending)
     : sorted_column_id(col_id), is_ascending(ascending) {}
 
 ////////////////////////////////////////////////////////////////////////////////
+// TaskManagerTableModel::TaskIconThemeColors:
+////////////////////////////////////////////////////////////////////////////////
+
+// static
+TaskManagerTableModel::TaskIconThemeColors
+TaskManagerTableModel::TaskIconThemeColors::FromColorProvider(
+    const ui::ColorProvider& color_provider) {
+  return {.icon_color = color_provider.GetColor(ui::kColorIcon),
+          .icon_background_color =
+              color_provider.GetColor(ui::kColorTableIconBackground),
+          .row_background_color =
+              color_provider.GetColor(kColorTaskManagerTableBackground)};
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // TaskManagerTableModel:
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -527,8 +547,45 @@ std::u16string TaskManagerTableModel::GetText(size_t row, int column) const {
 }
 
 ui::ImageModel TaskManagerTableModel::GetIcon(size_t row) const {
-  return ui::ImageModel::FromImageSkia(
-      observed_task_manager()->GetIcon(tasks_[row]));
+  const TaskId task_id = tasks_[row];
+  const gfx::ImageSkia& icon = observed_task_manager()->GetIcon(task_id);
+  if (icon.isNull() || !observed_task_manager()->ShouldThemifyIcon(task_id)) {
+    return ui::ImageModel::FromImageSkia(icon);
+  }
+
+  return ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(&TaskManagerTableModel::RasterizeThemedIcon,
+                          weak_ptr_factory_.GetWeakPtr(), task_id, icon),
+      icon.size());
+}
+
+// static
+gfx::ImageSkia TaskManagerTableModel::RasterizeThemedIcon(
+    base::WeakPtr<const TaskManagerTableModel> model,
+    TaskId task_id,
+    const gfx::ImageSkia& icon,
+    const ui::ColorProvider* color_provider) {
+  if (!color_provider) {
+    return icon;
+  }
+  const TaskIconThemeColors colors =
+      TaskIconThemeColors::FromColorProvider(*color_provider);
+
+  if (!model) {
+    return favicon::ThemeFavicon(icon, colors.icon_color,
+                                 colors.icon_background_color,
+                                 colors.row_background_color);
+  }
+  ThemedIcon& themed_icon = model->themed_icons_[task_id];
+  if (!themed_icon.source.BackedBySameObjectAs(icon) ||
+      themed_icon.colors != colors) {
+    themed_icon = {.source = icon,
+                   .colors = colors,
+                   .themed = favicon::ThemeFavicon(
+                       icon, colors.icon_color, colors.icon_background_color,
+                       colors.row_background_color)};
+  }
+  return themed_icon.themed;
 }
 
 void TaskManagerTableModel::SetObserver(ui::TableModelObserver* observer) {
@@ -851,6 +908,7 @@ void TaskManagerTableModel::OnTaskAdded(TaskId id) {
 }
 
 void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
+  themed_icons_.erase(id);
   if (!search_terms_.empty() && !HasMatchInTasksSharingSameProcess(id)) {
     // Update matched process set if task manager is in search mode.
     matched_process_set_.erase(observed_task_manager()->GetProcessId(id));

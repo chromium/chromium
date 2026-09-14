@@ -11,16 +11,20 @@
 #include "base/functional/callback.h"
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
+#include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
@@ -29,9 +33,11 @@
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/favicon/content/content_favicon_driver.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -45,10 +51,16 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
@@ -152,10 +164,86 @@ class TaskManagerViewTest : public InProcessBrowserTest {
     waiter.Wait();
   }
 
+  // Returns the icon the task manager holds for |tab|'s current page.
+  gfx::ImageSkia GetTaskIconForTab(content::WebContents* tab) {
+    TaskManagerInterface* const task_manager =
+        TaskManagerInterface::GetTaskManager();
+    return task_manager->GetIcon(task_manager->GetTaskIdForWebContents(tab));
+  }
+
+  // Returns the icon the task manager table shows for |tab|'s row.
+  ui::ImageModel GetIconForTab(content::WebContents* tab) {
+    const std::optional<size_t> row = FindRowForTab(tab);
+    EXPECT_TRUE(row);
+    return row ? GetView()->table_model_->GetIcon(*row) : ui::ImageModel();
+  }
+
+  // Returns a ColorProvider whose task manager table is entirely |background|,
+  // with |icon_color| as its icon color.
+  static std::unique_ptr<ui::ColorProvider> CreateTableColorProvider(
+      SkColor background,
+      SkColor icon_color) {
+    auto color_provider = std::make_unique<ui::ColorProvider>();
+    color_provider->SetColorForTesting(ui::kColorIcon, icon_color);
+    color_provider->SetColorForTesting(ui::kColorTableIconBackground,
+                                       background);
+    color_provider->SetColorForTesting(kColorTaskManagerTableBackground,
+                                       background);
+    return color_provider;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest,
+                       ThemeableFaviconsAreRecoloredForTheTableTheme) {
+  chrome::ShowTaskManager(browser());
+  ASSERT_TRUE(GetView());
+  content::WebContents* const tab =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  // The NTP has a favicon of its own: a dark, monochrome one.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUINewTabPageURL)));
+  ASSERT_TRUE(base::test::RunUntil([tab]() {
+    return favicon::ContentFaviconDriver::FromWebContents(tab)
+        ->FaviconIsValid();
+  }));
+  const ui::ImageModel ntp_icon = GetIconForTab(tab);
+  ASSERT_TRUE(ntp_icon.IsImageGenerator());
+  // On a light table the NTP favicon is legible as designed, so the model
+  // hands out the task's icon itself.
+  const gfx::ImageSkia as_is = ntp_icon.Rasterize(
+      CreateTableColorProvider(SK_ColorWHITE, SK_ColorBLACK).get());
+  ASSERT_FALSE(as_is.isNull());
+  EXPECT_TRUE(as_is.BackedBySameObjectAs(GetTaskIconForTab(tab)));
+  // On a dark table it is recolored with the theme's icon color, the way the
+  // tab strip recolors it for a dark tab background.
+  const std::unique_ptr<ui::ColorProvider> dark_color_provider =
+      CreateTableColorProvider(SK_ColorBLACK, SK_ColorWHITE);
+  const gfx::ImageSkia recolored =
+      ntp_icon.Rasterize(dark_color_provider.get());
+  ASSERT_FALSE(recolored.isNull());
+  EXPECT_FALSE(recolored.BackedBySameObjectAs(as_is));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *recolored.bitmap(),
+      *favicon::ThemeFavicon(as_is, SK_ColorWHITE, SK_ColorBLACK, SK_ColorBLACK)
+           .bitmap()));
+  // Repeated rasterization with the same theme colors reuses the cached icon.
+  const gfx::ImageSkia second_recolored =
+      ntp_icon.Rasterize(dark_color_provider.get());
+  EXPECT_TRUE(second_recolored.BackedBySameObjectAs(recolored));
+  // A page with a favicon of its own is shown as is on any table.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/favicon/page_with_favicon.html")));
+  ASSERT_TRUE(base::test::RunUntil([tab]() {
+    return favicon::ContentFaviconDriver::FromWebContents(tab)
+        ->FaviconIsValid();
+  }));
+  EXPECT_TRUE(GetIconForTab(tab).IsImage());
+}
 
 // Tests that all defined columns have a corresponding string IDs for keying
 // into the user preferences dictionary.
