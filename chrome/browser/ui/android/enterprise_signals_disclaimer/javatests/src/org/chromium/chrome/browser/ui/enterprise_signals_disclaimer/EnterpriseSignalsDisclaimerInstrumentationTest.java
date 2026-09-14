@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator.shouldUseModalDialogInsteadOfBottomSheet;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
@@ -74,6 +75,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Instrumentation tests for {@link EnterpriseSignalsDisclaimerController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -253,8 +255,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     }
 
     private FakeDialog showFakeDialog() {
-        final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity());
-        if (isTablet) {
+        if (shouldUseModalDialogInsteadOfBottomSheet(activity())) {
             final PropertyModel model = showTestModalDialog();
             return new FakeDialog() {
                 @Override
@@ -292,8 +293,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     }
 
     private View getDialogView() {
-        final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity());
-        if (isTablet) {
+        if (shouldUseModalDialogInsteadOfBottomSheet(activity())) {
             AppModalPresenter presenter =
                     (AppModalPresenter) modalDialogManager().getCurrentPresenterForTest();
             assert presenter != null;
@@ -323,13 +323,13 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @LargeTest
     public void disclaimerShowsOnStartup() {
         waitForDisclaimerVisible();
-        final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity());
+        boolean expectModal = shouldUseModalDialogInsteadOfBottomSheet(activity());
         // Verify that on phones the bottom sheet is used, while on large form factor the modal
         // dialog is used.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertEquals(!isTablet, bottomSheetController().isSheetOpen());
-                    Assert.assertEquals(isTablet, modalDialogManager().isShowing());
+                    Assert.assertEquals(!expectModal, bottomSheetController().isSheetOpen());
+                    Assert.assertEquals(expectModal, modalDialogManager().isShowing());
                 });
     }
 
@@ -473,7 +473,10 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @Test
     @LargeTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction({
+        DeviceFormFactor.TABLET_OR_DESKTOP,
+        DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
+    })
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void clickingOutsideModalDialogSignsOutAndHidesDialog() {
         final EnterpriseSignalsDisclaimerController controller =

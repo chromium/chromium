@@ -53,6 +53,7 @@ import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -204,7 +205,10 @@ public class EnterpriseSignalsDisclaimerRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({
+        DeviceFormFactor.TABLET_OR_DESKTOP,
+        DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
+    })
     public void testModalDialogOnLargeFormFactor() throws IOException {
         BlankUiTestActivity activity = mActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(

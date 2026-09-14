@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import android.content.Context;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -66,9 +67,7 @@ public class EnterpriseSignalsDisclaimerCoordinator
         assert identityManager.hasPrimaryAccount();
 
         EnterpriseSignalsDisclaimerView view;
-        // For the large form factors a modal dialog will be displayed, while smaller screens will
-        // get a bottom sheet.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+        if (shouldUseModalDialogInsteadOfBottomSheet(context)) {
             view = EnterpriseSignalsDisclaimerView.createForModalDialog(context);
             mDisclaimerHost =
                     new ModalDialogDisclaimerHost(
@@ -149,5 +148,15 @@ public class EnterpriseSignalsDisclaimerCoordinator
                 || dismissalCause == DismissalCause.DISMISSED_BY_SWIPE_DOWN
                 || dismissalCause == DismissalCause.DISMISSED_BY_TAP_OUTSIDE
                 || dismissalCause == DismissalCause.DISMISSED_BY_CLOSE_BUTTON;
+    }
+
+    /**
+     * For large form factor devices, a modal dialog will be used instead of a bottom sheet, unless
+     * the device is a foldable. On folds the bottom sheet dialog should be used to be consistent
+     * between folded and unfolded states.
+     */
+    static boolean shouldUseModalDialogInsteadOfBottomSheet(Context context) {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && !DeviceInfo.isFoldable();
     }
 }
