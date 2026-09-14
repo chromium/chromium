@@ -32,8 +32,12 @@ class LayoutTextControlInnerEditor final : public LayoutBlockFlow {
     return is_multiline_;
   }
 
+  const LayoutObject* ScrollerForTextOverflow() const override;
+
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
+  void UpdateAnonymousChildStyle(const LayoutObject* child,
+                                 ComputedStyleBuilder&) const override;
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style,
                       const ComputedStyle& new_style,

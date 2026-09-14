@@ -14,6 +14,12 @@ class LayoutTextControlMultiLine final : public LayoutBlockFlow {
  public:
   explicit LayoutTextControlMultiLine(Element* element);
 
+  // The ellipsis is not always rendered by the scroller itself: a textarea
+  // scrolls on its host but keeps each line in an anonymous block inside the
+  // inner editor. Those blocks would reuse their cached layout and stay
+  // truncated.
+  void SetNeedsLayoutForTextOverflowChange();
+
  private:
   HTMLElement* InnerEditorElement() const;
 
@@ -41,6 +47,13 @@ class LayoutTextControlMultiLine final : public LayoutBlockFlow {
                    const HitTestLocation& hit_test_location,
                    const PhysicalOffset& accumulated_offset,
                    HitTestPhase phase) override;
+};
+
+template <>
+struct DowncastTraits<LayoutTextControlMultiLine> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsTextArea();
+  }
 };
 
 }  // namespace blink

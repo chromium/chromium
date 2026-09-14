@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -91,6 +92,32 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
   before_parent->MoveChildrenTo(anonymous, before_parent->FirstChild(),
                                 before_child, /* full_remove_insert */ true);
   anonymous->AddChild(new_child);
+}
+
+const LayoutObject* LayoutTextControlInnerEditor::ScrollerForTextOverflow()
+    const {
+  NOT_DESTROYED();
+  if (!is_multiline_ ||
+      !RuntimeEnabledFeatures::TextOverflowInTextareaEnabled()) {
+    return this;
+  }
+  // Unlike an <input>, a textarea scrolls on its host rather than on the inner
+  // editor.
+  const LayoutObject* host = Parent();
+  CHECK(host && host->IsTextArea());
+  return host;
+}
+
+void LayoutTextControlInnerEditor::UpdateAnonymousChildStyle(
+    const LayoutObject*,
+    ComputedStyleBuilder& child_style_builder) const {
+  NOT_DESTROYED();
+  if (is_multiline_ &&
+      RuntimeEnabledFeatures::TextOverflowInTextareaEnabled()) {
+    // The anonymous blocks are the textarea's lines. text-overflow is not
+    // inherited, so hand it to them explicitly.
+    child_style_builder.SetTextOverflow(StyleRef().TextOverflow());
+  }
 }
 
 void LayoutTextControlInnerEditor::StyleDidChange(

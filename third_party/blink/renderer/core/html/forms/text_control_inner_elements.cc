@@ -193,7 +193,12 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
   }
   style_builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 
-  if (!IsA<HTMLTextAreaElement>(host)) {
+  if (IsA<HTMLTextAreaElement>(host)) {
+    if (RuntimeEnabledFeatures::TextOverflowInTextareaEnabled()) {
+      style_builder.SetTextOverflow(
+          ToTextControl(host)->ValueForTextOverflow());
+    }
+  } else {
     style_builder.SetHasLineIfEmpty(true);
     style_builder.SetScrollbarColor(nullptr);
     style_builder.SetWhiteSpace(EWhiteSpace::kPre);

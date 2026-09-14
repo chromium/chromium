@@ -7,11 +7,35 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 
 namespace blink {
 
 LayoutTextControlMultiLine::LayoutTextControlMultiLine(Element* element)
     : LayoutBlockFlow(element) {}
+
+void LayoutTextControlMultiLine::SetNeedsLayoutForTextOverflowChange() {
+  auto* text_control = DynamicTo<TextControlElement>(GetNode());
+  if (!text_control) {
+    return;
+  }
+  TextControlInnerEditorElement* inner_editor =
+      text_control->InnerEditorElement();
+  if (!inner_editor) {
+    return;
+  }
+  LayoutObject* inner_editor_object = inner_editor->GetLayoutObject();
+  if (!inner_editor_object) {
+    return;
+  }
+  for (LayoutObject* line = inner_editor_object->SlowFirstChild(); line;
+       line = line->NextSibling()) {
+    if (line->IsAnonymousBlockFlow()) {
+      line->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
+    }
+  }
+}
 
 HTMLElement* LayoutTextControlMultiLine::InnerEditorElement() const {
   return To<TextControlElement>(GetNode())->InnerEditorElement();

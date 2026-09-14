@@ -2297,6 +2297,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // resolved parent is not a block container (e.g., flex or inline).
   LayoutObject* ContainingBlockForTextOverflow() const;
 
+  // Returns the object whose scroll state decides whether text laid out in
+  // this block container should be truncated. This is normally the block
+  // container itself, but a <textarea> scrolls on its host rather than on the
+  // inner editor which owns the text-overflow style.
+  virtual const LayoutObject* ScrollerForTextOverflow() const {
+    NOT_DESTROYED();
+    return this;
+  }
+
   // Returns the nearest ancestor in the layout tree that IsForElement(),
   // or null if there is none.
   LayoutObject* NearestAncestorForElement() const;

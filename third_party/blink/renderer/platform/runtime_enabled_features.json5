@@ -6383,6 +6383,11 @@
       status: "stable",
     },
     {
+      // crbug.com/556432992
+      name: "TextOverflowInTextarea",
+      status: "stable",
+    },
+    {
       // https://crbug.com/41492459
       name: "TextOverflowString",
       status: "experimental",

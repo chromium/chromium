@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/core/paint/text_overflow_post_layout_snapshot.h"
 
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_text_control_multi_line.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_invalidation_reason.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -26,6 +28,11 @@ bool TextOverflowPostLayoutSnapshot::UpdateSnapshot() {
     if (is_scrolled_ != is_scrolled) {
       is_scrolled_ = is_scrolled;
       box->SetNeedsLayout(layout_invalidation_reason::kUnknown);
+      if (RuntimeEnabledFeatures::TextOverflowInTextareaEnabled()) {
+        if (auto* textarea = DynamicTo<LayoutTextControlMultiLine>(box)) {
+          textarea->SetNeedsLayoutForTextOverflowChange();
+        }
+      }
       return true;
     }
   }
