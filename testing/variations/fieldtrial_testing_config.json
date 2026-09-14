@@ -4080,6 +4080,36 @@
             ]
         }
     ],
+    "ChildProcessSecurityPolicyRust": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_RustAndCpp",
+                    "params": {
+                        "policy": "rust-and-cpp"
+                    },
+                    "enable_features": [
+                        "ChildProcessSecurityPolicyRust"
+                    ]
+                },
+                {
+                    "name": "Enabled_RustOnly",
+                    "params": {
+                        "policy": "rust-only"
+                    },
+                    "enable_features": [
+                        "ChildProcessSecurityPolicyRust"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeDarkNeutrals26": [
         {
             "platforms": [
