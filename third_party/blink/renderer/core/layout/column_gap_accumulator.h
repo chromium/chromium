@@ -20,7 +20,7 @@ class GapGeometry;
 
 // Accumulates gap-decoration state (main gaps, cross gaps, segment metadata)
 // for a multicol container. Instantiated only when the style has a gap rule.
-// Mirrors FlexGapAccumulator and the grid-internal GapAccumulator in spirit.
+// Mirrors FlexGapAccumulator and GridGapAccumulator in spirit.
 class CORE_EXPORT ColumnGapAccumulator {
   STACK_ALLOCATED();
 

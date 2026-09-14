@@ -192,6 +192,8 @@ blink_core_sources_layout = [
   "grid/grid_break_token_data.h",
   "grid/grid_baseline_accumulator.h",
   "grid/grid_data.h",
+  "grid/grid_gap_accumulator.cc",
+  "grid/grid_gap_accumulator.h",
   "grid/grid_item.cc",
   "grid/grid_item.h",
   "grid/grid_layout_algorithm.cc",
