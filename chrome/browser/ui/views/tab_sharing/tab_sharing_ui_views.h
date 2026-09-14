@@ -9,8 +9,10 @@
 #include <set>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/same_origin_observer.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/screen_sharing_util.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -86,6 +89,7 @@ class TabSharingUIViews : public TabSharingUI,
   // so that if the user interacts with one infobar, this would suppress
   // recording "no-interaction" by the others.
   ScreensharingControlsHistogramLogger& GetUmaLogger() override;
+  bool IsSharedTabBlocked() const override;
 
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
@@ -153,6 +157,7 @@ class TabSharingUIViews : public TabSharingUI,
 
   void CreateInfobarsForAllTabs();
   void CreateInfobarForWebContents(content::WebContents* contents);
+  void RefreshAllTabSharingInfoBars(bool recreate_shared_tab);
   void RemoveInfobarsForAllTabs();
 
   void CreateTabCaptureIndicator();
@@ -161,6 +166,11 @@ class TabSharingUIViews : public TabSharingUI,
 
   void UpdateTabCaptureData(content::WebContents* contents,
                             TabCaptureUpdate update);
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  void RegisterScreenshotProtectionObserver(content::WebContents* contents);
+  void OnScreenshotAllowedUpdated(content::WebContents* contents, bool allowed);
+#endif
 
   // Whether the share-this-tab-instead button may be shown for |web_contents|.
   bool IsShareInsteadButtonPossible(content::WebContents* web_contents) const;
@@ -226,6 +236,13 @@ class TabSharingUIViews : public TabSharingUI,
       browser_collection_observer_{this};
 
   ScreensharingControlsHistogramLogger uma_logger_;
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  std::map<content::WebContents*, base::CallbackListSubscription>
+      screenshot_allowed_subscriptions_;
+#endif
+
+  base::WeakPtrFactory<TabSharingUIViews> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_UI_VIEWS_H_

@@ -117,11 +117,13 @@ class TabSharingInfoBarTest : public testing::Test {
         TabSharingInfoBarDelegate::TabShareType::CAPTURE;
     GlobalRenderFrameHostId shared_tab_id = GlobalRenderFrameHostId(1, 1);
     GlobalRenderFrameHostId capturer_id = GlobalRenderFrameHostId(2, 2);
+    bool is_shared_tab_blocked = false;
   };
 
   TabSharingInfoBarTest() = default;
 
   const TabSharingInfoBar& CreateInfobar(const Preferences& prefs) {
+    mock_ui.SetIsSharedTabBlocked(prefs.is_shared_tab_blocked);
     return *static_cast<TabSharingInfoBar*>(TabSharingInfoBarDelegate::Create(
         infobar_manager_.get(), nullptr, prefs.shared_tab_id, prefs.capturer_id,
         prefs.shared_tab_name, prefs.capturer_name, /*web_contents=*/nullptr,
@@ -223,6 +225,70 @@ TEST_F(TabSharingInfoBarTest,
                      .role = TabRole::kCapturedTab});
   CheckStatusMessage(
       infobar, {LabelInfo(u"Sharing this tab to "), ButtonInfo(kAppName)});
+}
+
+TEST_F(TabSharingInfoBarTest, InfobarOnCapturedTabWhenBlocked) {
+  SCOPED_TRACE("InfobarOnCapturedTabWhenBlocked");
+  const TabSharingInfoBar& infobar =
+      CreateInfobar({.shared_tab_name = std::u16string(),
+                     .capturer_name = kAppName,
+                     .role = TabRole::kCapturedTab,
+                     .is_shared_tab_blocked = true});
+  CheckStatusMessage(
+      infobar,
+      {LabelInfo(u"Your organization blocks the screen sharing of this tab")});
+}
+
+TEST_F(TabSharingInfoBarTest, InfobarOnSelfCapturingTabWhenBlocked) {
+  SCOPED_TRACE("InfobarOnSelfCapturingTabWhenBlocked");
+  const TabSharingInfoBar& infobar =
+      CreateInfobar({.shared_tab_name = std::u16string(),
+                     .capturer_name = kAppName,
+                     .role = TabRole::kSelfCapturingTab,
+                     .shared_tab_id = GlobalRenderFrameHostId(1, 1),
+                     .capturer_id = GlobalRenderFrameHostId(1, 1),
+                     .is_shared_tab_blocked = true});
+  CheckStatusMessage(
+      infobar,
+      {LabelInfo(u"Your organization blocks the screen sharing of this tab")});
+}
+
+TEST_F(TabSharingInfoBarTest,
+       InfobarOnCapturingTabWhenCapturingBlockedTitledTab) {
+  SCOPED_TRACE("InfobarOnCapturingTabWhenCapturingBlockedTitledTab");
+  const TabSharingInfoBar& infobar =
+      CreateInfobar({.shared_tab_name = kSharedTabName,
+                     .capturer_name = kAppName,
+                     .role = TabRole::kCapturingTab,
+                     .is_shared_tab_blocked = true});
+  CheckStatusMessage(
+      infobar, {LabelInfo(u"Your organization blocks the screen sharing of "),
+                ButtonInfo(kSharedTabName)});
+}
+
+TEST_F(TabSharingInfoBarTest,
+       InfobarOnCapturingTabWhenCapturingBlockedUntitledTab) {
+  SCOPED_TRACE("InfobarOnCapturingTabWhenCapturingBlockedUntitledTab");
+  const TabSharingInfoBar& infobar =
+      CreateInfobar({.shared_tab_name = std::u16string(),
+                     .capturer_name = kAppName,
+                     .role = TabRole::kCapturingTab,
+                     .is_shared_tab_blocked = true});
+  CheckStatusMessage(
+      infobar,
+      {LabelInfo(u"Your organization blocks the screen sharing of a tab")});
+}
+
+TEST_F(TabSharingInfoBarTest, InfobarOnNotSharedTabWhenBlocked) {
+  SCOPED_TRACE("InfobarOnNotSharedTabWhenBlocked");
+  const TabSharingInfoBar& infobar =
+      CreateInfobar({.shared_tab_name = kSharedTabName,
+                     .capturer_name = kAppName,
+                     .role = TabRole::kOtherTab,
+                     .is_shared_tab_blocked = true});
+  CheckStatusMessage(
+      infobar, {LabelInfo(u"Your organization blocks the screen sharing of "),
+                ButtonInfo(kSharedTabName)});
 }
 
 // Test that the infobar on another not cast tab has the correct text:

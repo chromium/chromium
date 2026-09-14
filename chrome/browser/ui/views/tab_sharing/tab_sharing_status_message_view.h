@@ -65,14 +65,16 @@ class TabSharingStatusMessageView : public views::View {
       const std::u16string& capturer_name,
       TabSharingInfoBarDelegate::TabRole role,
       TabSharingInfoBarDelegate::TabShareType capture_type,
-      base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger);
+      base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger,
+      bool is_shared_tab_blocked = false);
 
   static std::u16string GetMessageText(
       const TabSharingStatusMessageView::EndpointInfo& shared_tab_info,
       const TabSharingStatusMessageView::EndpointInfo& capturer_info,
       const std::u16string& capturer_name,
       TabSharingInfoBarDelegate::TabRole role,
-      TabSharingInfoBarDelegate::TabShareType capture_type);
+      TabSharingInfoBarDelegate::TabShareType capture_type,
+      bool is_shared_tab_blocked = false);
 
   TabSharingStatusMessageView(
       const MessageInfo& info,

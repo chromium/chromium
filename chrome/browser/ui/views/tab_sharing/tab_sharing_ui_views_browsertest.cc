@@ -59,6 +59,15 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#include "components/enterprise/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+#include "base/strings/stringprintf.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/data_controls/core/browser/test_utils.h"
+#endif
+
 namespace {
 using ::testing::_;
 using ::testing::Not;
@@ -1194,3 +1203,123 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
   // The captured tab: [Stop]
   EXPECT_FALSE(HasShareThisTabInsteadButton(browser(), kTab1));
 }
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+class TabSharingUIViewsDataProtectionBrowserTest
+    : public TabSharingUIViewsBrowserTestBase {
+ public:
+  TabSharingUIViewsDataProtectionBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_data_protection::kEnableTabSharingProtection);
+  }
+
+  void SetScreenshotBlockedForHost(const std::string& host) {
+    data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(),
+                                   {base::StringPrintf(R"(
+          {
+            "name":"block_screenshots",
+            "rule_id":"1234",
+            "sources":{"urls":["%s"]},
+            "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"}]
+          }
+        )",
+                                                       host.c_str())});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabSharingUIViewsDataProtectionBrowserTest,
+                       SharingWithTabSharingProtection) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL kUrlAllowed =
+      embedded_test_server()->GetURL("allowed.com", "/title1.html");
+  GURL kUrlBlocked =
+      embedded_test_server()->GetURL("blocked.com", "/title1.html");
+
+  SetScreenshotBlockedForHost("blocked.com");
+
+  // Open 3 tabs:
+  // Tab 0: capturing tab
+  // Tab 1: captured tab
+  // Tab 2: other tab
+  AddTabs(browser(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
+
+  constexpr int kCapturingTab = 0;
+  constexpr int kCapturedTab = 1;
+  constexpr int kOtherTab = 2;
+
+  ASSERT_TRUE(content::NavigateToURL(
+      browser()->GetTabStripModel()->GetWebContentsAt(kCapturingTab),
+      kUrlAllowed));
+  ASSERT_TRUE(content::NavigateToURL(
+      browser()->GetTabStripModel()->GetWebContentsAt(kCapturedTab),
+      kUrlAllowed));
+  ASSERT_TRUE(content::NavigateToURL(
+      browser()->GetTabStripModel()->GetWebContentsAt(kOtherTab), kUrlAllowed));
+
+  const std::u16string allowed_origin =
+      url_formatter::FormatOriginForSecurityDisplay(
+          url::Origin::Create(kUrlAllowed),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  const std::u16string blocked_origin =
+      url_formatter::FormatOriginForSecurityDisplay(
+          url::Origin::Create(kUrlBlocked),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+
+  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
+
+  // Initially all tabs are allowed.
+  EXPECT_EQ(GetInfobarMessageText(browser(), kCapturingTab),
+            u"Sharing " + allowed_origin + u" to this tab");
+  EXPECT_EQ(GetInfobarMessageText(browser(), kCapturedTab),
+            u"Sharing this tab to capturer.com");
+  EXPECT_EQ(GetInfobarMessageText(browser(), kOtherTab),
+            u"Sharing " + allowed_origin + u" to capturer.com");
+  EXPECT_TRUE(ShareThisTabInsteadButtonIsEnabled(browser(), kOtherTab));
+
+  // Navigate captured tab to a blocked URL.
+  ASSERT_TRUE(content::NavigateToURL(
+      browser()->GetTabStripModel()->GetWebContentsAt(kCapturedTab),
+      kUrlBlocked));
+
+  // Verify infobar text updates on all tabs to blocked message.
+  EXPECT_EQ(
+      GetInfobarMessageText(browser(), kCapturingTab),
+      u"Your organization blocks the screen sharing of " + blocked_origin);
+  EXPECT_EQ(GetInfobarMessageText(browser(), kCapturedTab),
+            u"Your organization blocks the screen sharing of this tab");
+  EXPECT_EQ(
+      GetInfobarMessageText(browser(), kOtherTab),
+      u"Your organization blocks the screen sharing of " + blocked_origin);
+
+  // Navigate captured tab back to allowed URL.
+  ASSERT_TRUE(content::NavigateToURL(
+      browser()->GetTabStripModel()->GetWebContentsAt(kCapturedTab),
+      kUrlAllowed));
+
+  // Verify infobar text returns to normal sharing message.
+  EXPECT_EQ(GetInfobarMessageText(browser(), kCapturingTab),
+            u"Sharing " + allowed_origin + u" to this tab");
+  EXPECT_EQ(GetInfobarMessageText(browser(), kCapturedTab),
+            u"Sharing this tab to capturer.com");
+  EXPECT_EQ(GetInfobarMessageText(browser(), kOtherTab),
+            u"Sharing " + allowed_origin + u" to capturer.com");
+
+  // Navigate other tab to a blocked URL.
+  ASSERT_TRUE(content::NavigateToURL(
+      browser()->GetTabStripModel()->GetWebContentsAt(kOtherTab), kUrlBlocked));
+
+  // On the other tab, "Share this tab instead" button should now be disabled.
+  EXPECT_FALSE(ShareThisTabInsteadButtonIsEnabled(browser(), kOtherTab));
+
+  // Navigate other tab back to allowed URL.
+  ASSERT_TRUE(content::NavigateToURL(
+      browser()->GetTabStripModel()->GetWebContentsAt(kOtherTab), kUrlAllowed));
+
+  // "Share this tab instead" button should be re-enabled.
+  EXPECT_TRUE(ShareThisTabInsteadButtonIsEnabled(browser(), kOtherTab));
+}
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)

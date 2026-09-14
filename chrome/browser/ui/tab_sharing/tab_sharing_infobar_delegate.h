@@ -119,6 +119,8 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   std::u16string GetButtonTooltip(TabSharingInfoBarButton button) const;
   int GetButtons() const;
 
+  bool IsSharedTabBlocked() const;
+
   void Stop();
   void ShareThisTabInstead();
   void OnCapturedSurfaceControlActivityIndicatorPressed();

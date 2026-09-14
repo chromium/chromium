@@ -33,6 +33,7 @@ class TabSharingUI : public MediaStreamUI {
   virtual void StartSharing(infobars::InfoBar* infobar) = 0;
   virtual void StopSharing(std::string_view reason) = 0;
   virtual ScreensharingControlsHistogramLogger& GetUmaLogger() = 0;
+  virtual bool IsSharedTabBlocked() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_UI_H_

@@ -62,6 +62,7 @@ class TabSharingInfoBar : public InfoBarView {
       TabSharingInfoBarDelegate::TabRole role,
       TabSharingInfoBarDelegate::TabShareType capture_type) const;
   TabSharingInfoBarDelegate* GetDelegate();
+  const TabSharingInfoBarDelegate* GetDelegate() const;
 
   void StopButtonPressed();
   void ShareThisTabInsteadButtonPressed();

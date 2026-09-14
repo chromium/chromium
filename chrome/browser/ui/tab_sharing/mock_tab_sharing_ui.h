@@ -28,8 +28,14 @@ class MockTabSharingUI : public TabSharingUI {
   void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect) override;
 
+  bool IsSharedTabBlocked() const override { return is_shared_tab_blocked_; }
+  void SetIsSharedTabBlocked(bool is_blocked) {
+    is_shared_tab_blocked_ = is_blocked;
+  }
+
  private:
   ScreensharingControlsHistogramLogger uma_logger_;
+  bool is_shared_tab_blocked_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_SHARING_MOCK_TAB_SHARING_UI_H_
