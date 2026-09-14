@@ -76,7 +76,7 @@ DeriveClientSecurityStateForRendererInitiatedNavigation(
 // `url` the response URL.
 // `response_head` identifies the response headers received which may be
 // nullptr. `client` exposes the embedder API which may be nullptr.
-network::mojom::IPAddressSpace CalculateIPAddressSpace(
+CONTENT_EXPORT network::mojom::IPAddressSpace CalculateIPAddressSpace(
     const GURL& url,
     network::mojom::URLResponseHead* response_head,
     ContentBrowserClient* client);

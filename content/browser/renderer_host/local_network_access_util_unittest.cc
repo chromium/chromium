@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -21,6 +22,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace content {
 namespace {
@@ -434,6 +436,31 @@ TEST(LocalNetworkAccessUtilTest, DerivePolicyLocalNetworkAccess) {
 
   std::vector<std::pair<DerivePolicyInput, Policy>> expected = LNAPolicyMap();
   TestPolicyMap(expected);
+}
+
+// Trusted UI schemes are manually classified as `loopback`, since their
+// contents ship with the browser. chrome-untrusted:// hosts untrustworthy
+// content in an ordinary renderer, so it gets no special classification and
+// stays `unknown`, which is treated as `public` by request checks.
+TEST(LocalNetworkAccessUtilTest, CalculateIPAddressSpaceSpecialSchemes) {
+  EXPECT_EQ(CalculateIPAddressSpace(GURL("chrome://example"),
+                                    /*response_head=*/nullptr,
+                                    /*client=*/nullptr),
+            AddressSpace::kLoopback);
+  EXPECT_EQ(CalculateIPAddressSpace(GURL("devtools://example"),
+                                    /*response_head=*/nullptr,
+                                    /*client=*/nullptr),
+            AddressSpace::kLoopback);
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(CalculateIPAddressSpace(GURL("externalfile://example"),
+                                    /*response_head=*/nullptr,
+                                    /*client=*/nullptr),
+            AddressSpace::kLoopback);
+#endif
+  EXPECT_EQ(CalculateIPAddressSpace(GURL("chrome-untrusted://example"),
+                                    /*response_head=*/nullptr,
+                                    /*client=*/nullptr),
+            AddressSpace::kUnknown);
 }
 
 // Test the configuration in LNA warning-only mode.

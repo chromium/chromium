@@ -267,6 +267,12 @@ DeriveClientSecurityStateForRendererInitiatedNavigation(
 // - It pollutes metrics since kUnknown could also mean a missed edge case.
 // To address these issues we list here a number of schemes that should be
 // considered loopback.
+//
+// Note that chrome-untrusted:// is deliberately not listed. It exists to
+// render untrustworthy content in an ordinary, unprivileged renderer and is
+// not default-granted capabilities beyond those of a regular web page, so it
+// keeps the default kUnknown classification and is subject to Local Network
+// Access checks like any web page.
 // TODO(titouan): It might be better to have these schemes (and in general
 // other schemes such as data: or blob:) handled directly by the URLLoaders.
 // Investigate on whether this is worth doing.
@@ -277,7 +283,6 @@ AddressSpace IPAddressSpaceForSpecialScheme(const GURL& url,
   const char* special_content_schemes[] = {
       kChromeDevToolsScheme,
       kChromeUIScheme,
-      kChromeUIUntrustedScheme,
 #if BUILDFLAG(IS_CHROMEOS)
       kExternalFileScheme,
 #endif

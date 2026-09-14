@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -29,6 +30,7 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/resource_load_observer.h"
+#include "content/public/test/web_ui_browsertest_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
@@ -41,6 +43,7 @@
 #include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -815,6 +818,29 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+// This test verifies that the chrome-untrusted:// scheme is not considered
+// loopback for the purpose of Local Network Access, unlike chrome://.
+// Documents in this scheme process untrustworthy content in an ordinary
+// renderer, so they are classified as `unknown` (equivalent to `public`) and
+// are subject to Local Network Access checks like any web page.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForSpecialSchemeChromeUntrustedURL) {
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), GetChromeUntrustedUIURL("test-host/title1.html")));
+  EXPECT_TRUE(root_frame_host()->GetLastCommittedURL().SchemeIs(
+      kChromeUIUntrustedScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
             security_state->ip_address_space);
 }
 
@@ -2565,6 +2591,32 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 }
 
 // This test verifies that requests:
+//  - from a chrome-untrusted:// page
+//  - to a loopback IP address
+// are blocked when the permission is not granted, just as they are for a
+// public web page.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromChromeUntrustedToLoopbackNoPermissionIsBlocked) {
+  // chrome-untrusted:// data sources default to "default-src 'self';", which
+  // would block the fetch below at the CSP stage, before the Local Network
+  // Access check runs. Relax it so that LNA is the only thing that can block
+  // the request, which is what this test is about.
+  TestUntrustedDataSourceHeaders headers;
+  headers.default_src = "default-src https:;";
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), GetChromeUntrustedUIURL("test-host/title1.html")));
+
+  // We load the resource from a secure origin to avoid running afoul of mixed
+  // content restrictions.
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(SecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that requests:
 //  - from a secure page served from a local IP address
 //  - to a loopback IP address
 // are not blocked.
@@ -2852,6 +2904,34 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   EXPECT_THAT(
       InsecureLoopbackServer().request_observer().RequestMethodsForUrl(url),
       IsEmpty());
+}
+
+// This test verifies that iframe requests:
+//  - from a chrome-untrusted:// page
+//  - to a loopback IP address
+// are blocked when the permission is not granted, just as they are for a
+// public web page.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeFromChromeUntrustedToLoopbackIsBlocked) {
+  // Without this, the iframe below is blocked by the data source's default
+  // "default-src 'self';" (child-src falls back to it), and the test would
+  // pass without ever reaching the Local Network Access check.
+  TestUntrustedDataSourceHeaders headers;
+  headers.child_src = "child-src *;";
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), GetChromeUntrustedUIURL("test-host/title1.html")));
+
+  GURL url = InsecureLoopbackURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  AddChildFromURLWithoutWaiting(root_frame_host(), url);
+  ASSERT_TRUE(child_navigation_manager.WaitForNavigationFinished());
+
+  // Check that the child iframe failed to fetch.
+  EXPECT_FALSE(child_navigation_manager.was_successful());
 }
 
 // This test verifies that iframe requests:
