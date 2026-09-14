@@ -16,6 +16,7 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/page_load_metrics/google/browser/search_preload_process_data.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -390,6 +391,15 @@ TEST_F(PrerenderManagerPrewarmTest, StartPrewarmSearchResult) {
       *GetActiveWebContents());
   ASSERT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
   registry_observer.WaitForTrigger(prewarm_url);
+
+  content::PrerenderHostId host_id =
+      prerender_helper().GetPrewarmSearchResultHost(prewarm_url);
+  content::RenderFrameHost* prewarm_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(prewarm_rfh);
+  EXPECT_NE(page_load_metrics::SearchPreloadProcessData::Get(
+                prewarm_rfh->GetProcess()),
+            nullptr);
 
   // Prewarm page should not be found here as it's matcher was set as not
   // matching to any URL.

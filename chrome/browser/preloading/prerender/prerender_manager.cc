@@ -29,8 +29,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h"
+#include "components/page_load_metrics/google/browser/search_preload_process_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,7 +42,9 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/prerender_handle.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/replaced_navigation_entry_data.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -332,10 +334,9 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
 void PrerenderManager::NotifySearchPrewarmFinished(
     content::PrerenderLifecycleStatus result) {
   CHECK(is_search_prewarm_ongoing_);
+  CHECK(search_prewarm_handle_);
   is_search_prewarm_ongoing_ = false;
-  if (search_prewarm_handle_) {
-    search_prewarm_handle_->RemoveObserver(this);
-  }
+  search_prewarm_handle_->RemoveObserver(this);
   auto* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* service = SearchPreloadProgressServiceFactory::GetForProfile(profile);
@@ -610,6 +611,18 @@ void PrerenderManager::OnSearchPrewarmPrerenderNavigationHandle(
   page_load_metrics::PrerenderPrewarmNavigationData::GetOrCreate(
       &navigation_handle,
       /*prewarm_committed=*/true);
+
+  // `StartingSiteInstance` provides the SiteInstance allocated for the
+  // prerender host's initial frame tree. Tagging `SearchPreloadProcessData`
+  // here ensures this renderer process is tracked as hosting the prewarmed
+  // content.
+  content::RenderProcessHost* rph =
+      navigation_handle.GetStartingSiteInstance()
+          ? navigation_handle.GetStartingSiteInstance()->GetProcess()
+          : nullptr;
+  if (rph) {
+    page_load_metrics::SearchPreloadProcessData::GetOrCreate(rph);
+  }
 }
 
 PrerenderManager::PrerenderManager(content::WebContents* web_contents)

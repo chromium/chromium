@@ -20,6 +20,8 @@ source_set("browser") {
     "histogram_suffixes.h",
     "prerender_prewarm_navigation_data.cc",
     "prerender_prewarm_navigation_data.h",
+    "search_preload_process_data.cc",
+    "search_preload_process_data.h",
   ]
   configs += [
     "//build/config/compiler:wexit_time_destructors",
