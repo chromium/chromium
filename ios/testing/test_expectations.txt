@@ -151,3 +151,4 @@ crbug.com/560127176 FormInputAccessoryEGTest/testReauthPriorToFillPassportForm [
 crbug.com/561644215 ComposeboxTestCase/testComposeboxAIModeEmptyTextStartsCobrowse [ Pass Failure ]
 crbug.com/561644215 AssistantAIMTestCase/testAssistantDoesNotReappearAfterExplicitClose [ Pass Failure ]
 crbug.com/561644215 AssistantAIMTestCase/testAssistantPersistsOnBackground [ Pass Failure ]
+crbug.com/561662655 SafeBrowsingTestCase/testEnterpriseWarningPageRefreshedThenBypass [ Pass Failure ]
