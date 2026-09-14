@@ -999,12 +999,10 @@
   <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME" desc="The label for something that a user can autofill when filling a form. For context, a user has been able to fill addresses within Chrome for many users. Now a user can also fill a “Flight reservation”.">
     Flight
   </message>
-  <!-- TODO(crbug.com/485269384): Make Order entity translatable. -->
-  <message name="IDS_AUTOFILL_AI_ORDER_ENTITY_NAME" desc="The label for something that a user can autofill when filling a form. For context, a user has been able to fill addresses within Chrome for many users. Now a user can also fill an “Order”." translateable="false">
+  <message name="IDS_AUTOFILL_AI_ORDER_ENTITY_NAME" desc="The label for something that a user can autofill when filling a form. For context, a user has been able to fill addresses within Chrome for many users. Now a user can also fill an “Order”.">
     Order
   </message>
-  <!-- TODO(crbug.com/485363832): Make Shipment entity translatable. -->
-  <message name="IDS_AUTOFILL_AI_SHIPMENT_ENTITY_NAME" desc="The label for something that a user can autofill when filling a form. For context, a user has been able to fill addresses within Chrome for many users. Now a user can also fill a “Shipment”." translateable="false">
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_ENTITY_NAME" desc="The label for something that a user can autofill when filling a form. For context, a user has been able to fill addresses within Chrome for many users. Now a user can also fill a “Shipment”.">
     Shipment
   </message>
 
@@ -1036,10 +1034,10 @@
   <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE" desc="The title of a chip referring to flights (IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME) on Your saved info settings page.">
     Flight reservations
   </message>
-  <message name="IDS_AUTOFILL_AI_ORDERS_TITLE" desc="The title of a chip referring to orders (IDS_AUTOFILL_AI_ORDER_ENTITY_NAME) on Your saved info settings page." translateable="false">
+  <message name="IDS_AUTOFILL_AI_ORDERS_TITLE" desc="The title of a chip referring to orders (IDS_AUTOFILL_AI_ORDER_ENTITY_NAME) on Your saved info settings page.">
     Orders
   </message>
-  <message name="IDS_AUTOFILL_AI_SHIPMENTS_TITLE" desc="The title of a chip referring to shipments (IDS_AUTOFILL_AI_SHIPMENT_ENTITY_NAME) on Your saved info settings page." translateable="false">
+  <message name="IDS_AUTOFILL_AI_SHIPMENTS_TITLE" desc="The title of a chip referring to shipments (IDS_AUTOFILL_AI_SHIPMENT_ENTITY_NAME) on Your saved info settings page.">
     Shipments
   </message>
   <message name="IDS_AUTOFILL_AI_OTHER_ORDERS" desc="Main text for a suggestion that when hovered opens a subpopup displaying other orders.">
@@ -1171,7 +1169,7 @@
   </message>
 
   <!-- Attributes of the order entity -->
-  <!-- TODO(crbug.com/485269384): Make Order entity translatable. -->
+  <!-- TODO(crbug.com/485269384): Make Order entity attributes translatable. -->
   <message name="IDS_AUTOFILL_AI_ORDER_ID_ATTRIBUTE_NAME" desc="Used as a general label for the order id attribute." translateable="false">
     Id
   </message>
@@ -1192,7 +1190,7 @@
   </message>
 
   <!-- Attributes of the shipment entity -->
-  <!-- TODO(crbug.com/485363832): Make Shipment entity translatable. -->
+  <!-- TODO(crbug.com/485363832): Make Shipment entity attributes translatable. -->
   <message name="IDS_AUTOFILL_AI_SHIPMENT_TRACKING_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the shipment tracking number attribute." translateable="false">
     Tracking number
   </message>
