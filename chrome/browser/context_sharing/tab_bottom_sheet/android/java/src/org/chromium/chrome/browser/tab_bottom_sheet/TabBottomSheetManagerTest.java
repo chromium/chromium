@@ -292,6 +292,7 @@ public class TabBottomSheetManagerTest {
                                 CoBrowseViewFactory.buildCoBrowseViews(
                                         mWindowAndroid,
                                         webContents,
+                                        /* backgroundColor= */ Color.WHITE,
                                         TabBottomSheetClientType.UNKNOWN,
                                         CoBrowseContainerType.BOTTOM_SHEET,
                                         /* requestFocus= */ false,
@@ -346,6 +347,7 @@ public class TabBottomSheetManagerTest {
                                 CoBrowseViewFactory.buildCoBrowseViews(
                                         mWindowAndroid,
                                         webContents,
+                                        /* backgroundColor= */ Color.WHITE,
                                         TabBottomSheetClientType.UNKNOWN,
                                         CoBrowseContainerType.BOTTOM_SHEET,
                                         /* requestFocus= */ false,

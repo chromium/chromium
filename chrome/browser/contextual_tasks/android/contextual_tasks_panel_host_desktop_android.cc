@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_toast.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
@@ -159,7 +160,7 @@ bool ContextualTasksPanelHostDesktopAndroid::MaybeCreateBridge() {
           context_sharing::TabBottomSheetClientType::kContextualTasks,
           context_sharing::CoBrowseContainerType::kSidePanel,
           /*bottom_sheet_content_provider=*/nullptr,
-          /*enable_pinch_to_zoom=*/true);
+          /*enable_pinch_to_zoom=*/true, kColorSidePanelContentBackground);
   return co_browse_views_bridge_ != nullptr;
 }
 

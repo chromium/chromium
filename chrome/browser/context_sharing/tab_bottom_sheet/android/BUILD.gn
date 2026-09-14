@@ -21,7 +21,9 @@ source_set("android") {
     "//chrome/browser/context_sharing/tab_bottom_sheet/public/android:jni_headers",
     "//components/zoom",
     "//content/public/browser",
+    "//skia",
     "//ui/android",
+    "//ui/color",
   ]
 }
 
@@ -38,8 +40,6 @@ android_resources("java_resources") {
     "java/res/layout/tab_bottom_sheet.xml",
     "java/res/layout/tab_bottom_sheet_peek_layout.xml",
     "java/res/layout/tab_bottom_sheet_resizing_view.xml",
-    "java/res/values-night/colors.xml",
-    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [
@@ -232,6 +232,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window:create_browser_window",
+    "//chrome/browser/ui/color:color_headers",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",

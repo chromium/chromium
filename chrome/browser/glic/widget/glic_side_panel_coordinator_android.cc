@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/android/jni_headers/GlicBottomSheetComponentProvider_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -40,7 +41,8 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
   views_bridge_ = std::make_unique<context_sharing::CoBrowseViewsBridge>(
       *tab, context_sharing::TabBottomSheetClientType::kGlic,
       context_sharing::CoBrowseContainerType::kBottomSheet,
-      CreateBottomSheetContentProvider());
+      CreateBottomSheetContentProvider(),
+      /*enable_pinch_to_zoom=*/false, kColorGlicBackground);
   tab_bottom_sheet_bridge_ =
       std::make_unique<context_sharing::TabBottomSheetBridge>(this, tab);
   manager_initialized_subscription_ =

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 
+#include <cstdint>
+
 #include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -12,8 +14,11 @@
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_container_type.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/window_android.h"
+#include "ui/color/color_provider.h"
 
 // JNI headers must be included after standard headers to ensure types like
 // ui::WindowAndroid and content::WebContents are declared before use, and to
@@ -42,11 +47,13 @@ CoBrowseViewsBridge::CoBrowseViewsBridge(
     context_sharing::TabBottomSheetClientType client_type,
     context_sharing::CoBrowseContainerType container_type,
     const base::android::JavaRef<jobject>& bottom_sheet_content_provider,
-    bool enable_pinch_to_zoom)
+    bool enable_pinch_to_zoom,
+    ui::ColorId background_color_id)
     : tab_(tab),
       client_type_(client_type),
       container_type_(container_type),
       enable_pinch_to_zoom_(enable_pinch_to_zoom),
+      background_color_id_(background_color_id),
       bottom_sheet_content_provider_(bottom_sheet_content_provider),
       tab_insert_subscription_(tab.RegisterDidInsert(
           base::BindRepeating(&CoBrowseViewsBridge::OnTabInserted,
@@ -88,11 +95,16 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
 
   window_android_ = window_android;
 
+  const ui::ColorProvider* color_provider = window_android->GetColorProvider();
+  CHECK(color_provider);
+  SkColor color = color_provider->GetColor(background_color_id_);
+  int32_t background_color = static_cast<int32_t>(color);
+
   JNIEnv* env = AttachCurrentThread();
   java_co_browse_views_.Reset(Java_CoBrowseViewFactory_buildCoBrowseViews(
-      env, window_android, web_contents, static_cast<int>(client_type_),
-      static_cast<int>(container_type_), request_focus,
-      bottom_sheet_content_provider_));
+      env, window_android, web_contents, background_color,
+      static_cast<int>(client_type_), static_cast<int>(container_type_),
+      request_focus, bottom_sheet_content_provider_));
 
   return !java_co_browse_views_.is_null();
 }

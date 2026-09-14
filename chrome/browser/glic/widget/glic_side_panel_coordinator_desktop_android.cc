@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -229,7 +230,8 @@ SidePanelNativeView GlicSidePanelCoordinatorDesktopAndroid::CreateView(
         std::make_unique<context_sharing::CoBrowseViewsBridge>(
             *tab_, context_sharing::TabBottomSheetClientType::kGlic,
             context_sharing::CoBrowseContainerType::kSidePanel,
-            java_component_provider_);
+            java_component_provider_,
+            /*enable_pinch_to_zoom=*/false, kColorGlicBackground);
     cobrowse_views_bridge_->CreateCoBrowseViews(web_contents_.get(),
                                                 /*request_focus=*/false);
   }

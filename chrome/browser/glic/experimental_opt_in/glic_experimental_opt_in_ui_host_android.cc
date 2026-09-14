@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -59,7 +60,7 @@ class BottomSheetSession
         *tab, context_sharing::TabBottomSheetClientType::kGlic,
         context_sharing::CoBrowseContainerType::kBottomSheet,
         bottom_sheet_content_provider,
-        /*enable_pinch_to_zoom=*/false);
+        /*enable_pinch_to_zoom=*/false, kColorGlicBackground);
 
     content::WebContents::CreateParams params(profile);
     bottom_sheet_web_contents_ = content::WebContents::Create(params);

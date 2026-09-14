@@ -10,6 +10,7 @@
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_client_type.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/test_jni_headers/TestCoBrowseComponentProvider_jni.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
@@ -22,7 +23,8 @@ TabBottomSheetTestFeature::TabBottomSheetTestFeature(tabs::TabInterface* tab)
       Java_TestCoBrowseComponentProvider_Constructor(env);
   views_bridge_ = std::make_unique<CoBrowseViewsBridge>(
       *tab, TabBottomSheetClientType::kUnknown,
-      CoBrowseContainerType::kBottomSheet, provider);
+      CoBrowseContainerType::kBottomSheet, provider,
+      /*enable_pinch_to_zoom=*/false, kColorSidePanelContentBackground);
   tab_bottom_sheet_bridge_ = std::make_unique<TabBottomSheetBridge>(this, tab);
 }
 

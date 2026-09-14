@@ -9,12 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -144,24 +144,21 @@ public class CoBrowseViewFactory {
     }
 
     @CalledByNative
-    @VisibleForTesting
     public static @Nullable CoBrowseViews buildCoBrowseViews(
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             @Nullable @JniType("content::WebContents*") WebContents webContents,
+            @ColorInt int backgroundColor,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
             boolean requestFocus,
             @Nullable CoBrowseComponentProvider bottomSheetContentProvider) {
-        CoBrowseViewFactory factory = TabBottomSheetUtils.getFactoryFromWindow(windowAndroid);
+        ThreadUtils.assertOnUiThread();
+        @Nullable CoBrowseViewFactory factory =
+                TabBottomSheetUtils.getFactoryFromWindow(windowAndroid);
         if (factory == null) {
             return null;
         }
 
-        @ColorInt
-        int backgroundColor =
-                clientType == TabBottomSheetClientType.GLIC
-                        ? factory.mActivity.getColor(R.color.tab_bottom_sheet_glic_bg)
-                        : factory.mActivity.getColor(R.color.tab_bottom_sheet_base_bg);
         return factory.buildCoBrowseViews(
                 webContents,
                 backgroundColor,

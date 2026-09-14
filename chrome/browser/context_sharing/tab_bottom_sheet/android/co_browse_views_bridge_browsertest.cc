@@ -17,6 +17,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -90,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(
   // 4. Create CoBrowseViewsBridge on tab1.
   CoBrowseViewsBridge views_bridge(*tab1, TabBottomSheetClientType::kUnknown,
                                    CoBrowseContainerType::kBottomSheet,
-                                   provider);
+                                   provider, /*enable_pinch_to_zoom=*/false,
+                                   kColorSidePanelContentBackground);
 
   // 5. Set web contents to nullptr (inactive state, placeholder is shown).
   views_bridge.SetWebContents(nullptr, /*request_focus=*/false);

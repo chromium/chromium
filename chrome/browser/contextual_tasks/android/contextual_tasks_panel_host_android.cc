@@ -15,6 +15,7 @@
 #include "chrome/browser/contextual_tasks/jni_headers/ContextualTaskBottomSheetComponentProvider_jni.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/tabs/public/tab_interface.h"
@@ -170,7 +171,7 @@ ContextualTasksPanelHostAndroid::GetOrCreateBridge() {
         context_sharing::TabBottomSheetClientType::kContextualTasks,
         context_sharing::CoBrowseContainerType::kBottomSheet,
         CreateBottomSheetContentProvider(),
-        /*enable_pinch_to_zoom=*/true);
+        /*enable_pinch_to_zoom=*/true, kColorSidePanelContentBackground);
     tab_bottom_sheet_bridge_ =
         std::make_unique<context_sharing::TabBottomSheetBridge>(this,
                                                                 tab_android);
