@@ -14,11 +14,14 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/display.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace omnibox_everywhere {
+
+class RegionSelectOverlayView;
 
 // Manages frameless fullscreen overlay widgets displaying desktop screenshots
 // for region selection across all connected displays.
@@ -50,16 +53,30 @@ class OmniboxEverywhereRegionSelectOverlay : public views::WidgetObserver {
     return widgets_;
   }
 
-  // Returns the sliced bitmap displayed on the widget at |widget_index| for
+  // Returns the sliced bitmap displayed on the widget at `widget_index` for
   // testing.
   const SkBitmap& GetBitmapForWidgetForTesting(size_t widget_index) const;
+
+ private:
+  friend class RegionSelectOverlayView;
+
+  struct DisplaySliceInfo {
+    display::Display display;
+    gfx::Rect sub_rect_in_screenshot;
+  };
+
+  explicit OmniboxEverywhereRegionSelectOverlay(CompleteCallback callback);
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
- private:
-  explicit OmniboxEverywhereRegionSelectOverlay(CompleteCallback callback);
+  // Drag coordination methods called by RegionSelectOverlayView:
+  void OnDragStarted();
+  void OnDragUpdated(const gfx::Rect& global_selection_rect);
+  void OnDragCompleted(const gfx::Rect& global_selection_rect);
+  void OnDragCancelled();
+
   void Initialize(const SkBitmap& screenshot,
                   const RegionCaptureSource& source,
                   gfx::NativeWindow context);
@@ -70,9 +87,12 @@ class OmniboxEverywhereRegionSelectOverlay : public views::WidgetObserver {
       gfx::NativeWindow context);
 
   void Finish(const SkBitmap& result_bitmap);
+  SkBitmap CropGlobalSelection(const gfx::Rect& global_selection_rect) const;
   size_t GetActiveWidgetIndex() const;
 
   CompleteCallback callback_;
+  SkBitmap screenshot_;
+  std::vector<DisplaySliceInfo> display_slices_;
   std::vector<std::unique_ptr<views::Widget>> widgets_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       widget_observations_{this};

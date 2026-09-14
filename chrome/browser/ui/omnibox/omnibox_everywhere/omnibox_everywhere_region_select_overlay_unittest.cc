@@ -16,10 +16,8 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/views_drawing_test_utils.h"
@@ -111,6 +109,18 @@ class OmniboxEverywhereRegionSelectOverlayTest : public ChromeViewsTestBase {
     return bitmap;
   }
 
+  SkBitmap CreateSplitColorBitmap(int width,
+                                  int height,
+                                  int split_x,
+                                  SkColor color1,
+                                  SkColor color2) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(width, height);
+    bitmap.eraseColor(color1);
+    bitmap.eraseArea(SkIRect::MakeLTRB(split_x, 0, width, height), color2);
+    return bitmap;
+  }
+
   void SimulateMouseDrag(views::View* view,
                          const gfx::Point& start,
                          const gfx::Point& end) {
@@ -189,7 +199,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest, CreateAndDismiss) {
   overlay->GetActiveWidgetForTesting()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 }
 
@@ -204,7 +214,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
                     gfx::Point(10, 10), gfx::Point(60, 60));
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().empty());
   EXPECT_EQ(future.Get().width(), 50);
   EXPECT_EQ(future.Get().height(), 50);
@@ -223,7 +233,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest, ClickWithoutDragCancels) {
   SimulateMouseClick(overlay->GetActiveWidgetForTesting()->GetContentsView(),
                      gfx::Point(50, 50));
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 }
 
@@ -240,7 +250,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest, EscapeKeyPressedCancels) {
                   ->GetFocusManager()
                   ->ProcessAccelerator(escape_accel));
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 }
 
@@ -255,7 +265,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   // Synchronously closing native window directly.
   overlay->GetActiveWidgetForTesting()->CloseNow();
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 }
 
@@ -269,7 +279,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 
   overlay.reset();
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 }
 
@@ -354,11 +364,12 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   SimulateGestureDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
                       gfx::Point(10, 10), gfx::Point(70, 70));
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().empty());
   EXPECT_EQ(future.Get().width(), 60);
   EXPECT_EQ(future.Get().height(), 60);
   EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorBLUE);
+  EXPECT_TRUE(overlay->GetActiveWidgetForTesting()->IsClosed());
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
@@ -373,7 +384,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
                     gfx::Point(50, 50), gfx::Point(150, 150));
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().empty());
   // Cropped area should be the intersection (50, 50) -> (100, 100), width=50,
   // height=50.
@@ -394,7 +405,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
                     gfx::Point(60, 60), gfx::Point(10, 10));
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().empty());
   EXPECT_EQ(future.Get().width(), 50);
   EXPECT_EQ(future.Get().height(), 50);
@@ -413,7 +424,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
                     gfx::Point(50, 50), gfx::Point(-50, -50));
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().empty());
   // Cropped area should be the intersection (0, 0) -> (50, 50), width=50,
   // height=50.
@@ -435,7 +446,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
                     gfx::Point(10, 10), gfx::Point(24, 24));
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().empty());
   EXPECT_EQ(future.Get().width(), 14);
   EXPECT_EQ(future.Get().height(), 14);
@@ -469,7 +480,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   // Simulate mouse capture lost during drag.
   contents_view->OnMouseCaptureLost();
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 }
 
@@ -527,7 +538,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
                                ui::EF_LEFT_MOUSE_BUTTON);
   contents_view->OnMouseReleased(release_event);
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().empty());
   EXPECT_EQ(future.Get().width(), 100);
   EXPECT_EQ(future.Get().height(), 100);
@@ -756,7 +767,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   overlay->widgets_for_testing()[0]->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
   EXPECT_TRUE(overlay->widgets_for_testing()[0]->IsClosed());
   EXPECT_TRUE(overlay->widgets_for_testing()[1]->IsClosed());
@@ -768,14 +779,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
                display::Display(2, gfx::Rect(800, 0, 800, 600))});
 
   // Create a 1600x600 bitmap: left half green, right half blue.
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(1600, 600);
-  bitmap.eraseColor(SK_ColorGREEN);
-  for (int x = 800; x < 1600; ++x) {
-    for (int y = 0; y < 600; ++y) {
-      *bitmap.getAddr32(x, y) = SK_ColorBLUE;
-    }
-  }
+  SkBitmap bitmap =
+      CreateSplitColorBitmap(1600, 600, 800, SK_ColorGREEN, SK_ColorBLUE);
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
@@ -791,7 +796,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 
   SimulateMouseDrag(contents_view1, gfx::Point(10, 10), gfx::Point(60, 60));
 
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().empty());
   EXPECT_EQ(future.Get().width(), 50);
   EXPECT_EQ(future.Get().height(), 50);
@@ -808,14 +813,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
                display::Display(2, gfx::Rect(800, 0, 800, 600))});
 
   // Create a 1600x600 bitmap: left half Red, right half Blue.
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(1600, 600);
-  bitmap.eraseColor(SK_ColorRED);
-  for (int x = 800; x < 1600; ++x) {
-    for (int y = 0; y < 600; ++y) {
-      *bitmap.getAddr32(x, y) = SK_ColorBLUE;
-    }
-  }
+  SkBitmap bitmap =
+      CreateSplitColorBitmap(1600, 600, 800, SK_ColorRED, SK_ColorBLUE);
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
@@ -873,6 +872,84 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
             overlay->widgets_for_testing()[1].get());
   EXPECT_TRUE(overlay->widgets_for_testing()[1]->IsActive());
   EXPECT_FALSE(overlay->widgets_for_testing()[0]->IsActive());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       MultiDisplay_DragStartHidesToastOnAllWidgets) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      CreateTestBitmap(1600, 600), RegionCaptureSource::AllDisplays(),
+      future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  views::View* contents_view0 =
+      overlay->widgets_for_testing()[0]->GetContentsView();
+  views::View* contents_view1 =
+      overlay->widgets_for_testing()[1]->GetContentsView();
+  ASSERT_TRUE(contents_view0);
+  ASSERT_TRUE(contents_view1);
+
+  // Both toast chips are initially visible.
+  views::View* toast0 = contents_view0->children()[0];
+  views::View* toast1 = contents_view1->children()[0];
+  EXPECT_TRUE(toast0->GetVisible());
+  EXPECT_TRUE(toast1->GetVisible());
+
+  // Mouse press on monitor 0 starts dragging.
+  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(100, 100),
+                       gfx::Point(100, 100), base::TimeTicks::Now(),
+                       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  contents_view0->OnMousePressed(press);
+
+  // Both toast chips are now hidden across all widgets in unison.
+  EXPECT_FALSE(toast0->GetVisible());
+  EXPECT_FALSE(toast1->GetVisible());
+
+  // Cancel selection to clean up.
+  ui::KeyEvent esc(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE, ui::EF_NONE);
+  contents_view0->GetFocusManager()->OnKeyEvent(esc);
+  ASSERT_TRUE(future.Wait());
+}
+
+// A drag that starts on the secondary display and spills onto the primary is
+// attributed to the display holding the majority of the selection, and the
+// crop is clamped to that display's slice of the screenshot.
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       MultiDisplay_SelectionSpanningDisplaysCropsToMajorityDisplay) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  // Left half (display 1) green, right half (display 2) blue.
+  SkBitmap bitmap =
+      CreateSplitColorBitmap(1600, 600, 800, SK_ColorGREEN, SK_ColorBLUE);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  views::View* contents_view1 =
+      overlay->widgets_for_testing()[1]->GetContentsView();
+  ASSERT_TRUE(contents_view1);
+
+  // Drag on display 2 from local (100, 100) to local (-20, 300), i.e. global
+  // (900, 100) -> (780, 300). Display 2 holds 100x200 of the selection versus
+  // only 20x200 on display 1, so display 2 wins.
+  SimulateMouseDrag(contents_view1, gfx::Point(100, 100), gfx::Point(-20, 300));
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get().empty());
+  // Clamped to display 2's slice: global x 800..900, y 100..300.
+  EXPECT_EQ(future.Get().width(), 100);
+  EXPECT_EQ(future.Get().height(), 200);
+  // Blue confirms the crop came from display 2, not the green display 1.
+  EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorBLUE);
 }
 
 }  // namespace omnibox_everywhere
