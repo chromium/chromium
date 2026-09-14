@@ -22,7 +22,6 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
-#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
@@ -43,7 +42,6 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/url_formatter/url_formatter.h"
@@ -332,10 +330,6 @@ void BookmarkMenuDelegate::BuildFullMenu(MenuItemView* parent) {
   BuildMenusForPermanentNodes();
 }
 
-bookmarks::ManagedBookmarkService*
-BookmarkMenuDelegate::GetManagedBookmarkService() {
-  return ManagedBookmarkServiceFactory::GetForProfile(profile_);
-}
 
 const BookmarkMergedSurfaceService*
 BookmarkMenuDelegate::GetBookmarkMergedSurfaceService() const {

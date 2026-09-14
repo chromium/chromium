@@ -29,9 +29,6 @@ class BookmarkMergedSurfaceService;
 class BrowserWindowInterface;
 class Profile;
 
-namespace bookmarks {
-class ManagedBookmarkService;
-}  // namespace bookmarks
 
 namespace ui {
 class OSExchangeData;
@@ -91,7 +88,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
         const_cast<const BookmarkMenuDelegate*>(this)
             ->GetBookmarkMergedSurfaceService());
   }
-  bookmarks::ManagedBookmarkService* GetManagedBookmarkService();
   const BookmarkMergedSurfaceService* GetBookmarkMergedSurfaceService() const;
 
   // Returns the menu.
@@ -275,9 +271,9 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   // |menu_uses_mnemonics_|.
   std::u16string MaybeEscapeLabel(const std::u16string& title);
 
-  // Returns |next_menu_id_| and increments it by 2. This allows for 'sharing'
-  // command ids with the recent tabs menu, which also uses every other int as
-  // an id.
+  // Returns |next_menu_id_| and increments it by
+  // `AppMenuModel::kNumUnboundedMenuTypes`. This allows for interleaved command
+  // IDs across unbounded menu types in the app menu.
   int GetAndIncrementNextMenuID();
 
   // Removes `node` and its `menu`'s view. All descendants of the removed node
