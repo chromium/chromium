@@ -419,7 +419,9 @@ void LegacyFullscreenMediator::RecordFullscreenEnterMode() {
 }
 
 void LegacyFullscreenMediator::RecordFullscreenExitMode() {
-  CHECK(fullscreen_exit_trigger_.has_value());
+  if (!fullscreen_exit_trigger_.has_value()) {
+    return;
+  }
   base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
                                 fullscreen_exit_trigger_.value());
   fullscreen_exit_trigger_ = std::nullopt;
