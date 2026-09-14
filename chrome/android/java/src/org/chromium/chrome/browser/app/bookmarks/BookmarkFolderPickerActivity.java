@@ -147,19 +147,34 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                         });
         BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator);
 
-        Toolbar toolbar = mCoordinator.getToolbar();
         if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
-            toolbar.inflateMenu(R.menu.bookmark_folder_picker_menu_desktop);
-            toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
             setFinishOnTouchOutside(true);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             int scrimColor = ContextCompat.getColor(this, R.color.modal_dialog_scrim_color_lff);
             getWindow().setDimAmount(Color.alpha(scrimColor) / 255.0f);
         } else {
+            Toolbar toolbar = assumeNonNull(mCoordinator.getToolbar());
             setSupportActionBar(toolbar);
             assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         }
         setContentView(mCoordinator.getView());
+
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+            getWindow()
+                    .setLayout(
+                            WindowManager.LayoutParams.WRAP_CONTENT,
+                            WindowManager.LayoutParams.WRAP_CONTENT);
+            View closeButton = findViewById(R.id.close_button);
+            if (closeButton != null) {
+                closeButton.setOnClickListener(
+                        v -> {
+                            recordOutcome(BookmarkFolderPickerOutcome.CLOSED);
+                            setResult(RESULT_DISMISS_ALL);
+                            finish();
+                            overridePendingTransition(0, 0);
+                        });
+            }
+        }
 
         View cancelButton = findViewById(R.id.cancel_button);
         if (cancelButton != null) {
@@ -258,5 +273,20 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         }
 
         super.onDestroy();
+    }
+
+    @Override
+    protected void applyThemeOverlays() {
+        super.applyThemeOverlays();
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+            applySingleThemeOverlay(R.style.ThemeOverlay_Chromium_DialogWhenLarge_ContentWrapping);
+        }
+    }
+
+    @Override
+    protected boolean wrapContentWithEdgeToEdgeLayout() {
+        // Floating modal dialogs should not be wrapped edge-to-edge.
+        return super.wrapContentWithEdgeToEdgeLayout()
+                && !BookmarkUtils.isDesktopBookmarksDialogEnabled();
     }
 }

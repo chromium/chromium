@@ -39,13 +39,16 @@ class BookmarkManagerViewBinder {
             assumeNonNull(sectionHeaderData);
             title.setText(resources.getText(sectionHeaderData.titleRes));
             final @DimenRes int topPaddingRes = sectionHeaderData.topPaddingRes;
-            if (topPaddingRes != Resources.ID_NULL) {
-                title.setPaddingRelative(
-                        title.getPaddingStart(),
-                        resources.getDimensionPixelSize(topPaddingRes),
-                        title.getPaddingEnd(),
-                        title.getPaddingBottom());
-            }
+            // Reset padding to 0 to prevent recycled view leakage.
+            int topPadding =
+                    topPaddingRes != Resources.ID_NULL
+                            ? resources.getDimensionPixelSize(topPaddingRes)
+                            : 0;
+            title.setPaddingRelative(
+                    title.getPaddingStart(),
+                    topPadding,
+                    title.getPaddingEnd(),
+                    title.getPaddingBottom());
         }
     }
 

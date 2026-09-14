@@ -107,8 +107,7 @@ public class BookmarkEditDesktopTest {
 
         startEditActivity(mBookmarkId);
         CriteriaHelper.pollUiThread(
-                () -> mActivity.getCloseButton() != null,
-                "Close button not initialized in options menu");
+                () -> mActivity.getCloseButton() != null, "Close button not initialized in header");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -162,7 +161,7 @@ public class BookmarkEditDesktopTest {
         Assert.assertNotNull("Activity should not be null", mActivity);
         Assert.assertNotNull("Save button should exist", mActivity.getSaveButton());
         Assert.assertNotNull("Remove button should exist", mActivity.getRemoveButton());
-        Assert.assertNotNull("Close button should exist in menu", mActivity.getCloseButton());
+        Assert.assertNotNull("Close button should exist", mActivity.getCloseButton());
         Assert.assertNull("Delete button should not exist in menu", mActivity.getDeleteButton());
     }
 
@@ -228,7 +227,7 @@ public class BookmarkEditDesktopTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivity.onOptionsItemSelected(mActivity.getCloseButton());
+                    mActivity.getCloseButton().performClick();
                 });
 
         mDestroyedCallback.waitForCallback(0);

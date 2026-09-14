@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
+import androidx.annotation.DimenRes;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
@@ -255,10 +257,14 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
             return;
         }
 
+        final @DimenRes int localTopPaddingRes =
+                BookmarkUtils.isDesktopBookmarksDialogEnabled()
+                        ? R.dimen.bookmark_account_section_header_padding_top
+                        : Resources.ID_NULL;
         entries.add(
                 firstLocalBookmarkIndex,
                 BookmarkListEntry.createSectionHeader(
-                        R.string.local_bookmarks_section_header, Resources.ID_NULL));
+                        R.string.local_bookmarks_section_header, localTopPaddingRes));
         entries.add(
                 firstAccountBookmarkIndex,
                 BookmarkListEntry.createSectionHeader(

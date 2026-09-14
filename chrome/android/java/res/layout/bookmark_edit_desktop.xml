@@ -8,52 +8,61 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:minHeight="@dimen/bookmark_minimum_dialog_size_tablet"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/desktop_bookmark_dialog_padding"
     android:background="@macro/default_bg_color">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        app:layout_constraintTop_toTopOf="parent"
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="24dp"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:layout_marginEnd="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height_no_shadow"
-        style="@style/ModernToolbar" />
+        app:layout_constraintEnd_toStartOf="@id/close_button"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/shadow"
-        app:layout_constraintTop_toTopOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/close_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/material_ic_close_24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/close"
+        app:tint="@color/default_icon_color_tint_list"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bookmark_dialog_toolbar_shadow_height"
-        android:layout_marginTop="@dimen/toolbar_height_no_shadow"
-        android:background="@drawable/bookmark_title_bar_shadow"
-        android:visibility="gone" />
+        app:layout_constraintTop_toTopOf="@id/title"
+        app:layout_constraintBottom_toBottomOf="@id/title" />
 
     <ScrollView
         android:id="@+id/scroll_view"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/button_container"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.0"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop=
+            "@dimen/desktop_bookmark_dialog_container_margin"
+        app:layout_constrainedHeight="true"
         android:clipToPadding="false" >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
             android:orientation="vertical" >
 
             <org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout
                 android:id="@+id/title_text"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
                 android:hint="@string/bookmark_name"
                 app:emptyErrorMessage="@string/bookmark_missing_title">
                 <com.google.android.material.textfield.TextInputEditText
@@ -67,9 +76,11 @@
 
             <org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout
                 android:id="@+id/url_text"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop=
+                    "@dimen/desktop_bookmark_dialog_text_input_margin_top"
                 android:hint="@string/bookmark_url"
                 app:emptyErrorMessage="@string/bookmark_missing_url">
 
@@ -86,7 +97,8 @@
                 android:id="@+id/folder_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop=
+                    "@dimen/desktop_bookmark_dialog_container_margin"
                 android:layout_marginStart="3dp"
                 android:layout_marginEnd="3dp"
                 android:text="@string/bookmark_folder"
@@ -101,8 +113,6 @@
             <FrameLayout
                 android:id="@+id/folder_row_container"
                 android:layout_marginTop="6dp"
-                android:layout_marginStart=
-                    "@dimen/improved_bookmark_row_horizontal_negative_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
@@ -113,15 +123,13 @@
         android:id="@+id/button_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scroll_view"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop=
-            "@dimen/bookmark_folder_picker_button_container_top_padding"
-        android:paddingBottom=
-            "@dimen/bookmark_folder_picker_button_container_bottom_padding"
-        android:paddingHorizontal="16dp"
+        android:layout_marginTop=
+            "@dimen/desktop_bookmark_dialog_container_margin"
         android:gravity="center|end">
 
         <org.chromium.ui.widget.ButtonCompat
