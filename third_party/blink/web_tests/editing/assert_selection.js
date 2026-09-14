@@ -714,10 +714,18 @@ function computeBottom(element) {
 function setClipboardData(html, opt_text) {
   assert_not_equals(window.internals, undefined,
     'This test requests clipboard access from JavaScript.');
+  // Run the copy in the same document (the sample IFRAME) that will receive the
+  // paste. If the copy runs in a different frame than the paste, the two use
+  // different ClipboardHost mojo pipes, which are not mutually ordered. The
+  // paste creates a SystemClipboard snapshot that records the clipboard
+  // sequence number; if the copy's asynchronous CommitWrite has not yet been
+  // processed on its own pipe, the snapshot baselines a stale sequence number
+  // and the paste is spuriously treated as reading changed clipboard content.
+  const doc = this.document;
   function computeTextData() {
     if (opt_text !== undefined)
       return opt_text;
-    const element = document.createElement('div');
+    const element = doc.createElement('div');
     element.innerHTML = html;
     return element.textContent;
   }
@@ -727,9 +735,9 @@ function setClipboardData(html, opt_text) {
     clipboardData.setData('text/html', html);
     event.preventDefault();
   }
-  document.addEventListener('copy', copyHandler);
-  document.execCommand('copy');
-  document.removeEventListener('copy', copyHandler);
+  doc.addEventListener('copy', copyHandler);
+  doc.execCommand('copy');
+  doc.removeEventListener('copy', copyHandler);
 }
 
 class Sample {

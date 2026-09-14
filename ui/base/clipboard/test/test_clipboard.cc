@@ -453,6 +453,7 @@ TestClipboard::DataStore::DataStore(const DataStore& other) {
   url_title = other.url_title;
   html_src_url = other.html_src_url;
   png = other.png;
+  filenames = other.filenames;
   data_src = other.data_src;
 }
 
@@ -463,6 +464,7 @@ TestClipboard::DataStore& TestClipboard::DataStore::operator=(
   url_title = other.url_title;
   html_src_url = other.html_src_url;
   png = other.png;
+  filenames = other.filenames;
   data_src = other.data_src;
   return *this;
 }
