@@ -4,14 +4,11 @@
 
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 
-#include <utility>
-
-#include "base/functional/bind.h"
+#include "base/check.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/ui/browser_tab_strip_tracker.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -48,50 +45,39 @@ void TabletModePageBehavior::OnDisplayTabletStateChanged(
   }
 }
 
-bool TabletModePageBehavior::ShouldTrackBrowser(
-    BrowserWindowInterface* browser) {
-  return display::Screen::Get()->InTabletMode();
-}
-
-void TabletModePageBehavior::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (change.type() != TabStripModelChange::kInserted)
-    return;
-
+void TabletModePageBehavior::OnTabInserted(ash::BrowserDelegate* browser,
+                                           content::WebContents* contents) {
   // We limit the mobile-like behavior to webcontents in tabstrips since many
   // apps and extensions draw their own caption buttons and header frames. We
   // don't want those to shrink down and resize to fit the width of their
   // windows like webpages on mobile do. So this behavior is limited to webpages
   // in tabs and packaged apps.
-  for (const auto& contents : change.GetInsert()->contents)
-    contents.contents->NotifyPreferencesChanged();
+  contents->NotifyPreferencesChanged();
 }
 
 void TabletModePageBehavior::SetMobileLikeBehaviorEnabled(bool enabled) {
+  auto* browser_controller = ash::BrowserController::GetInstance();
+
+  if (enabled) {
+    CHECK(!tab_observation_.IsObserving());
+    tab_observation_.Observe(browser_controller);
+  } else {
+    tab_observation_.Reset();
+  }
+
   // Toggling tablet mode on/off should trigger refreshing the WebKit
   // preferences, since in tablet mode, we enable certain mobile-like features
   // such as "double tap to zoom", "shrink page contents to fit", ... etc.
   // Do this only for webpages that belong to existing browsers as well as
   // future browsers and webcontents.
-  if (enabled) {
-    // On calling Init() of the |tab_strip_tracker_|, we will get a call to
-    // TabInsertedAt() for all the existing webcontents, upon which we will
-    // trigger a refresh of their WebKit preferences.
-    tab_strip_tracker_ = std::make_unique<BrowserTabStripTracker>(this, this);
-    tab_strip_tracker_->Init();
-  } else if (ash::BrowserController::GetInstance()) {
-    // Manually trigger a refresh for the existing webcontents' preferences.
-    ash::BrowserController::GetInstance()->ForEachBrowser(
-        ash::BrowserController::BrowserOrder::kAscendingActivationTime,
-        [&](ash::BrowserDelegate& browser) {
-          for (size_t i = 0; i < browser.GetWebContentsCount(); ++i) {
-            content::WebContents* web_contents = browser.GetWebContentsAt(i);
-            DCHECK(web_contents);
+  browser_controller->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [enabled](ash::BrowserDelegate& browser) {
+        for (tabs::TabInterface* tab : browser.GetTabIterator()) {
+          content::WebContents* web_contents = tab->GetContents();
+          web_contents->NotifyPreferencesChanged();
 
-            web_contents->NotifyPreferencesChanged();
-
+          if (!enabled) {
             // For a tab that is requesting its mobile version site (via
             // chrome::ToggleRequestTabletSite()), and is not originated from
             // ARC context, return to its normal version site when exiting
@@ -102,14 +88,12 @@ void TabletModePageBehavior::SetMobileLikeBehaviorEnabled(bool enabled) {
                 controller.GetLastCommittedEntry();
             if (entry && entry->GetIsOverridingUserAgent() &&
                 !web_contents->GetUserData(
-                    arc::ArcWebContentsData::ArcWebContentsData::
-                        kArcTransitionFlag)) {
+                    arc::ArcWebContentsData::kArcTransitionFlag)) {
               entry->SetIsOverridingUserAgent(false);
               controller.LoadOriginalRequestURL();
             }
           }
-          return ash::BrowserController::kContinueIteration;
-        });
-    tab_strip_tracker_ = nullptr;
-  }
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
 }
