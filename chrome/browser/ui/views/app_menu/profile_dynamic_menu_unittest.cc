@@ -11,8 +11,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -107,8 +107,8 @@ TEST_F(ProfileDynamicMenuTest, BuildSyncSection_StandardProfile) {
                 .children()
                 .back()
                 ->GetActionItem()
-                ->GetProperty(ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kDivider);
+                ->GetProperty(AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
 }
 
 TEST_F(ProfileDynamicMenuTest, BuildSyncSection_SignedInProfile) {
@@ -176,20 +176,20 @@ TEST_F(ProfileDynamicMenuTest, BuildOtherProfiles_MultipleProfiles) {
   const auto& children = parent_item->GetChildren().children();
   ASSERT_EQ(children.size(), 4u);
   EXPECT_EQ(children[0]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kDivider);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
   EXPECT_EQ(children[1]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kHeader);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kHeader);
   EXPECT_EQ(children[1]->GetActionItem()->GetText(),
             l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
   EXPECT_EQ(children[2]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kRow);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kRow);
   EXPECT_EQ(children[2]->GetActionItem()->GetText(), u"Profile 2");
   EXPECT_EQ(children[3]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kDivider);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
 }
 
 TEST_F(ProfileDynamicMenuTest, BuildOtherProfiles_SingleProfile) {
@@ -211,11 +211,11 @@ TEST_F(ProfileDynamicMenuTest, BuildOtherProfiles_SingleProfile) {
   const auto& children = parent_item->GetChildren().children();
   ASSERT_EQ(children.size(), 2u);
   EXPECT_EQ(children[0]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kDivider);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
   EXPECT_EQ(children[1]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kHeader);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kHeader);
   EXPECT_EQ(children[1]->GetActionItem()->GetText(),
             l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
 }

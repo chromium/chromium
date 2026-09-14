@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
@@ -60,9 +61,9 @@ bool ShouldRoundBottomCorners(size_t index,
   }
   for (size_t i = index + 1; i < items.size(); ++i) {
     const auto display_type = items[i]->GetActionItem()->GetProperty(
-        ActionAppMenuManager::kDisplayTypeKey);
-    if (display_type != ActionAppMenuManager::DisplayType::kDivider &&
-        display_type != ActionAppMenuManager::DisplayType::kHeader) {
+        AppMenuActionItem::kDisplayTypeKey);
+    if (display_type != AppMenuActionItem::DisplayType::kDivider &&
+        display_type != AppMenuActionItem::DisplayType::kHeader) {
       return false;
     }
   }
@@ -76,9 +77,9 @@ bool ShouldRoundTopCorners(size_t index,
   for (size_t i = index; i > 0; --i) {
     size_t prev_index = i - 1;
     const auto display_type = items[prev_index]->GetActionItem()->GetProperty(
-        ActionAppMenuManager::kDisplayTypeKey);
-    if (display_type == ActionAppMenuManager::DisplayType::kDivider ||
-        display_type == ActionAppMenuManager::DisplayType::kHeader) {
+        AppMenuActionItem::kDisplayTypeKey);
+    if (display_type == AppMenuActionItem::DisplayType::kDivider ||
+        display_type == AppMenuActionItem::DisplayType::kHeader) {
       continue;
     }
     return ShouldRoundBottomCorners(prev_index, items);
@@ -222,20 +223,20 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
     actions::BaseAction* const child_base = children_action_items[i].get();
     actions::ActionItem* const child_ptr = child_base->GetActionItem();
 
-    const ActionAppMenuManager::DisplayType display_type =
-        child_ptr->GetProperty(ActionAppMenuManager::kDisplayTypeKey);
+    const auto display_type =
+        child_ptr->GetProperty(AppMenuActionItem::kDisplayTypeKey);
 
-    if (display_type == ActionAppMenuManager::DisplayType::kSearch) {
+    if (display_type == AppMenuActionItem::DisplayType::kSearch) {
       PopulateSearchBar(view_parent, child_ptr);
-    } else if (display_type == ActionAppMenuManager::DisplayType::kFooter) {
+    } else if (display_type == AppMenuActionItem::DisplayType::kFooter) {
       PopulateFooter(view_parent, child_ptr);
-    } else if (display_type == ActionAppMenuManager::DisplayType::kBlock) {
+    } else if (display_type == AppMenuActionItem::DisplayType::kBlock) {
       PopulateBlockSection(view_parent, child_ptr);
-    } else if (display_type == ActionAppMenuManager::DisplayType::kDivider) {
+    } else if (display_type == AppMenuActionItem::DisplayType::kDivider) {
       PopulateDivider(view_parent, child_ptr);
-    } else if (display_type == ActionAppMenuManager::DisplayType::kHeader) {
+    } else if (display_type == AppMenuActionItem::DisplayType::kHeader) {
       PopulateHeader(view_parent, child_ptr);
-    } else if (display_type == ActionAppMenuManager::DisplayType::kSection) {
+    } else if (display_type == AppMenuActionItem::DisplayType::kSection) {
       // Recursively call using the same parent to keep the children in
       // the same menu section.
       PopulateMenu(view_parent, child_base);
@@ -247,7 +248,7 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
           ShouldRoundBottomCorners(i, children_action_items);
       ConfigureMenuItem(menu_item, child_base, round_top_corners,
                         round_bottom_corners);
-      if (display_type == ActionAppMenuManager::DisplayType::kCustom) {
+      if (display_type == AppMenuActionItem::DisplayType::kCustom) {
         PopulateCustomRow(menu_item, child_base);
       } else if (!child_base->HasPopulateChildActionsCallback()) {
         // Recursively populate static items and static submenus immediately.
@@ -272,10 +273,10 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
 
   // Items marked as kCustom lay out their child actions inline in the same row
   // rather than spawning a popup submenu.
-  const ActionAppMenuManager::DisplayType display_type =
-      action_item->GetProperty(ActionAppMenuManager::kDisplayTypeKey);
+  const AppMenuActionItem::DisplayType display_type =
+      action_item->GetProperty(AppMenuActionItem::kDisplayTypeKey);
   const bool has_submenu =
-      display_type != ActionAppMenuManager::DisplayType::kCustom &&
+      display_type != AppMenuActionItem::DisplayType::kCustom &&
       !base_action_item->GetChildren().children().empty();
 
   views::MenuItemView* menu_item =
@@ -294,7 +295,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
                                       bool round_top_corners,
                                       bool round_bottom_corners) {
   if (std::u16string* text_override =
-          child_base->GetProperty(ActionAppMenuManager::kTextOverrideKey)) {
+          child_base->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
     menu_item->SetTitle(*text_override);
   }
 
@@ -308,7 +309,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   }
 
   if (ui::ImageModel* icon_override =
-          child_base->GetProperty(ActionAppMenuManager::kIconOverrideKey)) {
+          child_base->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
     menu_item->SetIcon(StandardizeMenuIconSize(*icon_override));
   } else if (!action_item->GetImage().IsEmpty()) {
     menu_item->SetIcon(StandardizeMenuIconSize(action_item->GetImage()));
@@ -321,7 +322,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   }
 
   if (std::u16string* chip_text =
-          child_base->GetProperty(ActionAppMenuManager::kChipTextKey)) {
+          child_base->GetProperty(AppMenuActionItem::kChipTextKey)) {
     ActionAppMenuChipView::AttachTo(menu_item, *chip_text);
   }
 
@@ -340,7 +341,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   menu_item->set_vertical_margin(vertical_padding);
 
   const ui::ColorId container_color =
-      action_item->GetProperty(ActionAppMenuManager::kContainerColorKey);
+      action_item->GetProperty(AppMenuActionItem::kContainerColorKey);
 
   // Get the styling from the ActionItem and apply it to its menu item.
   if (container_color != ui::kColorMenuBackground) {
@@ -451,5 +452,5 @@ void ActionAppMenu::PopulateCustomRow(views::MenuItemView* view_parent,
 void ActionAppMenu::PopulateDivider(views::MenuItemView* view_parent,
                                     actions::ActionItem* divider_action_item) {
   view_parent->AppendSeparator(
-      divider_action_item->GetProperty(ActionAppMenuManager::kSeparatorKey));
+      divider_action_item->GetProperty(AppMenuActionItem::kSeparatorKey));
 }

@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -55,8 +55,8 @@ void BookmarksDynamicMenu::BuildBookmarksActions(
       service->GetChildren(bookmark_bar_folder);
 
   if (bookmark_bar_children.size() > 0 || has_managed) {
-    parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
-    parent_item->AddChild(ActionAppMenuManager::CreateHeaderActionItem(
+    parent_item->AddChild(AppMenuActionItem::CreateDivider());
+    parent_item->AddChild(AppMenuActionItem::CreateHeader(
         l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE)));
 
     if (has_managed) {
@@ -76,7 +76,7 @@ void BookmarksDynamicMenu::BuildBookmarksActions(
   const bool has_mobile = service->GetChildrenCount(mobile_folder) > 0;
 
   if (has_other || has_mobile) {
-    parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
+    parent_item->AddChild(AppMenuActionItem::CreateDivider());
     if (has_other) {
       AddBookmarkFolderAction(parent_item, other_folder, service);
     }
@@ -114,7 +114,7 @@ void BookmarksDynamicMenu::AddBookmarkNodeAction(
       }
     }
 
-    builder.SetProperty(ActionAppMenuManager::kContainerColorKey,
+    builder.SetProperty(AppMenuActionItem::kContainerColorKey,
                         ui::kColorMenuBackground);
 
     GURL url = node->url();
@@ -160,7 +160,7 @@ void BookmarksDynamicMenu::AddBookmarkFolderAction(
   builder.SetText(underlying_nodes[0]->GetTitle())
       .SetImage(
           chrome::GetBookmarkFolderIcon(folder_icon_type, ui::kColorMenuIcon))
-      .SetProperty(ActionAppMenuManager::kContainerColorKey,
+      .SetProperty(AppMenuActionItem::kContainerColorKey,
                    ui::kColorMenuBackground);
   auto folder_action = std::move(builder).Build();
 

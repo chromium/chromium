@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_block_button.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -50,12 +50,12 @@ ActionAppMenuBlockView::ActionAppMenuBlockView(
         base::BindRepeating(execute_command_callback, action_id.value()));
 
     if (std::u16string* text_override =
-            block_child->GetProperty(ActionAppMenuManager::kTextOverrideKey)) {
+            block_child->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
       button->SetText(*text_override);
     }
 
     if (ui::ImageModel* icon_override =
-            block_child->GetProperty(ActionAppMenuManager::kIconOverrideKey)) {
+            block_child->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
       button->SetImageModel(*icon_override);
     }
 

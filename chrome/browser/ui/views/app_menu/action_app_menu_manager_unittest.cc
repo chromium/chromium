@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -142,69 +143,69 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
   EXPECT_EQ(profile_submenu->GetActionItem()->GetActionId(),
             kActionProfileSubmenu);
   EXPECT_EQ(profile_submenu->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kRow);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kRow);
 
   // It should contain sync header, divider, primary actions, divider, header,
   // other profiles, divider, and footer actions.
   const auto& children = profile_submenu->GetChildren().children();
   ASSERT_EQ(children.size(), 12u);
   EXPECT_EQ(children[0]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kHeader);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kHeader);
   EXPECT_EQ(
       children[0]->GetActionItem()->GetText(),
       l10n_util::GetStringFUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE_WITH_EMAIL,
                                  {u"test@example.com"}));
   EXPECT_EQ(children[1]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kDivider);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
   EXPECT_EQ(children[2]->GetActionItem()->GetActionId(),
             kActionManageGoogleAccount);
   EXPECT_EQ(children[2]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kRow);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kRow);
   EXPECT_EQ(children[3]->GetActionItem()->GetActionId(),
             kActionCustomizeChrome);
   EXPECT_EQ(children[3]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kRow);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kRow);
   EXPECT_EQ(children[4]->GetActionItem()->GetActionId(), kActionCloseProfile);
   EXPECT_EQ(children[4]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kRow);
-  EXPECT_EQ(*children[4]->GetProperty(ActionAppMenuManager::kTextOverrideKey),
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kRow);
+  EXPECT_EQ(*children[4]->GetProperty(AppMenuActionItem::kTextOverrideKey),
             l10n_util::GetPluralStringFUTF16(IDS_CLOSE_PROFILE,
                                              CountBrowsersFor(profile_.get())));
   EXPECT_EQ(children[5]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kDivider);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
   EXPECT_EQ(children[6]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kHeader);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kHeader);
   EXPECT_EQ(children[6]->GetActionItem()->GetText(),
             l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
   EXPECT_EQ(children[7]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kRow);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kRow);
   EXPECT_EQ(children[7]->GetActionItem()->GetText(), u"Profile 2");
   EXPECT_EQ(children[8]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kDivider);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
   EXPECT_EQ(children[9]->GetActionItem()->GetActionId(), kActionAddNewProfile);
   EXPECT_EQ(children[9]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kRow);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kRow);
   EXPECT_EQ(children[10]->GetActionItem()->GetActionId(),
             kActionOpenGuestProfile);
   EXPECT_EQ(children[10]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kRow);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kRow);
   EXPECT_EQ(children[11]->GetActionItem()->GetActionId(),
             kActionManageChromeProfiles);
   EXPECT_EQ(children[11]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kRow);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kRow);
 }
 
 TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenuSingleProfile) {
@@ -248,25 +249,25 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenuSingleProfile) {
   const auto& children = profile_submenu->GetChildren().children();
   ASSERT_EQ(children.size(), 11u);
   EXPECT_EQ(children[0]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kHeader);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kHeader);
   EXPECT_EQ(children[0]->GetActionItem()->GetText(),
             l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE));
   EXPECT_EQ(children[1]->GetActionItem()->GetActionId(), kActionShowSignin);
   EXPECT_EQ(children[2]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kDivider);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
   EXPECT_EQ(children[3]->GetActionItem()->GetActionId(),
             kActionManageGoogleAccount);
   EXPECT_EQ(children[4]->GetActionItem()->GetActionId(),
             kActionCustomizeChrome);
   EXPECT_EQ(children[5]->GetActionItem()->GetActionId(), kActionCloseProfile);
   EXPECT_EQ(children[6]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kDivider);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
   EXPECT_EQ(children[7]->GetActionItem()->GetProperty(
-                ActionAppMenuManager::kDisplayTypeKey),
-            ActionAppMenuManager::DisplayType::kHeader);
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kHeader);
   EXPECT_EQ(children[7]->GetActionItem()->GetText(),
             l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
   EXPECT_EQ(children[8]->GetActionItem()->GetActionId(), kActionAddNewProfile);

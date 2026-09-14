@@ -8,9 +8,10 @@
 #include <string>
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -53,8 +54,10 @@ TEST_F(ActionAppMenuChipViewTest, AttachTo_AddsChipAndUpdatesAccessibleName) {
 }
 
 TEST_F(ActionAppMenuChipViewTest, AttachTo_DrivenByChipTextProperty) {
-  auto item = ActionAppMenuManager::CreateIndirectActionItem(
-      kActionNewTab, ActionAppMenuManager::DisplayType::kRow,
+  auto item = AppMenuActionItem::CreateIndirect(
+      kActionNewTab,
+      BrowserActions::From(&mock_window_interface_)->root_action_item(),
+      AppMenuActionItem::DisplayType::kRow,
       /*container_color=*/std::nullopt,
       /*text_override=*/u"Profile Name",
       /*icon_override=*/std::nullopt,
@@ -62,7 +65,7 @@ TEST_F(ActionAppMenuChipViewTest, AttachTo_DrivenByChipTextProperty) {
   ASSERT_NE(item, nullptr);
 
   std::u16string* chip_text_prop =
-      item->GetProperty(ActionAppMenuManager::kChipTextKey);
+      item->GetProperty(AppMenuActionItem::kChipTextKey);
   ASSERT_NE(chip_text_prop, nullptr);
   EXPECT_EQ(*chip_text_prop, u"Signed in");
 }

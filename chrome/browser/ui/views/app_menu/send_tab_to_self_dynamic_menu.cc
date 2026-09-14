@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
@@ -150,9 +150,9 @@ void SendTabToSelfDynamicMenu::BuildSendTabToSelfActions(
         actions::ActionItem::Builder()
             .SetText(label)
             .SetImage(icon)
-            .SetProperty(ActionAppMenuManager::kDisplayTypeKey,
-                         ActionAppMenuManager::DisplayType::kRow)
-            .SetProperty(ActionAppMenuManager::kContainerColorKey,
+            .SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                         AppMenuActionItem::DisplayType::kRow)
+            .SetProperty(AppMenuActionItem::kContainerColorKey,
                          ui::kColorMenuBackground)
             .SetInvokeActionCallback(base::BindRepeating(
                 &SendTabToSelfDynamicMenu::ExecuteDeviceSelection,
@@ -161,20 +161,19 @@ void SendTabToSelfDynamicMenu::BuildSendTabToSelfActions(
             .Build());
   }
 
-  parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
+  parent_item->AddChild(AppMenuActionItem::CreateDivider());
 
-  parent_item->AddChild(
-      actions::ActionItem::Builder()
-          .SetText(
-              l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES))
-          .SetProperty(ActionAppMenuManager::kDisplayTypeKey,
-                       ActionAppMenuManager::DisplayType::kRow)
-          .SetProperty(ActionAppMenuManager::kContainerColorKey,
-                       ui::kColorMenuBackground)
-          .SetInvokeActionCallback(base::BindRepeating(
-              &SendTabToSelfDynamicMenu::ExecuteManageDevices,
-              weak_ptr_factory_.GetWeakPtr()))
-          .Build());
+  parent_item->AddChild(actions::ActionItem::Builder()
+                            .SetText(l10n_util::GetStringUTF16(
+                                IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES))
+                            .SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                                         AppMenuActionItem::DisplayType::kRow)
+                            .SetProperty(AppMenuActionItem::kContainerColorKey,
+                                         ui::kColorMenuBackground)
+                            .SetInvokeActionCallback(base::BindRepeating(
+                                &SendTabToSelfDynamicMenu::ExecuteManageDevices,
+                                weak_ptr_factory_.GetWeakPtr()))
+                            .Build());
 }
 
 void SendTabToSelfDynamicMenu::ExecuteDeviceSelection(

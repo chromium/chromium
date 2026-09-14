@@ -30,12 +30,13 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -115,7 +116,7 @@ void ProfileDynamicMenu::BuildSyncSection(actions::BaseAction* parent_item) {
     return;
   }
   if (BuildSyncSectionImpl(parent_item, profile)) {
-    parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
+    parent_item->AddChild(AppMenuActionItem::CreateDivider());
   }
 }
 
@@ -152,7 +153,7 @@ bool ProfileDynamicMenu::BuildSyncSectionImpl(actions::BaseAction* parent_item,
 
   // Section header showing sync status message or user email (e.g. "Signed in
   // as user@gmail.com").
-  parent_item->AddChild(ActionAppMenuManager::CreateHeaderActionItem(
+  parent_item->AddChild(AppMenuActionItem::CreateHeader(
       GetSyncSectionTitle(profile, identity_manager)));
 
   syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
@@ -227,9 +228,11 @@ bool ProfileDynamicMenu::BuildSyncSectionImpl(actions::BaseAction* parent_item,
       }
       CHECK_NE(action_id, 0);
       CHECK(icon);
-      parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-          action_id, ActionAppMenuManager::DisplayType::kRow,
-          ui::kColorMenuBackground, l10n_util::GetStringUTF16(button_string_id),
+      parent_item->AddChild(AppMenuActionItem::CreateIndirect(
+          action_id,
+          BrowserActions::From(browser_window_interface_)->root_action_item(),
+          AppMenuActionItem::DisplayType::kRow, ui::kColorMenuBackground,
+          l10n_util::GetStringUTF16(button_string_id),
           ui::ImageModel::FromVectorIcon(
               *icon, ui::kColorMenuIcon,
               ui::SimpleMenuModel::kDefaultIconSize)));
@@ -242,9 +245,10 @@ bool ProfileDynamicMenu::BuildSyncSectionImpl(actions::BaseAction* parent_item,
   if (signin_util::GetSignedInState(identity_manager) ==
       signin_util::SignedInState::kSyncing) {
     // Sync is enabled and operating normally.
-    parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-        kActionShowSyncSettings, ActionAppMenuManager::DisplayType::kRow,
-        ui::kColorMenuBackground,
+    parent_item->AddChild(AppMenuActionItem::CreateIndirect(
+        kActionShowSyncSettings,
+        BrowserActions::From(browser_window_interface_)->root_action_item(),
+        AppMenuActionItem::DisplayType::kRow, ui::kColorMenuBackground,
         l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SYNC_IS_ON),
         ui::ImageModel::FromVectorIcon(
             features::IsRoundedIconsEnabled()
@@ -253,9 +257,10 @@ bool ProfileDynamicMenu::BuildSyncSectionImpl(actions::BaseAction* parent_item,
             ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
   } else if (!identity_manager->HasPrimaryAccount(
                  signin::ConsentLevel::kSignin)) {
-    parent_item->AddChild(ActionAppMenuManager::CreateIndirectActionItem(
-        kActionShowSignin, ActionAppMenuManager::DisplayType::kRow,
-        ui::kColorMenuBackground,
+    parent_item->AddChild(AppMenuActionItem::CreateIndirect(
+        kActionShowSignin,
+        BrowserActions::From(browser_window_interface_)->root_action_item(),
+        AppMenuActionItem::DisplayType::kRow, ui::kColorMenuBackground,
         l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON),
         ui::ImageModel::FromVectorIcon(
             features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
@@ -287,8 +292,8 @@ void ProfileDynamicMenu::BuildOtherProfilesSection(
   if (!profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
       !profile->IsEnterpriseIsolatedModeProfile()) {
     if (has_profile_manager) {
-      parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
-      parent_item->AddChild(ActionAppMenuManager::CreateHeaderActionItem(
+      parent_item->AddChild(AppMenuActionItem::CreateDivider());
+      parent_item->AddChild(AppMenuActionItem::CreateHeader(
           l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE)));
 
       const int avatar_icon_size =
@@ -343,7 +348,7 @@ void ProfileDynamicMenu::BuildOtherProfilesSection(
                                             /*always_create=*/false);
                 },
                 profile_entry->GetPath()))
-            .SetProperty(ActionAppMenuManager::kContainerColorKey,
+            .SetProperty(AppMenuActionItem::kContainerColorKey,
                          ui::kColorMenuBackground);
 
         auto action_item = std::move(builder).Build();
@@ -355,7 +360,7 @@ void ProfileDynamicMenu::BuildOtherProfilesSection(
       }
 
       if (needs_separator) {
-        parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
+        parent_item->AddChild(AppMenuActionItem::CreateDivider());
       }
     }
   }

@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -70,7 +70,7 @@ void TabGroupDynamicMenu::BuildTabGroupsAction(
                                            ServiceAccessType::EXPLICIT_ACCESS);
 
   if (!group_ids.empty()) {
-    parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
+    parent_item->AddChild(AppMenuActionItem::CreateDivider());
   }
 
   for (const base::Uuid& uuid : group_ids) {
@@ -120,8 +120,8 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kOpenInBrowserIcon
                                                 : kOpenInBrowserOldIcon))
-          .SetProperty(ActionAppMenuManager::kDisplayTypeKey,
-                       ActionAppMenuManager::DisplayType::kRow)
+          .SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                       AppMenuActionItem::DisplayType::kRow)
           .Build();
 
   open_in_browser_item->SetProperty(kSavedTabGroupGuidKey,
@@ -167,15 +167,15 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
               features::IsRoundedIconsEnabled()
                   ? kMoveGroupIcon
                   : kMoveGroupToNewWindowRefreshOldIcon))
-          .SetProperty(ActionAppMenuManager::kDisplayTypeKey,
-                       ActionAppMenuManager::DisplayType::kRow)
+          .SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                       AppMenuActionItem::DisplayType::kRow)
           .Build();
 
   move_or_open_item->SetProperty(kSavedTabGroupGuidKey,
                                  std::make_unique<base::Uuid>(uuid));
   if (move_text_override.has_value()) {
     move_or_open_item->SetProperty(
-        ActionAppMenuManager::kTextOverrideKey,
+        AppMenuActionItem::kTextOverrideKey,
         std::make_unique<std::u16string>(move_text_override.value()));
   }
 
@@ -205,20 +205,20 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
               l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kKeepIcon : kKeepOldIcon))
-          .SetProperty(ActionAppMenuManager::kDisplayTypeKey,
-                       ActionAppMenuManager::DisplayType::kRow)
+          .SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                       AppMenuActionItem::DisplayType::kRow)
           .Build();
 
   pin_item->SetProperty(kSavedTabGroupGuidKey,
                         std::make_unique<base::Uuid>(uuid));
   if (pin_text_override.has_value()) {
     pin_item->SetProperty(
-        ActionAppMenuManager::kTextOverrideKey,
+        AppMenuActionItem::kTextOverrideKey,
         std::make_unique<std::u16string>(pin_text_override.value()));
   }
   if (pin_icon_override.has_value()) {
     pin_item->SetProperty(
-        ActionAppMenuManager::kIconOverrideKey,
+        AppMenuActionItem::kIconOverrideKey,
         std::make_unique<ui::ImageModel>(pin_icon_override.value()));
   }
 
@@ -244,27 +244,27 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kTabCloseIcon
                                                 : kCloseGroupRefreshOldIcon))
-          .SetProperty(ActionAppMenuManager::kDisplayTypeKey,
-                       ActionAppMenuManager::DisplayType::kRow)
+          .SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                       AppMenuActionItem::DisplayType::kRow)
           .Build();
 
   delete_or_leave_item->SetProperty(kSavedTabGroupGuidKey,
                                     std::make_unique<base::Uuid>(uuid));
   if (delete_text_override.has_value()) {
     delete_or_leave_item->SetProperty(
-        ActionAppMenuManager::kTextOverrideKey,
+        AppMenuActionItem::kTextOverrideKey,
         std::make_unique<std::u16string>(delete_text_override.value()));
   }
 
   parent_item->AddChild(std::move(delete_or_leave_item));
-  parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
+  parent_item->AddChild(AppMenuActionItem::CreateDivider());
 }
 
 void TabGroupDynamicMenu::BuildTabGroupData(
     std::optional<tab_groups::SavedTabGroup> group,
     favicon::FaviconService* favicon_service,
     actions::ActionItem* parent_item) {
-  auto header_item = ActionAppMenuManager::CreateHeaderActionItem(
+  auto header_item = AppMenuActionItem::CreateHeader(
       l10n_util::GetStringUTF16(IDS_TABS_TITLE_CXMENU));
   parent_item->AddChild(std::move(header_item));
 
