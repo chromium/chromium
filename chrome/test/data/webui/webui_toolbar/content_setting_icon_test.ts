@@ -6,27 +6,11 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, ContentSettingImageType, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {ContentSettingIconElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 
-class TestToolbarUiHandler extends TestBrowserProxy {
-  constructor() {
-    super([
-      'showContentSettingsBubble',
-      'onContentSettingImageAnimationEnded',
-    ]);
-  }
-
-  showContentSettingsBubble(type: ContentSettingImageType) {
-    this.methodCalled('showContentSettingsBubble', type);
-  }
-
-  onContentSettingImageAnimationEnded(type: ContentSettingImageType) {
-    this.methodCalled('onContentSettingImageAnimationEnded', type);
-  }
-}
+import {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
 
 suite('ContentSettingIcon', function() {
   let icon: ContentSettingIconElement;

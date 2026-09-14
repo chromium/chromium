@@ -5,37 +5,19 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl} from 'chrome://webui-toolbar.top-chrome/app.js';
 
-class TestToolbarUiHandler extends TestBrowserProxy {
-  constructor() {
-    super(['onPerformanceInterventionButtonClicked']);
-  }
-
-  onPerformanceInterventionButtonClicked() {
-    this.methodCalled('onPerformanceInterventionButtonClicked');
-  }
-}
-
-class TestPerformanceInterventionBrowserProxy extends TestBrowserProxy {
-  toolbarUIHandler: TestToolbarUiHandler;
-
-  constructor() {
-    super([]);
-    this.toolbarUIHandler = new TestToolbarUiHandler();
-  }
-}
+import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
 
 suite('PerformanceInterventionButton', function() {
   let button: any;
-  let browserProxy: TestPerformanceInterventionBrowserProxy;
+  let browserProxy: TestToolbarBrowserProxy;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    browserProxy = new TestPerformanceInterventionBrowserProxy();
-    BrowserProxyImpl.setInstance(browserProxy as any);
+    browserProxy = new TestToolbarBrowserProxy();
+    BrowserProxyImpl.setInstance(browserProxy);
 
     button = document.createElement('performance-intervention-button');
     document.body.appendChild(button);

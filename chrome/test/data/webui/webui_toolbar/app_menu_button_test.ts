@@ -9,24 +9,9 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {AppMenuIconType, AppMenuSeverity, BrowserProxyImpl, ContextMenuType, FocusRequestTarget} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {AppMenuButtonElement} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {BrowserProxy, FocusRequestListener} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
+import type {AppMenuButtonElement, BrowserProxy, FocusRequestListener} from 'chrome://webui-toolbar.top-chrome/app.js';
 
-class TestToolbarUiHandler extends TestBrowserProxy {
-  constructor() {
-    super(['showContextMenu', 'onAppMenuFocusChanged']);
-  }
-
-  showContextMenu(
-      type: ContextMenuType, rect: DOMRect, source: MenuSourceType,
-      showMenuToken: number|null = null) {
-    this.methodCalled('showContextMenu', [type, rect, source, showMenuToken]);
-  }
-
-  onAppMenuFocusChanged(focused: boolean) {
-    this.methodCalled('onAppMenuFocusChanged', focused);
-  }
-}
+import {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
 
 class MockBrowserProxy extends TestBrowserProxy {
   toolbarUIHandler: TestToolbarUiHandler;
