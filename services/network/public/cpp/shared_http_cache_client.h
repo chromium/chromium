@@ -52,10 +52,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) SharedHttpCacheClient
   // updates.
   // `database_task_runner`: Task runner for executing SQLite database
   // operations and hosting the DatabaseBackend factory receiver.
-  // Note: In this initial CL, SQLite database reading is not yet implemented
-  // and will be added in a follow-up CL. However, `database_task_runner` is
-  // established here so that the `DatabaseBackend` and factory receiver run on
-  // the sequence where database operations will execute.
   // `on_db_reader_initialized_callback`: Optional callback invoked on
   // `database_task_runner` when the database reader finishes initialization.
   static scoped_refptr<SharedHttpCacheClient> CreateAndInit(

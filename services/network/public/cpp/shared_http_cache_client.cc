@@ -13,14 +13,19 @@
 #include "base/functional/callback_forward.h"
 #include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "components/sqlite_vfs/pending_file_set.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/url_util.h"
+#include "net/disk_cache/sql/sql_shared_cache_isolated_database_reader.h"
+#include "net/filter/filter_source_stream.h"
+#include "net/http/http_response_info.h"
 #include "services/network/public/cpp/data_buffer_factory.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -79,11 +84,8 @@ class CacheClient : public network::mojom::SharedHttpCacheClient {
   const scoped_refptr<ThreadSafeSet> shared_state_;
 };
 
-// Implements network::mojom::SharedHttpCacheClientFactory on
-// `database_task_runner_`.
-// Receives `pending_file_set` to initialize the database reader (in a follow-up
-// CL), marks the cache initialized, and creates `CacheClient` on
-// `client_task_runner_`.
+// Implements network::mojom::SharedHttpCacheClientFactory and executes SQLite
+// database reads on `database_task_runner_`.
 class DatabaseBackend : public network::mojom::SharedHttpCacheClientFactory {
  public:
   DatabaseBackend(
@@ -97,7 +99,9 @@ class DatabaseBackend : public network::mojom::SharedHttpCacheClientFactory {
         shared_state_(std::move(shared_state)),
         on_db_reader_initialized_callback_(
             std::move(on_db_reader_initialized_callback)) {}
-  ~DatabaseBackend() override = default;
+  ~DatabaseBackend() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
   DatabaseBackend(const DatabaseBackend&) = delete;
   DatabaseBackend& operator=(const DatabaseBackend&) = delete;
 
@@ -105,30 +109,166 @@ class DatabaseBackend : public network::mojom::SharedHttpCacheClientFactory {
   void CreateClient(sqlite_vfs::PendingFileSet pending_file_set,
                     mojo::PendingReceiver<network::mojom::SharedHttpCacheClient>
                         client_receiver) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (client_created_) {
       receiver_.ReportBadMessage("Duplicate CreateClient call");
       return;
     }
     client_created_ = true;
+    db_reader_ =
+        std::make_unique<disk_cache::SqlSharedCacheIsolatedDatabaseReader>(
+            std::move(pending_file_set));
     shared_state_->Initialize();
     cache_client_.emplace(client_task_runner_, std::move(client_receiver),
                           shared_state_);
-    // TODO(crbug.com/473666511): Initializing the SQLite database reader using
-    // `pending_file_set` on `database_task_runner_` will be implemented in a
-    // follow-up CL.
     if (on_db_reader_initialized_callback_) {
       std::move(on_db_reader_initialized_callback_).Run();
     }
   }
 
+  void FindResource(
+      const GURL& url,
+      base::TimeTicks request_start,
+      base::Time request_start_time,
+      scoped_refptr<DataBufferFactory> data_buffer_factory,
+      base::OnceCallback<void(std::optional<SharedHttpCacheClient::Response>)>
+          callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(db_reader_);
+    const base::TimeTicks send_start = base::TimeTicks::Now();
+    const base::TimeTicks send_end = send_start;
+    auto response = db_reader_->ReadResponse(url.spec());
+    if (!response.has_value()) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    CHECK(data_buffer_factory);
+    const auto body_size = response->GetBodySize();
+    auto body = data_buffer_factory->AllocateDataBuffer(body_size);
+    if (!response->ReadBody(body->data())) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(
+            &DatabaseBackend::ParseAndDecode, std::move(data_buffer_factory),
+            request_start, request_start_time, send_start, send_end,
+            response->TakeHeaders(), std::move(body), std::move(callback)));
+  }
+
  private:
-  mojo::Receiver<network::mojom::SharedHttpCacheClientFactory> receiver_;
+  static void ParseAndDecode(
+      scoped_refptr<DataBufferFactory> data_buffer_factory,
+      base::TimeTicks request_start,
+      base::Time request_start_time,
+      base::TimeTicks send_start,
+      base::TimeTicks send_end,
+      std::vector<uint8_t> headers_pickle,
+      std::unique_ptr<DataBuffer> body,
+      base::OnceCallback<void(std::optional<SharedHttpCacheClient::Response>)>
+          callback);
+
+  mojo::Receiver<network::mojom::SharedHttpCacheClientFactory> receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   const scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
   const scoped_refptr<ThreadSafeSet> shared_state_;
-  base::OnceClosure on_db_reader_initialized_callback_;
-  bool client_created_ = false;
-  base::SequenceBound<CacheClient> cache_client_;
+  base::OnceClosure on_db_reader_initialized_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool client_created_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  base::SequenceBound<CacheClient> cache_client_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<disk_cache::SqlSharedCacheIsolatedDatabaseReader> db_reader_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
+
+// static
+void DatabaseBackend::ParseAndDecode(
+    scoped_refptr<DataBufferFactory> data_buffer_factory,
+    base::TimeTicks request_start,
+    base::Time request_start_time,
+    base::TimeTicks send_start,
+    base::TimeTicks send_end,
+    std::vector<uint8_t> headers_pickle,
+    std::unique_ptr<DataBuffer> body,
+    base::OnceCallback<void(std::optional<SharedHttpCacheClient::Response>)>
+        callback) {
+  CHECK(body);
+  const base::TimeTicks receive_headers_start = base::TimeTicks::Now();
+  base::PickleIterator pickle_iter = base::PickleIterator::WithData(
+      base::as_bytes(base::span(headers_pickle)));
+  auto response_info = std::make_unique<net::HttpResponseInfo>();
+  bool response_truncated = false;
+  if (!response_info->InitFromPickle(pickle_iter, &response_truncated) ||
+      !response_info->headers) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  const base::TimeTicks receive_headers_end = base::TimeTicks::Now();
+
+  // TODO(crbug.com/473666511): Add freshness check (e.g. Cache-Control:
+  // max-age, Expires, Age, Date headers) so that stale entries are not served
+  // directly and are instead revalidated via the network service.
+  //
+  // TODO(crbug.com/473666511): Support Stale-While-Revalidate (SWR) by serving
+  // the cached response while triggering an asynchronous revalidation request
+  // to the network service.
+  //
+  // TODO(crbug.com/473666511): Implement read-time security checks (CORS,
+  // ORB, CORP, SRI) to ensure responses stored under different request modes
+  // or before ORB rule updates are safe to serve for the current request.
+
+  network::mojom::URLResponseHeadPtr head =
+      network::mojom::URLResponseHead::New();
+  head->headers = response_info->headers;
+  head->request_time = response_info->request_time;
+  head->response_time = response_info->response_time;
+  head->original_response_time = response_info->original_response_time;
+  head->content_length = body->data().size();
+  head->headers->GetMimeTypeAndCharset(&head->mime_type, &head->charset);
+  head->was_fetched_via_cache = true;
+  head->remote_endpoint = response_info->remote_endpoint;
+  head->was_fetched_via_spdy = response_info->was_fetched_via_spdy;
+  head->was_alpn_negotiated = response_info->was_alpn_negotiated;
+  head->alpn_negotiated_protocol = response_info->alpn_negotiated_protocol;
+  head->alternate_protocol_usage = response_info->alternate_protocol_usage;
+  head->connection_info = response_info->connection_info;
+  head->network_accessed = false;
+  head->request_start = request_start;
+  head->response_start = receive_headers_end;
+  head->encoded_body_length = network::mojom::EncodedBodyLength::New(
+      response_info->encoded_body_size.has_value()
+          ? response_info->encoded_body_size->InBytes()
+          : body->data().size());
+  head->encoded_data_length = response_info->headers->raw_headers().size() +
+                              head->encoded_body_length->value;
+
+  head->load_timing.request_start = request_start;
+  head->load_timing.request_start_time = request_start_time;
+  head->load_timing.send_start = send_start;
+  head->load_timing.send_end = send_end;
+  head->load_timing.receive_headers_start = receive_headers_start;
+  head->load_timing.receive_headers_end = receive_headers_end;
+
+  const auto content_encoding_types =
+      net::FilterSourceStream::GetContentEncodingTypes(*response_info->headers);
+  if (!content_encoding_types.empty()) {
+    // TODO(crbug.com/473666511): Content decoding will be supported in a
+    // follow-up CL.
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  auto buffers = data_buffer_factory->CreateDataBufferList();
+  CHECK(buffers);
+  if (!body->data().empty()) {
+    buffers->Append(std::move(body));
+  }
+  std::move(callback).Run(
+      SharedHttpCacheClient::Response(std::move(head), std::move(buffers)));
+}
 
 class SharedHttpCacheClientImpl : public SharedHttpCacheClient {
  public:
@@ -156,12 +296,6 @@ class SharedHttpCacheClientImpl : public SharedHttpCacheClient {
   bool ShouldEarlyReturn(const GURL& url);
 
   const scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
-  // In this initial CL, SQLite database reading is not yet implemented (it will
-  // be added in a follow-up CL). Although named `database_task_runner_`, direct
-  // database processing is not performed in this CL. However,
-  // `database_task_runner_` is already used here to host `DatabaseBackend` so
-  // that `SharedHttpCacheClientFactory` runs on the sequence where database
-  // operations will execute once implemented.
   const scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
   const scoped_refptr<ThreadSafeSet> shared_state_;
   base::SequenceBound<DatabaseBackend> database_backend_;
@@ -236,6 +370,8 @@ void SharedHttpCacheClientImpl::Find(
   // TODO(crbug.com/473666511): Ineligible requests for cache lookup (e.g.
   // non-GET HTTP methods, loading flags such as LOAD_DISABLE_CACHE, non-HTTP
   // schemes) must also be skipped here. Implement this in a follow-up CL.
+  const base::TimeTicks request_start = base::TimeTicks::Now();
+  const base::Time request_start_time = base::Time::Now();
   if (request.is_revalidating || request.revalidation_etag ||
       request.revalidation_last_modified) {
     std::move(callback).Run(std::nullopt);
@@ -245,12 +381,12 @@ void SharedHttpCacheClientImpl::Find(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  // TODO(crbug.com/473666511): Database lookup will be implemented in a
-  // follow-up CL.
-  callback_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+  database_backend_.AsyncCall(&DatabaseBackend::FindResource)
+      .WithArgs(request.url, request_start, request_start_time,
+                std::move(data_buffer_factory),
+                base::BindPostTask(std::move(callback_task_runner),
+                                   std::move(callback)));
 }
-
 }  // namespace
 
 SharedHttpCacheClient::Response::Response(
