@@ -281,29 +281,29 @@ class GeminiBrowserAgentTest : public PlatformTest {
     return gemini_browser_agent_->processing_status_;
   }
 
-  // Getter for raw `attached_tabs_` member.
-  GeminiBrowserAgent::AttachedTabsList GetRawAttachedTabs() {
-    return gemini_browser_agent_->attached_tabs_;
+  // Getter for raw `shared_tabs_` member.
+  GeminiBrowserAgent::SharedTabsList GetRawSharedTabs() {
+    return gemini_browser_agent_->shared_tabs_;
   }
 
   // Getter for an attached tab context by ID.
   GeminiPageContext* GetRawAttachedTabContext(web::WebStateID id) {
-    return gemini_browser_agent_->GetAttachedPageContext(id);
+    return gemini_browser_agent_->GetSharedPageContext(id);
   }
 
-  // Setter for raw `attached_tabs_` member.
+  // Setter for raw `shared_tabs_` member.
   void SetRawAttachedTab(web::WebStateID id, GeminiPageContext* page_context) {
-    gemini_browser_agent_->SetAttachedPageContext(id, page_context);
+    gemini_browser_agent_->SetSharedPageContext(id, page_context);
   }
 
-  // Wrapper for `AttachedTabsCount`.
-  NSUInteger AttachedTabsCount() {
-    return gemini_browser_agent_->AttachedTabsCount();
+  // Wrapper for `SharedTabsCount`.
+  NSUInteger SharedTabsCount() {
+    return gemini_browser_agent_->SharedTabsCount();
   }
 
-  // Wrapper for `GetSharedTabs`.
-  NSUInteger GetSharedTabsCount() {
-    return gemini_browser_agent_->GetSharedTabs().count;
+  // Wrapper for `GetInactiveSharedTabs`.
+  NSUInteger GetInactiveSharedTabsCount() {
+    return gemini_browser_agent_->GetInactiveSharedTabs().count;
   }
 
   // Wrapper for `DetachTabWithID`.
@@ -1342,7 +1342,7 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
   SetRawAttachedTab(active_id, active_context);
 
   gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
-  EXPECT_EQ(GetRawAttachedTabs().size(), 2u);
+  EXPECT_EQ(GetRawSharedTabs().size(), 2u);
   // GetSelectedWebStateIDs() may return size 1 in downstream unit tests if
   // GCRGemini provider is uninitialized/nil, so we assert on raw selected IDs.
 
@@ -1366,7 +1366,7 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
       raw_non_selected_web_state->GetUniqueIdentifier();
 
   // Verify that attached tabs now contains only the new active tab.
-  auto raw_tabs = GetRawAttachedTabs();
+  auto raw_tabs = GetRawSharedTabs();
   EXPECT_EQ(raw_tabs.size(), 1u);
   EXPECT_NE(nil, GetRawAttachedTabContext(new_active_id));
 
@@ -1475,12 +1475,12 @@ TEST_F(GeminiBrowserAgentTest, TestDetachInvalidTabId) {
   SetRawAttachedTab(active_id, active_context);
 
   gemini_browser_agent_->OnTabPickerSelectionChanged({active_id});
-  size_t initial_size = GetRawAttachedTabs().size();
+  size_t initial_size = GetRawSharedTabs().size();
 
   DetachTabWithID(@"invalid_id");
 
   // The map size should be unchanged.
-  EXPECT_EQ(initial_size, GetRawAttachedTabs().size());
+  EXPECT_EQ(initial_size, GetRawSharedTabs().size());
 }
 
 // Tests that UpdateLocalTabAttachmentState updates the attachment state of the
@@ -1500,7 +1500,7 @@ TEST_F(GeminiBrowserAgentTest,
   gemini_browser_agent_->OnTabPickerSelectionChanged({active_id});
 
   // Verify it starts as attached.
-  auto tabs = GetRawAttachedTabs();
+  auto tabs = GetRawSharedTabs();
   ASSERT_EQ(1u, tabs.size());
   ASSERT_EQ(
       ios::provider::GeminiPageContextAttachmentState::kAttached,
@@ -1520,7 +1520,7 @@ TEST_F(GeminiBrowserAgentTest,
             user_action_tester.GetActionCount("MobileGeminiActiveTabAttached"));
 
   // Verify it is in the map as attached.
-  tabs = GetRawAttachedTabs();
+  tabs = GetRawSharedTabs();
   EXPECT_EQ(1u, tabs.size());
   EXPECT_EQ(
       ios::provider::GeminiPageContextAttachmentState::kAttached,
@@ -1551,7 +1551,7 @@ TEST_F(GeminiBrowserAgentTest, TestDetachSharedTab) {
 
   gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
 
-  auto tabs = GetRawAttachedTabs();
+  auto tabs = GetRawSharedTabs();
   ASSERT_EQ(2u, tabs.size());
 
   NSString* other_tab_id_str =
@@ -1561,13 +1561,13 @@ TEST_F(GeminiBrowserAgentTest, TestDetachSharedTab) {
   EXPECT_EQ(1, user_action_tester.GetActionCount("MobileGeminiTabDetached"));
 
   // Verify the shared tab is completely removed.
-  tabs = GetRawAttachedTabs();
+  tabs = GetRawSharedTabs();
   EXPECT_EQ(1u, tabs.size());
   EXPECT_EQ(nil, GetRawAttachedTabContext(other_id));
 }
 
 // Tests that disabling the page content sharing pref clears attached tabs.
-TEST_F(GeminiBrowserAgentTest, TestClearAttachedTabsOnPageContentPrefDisabled) {
+TEST_F(GeminiBrowserAgentTest, TestClearSharedTabsOnPageContentPrefDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
 
@@ -1585,13 +1585,13 @@ TEST_F(GeminiBrowserAgentTest, TestClearAttachedTabsOnPageContentPrefDisabled) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(other_id, other_context);
 
-  EXPECT_EQ(2u, GetRawAttachedTabs().size());
+  EXPECT_EQ(2u, GetRawSharedTabs().size());
 
   // Toggle the preference to disabled.
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
 
-  // Verify that `attached_tabs_` was cleared.
-  EXPECT_EQ(0u, GetRawAttachedTabs().size());
+  // Verify that `shared_tabs_` was cleared.
+  EXPECT_EQ(0u, GetRawSharedTabs().size());
 }
 
 // Tests that OnTabPickerSelectionChanged correctly assigns partial contexts to
@@ -1620,9 +1620,9 @@ TEST_F(GeminiBrowserAgentTest, TestOnTabPickerSelectionChangedNewlyAddedTab) {
 
   gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
 
-  // Verify that `attached_tabs_` now contains a partial context for the new
+  // Verify that `shared_tabs_` now contains a partial context for the new
   // tab.
-  auto tabs = GetRawAttachedTabs();
+  auto tabs = GetRawSharedTabs();
   ASSERT_EQ(2u, tabs.size());
 
   GeminiPageContext* other_context = GetRawAttachedTabContext(other_id);
@@ -1766,8 +1766,8 @@ TEST_F(GeminiBrowserAgentTest, TestMetricsBlockProviders) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(active_id, active_context);
 
-  EXPECT_EQ(1u, AttachedTabsCount());
-  EXPECT_FALSE(GetSharedTabsCount() > 0);
+  EXPECT_EQ(1u, SharedTabsCount());
+  EXPECT_FALSE(GetInactiveSharedTabsCount() > 0);
 
   // Add a shared tab.
   web::WebStateID other_id = web::WebStateID::NewUnique();
@@ -1776,19 +1776,19 @@ TEST_F(GeminiBrowserAgentTest, TestMetricsBlockProviders) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(other_id, other_context);
 
-  EXPECT_EQ(2u, AttachedTabsCount());
-  EXPECT_TRUE(GetSharedTabsCount() > 0);
+  EXPECT_EQ(2u, SharedTabsCount());
+  EXPECT_TRUE(GetInactiveSharedTabsCount() > 0);
 
   // Set active tab to detached.
   active_context.geminiPageContextAttachmentState =
       ios::provider::GeminiPageContextAttachmentState::kDetached;
-  EXPECT_EQ(1u, AttachedTabsCount());
-  EXPECT_TRUE(GetSharedTabsCount() > 0);
+  EXPECT_EQ(1u, SharedTabsCount());
+  EXPECT_TRUE(GetInactiveSharedTabsCount() > 0);
 }
 
-// Test that attached shared tabs preserve their insertion order regardless of
-// WebStateID values or subsequent context updates.
-TEST_F(GeminiBrowserAgentTest, TestSharedTabsPreserveInsertionOrder) {
+// Test that attached inactive shared tabs preserve their insertion order
+// regardless of WebStateID values or subsequent context updates.
+TEST_F(GeminiBrowserAgentTest, TestInactiveSharedTabsPreserveInsertionOrder) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
 
@@ -1813,7 +1813,7 @@ TEST_F(GeminiBrowserAgentTest, TestSharedTabsPreserveInsertionOrder) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(id_third, context_third);
 
-  auto raw_tabs = GetRawAttachedTabs();
+  auto raw_tabs = GetRawSharedTabs();
   ASSERT_EQ(3u, raw_tabs.size());
   EXPECT_EQ(id_first, raw_tabs[0].first);
   EXPECT_EQ(id_second, raw_tabs[1].first);
@@ -1825,7 +1825,7 @@ TEST_F(GeminiBrowserAgentTest, TestSharedTabsPreserveInsertionOrder) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(id_first, updated_context_first);
 
-  raw_tabs = GetRawAttachedTabs();
+  raw_tabs = GetRawSharedTabs();
   ASSERT_EQ(3u, raw_tabs.size());
   EXPECT_EQ(id_first, raw_tabs[0].first);
   EXPECT_EQ(id_second, raw_tabs[1].first);
