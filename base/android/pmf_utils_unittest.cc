@@ -43,4 +43,34 @@ TEST(PmfUtilsTest, CalculatePrivateMemoryFootprint) {
   EXPECT_EQ(expected_pmf, pmf.value().InKiB());
 }
 
+TEST(PmfUtilsTest, NegativePrivatePages) {
+  const char kStatusFile[] =
+      "First:    1\n"
+      "Second:  2 kB\n"
+      "VmSwap: 10 kB\n"
+      "Third:  10 kB\n"
+      "VmHWM:  72 kB\n"
+      "Last:     8";
+  // resident_pages (25) < shared_pages (40)
+  const char kStatmFile[] = "100 25 40 0 0";
+
+  base::FilePath statm_path;
+  EXPECT_TRUE(base::CreateTemporaryFile(&statm_path));
+  EXPECT_TRUE(base::WriteFile(statm_path, kStatmFile));
+  base::FilePath status_path;
+  EXPECT_TRUE(base::CreateTemporaryFile(&status_path));
+  EXPECT_TRUE(base::WriteFile(status_path, kStatusFile));
+
+  base::File statm_file(statm_path,
+                        base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File status_file(status_path,
+                         base::File::FLAG_OPEN | base::File::FLAG_READ);
+
+  std::optional<ByteSize> pmf =
+      PmfUtils::CalculatePrivateMemoryFootprintForTesting(statm_file,
+                                                          status_file);
+
+  EXPECT_FALSE(pmf.has_value());
+}
+
 }  // namespace base::android

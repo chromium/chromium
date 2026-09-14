@@ -18,6 +18,7 @@ class BASE_EXPORT PmfUtils {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PmfUtilsTest, CalculatePrivateMemoryFootprint);
+  FRIEND_TEST_ALL_PREFIXES(PmfUtilsTest, NegativePrivatePages);
   static std::optional<ByteSize> CalculatePrivateMemoryFootprintForTesting(
       base::File& statm_file,
       base::File& status_file);

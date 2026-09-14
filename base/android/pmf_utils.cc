@@ -63,6 +63,9 @@ std::optional<ByteSize> CalculateProcessMemoryFootprint(
 
   const ByteSizeDelta private_pages =
       ByteSize(resident_pages) - ByteSize(shared_pages);
+  if (private_pages.is_negative()) {
+    return std::nullopt;
+  }
   return private_pages.AsByteSize() * page_size + KiB(swap_footprint_kb);
 }
 }  // namespace
