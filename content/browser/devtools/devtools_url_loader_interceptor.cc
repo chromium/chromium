@@ -2128,8 +2128,9 @@ void InterceptionJob::OnComplete(
   // we're in the proper state. The completion is due upon client response.
   DCHECK(state_ == State::kResponseReceived || state_ == State::kResponseTaken)
       << "Unexpected state " << static_cast<int>(state_);
-  CHECK_NE(ResolutionState::kNone, waiting_for_resolution_,
-           base::NotFatalUntil::M159);
+  // TODO(crbug.com/560017318): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_NE(ResolutionState::kNone, waiting_for_resolution_);
 
   response_metadata_->status = status;
 }
