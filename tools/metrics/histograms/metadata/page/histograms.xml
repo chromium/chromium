@@ -759,6 +759,12 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/histograms.xml:PagePreloadingTriggerType) -->
 
+<variants name="PrerenderStatus">
+  <variant name="" summary="prerender and non-prerender navigations"/>
+  <variant name=".NonPrerender" summary="non-prerender navigations"/>
+  <variant name=".Prerender" summary="prerender navigations"/>
+</variants>
+
 <variants name="PrivacySandboxAdsApi">
   <variant name="FencedFrames"/>
   <variant name="PrivateAggregation"/>
@@ -3520,22 +3526,6 @@ chromium-metrics-reviews@google.com.
     cache or network. Recorded once upon navigation commit of the prerendered
     prewarm page.
   </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus{InitiatorOfNavigation}"
-    enum="SearchPrewarmPrerenderCoverageStatus" expires_after="2027-02-07">
-  <owner>suzukikeita@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The prewarm and prerender coverage status for Google Search navigations,
-    categorizing whether the navigation activated a prerendered page, reused a
-    prewarmed process, reused the current tab's process (with or without prior
-    prewarm), reused an initial blank/empty process, reused another existing
-    process, or allocated a cold process. Recorded once on Google Search
-    navigation commit or prerender activation for {InitiatorOfNavigation}.
-  </summary>
-  <token key="InitiatorOfNavigation" variants="InitiatorOfNavigation"/>
 </histogram>
 
 <histogram

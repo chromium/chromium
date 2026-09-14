@@ -19,22 +19,14 @@
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/google/browser/histogram_suffixes.h"
-#include "components/page_load_metrics/google/browser/search_preload_process_data.h"
-#include "components/page_load_metrics/google/browser/search_prewarm_coverage_status.h"
-#include "content/public/browser/child_process_security_policy.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
-#include "content/public/test/navigation_simulator.h"
 #include "net/base/load_timing_internal_info.h"
 #include "net/dns/public/resolution_details.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace {
 
@@ -228,12 +220,6 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
       internal::kHistogramGWSLargestContentfulPaint, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSLargestContentfulPaint, 100, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
-      "BrowserInitiated",
-      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-          kColdProcessAllocated,
-      1);
 }
 
 TEST_F(GWSPageLoadMetricsObserverTest, ConnectionEvents) {
@@ -1308,168 +1294,4 @@ TEST_F(GWSPageLoadMetricsObserverTest, SessionDetails_ResponseCached) {
                       suffix}),
         0);
   }
-}
-
-TEST_F(GWSPageLoadMetricsObserverTest,
-       PrewarmPrerenderCoverageStatus_ColdProcessAllocated) {
-  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
-      "BrowserInitiated",
-      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-          kColdProcessAllocated,
-      1);
-}
-
-TEST_F(GWSPageLoadMetricsObserverTest,
-       PrewarmPrerenderCoverageStatus_BlankProcessReused) {
-  // Start on about:blank so the tab already has an active process.
-  NavigateAndCommit(GURL("about:blank"));
-
-  // Navigate to SRP in the same tab, reusing the empty process.
-  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
-
-  tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
-      "BrowserInitiated",
-      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-          kBlankProcessReused,
-      1);
-}
-
-TEST_F(GWSPageLoadMetricsObserverTest,
-       PrewarmPrerenderCoverageStatus_NonSameSiteNotCurrentProcessReused) {
-  // Start on an unrelated cross-site page.
-  NavigateAndCommit(GURL("https://example.com"));
-
-  // Navigate to SRP. Because starting site is not same-site with the search
-  // URL, this is classified as a cold process allocation, not current process
-  // reuse.
-  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
-
-  tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
-      "BrowserInitiated",
-      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-          kColdProcessAllocated,
-      1);
-}
-
-TEST_F(GWSPageLoadMetricsObserverTest,
-       PrewarmPrerenderCoverageStatus_CurrentProcessReused) {
-  // Navigate to SRP first so main_rfh() gets an existing process without
-  // preload data.
-  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
-
-  NavigateAndCommit(GURL("https://www.google.com/search?q=another"));
-
-  tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
-      "BrowserInitiated",
-      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-          kCurrentProcessReused,
-      1);
-}
-
-TEST_F(GWSPageLoadMetricsObserverTest,
-       PrewarmPrerenderCoverageStatus_CurrentProcessReused_Prewarm) {
-  // Navigate to SRP first.
-  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
-
-  // Tag main_rfh()->GetProcess() as a preload process.
-  page_load_metrics::SearchPreloadProcessData::GetOrCreate(
-      main_rfh()->GetProcess());
-
-  NavigateAndCommit(GURL("https://www.google.com/search?q=another"));
-
-  tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
-      "BrowserInitiated",
-      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-          kCurrentProcessReused_Prewarm,
-      1);
-}
-
-TEST_F(GWSPageLoadMetricsObserverTest,
-       PrewarmPrerenderCoverageStatus_OtherProcessReused) {
-  // Explicitly isolate the search origin for this test so that platforms
-  // without strict site isolation (e.g. Android) will require a dedicated
-  // process for google.com and will not share or randomly pick the existing
-  // process from example.com under renderer process limits.
-  content::ChildProcessSecurityPolicy::GetInstance()->AddFutureIsolatedOrigins(
-      {url::Origin::Create(GURL(kGoogleSearchResultsUrl))},
-      content::ChildProcessSecurityPolicy::IsolatedOriginSource::TEST,
-      browser_context());
-
-  // In the primary web_contents(), navigate to a different site first so its
-  // current process is not the google.com process.
-  NavigateAndCommit(GURL("https://example.com"));
-
-  // Create another WebContents in the same profile/BrowserContext that
-  // navigates to SRP, creating a renderer process for google.com.
-  std::unique_ptr<content::WebContents> second_web_contents =
-      CreateTestWebContents();
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      second_web_contents.get(), GURL(kGoogleSearchResultsUrl));
-
-  // Restrict max renderer process count so that the subsequent navigation
-  // reuses an existing suitable renderer process.
-  content::RenderProcessHost::SetMaxRendererProcessCount(1);
-
-  // Now navigate primary web_contents() to SRP. Under process limit, this
-  // reuses the existing google.com process from second_web_contents rather
-  // than the current tab's example.com process.
-  NavigateAndCommit(GURL("https://www.google.com/search?q=another"));
-
-  content::RenderProcessHost::SetMaxRendererProcessCount(0);
-
-  tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
-      "BrowserInitiated",
-      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-          kOtherProcessReused,
-      1);
-}
-
-TEST_F(GWSPageLoadMetricsObserverTest,
-       PrewarmPrerenderCoverageStatus_PreloadProcessReused) {
-  // Explicitly isolate the search origin for this test so that platforms
-  // without strict site isolation (e.g. Android) will require a dedicated
-  // process for google.com and will not share or randomly pick the existing
-  // process from example.com under renderer process limits.
-  content::ChildProcessSecurityPolicy::GetInstance()->AddFutureIsolatedOrigins(
-      {url::Origin::Create(GURL(kGoogleSearchResultsUrl))},
-      content::ChildProcessSecurityPolicy::IsolatedOriginSource::TEST,
-      browser_context());
-
-  // In the primary web_contents(), navigate to a different site first so its
-  // current process is not the google.com process.
-  NavigateAndCommit(GURL("https://example.com"));
-
-  // Create another WebContents in the same profile/BrowserContext that
-  // navigates to SRP, creating a renderer process for google.com, and tag it
-  // as a preload process.
-  std::unique_ptr<content::WebContents> second_web_contents =
-      CreateTestWebContents();
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      second_web_contents.get(), GURL(kGoogleSearchResultsUrl));
-
-  page_load_metrics::SearchPreloadProcessData::GetOrCreate(
-      second_web_contents->GetPrimaryMainFrame()->GetProcess());
-
-  // Restrict max renderer process count so that the subsequent navigation
-  // reuses an existing suitable renderer process.
-  content::RenderProcessHost::SetMaxRendererProcessCount(1);
-
-  NavigateAndCommit(GURL("https://www.google.com/search?q=another"));
-
-  content::RenderProcessHost::SetMaxRendererProcessCount(0);
-
-  tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
-      "BrowserInitiated",
-      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-          kPreloadProcessReused_Prewarm,
-      1);
 }

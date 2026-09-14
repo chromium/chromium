@@ -30,11 +30,7 @@
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/google/browser/gws_session_state.h"
 #include "components/page_load_metrics/google/browser/histogram_suffixes.h"
-#include "components/page_load_metrics/google/browser/search_preload_process_data.h"
-#include "components/page_load_metrics/google/browser/search_prewarm_coverage_status.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "net/dns/public/resolution_details.h"
 #include "net/http/http_connection_info.h"
@@ -236,11 +232,6 @@ const char kHistogramGWSActivationToFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "Prerender.ActivationToFirstContentfulPaint";
 const char kHistogramGWSActivationToLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "Prerender.ActivationToLargestContentfulPaint";
-const char kHistogramGWSPrewarmPrerenderCoverageStatus[] =
-    HISTOGRAM_PREFIX "PrewarmPrerenderCoverageStatus";
-
-const char kHistogramBrowserInitiatedSuffix[] = ".BrowserInitiated";
-const char kHistogramRendererInitiatedSuffix[] = ".RendererInitiated";
 const char kHistogramGWSWarmUpType[] = HISTOGRAM_PREFIX "WarmUpType";
 
 const char kHistogramPrerenderSuffix[] = ".Prerender";
@@ -675,75 +666,6 @@ GWSPageLoadMetricsObserver::OnCommit(
     RecordPreCommitHistograms();
   }
 
-  content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
-  auto render_process_assignment =
-      rfh ? rfh->GetSiteInstance()->GetLastProcessAssignmentOutcome()
-          : content::SiteInstanceProcessAssignment::UNKNOWN;
-  const auto* initiator_suffix =
-      navigation_handle->IsRendererInitiated()
-          ? internal::kHistogramRendererInitiatedSuffix
-          : internal::kHistogramBrowserInitiatedSuffix;
-  // We determine the impact of the Prewarm-Prerender optimization.
-  auto* preload_process_data =
-      rfh ? page_load_metrics::SearchPreloadProcessData::Get(rfh->GetProcess())
-          : nullptr;
-  if (!is_prerendered_) {
-    page_load_metrics::SearchPrewarmPrerenderCoverageStatus coverage_status;
-
-    bool is_preload_process = preload_process_data != nullptr;
-    content::SiteInstance* starting_instance =
-        navigation_handle->GetStartingSiteInstance();
-    const GURL& prev_url = navigation_handle->GetPreviousPrimaryMainFrameURL();
-    const bool is_from_new_tab =
-        IsFromNewTabPage(navigation_handle) ||
-        source_type_ == kFromNewTabPage ||
-        source_type_ == kStartedInBackgroundFromNewTabPage ||
-        prev_url.is_empty() || prev_url.IsAboutBlank() ||
-        !content::SiteInstance::ShouldAssignSiteForURL(prev_url) ||
-        ((prev_url.SchemeIs("chrome") || prev_url.SchemeIs("chrome-native")) &&
-         (prev_url.host() == "newtab" || prev_url.host() == "new-tab-page"));
-
-    const bool is_starting_process_reused =
-        rfh && starting_instance && starting_instance->HasProcess() &&
-        starting_instance->GetProcess() == rfh->GetProcess();
-    const bool is_blank_process_reused =
-        is_starting_process_reused && is_from_new_tab;
-    const bool is_current_process_reused =
-        !is_from_new_tab && is_starting_process_reused &&
-        starting_instance->IsSameSiteWithURL(navigation_handle->GetURL());
-
-    bool is_other_process_reused =
-        !is_current_process_reused && !is_blank_process_reused &&
-        (render_process_assignment ==
-             content::SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS ||
-         is_starting_process_reused);
-
-    if (is_current_process_reused) {
-      coverage_status =
-          is_preload_process
-              ? page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-                    kCurrentProcessReused_Prewarm
-              : page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-                    kCurrentProcessReused;
-    } else if (is_preload_process) {
-      coverage_status = page_load_metrics::
-          SearchPrewarmPrerenderCoverageStatus::kPreloadProcessReused_Prewarm;
-    } else if (is_blank_process_reused) {
-      coverage_status = page_load_metrics::
-          SearchPrewarmPrerenderCoverageStatus::kBlankProcessReused;
-    } else if (is_other_process_reused) {
-      coverage_status = page_load_metrics::
-          SearchPrewarmPrerenderCoverageStatus::kOtherProcessReused;
-    } else {
-      coverage_status = page_load_metrics::
-          SearchPrewarmPrerenderCoverageStatus::kColdProcessAllocated;
-    }
-
-    base::UmaHistogramEnumeration(
-        base::StrCat({internal::kHistogramGWSPrewarmPrerenderCoverageStatus,
-                      initiator_suffix}),
-        coverage_status);
-  }
   if (!navigation_handle->IsSameDocument() &&
       navigation_handle->IsInOutermostMainFrame() &&
       navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
@@ -783,19 +705,6 @@ void GWSPageLoadMetricsObserver::DidActivatePrerenderedPage(
                               navigation_handle->IsPrerenderHostReused());
   }
 
-  const auto* initiator_suffix =
-      navigation_handle->IsRendererInitiated()
-          ? internal::kHistogramRendererInitiatedSuffix
-          : internal::kHistogramBrowserInitiatedSuffix;
-
-  page_load_metrics::SearchPrewarmPrerenderCoverageStatus coverage_status =
-      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
-          kPrerenderActivated;
-
-  base::UmaHistogramEnumeration(
-      base::StrCat({internal::kHistogramGWSPrewarmPrerenderCoverageStatus,
-                    initiator_suffix}),
-      coverage_status);
   // |navigation_handle| here is for the activation navigation, while
   // |GetDelegate().GetNavigationStart()| is the start time of initial prerender
   // navigation.
