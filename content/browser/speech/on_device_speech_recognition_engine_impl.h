@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/speech_recognition_audio_forwarder_config.h"
@@ -28,6 +27,7 @@
 
 namespace optimization_guide {
 class ModelBrokerClient;
+class ModelClient;
 }  // namespace optimization_guide
 
 namespace content {
