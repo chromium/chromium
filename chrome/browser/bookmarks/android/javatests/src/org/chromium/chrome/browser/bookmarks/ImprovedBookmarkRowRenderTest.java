@@ -41,6 +41,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -143,6 +144,11 @@ public class ImprovedBookmarkRowRenderTest {
                     mContentView.removeAllViews();
                     mContentView.addView(mImprovedBookmarkRow);
 
+                    @BookmarkRowDisplayPref
+                    int displayPref =
+                            mUseVisualRowLayout
+                                    ? BookmarkRowDisplayPref.VISUAL
+                                    : BookmarkRowDisplayPref.COMPACT;
                     mModel =
                             new PropertyModel.Builder(ImprovedBookmarkRowProperties.ALL_KEYS)
                                     .with(ImprovedBookmarkRowProperties.TITLE, "test title")
@@ -165,6 +171,16 @@ public class ImprovedBookmarkRowRenderTest {
                                     .with(
                                             ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
                                             ImageVisibility.DRAWABLE)
+                                    .with(
+                                            ImprovedBookmarkRowProperties.START_IMAGE_SIZE,
+                                            BookmarkViewUtils.getImageIconSize(
+                                                    mActivityTestRule.getActivity().getResources(),
+                                                    displayPref))
+                                    .with(
+                                            ImprovedBookmarkRowProperties.START_IMAGE_CORNER_RADIUS,
+                                            BookmarkViewUtils.getImageIconCornerRadius(
+                                                    mActivityTestRule.getActivity().getResources(),
+                                                    displayPref))
                                     .with(ImprovedBookmarkRowProperties.START_ICON_TINT, null)
                                     .with(
                                             ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,

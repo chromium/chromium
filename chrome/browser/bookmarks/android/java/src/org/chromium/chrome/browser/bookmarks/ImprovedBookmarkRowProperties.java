@@ -54,6 +54,9 @@ public class ImprovedBookmarkRowProperties {
             new WritableBooleanPropertyKey();
     public static final WritableIntPropertyKey START_IMAGE_VISIBILITY =
             new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey START_IMAGE_SIZE = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey START_IMAGE_CORNER_RADIUS =
+            new WritableIntPropertyKey();
     // Sets the background color for the start image.
     public static final WritableIntPropertyKey START_AREA_BACKGROUND_COLOR =
             new WritableIntPropertyKey();
@@ -128,6 +131,8 @@ public class ImprovedBookmarkRowProperties {
         DESCRIPTION,
         DESCRIPTION_VISIBLE,
         START_IMAGE_VISIBILITY,
+        START_IMAGE_SIZE,
+        START_IMAGE_CORNER_RADIUS,
         START_AREA_BACKGROUND_COLOR,
         START_ICON_TINT,
         START_ICON_DRAWABLE,
