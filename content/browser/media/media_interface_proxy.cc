@@ -24,6 +24,7 @@
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/security_principal.h"
@@ -43,7 +44,6 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 #if BUILDFLAG(ENABLE_CDM_PROVISION_FETCHER)
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/provision_fetcher_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -559,6 +559,25 @@ void MediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,
     auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
         cdm_config.key_system, CdmInfo::Robustness::kHardwareSecure);
     if (cdm_info) {
+      // The MediaFoundation CDM path has no off-the-record dimension:
+      // CdmDocumentServiceImpl::GetMediaFoundationCdmData reads the REGULAR
+      // profile's persistent per-origin CDM identity (origin_id /
+      // client_token in prefs::kMediaCdmOriginData) through the incognito
+      // pref overlay, and pre-creates persistent CDM storage under the
+      // REGULAR profile's directory (OffTheRecordProfileImpl::GetPath()
+      // aliases it), which the OS CDM then uses as its durable store —
+      // surviving incognito teardown. Renderer-side incognito key-system
+      // filtering (e.g. AddPlayReady's can_persist_data check) is not a
+      // security boundary, so enforce this browser-side: refuse to launch
+      // the MediaFoundation CDM for off-the-record contexts.
+      if (render_frame_host().GetBrowserContext()->IsOffTheRecord()) {
+        DVLOG(2) << "MediaFoundation CDM not supported off the record";
+        std::move(create_cdm_cb)
+            .Run(mojo::NullRemote(), nullptr,
+                 media::CreateCdmStatus::kCdmNotSupported);
+        return;
+      }
+
       DVLOG(2) << "Get MediaFoundationService with CDM path " << cdm_info->path;
       bool is_cached_factory = mf_interface_factory_remote_.is_bound();
       auto* factory = GetMediaFoundationServiceInterfaceFactory(cdm_info->path);
