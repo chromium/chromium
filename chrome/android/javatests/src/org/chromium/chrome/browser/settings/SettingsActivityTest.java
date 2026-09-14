@@ -156,6 +156,8 @@ public class SettingsActivityTest {
     }
 
     /** Regression test for https://crbug.com/548848118. */
+    // TODO(crbug.com/561400736): Fix orientation rotation failure and
+    // re-enable on android-14-tablet-landscape-arm64-rel.
     @Test
     @MediumTest
     @Restriction({

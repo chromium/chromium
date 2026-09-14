@@ -87,3 +87,6 @@
 # crbug.com/555361598
 -org.chromium.chrome.browser.settings.SettingsPageSigninTest.testSignOutInSingleColumnThenTransitionToMultiColumn
 -org.chromium.chrome.browser.settings.SettingsPageTest.testSearchInSingleColumnThenRotateToLandscapeAndExitSearch
+
+# crbug.com/561400736
+-org.chromium.chrome.browser.settings.SettingsActivityTest.testSearchBoxAlignmentInPortrait_Rtl
