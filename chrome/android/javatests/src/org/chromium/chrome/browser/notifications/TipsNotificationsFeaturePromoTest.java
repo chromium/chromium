@@ -74,6 +74,7 @@ import java.util.List;
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
 })
 @DisableFeatures({
+    ChromeFeatureList.BOTTOM_SHEET_ON_DESKTOP_WINDOWING, // crbug.com/561423545
     ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
     ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
 })
