@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_constants.h"
@@ -625,6 +626,12 @@ void DismissSendTabToSelfModal() {
       waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateContainingElement:UsernameElement()];
+
+  // Wait for the form to be cached in the main frame before asserting
+  // field values, ensuring that Autofill's form extraction has completed
+  // and ReceivedTabFormsFiller has processed the form.
+  GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
+                 @"Form was not cached in the main frame.");
 
   // Verify that the input field was populated with the expected value.
   NSString* checkFilledJS = @"(function() {"
