@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -256,22 +257,22 @@ std::string_view GetSignonRealmWithProtocolExcluded(const PasswordForm& form) {
 
 GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
   CHECK(form.match_type.has_value());
-  if (form.match_type.value() == PasswordForm::MatchType::kExact) {
+  if (form.match_type.value() == affiliations::MatchType::kExact) {
     return GetLoginMatchType::kExact;
   }
 
   if (static_cast<int>(form.match_type.value() &
-                       PasswordForm::MatchType::kAffiliated)) {
+                       affiliations::MatchType::kAffiliated)) {
     return GetLoginMatchType::kAffiliated;
   }
 
   if (static_cast<int>(form.match_type.value() &
-                       PasswordForm::MatchType::kPSL)) {
+                       affiliations::MatchType::kPSL)) {
     return GetLoginMatchType::kPSL;
   }
 
   if (static_cast<int>(form.match_type.value() &
-                       PasswordForm::MatchType::kGrouped)) {
+                       affiliations::MatchType::kGrouped)) {
     return GetLoginMatchType::kGrouped;
   }
 
@@ -280,22 +281,22 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
 
 GetLoginMatchType GetMatchType(const password_manager::StoredCredential& form) {
   CHECK(form.match_type.has_value());
-  if (form.match_type.value() == PasswordForm::MatchType::kExact) {
+  if (form.match_type.value() == affiliations::MatchType::kExact) {
     return GetLoginMatchType::kExact;
   }
 
   if (static_cast<int>(form.match_type.value() &
-                       PasswordForm::MatchType::kAffiliated)) {
+                       affiliations::MatchType::kAffiliated)) {
     return GetLoginMatchType::kAffiliated;
   }
 
   if (static_cast<int>(form.match_type.value() &
-                       PasswordForm::MatchType::kPSL)) {
+                       affiliations::MatchType::kPSL)) {
     return GetLoginMatchType::kPSL;
   }
 
   if (static_cast<int>(form.match_type.value() &
-                       PasswordForm::MatchType::kGrouped)) {
+                       affiliations::MatchType::kGrouped)) {
     return GetLoginMatchType::kGrouped;
   }
 
@@ -452,7 +453,7 @@ const StoredCredential* GetMatchForUpdating(
     const bool password_change_should_update_match =
         submitted_form.type == PasswordForm::Type::kChangeSubmission &&
         // Password change should update all matches that are PSL or stronger.
-        username_match->match_type < PasswordForm::MatchType::kGrouped;
+        username_match->match_type < affiliations::MatchType::kGrouped;
     if (!IsCredentialWeakMatch(*username_match) ||
         password_change_should_update_match) {
       return username_match;

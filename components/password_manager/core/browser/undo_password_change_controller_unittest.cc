@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -134,7 +135,7 @@ class UndoPasswordChangeControllerTest : public testing::Test {
         observed_form_.fields()[kPasswordFieldIndex].renderer_id();
 
     best_match_form_.username_value = failed_login_form_.username_value;
-    best_match_form_.match_type = PasswordForm::MatchType::kExact;
+    best_match_form_.match_type = affiliations::MatchType::kExact;
     controller_.OnNavigation(url::Origin::Create(GURL("https://example.com")),
                              ukm::UkmRecorder::GetNewSourceID());
   }
@@ -387,8 +388,7 @@ TEST_F(UndoPasswordChangeControllerTest,
 TEST_F(UndoPasswordChangeControllerTest,
        OnLoginPotentiallyFailed_GroupedAffiliation_RecoveryTriggered) {
   best_match_form_.SetPasswordBackupNote(kBackupPassword);
-  best_match_form_.match_type =
-      password_manager::PasswordForm::MatchType::kGrouped;
+  best_match_form_.match_type = affiliations::MatchType::kGrouped;
   auto form_manager = CreateFormManager(best_match_form_);
   base::RunLoop run_loop;
 

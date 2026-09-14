@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -183,7 +184,7 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
       .WillByDefault(testing::Return(nullptr));
 
   PasswordForm form = CreateEntry("username", "password", GURL(kUrl),
-                                  PasswordForm::MatchType::kExact);
+                                  affiliations::MatchType::kExact);
   profile_store_->AddLogin(password_manager::FromPasswordForm(form));
   ProcessPasswordStoreUpdates();
 
@@ -207,7 +208,7 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
       .WillByDefault(testing::Return(nullptr));
 
   PasswordForm form = CreateEntry("username", "password", GURL(kUrl),
-                                  PasswordForm::MatchType::kExact);
+                                  affiliations::MatchType::kExact);
   profile_store_->AddLogin(password_manager::FromPasswordForm(form));
   ProcessPasswordStoreUpdates();
 
@@ -233,7 +234,7 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
 
   PasswordForm form =
       CreateEntry("username", "password", GURL(kGroupedMatchUrl),
-                  PasswordForm::MatchType::kExact);
+                  affiliations::MatchType::kExact);
   profile_store_->AddLogin(password_manager::FromPasswordForm(form));
   ProcessPasswordStoreUpdates();
 

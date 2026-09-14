@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -170,7 +171,7 @@ TEST_F(CredentialManagerPasswordFormManagerTest, UpdatePasswordCredentialAPI) {
   PasswordForm saved_match = form_to_save_;
   saved_match.password_value =
       PasswordString(saved_match.password_value.value() + u"1");
-  saved_match.match_type = PasswordForm::MatchType::kExact;
+  saved_match.match_type = affiliations::MatchType::kExact;
 
   std::unique_ptr<CredentialManagerPasswordFormManager> form_manager =
       CreateFormManager(form_to_save_);

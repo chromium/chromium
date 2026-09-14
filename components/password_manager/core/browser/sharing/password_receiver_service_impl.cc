@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -219,7 +220,7 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResultsOrErrorFrom(
 
   // Grouped credentials are ignored because they have different domains.
   std::erase_if(results, [](const auto& form) {
-    return form.match_type == PasswordForm::MatchType::kGrouped;
+    return form.match_type == affiliations::MatchType::kGrouped;
   });
   // TODO(crbug.com/40269204): process PSL and affilated credentials if needed.
   // TODO(crbug.com/40269204): process conflicting passwords differently if

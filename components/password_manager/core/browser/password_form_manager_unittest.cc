@@ -22,6 +22,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
@@ -512,7 +513,7 @@ class PasswordFormManagerTestBase : public testing::Test {
     saved_match_.username_element = u"field1";
     saved_match_.password_value = PasswordString(u"test1");
     saved_match_.password_element = u"field2";
-    saved_match_.match_type = PasswordForm::MatchType::kExact;
+    saved_match_.match_type = affiliations::MatchType::kExact;
     saved_match_.scheme = PasswordForm::Scheme::kHtml;
     saved_match_.in_store = PasswordForm::Store::kProfileStore;
 
@@ -520,7 +521,7 @@ class PasswordFormManagerTestBase : public testing::Test {
     psl_saved_match_.url = psl_origin;
     psl_saved_match_.action = psl_action;
     psl_saved_match_.signon_realm = "https://myaccount.google.com/";
-    psl_saved_match_.match_type = PasswordForm::MatchType::kPSL;
+    psl_saved_match_.match_type = affiliations::MatchType::kPSL;
 
     parsed_observed_form_ = saved_match_;
     parsed_observed_form_.form_data = observed_form_;
@@ -1169,7 +1170,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsPSLMatchSaved) {
 
   saved_match_.url = GURL("https://m.accounts.google.com/auth");
   saved_match_.signon_realm = "https://m.accounts.google.com/";
-  saved_match_.match_type = PasswordForm::MatchType::kPSL;
+  saved_match_.match_type = affiliations::MatchType::kPSL;
 
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
@@ -2351,7 +2352,7 @@ TEST_P(PasswordFormManagerTest, RecordsAffiliatedWebsiteMatch) {
   affiliated_website_form.action =
       GURL("https://affiliated.domain.com/a/ServiceLogin");
   affiliated_website_form.signon_realm = "https://affiliated.domain.com/";
-  affiliated_website_form.match_type = PasswordForm::MatchType::kAffiliated;
+  affiliated_website_form.match_type = affiliations::MatchType::kAffiliated;
   fetcher_->set_preferred_or_potential_matched_form_type(
       PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedWebsites);
   SetNonFederatedAndNotifyFetchCompleted({affiliated_website_form});
@@ -2375,7 +2376,7 @@ TEST_P(PasswordFormManagerTest, RecordsAffiliatedAndroidAppMatch) {
   affiliated_app_form.url = GURL("android://hash@com.example.android/");
   affiliated_app_form.action = GURL("android://hash@com.example.android/");
   affiliated_app_form.signon_realm = "android://hash@com.example.android/";
-  affiliated_app_form.match_type = PasswordForm::MatchType::kAffiliated;
+  affiliated_app_form.match_type = affiliations::MatchType::kAffiliated;
   fetcher_->set_preferred_or_potential_matched_form_type(
       PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedApp);
   SetNonFederatedAndNotifyFetchCompleted({affiliated_app_form});
@@ -2446,7 +2447,7 @@ TEST_P(PasswordFormManagerTest, RecordsGroupedWebSiteMatch) {
   // `FormFetched::GetPreferredOrPotentialMatchedFormType()` API.
   fetcher_->set_preferred_or_potential_matched_form_type(
       PasswordFormMetricsRecorder::MatchedFormType::kGroupedWebsites);
-  saved_match_.match_type = PasswordForm::MatchType::kGrouped;
+  saved_match_.match_type = affiliations::MatchType::kGrouped;
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   form_manager_->Fill();

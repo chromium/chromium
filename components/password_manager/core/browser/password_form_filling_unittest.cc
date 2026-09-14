@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -173,10 +174,10 @@ class PasswordFormFillingTest : public testing::Test {
     saved_match_.username_value = u"test@gmail.com";
     saved_match_.password_value = PasswordString(u"test1");
     saved_match_.SetPasswordBackupNote(u"backup_password");
-    saved_match_.match_type = PasswordForm::MatchType::kExact;
+    saved_match_.match_type = affiliations::MatchType::kExact;
 
     psl_saved_match_ = saved_match_;
-    psl_saved_match_.match_type = PasswordForm::MatchType::kPSL;
+    psl_saved_match_.match_type = affiliations::MatchType::kPSL;
     psl_saved_match_.url =
         GURL("https://m.accounts.google.com/a/ServiceLoginAuth");
     psl_saved_match_.action = GURL("https://m.accounts.google.com/a/Login");
@@ -478,7 +479,7 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
   affiliated_match.username_value = u"test@gmail.com";
   affiliated_match.password_value = PasswordString(u"test1");
   affiliated_match.signon_realm = "https://fooo.com/";
-  affiliated_match.match_type = PasswordForm::MatchType::kAffiliated;
+  affiliated_match.match_type = affiliations::MatchType::kAffiliated;
 
   std::vector<PasswordForm> best_matches = {affiliated_match};
 
@@ -636,7 +637,7 @@ TEST(PasswordFormFillDataTest, TestSinglePreferredMatch) {
   preferred_match.password_value = PasswordString(kPreferredPassword);
   preferred_match.signon_realm = "https://foo.com/";
   preferred_match.scheme = PasswordForm::Scheme::kHtml;
-  preferred_match.match_type = PasswordForm::MatchType::kExact;
+  preferred_match.match_type = affiliations::MatchType::kExact;
 
   Origin page_origin = Origin::Create(GURL("https://foo.com/"));
 
@@ -685,7 +686,7 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   preferred_match.username_value = kPreferredUsername;
   preferred_match.password_value = PasswordString(kPreferredPassword);
   preferred_match.signon_realm = "https://foo.com/";
-  preferred_match.match_type = PasswordForm::MatchType::kPSL;
+  preferred_match.match_type = affiliations::MatchType::kPSL;
   preferred_match.scheme = PasswordForm::Scheme::kHtml;
 
   // Create a match that matches exactly.
@@ -695,14 +696,14 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   exact_match.password_value = PasswordString(kPreferredPassword);
   exact_match.signon_realm = "https://foo.com/";
   exact_match.scheme = PasswordForm::Scheme::kHtml;
-  exact_match.match_type = PasswordForm::MatchType::kExact;
+  exact_match.match_type = affiliations::MatchType::kExact;
 
   // Create a match that was matched using public suffix.
   StoredCredential public_suffix_match;
   public_suffix_match.url = GURL("https://foo.com/");
   public_suffix_match.username_value = u"test2@gmail.com";
   public_suffix_match.password_value = PasswordString(kPreferredPassword);
-  public_suffix_match.match_type = PasswordForm::MatchType::kPSL;
+  public_suffix_match.match_type = affiliations::MatchType::kPSL;
   public_suffix_match.signon_realm = "https://foo.com/";
   public_suffix_match.scheme = PasswordForm::Scheme::kHtml;
 
@@ -757,7 +758,7 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   preferred_match.username_value = kPreferredUsername;
   preferred_match.password_value = PasswordString(kPreferredPassword);
   preferred_match.signon_realm = "android://hash@foo.com/";
-  preferred_match.match_type = PasswordForm::MatchType::kAffiliated;
+  preferred_match.match_type = affiliations::MatchType::kAffiliated;
 
   // Create a match that matches exactly.
   StoredCredential exact_match;
@@ -766,7 +767,7 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   exact_match.password_value = PasswordString(kPreferredPassword);
   exact_match.signon_realm = "https://foo.com/";
   exact_match.scheme = PasswordForm::Scheme::kHtml;
-  exact_match.match_type = PasswordForm::MatchType::kExact;
+  exact_match.match_type = affiliations::MatchType::kExact;
 
   // Create a match that was matched using public suffix, so
   // |is_public_suffix_match| == true.
@@ -776,7 +777,7 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   affiliated_match.password_value = PasswordString(kPreferredPassword);
   affiliated_match.signon_realm = "https://foo1.com/";
   affiliated_match.scheme = PasswordForm::Scheme::kHtml;
-  affiliated_match.match_type = PasswordForm::MatchType::kAffiliated;
+  affiliated_match.match_type = affiliations::MatchType::kAffiliated;
 
   Origin page_origin = Origin::Create(GURL("https://foo.com/"));
 
@@ -820,7 +821,7 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
   preferred_match.url = GURL("https://foo.com/");
   preferred_match.username_value = kPreferredUsername;
   preferred_match.password_value = PasswordString(kPreferredPassword);
-  preferred_match.match_type = PasswordForm::MatchType::kExact;
+  preferred_match.match_type = affiliations::MatchType::kExact;
 
   // Set renderer id related fields.
   FormData form_data;
@@ -860,7 +861,7 @@ TEST(PasswordFormFillDataTest, NoPasswordElement) {
   preferred_match.url = GURL("https://foo.com/");
   preferred_match.username_value = kPreferredUsername;
   preferred_match.password_value = PasswordString(kPreferredPassword);
-  preferred_match.match_type = PasswordForm::MatchType::kExact;
+  preferred_match.match_type = affiliations::MatchType::kExact;
 
   FormData form_data;
   form_data.set_renderer_id(FormRendererId(42));
@@ -891,14 +892,14 @@ TEST(PasswordFormFillDataTest, TestAffiliationWithAppName) {
   form_on_page.password_value = PasswordString(kPreferredPassword);
   form_on_page.signon_realm = "https://foo.com/";
   form_on_page.scheme = PasswordForm::Scheme::kHtml;
-  form_on_page.match_type = PasswordForm::MatchType::kExact;
+  form_on_page.match_type = affiliations::MatchType::kExact;
 
   // Create a match that was matched using affiliation matching.
   StoredCredential affiliated_match;
   affiliated_match.url = GURL("android://hash@foo1.com/");
   affiliated_match.username_value = u"test2@gmail.com";
   affiliated_match.password_value = PasswordString(kPreferredPassword);
-  affiliated_match.match_type = PasswordForm::MatchType::kAffiliated;
+  affiliated_match.match_type = affiliations::MatchType::kAffiliated;
   affiliated_match.app_display_name = "Foo";
   affiliated_match.signon_realm = "https://foo1.com/";
   affiliated_match.scheme = PasswordForm::Scheme::kHtml;
@@ -932,7 +933,7 @@ TEST(PasswordFormFillDataTest, TestCrossOriginIframe) {
   form_on_page.signon_realm = "https://foo.com/";
   form_on_page.submit_element = u"";
   form_on_page.scheme = PasswordForm::Scheme::kHtml;
-  form_on_page.match_type = PasswordForm::MatchType::kExact;
+  form_on_page.match_type = affiliations::MatchType::kExact;
 
   // Create the current form on the page.
   StoredCredential additional_match;
@@ -941,7 +942,7 @@ TEST(PasswordFormFillDataTest, TestCrossOriginIframe) {
   additional_match.password_value = PasswordString(kPreferredPassword);
   additional_match.signon_realm = "https://foo.com/";
   additional_match.scheme = PasswordForm::Scheme::kHtml;
-  additional_match.match_type = PasswordForm::MatchType::kExact;
+  additional_match.match_type = affiliations::MatchType::kExact;
 
   Origin page_origin = Origin::Create(GURL("https://chromium.com/"));
 
@@ -955,7 +956,7 @@ TEST(PasswordFormFillDataTest, TestCrossOriginIframe) {
   preferred_match.password_value = PasswordString(kPreferredPassword);
   preferred_match.signon_realm = "https://foo.com/";
   preferred_match.scheme = PasswordForm::Scheme::kHtml;
-  preferred_match.match_type = PasswordForm::MatchType::kExact;
+  preferred_match.match_type = affiliations::MatchType::kExact;
 
   PasswordFormFillData result = CreatePasswordFormFillData(
       form_on_page, matches, &preferred_match, page_origin,
@@ -974,7 +975,7 @@ TEST(PasswordFormFillDataTest, TestCrossOriginIframe) {
 TEST(PasswordFormFillDataTest, TestGroupedAffiliation) {
   // Create a match that was matched using grouped matching.
   StoredCredential grouped_match;
-  grouped_match.match_type = PasswordForm::MatchType::kGrouped;
+  grouped_match.match_type = affiliations::MatchType::kGrouped;
 
   std::vector<StoredCredential> best;
   best.push_back(std::move(grouped_match));

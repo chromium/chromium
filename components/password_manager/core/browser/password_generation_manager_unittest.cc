@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -71,7 +72,7 @@ PasswordForm CreateSavedPSL() {
   form.action = GURL("https://login.example.org");
   form.username_value = u"old_username2";
   form.password_value = PasswordString(u"passw0rd");
-  form.match_type = PasswordForm::MatchType::kPSL;
+  form.match_type = affiliations::MatchType::kPSL;
   form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
@@ -454,22 +455,22 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ThenUpdate) {
   related_password.username_value = u"username";
   related_password.username_element = u"username_field";
   related_password.password_value = PasswordString(u"old password");
-  related_password.match_type = PasswordForm::MatchType::kExact;
+  related_password.match_type = affiliations::MatchType::kExact;
 
   PasswordForm related_psl_password = CreateSavedPSL();
   related_psl_password.username_value = u"username";
   related_psl_password.password_value = PasswordString(u"old password");
-  related_psl_password.match_type = PasswordForm::MatchType::kPSL;
+  related_psl_password.match_type = affiliations::MatchType::kPSL;
 
   PasswordForm unrelated_password = CreateSaved();
   unrelated_password.username_value = u"another username";
   unrelated_password.password_value = PasswordString(u"some password");
-  unrelated_password.match_type = PasswordForm::MatchType::kExact;
+  unrelated_password.match_type = affiliations::MatchType::kExact;
 
   PasswordForm unrelated_psl_password = CreateSavedPSL();
   unrelated_psl_password.username_value = u"another username";
   unrelated_psl_password.password_value = PasswordString(u"some password");
-  unrelated_psl_password.match_type = PasswordForm::MatchType::kPSL;
+  unrelated_psl_password.match_type = affiliations::MatchType::kPSL;
 
   EXPECT_CALL(store(), AddLogin);
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {

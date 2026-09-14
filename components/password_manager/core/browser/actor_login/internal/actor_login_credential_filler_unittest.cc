@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_util.h"
@@ -545,7 +546,7 @@ TEST_P(ActorLoginCredentialFillerTest, DontFillGroupedMatch) {
   std::vector<password_manager::PasswordForm> saved_forms;
   PasswordForm form =
       CreateSavedPasswordForm(GURL("https://otherexample.com"), kTestUsername);
-  form.match_type = password_manager::PasswordForm::MatchType::kGrouped;
+  form.match_type = affiliations::MatchType::kGrouped;
   saved_forms.push_back(std::move(form));
   form_fetcher_.SetBestMatches(saved_forms);
 
@@ -1150,8 +1151,7 @@ TEST_P(ActorLoginCredentialFillerTest,
   FakeFormFetcher sibling_form_fetcher;
   PasswordForm sibling_psl_match = CreateSavedPasswordForm(
       same_site_origin_1.GetURL(), kTestUsername, kTestPassword);
-  sibling_psl_match.match_type =
-      password_manager::PasswordForm::MatchType::kPSL;
+  sibling_psl_match.match_type = affiliations::MatchType::kPSL;
   sibling_form_fetcher.SetBestMatches({sibling_psl_match});
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
@@ -1231,8 +1231,7 @@ TEST_P(ActorLoginCredentialFillerTest,
   FakeFormFetcher sibling_form_fetcher;
   PasswordForm sibling_psl_match = CreateSavedPasswordForm(
       same_site_origin_2.GetURL(), kTestUsername, kTestPassword);
-  sibling_psl_match.match_type =
-      password_manager::PasswordForm::MatchType::kPSL;
+  sibling_psl_match.match_type = affiliations::MatchType::kPSL;
   sibling_form_fetcher.SetBestMatches({sibling_psl_match});
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
@@ -1310,16 +1309,14 @@ TEST_P(ActorLoginCredentialFillerTest,
   // Saved credential is an affiliated match for same_site_origin_1.
   PasswordForm matching_form = CreateSavedPasswordForm(
       same_site_origin_1.GetURL(), kTestUsername, kTestPassword);
-  matching_form.match_type =
-      password_manager::PasswordForm::MatchType::kAffiliated;
+  matching_form.match_type = affiliations::MatchType::kAffiliated;
   form_fetcher_.SetBestMatches({matching_form});
 
   // Sibling iframe (same_site_origin_2) has a PSL match.
   FakeFormFetcher sibling_form_fetcher;
   PasswordForm sibling_psl_match = CreateSavedPasswordForm(
       same_site_origin_1.GetURL(), kTestUsername, kTestPassword);
-  sibling_psl_match.match_type =
-      password_manager::PasswordForm::MatchType::kPSL;
+  sibling_psl_match.match_type = affiliations::MatchType::kPSL;
   sibling_form_fetcher.SetBestMatches({sibling_psl_match});
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
@@ -1398,15 +1395,14 @@ TEST_P(
   // Saved credential is an exact match for same_site_origin_1.
   PasswordForm matching_form = CreateSavedPasswordForm(
       same_site_origin_1.GetURL(), kTestUsername, kTestPassword);
-  matching_form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  matching_form.match_type = affiliations::MatchType::kExact;
   form_fetcher_.SetBestMatches({matching_form});
 
   // Sibling iframe (same_site_origin_2) has an affiliated match.
   FakeFormFetcher sibling_form_fetcher;
   PasswordForm sibling_affiliated_match = CreateSavedPasswordForm(
       same_site_origin_1.GetURL(), kTestUsername, kTestPassword);
-  sibling_affiliated_match.match_type =
-      password_manager::PasswordForm::MatchType::kAffiliated;
+  sibling_affiliated_match.match_type = affiliations::MatchType::kAffiliated;
   sibling_form_fetcher.SetBestMatches({sibling_affiliated_match});
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
@@ -1489,8 +1485,7 @@ TEST_P(ActorLoginCredentialFillerTest,
   FakeFormFetcher main_frame_fetcher;
   PasswordForm main_frame_psl_match = CreateSavedPasswordForm(
       saved_origin.GetURL(), kTestUsername, kTestPassword);
-  main_frame_psl_match.match_type =
-      password_manager::PasswordForm::MatchType::kPSL;
+  main_frame_psl_match.match_type = affiliations::MatchType::kPSL;
   main_frame_fetcher.SetBestMatches({main_frame_psl_match});
 
   // Iframe form manager also uses a fetcher where this credential is a PSL
@@ -1498,7 +1493,7 @@ TEST_P(ActorLoginCredentialFillerTest,
   FakeFormFetcher iframe_fetcher;
   PasswordForm iframe_psl_match = CreateSavedPasswordForm(
       saved_origin.GetURL(), kTestUsername, kTestPassword);
-  iframe_psl_match.match_type = password_manager::PasswordForm::MatchType::kPSL;
+  iframe_psl_match.match_type = affiliations::MatchType::kPSL;
   iframe_fetcher.SetBestMatches({iframe_psl_match});
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
@@ -2606,7 +2601,6 @@ TEST_P(ActorLoginCredentialFillerTest,
   filler.reset();
 }
 
-
 TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
@@ -2724,7 +2718,6 @@ TEST_P(ActorLoginCredentialFillerTest, AffiliatedOrigin_FillSuccess) {
 
 TEST_P(ActorLoginCredentialFillerTest,
        UsesChosenAffiliatedCredentialOverExactMatch) {
-
   // The origin where the credential is being filled.
   url::Origin current_origin = url::Origin::Create(GURL("https://example.com"));
   // This is the origin where the credential is saved for, and also the origin
@@ -2908,7 +2901,7 @@ TEST_P(ActorLoginCredentialFillerTest,
   // The credential was saved on login.example.com.
   password_manager::PasswordForm saved_form = CreateSavedPasswordForm(
       saved_origin.GetURL(), kTestUsername, kTestPassword);
-  saved_form.match_type = password_manager::PasswordForm::MatchType::kPSL;
+  saved_form.match_type = affiliations::MatchType::kPSL;
   form_fetcher_.SetBestMatches({saved_form});
 
   ON_CALL(mock_driver_, GetLastCommittedOrigin)
@@ -3006,14 +2999,13 @@ TEST_P(ActorLoginCredentialFillerTest,
   const FormData form_data = CreateSigninFormData(origin.GetURL());
   PasswordForm exact_match =
       CreateSavedPasswordForm(origin.GetURL(), kTestUsername);
-  exact_match.match_type = password_manager::PasswordForm::MatchType::kExact;
+  exact_match.match_type = affiliations::MatchType::kExact;
   FakeFormFetcher& exact_match_fetcher = form_fetcher_;
   exact_match_fetcher.SetBestMatches({exact_match});
 
   PasswordForm affiliated_match =
       CreateSavedPasswordForm(origin.GetURL(), kTestUsername);
-  affiliated_match.match_type =
-      password_manager::PasswordForm::MatchType::kAffiliated;
+  affiliated_match.match_type = affiliations::MatchType::kAffiliated;
   FakeFormFetcher affiliated_match_fetcher;
   affiliated_match_fetcher.SetBestMatches({affiliated_match});
 

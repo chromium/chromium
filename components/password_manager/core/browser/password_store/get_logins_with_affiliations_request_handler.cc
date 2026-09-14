@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -65,16 +66,16 @@ ProcessExactAndPSLForms(
         NOTREACHED();
       case MatchResult::EXACT_MATCH:
       case MatchResult::FEDERATED_MATCH:
-        form.match_type = PasswordForm::MatchType::kExact;
+        form.match_type = affiliations::MatchType::kExact;
         break;
       case MatchResult::PSL_MATCH:
         if (IsExtendedPSLMatch(form, digest, psl_extensions)) {
-          form.match_type = PasswordForm::MatchType::kPSL;
+          form.match_type = affiliations::MatchType::kPSL;
         }
         break;
       case MatchResult::FEDERATED_PSL_MATCH:
         if (IsExtendedPSLMatch(form, digest, psl_extensions)) {
-          form.match_type = PasswordForm::MatchType::kPSL;
+          form.match_type = affiliations::MatchType::kPSL;
         }
         break;
     }
@@ -290,10 +291,10 @@ GetLoginsHelper::MergeResults(
           signon_realm = url::Origin::Create(form.url).GetURL().spec();
         }
         if (affiliations_.contains(signon_realm)) {
-          form.match_type |= PasswordForm::MatchType::kAffiliated;
+          form.match_type |= affiliations::MatchType::kAffiliated;
         }
         if (group_.contains(signon_realm)) {
-          form.match_type |= PasswordForm::MatchType::kGrouped;
+          form.match_type |= affiliations::MatchType::kGrouped;
         }
         break;
       }

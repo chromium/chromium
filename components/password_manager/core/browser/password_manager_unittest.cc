@@ -27,6 +27,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
@@ -597,7 +598,7 @@ class PasswordManagerTestBase : public testing::Test {
     form.submit_element = u"signIn";
     form.signon_realm = test_signon_realm_;
     form.in_store = PasswordForm::Store::kProfileStore;
-    form.match_type = PasswordForm::MatchType::kExact;
+    form.match_type = affiliations::MatchType::kExact;
     return form;
   }
 
@@ -689,7 +690,7 @@ class PasswordManagerTestBase : public testing::Test {
     android_form.username_value = u"google";
     android_form.password_value = PasswordString(u"password");
     android_form.in_store = PasswordForm::Store::kProfileStore;
-    android_form.match_type = PasswordForm::MatchType::kAffiliated;
+    android_form.match_type = affiliations::MatchType::kAffiliated;
     return android_form;
   }
 
@@ -3059,7 +3060,7 @@ TEST_P(PasswordManagerTest, AttemptedSavePasswordSameOriginInsecureScheme) {
   secure_form.form_data.set_url(secure_form.url);
   secure_form.form_data.set_action(secure_form.action);
   secure_form.signon_realm = "https://example.com/";
-  secure_form.match_type = PasswordForm::MatchType::kExact;
+  secure_form.match_type = affiliations::MatchType::kExact;
 
   PasswordForm insecure_form(MakeSimpleForm());
   // If all inputs of |secure_form| and |insecure_form| are the same, then
@@ -3078,7 +3079,7 @@ TEST_P(PasswordManagerTest, AttemptedSavePasswordSameOriginInsecureScheme) {
   insecure_form.form_data.set_url(insecure_form.url);
   insecure_form.form_data.set_action(insecure_form.action);
   insecure_form.signon_realm = "http://example.com/";
-  insecure_form.match_type = PasswordForm::MatchType::kExact;
+  insecure_form.match_type = affiliations::MatchType::kExact;
 
   SetDriverOrigin(url::Origin::Create(secure_form.url));
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(
@@ -5239,7 +5240,6 @@ TEST_P(PasswordManagerTest, FillSingleUsername) {
   EXPECT_EQ(saved_match.password_value,
             fill_data.preferred_login.password_value);
   EXPECT_TRUE(fill_data.password_element_renderer_id.is_null());
-
 }
 
 // Check that a non-password form with SINGLE_USERNAME_FORGOT_PASSWORD

@@ -15,6 +15,7 @@
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
@@ -392,23 +393,23 @@ FakePasswordStoreBackend::GetGroupedMatchingLoginsInternal(
         (form_digest.scheme == PasswordForm::Scheme::kHtml &&
          password_manager::IsFederatedRealm(form.signon_realm,
                                             form_digest.url))) {
-      form.match_type = PasswordForm::MatchType::kExact;
+      form.match_type = affiliations::MatchType::kExact;
     } else if (IsPublicSuffixDomainMatch(form.signon_realm,
                                          form_digest.signon_realm)) {
-      form.match_type = PasswordForm::MatchType::kPSL;
+      form.match_type = affiliations::MatchType::kPSL;
     }
     final_results.push_back(FromPasswordForm(form));
   }
 
   if (auto it = affiliated_realms_.find(form_digest.signon_realm);
       it != affiliated_realms_.end()) {
-    AddLoginsWithMatchType(it->second, PasswordForm::MatchType::kAffiliated,
+    AddLoginsWithMatchType(it->second, affiliations::MatchType::kAffiliated,
                            final_results);
   }
 
   if (auto group_it = grouped_realms_.find(form_digest.signon_realm);
       group_it != grouped_realms_.end()) {
-    AddLoginsWithMatchType(group_it->second, PasswordForm::MatchType::kGrouped,
+    AddLoginsWithMatchType(group_it->second, affiliations::MatchType::kGrouped,
                            final_results);
   }
 
@@ -417,7 +418,7 @@ FakePasswordStoreBackend::GetGroupedMatchingLoginsInternal(
 
 void FakePasswordStoreBackend::AddLoginsWithMatchType(
     const std::vector<std::string>& realms,
-    PasswordForm::MatchType match_type,
+    affiliations::MatchType match_type,
     std::vector<StoredCredential>& results) {
   for (const std::string& realm : realms) {
     auto creds_it = stored_passwords_.find(realm);

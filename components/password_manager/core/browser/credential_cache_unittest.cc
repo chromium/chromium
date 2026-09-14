@@ -11,6 +11,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -55,7 +56,7 @@ PasswordForm CreateEntryWithBackupPassword(
     const std::string& password,
     const std::u16string& backup_password,
     const GURL& origin_url,
-    PasswordForm::MatchType match_type) {
+    affiliations::MatchType match_type) {
   PasswordForm form = CreateEntry(username, password, origin_url, match_type);
   form.SetPasswordBackupNote(backup_password);
   return form;
@@ -84,24 +85,24 @@ TEST_F(CredentialCacheTest, StoresCredentialsSortedByAplhabetAndOrigins) {
   Origin origin = Origin::Create(GURL(kExampleSite));
   std::vector<PasswordForm> matches = {
       CreateEntry("Berta", "30948", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       CreateEntry("Adam", "Pas83B", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       CreateEntry("Dora", "PakudC", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       CreateEntry("Carl", "P1238C", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       // These entries need to be ordered but come after the examples above.
       CreateEntry("Cesar", "V3V1V", GURL(kExampleSite),
-                  PasswordForm::MatchType::kAffiliated),
+                  affiliations::MatchType::kAffiliated),
       CreateEntry("Rolf", "A4nd0m", GURL(kExampleSiteMobile),
-                  PasswordForm::MatchType::kPSL),
+                  affiliations::MatchType::kPSL),
       CreateEntry("Greg", "5fnd1m", GURL(kExampleSiteSubdomain),
-                  PasswordForm::MatchType::kPSL),
+                  affiliations::MatchType::kPSL),
       CreateEntry("Elfi", "a65ddm", GURL(kExampleSiteSubdomain),
-                  PasswordForm::MatchType::kPSL),
+                  affiliations::MatchType::kPSL),
       CreateEntry("Alf", "R4nd50m", GURL(kExampleSiteMobile),
-                  PasswordForm::MatchType::kPSL)};
+                  affiliations::MatchType::kPSL)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, IsOriginBlocklisted(false), std::nullopt, origin);
 
@@ -144,25 +145,25 @@ TEST_F(CredentialCacheTest,
   std::vector<PasswordForm> matches = {
       CreateEntryWithBackupPassword("Berta", "30948", u"backuppassword",
                                     GURL(kExampleSite),
-                                    PasswordForm::MatchType::kExact),
+                                    affiliations::MatchType::kExact),
       CreateEntry("Adam", "Pas83B", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       CreateEntry("Dora", "PakudC", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       CreateEntry("Carl", "P1238C", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       // These entries need to be ordered but come after the examples above.
       CreateEntry("Cesar", "V3V1V", GURL(kExampleSite),
-                  PasswordForm::MatchType::kAffiliated),
+                  affiliations::MatchType::kAffiliated),
       CreateEntry("Rolf", "A4nd0m", GURL(kExampleSiteMobile),
-                  PasswordForm::MatchType::kPSL),
+                  affiliations::MatchType::kPSL),
       CreateEntryWithBackupPassword("Greg", "5fnd1m", u"backup",
                                     GURL(kExampleSiteSubdomain),
-                                    PasswordForm::MatchType::kPSL),
+                                    affiliations::MatchType::kPSL),
       CreateEntry("Elfi", "a65ddm", GURL(kExampleSiteSubdomain),
-                  PasswordForm::MatchType::kPSL),
+                  affiliations::MatchType::kPSL),
       CreateEntry("Alf", "R4nd50m", GURL(kExampleSiteMobile),
-                  PasswordForm::MatchType::kPSL)};
+                  affiliations::MatchType::kPSL)};
 
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, IsOriginBlocklisted(false), std::nullopt, origin);
@@ -217,17 +218,17 @@ TEST_F(CredentialCacheTest, StoresUnnotifiedSharedCredentialsCredentials) {
   const std::string kSharedUnnotified = "shared_unnotified";
 
   PasswordForm non_shared_credentials = CreateEntry(
-      kNonShared, "pass", GURL(kExampleSite), PasswordForm::MatchType::kExact);
+      kNonShared, "pass", GURL(kExampleSite), affiliations::MatchType::kExact);
 
   PasswordForm shared_notified_credentials =
       CreateEntry(kSharedNotified, "pass", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact);
+                  affiliations::MatchType::kExact);
   shared_notified_credentials.type = PasswordForm::Type::kReceivedViaSharing;
   shared_notified_credentials.sharing_notification_displayed = true;
 
   PasswordForm shared_unnotified_credentials =
       CreateEntry(kSharedUnnotified, "pass", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact);
+                  affiliations::MatchType::kExact);
   shared_unnotified_credentials.type = PasswordForm::Type::kReceivedViaSharing;
   shared_unnotified_credentials.sharing_notification_displayed = false;
 
@@ -257,11 +258,11 @@ TEST_F(CredentialCacheTest, StoresCredentialsForIndependentOrigins) {
   Origin origin = Origin::Create(GURL(kExampleSite));
   Origin origin2 = Origin::Create(GURL(kExampleSite2));
   std::vector<PasswordForm> matches1 = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches1, IsOriginBlocklisted(false), std::nullopt, origin);
   std::vector<PasswordForm> matches2 = {CreateEntry(
-      "Abe", "B4dPW", GURL(kExampleSite2), PasswordForm::MatchType::kExact)};
+      "Abe", "B4dPW", GURL(kExampleSite2), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches2, IsOriginBlocklisted(false), std::nullopt, origin2);
 
@@ -275,7 +276,7 @@ TEST_F(CredentialCacheTest, StoresCredentialsForIndependentOrigins) {
 TEST_F(CredentialCacheTest, ClearsCredentials) {
   Origin origin = Origin::Create(GURL(kExampleSite));
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, IsOriginBlocklisted(false), std::nullopt,
       Origin::Create(GURL(kExampleSite)));
@@ -289,7 +290,7 @@ TEST_F(CredentialCacheTest, ClearsCredentials) {
 TEST_F(CredentialCacheTest, StoresBlocklistedWithCredentials) {
   Origin origin = Origin::Create(GURL(kExampleSite));
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, IsOriginBlocklisted(true), std::nullopt,
       Origin::Create(GURL(kExampleSite)));
@@ -313,7 +314,7 @@ TEST_F(CredentialCacheTest, StoresBackendErrorAndCredentials) {
 
   // Backend error and matched passwords.
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, IsOriginBlocklisted(false),
       PasswordStoreBackendError(
@@ -338,7 +339,7 @@ TEST_F(CredentialCacheTest, StoresBackendErrorAndCredentials) {
 TEST_F(CredentialCacheTest, SplitsCredentialsInMainAndBackupFlagEnabled) {
   Origin origin = Origin::Create(GURL(kExampleSite));
   PasswordForm match_with_backup = CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact);
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact);
   match_with_backup.SetPasswordBackupNote(u"backuppassword");
   std::vector<PasswordForm> matches = {std::move(match_with_backup)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(

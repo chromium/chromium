@@ -24,6 +24,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
@@ -993,13 +994,13 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliationsAndGroups) {
 
   std::vector<PasswordForm> expected_results;
   expected_results.push_back(*all_credentials[0]);
-  expected_results.back().match_type = PasswordForm::MatchType::kAffiliated;
+  expected_results.back().match_type = affiliations::MatchType::kAffiliated;
   expected_results.push_back(*all_credentials[1]);
-  expected_results.back().match_type = PasswordForm::MatchType::kExact;
+  expected_results.back().match_type = affiliations::MatchType::kExact;
   expected_results.push_back(*all_credentials[2]);
-  expected_results.back().match_type = PasswordForm::MatchType::kPSL;
+  expected_results.back().match_type = affiliations::MatchType::kPSL;
   expected_results.push_back(*all_credentials[3]);
-  expected_results.back().match_type = PasswordForm::MatchType::kGrouped;
+  expected_results.back().match_type = affiliations::MatchType::kGrouped;
 
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
                                       kTestWebRealm1, GURL(kTestWebOrigin1)};
@@ -1074,8 +1075,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithoutAffiliations) {
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
                                       kTestWebRealm1, GURL(kTestWebOrigin1)};
 
-  all_credentials[0]->match_type = PasswordForm::MatchType::kExact;
-  all_credentials[1]->match_type = PasswordForm::MatchType::kPSL;
+  all_credentials[0]->match_type = affiliations::MatchType::kExact;
+  all_credentials[1]->match_type = affiliations::MatchType::kPSL;
   std::vector<PasswordForm> expected_results = {*all_credentials[0],
                                                 *all_credentials[1]};
 
@@ -1190,12 +1191,12 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
                                       kTestWebRealm1, GURL(kTestWebOrigin1)};
 
-  all_credentials[0]->match_type = PasswordForm::MatchType::kExact;
-  all_credentials[1]->match_type = PasswordForm::MatchType::kPSL;
-  all_credentials[2]->match_type = PasswordForm::MatchType::kAffiliated;
-  all_credentials[3]->match_type = PasswordForm::MatchType::kAffiliated;
-  all_credentials[5]->match_type = PasswordForm::MatchType::kAffiliated;
-  all_credentials[6]->match_type = PasswordForm::MatchType::kAffiliated;
+  all_credentials[0]->match_type = affiliations::MatchType::kExact;
+  all_credentials[1]->match_type = affiliations::MatchType::kPSL;
+  all_credentials[2]->match_type = affiliations::MatchType::kAffiliated;
+  all_credentials[3]->match_type = affiliations::MatchType::kAffiliated;
+  all_credentials[5]->match_type = affiliations::MatchType::kAffiliated;
+  all_credentials[6]->match_type = affiliations::MatchType::kAffiliated;
   std::vector<PasswordForm> expected_results = {
       *all_credentials[0], *all_credentials[1], *all_credentials[2],
       *all_credentials[3], *all_credentials[5], *all_credentials[6]};
@@ -1283,13 +1284,13 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
                                       kTestWebRealm1, GURL(kTestWebOrigin1)};
 
-  all_credentials[0]->match_type = PasswordForm::MatchType::kExact;
-  all_credentials[1]->match_type = PasswordForm::MatchType::kPSL;
+  all_credentials[0]->match_type = affiliations::MatchType::kExact;
+  all_credentials[1]->match_type = affiliations::MatchType::kPSL;
   all_credentials[2]->match_type =
-      PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kPSL;
-  all_credentials[3]->match_type = PasswordForm::MatchType::kAffiliated;
+      affiliations::MatchType::kAffiliated | affiliations::MatchType::kPSL;
+  all_credentials[3]->match_type = affiliations::MatchType::kAffiliated;
   all_credentials[6]->match_type =
-      PasswordForm::MatchType::kPSL | PasswordForm::MatchType::kGrouped;
+      affiliations::MatchType::kPSL | affiliations::MatchType::kGrouped;
   std::vector<PasswordForm> expected_results = {
       *all_credentials[0], *all_credentials[1], *all_credentials[2],
       *all_credentials[3], *all_credentials[6]};
@@ -1373,11 +1374,11 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
                                       kTestWebRealm1, GURL(kTestWebOrigin1)};
 
-  all_credentials[0]->match_type = PasswordForm::MatchType::kExact;
-  all_credentials[1]->match_type = PasswordForm::MatchType::kPSL;
+  all_credentials[0]->match_type = affiliations::MatchType::kExact;
+  all_credentials[1]->match_type = affiliations::MatchType::kPSL;
   all_credentials[2]->match_type =
-      PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kPSL;
-  all_credentials[3]->match_type = PasswordForm::MatchType::kAffiliated;
+      affiliations::MatchType::kAffiliated | affiliations::MatchType::kPSL;
+  all_credentials[3]->match_type = affiliations::MatchType::kAffiliated;
   std::vector<PasswordForm> expected_results = {
       *all_credentials[0], *all_credentials[1], *all_credentials[2],
       *all_credentials[3]};
@@ -1456,11 +1457,11 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithWebGroup) {
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
                                       kTestWebRealm1, GURL(kTestWebOrigin1)};
 
-  all_credentials[0]->match_type = PasswordForm::MatchType::kExact;
-  all_credentials[1]->match_type = PasswordForm::MatchType::kPSL;
+  all_credentials[0]->match_type = affiliations::MatchType::kExact;
+  all_credentials[1]->match_type = affiliations::MatchType::kPSL;
   all_credentials[2]->match_type =
-      PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kPSL;
-  all_credentials[3]->match_type = PasswordForm::MatchType::kGrouped;
+      affiliations::MatchType::kAffiliated | affiliations::MatchType::kPSL;
+  all_credentials[3]->match_type = affiliations::MatchType::kGrouped;
   std::vector<PasswordForm> expected_results = {
       *all_credentials[0], *all_credentials[1], *all_credentials[2],
       *all_credentials[3]};
@@ -1519,7 +1520,7 @@ TEST_P(PasswordStoreBuiltInBackendTest,
       ->ExpectCallToInjectAffiliationAndBrandingInformation(
           std::move(affiliation_info_for_results));
 
-  credential->match_type = PasswordForm::MatchType::kExact;
+  credential->match_type = affiliations::MatchType::kExact;
   credential->affiliated_web_realm = kTestWebRealm1;
   credential->app_display_name = kTestAndroidName1;
   credential->app_icon_url = GURL(kTestAndroidIconURL1);
@@ -1578,7 +1579,7 @@ TEST_P(PasswordStoreBuiltInBackendTest,
       ->ExpectCallToInjectAffiliationAndBrandingInformation(
           std::move(affiliation_info_for_results));
 
-  credential->match_type = PasswordForm::MatchType::kAffiliated;
+  credential->match_type = affiliations::MatchType::kAffiliated;
   credential->affiliated_web_realm = kTestWebRealm1;
   credential->app_display_name = kTestAndroidName1;
   credential->app_icon_url = GURL(kTestAndroidIconURL1);

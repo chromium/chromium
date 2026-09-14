@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_manager/mock_password_manager_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -221,7 +222,7 @@ class PasswordManualFallbackFlowTest : public Test {
     // Add 1 password form to the password store.
     profile_password_store().AddLogin(password_manager::FromPasswordForm(
         CreateEntry("username@example.com", "password", GURL(kUrl),
-                    PasswordForm::MatchType::kExact)));
+                    affiliations::MatchType::kExact)));
   }
 
   PasswordManualFallbackFlow& flow() { return *flow_; }
@@ -1455,10 +1456,10 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptManagePasswordsEntry) {
 TEST_F(PasswordManualFallbackFlowTest, ShowPasswordDetails) {
   PasswordForm form_com =
       CreateEntry("username@google.com", "password",
-                  GURL("https://google.com/"), PasswordForm::MatchType::kExact);
+                  GURL("https://google.com/"), affiliations::MatchType::kExact);
   PasswordForm form_de =
       CreateEntry("username@google.com", "password", GURL("https://google.de/"),
-                  PasswordForm::MatchType::kExact);
+                  affiliations::MatchType::kExact);
   profile_password_store().AddLogins(
       password_manager::FromPasswordForms({form_com, form_de}));
 

@@ -20,6 +20,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
@@ -569,7 +570,7 @@ TEST_P(HttpAuthManagerTest, UpdateLastUsedTimeWhenSubmittingSavedCredentials) {
   stored_form.password_value = PasswordString(u"1234");
   stored_form.in_store = PasswordForm::Store::kProfileStore;
   stored_form.date_last_used = base::Time::Now() - base::Days(1);
-  stored_form.match_type = PasswordForm::MatchType::kExact;
+  stored_form.match_type = affiliations::MatchType::kExact;
 
   MockHttpAuthObserver observer;
 

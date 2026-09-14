@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -97,7 +98,7 @@ StoredCredential FillStoredCredentialWithData(const PasswordFormData& form_data,
 PasswordForm CreateEntry(const std::string& username,
                          const std::string& password,
                          const GURL& origin_url,
-                         PasswordForm::MatchType match_type) {
+                         affiliations::MatchType match_type) {
   PasswordForm form;
   form.username_value = base::ASCIIToUTF16(username);
   form.password_value = PasswordString(base::ASCIIToUTF16(password));
@@ -111,7 +112,7 @@ std::unique_ptr<PasswordForm> CreateUniquePtrEntry(
     const std::string& username,
     const std::string& password,
     const GURL& origin_url,
-    PasswordForm::MatchType match_type) {
+    affiliations::MatchType match_type) {
   return std::make_unique<PasswordForm>(
       CreateEntry(username, password, origin_url, match_type));
 }

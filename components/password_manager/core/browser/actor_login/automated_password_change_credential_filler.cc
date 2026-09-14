@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 
@@ -35,8 +36,7 @@ AutomatedPasswordChangeCredentialFiller::
                                  /*frame_filling_started_cb=*/{},
                                  std::move(callback)),
       stored_credential_(std::move(stored_credential)) {
-  stored_credential_.match_type =
-      password_manager::PasswordForm::MatchType::kExact;
+  stored_credential_.match_type = affiliations::MatchType::kExact;
 }
 
 AutomatedPasswordChangeCredentialFiller::

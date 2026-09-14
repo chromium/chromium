@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
@@ -399,7 +400,7 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
       GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
   if (filter_grouped_credentials_) {
     std::erase_if(results, [this](const auto& form) {
-      if (form.match_type == PasswordForm::MatchType::kGrouped) {
+      if (form.match_type == affiliations::MatchType::kGrouped) {
         // To achieve consistency for
         // `FormFetcher::GetPreferredOrPotentialMatchFormType()`, grouped
         // website credentials are prioritized over grouped application

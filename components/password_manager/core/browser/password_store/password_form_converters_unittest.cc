@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -64,7 +65,7 @@ PasswordForm CreateFullPasswordForm() {
   form.app_display_name = "App Display Name";
   form.app_icon_url = GURL("https://example.com/app_icon.png");
   form.previously_associated_sync_account_email = "test@gmail.com";
-  form.match_type = PasswordForm::MatchType::kAffiliated;
+  form.match_type = affiliations::MatchType::kAffiliated;
   return form;
 }
 
@@ -116,7 +117,7 @@ StoredCredential CreateFullStoredCredential() {
   cred.app_display_name = "App Display Name";
   cred.app_icon_url = GURL("https://example.com/app_icon.png");
   cred.previously_associated_sync_account_email = "test@gmail.com";
-  cred.match_type = PasswordForm::MatchType::kAffiliated;
+  cred.match_type = affiliations::MatchType::kAffiliated;
   return cred;
 }
 

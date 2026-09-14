@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
@@ -141,7 +142,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   std::vector<StoredCredential> GetGroupedMatchingLoginsInternal(
       const PasswordFormDigest& form_digest);
   void AddLoginsWithMatchType(const std::vector<std::string>& realms,
-                              PasswordForm::MatchType match_type,
+                              affiliations::MatchType match_type,
                               std::vector<StoredCredential>& results);
 #endif
   PasswordStoreChangeList AddLoginInternal(const StoredCredential& cred);

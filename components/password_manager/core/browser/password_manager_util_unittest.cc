@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -48,7 +49,6 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 
 namespace password_manager_util {
 namespace {
@@ -117,7 +117,7 @@ PasswordForm GetTestCredential() {
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = kTestUsername;
   form.password_value = PasswordString(kTestPassword);
-  form.match_type = PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   return form;
 }
 
@@ -209,7 +209,7 @@ TEST(PasswordManagerUtil, GetSignonRealmWithProtocolExcluded) {
 
 TEST(PasswordManagerUtil, GetMatchType_Android) {
   PasswordForm form = GetTestAndroidCredential();
-  form.match_type = PasswordForm::MatchType::kAffiliated;
+  form.match_type = affiliations::MatchType::kAffiliated;
 
   EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
 }
@@ -217,20 +217,20 @@ TEST(PasswordManagerUtil, GetMatchType_Android) {
 TEST(PasswordManagerUtil, GetMatchType_Web) {
   PasswordForm form = GetTestCredential();
 
-  form.match_type = PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   EXPECT_EQ(GetLoginMatchType::kExact, GetMatchType(form));
 
   form.match_type =
-      PasswordForm::MatchType::kPSL | PasswordForm::MatchType::kAffiliated;
+      affiliations::MatchType::kPSL | affiliations::MatchType::kAffiliated;
   EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
 
-  form.match_type = PasswordForm::MatchType::kAffiliated;
+  form.match_type = affiliations::MatchType::kAffiliated;
   EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
 
-  form.match_type = PasswordForm::MatchType::kPSL;
+  form.match_type = affiliations::MatchType::kPSL;
   EXPECT_EQ(GetLoginMatchType::kPSL, GetMatchType(form));
 
-  form.match_type = PasswordForm::MatchType::kGrouped;
+  form.match_type = affiliations::MatchType::kGrouped;
   EXPECT_EQ(GetLoginMatchType::kGrouped, GetMatchType(form));
 }
 
@@ -240,7 +240,7 @@ TEST(PasswordManagerUtil, FindBestMatches) {
   const base::Time k2DaysAgo = kNow - base::Days(2);
   const int kNotFound = -1;
   struct TestMatch {
-    PasswordForm::MatchType match_type;
+    affiliations::MatchType match_type;
     base::Time date_last_used;
     std::u16string username;
     std::string signon_realm = kTestURL;
@@ -253,88 +253,88 @@ TEST(PasswordManagerUtil, FindBestMatches) {
   } test_cases[] = {
       {"Empty matches", {}, kNotFound, {}},
       {"1 exact match",
-       {{.match_type = PasswordForm::MatchType::kExact,
+       {{.match_type = affiliations::MatchType::kExact,
          .date_last_used = kNow,
          .username = u"u"}},
        /*expected_preferred_match_index=*/0,
        {{"u", 0}}},
       {"1 psl match",
-       {{.match_type = PasswordForm::MatchType::kPSL,
+       {{.match_type = affiliations::MatchType::kPSL,
          .date_last_used = kNow,
          .username = u"u"}},
        /*expected_preferred_match_index=*/0,
        {{"u", 0}}},
       {"2 matches with the same username",
-       {{.match_type = PasswordForm::MatchType::kExact,
+       {{.match_type = affiliations::MatchType::kExact,
          .date_last_used = kNow,
          .username = u"u"},
-        {.match_type = PasswordForm::MatchType::kExact,
+        {.match_type = affiliations::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u"}},
        /*expected_preferred_match_index=*/0,
        {{"u", 0}}},
       {"2 matches with different usernames, most recently used taken",
-       {{.match_type = PasswordForm::MatchType::kExact,
+       {{.match_type = affiliations::MatchType::kExact,
          .date_last_used = kNow,
          .username = u"u1"},
-        {.match_type = PasswordForm::MatchType::kExact,
+        {.match_type = affiliations::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u2"}},
        /*expected_preferred_match_index=*/0,
        {{"u1", 0}, {"u2", 1}}},
       {"2 matches with different usernames, exact match taken",
-       {{.match_type = PasswordForm::MatchType::kExact,
+       {{.match_type = affiliations::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u1"},
-        {.match_type = PasswordForm::MatchType::kPSL,
+        {.match_type = affiliations::MatchType::kPSL,
          .date_last_used = kNow,
          .username = u"u2"}},
        /*expected_preferred_match_index=*/0,
        {{"u1", 0}, {"u2", 1}}},
       {"8 matches, 3 usernames",
-       {{.match_type = PasswordForm::MatchType::kExact,
+       {{.match_type = affiliations::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u2"},
-        {.match_type = PasswordForm::MatchType::kPSL,
+        {.match_type = affiliations::MatchType::kPSL,
          .date_last_used = kYesterday,
          .username = u"u3"},
-        {.match_type = PasswordForm::MatchType::kPSL,
+        {.match_type = affiliations::MatchType::kPSL,
          .date_last_used = kYesterday,
          .username = u"u1"},
-        {.match_type = PasswordForm::MatchType::kExact,
+        {.match_type = affiliations::MatchType::kExact,
          .date_last_used = k2DaysAgo,
          .username = u"u3"},
-        {.match_type = PasswordForm::MatchType::kPSL,
+        {.match_type = affiliations::MatchType::kPSL,
          .date_last_used = kNow,
          .username = u"u1"},
-        {.match_type = PasswordForm::MatchType::kExact,
+        {.match_type = affiliations::MatchType::kExact,
          .date_last_used = kNow,
          .username = u"u2"},
-        {.match_type = PasswordForm::MatchType::kPSL,
+        {.match_type = affiliations::MatchType::kPSL,
          .date_last_used = kYesterday,
          .username = u"u3"},
-        {.match_type = PasswordForm::MatchType::kExact,
+        {.match_type = affiliations::MatchType::kExact,
          .date_last_used = k2DaysAgo,
          .username = u"u1"}},
        /*expected_preferred_match_index=*/5,
        {{"u1", 7}, {"u2", 5}, {"u3", 3}}},
       {"Affiliated Android app and exact matches, exact match taken",
-       {{.match_type = PasswordForm::MatchType::kAffiliated,
+       {{.match_type = affiliations::MatchType::kAffiliated,
          .date_last_used = kNow,
          .username = u"uAndroid",
          .signon_realm = kTestAndroidRealm},
-        {.match_type = PasswordForm::MatchType::kExact,
+        {.match_type = affiliations::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"uExact"}},
        /*expected_preferred_match_index=*/1,
        {{"uExact", 1}, {"uAndroid", 0}}},
       {"Affiliated Android app and affiliated website matches, most recently "
        "used taken",
-       {{.match_type = PasswordForm::MatchType::kAffiliated,
+       {{.match_type = affiliations::MatchType::kAffiliated,
          .date_last_used = kYesterday,
          .username = u"uAffiliatedAndroid",
          .signon_realm = kTestAndroidRealm},
-        {.match_type = PasswordForm::MatchType::kAffiliated,
+        {.match_type = affiliations::MatchType::kAffiliated,
          .date_last_used = kNow,
          .username = u"uAffiliatedWebsite"}},
        /*expected_preferred_match_index=*/1,
@@ -405,7 +405,7 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   const std::u16string kPassword2 = u"Password2";
 
   StoredCredential form;
-  form.match_type = PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   form.date_last_used = base::Time::Now();
 
   // Add the same credentials in account and profile stores.
@@ -468,7 +468,7 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
-  stored.match_type = PasswordForm::MatchType::kExact;
+  stored.match_type = affiliations::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value = PasswordString(u"new_password");
 
@@ -478,7 +478,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
 TEST(PasswordManagerUtil, GetMatchForUpdating_RejectUnknownUsername) {
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
-  stored.match_type = PasswordForm::MatchType::kExact;
+  stored.match_type = affiliations::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
   parsed.username_value = u"other_username";
 
@@ -488,7 +488,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_RejectUnknownUsername) {
 TEST(PasswordManagerUtil, GetMatchForUpdating_FederatedCredential) {
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
-  stored.match_type = PasswordForm::MatchType::kExact;
+  stored.match_type = affiliations::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value = PasswordString(std::u16string());
   parsed.federation_origin = url::SchemeHostPort(GURL(kTestFederationURL));
@@ -499,7 +499,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_FederatedCredential) {
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSL) {
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
-  stored.match_type = PasswordForm::MatchType::kPSL;
+  stored.match_type = affiliations::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
 
   EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
@@ -508,7 +508,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSL) {
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
-  stored.match_type = PasswordForm::MatchType::kPSL;
+  stored.match_type = affiliations::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value = PasswordString(u"new_password");
 
@@ -519,7 +519,7 @@ TEST(PasswordManagerUtil,
      GetMatchForUpdating_PasswordChangeCredentialPSLAnotherPassword) {
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
-  stored.match_type = PasswordForm::MatchType::kPSL;
+  stored.match_type = affiliations::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value = PasswordString(u"new_password");
   parsed.type = PasswordForm::Type::kChangeSubmission;
@@ -531,7 +531,7 @@ TEST(PasswordManagerUtil,
      GetMatchForUpdating_PasswordChangeCredentialGroupedAnotherPassword) {
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
-  stored.match_type = PasswordForm::MatchType::kGrouped;
+  stored.match_type = affiliations::MatchType::kGrouped;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value = PasswordString(u"new_password");
   parsed.type = PasswordForm::Type::kChangeSubmission;
@@ -543,7 +543,7 @@ TEST(PasswordManagerUtil,
      GetMatchForUpdating_MatchUsernamePSLNewPasswordKnown) {
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
-  stored.match_type = PasswordForm::MatchType::kPSL;
+  stored.match_type = affiliations::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.new_password_value = parsed.password_value;
   parsed.password_value.clear();
@@ -555,7 +555,7 @@ TEST(PasswordManagerUtil,
      GetMatchForUpdating_MatchUsernamePSLNewPasswordUnknown) {
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
-  stored.match_type = PasswordForm::MatchType::kPSL;
+  stored.match_type = affiliations::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.new_password_value = PasswordString(u"new_password");
   parsed.password_value.clear();
@@ -575,7 +575,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameFindByPassword) {
 TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameFindByPasswordPSL) {
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
-  stored.match_type = PasswordForm::MatchType::kPSL;
+  stored.match_type = affiliations::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
 
@@ -626,21 +626,21 @@ TEST(PasswordManagerUtil,
   stored1.username_value = u"MyUsername";
   stored1.password_value = PasswordString(u"MyPassword2");
   stored1.date_last_used = kYesterday;
-  stored1.match_type = PasswordForm::MatchType::kExact;
+  stored1.match_type = affiliations::MatchType::kExact;
 
   StoredCredential stored2 =
       password_manager::FromPasswordForm(GetTestCredential());
   stored2.username_value = u"";
   stored2.password_value = PasswordString(u"MyPassword1");
   stored2.date_last_used = kYesterday;
-  stored2.match_type = PasswordForm::MatchType::kExact;
+  stored2.match_type = affiliations::MatchType::kExact;
 
   StoredCredential stored3 =
       password_manager::FromPasswordForm(GetTestCredential());
   stored3.username_value = u"OtherUsername";
   stored3.password_value = PasswordString(u"MyPassword2");
   stored3.date_last_used = kNow;
-  stored3.match_type = PasswordForm::MatchType::kExact;
+  stored3.match_type = affiliations::MatchType::kExact;
 
   PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
@@ -654,7 +654,7 @@ TEST(PasswordManagerUtil,
   // stored1: MatchType::kExact, DateLastUsed: Yesterday
   // stored3: MatchType::kPSL, DateLastUsed: Now
   // Even though stored3 is newer, stored1 is exact and should be preferred.
-  stored3.match_type = PasswordForm::MatchType::kPSL;
+  stored3.match_type = affiliations::MatchType::kPSL;
   EXPECT_EQ(&stored1,
             GetMatchForUpdating(parsed, {&stored1, &stored2, &stored3}));
 }
@@ -933,7 +933,7 @@ const TrustedVaultErrorPreventsFromSavingTestCase
              PasswordForm::Store::kAccountStore,
          password_manager::ActionableError::kTrustedVaultKeyNeeded,
          password_manager::ActionableError::kInactionable, false},
-};
+    };
 
 INSTANTIATE_TEST_SUITE_P(
     All,

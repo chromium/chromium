@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
@@ -98,8 +99,7 @@ Credential PasswordFormToCredential(
     bool immediately_available_to_login,
     const password_manager::PasswordForm& form) {
   CHECK(form.match_type);
-  CHECK_NE(form.match_type.value(),
-           password_manager::PasswordForm::MatchType::kGrouped);
+  CHECK_NE(form.match_type.value(), affiliations::MatchType::kGrouped);
   Credential credential;
   credential.username = form.username_value;
   credential.source_site_or_app =
@@ -128,8 +128,7 @@ std::vector<Credential> ConstructCredentialsList(
   for (const auto& cred : best_matches) {
     // Don't consider weakly affiliated (grouped) credentials because they are
     // low confidence matches and would require additional user confirmation.
-    if (cred.match_type.value() ==
-        password_manager::PasswordForm::MatchType::kGrouped) {
+    if (cred.match_type.value() == affiliations::MatchType::kGrouped) {
       continue;
     }
     result.push_back(

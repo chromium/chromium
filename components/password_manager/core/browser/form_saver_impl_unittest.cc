@@ -17,6 +17,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -51,7 +52,7 @@ PasswordForm CreateObserved() {
 PasswordForm CreatePending(
     std::u16string_view username,
     std::u16string_view password,
-    PasswordForm::MatchType match_type = PasswordForm::MatchType::kExact) {
+    affiliations::MatchType match_type = affiliations::MatchType::kExact) {
   PasswordForm form = CreateObserved();
   form.username_value = std::u16string(username);
   form.password_value = PasswordString(std::u16string(password));
@@ -218,7 +219,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDoNotDeleteEmptyUsernamePSLCredentials) {
   PasswordForm stored = pending;
   PasswordForm no_username_psl = pending;
   no_username_psl.username_value.clear();
-  no_username_psl.match_type = PasswordForm::MatchType::kPSL;
+  no_username_psl.match_type = affiliations::MatchType::kPSL;
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
       &stored, &no_username_psl};
 
@@ -262,7 +263,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndUpdatePasswordValuesOnPSLMatch) {
   constexpr char16_t kNewPassword[] = u"new_password";
 
   PasswordForm duplicate =
-      CreatePending(u"nameofuser", kOldPassword, PasswordForm::MatchType::kPSL);
+      CreatePending(u"nameofuser", kOldPassword, affiliations::MatchType::kPSL);
   duplicate.url = GURL("https://www.example.in");
   duplicate.signon_realm = duplicate.url.spec();
 
@@ -285,7 +286,7 @@ TEST_P(FormSaverImplSaveTest, Write_UpdatePropagatesBackup) {
   pending.date_password_modified = base::Time::Now() - base::Seconds(1);
 
   PasswordForm duplicate =
-      CreatePending(u"nameofuser", kOldPassword, PasswordForm::MatchType::kPSL);
+      CreatePending(u"nameofuser", kOldPassword, affiliations::MatchType::kPSL);
   duplicate.url = GURL("https://www.example.in");
   duplicate.signon_realm = duplicate.url.spec();
 
@@ -307,12 +308,12 @@ TEST_P(FormSaverImplSaveTest, Write_UpdateDeletesAllAffectedBackups) {
   pending.date_password_modified = base::Time::Now() - base::Seconds(1);
 
   PasswordForm match_1 =
-      CreatePending(u"nameofuser", kOldPassword, PasswordForm::MatchType::kPSL);
+      CreatePending(u"nameofuser", kOldPassword, affiliations::MatchType::kPSL);
   match_1.SetPasswordBackupNote(kBackupPassword);
   match_1.url = GURL("https://www.example.in");
   match_1.signon_realm = match_1.url.spec();
   PasswordForm match_2 =
-      CreatePending(u"nameofuser", kOldPassword, PasswordForm::MatchType::kPSL);
+      CreatePending(u"nameofuser", kOldPassword, affiliations::MatchType::kPSL);
   match_2.SetPasswordBackupNote(kBackupPassword);
   match_2.url = GURL("https://account.example.in");
   match_2.signon_realm = match_2.url.spec();
@@ -342,7 +343,7 @@ TEST_P(FormSaverImplSaveTest, Write_UpdatePropagatesActorPermission) {
   pending.date_password_modified = base::Time::Now() - base::Seconds(1);
 
   PasswordForm duplicate =
-      CreatePending(u"nameofuser", kOldPassword, PasswordForm::MatchType::kPSL);
+      CreatePending(u"nameofuser", kOldPassword, affiliations::MatchType::kPSL);
   duplicate.url = GURL("https://www.example.in");
   duplicate.signon_realm = duplicate.url.spec();
 
@@ -364,7 +365,7 @@ TEST_P(FormSaverImplSaveTest, Write_UpdateDoesNotDeletePermission) {
   pending.date_password_modified = base::Time::Now() - base::Seconds(1);
 
   PasswordForm duplicate =
-      CreatePending(u"nameofuser", kOldPassword, PasswordForm::MatchType::kPSL);
+      CreatePending(u"nameofuser", kOldPassword, affiliations::MatchType::kPSL);
   duplicate.url = GURL("https://www.example.in");
   duplicate.signon_realm = duplicate.url.spec();
   duplicate.actor_login_approved = true;

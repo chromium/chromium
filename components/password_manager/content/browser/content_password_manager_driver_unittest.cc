@@ -216,7 +216,7 @@ PasswordFormFillData GetTestPasswordFormFillData() {
   preferred_match.password_value = password_manager::PasswordString(u"test");
   preferred_match.signon_realm = "https://foo.com/";
   preferred_match.scheme = PasswordForm::Scheme::kHtml;
-  preferred_match.match_type = PasswordForm::MatchType::kExact;
+  preferred_match.match_type = affiliations::MatchType::kExact;
 
   std::vector<StoredCredential> matches;
   StoredCredential non_preferred_match;
@@ -226,7 +226,7 @@ PasswordFormFillData GetTestPasswordFormFillData() {
       password_manager::PasswordString(u"test1");
   non_preferred_match.signon_realm = "https://foo.com/";
   non_preferred_match.scheme = PasswordForm::Scheme::kHtml;
-  non_preferred_match.match_type = PasswordForm::MatchType::kPSL;
+  non_preferred_match.match_type = affiliations::MatchType::kPSL;
   matches.push_back(std::move(non_preferred_match));
 
   url::Origin page_origin = url::Origin::Create(GURL("https://foo.com/"));
@@ -270,11 +270,13 @@ class ContentPasswordManagerDriverTest
 
   bool WasLoggingActivationMessageSent(bool* activation_flag) {
     base::RunLoop().RunUntilIdle();
-    if (!fake_agent_.called_set_logging_state())
+    if (!fake_agent_.called_set_logging_state()) {
       return false;
+    }
 
-    if (activation_flag)
+    if (activation_flag) {
       *activation_flag = fake_agent_.logging_state_active();
+    }
     fake_agent_.reset_data();
     return true;
   }

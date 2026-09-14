@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -117,7 +118,7 @@ class CredentialManagerPendingRequestTaskTest : public ::testing::Test {
     form_.signon_realm = form_.url.spec();
     form_.scheme = PasswordForm::Scheme::kHtml;
     form_.skip_zero_click = false;
-    form_.match_type = PasswordForm::MatchType::kExact;
+    form_.match_type = affiliations::MatchType::kExact;
   }
   ~CredentialManagerPendingRequestTaskTest() override = default;
 
@@ -286,7 +287,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest, NoAutosigninForPSLMatches) {
   RunAllPendingTasks();
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
-  psl_form.match_type = PasswordForm::MatchType::kPSL;
+  psl_form.match_type = affiliations::MatchType::kPSL;
   psl_form.in_store = PasswordForm::Store::kProfileStore;
   expected_forms.push_back(std::make_unique<PasswordForm>(psl_form));
 
@@ -315,7 +316,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
   form_.in_store = PasswordForm::Store::kProfileStore;
   expected_forms.push_back(std::make_unique<PasswordForm>(form_));
-  psl_form.match_type = PasswordForm::MatchType::kPSL;
+  psl_form.match_type = affiliations::MatchType::kPSL;
   psl_form.in_store = PasswordForm::Store::kProfileStore;
   expected_forms.push_back(std::make_unique<PasswordForm>(psl_form));
 

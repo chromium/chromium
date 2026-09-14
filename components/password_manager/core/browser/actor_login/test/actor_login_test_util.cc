@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -99,7 +100,7 @@ PasswordForm CreateSavedPasswordForm(const GURL& url,
   form.signon_realm = password_manager_util::GetSignonRealm(url);
   form.username_value = username;
   form.password_value = PasswordString(std::move(password));
-  form.match_type = PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   form.in_store = password_manager::PasswordForm::Store::kAccountStore;
   return form;
 }

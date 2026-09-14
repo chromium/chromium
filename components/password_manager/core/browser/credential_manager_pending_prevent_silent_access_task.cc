@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
 
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -39,7 +40,7 @@ void CredentialManagerPendingPreventSilentAccessTask::
   std::vector<StoredCredential> results =
       GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
   for (auto& form : results) {
-    if (form.match_type == PasswordForm::MatchType::kGrouped ||
+    if (form.match_type == affiliations::MatchType::kGrouped ||
         form.blocked_by_user) {
       continue;
     }

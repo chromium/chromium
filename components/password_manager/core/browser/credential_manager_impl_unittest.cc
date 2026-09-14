@@ -24,6 +24,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
@@ -328,7 +329,6 @@ class CredentialManagerImplTest : public testing::Test,
         cross_origin_form_.url.DeprecatedGetOriginAsURL().spec();
     cross_origin_form_.scheme = PasswordForm::Scheme::kHtml;
     cross_origin_form_.skip_zero_click = false;
-
   }
 
   void TearDown() override {
@@ -654,7 +654,7 @@ TEST_P(CredentialManagerImplTest,
       password_manager::features::kPasswordFormGroupedAffiliations};
   PasswordForm grouped_form = affiliated_form1_;
   grouped_form.skip_zero_click = false;
-  grouped_form.match_type = PasswordForm::MatchType::kGrouped;
+  grouped_form.match_type = affiliations::MatchType::kGrouped;
   grouped_form.username_value = form_.username_value;
   grouped_form.password_value = form_.password_value;
   store_->AddLogin(password_manager::FromPasswordForm(grouped_form));
@@ -772,7 +772,7 @@ TEST_P(CredentialManagerImplTest,
   form_.password_value = PasswordString();
   form_.skip_zero_click = true;
   form_.signon_realm = "federation://example.com/example.com";
-  form_.match_type = PasswordForm::MatchType::kExact;
+  form_.match_type = affiliations::MatchType::kExact;
   store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   // Calling 'Store' with a credential that matches |form_| should update
@@ -977,7 +977,7 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithPSLCredential) {
   store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
-  subdomain_form_.match_type = PasswordForm::MatchType::kPSL;
+  subdomain_form_.match_type = affiliations::MatchType::kPSL;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr(
                             UnorderedElementsAre(Pointee(
                                 MatchesFormExceptStore(subdomain_form_))),
@@ -995,8 +995,8 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(password_manager::FromPasswordForm(origin_path_form_));
   store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
 
-  form_.match_type = PasswordForm::MatchType::kExact;
-  origin_path_form_.match_type = PasswordForm::MatchType::kExact;
+  form_.match_type = affiliations::MatchType::kExact;
+  origin_path_form_.match_type = affiliations::MatchType::kExact;
 
   EXPECT_CALL(*client_,
               PromptUserToChooseCredentialsPtr(
@@ -1051,9 +1051,9 @@ TEST_P(CredentialManagerImplTest,
       "federation://" + federated.url.GetHost() + "/google.com";
   store_->AddLogin(password_manager::FromPasswordForm(federated));
 
-  form_.match_type = PasswordForm::MatchType::kExact;
-  origin_path_form_.match_type = PasswordForm::MatchType::kExact;
-  federated.match_type = PasswordForm::MatchType::kExact;
+  form_.match_type = affiliations::MatchType::kExact;
+  origin_path_form_.match_type = affiliations::MatchType::kExact;
+  federated.match_type = affiliations::MatchType::kExact;
 
   EXPECT_CALL(*client_,
               PromptUserToChooseCredentialsPtr(
@@ -1257,7 +1257,7 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest, RequestCredentialWithoutFirstRun) {
   client_->set_first_run_seen(false);
   store_->AddLogin(password_manager::FromPasswordForm(form_));
-  form_.match_type = PasswordForm::MatchType::kExact;
+  form_.match_type = affiliations::MatchType::kExact;
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, NotifyUserCouldBeAutoSignedInPtr(
@@ -1271,7 +1271,7 @@ TEST_P(CredentialManagerImplTest, RequestCredentialWithFirstRunAndSkip) {
   client_->set_first_run_seen(true);
   form_.skip_zero_click = true;
   store_->AddLogin(password_manager::FromPasswordForm(form_));
-  form_.match_type = PasswordForm::MatchType::kExact;
+  form_.match_type = affiliations::MatchType::kExact;
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, NotifyUserCouldBeAutoSignedInPtr(
@@ -1827,8 +1827,8 @@ TEST_P(CredentialManagerImplTest,
   form_.username_value = u"username_value";
   store_->AddLogin(password_manager::FromPasswordForm(form_));
 
-  form_.match_type = PasswordForm::MatchType::kExact;
-  federated.match_type = PasswordForm::MatchType::kExact;
+  form_.match_type = affiliations::MatchType::kExact;
+  federated.match_type = affiliations::MatchType::kExact;
 
   EXPECT_CALL(*client_, PasswordWasAutofilled(
                             ElementsAre(MatchesFormExceptStore(form_)), _,

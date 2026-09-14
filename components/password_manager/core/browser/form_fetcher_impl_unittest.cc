@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -173,7 +174,7 @@ PasswordForm CreateHTMLForm(const std::string& origin_url,
   form.username_value = ASCIIToUTF16(username_value);
   form.password_value = PasswordString(ASCIIToUTF16(password_value));
   form.date_last_used = date_last_used;
-  form.match_type = PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   return form;
 }
 
@@ -186,7 +187,7 @@ PasswordForm CreateLeakedCredential(
   compromised.password_issues.insert(
       {InsecureType::kLeaked, insecurity_metadata});
   compromised.in_store = store;
-  compromised.match_type = PasswordForm::MatchType::kExact;
+  compromised.match_type = affiliations::MatchType::kExact;
   return compromised;
 }
 
@@ -196,7 +197,7 @@ PasswordForm CreateNonFederated(const std::string& username_value = "user",
   PasswordForm form =
       CreateHTMLForm(kTestHttpsURL, username_value, "password", date_last_used);
   form.action = GURL(kTestHttpsActionURL);
-  form.match_type = PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   return form;
 }
 
@@ -204,7 +205,7 @@ PasswordForm CreateNonFederated(const std::string& username_value = "user",
 PasswordForm CreateHTTPNonFederated() {
   PasswordForm form = CreateHTMLForm(kTestHttpURL, "user", "password");
   form.action = GURL(kTestHttpActionURL);
-  form.match_type = PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   return form;
 }
 
@@ -215,7 +216,7 @@ PasswordForm CreateFederated(const std::string& username_value = "user",
   form.signon_realm = kTestFederatedRealm;
   form.password_value.clear();
   form.federation_origin = url::SchemeHostPort(GURL(kTestFederationURL));
-  form.match_type = PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   return form;
 }
 
@@ -227,7 +228,7 @@ PasswordForm CreateAndroidFederated(
       CreateHTMLForm("android://hash@com.example.android/", username_value,
                      /*password_value=*/"", date_last_used);
   form.federation_origin = url::SchemeHostPort(GURL(kTestFederationURL));
-  form.match_type = PasswordForm::MatchType::kAffiliated;
+  form.match_type = affiliations::MatchType::kAffiliated;
   return form;
 }
 
@@ -240,19 +241,19 @@ PasswordForm CreateBlocked() {
 
 PasswordForm CreateBlockedPsl() {
   PasswordForm form = CreateBlocked();
-  form.match_type = PasswordForm::MatchType::kPSL;
+  form.match_type = affiliations::MatchType::kPSL;
   return form;
 }
 
 PasswordForm CreateGrouped() {
   PasswordForm form = CreateHTMLForm(kTestGroupedURL, "user", "password");
-  form.match_type = PasswordForm::MatchType::kGrouped;
+  form.match_type = affiliations::MatchType::kGrouped;
   return form;
 }
 
 PasswordForm CreateGroupedApp() {
   PasswordForm form = CreateHTMLForm(kTestAndroidFacetURI, "user", "password");
-  form.match_type = PasswordForm::MatchType::kGrouped;
+  form.match_type = affiliations::MatchType::kGrouped;
   return form;
 }
 
@@ -1376,7 +1377,7 @@ TEST_F(MultiStoreFormFetcherTest, MovingToAccountStoreIsBlocked) {
 
   // PSL form that's blocked for |kUser| for "psl_username".
   PasswordForm psl_form = CreateHTMLForm("psl.url.com", "psl_username", "pass");
-  psl_form.match_type = PasswordForm::MatchType::kPSL;
+  psl_form.match_type = affiliations::MatchType::kPSL;
   psl_form.in_store = PasswordForm::Store::kProfileStore;
   psl_form.moving_blocked_for_list.push_back(kUser);
 
