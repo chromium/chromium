@@ -187,6 +187,10 @@ public class SearchIndexProviderRegistryTest {
                         for (String msg : unindexedFragments) {
                             sb.append("  - ").append(msg).append("\n");
                         }
+                        sb.append(
+                                "\n"
+                                    + "See //components/browser_ui/settings/android/settings_search_testing.md"
+                                    + " for documentation.");
                         fail(sb.toString());
                     }
                 });

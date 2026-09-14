@@ -44,3 +44,9 @@ More information see
 | Collection of individual preferences in XML, used with `addPreferencesFromResource()` | No change, adhere to [ Android conventions](https://developer.android.com/guide/topics/ui/settings) |
 | Android SharedPreferences, as in `android.content.SharedPreferences` | Always keep “Shared” prefix |
 | Chrome Native preferences, as in `components/prefs/pref_service.h` | Always refer to with the abbreviated “prefs”, adhering to Chrome conventions |
+
+## Settings Search & Testing
+
+Android Settings screens are indexed for in-app search via `//components/browser_ui/settings/android/.../search`.
+To ensure settings remain reachable and prevent silent regressions, see the
+[Settings Search Testing Guide](/components/browser_ui/settings/android/settings_search_testing.md).

@@ -223,6 +223,10 @@ public class SettingsSearchOrphanTest {
                         for (OrphanReport bug : unexpectedBugs) {
                             sb.append("  - ").append(bug.toString()).append("\n");
                         }
+                        sb.append(
+                                "\n"
+                                    + "See //components/browser_ui/settings/android/settings_search_testing.md"
+                                    + " for documentation.");
                         fail(sb.toString());
                     }
                 });

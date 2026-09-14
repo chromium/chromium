@@ -122,7 +122,10 @@ class SearchIndexValidator {
                     "Settings search index parity failure on "
                             + fragmentName
                             + ":\n  - "
-                            + String.join("\n  - ", errors));
+                            + String.join("\n  - ", errors)
+                            + "\n\n"
+                            + "See //components/browser_ui/settings/android/settings_search_testing.md"
+                            + " for documentation.");
         }
     }
 

@@ -30,7 +30,10 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Set;
 
-/** Utility methods and custom matchers for Settings UI tests and search index parity tests. */
+/**
+ * Utility methods and custom matchers for Settings UI tests and search index parity tests (see
+ * //components/browser_ui/settings/android/settings_search_testing.md).
+ */
 public class SettingsSearchTestUtils {
 
     private SettingsSearchTestUtils() {}
