@@ -665,7 +665,7 @@ bool IsGeminiActorBackgroundingEnabled() {
   return kGeminiActorBackgrounding.Get();
 }
 
-BASE_FEATURE(kGeminiUnaryMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiUnaryMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiUnaryMigrationEnabled() {
   if (!IsPageActionMenuEnabled()) {
@@ -674,7 +674,7 @@ bool IsGeminiUnaryMigrationEnabled() {
   return base::FeatureList::IsEnabled(kGeminiUnaryMigration);
 }
 
-BASE_FEATURE(kGeminiBinaryMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiBinaryMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiBinaryMigrationEnabled() {
   if (!IsPageActionMenuEnabled()) {

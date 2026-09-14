@@ -10967,22 +10967,6 @@
             ]
         }
     ],
-    "HeliosgRPCMigration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GeminiBinaryMigration",
-                        "GeminiUnaryMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "HideToolbar": [
         {
             "platforms": [
