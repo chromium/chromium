@@ -765,6 +765,7 @@ source_set("interactive_ui_tests") {
 
   if (!is_android) {
     sources += [
+      "contextual_tasks_context_management_interactive_uitest.cc",
       "contextual_tasks_interactive_uitest.cc",
       "contextual_tasks_side_panel_coordinator_interactive_uitest.cc",
       "contextual_tasks_ui_service_interactive_uitest.cc",
@@ -800,12 +801,16 @@ source_set("interactive_ui_tests") {
   if (!is_android) {
     deps += [
       ":ui",
+
+      # TabUnderlineView currently resides under glic/browser_ui.
+      "//chrome/browser/glic/browser_ui:glow",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:test_support",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/lens:enterprise_policy",
+      "//third_party/lens_server_proto:lens_overlay_proto",
     ]
   }
 }
