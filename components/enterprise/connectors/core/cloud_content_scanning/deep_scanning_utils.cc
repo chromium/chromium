@@ -80,6 +80,8 @@ crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
       "pending-file-download-scans");
   static crash_reporter::CrashKeyString<7> pending_prints(
       "pending-print-scans");
+  static crash_reporter::CrashKeyString<7> pending_network_requests(
+      "pending-network-request-scans");
   static crash_reporter::CrashKeyString<7> total_file_uploads(
       "total-file-upload-scans");
   static crash_reporter::CrashKeyString<7> total_text_uploads(
@@ -87,6 +89,8 @@ crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
   static crash_reporter::CrashKeyString<7> total_file_downloads(
       "total-file-download-scans");
   static crash_reporter::CrashKeyString<7> total_prints("total-print-scans");
+  static crash_reporter::CrashKeyString<7> total_network_requests(
+      "total-network-request-scans");
   switch (key) {
     case ScanningCrashKey::PENDING_FILE_UPLOADS:
       return &pending_file_uploads;
@@ -96,6 +100,8 @@ crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
       return &pending_file_downloads;
     case ScanningCrashKey::PENDING_PRINTS:
       return &pending_prints;
+    case ScanningCrashKey::PENDING_NETWORK_REQUESTS:
+      return &pending_network_requests;
     case ScanningCrashKey::TOTAL_FILE_UPLOADS:
       return &total_file_uploads;
     case ScanningCrashKey::TOTAL_TEXT_UPLOADS:
@@ -104,6 +110,8 @@ crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
       return &total_file_downloads;
     case ScanningCrashKey::TOTAL_PRINTS:
       return &total_prints;
+    case ScanningCrashKey::TOTAL_NETWORK_REQUESTS:
+      return &total_network_requests;
   }
 }
 
@@ -112,10 +120,12 @@ int* GetScanCrashKeyCount(ScanningCrashKey key) {
   static int pending_text_uploads = 0;
   static int pending_file_downloads = 0;
   static int pending_prints = 0;
+  static int pending_network_requests = 0;
   static int total_file_uploads = 0;
   static int total_text_uploads = 0;
   static int total_file_downloads = 0;
   static int total_prints = 0;
+  static int total_network_requests = 0;
   switch (key) {
     case ScanningCrashKey::PENDING_FILE_UPLOADS:
       return &pending_file_uploads;
@@ -125,6 +135,8 @@ int* GetScanCrashKeyCount(ScanningCrashKey key) {
       return &pending_file_downloads;
     case ScanningCrashKey::PENDING_PRINTS:
       return &pending_prints;
+    case ScanningCrashKey::PENDING_NETWORK_REQUESTS:
+      return &pending_network_requests;
     case ScanningCrashKey::TOTAL_FILE_UPLOADS:
       return &total_file_uploads;
     case ScanningCrashKey::TOTAL_TEXT_UPLOADS:
@@ -133,6 +145,8 @@ int* GetScanCrashKeyCount(ScanningCrashKey key) {
       return &total_file_downloads;
     case ScanningCrashKey::TOTAL_PRINTS:
       return &total_prints;
+    case ScanningCrashKey::TOTAL_NETWORK_REQUESTS:
+      return &total_network_requests;
   }
 }
 

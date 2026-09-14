@@ -46,10 +46,13 @@ constexpr std::pair<ScanningCrashKey, const char*> kAllCrashKeys[] = {
     {ScanningCrashKey::PENDING_FILE_DOWNLOADS, "pending-file-download-scans"},
     {ScanningCrashKey::PENDING_TEXT_UPLOADS, "pending-text-upload-scans"},
     {ScanningCrashKey::PENDING_PRINTS, "pending-print-scans"},
+    {ScanningCrashKey::PENDING_NETWORK_REQUESTS,
+     "pending-network-request-scans"},
     {ScanningCrashKey::TOTAL_FILE_UPLOADS, "total-file-upload-scans"},
     {ScanningCrashKey::TOTAL_FILE_DOWNLOADS, "total-file-download-scans"},
     {ScanningCrashKey::TOTAL_TEXT_UPLOADS, "total-text-upload-scans"},
-    {ScanningCrashKey::TOTAL_PRINTS, "total-print-scans"}};
+    {ScanningCrashKey::TOTAL_PRINTS, "total-print-scans"},
+    {ScanningCrashKey::TOTAL_NETWORK_REQUESTS, "total-network-request-scans"}};
 #endif  // !BUILDFLAG(USE_CRASH_KEY_STUBS)
 
 constexpr int64_t kTotalBytes = 1000;
