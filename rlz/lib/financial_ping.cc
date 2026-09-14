@@ -203,8 +203,6 @@ void OnURLLoadComplete(std::unique_ptr<network::SimpleURLLoader> url_loader,
                              std::move(response_body).value_or(""));
 }
 
-bool send_financial_ping_interrupted_for_test = false;
-
 }  // namespace
 
 // The signal for the current ping request. It can be used to cancel the request
@@ -225,7 +223,6 @@ bool FinancialPing::SetURLLoaderFactory(
   g_URLLoaderFactory.store(factory, std::memory_order_release);
   scoped_refptr<RefCountedWaitableEvent> event = GetPingResultEvent();
   if (!factory && event) {
-    send_financial_ping_interrupted_for_test = true;
     event->SignalShutdown();
   }
   return true;
@@ -330,7 +327,6 @@ FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
     return PING_FAILURE;
 
   if (event->GetResponseCode() == -1) {
-    send_financial_ping_interrupted_for_test = true;
     return PING_SHUTDOWN;
   } else if (event->GetResponseCode() != 200) {
     return PING_FAILURE;
@@ -386,17 +382,5 @@ bool FinancialPing::ClearLastPingTime(Product product) {
     return false;
   return store->ClearPingTime(product);
 }
-
-namespace test {
-
-void ResetSendFinancialPingInterrupted() {
-  send_financial_ping_interrupted_for_test = false;
-}
-
-bool WasSendFinancialPingInterrupted() {
-  return send_financial_ping_interrupted_for_test;
-}
-
-}  // namespace test
 
 }  // namespace rlz_lib

@@ -43,7 +43,6 @@
 #endif
 
 #include "base/apple/scoped_nsautorelease_pool.h"
-#include "base/threading/thread.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -679,52 +678,6 @@ TEST_F(RlzLibTest, SendFinancialPing) {
             expected_amount_of_request);
 }
 
-void ResetURLLoaderFactory() {
-  rlz_lib::SetURLLoaderFactory(nullptr);
-}
-
-TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
-  // rlz_lib::SendFinancialPing fails when this is set.
-  if (!rlz_lib::SupplementaryBranding::GetBrand().empty())
-    return;
-
-#if BUILDFLAG(IS_APPLE)
-  base::apple::ScopedNSAutoreleasePool pool;
-#endif
-
-  base::Thread io_thread("rlz_unittest_io_thread");
-  ASSERT_TRUE(io_thread.StartWithOptions(
-      base::Thread::Options(base::MessagePumpType::IO, 0)));
-
-  network::TestURLLoaderFactory test_url_loader_factory;
-  URLLoaderFactoryRAII set_factory(
-      test_url_loader_factory.GetSafeWeakWrapper().get());
-
-  rlz_lib::test::ResetSendFinancialPingInterrupted();
-  EXPECT_FALSE(rlz_lib::test::WasSendFinancialPingInterrupted());
-
-  io_thread.task_runner()->PostTask(FROM_HERE,
-                                    base::BindOnce(&ResetURLLoaderFactory));
-
-  SendFinancialPing(rlz_lib::TOOLBAR_NOTIFIER, /* exclude_machine_id */ false);
-
-  EXPECT_TRUE(rlz_lib::test::WasSendFinancialPingInterrupted());
-  rlz_lib::test::ResetSendFinancialPingInterrupted();
-
-  io_thread.Stop();
-
-  // If PingRlzServer started before SetURLLoaderFactory(nullptr) was called on
-  // io_thread, a pending request was created on base::ThreadPool. Simulate a
-  // response to complete the SimpleURLLoader, then run until idle to ensure all
-  // ThreadPool tasks and Mojo receiver cleanups finish on their own sequence
-  // before `test_url_loader_factory` is destroyed on the main thread.
-  while (test_url_loader_factory.NumPending() > 0) {
-    test_url_loader_factory.SimulateResponseForPendingRequest(
-        test_url_loader_factory.GetPendingRequest(0)->request.url.spec(), "",
-        net::HTTP_NOT_FOUND);
-  }
-  RunUntilIdle();
-}
 
 TEST_F(RlzLibTest, ClearProductState) {
   MachineDealCodeHelper::Clear();

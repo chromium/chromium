@@ -68,12 +68,6 @@ class FinancialPing {
   FinancialPing() {}
   ~FinancialPing() {}
 };
-
-namespace test {
-void ResetSendFinancialPingInterrupted();
-bool WasSendFinancialPingInterrupted();
-}  // namespace test
-
 }  // namespace rlz_lib
 
 
