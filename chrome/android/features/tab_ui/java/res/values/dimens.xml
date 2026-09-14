@@ -275,5 +275,4 @@ found in the LICENSE file.
     <dimen name="tab_search_close_button_size">24dp</dimen>
     <dimen name="tab_search_close_button_size_desktop">20dp</dimen>
     <dimen name="tab_search_close_button_margin_end">8dp</dimen>
-    <dimen name="tab_search_overlay_hairline_gap">1dp</dimen>
 </resources>
