@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -231,13 +233,20 @@ class FullWebUIOmniboxInteractiveTestBase
     return PollUntil(
         [this, expected_focus]() -> bool {
           auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-          if (!browser_view || !browser_view->GetLocationBarView() ||
-              !browser_view->GetLocationBarView()->omnibox_view()) {
+          if (!browser_view) {
             return false;
           }
-          return browser_view->GetLocationBarView()
-                     ->omnibox_view()
-                     ->HasFocus() == expected_focus;
+          if (auto* location_bar_view = browser_view->GetLocationBarView()) {
+            return location_bar_view->omnibox_view() &&
+                   location_bar_view->omnibox_view()->HasFocus() ==
+                       expected_focus;
+          }
+          if (auto* location_bar = browser_view->GetLocationBar()) {
+            auto* omnibox_view = static_cast<WebUIReadOnlyOmnibox*>(
+                location_bar->GetOmniboxView());
+            return omnibox_view && omnibox_view->has_focus() == expected_focus;
+          }
+          return false;
         },
         "WaitForOmniboxFocus");
   }
@@ -1293,6 +1302,9 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       auto* location_bar = BrowserView::GetBrowserViewForBrowser(browser())
                                ->toolbar()
                                ->location_bar_view();
+      if (!location_bar) {
+        return;
+      }
       auto* focus_ring = views::FocusRing::Get(location_bar);
       if (focus_ring) {
         EXPECT_EQ(focus_ring->ShouldPaintForTesting(), should_paint);
