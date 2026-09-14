@@ -21,6 +21,10 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManForDev);
 COMPONENT_EXPORT(WEBAUTHN)
 extern const base::FeatureParam<std::string> kWebAuthnAndroidCredManForDevMode;
 
+// Disables sending the smart-card transport in FIDO2 API calls. This is a
+// temporary workaround for crbug.com/555599813.
+COMPONENT_EXPORT(WEBAUTHN)
+BASE_DECLARE_FEATURE(kWebAuthnFilterSmartCardTransport);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
