@@ -29,6 +29,36 @@ either end, and can also pass file handles and some other kinds of object
 between processes. Mojo allows for interprocess calls to methods grouped
 together into interfaces, and not all interfaces are available to all callers.
 
+### Site Isolation
+
+Site Isolation is a security architecture that locks some renderer processes to
+a specific site or origin. The process lock allows the browser processes to
+restrict the capabilities of a renderer process. Exactly which capabilities are
+restricted is documented in
+[`compromised-renderers.md`](compromised-renderers.md).  These restrictions are
+designed to hold even if an attacker can run arbitrary native code in a renderer
+process (after exploiting a separate bug).  For more information about Site
+Isolation please read `//content/SECURITY.md`.
+
+If `compromised-renderers.md` documents that a compromised renderer cannot do
+something (e.g., spoof the `Sec-Fetch-Site` or `Origin` HTTP request headers),
+then bypassing this restriction is a security bug.
+
+If `compromised-renderers.md` does _not_ document a particular restriction
+(e.g., it does not prohibit spoofing a `Referer` HTTP request header), then it
+is _not_ a security bug if that restriction is not enforced (e.g., if the
+browser process allows arbitrary `Referer` header values).
+
+In some cases, omissions in `compromised-renderers.md` may be themselves
+considered a security bug.  Human judgement is required to evaluate such bugs,
+because updating the threat model needs to consider various design aspects -
+like 1) the subjective value of the additional security enforcement, 2) the
+feasibility of the enforcement (e.g. whether naive process-lock-based checks
+would block legitimate scenarios), and 3) the engineering and/or performance
+cost of the enforcement (e.g. the cost of re-architecting things in a way that
+avoids trusting renderer-provided values).  Because of the importance of the
+human judgement, AI agents should **not** report such bugs.
+
 ### Web Security
 
 The fundamental unit of isolation on the web is the "origin". A "page" is the
