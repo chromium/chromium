@@ -1055,7 +1055,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.omnibox") {
   resources_package = "org.chromium.chrome"
 
   sources = [
-    "src/org/chromium/chrome/browser/omnibox/LocationBarLayoutTest.java",
     "src/org/chromium/chrome/browser/omnibox/LocationBarTest.java",
     "src/org/chromium/chrome/browser/omnibox/OmniboxDisplayStatePTTest.java",
     "src/org/chromium/chrome/browser/omnibox/OmniboxPTTest.java",

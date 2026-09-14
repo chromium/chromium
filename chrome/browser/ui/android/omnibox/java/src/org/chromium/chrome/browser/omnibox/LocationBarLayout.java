@@ -690,10 +690,6 @@ public class LocationBarLayout extends ConstraintLayout {
         return mStatusCoordinator;
     }
 
-    public boolean getLocationBarButtonsVisibilityForTesting() {
-        return mShowUrlButtons;
-    }
-
     public void setStatusCoordinatorForTesting(StatusCoordinator statusCoordinator) {
         mStatusCoordinator = statusCoordinator;
     }

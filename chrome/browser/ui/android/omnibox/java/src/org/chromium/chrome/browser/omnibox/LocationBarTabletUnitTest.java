@@ -65,6 +65,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.widget.ToastManager;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for LocationBarTablet. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -912,6 +913,42 @@ public class LocationBarTabletUnitTest {
         doReturn(true).when(spyTablet).isActivationChipCompact();
 
         assertTrue(spyTablet.isUrlBarTextOverflowing());
+    }
+
+    // The class-level @Restriction does not configure Robolectric's screen size; without a
+    // tablet qualifier DeviceFormFactor resolves this context as a phone.
+    @Config(qualifiers = "sw600dp")
+    @Test
+    public void urlBarIsNotTranslated_duringNtpFocusAnimation() {
+        // Establish the exact conditions under which a *phone* translates the URL bar to follow
+        // the NTP fake search box, leaving form factor as the only reason translation stays at 0.
+        doReturn(true).when(mStatusCoordinator).isSearchEngineStatusIconVisible();
+        doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
+        View urlBar = mLocationBarTablet.findViewById(R.id.url_bar);
+
+        assertUrlBarUntranslated(
+                urlBar,
+                /* ntpSearchBoxScrollFraction= */ 0,
+                /* urlFocusChangeFraction= */ MathUtils.EPSILON,
+                /* isUrlFocusChangeInProgress= */ true);
+        assertUrlBarUntranslated(urlBar, 0.5f, 0.5f, /* isUrlFocusChangeInProgress= */ false);
+        assertUrlBarUntranslated(urlBar, 1.0f, 1.0f, /* isUrlFocusChangeInProgress= */ false);
+    }
+
+    /**
+     * Drives the focus animation to the given progress and asserts the URL bar is neither
+     * translated nor re-margined: unlike phones, tablets widen the omnibox by relayout only.
+     */
+    private void assertUrlBarUntranslated(
+            View urlBar,
+            float ntpSearchBoxScrollFraction,
+            float urlFocusChangeFraction,
+            boolean isUrlFocusChangeInProgress) {
+        mLocationBarTablet.setUrlFocusChangePercent(
+                ntpSearchBoxScrollFraction, urlFocusChangeFraction, isUrlFocusChangeInProgress);
+
+        assertEquals(0, ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart());
+        assertEquals(0f, urlBar.getTranslationX(), MathUtils.EPSILON);
     }
 
     private void setupContainerAndMeasure(int containerWidth, int prefocusWidth, int leftPosition) {

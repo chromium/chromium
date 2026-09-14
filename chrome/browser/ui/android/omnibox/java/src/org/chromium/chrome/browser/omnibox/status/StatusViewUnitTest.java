@@ -288,4 +288,17 @@ public class StatusViewUnitTest {
         assertEquals(
                 mResourceProvider.getStatusIconSize(), mStatusView.getStatusIconSizeForTesting());
     }
+
+    @Test
+    public void testUseWideStatusIconTogglesMinimumWidth() {
+        mStatusModel.set(StatusProperties.USE_WIDE_STATUS_ICON, true);
+        assertEquals(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.status_view_width_wide),
+                mStatusView.getMinimumWidth());
+
+        mStatusModel.set(StatusProperties.USE_WIDE_STATUS_ICON, false);
+        assertEquals(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.status_view_width_narrow),
+                mStatusView.getMinimumWidth());
+    }
 }

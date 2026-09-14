@@ -539,6 +539,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarEmbedderUiOverridesUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarFocusScrimHandlerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarMediatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/LocationBarPhoneUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarTabletUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipMediatorUnitTest.java",
