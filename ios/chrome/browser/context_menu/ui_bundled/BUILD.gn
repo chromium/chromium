@@ -145,6 +145,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/text_selection/model:model_utils",
+    "//ios/chrome/browser/web/model/image_fetch",
     "//ios/chrome/test:test_support",
     "//ios/components/enterprise/analysis:features",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",

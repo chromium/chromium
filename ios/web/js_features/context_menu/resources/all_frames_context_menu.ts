@@ -548,7 +548,11 @@ function getReferrerPolicy(linkElement?: Element): string {
       if (referrerPolicy === 'default' || referrerPolicy === 'always' ||
           referrerPolicy === 'no-referrer' || referrerPolicy === 'origin' ||
           referrerPolicy === 'no-referrer-when-downgrade' ||
-          referrerPolicy === 'unsafe-url') {
+          referrerPolicy === 'unsafe-url' ||
+          referrerPolicy === 'origin-when-cross-origin' ||
+          referrerPolicy === 'same-origin' ||
+          referrerPolicy === 'strict-origin' ||
+          referrerPolicy === 'strict-origin-when-cross-origin') {
         return referrerPolicy;
       } else {
         return 'never';

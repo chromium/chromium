@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/web/public/navigation/referrer.h"
 #import "url/origin.h"
 
 namespace web {
@@ -19,6 +20,7 @@ class WebState;
 
 - (instancetype)initWithSrcURL:(NSURL*)URL
                       webState:(web::WebState*)webState
+                referrerPolicy:(web::ReferrerPolicy)referrerPolicy
                        frameID:(NSString*)frameID
                    frameOrigin:(url::Origin)frameOrigin
     NS_DESIGNATED_INITIALIZER;

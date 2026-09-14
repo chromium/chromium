@@ -220,7 +220,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   const bool isOffTheRecord = self.browser->GetProfile()->IsOffTheRecord();
 
   const GURL& lastCommittedURL = webState->GetLastCommittedURL();
-  web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
+  web::Referrer referrer(lastCommittedURL, params.referrer_policy);
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   NSString* menuTitle = nil;
@@ -361,6 +361,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
       [[ImagePreviewViewController alloc]
           initWithSrcURL:net::NSURLWithGURL(params.src_url)
                 webState:webState
+          referrerPolicy:params.referrer_policy
                  frameID:base::SysUTF8ToNSString(params.frame_id)
              frameOrigin:params.frame_security_origin];
   [previewViewController loadPreview];

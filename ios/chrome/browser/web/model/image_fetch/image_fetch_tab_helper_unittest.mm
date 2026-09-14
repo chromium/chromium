@@ -438,3 +438,24 @@ TEST_F(ImageFetchTabHelperTest,
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
             intercepted_credentials_mode.value());
 }
+
+// Tests that ImageFetchTabHelper::GetImageData with fallback correctly handles
+// custom referrer policies.
+TEST_F(ImageFetchTabHelperTest,
+       GetImageDataWithCustomReferrerPolicyFallsbackToImageFetcher) {
+  base::RunLoop run_loop;
+  __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  web::Referrer referrer(GURL("https://source.example.com/page?query=secret"),
+                         web::ReferrerPolicyNever);
+  image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), referrer,
+                                         "invalid-frame-id",
+                                         main_frame_origin(), ^(NSData* data) {
+                                           ASSERT_TRUE(data);
+                                           EXPECT_NSEQ(GetExpectedData(), data);
+                                           quit_closure.Run();
+                                         });
+
+  run_loop.Run();
+  EXPECT_EQ(1u, test_url_loader_factory_.total_requests());
+  histogram_tester_.ExpectTotalCount(kUmaGetImageDataByJsResult, 0);
+}

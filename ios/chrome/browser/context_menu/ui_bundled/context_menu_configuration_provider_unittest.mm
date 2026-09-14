@@ -48,6 +48,8 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/web/model/image_fetch/image_fetch_java_script_feature.h"
+#import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/components/enterprise/analysis/features.h"
@@ -724,4 +726,44 @@ TEST_F(ContextMenuConfigurationProviderTest,
   EXPECT_NE(action.subtitle, nil);
   EXPECT_TRUE([action.subtitle
       containsString:@"Images will be available again when your limit resets"]);
+}
+
+// Tests that an image preview provider is created when given valid image params
+// with a custom referrer policy, and returning a non-nil view controller.
+TEST_F(ContextMenuConfigurationProviderTest, ImagePreviewProvider_ValidUrl) {
+  web::FakeWebState* web_state = GetActiveWebState();
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame();
+  frames_manager->AddWebFrame(std::move(main_frame));
+  web_state->SetWebFramesManager(
+      ImageFetchJavaScriptFeature::GetInstance()->GetSupportedContentWorld(),
+      std::move(frames_manager));
+  ImageFetchTabHelper::CreateForWebState(web_state);
+
+  web::ContextMenuParams params = GetContextMenuParamsWithImageUrl(kImageUrl);
+  params.referrer_policy = web::ReferrerPolicyNever;
+
+  UIContextMenuContentPreviewProvider preview_provider =
+      [configuration_provider_
+          contextMenuContentPreviewProviderForWebState:web_state
+                                                params:params];
+  ASSERT_TRUE(preview_provider != nil);
+
+  UIViewController* preview_vc = preview_provider();
+  EXPECT_NSNE(nil, preview_vc);
+}
+
+// Tests that no preview provider is created for a context menu on a URL.
+TEST_F(ContextMenuConfigurationProviderTest, ImagePreviewProvider_LinkUrl) {
+  web::FakeWebState* web_state = GetActiveWebState();
+  ImageFetchTabHelper::CreateForWebState(web_state);
+
+  web::ContextMenuParams params =
+      GetContextMenuParamsWithLinkURL(kLinkUrl, CGPointZero);
+
+  UIContextMenuContentPreviewProvider preview_provider =
+      [configuration_provider_
+          contextMenuContentPreviewProviderForWebState:web_state
+                                                params:params];
+  EXPECT_EQ(nil, preview_provider);
 }

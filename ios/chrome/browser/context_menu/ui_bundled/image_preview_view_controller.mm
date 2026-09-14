@@ -51,6 +51,9 @@ constexpr CGFloat kPreviewImageScale = 2.0;
   // in Chrome process.
   web::JavaScriptImageTranscoder _imageTranscoder;
 
+  // The referrer policy to use when fetching the image preview.
+  web::ReferrerPolicy _referrerPolicy;
+
   // Image view that contains the preview image.
   UIImageView* _imageView;
 
@@ -71,12 +74,14 @@ constexpr CGFloat kPreviewImageScale = 2.0;
 
 - (instancetype)initWithSrcURL:(NSURL*)URL
                       webState:(web::WebState*)webState
+                referrerPolicy:(web::ReferrerPolicy)referrerPolicy
                        frameID:(NSString*)frameID
                    frameOrigin:(url::Origin)frameOrigin {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _imageURL = [URL copy];
     _webState = webState->GetWeakPtr();
+    _referrerPolicy = referrerPolicy;
     _frameID = [frameID copy];
     _frameOrigin = std::move(frameOrigin);
   }
@@ -84,10 +89,16 @@ constexpr CGFloat kPreviewImageScale = 2.0;
 }
 
 - (void)loadPreview {
+  if (!_webState) {
+    return;
+  }
   ImageFetchTabHelper* imageFetcher =
       ImageFetchTabHelper::FromWebState(_webState.get());
+  if (!imageFetcher) {
+    return;
+  }
   const GURL& lastCommittedURL = _webState->GetLastCommittedURL();
-  web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
+  web::Referrer referrer(lastCommittedURL, _referrerPolicy);
 
   std::string frameIDStr = _frameID ? base::SysNSStringToUTF8(_frameID) : "";
 
