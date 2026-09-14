@@ -324,13 +324,22 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ExecuteToggleCommand) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ExecuteExitCommand) {
   base::UserActionTester user_action_tester;
-  bool callback_called = false;
-  OmniboxEverywhereBackgroundModeManager manager(base::BindRepeating(
-      [](bool* called) { *called = true; }, &callback_called));
+  bool show_callback_called = false;
+  bool close_callback_called = false;
+  OmniboxEverywhereBackgroundModeManager manager(
+      base::BindRepeating([](bool* called) { *called = true; },
+                          &show_callback_called),
+      base::BindRepeating([](bool* called) { *called = true; },
+                          &close_callback_called));
 
   StatusIconMenuModel::Delegate* delegate =
       static_cast<StatusIconMenuModel::Delegate*>(&manager);
   delegate->ExecuteCommand(IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT, 0);
+
+  // The Omnibox Everywhere window is closed along with the browsers, as it
+  // holds a keep-alive that would otherwise prevent shutdown.
+  EXPECT_TRUE(close_callback_called);
+  EXPECT_FALSE(show_callback_called);
   EXPECT_EQ(1, user_action_tester.GetActionCount("Exit"));
 }
 #endif

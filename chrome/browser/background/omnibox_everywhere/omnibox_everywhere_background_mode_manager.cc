@@ -39,8 +39,10 @@
 namespace omnibox_everywhere {
 
 OmniboxEverywhereBackgroundModeManager::OmniboxEverywhereBackgroundModeManager(
-    ShowUICallback show_ui_callback)
-    : show_ui_callback_(std::move(show_ui_callback)) {
+    ShowUICallback show_ui_callback,
+    CloseUICallback close_ui_callback)
+    : show_ui_callback_(std::move(show_ui_callback)),
+      close_ui_callback_(std::move(close_ui_callback)) {
   CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere));
   CHECK(g_browser_process && g_browser_process->local_state());
 
@@ -224,6 +226,12 @@ void OmniboxEverywhereBackgroundModeManager::ExecuteCommand(int command_id,
       }
       break;
     case IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT:
+      // Close the Omnibox Everywhere window first if it is open. It holds its
+      // own keep-alive, which would otherwise keep the browser process running
+      // after all browsers have been closed.
+      if (close_ui_callback_) {
+        close_ui_callback_.Run();
+      }
       chrome::CloseAllBrowsers();
       base::RecordAction(base::UserMetricsAction("Exit"));
       break;

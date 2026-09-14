@@ -52,7 +52,9 @@ OmniboxEverywhereController::OmniboxEverywhereController(
           std::make_unique<OmniboxEverywhereBackgroundModeManager>(
               base::BindRepeating(
                   &OmniboxEverywhereController::OnStatusIconClicked,
-                  base::Unretained(this)))),
+                  base::Unretained(this)),
+              base::BindRepeating(&OmniboxEverywhereController::Close,
+                                  base::Unretained(this)))),
       listener_(listener ? listener
                          : ui::GlobalAcceleratorListener::GetInstance())
 #if BUILDFLAG(IS_WIN)

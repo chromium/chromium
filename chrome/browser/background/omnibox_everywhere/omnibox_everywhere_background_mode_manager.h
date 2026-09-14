@@ -35,9 +35,11 @@ class OmniboxEverywhereBackgroundModeManager
       public BrowserCollectionObserver {
  public:
   using ShowUICallback = base::RepeatingClosure;
+  using CloseUICallback = base::RepeatingClosure;
 
   explicit OmniboxEverywhereBackgroundModeManager(
-      ShowUICallback show_ui_callback);
+      ShowUICallback show_ui_callback,
+      CloseUICallback close_ui_callback = {});
   OmniboxEverywhereBackgroundModeManager(
       const OmniboxEverywhereBackgroundModeManager&) = delete;
   OmniboxEverywhereBackgroundModeManager& operator=(
@@ -87,6 +89,7 @@ class OmniboxEverywhereBackgroundModeManager
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
   ShowUICallback show_ui_callback_;
+  CloseUICallback close_ui_callback_;
 
 #if BUILDFLAG(IS_WIN)
   // Handles interactions with StartupLaunchManager.
