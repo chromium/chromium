@@ -259,6 +259,7 @@ def fuzz_target_builder(
         clusterfuzz_archive_subdir = None,
         clusterfuzz_ios_targets_only = None,
         clusterfuzz_v8_targets_only = None,
+        clusterfuzz_archive_path = None,
         contact_team_email = "chrome-fuzzing-core@google.com",
         **kwargs):
     if not name and not test_builder_name:
@@ -273,6 +274,9 @@ def fuzz_target_builder(
         "upload_bucket": "chromium-browser-" + fuzzing_engine,
         "upload_directory": clusterfuzz_archive_subdir or sanitizer,
     }
+
+    if clusterfuzz_archive_path:
+        properties["archive_path"] = clusterfuzz_archive_path
 
     if clusterfuzz_archive_name_prefix != None:
         properties["archive_prefix"] = clusterfuzz_archive_name_prefix
@@ -530,7 +534,7 @@ def centipede_linux_asan_builder(
 centipede_linux_asan_builder(
     name = "Centipede Upload Linux ASan",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    clusterfuzz_archive_name_prefix = "centipede",
+    clusterfuzz_archive_path = "linux-release-asan/centipede-linux-release",
     console_short_name = "cent",
     execution_timeout = 6 * time.hour,
     gn_extra_configs = [
@@ -889,6 +893,7 @@ libfuzzer_linux_asan_builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
+    clusterfuzz_archive_path = "linux-release-asan/libfuzzer-linux-release",
     console_short_name = "linux",
     execution_timeout = 5 * time.hour,
     gn_extra_configs = [
@@ -1152,6 +1157,7 @@ libfuzzer_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.WIN,
+    clusterfuzz_archive_path = "win32-release_x64-asan/libfuzzer-win32-release_x64",
     console_short_name = "win-asan",
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again

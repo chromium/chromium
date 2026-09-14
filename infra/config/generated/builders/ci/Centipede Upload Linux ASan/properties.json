@@ -66,7 +66,7 @@
       "v.test_suite"
     ]
   },
-  "archive_prefix": "centipede",
+  "archive_path": "linux-release-asan/centipede-linux-release",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [
     "chrome_browser_release"
