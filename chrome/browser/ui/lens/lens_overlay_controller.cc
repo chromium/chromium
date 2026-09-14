@@ -906,6 +906,9 @@ void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
     GetLensSessionMetricsLogger()->OnSearchboxFocused();
 
     if (state() == State::kHidden) {
+      if (!lens_search_controller_->IsCurrentTabSameOrigin()) {
+        return;
+      }
       // If the live page is showing and the searchbox becomes focused, showing
       // intent to issue a new query, upload the new page content for
       // contextualization.
@@ -1135,6 +1138,11 @@ void LensOverlayController::StorePageContentAndContinueInitialization(
     std::optional<uint32_t> page_count) {
   if (page_context_start_time.has_value()) {
     lens::RecordTimeToGetPageContext(base::TimeTicks::Now() - invocation_time_);
+  }
+  if (!lens_search_controller_->IsCurrentTabSameOrigin()) {
+    page_contents.clear();
+    primary_content_type = lens::MimeType::kUnknown;
+    page_count = std::nullopt;
   }
   initialization_data->page_contents_ = page_contents;
   initialization_data->primary_content_type_ = primary_content_type;
@@ -1912,6 +1920,9 @@ void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
 }
 
 void LensOverlayController::ReshowOverlay() {
+  if (!lens_search_controller_->IsCurrentTabSameOrigin()) {
+    return;
+  }
   OverlayBaseController::ReshowOverlay();
   use_aim_for_visual_search_ = true;
 
@@ -2109,6 +2120,9 @@ void LensOverlayController::NotifyUserEducationAboutOverlayUsed() {
 }
 
 void LensOverlayController::NotifyPageContentUpdated() {
+  if (!lens_search_controller_->IsCurrentTabSameOrigin()) {
+    return;
+  }
   auto page_content_type = lens::StringMimeTypeToMojoPageContentType(
       tab_->GetContents()->GetContentsMimeType());
   if (page_) {
@@ -2235,6 +2249,9 @@ void LensOverlayController::OnScreenshotTaken(
 }
 
 void LensOverlayController::ReshowOverlayPart2() {
+  if (!lens_search_controller_->IsCurrentTabSameOrigin()) {
+    return;
+  }
   ReshowScreenshot(GetContextualizationController()->viewport_screenshot(),
                    base::BindOnce(&LensOverlayController::ReshowOverlayPart3,
                                   weak_factory_.GetWeakPtr()));

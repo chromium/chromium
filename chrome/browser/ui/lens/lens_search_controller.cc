@@ -291,6 +291,21 @@ void LensSearchController::OpenLensOverlayInCurrentSession() {
     return;
   }
 
+  // If the current tab origin does not match the session origin, do not allow
+  // opening the overlay in this session.
+  if (!IsCurrentTabSameOrigin()) {
+    return;
+  }
+
+  auto invocation_source = lens_session_metrics_logger_->GetInvocationSource();
+  if (!RunLensEligibilityChecks(
+          invocation_source,
+          base::BindRepeating(
+              &LensSearchController::OpenLensOverlayInCurrentSession,
+              weak_ptr_factory_.GetWeakPtr()))) {
+    return;
+  }
+
   // If the overlay was already initialized, but hidden, reshow the overlay.
   if (lens_overlay_controller_->state() ==
       LensOverlayController::State::kHidden) {
@@ -299,8 +314,7 @@ void LensSearchController::OpenLensOverlayInCurrentSession() {
   }
 
   // Otherwise, the overlay must be fully closed. Open the overlay as normal.
-  lens_overlay_controller_->ShowUI(
-      lens_session_metrics_logger_->GetInvocationSource());
+  lens_overlay_controller_->ShowUI(invocation_source);
 }
 
 void LensSearchController::StartContextualization(
@@ -554,7 +568,8 @@ tabs::TabInterface* LensSearchController::GetTabInterface() {
 }
 
 const GURL& LensSearchController::GetPageURL() const {
-  if (lens::CanSharePageURLWithLensOverlay(pref_service_)) {
+  if (lens::CanSharePageURLWithLensOverlay(pref_service_) &&
+      IsCurrentTabSameOrigin()) {
     return tab_->GetContents()->GetVisibleURL();
   }
   return GURL::EmptyGURL();
@@ -563,7 +578,8 @@ const GURL& LensSearchController::GetPageURL() const {
 std::optional<std::string> LensSearchController::GetPageTitle() {
   std::optional<std::string> page_title;
   content::WebContents* active_web_contents = tab_->GetContents();
-  if (lens::CanSharePageTitleWithLensOverlay(sync_service_, pref_service_)) {
+  if (lens::CanSharePageTitleWithLensOverlay(sync_service_, pref_service_) &&
+      IsCurrentTabSameOrigin()) {
     page_title = std::make_optional<std::string>(
         base::UTF16ToUTF8(active_web_contents->GetTitle()));
   }
@@ -796,6 +812,12 @@ void LensSearchController::StartLensSession(
   state_ = State::kInitializing;
   invocation_source_ = invocation_source;
 
+  content::WebContents* contents = tab_->GetContents();
+  session_origin_ =
+      contents && contents->GetPrimaryMainFrame()
+          ? contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()
+          : url::Origin();
+
   should_route_to_contextual_tasks_ =
       ShouldEnableContextualTasksRouting(invocation_source);
 
@@ -897,6 +919,10 @@ void LensSearchController::NotifyOverlayOpened() {
 void LensSearchController::OnThumbnailProcessed(
     bool is_region_selection,
     const std::string& thumbnail_uri) {
+  if (!IsCurrentTabSameOrigin()) {
+    return;
+  }
+
   if (should_route_to_contextual_tasks()) {
     // This function returns full viewport thumbnails and region selection
     // thumbnails. Only region search selections should trigger the thumbnail
@@ -946,6 +972,7 @@ void LensSearchController::CloseLensPart2(
   // Record end of session metrics.
   lens_session_metrics_logger_->RecordEndOfSessionMetrics(dismissal_source);
 
+  session_origin_ = url::Origin();
   state_ = State::kOff;
 }
 
@@ -1070,7 +1097,7 @@ void LensSearchController::HandlePageContentUploadProgress(uint64_t position,
 void LensSearchController::HandleThumbnailCreatedBitmap(
     const SkBitmap& thumbnail) {
   if (!lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail() ||
-      thumbnail.drawsNothing()) {
+      thumbnail.drawsNothing() || !IsCurrentTabSameOrigin()) {
     return;
   }
 
@@ -1206,4 +1233,17 @@ void LensSearchController::WillDetach(tabs::TabInterface* tab,
 
 Profile* LensSearchController::GetProfile() {
   return Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+}
+
+bool LensSearchController::IsCurrentTabSameOrigin() const {
+  if (state_ == State::kOff || !tab_) {
+    return false;
+  }
+  content::WebContents* contents = tab_->GetContents();
+  if (!contents || !contents->GetPrimaryMainFrame()) {
+    return false;
+  }
+  return contents->GetPrimaryMainFrame()
+      ->GetLastCommittedOrigin()
+      .IsSameOriginWith(session_origin_);
 }

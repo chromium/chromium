@@ -146,6 +146,10 @@ void LensComposeboxController::OnFocusChanged(bool focused) {
     return;
   }
 
+  if (!lens_search_controller_->IsCurrentTabSameOrigin()) {
+    return;
+  }
+
   // Ignore if contextualization is not active.
   if (!lens_search_controller_->lens_search_contextualization_controller()
            ->IsActive()) {
@@ -270,6 +274,9 @@ LensComposeboxController::GetSessionMetricsLogger() {
 
 lens::proto::LensOverlaySuggestInputs
 LensComposeboxController::GetLensSuggestInputs() const {
+  if (!lens_search_controller_->IsCurrentTabSameOrigin()) {
+    return lens::proto::LensOverlaySuggestInputs();
+  }
   if (!lens::features::GetAimSuggestionsEnabled()) {
     return lens::proto::LensOverlaySuggestInputs();
   }
@@ -329,13 +336,15 @@ lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(
   lens_image_query_data->set_search_session_id(
       query_controller->search_session_id());
 
+  const bool is_same_origin = lens_search_controller_->IsCurrentTabSameOrigin();
   const auto& primary_content_type =
-      contextualization_controller->primary_content_type();
+      is_same_origin ? contextualization_controller->primary_content_type()
+                     : lens::MimeType::kUnknown;
   const auto media_type =
       overlay_controller->HasRegionSelection()
           ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
           : MimeTypeToMediaType(primary_content_type,
-                                /*has_viewport_screenshot=*/true);
+                                /*has_viewport_screenshot=*/is_same_origin);
   lens_image_query_data->mutable_request_id()->CopyFrom(
       *query_controller->GetNextRequestId(lens::RequestIdUpdateMode::kSearchUrl,
                                           media_type));
@@ -346,7 +355,7 @@ lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(
   std::optional<lens::LensOverlayVisualSearchInteractionData>
       visual_search_interaction_data =
           query_controller->GetVisualSearchInteractionData();
-  if (visual_search_interaction_data &&
+  if (is_same_origin && visual_search_interaction_data &&
       overlay_controller->HasRegionSelection()) {
     lens_image_query_data->mutable_visual_search_interaction_data()->CopyFrom(
         visual_search_interaction_data.value());

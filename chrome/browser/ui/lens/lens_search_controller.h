@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/origin.h"
 
 namespace lens {
 class LensOverlayQueryController;
@@ -280,6 +281,13 @@ class LensSearchController {
   get_lens_permission_bubble_controller_for_testing() {
     return lens_permission_bubble_controller_.get();
   }
+
+  // Returns whether the current tab's committed origin matches the origin
+  // of the page when this Lens session was initiated.
+  bool IsCurrentTabSameOrigin() const;
+
+  // Returns the origin of the page when this Lens session was initiated.
+  const url::Origin& session_origin() const { return session_origin_; }
 
  protected:
   friend class LensOverlayController;
@@ -558,6 +566,9 @@ class LensSearchController {
   raw_ptr<tabs::TabInterface> tab_;
 
   ui::ScopedUnownedUserData<LensSearchController> scoped_unowned_user_data_;
+
+  // The origin of the page when the Lens session was initialized.
+  url::Origin session_origin_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensSearchController> weak_ptr_factory_{this};
