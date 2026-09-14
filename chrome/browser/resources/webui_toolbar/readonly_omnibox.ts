@@ -961,9 +961,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     const currentSelection = this.getMojoSelection();
     if (currentSelection.start !== this.omniboxViewState.selection?.start ||
         currentSelection.end !== this.omniboxViewState.selection?.end) {
-      if (this.unelideAndUpdateSelection(UnelisionGesture.OTHER)) {
-        this.sendInputToBrowser(/*unelision=*/ true);
-      }
+      const unelided = this.unelideAndUpdateSelection(UnelisionGesture.OTHER);
+      ++this.omniboxViewState.uiVersion;  // may be taking control of selection.
+      this.sendInputToBrowser(unelided);
     }
   }
 

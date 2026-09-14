@@ -63,6 +63,10 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   // messy.
   bool is_focused() const { return focused_; }
 
+  const OmniboxPopupHandler* popup_handler_for_testing() {
+    return GetPopupHandler();
+  }
+
  private:
   // Gets the OmniboxPopupHandler associated with this view's WebUI.
   OmniboxPopupHandler* GetPopupHandler();
