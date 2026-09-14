@@ -57,8 +57,6 @@ if (is_win) {
     sources = [
       "guided_setter_overlay_window_win.cc",
       "guided_setter_overlay_window_win.h",
-      "settings_window_finder_win.cc",
-      "settings_window_finder_win.h",
       "visual_guided_setter_controller_win.cc",
       "visual_guided_setter_controller_win.h",
       "visual_guided_setter_layout_utils.cc",
@@ -72,6 +70,7 @@ if (is_win) {
     public_deps = [
       ":visual_guided_setter_mojo_bindings",
       "//base",
+      "//chrome/browser/default_browser/win",
       "//ui/gfx",
     ]
 
@@ -101,7 +100,6 @@ if (is_win) {
 
     sources = [
       "guided_setter_overlay_window_win_unittest.cc",
-      "settings_window_finder_win_unittest.cc",
       "visual_guided_setter_controller_win_unittest.cc",
       "visual_guided_setter_layout_utils_unittest.cc",
     ]

@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win)
+
+source_set("win") {
+  sources = [
+    "settings_window_finder_win.cc",
+    "settings_window_finder_win.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//ui/gfx" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "settings_window_finder_win_unittest.cc" ]
+  deps = [
+    ":win",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

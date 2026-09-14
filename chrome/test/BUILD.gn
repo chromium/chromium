@@ -6509,6 +6509,10 @@ test("unit_tests") {
       "//chrome/browser/ui/download",
       "//chrome/browser/ui/download:unit_tests",
     ]
+
+    if (is_win) {
+      deps += [ "//chrome/browser/default_browser/win:unit_tests" ]
+    }
   }
 
   if (!is_android) {

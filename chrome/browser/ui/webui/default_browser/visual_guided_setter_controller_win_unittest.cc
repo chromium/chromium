@@ -19,7 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
-#include "chrome/browser/ui/webui/default_browser/settings_window_finder_win.h"
+#include "chrome/browser/default_browser/win/settings_window_finder_win.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/test_renderer_host.h"

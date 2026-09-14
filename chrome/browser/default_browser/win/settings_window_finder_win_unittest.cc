@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/default_browser/settings_window_finder_win.h"
+#include "chrome/browser/default_browser/win/settings_window_finder_win.h"
 
 #include <windows.h>
 

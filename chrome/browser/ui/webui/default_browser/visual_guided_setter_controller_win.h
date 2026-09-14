@@ -17,7 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/win/windows_types.h"
-#include "chrome/browser/ui/webui/default_browser/settings_window_finder_win.h"
+#include "chrome/browser/default_browser/win/settings_window_finder_win.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
