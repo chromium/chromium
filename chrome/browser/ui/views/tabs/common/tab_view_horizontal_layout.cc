@@ -50,7 +50,7 @@ int Center(int size, int item_size) {
 }
 }  // namespace
 
-TabViewHorizontalLayout::TabViewHorizontalLayout() = default;
+TabViewHorizontalLayout::TabViewHorizontalLayout() : title_animation_(this) {}
 TabViewHorizontalLayout::~TabViewHorizontalLayout() = default;
 
 void TabViewHorizontalLayout::OnTabClosing() {
@@ -58,6 +58,20 @@ void TabViewHorizontalLayout::OnTabClosing() {
       CalculateChildVisibilities(TabView().width(),
                                  TabView().GetContentsBounds().width())
           .center_icon;
+}
+
+void TabViewHorizontalLayout::OnShouldDisplayFaviconChanged() {
+  start_title_bounds_ = TabView().title_->bounds();
+  title_animation_.Stop();
+  title_animation_.SetDuration(
+      gfx::Animation::RichAnimationDuration(base::Milliseconds(100)));
+  title_animation_.Start();
+}
+
+void TabViewHorizontalLayout::AnimationProgressed(
+    const gfx::Animation* animation) {
+  DCHECK_EQ(animation, &title_animation_);
+  TabView().InvalidateLayout();
 }
 
 views::ProposedLayout TabViewHorizontalLayout::CalculateProposedLayout(
@@ -216,8 +230,9 @@ views::ProposedLayout TabViewHorizontalLayout::CalculateProposedLayout(
     const int title_width = std::max(title_right - title_left, 0);
     // The Label will automatically center the font's cap height within the
     // provided vertical space.
-    title_bounds = gfx::Rect(title_left, 0, title_width, height);
+    const gfx::Rect target_title_bounds(title_left, 0, title_width, height);
     show_title = title_width > 0;
+    title_bounds = GetTitleBounds(target_title_bounds);
   }
   layouts.child_layouts.emplace_back(TabView().title_.get(), show_title,
                                      title_bounds);
@@ -387,4 +402,16 @@ TabViewHorizontalLayout::CalculateChildVisibilities(int width,
   show_title = !(features::IsTabStripDeclutterEnabled() && center_icon);
 
   return icon_visibilities;
+}
+
+gfx::Rect TabViewHorizontalLayout::GetTitleBounds(
+    const gfx::Rect& target_bounds) const {
+  if (title_animation_.is_animating() && !start_title_bounds_.IsEmpty() &&
+      !target_bounds.IsEmpty()) {
+    return gfx::Tween::RectValueBetween(
+        gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_SLOW_IN,
+                                   title_animation_.GetCurrentValue()),
+        start_title_bounds_, target_bounds);
+  }
+  return target_bounds;
 }
