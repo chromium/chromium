@@ -15,9 +15,12 @@
 #include "components/enterprise/common/proto/synced/saas_usage_report_event.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "net/ssl/ssl_cipher_suite_names.h"
 
 namespace {
 
+constexpr char kUnencrypted[] = "Unencrypted";
+constexpr char kUnknown[] = "Unknown";
 constexpr char kNavigationCount[] = "navigation_count";
 constexpr char kEncryptionProtocols[] = "encryption_protocols";
 constexpr char kFirstSeenTime[] = "first_seen_time";
@@ -83,6 +86,20 @@ bool IsValidEntry(const base::Value& value, std::string_view domain) {
 }  // namespace
 
 namespace enterprise_reporting {
+
+std::string_view GetEncryptionProtocolString(
+    std::optional<net::SSLVersion> ssl_version) {
+  if (!ssl_version.has_value()) {
+    return kUnencrypted;
+  }
+  if (*ssl_version == net::SSL_CONNECTION_VERSION_UNKNOWN) {
+    return kUnknown;
+  }
+  const char* protocol = nullptr;
+  net::SSLVersionToString(&protocol, *ssl_version);
+  CHECK(protocol);
+  return protocol;
+}
 
 void RecordNavigation(PrefService& pref_service,
                       std::string_view domain,

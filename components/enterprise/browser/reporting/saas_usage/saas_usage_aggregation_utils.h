@@ -5,12 +5,19 @@
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_REPORTING_SAAS_USAGE_SAAS_USAGE_AGGREGATION_UTILS_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_SAAS_USAGE_SAAS_USAGE_AGGREGATION_UTILS_H_
 
+#include <optional>
 #include <string_view>
 
 #include "components/enterprise/common/proto/synced/saas_usage_report_event.pb.h"
 #include "components/prefs/pref_service.h"
+#include "net/ssl/ssl_connection_status_flags.h"
 
 namespace enterprise_reporting {
+
+// Returns the string representation of an SSL/TLS version for SaaS usage
+// reporting (e.g. "TLS 1.3", "TLS 1.2", "Unknown", "Unencrypted").
+std::string_view GetEncryptionProtocolString(
+    std::optional<net::SSLVersion> ssl_version);
 
 // These functions are used to aggregate domain reporting data. They store the
 // aggregated data using PrefService.

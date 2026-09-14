@@ -4,11 +4,12 @@
 
 #include "chrome/browser/enterprise/reporting/saas_usage/navigation_handle_data_delegate.h"
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_aggregation_utils.h"
 #include "content/public/browser/navigation_handle.h"
-#include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 
@@ -21,19 +22,12 @@ NavigationHandleDataDelegate::NavigationHandleDataDelegate(
 void NavigationHandleDataDelegate::GetEncryptionProtocol(
     EncryptionProtocolCallback callback) const {
   const auto& ssl_info = navigation_handle_->GetSSLInfo();
-  if (!ssl_info.has_value()) {
-    std::move(callback).Run("Unencrypted");
-    return;
+  std::optional<net::SSLVersion> ssl_version;
+  if (ssl_info.has_value()) {
+    ssl_version =
+        net::SSLConnectionStatusToVersion(ssl_info->connection_status);
   }
-  net::SSLVersion ssl_version =
-      net::SSLConnectionStatusToVersion(ssl_info->connection_status);
-  if (ssl_version == net::SSL_CONNECTION_VERSION_UNKNOWN) {
-    std::move(callback).Run("Unknown");
-    return;
-  }
-  const char* encryption_protocol = "";
-  net::SSLVersionToString(&encryption_protocol, ssl_version);
-  std::move(callback).Run(encryption_protocol);
+  std::move(callback).Run(GetEncryptionProtocolString(ssl_version));
 }
 
 GURL NavigationHandleDataDelegate::GetUrl() const {
