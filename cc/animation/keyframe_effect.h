@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -165,10 +166,10 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
 
   std::string KeyframeModelsToString() const;
 
-  // Iterates through all |keyframe_models_| and returns the minimum of their
-  // animation curve's tick intervals.
-  // Returns 0 if there is a continuous animation which should be ticked as
-  // fast as possible.
+  // Iterates through active keyframe models and returns the effective tick
+  // interval (curve interval / playback_rate).
+  // Returns 0 if there is any active continuous animation curve.
+  // Returns TimeDelta::Max() if there are no active models.
   base::TimeDelta MinimumTickInterval() const;
 
   bool awaiting_deletion() { return awaiting_deletion_; }

@@ -5,6 +5,7 @@
 #include "cc/animation/animation_host.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <memory>
 #include <utility>
 
@@ -48,6 +49,46 @@ AnimationWorkletMutationState ToAnimationWorkletMutationState(
     case MutateStatus::kCanceled:
       return AnimationWorkletMutationState::CANCELED;
   }
+}
+
+// Returns true if `candidate_interval` is a harmonic divisor of
+// `animation_interval` (i.e. `animation_interval ≈ k * candidate_interval`
+// for an integer k >= 1) such that cumulative phase drift does not exceed
+// one candidate tick over `min_acceptable_drift_duration`.
+bool IsHarmonicInterval(
+    base::TimeDelta candidate_interval,
+    base::TimeDelta animation_interval,
+    base::TimeDelta min_acceptable_drift_duration = base::Seconds(3)) {
+  CHECK_GT(candidate_interval, base::TimeDelta());
+  if (animation_interval < candidate_interval) {
+    return false;
+  }
+
+  const int64_t candidate_us = candidate_interval.InMicroseconds();
+  const int64_t anim_us = animation_interval.InMicroseconds();
+
+  // Fast path: exact integer harmonic (zero drift).
+  if (anim_us % candidate_us == 0) {
+    return true;
+  }
+
+  // Nearest integer cadence: round(anim_us / candidate_us)
+  const int64_t cadence = (anim_us + candidate_us / 2) / candidate_us;
+  if (cadence <= 0) {
+    return false;
+  }
+
+  // Phase drift accumulated per animation cycle.
+  const int64_t drift_us = std::abs(anim_us - cadence * candidate_us);
+  if (drift_us == 0) {
+    return true;
+  }
+
+  // Check whether cumulative drift over `min_acceptable_drift_duration`
+  // stays within one candidate tick interval (cross-multiplied to avoid
+  // division truncation):
+  return candidate_us * anim_us >=
+         min_acceptable_drift_duration.InMicroseconds() * drift_us;
 }
 
 }  // namespace
@@ -118,17 +159,60 @@ void AnimationHost::ClearMutators() {
 }
 
 base::TimeDelta AnimationHost::MinimumTickInterval() const {
-  base::TimeDelta min_interval = base::TimeDelta::Max();
+  // Cap harmonic subdivisions at 32 (matching Viz's MixedFixedIntervalMatcher)
+  // to guarantee O(1) termination.
+  constexpr int kMaxHarmonics = 32;
+  int total_harmonics = 1;
+  base::TimeDelta candidate = base::TimeDelta::Max();
+
   for (const auto& animation : ticking_animations_.Read(*this)) {
     DCHECK(animation->keyframe_effect());
     base::TimeDelta interval =
         animation->keyframe_effect()->MinimumTickInterval();
-    if (interval.is_zero())
-      return interval;
-    if (interval < min_interval)
-      min_interval = interval;
+    // A zero interval indicates a continuous animation that must tick on every
+    // frame; disqualify the entire host from rate throttling.
+    if (interval.is_zero()) {
+      return base::TimeDelta();
+    }
+    CHECK_GT(interval, base::TimeDelta());
+    if (interval == base::TimeDelta::Max()) {
+      continue;
+    }
+
+    if (candidate == base::TimeDelta::Max()) {
+      candidate = interval;
+      continue;
+    }
+
+    if (IsHarmonicInterval(candidate, interval)) {
+      continue;
+    }
+
+    // Subdivide `candidate` until it harmonizes with `interval`. Because any
+    // integer subdivision of `candidate` remains a valid harmonic divisor of
+    // all previously matched animations, a single pass is sufficient.
+    bool matched = false;
+    for (int n = 2; n * total_harmonics <= kMaxHarmonics; ++n) {
+      base::TimeDelta sub_candidate = candidate / n;
+      // Integer microsecond division can round down to zero for tiny intervals.
+      if (!sub_candidate.is_positive()) {
+        break;
+      }
+      if (IsHarmonicInterval(sub_candidate, interval)) {
+        candidate = sub_candidate;
+        total_harmonics *= n;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      // No common harmonic found within the maximum multiple; treat as
+      // continuous.
+      return base::TimeDelta();
+    }
   }
-  return min_interval;
+
+  return candidate;
 }
 
 void AnimationHost::EraseTimeline(scoped_refptr<AnimationTimeline> timeline) {

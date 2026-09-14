@@ -5,6 +5,7 @@
 #include "cc/animation/keyframe_effect.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <string>
 #include <utility>
@@ -796,11 +797,40 @@ std::string KeyframeEffect::KeyframeModelsToString() const {
 base::TimeDelta KeyframeEffect::MinimumTickInterval() const {
   base::TimeDelta min_interval = base::TimeDelta::Max();
   for (const auto& model : keyframe_models()) {
-    base::TimeDelta interval = model->curve()->TickInterval();
-    if (interval.is_zero())
-      return interval;
-    if (interval < min_interval)
+    // Only active models produce visual output changes and compositor damage;
+    // paused, finished, or aborted models are ignored.
+    if (model->run_state() != gfx::KeyframeModel::STARTING &&
+        model->run_state() != gfx::KeyframeModel::RUNNING) {
+      continue;
+    }
+
+    // TickInterval() returns the minimum interval across all keyframe segments.
+    // This is conservative: we request the fastest segment's refresh rate,
+    // which may over-refresh slower segments but never drops frames.
+    // TODO(crbug.com/40726710): Compute the time to the next tick from current
+    // animation progress (e.g. taking the remainder of current time minus start
+    // time by step interval) to automatically support variable intervals
+    // across segments without over-refreshing.
+    const base::TimeDelta curve_interval = model->curve()->TickInterval();
+    if (curve_interval.is_zero()) {
+      return base::TimeDelta();
+    }
+
+    // Negative playback rates (reverse animations) have the same visual
+    // step frequency; use absolute value for the interval calculation.
+    const double playback_rate = std::abs(model->playback_rate());
+    if (!std::isfinite(playback_rate) || playback_rate == 0.0) {
+      return base::TimeDelta();
+    }
+
+    const base::TimeDelta interval = curve_interval / playback_rate;
+    if (!interval.is_positive()) {
+      return base::TimeDelta();
+    }
+
+    if (interval < min_interval) {
       min_interval = interval;
+    }
   }
   return min_interval;
 }

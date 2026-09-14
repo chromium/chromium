@@ -8,15 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/time/time.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/mutator_host_delegate.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-
-namespace base {
-class TimeDelta;
-class TimeTicks;
-}  // namespace base
 
 namespace cc {
 
@@ -168,9 +164,13 @@ class MutatorHost {
   virtual bool HasViewTransition() const = 0;
   virtual bool HasScrollLinkedAnimation(ElementId for_scroller) const = 0;
 
-  // Iterates through all animations and returns the minimum tick interval.
-  // Returns 0 if there is a continuous animation which should be ticked
-  // as fast as possible.
+  // Iterates through all currently-ticking animations and returns the common
+  // harmonic tick interval. If every active animation has a stepped timing
+  // function and their cadences can be harmonized within drift limits, returns
+  // the common tick interval.
+  // Returns 0 if there is any continuous animation (or incompatible stepped
+  // animations) which should be ticked as fast as possible.
+  // Returns TimeDelta::Max() if there are no active animations.
   virtual base::TimeDelta MinimumTickInterval() const = 0;
 
   using TrackedAnimationSequenceId = size_t;

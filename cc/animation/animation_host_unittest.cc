@@ -5,6 +5,7 @@
 #include "cc/animation/animation_host.h"
 
 #include <limits>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -21,6 +22,7 @@
 #include "cc/trees/transform_node.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 using ::testing::_;
 using ::testing::InvokeWithoutArgs;
@@ -608,6 +610,220 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   double duration = ToMilliseconds(
       scroll_timeline->Duration(property_trees.scroll_tree(), false));
   EXPECT_NEAR(tick_time, 0.2 * duration, 1e-6);
+}
+
+TEST_F(AnimationHostTest, MinimumTickInterval_NoAnimations) {
+  // Returns TimeDelta::Max() when no animations are ticking.
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::TimeDelta::Max());
+}
+
+TEST_F(AnimationHostTest, MinimumTickInterval_SingleStepped) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+  CreateImplTimelineAndAnimation();
+
+  // 15 steps over 1.0s duration -> 66666us.
+  AddOpacityStepsToAnimation(animation_.get(), 1.0, 0.0f, 1.0f, 15);
+  PushProperties();
+  host_impl_->ActivateAnimations(nullptr);
+  TickAnimationsTransferEvents(base::TimeTicks(), 1u);
+
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::Microseconds(66666));
+}
+
+TEST_F(AnimationHostTest, MinimumTickInterval_MultipleCompatibleStepped) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+
+  int animation_id2 = AnimationIdProvider::NextAnimationId();
+  scoped_refptr<Animation> animation2 = Animation::Create(animation_id2);
+  timeline_->AttachAnimation(animation2);
+  animation2->AttachElement(element_id_);
+
+  CreateImplTimelineAndAnimation();
+
+  // Animation 1: 5 steps over 1.0s -> 200ms (200000us).
+  AddOpacityStepsToAnimation(animation_.get(), 1.0, 0.0f, 1.0f, 5);
+  // Animation 2: 2 steps over 1.0s -> 500ms (500000us).
+  AddOpacityStepsToAnimation(animation2.get(), 1.0, 0.0f, 1.0f, 2);
+
+  PushProperties();
+  host_impl_->ActivateAnimations(nullptr);
+  TickAnimationsTransferEvents(base::TimeTicks(), 2u);
+
+  // Harmonizes 200ms and 500ms to their common harmonic divisor 100ms.
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::Milliseconds(100));
+}
+
+TEST_F(AnimationHostTest, MinimumTickInterval_MultipleIdenticalStepped) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+
+  int animation_id2 = AnimationIdProvider::NextAnimationId();
+  scoped_refptr<Animation> animation2 = Animation::Create(animation_id2);
+  timeline_->AttachAnimation(animation2);
+  animation2->AttachElement(element_id_);
+
+  CreateImplTimelineAndAnimation();
+
+  // Both animations: 10 steps over 1.0s -> 100ms.
+  AddOpacityStepsToAnimation(animation_.get(), 1.0, 0.0f, 1.0f, 10);
+  AddOpacityStepsToAnimation(animation2.get(), 1.0, 0.0f, 1.0f, 10);
+
+  PushProperties();
+  host_impl_->ActivateAnimations(nullptr);
+  TickAnimationsTransferEvents(base::TimeTicks(), 2u);
+
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::Milliseconds(100));
+}
+
+TEST_F(AnimationHostTest, MinimumTickInterval_SteppedAndContinuousConflict) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+
+  int animation_id2 = AnimationIdProvider::NextAnimationId();
+  scoped_refptr<Animation> animation2 = Animation::Create(animation_id2);
+  timeline_->AttachAnimation(animation2);
+  animation2->AttachElement(element_id_);
+
+  CreateImplTimelineAndAnimation();
+
+  // Animation 1: 15 steps over 1.0s (stepped).
+  AddOpacityStepsToAnimation(animation_.get(), 1.0, 0.0f, 1.0f, 15);
+  // Animation 2: continuous opacity transition.
+  AddOpacityTransitionToAnimation(animation2.get(), 1.0, 0.0f, 1.0f, false);
+
+  PushProperties();
+  host_impl_->ActivateAnimations(nullptr);
+  TickAnimationsTransferEvents(base::TimeTicks(), 2u);
+
+  // Continuous animation present: must return 0 to avoid throttling.
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::TimeDelta());
+}
+
+TEST_F(AnimationHostTest, MinimumTickInterval_IncompatibleStepped) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+
+  int animation_id2 = AnimationIdProvider::NextAnimationId();
+  scoped_refptr<Animation> animation2 = Animation::Create(animation_id2);
+  timeline_->AttachAnimation(animation2);
+  animation2->AttachElement(element_id_);
+
+  CreateImplTimelineAndAnimation();
+
+  // Animation 1: 37 steps over 1.0s (~27027us).
+  AddOpacityStepsToAnimation(animation_.get(), 1.0, 0.0f, 1.0f, 37);
+  // Animation 2: 41 steps over 1.0s (~24390us).
+  AddOpacityStepsToAnimation(animation2.get(), 1.0, 0.0f, 1.0f, 41);
+
+  PushProperties();
+  host_impl_->ActivateAnimations(nullptr);
+  TickAnimationsTransferEvents(base::TimeTicks(), 2u);
+
+  // Coprime steps requiring >32 harmonics cannot be harmonized within
+  // kMaxHarmonics; returns 0 (continuous fallback).
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::TimeDelta());
+}
+
+TEST_F(AnimationHostTest, MinimumTickInterval_PausedOrFinishedIgnored) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+  CreateImplTimelineAndAnimation();
+
+  // Add stepped opacity animation.
+  AddOpacityStepsToAnimation(animation_.get(), 1.0, 0.0f, 1.0f, 15);
+
+  PushProperties();
+  host_impl_->ActivateAnimations(nullptr);
+  TickAnimationsTransferEvents(base::TimeTicks(), 1u);
+
+  // Add a continuous model that is in FINISHED state.
+  auto curve = gfx::KeyframedFloatAnimationCurve::Create();
+  curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(base::TimeDelta(), 0.0f, nullptr));
+  curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(base::Seconds(1), 1.0f, nullptr));
+  std::unique_ptr<KeyframeModel> finished_model = KeyframeModel::Create(
+      std::move(curve), AnimationIdProvider::NextKeyframeModelId(),
+      AnimationIdProvider::NextGroupId(),
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
+  finished_model->SetRunState(gfx::KeyframeModel::FINISHED);
+  animation_impl_->AddKeyframeModel(std::move(finished_model));
+
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::Microseconds(66666));
+
+  // Add a continuous model that is in PAUSED state.
+  auto paused_curve = gfx::KeyframedFloatAnimationCurve::Create();
+  paused_curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(base::TimeDelta(), 0.0f, nullptr));
+  paused_curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(base::Seconds(1), 1.0f, nullptr));
+  std::unique_ptr<KeyframeModel> paused_model = KeyframeModel::Create(
+      std::move(paused_curve), AnimationIdProvider::NextKeyframeModelId(),
+      AnimationIdProvider::NextGroupId(),
+      KeyframeModel::TargetPropertyId(TargetProperty::FILTER));
+  paused_model->SetRunState(gfx::KeyframeModel::PAUSED);
+  animation_impl_->AddKeyframeModel(std::move(paused_model));
+
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::Microseconds(66666));
+}
+
+TEST_F(AnimationHostTest, MinimumTickInterval_MultipleTimelines) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+
+  const int timeline_id2 = AnimationIdProvider::NextTimelineId();
+  scoped_refptr<AnimationTimeline> timeline2 =
+      AnimationTimeline::Create(timeline_id2);
+  host_->AddAnimationTimeline(timeline2);
+
+  int animation_id2 = AnimationIdProvider::NextAnimationId();
+  scoped_refptr<Animation> animation2 = Animation::Create(animation_id2);
+  timeline2->AttachAnimation(animation2);
+  animation2->AttachElement(element_id_);
+
+  CreateImplTimelineAndAnimation();
+
+  // Animation 1 on timeline_: 5 steps over 1.0s -> 200ms.
+  AddOpacityStepsToAnimation(animation_.get(), 1.0, 0.0f, 1.0f, 5);
+  // Animation 2 on timeline2: 2 steps over 1.0s -> 500ms.
+  AddOpacityStepsToAnimation(animation2.get(), 1.0, 0.0f, 1.0f, 2);
+
+  PushProperties();
+  host_impl_->ActivateAnimations(nullptr);
+  TickAnimationsTransferEvents(base::TimeTicks(), 2u);
+
+  // Harmonizes 200ms and 500ms to their common harmonic divisor 100ms.
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::Milliseconds(100));
+}
+
+TEST_F(AnimationHostTest, MinimumTickInterval_PlaybackRateScaling) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+  CreateImplTimelineAndAnimation();
+
+  // 15 steps over 1.0s duration -> 66666us base interval.
+  AddOpacityStepsToAnimation(animation_.get(), 1.0, 0.0f, 1.0f, 15);
+  PushProperties();
+  host_impl_->ActivateAnimations(nullptr);
+  TickAnimationsTransferEvents(base::TimeTicks(), 1u);
+
+  auto* model = animation_impl_->GetKeyframeModel(TargetProperty::OPACITY);
+  ASSERT_TRUE(model);
+
+  // Set playback rate to 2.0x -> effective interval 33333us.
+  model->set_playback_rate(2.0);
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::Microseconds(33333));
+
+  // Set negative playback rate -0.5x (reversing) -> effective interval
+  // 133332us.
+  model->set_playback_rate(-0.5);
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::Microseconds(133332));
+
+  // Set invalid zero or non-finite rate -> returns 0 (continuous).
+  model->set_playback_rate(0.0);
+  EXPECT_EQ(host_impl_->MinimumTickInterval(), base::TimeDelta());
 }
 
 }  // namespace
