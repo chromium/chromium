@@ -150,6 +150,20 @@ void AppMenuIconController::UpdateDelegate() {
 AppMenuIconController::TypeAndSeverity
 AppMenuIconController::GetTypeAndSeverity() const {
 #if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Display the badge immediately if a restart is scheduled. By default in
+  // production, the first nudge interval (14 days) occurs well after upgrade
+  // annoyance is reached, but testing environments or Finch trial configs can
+  // use shorter nudge intervals, scheduling a restart while annoyance is still
+  // NONE.
+  if (browser_defaults::kShowUpgradeMenuItem &&
+      base::FeatureList::IsEnabled(features::kScheduledRestart)) {
+    if (auto* srm = GetScheduledRestartManager(); srm && srm->is_scheduled()) {
+      return {IconType::kUpgradeNotification, Severity::kLow};
+    }
+  }
+#endif
+
   if (browser_defaults::kShowUpgradeMenuItem &&
       upgrade_detector_->notify_upgrade()) {
     UpgradeDetector::UpgradeNotificationAnnoyanceLevel level =
@@ -159,15 +173,6 @@ AppMenuIconController::GetTypeAndSeverity() const {
     // annoyance level is reached.
     auto severity = SeverityFromUpgradeLevel(is_unstable_channel_, level);
     if (severity != Severity::kNone) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      if (base::FeatureList::IsEnabled(features::kScheduledRestart)) {
-        if (auto* srm = GetScheduledRestartManager();
-            srm && srm->is_scheduled()) {
-          severity =
-              Severity::kLow;  // Clamp to lowest severity when scheduled.
-        }
-      }
-#endif
       return {IconType::kUpgradeNotification, severity};
     }
   }

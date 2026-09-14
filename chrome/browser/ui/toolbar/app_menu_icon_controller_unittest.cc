@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -366,6 +367,82 @@ TEST_P(AppMenuIconControllerTest,
       EXPECT_NE(AppMenuIconController::GetIconTooltip(state_cancelled.type,
                                                       state_cancelled.severity),
                 expected_label);
+    }
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+    dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+#endif
+
+    ResetProfile();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+  }
+  // Restore default GlobalFeatures and profile for subsequent tests.
+  TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+      /*profile_manager=*/false);
+  CreateProfile();
+}
+
+TEST_P(AppMenuIconControllerTest,
+       ScheduledRestartShowsLabelEvenWhenAnnoyanceLevelIsNone) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kScheduledRestart);
+
+  ResetProfile();
+  {
+    test::ScopedGlobalFeaturesOverride features_override(base::BindRepeating(
+        [](UpgradeDetector* detector) -> std::unique_ptr<GlobalFeatures> {
+          return std::make_unique<TestGlobalFeatures>(detector);
+        },
+        upgrade_detector()));
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
+    CreateProfile();
+
+    auto* manager = TestingBrowserProcess::GetGlobal()
+                        ->GetFeatures()
+                        ->scheduled_restart_manager();
+    ASSERT_TRUE(manager);
+
+    {
+      ::testing::NiceMock<MockAppMenuIconControllerDelegate> mock_delegate;
+      AppMenuIconController controller(upgrade_detector(), profile(),
+                                       &mock_delegate);
+
+      // Annoyance level is initially NONE.
+      auto state_before = controller.GetTypeAndSeverity();
+      EXPECT_EQ(state_before.type, AppMenuIconController::IconType::kNone);
+      EXPECT_EQ(state_before.severity, AppMenuIconController::Severity::kNone);
+
+      // Activate Idle scheduled restart.
+      manager->ScheduleRestartOnIdle();
+
+      auto state_after = controller.GetTypeAndSeverity();
+      EXPECT_EQ(state_after.type,
+                AppMenuIconController::IconType::kUpgradeNotification);
+      EXPECT_EQ(state_after.severity, AppMenuIconController::Severity::kLow);
+
+      // Label and tooltip should show "Restart scheduled".
+      std::u16string expected_label =
+          l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_RESTART_SCHEDULED);
+      EXPECT_EQ(AppMenuIconController::GetIconLabel(state_after.type,
+                                                    state_after.severity),
+                expected_label);
+      EXPECT_EQ(AppMenuIconController::GetIconTooltip(state_after.type,
+                                                      state_after.severity),
+                expected_label);
+
+      // Cancel schedule: button should return to default unalerted state.
+      manager->CancelSchedule();
+      auto state_cancelled = controller.GetTypeAndSeverity();
+      EXPECT_EQ(state_cancelled.type, AppMenuIconController::IconType::kNone);
+      EXPECT_EQ(state_cancelled.severity,
+                AppMenuIconController::Severity::kNone);
+      EXPECT_TRUE(AppMenuIconController::GetIconLabel(state_cancelled.type,
+                                                      state_cancelled.severity)
+                      .empty());
+      EXPECT_EQ(AppMenuIconController::GetIconTooltip(state_cancelled.type,
+                                                      state_cancelled.severity),
+                l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP));
     }
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
