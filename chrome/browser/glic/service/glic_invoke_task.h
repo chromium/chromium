@@ -33,7 +33,9 @@ class Profile;
 
 namespace glic {
 
+// LINT.IfChange(GlicTaskType)
 enum class GlicTaskType : int {
+  kUnknown = 0,
   kSequentialTaskGroup = 1,
   kParallelTaskGroup = 2,
   kWaitForNavigation = 3,
@@ -50,7 +52,9 @@ enum class GlicTaskType : int {
   kClipboardPolicy = 14,
   kCopyPolicy = 15,
   kPastePolicy = 16,
+  kMaxValue = kPastePolicy,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeTimeoutStage)
 
 class GlicInvokeTask {
  public:

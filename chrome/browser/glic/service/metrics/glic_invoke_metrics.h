@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INVOKE_METRICS_H_
 #define CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INVOKE_METRICS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -47,6 +49,8 @@ class GlicInvokeMetrics {
       std::optional<GlicTaskType> stopped_task = std::nullopt) const;
 
  private:
+  void RecordTimeoutStage(std::optional<GlicTaskType> stage) const;
+
   mojom::InvocationSource source_;
   base::TimeTicks invoke_start_time_;
   uint64_t invocation_id_;

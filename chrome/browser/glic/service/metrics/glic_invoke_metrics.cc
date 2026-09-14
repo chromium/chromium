@@ -8,6 +8,7 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
+#include "chrome/browser/glic/service/glic_invoke_task.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "components/metrics/structured/buildflags/buildflags.h"
 
@@ -23,6 +24,7 @@ namespace {
 constexpr char kInvokeResultHistogramName[] = "Glic.InvokeResult";
 constexpr char kInvokeSourceHistogramName[] = "Glic.Invoke.InvocationSource";
 constexpr char kInvokeDurationHistogramName[] = "Glic.Invoke.Duration";
+constexpr char kInvokeTimeoutStageHistogramName[] = "Glic.Invoke.TimeoutStage";
 
 }  // namespace
 
@@ -117,6 +119,9 @@ void GlicInvokeMetrics::RecordError(
       base::StringPrintf("%s.%s", kInvokeDurationHistogramName,
                          GetInvocationSourceString(source_)),
       duration);
+  if (result == GlicInvokeError::kTimeout) {
+    RecordTimeoutStage(stopped_task);
+  }
 
 #if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
   metrics::structured::StructuredMetricsClient::Record(
@@ -131,6 +136,17 @@ void GlicInvokeMetrics::RecordError(
                                   : 0)
           .SetTimeSinceStart(duration.InMilliseconds()));
 #endif
+}
+
+void GlicInvokeMetrics::RecordTimeoutStage(
+    std::optional<GlicTaskType> stage) const {
+  GlicTaskType stage_to_record = stage.value_or(GlicTaskType::kUnknown);
+  base::UmaHistogramEnumeration(kInvokeTimeoutStageHistogramName,
+                                stage_to_record);
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("%s.%s", kInvokeTimeoutStageHistogramName,
+                         GetInvocationSourceString(source_)),
+      stage_to_record);
 }
 
 }  // namespace glic

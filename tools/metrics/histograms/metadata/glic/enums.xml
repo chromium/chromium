@@ -672,6 +672,30 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_invoke_options.h:GlicInvokeError) -->
 
+<!-- LINT.IfChange(GlicInvokeTimeoutStage) -->
+
+<enum name="GlicInvokeTimeoutStage">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="SequentialTaskGroup"/>
+  <int value="2" label="ParallelTaskGroup"/>
+  <int value="3" label="WaitForNavigation"/>
+  <int value="4" label="SetTabPendingActuation"/>
+  <int value="5" label="ShowInstance"/>
+  <int value="6" label="SetupHiddenPanel"/>
+  <int value="7" label="MaybeInitializeHiddenClient"/>
+  <int value="8" label="WaitForClientConnected"/>
+  <int value="9" label="PostCallback"/>
+  <int value="10" label="Stabilization"/>
+  <int value="11" label="WaitForFreCompletion"/>
+  <int value="12" label="SendToClient"/>
+  <int value="13" label="WaitForActuation"/>
+  <int value="14" label="ClipboardPolicy"/>
+  <int value="15" label="CopyPolicy"/>
+  <int value="16" label="PastePolicy"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_invoke_task.h:GlicTaskType) -->
+
 <!-- LINT.IfChange(GlicResponseError) -->
 
 <enum name="GlicMetricsError">

@@ -2001,6 +2001,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Invoke.TimeoutStage" enum="GlicInvokeTimeoutStage"
+    expires_after="2027-06-01">
+  <owner>csharrison@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the active task type when a Glic invocation times out. Recorded when
+    the invocation handler times out before completing.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Invoke.TimeoutStage.{InvocationSource}"
+    enum="GlicInvokeTimeoutStage" expires_after="2027-06-01">
+  <owner>csharrison@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the active task type when a Glic invocation times out, sliced by the
+    invocation source. Recorded when the invocation handler times out before
+    completing.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+</histogram>
+
 <histogram name="Glic.InvokeResult" enum="GlicInvokeResult"
     expires_after="2027-06-01">
   <owner>vollick@chromium.org</owner>
