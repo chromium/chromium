@@ -44,7 +44,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
@@ -381,7 +380,6 @@ public final class TextFieldViewUnitTest {
      * required.
      */
     @Test
-    @DisabledTest(message = "crbug.com/533068290")
     public void testRequiredFieldHasCorrectLabelAndAccessibilityScreenReaderOff() {
         PropertyModel model = buildDefaultPropertyModel();
         model.set(IS_REQUIRED, true);
@@ -391,16 +389,17 @@ public final class TextFieldViewUnitTest {
         // Hint should contain '*' when screen reader is off.
         assertTrue(inputLayout.getHint().toString().contains(FieldView.REQUIRED_FIELD_INDICATOR));
 
-        // Accessibility text should be the value, not the label.
+        // Accessibility text should lead with the value, not the label. TextInputLayout
+        // reports the hint through setHintText() on API 26+, but appends it to the text on
+        // older ones, so assert the value is announced first instead of being replaced.
         AccessibilityDelegate delegate = inputLayout.getEditText().getAccessibilityDelegate();
         assertNotNull(delegate);
         AccessibilityNodeInfo infoNode = AccessibilityNodeInfo.obtain();
         delegate.onInitializeAccessibilityNodeInfo(inputLayout.getEditText(), infoNode);
-        assertEquals(FIELD_VALUE, infoNode.getText().toString());
+        assertTrue(infoNode.getText().toString().startsWith(FIELD_VALUE));
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/533068290")
     public void testRequiredFieldHasCorrectLabelAndAccessibilityScreenReaderOn() {
         PropertyModel model = buildDefaultPropertyModel();
         model.set(IS_REQUIRED, true);
@@ -415,12 +414,12 @@ public final class TextFieldViewUnitTest {
                         FIELD_LABEL);
         assertEquals(expectedHint, hint);
 
-        // Accessibility text should still be the value, not the label.
+        // Accessibility text should still lead with the value, not the label.
         AccessibilityDelegate delegate = inputLayout.getEditText().getAccessibilityDelegate();
         assertNotNull(delegate);
         AccessibilityNodeInfo infoNode = AccessibilityNodeInfo.obtain();
         delegate.onInitializeAccessibilityNodeInfo(inputLayout.getEditText(), infoNode);
-        assertEquals(FIELD_VALUE, infoNode.getText().toString());
+        assertTrue(infoNode.getText().toString().startsWith(FIELD_VALUE));
     }
 
     /**
