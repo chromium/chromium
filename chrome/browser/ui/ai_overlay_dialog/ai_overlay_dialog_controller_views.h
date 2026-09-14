@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_CONTROLLER_VIEWS_H_
 #define CHROME_BROWSER_UI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_CONTROLLER_VIEWS_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 
 namespace views {
@@ -32,6 +33,8 @@ class AiOverlayDialogControllerViews : public AiOverlayDialogController {
 
  private:
   views::WebView* GetActiveOverlayWebView() const;
+
+  base::WeakPtrFactory<AiOverlayDialogControllerViews> weak_factory_{this};
 };
 
 }  // namespace ttc

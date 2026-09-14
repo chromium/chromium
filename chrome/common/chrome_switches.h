@@ -342,6 +342,11 @@ inline constexpr char kEnableNetBenchmarking[] = "enable-net-benchmarking";
 inline constexpr char kEnablePotentiallyAnnoyingSecurityFeatures[] =
     "enable-potentially-annoying-security-features";
 
+// Enables test mode for the AI overlay dialog, which automatically opens
+// the dialog on browser startup and exposes programmatic test APIs to WebUI.
+inline constexpr char kAiOverlayDialogTestMode[] =
+    "ai-overlay-dialog-test-mode";
+
 // Enables verbose debug logs for Talk to Chrome (TTC).
 inline constexpr char kEnableTtcDebugLogs[] = "enable-ttc-debug-logs";
 

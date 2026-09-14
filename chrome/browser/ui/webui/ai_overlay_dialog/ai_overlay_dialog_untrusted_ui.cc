@@ -80,6 +80,9 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
       "notes", IDR_AI_OVERLAY_DIALOG_UNTRUSTED_NOTES_NOTES_HTML);
 
   html_source->AddBoolean("isAndroidBackend", BUILDFLAG(IS_ANDROID));
+  html_source->AddBoolean("enableTtcTestApi",
+                          base::CommandLine::ForCurrentProcess()->HasSwitch(
+                              switches::kAiOverlayDialogTestMode));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->OverrideContentSecurityPolicy(

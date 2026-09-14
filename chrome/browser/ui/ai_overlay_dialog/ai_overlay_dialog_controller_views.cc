@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller_views.h"
 
+#include "base/command_line.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -25,7 +28,14 @@ namespace ttc {
 
 AiOverlayDialogControllerViews::AiOverlayDialogControllerViews(
     BrowserWindowInterface* browser)
-    : AiOverlayDialogController(browser) {}
+    : AiOverlayDialogController(browser) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAiOverlayDialogTestMode)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&AiOverlayDialogControllerViews::ShowOverlay,
+                                  weak_factory_.GetWeakPtr()));
+  }
+}
 
 AiOverlayDialogControllerViews::~AiOverlayDialogControllerViews() = default;
 
