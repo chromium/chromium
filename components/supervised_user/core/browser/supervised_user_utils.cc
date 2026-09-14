@@ -15,13 +15,13 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "components/supervised_user/core/browser/proto/transaction_data.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_log_record.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_formatter/url_formatter.h"
@@ -209,9 +209,7 @@ GURL GetParentAccessURL(
   GURL::Replacements replacements;
   std::string query = base::StrCat(
       {"callerid=", kCallerId, "&hl=", locale, "&continue=", kContinueUrl});
-  if (base::FeatureList::IsEnabled(
-          kLocalWebApprovalsWidgetSupportsUrlPayload) &&
-      !blocked_url.GetHost().empty()) {
+  if (!blocked_url.GetHost().empty()) {
     // Prepare blocked URL hostname for user-friendly display, including
     // internationalized domain name (IDN) conversion if necessary.
     std::u16string blocked_hostname = url_formatter::FormatUrl(
