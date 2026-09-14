@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
-
+#include "base/containers/flat_set.h"
 #include "base/test/tracing/trace_event_analyzer.h"
 #include "build/build_config.h"
+#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -32,7 +32,9 @@ class LayoutInstabilityTest : public MetricIntegrationTest {
               ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame,
               uint64_t num_layout_shifts = 1,
               bool check_UKM_UMA_metrics = false);
-  double CheckTraceData(base::ListValue& expectations, TraceAnalyzer&);
+  double CheckTraceData(const base::flat_set<std::string>& target_frame_tokens,
+                        base::ListValue& expectations,
+                        TraceAnalyzer&);
   void CheckSources(const base::ListValue& expected_sources,
                     const base::ListValue& trace_sources);
   void CheckUKMAndUMAMetrics(double expect_score);
@@ -56,10 +58,15 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
   StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
   Load("/layout-instability/" + test_file);
 
+  base::flat_set<std::string> target_frame_tokens;
   // Set layout shift amount expectations from web perf API.
   base::ListValue expectations;
   if (frame == ShiftFrame::LayoutShiftOnlyInMainFrame ||
       frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
+    target_frame_tokens.insert(web_contents()
+                                   ->GetPrimaryMainFrame()
+                                   ->GetDevToolsFrameToken()
+                                   .ToString());
     base::ListValue value =
         EvalJs(web_contents(), "cls_run_tests").TakeValue().TakeList();
     for (auto& d : value) {
@@ -70,6 +77,8 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
       frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
     content::RenderFrameHost* child_frame =
         content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+    ASSERT_TRUE(child_frame);
+    target_frame_tokens.insert(child_frame->GetDevToolsFrameToken().ToString());
     base::ListValue value =
         EvalJs(child_frame, "cls_run_tests").TakeValue().TakeList();
     for (auto& d : value) {
@@ -83,23 +92,33 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
 
   // It compares the trace data of layout shift events with |expectations| and
   // computes a score that's used to check the UKM and UMA values below.
-  double final_score = CheckTraceData(expectations, *StopTracingAndAnalyze());
+  double final_score = CheckTraceData(target_frame_tokens, expectations,
+                                      *StopTracingAndAnalyze());
 
-  // We can only verify the layout shift metrics here in UKM and UMA if layout
-  // shift only happens in the main frame. For layout shift happens in the
-  // sub-frame, it needs to apply a sub-frame weighting factor.
+  // We verify the layout shift metrics in UKM and UMA using the weighted score.
   if (check_UKM_UMA_metrics) {
-    DCHECK_EQ(ShiftFrame::LayoutShiftOnlyInMainFrame, frame);
     CheckUKMAndUMAMetrics(final_score);
   }
 }
 
-double LayoutInstabilityTest::CheckTraceData(base::ListValue& expectations,
-                                             TraceAnalyzer& analyzer) {
+double LayoutInstabilityTest::CheckTraceData(
+    const base::flat_set<std::string>& target_frame_tokens,
+    base::ListValue& expectations,
+    TraceAnalyzer& analyzer) {
   double final_score = 0.0;
+  double final_weighted_score = 0.0;
+
+  TraceEventVector all_events;
+  analyzer.FindEvents(Query::EventNameIs("LayoutShift"), &all_events);
 
   TraceEventVector events;
-  analyzer.FindEvents(Query::EventNameIs("LayoutShift"), &events);
+  for (auto* event : all_events) {
+    std::string frame_id;
+    if (event->GetArgAsString("frame", &frame_id) &&
+        target_frame_tokens.contains(frame_id)) {
+      events.push_back(event);
+    }
+  }
 
   size_t i = 0;
   for (const base::Value& expectation_value : expectations) {
@@ -112,13 +131,20 @@ double LayoutInstabilityTest::CheckTraceData(base::ListValue& expectations,
     }
 
     EXPECT_LT(i, events.size());
+    if (i >= events.size()) {
+      break;
+    }
     base::DictValue data = events[i]->GetKnownArgAsDict("data");
     ++i;
 
     if (score) {
       const std::optional<double> traced_score = data.FindDouble("score");
-      final_score += traced_score.has_value() ? traced_score.value() : 0;
+      final_score += traced_score.value_or(0.0);
       EXPECT_EQ(*score, final_score);
+
+      const std::optional<double> traced_weighted_score =
+          data.FindDouble("weighted_score_delta");
+      final_weighted_score += traced_weighted_score.value_or(0.0);
     }
     const base::ListValue* sources = expectation.FindList("sources");
     if (sources) {
@@ -127,7 +153,7 @@ double LayoutInstabilityTest::CheckTraceData(base::ListValue& expectations,
   }
 
   EXPECT_EQ(i, events.size());
-  return final_score;
+  return final_weighted_score;
 }
 
 void LayoutInstabilityTest::CheckSources(
@@ -305,17 +331,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, DISABLED_Sources_MaxImpact) {
 // calculated by applying a sub-frame weighting factor to the total score.
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, OOPIFSubframeWeighting) {
   RunWPT("main-frame.html", ShiftFrame::LayoutShiftOnlyInSubFrame,
-         /*num_layout_shifts=*/2);
-
-  // Check UKM.
-  ExpectUKMPageLoadMetricNear(
-      PageLoad::kLayoutInstability_CumulativeShiftScoreName,
-      page_load_metrics::LayoutShiftUkmValue(0.03), 1);
-
-  // Check UMA.
-  ExpectUniqueUMAPageLoadMetricNear(
-      "PageLoad.LayoutInstability.CumulativeShiftScore",
-      page_load_metrics::LayoutShiftUmaValue(0.03));
+         /*num_layout_shifts=*/2, /*check_UKM_UMA_metrics=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
