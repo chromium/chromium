@@ -85,6 +85,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   void RecordingCleared() override;
 
   bool clear_frame() const { return clear_frame_; }
+  void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }
 
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
 

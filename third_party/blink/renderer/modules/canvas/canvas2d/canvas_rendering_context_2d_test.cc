@@ -1415,6 +1415,35 @@ TEST_P(CanvasRenderingContext2DTest, Path_FullCoverage) {
                                       PaintOpIs<DrawPathOp>())));
 }
 
+TEST_P(CanvasRenderingContext2DTest, WritePixelsDoesNotClearFrame) {
+  CreateContext(kNonOpaque);
+  CanvasElement().SetSize(gfx::Size(10, 10));
+
+  // A fresh canvas starts with clear_frame() == true.
+  EXPECT_TRUE(Context2D()->clear_frame());
+
+  // Calling putImageData (WritePixels) covering the entire canvas writes raw
+  // pixels directly to the backing store without recording paint ops. Thus,
+  // clear_frame() must become false so that subsequent draws are not
+  // mistakenly vector-printed without these pixels.
+  NonThrowableExceptionState exception_state;
+  Context2D()->putImageData(full_image_data_.Get(), 0, 0, exception_state);
+  EXPECT_FALSE(Context2D()->clear_frame());
+
+  // Subsequent drawing and flushing must also leave clear_frame() as false.
+  Context2D()->fillRect(0, 0, 5, 5);
+  Context2D()->FlushCanvas(FlushReason::kOther);
+  EXPECT_FALSE(Context2D()->clear_frame());
+
+  // An explicit clear resets clear_frame() back to true.
+  Context2D()->clearRect(0, 0, 10, 10);
+  EXPECT_TRUE(Context2D()->clear_frame());
+
+  // Partial-coverage putImageData also leaves clear_frame() as false.
+  Context2D()->putImageData(partial_image_data_.Get(), 0, 0, exception_state);
+  EXPECT_FALSE(Context2D()->clear_frame());
+}
+
 //==============================================================================
 
 TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {

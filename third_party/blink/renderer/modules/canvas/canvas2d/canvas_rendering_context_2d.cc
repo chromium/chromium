@@ -379,9 +379,6 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
     }
   }
 
-  // WritePixels content is not saved in the recording. Calling WritePixels
-  // therefore invalidates the last recording because it's now
-  // missing that information.
   bool result = false;
   if (shared_image_provider_) {
     result =
@@ -390,7 +387,12 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
     result = bitmap_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
   }
   if (result) {
+    // WritePixels content is not saved in the recording. Thus, WritePixels()
+    // must invalidate the last recording and ensure that any subsequent
+    // recording is not treated as a full-frame recording, as it would be
+    // missing this pixel data.
     last_recording_ = std::nullopt;
+    set_clear_frame(false);
   }
   return result;
 }
