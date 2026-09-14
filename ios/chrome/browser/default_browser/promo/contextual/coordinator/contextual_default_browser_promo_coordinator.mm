@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_default_browser_promo_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 namespace {
@@ -142,9 +144,12 @@ constexpr CGFloat kMaxSheetHeightRatio = 0.75;
 
 #pragma mark - Private
 
-// Dismisses the promo.
+// Dismisses the promo via the command dispatcher handler.
 - (void)hidePromo {
-  [self stop];
+  id<ContextualDefaultBrowserPromoCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                         ContextualDefaultBrowserPromoCommands);
+  [handler hideContextualDefaultBrowserPromo];
 }
 
 // Notifies the feature engagement tracker that a promo action was taken.

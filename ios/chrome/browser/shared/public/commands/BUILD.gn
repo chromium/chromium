@@ -20,6 +20,7 @@ source_set("commands") {
     "collaboration_group_commands.h",
     "command_dispatcher.h",
     "command_dispatcher.mm",
+    "contextual_default_browser_promo_commands.h",
     "contextual_panel_entrypoint_commands.h",
     "contextual_panel_entrypoint_iph_commands.h",
     "contextual_sheet_commands.h",
