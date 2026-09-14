@@ -46,16 +46,6 @@ void SetManualFilterForHost(Profile* profile,
                             std::string_view host,
                             bool allowlist);
 
-// Updates manual block/allow list with a given url.
-// e.g. SetManualFilterForUrl(profile, "http://www.example.com", false) adds the
-// given url to the blocklist and the supervised user
-// will not be able to access this url. Similarly
-// SetManualFilterForUrl(profile, "www.example.com", true) adds the url to the
-// allowlist. The supervised user will be able to access this url.
-void SetManualFilterForUrl(Profile* profile,
-                           std::string_view url,
-                           bool allowlist);
-
 // Convenience method for browser tests emulating parent changes to web
 // filtering.
 void SetWebFilterType(const Profile* profile,

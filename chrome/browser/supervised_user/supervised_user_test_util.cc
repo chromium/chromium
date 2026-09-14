@@ -129,15 +129,6 @@ void SetManualFilterForHost(Profile* profile,
           profile->GetProfileKey()));
 }
 
-void SetManualFilterForUrl(Profile* profile,
-                           std::string_view url,
-                           bool allowlist) {
-  supervised_user::SupervisedUserTestEnvironment::SetManualFilterForUrl(
-      url, allowlist,
-      *supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
-          profile->GetProfileKey()));
-}
-
 void SetWebFilterType(const Profile* profile,
                       supervised_user::WebFilterType web_filter_type) {
   supervised_user::FamilyLinkSettingsService* service =
