@@ -25,3 +25,9 @@ include_rules = [
   "+ui/base",
   "+ui/gfx/geometry",
 ]
+
+specific_include_rules = {
+  "mirroring_gpu_factories_factory_unittest\.cc": [
+    "+ui/gl/gl_implementation.h",
+  ],
+}

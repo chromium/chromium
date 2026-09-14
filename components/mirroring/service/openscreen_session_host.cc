@@ -385,7 +385,13 @@ void OpenscreenSessionHost::OnNegotiated(
               base::SingleThreadTaskRunner::GetCurrentDefault(),
               base::BindOnce(&OpenscreenSessionHost::OnGpuFactoriesConfigured,
                              weak_factory_.GetWeakPtr())));
-      gpu_factories = &(gpu_factories_factory_.value()->GetInstance());
+      if (gpu_factories_factory_.has_value()) {
+        gpu_factories = &(gpu_factories_factory_.value()->GetInstance());
+      } else {
+        // The GPU channel could not be established, so fall back to software
+        // encoding.
+        video_config->use_hardware_encoder = false;
+      }
     }
 
     auto video_encoder = media::cast::VideoEncoder::Create(
@@ -781,6 +787,22 @@ void OpenscreenSessionHost::StopStreaming() {
       base::StrCat({"stopped streaming. state=",
                     base::NumberToString(static_cast<int>(state_))}));
 
+  // This cleanup must happen even when there is no active `session_`, since
+  // callers awaiting a VEA need an explicit failure rather than a dropped
+  // callback.
+  gpu_factories_factory_.reset();
+  channel_token_ = base::UnguessableToken();
+  route_id_ = 0;
+
+  // Fail all pending VEA requests as the GPU factory is gone. This explicitly
+  // signals failure to callers, so they won't get an invalid token/ID. They'll
+  // simply know VEA creation failed.
+  for (auto& callback : pending_vea_requests_) {
+    std::move(callback).Run(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            nullptr);
+  }
+  pending_vea_requests_.clear();
+
   if (!session_) {
     return;
   }
@@ -790,7 +812,6 @@ void OpenscreenSessionHost::StopStreaming() {
   audio_sender_.reset();
   video_sender_.reset();
   refresh_timer_.Stop();
-  gpu_factories_factory_.reset();
   remoting_stream_data_.reset();
 }
 
@@ -961,21 +982,9 @@ void OpenscreenSessionHost::OnGpuFactoryContextLost(
   CHECK(config.use_hardware_encoder);
   CHECK_EQ(state_, State::kMirroring);
 
-  gpu_factories_factory_.reset();
-  channel_token_ = base::UnguessableToken();
-  route_id_ = 0;
   base::UmaHistogramEnumeration(
       "MediaRouter.MirroringService.GpuFactoryContextLost",
       config.video_codec());
-
-  // Fail all pending VEA requests as the GPU factory is lost. This explicitly
-  // signals failure to callers, so they won't get an invalid token/ID. They'll
-  // simply know VEA creation failed.
-  for (auto& callback : pending_vea_requests_) {
-    std::move(callback).Run(base::SingleThreadTaskRunner::GetCurrentDefault(),
-                            nullptr);
-  }
-  pending_vea_requests_.clear();
 
   MaybeDenylistHardwareCodecAndRenegotiate(config.video_codec());
 }

@@ -6,10 +6,12 @@
 #define COMPONENTS_MIRRORING_SERVICE_MIRRORING_GPU_FACTORIES_FACTORY_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
@@ -17,9 +19,14 @@
 #include "media/mojo/clients/mojo_gpu_video_accelerator_factories.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 
+namespace gpu {
+class GpuChannelHost;
+}  // namespace gpu
+
 namespace viz {
+class ContextProviderCommandBuffer;
 class Gpu;
-}
+}  // namespace viz
 
 namespace mirroring {
 
@@ -44,8 +51,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringGpuFactoriesFactory
       std::unique_ptr<MirroringGpuFactoriesFactory, base::OnTaskRunnerDeleter>;
 
   // Factory method to ensure the object is always managed by a UniquePtr
-  // that deletes it on the correct thread.
-  static UniquePtr Create(
+  // that deletes it on the correct thread. Must be called on the MAIN thread.
+  // Returns `std::nullopt` if the GPU channel cannot be established, in which
+  // case the caller should fall back to software encoding.
+  static std::optional<UniquePtr> Create(
       scoped_refptr<media::cast::CastEnvironment> cast_environment,
       viz::Gpu& gpu,
       base::OnceClosure context_lost_cb,
@@ -64,7 +73,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringGpuFactoriesFactory
  private:
   MirroringGpuFactoriesFactory(
       scoped_refptr<media::cast::CastEnvironment> cast_environment,
-      viz::Gpu& gpu,
+      scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
+      mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
+          vea_provider,
       base::OnceClosure context_lost_cb,
       ContextConfiguredCallback context_configured_cb);
 
@@ -74,17 +85,14 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringGpuFactoriesFactory
   void OnChannelTokenReady(int32_t route_id,
                            const base::UnguessableToken& channel_token);
 
-  // Properly resets `instance_` and `context_provider_` on the VIDEO thread.
-  void ResetGpuFactories();
-
   scoped_refptr<media::cast::CastEnvironment> cast_environment_;
-  raw_ref<viz::Gpu, DisableDanglingPtrDetection> gpu_;
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
   base::OnceClosure context_lost_cb_;
   ContextConfiguredCallback context_configured_cb_;
   std::unique_ptr<media::MojoGpuVideoAcceleratorFactories> instance_;
 
-  base::WeakPtrFactory<MirroringGpuFactoriesFactory> weak_factory_{this};
+  // Weak pointer factory used exclusively on the VIDEO thread.
+  base::WeakPtrFactory<MirroringGpuFactoriesFactory> video_weak_factory_{this};
 };
 
 }  // namespace mirroring

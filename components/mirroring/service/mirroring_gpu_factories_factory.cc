@@ -4,9 +4,12 @@
 
 #include "components/mirroring/service/mirroring_gpu_factories_factory.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -20,64 +23,54 @@ using media::cast::CastEnvironment;
 
 }
 
-MirroringGpuFactoriesFactory::UniquePtr MirroringGpuFactoriesFactory::Create(
+std::optional<MirroringGpuFactoriesFactory::UniquePtr>
+MirroringGpuFactoriesFactory::Create(
     scoped_refptr<CastEnvironment> cast_environment,
     viz::Gpu& gpu,
     base::OnceClosure context_lost_cb,
     ContextConfiguredCallback context_configured_cb) {
+  CHECK(cast_environment->CurrentlyOn(CastEnvironment::ThreadId::kMain));
+
+  auto gpu_channel_host = gpu.EstablishGpuChannelSync();
+  if (!gpu_channel_host) {
+    return std::nullopt;
+  }
+
+  auto video_runner =
+      cast_environment->GetTaskRunner(CastEnvironment::ThreadId::kVideo);
+
+  mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
+      vea_provider;
+  gpu.CreateVideoEncodeAcceleratorProvider(
+      vea_provider.InitWithNewPipeAndPassReceiver());
+
   return UniquePtr(new MirroringGpuFactoriesFactory(
-                       cast_environment, gpu, std::move(context_lost_cb),
+                       std::move(cast_environment), std::move(gpu_channel_host),
+                       std::move(vea_provider), std::move(context_lost_cb),
                        std::move(context_configured_cb)),
-                   base::OnTaskRunnerDeleter(cast_environment->GetTaskRunner(
-                       CastEnvironment::ThreadId::kVideo)));
+                   base::OnTaskRunnerDeleter(std::move(video_runner)));
 }
 
 MirroringGpuFactoriesFactory::MirroringGpuFactoriesFactory(
     scoped_refptr<CastEnvironment> cast_environment,
-    viz::Gpu& gpu,
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
+    mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
+        vea_provider,
     base::OnceClosure context_lost_cb,
     ContextConfiguredCallback context_configured_cb)
     : cast_environment_(std::move(cast_environment)),
-      gpu_(gpu),
       context_lost_cb_(std::move(context_lost_cb)),
-      context_configured_cb_(std::move(context_configured_cb)) {}
-
-MirroringGpuFactoriesFactory::~MirroringGpuFactoriesFactory() {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
-  ResetGpuFactories();
-}
-
-media::GpuVideoAcceleratorFactories&
-MirroringGpuFactoriesFactory::GetInstance() {
+      context_configured_cb_(std::move(context_configured_cb)) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
+  CHECK(gpu_channel_host);
 
-  // If we have a valid context, return the current instance as it is still
-  // valid.
-  if (instance_) {
-    return *instance_;
-  }
-
-  // Finally, create and return a new instance.
   static constexpr int32_t kStreamId = 0;
-
-  auto gpu_channel_host = gpu_->EstablishGpuChannelSync();
 
   context_provider_ = viz::ContextProviderCommandBuffer::CreateForRaster(
       gpu_channel_host, kStreamId, gpu::SchedulingPriority::kHigh,
       GURL("chrome://gpu/CastStreaming"), /*automatic_flushes=*/false,
       /*support_locking=*/false, gpu::SharedMemoryLimits::ForMailboxContext(),
-
       viz::command_buffer_metrics::ContextType::VIDEO_CAPTURE);
-
-  cast_environment_->PostTask(
-      CastEnvironment::ThreadId::kVideo, FROM_HERE,
-      base::BindOnce(&MirroringGpuFactoriesFactory::BindOnVideoThread,
-                     weak_factory_.GetWeakPtr()));
-
-  mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
-      vea_provider;
-  gpu_->CreateVideoEncodeAcceleratorProvider(
-      vea_provider.InitWithNewPipeAndPassReceiver());
 
   auto codec_factory = std::make_unique<media::MojoCodecFactoryDefault>(
       cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kVideo),
@@ -95,6 +88,30 @@ MirroringGpuFactoriesFactory::GetInstance() {
       /*enable_video_decode_accelerator=*/false,
       /*enable_video_encode_accelerator=*/true);
 
+  // NOTE: this Unretained is safe because deletion of `this` is posted to the
+  // VIDEO thread via base::OnTaskRunnerDeleter, so this task will always run
+  // before `this` is destroyed.
+  cast_environment_->PostTask(
+      CastEnvironment::ThreadId::kVideo, FROM_HERE,
+      base::BindOnce(&MirroringGpuFactoriesFactory::BindOnVideoThread,
+                     base::Unretained(this)));
+}
+
+MirroringGpuFactoriesFactory::~MirroringGpuFactoriesFactory() {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
+  if (context_provider_) {
+    context_provider_->RemoveObserver(this);
+  }
+  // Destroy the accelerator factories before releasing `context_provider_`,
+  // since `instance_` holds a reference to it. Done explicitly rather than
+  // relying on reverse member-declaration order.
+  instance_.reset();
+}
+
+media::GpuVideoAcceleratorFactories&
+MirroringGpuFactoriesFactory::GetInstance() {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
+  CHECK(instance_);
   return *instance_;
 }
 
@@ -112,7 +129,7 @@ void MirroringGpuFactoriesFactory::BindOnVideoThread() {
   if (command_buffer_proxy) {
     command_buffer_proxy->GetGpuChannel().GetChannelToken(base::BindOnce(
         &MirroringGpuFactoriesFactory::OnChannelTokenReady,
-        weak_factory_.GetWeakPtr(), command_buffer_proxy->route_id()));
+        video_weak_factory_.GetWeakPtr(), command_buffer_proxy->route_id()));
   }
 }
 
@@ -130,22 +147,10 @@ void MirroringGpuFactoriesFactory::OnChannelTokenReady(
 
 void MirroringGpuFactoriesFactory::OnContextLost() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
-  ResetGpuFactories();
   if (context_lost_cb_) {
     // `context_lost_cb_` may destroy `this`, so it is important that it is
     // called last in this method.
     std::move(context_lost_cb_).Run();
-  }
-}
-
-void MirroringGpuFactoriesFactory::ResetGpuFactories() {
-  // The GPU factories object, after construction, must only be accessed on the
-  // video encoding thread (including for deletion).
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
-  instance_.reset();
-  if (context_provider_) {
-    context_provider_->RemoveObserver(this);
-    context_provider_ = nullptr;
   }
 }
 

@@ -103,6 +103,7 @@ source_set("unittests") {
     "//components/mirroring/mojom:service",
     "//components/openscreen_platform",
     "//gpu:test_support",
+    "//gpu/config",
     "//gpu/ipc/common:test_support",
     "//media",
     "//media:test_support",
@@ -124,6 +125,7 @@ source_set("unittests") {
     "//testing/gtest",
     "//third_party/openscreen/src/cast/streaming:common",
     "//third_party/openscreen/src/cast/streaming:sender",
+    "//ui/gl",
   ]
 
   # Make sure to use the Chromium protobuf headers, and not the ones in

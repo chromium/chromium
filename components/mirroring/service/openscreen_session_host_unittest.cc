@@ -185,6 +185,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   OpenscreenSessionHostTest& operator=(const OpenscreenSessionHostTest&) =
       delete;
 
+  void SetUp() override {
+    media::cast::encoding_support::ClearHardwareCodecDenyListForTesting();
+  }
+
   void TearDown() override {
     media::cast::encoding_support::ClearHardwareCodecDenyListForTesting();
   }
@@ -201,6 +205,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     if (session_host_) {
       DeleteSessionHost();
     }
+    media::cast::encoding_support::ClearHardwareCodecDenyListForTesting();
   }
 
  protected:
@@ -703,6 +708,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     session_host_->video_sender_ = std::move(video_sender);
   }
 
+  void PushGpuFactoryContextLost(const media::cast::FrameSenderConfig& config) {
+    session_host_->OnGpuFactoryContextLost(config);
+  }
+
   uint32_t GetVideoNetworkBandwidth() const {
     return session_host_->GetVideoNetworkBandwidth();
   }
@@ -1193,6 +1202,39 @@ TEST_F(OpenscreenSessionHostTest,
   AssertCodecWasOffered(media::VideoCodec::kVP8, false);
 }
 
+TEST_F(OpenscreenSessionHostTest,
+       ShouldDisableHardwareEncodingIfGpuContextLost) {
+  CreateSession(SessionType::VIDEO_ONLY);
+
+  // Mock the profiles to enable VP9 hardware encode.
+  SetSupportedProfiles(
+      std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
+          media::VideoEncodeAccelerator::SupportedProfile(
+              media::VideoCodecProfile::VP9PROFILE_PROFILE0,
+              gfx::Size{1920, 1080})});
+  base::RunLoop run_loop;
+  set_run_loop_quit_closure(run_loop.QuitClosure());
+  NegotiateMirroring();
+  run_loop.Run();
+
+  // We should have offered VP9 with hardware ENABLED.
+  AssertCodecWasOffered(media::VideoCodec::kVP9, true);
+
+  // GPU context lost occurs.
+  FrameSenderConfig config;
+  config.use_hardware_encoder = true;
+  config.video_codec_params =
+      media::cast::VideoCodecParams{media::VideoCodec::kVP9};
+
+  base::RunLoop renegotiate_loop;
+  set_run_loop_quit_closure(renegotiate_loop.QuitClosure());
+  PushGpuFactoryContextLost(config);
+  renegotiate_loop.Run();
+
+  // This should have forced a renegotiation with hardware DISABLED.
+  AssertCodecWasOffered(media::VideoCodec::kVP9, false);
+}
+
 TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareH264EncodingIfSupported) {
 #if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list;
@@ -1506,8 +1548,9 @@ TEST_F(OpenscreenSessionHostTest, RemotingNegotiationMismatchedCodec) {
   // During Media Remoting, it is expected and normal for the negotiated codec
   // to differ from the offered `kUnknown` codec. This should not crash!
   EXPECT_CALL(remoting_source_, OnStarted());
-  session_host_->OnNegotiated(nullptr, std::move(senders),
-                              openscreen::cast::capture_recommendations::Recommendations{});
+  session_host_->OnNegotiated(
+      nullptr, std::move(senders),
+      openscreen::cast::capture_recommendations::Recommendations{});
   task_environment_.RunUntilIdle();
 
   StopSession();
