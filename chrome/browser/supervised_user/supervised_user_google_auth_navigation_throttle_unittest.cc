@@ -7,7 +7,6 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
@@ -16,7 +15,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
-#include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
@@ -41,11 +39,6 @@ std::unique_ptr<KeyedService> BuildTestSigninClient(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TestSigninClient>(profile->GetPrefs());
-}
-
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    content::BrowserContext* context) {
-  return std::make_unique<syncer::MockSyncService>();
 }
 
 class MockNavigationSubframeHandle : public content::MockNavigationHandle {
@@ -79,9 +72,6 @@ class SupervisedUserGoogleAuthNavigationThrottleTest
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
-                SyncServiceFactory::GetInstance(),
-                base::BindRepeating(&CreateMockSyncService)},
-            TestingProfile::TestingFactory{
                 ChromeSigninClientFactory::GetInstance(),
                 base::BindRepeating(&BuildTestSigninClient)}};
   }
