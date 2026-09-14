@@ -4708,14 +4708,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             boolean isUrlBarVisible =
                     !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
             if (isUrlBarVisible) {
-                ToolbarManager toolbarManager = getToolbarManager();
-                if (toolbarManager.isUrlBarFocused()) {
-                    toolbarManager.selectAllUrlBarText();
-                } else {
-                    // This is expected to select all text when focusing.
-                    toolbarManager.beginFuseboxInput(
-                            new AutocompleteInput(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION));
-                }
+                getToolbarManager()
+                        .focusAndSelectAllUrlBarText(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
             }
         } else if (id == R.id.focus_and_clear_url_bar) {
             boolean isUrlBarVisible =

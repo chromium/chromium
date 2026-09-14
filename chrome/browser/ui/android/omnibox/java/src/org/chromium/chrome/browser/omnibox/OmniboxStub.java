@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 
 /**
  * Handles user interaction with the stubbed Omnibox (a.k.a. fakebox) used in the pages such as NTP
@@ -42,8 +43,17 @@ public interface OmniboxStub {
      */
     boolean isUrlBarFocused();
 
-    /** Selects all text in the omnibox. */
-    void selectAllText();
+    /**
+     * Focuses the Omnibox and selects all of its text, whichever state the input session is in.
+     *
+     * <p>Unlike {@link #beginInput(AutocompleteInput)}, this never discards an in-progress input:
+     * an unfocused but still live session ({@link
+     * AutocompleteInput.DisplayState#DRAFTING_NO_FOCUS}) is refocused rather than restarted. A new
+     * session is only initialized when no session is currently in progress.
+     *
+     * @param focusReason The focus reason to start a session with, if none is in progress.
+     */
+    void focusAndSelectAllText(@OmniboxFocusReason int focusReason);
 
     /**
      * Get the {@link VoiceRecognitionHandler}.

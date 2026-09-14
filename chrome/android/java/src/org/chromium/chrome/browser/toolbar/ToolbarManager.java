@@ -263,6 +263,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -2484,10 +2485,14 @@ public class ToolbarManager
         return mLocationBar.getOmniboxStub().isUrlBarFocused();
     }
 
-    /** Selects all text in the URL bar. */
-    public void selectAllUrlBarText() {
+    /**
+     * Focuses the UrlBar and selects all of its text, preserving any in-progress input session.
+     *
+     * @param focusReason The focus reason to start a session with, if none is in progress.
+     */
+    public void focusAndSelectAllUrlBarText(@OmniboxFocusReason int focusReason) {
         if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
-        mLocationBar.getOmniboxStub().selectAllText();
+        mLocationBar.getOmniboxStub().focusAndSelectAllText(focusReason);
     }
 
     /** Returns the UrlBar text excluding the autocomplete text. */

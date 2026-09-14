@@ -3350,6 +3350,14 @@ class LocationBarMediator
         clearUrlBarFocus();
     }
 
+    /**
+     * The display state of the current input, or {@link DisplayState#WEBSITE} when no input session
+     * is in progress -- the two are equivalent, as WEBSITE denotes exactly that.
+     */
+    private @DisplayState int getDisplayState() {
+        return mCurrentInput == null ? DisplayState.WEBSITE : mCurrentInput.getDisplayState();
+    }
+
     /** True when the current input is non-null and the input display state matches the argument. */
     private boolean displayStateEquals(@DisplayState int displayState) {
         return mCurrentInput != null && mCurrentInput.getDisplayState() == displayState;
@@ -3426,13 +3434,23 @@ class LocationBarMediator
         return mUrlHasFocus;
     }
 
-    @Override
-    public void selectAllText() {
+    /** Selects all text in the omnibox, committing any preview text first. */
+    @VisibleForTesting
+    void selectAllText() {
         if (mUrlCoordinator == null) return;
         if (mCurrentInput != null) {
             mCurrentInput.commitPreviewText().setSelection(TextSelection.SELECT_ALL);
         }
         mUrlCoordinator.selectAllText();
+    }
+
+    @Override
+    public void focusAndSelectAllText(@OmniboxFocusReason int focusReason) {
+        switch (getDisplayState()) {
+            case DisplayState.DRAFTING_NO_FOCUS -> mUrlCoordinator.requestFocus();
+            case DisplayState.DRAFTING, DisplayState.SUGGESTIONS -> selectAllText();
+            default -> beginInput(new AutocompleteInput(focusReason));
+        }
     }
 
     /** {@link OmniboxStub#loadUrlFromVoice(String)} */

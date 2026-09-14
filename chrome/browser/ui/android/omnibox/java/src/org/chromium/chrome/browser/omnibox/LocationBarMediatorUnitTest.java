@@ -602,6 +602,24 @@ public class LocationBarMediatorUnitTest {
         assertEquals(text, mSessionState.getAutocompleteInput().getUserText());
     }
 
+    private void assertSelection(TextSelection selection) {
+        assertEquals(selection, mSessionState.getAutocompleteInput().getSelection());
+    }
+
+    /**
+     * Makes {@code mUrlCoordinator.requestFocus()} deliver the focus change synchronously, as the
+     * real UrlBar does.
+     */
+    private void stubSynchronousFocusOnRequest() {
+        doAnswer(
+                        invocation -> {
+                            mMediator.onUrlFocusChange(/* hasFocus= */ true);
+                            return null;
+                        })
+                .when(mUrlCoordinator)
+                .requestFocus();
+    }
+
     private void assertDraftingNoFocusProperties() {
         assertTrue(mSessionState.isSessionActive());
         assertDisplayState(DisplayState.DRAFTING_NO_FOCUS);
@@ -613,6 +631,11 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mMediator.beginInput(input);
+    }
+
+    /** Sets up a session in {@code displayState}, with user text that differs from the initial. */
+    private void setupSession(@DisplayState int displayState) {
+        setupSession(displayState, /* textDiffers= */ true);
     }
 
     private void setupSession(@DisplayState int displayState, boolean textDiffers) {
@@ -5172,14 +5195,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
 
-        // Stub requestFocus to trigger focus change synchronously.
-        doAnswer(
-                        invocation -> {
-                            mMediator.onUrlFocusChange(/* hasFocus= */ true);
-                            return null;
-                        })
-                .when(mUrlCoordinator)
-                .requestFocus();
+        stubSynchronousFocusOnRequest();
 
         // Clear invocations to start fresh.
         clearInvocations(mUrlCoordinator);
@@ -5304,6 +5320,48 @@ public class LocationBarMediatorUnitTest {
         assertEquals(TextSelection.SELECT_ALL, mSessionState.getAutocompleteInput().getSelection());
         verify(mUrlCoordinator)
                 .setUrlBarData(any(), eq(ScrollType.NO_SCROLL), eq(TextSelection.SELECT_ALL));
+    }
+
+    @Test
+    public void testFocusAndSelectAllText_fromDraftingNoFocus_refocusesWithoutRestarting() {
+        setupSession(DisplayState.DRAFTING_NO_FOCUS);
+        stubSynchronousFocusOnRequest();
+
+        mMediator.focusAndSelectAllText(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
+
+        assertDisplayState(DisplayState.DRAFTING);
+        assertSelection(TextSelection.SELECT_ALL);
+    }
+
+    @Test
+    public void testFocusAndSelectAllText_fromDrafting_reselectsText() {
+        setupSession(DisplayState.DRAFTING);
+
+        mMediator.focusAndSelectAllText(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
+
+        assertDisplayState(DisplayState.DRAFTING);
+        assertSelection(TextSelection.SELECT_ALL);
+    }
+
+    @Test
+    public void testFocusAndSelectAllText_fromSuggestions_reselectsText() {
+        setupSession(DisplayState.SUGGESTIONS);
+
+        mMediator.focusAndSelectAllText(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
+
+        assertDisplayState(DisplayState.SUGGESTIONS);
+        assertSelection(TextSelection.SELECT_ALL);
+    }
+
+    @Test
+    public void testFocusAndSelectAllText_withoutSession_beginsInput() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        mMediator.focusAndSelectAllText(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
+
+        // DRAFTING rather than SUGGESTIONS: the session is still awaiting suggestions.
+        assertDisplayState(DisplayState.DRAFTING);
     }
 
     @Test
