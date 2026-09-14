@@ -234,7 +234,11 @@ class BookmarkFolderPickerMediator {
     private void updateToolbarTitleForCurrentParent() {
         String title;
         if (mCurrentParentItem.getId().equals(mBookmarkModel.getRootFolderId())) {
-            title = mContext.getString(R.string.folder_picker_root);
+            title =
+                    mContext.getString(
+                            BookmarkUtils.isDesktopBookmarksDialogEnabled()
+                                    ? R.string.folder_picker_root_desktop
+                                    : R.string.folder_picker_root);
         } else {
             title = mCurrentParentItem.getTitle();
         }

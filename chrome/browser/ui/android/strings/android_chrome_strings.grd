@@ -4832,6 +4832,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_FOLDER_PICKER_ROOT"  desc="Toolbar title for when the user is selecting a folder and the current selected folder is the root.">
         Move to\u2026
       </message>
+      <message name="IDS_FOLDER_PICKER_ROOT_DESKTOP"  desc="Title for the folder picker shown in the desktop bookmarks dialog, when the current selected folder is the root.">
+        Choose another folder
+      </message>
       <message name="IDS_FOLDER_PICKER_MOVE_HERE"  desc="Button the user clicks to move the given bookmark (or folder) to the selected folder.">
         Move here
       </message>
