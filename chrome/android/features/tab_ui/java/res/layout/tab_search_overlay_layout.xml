@@ -30,8 +30,9 @@ found in the LICENSE file.
         android:focusable="false">
 
         <FrameLayout
+            android:id="@+id/tab_search_overlay_header"
             android:layout_width="match_parent"
-            android:layout_height="42dp">
+            android:layout_height="@dimen/tab_search_overlay_header_height">
 
             <ImageButton
                 android:id="@+id/tab_search_close_button"

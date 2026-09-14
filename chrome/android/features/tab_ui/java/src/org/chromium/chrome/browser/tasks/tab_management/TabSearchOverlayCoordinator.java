@@ -759,12 +759,15 @@ public class TabSearchOverlayCoordinator
     }
 
     /**
-     * Updates the top margin of the panel view to align with the top of the tab strip.
+     * Updates the top margin of the panel view.
      *
-     * <p>The top of the tab strip is defined by the location of the control container. In desktop
-     * windowing mode, this sits at the top of the window (topMargin = 0). When not in desktop
-     * windowing (e.g. fullscreen), the control container starts below the system status bar, so the
-     * panel is offset to align with the tab strip and remain accessible.
+     * <p>In desktop windowing, OS caption controls overlapping the window are unavoidable. We use
+     * {@link AppHeaderState#getCaptionControlsTopOffset()} to ensure the panel header aligns with
+     * the caption controls (or is offset below any status bar sitting above the caption).
+     *
+     * <p>When not in desktop windowing (conventional app state, e.g. fullscreen), the top margin is
+     * calculated via {@link #getTopMarginForConventionalState()} so the panel aligns below the
+     * system status bar.
      */
     private void updatePanelTopMargin() {
         if (mPanelContainer == null) {
@@ -776,17 +779,44 @@ public class TabSearchOverlayCoordinator
             return;
         }
 
-        View controlContainer = mActivity.findViewById(R.id.control_container);
-        int topMargin = 0;
-        if (controlContainer != null) {
-            int[] location = new int[2];
-            controlContainer.getLocationInWindow(location);
-            topMargin = Math.max(0, location[1]);
-        }
+        AppHeaderState appHeaderState =
+                mDesktopWindowStateManager != null
+                        ? mDesktopWindowStateManager.getAppHeaderState()
+                        : null;
+
+        int topMargin =
+                appHeaderState != null && appHeaderState.isInDesktopWindow()
+                        ? appHeaderState.getCaptionControlsTopOffset()
+                        : getTopMarginForConventionalState();
+
         if (params.topMargin != topMargin) {
             params.topMargin = topMargin;
             panelView.setLayoutParams(params);
         }
+    }
+
+    /**
+     * Calculates the top margin for the panel when in a conventional app state (not in desktop
+     * windowing).
+     *
+     * <p>The top margin is calculated from the control container and toolbar positions ({@code
+     * toolbarTop - tabStripHeight}) so the panel aligns below the system status bar.
+     */
+    private int getTopMarginForConventionalState() {
+        View controlContainer = mActivity.findViewById(R.id.control_container);
+        View toolbarContainer =
+                controlContainer != null
+                        ? controlContainer.findViewById(R.id.toolbar_container)
+                        : null;
+        int tabStripHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
+        int toolbarTop = 0;
+        if (toolbarContainer != null) {
+            int[] location = new int[2];
+            toolbarContainer.getLocationInWindow(location);
+            toolbarTop = location[1] > 0 ? location[1] : toolbarContainer.getTop();
+        }
+        return Math.max(0, toolbarTop - tabStripHeight);
     }
 
     /**
