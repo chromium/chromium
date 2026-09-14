@@ -25,6 +25,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_isolation_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
@@ -97,6 +98,15 @@ IsolatedWebAppThrottle::WillStartRequest() {
     return PROCEED;
   }
 
+  const auto iwa_origin = IwaOrigin::Create(navigation_handle()->GetURL());
+  if (!iwa_origin.has_value()) {
+    return PROCEED;
+  }
+
+  if (!IsAuthorizedIwaNavigation(*iwa_origin)) {
+    return BLOCK_REQUEST;
+  }
+
   IwaRuntimeDataProvider& key_distribution_info_provider =
       IwaRuntimeDataProvider::GetInstance();
   WebAppProvider& provider =
@@ -105,10 +115,6 @@ IsolatedWebAppThrottle::WillStartRequest() {
   if (provider.is_registry_ready() &&
       key_distribution_info_provider.OnBestEffortRuntimeDataReady()
           .is_signaled()) {
-    const auto iwa_origin = IwaOrigin::Create(navigation_handle()->GetURL());
-    if (!iwa_origin.has_value()) {
-      return PROCEED;
-    }
     if (NeedsManifestFetch(*iwa_origin)) {
       IwaPermissionsPolicyCacheFactory::GetForProfile(profile())
           ->ObtainManifestAndCache(
@@ -204,6 +210,29 @@ Profile* IsolatedWebAppThrottle::profile() const {
 bool IsolatedWebAppThrottle::is_isolated_web_app_navigation() const {
   return content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
       profile(), navigation_handle()->GetURL());
+}
+
+bool IsolatedWebAppThrottle::IsAuthorizedIwaNavigation(
+    const IwaOrigin& iwa_origin) const {
+  content::NavigationHandle& handle = CHECK_DEREF(navigation_handle());
+
+  // Renderer-initiated cross-origin navigations into an IWA are strictly
+  // prohibited.
+  if (handle.IsRendererInitiated() &&
+      handle.GetInitiatorOrigin() != iwa_origin.origin()) {
+    return false;
+  }
+
+  // Subframes cannot be navigated into an IWA unless the parent frame is
+  // already the same IWA origin.
+  if (!handle.IsInMainFrame()) {
+    content::RenderFrameHost* parent = handle.GetParentFrame();
+    if (!parent || parent->GetLastCommittedOrigin() != iwa_origin.origin()) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 const char* IsolatedWebAppThrottle::GetNameForLogging() {

@@ -135,4 +135,46 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
   EXPECT_THAT(*policy, IsEmpty());
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
+                       CrossIwaNavigationDoesNotTriggerManifestFetch) {
+  // Install App 1.
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app1 =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info1,
+                       app1->Install(profile()));
+
+  // Install App 2.
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app2 =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info2,
+                       app2->Install(profile()));
+
+  IwaOrigin iwa_origin2 =
+      IwaOrigin::Create(url_info2.origin().GetURL()).value();
+  // App 2's manifest should not yet be cached.
+  EXPECT_THAT(GetCache()->GetPolicy(iwa_origin2), IsNull());
+
+  // Open App 1.
+  content::RenderFrameHost* frame1 = OpenApp(url_info1.app_id());
+  ASSERT_THAT(frame1, NotNull());
+
+  // Attempt to navigate an iframe in App 1 to App 2.
+  content::TestNavigationObserver observer(url_info2.origin().GetURL());
+  observer.WatchExistingWebContents();
+  EXPECT_TRUE(
+      content::ExecJs(frame1, content::JsReplace(R"(
+        const iframe = document.createElement('iframe');
+        iframe.src = $1;
+        document.body.appendChild(iframe);
+      )",
+                                                 url_info2.origin().GetURL())));
+  observer.Wait();
+
+  // Navigation should have failed/been blocked.
+  EXPECT_FALSE(observer.last_navigation_succeeded());
+
+  // Crucially, App 2's manifest policy must NOT have been cached.
+  EXPECT_THAT(GetCache()->GetPolicy(iwa_origin2), IsNull());
+}
+
 }  // namespace web_app

@@ -17,6 +17,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,6 +83,7 @@ TEST_F(IsolatedWebAppThrottleTest, NoIwaNavigationProceed) {
 TEST_F(IsolatedWebAppThrottleTest, WebAppProviderNotInitialized) {
   content::MockNavigationHandle test_handle(GURL(kIsolatedAppOrigin),
                                             main_frame());
+  test_handle.set_is_renderer_initiated(false);
   content::MockNavigationThrottleRegistry test_registry(
       &test_handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
@@ -94,6 +96,7 @@ TEST_F(IsolatedWebAppThrottleTest, WebAppProviderInitialized) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   content::MockNavigationHandle test_handle(GURL(kIsolatedAppOrigin),
                                             main_frame());
+  test_handle.set_is_renderer_initiated(false);
   content::MockNavigationThrottleRegistry test_registry(
       &test_handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
@@ -114,6 +117,7 @@ TEST_F(IsolatedWebAppThrottleTest, WebAppProviderInitialized) {
 TEST_F(IsolatedWebAppThrottleTest, WebAppProviderInitializedAfterNavigation) {
   content::MockNavigationHandle test_handle(GURL(kIsolatedAppOrigin),
                                             main_frame());
+  test_handle.set_is_renderer_initiated(false);
   content::MockNavigationThrottleRegistry test_registry(
       &test_handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
@@ -127,6 +131,90 @@ TEST_F(IsolatedWebAppThrottleTest, WebAppProviderInitializedAfterNavigation) {
   });
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   run_loop.Run();
+}
+
+TEST_F(IsolatedWebAppThrottleTest,
+       CrossOriginRendererInitiatedNavigationBlocked) {
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  content::MockNavigationHandle test_handle(GURL(kIsolatedAppOrigin),
+                                            main_frame());
+  test_handle.set_is_renderer_initiated(true);
+  test_handle.set_initiator_origin(
+      url::Origin::Create(GURL("https://example.com")));
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(test_registry);
+
+  // Cross-origin renderer-initiated navigation should be blocked immediately.
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
+            throttle->WillStartRequest().action());
+
+  EXPECT_FALSE(GetCache()->GetPolicy(
+      IwaOrigin::Create(GURL(kIsolatedAppOrigin)).value()));
+}
+
+TEST_F(IsolatedWebAppThrottleTest, CrossIwaRendererInitiatedNavigationBlocked) {
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  content::MockNavigationHandle test_handle(GURL(kIsolatedAppOrigin),
+                                            main_frame());
+  test_handle.set_is_renderer_initiated(true);
+  test_handle.set_initiator_origin(url::Origin::Create(
+      GURL("isolated-app://"
+           "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic")));
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(test_registry);
+
+  // Cross-IWA renderer-initiated navigation should be blocked immediately.
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
+            throttle->WillStartRequest().action());
+
+  EXPECT_FALSE(GetCache()->GetPolicy(
+      IwaOrigin::Create(GURL(kIsolatedAppOrigin)).value()));
+}
+
+TEST_F(IsolatedWebAppThrottleTest,
+       SameOriginRendererInitiatedNavigationDefersForManifestFetch) {
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  content::MockNavigationHandle test_handle(GURL(kIsolatedAppOrigin),
+                                            main_frame());
+  test_handle.set_is_renderer_initiated(true);
+  test_handle.set_initiator_origin(
+      url::Origin::Create(GURL(kIsolatedAppOrigin)));
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(test_registry);
+
+  // Same-origin renderer-initiated navigation should DEFER to fetch the
+  // manifest.
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle->WillStartRequest().action());
+}
+
+TEST_F(IsolatedWebAppThrottleTest, CrossOriginSubframeNavigationBlocked) {
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  NavigateAndCommit(GURL("https://example.com"));
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_frame())
+          ->AppendChild("subframe");
+  content::MockNavigationHandle test_handle(web_contents());
+  test_handle.set_url(GURL(kIsolatedAppOrigin));
+  test_handle.set_render_frame_host(subframe);
+  test_handle.set_is_renderer_initiated(false);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(test_registry);
+
+  // Subframe whose parent is not the same IWA should be blocked immediately.
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
+            throttle->WillStartRequest().action());
+
+  EXPECT_FALSE(GetCache()->GetPolicy(
+      IwaOrigin::Create(GURL(kIsolatedAppOrigin)).value()));
 }
 
 }  // namespace web_app

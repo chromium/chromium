@@ -52,6 +52,7 @@ class IsolatedWebAppThrottle : public content::NavigationThrottle {
 
   Profile* profile() const;
   bool is_isolated_web_app_navigation() const;
+  bool IsAuthorizedIwaNavigation(const IwaOrigin& iwa_origin) const;
 
   base::WeakPtrFactory<IsolatedWebAppThrottle> weak_ptr_factory_{this};
 };
