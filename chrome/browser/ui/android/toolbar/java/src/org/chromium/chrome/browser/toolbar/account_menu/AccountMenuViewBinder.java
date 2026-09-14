@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.toolbar.account_menu;
 
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -16,6 +19,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.IdentityCardProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.PromoCardProperties;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -26,9 +30,27 @@ public class AccountMenuViewBinder {
         TextView textView = (TextView) view;
         if (propertyKey == MenuItemProperties.TITLE_ID) {
             textView.setText(model.get(MenuItemProperties.TITLE_ID));
-        } else if (propertyKey == MenuItemProperties.START_ICON_ID) {
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    model.get(MenuItemProperties.START_ICON_ID), 0, 0, 0);
+        } else if (propertyKey == MenuItemProperties.START_ICON_ID
+                || propertyKey == MenuItemProperties.SHOW_ICON_BADGE) {
+            boolean showIconBadge = model.get(MenuItemProperties.SHOW_ICON_BADGE);
+            int iconId = model.get(MenuItemProperties.START_ICON_ID);
+            if (showIconBadge) {
+                Drawable icon = AppCompatResources.getDrawable(textView.getContext(), iconId);
+                assert icon != null;
+                Drawable badgedIcon =
+                        UiUtils.drawIconWithBadge(
+                                textView.getContext(),
+                                icon,
+                                R.color.default_icon_color_tint_list,
+                                R.dimen.account_menu_icon_badge_size,
+                                R.dimen.account_menu_icon_badge_border_size,
+                                R.color.default_red);
+                textView.setCompoundDrawableTintList(null);
+                textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        badgedIcon, null, null, null);
+            } else {
+                textView.setCompoundDrawablesRelativeWithIntrinsicBounds(iconId, 0, 0, 0);
+            }
         } else if (propertyKey == MenuItemProperties.CLICK_LISTENER) {
             textView.setOnClickListener(model.get(MenuItemProperties.CLICK_LISTENER));
         } else {

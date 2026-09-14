@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -44,6 +45,8 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -125,6 +128,9 @@ public class AccountMenuMediator
         IdentityManager identityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
         if (identityManager.hasPrimaryAccount()) {
+            SyncService syncService = assumeNonNull(SyncServiceFactory.getForProfile(mProfile));
+            boolean showIconBadge =
+                    syncService.getUserActionableError() != UserActionableError.NONE;
             mModelList.add(
                     new ListItem(
                             ItemType.MENU_ITEM,
@@ -134,7 +140,8 @@ public class AccountMenuMediator
                                     v -> {
                                         mDismissCallback.run();
                                         openAccountSettings();
-                                    })));
+                                    },
+                                    showIconBadge)));
         }
 
         if (IncognitoUtils.isIncognitoModeEnabled(mProfile)) {

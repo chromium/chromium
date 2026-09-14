@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -43,11 +44,21 @@ public class AccountMenuProperties {
         /** Drawable resource id for the item start icon. */
         public static final WritableIntPropertyKey START_ICON_ID = new WritableIntPropertyKey();
 
+        /**
+         * Whether a badge should be shown for the icon.
+         *
+         * <p>TODO(crbug.com/555648510): Remove this property after error cards are implemented.
+         */
+        public static final WritableBooleanPropertyKey SHOW_ICON_BADGE =
+                new WritableBooleanPropertyKey();
+
         /** Click listener for the item. */
         public static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
                 new WritableObjectPropertyKey<>();
 
-        public static final PropertyKey[] ALL_KEYS = {TITLE_ID, START_ICON_ID, CLICK_LISTENER};
+        public static final PropertyKey[] ALL_KEYS = {
+            TITLE_ID, START_ICON_ID, CLICK_LISTENER, SHOW_ICON_BADGE
+        };
 
         private MenuItemProperties() {}
 
@@ -58,6 +69,21 @@ public class AccountMenuProperties {
                     .with(TITLE_ID, titleId)
                     .with(START_ICON_ID, iconId)
                     .with(CLICK_LISTENER, clickListener)
+                    .with(SHOW_ICON_BADGE, false)
+                    .build();
+        }
+
+        /** TODO(crbug.com/555648510): Remove this method error cards are implemented. */
+        public static PropertyModel createModel(
+                @StringRes int titleId,
+                @DrawableRes int iconId,
+                OnClickListener clickListener,
+                boolean showIconBadge) {
+            return new PropertyModel.Builder(ALL_KEYS)
+                    .with(TITLE_ID, titleId)
+                    .with(START_ICON_ID, iconId)
+                    .with(CLICK_LISTENER, clickListener)
+                    .with(SHOW_ICON_BADGE, showIconBadge)
                     .build();
         }
     }

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -60,6 +61,8 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -87,6 +90,7 @@ public class AccountMenuMediatorTest {
     @Mock private Runnable mDismissCallback;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SigninManager mSigninManager;
+    @Mock private SyncService mSyncService;
     @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
 
@@ -99,11 +103,13 @@ public class AccountMenuMediatorTest {
         mContext = ApplicationProvider.getApplicationContext();
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
         doReturn(mAccountManagerTestRule.getIdentityManager())
                 .when(mIdentityServicesProvider)
                 .getIdentityManager(mProfile);
+        doReturn(UserActionableError.NONE).when(mSyncService).getUserActionableError();
         doReturn(true).when(mSigninManager).isSigninAllowed();
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mOrchestrator);
         TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
