@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
 
 enum MonitoredProcessType {
@@ -147,7 +148,7 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
   virtual void SampleAllProcesses(Observer* observer);
 
   void AddChildProcessInfoForTesting(
-      int id,
+      content::ChildProcessId id,
       ProcessInfo::Key key,
       std::unique_ptr<ProcessMetricsDelegate> process_metrics);
 
@@ -195,7 +196,7 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
 
   std::map<content::RenderProcessHost*, ProcessInfo> render_process_infos_;
 
-  std::map<int /*ChildProcessId*/, ProcessInfo> browser_child_process_infos_;
+  std::map<content::ChildProcessId, ProcessInfo> browser_child_process_infos_;
 
   // The metrics for the processes that exited during the last interval. Added
   // to the current interval's sample and then reset to zero.

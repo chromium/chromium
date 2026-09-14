@@ -350,7 +350,7 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
 }
 
 void ProcessMonitor::AddChildProcessInfoForTesting(
-    int id,
+    content::ChildProcessId id,
     ProcessInfo::Key key,
     std::unique_ptr<ProcessMetricsDelegate> process_metrics) {
   browser_child_process_infos_.emplace(
@@ -430,7 +430,8 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
       GetMonitoredProcessInfoKeyForNonRendererChildProcess(data);
   bool inserted =
       browser_child_process_infos_
-          .emplace(std::piecewise_construct, std::forward_as_tuple(data.id),
+          .emplace(std::piecewise_construct,
+                   std::forward_as_tuple(data.GetChildProcessId()),
                    std::forward_as_tuple(
                        key, CreateProcessMetricsDelegate(process.Handle())))
           .second;
@@ -440,8 +441,7 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
 void ProcessMonitor::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_child_process_infos_.find(data.id) ==
-         browser_child_process_infos_.end());
+  DCHECK(!browser_child_process_infos_.contains(data.GetChildProcessId()));
 }
 
 void ProcessMonitor::BrowserChildProcessCrashed(
@@ -477,14 +477,13 @@ void ProcessMonitor::OnBrowserChildProcessExited(
     return;
   }
 #endif
-  auto it = browser_child_process_infos_.find(data.id);
+  auto it = browser_child_process_infos_.find(data.GetChildProcessId());
   if (it == browser_child_process_infos_.end()) {
     // It is possible to receive this notification without a launch-and-connect
     // notification. See https://crbug.com/41447174 for a similar issue.
     return;
   }
 
-  CHECK(it != browser_child_process_infos_.end());
   // Remember the metrics from when the process exited, if available.
   if (info.cpu_usage.has_value()) {
     const ProcessInfo& process_info = it->second;

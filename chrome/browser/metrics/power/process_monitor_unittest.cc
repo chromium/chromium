@@ -141,10 +141,12 @@ TEST(ProcessMonitorTest, UtilityProcessesRecordedTogether) {
 
   ProcessMonitor pm;
   pm.AddChildProcessInfoForTesting(
-      1, ProcessInfo::Key(MonitoredProcessType::kUtility, "Foo"),
+      content::ChildProcessId(1),
+      ProcessInfo::Key(MonitoredProcessType::kUtility, "Foo"),
       std::make_unique<FakeProcessMetricsDelegate>(0.0));
   pm.AddChildProcessInfoForTesting(
-      2, ProcessInfo::Key(MonitoredProcessType::kUtility, "Bar"),
+      content::ChildProcessId(2),
+      ProcessInfo::Key(MonitoredProcessType::kUtility, "Bar"),
       std::make_unique<FakeProcessMetricsDelegate>(0.0));
 
   MockObserver obs;
@@ -184,7 +186,8 @@ TEST(ProcessMonitorTest, UtilityProcessesRecordedTogether) {
 TEST_F(ProcessMonitorIntervalTest, FullInterval) {
   ProcessInfo::Key key(MonitoredProcessType::kUtility, "Foo");
   process_monitor().AddChildProcessInfoForTesting(
-      1, key, std::make_unique<FakeProcessMetricsDelegate>(50.0));
+      content::ChildProcessId(1), key,
+      std::make_unique<FakeProcessMetricsDelegate>(50.0));
 
   // Advance time to the end of the interval.
   task_env().FastForwardBy(kLongPowerMetricsIntervalDuration);
@@ -207,7 +210,8 @@ TEST_F(ProcessMonitorIntervalTest, StartDuringInterval) {
 
   ProcessInfo::Key key(MonitoredProcessType::kUtility, "Foo");
   process_monitor().AddChildProcessInfoForTesting(
-      1, key, std::make_unique<FakeProcessMetricsDelegate>(50.0));
+      content::ChildProcessId(1), key,
+      std::make_unique<FakeProcessMetricsDelegate>(50.0));
 
   // Advance time to the end of the interval (120 seconds). The process lived
   // for 90 seconds.
@@ -230,7 +234,8 @@ TEST_F(ProcessMonitorIntervalTest, StartDuringInterval) {
 TEST_F(ProcessMonitorIntervalTest, EndDuringInterval) {
   ProcessInfo::Key key(MonitoredProcessType::kUtility, "Foo");
   process_monitor().AddChildProcessInfoForTesting(
-      1, key, std::make_unique<FakeProcessMetricsDelegate>(50.0));
+      content::ChildProcessId(1), key,
+      std::make_unique<FakeProcessMetricsDelegate>(50.0));
 
   // Advance time to 3/4 of the interval (90 seconds). The process lived for 90
   // seconds.
@@ -262,7 +267,8 @@ TEST_F(ProcessMonitorIntervalTest, StartAndEndDuringInterval) {
 
   ProcessInfo::Key key(MonitoredProcessType::kUtility, "Foo");
   process_monitor().AddChildProcessInfoForTesting(
-      1, key, std::make_unique<FakeProcessMetricsDelegate>(25.0));
+      content::ChildProcessId(1), key,
+      std::make_unique<FakeProcessMetricsDelegate>(25.0));
 
   // Advance time to 3/4 of the interval (90 seconds). The process lived for 60
   // seconds.
