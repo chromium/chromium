@@ -165,6 +165,33 @@ if (!is_android) {
     ]
   }
 
+  # The BrowserWindow interface. It is a leaf so that code which only needs to
+  # talk to the window can depend on it without depending on :ui, which would
+  # be circular for the many targets that :ui itself depends on.
+  source_set("browser_window_header") {
+    public = [
+      "browser_window.h",
+      "browser_window_deleter.h",
+    ]
+    public_deps = [
+      ":download_close_type",
+      "//base",
+      "//chrome/browser/ui/hats",
+      "//chrome/common:buildflags",
+      "//components/apps/link_capturing",
+      "//components/content_settings/core/common",
+      "//components/translate/core/browser",
+      "//components/translate/core/common",
+      "//ui/base",
+      "//ui/base:types",
+      "//ui/base/interaction",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//url",
+    ]
+  }
+
   source_set("browser_actions") {
     public = [ "browser_actions.h" ]
     public_deps = [
