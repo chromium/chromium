@@ -220,22 +220,6 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
       internal::kHistogramGWSLargestContentfulPaint, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSLargestContentfulPaint, 100, 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.GoogleSearch.SiteInstanceProcessAssignment2."
-      "BrowserInitiated",
-      1);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.GoogleSearch.SiteInstanceProcessAssignment2."
-      "BrowserInitiated.NonPrerender",
-      1);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.GoogleSearch.HadPriorPrewarmCommitStatus2."
-      "BrowserInitiated",
-      1);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.GoogleSearch.HadPriorPrewarmCommitStatus2."
-      "BrowserInitiated.NonPrerender",
-      1);
 }
 
 TEST_F(GWSPageLoadMetricsObserverTest, ConnectionEvents) {

@@ -361,27 +361,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/paid_content_page_load_metrics_observer.cc:PaidContentState) -->
 
-<!-- LINT.IfChange(PrerenderPrewarmNavigationStatus) -->
-
-<enum name="PrerenderPrewarmNavigationStatus">
-  <int value="0" label="Not prewarmed, prerender host not reused"/>
-  <int value="1" label="Not prewarmed, prerender host reused"/>
-  <int value="2" label="Prewarmed, prerender host not reused"/>
-  <int value="3" label="Prewarmed, prerender host reused"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h:PrerenderPrewarmNavigationStatus) -->
-
-<!-- LINT.IfChange(PriorPrewarmCommitStatus) -->
-
-<enum name="PriorPrewarmCommitStatus">
-  <int value="0" label="No prewarm triggered"/>
-  <int value="1" label="Prewarm triggered, not committed"/>
-  <int value="2" label="Prewarm triggered, committed"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h:PriorPrewarmCommitStatus) -->
-
 <!-- LINT.IfChange(SoftNavigationPageLoadMetricsObserverState) -->
 
 <enum name="SoftNavigationPageLoadMetricsObserverState">

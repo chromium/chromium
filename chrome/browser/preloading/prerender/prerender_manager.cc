@@ -29,7 +29,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h"
 #include "components/page_load_metrics/google/browser/search_preload_process_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -603,15 +602,6 @@ bool PrerenderManager::IsPrewarmValid() {
 
 void PrerenderManager::OnSearchPrewarmPrerenderNavigationHandle(
     content::NavigationHandle& navigation_handle) {
-  // Set the PrerenderPrewarmNavigationData for the navigation. This is used to
-  // determine if a navigation is a DSE prewarm navigation, and if the
-  // navigation happened after a DSE prewarm. Note that `prerender_host_reused`
-  // is set to false here because this is a new navigation and we are not
-  // certain if this is a prerender navigation or not yet.
-  page_load_metrics::PrerenderPrewarmNavigationData::GetOrCreate(
-      &navigation_handle,
-      /*prewarm_committed=*/true);
-
   // `StartingSiteInstance` provides the SiteInstance allocated for the
   // prerender host's initial frame tree. Tagging `SearchPreloadProcessData`
   // here ensures this renderer process is tracked as hosting the prewarmed

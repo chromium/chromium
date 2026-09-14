@@ -18,8 +18,6 @@ source_set("browser") {
     "gws_session_state.h",
     "histogram_suffixes.cc",
     "histogram_suffixes.h",
-    "prerender_prewarm_navigation_data.cc",
-    "prerender_prewarm_navigation_data.h",
     "search_preload_process_data.cc",
     "search_preload_process_data.h",
   ]
