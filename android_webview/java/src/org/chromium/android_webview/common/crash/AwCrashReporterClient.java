@@ -8,6 +8,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -20,9 +22,18 @@ public class AwCrashReporterClient {
     private static final String CHROMIUM_PREFIX = "chromium-";
 
     /**
+     * Sets the process name crash key.
+     *
+     * @param processName The name of the current process.
+     */
+    public static void setProcessNameCrashKey(String processName) {
+        AwCrashReporterClientJni.get().setProcessNameCrashKey(processName);
+    }
+
+    /**
      * Determine if a Throwable should be reported to the crash reporting mechanism.
      *
-     * We report exceptions if any stack frame corresponds to a class directly defined in the
+     * <p>We report exceptions if any stack frame corresponds to a class directly defined in the
      * WebView classloader (which may have been proguarded) or is defined in an ancestral
      * classloader, but has package android.webkit. (i.e. it is a framework WebView class).
      * Technically we should also include androidx.webkit classes, but these are defined in the app
@@ -44,5 +55,10 @@ public class AwCrashReporterClient {
             }
         }
         return false;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void setProcessNameCrashKey(@JniType("std::string") String processName);
     }
 }

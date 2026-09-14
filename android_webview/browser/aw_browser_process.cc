@@ -9,7 +9,6 @@
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
-#include "android_webview/common/crash_reporter/crash_keys.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
@@ -26,7 +25,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/posix_key_provider.h"
@@ -370,14 +368,6 @@ static void JNI_AwBrowserProcess_OnStartupComplete(JNIEnv* env) {
 static void JNI_AwBrowserProcess_SetNativeWebViewZygoteEnabled(JNIEnv* env,
                                                                bool enabled) {
   AwBrowserProcess::SetNativeWebViewZygoteEnabled(enabled);
-}
-
-static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
-    JNIEnv* env,
-    const std::string& processName) {
-  static ::crash_reporter::CrashKeyString<64> crash_key(
-      crash_keys::kAppProcessName);
-  crash_key.Set(processName);
 }
 
 static void JNI_AwBrowserProcess_ReadTracingCommandLineOnMainThread(

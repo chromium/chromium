@@ -17,6 +17,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.WebViewCachedFlags;
+import org.chromium.android_webview.common.crash.AwCrashReporterClient;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.metrics.AwMetricsLogUploader;
 import org.chromium.android_webview.metrics.TrackExitReasons;
@@ -121,7 +122,7 @@ public final class StartupTasks {
         try (DualTraceEvent e1 =
                 DualTraceEvent.scoped("StartupTasks.preBrowserProcessStartStepTwo")) {
             final Context appContext = ContextUtils.getApplicationContext();
-            AwBrowserProcess.setProcessNameCrashKey(ContextUtils.getProcessName());
+            AwCrashReporterClient.setProcessNameCrashKey(ContextUtils.getProcessName());
             AwDataDirLock.lock(appContext);
 
             if (isMultiProcess()) {
