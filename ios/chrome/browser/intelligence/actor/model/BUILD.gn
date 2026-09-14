@@ -50,6 +50,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
 
     # TODO(crbug.com/512521102): Remove these deps once the snackbar prototype
     # is removed.
@@ -137,6 +138,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/test:test_support",
     "//ios/web/find_in_page",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",

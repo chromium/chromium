@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
@@ -30,6 +31,10 @@
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 #import "ios/chrome/app/background_task/background_continued_processing_task_context.h"  // nogncheck
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/web/public/js_messaging/content_world.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #endif
 
 namespace actor {
@@ -38,6 +43,16 @@ namespace {
 
 // Safety timeout duration to wait for pages to finish loading.
 constexpr base::TimeDelta kPageLoadTimeout = base::Seconds(7);
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+// Interval between JavaScript heartbeat pings. Found to be the sweetspot for
+// keeping renderer processes alive & accepting IPC messages (otherwise they
+// drop their keep-alive assertions after about 1 second of inactivity.)
+constexpr base::TimeDelta kHeartbeatInterval = base::Milliseconds(400);
+
+// Minimal zero side effects script executed to generate IPC activity.
+constexpr char16_t kHeartbeatScript[] = u";";
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 // Returns the string representation of the ActorTaskState.
 std::string ActorTaskStateToString(ActorTaskState state) {
@@ -109,6 +124,7 @@ ActorTask::~ActorTask() {
   load_timeout_timer_.Stop();
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  StopHeartbeatTimer();
   FinalizeBackgroundTask(/*success=*/false);
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
@@ -163,6 +179,7 @@ void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   UpdateBackgroundTaskSubtitle(task_update);
+  StartHeartbeatTimer();
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   engine_->Act(
@@ -192,6 +209,10 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
     }
     [observers_ actorTaskWithID:task_id_
                  didAddWebState:web_state->GetUniqueIdentifier()];
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+    StartHeartbeatTimer();
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   }
 }
 
@@ -201,6 +222,7 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   SetKeepRenderProcessAliveOnControlledWebStates(/*keep_alive=*/false);
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  StopHeartbeatTimer();
   const bool success = stop_reason == ActorTaskStoppedReason::kTaskComplete ||
                        stop_reason == ActorTaskStoppedReason::kStoppedByUser;
   FinalizeBackgroundTask(success);
@@ -214,6 +236,10 @@ void ActorTask::Pause(bool from_actor) {
 }
 
 void ActorTask::Resume() {
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  StartHeartbeatTimer();
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
   // TODO(crbug.com/496164697): Implement and test.
 }
 
@@ -335,11 +361,16 @@ void ActorTask::DidStopLoading(web::WebState* web_state) {
 
 void ActorTask::WebStateDestroyed(web::WebState* web_state) {
   OnWebStateFinishedLoading(web_state);
-  std::erase_if(
-      controlled_web_states_,
-      [web_state](const base::WeakPtr<web::WebState>& weak_web_state) {
-        return !weak_web_state || weak_web_state.get() == web_state;
-      });
+  if (ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state)) {
+    tab_helper->SetActuating(false);
+  }
+  PruneDestroyedWebStates(web_state);
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  if (controlled_web_states_.empty()) {
+    StopHeartbeatTimer();
+  }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 }
 
 #pragma mark - Private
@@ -382,6 +413,12 @@ void ActorTask::SetState(ActorTaskState new_state) {
     SetActuatingOnWebStates(new_is_actuating);
   }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  if (IsTerminalState(new_state)) {
+    StopHeartbeatTimer();
+  }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
   [observers_ actorTaskWithID:task_id_
                didChangeState:new_state
                     fromState:old_state];
@@ -422,6 +459,9 @@ void ActorTask::DeferActCompletion(ActCallback callback,
 }
 
 void ActorTask::OnWebStateFinishedLoading(web::WebState* web_state) {
+  if (!scoped_web_state_observations_.IsObservingSource(web_state)) {
+    return;
+  }
   scoped_web_state_observations_.RemoveObservation(web_state);
 
   if (scoped_web_state_observations_.IsObservingAnySource()) {
@@ -473,6 +513,15 @@ Browser* ActorTask::GetBrowserForWindowId(int32_t window_id) const {
   return nullptr;
 }
 
+void ActorTask::PruneDestroyedWebStates(web::WebState* destroying_web_state) {
+  std::erase_if(controlled_web_states_,
+                [destroying_web_state](
+                    const base::WeakPtr<web::WebState>& weak_web_state) {
+                  return !weak_web_state ||
+                         weak_web_state.get() == destroying_web_state;
+                });
+}
+
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 void ActorTask::UpdateBackgroundTaskSubtitle(const std::string& task_update) {
   if (background_task_context_) {
@@ -495,6 +544,77 @@ void ActorTask::FinalizeBackgroundTask(bool success) {
     [background_task_context_ setTaskCompletedWithSuccess:success];
   }
   background_task_context_ = nil;
+}
+
+void ActorTask::StartHeartbeatTimer() {
+  if (!IsGeminiActorBackgroundingEnabled()) {
+    return;
+  }
+
+  if (IsTerminalState(state_)) {
+    return;
+  }
+
+  if (heartbeat_timer_.IsRunning()) {
+    return;
+  }
+
+  PruneDestroyedWebStates();
+  if (controlled_web_states_.empty()) {
+    return;
+  }
+
+  heartbeat_timer_.Start(FROM_HERE, kHeartbeatInterval,
+                         base::BindRepeating(&ActorTask::SendHeartbeatPing,
+                                             weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ActorTask::StopHeartbeatTimer() {
+  heartbeat_timer_.Stop();
+}
+
+void ActorTask::SendHeartbeatPing() {
+  PruneDestroyedWebStates();
+  if (controlled_web_states_.empty()) {
+    StopHeartbeatTimer();
+    return;
+  }
+
+  for (const base::WeakPtr<web::WebState>& web_state_weak :
+       controlled_web_states_) {
+    web::WebState* web_state = web_state_weak.get();
+    if (!web_state) {
+      continue;
+    }
+
+    web::WebFramesManager* frames_manager =
+        web_state->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
+    if (!frames_manager) {
+      continue;
+    }
+
+    web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+    if (!main_frame) {
+      continue;
+    }
+
+    main_frame->ExecuteJavaScript(
+        kHeartbeatScript, base::BindOnce(&ActorTask::OnHeartbeatPingResponse,
+                                         weak_ptr_factory_.GetWeakPtr(),
+                                         web_state->GetUniqueIdentifier()));
+  }
+}
+
+void ActorTask::OnHeartbeatPingResponse(web::WebStateID web_state_id,
+                                        const base::Value* /*result*/,
+                                        NSError* error) {
+  if (error) {
+    LogJournalEvent(
+        *journal_, GURL(), task_id_, "ActorTask::HeartbeatPingFailed",
+        {{"web_state_id", base::NumberToString(web_state_id.identifier())},
+         {"error_domain", base::SysNSStringToUTF8(error.domain)},
+         {"error_code", base::NumberToString(error.code)}});
+  }
 }
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 

@@ -22,6 +22,11 @@
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 @class BackgroundContinuedProcessingTaskContext;
+@class NSError;
+
+namespace base {
+class Value;
+}  // namespace base
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 @class CRBProtocolObservers;
@@ -184,6 +189,10 @@ class ActorTask : public web::WebStateObserver,
   // Returns the Browser associated with the given `window_id`.
   Browser* GetBrowserForWindowId(int32_t window_id) const;
 
+  // Prunes destroyed or null WebStates from `controlled_web_states_`. If
+  // `destroying_web_state` is provided, also prunes the matching entry.
+  void PruneDestroyedWebStates(web::WebState* destroying_web_state = nullptr);
+
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   // Updates the subtitle of the background continued processing task to match
   // the latest `task_update`.
@@ -195,6 +204,25 @@ class ActorTask : public web::WebStateObserver,
 
   // Finalizes the background task, reporting whether it succeeded.
   void FinalizeBackgroundTask(bool success);
+
+  // Starts the JavaScript heartbeat ping timer if backgrounding is enabled and
+  // the timer is not already running.
+  // TODO(crbug.com/561253684): Ensure we only start the heartbeat timer when
+  // the app is backgrounded.
+  void StartHeartbeatTimer();
+
+  // Stops the JavaScript heartbeat ping timer.
+  void StopHeartbeatTimer();
+
+  // Sends a lightweight JavaScript ping to all controlled WebStates to keep
+  // their out-of-process WebContent processes alive.
+  void SendHeartbeatPing();
+
+  // Handles completion or failure of a JavaScript heartbeat ping for
+  // `web_state_id`. Failed pings are logged to the journal.
+  void OnHeartbeatPingResponse(web::WebStateID web_state_id,
+                               const base::Value* result,
+                               NSError* error);
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   // The task state.
@@ -254,6 +282,9 @@ class ActorTask : public web::WebStateObserver,
   // Active context for background continued processing, if requested.
   __strong BackgroundContinuedProcessingTaskContext* background_task_context_ =
       nil;
+
+  // Repeating timer for sending JavaScript heartbeat pings.
+  base::RepeatingTimer heartbeat_timer_;
 #endif
 
   // Weak pointer factory.

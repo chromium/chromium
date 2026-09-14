@@ -7,6 +7,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
@@ -33,6 +34,9 @@
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"  // nogncheck
 #import "ios/chrome/app/background_task/background_continued_processing_task_context.h"  // nogncheck
 #import "ios/chrome/app/background_task/features.h"  // nogncheck
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #endif
 
 @interface FakeActorTaskUpdatesObserver : NSObject <ActorTaskUpdatesObserver>
@@ -213,6 +217,27 @@ class ActorTaskTest : public PlatformTest {
   }
 
   void TriggerOnPageLoadedTimeout() { task_->OnPageLoadedTimeout(); }
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  web::FakeWebFrame* AttachMainWebFrame(web::FakeWebState* web_state) {
+    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    auto main_frame = web::FakeWebFrame::CreateMainWebFrame();
+    web::FakeWebFrame* main_frame_ptr = main_frame.get();
+    frames_manager->AddWebFrame(std::move(main_frame));
+    web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                   std::move(frames_manager));
+    return main_frame_ptr;
+  }
+
+  void TriggerOnActCompleted(ActCallback callback,
+                             std::vector<ActionResult> results) {
+    task_->OnActCompleted(std::move(callback), std::move(results));
+  }
+
+  bool IsHeartbeatTimerRunning() const {
+    return task_->heartbeat_timer_.IsRunning();
+  }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -692,6 +717,22 @@ TEST_F(ActorTaskTest, ActorTabHelperActuatingState) {
   EXPECT_FALSE(helper->IsActuating());
 }
 
+// Test that destroying a controlled `WebState` stops actuation on its
+// `ActorTabHelper` before removal.
+TEST_F(ActorTaskTest, WebStateDestroyedResetsActorTabHelperActuatingState) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  ActorTabHelper::CreateForWebState(web_state.get());
+  ActorTabHelper* helper = ActorTabHelper::FromWebState(web_state.get());
+  ASSERT_NE(helper, nullptr);
+
+  SetTaskState(ActorTaskState::kActing);
+  AddControlledWebState(web_state->GetWeakPtr());
+  EXPECT_TRUE(helper->IsActuating());
+
+  task_->WebStateDestroyed(web_state.get());
+  EXPECT_FALSE(helper->IsActuating());
+}
+
 TEST_F(ActorTaskTest, WindowIdAndInsertWebState) {
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
 
@@ -985,6 +1026,381 @@ TEST_F(ActorTaskTest, DestructorFinalizesBackgroundTask) {
   task.reset();
 
   EXPECT_TRUE(context.completed);
+}
+
+// Test that adding a controlled WebState starts the 400ms heartbeat timer
+// immediately to keep WebContent processes alive, and sends periodic JavaScript
+// pings.
+TEST_F(ActorTaskTest, HeartbeatStartsOnActAndPings) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
+  ASSERT_TRUE(main_frame);
+
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+
+  AddControlledWebState(web_state->GetWeakPtr());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_->Act({}, "Starting actuation", base::DoNothing());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 0u);
+
+  // Fast forward 399ms; timer should not have fired yet.
+  task_environment_.FastForwardBy(base::Milliseconds(399));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 0u);
+
+  // Fast forward 1ms (total 400ms); first ping should have executed.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 1u);
+  EXPECT_EQ(main_frame->GetLastJavaScriptCall(), u";");
+
+  // Fast forward another 800ms; two more pings should have executed.
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 3u);
+}
+
+// Test that `Act()` starts the heartbeat timer if it was not already running.
+TEST_F(ActorTaskTest, HeartbeatStartsOnAct) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Initialize without backgrounding to verify timer does not start initially.
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor},
+      {kEnableBackgroundContinuedProcessing});
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
+  ASSERT_TRUE(main_frame);
+
+  AddControlledWebState(web_state->GetWeakPtr());
+  task_->Act({}, "Act without backgrounding", base::DoNothing());
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+
+  // Now enable background continued processing.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  // Calling `Act()` should start the timer.
+  task_->Act({}, "Starting actuation", base::DoNothing());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 1u);
+  EXPECT_EQ(main_frame->GetLastJavaScriptCall(), u";");
+}
+
+// Test that the heartbeat timer continues running while the task is reflecting.
+TEST_F(ActorTaskTest, HeartbeatPersistsDuringReflecting) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
+  ASSERT_TRUE(main_frame);
+
+  AddControlledWebState(web_state->GetWeakPtr());
+  task_->Act({}, "Executing tool", base::DoNothing());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  // Trigger completion of tool execution, transitioning to reflecting.
+  TriggerOnActCompleted(base::DoNothing(), {});
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kReflecting);
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  // Verify pings continue while in reflecting state.
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 1u);
+  EXPECT_EQ(main_frame->GetLastJavaScriptCall(), u";");
+}
+
+// Test that stopping the task stops the heartbeat timer.
+TEST_F(ActorTaskTest, HeartbeatStopsOnTaskStop) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
+  ASSERT_TRUE(main_frame);
+
+  AddControlledWebState(web_state->GetWeakPtr());
+  task_->Act({}, "Act", base::DoNothing());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 1u);
+
+  // Stop the task.
+  task_->Stop(ActorTaskStoppedReason::kTaskComplete);
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+
+  // Verify no further pings occur after stopping.
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 1u);
+}
+
+// Test that pausing the task does not stop the heartbeat timer so that
+// WebContent processes remain alive throughout the entire duration of the task.
+TEST_F(ActorTaskTest, HeartbeatPersistsDuringPause) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
+  ASSERT_TRUE(main_frame);
+
+  AddControlledWebState(web_state->GetWeakPtr());
+  task_->Act({}, "Act", base::DoNothing());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 1u);
+
+  // Pause the task. The heartbeat timer must remain running.
+  task_->Pause(/*from_actor=*/false);
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 2u);
+
+  // Resume the task.
+  task_->Resume();
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 3u);
+}
+
+// Test that interrupting the task to wait on user input does not stop the
+// heartbeat timer.
+TEST_F(ActorTaskTest, HeartbeatPersistsDuringWaitingOnUser) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
+  ASSERT_TRUE(main_frame);
+
+  AddControlledWebState(web_state->GetWeakPtr());
+  task_->Act({}, "Act", base::DoNothing());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  // Interrupt the task to wait on user input.
+  task_->Interrupt(/*retain_user_control=*/true,
+                   ActorTaskInterruptReason::kWaitingUserConfirmation);
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 1u);
+
+  // Uninterrupt resumes the task.
+  task_->Uninterrupt(ActorTaskState::kActing);
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 2u);
+}
+
+// Test that destroying all controlled WebStates stops the heartbeat timer.
+TEST_F(ActorTaskTest, HeartbeatStopsWhenAllWebStatesDestroyed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
+  ASSERT_TRUE(main_frame);
+
+  AddControlledWebState(web_state->GetWeakPtr());
+  task_->Act({}, "Act", base::DoNothing());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 1u);
+
+  // Destroy the WebState.
+  web_state.reset();
+
+  // On the next interval, SendHeartbeatPing detects that no valid WebStates
+  // remain, prunes expired weak references, and stops the timer.
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+
+  // Adding a new WebState while the task is actuating resumes the heartbeat
+  // timer.
+  auto web_state2 = std::make_unique<web::FakeWebState>();
+  AttachMainWebFrame(web_state2.get());
+  AddControlledWebState(web_state2->GetWeakPtr());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_->WebStateDestroyed(web_state2.get());
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+}
+
+// Test that heartbeat pings are fire-and-forget, logging failures to the
+// journal without stopping the task.
+TEST_F(ActorTaskTest, HeartbeatPingsFireAndForget) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  // Note: Do not add a result for executed JS so FakeWebFrame generates an
+  // error.
+  web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
+  ASSERT_TRUE(main_frame);
+
+  FakeActorTaskUpdatesObserver* observer =
+      [[FakeActorTaskUpdatesObserver alloc] init];
+  task_->AddObserver(observer);
+
+  AddControlledWebState(web_state->GetWeakPtr());
+  task_->Act({}, "Act", base::DoNothing());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  // Fast forward across 10 intervals (4000ms total).
+  task_environment_.FastForwardBy(base::Milliseconds(4000));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 10u);
+  EXPECT_EQ(main_frame->GetLastJavaScriptCall(), u";");
+  EXPECT_FALSE(observer.didStopCalled);
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  // Verify journal logs recorded the failures.
+  std::vector<mojom::JournalEntryPtr> logs = GetLogsForTesting(journal_.get());
+  int failure_events = 0;
+  for (const auto& entry : logs) {
+    if (entry->event == "ActorTask::HeartbeatPingFailed") {
+      failure_events++;
+    }
+  }
+  EXPECT_EQ(failure_events, 10);
+}
+
+// Test that successful heartbeat pings do not log failure events to the
+// journal.
+TEST_F(ActorTaskTest, HeartbeatSuccessfulPingDoesNotLogFailure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
+  ASSERT_TRUE(main_frame);
+  base::Value success_result;
+  main_frame->AddResultForExecutedJs(&success_result, u";");
+
+  AddControlledWebState(web_state->GetWeakPtr());
+  task_->Act({}, "Act", base::DoNothing());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame->GetJavaScriptCallHistory().size(), 1u);
+
+  std::vector<mojom::JournalEntryPtr> logs = GetLogsForTesting(journal_.get());
+  for (const auto& entry : logs) {
+    EXPECT_NE(entry->event, "ActorTask::HeartbeatPingFailed");
+  }
+}
+
+// Test that the heartbeat timer is not started when the backgrounding feature
+// parameter is disabled.
+TEST_F(ActorTaskTest, HeartbeatDisabledWhenFeatureParamDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kGeminiActor, {{kGeminiActorBackgroundingParam, "false"}}},
+       {kPageActionMenu, {}},
+       {kActorTools, {}},
+       {kEnableBackgroundContinuedProcessing, {}}},
+      {});
+
+  EXPECT_FALSE(IsGeminiActorBackgroundingEnabled());
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  AttachMainWebFrame(web_state.get());
+
+  AddControlledWebState(web_state->GetWeakPtr());
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+
+  task_->Act({}, "Act with backgrounding disabled", base::DoNothing());
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
+}
+
+// Test that heartbeat pings are dispatched to multiple controlled WebStates,
+// and that destroying one WebState keeps the timer active for the remaining
+// valid WebStates until all are destroyed.
+TEST_F(ActorTaskTest, HeartbeatMultipleWebStates) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  auto web_state1 = std::make_unique<web::FakeWebState>();
+  web::FakeWebFrame* main_frame1 = AttachMainWebFrame(web_state1.get());
+  ASSERT_TRUE(main_frame1);
+  base::Value success_result;
+  main_frame1->AddResultForExecutedJs(&success_result, u";");
+
+  auto web_state2 = std::make_unique<web::FakeWebState>();
+  web::FakeWebFrame* main_frame2 = AttachMainWebFrame(web_state2.get());
+  ASSERT_TRUE(main_frame2);
+
+  AddControlledWebState(web_state1->GetWeakPtr());
+  AddControlledWebState(web_state2->GetWeakPtr());
+
+  task_->Act({}, "Act across multiple WebStates", base::DoNothing());
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  // Fast-forward one interval; both frames receive a ping.
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_EQ(main_frame1->GetJavaScriptCallHistory().size(), 1u);
+  EXPECT_EQ(main_frame2->GetJavaScriptCallHistory().size(), 1u);
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+
+  // Destroy only the first WebState.
+  web_state1.reset();
+
+  // Fast-forward another interval; heartbeat should still be running for
+  // `web_state2`.
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_TRUE(IsHeartbeatTimerRunning());
+  EXPECT_EQ(main_frame2->GetJavaScriptCallHistory().size(), 2u);
+
+  // Destroy the second WebState.
+  web_state2.reset();
+
+  // On the next interval, all WebStates have expired, so timer stops.
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_FALSE(IsHeartbeatTimerRunning());
 }
 
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
