@@ -107,33 +107,31 @@ class MemorySaverBubbleViewTest
                                                       discard_reason);
   }
 
-  void SetTabDiscardState(int tab_index, bool is_discarded) {
-    if (is_discarded) {
-      base::ByteSize savings = kMemorySavings;
-      mojom::LifecycleUnitDiscardReason reason =
-          ::mojom::LifecycleUnitDiscardReason::PROACTIVE;
-      content::WebContents* const old_contents =
-          browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
-      if (auto* old_usage =
-              performance_manager::user_tuning::UserPerformanceTuningManager::
-                  PreDiscardResourceUsage::FromWebContents(old_contents)) {
-        savings = old_usage->memory_footprint_estimate();
-        reason = old_usage->discard_reason();
-      }
+  void DiscardTab(int tab_index) {
+    base::ByteSize savings = kMemorySavings;
+    mojom::LifecycleUnitDiscardReason reason =
+        ::mojom::LifecycleUnitDiscardReason::PROACTIVE;
+    content::WebContents* const old_contents =
+        browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
+    if (auto* old_usage =
+            performance_manager::user_tuning::UserPerformanceTuningManager::
+                PreDiscardResourceUsage::FromWebContents(old_contents)) {
+      savings = old_usage->memory_footprint_estimate();
+      reason = old_usage->discard_reason();
+    }
 
-      TryDiscardTabAt(tab_index);
+    TryDiscardTabAt(tab_index);
 
-      content::WebContents* const new_contents =
-          browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
-      if (auto* new_usage =
-              performance_manager::user_tuning::UserPerformanceTuningManager::
-                  PreDiscardResourceUsage::FromWebContents(new_contents)) {
-        new_usage->UpdateDiscardInfo(savings, reason);
-      } else {
-        performance_manager::user_tuning::UserPerformanceTuningManager::
-            PreDiscardResourceUsage::CreateForWebContents(new_contents, savings,
-                                                          reason);
-      }
+    content::WebContents* const new_contents =
+        browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
+    if (auto* new_usage =
+            performance_manager::user_tuning::UserPerformanceTuningManager::
+                PreDiscardResourceUsage::FromWebContents(new_contents)) {
+      new_usage->UpdateDiscardInfo(savings, reason);
+    } else {
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          PreDiscardResourceUsage::CreateForWebContents(new_contents, savings,
+                                                        reason);
     }
   }
 
@@ -192,7 +190,7 @@ class MemorySaverBubbleViewSavingsTest
 
 // When the page action chip is clicked, the dialog should open.
 IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest, ShouldOpenDialogOnClick) {
-  SetTabDiscardState(0, true);
+  DiscardTab(0);
 
   EXPECT_EQ(GetBubbleView(), nullptr);
 
@@ -204,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest, ShouldOpenDialogOnClick) {
 // When the dialog is closed, UMA metrics should be logged.
 IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
                        ShouldLogMetricsOnDialogDismiss) {
-  SetTabDiscardState(0, true);
+  DiscardTab(0);
 
   // Open bubble
   StubMemorySaverBubbleObserver observer;
@@ -224,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
 // The domain of the current site should be rendered as a subtitle.
 IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
                        ShouldRenderDomainInDialogSubtitle) {
-  SetTabDiscardState(0, true);
+  DiscardTab(0);
 
   ClickPageActionChip();
 
@@ -339,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
   EXPECT_EQ(2, tab_strip_model->count());
 
   tab_strip_model->ActivateTabAt(0);
-  SetTabDiscardState(1, true);
+  DiscardTab(1);
   tab_strip_model->ActivateTabAt(1);
   content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(1));
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -348,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
         .ShouldShowSuggestionChip();
   }));
 
-  SetTabDiscardState(0, true);
+  DiscardTab(0);
 
   tab_strip_model->SelectNextTab();
   content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(0));
@@ -370,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
 // The memory savings should be rendered within the resource view.
 IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
                        ShouldRenderMemorySavingsInResourceView) {
-  SetTabDiscardState(0, true);
+  DiscardTab(0);
 
   ClickPageActionChip();
 
@@ -384,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
 // view.
 IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
                        ShouldNotRenderMemorySavingsInDialogBodyText) {
-  SetTabDiscardState(0, true);
+  DiscardTab(0);
 
   ClickPageActionChip();
 
@@ -405,7 +403,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverBubbleViewSavingsTest,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   tab_strip_model->ActivateTabAt(0);
-  SetTabDiscardState(1, true);
+  DiscardTab(1);
   tab_strip_model->ActivateTabAt(1);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return page_actions::PageActionTestAccessor(browser(),
