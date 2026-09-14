@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"  // nogncheck crbug.com/40147906
 #include "ui/views/controls/button/label_button.h"  // nogncheck crbug.com/40147906
@@ -323,12 +324,17 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
   }
 
   BrowserWindowInterface* browser_window_interface =
+#if !BUILDFLAG(IS_ANDROID)
       tab_interface->GetBrowserWindowInterface();
-
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+#else
+      // NEEDS_ANDROID_IMPL: GetBrowserWindowInterface will be available later
+      nullptr;
+#endif
   if (!browser_window_interface) {
     return false;
   }
+
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   auto* user_education_interface =
       BrowserUserEducationInterface::From(browser_window_interface);
   if (!user_education_interface) {
@@ -342,6 +348,8 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
   }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+  // NEEDS_ANDROID_IMPL
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
@@ -352,9 +360,16 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
   auto* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
 
-  if (browser_window_interface &&
-      glic_service->IsPanelShowingForBrowser(*browser_window_interface)) {
+  if (glic_service->IsPanelShowingForBrowser(*browser_window_interface)) {
     recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownWindowShowing);
+    return true;
+  }
+
+  auto* glic_side_panel_coordinator =
+      glic::GlicSidePanelCoordinator::GetForTab(tab_interface);
+  if (glic_side_panel_coordinator && glic_side_panel_coordinator->IsShowing()) {
+    recorder->set_nudge_decision(
+        NudgeDecision::kNudgeNotShownSidePanelForTabShowing);
     return true;
   }
 
@@ -364,6 +379,8 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
     recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownActorActiveOnTab);
     return true;
   }
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
   auto* controller = contextual_tasks::ContextualTasksPanelController::From(
