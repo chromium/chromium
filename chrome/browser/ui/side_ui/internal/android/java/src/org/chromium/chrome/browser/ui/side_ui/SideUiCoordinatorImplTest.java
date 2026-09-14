@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -980,6 +981,53 @@ public class SideUiCoordinatorImplTest {
         // Verifies the top margin reflects the change in HeightType.
         rightLayoutParams = (MarginLayoutParams) mRightAnchorContainer.getLayoutParams();
         assertEquals(topControlsTotalHeight, rightLayoutParams.topMargin);
+    }
+
+    @Test
+    public void
+            testUpdateUi_HeightTypeChanges_TopControlsStackerChangedBeforeUpdateUi_NotifiesContainer() {
+        mRightAnchorContainer.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        int topControlsTotalHeight = 56;
+        doReturn(topControlsTotalHeight)
+                .when(mTopControlsStacker)
+                .getVisibleTopControlsTotalHeight();
+
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mHeightType = HeightType.TOOLBAR;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+
+        assertEquals(
+                HeightType.TOOLBAR,
+                mCoordinator.getCurrentSideUiSpecs().getHeightType(AnchorSide.RIGHT));
+        assertEquals(HeightType.NOT_APPLICABLE, sideUiContainer.mLastOldHeightType);
+        assertEquals(HeightType.TOOLBAR, sideUiContainer.mLastNewHeightType);
+        assertEquals(1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
+
+        // Simulate TopControlsStacker changing heights before updateUi is called (e.g., when
+        // switching from horizontal tabs to vertical tabs, tab strip layer height becomes 0).
+        lenient()
+                .doReturn(0)
+                .when(mTopControlsStacker)
+                .getHeightFromLayerBottomToTop(TopControlType.TABSTRIP);
+
+        sideUiContainer.mHeightType = HeightType.WEB_CONTENTS;
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+
+        assertEquals(
+                HeightType.WEB_CONTENTS,
+                mCoordinator.getCurrentSideUiSpecs().getHeightType(AnchorSide.RIGHT));
+        assertEquals(HeightType.TOOLBAR, sideUiContainer.mLastOldHeightType);
+        assertEquals(HeightType.WEB_CONTENTS, sideUiContainer.mLastNewHeightType);
+        assertEquals(2, sideUiContainer.mNumOnUiUpdateCompletedReceived);
     }
 
     @Test

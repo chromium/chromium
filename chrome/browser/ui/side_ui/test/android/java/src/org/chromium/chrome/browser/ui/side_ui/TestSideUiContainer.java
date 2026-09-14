@@ -81,6 +81,12 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** The last {@code newWidth} received by {@link #onUiUpdateCompleted}. */
     public @Nullable @Px Integer mLastNewWidth;
 
+    /** The last {@code oldHeightType} received by {@link #onUiUpdateCompleted}. */
+    public @HeightType int mLastOldHeightType;
+
+    /** The last {@code newHeightType} received by {@link #onUiUpdateCompleted}. */
+    public @HeightType int mLastNewHeightType;
+
     private final SideUiCoordinator mSideUiCoordinator;
     private final View mSideUiContainerView;
     private final @SideUiId int mSideUiId;
@@ -160,6 +166,8 @@ public final class TestSideUiContainer implements SideUiContainer {
         mNumOnUiUpdateCompletedReceived++;
         mLastOldWidth = oldWidth;
         mLastNewWidth = newWidth;
+        mLastOldHeightType = oldHeightType;
+        mLastNewHeightType = newHeightType;
     }
 
     @Override
