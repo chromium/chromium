@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEventFilter;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.TestProfile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -64,12 +65,13 @@ public class OverlayPanelEventFilterTest {
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private final TestProfile mProfile = TestProfile.createRegular();
 
     @Mock private LayoutManagerImpl mLayoutManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ViewGroup mCompositorViewHolder;
-    @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private OverlayPanelContentDelegate mOverlayPanelContentDelegate;
     @Mock private OverlayPanelContentProgressObserver mOverlayPanelContentProgressObserver;
