@@ -267,7 +267,8 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::DictValue* dict) {
   base::ListValue language_list = language_list_.Clone();
 
   if (language_list.empty()) {
-    language_list = GetMinimalUILanguageList();
+    language_list =
+        GetMinimalUILanguageList(application_locale_storage_->Get());
   }
 
   dict->Set("languageList", std::move(language_list));

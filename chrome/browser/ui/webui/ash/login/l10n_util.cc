@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/login/resources/grit/ash_login_strings.h"
@@ -79,7 +80,7 @@ void AddOptgroupOtherLayouts(base::ListValue& input_methods_list) {
 }
 
 base::DictValue CreateLanguageEntry(
-    const std::string& language_code,
+    std::string_view language_code,
     const std::u16string& language_display_name,
     const std::u16string& language_native_display_name) {
   std::u16string display_name = language_display_name;
@@ -395,7 +396,7 @@ void ResolveLanguageListInThreadPool(
                      list_locale, selected_language));
 }
 
-void AdjustUILanguageList(const std::string& selected,
+void AdjustUILanguageList(std::string_view selected,
                           base::ListValue& languages_list) {
   for (auto& it : languages_list) {
     base::DictValue& language_info = it.GetDict();
@@ -446,9 +447,7 @@ void ResolveUILanguageList(
                      input_method_manager, std::move(callback)));
 }
 
-base::ListValue GetMinimalUILanguageList() {
-  const std::string application_locale =
-      g_browser_process->GetApplicationLocale();
+base::ListValue GetMinimalUILanguageList(std::string_view application_locale) {
   std::u16string language_native_display_name =
       l10n_util::GetDisplayNameForLocale(application_locale, application_locale,
                                          true);

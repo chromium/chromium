@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -55,7 +56,7 @@ void ResolveUILanguageList(
 // Returns a minimal list of UI languages, which consists of active language
 // only. It is used as a placeholder until ResolveUILanguageList() finishes
 // on BlockingPool.
-base::ListValue GetMinimalUILanguageList();
+base::ListValue GetMinimalUILanguageList(std::string_view application_locale);
 
 // Returns the most first entry of `most_relevant_language_codes` that is
 // actually available (present in `available_locales`). If none of the entries
