@@ -57,7 +57,8 @@ enum class ActorTaskStoppedReason {
   kBrowserFailure = 3,
   // One of the tabs executing the task was detached or destroyed.
   kTabDetached = 4,
-  // System or browser is shutting down.
+  // System or browser is shutting down (including a cancelled/expired
+  // background task).
   kShutdown = 5,
   // User started a new chat session, aborting the current task.
   kUserStartedNewChat = 6

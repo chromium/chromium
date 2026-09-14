@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/build/chrome_build.gni")
+
 source_set("model") {
   sources = [
     "actor_browser_agent.h",
@@ -29,6 +31,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_gating/core",
+    "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_factory",
@@ -56,6 +59,15 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/snackbar",
     "//url",
   ]
+
+  if (ios_enable_background_continued_processing) {
+    deps += [
+      "//ios/chrome/app/application_delegate:app_state",
+      "//ios/chrome/app/background_task",
+      "//ios/chrome/app/profile",
+      "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    ]
+  }
 }
 
 source_set("tab_helper") {
@@ -101,6 +113,7 @@ source_set("unit_tests") {
     "//components/actor/core:journal",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_gating/core",
+    "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_factory",
@@ -132,4 +145,14 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//url",
   ]
+
+  if (ios_enable_background_continued_processing) {
+    deps += [
+      "//ios/chrome/app/application_delegate:app_state",
+      "//ios/chrome/app/background_task",
+      "//ios/chrome/app/background_task:features",
+      "//ios/chrome/app/profile",
+      "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    ]
+  }
 }

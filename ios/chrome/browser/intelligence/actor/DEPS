@@ -6,5 +6,11 @@ include_rules = [
   # TODO(crbug.com/512521102): Remove when the snackbar prototype is removed.
   "+ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h",
   "+ios/chrome/browser/tab_insertion/model",
+
+  # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.
+  "+ios/chrome/app/application_delegate/app_state.h",
+  "+ios/chrome/app/background_task",
+  "+ios/chrome/app/profile/profile_state.h",
+
   "+third_party/perfetto",
 ]

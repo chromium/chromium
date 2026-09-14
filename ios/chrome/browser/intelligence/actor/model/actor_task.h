@@ -13,11 +13,16 @@
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/timer/timer.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_observer.h"
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+@class BackgroundContinuedProcessingTaskContext;
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 @class CRBProtocolObservers;
 
@@ -129,6 +134,12 @@ class ActorTask : public web::WebStateObserver,
   // Returns whether this task allows actuating on incognito WebStates.
   bool allow_incognito_web_states() const;
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  // Sets the background continued processing task context.
+  void SetBackgroundTaskContext(
+      BackgroundContinuedProcessingTaskContext* background_task_context);
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
   // web::WebStateObserver overrides.
   void DidStopLoading(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
@@ -139,6 +150,9 @@ class ActorTask : public web::WebStateObserver,
   // Sets the actuation state on all controlled `WebState`s based on
   // `actuating`.
   void SetActuatingOnWebStates(bool actuating);
+
+  // Sets `SetKeepRenderProcessAlive` on all controlled `WebState`s.
+  void SetKeepRenderProcessAliveOnControlledWebStates(bool keep_alive);
 
   // Sets the task state and logs the transition.
   void SetState(ActorTaskState new_state);
@@ -169,6 +183,19 @@ class ActorTask : public web::WebStateObserver,
 
   // Returns the Browser associated with the given `window_id`.
   Browser* GetBrowserForWindowId(int32_t window_id) const;
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  // Updates the subtitle of the background continued processing task to match
+  // the latest `task_update`.
+  void UpdateBackgroundTaskSubtitle(const std::string& task_update);
+
+  // Advances the background task progress by one discrete step using the
+  // context's stepped progress tracker.
+  void UpdateBackgroundTaskProgress();
+
+  // Finalizes the background task, reporting whether it succeeded.
+  void FinalizeBackgroundTask(bool success);
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;
@@ -222,6 +249,12 @@ class ActorTask : public web::WebStateObserver,
   // executions. `CRBProtocolObservers` itself is held strongly, but the
   // observers inside are held weakly.
   __strong CRBProtocolObservers<ActorTaskUpdatesObserver>* observers_;
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  // Active context for background continued processing, if requested.
+  __strong BackgroundContinuedProcessingTaskContext* background_task_context_ =
+      nil;
+#endif
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};

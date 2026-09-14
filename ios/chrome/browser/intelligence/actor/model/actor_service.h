@@ -16,6 +16,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_origin_gating_checker_delegate_ios.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/web_state_id.h"
@@ -162,6 +163,14 @@ class ActorService : public KeyedService {
   // if it cannot be found.
   web::WebState* GetWebState(web::WebStateID web_state_id,
                              bool allows_incognito);
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  // Creates and registers a background continued processing task with the
+  // system for `task`, and sets the context on `task` if available. Returns
+  // whether registration was successful (does not guarantee the task will be
+  // executed by the system).
+  bool RegisterBackgroundTask(ActorTask* task);
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   // Generator for unique task IDs.
   ActorTaskId::Generator next_task_id_;

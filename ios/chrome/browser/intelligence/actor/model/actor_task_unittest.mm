@@ -6,7 +6,9 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/actor/core/aggregated_journal.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
@@ -14,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -25,6 +28,12 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+#import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"  // nogncheck
+#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"  // nogncheck
+#import "ios/chrome/app/background_task/features.h"  // nogncheck
+#endif
 
 @interface FakeActorTaskUpdatesObserver : NSObject <ActorTaskUpdatesObserver>
 
@@ -150,6 +159,19 @@ std::vector<mojom::JournalEntryPtr> GetLogsForTesting(
   }
   return result;
 }
+
+// A FakeWebState subclass that records whether SetKeepRenderProcessAlive was
+// called.
+class TestKeepAliveWebState : public web::FakeWebState {
+ public:
+  void SetKeepRenderProcessAlive(bool keep_alive) override {
+    keep_render_process_alive_ = keep_alive;
+  }
+  bool keep_render_process_alive() const { return keep_render_process_alive_; }
+
+ private:
+  bool keep_render_process_alive_ = false;
+};
 
 }  // namespace
 
@@ -752,5 +774,219 @@ TEST_F(ActorTaskTest, InsertWebState_AdjacentPlacement) {
   EXPECT_EQ(web_state_c, browser->GetWebStateList()->GetWebStateAt(1));
   EXPECT_EQ(b_ptr, browser->GetWebStateList()->GetWebStateAt(2));
 }
+
+// Test that `SetKeepRenderProcessAlive` is enabled for all controlled
+// `WebState`s for the entire duration of the task and is reset when the task
+// stops or is destroyed.
+TEST_F(ActorTaskTest, SetKeepRenderProcessAliveOnControlledWebStates) {
+  auto web_state1 = std::make_unique<TestKeepAliveWebState>();
+  auto web_state2 = std::make_unique<TestKeepAliveWebState>();
+
+  EXPECT_FALSE(web_state1->keep_render_process_alive());
+  EXPECT_FALSE(web_state2->keep_render_process_alive());
+
+  // Add `web_state1` while task is in `kInit`. It should immediately be marked
+  // keep-alive for the task duration.
+  AddControlledWebState(web_state1->GetWeakPtr());
+  EXPECT_TRUE(web_state1->keep_render_process_alive());
+
+  // Transition to `kActing`.
+  SetTaskState(ActorTaskState::kActing);
+  EXPECT_TRUE(web_state1->keep_render_process_alive());
+
+  // Add `web_state2` while in `kActing`. It should also be marked keep-alive.
+  AddControlledWebState(web_state2->GetWeakPtr());
+  EXPECT_TRUE(web_state2->keep_render_process_alive());
+
+  // Transition across non-actuating states (`kPausedByUser`, `kReflecting`,
+  // `kWaitingOnUser`). Keep-alive should persist for the task duration.
+  SetTaskState(ActorTaskState::kPausedByUser);
+  EXPECT_TRUE(web_state1->keep_render_process_alive());
+  EXPECT_TRUE(web_state2->keep_render_process_alive());
+
+  SetTaskState(ActorTaskState::kReflecting);
+  EXPECT_TRUE(web_state1->keep_render_process_alive());
+  EXPECT_TRUE(web_state2->keep_render_process_alive());
+
+  SetTaskState(ActorTaskState::kWaitingOnUser);
+  EXPECT_TRUE(web_state1->keep_render_process_alive());
+  EXPECT_TRUE(web_state2->keep_render_process_alive());
+
+  // Stopping the task should reset keep-alive to false.
+  task_->Stop(ActorTaskStoppedReason::kTaskComplete);
+  EXPECT_FALSE(web_state1->keep_render_process_alive());
+  EXPECT_FALSE(web_state2->keep_render_process_alive());
+
+  // Verify that destroying an active task also resets keep-alive.
+  auto web_state3 = std::make_unique<TestKeepAliveWebState>();
+  auto scoped_task = std::make_unique<ActorTask>(
+      ActorTaskId(42), "Scoped Task",
+      /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
+      BrowserListFactory::GetForProfile(profile_.get()));
+  scoped_task->AddControlledWebState(web_state3.get());
+  EXPECT_TRUE(web_state3->keep_render_process_alive());
+
+  scoped_task.reset();
+  EXPECT_FALSE(web_state3->keep_render_process_alive());
+}
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
+// Test that executing a tool increments background task progress, and
+// completing the task completes progress.
+TEST_F(ActorTaskTest, BackgroundTaskProgressIncrementsOnToolExecution) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  BackgroundContinuedProcessingTaskConfiguration* config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:@"Test Task"
+          expirationHandler:^{
+          }];
+  BackgroundContinuedProcessingTaskContext* context =
+      [[BackgroundContinuedProcessingTaskContext alloc]
+          initWithTaskIdentifier:@"org.chromium.test.task"
+                   configuration:config
+                   finishHandler:nil];
+
+  task_->SetBackgroundTaskContext(context);
+
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.0);
+
+  TriggerOnWillExecuteTool(ToolType::kClick,
+                           web::WebStateID::FromSerializedValue(1));
+  EXPECT_GT(context.completedUnits, 0);
+
+  // Completing the task hits 100% and completes the context.
+  task_->Stop(ActorTaskStoppedReason::kTaskComplete);
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 1.0);
+  EXPECT_TRUE(context.completed);
+}
+
+// Test that stopping an ActorTask with `kStoppedByUser` finalizes the
+// background task with success (100% progress).
+TEST_F(ActorTaskTest, BackgroundTaskStoppedByUser) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  BackgroundContinuedProcessingTaskConfiguration* config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:@"Test Task"
+          expirationHandler:^{
+          }];
+  BackgroundContinuedProcessingTaskContext* context =
+      [[BackgroundContinuedProcessingTaskContext alloc]
+          initWithTaskIdentifier:@"org.chromium.test.task"
+                   configuration:config
+                   finishHandler:nil];
+
+  task_->SetBackgroundTaskContext(context);
+  TriggerOnWillExecuteTool(ToolType::kClick,
+                           web::WebStateID::FromSerializedValue(1));
+  EXPECT_LT(context.fractionCompleted, 1.0);
+
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 1.0);
+  EXPECT_TRUE(context.completed);
+}
+
+// Test that `Act()` updates the background task context subtitle.
+TEST_F(ActorTaskTest, BackgroundTaskSubtitleUpdate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  BackgroundContinuedProcessingTaskConfiguration* config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:@"Test Task"
+          expirationHandler:^{
+          }];
+  BackgroundContinuedProcessingTaskContext* context =
+      [[BackgroundContinuedProcessingTaskContext alloc]
+          initWithTaskIdentifier:@"org.chromium.test.task"
+                   configuration:config
+                   finishHandler:nil];
+
+  task_->SetBackgroundTaskContext(context);
+
+  task_->Act({}, "Searching for flights", base::DoNothing());
+  EXPECT_NSEQ(context.subtitle, @"Searching for flights");
+}
+
+// Test that stopping an ActorTask with `kShutdown` finalizes the background
+// task with failure (does not reach 100%).
+TEST_F(ActorTaskTest, BackgroundTaskStoppedWithShutdown) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  BackgroundContinuedProcessingTaskConfiguration* config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:@"Test Task"
+          expirationHandler:^{
+          }];
+  BackgroundContinuedProcessingTaskContext* context =
+      [[BackgroundContinuedProcessingTaskContext alloc]
+          initWithTaskIdentifier:@"org.chromium.test.task"
+                   configuration:config
+                   finishHandler:nil];
+
+  task_->SetBackgroundTaskContext(context);
+
+  FakeActorTaskUpdatesObserver* observer =
+      [[FakeActorTaskUpdatesObserver alloc] init];
+  task_->AddObserver(observer);
+
+  task_->Stop(ActorTaskStoppedReason::kShutdown);
+
+  EXPECT_TRUE(observer.didStopCalled);
+  EXPECT_EQ(observer.finalState, ActorTaskState::kInit);
+  EXPECT_TRUE(context.completed);
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.0);
+}
+
+// Test that destroying `ActorTask` finalizes the background task.
+TEST_F(ActorTaskTest, DestructorFinalizesBackgroundTask) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  BackgroundContinuedProcessingTaskConfiguration* config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:@"Test Task"
+          expirationHandler:^{
+          }];
+  BackgroundContinuedProcessingTaskContext* context =
+      [[BackgroundContinuedProcessingTaskContext alloc]
+          initWithTaskIdentifier:@"org.chromium.test.task"
+                   configuration:config
+                   finishHandler:nil];
+
+  auto task = std::make_unique<ActorTask>(
+      ActorTaskId(1), "Test Task",
+      /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
+      BrowserListFactory::GetForProfile(profile_.get()));
+  task->SetBackgroundTaskContext(context);
+  EXPECT_FALSE(context.completed);
+
+  task.reset();
+
+  EXPECT_TRUE(context.completed);
+}
+
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 }  // namespace actor

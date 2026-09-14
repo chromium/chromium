@@ -15,6 +15,7 @@
 #import "components/actor/core/safety_list_manager.h"
 #import "components/origin_gating/core/origin_gating_configuration.h"
 #import "components/origin_gating/core/types.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_origin_gating_checker_delegate_ios.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_browser_utils.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
@@ -33,6 +35,16 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/web/public/web_state.h"
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+#import "ios/chrome/app/application_delegate/app_state.h"  // nogncheck
+#import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"  // nogncheck
+#import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"  // nogncheck
+#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"  // nogncheck
+#import "ios/chrome/app/profile/profile_state.h"  // nogncheck
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"  // nogncheck
+#import "ios/chrome/browser/shared/model/browser/browser_list_utils.h"
+#endif
 
 namespace {
 
@@ -91,6 +103,10 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   auto task = std::make_unique<ActorTask>(
       task_id, title, allow_incognito_web_states, journal_.get(),
       tool_factory_.get(), browser_list);
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  RegisterBackgroundTask(task.get());
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   for (id<ActorTaskUpdatesObserver> observer : task_observers_) {
     if (observer) {
@@ -360,6 +376,70 @@ web::WebState* ActorService::GetWebState(web::WebStateID web_state_id,
   return browser_and_index.browser->GetWebStateList()->GetWebStateAt(
       browser_and_index.tab_index);
 }
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+bool ActorService::RegisterBackgroundTask(ActorTask* task) {
+  CHECK(task);
+  const ActorTaskId task_id = task->task_id();
+  if (!IsGeminiActorBackgroundingEnabled()) {
+    LogJournalEvent(*journal_, GURL(), task_id,
+                    "ActorService::RegisterBackgroundTask",
+                    {{"status", "feature_disabled"}});
+    return false;
+  }
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
+  Browser* browser =
+      browser_list_utils::GetMostActiveSceneBrowser(browser_list);
+  SceneState* scene_state = browser ? browser->GetSceneState() : nil;
+  if (!scene_state) {
+    LogJournalEvent(*journal_, GURL(), task_id,
+                    "ActorService::RegisterBackgroundTask",
+                    {{"status", "no_active_scene"}});
+    return false;
+  }
+  AppState* app_state = scene_state.profileState.appState;
+
+  BackgroundContinuedProcessingAppAgent* agent =
+      [BackgroundContinuedProcessingAppAgent agentFromApp:app_state];
+  if (!agent) {
+    LogJournalEvent(*journal_, GURL(), task_id,
+                    "ActorService::RegisterBackgroundTask",
+                    {{"status", "no_backgrounding_task_app_agent"}});
+    return false;
+  }
+
+  base::WeakPtr<ActorService> weak_service = weak_ptr_factory_.GetWeakPtr();
+
+  void (^expiration_handler)(void) = ^{
+    if (weak_service) {
+      weak_service->StopTask(task_id, ActorTaskStoppedReason::kShutdown);
+    }
+  };
+
+  BackgroundContinuedProcessingTaskConfiguration* config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:base::SysUTF8ToNSString(task->title())
+          expirationHandler:expiration_handler];
+
+  std::string task_id_string = base::NumberToString(task_id.value());
+  BackgroundContinuedProcessingTaskContext* context =
+      [agent requestTaskWithIdentifier:base::SysUTF8ToNSString(task_id_string)
+                         configuration:config];
+  if (!context) {
+    LogJournalEvent(*journal_, GURL(), task_id,
+                    "ActorService::RegisterBackgroundTask",
+                    {{"status", "request_background_task_rejected"}});
+    return false;
+  }
+
+  task->SetBackgroundTaskContext(context);
+  LogJournalEvent(*journal_, GURL(), task_id,
+                  "ActorService::RegisterBackgroundTask",
+                  {{"status", "success (not guaranteed to be executed)"}});
+  return true;
+}
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 // static
 origin_gating::OriginGatingConfiguration

@@ -14,6 +14,7 @@
 #import "base/timer/timer.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/sessions/core/session_id.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
@@ -26,6 +27,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/web/public/web_state.h"
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"  // nogncheck
+#endif
 
 namespace actor {
 
@@ -100,7 +105,13 @@ ActorTask::ActorTask(ActorTaskId task_id,
 
 ActorTask::~ActorTask() {
   SetActuatingOnWebStates(false);
+  SetKeepRenderProcessAliveOnControlledWebStates(/*keep_alive=*/false);
   load_timeout_timer_.Stop();
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  FinalizeBackgroundTask(/*success=*/false);
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
   observers_ = nil;
 }
 
@@ -149,6 +160,11 @@ void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
   // TODO(crbug.com/503054406): Check for invalid states.
   SetState(ActorTaskState::kActing);
   last_task_update_ = task_update;
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  UpdateBackgroundTaskSubtitle(task_update);
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
   engine_->Act(
       std::move(actions),
       base::BindOnce(&ActorTask::OnActCompleted, weak_ptr_factory_.GetWeakPtr(),
@@ -167,6 +183,9 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
         {{"web_state_id", base::NumberToString(
                               web_state->GetUniqueIdentifier().identifier())}});
     controlled_web_states_.push_back(web_state->GetWeakPtr());
+    if (!IsTerminalState(state_)) {
+      web_state->SetKeepRenderProcessAlive(/*keep_alive=*/true);
+    }
     if (ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state)) {
       const bool is_actuating = IsActuatingState(state_);
       tab_helper->SetActuating(is_actuating);
@@ -179,6 +198,14 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
 void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   [observers_ actorTaskDidStopWithID:task_id_ finalState:state_];
   SetActuatingOnWebStates(false);
+  SetKeepRenderProcessAliveOnControlledWebStates(/*keep_alive=*/false);
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  const bool success = stop_reason == ActorTaskStoppedReason::kTaskComplete ||
+                       stop_reason == ActorTaskStoppedReason::kStoppedByUser;
+  FinalizeBackgroundTask(success);
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
   // TODO(crbug.com/496164697): Implement and test.
 }
 
@@ -293,6 +320,13 @@ bool ActorTask::allow_incognito_web_states() const {
   return allow_incognito_web_states_;
 }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+void ActorTask::SetBackgroundTaskContext(
+    BackgroundContinuedProcessingTaskContext* background_task_context) {
+  background_task_context_ = background_task_context;
+}
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
 #pragma mark - web::WebStateObserver
 
 void ActorTask::DidStopLoading(web::WebState* web_state) {
@@ -301,6 +335,11 @@ void ActorTask::DidStopLoading(web::WebState* web_state) {
 
 void ActorTask::WebStateDestroyed(web::WebState* web_state) {
   OnWebStateFinishedLoading(web_state);
+  std::erase_if(
+      controlled_web_states_,
+      [web_state](const base::WeakPtr<web::WebState>& weak_web_state) {
+        return !weak_web_state || weak_web_state.get() == web_state;
+      });
 }
 
 #pragma mark - Private
@@ -317,6 +356,16 @@ void ActorTask::SetActuatingOnWebStates(bool actuating) {
       continue;
     }
     tab_helper->SetActuating(actuating);
+  }
+}
+
+void ActorTask::SetKeepRenderProcessAliveOnControlledWebStates(
+    bool keep_alive) {
+  for (const base::WeakPtr<web::WebState>& web_state_weak :
+       controlled_web_states_) {
+    if (web::WebState* web_state = web_state_weak.get()) {
+      web_state->SetKeepRenderProcessAlive(keep_alive);
+    }
   }
 }
 
@@ -399,6 +448,10 @@ void ActorTask::OnPageLoadedTimeout() {
 
 void ActorTask::OnWillExecuteTool(ToolType tool_type,
                                   web::WebStateID web_state_id) {
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  UpdateBackgroundTaskProgress();
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
   [observers_ actorTaskWithID:task_id_
               willExecuteTool:tool_type
                    taskUpdate:base::SysUTF8ToNSString(last_task_update_)
@@ -419,5 +472,30 @@ Browser* ActorTask::GetBrowserForWindowId(int32_t window_id) const {
   }
   return nullptr;
 }
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+void ActorTask::UpdateBackgroundTaskSubtitle(const std::string& task_update) {
+  if (background_task_context_) {
+    background_task_context_.subtitle = base::SysUTF8ToNSString(task_update);
+  }
+}
+
+void ActorTask::UpdateBackgroundTaskProgress() {
+  if (background_task_context_) {
+    [background_task_context_ incrementStepProgress];
+  }
+}
+
+void ActorTask::FinalizeBackgroundTask(bool success) {
+  if (!background_task_context_) {
+    return;
+  }
+
+  if (!background_task_context_.completed) {
+    [background_task_context_ setTaskCompletedWithSuccess:success];
+  }
+  background_task_context_ = nil;
+}
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 }  // namespace actor

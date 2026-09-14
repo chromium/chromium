@@ -21,6 +21,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
 #import "components/origin_gating/core/types.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
@@ -50,6 +51,20 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+#import <BackgroundTasks/BackgroundTasks.h>
+
+#import "ios/chrome/app/application_delegate/app_state.h"  // nogncheck
+#import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"  // nogncheck
+#import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"  // nogncheck
+#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"  // nogncheck
+#import "ios/chrome/app/background_task/features.h"  // nogncheck
+#import "ios/chrome/app/profile/profile_state.h"     // nogncheck
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"  // nogncheck
+#endif
 
 // TODO(crbug.com/556276928): Centralize fake observer across unit tests.
 @interface FakeActorServiceTaskUpdatesObserver
@@ -170,6 +185,11 @@ class ActorServiceTest : public PlatformTest {
 
   bool HasTask(ActorService* service, ActorTaskId task_id) {
     return service->active_tasks_.find(task_id) != service->active_tasks_.end();
+  }
+
+  ActorTask* GetTask(ActorService* service, ActorTaskId task_id) {
+    auto it = service->active_tasks_.find(task_id);
+    return it != service->active_tasks_.end() ? it->second.get() : nullptr;
   }
 
   AggregatedJournal* GetJournal(ActorService* service) {
@@ -715,6 +735,110 @@ TEST_F(ActorServiceTest, DuplicateTaskUpdatesObserverIgnored) {
 
   service->RemoveTaskUpdatesObserver(observer);
 }
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+// Test that CreateTask succeeds and falls back gracefully when backgrounding
+// is enabled but no active scene browser exists.
+TEST_F(ActorServiceTest, CreateTask_BackgroundingEnabledNoActiveScene) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor, kGeminiClientMigration,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  EXPECT_TRUE(IsGeminiActorBackgroundingEnabled());
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id =
+      service->CreateTask("Background Task",
+                          /*allow_incognito_web_states=*/false);
+  EXPECT_TRUE(HasTask(service, task_id));
+  EXPECT_EQ(service->GetActiveTaskState(), ActorTaskState::kInit);
+
+  ActorTask* task = GetTask(service, task_id);
+  ASSERT_NE(nullptr, task);
+}
+
+// Test that CreateTask registers a background task with the OS agent when
+// backgrounding is enabled and an active scene with an app agent exists.
+TEST_F(ActorServiceTest,
+       CreateTask_BackgroundingEnabledWithActiveSceneAndAgent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor, kGeminiClientMigration,
+       kEnableBackgroundContinuedProcessing},
+      {});
+
+  EXPECT_TRUE(IsGeminiActorBackgroundingEnabled());
+
+  id mock_app_state = OCMClassMock([AppState class]);
+  id mock_profile_state = OCMClassMock([ProfileState class]);
+  id mock_scene_state = OCMClassMock([SceneState class]);
+  OCMStub([mock_scene_state profileState]).andReturn(mock_profile_state);
+  OCMStub([mock_profile_state appState]).andReturn(mock_app_state);
+  OCMStub([mock_scene_state activationLevel])
+      .andReturn(SceneActivationLevelForegroundActive);
+
+  auto test_browser =
+      std::make_unique<TestBrowser>(profile_.get(), mock_scene_state);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  id mock_agent = OCMClassMock([BackgroundContinuedProcessingAppAgent class]);
+  OCMStub([mock_agent agentFromApp:mock_app_state]).andReturn(mock_agent);
+
+  id mock_scheduler = OCMClassMock([BGTaskScheduler class]);
+  OCMStub([mock_scheduler sharedScheduler]).andReturn(mock_scheduler);
+
+  __block BackgroundContinuedProcessingTaskConfiguration* captured_config = nil;
+  BackgroundContinuedProcessingTaskConfiguration* dummy_config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:@"Dummy"
+          expirationHandler:^{
+          }];
+  BackgroundContinuedProcessingTaskContext* mock_context =
+      [[BackgroundContinuedProcessingTaskContext alloc]
+          initWithTaskIdentifier:@"org.chromium.test.task"
+                   configuration:dummy_config
+                   finishHandler:nil];
+
+  OCMStub([mock_agent
+              requestTaskWithIdentifier:[OCMArg any]
+                          configuration:[OCMArg checkWithBlock:^BOOL(id val) {
+                            captured_config = val;
+                            return YES;
+                          }]])
+      .andReturn(mock_context);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id =
+      service->CreateTask("Registered Task",
+                          /*allow_incognito_web_states=*/false);
+  EXPECT_TRUE(HasTask(service, task_id));
+
+  ActorTask* task = GetTask(service, task_id);
+  ASSERT_NE(nullptr, task);
+
+  ASSERT_NE(nil, captured_config);
+  EXPECT_NSEQ(@"Registered Task", captured_config.title);
+  EXPECT_EQ(kDefaultTotalUnitsOfProgress, captured_config.totalUnits);
+
+  // Invoking the expiration handler should shut down the task.
+  captured_config.expirationHandler();
+  EXPECT_FALSE(HasTask(service, task_id));
+
+  browser_list->RemoveBrowser(test_browser.get());
+  [mock_scheduler stopMocking];
+  [mock_agent stopMocking];
+  [mock_scene_state stopMocking];
+  [mock_profile_state stopMocking];
+  [mock_app_state stopMocking];
+}
+#endif
 
 class ActorServiceOriginGatingTest : public ActorServiceTest {
  public:
