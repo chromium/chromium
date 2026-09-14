@@ -346,7 +346,7 @@ export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * Called when dialog is shown for the first time.
    */
   private applyOobeConfiguration(): void {
-    if (this.configurationApplied) {
+    if (this.hidden || this.configurationApplied) {
       return;
     }
     const configuration = Oobe.getInstance().getOobeConfiguration();
