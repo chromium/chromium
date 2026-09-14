@@ -8,6 +8,8 @@ source_set("metrics") {
     "android_metrics_log_uploader.h",
     "android_metrics_provider.cc",
     "android_metrics_provider.h",
+    "aw_entropy_state_provider.cc",
+    "aw_entropy_state_provider.h",
     "aw_histograms_allowlist.cc",
     "aw_histograms_allowlist.h",
     "aw_metrics_filtering_status_metrics_provider.cc",

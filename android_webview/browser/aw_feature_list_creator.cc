@@ -16,6 +16,7 @@
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/android_metrics_provider.h"
+#include "android_webview/browser/metrics/aw_entropy_state_provider.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
 #include "android_webview/browser/supervised_user/aw_supervised_user_url_classifier.h"
@@ -345,6 +346,9 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   std::unique_ptr<const variations::EntropyProviders> entropy_providers;
 
   if (nonembedded_low_entropy_source >= 0) {
+    local_state_->SetInteger(prefs::kWebViewLowEntropySource,
+                             nonembedded_low_entropy_source);
+
     // If we have a nonembedded low entropy source, wrap the standard providers.
     entropy_providers = std::make_unique<AwEntropyProviders>(
         std::move(standard_providers),

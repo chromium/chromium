@@ -12,6 +12,7 @@
 
 #include "android_webview/browser/metrics/android_metrics_log_uploader.h"
 #include "android_webview/browser/metrics/android_metrics_provider.h"
+#include "android_webview/browser/metrics/aw_entropy_state_provider.h"
 #include "android_webview/browser/metrics/aw_metrics_service_accessor.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/callback_android.h"
@@ -45,7 +46,6 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
-#include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -416,7 +416,7 @@ void AwMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::CPUMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::EntropyStateProvider>(local_state_));
+      std::make_unique<AwEntropyStateProvider>(local_state_));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::ScreenInfoMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
@@ -891,6 +891,7 @@ void AwMetricsServiceClient::RegisterMetricsPrefs(
   metrics::FileMetricsProvider::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
   AndroidMetricsProvider::RegisterPrefs(registry);
+  AwEntropyStateProvider::RegisterPrefs(registry);
 }
 
 // static
