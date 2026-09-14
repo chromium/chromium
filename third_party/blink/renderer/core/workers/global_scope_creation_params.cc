@@ -13,6 +13,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 
 namespace blink {
@@ -140,7 +141,7 @@ GlobalScopeCreationParams::CreateForWorkerForTesting(
   return std::make_unique<GlobalScopeCreationParams>(
       script_url, mojom::blink::ScriptType::kClassic, "fake global scope name",
       "fake user agent", UserAgentMetadata(),
-      /*web_worker_fetch_context=*/nullptr,
+      base::MakeRefCounted<EmptyWebWorkerFetchContext>(),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       network::mojom::ReferrerPolicy::kDefault,
