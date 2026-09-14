@@ -691,6 +691,27 @@
             ]
         }
     ],
+    "AndroidDesktopBookmarkImprovements": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "form_factors": [
+                "desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidDesktopBookmarkDialog",
+                        "AndroidDesktopBookmarkPopup",
+                        "BookmarksBarContextMenu",
+                        "BookmarksBarNTP"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDesktopUAPlatform": [
         {
             "platforms": [
