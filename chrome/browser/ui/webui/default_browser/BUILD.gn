@@ -76,6 +76,7 @@ if (is_win) {
     ]
 
     deps = [
+      "//base:i18n",
       "//chrome/app/theme:chrome_unscaled_resources",
       "//chrome/browser/default_browser",
       "//chrome/browser/profiles:profile",

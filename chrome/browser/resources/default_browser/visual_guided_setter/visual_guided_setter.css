@@ -182,16 +182,6 @@ h1 {
   position: relative;
 }
 
-#arrow-anchor {
-  align-items: center;
-  display: flex;
-  left: -85px;
-  pointer-events: none;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
 #content-title {
   color: var(--color-sys-on-surface);
   font-size: 21px;
@@ -212,7 +202,7 @@ h1 {
   font-size: 16px;
   line-height: 26px;
   margin: 0;
-  padding-left: 20px;
+  padding-inline-start: 20px;
 }
 
 li {
@@ -245,6 +235,6 @@ strong {
 
   .instructions {
     display: inline-block;
-    text-align: left;
+    text-align: start;
   }
 }

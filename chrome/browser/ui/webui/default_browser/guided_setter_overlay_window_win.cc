@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -77,7 +78,11 @@ class OverlayArrowView : public views::View {
     SkRect path_bounds = GetStemPath().getBounds();
     path_bounds.join(GetHeadPath().getBounds());
 
-    gfx::RectF arrow_rect(path_bounds.fLeft + end_dip.x(),
+    // The drawing is flipped about the end point in RTL, so it occupies the
+    // span on the other side of it. See OnPaint().
+    const float left = base::i18n::IsRTL() ? end_dip.x() - path_bounds.fRight
+                                           : end_dip.x() + path_bounds.fLeft;
+    gfx::RectF arrow_rect(left,
                           path_bounds.fTop + end_dip.y() - kArrowYOffsetDip,
                           path_bounds.width(), path_bounds.height());
 
@@ -116,8 +121,19 @@ class OverlayArrowView : public views::View {
         color_.value_or(GetColorProvider()->GetColor(ui::kColorAccent)));
     flags.setAntiAlias(true);
 
+    gfx::Transform transform;
+    transform.Translate(end_.x(), end_.y() - kArrowYOffsetDip);
+    if (base::i18n::IsRTL()) {
+      // The paths are drawn head near the origin, tail extending to the
+      // right, which points the arrow leftward at the window's right edge. In
+      // RTL it has to run the other way, so flip it about the endpoint. The
+      // head tip sits a few DIP off the origin, so it lands the same small
+      // distance outside the window's edge on either side.
+      transform.Scale(-1.0f, 1.0f);
+    }
+
     gfx::ScopedCanvas scoped_canvas(canvas);
-    canvas->Translate(gfx::Vector2d(end_.x(), end_.y() - kArrowYOffsetDip));
+    canvas->Transform(transform);
     canvas->DrawPath(GetStemPath(), flags);
     canvas->DrawPath(GetHeadPath(), flags);
   }

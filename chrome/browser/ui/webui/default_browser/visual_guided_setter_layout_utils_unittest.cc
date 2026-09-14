@@ -6,7 +6,9 @@
 
 #include <windows.h>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -125,6 +127,32 @@ TEST_F(VisualGuidedSetterLayoutUtilsTest, IsDpiCompatibleForDocking) {
 
   // The fake window should be compatible with its own primary bounds.
   EXPECT_TRUE(IsDpiCompatibleForDocking(fake_hwnd(), physical_bounds));
+}
+
+// The arrow runs between the stage and the instructions, which swap sides with
+// the UI direction, so both of its endpoints move to the opposite edge.
+class VisualGuidedSetterLayoutUtilsRTLTest
+    : public VisualGuidedSetterLayoutUtilsTest {
+ private:
+  base::test::ScopedRestoreICUDefaultLocale locale_{"ar"};
+};
+
+TEST_F(VisualGuidedSetterLayoutUtilsRTLTest, ArrowPointsTheOtherWay) {
+  ASSERT_TRUE(base::i18n::IsRTL());
+
+  gfx::Rect anchor(100, 200, 200, 200);
+  gfx::Point start = ComputeArrowStartPointFromAnchor(anchor);
+  EXPECT_EQ(start.x(), 100);
+  EXPECT_EQ(start.y(), 300);
+
+  const int padding_px = display::win::GetScreenWin()
+                             ->DIPToScreenSize(fake_hwnd(), gfx::Size(0, 164))
+                             .height();
+
+  gfx::Rect target(200, 300, 200, 2000);
+  gfx::Point end = ComputeArrowEndPoint(fake_hwnd(), target);
+  EXPECT_EQ(end.x(), 200);
+  EXPECT_EQ(end.y(), 300 + padding_px);
 }
 
 }  // namespace visual_guided_setter
