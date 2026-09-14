@@ -135,4 +135,12 @@ public interface SigninAndHistorySyncActivityLauncher {
             Profile profile,
             FullscreenSigninAndHistorySyncConfig config,
             @SigninAccessPoint int signinAccessPoint);
+
+    /**
+     * Opens the Google My Account management page in a Custom Tab.
+     *
+     * @param context The context to launch the custom tab from.
+     */
+    @MainThread
+    void openManageGoogleAccount(Context context);
 }

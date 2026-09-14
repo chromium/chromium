@@ -16,6 +16,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
@@ -38,6 +39,8 @@ import java.util.function.Supplier;
 @NullMarked
 public final class SigninAndHistorySyncActivityLauncherImpl
         implements SigninAndHistorySyncActivityLauncher {
+    private static final String MY_ACCOUNT_URL = "https://myaccount.google.com/smartlink/home";
+
     private static @Nullable SigninAndHistorySyncActivityLauncher sLauncher;
 
     /** Singleton instance getter */
@@ -143,5 +146,11 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                     context, config, signinAccessPoint);
         }
         return null;
+    }
+
+    @MainThread
+    @Override
+    public void openManageGoogleAccount(Context context) {
+        new SettingsCustomTabLauncherImpl().openUrlInCct(context, MY_ACCOUNT_URL);
     }
 }

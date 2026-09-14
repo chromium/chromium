@@ -90,6 +90,17 @@ public class AccountMenuViewBinderTest {
 
     @Test
     @SmallTest
+    public void testBindManageGoogleAccount() {
+        mModel.set(MenuItemProperties.TITLE_ID, R.string.manage_your_google_account);
+        mModel.set(MenuItemProperties.START_ICON_ID, R.drawable.ic_google_services_24dp);
+        assertEquals(
+                mActivity.getString(R.string.manage_your_google_account),
+                mItemView.getText().toString());
+        assertNotNull(mItemView.getCompoundDrawablesRelative()[0]);
+    }
+
+    @Test
+    @SmallTest
     public void testBindPromoCard_onSigninClickListener() {
         View promoView =
                 LayoutInflater.from(mActivity).inflate(R.layout.account_menu_promo_card, null);

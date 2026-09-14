@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.account_menu;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -226,8 +227,8 @@ public class AccountMenuMediatorTest {
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
         mMediator.updateMenuItems();
 
-        assertEquals(5, mModelList.size());
-        ListItem item = mModelList.get(2);
+        assertEquals(6, mModelList.size());
+        ListItem item = mModelList.get(3);
         assertEquals(ItemType.MENU_ITEM, item.type);
 
         PropertyModel model = item.model;
@@ -317,7 +318,7 @@ public class AccountMenuMediatorTest {
 
         mMediator.updateMenuItems();
 
-        assertEquals(5, mModelList.size());
+        assertEquals(6, mModelList.size());
         ListItem item = mModelList.get(0);
         assertEquals(ItemType.IDENTITY_CARD, item.type);
         DisplayableProfileData profileData = item.model.get(IdentityCardProperties.PROFILE_DATA);
@@ -374,7 +375,9 @@ public class AccountMenuMediatorTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
         mMediator.onSignedIn();
-        assertEquals(5, mModelList.size());
+        // Identity card, autofill, account settings, manage Google account, divider and incognito
+        // items.
+        assertEquals(6, mModelList.size());
         assertEquals(ItemType.IDENTITY_CARD, mModelList.get(0).type);
 
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(null);
@@ -386,5 +389,59 @@ public class AccountMenuMediatorTest {
         mMediator.onSignInAllowedChanged();
         assertEquals(3, mModelList.size());
         assertEquals(ItemType.MENU_ITEM, mModelList.get(0).type);
+    }
+
+    @Test
+    @SmallTest
+    public void testManageGoogleAccountItemClick_opensMyAccount() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+
+        mMediator.updateMenuItems();
+
+        assertEquals(6, mModelList.size());
+        ListItem item = mModelList.get(2);
+        assertEquals(ItemType.MENU_ITEM, item.type);
+        assertNotNull(item);
+        assertEquals(
+                R.string.manage_your_google_account, item.model.get(MenuItemProperties.TITLE_ID));
+        OnClickListener clickListener = item.model.get(MenuItemProperties.CLICK_LISTENER);
+        assertNotNull(clickListener);
+
+        clickListener.onClick(null);
+
+        verify(mDismissCallback).run();
+        verify(mSigninLauncher).openManageGoogleAccount(eq(mContext));
+    }
+
+    @Test
+    @SmallTest
+    public void testSignedOut_doesNotDisplayManageGoogleAccountItem() {
+        // The FakeIdentityManager from `mAccountManagerTestRule` has no primary account by default.
+        mMediator.updateMenuItems();
+
+        for (ListItem item : mModelList) {
+            if (item.type == ItemType.MENU_ITEM) {
+                assertNotEquals(
+                        R.string.manage_your_google_account,
+                        item.model.get(MenuItemProperties.TITLE_ID));
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testIncognitoProfile_doesNotDisplayManageGoogleAccountItem() {
+        doReturn(true).when(mProfile).isOffTheRecord();
+
+        mMediator.updateMenuItems();
+
+        for (ListItem item : mModelList) {
+            if (item.type == ItemType.MENU_ITEM) {
+                assertNotEquals(
+                        R.string.manage_your_google_account,
+                        item.model.get(MenuItemProperties.TITLE_ID));
+            }
+        }
     }
 }

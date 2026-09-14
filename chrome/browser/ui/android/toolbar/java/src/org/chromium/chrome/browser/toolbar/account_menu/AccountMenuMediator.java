@@ -125,6 +125,8 @@ public class AccountMenuMediator
                                     openAutofillSettings();
                                 })));
 
+        maybeAddManageGoogleAccount();
+
         IdentityManager identityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
         if (identityManager.hasPrimaryAccount()) {
@@ -303,6 +305,26 @@ public class AccountMenuMediator
                         selector.getTabCreatorManager().getTabCreator(/* incognito= */ true);
                 TabCreatorUtil.launchNtp(incognitoTabCreator);
             }
+        }
+    }
+
+    private void maybeAddManageGoogleAccount() {
+        if (mProfile.isOffTheRecord()) {
+            return;
+        }
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        if (identityManager != null && identityManager.hasPrimaryAccount()) {
+            mModelList.add(
+                    new ListItem(
+                            ItemType.MENU_ITEM,
+                            MenuItemProperties.createModel(
+                                    R.string.manage_your_google_account,
+                                    R.drawable.ic_google_services_24dp,
+                                    v -> {
+                                        mDismissCallback.run();
+                                        mSigninLauncher.openManageGoogleAccount(mContext);
+                                    })));
         }
     }
 }
