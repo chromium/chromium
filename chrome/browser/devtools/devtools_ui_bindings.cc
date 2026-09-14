@@ -252,9 +252,10 @@ void DefaultBindingsDelegate::ActivateWindow() {
 }
 
 void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
-  content::OpenURLParams params(GURL(url), content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else
@@ -282,9 +283,10 @@ void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
   DCHECK(url_service);
   GURL url =
       GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(query));
-  content::OpenURLParams params(GURL(url), content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
 #endif
 }

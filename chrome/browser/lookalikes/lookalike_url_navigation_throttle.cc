@@ -240,11 +240,10 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
     // for why this is OK. Assume interstitial reloads are always browser
     // initiated.
     handle->GetWebContents()->OpenURL(
-        content::OpenURLParams(interstitial_params.url,
-                               interstitial_params.referrer,
-                               WindowOpenDisposition::CURRENT_TAB,
-                               ui::PageTransition::PAGE_TRANSITION_RELOAD,
-                               false /* is_renderer_initiated */),
+        content::OpenURLParams::CreateBrowserInitiated(
+            interstitial_params.url, WindowOpenDisposition::CURRENT_TAB,
+            ui::PageTransition::PAGE_TRANSITION_RELOAD,
+            interstitial_params.referrer),
         /*navigation_handle_callback=*/{});
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }

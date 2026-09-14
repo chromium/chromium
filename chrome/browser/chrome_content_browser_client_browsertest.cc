@@ -2236,9 +2236,10 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest, OpenURL) {
                  GURL("https://www.chromium.org")};
 
   for (const GURL& url : urls) {
-    content::OpenURLParams params(url, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
     // TODO(peter): We should have more in-depth browser tests for the window
     // opening functionality, which also covers Android. This test can currently
     // only be ran on platforms where OpenURL is implemented synchronously.

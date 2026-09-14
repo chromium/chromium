@@ -208,12 +208,12 @@ void OpenUrl(content::WebContents* current_web_contents,
              const GURL& url,
              const content::Referrer& referrer,
              bool in_new_tab) {
-  content::OpenURLParams params(url, referrer,
-                                in_new_tab
-                                    ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                    : WindowOpenDisposition::CURRENT_TAB,
-                                ui::PAGE_TRANSITION_LINK,
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          url,
+          in_new_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                     : WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_LINK, referrer);
   current_web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
@@ -613,10 +613,10 @@ void ChromePasswordProtectionService::ShowInterstitial(
   if (web_contents->IsFullscreen())
     web_contents->ExitFullscreen(/*will_cause_resize=*/true);
 
-  content::OpenURLParams params(
-      GURL(chrome::kChromeUIResetPasswordURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(chrome::kChromeUIResetPasswordURL),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
   std::string post_data =
       base::NumberToString(static_cast<std::underlying_type_t<PasswordType>>(
           ConvertReusedPasswordAccountTypeToPasswordType(password_type)));

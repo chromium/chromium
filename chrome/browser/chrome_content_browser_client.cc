@@ -9260,10 +9260,10 @@ void ChromeContentBrowserClient::ShowCaptionSettings(
   if (!web_contents) {
     return;
   }
-  content::OpenURLParams params(
-      GURL(captions::GetCaptionSettingsUrl()), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(captions::GetCaptionSettingsUrl()),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 #endif
 }

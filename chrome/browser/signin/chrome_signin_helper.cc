@@ -377,9 +377,9 @@ void ProcessMirrorHeader(
 
   if (service_type == signin::GAIA_SERVICE_TYPE_INCOGNITO) {
     web_contents->OpenURL(
-        content::OpenURLParams(continue_url, content::Referrer(),
-                               WindowOpenDisposition::OFF_THE_RECORD,
-                               ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
+        content::OpenURLParams::CreateBrowserInitiated(
+            continue_url, WindowOpenDisposition::OFF_THE_RECORD,
+            ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
         /*navigation_handle_callback=*/{});
     return;
   }

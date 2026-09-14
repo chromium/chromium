@@ -161,9 +161,8 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
   GetActiveWebContents()->OpenURL(
-      content::OpenURLParams(url, content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
       std::move(navigation_handle_callback));
 
   // Wait for the navigation to finish.

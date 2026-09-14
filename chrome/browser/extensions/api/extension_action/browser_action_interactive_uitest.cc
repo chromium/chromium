@@ -333,9 +333,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_TestOpenPopup) {
     BrowserWindowInterface* new_browser_interface =
         GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
             browser()->OpenURL(
-                content::OpenURLParams(GURL("about:blank"), content::Referrer(),
-                                       WindowOpenDisposition::NEW_WINDOW,
-                                       ui::PAGE_TRANSITION_TYPED, false),
+                content::OpenURLParams::CreateBrowserInitiated(
+                    GURL("about:blank"), WindowOpenDisposition::NEW_WINDOW,
+                    ui::PAGE_TRANSITION_TYPED),
                 /*navigation_handle_callback=*/{}));
     ui_test_utils::BrowserActivationWaiter waiter(new_browser_interface);
     new_browser = new_browser_interface;
@@ -696,9 +696,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
 
   // Create a new browser window to prevent the message loop from terminating.
   browser()->OpenURL(
-      content::OpenURLParams(GURL("chrome://version"), content::Referrer(),
-                             WindowOpenDisposition::NEW_WINDOW,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL("chrome://version"), WindowOpenDisposition::NEW_WINDOW,
+          ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   // Forcibly closing the browser HWND should not cause a crash.

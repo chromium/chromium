@@ -755,10 +755,9 @@ class PrerenderNewTabPageBrowserTest
 
   void SimulateNewTabNavigation(const GURL& url) {
     GetActiveWebContents()->OpenURL(
-        content::OpenURLParams(
-            url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-            /*is_renderer_initiated=*/false),
+        content::OpenURLParams::CreateBrowserInitiated(
+            url, WindowOpenDisposition::CURRENT_TAB,
+            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK)),
         base::BindRepeating(&AttachNewTabPageNavigationHandleUserData));
   }
 
@@ -1043,11 +1042,10 @@ class PrerenderPrewarmDefaultSearchEngineTest
   content::WebContents* CreateNewTab() {
     content::WebContents* original_web_contents = GetActiveWebContents();
     original_web_contents->OpenURL(
-        content::OpenURLParams(
-            GURL(url::kAboutBlankURL), content::Referrer(),
+        content::OpenURLParams::CreateBrowserInitiated(
+            GURL(url::kAboutBlankURL),
             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-            /*is_renderer_initiated=*/false),
+            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK)),
         base::BindRepeating(&AttachNewTabPageNavigationHandleUserData));
     content::WebContents* new_web_contents = GetActiveWebContents();
     EXPECT_TRUE(new_web_contents);

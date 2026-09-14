@@ -4282,9 +4282,9 @@ IN_PROC_BROWSER_TEST_F(SSLNetworkTimeBrowserTest,
   EXPECT_TRUE(contents->IsLoading());
   content::TestNavigationObserver observer(contents, 1);
   browser()->OpenURL(
-      content::OpenURLParams(https_server_.GetURL("/"), content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          https_server_.GetURL("/"), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   observer.Wait();
 
@@ -4756,9 +4756,9 @@ IN_PROC_BROWSER_TEST_F(CommonNameMismatchBrowserTest,
   EXPECT_TRUE(contents->IsLoading());
   content::TestNavigationObserver observer(contents, 1);
   browser()->OpenURL(
-      content::OpenURLParams(GURL("https://google.com"), content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL("https://google.com"), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   observer.Wait();
 

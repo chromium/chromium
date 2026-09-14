@@ -2969,12 +2969,10 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   // Link click.
   content::TestNavigationManager navigation_manager(GetWebContents(),
                                                     search_url);
-  GetWebContents()->OpenURL(
-      content::OpenURLParams(search_url, content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_LINK,
-                             /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
+  GetWebContents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                                search_url, WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_LINK),
+                            /*navigation_handle_callback=*/{});
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   EXPECT_EQ(2u, search_server_request_count());
@@ -3058,11 +3056,10 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, NoServePost) {
   // Post request.
   content::TestNavigationManager navigation_manager(GetWebContents(),
                                                     search_url);
-  content::OpenURLParams params(search_url, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
-                                ui::PAGE_TRANSITION_TYPED,
-
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          search_url, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_TYPED);
   std::string post_data = "test=body";
   params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
       base::as_byte_span(post_data));

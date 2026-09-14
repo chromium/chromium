@@ -184,13 +184,12 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
           base::BindRepeating(&AttachBookmarkBarNavigationHandleUserData);
 
   browser()->GetTabStripModel()->GetActiveWebContents()->OpenURL(
-      content::OpenURLParams(
+      content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("origin.com",
                                          "/subresource_loading/index.html"),
-          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::CURRENT_TAB,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*is_renderer_initiated=*/false),
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       /*navigation_handle_callback=*/std::move(
           prerender_navigation_handle_callback));
   NavigateAway();
@@ -209,13 +208,12 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
           base::BindRepeating(&AttachNewTabPageNavigationHandleUserData);
 
   browser()->GetTabStripModel()->GetActiveWebContents()->OpenURL(
-      content::OpenURLParams(
+      content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("origin.com",
                                          "/subresource_loading/index.html"),
-          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          WindowOpenDisposition::CURRENT_TAB,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*is_renderer_initiated=*/false),
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       /*navigation_handle_callback=*/std::move(
           prerender_navigation_handle_callback));
   NavigateAway();

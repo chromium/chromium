@@ -3153,9 +3153,10 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, OpenURLFromTab_CurrentTab_Succeed) {
   ExtensionTestMessageListener load_listener("WebViewTest.LOADSTOP");
 
   GURL test_url("http://www.google.com");
-  content::OpenURLParams params(
-      test_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false /* is_renderer_initiated */);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          test_url, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.source_render_frame_id = GetGuestRenderFrameHost()->GetRoutingID();
   params.source_render_process_id =
       GetGuestRenderFrameHost()->GetProcess()->GetID().GetUnsafeValue();

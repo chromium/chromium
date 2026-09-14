@@ -1081,9 +1081,9 @@ IN_PROC_BROWSER_TEST_F(SecurityStateLoadingTest, NavigationStateChanges) {
   // Navigate to a page that doesn't finish loading. Test that the
   // security state is neutral while the page is loading.
   browser()->OpenURL(
-      content::OpenURLParams(
-          embedded_test_server()->GetURL("/title1.html"), content::Referrer(),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/title1.html"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   CheckSecurityInfoForNonCommitted(
       browser()->GetTabStripModel()->GetActiveWebContents());

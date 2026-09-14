@@ -971,10 +971,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptBlockingScript) {
 
   // Navigate! Both extensions will try to inject. Use WebContents::OpenURL() to
   // avoid waits on navigation/load, which cause the test to time out.
-  content::OpenURLParams params(
-      embedded_test_server()->GetURL("/empty.html"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/empty.html"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED);
   web_contents->OpenURL(params,
                         /*navigation_handle_callback=*/{});
 
@@ -1025,10 +1025,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
 
   // Navigate! Use WebContents::OpenURL() to avoid waits that can cause the
   // test to time out.
-  content::OpenURLParams params(
-      embedded_test_server()->GetURL("/empty.html"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/empty.html"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED);
   web_contents->OpenURL(params,
                         /*navigation_handle_callback=*/{});
 
@@ -1066,10 +1066,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
 
   // Navigate! Use WebContents::OpenURL() to avoid waits that can cause the
   // test to time out.
-  content::OpenURLParams params(
-      embedded_test_server()->GetURL("/empty.html"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/empty.html"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED);
   web_contents->OpenURL(params,
                         /*navigation_handle_callback=*/{});
 
@@ -2620,10 +2620,10 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithBackgroundCompilation,
 
   // Navigate, the script will be injected.
   content::WebContents* web_contents = GetActiveWebContents();
-  content::OpenURLParams params(
-      embedded_test_server()->GetURL("/empty.html"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/empty.html"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED);
   web_contents->OpenURL(params,
                         /*navigation_handle_callback=*/{});
 

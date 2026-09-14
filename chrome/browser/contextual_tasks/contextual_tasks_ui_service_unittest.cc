@@ -3654,11 +3654,10 @@ TEST_F(ContextualTasksUiServiceTest,
       browser.GetUnownedUserDataHost(), mock_tab_list);
 
   GURL target_url("https://target.example.com/");
-  content::Referrer referrer;
-  content::OpenURLParams params(target_url, referrer,
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK,
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
 
   real_service_->OpenUrlForTesting(params, blink::mojom::WindowFeatures(),
                                    &browser);

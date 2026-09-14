@@ -252,13 +252,11 @@ void ProfileManagementNavigationThrottle::NavigateTo(const GURL& url) {
   // is scoped to the lifetime of `WebContents`.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &ProfileManagementWebContentsLifetimeHelper::OpenURL,
-          helper->GetWeakPtr(),
-          content::OpenURLParams(
-              url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-              ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
-              /*is_renderer_initiated=*/false)));
+      base::BindOnce(&ProfileManagementWebContentsLifetimeHelper::OpenURL,
+                     helper->GetWeakPtr(),
+                     content::OpenURLParams::CreateBrowserInitiated(
+                         url, WindowOpenDisposition::CURRENT_TAB,
+                         ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT)));
 
   // Only call `CancelDeferredNavigation()` outside of testing since it crashes
   // unit tests.

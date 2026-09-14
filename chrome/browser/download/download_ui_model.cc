@@ -707,28 +707,28 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
       NOTREACHED();
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
       download_commands->GetBrowser()->OpenURL(
-          content::OpenURLParams(
+          content::OpenURLParams::CreateBrowserInitiated(
               download_commands->GetLearnMoreURLForInterruptedDownload(),
-              content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-              ui::PAGE_TRANSITION_LINK, false),
+              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              ui::PAGE_TRANSITION_LINK),
           /*navigation_handle_callback=*/{});
       break;
     case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
       download_commands->GetBrowser()->OpenURL(
-          content::OpenURLParams(
+          content::OpenURLParams::CreateBrowserInitiated(
               GURL(chrome::kInsecureDownloadBlockingLearnMoreUrl),
-              content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-              ui::PAGE_TRANSITION_LINK, false),
+              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              ui::PAGE_TRANSITION_LINK),
           /*navigation_handle_callback=*/{});
       break;
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
       download_commands->GetBrowser()->OpenURL(
-          content::OpenURLParams(google_util::AppendGoogleLocaleParam(
-                                     GURL(chrome::kDownloadBlockedLearnMoreURL),
-                                     g_browser_process->GetApplicationLocale()),
-                                 content::Referrer(),
-                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                 ui::PAGE_TRANSITION_LINK, false),
+          content::OpenURLParams::CreateBrowserInitiated(
+              google_util::AppendGoogleLocaleParam(
+                  GURL(chrome::kDownloadBlockedLearnMoreURL),
+                  g_browser_process->GetApplicationLocale()),
+              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              ui::PAGE_TRANSITION_LINK),
           /*navigation_handle_callback=*/{});
       break;
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:

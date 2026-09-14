@@ -39,9 +39,9 @@ void OpenBrowserSwitchPage(base::WeakPtr<content::WebContents> web_contents,
 
   GURL about_url(chrome::kChromeUIBrowserSwitchURL);
   about_url = net::AppendQueryParameter(about_url, "url", url.spec());
-  content::OpenURLParams params(about_url, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
-                                transition_type, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          about_url, WindowOpenDisposition::CURRENT_TAB, transition_type);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 

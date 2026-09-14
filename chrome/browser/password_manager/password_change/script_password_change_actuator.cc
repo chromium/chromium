@@ -184,12 +184,12 @@ void ScriptPasswordChangeActuator::OpenPasswordChangeTab(
 
   content::WebContents* web_contents = GetExecutorWebContents();
   if (!web_contents) {
-    web_contents = originator->OpenURL(
-        content::OpenURLParams(GURL(change_password_url_), content::Referrer(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PAGE_TRANSITION_LINK,
-                               /* is_renderer_initiated= */ false),
-        /*navigation_handle_callback=*/{});
+    web_contents =
+        originator->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                                GURL(change_password_url_),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK),
+                            /*navigation_handle_callback=*/{});
     CHECK(web_contents);
   } else if (hidden_executor_) {
     AddPasswordChangeToTabStrip(

@@ -689,11 +689,9 @@ void ContentAnalysisDialogDelegate::AddLinksToDialogMessage() {
                 return;
               }
               web_contents->OpenURL(
-                  content::OpenURLParams(
-                      url, content::Referrer(),
-                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                      ui::PAGE_TRANSITION_LINK,
-                      /*is_renderer_initiated=*/false),
+                  content::OpenURLParams::CreateBrowserInitiated(
+                      url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                      ui::PAGE_TRANSITION_LINK),
                   /*navigation_handle_callback=*/{});
             },
             web_contents_getter_.Run()->GetWeakPtr(), range.second)));
@@ -844,10 +842,9 @@ void ContentAnalysisDialogDelegate::LearnMoreLinkClickedCallback(
     const ui::Event& event) {
   DCHECK(has_learn_more_url());
   web_contents_getter_.Run()->OpenURL(
-      content::OpenURLParams((*delegate_base_->GetCustomLearnMoreUrl()),
-                             content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          (*delegate_base_->GetCustomLearnMoreUrl()),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

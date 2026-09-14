@@ -225,10 +225,9 @@ class GlicTabObserverBrowserTest
 
   void NavigateTab(tabs::TabInterface* tab, const GURL& url) {
     content::TestNavigationObserver navigation_observer(tab->GetContents());
-    content::OpenURLParams params(url, content::Referrer(),
-                                  WindowOpenDisposition::CURRENT_TAB,
-                                  ui::PAGE_TRANSITION_TYPED,
-                                  /*is_renderer_initiated=*/false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED);
     tab->GetContents()->OpenURL(params, base::DoNothing());
     navigation_observer.Wait();
   }
@@ -479,10 +478,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, LinkClickTracking) {
   ASSERT_TRUE(first_tab);
 
   GURL target_url("about:blank");
-  content::OpenURLParams params(target_url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK,
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   ASSERT_OK_AND_ASSIGN(auto creation, OpenURLAndWaitForTabCreation(
                                           first_tab, params, collector));
   ASSERT_TRUE(creation.new_tab);
@@ -498,10 +497,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, LinkClickNewWindowTracking) {
   ASSERT_TRUE(first_tab);
 
   GURL target_url("about:blank");
-  content::OpenURLParams params(target_url, content::Referrer(),
-                                WindowOpenDisposition::NEW_WINDOW,
-                                ui::PAGE_TRANSITION_LINK,
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          target_url, WindowOpenDisposition::NEW_WINDOW,
+          ui::PAGE_TRANSITION_LINK);
   params.source_render_process_id = first_tab->GetContents()
                                         ->GetPrimaryMainFrame()
                                         ->GetProcess()

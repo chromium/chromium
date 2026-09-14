@@ -85,9 +85,10 @@ void InstallChromeApp(const std::string& app_id,
   // may need to start a browser or browser session here.
   DCHECK(browser);
 
-  content::OpenURLParams params(GetAppInstallUrl(app_id), content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GetAppInstallUrl(app_id), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser->GetProfile());

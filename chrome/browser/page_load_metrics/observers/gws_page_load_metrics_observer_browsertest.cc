@@ -223,12 +223,10 @@ IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverBrowserTest,
   const GURL srp_url = GetSrpUrl("initial");
 
   content::WebContents* new_tab = GetActiveWebContents()->OpenURL(
-      content::OpenURLParams(
-          GURL(url::kAboutBlankURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*is_renderer_initiated=*/false),
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       /*navigation_handle_callback=*/{});
   content::WaitForLoadStop(new_tab);
 

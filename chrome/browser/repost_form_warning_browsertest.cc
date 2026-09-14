@@ -100,9 +100,9 @@ IN_PROC_BROWSER_TEST_F(RepostFormWarningTest, TestLoginAfterRepost) {
   // Navigate to a page that requires authentication, bringing up another
   // tab-modal sheet.
   browser()->OpenURL(
-      content::OpenURLParams(
-          embedded_test_server()->GetURL("/auth-basic"), content::Referrer(),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/auth-basic"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   ASSERT_TRUE(base::test::RunUntil(
       []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
@@ -115,9 +115,9 @@ IN_PROC_BROWSER_TEST_F(RepostFormWarningTest, TestLoginAfterRepost) {
   // happen while the auth dialog is up.
   content::TestNavigationObserver navigation_observer(web_contents);
   browser()->OpenURL(
-      content::OpenURLParams(
-          embedded_test_server()->GetURL("/bar"), content::Referrer(),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/bar"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   navigation_observer.Wait();
 }

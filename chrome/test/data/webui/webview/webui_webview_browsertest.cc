@@ -513,9 +513,9 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
   g_browser_process->local_state()->SetBoolean(
       chrome_urls::kInternalOnlyUisEnabled, true);
   content::WebContents* target_webui_window = browser()->OpenURL(
-      content::OpenURLParams(
-          GURL(chrome::kChromeUIWebUIJsErrorURL), content::Referrer(),
-          WindowOpenDisposition::NEW_WINDOW, ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(chrome::kChromeUIWebUIJsErrorURL),
+          WindowOpenDisposition::NEW_WINDOW, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   content::WaitForLoadStop(target_webui_window);
 

@@ -1877,9 +1877,10 @@ void DevToolsWindow::OpenInNewTab(const GURL& url) {
           child_id, fixed_url)) {
     fixed_url = GURL(url::kAboutBlankURL);
   }
-  content::OpenURLParams params(fixed_url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          fixed_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   if (!inspected_web_contents ||
       !inspected_web_contents->OpenURL(params,
                                        /*navigation_handle_callback=*/{})) {

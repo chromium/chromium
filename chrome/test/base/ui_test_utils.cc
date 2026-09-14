@@ -352,8 +352,8 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
   AllBrowserTabAddedWaiter tab_added_waiter;
 
   WebContents* const web_contents =
-      browser->OpenURL(OpenURLParams(url, Referrer(), disposition,
-                                     ui::PAGE_TRANSITION_TYPED, false),
+      browser->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                           url, disposition, ui::PAGE_TRANSITION_TYPED),
                        /*navigation_handle_callback=*/{});
   if (browser_test_flags & BROWSER_TEST_WAIT_FOR_BROWSER) {
     // `WaitForBrowserNotInSet()` waits until the new browser is created, and

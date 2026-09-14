@@ -74,10 +74,9 @@ class ImageLoadingUMATest : public InProcessBrowserTest {
     }
 
     content::WebContents* contents = browser()->OpenURL(
-        content::OpenURLParams(
+        content::OpenURLParams::CreateBrowserInitiated(
             embedded_test_server()->GetURL("/mock_page.html"),
-            content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-            ui::PAGE_TRANSITION_TYPED, false),
+            WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
         /*navigation_handle_callback=*/{});
     auto waiter =
         std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(

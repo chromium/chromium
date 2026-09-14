@@ -55,19 +55,19 @@ void LeaveSiteFromSafetyTip(content::WebContents* web_contents,
 #endif
   }
 
-  content::OpenURLParams params(
-      navigated_to, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false /* is_renderer_initiated */);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          navigated_to, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.should_replace_current_entry = true;
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void OpenHelpCenterFromSafetyTip(content::WebContents* web_contents) {
   web_contents->OpenURL(
-      content::OpenURLParams(
-          GURL(chrome::kSafetyTipHelpCenterURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-          false /*is_renderer_initiated*/),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(chrome::kSafetyTipHelpCenterURL),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

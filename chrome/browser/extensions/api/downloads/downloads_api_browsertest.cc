@@ -854,9 +854,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
       tab = PlatformOpenURLOffTheRecord(current_profile(), GURL("about:blank"));
     }
     CHECK(tab);
-    content::OpenURLParams params(url, content::Referrer(), disposition,
-                                  ui::PAGE_TRANSITION_LINK,
-                                  /*is_renderer_initiated=*/false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            url, disposition, ui::PAGE_TRANSITION_LINK);
     tab->OpenURL(params,
                  /*navigation_handle_callback=*/{});
     return tab;

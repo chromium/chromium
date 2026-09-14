@@ -300,11 +300,12 @@ bool BrowserExtensionWindowController::OpenOptionsPage(
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android, we just open the options page in a new tab.
-  content::OpenURLParams params(
-      url, content::Referrer(),
-      open_in_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                  : WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          url,
+          open_in_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                      : WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_LINK);
   browser_->OpenURL(params, /*navigation_handle_callback=*/{});
 #else
   // Force the options page to open in non-OTR window if the extension is not

@@ -889,10 +889,9 @@ void ComposeSession::OpenBugReportingLink() {
     }
   }
   web_contents_->OpenURL(
-      content::OpenURLParams(GURL(url), content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK,
-                             /* is_renderer_initiated= */ false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 
@@ -908,19 +907,17 @@ void ComposeSession::OpenComposeLearnMorePage() {
     return;
   }
   web_contents_->OpenURL(
-      content::OpenURLParams(
-          GURL(kComposeLearnMorePageURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-          /* is_renderer_initiated= */ false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(kComposeLearnMorePageURL),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 
 void ComposeSession::OpenEnterpriseComposeLearnMorePage() {
   web_contents_->OpenURL(
-      content::OpenURLParams(
-          GURL(kEnterpriseComposeLearnMorePageURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-          /* is_renderer_initiated= */ false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(kEnterpriseComposeLearnMorePageURL),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 
@@ -935,19 +932,17 @@ void ComposeSession::OpenFeedbackSurveyLink() {
     }
   }
   web_contents_->OpenURL(
-      content::OpenURLParams(GURL(url), content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK,
-                             /* is_renderer_initiated= */ false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 
 void ComposeSession::OpenSignInPage() {
   web_contents_->OpenURL(
-      content::OpenURLParams(GURL(kSignInPageURL), content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK,
-                             /* is_renderer_initiated= */ false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(kSignInPageURL), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

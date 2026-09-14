@@ -94,12 +94,10 @@ void SessionsSyncPerfTest::UpdateTabs(int profile) {
     chrome::SelectNumberedTab(browser, i);
     url = NextURL();
     browser->OpenURL(
-        OpenURLParams(
-            url,
+        OpenURLParams::CreateBrowserInitiated(
+            url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
             content::Referrer(GURL("http://localhost"),
-                              network::mojom::ReferrerPolicy::kDefault),
-            WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
-            false),
+                              network::mojom::ReferrerPolicy::kDefault)),
         /*navigation_handle_callback=*/{});
     urls.push_back(url);
   }

@@ -67,10 +67,10 @@ void KnownInterceptionDisclosureMessageDelegate::MaybeShow() {
   message_->SetSecondaryActionCallback(base::BindRepeating(
       [](content::WebContents* web_contents) {
         web_contents->OpenURL(
-            content::OpenURLParams(
+            content::OpenURLParams::CreateBrowserInitiated(
                 GURL("chrome://connection-monitoring-detected/"),
-                content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                ui::PAGE_TRANSITION_LINK, false /* is_renderer_initiated */),
+                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                ui::PAGE_TRANSITION_LINK),
             /*navigation_handle_callback=*/{});
       },
       web_contents_));

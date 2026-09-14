@@ -334,9 +334,10 @@ void ChromeExtensionsAPIClient::OpenFileUrlForTesting(
   CHECK(web_contents) << "Unable to find active tab web contents.";
 
   // Open the file URL in the current tab.
-  content::OpenURLParams params(
-      file_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_FROM_API, /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          file_url, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_FROM_API);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 

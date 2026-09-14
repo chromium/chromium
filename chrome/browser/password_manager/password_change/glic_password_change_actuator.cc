@@ -239,11 +239,10 @@ void GlicPasswordChangeActuator::Start() {
     return;
   }
 
-  content::OpenURLParams open_url_params(
-      target_url, content::Referrer(),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams open_url_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          target_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
   content::WebContents* new_contents =
       originator_->OpenURL(open_url_params, /*navigation_handle_callback=*/{});
@@ -347,10 +346,9 @@ void GlicPasswordChangeActuator::OpenPasswordChangeTab(
     GURL target_url = change_password_url_.is_empty() ? credential_.url
                                                       : change_password_url_;
     originator->OpenURL(
-        content::OpenURLParams(target_url, content::Referrer(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PAGE_TRANSITION_LINK,
-                               /*is_renderer_initiated=*/false),
+        content::OpenURLParams::CreateBrowserInitiated(
+            target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_LINK),
         /*navigation_handle_callback=*/{});
   }
 }

@@ -88,9 +88,10 @@ void OpenLoginPage(content::WebContents* web_contents) {
   // the platform's portal detection URL in a new tab.
   const std::string url = security_interstitials::GetCaptivePortalServerUrl(
       base::android::AttachCurrentThread());
-  content::OpenURLParams params(GURL(url), content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 #else
   ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(web_contents,

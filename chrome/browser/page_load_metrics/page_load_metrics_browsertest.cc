@@ -528,10 +528,9 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPImagePriority) {
   }
 
   browser()->OpenURL(
-      content::OpenURLParams(embedded_test_server()->GetURL("/mock_page.html"),
-                             content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/mock_page.html"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   main_html_response->WaitForRequest();
@@ -648,10 +647,9 @@ class PageLoadMetricsBrowserTestAnimatedLCP
     std::string second_frame = file_contents.substr(first_frame_size);
 
     browser()->OpenURL(
-        content::OpenURLParams(
+        content::OpenURLParams::CreateBrowserInitiated(
             embedded_test_server()->GetURL("/mock_page.html"),
-            content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-            ui::PAGE_TRANSITION_TYPED, false),
+            WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
         /*navigation_handle_callback=*/{});
 
     main_html_response->WaitForRequest();
@@ -947,10 +945,10 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestWithInitialWebUIParam,
 
   // Load the document and specify no-store for the main resource.
   content::TestNavigationManager navigation_manager(web_contents(), kUrl);
-  browser()->OpenURL(content::OpenURLParams(kUrl, content::Referrer(),
-                                            WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          kUrl, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
 
   // The navigation starts.
   EXPECT_TRUE(navigation_manager.WaitForRequestStart());
@@ -2362,10 +2360,9 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsResourceLoadBrowserTest,
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
 
   browser()->OpenURL(
-      content::OpenURLParams(embedded_test_server()->GetURL("/mock_page.html"),
-                             content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/mock_page.html"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   main_response->WaitForRequest();
@@ -2408,10 +2405,9 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsResourceLoadBrowserTest,
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
 
   browser()->OpenURL(
-      content::OpenURLParams(embedded_test_server()->GetURL("/mock_page.html"),
-                             content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/mock_page.html"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   main_html_response->WaitForRequest();
@@ -3185,11 +3181,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Create a new active tab.
-  content::WebContents* target_contents = browser()->OpenURL(
-      {embedded_test_server()->GetURL("/title1.html"), content::Referrer(),
-       WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_TYPED,
-       false},
-      /*navigation_handle_callback=*/{});
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/title1.html"),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_TYPED);
+  content::WebContents* target_contents =
+      browser()->OpenURL(params,
+                         /*navigation_handle_callback=*/{});
   auto fcp_waiter =
       CreatePageLoadMetricsTestWaiter("fcp_waiter", target_contents);
   fcp_waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
@@ -3246,10 +3244,11 @@ class PageLoadMetricsBrowserTestTerminatedPage
 
  public:
   content::WebContents* OpenTabAndNavigate() {
-    content::OpenURLParams page(embedded_test_server()->GetURL("/title1.html"),
-                                content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_TYPED, false);
+    content::OpenURLParams page =
+        content::OpenURLParams::CreateBrowserInitiated(
+            embedded_test_server()->GetURL("/title1.html"),
+            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_TYPED);
 
     content::WebContents* contents =
         browser()->OpenURL(page, /*navigation_handle_callback=*/{});
@@ -3459,11 +3458,10 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestRendererCrashedPage,
       RenderFrameHost()->GetProcess(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
-  browser()->OpenURL(
-      content::OpenURLParams(GURL(GetParam()), content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         GURL(GetParam()), WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
 
   crash_observer.Wait();
   EXPECT_FALSE(crash_observer.did_exit_normally());
@@ -3518,11 +3516,10 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestNoRendererCrashedPage,
   content::RenderProcessHostWatcher destruction_observer(contents,
       content::RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
 
-  browser()->OpenURL(
-      content::OpenURLParams(GURL(GetParam()), content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         GURL(GetParam()), WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
 
   destruction_observer.Wait();
   EXPECT_TRUE(web_contents() == contents);

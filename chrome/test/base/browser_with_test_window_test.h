@@ -91,9 +91,11 @@ class TestingProfileManager;
 //   NavigateAndCommit(contents, url2);
 //
 //   // This is equivalent to the above, and lets you test pending navigations.
-//   browser()->OpenURL(OpenURLParams(
-//       GURL("http://foo/2"), GURL(), WindowOpenDisposition::CURRENT_TAB,
-//       ui::PAGE_TRANSITION_TYPED, false), /*navigation_handle_callback=*/{});
+//   browser()->OpenURL(
+//       OpenURLParams::CreateBrowserInitiated(
+//           GURL("http://foo/2"), WindowOpenDisposition::CURRENT_TAB,
+//           ui::PAGE_TRANSITION_TYPED),
+//       /*navigation_handle_callback=*/{});
 //   CommitPendingLoad(&contents->GetController());
 //
 // Subclasses must invoke BrowserWithTestWindowTest::SetUp as it is responsible

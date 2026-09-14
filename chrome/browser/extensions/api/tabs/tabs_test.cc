@@ -1872,9 +1872,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabsIwaDuplicateTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTab) {
-  content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   content::WebContents* web_contents =
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
@@ -1909,9 +1910,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTabNoPermission) {
-  content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   content::WebContents* web_contents =
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
@@ -2115,9 +2117,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
           ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
 
   // Create two additional tabs and wait for them to finish loading.
-  content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
-                                WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   content::WebContents* web_contents_a =
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   ASSERT_TRUE(web_contents_a);
@@ -2793,9 +2796,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, Freezing) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
   // Create two additional tabs.
-  content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
-                                WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   content::WebContents* web_contents_a =
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   content::WebContents* web_contents_b =
@@ -3092,9 +3096,9 @@ double GetZoomFactor(const content::WebContents* web_contents) {
 }
 
 content::OpenURLParams GetOpenParams(const char* url) {
-  return content::OpenURLParams(GURL(url), content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  return content::OpenURLParams::CreateBrowserInitiated(
+      GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK);
 }
 
 }  // namespace

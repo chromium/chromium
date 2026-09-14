@@ -210,10 +210,11 @@ class PageDiscardingHelperBrowserTest
   int OpenNewBackgroundPage() {
     // Load a page with title and favicon so that some tests can manipulate
     // them.
-    content::OpenURLParams page(
-        embedded_test_server()->GetURL("/favicon/title2_with_favicon.html"),
-        content::Referrer(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
-        ui::PAGE_TRANSITION_TYPED, false);
+    content::OpenURLParams page =
+        content::OpenURLParams::CreateBrowserInitiated(
+            embedded_test_server()->GetURL("/favicon/title2_with_favicon.html"),
+            WindowOpenDisposition::NEW_BACKGROUND_TAB,
+            ui::PAGE_TRANSITION_TYPED);
     content::WebContents* contents =
         browser()->OpenURL(page, /*navigation_handle_callback=*/{});
     content::TestNavigationObserver observer(contents);

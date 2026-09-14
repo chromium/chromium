@@ -210,11 +210,10 @@ void UsbChooserController::OpenHelpCenterUrl() const {
   }
 
   WebContents::FromRenderFrameHost(render_frame_host)
-      ->OpenURL(content::OpenURLParams(
-                    GURL(chrome::kChooserUsbOverviewURL), content::Referrer(),
+      ->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                    GURL(chrome::kChooserUsbOverviewURL),
                     WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                    false /* is_renderer_initialized */),
+                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
                 /*navigation_handle_callback=*/{});
 }
 

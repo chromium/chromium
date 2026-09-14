@@ -345,10 +345,10 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NavigateAwayFromHungRenderer) {
   // Now navigate this tab to a different site. This should wind up in a
   // different renderer process, so it should complete and show up in the task
   // manager.
-  tab2->OpenURL(content::OpenURLParams(url3, content::Referrer(),
-                                       WindowOpenDisposition::CURRENT_TAB,
-                                       ui::PAGE_TRANSITION_TYPED, false),
-                /*navigation_handle_callback=*/{});
+  tab2->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          url3, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
 
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("iframe test")));
 }
@@ -1072,9 +1072,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(
         expected_b_subframes + expected_c_subframes, MatchAnySubframe()));
   };
-  browser()->OpenURL(content::OpenURLParams(main_url, content::Referrer(),
-                                            WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false),
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         main_url, WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1140,9 +1140,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, NavigateToSubframeProcess) {
   // b.com and c.com.
   GURL a_dotcom(embedded_test_server()->GetURL(
       "/cross-site/a.com/iframe_cross_site.html"));
-  browser()->OpenURL(content::OpenURLParams(a_dotcom, content::Referrer(),
-                                            WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false),
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         a_dotcom, WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1164,9 +1164,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, NavigateToSubframeProcess) {
   GURL b_dotcom(
       embedded_test_server()->GetURL("/cross-site/b.com/iframe.html"));
 
-  browser()->OpenURL(content::OpenURLParams(b_dotcom, content::Referrer(),
-                                            WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false),
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         b_dotcom, WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
 
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("iframe test")));
@@ -1188,9 +1188,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   GURL b_dotcom(
       embedded_test_server()->GetURL("/cross-site/b.com/iframe.html"));
 
-  browser()->OpenURL(content::OpenURLParams(b_dotcom, content::Referrer(),
-                                            WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false),
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         b_dotcom, WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
 
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("iframe test")));
@@ -1201,9 +1201,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   // b.com and c.com.
   GURL a_dotcom(embedded_test_server()->GetURL(
       "/cross-site/a.com/iframe_cross_site.html"));
-  browser()->OpenURL(content::OpenURLParams(a_dotcom, content::Referrer(),
-                                            WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false),
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         a_dotcom, WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1246,9 +1246,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents());
   GURL a_dotcom(embedded_test_server()->GetURL(
       "/cross-site/a.com/iframe_cross_site.html"));
-  browser()->OpenURL(content::OpenURLParams(a_dotcom, content::Referrer(),
-                                            WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false),
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         a_dotcom, WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1313,9 +1313,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   GURL a_dotcom_with_iframes(embedded_test_server()->GetURL(
       "/cross-site/a.com/iframe_cross_site.html"));
   browser()->OpenURL(
-      content::OpenURLParams(a_dotcom_with_iframes, content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          a_dotcom_with_iframes, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1336,11 +1336,10 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   // the subframe processes should disappear.
   GURL a_dotcom_simple(
       embedded_test_server()->GetURL("/cross-site/a.com/title2.html"));
-  browser()->OpenURL(
-      content::OpenURLParams(a_dotcom_simple, content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         a_dotcom_simple, WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnySubframe()));
@@ -1360,9 +1359,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
 
   GURL a_with_frames(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,b,c(d,a,b,c))"));
-  browser()->OpenURL(content::OpenURLParams(a_with_frames, content::Referrer(),
-                                            WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false),
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         a_with_frames, WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
 
   if (ShouldExpectSubframes()) {
@@ -1401,9 +1400,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   GURL other_tab_url(embedded_test_server()->GetURL(
       "d.com", "/cross_site_iframe_factory.html?d(a(c(b)))"));
   browser()->OpenURL(
-      content::OpenURLParams(other_tab_url, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          other_tab_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1569,9 +1568,8 @@ class PrerenderTaskBrowserTest : public TaskManagerBrowserTest {
       WindowOpenDisposition disposition,
       ui::PageTransition transition) {
     return GetActiveWebContents()->OpenURL(
-        content::OpenURLParams(url, content::Referrer(), disposition,
-                               transition,
-                               /*is_renderer_initiated=*/false),
+        content::OpenURLParams::CreateBrowserInitiated(url, disposition,
+                                                       transition),
         /*navigation_handle_callback=*/{});
   }
 

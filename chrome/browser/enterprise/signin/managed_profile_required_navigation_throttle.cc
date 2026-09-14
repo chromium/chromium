@@ -42,10 +42,10 @@ class BlockingInfo : public base::SupportsUserData::Data {
   ~BlockingInfo() override {
     if (reload_required_ && !enterprise_action_web_contents_.WasInvalidated()) {
       enterprise_action_web_contents_->OpenURL(
-          content::OpenURLParams(
+          content::OpenURLParams::CreateBrowserInitiated(
               enterprise_action_web_contents_->GetVisibleURL(),
-              content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-              ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
+              WindowOpenDisposition::CURRENT_TAB,
+              ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
           /*navigation_handle_callback=*/std::move(on_reload_triggered_));
     }
   }

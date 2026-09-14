@@ -697,9 +697,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   GURL dest_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL redirect_url(embedded_test_server()->GetURL(
       "c.com", "/server-redirect?" + dest_url.spec()));
-  browser()->OpenURL(content::OpenURLParams(redirect_url, content::Referrer(),
-                                            WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false),
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         redirect_url, WindowOpenDisposition::CURRENT_TAB,
+                         ui::PAGE_TRANSITION_TYPED),
                      /*navigation_handle_callback=*/{});
   javascript_dialogs::AppModalDialogController* alert =
       ui_test_utils::WaitForAppModalDialog();

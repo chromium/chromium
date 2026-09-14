@@ -1124,11 +1124,11 @@ IN_PROC_BROWSER_TEST_F(
   GURL url("invalid.scheme:for-sure");
   ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
 
-  content::WebContents* web_contents = browser()->OpenURL(
-      content::OpenURLParams(url, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
-      /*navigation_handle_callback=*/{});
+  content::WebContents* web_contents =
+      browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                             url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_TYPED),
+                         /*navigation_handle_callback=*/{});
   tab_added_waiter.Wait();
   ASSERT_TRUE(WaitForLoadStop(web_contents));
 
@@ -1278,10 +1278,9 @@ testing::AssertionResult SimulateBtmBounce(content::WebContents* web_contents,
                                            const GURL& bounce_url,
                                            const GURL& final_url) {
   web_contents = web_contents->OpenURL(
-      content::OpenURLParams(initial_url, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PageTransition::PAGE_TRANSITION_TYPED,
-                             /*is_renderer_initiated=*/false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          initial_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PageTransition::PAGE_TRANSITION_TYPED),
       {});
   if (!web_contents) {
     return testing::AssertionFailure() << "OpenURL() returned nullptr";

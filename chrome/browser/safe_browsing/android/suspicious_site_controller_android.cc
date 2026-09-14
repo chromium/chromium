@@ -553,10 +553,10 @@ void SuspiciousSiteControllerAndroid::OnHelpCenterLinkClicked() {
   }
   content::WebContents* contents = web_contents();
   CHECK(contents);
-  content::OpenURLParams params(
-      GURL(chrome::kUnsafeSiteWarningHelpCenterURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(chrome::kUnsafeSiteWarningHelpCenterURL),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
 
   contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }

@@ -3078,9 +3078,10 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
                                               ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                               std::string());
     } else {
-      content::OpenURLParams url_params(
-          url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-          ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+      content::OpenURLParams url_params =
+          content::OpenURLParams::CreateBrowserInitiated(
+              url, WindowOpenDisposition::CURRENT_TAB,
+              ui::PAGE_TRANSITION_LINK);
       web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
     }
   }

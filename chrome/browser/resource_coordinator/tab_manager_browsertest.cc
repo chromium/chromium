@@ -226,15 +226,15 @@ class TabManagerTest : public InProcessBrowserTest,
   void OpenTwoTabs(const GURL& first_url, const GURL& second_url) {
     // Open two tabs. Wait for both of them to load.
     content::TestNavigationObserver load1(tsm()->GetActiveWebContents(), 1);
-    OpenURLParams open1(first_url, content::Referrer(),
-                        WindowOpenDisposition::CURRENT_TAB,
-                        ui::PAGE_TRANSITION_TYPED, false);
+    OpenURLParams open1 = OpenURLParams::CreateBrowserInitiated(
+        first_url, WindowOpenDisposition::CURRENT_TAB,
+        ui::PAGE_TRANSITION_TYPED);
     browser()->OpenURL(open1, /*navigation_handle_callback=*/{});
     load1.Wait();
 
-    OpenURLParams open2(second_url, content::Referrer(),
-                        WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                        ui::PAGE_TRANSITION_TYPED, false);
+    OpenURLParams open2 = OpenURLParams::CreateBrowserInitiated(
+        second_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        ui::PAGE_TRANSITION_TYPED);
     auto* tab2 = browser()->OpenURL(open2, /*navigation_handle_callback=*/{});
     content::WaitForLoadStop(tab2);
 

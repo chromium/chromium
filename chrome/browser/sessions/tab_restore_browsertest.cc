@@ -1162,9 +1162,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWithExistingSiteInstance) {
   content::LoadStopObserver observer(tab);
   BrowserWebContentsDelegate::From(browser())->OpenURLFromTab(
       tab,
-      content::OpenURLParams(http_url2, content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          http_url2, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   observer.Wait();
 

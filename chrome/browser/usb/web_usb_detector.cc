@@ -95,10 +95,9 @@ void OpenURL(const GURL& url) {
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(
       ProfileManager::GetLastUsedProfileAllowedByPolicy());
   browser_displayer.browser_window_interface()->OpenURL(
-      content::OpenURLParams(url, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                             false /* is_renderer_initialized */),
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 }
 

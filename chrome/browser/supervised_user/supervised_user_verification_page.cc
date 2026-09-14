@@ -199,9 +199,10 @@ void SupervisedUserVerificationPage::CommandReceived(
         }
       }
 #else
-      content::OpenURLParams params(reauth_url_, content::Referrer(),
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                    ui::PAGE_TRANSITION_LINK, false);
+      content::OpenURLParams params =
+          content::OpenURLParams::CreateBrowserInitiated(
+              reauth_url_, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              ui::PAGE_TRANSITION_LINK);
       auto* signin_web_contents =
           SecurityInterstitialPage::web_contents()->OpenURL(
               params, /*navigation_handle_callback=*/{});

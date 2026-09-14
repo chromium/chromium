@@ -77,10 +77,10 @@ void NavigateTool::Invoke(ToolCallback callback) {
 
   // TODO(b/460113906): Legacy code path - remove once the
   // NavigateUsingLoadURL path lands safely.
-  content::OpenURLParams params(
-      url_, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ::ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      false /* is_renderer_initiated */);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          url_, WindowOpenDisposition::CURRENT_TAB,
+          ::ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
   // TODO(b/460113906): Alternate to the NavigateUsingLoadURL path to fix for
   // this bug. Unfortunately, OpenURL has the side effect that a navigation

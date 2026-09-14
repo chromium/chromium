@@ -143,9 +143,9 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
       incognito_browser()->GetTabStripModel()->GetActiveWebContents(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   incognito_browser()->OpenURL(
-      content::OpenURLParams(
-          GURL(blink::kChromeUICrashURL), content::Referrer(),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(blink::kChromeUICrashURL), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   crash_observer.Wait();
 

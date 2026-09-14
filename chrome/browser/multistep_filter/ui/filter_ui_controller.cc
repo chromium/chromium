@@ -234,10 +234,10 @@ void FilterUiController::NavigateTo(const UrlFilterSuggestion& suggestion) {
   if (!web_contents) {
     return;
   }
-  content::OpenURLParams params(suggestion.navigation_url, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
-                                ui::PAGE_TRANSITION_GENERATED,
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          suggestion.navigation_url, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_GENERATED);
   web_contents->OpenURL(
       params, base::BindOnce(
                   [](UrlFilterSuggestion suggestion,
@@ -280,11 +280,11 @@ void FilterUiController::OpenSettings() {
   // navigation.
   if (content::WebContents* web_contents = tab().GetContents()) {
     GURL settings_url(chrome::kChromeUISettingsURL);
-    content::OpenURLParams params(
-        settings_url.Resolve(chrome::kSuggestionsSubPage), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui::PAGE_TRANSITION_GENERATED,
-        /*is_renderer_initiated=*/false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            settings_url.Resolve(chrome::kSuggestionsSubPage),
+            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_GENERATED);
     web_contents->OpenURL(params,
                           base::BindOnce([](content::NavigationHandle&) {}));
   }
@@ -296,10 +296,10 @@ void FilterUiController::OpenFeedback() {
     return;
   }
   if (content::WebContents* web_contents = tab().GetContents()) {
-    content::OpenURLParams params(feedback_url, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                  ui::PAGE_TRANSITION_LINK,
-                                  /*is_renderer_initiated=*/false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            feedback_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_LINK);
     web_contents->OpenURL(params,
                           base::BindOnce([](content::NavigationHandle&) {}));
   }

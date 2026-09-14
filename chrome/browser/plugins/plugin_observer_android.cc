@@ -41,9 +41,10 @@ void PluginObserverAndroid::OpenPDF(const GURL& url) {
     return;
   }
 
-  content::OpenURLParams open_url_params(
-      url, referrer, WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+  content::OpenURLParams open_url_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_AUTO_BOOKMARK, referrer);
   // On Android, PDFs downloaded with a user gesture are auto-opened.
   open_url_params.user_gesture = true;
   GetWebContents().OpenURL(open_url_params, /*navigation_handle_callback=*/{});

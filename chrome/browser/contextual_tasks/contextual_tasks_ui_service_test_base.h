@@ -153,6 +153,10 @@ inline content::OpenURLParams CreateOpenUrlParams(
     ui::PageTransition page_transition =
         ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL) {
   content::Referrer referrer;
+  if (!is_renderer_initiated) {
+    return content::OpenURLParams::CreateBrowserInitiated(
+        url, WindowOpenDisposition::CURRENT_TAB, page_transition, referrer);
+  }
   return content::OpenURLParams(url, referrer,
                                 WindowOpenDisposition::CURRENT_TAB,
                                 page_transition, is_renderer_initiated);

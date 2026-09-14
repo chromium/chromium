@@ -31,11 +31,10 @@ void NavigateShareTargetPost(
     const std::string& header_list,
     const GURL& share_target_gurl,
     content::WebContents* web_contents) {
-  content::OpenURLParams open_url_params(
-      share_target_gurl, content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      false /* is_renderer_initiated */);
+  content::OpenURLParams open_url_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          share_target_gurl, WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
   open_url_params.post_data = post_data;
   open_url_params.extra_headers = header_list;
   web_contents->OpenURL(open_url_params, /*navigation_handle_callback=*/{});
