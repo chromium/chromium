@@ -4024,6 +4024,7 @@
                         "MigratedGoogleApiKeys": "true",
                         "MigratedInstallerDownloader": "true",
                         "MigratedKnownInterceptionDisclosure": "true",
+                        "MigratedOSCryptAsyncAvailability": "true",
                         "MigratedObsoleteSystem": "true",
                         "MigratedPageInfo": "true",
                         "MigratedPdf": "true",
