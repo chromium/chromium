@@ -2080,7 +2080,7 @@ public class UrlOverridingTest {
                 };
         InterceptNavigationDelegateImpl.setResultCallbackForTesting(callback);
 
-        ThreadUtils.runOnUiThreadBlocking(
+        Runnable createNewTab =
                 () -> {
                     LoadUrlParams loadUrlParams = new LoadUrlParams(url);
                     loadUrlParams.setHasUserGesture(true);
@@ -2092,7 +2092,16 @@ public class UrlOverridingTest {
                                     loadUrlParams,
                                     TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
                                     activity.getActivityTab());
-                });
+                };
+
+        ChromeTabbedActivity activity2 =
+                expectReparent
+                        ? ApplicationTestUtils.waitForActivityWithClass(
+                                ChromeTabbedActivity.class, Stage.CREATED, createNewTab)
+                        : null;
+        if (!expectReparent) {
+            ThreadUtils.runOnUiThreadBlocking(createNewTab);
+        }
 
         callbackHelper.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
         Assert.assertNotNull(resultValue.get());
@@ -2102,6 +2111,85 @@ public class UrlOverridingTest {
                         : OverrideUrlLoadingResultType.NO_OVERRIDE,
                 resultValue.get().getResultType());
         Assert.assertNull(getCurrentExternalNavigationMessage());
+
+        if (expectReparent) {
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        if (activity2.getActivityTab() == null) return false;
+                        return activity2.getActivityTab().getUrl().equals(url);
+                    });
+        }
+    }
+
+    @Test
+    @LargeTest
+    @RequiresRestart // Avoid having multiple windows mess up the other tests
+    public void testRedirectFromLinkCreatingNewWindow() throws Exception {
+        TestWebServer webServer = TestWebServer.start();
+        GURL redirectTargetUrl = new GURL(mTestServer.getURL(HELLO_PAGE));
+        final String redirectUrl3 =
+                webServer.setRedirect("/redirect3.html", redirectTargetUrl.getSpec());
+        final String redirectUrl2 = webServer.setRedirect("/redirect2.html", redirectUrl3);
+        final String redirectUrl1 = webServer.setRedirect("/redirect1.html", redirectUrl2);
+        final boolean expectReparent = MultiWindowUtils.isMultiInstanceApi31Enabled();
+        if (expectReparent) {
+            InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
+        }
+
+        mTabbedActivityTestRule.startOnBlankPage();
+        ChromeActivity activity = mTabbedActivityTestRule.getActivity();
+
+        final CallbackHelper callbackHelper = new CallbackHelper();
+
+        Callback<Pair<GURL, OverrideUrlLoadingResult>> callback =
+                (result) -> {
+                    if (result.first.getSpec().equals(redirectUrl1) && expectReparent) {
+                        Assert.assertEquals(
+                                OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW,
+                                result.second.getResultType());
+                    } else {
+                        Assert.assertEquals(
+                                OverrideUrlLoadingResultType.NO_OVERRIDE,
+                                result.second.getResultType());
+                    }
+                    if (result.first.equals(redirectTargetUrl)) {
+                        callbackHelper.notifyCalled();
+                    }
+                };
+        InterceptNavigationDelegateImpl.setResultCallbackForTesting(callback);
+
+        Runnable createNewTab =
+                () -> {
+                    LoadUrlParams loadUrlParams = new LoadUrlParams(redirectUrl1);
+                    loadUrlParams.setHasUserGesture(true);
+                    loadUrlParams.setIsRendererInitiated(true);
+                    loadUrlParams.setInitiatorOrigin(createExampleOrigin());
+
+                    activity.getTabCreator(false)
+                            .createNewTab(
+                                    loadUrlParams,
+                                    TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
+                                    activity.getActivityTab());
+                };
+
+        ChromeTabbedActivity activity2 =
+                expectReparent
+                        ? ApplicationTestUtils.waitForActivityWithClass(
+                                ChromeTabbedActivity.class, Stage.CREATED, createNewTab)
+                        : null;
+        if (!expectReparent) {
+            ThreadUtils.runOnUiThreadBlocking(createNewTab);
+        }
+
+        callbackHelper.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
+        Assert.assertNull(getCurrentExternalNavigationMessage());
+        if (expectReparent) {
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        if (activity2.getActivityTab() == null) return false;
+                        return activity2.getActivityTab().getUrl().equals(redirectTargetUrl);
+                    });
+        }
     }
 
     @Test

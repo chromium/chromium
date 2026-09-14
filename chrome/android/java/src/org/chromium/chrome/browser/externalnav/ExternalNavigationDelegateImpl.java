@@ -323,7 +323,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean shouldLaunchNewWindow(ExternalNavigationParams params) {
-        return wasTabLaunchedFromLinkCreatingNewWindow()
+        return !params.isRedirect()
+                && wasTabLaunchedFromLinkCreatingNewWindow()
                 && params.isInitialNavigationInFrame()
                 // TODO(crbug.com/452537438): Figure out a better way to check whether we are in
                 // desktop windowing mode or if the device can enter desktop windowing mode.
