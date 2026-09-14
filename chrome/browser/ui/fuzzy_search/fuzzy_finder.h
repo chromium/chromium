@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_FUZZY_SEARCH_FUZZY_FINDER_H_
 #define CHROME_BROWSER_UI_FUZZY_SEARCH_FUZZY_FINDER_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/gfx/range/range.h"
 
 class FuzzySearchItem;
 
@@ -17,6 +20,7 @@ class FuzzySearchItem;
 struct FuzzySearchResult {
   raw_ptr<FuzzySearchItem> item = nullptr;
   double score = 0.0;
+  std::vector<gfx::Range> match_ranges;
 };
 
 // Performs fuzzy search over a collection of FuzzySearchItems (matching against
@@ -59,14 +63,21 @@ class FuzzyFinder {
 
  private:
   // Scores an item across its title, secondary text, and synonyms using the
-  // fuzzy DP sequence alignment algorithm.
-  double ScoreItem(const FuzzySearchItem* item, std::u16string_view norm_query);
+  // fuzzy sequence alignment algorithm. If the item's title is the best
+  // match, populates `match_ranges` with the character spans of the match.
+  // Leaves `match_ranges` empty if secondary text or synonyms produced the
+  // best match.
+  double ScoreItem(const FuzzySearchItem* item,
+                   std::u16string_view norm_query,
+                   std::vector<gfx::Range>* match_ranges = nullptr);
 
   // Evaluates a candidate string against a query with typo, transposition, and
   // boundary tolerance using reusable scratch buffers. Returns a normalized
-  // confidence score in [0.0, 1.0].
-  double ComputeDpMatrixMatch(std::u16string_view query,
-                              std::u16string_view candidate);
+  // confidence score in [0.0, 1.0]. If `match_ranges` is provided, populates
+  // it with exact match character spans via backtracking.
+  double MatchCandidate(std::u16string_view query,
+                        std::u16string_view candidate,
+                        std::vector<gfx::Range>* match_ranges = nullptr);
 
   std::vector<FuzzySearchItem*> searchable_items_;
 
@@ -76,6 +87,9 @@ class FuzzyFinder {
   std::vector<bool> word_boundaries_;
   std::vector<int> score_matrix_;
   std::vector<int> consecutive_matrix_;
+  // Match steps (e.g. exact match, transposition, substitution, skip)
+  // recorded at each character position to backtrack exact match spans.
+  std::vector<uint8_t> match_steps_;
 };
 
 #endif  // CHROME_BROWSER_UI_FUZZY_SEARCH_FUZZY_FINDER_H_

@@ -9,8 +9,9 @@
 #include <vector>
 
 #include "chrome/browser/ui/fuzzy_search/fuzzy_search_item.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/range/range.h"
 
 namespace {
 
@@ -605,6 +606,45 @@ TEST_F(FuzzyFinderTest, MinScoreCutoffFiltersWeakMatches) {
   EXPECT_THAT(
       ExtractResultTitles(results),
       ElementsAre(u"Performance Monitor", u"Page Event Resource Filter"));
+}
+
+TEST_F(FuzzyFinderTest, MatchRangesComputation) {
+  // 1. Prefix match: "New Tab" with query "New" -> [0, 3)
+  auto prefix_items = CreateItems({{u"New Tab"}});
+  FuzzyFinder prefix_finder(prefix_items);
+  auto prefix_results = prefix_finder.FuzzyFind(u"New", /*max_results=*/1);
+  ASSERT_EQ(prefix_results.size(), 1u);
+  EXPECT_THAT(prefix_results[0].match_ranges, ElementsAre(gfx::Range(0, 3)));
+
+  // 2. Infix match: "Open New Tab" with query "New" -> [5, 8)
+  auto infix_items = CreateItems({{u"Open New Tab"}});
+  FuzzyFinder infix_finder(infix_items);
+  auto infix_results = infix_finder.FuzzyFind(u"New", /*max_results=*/1);
+  ASSERT_EQ(infix_results.size(), 1u);
+  EXPECT_THAT(infix_results[0].match_ranges, ElementsAre(gfx::Range(5, 8)));
+
+  // 3. Multi-word acronym match: "Google Chrome Browser" with query "gcb"
+  auto multi_items = CreateItems({{u"Google Chrome Browser"}});
+  FuzzyFinder multi_finder(multi_items);
+  auto multi_results = multi_finder.FuzzyFind(u"gcb", /*max_results=*/1);
+  ASSERT_EQ(multi_results.size(), 1u);
+  EXPECT_THAT(
+      multi_results[0].match_ranges,
+      ElementsAre(gfx::Range(0, 1), gfx::Range(7, 8), gfx::Range(14, 15)));
+
+  // 4. Synonym match leaves match_ranges empty.
+  auto syn_items = CreateItems({{u"Settings", u"", {u"Preferences"}}});
+  FuzzyFinder syn_finder(syn_items);
+  auto syn_results = syn_finder.FuzzyFind(u"Preferences", /*max_results=*/1);
+  ASSERT_EQ(syn_results.size(), 1u);
+  EXPECT_TRUE(syn_results[0].match_ranges.empty());
+
+  // 5. Secondary text match leaves match_ranges empty.
+  auto sec_items = CreateItems({{u"Settings", u"Preferences"}});
+  FuzzyFinder sec_finder(sec_items);
+  auto sec_results = sec_finder.FuzzyFind(u"Preferences", /*max_results=*/1);
+  ASSERT_EQ(sec_results.size(), 1u);
+  EXPECT_TRUE(sec_results[0].match_ranges.empty());
 }
 
 }  // namespace

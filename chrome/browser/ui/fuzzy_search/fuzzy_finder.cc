@@ -67,6 +67,24 @@ constexpr double kScoreBias = 0.25;
 // dropped to filter out weak or low-confidence matches.
 constexpr double kMinScore = 0.60;
 
+// Represents the character alignment decision made at each position when
+// matching a query against a candidate string. Used when backtracking from the
+// best match end position to extract exact matching character spans for UI
+// bolding.
+enum class MatchStep : uint8_t {
+  kNone = 0,
+  // Candidate character was skipped (gap between query characters).
+  kSkipCandidate,
+  // Exact character match (e.g. query 'a' == candidate 'a'). Highlighted in UI.
+  kExactMatch,
+  // Adjacent characters were transposed (e.g. "teh" vs "the"). Highlighted in
+  // UI.
+  kTransposition,
+  // Character substitution / typo (e.g. 'g' -> 'f'). Valid alignment for fuzzy
+  // scoring, but NOT an exact match so it is omitted from UI highlighting.
+  kSubstitution,
+};
+
 // Returns true if the query meets the standard minimum search length.
 bool HasMinQueryLength(std::u16string_view query) {
   return query.length() >= kMinQueryLength;
@@ -105,10 +123,13 @@ std::vector<FuzzySearchResult> FuzzyFinder::Find(const std::u16string& query,
   // Iterate through the searchable items and perform the search.
   for (FuzzySearchItem* item : searchable_items_) {
     CHECK(item);
-    if (search.Search(item->GetTitle(), nullptr, nullptr)) {
+    size_t match_start = 0;
+    size_t match_length = 0;
+    if (search.Search(item->GetTitle(), &match_start, &match_length)) {
       FuzzySearchResult result;
       result.item = item;
-      results.emplace_back(result);
+      result.match_ranges.emplace_back(match_start, match_start + match_length);
+      results.emplace_back(std::move(result));
       if (results.size() >= max_results) {
         break;
       }
@@ -140,9 +161,11 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(
 
   for (FuzzySearchItem* item : searchable_items_) {
     CHECK(item);
-    const double score = ScoreItem(item, normalized_query);
+    std::vector<gfx::Range> match_ranges;
+    const double score = ScoreItem(item, normalized_query, &match_ranges);
     if (score >= kMinScore) {
-      results.push_back(FuzzySearchResult{item, score});
+      results.push_back(
+          FuzzySearchResult{item, score, std::move(match_ranges)});
     }
   }
 
@@ -161,7 +184,8 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(
 }
 
 double FuzzyFinder::ScoreItem(const FuzzySearchItem* item,
-                              std::u16string_view norm_query) {
+                              std::u16string_view norm_query,
+                              std::vector<gfx::Range>* match_ranges) {
   CHECK(item);
 
   // TODO(crbug.com/549169077): Support full diacritic/accent folding or
@@ -170,24 +194,43 @@ double FuzzyFinder::ScoreItem(const FuzzySearchItem* item,
 
   // 1. Title match
   const std::u16string norm_title = base::i18n::ToLower(item->GetTitle());
-  double best_score =
-      ComputeDpMatrixMatch(norm_query, norm_title) * kTitleWeight;
+  std::vector<gfx::Range> title_ranges;
+  const double title_raw_score =
+      MatchCandidate(norm_query, norm_title, &title_ranges);
+  const double title_score = title_raw_score * kTitleWeight;
+  double best_score = title_score;
+  bool best_is_title = (title_raw_score > 0.0);
 
   // 2. Secondary text match
   const std::u16string& secondary_text = item->GetSecondaryText();
   if (!secondary_text.empty()) {
     const std::u16string norm_secondary = base::i18n::ToLower(secondary_text);
     const double secondary_score =
-        ComputeDpMatrixMatch(norm_query, norm_secondary) * kSecondaryTextWeight;
-    best_score = std::max(best_score, secondary_score);
+        MatchCandidate(norm_query, norm_secondary, nullptr) *
+        kSecondaryTextWeight;
+    if (secondary_score > best_score) {
+      best_score = secondary_score;
+      best_is_title = false;
+    }
   }
 
   // 3. Synonyms match
   for (const std::u16string& synonym : item->GetSynonyms()) {
     const std::u16string norm_syn = base::i18n::ToLower(synonym);
     const double syn_score =
-        ComputeDpMatrixMatch(norm_query, norm_syn) * kSynonymWeight;
-    best_score = std::max(best_score, syn_score);
+        MatchCandidate(norm_query, norm_syn, nullptr) * kSynonymWeight;
+    if (syn_score > best_score) {
+      best_score = syn_score;
+      best_is_title = false;
+    }
+  }
+
+  if (match_ranges) {
+    if (best_is_title) {
+      *match_ranges = std::move(title_ranges);
+    } else {
+      match_ranges->clear();
+    }
   }
 
   return best_score;
@@ -202,11 +245,11 @@ double FuzzyFinder::ScoreItem(const FuzzySearchItem* item,
 //
 //   Query       't' (i=0)     'a' (i=1)     'b' (i=2)     's' (i=3)
 //             +-------------+-------------+-------------+-------------+
-//   't' (j=0) | 32 (match)  | 29 (gap -3) | 28 (gap -1) | 27 (gap -1) |
+//   't' (j=0) | 32 (match)  | 26 (gap -6) | 24 (gap -2) | 22 (gap -2) |
 //             +-------------+-------------+-------------+-------------+
-//   'a' (j=1) |  0 (no diag)| 52 (match)  | 49 (gap -3) | 48 (gap -1) |
+//   'a' (j=1) |  0 (no diag)| 54 (match)  | 48 (gap -6) | 46 (gap -2) |
 //             +-------------+-------------+-------------+-------------+
-//   'b' (j=2) |  0 (no diag)|  0 (no diag)| 72 (match)  | 69 (gap -3) |
+//   'b' (j=2) |  0 (no diag)|  0 (no diag)| 76 (match)  | 70 (gap -6) |
 //             +-------------+-------------+-------------+-------------+
 // clang-format on
 //
@@ -214,10 +257,10 @@ double FuzzyFinder::ScoreItem(const FuzzySearchItem* item,
 // 1. Cell (0,0): 't' matches 't' at word start:
 //    16 (kMatchScore) + 16 (kInitialBoundaryBonus) = 32.
 // 2. Cell (1,1): 'a' matches 'a' with streak = 2:
-//    diag 32 + 16 (kMatchScore) + 4 (kConsecutiveBonus) = 52.
+//    diag 32 + 16 (kMatchScore) + 6 (kConsecutiveBonus) = 54.
 // 3. Cell (2,2): 'b' matches 'b' with streak = 3:
-//    diag 52 + 16 (kMatchScore) + 4 (kConsecutiveBonus) = 72.
-// 4. Max score in row 2 (M - 1) is 72 (at i=2).
+//    diag 54 + 16 (kMatchScore) + 6 (kConsecutiveBonus) = 76.
+// 4. Max score in row 2 (M - 1) is 76 (at i=2).
 //
 // Max Possible Score Breakdown:
 // max_possible = 32 (1st char: kMatchScore 16 + kInitialBoundaryBonus 16)
@@ -226,15 +269,20 @@ double FuzzyFinder::ScoreItem(const FuzzySearchItem* item,
 //              = 32 + 24 * (3 - 1) = 80.
 //
 // Normalized Score:
-// norm = 0.25 (kScoreBias) + (72 / 80) * (1.0 - 0.25)
-//      = 0.25 + 0.90 * 0.75 = 0.9250.
-double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
-                                         std::u16string_view candidate) {
+// norm = 0.25 (kScoreBias) + (76 / 80) * (1.0 - 0.25)
+//      = 0.25 + 0.95 * 0.75 = 0.9625.
+double FuzzyFinder::MatchCandidate(std::u16string_view query,
+                                   std::u16string_view candidate,
+                                   std::vector<gfx::Range>* match_ranges) {
+  if (match_ranges) {
+    match_ranges->clear();
+  }
+
   const size_t m = query.length();
   const size_t n = candidate.length();
 
   // Guard against empty strings or queries that exceed the candidate length.
-  // Because the inner DP loop for row j starts at candidate index i = j,
+  // Because the inner alignment loop for row j starts at candidate index i = j,
   // when m > n the final row (m - 1) is never evaluated (i = j >= n is
   // false), meaning m > n can never produce a match. Early exiting here
   // avoids unnecessary heap matrix allocations.
@@ -260,8 +308,11 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
   //   candidate prefix 0..i.
   // - `consecutive_matrix_[j * n + i]`: Length of the contiguous matching run
   //   ending at (j, i).
+  // - `match_steps_[j * n + i]`: Alignment step taken to reach (j, i), used for
+  //   backtracking match ranges.
   score_matrix_.assign(m * n, 0);
   consecutive_matrix_.assign(m * n, 0);
+  match_steps_.assign(m * n, static_cast<uint8_t>(MatchStep::kNone));
 
   // --- Row 0: Align the first query character (j = 0) ---
   // The first character represents the base case where a new match begins.
@@ -279,20 +330,24 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
       if (left_score > match_score) {
         score_matrix_[i] = left_score;
         consecutive_matrix_[i] = 0;
+        match_steps_[i] = static_cast<uint8_t>(MatchStep::kSkipCandidate);
         in_gap = true;
       } else {
         score_matrix_[i] = match_score;
         consecutive_matrix_[i] = 1;
+        match_steps_[i] = static_cast<uint8_t>(MatchStep::kExactMatch);
         in_gap = false;
       }
     } else {
       if (left_score > 0) {
         score_matrix_[i] = left_score;
         consecutive_matrix_[i] = 0;
+        match_steps_[i] = static_cast<uint8_t>(MatchStep::kSkipCandidate);
         in_gap = true;
       } else {
         score_matrix_[i] = 0;
         consecutive_matrix_[i] = 0;
+        match_steps_[i] = static_cast<uint8_t>(MatchStep::kNone);
         in_gap = false;
       }
     }
@@ -305,12 +360,13 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
       const size_t idx = i + (j * n);
       const size_t diag_idx = (i - 1) + ((j - 1) * n);
 
-      // 1. Horizontal transition (skip candidate character / gap propagation).
+      // 1. Horizontal step (skip candidate character / gap propagation).
       int left_score = (i > 0) ? score_matrix_[idx - 1] : 0;
       left_score -= in_gap ? kGapExtensionPenalty : kGapStartPenalty;
 
       int diagonal_score = 0;
       int consecutive = 0;
+      MatchStep diag_step = MatchStep::kNone;
 
       const bool is_exact_match = (query[j] == candidate[i]);
       // Check for adjacent character transposition (e.g. user typed "teh" for
@@ -319,8 +375,8 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
           (j > 0 && i > 0 && query[j] == candidate[i - 1] &&
            query[j - 1] == candidate[i]);
 
-      // 2. Diagonal transitions:
-      // Only allow diagonal transitions if the previous query prefix had a
+      // 2. Diagonal match steps:
+      // Only allow diagonal steps if the previous query prefix had a
       // valid alignment (score > 0) to ensure full query coverage.
       if (is_exact_match) {
         if (score_matrix_[diag_idx] > 0) {
@@ -334,17 +390,20 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
               diagonal_score += kConsecutiveBonus;
             }
           }
+          diag_step = MatchStep::kExactMatch;
         }
       } else if (is_swap_match) {
         if (j == 1) {
           diagonal_score = (kMatchScore * 2) + kSwapPenalty;
           consecutive = 2;
+          diag_step = MatchStep::kTransposition;
         } else if (j > 1 && i > 1) {
           const size_t trans_diag_idx = (i - 2) + ((j - 2) * n);
           if (score_matrix_[trans_diag_idx] > 0) {
             diagonal_score = score_matrix_[trans_diag_idx] + (kMatchScore * 2) +
                              kSwapPenalty;
             consecutive = 2;
+            diag_step = MatchStep::kTransposition;
           }
         }
       } else if (m > 3) {
@@ -353,6 +412,9 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
         if (score_matrix_[diag_idx] > 0) {
           diagonal_score = score_matrix_[diag_idx] + kTypoPenalty;
           consecutive = 0;
+          if (diagonal_score > 0) {
+            diag_step = MatchStep::kSubstitution;
+          }
         }
       }
 
@@ -360,12 +422,15 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
       if (in_gap && left_score > 0) {
         score_matrix_[idx] = left_score;
         consecutive_matrix_[idx] = 0;
+        match_steps_[idx] = static_cast<uint8_t>(MatchStep::kSkipCandidate);
       } else if (!in_gap && diagonal_score > 0) {
         score_matrix_[idx] = diagonal_score;
         consecutive_matrix_[idx] = consecutive;
+        match_steps_[idx] = static_cast<uint8_t>(diag_step);
       } else {
         score_matrix_[idx] = 0;
         consecutive_matrix_[idx] = 0;
+        match_steps_[idx] = static_cast<uint8_t>(MatchStep::kNone);
         in_gap = false;
       }
     }
@@ -377,12 +442,73 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
   // match can finish at any character in the candidate string, so we find the
   // maximum score across all columns in the final row.
   int max_score = 0;
+  size_t best_i = 0;
   for (size_t i = 0; i < n; ++i) {
-    max_score = std::max(max_score, score_matrix_[i + ((m - 1) * n)]);
+    const int s = score_matrix_[i + ((m - 1) * n)];
+    if (s > max_score || (s == max_score && s > 0 &&
+                          consecutive_matrix_[i + ((m - 1) * n)] >
+                              consecutive_matrix_[best_i + ((m - 1) * n)])) {
+      max_score = s;
+      best_i = i;
+    }
   }
 
   if (max_score <= 0) {
     return 0.0;
+  }
+
+  // --- Backtracking for Match Spans ---
+  if (match_ranges) {
+    std::vector<size_t> matched_indices;
+    int curr_j = static_cast<int>(m) - 1;
+    int curr_i = static_cast<int>(best_i);
+
+    while (curr_j >= 0 && curr_i >= 0) {
+      const size_t idx =
+          static_cast<size_t>(curr_i) + static_cast<size_t>(curr_j) * n;
+      const auto step = static_cast<MatchStep>(match_steps_[idx]);
+
+      if (step == MatchStep::kExactMatch) {
+        matched_indices.push_back(static_cast<size_t>(curr_i));
+        --curr_j;
+        --curr_i;
+      } else if (step == MatchStep::kTransposition) {
+        matched_indices.push_back(static_cast<size_t>(curr_i));
+        matched_indices.push_back(static_cast<size_t>(curr_i - 1));
+        curr_j -= 2;
+        curr_i -= 2;
+      } else if (step == MatchStep::kSubstitution) {
+        // Character at candidate index `curr_i` substituted query character
+        // `curr_j`; not an exact character match, so omit from match_ranges.
+        --curr_j;
+        --curr_i;
+      } else if (step == MatchStep::kSkipCandidate) {
+        --curr_i;
+      } else {
+        break;
+      }
+    }
+
+    if (!matched_indices.empty()) {
+      std::sort(matched_indices.begin(), matched_indices.end());
+      matched_indices.erase(
+          std::unique(matched_indices.begin(), matched_indices.end()),
+          matched_indices.end());
+
+      size_t range_start = matched_indices[0];
+      size_t range_end = range_start + 1;
+
+      for (size_t k = 1; k < matched_indices.size(); ++k) {
+        if (matched_indices[k] == range_end) {
+          ++range_end;
+        } else {
+          match_ranges->emplace_back(range_start, range_end);
+          range_start = matched_indices[k];
+          range_end = range_start + 1;
+        }
+      }
+      match_ranges->emplace_back(range_start, range_end);
+    }
   }
 
   // --- Score Normalization ---
