@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -37,7 +38,9 @@ TEST_F(EditorMediatorTest,
   EditorMediator mediator(TestingBrowserProcess::GetGlobal()
                               ->GetFeatures()
                               ->application_locale_storage(),
-                          &profile(), std::move(geolocation_provider));
+                          &profile(),
+                          manta::MantaServiceFactory::GetForProfile(&profile()),
+                          std::move(geolocation_provider));
 
   IMEBridge::Get()->SetCurrentInputContext(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
@@ -54,7 +57,9 @@ TEST_F(EditorMediatorTest, CacheContextChangesSelectedTextLength) {
   EditorMediator mediator(TestingBrowserProcess::GetGlobal()
                               ->GetFeatures()
                               ->application_locale_storage(),
-                          &profile(), std::move(geolocation_provider));
+                          &profile(),
+                          manta::MantaServiceFactory::GetForProfile(&profile()),
+                          std::move(geolocation_provider));
 
   IMEBridge::Get()->SetCurrentInputContext(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));

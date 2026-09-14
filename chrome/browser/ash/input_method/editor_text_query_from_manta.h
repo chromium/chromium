@@ -9,15 +9,20 @@
 #include <string>
 
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
-#include "chrome/browser/manta/manta_service_factory.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/orca_provider.h"
+
+namespace manta {
+class MantaService;
+}  // namespace manta
 
 namespace ash::input_method {
 
 class EditorTextQueryFromManta : public EditorTextQueryProvider::MantaProvider {
  public:
-  explicit EditorTextQueryFromManta(Profile* profile);
+  // `manta_service` may be null when the Manta service is unavailable; when
+  // non-null it must outlive `this`.
+  explicit EditorTextQueryFromManta(manta::MantaService* manta_service);
   ~EditorTextQueryFromManta() override;
 
   // EditorTextQueryProvider::MantaProvider overrides

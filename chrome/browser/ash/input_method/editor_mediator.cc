@@ -77,14 +77,18 @@ magic_boost::TransitionAction ConvertToMagicBoostTransitionAction(
 EditorMediator::EditorMediator(
     const ApplicationLocaleStorage* application_locale_storage,
     Profile* profile,
+    manta::MantaService* manta_service,
     std::unique_ptr<EditorGeolocationProvider> editor_geolocation_provider)
     : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       profile_(profile),
+      manta_service_(CHECK_DEREF(manta_service)),
       panel_manager_(this),
       editor_geolocation_provider_(std::move(editor_geolocation_provider)),
       editor_context_(this, this, editor_geolocation_provider_.get()),
-      editor_switch_(
-          std::make_unique<EditorSwitch>(this, profile, &editor_context_)),
+      editor_switch_(std::make_unique<EditorSwitch>(this,
+                                                    profile,
+                                                    manta_service,
+                                                    &editor_context_)),
       metrics_recorder_(
           std::make_unique<EditorMetricsRecorder>(&editor_context_,
                                                   GetEditorOpportunityMode())),
@@ -345,7 +349,9 @@ EditorMediator::ServiceConnection::ServiceConnection(
       mediator);
   text_query_provider_ = std::make_unique<EditorTextQueryProvider>(
       text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
-      metrics_recorder, std::make_unique<EditorTextQueryFromManta>(profile));
+      metrics_recorder,
+      std::make_unique<EditorTextQueryFromManta>(
+          &mediator->manta_service_.get()));
   editor_client_connector_ = std::make_unique<EditorClientConnector>(
       editor_client_connector_receiver.InitWithNewEndpointAndPassRemote());
   editor_event_proxy_ = std::make_unique<EditorEventProxy>(

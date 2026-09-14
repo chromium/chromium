@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
@@ -101,13 +100,9 @@ std::vector<std::string> AllowedInputMethods() {
 }
 
 manta::FeatureSupportStatus FetchOrcaAccountCapabilityFromMantaService(
-    Profile* profile) {
-  if (manta::MantaService* service =
-          manta::MantaServiceFactory::GetForProfile(profile)) {
-    return service->SupportsOrca();
-  }
-
-  return manta::FeatureSupportStatus::kUnknown;
+    manta::MantaService* service) {
+  return service ? service->SupportsOrca()
+                 : manta::FeatureSupportStatus::kUnknown;
 }
 
 bool IsInputTypeAllowed(ui::TextInputType type) {
@@ -243,6 +238,7 @@ bool IsAllowedForUseInDemoMode(std::string_view country_code) {
 }
 
 bool IsAllowedForUseInNonDemoMode(Profile* profile,
+                                  manta::MantaService* manta_service,
                                   std::string_view country_code) {
   if (!base::FeatureList::IsEnabled(chromeos::features::kOrca) ||
       !base::FeatureList::IsEnabled(
@@ -250,7 +246,7 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
       !IsGenerativeAiAllowedForCountry(country_code) ||
       (base::FeatureList::IsEnabled(
            ash::features::kOrcaUseAccountCapabilities) &&
-       FetchOrcaAccountCapabilityFromMantaService(profile) !=
+       FetchOrcaAccountCapabilityFromMantaService(manta_service) !=
            manta::FeatureSupportStatus::kSupported)) {
     return false;
   }
@@ -266,9 +262,11 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
 
 EditorSwitch::EditorSwitch(Observer* observer,
                            Profile* profile,
+                           manta::MantaService* manta_service,
                            EditorContext* context)
     : observer_(observer),
       profile_(profile),
+      manta_service_(manta_service),
       context_(context),
       ime_allowlist_(GetAllowedInputMethodEngines()),
       last_known_editor_mode_(GetEditorMode()) {}
@@ -300,7 +298,7 @@ bool EditorSwitch::IsAllowedForUse() const {
   return base::FeatureList::IsEnabled(ash::features::kOrcaSupportDemoMode) &&
                  ash::demo_mode::IsDeviceInDemoMode()
              ? IsAllowedForUseInDemoMode(context_->active_country_code())
-             : IsAllowedForUseInNonDemoMode(profile_,
+             : IsAllowedForUseInNonDemoMode(profile_, manta_service_,
                                             context_->active_country_code());
 }
 
@@ -357,7 +355,7 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
 
     if (base::FeatureList::IsEnabled(
             ash::features::kOrcaUseAccountCapabilities)) {
-      switch (FetchOrcaAccountCapabilityFromMantaService(profile_)) {
+      switch (FetchOrcaAccountCapabilityFromMantaService(manta_service_)) {
         case manta::FeatureSupportStatus::kUnsupported:
           blocked_reasons.push_back(
               EditorBlockedReason::kBlockedByUnsupportedCapability);

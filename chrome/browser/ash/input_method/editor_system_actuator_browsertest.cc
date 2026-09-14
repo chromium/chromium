@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -89,6 +90,8 @@ IN_PROC_BROWSER_TEST_P(EditorSystemActuatorAccessibilityTest,
   EditorMediator editor_mediator(
       g_browser_process->GetFeatures()->application_locale_storage(),
       ash::AccessibilityManager::Get()->profile(),
+      manta::MantaServiceFactory::GetForProfile(
+          ash::AccessibilityManager::Get()->profile()),
       std::make_unique<EditorGeolocationMockProvider>("testing_country"));
   EditorSystemActuator system_actuator(
       ash::AccessibilityManager::Get()->profile(),
@@ -107,6 +110,8 @@ IN_PROC_BROWSER_TEST_P(EditorSystemActuatorAccessibilityTest,
   EditorMediator editor_mediator(
       g_browser_process->GetFeatures()->application_locale_storage(),
       ash::AccessibilityManager::Get()->profile(),
+      manta::MantaServiceFactory::GetForProfile(
+          ash::AccessibilityManager::Get()->profile()),
       std::make_unique<EditorGeolocationMockProvider>("testing_country"));
   EditorSystemActuator system_actuator(
       ash::AccessibilityManager::Get()->profile(),

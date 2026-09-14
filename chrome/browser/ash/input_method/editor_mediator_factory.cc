@@ -51,9 +51,10 @@ EditorMediatorFactory::~EditorMediatorFactory() = default;
 
 std::unique_ptr<KeyedService> EditorMediatorFactory::BuildInstanceFor(
     content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<EditorMediator>(
-      g_browser_process->GetFeatures()->application_locale_storage(),
-      Profile::FromBrowserContext(context),
+      g_browser_process->GetFeatures()->application_locale_storage(), profile,
+      manta::MantaServiceFactory::GetForProfile(profile),
       std::make_unique<EditorGeolocationProviderFromFinch>());
 }
 

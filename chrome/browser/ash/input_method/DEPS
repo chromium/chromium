@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/feedback",
   "+chrome/browser/global_features.h",
-  "+chrome/browser/manta",
   "+chrome/browser/metrics",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/input_method",
@@ -32,6 +31,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only the EditorMediator factory reaches MantaServiceFactory: it DependsOn
+  # it and injects the MantaService into EditorMediator; the editor consumers
+  # take the injected service instead of calling the factory.
+  "editor_mediator_factory\\.cc": [
+    "+chrome/browser/manta",
+  ],
+
   "component_extension_ime_manager_delegate_impl\\.cc": [
     "+chrome/grit",
   ],

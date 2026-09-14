@@ -14,6 +14,10 @@
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "ui/base/ime/ash/text_input_method.h"
 
+namespace manta {
+class MantaService;
+}  // namespace manta
+
 namespace ash::input_method {
 
 // EditorSwitch is the centralized switch that decides whether the feature is
@@ -27,7 +31,12 @@ class EditorSwitch {
         chromeos::editor_menu::EditorMode mode) = 0;
   };
 
-  EditorSwitch(Observer* observer, Profile* profile, EditorContext* context);
+  // `manta_service` may be null when the Manta service is unavailable; when
+  // non-null it must outlive `this`.
+  EditorSwitch(Observer* observer,
+               Profile* profile,
+               manta::MantaService* manta_service,
+               EditorContext* context);
   EditorSwitch(const EditorSwitch&) = delete;
   EditorSwitch& operator=(const EditorSwitch&) = delete;
   ~EditorSwitch();
@@ -57,6 +66,7 @@ class EditorSwitch {
 
   raw_ptr<Observer> observer_;
   raw_ptr<Profile> profile_;
+  raw_ptr<manta::MantaService> manta_service_;
   raw_ptr<EditorContext> context_;
 
   const std::vector<std::string> ime_allowlist_;

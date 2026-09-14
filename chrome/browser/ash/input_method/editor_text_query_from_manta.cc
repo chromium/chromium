@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
-#include "chrome/browser/manta/manta_service_factory.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/orca_provider.h"
@@ -17,16 +16,16 @@
 namespace ash::input_method {
 namespace {
 
-std::unique_ptr<manta::OrcaProvider> CreateProvider(Profile* profile) {
-  manta::MantaService* service =
-      manta::MantaServiceFactory::GetForProfile(profile);
+std::unique_ptr<manta::OrcaProvider> CreateProvider(
+    manta::MantaService* service) {
   return service ? service->CreateOrcaProvider() : nullptr;
 }
 
 }  // namespace
 
-EditorTextQueryFromManta::EditorTextQueryFromManta(Profile* profile)
-    : provider_(CreateProvider(profile)) {}
+EditorTextQueryFromManta::EditorTextQueryFromManta(
+    manta::MantaService* manta_service)
+    : provider_(CreateProvider(manta_service)) {}
 
 EditorTextQueryFromManta::~EditorTextQueryFromManta() = default;
 
