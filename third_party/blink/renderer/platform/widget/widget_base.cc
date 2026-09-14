@@ -1289,6 +1289,12 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     // focused element.
     frame_widget->GetEditContextBoundsInWindow(&control_bounds,
                                                &selection_bounds);
+    // Querying edit context bounds can trigger layout updates or synchronous
+    // events that may result in widget destruction. Ensure WidgetBase is still
+    // alive before proceeding.
+    if (!weak_this) {
+      return;
+    }
   }
   const ui::TextInputMode new_mode =
       ConvertWebTextInputMode(new_info.input_mode);
@@ -1323,6 +1329,11 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     if (!new_info.ime_text_spans.empty() && frame_widget) {
       params->ime_text_spans_info =
           frame_widget->GetImeTextSpansInfo(new_info.ime_text_spans);
+      // Querying IME text spans info can update layout and destroy the widget.
+      // Ensure WidgetBase is still alive before proceeding.
+      if (!weak_this) {
+        return;
+      }
     }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     if (next_previous_flags_ == kInvalidNextPreviousFlagsValue) {
@@ -1331,8 +1342,14 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
       // Also we won't send WidgetHostMsg_TextInputStateChanged if next/previous
       // focusable status is changed.
       if (frame_widget) {
-        next_previous_flags_ =
+        const int32_t next_previous_flags =
             frame_widget->ComputeWebTextInputNextPreviousFlags();
+        // Computing focus navigation flags can potentially result in widget
+        // destruction. Ensure WidgetBase is still alive before proceeding.
+        if (!weak_this) {
+          return;
+        }
+        next_previous_flags_ = next_previous_flags;
       } else {
         // For safety in case GetInputMethodController() is null, because -1 is
         // invalid value to send to browser process.
@@ -1373,6 +1390,10 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
           ui::mojom::VirtualKeyboardVisibilityRequest::NONE) {
         // Reset the visibility state.
         frame_widget->ResetVirtualKeyboardVisibilityRequest();
+        // Ensure WidgetBase is still alive before proceeding.
+        if (!weak_this) {
+          return;
+        }
       }
     }
 
