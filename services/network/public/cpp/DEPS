@@ -19,4 +19,7 @@ specific_include_rules = {
     "+services/proxy_resolver/public/cpp",
     "+services/proxy_resolver/public/mojom",
   ],
+  "shared_http_cache_client.*": [
+    "+components/sqlite_vfs/pending_file_set.h",
+  ],
 }

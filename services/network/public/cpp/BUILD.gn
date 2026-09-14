@@ -150,6 +150,7 @@ component("cpp") {
     "self_deleting_url_loader_factory.cc",
     "self_deleting_url_loader_factory.h",
     "session_cookie_delete_predicate.h",
+    "shared_http_cache_client.h",
     "shared_url_loader_factory.cc",
     "shared_url_loader_factory.h",
     "simple_host_resolver.cc",
@@ -218,6 +219,13 @@ component("cpp") {
     "//net",
     "//services/proxy_resolver/public/mojom",
   ]
+
+  if (enable_disk_cache_sql_backend) {
+    sources += [ "shared_http_cache_client.cc" ]
+    deps += [ "//components/sqlite_vfs" ]
+  } else {
+    sources += [ "shared_http_cache_client_stub.cc" ]
+  }
 
   defines = [ "IS_NETWORK_CPP_IMPL" ]
 }
@@ -894,6 +902,10 @@ source_set("tests") {
 
   if (is_linux) {
     sources += [ "network_interface_change_listener_mojom_traits_unittest.cc" ]
+  }
+
+  if (enable_disk_cache_sql_backend) {
+    sources += [ "shared_http_cache_client_unittest.cc" ]
   }
 
   deps = [

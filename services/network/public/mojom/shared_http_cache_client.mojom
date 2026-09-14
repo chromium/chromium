@@ -1,0 +1,61 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "components/sqlite_vfs/mojom/sqlite_vfs.mojom";
+
+// Client-side receiver interface to receive URL hash notifications for the
+// Renderer-Accessible HTTP cache.
+//
+// Process roles:
+// - Hosted / implemented by: The renderer process (per frame / execution
+//   context).
+// - Called by: The network service (via browser navigation plumbing).
+//
+// Created via `SharedHttpCacheClientFactory::CreateClient` once the isolated
+// SQLite cache database files are prepared for read-only access.
+interface SharedHttpCacheClient {
+  // Notifies the client of newly added cached resource URL persistent hashes.
+  //
+  // May be called multiple times once the client is created, including
+  // initially with an empty list if no resources are cached yet. The client
+  // records these hashes in an in-memory thread-safe lookup set to quickly
+  // determine whether a request can early-return as a cache miss without
+  // performing IPC or disk I/O.
+  //
+  // Parameters:
+  // - `new_hashes`: List of 32-bit persistent hashes
+  //   (net::SimplifyUrlForRequest) of URLs present in the shared cache.
+  OnResourcesAdded(array<uint32> new_hashes);
+};
+
+// Factory interface hosted in the renderer process to instantiate
+// `SharedHttpCacheClient` when the isolated SQLite database is ready.
+//
+// Process roles:
+// - Hosted / implemented by: The renderer process (per frame / execution
+//   context).
+// - Called by: The network service.
+//
+// The receiver is passed to the renderer during navigation commit. When (and
+// if) the SQLite database files for the frame's NetworkIsolationKey are
+// available, the network service calls `CreateClient` (only once) to deliver
+// the read-only file handles and bind the `SharedHttpCacheClient` interface.
+interface SharedHttpCacheClientFactory {
+  // Delivers the read-only file set for the isolated SQLite database and binds
+  // the `SharedHttpCacheClient` receiver for receiving cache hash updates.
+  //
+  // This method is called only once (at most once) during the lifetime of this
+  // factory interface. Calling it more than once is an error; if called more
+  // than once, the receiver reports a bad message and disconnects.
+  //
+  // Parameters:
+  // - `pending_file_set`: Read-only file handles for the SQLite database and
+  //   its shared lock region.
+  // - `client_receiver`: Receiver endpoint for the `SharedHttpCacheClient`
+  //   interface.
+  CreateClient(sqlite_vfs.mojom.PendingReadOnlyFileSet pending_file_set,
+               pending_receiver<SharedHttpCacheClient> client_receiver);
+};
