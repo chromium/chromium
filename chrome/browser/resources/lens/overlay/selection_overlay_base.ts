@@ -36,6 +36,12 @@ const SCREENSHOT_FULLSIZE_MARGIN_PIXEL = 24;
 // adding margins.
 const SCREENSHOT_RESIZE_TOLERANCE_PIXELS = 2;
 
+// Duration and easing for animating the canvas to its margined dimensions
+// when opening concurrently with the side panel.
+const INITIAL_RESIZE_ANIMATION_DURATION_MS = 300;
+const INITIAL_RESIZE_ANIMATION_EASING = 'cubic-bezier(0.05, 0.7, 0.1, 1)';
+const RESIZED_BORDER_RADIUS_PX = 16;
+
 // The size of our custom cursor.
 export const CURSOR_SIZE_PIXEL = 32;
 
@@ -102,6 +108,12 @@ export abstract class SelectionOverlayBaseElement extends
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableBorderGlow'),
       },
+      isCoBrowsePanelWithLensOverlayEnabled: {
+        type: Boolean,
+        readOnly: true,
+        value: () =>
+            loadTimeData.getBoolean('isCoBrowsePanelWithLensOverlayEnabled'),
+      },
       isClosing: {
         type: Boolean,
         reflectToAttribute: true,
@@ -160,6 +172,7 @@ export abstract class SelectionOverlayBaseElement extends
   declare protected currentGesture: GestureEvent;
   declare private disableShimmer: boolean;
   declare private enableBorderGlow: boolean;
+  declare private isCoBrowsePanelWithLensOverlayEnabled: boolean;
   // Whether the overlay is being shut down.
   declare private isClosing: boolean;
   // Whether the default background scrim is currently being darkened.
@@ -175,6 +188,9 @@ export abstract class SelectionOverlayBaseElement extends
 
   // The border glow layer rendered on the selection overlay if it exists.
   private overlayBorderGlow: OverlayBorderGlowElement;
+  // Tracks any active entrance or resize animation so it can be cleanly
+  // canceled.
+  private activeAnimation?: Animation;
 
   protected eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
@@ -207,6 +223,7 @@ export abstract class SelectionOverlayBaseElement extends
     this.listenerIds = [
       this.baseHandler.addNotifyOverlayClosingListener(() => {
         this.isClosing = true;
+        this.activeAnimation?.cancel();
         this.removeDragListeners();
       }),
       this.baseHandler.addMultiRegionSelectionListener((regions) => {
@@ -273,6 +290,7 @@ export abstract class SelectionOverlayBaseElement extends
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.activeAnimation?.cancel();
     this.resizeObserver.unobserve(this);
     this.eventTracker_.removeAll();
     this.listenerIds.forEach(id => assert(this.baseHandler.removeListener(id)));
@@ -748,6 +766,45 @@ export abstract class SelectionOverlayBaseElement extends
     }
   }
 
+  /**
+   * Smoothly animates the canvas from the viewport dimensions to the
+   * margined dimensions.
+   */
+  private async animateToResizedBounds(): Promise<void> {
+    this.updateCanvasSize(window.innerWidth, window.innerHeight);
+
+    this.activeAnimation = this.backgroundImageCanvas().animate(
+        [
+          {
+            width: `${window.innerWidth}px`,
+            height: `${window.innerHeight}px`,
+            borderRadius: '0px',
+          },
+          {
+            width: `${this.canvasWidth}px`,
+            height: `${this.canvasHeight}px`,
+            borderRadius: `${RESIZED_BORDER_RADIUS_PX}px`,
+          },
+        ],
+        {
+          duration: INITIAL_RESIZE_ANIMATION_DURATION_MS,
+          easing: INITIAL_RESIZE_ANIMATION_EASING,
+        });
+
+    try {
+      await this.activeAnimation.finished;
+      if (!this.isClosing) {
+        this.updateSelectionOverlayRect();
+        this.resizeSelectionCanvases(
+            this.selectionOverlayRect.width, this.selectionOverlayRect.height);
+      }
+    } catch {
+      // Animation was canceled (e.g. overlay closing).
+    } finally {
+      this.activeAnimation = undefined;
+    }
+  }
+
   private screenshotDataReceived(
       screenshotBitmap: ImageBitmap, isSidePanelOpen: boolean) {
     renderScreenshot(this.backgroundImageCanvas(), screenshotBitmap);
@@ -761,6 +818,9 @@ export abstract class SelectionOverlayBaseElement extends
     this.isScreenshotRendered = true;
     if (isSidePanelOpen) {
       this.setSidePanelOpened();
+      if (this.isCoBrowsePanelWithLensOverlayEnabled) {
+        this.animateToResizedBounds();
+      }
     }
     this.onImageRendered();
   }
