@@ -4,19 +4,34 @@
 # Install the repository signing key (see also:
 # https://www.google.com/linuxrepositories/)
 install_rpm_key() {
-  KEY_PACKAGE="gpg-pubkey-d38b4796-570c8cd3"
-  # Check to see if all keys already exists.
+  # The version of the gpg-pubkey package is the short key ID for rpm < 6.0
+  # (gpg-pubkey-d38b4796-570c8cd3) and the full key fingerprint for rpm >= 6.0
+  # (gpg-pubkey-eb4c1bfd4f042f6dddccec917721f63bd38b4796-570c8cd3), so look for
+  # either form rather than hardcoding a package name.
+  # Use an explicit query format since the default is configurable via the
+  # %_query_all_fmt rpm macro.
+  KEY_PACKAGES=$(rpm -q --qf '%{NAME}-%{VERSION}-%{RELEASE}\n' gpg-pubkey \
+    2>/dev/null | grep -Ei \
+    '^gpg-pubkey-(eb4c1bfd4f042f6dddccec917721f63b)?d38b4796-570c8cd3$')
+
+  # Check to see if all keys already exist.
   # Make sure all the most recent signing subkeys are installed.
   NEED_KEYS=0
 
-  for SUB_KEY in $PGP_SUBKEYS; do
-    rpm -q ${KEY_PACKAGE} --qf '%{Pubkeys:armor}\n' | \
-      gpg --with-colons - 2>/dev/null | \
-      grep -q "$SUB_KEY"
-    if [ "$?" -ne "0" ]; then
-      NEED_KEYS=1
-    fi
-  done
+  if [ -z "$KEY_PACKAGES" ]; then
+    NEED_KEYS=1
+  else
+    INSTALLED_SUBKEYS=$(rpm -q --qf '%{Pubkeys:armor}\n' $KEY_PACKAGES \
+      2>/dev/null | gpg --with-colons - 2>/dev/null)
+    for SUB_KEY in $PGP_SUBKEYS; do
+      # The key ID is the fifth field of the colon-delimited subkey record.
+      if ! printf '%s\n' "$INSTALLED_SUBKEYS" | \
+          grep -qiE "^sub(:[^:]*){3}:$SUB_KEY:"; then
+        NEED_KEYS=1
+        break
+      fi
+    done
+  fi
 
   if [ $NEED_KEYS -ne 1 ]; then
     return
@@ -24,13 +39,12 @@ install_rpm_key() {
 
   # Make sure no older version of the key is installed because it appears
   # 'rpm --import' won't overwrite an existing key package.
-  rpm -q ${KEY_PACKAGE} >/dev/null 2>&1
-  if [ "$?" -eq "0" ]; then
+  if [ -n "$KEY_PACKAGES" ]; then
     # Note, if this is run during the package install, it will fail because rpm
     # can't recursively run rpm, but it should work when run later as part of
     # the installed cron job (and probably nothing needs the new keys before
     # then).
-    rpm -e --allmatches ${KEY_PACKAGE} >/dev/null 2>&1 || return
+    rpm -e --allmatches $KEY_PACKAGES >/dev/null 2>&1 || return
   fi
 
   # RPM on Mandriva 2009 is dumb and does not understand "rpm --import -"
