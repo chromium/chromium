@@ -75,7 +75,7 @@ void ClientPaintCache::Purge(PurgedData* purged_data) {
     PaintCacheId id = it->first.second;
 
     EraseFromMap(it);
-    UNSAFE_TODO((*purged_data)[static_cast<uint32_t>(type)]).push_back(id);
+    (*purged_data)[static_cast<uint32_t>(type)].push_back(id);
   }
 }
 

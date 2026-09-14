@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_PAINT_CACHE_H_
 #define CC_PAINT_PAINT_CACHE_H_
 
+#include <array>
 #include <map>
 #include <set>
 #include <utility>
@@ -73,7 +74,7 @@ class CC_PAINT_EXPORT ClientPaintCache {
 
   // Populates |purged_data| with the list of ids which should be purged from
   // the ServicePaintCache.
-  using PurgedData = PaintCacheIds[PaintCacheDataTypeCount];
+  using PurgedData = std::array<PaintCacheIds, PaintCacheDataTypeCount>;
   void Purge(PurgedData* purged_data);
 
   // Finalize the state of pending entries, which were sent to the service-side
