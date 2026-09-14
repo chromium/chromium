@@ -1602,6 +1602,8 @@ int HttpCache::Transaction::DoDoneHeadersAddToEntryComplete(int result) {
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("net"),
                       "DoDoneHeadersAddToEntryComplete",
                       track_for_state_change_, "result", result);
+  net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_ADD_TO_ENTRY,
+                                    result);
   // This transaction's response headers did not match its ActiveEntry so it
   // created a new ActiveEntry (new_entry_) to write to (and doomed the old
   // one). Now that the new entry has been created, start writing the response.

@@ -17883,6 +17883,57 @@ TEST_F(HttpCacheTest, HeadersPhaseCannotProceedAddToEntryRace) {
                                       1);
 }
 
+// Tests that HTTP_CACHE_ADD_TO_ENTRY NetLog event is properly closed with an
+// END event when revalidation creates a new entry.
+TEST_F(HttpCacheTest, NetLogAddToEntryClosedOnRevalidationNewEntry) {
+  RecordingNetLogObserver net_log_observer;
+  MockHttpCache cache;
+
+  MockHttpRequest request(kSimpleGET_Transaction);
+
+  MockTransaction transaction(kSimpleGET_Transaction);
+  transaction.load_flags |= LOAD_VALIDATE_CACHE;
+  MockHttpRequest validate_request(transaction);
+
+  std::vector<std::unique_ptr<Context>> context_list;
+  const int kNumTransactions = 2;
+  for (int i = 0; i < kNumTransactions; ++i) {
+    context_list.push_back(std::make_unique<Context>());
+    auto& c = context_list[i];
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
+
+    MockHttpRequest* this_request = (i == 1) ? &validate_request : &request;
+    c->result = c->trans->Start(this_request, c->callback.callback(),
+                                NetLogWithSource::Make(NetLogSourceType::NONE));
+  }
+
+  for (auto& context : context_list) {
+    if (context->result == ERR_IO_PENDING) {
+      context->result = context->callback.WaitForResult();
+    }
+    ReadAndVerifyTransaction(context->trans.get(), kSimpleGET_Transaction);
+  }
+
+  // Verify that every HTTP_CACHE_ADD_TO_ENTRY BEGIN event has a matching END
+  // event.
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HTTP_CACHE_ADD_TO_ENTRY);
+
+  int begin_count = 0;
+  int end_count = 0;
+  for (const auto& entry : entries) {
+    if (entry.phase == NetLogEventPhase::BEGIN) {
+      ++begin_count;
+    } else if (entry.phase == NetLogEventPhase::END) {
+      ++end_count;
+    }
+  }
+
+  EXPECT_EQ(begin_count, 3);
+  EXPECT_EQ(end_count, 3);
+}
+
 TEST_F(HttpCacheTest, SetMaxBytesBeforeInitWithoutForcedInit) {
   base::HistogramTester histogram_tester;
   auto* factory = new MockBackendFactory();
