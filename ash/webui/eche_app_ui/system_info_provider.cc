@@ -4,9 +4,12 @@
 
 #include "ash/webui/eche_app_ui/system_info_provider.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/mojom/types_mojom_traits.h"
 #include "ash/webui/eche_app_ui/system_info.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -36,12 +39,14 @@ const char kJsonDisableStunServerKey[] = "disable_stun_server";
 const char kJsonCheckAndroidNetworkInfoKey[] = "check_android_network_info";
 const char kJsonProcessAndroidAccessibilityTreeKey[] = "process_android_accessibility_tree";
 
-const std::map<ConnectionStateType, const char*> CONNECTION_STATE_TYPE{
-    {ConnectionStateType::kOnline, "online"},
-    {ConnectionStateType::kConnected, "connected"},
-    {ConnectionStateType::kPortal, "portal"},
-    {ConnectionStateType::kConnecting, "connecting"},
-    {ConnectionStateType::kNotConnected, "not_connected"}};
+constexpr auto kConnectionStateType =
+    base::MakeFixedFlatMap<ConnectionStateType, std::string_view>({
+        {ConnectionStateType::kOnline, "online"},
+        {ConnectionStateType::kConnected, "connected"},
+        {ConnectionStateType::kPortal, "portal"},
+        {ConnectionStateType::kConnecting, "connecting"},
+        {ConnectionStateType::kNotConnected, "not_connected"},
+    });
 
 SystemInfoProvider::SystemInfoProvider(
     std::unique_ptr<SystemInfo> system_info,
@@ -89,10 +94,10 @@ void SystemInfoProvider::GetSystemInfo(
   json_dictionary.Set(kJsonDeviceTypeKey, system_info_->GetDeviceType());
   json_dictionary.Set(kJsonOsVersionKey, system_info_->GetOsVersion());
   json_dictionary.Set(kJsonChannelKey, system_info_->GetChannel());
-  auto found_type = CONNECTION_STATE_TYPE.find(wifi_connection_state_);
-  std::string connecton_state_string =
-      found_type == CONNECTION_STATE_TYPE.end() ? "" : found_type->second;
-  json_dictionary.Set(kJsonWifiConnectionStateKey, connecton_state_string);
+  auto found_type = kConnectionStateType.find(wifi_connection_state_);
+  std::string_view connection_state_string =
+      found_type == kConnectionStateType.end() ? "" : found_type->second;
+  json_dictionary.Set(kJsonWifiConnectionStateKey, connection_state_string);
   json_dictionary.Set(kJsonDebugModeKey, base::FeatureList::IsEnabled(
                                              features::kEcheSWADebugMode));
   json_dictionary.Set(

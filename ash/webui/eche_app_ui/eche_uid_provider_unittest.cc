@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -14,44 +15,6 @@
 
 namespace ash {
 namespace eche_app {
-
-class TaskRunner {
- public:
-  TaskRunner() = default;
-  ~TaskRunner() = default;
-
-  void WaitForResult() { run_loop_.Run(); }
-
-  void Finish() { run_loop_.Quit(); }
-
- private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  base::RunLoop run_loop_;
-};
-
-class EcheUidProviderTest;
-
-class Callback {
- public:
-  static void GetUidCallback(const std::string& uid) {
-    uid_ = uid;
-    if (task_runner_) {
-      task_runner_->Finish();
-    }
-  }
-
-  static void setTaskRunner(TaskRunner* task_runner) {
-    task_runner_ = task_runner;
-  }
-
-  static std::string GetUid() { return uid_; }
-  static void ResetUid() { uid_ = ""; }
-  static void ResetTaskRunner() { task_runner_ = nullptr; }
-
- private:
-  static TaskRunner* task_runner_;
-  static std::string uid_;
-};
 
 class FakeExchangerClient : public mojom::UidGenerator {
  public:
@@ -71,9 +34,6 @@ class FakeExchangerClient : public mojom::UidGenerator {
   mojo::Remote<mojom::UidGenerator> remote_;
 };
 
-ash::eche_app::TaskRunner* ash::eche_app::Callback::task_runner_ = nullptr;
-std::string ash::eche_app::Callback::uid_ = "";
-
 class EcheUidProviderTest : public testing::Test {
  protected:
   EcheUidProviderTest() = default;
@@ -88,8 +48,6 @@ class EcheUidProviderTest : public testing::Test {
   }
   void TearDown() override {
     uid_provider_.reset();
-    Callback::ResetUid();
-    Callback::ResetTaskRunner();
   }
   void ResetPrefString(const std::string& path, const std::string& value) {
     pref_service_.SetString(path, value);
@@ -100,8 +58,13 @@ class EcheUidProviderTest : public testing::Test {
     uid_provider_.reset();
     uid_provider_ = std::make_unique<EcheUidProvider>(&pref_service_);
   }
-  void GetUid() {
-    uid_provider_->GetUid(base::BindOnce(&Callback::GetUidCallback));
+  void ClearPref(const std::string& path) {
+    pref_service_.ClearPref(path);
+  }
+  std::string GetUid() {
+    base::test::TestFuture<const std::string&> future;
+    uid_provider_->GetUid(future.GetCallback());
+    return future.Get();
   }
   std::optional<std::vector<uint8_t>> DecodeStringWithSeed(
       size_t expected_len) {
@@ -109,50 +72,45 @@ class EcheUidProviderTest : public testing::Test {
     return uid_provider_->ConvertStringToBinary(pref_seed, expected_len);
   }
 
-  TaskRunner task_runner_;
   std::unique_ptr<EcheUidProvider> uid_provider_;
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(EcheUidProviderTest, GetUidHasValue) {
-  GetUid();
-  EXPECT_NE(Callback::GetUid(), "");
+  EXPECT_NE(GetUid(), "");
 }
 
 TEST_F(EcheUidProviderTest, GetUidFromCacheShouldBeTheSameOne) {
-  GetUid();
-  std::string uid = Callback::GetUid();
-  GetUid();
-  EXPECT_EQ(Callback::GetUid(), uid);
+  std::string uid = GetUid();
+  ClearPref(kEcheAppSeedPref);
+  EXPECT_EQ(GetUid(), uid);
+  ResetUidProvider();
+  EXPECT_NE(GetUid(), uid);
 }
 
 TEST_F(EcheUidProviderTest, GetUidFromPrefShouldBeTheSameOne) {
-  GetUid();
-  std::string uid = Callback::GetUid();
+  std::string uid = GetUid();
   ResetUidProvider();
-  GetUid();
-  EXPECT_EQ(Callback::GetUid(), uid);
+  EXPECT_EQ(GetUid(), uid);
 }
 
 TEST_F(EcheUidProviderTest, GetUidWithWrongKeyShouldNotBeTheSame) {
-  GetUid();
-  std::string uid = Callback::GetUid();
+  std::string uid = GetUid();
   ResetPrefString(kEcheAppSeedPref, "wrong seed");
-  GetUid();
-  EXPECT_NE(Callback::GetUid(), uid);
+  EXPECT_NE(GetUid(), uid);
 }
 
 TEST_F(EcheUidProviderTest, BindPendingReceiverCanGetUid) {
-  Callback::setTaskRunner(&task_runner_);
   FakeExchangerClient fake_exchanger_client;
   uid_provider_->Bind(fake_exchanger_client.CreatePendingReceiver());
 
-  fake_exchanger_client.GetUid(base::BindOnce(&Callback::GetUidCallback));
-  task_runner_.WaitForResult();
+  base::test::TestFuture<const std::string&> future;
+  fake_exchanger_client.GetUid(future.GetCallback());
 
-  EXPECT_NE(Callback::GetUid(), "");
+  EXPECT_NE(future.Get(), "");
 }
 
 TEST_F(EcheUidProviderTest, GetBinaryWhenSeedSizeCorrect) {

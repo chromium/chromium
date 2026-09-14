@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -180,20 +181,7 @@ class FakeObserver : public mojom::SystemInfoObserver {
   static TaskRunner* task_runner_;
 };
 
-class Callback {
- public:
-  static void GetSystemInfoCallback(const std::string& system_info) {
-    system_info_ = system_info;
-  }
-  static std::string GetSystemInfo() { return system_info_; }
-  static void resetSystemInfo() { system_info_ = ""; }
-
- private:
-  static std::string system_info_;
-};
-
 ash::eche_app::TaskRunner* ash::eche_app::FakeObserver::task_runner_ = nullptr;
-std::string ash::eche_app::Callback::system_info_ = "";
 
 class SystemInfoProviderTest : public testing::Test {
  protected:
@@ -228,12 +216,12 @@ class SystemInfoProviderTest : public testing::Test {
 
   void TearDown() override {
     system_info_provider_.reset();
-    Callback::resetSystemInfo();
   }
 
-  void GetSystemInfo() {
-    system_info_provider_->GetSystemInfo(
-        base::BindOnce(&Callback::GetSystemInfoCallback));
+  std::string GetSystemInfo() {
+    base::test::TestFuture<const std::string&> future;
+    system_info_provider_->GetSystemInfo(future.GetCallback());
+    return future.Get();
   }
 
   void SetWifiConnectionStateList() {
@@ -349,8 +337,7 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   bool check_android_network_info = true;
   bool process_android_accessibility_tree = true;
 
-  GetSystemInfo();
-  std::string json = Callback::GetSystemInfo();
+  std::string json = GetSystemInfo();
   ParseJson(json, device_name, board_name, tablet_mode, wifi_connection_state,
             debug_mode, gaia_id, device_type, os_version, channel,
             measure_latency, send_start_signaling, disable_stun_server,
