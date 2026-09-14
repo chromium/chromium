@@ -209,8 +209,8 @@ UIStackView* CreateLoadingScreen(UIView* track_button, UIView* menu_button) {
 
   if (self) {
     _titleLabel = [[UILabel alloc] init];
-    _titleLabel.font =
-        CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+    _titleLabel.font = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
+                                                 UIFontWeightSemibold);
     _titleLabel.adjustsFontForContentSizeCategory = YES;
     _URLLabel = [[UILabel alloc] init];
     _URLLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
