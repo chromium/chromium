@@ -99,7 +99,6 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/language",
     "//chrome/browser/profiles",
-    "//chrome/browser/translate",
     "//chrome/browser/ui:accelerator_utils_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui:view_ids",

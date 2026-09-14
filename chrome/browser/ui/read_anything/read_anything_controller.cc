@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -327,10 +326,6 @@ ReadAnythingContentsWrapper ReadAnythingController::GetOrCreateWebUIWrapper(
         web_ui_wrapper_->web_contents(), this);
     find_in_page::FindTabHelper::CreateForWebContents(
         web_ui_wrapper_->web_contents());
-    if (features::IsReadAnythingTranslateEntryPointEnabled()) {
-      ChromeTranslateClient::CreateForWebContents(
-          web_ui_wrapper_->web_contents());
-    }
   }
   return std::move(web_ui_wrapper_);
 }

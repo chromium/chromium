@@ -41,7 +41,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -55,7 +54,6 @@
 #include "components/translate/core/common/translate_features.h"
 #include "components/user_education/common/new_badge/new_badge_specification.h"
 #include "components/user_education/common/user_education_features.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -2048,19 +2046,12 @@ class ReadAnythingUntrustedPageHandlerTranslateEntryPointTest
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTranslateEntryPointTest,
-                       OnTranslationRequested) {
+                       OnTranslationRequested_TranslatesMainPage) {
   // Navigate to a simple page and set up the handler.
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/simple.html")));
   translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
-
-  // Set the side panel URL on the test web contents so that
-  // ChromeTranslateClient can find the browser window.
-  content::NavigationController::LoadURLParams params{
-      GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL)};
-  web_contents_->GetController().LoadURLWithParams(params);
-  content::WaitForLoadStop(web_contents_.get());
 
   handler_ = CreateHandler();
   TranslateBubbleController* controller =
@@ -2068,6 +2059,17 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTranslateEntryPointTest,
   EXPECT_TRUE(!controller || !controller->GetTranslateBubble());
 
   OnTranslationRequested();
+
+  // Translation is requested on the tab, which also covers the reading mode
+  // content. See ContentTranslateDriver::GetTranslateAgents().
+  ChromeTranslateClient* main_translate_client = GetChromeTranslateClient();
+  ASSERT_NE(main_translate_client, nullptr);
+  EXPECT_TRUE(main_translate_client->GetLanguageState().translate_enabled());
+
+  // The side panel's WebContents is not itself a translation target, so it has
+  // no ChromeTranslateClient of its own.
+  EXPECT_EQ(ChromeTranslateClient::FromWebContents(web_contents_.get()),
+            nullptr);
 
   controller = TranslateBubbleController::From(browser());
   ASSERT_NE(controller, nullptr);
