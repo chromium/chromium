@@ -62,7 +62,6 @@ is_official_build = true
 symbol_level = 1
 target_cpu = "arm64"
 target_os = "android"
-v8_is_on_release_branch = true
 ```
 
 ### 3. Build and Run the Generation Script
