@@ -27,6 +27,7 @@ using ParameterisedList = quiche::structured_headers::ParameterisedList;
 using ListOfLists = quiche::structured_headers::ListOfLists;
 using List = quiche::structured_headers::List;
 using Parameters = quiche::structured_headers::Parameters;
+using InnerList = quiche::structured_headers::InnerList;
 
 // See crbug.com/377941140 for details of this migration.
 NET_EXPORT BASE_DECLARE_FEATURE(kStructuredHeadersInRust);
@@ -61,14 +62,6 @@ inline std::string_view ItemTypeToString(
     structured_headers::Item::ItemType type) {
   return quiche::structured_headers::ItemTypeToString(type);
 }
-
-// Exposed only for Mojo typemapping. Do not use.
-// TODO(crbug.com/517204961): Replace this with `using InnerList =
-// quiche::structured_headers::InnerList`.
-struct InnerListWrapper {
-  std::vector<ParameterizedItem> items;
-  Parameters params;
-};
 
 }  // namespace net::structured_headers
 

@@ -108,10 +108,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
     return 0;
   }
 
-  static net::structured_headers::ParameterizedItem item(
+  static const net::structured_headers::ParameterizedItem& item(
       const net::structured_headers::ParameterizedMember&);
 
-  static net::structured_headers::InnerListWrapper inner_list(
+  static const net::structured_headers::InnerList& inner_list(
       const net::structured_headers::ParameterizedMember&);
 
   static bool Read(network::mojom::StructuredHeadersParameterizedMemberDataView,
@@ -150,20 +150,20 @@ struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
     StructTraits<network::mojom::StructuredHeadersInnerListDataView,
-                 net::structured_headers::InnerListWrapper> {
+                 net::structured_headers::InnerList> {
   static const std::vector<net::structured_headers::ParameterizedItem>& items(
-      const net::structured_headers::InnerListWrapper& in) {
+      const net::structured_headers::InnerList& in) {
     return in.items;
   }
 
   static const std::vector<
       std::pair<std::string, net::structured_headers::Item>>&
-  parameters(const net::structured_headers::InnerListWrapper& in) {
+  parameters(const net::structured_headers::InnerList& in) {
     return in.params;
   }
 
   static bool Read(network::mojom::StructuredHeadersInnerListDataView,
-                   net::structured_headers::InnerListWrapper* out);
+                   net::structured_headers::InnerList* out);
 };
 
 }  // namespace mojo

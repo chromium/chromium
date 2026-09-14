@@ -14,7 +14,7 @@
 namespace mojo {
 
 namespace {
-using net::structured_headers::InnerListWrapper;
+using net::structured_headers::InnerList;
 using net::structured_headers::Item;
 using net::structured_headers::ParameterizedItem;
 using net::structured_headers::ParameterizedMember;
@@ -116,31 +116,31 @@ bool StructTraits<network::mojom::StructuredHeadersParameterizedItemDataView,
 StructuredHeadersParameterizedMemberDataView::Tag
 UnionTraits<StructuredHeadersParameterizedMemberDataView,
             ParameterizedMember>::GetTag(const ParameterizedMember& in) {
-  if (in.GetWithParamsIfItem().has_value()) {
+  if (in.GetIfItem()) {
     return StructuredHeadersParameterizedMemberDataView::Tag::kItem;
   }
-  if (in.GetWithParamsIfInnerList().has_value()) {
+  if (in.GetIfInnerList()) {
     return StructuredHeadersParameterizedMemberDataView::Tag::kInnerList;
   }
   return StructuredHeadersParameterizedMemberDataView::Tag::kEmpty;
 }
 
 // static
-ParameterizedItem
+const ParameterizedItem&
 UnionTraits<StructuredHeadersParameterizedMemberDataView,
             ParameterizedMember>::item(const ParameterizedMember& in) {
-  auto pair = in.GetWithParamsIfItem();
-  CHECK(pair.has_value());
-  return {pair->first, pair->second};
+  const auto* item = in.GetIfItem();
+  CHECK(item);
+  return *item;
 }
 
 // static
-InnerListWrapper
+const InnerList&
 UnionTraits<StructuredHeadersParameterizedMemberDataView,
             ParameterizedMember>::inner_list(const ParameterizedMember& in) {
-  auto pair = in.GetWithParamsIfInnerList();
-  CHECK(pair.has_value());
-  return {pair->first, pair->second};
+  const auto* inner_list = in.GetIfInnerList();
+  CHECK(inner_list);
+  return *inner_list;
 }
 
 // static
@@ -157,16 +157,15 @@ bool UnionTraits<StructuredHeadersParameterizedMemberDataView,
       if (!data.ReadItem(&item)) {
         return false;
       }
-      *out = ParameterizedMember(std::move(item.item), std::move(item.params));
+      *out = ParameterizedMember(std::move(item));
       return true;
     }
     case StructuredHeadersParameterizedMemberDataView::Tag::kInnerList: {
-      InnerListWrapper inner_list;
+      InnerList inner_list;
       if (!data.ReadInnerList(&inner_list)) {
         return false;
       }
-      *out = ParameterizedMember(std::move(inner_list.items),
-                                 std::move(inner_list.params));
+      *out = ParameterizedMember(std::move(inner_list));
       return true;
     }
   }
@@ -215,10 +214,10 @@ bool StructTraits<network::mojom::StructuredHeadersDictionaryDataView,
 }
 
 // static
-bool StructTraits<network::mojom::StructuredHeadersInnerListDataView,
-                  InnerListWrapper>::
-    Read(network::mojom::StructuredHeadersInnerListDataView data,
-         InnerListWrapper* out) {
+bool StructTraits<
+    network::mojom::StructuredHeadersInnerListDataView,
+    InnerList>::Read(network::mojom::StructuredHeadersInnerListDataView data,
+                     InnerList* out) {
   return data.ReadItems(&out->items) && data.ReadParameters(&out->params);
 }
 

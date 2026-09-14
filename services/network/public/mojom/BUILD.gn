@@ -1588,7 +1588,7 @@ mojom("mojom_structured_headers") {
         },
         {
           mojom = "network.mojom.StructuredHeadersInnerList"
-          cpp = "::net::structured_headers::InnerListWrapper"
+          cpp = "::net::structured_headers::InnerList"
           move_only = true
         },
       ]
