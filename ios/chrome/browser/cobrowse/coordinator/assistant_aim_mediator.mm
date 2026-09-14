@@ -269,7 +269,6 @@
   // regular mode.
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL
                                                                inIncognito:NO];
-  command.openerWebState = webState->GetWeakPtr();
 
   [self.sceneHandler openURLInNewTab:command];
 
