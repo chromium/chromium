@@ -45,7 +45,6 @@
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_controller_factory.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
@@ -59,6 +58,7 @@
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
+#include "chromeos/ash/components/feature_engagement/feature_engagement_tracker_provider.h"
 #include "chromeos/ash/components/search_engines/template_url_service_provider.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "components/constrained_window/modal_dialog_host_property.h"
@@ -755,7 +755,8 @@ AppListClientImpl::CreateLauncherSearchIphSession() {
   }
 
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
+      ash::FeatureEngagementTrackerProvider::Get().Find(CHECK_DEREF(
+          ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile())));
   if (!tracker->ShouldTriggerHelpUI(
           feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
     return nullptr;
