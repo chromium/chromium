@@ -19,8 +19,13 @@ include_rules = [
   "+chrome/browser/ash/multidevice_setup",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/secure_channel",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/network",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+chrome/browser/prefs",
+  ],
+}

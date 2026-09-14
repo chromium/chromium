@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/feature_engagement",
   "+chrome/browser/metrics",
   "+chrome/browser/policy",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/web_applications/mojom",
   "+chrome/browser/web_applications/test",
@@ -41,6 +40,7 @@ specific_include_rules = {
     "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
     "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/global_features.h",
+    "+chrome/browser/prefs",
   ],
   "campaigns_manager_test_helper\\.cc": [
     "+chrome/browser/browser_process_platform_part.h",

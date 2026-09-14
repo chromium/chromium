@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/metrics",
   "+chrome/browser/net",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/ash/settings/os_settings_features_util.h",
   "+chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h",
@@ -32,3 +31,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+chrome/browser/prefs",
+  ],
+}
