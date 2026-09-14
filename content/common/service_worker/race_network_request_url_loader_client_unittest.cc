@@ -538,13 +538,11 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   // Abort the consumer handle after the first data chunk has arrived.
   AbortBodyConsumerHandle();
 
-  // Once the data pipe for RaceNetworkRequest is closed, the fetch handler side
-  // data pipe is NOT affected in the sequential case because it hasn't even
-  // started yet, or it proceeds independently.
-  // Actually, in the current implementation of SimpleBufferManager, if the
-  // network clone fails, the fetch handler clone never starts.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(client_for_fetch_handler()->state(), State::kWaiting);
+  // Once the data pipe for RaceNetworkRequest is closed, the clone for the
+  // network request finishes, allowing the second clone for the fetch handler
+  // to proceed and receive the response data.
+  client_for_fetch_handler()->RunUntilStateChange(/*resume_state=*/false);
+  EXPECT_EQ(client_for_fetch_handler()->state(), State::kChunkReceived);
 }
 
 TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,

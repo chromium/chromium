@@ -43,6 +43,7 @@ class CONTENT_EXPORT RaceNetworkRequestSimpleBufferManager
  private:
   void OnWriteAvailable(MojoResult result,
                         const mojo::HandleSignalsState& state);
+  void OnPeerClosed(MojoResult result, const mojo::HandleSignalsState& state);
   void MaybeWriteData();
   void Finish();
   std::string_view GetDataFromBuffer();
@@ -53,6 +54,7 @@ class CONTENT_EXPORT RaceNetworkRequestSimpleBufferManager
 
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   std::unique_ptr<mojo::SimpleWatcher> producer_handle_watcher_;
+  std::unique_ptr<mojo::SimpleWatcher> peer_closed_watcher_;
   base::OnceClosure clone_complete_callback_;
 
   // This ensures that all methods are called on the same sequence.
