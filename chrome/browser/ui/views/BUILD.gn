@@ -1588,3 +1588,27 @@ source_set("sad_tab_view") {
     deps += [ "//chromeos/components/kiosk" ]
   }
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+  deps = []
+
+  if (is_chromeos) {
+    sources += [ "intent_picker_bubble_view_browsertest_chromeos.cc" ]
+    deps += [
+      ":intent_picker_bubble_view",
+      "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:test_support",
+      "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/arc:arc_util",
+      "//chrome/browser/web_applications:features",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chromeos/ash/experiences/arc:arc_test_support",
+      "//chromeos/ash/experiences/arc:notification_test_support",
+      "//ui/events:test_support",
+    ]
+  }
+}
