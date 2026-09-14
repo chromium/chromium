@@ -46,6 +46,8 @@ void TrackedAtomicPreference::OnNewValue(
   if (encryptor) {
     transaction->StoreEncryptedHash(pref_path_, value);
   }
+
+  helper_.ReportAuthDataCalculated();
 }
 
 bool TrackedAtomicPreference::EnforceAndReport(

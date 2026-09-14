@@ -32,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_store.h"
 #include "services/preferences/public/cpp/tracked/pref_names.h"
+#include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
 #include "services/preferences/tracked/dictionary_hash_store_contents.h"
 #include "services/preferences/tracked/features.h"
 #include "services/preferences/tracked/pref_hash_store_transaction.h"
@@ -317,6 +318,9 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::FilterSerializeData(
       // processing paths that have changed.
       process_paths(changed_paths_);
     }
+    // The earlier call to `process_paths` may not have iterated through just
+    // `changed_paths_`, so emit metrics for changed paths separately.
+    RecordPrefValueChanges();
 
     changed_paths_.clear();
   }
@@ -653,6 +657,14 @@ void PrefHashFilter::MaybeRecordTrackedPreferenceResetCount(
   UMA_HISTOGRAM_COUNTS_100("Settings.TrackedPreferenceResets.Count",
                            reset_list ? reset_list->size() : 0);
   reset_metric_recorded_ = true;
+}
+
+void PrefHashFilter::RecordPrefValueChanges() const {
+  for (const auto& [path, preference] : changed_paths_) {
+    UMA_HISTOGRAM_EXACT_LINEAR(
+        user_prefs::tracked::kTrackedPrefHistogramNewValueSerialized,
+        preference->GetReportingId(), reporting_ids_count_);
+  }
 }
 
 // static

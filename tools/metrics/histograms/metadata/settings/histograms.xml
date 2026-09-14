@@ -1549,6 +1549,47 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="Settings.TrackedPreferences.AuthDataCalculated"
+    enum="TrackedPreference" expires_after="2027-08-28">
+  <owner>svend@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Emitted whenever authentication data is calculated for a tracked preference.
+    Even if multiple authenticators are calculated at the same time for the same
+    pref value (such as an HMAC and an encrypted hash), this histogram is only
+    emitted once. Note that authentication data may be calculated for a tracked
+    preference even if the preference has not had its value changed; to measure
+    how often a tracked preference gets a new value, use
+    Settings.TrackedPreferences.NewValueSerialized instead.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferences.NewValueSerialized"
+    enum="TrackedPreference" expires_after="2027-08-28">
+  <owner>svend@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Emitted whenever a tracked preference has a new value serialized to disk. If
+    multiple tracked prefs have values changed in the same serialization, this
+    histogram is emitted once for each pref. If the same tracked pref has its
+    value changed multiple times in memory between serializations to disk, this
+    histogram will only emit once for the pref per serialization.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferences.SuperAuthenticatorCalculated"
+    enum="Boolean" expires_after="2027-08-28">
+  <owner>svend@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Emitted when super authenticators are calculated for tracked preferences.
+    This histogram is only emitted once per event that causes super
+    authenticator calculation, so if multiple types of super authenticators are
+    calculated for the same change (such as a super HMAC and super encrypted
+    hash), this histogram will only be emitted once.
+  </summary>
+</histogram>
+
 <histogram
     name="Settings.TrackedPreferences.TypeMismatch.Combination.{RegisteredType}To{LoadedType}"
     enum="TrackedPreference" expires_after="2027-06-09">

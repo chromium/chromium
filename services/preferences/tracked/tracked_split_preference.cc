@@ -52,6 +52,8 @@ void TrackedSplitPreference::OnNewValue(
     transaction->StoreSplitEncryptedHash(pref_path_,
                                          value ? &value->GetDict() : nullptr);
   }
+
+  helper_.ReportAuthDataCalculated();
 }
 
 bool TrackedSplitPreference::EnforceAndReport(

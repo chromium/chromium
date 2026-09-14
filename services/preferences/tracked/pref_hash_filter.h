@@ -188,6 +188,10 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   void MaybeRecordTrackedPreferenceResetCount(
       const base::DictValue& pref_store_contents);
 
+  // Emits the Settings.TrackedPreferences.NewValueSerialized histogram for each
+  // preference in `changed_paths_`.
+  void RecordPrefValueChanges() const;
+
   // Applies resets found during any validation pass to the live PrefService.
   // This is posted as a task to run after PrefService initialization is
   // complete.

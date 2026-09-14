@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -28,6 +29,9 @@ namespace {
 using ValueState =
     prefs::mojom::TrackedPreferenceValidationDelegate::ValueState;
 
+constexpr char kSuperAuthenticatorCalculatedHistogram[] =
+    "Settings.TrackedPreferences.SuperAuthenticatorCalculated";
+
 // Helper to get derived key for encrypted hashes; this is a replicate of the
 // function in the .cc file.
 std::string GetEncKey(const std::string& path) {
@@ -43,6 +47,13 @@ std::string GetSplitEncKeyBase(const std::string& path) {
 // structured data.
 const char kImportHmacKey[] = "mac";
 const char kImportEncryptedHashKey[] = "encrypted_hash";
+
+class NonSuperMacDictionaryHashStoreContents
+    : public DictionaryHashStoreContents {
+ public:
+  using DictionaryHashStoreContents::DictionaryHashStoreContents;
+  bool SupportsSuperAuthenticator() const override { return false; }
+};
 }  // namespace
 
 class PrefHashStoreImplTest : public testing::Test {
@@ -640,6 +651,77 @@ TEST_F(PrefHashStoreImplTest, TrustedUnknownSplitValueFromExistingAtomic) {
               transaction->CheckSplitValue("path1", &dict, &invalid_keys));
     EXPECT_TRUE(invalid_keys.empty());
   }
+}
+
+TEST_F(PrefHashStoreImplTest,
+       SuperAuthenticatorCalculatedHistogram_SuperAuthenticatorsEnabled) {
+  base::HistogramTester histogram_tester;
+  base::Value string_1("string1");
+  PrefHashStoreImpl pref_hash_store(std::string(32, 0), /*use_super_hmac=*/true,
+                                    /*use_super_encrypted_hash=*/true);
+
+  // Read-only transaction -> no histogram emission.
+  {
+    std::unique_ptr<PrefHashStoreTransaction> transaction(
+        pref_hash_store.BeginTransaction(GetHashStoreContents()));
+    EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE,
+              transaction->CheckValue("path1", &string_1));
+  }
+  histogram_tester.ExpectTotalCount(kSuperAuthenticatorCalculatedHistogram, 0);
+
+  // Mutating transaction for atomic pref -> histogram emits.
+  {
+    std::unique_ptr<PrefHashStoreTransaction> transaction(
+        pref_hash_store.BeginTransaction(GetHashStoreContents()));
+    transaction->StoreHmac("path1", &string_1);
+  }
+  histogram_tester.ExpectUniqueSample(kSuperAuthenticatorCalculatedHistogram,
+                                      true, 1);
+
+  // Mutating transaction for split pref -> histogram emits.
+  {
+    std::unique_ptr<PrefHashStoreTransaction> transaction(
+        pref_hash_store.BeginTransaction(GetHashStoreContents()));
+    base::DictValue split_dict;
+    split_dict.Set("k1", "v1");
+    transaction->StoreSplitHmac("path2", &split_dict);
+  }
+  histogram_tester.ExpectUniqueSample(kSuperAuthenticatorCalculatedHistogram,
+                                      true, 2);
+}
+
+TEST_F(PrefHashStoreImplTest,
+       SuperAuthenticatorCalculatedHistogram_SuperAuthenticatorsDisabled) {
+  base::HistogramTester histogram_tester;
+  base::Value string_1("string1");
+  PrefHashStoreImpl pref_hash_store_no_super_mac(
+      std::string(32, 0), /*use_super_hmac=*/false,
+      /*use_super_encrypted_hash=*/false);
+  // Mutating transaction with super authenticators disabled -> no emission.
+  {
+    std::unique_ptr<PrefHashStoreTransaction> transaction(
+        pref_hash_store_no_super_mac.BeginTransaction(GetHashStoreContents()));
+    transaction->StoreHmac("path", &string_1);
+  }
+  histogram_tester.ExpectTotalCount(kSuperAuthenticatorCalculatedHistogram, 0);
+}
+
+TEST_F(PrefHashStoreImplTest,
+       SuperAuthenticatorCalculatedHistogram_SuperAuthenticatorNotSupported) {
+  base::HistogramTester histogram_tester;
+  base::DictValue storage;
+  NonSuperMacDictionaryHashStoreContents contents(storage);
+  PrefHashStoreImpl pref_hash_store(std::string(32, 0), /*use_super_hmac=*/true,
+                                    /*use_super_encrypted_hash=*/true);
+  base::Value string_val("value");
+  // Mutating transaction for a store that doesn't support super authenticators
+  // -> no emission.
+  {
+    std::unique_ptr<PrefHashStoreTransaction> transaction(
+        pref_hash_store.BeginTransaction(&contents));
+    transaction->StoreHmac("path", &string_val);
+  }
+  histogram_tester.ExpectTotalCount(kSuperAuthenticatorCalculatedHistogram, 0);
 }
 
 class PrefHashStoreImplEncryptedTest : public testing::Test {
@@ -1753,6 +1835,71 @@ TEST_F(
   // common_subkey's hash should have been updated.
   EXPECT_NE(temp_split_ehs.at("common_subkey"),
             stored_split_ehs.at("common_subkey"));
+}
+
+TEST_F(PrefHashStoreImplEncryptedTest,
+       SuperAuthenticatorCalculatedHistogram_Encrypted) {
+  base::HistogramTester histogram_tester;
+  base::Value string_val("value");
+
+  // Read-only transaction with encryptor -> no emission.
+  {
+    auto tx = BeginTransaction(/*with_encryptor=*/true);
+    tx->CheckValue("path1", &string_val);
+  }
+  histogram_tester.ExpectTotalCount(kSuperAuthenticatorCalculatedHistogram, 0);
+
+  // StoreEncryptedHash transaction with encryptor -> emits.
+  {
+    auto tx = BeginTransaction(/*with_encryptor=*/true);
+    tx->StoreEncryptedHash("path1", &string_val);
+  }
+  histogram_tester.ExpectUniqueSample(kSuperAuthenticatorCalculatedHistogram,
+                                      true, 1);
+
+  // Consecutive read-only transaction -> no additional emission.
+  {
+    auto tx = BeginTransaction(/*with_encryptor=*/true);
+    tx->CheckValue("path1", &string_val);
+  }
+  histogram_tester.ExpectTotalCount(kSuperAuthenticatorCalculatedHistogram, 1);
+
+  // Split encrypted hash mutation -> increments emission count.
+  base::DictValue split_dict;
+  split_dict.Set("k1", "v1");
+  {
+    auto tx = BeginTransaction(/*with_encryptor=*/true);
+    tx->StoreSplitEncryptedHash("split_path", &split_dict);
+  }
+  histogram_tester.ExpectUniqueSample(kSuperAuthenticatorCalculatedHistogram,
+                                      true, 2);
+
+  // StoreHmac with both super HMAC and encryptor -> increments emission count.
+  {
+    auto tx = BeginTransaction(/*with_encryptor=*/true);
+    tx->StoreHmac("path2", &string_val);
+  }
+  histogram_tester.ExpectUniqueSample(kSuperAuthenticatorCalculatedHistogram,
+                                      true, 3);
+}
+
+TEST_F(PrefHashStoreImplEncryptedTest,
+       SuperAuthenticatorCalculatedHistogram_SuperEncryptedHashOnly) {
+  base::HistogramTester histogram_tester;
+  PrefHashStoreImpl store_encrypted_only(kSeed, /*use_super_hmac=*/false,
+                                         /*use_super_encrypted_hash=*/true);
+  base::Value string_val("value");
+
+  // Mutating authenticators with super encrypted hash enabled, super HMAC
+  // disabled -> emits once.
+  {
+    auto tx = store_encrypted_only.BeginTransaction(&dictionary_contents_,
+                                                    test_encryptor_);
+    tx->StoreEncryptedHash("path1", &string_val);
+    tx->StoreHmac("path1", &string_val);
+  }
+  histogram_tester.ExpectUniqueSample(kSuperAuthenticatorCalculatedHistogram,
+                                      true, 1);
 }
 
 #if BUILDFLAG(IS_WIN)

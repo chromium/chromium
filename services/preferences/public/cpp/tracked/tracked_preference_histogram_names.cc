@@ -8,6 +8,10 @@ namespace user_prefs {
 namespace tracked {
 
 // Tracked pref histogram names.
+const char kTrackedPrefHistogramAuthDataCalculated[] =
+    "Settings.TrackedPreferences.AuthDataCalculated";
+const char kTrackedPrefHistogramNewValueSerialized[] =
+    "Settings.TrackedPreferences.NewValueSerialized";
 const char kTrackedPrefHistogramUnchanged[] =
     "Settings.TrackedPreferenceUnchanged";
 const char kTrackedPrefHistogramCleared[] = "Settings.TrackedPreferenceCleared";

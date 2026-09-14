@@ -41,6 +41,7 @@
 #include "services/preferences/public/cpp/tracked/configuration.h"
 #include "services/preferences/public/cpp/tracked/mock_validation_delegate.h"
 #include "services/preferences/public/cpp/tracked/pref_names.h"
+#include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
 #include "services/preferences/tracked/features.h"
 #include "services/preferences/tracked/hash_store_contents.h"
 #include "services/preferences/tracked/pref_hash_store.h"
@@ -1226,6 +1227,53 @@ TEST_P(PrefHashFilterTest, MultiplePrefsFilterSerializeData) {
   ASSERT_TRUE(actual_split->is_dict());
   EXPECT_EQ(expected_split_dict_content, actual_split->GetDict());
   ASSERT_EQ(PrefTrackingStrategy::SPLIT, stored_value_split_info.second);
+}
+
+TEST_P(PrefHashFilterTest,
+       FilterSerializeDataRecordsNewValueSerializedHistogram) {
+  base::HistogramTester histogram_tester;
+  base::DictValue root_dict;
+
+  root_dict.Set(kAtomicPref, 1);
+  root_dict.Set(kAtomicPref3, 3);
+  base::DictValue split_dict;
+  split_dict.Set("a", true);
+  root_dict.Set(kSplitPref, split_dict.Clone());
+  root_dict.Set("untracked", 4);
+
+  // Update multiple tracked prefs, an untracked pref, and update one tracked
+  // pref twice.
+  pref_hash_filter_->FilterUpdate(kAtomicPref);
+  pref_hash_filter_->FilterUpdate(kAtomicPref);  // Duplicate update.
+  pref_hash_filter_->FilterUpdate(kAtomicPref3);
+  pref_hash_filter_->FilterUpdate(kSplitPref);
+  pref_hash_filter_->FilterUpdate("untracked");
+
+  base::RunLoop run_loop;
+  mock_pref_hash_store_->SetTransactionCompletionCallback(
+      run_loop.QuitClosure());
+  pref_hash_filter_->FilterSerializeData(root_dict);
+  run_loop.Run();
+
+  // Verify histogram emissions:
+  // kAtomicPref (id 0) -> 1 sample
+  // kSplitPref (id 2) -> 1 sample
+  // kAtomicPref3 (id 5) -> 1 sample
+  // "untracked" -> not tracked, no sample
+  // Total samples: 3
+  histogram_tester.ExpectBucketCount(
+      user_prefs::tracked::kTrackedPrefHistogramNewValueSerialized, 0, 1);
+  histogram_tester.ExpectBucketCount(
+      user_prefs::tracked::kTrackedPrefHistogramNewValueSerialized, 2, 1);
+  histogram_tester.ExpectBucketCount(
+      user_prefs::tracked::kTrackedPrefHistogramNewValueSerialized, 5, 1);
+  histogram_tester.ExpectTotalCount(
+      user_prefs::tracked::kTrackedPrefHistogramNewValueSerialized, 3);
+
+  // Subsequent serialize with no new changes should emit nothing further.
+  pref_hash_filter_->FilterSerializeData(root_dict);
+  histogram_tester.ExpectTotalCount(
+      user_prefs::tracked::kTrackedPrefHistogramNewValueSerialized, 3);
 }
 
 TEST_P(PrefHashFilterTest, UnknownNullValue) {

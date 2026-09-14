@@ -388,6 +388,9 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::
         }
       }
     }
+
+    base::UmaHistogramBoolean(
+        "Settings.TrackedPreferences.SuperAuthenticatorCalculated", true);
   }
 }
 

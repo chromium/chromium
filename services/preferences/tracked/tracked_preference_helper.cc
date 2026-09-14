@@ -169,6 +169,12 @@ void TrackedPreferenceHelper::ReportAction(ResetAction reset_action) const {
   }
 }
 
+void TrackedPreferenceHelper::ReportAuthDataCalculated() const {
+  UMA_HISTOGRAM_EXACT_LINEAR(
+      user_prefs::tracked::kTrackedPrefHistogramAuthDataCalculated,
+      reporting_id_, reporting_ids_count_);
+}
+
 size_t TrackedPreferenceHelper::GetReportingId() const {
   return reporting_id_;
 }

@@ -8,6 +8,8 @@
 namespace user_prefs {
 namespace tracked {
 
+extern const char kTrackedPrefHistogramAuthDataCalculated[];
+extern const char kTrackedPrefHistogramNewValueSerialized[];
 extern const char kTrackedPrefHistogramUnchanged[];
 extern const char kTrackedPrefHistogramCleared[];
 extern const char kTrackedPrefHistogramChanged[];

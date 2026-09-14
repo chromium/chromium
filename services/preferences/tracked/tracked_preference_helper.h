@@ -66,6 +66,9 @@ class TrackedPreferenceHelper {
   // Reports |reset_action| via UMA under |reporting_id_|.
   void ReportAction(ResetAction reset_action) const;
 
+  // Reports the calculation of new auth data via UMA under `reporting_id_`.
+  void ReportAuthDataCalculated() const;
+
   // Returns the reporting ID for this tracked preference.
   size_t GetReportingId() const;
 
