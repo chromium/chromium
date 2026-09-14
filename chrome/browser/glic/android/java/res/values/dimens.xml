@@ -43,4 +43,12 @@ found in the LICENSE file.
     <!-- LINT.ThenChange(//chrome/browser/glic/android/java/res/drawable/glic_menu_dot.xml) -->
     <dimen name="glic_dirty_dot_size">6dp</dimen>
     <dimen name="glic_task_menu_item_vertical_padding">12dp</dimen>
+
+    <!-- Glic microphone permission dialog dimensions -->
+    <dimen name="glic_mic_dialog_padding_horizontal">24dp</dimen>
+    <dimen name="glic_mic_dialog_padding_top">24dp</dimen>
+    <dimen name="glic_mic_dialog_padding_bottom">8dp</dimen>
+    <dimen name="glic_mic_dialog_icon_size">24dp</dimen>
+    <dimen name="glic_mic_dialog_icon_margin_bottom">16dp</dimen>
+    <dimen name="glic_mic_dialog_message_margin_top">16dp</dimen>
 </resources>

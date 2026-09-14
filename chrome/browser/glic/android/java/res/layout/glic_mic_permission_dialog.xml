@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/glic_mic_dialog_padding_horizontal"
+    android:paddingEnd="@dimen/glic_mic_dialog_padding_horizontal"
+    android:paddingTop="@dimen/glic_mic_dialog_padding_top"
+    android:paddingBottom="@dimen/glic_mic_dialog_padding_bottom">
+
+  <ImageView
+      android:layout_width="@dimen/glic_mic_dialog_icon_size"
+      android:layout_height="@dimen/glic_mic_dialog_icon_size"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginBottom="@dimen/glic_mic_dialog_icon_margin_bottom"
+      android:importantForAccessibility="no"
+      android:src="@drawable/ic_mic_white_24dp"
+      app:tint="@macro/default_icon_color" />
+
+  <TextView
+      android:id="@+id/mic_dialog_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/glic_mic_permission_dialog_title"
+      android:textAppearance="@style/TextAppearance.Headline.Primary"
+      android:accessibilityHeading="true" />
+
+  <TextView
+      android:id="@+id/mic_dialog_message"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/glic_mic_dialog_message_margin_top"
+      android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+</LinearLayout>
