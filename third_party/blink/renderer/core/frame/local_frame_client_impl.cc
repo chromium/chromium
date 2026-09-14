@@ -1290,6 +1290,10 @@ bool LocalFrameClientImpl::IsDomStorageDisabled() const {
   return web_frame_->Client()->IsDomStorageDisabled();
 }
 
+bool LocalFrameClientImpl::AreDedicatedWorkersDisabled() const {
+  return web_frame_->Client()->AreDedicatedWorkersDisabled();
+}
+
 bool LocalFrameClientImpl::IsForInitialWebUI() const {
   return web_frame_->Client() && web_frame_->Client()->IsForInitialWebUI();
 }

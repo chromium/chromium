@@ -15250,6 +15250,13 @@ void RenderFrameHostImpl::CreateCodeCacheHost(
 
 void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
     mojo::PendingReceiver<blink::mojom::DedicatedWorkerHostFactory> receiver) {
+  if (GetSiteInstance()->IsPdf()) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(),
+        bad_message::RFH_DEDICATED_WORKER_HOST_FACTORY_PDF_PROCESS_BLOCKED);
+    return;
+  }
+
   // Allocate the worker in the same process as the creator.
   ChildProcessId worker_process_id = GetProcess()->GetID();
 

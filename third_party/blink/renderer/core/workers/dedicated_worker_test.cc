@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
@@ -1213,6 +1215,36 @@ TEST_F(DedicatedWorkerTest, DocumentPolicyInheritedForLocalSchemeWorker) {
   // The worker inherited the creator's `force-load-at-top` policy rather than
   // falling back to the feature's default (false).
   EXPECT_TRUE(force_load_at_top_enabled);
+}
+
+class DedicatedWorkersDisabledLocalFrameClient : public EmptyLocalFrameClient {
+ public:
+  bool AreDedicatedWorkersDisabled() const override { return true; }
+};
+
+class DedicatedWorkerDisabledTest : public PageTestBase {
+ public:
+  void SetUp() override {
+    client_ = MakeGarbageCollected<DedicatedWorkersDisabledLocalFrameClient>();
+    PageTestBase::SetupPageWithClients(nullptr, client_);
+  }
+
+ private:
+  Persistent<DedicatedWorkersDisabledLocalFrameClient> client_;
+};
+
+TEST_F(DedicatedWorkerDisabledTest, DedicatedWorkerDisabledInFrame) {
+  NavigateTo(KURL("https://example.com/"));
+  DummyExceptionStateForTesting exception_state;
+  DedicatedWorker* worker = DedicatedWorker::Create(
+      GetFrame().DomWindow(),
+      MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(
+          "https://example.com/worker.js"),
+      WorkerOptions::Create(), exception_state);
+  EXPECT_FALSE(worker);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            ToExceptionCode(DOMExceptionCode::kSecurityError));
 }
 
 }  // namespace blink

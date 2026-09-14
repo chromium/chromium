@@ -447,6 +447,9 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   // and sessionStorage.
   virtual bool IsDomStorageDisabled() const { return false; }
 
+  // Specifies whether to disable dedicated workers.
+  virtual bool AreDedicatedWorkersDisabled() const { return false; }
+
   // Debugging -----------------------------------------------------------
   virtual void BindDevToolsAgent(
       mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,

@@ -305,6 +305,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       override;
 
   bool IsDomStorageDisabled() const override;
+  bool AreDedicatedWorkersDisabled() const override;
 
  private:
   bool IsLocalFrameClientImpl() const override { return true; }

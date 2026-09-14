@@ -21,7 +21,9 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/process_lock.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
@@ -30,6 +32,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/dedicated_worker_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -509,6 +512,51 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, SingleSharedWorker) {
     return;
 
   RunTest(GetTestURL("single_worker.html", "shared=true"));
+}
+
+// A frame committed as PDF content (like the PDF viewer's content frame) runs
+// in a process whose SiteInfo has `is_pdf` set. PDF documents never run
+// script that could create dedicated workers, so the browser must refuse to
+// bind blink.mojom.DedicatedWorkerHostFactory for such processes and
+// terminate them instead.
+IN_PROC_BROWSER_TEST_F(WorkerTest, DedicatedWorkerBlockedForPdfProcess) {
+  WebContentsImpl* tab = static_cast<WebContentsImpl*>(shell()->web_contents());
+  const GURL url = ssl_server()->GetURL("a.test", "/title1.html");
+
+  // Commit `url` as PDF content so that the resulting frame runs in a process
+  // whose SiteInfo has `is_pdf` set.
+  NavigationController::LoadURLParams params(url);
+  params.transition_type = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  params.is_pdf = true;
+  NavigateToURLBlockUntilNavigationsComplete(
+      tab, params, 1, /*ignore_uncommitted_navigations=*/false);
+  ASSERT_TRUE(IsLastCommittedEntryOfPageType(tab, PAGE_TYPE_NORMAL));
+  ASSERT_EQ(url, tab->GetLastCommittedURL());
+
+  RenderFrameHostImpl* frame = tab->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame->GetSiteInstance()->GetSiteInfo().is_pdf());
+  ASSERT_TRUE(frame->GetProcess()->IsPdf());
+
+  // Attempting to create a dedicated worker from a PDF frame triggers the
+  // renderer to request blink.mojom.DedicatedWorkerHostFactory from
+  // RenderFrameHost. The browser must reject this and terminate the process.
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(frame->GetProcess());
+  ExecuteScriptAsync(frame, "new Worker('/workers/worker_common.js');");
+  EXPECT_EQ(bad_message::RFH_DEDICATED_WORKER_HOST_FACTORY_PDF_PROCESS_BLOCKED,
+            kill_waiter.Wait());
+
+  // Control: the same page committed normally can create dedicated workers.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_FALSE(
+      tab->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteInfo().is_pdf());
+  EXPECT_EQ("pong", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker = new Worker('/workers/worker_common.js');
+      worker.onmessage = e => resolve(e.data);
+      worker.postMessage('ping');
+    })
+  )"));
 }
 
 // A WebContents created with `disallow_shared_workers` must not be able to

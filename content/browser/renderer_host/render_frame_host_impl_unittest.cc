@@ -34,6 +34,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -1602,6 +1604,34 @@ TEST_F(RenderFrameHostImplTest, CreateNewWindowInvalidDisposition) {
       ->CreateNewWindow(std::move(params), base::DoNothing());
 
   EXPECT_EQ(1, process()->bad_msg_count());
+}
+
+// Ensure that attempting to create a DedicatedWorkerHostFactory from a PDF
+// process causes a bad message.
+TEST_F(RenderFrameHostImplTest, DedicatedWorkerBlockedForPdfProcess) {
+  UrlInfo url_info(
+      UrlInfoInit(GURL("https://foo.com/document.pdf"))
+          .WithEmbedderIsolationInfo(EmbedderIsolationInfo::CreateForPdf()));
+  scoped_refptr<SiteInstanceImpl> pdf_instance =
+      SiteInstanceImpl::CreateForUrlInfo(GetBrowserContext(), url_info,
+                                         /*is_guest=*/false,
+                                         /*is_fenced=*/false,
+                                         /*is_fixed_storage_partition=*/false);
+  std::unique_ptr<TestWebContents> pdf_web_contents =
+      TestWebContents::Create(GetBrowserContext(), pdf_instance);
+  TestRenderFrameHost* pdf_rfh = pdf_web_contents->GetPrimaryMainFrame();
+
+  EXPECT_EQ(0, pdf_rfh->GetProcess()->bad_msg_count());
+
+  base::HistogramTester histograms;
+  mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+  pdf_rfh->CreateDedicatedWorkerHostFactory(
+      factory.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ(1, pdf_rfh->GetProcess()->bad_msg_count());
+  histograms.ExpectUniqueSample(
+      "Stability.BadMessageTerminated.Content",
+      bad_message::RFH_DEDICATED_WORKER_HOST_FACTORY_PDF_PROCESS_BLOCKED, 1);
 }
 
 class RenderFrameHostImplCookieChangeListenerTest

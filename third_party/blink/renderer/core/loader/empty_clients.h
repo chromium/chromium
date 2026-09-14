@@ -494,6 +494,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
   }
 
   bool IsDomStorageDisabled() const override { return false; }
+  bool AreDedicatedWorkersDisabled() const override { return false; }
 
  protected:
   // Not owned

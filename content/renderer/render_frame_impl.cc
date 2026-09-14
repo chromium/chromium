@@ -3568,6 +3568,10 @@ bool RenderFrameImpl::IsDomStorageDisabled() const {
   return GetContentClient()->renderer()->IsDomStorageDisabled();
 }
 
+bool RenderFrameImpl::AreDedicatedWorkersDisabled() const {
+  return GetContentClient()->renderer()->AreDedicatedWorkersDisabled();
+}
+
 v8::Local<v8::Object> RenderFrameImpl::GetScriptableObject(
     const blink::WebElement& plugin_element,
     v8::Isolate* isolate) {

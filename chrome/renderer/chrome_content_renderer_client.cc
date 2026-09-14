@@ -923,6 +923,20 @@ bool ChromeContentRendererClient::IsDomStorageDisabled() const {
 #endif
 }
 
+bool ChromeContentRendererClient::AreDedicatedWorkersDisabled() const {
+#if BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_EXTENSIONS)
+  // PDF renderers shouldn't need to create dedicated workers. Note that it's
+  // still possible to attempt to instantiate a Worker in a PDF document's
+  // context via DevTools; returning true here ensures that the constructor
+  // throws a SecurityError DOMException. This avoids a renderer kill by the
+  // browser process which isn't expecting PDF renderer processes to ever create
+  // dedicated workers. See https://crbug.com/553118313.
+  return pdf::IsPdfRenderer();
+#else
+  return false;
+#endif
+}
+
 v8::Local<v8::Object> ChromeContentRendererClient::GetScriptableObject(
     const blink::WebElement& plugin_element,
     v8::Isolate* isolate) {

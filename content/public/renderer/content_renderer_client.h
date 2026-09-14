@@ -140,6 +140,9 @@ class CONTENT_EXPORT ContentRendererClient {
   // and sessionStorage.
   virtual bool IsDomStorageDisabled() const;
 
+  // Specifies whether to disable dedicated workers.
+  virtual bool AreDedicatedWorkersDisabled() const;
+
   // Returns a scriptable object which implements custom javascript API for the
   // given element. This is used for external plugin handlers for providing
   // custom API such as|postMessage| for <embed> and <object>.

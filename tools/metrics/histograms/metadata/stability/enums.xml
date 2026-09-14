@@ -583,6 +583,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="398" label="RFPH_SET_IS_INERT_WITHOUT_CPFC"/>
   <int value="399" label="RFPH_SYNCHRONIZE_VISUAL_PROPERTIES_WITHOUT_CPFC"/>
   <int value="400" label="RFPH_UPDATE_VIEWPORT_INTERSECTION_WITHOUT_CPFC"/>
+  <int value="401"
+      label="RFH_DEDICATED_WORKER_HOST_FACTORY_PDF_PROCESS_BLOCKED"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

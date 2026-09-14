@@ -82,6 +82,15 @@ DedicatedWorker* DedicatedWorker::Create(
     return nullptr;
   }
 
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (window->GetFrame() && window->GetFrame()->Client() &&
+        window->GetFrame()->Client()->AreDedicatedWorkersDisabled()) {
+      exception_state.ThrowSecurityError(
+          "Dedicated workers are not supported in this document.");
+      return nullptr;
+    }
+  }
+
   String compliant_url = TrustedTypesCheckForScriptURL(
       url, context, trusted_types_names::kWorker,
       trusted_types_names::kConstructor, exception_state);

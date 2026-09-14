@@ -795,6 +795,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   // and sessionStorage.
   virtual bool IsDomStorageDisabled() const { return false; }
 
+  // Specifies whether to disable dedicated workers.
+  virtual bool AreDedicatedWorkersDisabled() const { return false; }
+
   // Returns a scriptable object for the given plugin element. This is used for
   // having an external handler implement certain customized APIs for the
   // plugin element (e.g., to expose postMessage).

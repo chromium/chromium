@@ -426,6 +426,7 @@ enum BadMessageReason {
   RFPH_SET_IS_INERT_WITHOUT_CPFC = 398,
   RFPH_SYNCHRONIZE_VISUAL_PROPERTIES_WITHOUT_CPFC = 399,
   RFPH_UPDATE_VIEWPORT_INTERSECTION_WITHOUT_CPFC = 400,
+  RFH_DEDICATED_WORKER_HOST_FACTORY_PDF_PROCESS_BLOCKED = 401,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

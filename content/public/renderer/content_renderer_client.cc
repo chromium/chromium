@@ -63,6 +63,10 @@ bool ContentRendererClient::IsDomStorageDisabled() const {
   return false;
 }
 
+bool ContentRendererClient::AreDedicatedWorkersDisabled() const {
+  return false;
+}
+
 v8::Local<v8::Object> ContentRendererClient::GetScriptableObject(
     const blink::WebElement& plugin_element,
     v8::Isolate* isolate) {
