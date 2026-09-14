@@ -87,8 +87,6 @@ device_signals::SignalsAggregationResponse CreateFilledResponse(
                               kFakeSignalMacAddr3};
 
 #if BUILDFLAG(IS_ANDROID)
-  os_signals.has_potentially_harmful_apps = kFakeHasHarmfulApps;
-  os_signals.verified_apps_enabled = kFakeVerifiedAppsEnabled;
   os_signals.security_patch_ms = kFakeSecurityPatchLevel;
 #endif
 
@@ -148,6 +146,13 @@ device_signals::SignalsAggregationResponse CreateFilledResponse(
 
   response.profile_signals_response = profile_signals;
 
+#if BUILDFLAG(IS_ANDROID)
+  device_signals::VerifyAppsSignalsResponse verify_apps_signals;
+  verify_apps_signals.has_potentially_harmful_apps = kFakeHasHarmfulApps;
+  verify_apps_signals.verified_apps_enabled = kFakeVerifiedAppsEnabled;
+  response.verify_apps_signals_response = verify_apps_signals;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   return response;
 }
 
@@ -183,6 +188,9 @@ class ChromeProfileRequestGeneratorTest
       const base::ListValue& cert_selectors = {}) const {
     device_signals::SignalsAggregationRequest request;
     request.signal_names.emplace(device_signals::SignalName::kOsSignals);
+#if BUILDFLAG(IS_ANDROID)
+    request.signal_names.emplace(device_signals::SignalName::kVerifyApps);
+#endif  // BUILDFLAG(IS_ANDROID)
     request.signal_names.emplace(
         device_signals::SignalName::kBrowserContextSignals);
 

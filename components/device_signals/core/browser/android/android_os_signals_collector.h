@@ -22,7 +22,7 @@ enum class HasHarmfulAppsResultStatus;
 
 namespace device_signals {
 
-struct OsSignalsResponse;
+struct VerifyAppsSignalsResponse;
 
 class AndroidOsSignalsCollector : public BaseSignalsCollector {
  public:
@@ -41,17 +41,20 @@ class AndroidOsSignalsCollector : public BaseSignalsCollector {
                     SignalsAggregationResponse& response,
                     base::OnceClosure done_closure);
 
-  void OnIsVerifyAppsEnabled(
-      SignalsAggregationResponse& response,
-      std::unique_ptr<OsSignalsResponse> os_signals_response,
-      base::OnceClosure done_closure,
-      base::TimeTicks start_time,
-      safe_browsing::VerifyAppsEnabledResult result);
+  void GetVerifyApps(UserPermission permission,
+                     const SignalsAggregationRequest& request,
+                     SignalsAggregationResponse& response,
+                     base::OnceClosure done_closure);
+
+  void OnIsVerifyAppsEnabled(SignalsAggregationResponse& response,
+                             base::OnceClosure done_closure,
+                             base::TimeTicks start_time,
+                             safe_browsing::VerifyAppsEnabledResult result);
 
   void OnHasPotentiallyHarmfulApps(
       SignalsAggregationResponse& response,
-      std::unique_ptr<OsSignalsResponse> os_signals_response,
       base::OnceClosure done_closure,
+      VerifyAppsSignalsResponse verify_apps_response,
       base::TimeTicks start_time,
       safe_browsing::HasHarmfulAppsResultStatus result,
       int num_of_apps,

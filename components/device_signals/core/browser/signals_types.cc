@@ -156,6 +156,20 @@ bool CertificateSignalsResponse::operator==(
     const CertificateSignalsResponse&) const = default;
 CertificateSignalsResponse::~CertificateSignalsResponse() = default;
 
+#if BUILDFLAG(IS_ANDROID)
+VerifyAppsSignalsResponse::VerifyAppsSignalsResponse() = default;
+VerifyAppsSignalsResponse::VerifyAppsSignalsResponse(
+    const VerifyAppsSignalsResponse&) = default;
+
+VerifyAppsSignalsResponse& VerifyAppsSignalsResponse::operator=(
+    const VerifyAppsSignalsResponse&) = default;
+
+bool VerifyAppsSignalsResponse::operator==(
+    const VerifyAppsSignalsResponse&) const = default;
+
+VerifyAppsSignalsResponse::~VerifyAppsSignalsResponse() = default;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 SignalsAggregationRequest::SignalsAggregationRequest() = default;
 
 SignalsAggregationRequest::SignalsAggregationRequest(

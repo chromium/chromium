@@ -57,6 +57,8 @@ std::string GetHistogramVariant(SignalName signal_name) {
       return "BrowserContextSignals";
     case SignalName::kCertificates:
       return "Certificates";
+    case SignalName::kVerifyApps:
+      return "VerifyApps";
   }
 }
 

@@ -67,8 +67,8 @@ class AndroidOsSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
 
   // Helper function to check a subset of signals that should or should not be
   // collected based on permission.
-  void CheckAndroidSignalsCollected(OsSignalsResponse& response,
-                                    bool can_collect_pii) {
+  void CheckOsSignalsCollected(OsSignalsResponse& response,
+                               bool can_collect_pii) {
     CheckSignalsCollected(response, can_collect_pii,
                           base::android::device_info::device_name());
 
@@ -78,6 +78,9 @@ class AndroidOsSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
               base::android::android_info::manufacturer());
     EXPECT_EQ(response.security_patch_ms,
               device_signals::GetSecurityPatchLevelEpoch());
+  }
+
+  void CheckVerifyAppsSignalsCollected(VerifyAppsSignalsResponse& response) {
     EXPECT_EQ(response.verified_apps_enabled, expected_verify_app_result_);
     EXPECT_EQ(response.has_potentially_harmful_apps,
               GetExpectedHarmfulAppsSignal());
@@ -134,8 +137,9 @@ class AndroidOsSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
 
 // Test that runs a sanity check on the set of signals supported by this
 // collector. Will need to be updated if new signals become supported.
-TEST_F(AndroidOsSignalsCollectorTest, SupportedOsSignalNames) {
-  const std::array<SignalName, 1> supported_signals{{SignalName::kOsSignals}};
+TEST_F(AndroidOsSignalsCollectorTest, SupportedSignalNames) {
+  const std::array<SignalName, 2> supported_signals{
+      {SignalName::kOsSignals, SignalName::kVerifyApps}};
 
   const auto names_set = signal_collector_->GetSupportedSignalNames();
 
@@ -146,26 +150,76 @@ TEST_F(AndroidOsSignalsCollectorTest, SupportedOsSignalNames) {
 }
 
 // Happy path test case for OS signals collection with full permission.
-TEST_F(AndroidOsSignalsCollectorTest, GetSignal_Success) {
+TEST_F(AndroidOsSignalsCollectorTest, GetOsSignals_Success) {
+  SetFakeBrowserPolicyData();
+
+  SignalsAggregationRequest empty_request;
+  SignalsAggregationResponse response;
+  base::RunLoop run_loop;
+  signal_collector_->GetSignal(SignalName::kOsSignals, UserPermission::kGranted,
+                               empty_request, response, run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_FALSE(response.top_level_error.has_value());
+  ASSERT_TRUE(response.os_signals_response);
+  CheckOsSignalsCollected(response.os_signals_response.value(),
+                          /*can_collect_pii=*/true);
+}
+
+// Happy path test case for VerifyApps signals collection with full permission.
+TEST_F(AndroidOsSignalsCollectorTest, GetVerifyApps_Success) {
   SetFakeBrowserPolicyData();
   // Test when verify apps is enabled.
   SetVerifyAppsResult(VerifyAppsEnabledResult::SUCCESS_ENABLED);
   // Test when harmful apps detection fails.
   SetHarmfulAppsResult(HasHarmfulAppsResultStatus::LOCAL_FAILURE, 0);
 
-  SignalName signal_name = SignalName::kOsSignals;
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  signal_collector_->GetSignal(signal_name, UserPermission::kGranted,
-                               empty_request, response, run_loop.QuitClosure());
-
+  signal_collector_->GetSignal(SignalName::kVerifyApps,
+                               UserPermission::kGranted, empty_request,
+                               response, run_loop.QuitClosure());
   run_loop.Run();
 
   ASSERT_FALSE(response.top_level_error.has_value());
+  ASSERT_TRUE(response.verify_apps_signals_response);
+  CheckVerifyAppsSignalsCollected(
+      response.verify_apps_signals_response.value());
+}
+
+// Happy path test case for collecting both OS signals and VerifyApps signals.
+TEST_F(AndroidOsSignalsCollectorTest, GetAllSignals_Success) {
+  SetFakeBrowserPolicyData();
+  // Test when verify apps is enabled.
+  SetVerifyAppsResult(VerifyAppsEnabledResult::SUCCESS_ENABLED);
+  // Test when harmful apps detection fails.
+  SetHarmfulAppsResult(HasHarmfulAppsResultStatus::LOCAL_FAILURE, 0);
+
+  SignalsAggregationRequest empty_request;
+  SignalsAggregationResponse response;
+
+  base::RunLoop os_run_loop;
+  signal_collector_->GetSignal(SignalName::kOsSignals, UserPermission::kGranted,
+                               empty_request, response,
+                               os_run_loop.QuitClosure());
+  os_run_loop.Run();
+
+  base::RunLoop verify_apps_run_loop;
+  signal_collector_->GetSignal(SignalName::kVerifyApps,
+                               UserPermission::kGranted, empty_request,
+                               response, verify_apps_run_loop.QuitClosure());
+  verify_apps_run_loop.Run();
+
+  ASSERT_FALSE(response.top_level_error.has_value());
+
   ASSERT_TRUE(response.os_signals_response);
-  CheckAndroidSignalsCollected(response.os_signals_response.value(),
-                               /*can_collect_pii=*/true);
+  CheckOsSignalsCollected(response.os_signals_response.value(),
+                          /*can_collect_pii=*/true);
+
+  ASSERT_TRUE(response.verify_apps_signals_response);
+  CheckVerifyAppsSignalsCollected(
+      response.verify_apps_signals_response.value());
 }
 
 // Tests that an unsupported signal is marked as unsupported.
@@ -185,37 +239,67 @@ TEST_F(AndroidOsSignalsCollectorTest, GetOsSignal_Unsupported) {
 }
 
 // Tests that signal collection is still complete even when consent is missing.
-TEST_F(AndroidOsSignalsCollectorTest, GetSignal_MissingConsent) {
+TEST_F(AndroidOsSignalsCollectorTest, GetOsSignals_MissingConsent) {
   SetFakeBrowserPolicyData();
 
-  SignalName signal_name = SignalName::kOsSignals;
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  signal_collector_->GetSignal(signal_name, UserPermission::kMissingConsent,
-                               empty_request, response, run_loop.QuitClosure());
-
+  signal_collector_->GetSignal(SignalName::kOsSignals,
+                               UserPermission::kMissingConsent, empty_request,
+                               response, run_loop.QuitClosure());
   run_loop.Run();
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_TRUE(response.os_signals_response);
-  CheckAndroidSignalsCollected(response.os_signals_response.value(),
-                               /*can_collect_pii=*/false);
+  CheckOsSignalsCollected(response.os_signals_response.value(),
+                          /*can_collect_pii=*/false);
 }
 
-// Tests that signal collection is halted if permission is not sufficient.
-TEST_F(AndroidOsSignalsCollectorTest, GetSignal_MissingUser) {
-  SignalName signal_name = SignalName::kOsSignals;
+// Tests that signal collection is still complete even when consent is missing.
+TEST_F(AndroidOsSignalsCollectorTest, GetVerifyApps_MissingConsent) {
+  SetFakeBrowserPolicyData();
+
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  signal_collector_->GetSignal(signal_name, UserPermission::kMissingUser,
-                               empty_request, response, run_loop.QuitClosure());
+  signal_collector_->GetSignal(SignalName::kVerifyApps,
+                               UserPermission::kMissingConsent, empty_request,
+                               response, run_loop.QuitClosure());
+  run_loop.Run();
 
+  ASSERT_FALSE(response.top_level_error.has_value());
+  ASSERT_TRUE(response.verify_apps_signals_response);
+  CheckVerifyAppsSignalsCollected(
+      response.verify_apps_signals_response.value());
+}
+
+// Tests that signal collection is halted if permission is not sufficient.
+TEST_F(AndroidOsSignalsCollectorTest, GetOsSignals_MissingUser) {
+  SignalsAggregationRequest empty_request;
+  SignalsAggregationResponse response;
+  base::RunLoop run_loop;
+  signal_collector_->GetSignal(SignalName::kOsSignals,
+                               UserPermission::kMissingUser, empty_request,
+                               response, run_loop.QuitClosure());
   run_loop.Run();
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_FALSE(response.os_signals_response);
+}
+
+// Tests that signal collection is halted if permission is not sufficient.
+TEST_F(AndroidOsSignalsCollectorTest, GetVerifyApps_MissingUser) {
+  SignalsAggregationRequest empty_request;
+  SignalsAggregationResponse response;
+  base::RunLoop run_loop;
+  signal_collector_->GetSignal(SignalName::kVerifyApps,
+                               UserPermission::kMissingUser, empty_request,
+                               response, run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_FALSE(response.top_level_error.has_value());
+  ASSERT_FALSE(response.verify_apps_signals_response);
 }
 
 }  // namespace device_signals

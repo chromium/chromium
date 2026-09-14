@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
@@ -62,6 +63,9 @@ AndroidOsSignalsCollector::AndroidOsSignalsCollector(
           {SignalName::kOsSignals,
            base::BindRepeating(&AndroidOsSignalsCollector::GetOsSignals,
                                base::Unretained(this))},
+          {SignalName::kVerifyApps,
+           base::BindRepeating(&AndroidOsSignalsCollector::GetVerifyApps,
+                               base::Unretained(this))},
       }),
       device_cloud_policy_manager_(device_cloud_policy_manager) {}
 
@@ -74,42 +78,60 @@ void AndroidOsSignalsCollector::GetOsSignals(
     base::OnceClosure done_closure) {
   if (permission != UserPermission::kGranted &&
       permission != UserPermission::kMissingConsent) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(done_closure));
+    return;
+  }
+
+  OsSignalsResponse signal_response;
+
+  if (permission == UserPermission::kGranted) {
+    // TODO(crbug.com/449189531): Refactor and use `policy::GetDeviceName()`
+    // instead.
+    signal_response.display_name = base::android::device_info::device_name();
+  }
+  signal_response.operating_system = policy::GetOSPlatform();
+  signal_response.os_version = base::SysInfo::OperatingSystemVersion();
+  signal_response.browser_version = version_info::GetVersionNumber();
+  signal_response.device_model = base::android::android_info::model();
+  signal_response.device_manufacturer =
+      base::android::android_info::manufacturer();
+  signal_response.device_enrollment_domain =
+      device_signals::TryGetEnrollmentDomain(device_cloud_policy_manager_);
+  signal_response.security_patch_ms =
+      device_signals::GetSecurityPatchLevelEpoch();
+
+  response.os_signals_response = std::move(signal_response);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(done_closure));
+}
+
+void AndroidOsSignalsCollector::GetVerifyApps(
+    UserPermission permission,
+    const SignalsAggregationRequest& request,
+    SignalsAggregationResponse& response,
+    base::OnceClosure done_closure) {
+  if (permission != UserPermission::kGranted &&
+      permission != UserPermission::kMissingConsent) {
     std::move(done_closure).Run();
     return;
   }
 
-  auto signal_response = std::make_unique<OsSignalsResponse>();
-  if (permission == UserPermission::kGranted) {
-    // TODO(crbug.com/449189531): Refactor and use `policy::GetDeviceName()`
-    // instead.
-    signal_response->display_name = base::android::device_info::device_name();
-  }
-  signal_response->operating_system = policy::GetOSPlatform();
-  signal_response->os_version = base::SysInfo::OperatingSystemVersion();
-  signal_response->browser_version = version_info::GetVersionNumber();
-  signal_response->device_model = base::android::android_info::model();
-  signal_response->device_manufacturer =
-      base::android::android_info::manufacturer();
-  signal_response->device_enrollment_domain =
-      device_signals::TryGetEnrollmentDomain(device_cloud_policy_manager_);
-  signal_response->security_patch_ms =
-      device_signals::GetSecurityPatchLevelEpoch();
-
   base::TimeTicks start_time = base::TimeTicks::Now();
   safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
-      .StartIsVerifyAppsEnabled(base::BindOnce(
-          &AndroidOsSignalsCollector::OnIsVerifyAppsEnabled,
-          weak_factory_.GetWeakPtr(), std::ref(response),
-          std::move(signal_response), std::move(done_closure), start_time));
+      .StartIsVerifyAppsEnabled(
+          base::BindOnce(&AndroidOsSignalsCollector::OnIsVerifyAppsEnabled,
+                         weak_factory_.GetWeakPtr(), std::ref(response),
+                         std::move(done_closure), start_time));
 }
 
 void AndroidOsSignalsCollector::OnIsVerifyAppsEnabled(
     SignalsAggregationResponse& response,
-    std::unique_ptr<OsSignalsResponse> os_signals_response,
     base::OnceClosure done_closure,
     base::TimeTicks start_time,
     VerifyAppsEnabledResult result) {
-  os_signals_response->verified_apps_enabled =
+  VerifyAppsSignalsResponse verify_apps_response;
+  verify_apps_response.verified_apps_enabled =
       (result == VerifyAppsEnabledResult::SUCCESS_ENABLED ||
        result == VerifyAppsEnabledResult::SUCCESS_ALREADY_ENABLED);
 
@@ -117,13 +139,14 @@ void AndroidOsSignalsCollector::OnIsVerifyAppsEnabled(
       .StartHasPotentiallyHarmfulApps(base::BindOnce(
           &AndroidOsSignalsCollector::OnHasPotentiallyHarmfulApps,
           weak_factory_.GetWeakPtr(), std::ref(response),
-          std::move(os_signals_response), std::move(done_closure), start_time));
+          std::move(done_closure), std::move(verify_apps_response),
+          start_time));
 }
 
 void AndroidOsSignalsCollector::OnHasPotentiallyHarmfulApps(
     SignalsAggregationResponse& response,
-    std::unique_ptr<OsSignalsResponse> os_signals_response,
     base::OnceClosure done_closure,
+    VerifyAppsSignalsResponse verify_apps_response,
     base::TimeTicks start_time,
     HasHarmfulAppsResultStatus result,
     int num_of_apps,
@@ -134,12 +157,12 @@ void AndroidOsSignalsCollector::OnHasPotentiallyHarmfulApps(
         << static_cast<int>(result) << " and code " << status_code;
   }
 
-  os_signals_response->has_potentially_harmful_apps =
+  verify_apps_response.has_potentially_harmful_apps =
       result == HasHarmfulAppsResultStatus::SUCCESS && num_of_apps != 0;
+
   LogSafetyNetMetrics(result, num_of_apps, start_time);
 
-  response.os_signals_response = std::move(*os_signals_response);
-
+  response.verify_apps_signals_response = std::move(verify_apps_response);
   std::move(done_closure).Run();
 }
 

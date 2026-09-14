@@ -234,6 +234,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Agent"/>
   <int value="5" label="OS Signals"/>
   <int value="6" label="Browser Context Signals"/>
+  <int value="7" label="Certificates"/>
+  <int value="8" label="Verify Apps"/>
 </enum>
 
 <enum name="DeviceSignalsUserPermission">

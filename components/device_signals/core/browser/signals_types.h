@@ -43,7 +43,8 @@ enum class SignalName {
   kOsSignals,
   kBrowserContextSignals,
   kCertificates,
-  kMaxValue = kCertificates
+  kVerifyApps,
+  kMaxValue = kVerifyApps
 };
 
 // Superset of all signal collection errors that can occur, including top-level
@@ -254,9 +255,6 @@ struct OsSignalsResponse : BaseSignalResponse {
   // Linux specific
   std::optional<std::string> distribution_version = std::nullopt;
 
-  // Android specific
-  std::optional<bool> has_potentially_harmful_apps = std::nullopt;
-  std::optional<bool> verified_apps_enabled = std::nullopt;
   // The date when the device most recently applied a security patch, in ms
   // since epoch.
   std::optional<int64_t> security_patch_ms;
@@ -287,8 +285,8 @@ struct ProfileSignalsResponse : BaseSignalResponse {
   std::optional<std::string> profile_id = std::nullopt;
 
   // Enterprise cloud content analysis exclusives
-  enterprise_connectors::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode =
-      enterprise_connectors::REAL_TIME_CHECK_DISABLED;
+  enterprise_connectors::EnterpriseRealTimeUrlCheckMode
+      realtime_url_check_mode = enterprise_connectors::REAL_TIME_CHECK_DISABLED;
   std::vector<std::string> file_downloaded_providers{};
   std::vector<std::string> file_attached_providers{};
   std::vector<std::string> bulk_data_entry_providers{};
@@ -332,6 +330,22 @@ struct CertificateSignalsResponse : BaseSignalResponse {
   std::vector<std::string> serialized_caa_responses;
   bool truncated_certificates = false;
 };
+
+#if BUILDFLAG(IS_ANDROID)
+struct VerifyAppsSignalsResponse : BaseSignalResponse {
+  VerifyAppsSignalsResponse();
+
+  VerifyAppsSignalsResponse(const VerifyAppsSignalsResponse&);
+  VerifyAppsSignalsResponse& operator=(const VerifyAppsSignalsResponse&);
+
+  bool operator==(const VerifyAppsSignalsResponse&) const;
+
+  ~VerifyAppsSignalsResponse() override;
+
+  std::optional<bool> has_potentially_harmful_apps = std::nullopt;
+  std::optional<bool> verified_apps_enabled = std::nullopt;
+};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Request struct containing properties that will be used by the
 // SignalAggregator to validate signals access permissions while delegating
@@ -402,6 +416,11 @@ struct SignalsAggregationResponse {
   std::optional<AgentSignalsResponse> agent_signals_response = std::nullopt;
   std::optional<CertificateSignalsResponse> certificate_signals_response =
       std::nullopt;
+
+#if BUILDFLAG(IS_ANDROID)
+  std::optional<VerifyAppsSignalsResponse> verify_apps_signals_response =
+      std::nullopt;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace device_signals

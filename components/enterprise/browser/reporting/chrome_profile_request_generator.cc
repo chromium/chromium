@@ -196,6 +196,9 @@ void ChromeProfileRequestGenerator::OnBaseReportsReady(
   // Start signals collection process.
   device_signals::SignalsAggregationRequest signals_request;
   signals_request.signal_names.emplace(device_signals::SignalName::kOsSignals);
+#if BUILDFLAG(IS_ANDROID)
+  signals_request.signal_names.emplace(device_signals::SignalName::kVerifyApps);
+#endif  // BUILDFLAG(IS_ANDROID)
   signals_request.signal_names.emplace(
       device_signals::SignalName::kBrowserContextSignals);
 
@@ -331,15 +334,6 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
     }
 
 #if BUILDFLAG(IS_ANDROID)
-    if (os_signals.has_potentially_harmful_apps.has_value()) {
-      os_report->set_has_potentially_harmful_apps(
-          os_signals.has_potentially_harmful_apps.value());
-    }
-    if (os_signals.verified_apps_enabled.has_value()) {
-      os_report->set_verified_apps_enabled(
-          os_signals.verified_apps_enabled.value());
-    }
-
     if (os_signals.security_patch_ms) {
       os_report->set_security_patch_ms(os_signals.security_patch_ms.value());
     }
@@ -447,6 +441,21 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
       }
     }
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (response.verify_apps_signals_response) {
+    const auto& verify_apps_signals =
+        response.verify_apps_signals_response.value();
+    if (verify_apps_signals.has_potentially_harmful_apps.has_value()) {
+      os_report->set_has_potentially_harmful_apps(
+          verify_apps_signals.has_potentially_harmful_apps.value());
+    }
+    if (verify_apps_signals.verified_apps_enabled.has_value()) {
+      os_report->set_verified_apps_enabled(
+          verify_apps_signals.verified_apps_enabled.value());
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   request->GetChromeProfileReportRequest()
       .set_allocated_browser_device_identifier(device_identifier.release());
