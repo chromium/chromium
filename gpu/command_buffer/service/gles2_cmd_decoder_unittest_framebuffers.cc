@@ -3455,9 +3455,8 @@ TEST_P(GLES2DecoderManualInitTest, ClearBackbufferBitsOnDiscardFramebufferEXT) {
   const GLsizei count = 1;
   GLenum attachments[] = {GL_COLOR_EXT};
 
-  EXPECT_CALL(*gl_, DiscardFramebufferEXT(target, count, _))
-      .Times(1)
-      .RetiresOnSaturation();
+  // We skip driver's DiscardFramebuffer call on default fbo.
+  EXPECT_CALL(*gl_, DiscardFramebufferEXT(target, count, _)).Times(0);
   auto& cmd = *GetImmediateAs<cmds::DiscardFramebufferEXTImmediate>();
   cmd.Init(target, count, attachments);
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(attachments)));
@@ -3466,9 +3465,7 @@ TEST_P(GLES2DecoderManualInitTest, ClearBackbufferBitsOnDiscardFramebufferEXT) {
             GetAndClearBackbufferClearBitsForTest());
 
   attachments[0] = GL_DEPTH_EXT;
-  EXPECT_CALL(*gl_, DiscardFramebufferEXT(target, count, _))
-      .Times(1)
-      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, DiscardFramebufferEXT(target, count, _)).Times(0);
   cmd.Init(target, count, attachments);
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(attachments)));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -3476,9 +3473,7 @@ TEST_P(GLES2DecoderManualInitTest, ClearBackbufferBitsOnDiscardFramebufferEXT) {
             GetAndClearBackbufferClearBitsForTest());
 
   attachments[0] = GL_STENCIL_EXT;
-  EXPECT_CALL(*gl_, DiscardFramebufferEXT(target, count, _))
-      .Times(1)
-      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, DiscardFramebufferEXT(target, count, _)).Times(0);
   cmd.Init(target, count, attachments);
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(attachments)));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -3487,9 +3482,7 @@ TEST_P(GLES2DecoderManualInitTest, ClearBackbufferBitsOnDiscardFramebufferEXT) {
 
   const GLsizei count0 = 3;
   const GLenum attachments0[] = {GL_COLOR_EXT, GL_DEPTH_EXT, GL_STENCIL_EXT};
-  EXPECT_CALL(*gl_, DiscardFramebufferEXT(target, count0, _))
-      .Times(1)
-      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, DiscardFramebufferEXT(target, count0, _)).Times(0);
   cmd.Init(target, count0, attachments0);
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(attachments0)));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -3504,9 +3497,8 @@ TEST_P(GLES3DecoderTest,
   // Invalidate the color buffer of the default framebuffer.
   const GLsizei count = 1;
   GLenum attachments[] = {GL_COLOR_EXT};
-  EXPECT_CALL(*gl_, InvalidateFramebuffer(GL_FRAMEBUFFER, count, _))
-      .Times(1)
-      .RetiresOnSaturation();
+  // We skip driver's InvalidateFramebuffer call on default fbo.
+  EXPECT_CALL(*gl_, InvalidateFramebuffer(GL_FRAMEBUFFER, count, _)).Times(0);
   auto& invalidate_cmd =
       *GetImmediateAs<cmds::InvalidateFramebufferImmediate>();
   invalidate_cmd.Init(GL_FRAMEBUFFER, count, attachments);

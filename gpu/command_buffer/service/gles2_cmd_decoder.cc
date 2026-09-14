@@ -5817,6 +5817,10 @@ void GLES2DecoderImpl::InvalidateFramebufferImpl(
   }
 
   bool skip_api_call = false;
+  if (!framebuffer) {
+    // Don't invalidate backbuffer.
+    skip_api_call = true;
+  }
   if (workarounds().dont_invalidate_incomplete_fbos) {
     if (DoCheckFramebufferStatus(target) != GL_FRAMEBUFFER_COMPLETE) {
       skip_api_call = true;
