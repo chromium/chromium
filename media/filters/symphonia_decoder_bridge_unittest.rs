@@ -535,27 +535,114 @@ fn test_detect_mpeg_audio_codec_id() {
 }
 
 // Verify that an MP3-configured decoder dynamically updates to MP2 when
-// an MP2 packet is encountered.
+// an MP2 packet is encountered and successfully decodes the frame.
 #[gtest(SymphoniaDecoderBridgeTest, Mp2LayerSwitching)]
 fn test_mp2_layer_switching() {
+    use symphonia::core::codecs::audio::well_known::*;
+
     let config = ffi::SymphoniaDecoderConfig {
         codec: ffi::SymphoniaAudioCodec::Mp3,
         extra_data: &[],
         bytes_per_sample: 4,
-        channel_mask: 3, // Stereo
+        channel_mask: 1, // Mono
         max_frames_per_packet: 0,
-        sample_rate: 44100,
+        sample_rate: 48000,
     };
     let mut result = init_symphonia_decoder(&config);
     expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP3));
 
-    // MPEG-1 Layer 2 frame header (0xFF, 0xFD, 0xBF, 0x0F, ...).
-    let mp2_packet_data = [0xFF, 0xFD, 0xBF, 0x0F, 0xD7, 0x3F, 0xFC, 0xE3, 0xD9, 0x79, 0x00, 0x00];
+    // MPEG-1 Layer 2 frame header: 96 kbps, 48000 Hz, mono (frame size = 288
+    // bytes). Remaining zero bytes indicate bit allocation 0 (silence) for
+    // all sub-bands.
+    let mut mp2_packet_data = vec![0u8; 288];
+    mp2_packet_data[..4].copy_from_slice(&[0xFF, 0xFD, 0x64, 0xD0]);
     let packet =
-        ffi::SymphoniaPacket { timestamp_us: 0, duration_us: 26122, data: &mp2_packet_data };
+        ffi::SymphoniaPacket { timestamp_us: 0, duration_us: 24000, data: &mp2_packet_data };
 
-    // Calling decode should trigger maybe_update_mpeg_decoder and
-    // update to MP2.
+    // Calling decode should trigger maybe_update_mpeg_decoder, update to MP2,
+    // and decode 1152 PCM frames.
     let decode_result = result.decoder.decode(&packet);
-    expect_ne!(decode_result.status, ffi::SymphoniaDecodeStatus::InvalidDecoderState);
+    expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode_result.buffer.num_frames, 1152);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP2));
+}
+
+// Verify that an MP3-configured decoder dynamically updates to MP1 when
+// an MP1 packet is encountered and successfully decodes the frame.
+#[gtest(SymphoniaDecoderBridgeTest, Mp1LayerSwitching)]
+fn test_mp1_layer_switching() {
+    use symphonia::core::codecs::audio::well_known::*;
+
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::Mp3,
+        extra_data: &[],
+        bytes_per_sample: 4,
+        channel_mask: 1, // Mono
+        max_frames_per_packet: 0,
+        sample_rate: 48000,
+    };
+    let mut result = init_symphonia_decoder(&config);
+    expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP3));
+
+    // MPEG-1 Layer 1 frame header: 192 kbps, 48000 Hz, mono (frame size = 192
+    // bytes). Remaining zero bytes indicate bit allocation 0 (silence) for
+    // all sub-bands.
+    let mut mp1_packet_data = vec![0u8; 192];
+    mp1_packet_data[..4].copy_from_slice(&[0xFF, 0xFE, 0x64, 0xD0]);
+    let packet =
+        ffi::SymphoniaPacket { timestamp_us: 0, duration_us: 8000, data: &mp1_packet_data };
+
+    // Calling decode should trigger maybe_update_mpeg_decoder, update to MP1,
+    // and decode 384 PCM frames.
+    let decode_result = result.decoder.decode(&packet);
+    expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode_result.buffer.num_frames, 384);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP1));
+}
+
+// Verify that an MP3-configured decoder dynamically updates when switching
+// between layers mid-stream (e.g., MP2 to MP1 and back to MP2).
+#[gtest(SymphoniaDecoderBridgeTest, MpMidstreamLayerSwitching)]
+fn test_mp_midstream_layer_switching() {
+    use symphonia::core::codecs::audio::well_known::*;
+
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::Mp3,
+        extra_data: &[],
+        bytes_per_sample: 4,
+        channel_mask: 1, // Mono
+        max_frames_per_packet: 0,
+        sample_rate: 48000,
+    };
+    let mut result = init_symphonia_decoder(&config);
+    expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP3));
+
+    // Decode MP2 frame.
+    let mut mp2_packet_data = vec![0u8; 288];
+    mp2_packet_data[..4].copy_from_slice(&[0xFF, 0xFD, 0x64, 0xD0]);
+    let mp2_packet =
+        ffi::SymphoniaPacket { timestamp_us: 0, duration_us: 24000, data: &mp2_packet_data };
+    let decode_result = result.decoder.decode(&mp2_packet);
+    expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode_result.buffer.num_frames, 1152);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP2));
+
+    // Decode MP1 frame mid-stream.
+    let mut mp1_packet_data = vec![0u8; 192];
+    mp1_packet_data[..4].copy_from_slice(&[0xFF, 0xFE, 0x64, 0xD0]);
+    let mp1_packet =
+        ffi::SymphoniaPacket { timestamp_us: 24000, duration_us: 8000, data: &mp1_packet_data };
+    let decode_result = result.decoder.decode(&mp1_packet);
+    expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode_result.buffer.num_frames, 384);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP1));
+
+    // Decode MP2 frame again mid-stream.
+    let decode_result = result.decoder.decode(&mp2_packet);
+    expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode_result.buffer.num_frames, 1152);
+    expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP2));
 }
