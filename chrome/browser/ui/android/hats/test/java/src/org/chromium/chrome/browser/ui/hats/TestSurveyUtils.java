@@ -15,10 +15,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.InMemorySharedPreferences;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -97,14 +95,12 @@ public class TestSurveyUtils {
             return new Statement() {
                 @Override
                 public void evaluate() throws Throwable {
-                    // Append switch so throttler always passes for the survey.
-                    CommandLine.getInstance()
-                            .appendSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
-                    CommandLine.getInstance()
-                            .appendSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE);
-
                     mTestSurveyFactory = setUpTestSurveyFactory();
-                    base.evaluate();
+                    try {
+                        base.evaluate();
+                    } finally {
+                        mTestSurveyFactory = null;
+                    }
                 }
             };
         }
@@ -185,7 +181,10 @@ public class TestSurveyUtils {
         }
 
         @Override
-        public void destroy() {}
+        public void destroy() {
+            mLastShownTriggerId = null;
+            mLastShownSurveyPsd = null;
+        }
     }
 
     /** Test implementation of a SurveyController. */

@@ -14,9 +14,11 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.hats.TestSurveyUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -36,6 +38,10 @@ import java.util.List;
 
 /** Integration test for {@link ChromeSurveyController} using {@link SurveyClient}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@CommandLineFlags.Add({
+    ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY,
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
+})
 @Features.EnableFeatures(
         ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID
                 + ":autodismiss_duration_ms/500"
