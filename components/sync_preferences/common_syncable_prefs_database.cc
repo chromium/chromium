@@ -171,6 +171,8 @@ enum {
   kDriveConsentState = 121,
   kAutofillAiPrivateInferenceOptInStatus = 122,
   kAutofillWalletReminderNoticeShown = 123,
+  kAutofillAtMemoryDoubleCtrlTriggerEnabled = 124,
+  kAutofillAtMemoryShortcut = 125,
   // New entries should be added above this line.
   kSubscriptionEligibilityAiSubscriptionTier =
       100338,  // (different ID as it's a move from //chrome)
@@ -503,6 +505,12 @@ constexpr auto kCommonSyncablePrefsAllowlist =
          {syncable_prefs_ids::kAutofillWalletReminderNoticeShown,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone,
           WriteBehavior::kWriteToAccountOnly}},
+        {autofill::prefs::kAutofillAtMemoryDoubleCtrlTriggerEnabled,
+         {syncable_prefs_ids::kAutofillAtMemoryDoubleCtrlTriggerEnabled,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {autofill::prefs::kAutofillAtMemoryShortcut,
+         {syncable_prefs_ids::kAutofillAtMemoryShortcut, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
     });
 
 }  // namespace

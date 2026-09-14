@@ -203,6 +203,7 @@ export {SettingsPaymentsPageElement} from './autofill_page/payments/payments_pag
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/payments/virtual_card_unenroll_dialog.js';
 export {SettingsShoppingPageElement} from './autofill_page/shopping/shopping_page.js';
 export {SettingsSuggestionsFromGeminiPageElement} from './autofill_page/suggestions_from_gemini/suggestions_from_gemini_page.js';
+export type {AtMemoryTriggerPrefValue} from './autofill_page/suggestions_from_gemini/suggestions_from_gemini_page.js';
 export {SettingsTravelPageElement} from './autofill_page/travel/travel_page.js';
 export {SettingsWalletablePassDetectionToggleElement} from './autofill_page/walletable_pass_detection_toggle.js';
 // <if expr="not is_chromeos">

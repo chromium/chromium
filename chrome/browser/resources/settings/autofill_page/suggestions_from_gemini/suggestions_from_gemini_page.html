@@ -18,8 +18,11 @@
         external>
     </cr-link-row>
   </div>
-  <div class="card" hidden$="[[!showCustomShortcut_(
-          prefs.generated.find_and_fill_with_gemini.value,isAtMemoryTriggerCustomizationAllowed_)]]">
+  <div class="card" hidden$="[[!showLegacyShortcut_(
+      prefs.generated.find_and_fill_with_gemini.value,
+      isAtMemoryTriggerCustomizationAllowed_,
+      isAtMemoryDoubleCtrlEnabled_,
+      prefsInitialized_)]]">
     <div class="cr-row keyboard-shortcut-setting"
         id="atMemoryTriggerSetting">
       <div class="flex cr-padded-text">
@@ -38,6 +41,37 @@
           shortcut="[[atMemoryTrigger_]]"
           allow-ctrl-alt-shortcuts
           on-shortcut-updated="onAtMemoryTriggerSettingUpdated_">
+      </cr-shortcut-input>
+    </div>
+  </div>
+  <div class="card" hidden$="[[!showDoubleCtrlShortcut_(
+      prefs.generated.find_and_fill_with_gemini.value,
+      isAtMemoryTriggerCustomizationAllowed_,
+      isAtMemoryDoubleCtrlEnabled_,
+      prefsInitialized_)]]">
+    <settings-toggle-button id="atMemoryDoubleCtrlTriggerToggle"
+        pref="{{prefs.autofill.at_memory.double_ctrl_trigger_enabled}}"
+        label="$i18n{atMemoryTriggerLabel}"
+        sub-label="$i18n{atMemoryTriggerSubLabel}">
+    </settings-toggle-button>
+    <div class="cr-row keyboard-shortcut-setting hr"
+        id="atMemoryShortcutSetting">
+      <div class="flex cr-padded-text">
+        <div class="shortcut-label" aria-hidden>
+          $i18n{atMemoryShortcutLabel}
+        </div>
+        <div class="secondary">
+          $i18n{atMemoryShortcutSubLabel}
+        </div>
+      </div>
+      <cr-shortcut-input class="cr-padded-text shortcut-input"
+          input-aria-label="$i18n{atMemoryShortcutInputAreaLabel}"
+          edit-button-aria-label="$i18n{atMemoryShortcutEditButtonLabel}"
+          clear-button-aria-label=
+              "$i18n{atMemoryShortcutClearButtonLabel}"
+          shortcut="[[prefs.autofill.at_memory.shortcut.value]]"
+          allow-ctrl-alt-shortcuts
+          on-shortcut-updated="onAtMemoryShortcutUpdated_">
       </cr-shortcut-input>
     </div>
   </div>

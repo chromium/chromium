@@ -494,6 +494,34 @@
     <message name="IDS_SETTINGS_AUTOFILL_AT_MEMORY_TRIGGER_SETTING_CLEAR_BUTTON_LABEL" desc="Label of the clear button of enhanced autofill shortcut setting.">
       Clear enhanced autofill shortcut
     </message>
+    <if expr="is_macosx">
+      <message name="IDS_SETTINGS_AUTOFILL_AT_MEMORY_TRIGGER_LABEL_MAC" desc="Title for the toggle allowing users to enable or disable the double-press Command shortcut for enhanced autofill.">
+        Press ⌘ twice for enhanced autofill
+      </message>
+    </if>
+    <if expr="not is_macosx">
+      <message name="IDS_SETTINGS_AUTOFILL_AT_MEMORY_TRIGGER_LABEL_NON_MAC" desc="Title for the toggle allowing users to enable or disable the double-press Ctrl shortcut for enhanced autofill.">
+        Press Ctrl twice for enhanced autofill
+      </message>
+    </if>
+    <message name="IDS_SETTINGS_AUTOFILL_AT_MEMORY_TRIGGER_SUB_LABEL" desc="Subtitle for the toggle allowing users to enable or disable the double-press Ctrl shortcut for enhanced autofill.">
+      Use the default keyboard shortcut when filling out forms
+    </message>
+    <message name="IDS_SETTINGS_AUTOFILL_AT_MEMORY_SHORTCUT_LABEL" desc="Title for the shortcut setting for enhanced autofill.">
+      Custom shortcut for enhanced autofill
+    </message>
+    <message name="IDS_SETTINGS_AUTOFILL_AT_MEMORY_SHORTCUT_SUB_LABEL" desc="Subtitle for the shortcut setting for enhanced autofill.">
+      Set up your own keyboard shortcut
+    </message>
+    <message name="IDS_SETTINGS_AUTOFILL_AT_MEMORY_SHORTCUT_INPUT_AREA_LABEL" desc="Accessibility label for the shortcut input field for enhanced autofill.">
+      Custom shortcut for enhanced autofill
+    </message>
+    <message name="IDS_SETTINGS_AUTOFILL_AT_MEMORY_SHORTCUT_EDIT_BUTTON_LABEL" desc="Accessibility label for the edit button of the shortcut for enhanced autofill.">
+      Edit custom shortcut for enhanced autofill
+    </message>
+    <message name="IDS_SETTINGS_AUTOFILL_AT_MEMORY_SHORTCUT_CLEAR_BUTTON_LABEL" desc="Accessibility label for the clear button of the shortcut for enhanced autofill.">
+      Clear custom shortcut for enhanced autofill
+    </message>
     <message name="IDS_SETTINGS_YOUR_SAVED_INFO_DESCRIPTION" desc="Description of the 'Your saved info' page.">
       Manage your autofill info for faster browsing &#x2014; info like passwords, payment methods, addresses, and ID cards
     </message>

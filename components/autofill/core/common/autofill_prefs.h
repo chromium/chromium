@@ -91,6 +91,13 @@ inline constexpr char kAutofillAmountExtractionAiTermsSeen[] =
 //                     to trigger the popup. Default: `@@`.
 inline constexpr char kAutofillAtMemoryTriggerInfo[] =
     "autofill.at_memory.trigger_info";
+// Boolean that is true if the Double Ctrl / Double Command trigger for
+// AtMemory is enabled.
+inline constexpr char kAutofillAtMemoryDoubleCtrlTriggerEnabled[] =
+    "autofill.at_memory.double_ctrl_trigger_enabled";
+// String representing the keyboard shortcut configured for AtMemory.
+inline constexpr char kAutofillAtMemoryShortcut[] =
+    "autofill.at_memory.shortcut";
 // Boolean that is true if Autofill is enabled and allowed to save credit card
 // data.
 inline constexpr char kAutofillCreditCardEnabled[] =
