@@ -186,10 +186,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   // to a selectable type.
   expected_types.Remove(CONTEXTUAL_TASK);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  expected_types.RemoveAll({WEB_APKS});
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   EXPECT_TRUE(sync_user_settings->IsSyncEverythingEnabled());
   EXPECT_THAT(GetPreferredUserTypes(*sync_user_settings),
               ContainerEq(expected_types));
@@ -430,7 +426,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
       MakeSyncUserSettings(GetUserTypes());
 
   DataTypeSet expected_types = GetUserTypes();
-  expected_types.RemoveAll({WEB_APKS});
   // TODO(crbug.com/397767033): In CL #3, delete (AI_THREAD is now mapped to a
   // selectable type.
   expected_types.Remove(CONTEXTUAL_TASK);

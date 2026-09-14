@@ -21,8 +21,7 @@ Java WebApkActivityCoordinator / WebApkUpdateManager
                      ▼ (JNI)
 [Native WebAPK Services] chrome/browser/android/webapk/
       ├── WebApkInstaller ──► WebAPK Minting Server (Requests signed APK)
-      ├── WebApkUpdateManager ──► Manifest Serialization & Update Dispatch
-      └── WebApkSyncBridge / WebApkDatabase ──► Chrome Sync Engine
+      └── WebApkUpdateManager ──► Manifest Serialization & Update Dispatch
 ```
 
 ### 1. Installation Pipeline
@@ -39,15 +38,7 @@ Java WebApkActivityCoordinator / WebApkUpdateManager
   the profile-keyed service that queues, deduplicates, and manages active
   installation requests across tabs.
 
-### 2. Synchronization & Persistence
-
-- **[`WebApkSyncBridge`](webapk_sync_bridge.h)** &
-  **[`WebApkDatabase`](webapk_database.h)**: Synchronizes installed WebAPK
-  specifics with Chrome Sync and persists local state in LevelDB, enabling
-  WebAPK restoration on new Android devices via
-  [`WebApkRestoreManager`](webapk_restore_manager.h).
-
-### 3. Update Dispatch & Invariants
+### 2. Update Dispatch & Invariants
 
 - **Background Update Bridge:** Free JNI functions in
   [`webapk_update_manager.cc`](webapk_update_manager.cc) serialize updated

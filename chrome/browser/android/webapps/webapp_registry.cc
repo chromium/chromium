@@ -8,7 +8,6 @@
 #include "base/android/jni_array.h"
 #include "base/logging.h"
 #include "chrome/browser/android/browsing_data/url_filter_bridge.h"
-#include "components/sync/protocol/web_apk_specifics.pb.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/WebappRegistry_jni.h"
@@ -56,32 +55,6 @@ std::vector<std::string> WebappRegistry::GetOriginsWithInstalledApp() {
   base::android::AppendJavaStringArrayToStringVector(env, java_result,
                                                      &origins);
   return origins;
-}
-
-std::vector<std::unique_ptr<sync_pb::WebApkSpecifics>>
-WebappRegistry::GetWebApkSpecifics() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  ScopedJavaLocalRef<jobjectArray> java_result =
-      Java_WebappRegistry_getWebApkSpecifics(env);
-
-  std::vector<std::string> webapk_specifics_bytes;
-  base::android::JavaArrayOfByteArrayToStringVector(env, java_result,
-                                                    &webapk_specifics_bytes);
-
-  std::vector<std::unique_ptr<sync_pb::WebApkSpecifics>> webapk_specifics;
-  for (const auto& specifics_bytes : webapk_specifics_bytes) {
-    std::unique_ptr<sync_pb::WebApkSpecifics> specifics =
-        std::make_unique<sync_pb::WebApkSpecifics>();
-    if (!specifics->ParseFromString(specifics_bytes)) {
-      LOG(ERROR) << "failed to parse WebApkSpecifics proto";
-      continue;
-    }
-
-    webapk_specifics.push_back(std::move(specifics));
-  }
-
-  return webapk_specifics;
 }
 
 // static

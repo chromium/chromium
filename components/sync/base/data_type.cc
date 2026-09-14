@@ -647,23 +647,6 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
             .local_sync_support_policy = LocalSyncSupportPolicy::kSupported,
         },
         {
-            .type = WEB_APKS,
-            .specifics_field_number =
-                sync_pb::EntitySpecifics::kWebApkFieldNumber,
-            .debug_string = "Web Apks",
-            .histogram_suffix = "WEB_APK",
-            .stable_lowercase_string = "webapks",
-            .encryption_policy =
-                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
-            .priority = DataTypePriority::kRegular,
-            .communication_direction = CommunicationDirection::kRegularTwoWay,
-            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
-            .unsynced_data_check_on_signout_policy =
-                UnsyncedDataCheckOnSignoutPolicy::kNone,
-            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
-            .local_sync_support_policy = LocalSyncSupportPolicy::kSupported,
-        },
-        {
             .type = OS_PREFERENCES,
             .specifics_field_number =
                 sync_pb::EntitySpecifics::kOsPreferenceFieldNumber,
@@ -1212,12 +1195,12 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
     }};
 
 // LINT.IfChange(DataTypeHistogramSuffix)
-static_assert(GetNumDataTypes() == 66,
+static_assert(GetNumDataTypes() == 65,
               "When adding a new type, update kDataTypeInfoTable, update "
               "histograms.xml and follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
 
 const DataTypeInfo& GetDataTypeInfo(DataType type) {
   static const base::NoDestructor<
@@ -1350,9 +1333,6 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
       break;
     case WEB_APPS:
       specifics->mutable_web_app();
-      break;
-    case WEB_APKS:
-      specifics->mutable_web_apk();
       break;
     case WIFI_CONFIGURATIONS:
       specifics->mutable_wifi_configuration();
@@ -1718,8 +1698,6 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kWifiConfigurations;
     case WEB_APPS:
       return DataTypeForHistograms::kWebApps;
-    case WEB_APKS:
-      return DataTypeForHistograms::kWebApks;
     case OS_PREFERENCES:
       return DataTypeForHistograms::kOsPreferences;
     case OS_PRIORITY_PREFERENCES:

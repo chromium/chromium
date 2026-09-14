@@ -3560,7 +3560,6 @@ group("browser_generated_files") {
   ]
   if (is_android) {
     public_deps += [
-      "//chrome/browser/android/webapk/proto",
       "//chrome/browser/auxiliary_search/proto",
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//chrome/browser/ui/webui/notifications_internals:mojo_bindings",
@@ -3957,11 +3956,6 @@ static_library("test_support") {
   ]
 
   if (is_android) {
-    sources += [
-      "android/webapk/test/fake_webapk_specifics_fetcher.cc",
-      "android/webapk/test/fake_webapk_specifics_fetcher.h",
-    ]
-
     deps += [ "//chrome/browser/android" ]
   } else {
     sources += [

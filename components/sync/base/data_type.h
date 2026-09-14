@@ -114,8 +114,6 @@ enum DataType {
   WIFI_CONFIGURATIONS,
   // A web app object.
   WEB_APPS,
-  // A WebAPK object.
-  WEB_APKS,
   // OS-specific preferences (a.k.a. "OS settings"). ChromeOS only.
   OS_PREFERENCES,
   // Synced before other user types. Never encrypted. ChromeOS only.
@@ -298,7 +296,7 @@ enum class DataTypeForHistograms {
   kIncomingPasswordSharingInvitations = 59,
   kOutgoingPasswordSharingInvitations = 60,
   kAutofillWalletCredential = 61,
-  kWebApks = 62,
+  // kDeprecatedWebApks = 62,
   kSharedTabGroupData = 63,
   kCollaborationGroup = 64,
   // kDeprecatedPlusAddresses = 65,

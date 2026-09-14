@@ -70,7 +70,6 @@ import "components/sync/protocol/theme_specifics.proto";
 import "components/sync/protocol/typed_url_specifics.proto";
 import "components/sync/protocol/user_consent_specifics.proto";
 import "components/sync/protocol/user_event_specifics.proto";
-import "components/sync/protocol/web_apk_specifics.proto";
 import "components/sync/protocol/web_app_specifics.proto";
 import "components/sync/protocol/webauthn_credential_specifics.proto";
 import "components/sync/protocol/wifi_configuration_specifics.proto";
@@ -145,7 +144,6 @@ message EntitySpecifics {
     UserConsentSpecifics user_consent = 556014;
     SendTabToSelfSpecifics send_tab_to_self = 601980;
     SecurityEventSpecifics security_event = 600372;
-    WebApkSpecifics web_apk = 1117170;
     WebAppSpecifics web_app = 673225;
     WifiConfigurationSpecifics wifi_configuration = 662827;
     OsPreferenceSpecifics os_preference = 702141;
@@ -200,6 +198,7 @@ message EntitySpecifics {
     EmptySpecifics accessibility_annotation = 1588764 [deprecated = true];
     EmptySpecifics plus_address = 1267844 [deprecated = true];
     EmptySpecifics plus_address_setting = 1303742 [deprecated = true];
+    EmptySpecifics web_apk = 1117170 [deprecated = true];
     TypedUrlSpecifics typed_url = 40781 [deprecated = true];
   }
   reserved 161496;

@@ -38,7 +38,6 @@ class UserSelectableTypeTest : public ::testing::Test {
     data_types.Put(APPS);
     data_types.Put(APP_SETTINGS);
     data_types.Put(WEB_APPS);
-    data_types.Put(WEB_APKS);
 
     return data_types;
   }
