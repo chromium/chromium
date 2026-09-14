@@ -94,6 +94,9 @@ public class OmniboxTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    /** Keyword of the default search engine, captured before the test swaps it out. */
+    private String mDefaultSearchEngineKeyword;
+
     @Test
     @EnormousTest
     @Feature({"Omnibox"})
@@ -358,7 +361,6 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     @DisableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
-    @DisabledTest(message = "https://crbug.com/524704358")
     public void testSecurityIconOnHTTPSFocusAndBack() throws Exception {
         mActivityTestRule.startOnBlankPage();
         setNonDefaultSearchEngine();
@@ -434,6 +436,7 @@ public class OmniboxTest {
                     List<TemplateUrl> searchEngines = templateUrlService.getTemplateUrls();
                     TemplateUrl defaultEngine =
                             templateUrlService.getDefaultSearchEngineTemplateUrl();
+                    mDefaultSearchEngineKeyword = defaultEngine.getKeyword();
 
                     TemplateUrl notDefault = null;
                     for (TemplateUrl searchEngine : searchEngines) {
@@ -451,13 +454,10 @@ public class OmniboxTest {
 
     private void restoreDefaultSearchEngine() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TemplateUrlService service =
-                            TemplateUrlServiceFactory.getForProfile(
-                                    ProfileManager.getLastUsedRegularProfile());
-                    TemplateUrl defaultEngine = service.getDefaultSearchEngineTemplateUrl();
-                    service.setSearchEngine(defaultEngine.getKeyword());
-                });
+                () ->
+                        TemplateUrlServiceFactory.getForProfile(
+                                        ProfileManager.getLastUsedRegularProfile())
+                                .setSearchEngine(mDefaultSearchEngineKeyword));
     }
 
     /** Test whether the color of the Location bar is correct for HTTPS scheme. */
@@ -465,7 +465,7 @@ public class OmniboxTest {
     @SmallTest
     @SkipCommandLineParameterization
     @DisableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
-    @DisabledTest(message = "crbug.com/556414361")
+    @DisabledTest(message = "Page theme color never arrives on the CQ AVD. crbug.com/556414361")
     public void testHttpsLocationBarColor() throws Exception {
         mActivityTestRule.startOnBlankPage();
         EmbeddedTestServer testServer =
@@ -539,7 +539,7 @@ public class OmniboxTest {
     @SmallTest
     @SkipCommandLineParameterization
     @EnableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
-    @DisabledTest(message = "crbug.com/556408574")
+    @DisabledTest(message = "Page theme color never arrives on the CQ AVD. crbug.com/556408574")
     public void testHttpsLocationBarColor_PageInfoAsAppMenuItemFlagEnabled() throws Exception {
         mActivityTestRule.startOnBlankPage();
         EmbeddedTestServer testServer =
@@ -619,23 +619,23 @@ public class OmniboxTest {
     @Test
     @MediumTest
     @Feature({"Omnibox"})
-    @DisabledTest(message = "crbug.com/555870875")
     public void testPersistedEditingState() {
         mActivityTestRule.startOnBlankPage();
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 
         // 1. In Tab 1, focus omnibox and type first text without committing.
+        Tab tab1 = getActivityTab();
         omnibox.requestFocus();
         omnibox.typeText("first query", false);
         omnibox.checkText("first query");
 
-        // 2. Open another tab using Ctrl+T keyboard shortcut.
-        int initialTabCount = ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity());
+        // 2. Open another tab using Ctrl+T keyboard shortcut. Wait for it to become the active tab
+        // rather than merely to exist, so that Tab 1 has handed over its editing state.
         omnibox.sendShortcut(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON);
         CriteriaHelper.pollUiThread(
-                () ->
-                        ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity())
-                                == initialTabCount + 1);
+                () -> mActivityTestRule.getActivity().getActivityTab() != tab1,
+                "The new tab never became the active tab.");
+        Tab tab2 = getActivityTab();
 
         // 3. In Tab 2, focus omnibox and type second text without committing.
         omnibox.requestFocus();
@@ -644,11 +644,24 @@ public class OmniboxTest {
 
         // 4. Send Ctrl+PageUp to switch back to Tab 1.
         omnibox.sendShortcut(KeyEvent.KEYCODE_PAGE_UP, KeyEvent.META_CTRL_ON);
+        waitForActivityTab(tab1);
         omnibox.checkText("first query");
 
         // 5. Send Ctrl+PageDown to switch back to Tab 2.
         omnibox.sendShortcut(KeyEvent.KEYCODE_PAGE_DOWN, KeyEvent.META_CTRL_ON);
+        waitForActivityTab(tab2);
         omnibox.checkText("second query");
+    }
+
+    private Tab getActivityTab() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getActivityTab());
+    }
+
+    private void waitForActivityTab(Tab expected) {
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getActivityTab() == expected,
+                "The tab switch never completed.");
     }
 
     @Test
