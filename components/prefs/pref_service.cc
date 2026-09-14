@@ -418,7 +418,7 @@ void PrefService::SetLanguageTag(std::string_view path,
 void PrefService::SetInt64(std::string_view path, int64_t value) {
   CHECK_EQ(pref_registry_->GetRegisteredPrefType(path).value_or(
                PrefRegistry::RegisteredPrefType::kInt64),
-           PrefRegistry::RegisteredPrefType::kInt64, base::NotFatalUntil::M143)
+           PrefRegistry::RegisteredPrefType::kInt64)
       << path;
   SetUserPrefValue(path, base::Int64ToValue(value));
 }
@@ -426,7 +426,7 @@ void PrefService::SetInt64(std::string_view path, int64_t value) {
 int64_t PrefService::GetInt64(std::string_view path) const {
   CHECK_EQ(pref_registry_->GetRegisteredPrefType(path).value_or(
                PrefRegistry::RegisteredPrefType::kInt64),
-           PrefRegistry::RegisteredPrefType::kInt64, base::NotFatalUntil::M143)
+           PrefRegistry::RegisteredPrefType::kInt64)
       << path;
   const base::Value& value = GetValue(path);
   std::optional<int64_t> integer = base::ValueToInt64(value);
@@ -451,7 +451,7 @@ uint64_t PrefService::GetUint64(std::string_view path) const {
 void PrefService::SetTime(std::string_view path, base::Time value) {
   CHECK_EQ(pref_registry_->GetRegisteredPrefType(path).value_or(
                PrefRegistry::RegisteredPrefType::kTime),
-           PrefRegistry::RegisteredPrefType::kTime, base::NotFatalUntil::M143)
+           PrefRegistry::RegisteredPrefType::kTime)
       << path;
   SetUserPrefValue(path, base::TimeToValue(value));
 }
@@ -459,7 +459,7 @@ void PrefService::SetTime(std::string_view path, base::Time value) {
 base::Time PrefService::GetTime(std::string_view path) const {
   CHECK_EQ(pref_registry_->GetRegisteredPrefType(path).value_or(
                PrefRegistry::RegisteredPrefType::kTime),
-           PrefRegistry::RegisteredPrefType::kTime, base::NotFatalUntil::M143)
+           PrefRegistry::RegisteredPrefType::kTime)
       << path;
   const base::Value& value = GetValue(path);
   std::optional<base::Time> time = base::ValueToTime(value);
