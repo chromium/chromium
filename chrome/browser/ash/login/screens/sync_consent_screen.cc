@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/consent_auditor/consent_auditor.h"
