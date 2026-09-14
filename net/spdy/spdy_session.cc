@@ -1244,9 +1244,6 @@ void SpdySession::UpdateStreamPriority(SpdyStream* stream,
 
   DCHECK(IsStreamActive(stream_id));
 
-  if (base::FeatureList::IsEnabled(features::kAvoidH2Reprioritization))
-    return;
-
   auto updates = priority_dependency_state_.OnStreamUpdate(
       stream_id, ConvertRequestPriorityToSpdyPriority(new_priority));
   for (auto u : updates) {
