@@ -62,6 +62,7 @@
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget_observer.h"
@@ -229,6 +230,14 @@ class NativeWidgetMacTest : public WidgetTest {
         DialogDelegateView::CreatePassKey());
     dialog->SetModalType(modal_type);
     return dialog.release();
+  }
+
+  // Waits for the widget's minimized state to match `minimized`.
+  static void WaitForMinimized(Widget* widget, bool minimized = true) {
+    views::test::PropertyWaiter waiter(
+        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        minimized, base::Seconds(5));
+    EXPECT_TRUE(waiter.Wait());
   }
 
   // Make an NSWindow with a close button and a title bar to use as a parent.
@@ -836,6 +845,109 @@ TEST_F(NativeWidgetMacTest, MinimizeByNativeShow) {
   }
 
   EXPECT_TRUE(widget->IsMinimized());
+}
+
+class NativeWidgetMacCompositorVisibilityTest
+    : public NativeWidgetMacTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  NativeWidgetMacCompositorVisibilityTest() {
+    feature_list_.InitWithFeatureState(
+        features::kNotifyCompositorOfWindowVisibilityOnMacOs,
+        NotifyCompositorOfVisibility());
+  }
+
+  bool NotifyCompositorOfVisibility() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that minimizing a window updates compositor visibility according to
+// whether kNotifyCompositorOfWindowVisibilityOnMacOs is enabled, and restoring
+// it marks the compositor as visible again and resumes painting.
+TEST_P(NativeWidgetMacCompositorVisibilityTest,
+       CompositorVisibilityOnMiniaturize) {
+  const bool notify_enabled = NotifyCompositorOfVisibility();
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget->Init(std::move(init_params));
+
+  auto* view = widget->GetContentsView()->AddChildView(
+      std::make_unique<PaintCountView>());
+  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+
+  widget->SetBounds(gfx::Rect(100, 100, 300, 300));
+  {
+    views::test::PropertyWaiter visibility_waiter(
+        base::BindRepeating(&Widget::IsVisible, base::Unretained(widget.get())),
+        true);
+    widget->Show();
+    EXPECT_TRUE(visibility_waiter.Wait());
+  }
+
+  ASSERT_NE(nullptr, widget->GetCompositor());
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  view->WaitForPaintCount(1);
+
+  // 1. Minimize externally via Cocoa AppKit (performMiniaturize:).
+  [ns_window performMiniaturize:nil];
+  WaitForMinimized(widget.get());
+  EXPECT_TRUE(widget->IsMinimized());
+  EXPECT_EQ(widget->GetCompositor()->IsVisible(), !notify_enabled);
+
+  // Deminiaturize and verify compositor resumes and paints successfully.
+  [ns_window deminiaturize:nil];
+  WaitForMinimized(widget.get(), /*minimized=*/false);
+  EXPECT_FALSE(widget->IsMinimized());
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  view->WaitForPaintCount(2);
+
+  // 2. Also test views::Widget::Minimize() and views::Widget::Restore().
+  widget->Minimize();
+  WaitForMinimized(widget.get());
+  EXPECT_TRUE(widget->IsMinimized());
+  EXPECT_EQ(widget->GetCompositor()->IsVisible(), !notify_enabled);
+
+  widget->Restore();
+  WaitForMinimized(widget.get(), /*minimized=*/false);
+  EXPECT_FALSE(widget->IsMinimized());
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  view->WaitForPaintCount(3);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NativeWidgetMacCompositorVisibilityTest,
+                         ::testing::Bool());
+
+// Tests that closing a window while it is minimized with an invisible
+// compositor cleans up cleanly without assertions or crashes.
+TEST_F(NativeWidgetMacTest, CloseWhileMinimized) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kNotifyCompositorOfWindowVisibilityOnMacOs);
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget->Init(std::move(init_params));
+
+  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+  widget->SetBounds(gfx::Rect(100, 100, 300, 300));
+  widget->Show();
+
+  ASSERT_NE(nullptr, widget->GetCompositor());
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+
+  [ns_window performMiniaturize:nil];
+  WaitForMinimized(widget.get());
+  EXPECT_TRUE(widget->IsMinimized());
+  EXPECT_FALSE(widget->GetCompositor()->IsVisible());
+
+  // Close the widget while minimized and invisible.
+  widget->CloseNow();
 }
 
 TEST_F(NativeWidgetMacTest, MiniaturizeFramelessWindow) {
@@ -2303,7 +2415,7 @@ TEST_F(NativeWidgetMacTest, ChangeOpacity) {
 // subsequent show only when `prevent_stale_content_after_hide` is set.
 TEST_F(NativeWidgetMacTest, HideAndShowOpacityWithAlphaFeature) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAlphaInsteadOfCATransaction);
+  feature_list.InitAndEnableFeature(::features::kAlphaInsteadOfCATransaction);
 
   // Case 1: Window without prevent_stale_content_after_hide (default).
   // Once the first frame arrives, subsequent hide-then-show does not reset

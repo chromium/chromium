@@ -16,6 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 #include "components/remote_cocoa/app_shim/mouse_capture.h"
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
@@ -56,6 +57,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_activation_delegate.h"
@@ -1108,6 +1110,7 @@ void NativeWidgetMacNSWindowHost::OnApplicationHostDestroying(
 // remote_cocoa::mojom::NativeWidgetNSWindowHost:
 
 void NativeWidgetMacNSWindowHost::OnVisibilityChanged(bool window_visible) {
+  TRACE_EVENT("ui", __PRETTY_FUNCTION__, "window_visible", window_visible);
   if (is_visible_ == window_visible) {
     return;
   }
@@ -1116,10 +1119,18 @@ void NativeWidgetMacNSWindowHost::OnVisibilityChanged(bool window_visible) {
   if (compositor_) {
     layer()->SetVisible(window_visible);
     if (window_visible) {
+      if (base::FeatureList::IsEnabled(
+              views::features::kNotifyCompositorOfWindowVisibilityOnMacOs)) {
+        compositor_->compositor()->SetVisible(true);
+      }
       compositor_->Unsuspend();
       layer()->SchedulePaint(layer()->bounds());
     } else {
       compositor_->Suspend();
+      if (base::FeatureList::IsEnabled(
+              views::features::kNotifyCompositorOfWindowVisibilityOnMacOs)) {
+        compositor_->compositor()->SetVisible(false);
+      }
     }
   }
 
@@ -1571,7 +1582,7 @@ void NativeWidgetMacNSWindowHost::OnWindowKeyStatusChanged(
   // for PWAs. However this breaks accessibility on in-process windows,
   // so set it back to NO when a local window gains focus. See
   // https://crbug.com/41485830.
-  if (is_key && features::IsAccessibilityRemoteUIAppEnabled()) {
+  if (is_key && ::features::IsAccessibilityRemoteUIAppEnabled()) {
     [NSAccessibilityRemoteUIElement setRemoteUIApp:!!application_host_];
   }
   // Explicitly set the keyboard accessibility state on regaining key
@@ -1740,7 +1751,7 @@ bool NativeWidgetMacNSWindowHost::GetRootViewAccessibilityToken(
   *pid = getpid();
   id element_id = GetNativeViewAccessible();
 
-  if (features::IsAccessibilityRemoteUIAppEnabled()) {
+  if (::features::IsAccessibilityRemoteUIAppEnabled()) {
     pid_t client_pid = [remote_view_accessible_ processIdentifier];
     if ([element_id respondsToSelector:@selector
                     (accessibilitySetPresenterProcessIdentifier:)]) {

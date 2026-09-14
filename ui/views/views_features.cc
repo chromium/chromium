@@ -53,4 +53,11 @@ BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
 // If enabled, NativeViewHost controls the layers of the native view.
 BASE_FEATURE(kNativeViewHostManagesLayers, base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_MAC)
+// When enabled, tell the browser compositor when the window is hidden, to allow
+// it to reclaim resources.
+BASE_FEATURE(kNotifyCompositorOfWindowVisibilityOnMacOs,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace views::features
