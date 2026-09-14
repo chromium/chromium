@@ -788,6 +788,7 @@ class MockAutofillDriver : public TestAutofillDriver {
               SendTypePredictionsToRenderer,
               ((const FormStructure&)),
               (override));
+  MOCK_METHOD(bool, CanShowAutofillUi, (), (const override));
 };
 
 class MockAmountExtractionManager : public payments::AmountExtractionManager {
@@ -1007,6 +1008,7 @@ class BrowserAutofillManagerTest
     payments_autofill_client()
         .SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
 #endif
+    ON_CALL(autofill_driver(), CanShowAutofillUi).WillByDefault(Return(true));
   }
 
   void TearDown() override { DestroyAutofillClient(); }
@@ -6200,6 +6202,32 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
                        /*form_element_was_clicked=*/true);
   EXPECT_THAT(external_delegate()->suggestions(), IsEmpty());
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Tests that Autofill suggestions are shown if TouchToFillAutofill is not
+// eligible.
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
+       PrivateInferenceNotice_DoesNotShowIfAutofillUiCantBeShown) {
+  EXPECT_CALL(autofill_driver(), CanShowAutofillUi)
+      .WillRepeatedly(Return(false));
+  SeeForm(/*may_run_model=*/false);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kAutofillAiPrivateInferenceNotice)};
+  EXPECT_CALL(mock_ai_manager(), GetSuggestions).WillOnce(Return(suggestions));
+
+  EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
+      .WillOnce(testing::Return(false));
+  // The private inference notice should be shown when touch to fill bottom
+  // sheet is shown.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiPrivateInferenceNotice).Times(0);
+  TryToShowTouchToFill(passport_form(), passport_form().fields().front(),
+                       /*form_element_was_clicked=*/true);
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(Field(
+                  &Suggestion::type,
+                  Eq(SuggestionType::kAutofillAiPrivateInferenceNotice))));
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
 
 // Tests that Autofill suggestions are shown if TouchToFillAutofill is not

@@ -1314,6 +1314,10 @@ bool BrowserAutofillManager::TryToShowTouchToFillSuggestions(
 
 bool BrowserAutofillManager::MaybeShowPrivateInferenceNotice(
     base::span<const Suggestion> autofill_ai_suggestions) {
+  if (!driver().CanShowAutofillUi()) {
+    return false;
+  }
+
   if (std::ranges::contains(autofill_ai_suggestions,
                             SuggestionType::kAutofillAiPrivateInferenceNotice,
                             &Suggestion::type)) {
