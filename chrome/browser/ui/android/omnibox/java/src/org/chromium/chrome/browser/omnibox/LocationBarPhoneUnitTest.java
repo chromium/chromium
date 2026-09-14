@@ -30,7 +30,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -51,7 +50,14 @@ import org.chromium.url.JUnitTestGURLs;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "w400dp")
-@EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+// ANDROID_PAGE_INFO_AS_APP_MENU_ITEM is pinned rather than left to its default because it gates
+// LocationBarLayout#setLocationBarStartPadding, which the centering assertions depend on. Its
+// CachedFlag declares defaultValueInTests=true, so leaving it implicit makes the outcome differ
+// between environments that resolve that default and those that do not. See crbug.com/561618037.
+@EnableFeatures({
+    ChromeFeatureList.ANDROID_BOTTOM_BAR,
+    ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM
+})
 public class LocationBarPhoneUnitTest {
     /**
      * Tolerance in pixels for centering checks, accounting for rounding accumulated across two
@@ -171,7 +177,6 @@ public class LocationBarPhoneUnitTest {
     }
 
     @Test
-    @DisabledTest(message = "Off-center by the hidden status view's width. crbug.com/561618037")
     public void urlBarShifts_whenStatusViewHidden() {
         showUrl(SHORT_URL);
         int leftWithStatusView = mUrlBar.getLeft();
@@ -183,6 +188,13 @@ public class LocationBarPhoneUnitTest {
                 "URL bar should move when the status view is hidden",
                 leftWithStatusView,
                 mUrlBar.getLeft());
+        // With neither the status view nor the back button on screen, the location bar takes on the
+        // icon start padding, and the clump is centered inside what remains.
+        assertEquals(
+                mLocationBar
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_icon_starting_padding),
+                mLocationBar.getPaddingStart());
         assertUrlBarCentered();
     }
 
@@ -279,11 +291,20 @@ public class LocationBarPhoneUnitTest {
         assertEquals(0f, mStatusView.getTranslationX(), MathUtils.EPSILON);
     }
 
-    /** Asserts the status view and URL bar clump is horizontally centered in the location bar. */
+    /**
+     * Asserts the status view and URL bar clump is horizontally centered in the location bar.
+     *
+     * <p>The clump is centered within the content box, so the location bar's own horizontal padding
+     * must be discounted. {@link LocationBarLayout#updateStartPadding()} applies {@code
+     * R.dimen.location_bar_icon_starting_padding} whenever the status view and the back button are
+     * both hidden, which would otherwise read as an off-centre URL bar.
+     */
     private void assertUrlBarCentered() {
         boolean isStatusVisible = mStatusView.getVisibility() == View.VISIBLE;
-        int leftSpace = isStatusVisible ? mStatusView.getLeft() : mUrlBar.getLeft();
-        int rightSpace = mLocationBar.getWidth() - mUrlBar.getRight();
+        int clumpLeft = isStatusVisible ? mStatusView.getLeft() : mUrlBar.getLeft();
+        int leftSpace = clumpLeft - mLocationBar.getPaddingLeft();
+        int rightSpace =
+                mLocationBar.getWidth() - mLocationBar.getPaddingRight() - mUrlBar.getRight();
 
         assertEquals(
                 "URL bar is not centered", leftSpace, rightSpace, LAYOUT_ROUNDING_TOLERANCE_PX);
