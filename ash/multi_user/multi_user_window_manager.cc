@@ -191,6 +191,12 @@ void MultiUserWindowManager::SetWindowOwner(aura::Window* window,
 
   if (current_account_id_.has_value() &&
       !IsWindowOnDesktopOfUser(window, *current_account_id_)) {
+    // When assigning ownership of a window (or a window with a transient child)
+    // that is a system modal dialog to a background user, switch to that user
+    // instead of hiding it so the modal dialog is presented to its owner.
+    if (MaybeSwitchActiveUserForSystemModalWindow(window)) {
+      return;
+    }
     SetWindowVisibility(window, false);
   }
 }
@@ -342,12 +348,24 @@ void MultiUserWindowManager::OnWindowVisibilityChanged(aura::Window* window,
 
   // Don't allow to make the window visible if it shouldn't be.
   if (visible && !IsWindowOnDesktopOfUser(window, *current_account_id_)) {
+    // When a system modal dialog (or a window with a system modal transient
+    // child) is shown for a background user, switch to that user instead of
+    // suppressing the window so the dialog can be addressed.
+    if (MaybeSwitchActiveUserForSystemModalWindow(window)) {
+      return;
+    }
     SetWindowVisibility(window, false);
     return;
   }
   aura::Window* owned_parent = GetOwningWindowInTransientChain(window);
   if (owned_parent && owned_parent != window && visible &&
       !IsWindowOnDesktopOfUser(owned_parent, *current_account_id_)) {
+    // Similarly, if an unowned transient child is shown and its owning window
+    // in the transient chain has a system modal transient child, switch to
+    // the owning window's user instead of hiding it.
+    if (MaybeSwitchActiveUserForSystemModalWindow(owned_parent)) {
+      return;
+    }
     SetWindowVisibility(window, false);
   }
 }
@@ -437,32 +455,30 @@ bool MultiUserWindowManager::ShowWindowForUserIntern(
   return true;
 }
 
+bool MultiUserWindowManager::MaybeSwitchActiveUserForSystemModalWindow(
+    aura::Window* window) {
+  CHECK(window);
+  CHECK(window->GetRootWindow());
+  if (!HasSystemModalTransientChildWindow(window)) {
+    return false;
+  }
+  AccountId account_id = GetUserPresentingWindow(window);
+  if (!account_id.is_valid()) {
+    aura::Window* owning_window = GetOwningWindowInTransientChain(window);
+    CHECK(owning_window);
+    account_id = GetUserPresentingWindow(owning_window);
+    CHECK(account_id.is_valid());
+  }
+  Shell::Get()->session_controller()->SwitchActiveUser(account_id);
+  return true;
+}
+
 void MultiUserWindowManager::SetWindowVisibility(
     aura::Window* window,
     bool visible,
     base::TimeDelta animation_time) {
   if (desks_util::BelongsToActiveDesk(window) && window->IsVisible() == visible)
     return;
-
-  // Hiding a system modal dialog should not be allowed. Instead we switch to
-  // the user which is showing the system modal window.
-  // Note that in some cases (e.g. unit test) windows might not have a root
-  // window.
-  if (!visible && window->GetRootWindow()) {
-    if (HasSystemModalTransientChildWindow(window)) {
-      // The window is system modal and we need to find the parent which owns
-      // it so that we can switch to the desktop accordingly.
-      AccountId account_id = GetUserPresentingWindow(window);
-      if (!account_id.is_valid()) {
-        aura::Window* owning_window = GetOwningWindowInTransientChain(window);
-        DCHECK(owning_window);
-        account_id = GetUserPresentingWindow(owning_window);
-        DCHECK(account_id.is_valid());
-      }
-      Shell::Get()->session_controller()->SwitchActiveUser(account_id);
-      return;
-    }
-  }
 
   // To avoid that these commands are recorded as any other commands, we are
   // suppressing any window entry changes while this is going on.

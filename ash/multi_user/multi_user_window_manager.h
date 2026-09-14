@@ -203,8 +203,7 @@ class ASH_EXPORT MultiUserWindowManager : public SessionObserver,
   // Show / hide the given window. Note: By not doing this within the functions,
   // this allows to either switching to different ways to show/hide and / or to
   // distinguish state changes performed by this class vs. state changes
-  // performed by the others. Note furthermore that system modal dialogs will
-  // not get hidden. We will switch instead to the owners desktop.
+  // performed by the others.
   // The |animation_time| is the time the animation should take, an empty value
   // switches instantly.
   void SetWindowVisibility(aura::Window* window,
@@ -212,6 +211,10 @@ class ASH_EXPORT MultiUserWindowManager : public SessionObserver,
                            base::TimeDelta animation_time = base::TimeDelta());
 
   const WindowToEntryMap& window_to_entry() { return window_to_entry_; }
+
+  // If |window| has a system modal transient child, switches the active user
+  // to the user presenting the window and returns true.
+  bool MaybeSwitchActiveUserForSystemModalWindow(aura::Window* window);
 
   // Show the window and its transient children. However - if a transient child
   // was turned invisible by some other operation, it will stay invisible.
