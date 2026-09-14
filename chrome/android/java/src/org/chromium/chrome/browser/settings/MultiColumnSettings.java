@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** Preference container implementation for SettingsActivity in multi-column mode. */
 @NullMarked
@@ -104,9 +105,10 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    private final FragmentTracker mFragmentTracker = new FragmentTracker(mObservers);
-
     private @Nullable Profile mProfile;
+
+    private final FragmentTracker mFragmentTracker =
+            new FragmentTracker(mObservers, () -> mProfile);
 
     private @Nullable Context mThemedContext;
 
@@ -988,9 +990,16 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         private boolean mTitleInitialized;
 
         private final ObserverList<Observer> mObservers;
+        private final Supplier<@Nullable Profile> mProfileSupplier;
 
         FragmentTracker(ObserverList<Observer> observers) {
+            this(observers, () -> null);
+        }
+
+        FragmentTracker(
+                ObserverList<Observer> observers, Supplier<@Nullable Profile> profileSupplier) {
             mObservers = observers;
+            mProfileSupplier = profileSupplier;
         }
 
         private static final String TAG = "FragmentTracker";
@@ -1074,7 +1083,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                 if (index < 0) {
                     // Enter into more detailed page.
                     mTitles.add(
-                            new Title(uuid, titleSupplier, backStackCount, page.getMainMenuKey()));
+                            new Title(uuid, titleSupplier, backStackCount, getMainMenuKey(page)));
                     updated = true;
                 } else {
                     // Move back from the detailed page.
@@ -1166,7 +1175,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                                     uuid,
                                     page.getPageTitle(),
                                     backStackCount,
-                                    page.getMainMenuKey());
+                                    getMainMenuKey(page));
                 } else {
                     unmatchedIndices.add(i);
                 }
@@ -1187,7 +1196,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                                     uuid,
                                     page.getPageTitle(),
                                     backStackCount,
-                                    page.getMainMenuKey());
+                                    getMainMenuKey(page));
                 }
             }
 
@@ -1196,6 +1205,39 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                     mTitles.add(title);
                 }
             }
+        }
+
+        private @Nullable String getMainMenuKey(EmbeddableSettingsPage page) {
+            String mainMenuKey = page.getMainMenuKey();
+
+            // Building the index is expensive, so only consult the breadcrumb trail when the page
+            // doesn't already declare a main menu key.
+            if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled() || mainMenuKey != null) {
+                return mainMenuKey;
+            }
+
+            // The index needs a profile, and a context that only an attached fragment can supply.
+            Profile profile = mProfileSupplier.get();
+            if (!(page instanceof Fragment fragment) || profile == null) {
+                return mainMenuKey;
+            }
+            Context context = fragment.getContext();
+            if (context == null) {
+                return mainMenuKey;
+            }
+
+            String fragmentClassName = fragment.getClass().getName();
+            Bundle args = fragment.getArguments();
+
+            // Build the index and attempt to retrieve the main menu key from the breadcrumb trail.
+            SettingsIndexData indexData =
+                    SettingsSearchCoordinator.ensureIndexBuilt(context, profile);
+            List<SettingsIndexData.Entry> path =
+                    indexData.getBreadcrumbEntries(fragmentClassName, args);
+            if (path != null && !path.isEmpty()) {
+                return path.get(0).key;
+            }
+            return mainMenuKey;
         }
     }
 
