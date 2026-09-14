@@ -49,10 +49,6 @@ inline constexpr char kPostHttpMethod[] = "POST";
 // micro-currency units.
 inline constexpr long kToMicroCurrency = 1e6;
 
-// Header name for using alternate shopping server.
-inline constexpr char kAlternateServerHeaderName[] = "x-use-alt-service";
-inline constexpr char kAlternateServerHeaderTrueValue[] = "true";
-
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_CONSTANTS_H_

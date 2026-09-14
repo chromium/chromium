@@ -4,22 +4,14 @@
 
 #include "components/commerce/core/commerce_utils.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "base/check.h"
-#include "base/feature_list.h"
-#include "base/json/json_writer.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/escape.h"
-#include "base/time/time.h"
-#include "base/uuid.h"
-#include "base/values.h"
-#include "components/commerce/core/commerce_constants.h"
-#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
-#include "components/endpoint_fetcher/endpoint_fetcher.h"
-#include "net/base/url_util.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "url/gurl.h"
 
 namespace commerce {
@@ -112,15 +104,6 @@ std::unique_ptr<ProductInfo> OptGuideResultToProductInfo(
   }
 
   return info;
-}
-
-void MaybeUseAlternateShoppingServer(
-    endpoint_fetcher::EndpointFetcher::RequestParams::Builder& params_builder) {
-  if (base::FeatureList::IsEnabled(commerce::kShoppingAlternateServer)) {
-    params_builder.SetHeaders(
-        std::vector<endpoint_fetcher::EndpointFetcher::RequestParams::Header>{
-            {kAlternateServerHeaderName, kAlternateServerHeaderTrueValue}});
-  }
 }
 
 }  // namespace commerce

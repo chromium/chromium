@@ -400,7 +400,6 @@ source_set("account_checker") {
     ":commerce_constants",
     ":feature_list",
     ":pref_names",
-    ":utils",
     "//base",
     "//components/endpoint_fetcher",
     "//components/prefs",
@@ -487,30 +486,9 @@ source_set("utils") {
     "commerce_utils.h",
   ]
   deps = [
-    ":commerce_constants",
     ":commerce_types",
-    ":feature_list",
     "//components/commerce/core:proto",
-    "//components/endpoint_fetcher",
     "//components/optimization_guide/core",
-    "//net",
-  ]
-}
-
-source_set("utils_unit_tests") {
-  testonly = true
-
-  sources = [ "commerce_utils_unittest.cc" ]
-
-  deps = [
-    ":commerce_constants",
-    ":feature_list",
-    ":shopping_service_test_support",
-    ":utils",
-    "//base",
-    "//base/test:test_support",
-    "//components/endpoint_fetcher",
-    "//net/traffic_annotation:test_support",
     "//url",
   ]
 }

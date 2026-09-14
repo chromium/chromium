@@ -29,8 +29,4 @@ const char kDiscountAutofillName[] = "Discount Autofill";
 const char kDiscountAutofillDescription[] =
     "Enable discount autofill experiment.";
 
-const char kShoppingAlternateServerName[] = "Alternate Shopping Server.";
-const char kShoppingAlternateServerDescription[] =
-    "Enable using the alternate shopping server for testing.";
-
 }  // namespace commerce::flag_descriptions

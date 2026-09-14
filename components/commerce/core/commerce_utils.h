@@ -6,7 +6,6 @@
 #define COMPONENTS_COMMERCE_CORE_COMMERCE_UTILS_H_
 
 #include "components/commerce/core/commerce_types.h"
-#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 
 namespace commerce {
@@ -16,11 +15,6 @@ namespace commerce {
 // or there was no info.
 std::unique_ptr<ProductInfo> OptGuideResultToProductInfo(
     const optimization_guide::OptimizationMetadata& metadata);
-
-// Conditionally route traffic to an alternate shopping server by sending
-// HTTP headers with the request.
-void MaybeUseAlternateShoppingServer(
-    endpoint_fetcher::EndpointFetcher::RequestParams::Builder& params_builder);
 
 }  // namespace commerce
 

@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -324,7 +323,6 @@ std::unique_ptr<EndpointFetcher> AccountChecker::CreateEndpointFetcher(
       .SetConsentLevel(consent_level)
       .SetTimeout(timeout)
       .SetPostData(post_data);
-  MaybeUseAlternateShoppingServer(request_params);
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, identity_manager_, request_params.Build());
 }
