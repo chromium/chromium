@@ -75,7 +75,36 @@ class CriticalActionDatabase {
   // Exposes underlying database for testing or verification.
   sql::Database& GetDBForTesting() { return db_; }
 
+  // Generates a comma-separated list of placeholder question marks for SQL
+  // parameterized queries, e.g. "?, ?, ?". Returns an empty string if `count`
+  // is 0.
+  static std::string CreatePlaceholders(size_t count);
+
+  // Builds an IN clause condition: "column_name IN (?, ?, ...)".
+  // Returns an empty string if `count` is 0.
+  static std::string BuildInCondition(std::string_view column_name,
+                                      size_t count);
+
+  // Appends timestamp range filter conditions (">= ?" and/or "< ?") to
+  // `conditions`.
+  static void AddTimeRangeConditions(
+      std::vector<std::string>& conditions,
+      std::string_view column_name,
+      std::optional<base::Time> begin_time,
+      std::optional<base::Time> end_time);
+
+  // Builds the SQL query string for `GetCriticalActions` given `options`.
+  static std::string BuildGetCriticalActionsQuery(
+      const CriticalActionQueryOptions& options);
+
  private:
+  // Binds the filter values from `options` into `statement`.
+  static void BindQueryOptions(sql::Statement& statement,
+                               const CriticalActionQueryOptions& options);
+
+  // Constructs a CriticalActionEntry from the current row of `statement`.
+  static CriticalActionEntry StatementToEntry(sql::Statement& statement);
+
   // Creates tables and indices if they do not yet exist.
   // Must be called within an active transaction.
   bool InitSchema();

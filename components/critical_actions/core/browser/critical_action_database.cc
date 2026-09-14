@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "sql/error_delegate_util.h"
 #include "sql/sqlite_result_code.h"
@@ -334,24 +335,52 @@ std::optional<CriticalActionEntry> CriticalActionDatabase::GetCriticalAction(
     return std::nullopt;
   }
 
-  CriticalActionEntry entry;
-  entry.critical_action_id = statement.ColumnString(0);
-  entry.timestamp = statement.ColumnTime(1);
-  entry.visit_id = statement.ColumnInt64(2);
-  entry.conversation_id = statement.ColumnString(3);
-  entry.actor_task_id = statement.ColumnString(4);
-  entry.action_type = static_cast<ActionType>(statement.ColumnInt(5));
-  entry.url = GURL(statement.ColumnString(6));
-  entry.metadata = statement.ColumnString(7);
-
-  return entry;
+  return StatementToEntry(statement);
 }
 
-std::vector<CriticalActionEntry> CriticalActionDatabase::GetCriticalActions(
-    const CriticalActionQueryOptions& options) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<CriticalActionEntry> entries;
+// static
+std::string CriticalActionDatabase::CreatePlaceholders(size_t count) {
+  if (count == 0) {
+    return "";
+  }
+  std::string placeholders;
+  placeholders.reserve(count * 2);
+  for (size_t i = 0; i < count; ++i) {
+    if (i > 0) {
+      placeholders += ",";
+    }
+    placeholders += "?";
+  }
+  return placeholders;
+}
 
+// static
+std::string CriticalActionDatabase::BuildInCondition(
+    std::string_view column_name,
+    size_t count) {
+  if (count == 0) {
+    return "";
+  }
+  return base::StrCat({column_name, " IN (", CreatePlaceholders(count), ")"});
+}
+
+// static
+void CriticalActionDatabase::AddTimeRangeConditions(
+    std::vector<std::string>& conditions,
+    std::string_view column_name,
+    std::optional<base::Time> begin_time,
+    std::optional<base::Time> end_time) {
+  if (begin_time.has_value()) {
+    conditions.push_back(base::StrCat({column_name, " >= ?"}));
+  }
+  if (end_time.has_value()) {
+    conditions.push_back(base::StrCat({column_name, " < ?"}));
+  }
+}
+
+// static
+std::string CriticalActionDatabase::BuildGetCriticalActionsQuery(
+    const CriticalActionQueryOptions& options) {
   std::vector<std::string> conditions;
   std::string sql_query =
       "SELECT e.critical_action_id, e.timestamp, v.visit_id, "
@@ -362,22 +391,13 @@ std::vector<CriticalActionEntry> CriticalActionDatabase::GetCriticalActions(
       "v.critical_action_id "
       "LEFT JOIN CriticalActionConversations c ON e.critical_action_id = "
       "c.critical_action_id";
-  if (options.begin_time.has_value()) {
-    conditions.push_back("e.timestamp >= ?");
-  }
-  if (options.end_time.has_value()) {
-    conditions.push_back("e.timestamp < ?");
-  }
+
+  AddTimeRangeConditions(conditions, "e.timestamp", options.begin_time,
+                         options.end_time);
+
   if (!options.action_types.empty()) {
-    std::string condition = "e.action_type IN (";
-    for (size_t i = 0; i < options.action_types.size(); ++i) {
-      if (i > 0) {
-        condition += ", ";
-      }
-      condition += "?";
-    }
-    condition += ")";
-    conditions.push_back(condition);
+    conditions.push_back(
+        BuildInCondition("e.action_type", options.action_types.size()));
   }
 
   // TODO(b/543797083): Critical actions are currently stored locally and
@@ -385,15 +405,8 @@ std::vector<CriticalActionEntry> CriticalActionDatabase::GetCriticalActions(
   // other devices will not have matching critical actions in the local
   // database.
   if (!options.visit_ids.empty()) {
-    std::string condition = "v.visit_id IN (";
-    for (size_t i = 0; i < options.visit_ids.size(); ++i) {
-      if (i > 0) {
-        condition += ", ";
-      }
-      condition += "?";
-    }
-    condition += ")";
-    conditions.push_back(condition);
+    conditions.push_back(
+        BuildInCondition("v.visit_id", options.visit_ids.size()));
   }
   if (options.conversation_id.has_value()) {
     conditions.push_back("c.conversation_id = ?");
@@ -403,23 +416,23 @@ std::vector<CriticalActionEntry> CriticalActionDatabase::GetCriticalActions(
   }
 
   if (!conditions.empty()) {
-    sql_query += " WHERE ";
-    for (size_t i = 0; i < conditions.size(); ++i) {
-      if (i > 0) {
-        sql_query += " AND ";
-      }
-      sql_query += conditions[i];
-    }
+    base::StrAppend(&sql_query,
+                    {" WHERE ", base::JoinString(conditions, " AND ")});
   }
 
-  sql_query += " ORDER BY e.timestamp DESC";
+  base::StrAppend(&sql_query, {" ORDER BY e.timestamp DESC"});
 
   if (options.max_count.has_value()) {
-    sql_query += " LIMIT ?";
+    base::StrAppend(&sql_query, {" LIMIT ?"});
   }
 
-  sql::Statement statement(db_.GetUniqueStatement(sql_query));
+  return sql_query;
+}
 
+// static
+void CriticalActionDatabase::BindQueryOptions(
+    sql::Statement& statement,
+    const CriticalActionQueryOptions& options) {
   int bind_index = 0;
   if (options.begin_time.has_value()) {
     statement.BindTime(bind_index++, *options.begin_time);
@@ -446,18 +459,35 @@ std::vector<CriticalActionEntry> CriticalActionDatabase::GetCriticalActions(
   if (options.max_count.has_value()) {
     statement.BindInt64(bind_index++, *options.max_count);
   }
+}
+
+// static
+CriticalActionEntry CriticalActionDatabase::StatementToEntry(
+    sql::Statement& statement) {
+  CriticalActionEntry entry;
+  entry.critical_action_id = statement.ColumnString(0);
+  entry.timestamp = statement.ColumnTime(1);
+  entry.visit_id = statement.ColumnInt64(2);
+  entry.conversation_id = statement.ColumnString(3);
+  entry.actor_task_id = statement.ColumnString(4);
+  entry.action_type = static_cast<ActionType>(statement.ColumnInt(5));
+  entry.url = GURL(statement.ColumnString(6));
+  entry.metadata = statement.ColumnString(7);
+  return entry;
+}
+
+std::vector<CriticalActionEntry> CriticalActionDatabase::GetCriticalActions(
+    const CriticalActionQueryOptions& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<CriticalActionEntry> entries;
+
+  std::string sql_query = BuildGetCriticalActionsQuery(options);
+  sql::Statement statement(db_.GetUniqueStatement(sql_query));
+
+  BindQueryOptions(statement, options);
 
   while (statement.Step()) {
-    CriticalActionEntry entry;
-    entry.critical_action_id = statement.ColumnString(0);
-    entry.timestamp = statement.ColumnTime(1);
-    entry.visit_id = statement.ColumnInt64(2);
-    entry.conversation_id = statement.ColumnString(3);
-    entry.actor_task_id = statement.ColumnString(4);
-    entry.action_type = static_cast<ActionType>(statement.ColumnInt(5));
-    entry.url = GURL(statement.ColumnString(6));
-    entry.metadata = statement.ColumnString(7);
-    entries.push_back(std::move(entry));
+    entries.push_back(StatementToEntry(statement));
   }
 
   return entries;
@@ -532,14 +562,7 @@ bool CriticalActionDatabase::DeleteCriticalActionsByVisitIds(
     const size_t batch_size =
         std::min(kMaxBatchSize, visit_ids.size() - batch_start_index);
 
-    std::string placeholders;
-    placeholders.reserve(batch_size * 2);
-    for (size_t offset = 0; offset < batch_size; ++offset) {
-      if (offset > 0) {
-        placeholders += ",";
-      }
-      placeholders += "?";
-    }
+    const std::string placeholders = CreatePlaceholders(batch_size);
 
     for (const auto& table_name : kDeleteByVisitIdsTableNames) {
       sql::Statement stmt(db_.GetUniqueStatement(

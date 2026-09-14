@@ -13,10 +13,14 @@
 #include "base/uuid.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/test/scoped_error_expecter.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace critical_actions {
+
+using ::testing::HasSubstr;
+using ::testing::Not;
 
 class CriticalActionDatabaseTest : public testing::Test {
  public:
@@ -434,6 +438,91 @@ TEST_F(CriticalActionDatabaseTest, MigrationV1ToV2) {
 
     database.Close();
   }
+}
+
+TEST(CriticalActionDatabaseHelpersTest, CreatePlaceholders) {
+  EXPECT_EQ(CriticalActionDatabase::CreatePlaceholders(0), "");
+  EXPECT_EQ(CriticalActionDatabase::CreatePlaceholders(1), "?");
+  EXPECT_EQ(CriticalActionDatabase::CreatePlaceholders(2), "?,?");
+}
+
+TEST(CriticalActionDatabaseHelpersTest, BuildInCondition) {
+  EXPECT_EQ(CriticalActionDatabase::BuildInCondition("visit_id", 0), "");
+  EXPECT_EQ(CriticalActionDatabase::BuildInCondition("visit_id", 1),
+            "visit_id IN (?)");
+  EXPECT_EQ(CriticalActionDatabase::BuildInCondition("e.action_type", 2),
+            "e.action_type IN (?,?)");
+  EXPECT_EQ(CriticalActionDatabase::BuildInCondition("v.visit_id", 3),
+            "v.visit_id IN (?,?,?)");
+}
+
+TEST(CriticalActionDatabaseHelpersTest, AddTimeRangeConditions) {
+  std::vector<std::string> conditions;
+  CriticalActionDatabase::AddTimeRangeConditions(conditions, "e.timestamp",
+                                                 std::nullopt, std::nullopt);
+  EXPECT_TRUE(conditions.empty());
+
+  base::Time t1 = base::Time::FromTimeT(1000);
+  base::Time t2 = base::Time::FromTimeT(2000);
+
+  CriticalActionDatabase::AddTimeRangeConditions(conditions, "e.timestamp", t1,
+                                                 std::nullopt);
+  ASSERT_EQ(conditions.size(), 1u);
+  EXPECT_EQ(conditions[0], "e.timestamp >= ?");
+
+  conditions.clear();
+  CriticalActionDatabase::AddTimeRangeConditions(conditions, "e.timestamp",
+                                                 std::nullopt, t2);
+  ASSERT_EQ(conditions.size(), 1u);
+  EXPECT_EQ(conditions[0], "e.timestamp < ?");
+
+  conditions.clear();
+  CriticalActionDatabase::AddTimeRangeConditions(conditions, "e.timestamp", t1,
+                                                 t2);
+  ASSERT_EQ(conditions.size(), 2u);
+  EXPECT_EQ(conditions[0], "e.timestamp >= ?");
+  EXPECT_EQ(conditions[1], "e.timestamp < ?");
+}
+
+TEST(CriticalActionDatabaseHelpersTest,
+     BuildGetCriticalActionsQuery_DefaultOptions) {
+  CriticalActionQueryOptions options;
+  std::string query =
+      CriticalActionDatabase::BuildGetCriticalActionsQuery(options);
+  EXPECT_THAT(query, HasSubstr("SELECT e.critical_action_id"));
+  EXPECT_THAT(query, Not(HasSubstr("WHERE")));
+  EXPECT_THAT(query, HasSubstr("ORDER BY e.timestamp DESC"));
+  EXPECT_THAT(query, Not(HasSubstr("LIMIT")));
+}
+
+TEST(CriticalActionDatabaseHelpersTest,
+     BuildGetCriticalActionsQuery_TimeRange) {
+  CriticalActionQueryOptions options;
+  options.begin_time = base::Time::FromTimeT(1000);
+  options.end_time = base::Time::FromTimeT(2000);
+  std::string query =
+      CriticalActionDatabase::BuildGetCriticalActionsQuery(options);
+  EXPECT_THAT(query, HasSubstr("WHERE e.timestamp >= ? AND e.timestamp < ?"));
+  EXPECT_THAT(query, HasSubstr("ORDER BY e.timestamp DESC"));
+  EXPECT_THAT(query, Not(HasSubstr("LIMIT")));
+}
+
+TEST(CriticalActionDatabaseHelpersTest,
+     BuildGetCriticalActionsQuery_WithFiltersAndLimit) {
+  CriticalActionQueryOptions options;
+  options.action_types = {ActionType::kFormFill, ActionType::kDownload};
+  options.visit_ids = {101, 102, 103};
+  options.conversation_id = "test_conversation";
+  options.actor_task_id = "test_task";
+  options.max_count = 50;
+
+  std::string query =
+      CriticalActionDatabase::BuildGetCriticalActionsQuery(options);
+  EXPECT_THAT(query, HasSubstr("WHERE e.action_type IN (?,?) AND "
+                               "v.visit_id IN (?,?,?) AND "
+                               "c.conversation_id = ? AND "
+                               "e.actor_task_id = ?"));
+  EXPECT_THAT(query, HasSubstr("ORDER BY e.timestamp DESC LIMIT ?"));
 }
 
 }  // namespace critical_actions
