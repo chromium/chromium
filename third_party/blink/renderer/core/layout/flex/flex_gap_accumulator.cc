@@ -223,7 +223,7 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
       is_last_line, single_line, main_intersection_offset, line_cross_start);
   // Store this `CrossGap`'s index in the full gap-decoration value list.
   const GridTrackSizingDirection cross_direction =
-      is_column_ ? kForRows : kForColumns;
+      OppositeDirection(gap_geometry_->GetMainDirection());
   if (in_fragmentation &&
       gap_geometry_->NeedsDecorationValueAssignmentMapping(cross_direction)) {
     RecordFragmentedFlexCrossGapDecorationIndex(flex_lines, global_line_index,

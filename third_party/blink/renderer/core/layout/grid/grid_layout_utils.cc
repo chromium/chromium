@@ -1084,9 +1084,8 @@ GridLayoutTrackCollection* CreateSubgridTrackCollection(
     GridTrackSizingDirection track_direction) {
   DCHECK(subgrid_data.IsSubgrid());
 
-  const bool is_for_columns_in_parent = subgrid_data->is_parallel_with_root_grid
-                                            ? track_direction == kForColumns
-                                            : track_direction == kForRows;
+  const bool is_for_columns_in_parent =
+      subgrid_data->RelativeDirectionInSubgrid(track_direction) == kForColumns;
 
   const auto& parent_track_collection =
       is_for_columns_in_parent ? subgrid_data.Columns() : subgrid_data.Rows();
@@ -1117,9 +1116,8 @@ GridTrackBaselines* CreateSubgridBaselines(
     const GridTrackBaselines& parent_baselines) {
   DCHECK(subgrid_data.IsSubgrid());
 
-  const bool is_for_columns_in_parent = subgrid_data->is_parallel_with_root_grid
-                                            ? track_direction == kForColumns
-                                            : track_direction == kForRows;
+  const bool is_for_columns_in_parent =
+      subgrid_data->RelativeDirectionInSubgrid(track_direction) == kForColumns;
 
   const auto& parent_track_collection =
       is_for_columns_in_parent ? subgrid_data.Columns() : subgrid_data.Rows();

@@ -1291,12 +1291,8 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
           DCHECK(opt_subgrid_data.IsSubgrid());
           // Recreate the subgrid track collection if there are baselines which
           // need to be inherited.
-          const bool is_for_columns_in_parent =
-              opt_subgrid_data->is_parallel_with_root_grid
-                  ? track_direction == kForColumns
-                  : track_direction == kForRows;
           const auto parent_baseline_direction =
-              is_for_columns_in_parent ? kForColumns : kForRows;
+              opt_subgrid_data->RelativeDirectionInSubgrid(track_direction);
           const auto* parent_baselines =
               opt_subgrid_data.ParentLayoutData()->GetBaselines(
                   parent_baseline_direction);

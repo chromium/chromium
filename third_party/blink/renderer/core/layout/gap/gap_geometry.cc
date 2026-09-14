@@ -20,12 +20,7 @@ GridLanesMainGapSegmentWalker::GridLanesMainGapSegmentWalker(
     const GapGeometry& gap_geometry,
     wtf_size_t main_gap_index)
     : gap_geometry_(gap_geometry),
-      // TODO(javiercon): Consider having a util method for
-      // GridTrackSizingDirection that swaps direction since it's a common
-      // scenario.
-      cross_direction_(gap_geometry.GetMainDirection() == kForColumns
-                           ? kForRows
-                           : kForColumns) {
+      cross_direction_(OppositeDirection(gap_geometry.GetMainDirection())) {
   if (cross_direction_ == kForRows) {
     content_start_ = gap_geometry.GetContentBlockStart();
     content_end_ = gap_geometry.GetContentBlockEnd();
@@ -562,11 +557,7 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
     return;
   }
 
-  // TODO(samomekarajr): Consider having a util method for
-  // GridTrackSizingDirection that swaps direction since it's a common
-  // scenario.
-  GridTrackSizingDirection cross_direction =
-      direction == kForRows ? kForColumns : kForRows;
+  GridTrackSizingDirection cross_direction = OppositeDirection(direction);
 
   std::optional<LayoutUnit> cross_gap_size_above;
   if (has_cross_gaps_before) {

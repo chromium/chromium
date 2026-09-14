@@ -33,7 +33,7 @@ LayoutUnit StackingAxisGap(const ComputedStyle& style,
   const GridTrackSizingDirection grid_axis_direction =
       style.GridLanesTrackSizingDirection();
   const GridTrackSizingDirection stacking_axis_direction =
-      (grid_axis_direction == kForColumns) ? kForRows : kForColumns;
+      OppositeDirection(grid_axis_direction);
   return GridTrackSizingAlgorithm::CalculateGutterSize(
       style, percentage_resolution_size, stacking_axis_direction);
 }
@@ -1222,7 +1222,7 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
     // container, so `end` aligned items are already in place after reflection.
     // In normal mode, `start` aligned items are already in place.
     auto stacking_axis_alignment =
-        is_for_columns ? item.Alignment(kForRows) : item.Alignment(kForColumns);
+        item.Alignment(OppositeDirection(grid_axis_direction));
     if (is_fill_reverse ? stacking_axis_alignment == AxisEdge::kEnd
                         : stacking_axis_alignment == AxisEdge::kStart) {
       continue;
@@ -3044,7 +3044,7 @@ void GridLanesLayoutAlgorithm::RebuildSubgridLayoutDataForResolvedPlacement(
   // be a standalone axis.
   if (subgrid_item.node.IsGrid()) {
     const GridTrackSizingDirection standalone_axis_in_subgrid =
-        subgrid_axis_direction == kForColumns ? kForRows : kForColumns;
+        OppositeDirection(subgrid_axis_direction);
     subgrid_algorithm.InitializeTrackSizes(
         child_sizing_subtree, subgridded_item_data, standalone_axis_in_subgrid);
     subgrid_algorithm.CompleteTrackSizingAlgorithm(

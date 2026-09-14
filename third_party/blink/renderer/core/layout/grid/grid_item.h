@@ -235,9 +235,8 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   GridTrackSizingDirection RelativeDirectionInSubgrid(
       GridTrackSizingDirection track_direction) const {
     DCHECK(IsSubgrid());
-    const bool is_for_columns =
-        is_parallel_with_root_grid == (track_direction == kForColumns);
-    return is_for_columns ? kForColumns : kForRows;
+    return is_parallel_with_root_grid ? track_direction
+                                      : OppositeDirection(track_direction);
   }
 
   // Returns the relative direction this subgrid's coordinate system. If

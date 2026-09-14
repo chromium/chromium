@@ -16,6 +16,11 @@ enum GridPositionSide {
 
 enum GridTrackSizingDirection { kForColumns, kForRows };
 
+constexpr GridTrackSizingDirection OppositeDirection(
+    GridTrackSizingDirection direction) {
+  return direction == kForColumns ? kForRows : kForColumns;
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GRID_ENUMS_H_

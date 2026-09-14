@@ -15,7 +15,7 @@ enum class AutoPlacementType { kNotNeeded, kMajor, kMinor, kBoth };
 AutoPlacementType AutoPlacement(const GridArea& position,
                                 GridTrackSizingDirection major_direction) {
   const GridTrackSizingDirection minor_direction =
-      (major_direction == kForColumns) ? kForRows : kForColumns;
+      OppositeDirection(major_direction);
   const GridSpan& major_span = position.Span(major_direction);
   const GridSpan& minor_span = position.Span(minor_direction);
   CHECK(!major_span.IsUntranslatedDefinite() &&
@@ -45,8 +45,7 @@ GridPlacement::GridPlacement(const ComputedStyle& grid_style,
       // property (row or column), the minor direction is its opposite.
       major_direction_(grid_style.IsGridAutoFlowDirectionRow() ? kForRows
                                                                : kForColumns),
-      minor_direction_(grid_style.IsGridAutoFlowDirectionRow() ? kForColumns
-                                                               : kForRows) {}
+      minor_direction_(OppositeDirection(major_direction_)) {}
 
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
 GridPlacementData GridPlacement::RunAutoPlacementAlgorithm(

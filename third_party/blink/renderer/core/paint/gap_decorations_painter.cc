@@ -131,7 +131,7 @@ bool ShouldMoveIntersectionEndForward(
   }
 
   const GridTrackSizingDirection cross_direction =
-      track_direction == kForColumns ? kForRows : kForColumns;
+      OppositeDirection(track_direction);
 
   // The following logic is only valid for grid containers.
   if (gap_geometry.GetContainerType() != GapGeometry::ContainerType::kGrid) {
@@ -237,7 +237,7 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
           style, gap_geometry.GetContainerType(), track_direction);
 
   const GridTrackSizingDirection cross_direction =
-      track_direction == kForColumns ? kForRows : kForColumns;
+      OppositeDirection(track_direction);
   RuleVisibilityItems cross_rule_visibility =
       CSSGapDecorationUtils::ResolveRuleVisibilityItemsValue(
           style, gap_geometry.GetContainerType(), cross_direction);

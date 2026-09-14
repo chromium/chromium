@@ -724,8 +724,7 @@ std::unique_ptr<protocol::ListValue> BuildGridTrackSizes(
   }
   if (!alt_axis_pos) {
     alt_axis_pos = GetPositionForFirstTrack(
-        layout_box, direction == kForRows ? kForColumns : kForRows,
-        alt_axis_positions);
+        layout_box, OppositeDirection(direction), alt_axis_positions);
   }
   if (rtl_offset && direction == kForRows) {
     *alt_axis_pos += *rtl_offset;
@@ -784,8 +783,7 @@ std::unique_ptr<protocol::ListValue> BuildGridPositiveLineNumberPositions(
 
   if (!alt_axis_pos) {
     alt_axis_pos = GetPositionForFirstTrack(
-        layout_box, direction == kForRows ? kForColumns : kForRows,
-        alt_axis_positions);
+        layout_box, OppositeDirection(direction), alt_axis_positions);
   }
 
   if (rtl_offset && direction == kForRows) {
@@ -848,8 +846,7 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
 
   if (!alt_axis_pos) {
     alt_axis_pos = GetPositionForLastTrack(
-        layout_box, direction == kForRows ? kForColumns : kForRows,
-        alt_axis_positions);
+        layout_box, OppositeDirection(direction), alt_axis_positions);
   }
 
   if (rtl_offset && direction == kForRows) {
@@ -1151,7 +1148,7 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNamesForGrid(
 
   const LayoutUnit gap = grid->GridGap(direction);
   const LayoutUnit alt_axis_pos = GetPositionForFirstTrack(
-      grid, direction == kForRows ? kForColumns : kForRows, alt_axis_positions);
+      grid, OppositeDirection(direction), alt_axis_positions);
 
   const NamedGridLinesMap& explicit_lines_map =
       grid->CachedPlacementData().line_resolver.ExplicitNamedLinesMap(
