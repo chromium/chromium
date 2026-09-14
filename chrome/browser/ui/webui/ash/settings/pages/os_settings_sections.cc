@@ -103,7 +103,8 @@ OsSettingsSections::OsSettingsSections(
 
   AddSection(mojom::Section::kSystemPreferences,
              std::make_unique<SystemPreferencesSection>(
-                 local_state, profile, search_tag_registry, prefs));
+                 local_state, application_locale_storage, profile,
+                 search_tag_registry, prefs));
 }
 
 OsSettingsSections::OsSettingsSections() = default;

@@ -12,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -22,6 +21,7 @@
 #include "chromeos/ash/components/settings/system_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/timezone/timezone_util.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -90,11 +90,14 @@ bool IsFineGrainedTimeZoneEnabled() {
 
 }  // namespace
 
-DateTimeSection::DateTimeSection(PrefService* local_state,
-                                 Profile* profile,
-                                 SearchTagRegistry* search_tag_registry)
+DateTimeSection::DateTimeSection(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    Profile* profile,
+    SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry),
-      local_state_(CHECK_DEREF(local_state)) {
+      local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   CHECK(profile);
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
@@ -143,11 +146,10 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "systemGeolocationDialogLearnMoreUrl",
       ash::external_urls::kPrivacyHubGeolocationLearnMoreURL);
 
-  html_source->AddString(
-      "timeZoneSettingsLearnMoreURL",
-      base::ASCIIToUTF16(base::StringPrintf(
-          ash::external_urls::kTimeZoneSettingsLearnMoreURL,
-          g_browser_process->GetApplicationLocale().c_str())));
+  html_source->AddString("timeZoneSettingsLearnMoreURL",
+                         base::ASCIIToUTF16(base::StringPrintf(
+                             ash::external_urls::kTimeZoneSettingsLearnMoreURL,
+                             application_locale_storage_->Get().c_str())));
 
   // Set the initial time zone to show.
   html_source->AddString("timeZoneName", system::GetCurrentTimezoneName());
