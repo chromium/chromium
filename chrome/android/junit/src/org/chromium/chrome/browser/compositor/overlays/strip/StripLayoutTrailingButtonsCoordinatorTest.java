@@ -642,6 +642,15 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 "Glic button text should collapse while actor button is showing.",
                 mGlicButton.getText());
 
+        // Calling showGlicActorTaskIcon() transitions back to default icon-only state, clearing
+        // the nudge label while keeping the actor button visible.
+        delegate.showGlicActorTaskIcon();
+        assertTrue("Actor button should remain visible.", mCoordinator.shouldGlicActorBeVisible());
+        assertFalse(
+                "Actor nudge should be cleared when returning to default icon state.",
+                delegate.getIsShowingGlicActorTaskIconNudge());
+        assertNull("Actor button text should be cleared.", mGlicActorButton.getText());
+
         // Hide actor icon: actor button hides, nudge clears, and Glic button text restores.
         delegate.hideGlicActorTaskIcon();
         assertFalse(

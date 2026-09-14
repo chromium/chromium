@@ -217,6 +217,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                 @Override
                 public void showGlicActorTaskIcon() {
                     mIsGlicActorButtonShowing = true;
+                    mActorNudgeLabel = null;
                     updateTrailingButtonsState(
                             /* animate= */ true, /* forceLayoutChanged= */ false);
                 }
