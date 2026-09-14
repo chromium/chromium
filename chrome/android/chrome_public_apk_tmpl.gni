@@ -610,8 +610,8 @@ template("chrome_common_apk_or_module_tmpl") {
       }
     }
 
-    # The Chromium Linker depends on ASharedMemory_create() introduced in O.
-    use_chromium_linker = chromium_linker_supported && _is_trichrome
+    # Chromium Linker used for shared relros.
+    use_chromium_linker = chromium_linker_supported && !_is_test
 
     if (use_chromium_linker) {
       if (android_64bit_target_cpu && !_is_64_bit_browser) {
