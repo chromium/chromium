@@ -38,6 +38,8 @@ class IdentityManager;
 
 namespace policy {
 class UserCloudSigninRestrictionPolicyFetcher;
+struct UserManagementStatus;
+struct UserInterceptionPolicies;
 }  // namespace policy
 
 // Service responsible to show enterprise management disclaimers at startup on
@@ -167,11 +169,38 @@ class ProfileManagementDisclaimerService
 
   void MaybeResetAcceptManagementDisclaimer(bool auto_accept_management);
 
-  void OnRegisteredForPolicy(bool is_from_cached_registration_result,
+  // Updates the last policy registration failure time preference for rate
+  // limiting / backoff between failed registration attempts, or clears it if
+  // the account is managed.
+  void UpdatePolicyRegistrationFailureTime(
+      const GaiaId& gaia_id,
+      bool is_managed_account,
+      bool update_failure_time_on_unmanaged);
+
+  // Returns true if the account is eligible to show the management disclaimer.
+  bool IsEligibleForManagementDisclaimer(bool is_managed_account);
+
+  // Handles auto-accepting account management if configured. Returns true if
+  // management was auto-accepted, false otherwise.
+  bool MaybeAutoAcceptManagement();
+
+  void OnRegisteredForPolicy(const CoreAccountId& account_id,
+                             bool is_from_cached_registration_result,
                              bool is_managed_account);
 
+  // Called when the profile separation policies are fetched (or extracted from
+  // DM Server status/interception policies).
   void OnProfileSeparationPoliciesFetched(
       policy::ProfileSeparationPolicies profile_separation_policies);
+
+  // Called when the user cloud management status and interception policies
+  // are fetched from the Device Management server. `account_id` is bound into
+  // the callback to guarantee concurrency safety and avoid cross-account races
+  // if the active sign-in account changes while the network fetch is in flight.
+  void OnManagementStatusFetched(
+      const CoreAccountId& account_id,
+      std::optional<policy::UserManagementStatus> status,
+      std::optional<policy::UserInterceptionPolicies> interception_policies);
 
   // Opens the device signals disclaimer dialog if the following conditions
   // apply for the current profile:

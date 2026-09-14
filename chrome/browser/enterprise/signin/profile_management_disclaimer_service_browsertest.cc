@@ -962,11 +962,10 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
       policy::UserPolicySigninServiceFactory::GetForProfile(GetProfile()))
       ->UpdateDMTokenAndClientId("dm_token", "client_id");
 
-  // This should trigger the failure to register.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   AccountInfo account_info =
       MakeValidAccountInfoForAccount("bob@example.com", "example.com");
   base::RunLoop().RunUntilIdle();
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
 
   {
     base::test::TestFuture<Profile*, bool> future;
