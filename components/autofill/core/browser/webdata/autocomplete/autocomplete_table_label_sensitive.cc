@@ -22,6 +22,8 @@
 
 #include "base/check_deref.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/normalizer.h"
 #include "base/i18n/unicodestring.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -39,7 +41,6 @@
 #include "sql/table_management_helpers.h"
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
-#include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/urename.h"
@@ -95,14 +96,12 @@ time_t GetEndTime(base::Time end) {
 //   Kanji, Hangul, Greek, Cyrillic, etc.
 //   5. Unicode NFKC normalization - canonicalization for string comparison.
 std::u16string NormalizeLabel(std::u16string_view label_view) {
-  icu::UnicodeString uni_label(label_view.data(), label_view.length());
-
-  UErrorCode status = U_ZERO_ERROR;
-  const icu::Normalizer2* normalizer =
-      icu::Normalizer2::getNFKCInstance(status);
-  if (U_SUCCESS(status)) {
-    uni_label = normalizer->normalize(uni_label, status);
-  }
+  std::u16string normalized_label =
+      base::i18n::IcuBridge::GetInstance().normalizer().Normalize(
+          base::i18n::IcuBridge::Normalizer::NormalizationForm::NFKC,
+          label_view);
+  icu::UnicodeString uni_label(normalized_label.data(),
+                               normalized_label.length());
 
   int32_t start = 0;
   int32_t end = uni_label.length() - 1;
