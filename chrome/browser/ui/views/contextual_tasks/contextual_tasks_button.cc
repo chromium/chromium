@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -34,7 +35,6 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -214,9 +214,15 @@ ContextualTasksButton::ContextualTasksButton(
   GetViewAccessibility().SetName(button_tooltip);
   SetTooltipText(button_tooltip);
 
-  side_panel_alignment_.Init(
+  PrefService* const pref_service =
+      browser_window_interface->GetProfile()->GetPrefs();
+  pref_change_registrar_.Init(pref_service);
+  pref_change_registrar_.Add(
       prefs::kSidePanelHorizontalAlignment,
-      browser_window_interface->GetProfile()->GetPrefs(),
+      base::BindRepeating(&ContextualTasksButton::OnSidePanelAlignmentChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kSidePanelAlignmentOverrides,
       base::BindRepeating(&ContextualTasksButton::OnSidePanelAlignmentChanged,
                           base::Unretained(this)));
 
@@ -378,14 +384,11 @@ void ContextualTasksButton::OnSidePanelAlignmentChanged() {
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     UpdateColorsAndInsets();
+    MaybeUpdateVisibility();
   } else {
-    PrefService* const pref_service =
-        browser_window_interface_->GetProfile()->GetPrefs();
-
     const gfx::VectorIcon& contextual_tasks_icon =
-        pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment)
-            ? kDockToRightSparkCustomIcon
-            : kDockToLeftSparkCustomIcon;
+        IsSidePanelRightAligned() ? kDockToRightSparkCustomIcon
+                                  : kDockToLeftSparkCustomIcon;
     SetVectorIcon(contextual_tasks_icon);
   }
 }
@@ -464,6 +467,25 @@ bool ContextualTasksButton::ShouldApplyCircularBackgroundShadow() const {
   return controller && controller->ShouldDisplayVerticalTabs();
 }
 
+bool ContextualTasksButton::IsSidePanelRightAligned() const {
+  if (!browser_window_interface_ || !browser_window_interface_->GetProfile()) {
+    return false;
+  }
+  PrefService* const pref_service =
+      browser_window_interface_->GetProfile()->GetPrefs();
+  if (!pref_service) {
+    return false;
+  }
+  const base::DictValue& overrides =
+      pref_service->GetDict(prefs::kSidePanelAlignmentOverrides);
+  std::optional<bool> override_value = overrides.FindBool(
+      SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks));
+  if (override_value.has_value()) {
+    return *override_value;
+  }
+  return pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
+}
+
 void ContextualTasksButton::MaybeUpdateVisibility() {
   if (contextual_tasks::kShowEntryPoint.Get() !=
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
@@ -477,7 +499,8 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
       ContextualTasksEphemeralButtonController::From(browser_window_interface_);
 
   const bool was_visible = GetVisible();
-  const bool will_be_visible = is_button_eligible && controller &&
+  const bool will_be_visible = !IsSidePanelRightAligned() &&
+                               is_button_eligible && controller &&
                                controller->ShouldShowEphemeralButton();
 
   if (!was_visible && will_be_visible) {
