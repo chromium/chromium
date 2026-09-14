@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_evaluator.h"
 
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -190,6 +192,49 @@ TEST_F(ContextualCueingEvaluatorTest, EvaluateCategoryScoresDirectly) {
   EXPECT_FALSE(result2.is_eligible());
   EXPECT_EQ(result2.decision,
             ContextualCueingDecision::kFailedCategoryClassification);
+}
+
+TEST_F(ContextualCueingEvaluatorTest, FETBlocksEvaluation) {
+  ContextualCueingCapTrackerService cap_tracker;
+  testing::NiceMock<feature_engagement::test::MockTracker> mock_tracker;
+  EXPECT_CALL(mock_tracker,
+              WouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiContextualCueChip)))
+      .WillRepeatedly(testing::Return(false));
+
+  ContextualCueingEvaluator evaluator(&cap_tracker, &mock_tracker);
+
+  std::vector<page_content_annotations::Category> categories = {
+      {.category_type = page_content_annotations::CategoryType::kShopping,
+       .score = 0.90f},
+  };
+
+  auto result =
+      evaluator.Evaluate(GURL("https://example.com/store"), categories);
+  EXPECT_FALSE(result.is_eligible());
+  EXPECT_EQ(result.decision,
+            ContextualCueingDecision::kTargetFeatureNotEligible);
+}
+
+TEST_F(ContextualCueingEvaluatorTest, FETAllowsEvaluation) {
+  ContextualCueingCapTrackerService cap_tracker;
+  testing::NiceMock<feature_engagement::test::MockTracker> mock_tracker;
+  EXPECT_CALL(mock_tracker,
+              WouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiContextualCueChip)))
+      .WillRepeatedly(testing::Return(true));
+
+  ContextualCueingEvaluator evaluator(&cap_tracker, &mock_tracker);
+
+  std::vector<page_content_annotations::Category> categories = {
+      {.category_type = page_content_annotations::CategoryType::kShopping,
+       .score = 0.90f},
+  };
+
+  auto result =
+      evaluator.Evaluate(GURL("https://example.com/store"), categories);
+  EXPECT_TRUE(result.is_eligible());
+  EXPECT_EQ(result.decision, ContextualCueingDecision::kSuccess);
 }
 
 }  // namespace contextual_cueing

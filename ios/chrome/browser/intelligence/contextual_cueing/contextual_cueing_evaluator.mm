@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_evaluator.h"
 
 #import <algorithm>
+#import <utility>
 
 #import "base/strings/string_util.h"
 #import "components/contextual_cueing/contextual_cueing_utils.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/google/core/common/google_util.h"
 
 namespace contextual_cueing {
@@ -29,13 +32,26 @@ ContextualCueingEvaluator::EvaluationConfig::operator=(
 #pragma mark - ContextualCueingEvaluator
 
 ContextualCueingEvaluator::ContextualCueingEvaluator(
-    ContextualCueingCapTrackerService* cap_tracker_service)
-    : ContextualCueingEvaluator(cap_tracker_service, EvaluationConfig()) {}
+    ContextualCueingCapTrackerService* cap_tracker_service,
+    feature_engagement::Tracker* tracker)
+    : ContextualCueingEvaluator(cap_tracker_service,
+                                tracker,
+                                EvaluationConfig()) {}
 
 ContextualCueingEvaluator::ContextualCueingEvaluator(
     ContextualCueingCapTrackerService* cap_tracker_service,
     EvaluationConfig config)
-    : cap_tracker_service_(cap_tracker_service), config_(std::move(config)) {}
+    : ContextualCueingEvaluator(cap_tracker_service,
+                                /*tracker=*/nullptr,
+                                std::move(config)) {}
+
+ContextualCueingEvaluator::ContextualCueingEvaluator(
+    ContextualCueingCapTrackerService* cap_tracker_service,
+    feature_engagement::Tracker* tracker,
+    EvaluationConfig config)
+    : cap_tracker_service_(cap_tracker_service),
+      tracker_(tracker),
+      config_(std::move(config)) {}
 
 ContextualCueingEvaluator::~ContextualCueingEvaluator() = default;
 
@@ -66,6 +82,12 @@ ContextualCueingDecision ContextualCueingEvaluator::EvaluatePageEligibility(
     if (cap_decision != ContextualCueingDecision::kSuccess) {
       return cap_decision;
     }
+  }
+
+  // Feature Engagement Tracker eligibility check.
+  if (tracker_ && !tracker_->WouldTriggerHelpUI(
+                      feature_engagement::kIPHiOSGeminiContextualCueChip)) {
+    return ContextualCueingDecision::kTargetFeatureNotEligible;
   }
 
   // MIME type check.

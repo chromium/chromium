@@ -14,8 +14,10 @@ source_set("contextual_cueing") {
     "contextual_cueing_tab_helper.mm",
   ]
   deps = [
+    "//components/feature_engagement/public",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//ios/chrome/browser/feature_engagement/model",
   ]
   public_deps = [
     "//base",
@@ -52,11 +54,15 @@ source_set("unit_tests") {
   deps = [
     ":contextual_cueing",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/feature_engagement/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/intelligence/bwg/model:test_support",
     "//ios/chrome/browser/intelligence/features",

@@ -16,6 +16,10 @@
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service.h"
 #import "url/gurl.h"
 
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
 namespace contextual_cueing {
 
 // Evaluates whether a page qualifies for a contextual cue based on on-device
@@ -53,9 +57,14 @@ class ContextualCueingEvaluator {
   };
 
   explicit ContextualCueingEvaluator(
-      ContextualCueingCapTrackerService* cap_tracker_service);
+      ContextualCueingCapTrackerService* cap_tracker_service,
+      feature_engagement::Tracker* tracker = nullptr);
   ContextualCueingEvaluator(
       ContextualCueingCapTrackerService* cap_tracker_service,
+      EvaluationConfig config);
+  ContextualCueingEvaluator(
+      ContextualCueingCapTrackerService* cap_tracker_service,
+      feature_engagement::Tracker* tracker,
       EvaluationConfig config);
   ~ContextualCueingEvaluator();
 
@@ -82,6 +91,7 @@ class ContextualCueingEvaluator {
 
  private:
   raw_ptr<ContextualCueingCapTrackerService> cap_tracker_service_ = nullptr;
+  raw_ptr<feature_engagement::Tracker> tracker_ = nullptr;
   const EvaluationConfig config_;
 };
 

@@ -1,5 +1,6 @@
 include_rules = [
   "+components/contextual_cueing",
+  "+components/feature_engagement/public",
   "+components/google/core/common",
   "+components/keyed_service/core",
   "+components/keyed_service/ios",
@@ -8,6 +9,7 @@ include_rules = [
   "+components/page_content_annotations/core",
   "+components/signin/public/identity_manager",
   "+components/sync/service",
+  "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/intelligence/bwg/metrics",
   "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/intelligence/features",
@@ -20,6 +22,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*test\\.mm": [
+    "+components/feature_engagement/test",
     "+ios/chrome/browser/optimization_guide/model/fake_optimization_guide_service.h",
     "+ios/chrome/browser/shared/model/profile/test",
   ],

@@ -12,6 +12,9 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/contextual_cueing/contextual_cueing_enums.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
@@ -20,6 +23,7 @@
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
@@ -52,7 +56,9 @@ ContextualCueingTabHelper::ContextualCueingTabHelper(web::WebState* web_state)
   web_state_observation_.Observe(web_state_);
 }
 
-ContextualCueingTabHelper::~ContextualCueingTabHelper() = default;
+ContextualCueingTabHelper::~ContextualCueingTabHelper() {
+  DismissFeatureEngagementPromo();
+}
 
 void ContextualCueingTabHelper::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -72,29 +78,57 @@ ContextualCueingTabHelper::GetContextualCue() const {
   return cue_;
 }
 
-void ContextualCueingTabHelper::RecordCueShown() {
+bool ContextualCueingTabHelper::RecordCueShown() {
+  CHECK(!fet_dismiss_runner_);
+  feature_engagement::Tracker* tracker = GetFeatureEngagementTracker();
+  if (tracker) {
+    if (!tracker->ShouldTriggerHelpUI(
+            feature_engagement::kIPHiOSGeminiContextualCueChip)) {
+      RecordContextualCueingDecision(
+          ContextualCueingDecision::kTargetFeatureNotEligible);
+      // FET owns promo arbitration; drop the cue so no surface keeps showing a
+      // chip that FET has not authorized.
+      InvalidateCue();
+      return false;
+    }
+    fet_dismiss_runner_.ReplaceClosure(base::BindOnce(
+        [](feature_engagement::Tracker* tracker) {
+          tracker->Dismissed(
+              feature_engagement::kIPHiOSGeminiContextualCueChip);
+        },
+        base::Unretained(tracker)));
+  }
+
   RecordContextualCueingDecision(ContextualCueingDecision::kSuccess);
   ContextualCueingCapTrackerService* cap_service = GetCapTrackerService();
-  if (!cap_service) {
-    return;
+  if (cap_service && web_state_) {
+    cap_service->RecordCueShown(web_state_->GetLastCommittedURL());
   }
-  cap_service->RecordCueShown(web_state_->GetLastCommittedURL());
+  return true;
 }
 
 void ContextualCueingTabHelper::RecordCueDismissed() {
   ContextualCueingCapTrackerService* cap_service = GetCapTrackerService();
-  if (!cap_service) {
-    return;
+  if (cap_service && web_state_) {
+    cap_service->RecordCueDismissed(web_state_->GetLastCommittedURL());
   }
-  cap_service->RecordCueDismissed(web_state_->GetLastCommittedURL());
+
+  DismissFeatureEngagementPromo();
 }
 
 void ContextualCueingTabHelper::RecordCueClicked() {
   ContextualCueingCapTrackerService* cap_service = GetCapTrackerService();
-  if (!cap_service) {
-    return;
+  if (cap_service && web_state_) {
+    cap_service->RecordCueClicked(web_state_->GetLastCommittedURL());
   }
-  cap_service->RecordCueClicked(web_state_->GetLastCommittedURL());
+
+  feature_engagement::Tracker* tracker = GetFeatureEngagementTracker();
+  if (tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kIOSGeminiContextualCueChipUsed);
+  }
+
+  DismissFeatureEngagementPromo();
 }
 
 #pragma mark - web::WebStateObserver
@@ -160,15 +194,11 @@ void ContextualCueingTabHelper::CancelClassification() {
     return;
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
-  bool had_cue = cue_.has_value();
-  cue_.reset();
   log_entry_.reset();
 
-  if (had_cue) {
-    for (Observer& observer : observers_) {
-      observer.OnContextualCueInvalidated(this);
-    }
-  }
+  DismissFeatureEngagementPromo();
+
+  InvalidateCue();
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
@@ -209,7 +239,8 @@ void ContextualCueingTabHelper::StartClassification() {
   if (mime_type.empty()) {
     mime_type = "text/html";
   }
-  ContextualCueingEvaluator evaluator(GetCapTrackerService());
+  ContextualCueingEvaluator evaluator(GetCapTrackerService(),
+                                      GetFeatureEngagementTracker());
   ContextualCueingDecision page_decision =
       evaluator.EvaluatePageEligibility(url, mime_type);
   // Check if we are eligible to show a cue before classifying the page.
@@ -257,7 +288,8 @@ void ContextualCueingTabHelper::OnPageClassified(
   if (mime_type.empty()) {
     mime_type = "text/html";
   }
-  ContextualCueingEvaluator evaluator(GetCapTrackerService());
+  ContextualCueingEvaluator evaluator(GetCapTrackerService(),
+                                      GetFeatureEngagementTracker());
   ContextualCueingEvaluator::EvaluationResult evaluation_result =
       evaluator.Evaluate(expected_url, *categories, mime_type);
   if (!evaluation_result.is_eligible()) {
@@ -358,6 +390,15 @@ void ContextualCueingTabHelper::OnModelExecutionResponseReceived(
     return;
   }
 
+  feature_engagement::Tracker* tracker = GetFeatureEngagementTracker();
+  if (tracker && !tracker->WouldTriggerHelpUI(
+                     feature_engagement::kIPHiOSGeminiContextualCueChip)) {
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kTargetFeatureNotEligible);
+    NotifyContextualCueReceived(std::nullopt);
+    return;
+  }
+
   NotifyContextualCueReceived(cue);
 }
 
@@ -366,6 +407,16 @@ void ContextualCueingTabHelper::NotifyContextualCueReceived(
   cue_ = std::move(cue);
   for (Observer& observer : observers_) {
     observer.OnContextualCueReceived(this, cue_);
+  }
+}
+
+void ContextualCueingTabHelper::InvalidateCue() {
+  if (!cue_.has_value()) {
+    return;
+  }
+  cue_.reset();
+  for (Observer& observer : observers_) {
+    observer.OnContextualCueInvalidated(this);
   }
 }
 
@@ -395,6 +446,23 @@ ContextualCueingTabHelper::GetCapTrackerService() const {
     return nullptr;
   }
   return ContextualCueingCapTrackerServiceFactory::GetForProfile(profile);
+}
+
+feature_engagement::Tracker*
+ContextualCueingTabHelper::GetFeatureEngagementTracker() const {
+  if (!web_state_) {
+    return nullptr;
+  }
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (!profile) {
+    return nullptr;
+  }
+  return feature_engagement::TrackerFactory::GetForProfile(profile);
+}
+
+void ContextualCueingTabHelper::DismissFeatureEngagementPromo() {
+  fet_dismiss_runner_.RunAndReset();
 }
 
 }  // namespace contextual_cueing

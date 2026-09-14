@@ -10,6 +10,7 @@
 #import <string>
 #import <vector>
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
@@ -23,6 +24,10 @@
 #import "url/gurl.h"
 
 class ProfileIOS;
+
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
 
 namespace optimization_guide {
 class ModelQualityLogEntry;
@@ -95,8 +100,11 @@ class ContextualCueingTabHelper
   const std::optional<optimization_guide::proto::ContextualCue>&
   GetContextualCue() const;
 
-  // Records that a contextual cue was shown to the user.
-  void RecordCueShown();
+  // Records that a contextual cue was shown to the user. Must only be called
+  // once per cue presentation. Returns true if the cue is allowed to be shown.
+  // Returns false if the Feature Engagement Tracker rejected the promo, in
+  // which case the cue is invalidated and callers MUST hide the chip.
+  [[nodiscard]] bool RecordCueShown();
 
   // Records that a contextual cue was explicitly dismissed by the user.
   void RecordCueDismissed();
@@ -145,6 +153,10 @@ class ContextualCueingTabHelper
   void NotifyContextualCueReceived(
       std::optional<optimization_guide::proto::ContextualCue> cue);
 
+  // Clears `cue_` and notifies observers that the cue is no longer valid. No-op
+  // if there is no cue.
+  void InvalidateCue();
+
   // Checks if history sync is enabled.
   bool IsHistorySyncEnabled(ProfileIOS* profile);
 
@@ -154,9 +166,21 @@ class ContextualCueingTabHelper
   // Returns the CapTrackerService for the associated profile, or nullptr.
   ContextualCueingCapTrackerService* GetCapTrackerService() const;
 
+  // Returns the Feature Engagement Tracker for the associated profile, or
+  // nullptr.
+  feature_engagement::Tracker* GetFeatureEngagementTracker() const;
+
+  // Notifies FET that the contextual cue promo is no longer showing and clears
+  // `fet_dismiss_runner_`. No-op if the promo is not active.
+  void DismissFeatureEngagementPromo();
+
   raw_ptr<web::WebState> web_state_ = nullptr;
   raw_ptr<Delegate> delegate_ = nullptr;
   GURL current_url_;
+
+  // Runs `feature_engagement::Tracker::Dismissed` when the contextual cue chip
+  // stops showing (or on tab helper destruction). Empty when not active.
+  base::ScopedClosureRunner fet_dismiss_runner_;
 
   std::optional<std::vector<page_content_annotations::Category>> categories_;
   std::optional<optimization_guide::proto::ContextualCue> cue_;
