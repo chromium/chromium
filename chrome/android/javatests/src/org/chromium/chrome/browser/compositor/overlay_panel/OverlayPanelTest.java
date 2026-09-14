@@ -32,7 +32,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -52,7 +51,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests logic in the OverlayPanel. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@NullMarked
 public class OverlayPanelTest {
     private static final int MOCK_VIEWPORT_WIDTH = 400;
     private static final int MOCK_VIEWPORT_HEIGHT = 1000;
@@ -79,13 +77,8 @@ public class OverlayPanelTest {
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private OverlayPanelContent mMockContent;
 
-    @SuppressWarnings("NullAway.Init")
     Activity mActivity;
-
-    @SuppressWarnings("NullAway.Init")
     ActivityWindowAndroid mWindowAndroid;
-
-    @SuppressWarnings("NullAway.Init")
     TestOverlayPanel mPanel;
 
     private static class TestOverlayPanel extends OverlayPanel {

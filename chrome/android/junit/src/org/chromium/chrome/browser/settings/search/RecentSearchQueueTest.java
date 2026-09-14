@@ -28,10 +28,7 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 public class RecentSearchQueueTest {
     private static final String PREF_KEY = ChromePreferenceKeys.SETTINGS_RECENT_SEARCH_ENTRIES;
 
-    @SuppressWarnings("NullAway.Init")
     private SharedPreferencesManager mPreferences;
-
-    @SuppressWarnings("NullAway.Init")
     private RecentSearchQueue mQueue;
 
     @Before
