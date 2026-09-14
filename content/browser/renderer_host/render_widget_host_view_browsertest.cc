@@ -30,6 +30,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/gpu/compositor_util.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -1056,16 +1057,12 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   ASSERT_FALSE(bg_color.has_value());
 }
 
-// TODO(crbug.com/558178328): Fails persistently on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_SharedWorkerContextProviderDurationRecorded \
-  DISABLED_SharedWorkerContextProviderDurationRecorded
-#else
-#define MAYBE_SharedWorkerContextProviderDurationRecorded \
-  SharedWorkerContextProviderDurationRecorded
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
-                       MAYBE_SharedWorkerContextProviderDurationRecorded) {
+                       SharedWorkerContextProviderDurationRecorded) {
+  if (GpuDataManagerImpl::GetInstance()->IsGpuCompositingDisabled()) {
+    GTEST_SKIP() << "The shared raster worker context is only created when the "
+                    "renderer composites on the GPU.";
+  }
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(NavigateToURL(
