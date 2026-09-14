@@ -52,12 +52,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.KeyUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.search.SearchBoxProperties;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -133,6 +131,9 @@ public class BookmarkSearchBoxRowTest {
                     mPropertyModel =
                             new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
                                     .with(
+                                            BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES,
+                                            R.string.price_tracking_bookmarks_filter_title)
+                                    .with(
                                             BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY,
                                             true)
                                     .with(
@@ -166,8 +167,6 @@ public class BookmarkSearchBoxRowTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/557319392): Touch injection is flaky on Desktop Freeform.
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM)
     public void testFocusAndEnter() {
         onView(withId(R.id.search_text)).perform(click());
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(true)));
@@ -223,8 +222,6 @@ public class BookmarkSearchBoxRowTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/557319392): Touch injection is flaky on Desktop Freeform.
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM)
     public void testShoppingChipToggleCallback() {
         setProperty(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, false);
         onView(withId(R.id.shopping_filter_chip)).perform(click());
