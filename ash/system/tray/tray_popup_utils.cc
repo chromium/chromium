@@ -15,7 +15,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/size_range_layout.h"
 #include "ash/system/tray/tray_constants.h"
@@ -236,7 +236,8 @@ views::ImageView* TrayPopupUtils::CreateMainImageView(bool use_wide_layout) {
 
 std::unique_ptr<views::Painter> TrayPopupUtils::CreateFocusPainter() {
   return views::Painter::CreateSolidFocusPainter(
-      AshColorProvider::Get()->GetColor(ui::kColorAshFocusRing),
+      StyleUtil::GetColorProviderForNativeTheme()->GetColor(
+          ui::kColorAshFocusRing),
       kFocusBorderThickness, gfx::InsetsF());
 }
 

@@ -12,6 +12,8 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ui {
@@ -30,9 +32,9 @@ class ASH_EXPORT StylusBatteryDelegate
   StylusBatteryDelegate& operator=(const StylusBatteryDelegate& other) = delete;
   ~StylusBatteryDelegate() override;
 
-  SkColor GetColorForBatteryLevel() const;
+  ui::ColorId GetColorForBatteryLevel() const;
   gfx::ImageSkia GetBatteryImage(const ui::ColorProvider* color_provider) const;
-  gfx::ImageSkia GetBatteryStatusUnknownImage() const;
+  ui::ImageModel GetBatteryStatusUnknownImage() const;
   void SetBatteryUpdateCallback(Callback battery_update_callback);
   bool IsBatteryCharging() const;
   bool IsBatteryLevelLow() const;

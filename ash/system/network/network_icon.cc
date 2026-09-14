@@ -12,8 +12,8 @@
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
+#include "ash/style/style_util.h"
 #include "ash/system/network/network_icon_animation.h"
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/tray/tray_constants.h"
@@ -233,7 +233,8 @@ gfx::ImageSkia ConnectingVpnImage(double animation) {
   float floored_animation_value =
       std::floor(animation * kNumFadeImages) / kNumFadeImages;
   const SkColor icon_color =
-      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
+      StyleUtil::GetColorProviderForNativeTheme()->GetColor(
+          cros_tokens::kIconColorPrimary);
   return gfx::CreateVectorIcon(
       kNetworkVpnIcon,
       gfx::Tween::ColorValueBetween(
@@ -483,41 +484,29 @@ NetworkIconImpl* FindAndUpdateImageImpl(const ui::ColorProvider* color_provider,
 
 SkColor GetDefaultColorForIconType(const ui::ColorProvider* color_provider,
                                    IconType icon_type) {
-  // If |color_provider| is null, AshColorProvider will be used
-  // to fetch the color instead.
-  const bool use_color_provider = !!color_provider;
+  if (icon_type == ICON_TYPE_TRAY_OOBE) {
+    return kIconColorInOobe;
+  }
 
-  auto* ash_color_provider = AshColorProvider::Get();
+  if (!color_provider) {
+    color_provider = StyleUtil::GetColorProviderForNativeTheme();
+  }
+
   switch (icon_type) {
     case ICON_TYPE_TRAY_OOBE:
       return kIconColorInOobe;
     case ICON_TYPE_TRAY_REGULAR:
     case ICON_TYPE_FEATURE_POD:
     case ICON_TYPE_LIST:
-      return use_color_provider
-                 ? color_provider->GetColor(cros_tokens::kCrosSysOnSurface)
-                 : ash_color_provider->GetColor(cros_tokens::kColorPrimary);
+      return color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
     case ICON_TYPE_TRAY_ACTIVE:
-      return use_color_provider
-                 ? color_provider->GetColor(
-                       cros_tokens::kCrosSysSystemOnPrimaryContainer)
-                 : ash_color_provider->GetColor(cros_tokens::kColorPrimary);
     case ICON_TYPE_FEATURE_POD_TOGGLED:
-      return use_color_provider
-                 ? color_provider->GetColor(
-                       cros_tokens::kCrosSysSystemOnPrimaryContainer)
-                 : ash_color_provider->GetColor(cros_tokens::kColorPrimary);
+      return color_provider->GetColor(
+          cros_tokens::kCrosSysSystemOnPrimaryContainer);
     case ICON_TYPE_FEATURE_POD_DISABLED:
-      return use_color_provider
-                 ? color_provider->GetColor(cros_tokens::kCrosSysDisabled)
-                 : color_utils::GetResultingPaintColor(
-                       ColorUtil::GetDisabledColor(GetDefaultColorForIconType(
-                           color_provider, ICON_TYPE_FEATURE_POD)),
-                       ash_color_provider->GetBackgroundColor());
+      return color_provider->GetColor(cros_tokens::kCrosSysDisabled);
     default:
-      return use_color_provider
-                 ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
-                 : ash_color_provider->GetColor(cros_tokens::kColorPrimary);
+      return color_provider->GetColor(cros_tokens::kCrosSysPrimary);
   }
 }
 

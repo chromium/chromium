@@ -112,7 +112,6 @@ class AnnotatorController;
 class AppListControllerImpl;
 class AppListFeatureUsageMetrics;
 class AshAcceleratorConfiguration;
-class AshColorProvider;
 class AshDBusServices;
 class AshFocusRules;
 class AshTouchTransformController;
@@ -840,7 +839,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   ToplevelWindowEventHandler* toplevel_window_event_handler() {
     return toplevel_window_event_handler_.get();
   }
-  AshColorProvider* ash_color_provider() { return ash_color_provider_.get(); }
 
   PrefService* local_state() { return local_state_; }
 
@@ -1148,7 +1146,6 @@ class ASH_EXPORT Shell : public SessionObserver,
       sunfish_scanner_feature_watcher_;
   std::unique_ptr<FeatureDiscoveryDurationReporterImpl>
       feature_discover_reporter_;
-  std::unique_ptr<AshColorProvider> ash_color_provider_;
   std::unique_ptr<NightLightControllerImpl> night_light_controller_;
   std::unique_ptr<InformedRestoreController> informed_restore_controller_;
   std::unique_ptr<PipController> pip_controller_;

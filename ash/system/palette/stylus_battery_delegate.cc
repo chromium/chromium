@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/power/peripheral_battery_listener.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/tray_constants.h"
@@ -34,20 +33,23 @@ StylusBatteryDelegate::StylusBatteryDelegate() {
 
 StylusBatteryDelegate::~StylusBatteryDelegate() = default;
 
-SkColor StylusBatteryDelegate::GetColorForBatteryLevel() const {
+ui::ColorId StylusBatteryDelegate::GetColorForBatteryLevel() const {
   if (!battery_level_.has_value()) {
-    return AshColorProvider::Get()->GetColor(cros_tokens::kIconColorWarning);
+    return cros_tokens::kIconColorWarning;
   }
   if (battery_level_ <= kStylusLowBatteryThreshold && !IsBatteryCharging()) {
-    return AshColorProvider::Get()->GetColor(cros_tokens::kIconColorAlert);
+    return cros_tokens::kIconColorAlert;
   }
 
-  return AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
+  return cros_tokens::kIconColorPrimary;
 }
 
 gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage(
     const ui::ColorProvider* color_provider) const {
-  PowerStatus::BatteryImageInfo info(GetColorForBatteryLevel());
+  SkColor color = color_provider
+                      ? color_provider->GetColor(GetColorForBatteryLevel())
+                      : gfx::kPlaceholderColor;
+  PowerStatus::BatteryImageInfo info(color);
   info.charge_percent = battery_level_.value_or(0);
 
   if (IsBatteryCharging()) {
@@ -59,11 +61,9 @@ gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage(
                                       color_provider);
 }
 
-gfx::ImageSkia StylusBatteryDelegate::GetBatteryStatusUnknownImage() const {
-  const SkColor icon_color =
-      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
-
-  return gfx::CreateVectorIcon(kStylusBatteryStatusUnknownIcon, icon_color);
+ui::ImageModel StylusBatteryDelegate::GetBatteryStatusUnknownImage() const {
+  return ui::ImageModel::FromVectorIcon(kStylusBatteryStatusUnknownIcon,
+                                        cros_tokens::kIconColorPrimary);
 }
 
 void StylusBatteryDelegate::SetBatteryUpdateCallback(

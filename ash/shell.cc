@@ -140,7 +140,6 @@
 #include "ash/shell_tab_handler.h"
 #include "ash/shutdown_controller_impl.h"
 #include "ash/style/ash_color_mixer.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/style_util.h"
@@ -1110,8 +1109,6 @@ Shell::~Shell() {
   keyboard_backlight_color_controller_.reset();
   rgb_keyboard_manager_.reset();
 
-  ash_color_provider_.reset();
-
   // Depends on `dark_light_mode_controller_` and `wallpaper_controller_` so it
   // should be destroyed first.
   color_palette_controller_.reset();
@@ -1430,7 +1427,6 @@ void Shell::Init(
     env->set_context_factory(context_factory);
   }
 
-  ash_color_provider_ = std::make_unique<AshColorProvider>();
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(AddCrosStylesColorMixer));
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(

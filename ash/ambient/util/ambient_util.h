@@ -12,7 +12,6 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 
 #include "ui/gfx/font_list.h"
@@ -39,7 +38,7 @@ ASH_EXPORT SkColor GetColor(const ui::ColorProvider* color_provider,
                             ui::ColorId color_id,
                             bool dark_mode_enabled);
 
-// Version of the above that uses AshColorProvider::IsDarkModeEnabled().
+// Version of the above that uses DarkLightModeController.
 ASH_EXPORT SkColor GetColor(const ui::ColorProvider* color_provider,
                             ui::ColorId color_id);
 

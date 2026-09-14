@@ -24,7 +24,9 @@
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/color_palette_controller.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
@@ -76,6 +78,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_solid_color.h"
@@ -1913,8 +1916,14 @@ void SplitViewController::UpdateBlackScrim(
   if (!black_scrim_layer_) {
     // Create an invisible black scrim layer.
     black_scrim_layer_ = std::make_unique<ui::LayerSolidColor>();
-    black_scrim_layer_->SetColor(
-        SkColor4f::FromColor(AshColorProvider::Get()->GetBackgroundColor()));
+    const SkColor default_color =
+        StyleUtil::GetColorProviderForNativeTheme()->GetColor(
+            kColorAshShieldAndBaseOpaque);
+    const SkColor background_color =
+        Shell::Get()
+            ->color_palette_controller()
+            ->GetUserWallpaperColorOrDefault(default_color);
+    black_scrim_layer_->SetColor(SkColor4f::FromColor(background_color));
     // Set the black scrim layer underneath split view divider.
     auto* divider_layer = split_view_divider_.GetDividerWindow()->layer();
     auto* divider_parent_layer = divider_layer->parent();

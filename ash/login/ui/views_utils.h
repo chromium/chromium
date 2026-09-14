@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "ash/ash_export.h"
-#include "ash/style/ash_color_provider.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"

@@ -13,7 +13,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/phonehub/app_stream_launcher_item.h"
@@ -243,12 +242,11 @@ std::unique_ptr<views::Button> AppStreamLauncherView::CreateButton(
     views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
     int message_id) {
-  SkColor color =
-      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
-  SkColor disabled_color = SkColorSetA(color, gfx::kDisabledControlAlpha);
   auto button = views::CreateVectorImageButton(std::move(callback));
-  views::SetImageFromVectorIconWithColor(button.get(), icon,
-                                         {color, disabled_color});
+  views::SetImageFromVectorIconWithColor(
+      button.get(), icon,
+      {cros_tokens::kIconColorPrimary,
+       cros_tokens::kButtonIconColorPrimaryDisabled});
 
   ash::StyleUtil::SetUpInkDropForButton(button.get(), gfx::Insets(),
                                         /*highlight_on_hover=*/false,

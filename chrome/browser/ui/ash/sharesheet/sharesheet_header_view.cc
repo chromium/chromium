@@ -12,10 +12,9 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/rounded_image_view.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -154,8 +153,8 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
             cros_styles::ColorName::kTextColorProminent, is_dark_mode_enabled,
             /*use_debug_colors=*/false));
         label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-        auto second_tone_icon_color_prominent =
-            ColorUtil::GetSecondToneColor(AshColorProvider::Get()->GetColor(
+        auto second_tone_icon_color_prominent = ColorUtil::GetSecondToneColor(
+            StyleUtil::GetColorProviderForNativeTheme()->GetColor(
                 cros_tokens::kIconColorProminent));
         label->SetBackground(views::CreateRoundedRectBackground(
             second_tone_icon_color_prominent, kImagePreviewIconCornerRadius));
@@ -288,7 +287,8 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
   } else {
     DCHECK_GT(image_preview_->GetImageViewCount(), 0u);
     const auto icon_color =
-        ColorProvider::Get()->GetColor(cros_tokens::kIconColorProminent);
+        StyleUtil::GetColorProviderForNativeTheme()->GetColor(
+            cros_tokens::kIconColorProminent);
     gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
         GetTextVectorIcon(),
         sharesheet::kImagePreviewPlaceholderIconContentSize, icon_color);

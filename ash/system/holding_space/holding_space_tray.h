@@ -16,7 +16,6 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/callback_list.h"

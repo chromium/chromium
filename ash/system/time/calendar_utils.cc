@@ -12,8 +12,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/color_util.h"
 #include "ash/system/time/date_helper.h"
 #include "base/i18n/icubridge/calendar.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
@@ -232,22 +230,6 @@ base::Time GetMinTime(const base::Time d1, const base::Time d2) {
   return (d1 < d2) ? d1 : d2;
 }
 
-SkColor GetPrimaryTextColor() {
-  const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
-  return color_provider->GetColor(cros_tokens::kTextColorPrimary);
-}
-
-SkColor GetSecondaryTextColor() {
-  const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
-  return color_provider->GetColor(cros_tokens::kTextColorSecondary);
-}
-
-SkColor GetDisabledTextColor() {
-  const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
-  const SkColor primary_color =
-      color_provider->GetColor(cros_tokens::kTextColorPrimary);
-  return ColorUtil::GetDisabledColor(primary_color);
-}
 
 base::Time GetFirstDayOfMonth(const base::Time& date) {
   return date -

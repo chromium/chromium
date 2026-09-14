@@ -15,7 +15,7 @@ namespace message_center_style {
 
 constexpr SkColor kScrollShadowColor = SkColorSetARGB(0x24, 0x0, 0x0, 0x0);
 
-// TODO(crbug.com/1309551): Get the colors from AshColorProvider once
+// TODO(crbug.com/1309551): Get the colors from ColorProvider once
 // notification supports dark/light mode.
 constexpr SkColor kSeparatorColor = SkColorSetA(SK_ColorBLACK, 0x24);  // 14%
 

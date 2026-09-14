@@ -7,10 +7,10 @@
 #include <math.h>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"

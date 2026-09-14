@@ -13,7 +13,7 @@
 
 namespace ash {
 
-// Do not add constant colors in this file. Get the colors from AshColorProvider
+// Do not add constant colors in this file. Get the colors from ColorProvider
 // instead.
 
 // The size delta between the default font and the font size found in tray

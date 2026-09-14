@@ -18,7 +18,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
@@ -140,7 +140,7 @@ class QuickSettingsHeader::ManagedStateView : public views::Button {
   void OnThemeChanged() override {
     views::Button::OnThemeChanged();
     const std::pair<SkColor, float> base_color_and_opacity =
-        AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+        StyleUtil::GetInkDropBaseColorAndOpacity();
     views::InkDrop::Get(this)->SetBaseColor(base_color_and_opacity.first);
     image_->SetImage(ui::ImageModel::FromVectorIcon(
         *icon_,

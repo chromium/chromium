@@ -4,7 +4,6 @@
 
 #include "ash/system/palette/common_palette_tool.h"
 
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/palette/palette_ids.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -13,10 +12,9 @@
 #include "ash/system/tray/view_click_listener.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -44,12 +42,11 @@ void CommonPaletteTool::OnViewClicked(views::View* sender) {
 }
 
 views::View* CommonPaletteTool::CreateDefaultView(const std::u16string& name) {
-  SkColor icon_color =
-      AshColorProvider::Get()->GetColor(cros_tokens::kColorPrimary);
-  gfx::ImageSkia icon =
-      CreateVectorIcon(GetPaletteIcon(), kMenuIconSize, icon_color);
   highlight_view_ = new HoverHighlightView(this);
-  highlight_view_->AddIconAndLabel(icon, name);
+  highlight_view_->AddIconAndLabel(
+      ui::ImageModel::FromVectorIcon(GetPaletteIcon(),
+                                     cros_tokens::kColorPrimary, kMenuIconSize),
+      name);
   return highlight_view_;
 }
 

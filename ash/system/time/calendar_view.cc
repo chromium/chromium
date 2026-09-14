@@ -268,18 +268,12 @@ void StopViewLayerAnimation(views::View* view) {
 class CalendarLabel : public views::Label {
  public:
   explicit CalendarLabel(const std::u16string& text) : views::Label(text) {
-    views::Label::SetEnabledColor(calendar_utils::GetPrimaryTextColor());
+    views::Label::SetEnabledColor(cros_tokens::kTextColorPrimary);
     views::Label::SetAutoColorReadabilityEnabled(false);
   }
   CalendarLabel(const CalendarLabel&) = delete;
   CalendarLabel& operator=(const CalendarLabel&) = delete;
   ~CalendarLabel() override = default;
-
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-
-    views::Label::SetEnabledColor(calendar_utils::GetPrimaryTextColor());
-  }
 };
 
 // Resets the `view`'s opacity and position.

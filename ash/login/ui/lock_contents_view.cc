@@ -41,6 +41,7 @@
 #include "ash/public/cpp/management_disclosure_client.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/public/cpp/smartlock_state.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"

@@ -17,8 +17,7 @@ class Event;
 
 namespace ash {
 
-// A toggle button configured for the system tray menu's layout. Also gets the
-// colors from AshColorProvider.
+// A toggle button configured for the system tray menu's layout.
 class ASH_EXPORT TrayToggleButton : public views::ToggleButton {
   METADATA_HEADER(TrayToggleButton, views::ToggleButton)
 

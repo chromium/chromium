@@ -19,7 +19,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
@@ -479,10 +478,14 @@ AshNotificationView::AshNotificationView(
                                views::FlexSpecification(
                                    views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded))
-                  .AddChild(CreateHeaderRowBuilder()
-                                .SetIsInAshNotificationView(true)
-                                .SetColor(AshColorProvider::Get()->GetColor(
-                                    cros_tokens::kTextColorSecondary)))
+                  .AddChild(
+                      CreateHeaderRowBuilder()
+                          .SetIsInAshNotificationView(true)
+                          .SetColor(
+                              notification_style_utils::
+                                  GetColorProviderForNativeTheme()
+                                      ->GetColor(
+                                          cros_tokens::kTextColorSecondary)))
                   .AddChild(
                       CreateLeftContentBuilder()
                           .CopyAddressTo(&left_content_)
@@ -1667,8 +1670,12 @@ void AshNotificationView::UpdateIconAndButtonsColor(
       !notification ||
       notification->rich_notification_data().ignore_accent_color_for_text;
   if (use_default_button_color) {
-    button_color = AshColorProvider::Get()->GetColor(
-        kColorAshControlBackgroundColorActive);
+    const auto* color_provider = GetColorProvider();
+    button_color =
+        color_provider
+            ? color_provider->GetColor(kColorAshControlBackgroundColorActive)
+            : notification_style_utils::GetColorProviderForNativeTheme()
+                  ->GetColor(kColorAshControlBackgroundColorActive);
   }
 
   for (views::LabelButton* action_button : action_buttons()) {

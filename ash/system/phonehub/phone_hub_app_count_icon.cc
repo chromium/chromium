@@ -5,9 +5,10 @@
 #include "ash/system/phonehub/phone_hub_app_count_icon.h"
 
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
@@ -30,17 +31,18 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
   void Draw(gfx::Canvas* canvas) override {
     float radius = size().width() / 2.0f;
 
+    auto* color_provider = StyleUtil::GetColorProviderForNativeTheme();
     canvas->DrawStringRectWithFlags(
         base::FormatNumber(count_), GetNumberIconFontList(),
-        AshColorProvider::Get()->GetColor(cros_tokens::kIconColorSecondary),
+        color_provider->GetColor(cros_tokens::kIconColorSecondary),
         gfx::Rect(size()),
         gfx::Canvas::TEXT_ALIGN_CENTER | gfx::Canvas::NO_SUBPIXEL_RENDERING);
     cc::PaintFlags flags;
     flags.setBlendMode(SkBlendMode::kXor);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
-    flags.setColor(AshColorProvider::Get()->GetColor(
-        kColorAshIconColorSecondaryBackground));
+    flags.setColor(
+        color_provider->GetColor(kColorAshIconColorSecondaryBackground));
     canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
   }
 

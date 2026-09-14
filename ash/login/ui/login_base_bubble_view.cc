@@ -8,6 +8,7 @@
 
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/system_shadow.h"

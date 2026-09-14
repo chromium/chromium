@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "ash/style/ash_color_provider.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/check_op.h"
 #include "third_party/skia/include/core/SkColor.h"
