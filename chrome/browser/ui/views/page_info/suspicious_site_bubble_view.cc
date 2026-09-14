@@ -304,12 +304,11 @@ void SuspiciousSiteBubbleView::OpenHelpCenter() {
       controller->OnLearnMoreClicked();
       return;
     }
-    web_contents()->OpenURL(
-        content::OpenURLParams(GURL(chrome::kSafeBrowsingHelpCenterURL),
-                               content::Referrer(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PAGE_TRANSITION_LINK, false),
-        /*navigation_handle_callback=*/{});
+    web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                                GURL(chrome::kSafeBrowsingHelpCenterURL),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK),
+                            /*navigation_handle_callback=*/{});
   }
 }
 

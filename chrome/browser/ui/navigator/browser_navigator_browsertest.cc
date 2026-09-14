@@ -2524,9 +2524,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
   WebContents* source_contents =
       browser()->GetTabStripModel()->GetWebContentsAt(0);
-  content::OpenURLParams open_params(GetGoogleURL(), content::Referrer(),
-                                     WindowOpenDisposition::NEW_SPLIT_VIEW,
-                                     ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams open_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GetGoogleURL(), WindowOpenDisposition::NEW_SPLIT_VIEW,
+          ui::PAGE_TRANSITION_LINK);
   WebContents* returned_contents = source_contents->OpenURL(open_params, {});
 
   // Returning |source_contents| avoids DidOpenRequestedURL notifications,
@@ -2571,9 +2572,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   WebContents* const other_pinned_contents =
       tab_strip_model->GetWebContentsAt(1);
 
-  content::OpenURLParams open_params(GetGoogleURL(), content::Referrer(),
-                                     WindowOpenDisposition::NEW_SPLIT_VIEW,
-                                     ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams open_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GetGoogleURL(), WindowOpenDisposition::NEW_SPLIT_VIEW,
+          ui::PAGE_TRANSITION_LINK);
   WebContents* const new_contents = source_contents->OpenURL(open_params, {});
   ASSERT_TRUE(new_contents);
   ASSERT_EQ(3, tab_strip_model->count());

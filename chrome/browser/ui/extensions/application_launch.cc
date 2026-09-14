@@ -305,13 +305,12 @@ WebContents* OpenApplicationTab(Profile* profile,
     int tab_index = model->GetIndexOfWebContents(existing_tab);
 
     existing_tab->OpenURL(
-        content::OpenURLParams(
-            url,
+        content::OpenURLParams::CreateBrowserInitiated(
+            url, disposition, transition,
             content::Referrer::SanitizeForRequest(
                 url,
                 content::Referrer(existing_tab->GetURL(),
-                                  network::mojom::ReferrerPolicy::kDefault)),
-            disposition, transition, false),
+                                  network::mojom::ReferrerPolicy::kDefault))),
         /*navigation_handle_callback=*/{});
     // Reset existing_tab as OpenURL() may have clobbered it.
     existing_tab = browser->GetTabStripModel()->GetActiveWebContents();

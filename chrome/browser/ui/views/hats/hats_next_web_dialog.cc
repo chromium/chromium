@@ -129,9 +129,9 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
     // cannot open new browser windows, so they are instead opened in the
     // regular browser that initiated the HaTS survey.
     content::OpenURLParams params =
-        content::OpenURLParams(target_url, content::Referrer(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PAGE_TRANSITION_LINK, false);
+        content::OpenURLParams::CreateBrowserInitiated(
+            target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_LINK);
 
     // For the case where we are showing a survey in an undocked DevTools
     // window, we open the URL in the browser of the inspected page.

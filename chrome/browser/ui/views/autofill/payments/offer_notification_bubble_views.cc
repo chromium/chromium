@@ -180,11 +180,9 @@ void OfferNotificationBubbleViews::InitWithGPayPromoCodeOfferContent() {
 void OfferNotificationBubbleViews::OnPromoCodeSeeDetailsClicked() {
   DCHECK(controller_->GetOffer()->GetOfferDetailsUrl().is_valid());
   web_contents()->OpenURL(
-      content::OpenURLParams(
+      content::OpenURLParams::CreateBrowserInitiated(
           GURL(controller_->GetOffer()->GetOfferDetailsUrl()),
-          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_LINK,
-          /*is_renderer_initiated=*/false),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

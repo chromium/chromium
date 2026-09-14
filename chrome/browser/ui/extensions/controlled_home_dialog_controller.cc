@@ -220,10 +220,10 @@ void ControlledHomeDialogController::OnBubbleClosed(CloseAction action) {
       if (!g_should_ignore_learn_more_for_testing && web_contents_) {
         GURL learn_more_url(chrome::kExtensionControlledSettingLearnMoreURL);
         CHECK(learn_more_url.is_valid());
-        content::OpenURLParams params(learn_more_url, content::Referrer(),
-                                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                      ui::PAGE_TRANSITION_LINK,
-                                      /*is_renderer_initiated=*/false);
+        content::OpenURLParams params =
+            content::OpenURLParams::CreateBrowserInitiated(
+                learn_more_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                ui::PAGE_TRANSITION_LINK);
         web_contents_->OpenURL(params, {});
       }
       break;

@@ -649,9 +649,9 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
     } else {
       DCHECK(item->url.is_valid());
       browser_->OpenURL(
-          content::OpenURLParams(item->url, content::Referrer(),
-                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false),
+          content::OpenURLParams::CreateBrowserInitiated(
+              item->url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              ui::PAGE_TRANSITION_AUTO_BOOKMARK),
           /*navigation_handle_callback=*/{});
     }
   } else if (profile_commands_.contains(command_id)) {

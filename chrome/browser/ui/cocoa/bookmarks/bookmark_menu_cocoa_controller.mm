@@ -75,8 +75,8 @@ void DoOpenBookmark(Profile* profile,
   if (!browser) {
     browser = CreateBrowserWindow(BrowserWindowCreateParams(profile, true));
   }
-  OpenURLParams params(node->url(), Referrer(), disposition,
-                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+  OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
+      node->url(), disposition, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
   RecordBookmarkLaunch(BookmarkLaunchLocation::kTopMenu,
                        profile_metrics::GetBrowserProfileType(profile));

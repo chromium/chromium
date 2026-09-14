@@ -308,12 +308,11 @@ void SerialChooserController::OpenHelpCenterUrl() const {
     return;
   }
 
-  web_contents->OpenURL(
-      content::OpenURLParams(
-          GURL(chrome::kChooserSerialOverviewUrl), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
+  web_contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                            GURL(chrome::kChooserSerialOverviewUrl),
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
+                        /*navigation_handle_callback=*/{});
 }
 
 void SerialChooserController::OpenPermissionPreferences() const {
@@ -531,11 +530,11 @@ void SerialChooserController::OpenBluetoothHelpUrl() const {
       profile, chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
 #else
   // For other operating systems, show a help center page in a tab.
-  content::OpenURLParams open_url_params(
-      GURL(chrome::kBluetoothAdapterOffHelpURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams open_url_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(chrome::kBluetoothAdapterOffHelpURL),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 #if BUILDFLAG(IS_ANDROID)
   auto* rfh = initiator_document_.AsRenderFrameHostIfValid();
   auto* web_contents = rfh && rfh->IsActive()

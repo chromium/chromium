@@ -132,9 +132,10 @@ void ExtensionInstallDialogViewAndroid::OnStoreLinkClicked(
     return;
   }
   GURL gurl(base::android::ConvertJavaStringToUTF8(env, url));
-  content::OpenURLParams params(gurl, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          gurl, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 

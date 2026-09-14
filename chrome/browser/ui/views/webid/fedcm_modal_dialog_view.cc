@@ -75,9 +75,9 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
       is_fullscreen ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                     : WindowOpenDisposition::NEW_POPUP;
 
-  content::OpenURLParams params(url, content::Referrer(), disposition,
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, disposition, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   base::WeakPtr<FedCmModalDialogView> weak_this =
       weak_ptr_factory_.GetWeakPtr();
   content::WebContents* popup_window = delegate->OpenURLFromTab(

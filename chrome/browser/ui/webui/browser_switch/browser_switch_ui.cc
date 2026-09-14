@@ -45,10 +45,10 @@
 namespace {
 
 void GotoNewTabPage(content::WebContents* web_contents) {
-  content::OpenURLParams params(chrome::ChromeUINewTabURLAsGURL(),
-                                content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          chrome::ChromeUINewTabURLAsGURL(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 

@@ -289,9 +289,9 @@ void ActionChipsHandler::NavigateToAim(
       /*middle_button=*/mouse_button == 1, modifiers->alt_key,
       modifiers->ctrl_key, modifiers->meta_key, modifiers->shift_key);
 
-  content::OpenURLParams params(aim_url, content::Referrer(), disposition,
-                                ui::PAGE_TRANSITION_GENERATED,
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          aim_url, disposition, ui::PAGE_TRANSITION_GENERATED);
   web_ui_->GetWebContents()->OpenURL(params,
                                      /*navigation_handle_callback=*/{});
 }

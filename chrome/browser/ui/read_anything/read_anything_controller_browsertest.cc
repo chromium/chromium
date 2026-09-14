@@ -2059,26 +2059,26 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   int initial_tab_count = browser()->GetTabStripModel()->count();
 
-  content::OpenURLParams chrome_params(
-      GURL("chrome://settings/"), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      false);
+  content::OpenURLParams chrome_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL("chrome://settings/"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
                          immersive_contents, chrome_params, base::DoNothing()));
   EXPECT_EQ(initial_tab_count, browser()->GetTabStripModel()->count());
 
-  content::OpenURLParams file_params(GURL("file:///etc/passwd"),
-                                     content::Referrer(),
-                                     WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                     ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams file_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL("file:///etc/passwd"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
                          immersive_contents, file_params, base::DoNothing()));
   EXPECT_EQ(initial_tab_count, browser()->GetTabStripModel()->count());
 
-  content::OpenURLParams js_params(GURL("javascript:alert(1)"),
-                                   content::Referrer(),
-                                   WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                   ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams js_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL("javascript:alert(1)"),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
                          immersive_contents, js_params, base::DoNothing()));
   EXPECT_EQ(initial_tab_count, browser()->GetTabStripModel()->count());
@@ -2150,9 +2150,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
       GURL("chrome-extension://abc/popup.html"),
   };
   for (const GURL& target : non_web_urls) {
-    content::OpenURLParams params(target, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                  ui::PAGE_TRANSITION_LINK, false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            target, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_LINK);
     EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
                            immersive_contents, params, base::DoNothing()))
         << target;
@@ -2181,9 +2182,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(side_panel_delegate);
 
   for (const GURL& target : non_web_urls) {
-    content::OpenURLParams params(target, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                  ui::PAGE_TRANSITION_LINK, false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            target, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_LINK);
     EXPECT_EQ(nullptr, side_panel_delegate->OpenURLFromTab(
                            side_panel_contents, params, base::DoNothing()))
         << target;

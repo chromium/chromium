@@ -104,10 +104,10 @@ SkillsNavigationThrottle::WillStartRequest() {
                       ? WindowOpenDisposition::CURRENT_TAB
                       : WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
-              content::OpenURLParams params(
-                  GURL(features::kSkillsSettingsPageUrl.Get()),
-                  content::Referrer(), disposition, ui::PAGE_TRANSITION_LINK,
-                  /*is_renderer_initiated=*/false);
+              content::OpenURLParams params =
+                  content::OpenURLParams::CreateBrowserInitiated(
+                      GURL(features::kSkillsSettingsPageUrl.Get()), disposition,
+                      ui::PAGE_TRANSITION_LINK);
               web_contents->OpenURL(params,
                                     /*navigation_handle_callback=*/{});
             }

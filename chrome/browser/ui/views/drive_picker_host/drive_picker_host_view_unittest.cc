@@ -188,9 +188,10 @@ TEST_F(DrivePickerHostViewTest, OpenURLFromTab_ForwardsToBrowserWindow) {
       drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog);
 
   const GURL test_url("https://policies.google.com/terms");
-  content::OpenURLParams params(test_url, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          test_url, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_LINK);
 
   EXPECT_CALL(*browser_window_interface(),
               OpenURL(testing::Field(&content::OpenURLParams::disposition,
@@ -209,9 +210,10 @@ TEST_F(DrivePickerHostViewTest, OpenURLFromTab_RejectsPrivilegedSchemes) {
   for (const std::string& url_str :
        {"chrome://settings", "file:///etc/passwd"}) {
     const GURL privileged_url(url_str);
-    content::OpenURLParams params(privileged_url, content::Referrer(),
-                                  WindowOpenDisposition::CURRENT_TAB,
-                                  ui::PAGE_TRANSITION_LINK, false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            privileged_url, WindowOpenDisposition::CURRENT_TAB,
+            ui::PAGE_TRANSITION_LINK);
 
     EXPECT_CALL(*browser_window_interface(), OpenURL(testing::_, testing::_))
         .Times(0);

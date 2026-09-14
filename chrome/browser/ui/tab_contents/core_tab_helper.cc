@@ -555,9 +555,10 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
   if (!url.is_valid()) {
     return;
   }
-  content::OpenURLParams open_url_params(
-      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams open_url_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   const std::string& content_type = post_content.first;
   const std::string& post_data = post_content.second;
   if (!post_data.empty()) {

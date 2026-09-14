@@ -95,10 +95,10 @@ class PasskeyUpgradeBubbleController : public PasswordBubbleControllerBase {
     GURL learn_more_url(kHelpCenterUrlBase);
     google_util::AppendGoogleLocaleParam(learn_more_url,
                                          base::i18n::GetConfiguredLocale());
-    content::OpenURLParams params(learn_more_url, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                  ui::PAGE_TRANSITION_LINK,
-                                  /*is_renderer_initiated=*/false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            learn_more_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui::PAGE_TRANSITION_LINK);
     web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
   }
 

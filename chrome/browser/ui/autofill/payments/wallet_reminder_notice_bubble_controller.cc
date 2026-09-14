@@ -103,12 +103,10 @@ void WalletReminderNoticeBubbleController::OnLinkClicked(const GURL& url) {
       autofill_metrics::WalletReminderNoticeInteraction::kClickedLink);
   logged_link_clicked_ = true;
 
-  web_contents()->OpenURL(
-      content::OpenURLParams(url, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK,
-                             /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
+  web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                              url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              ui::PAGE_TRANSITION_LINK),
+                          /*navigation_handle_callback=*/{});
 }
 
 void WalletReminderNoticeBubbleController::OnBubbleClosed() {

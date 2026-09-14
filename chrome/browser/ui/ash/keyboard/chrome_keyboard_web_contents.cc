@@ -277,9 +277,10 @@ void ChromeKeyboardWebContents::OnColorProviderChanged() {
 
 void ChromeKeyboardWebContents::LoadContents(const GURL& url) {
   TRACE_EVENT0("vk", "LoadContents");
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::SINGLETON_TAB,
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, WindowOpenDisposition::SINGLETON_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 

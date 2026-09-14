@@ -1380,20 +1380,20 @@ IN_PROC_BROWSER_TEST_P(
 
   // Verify CURRENT_TAB returns nullptr to preserve internal dialog navigation
   // behavior and prevent accidental parent tab navigation.
-  content::OpenURLParams current_tab_params(
-      GURL("https://example.com"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams current_tab_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL("https://example.com"), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(nullptr, payment_handler_contents->GetDelegate()->OpenURLFromTab(
                          payment_handler_contents, current_tab_params,
                          base::NullCallback()));
 
   // Verify NEW_FOREGROUND_TAB (e.g. PageInfo "Learn more") routes to the
   // parent tab's WebContents.
-  content::OpenURLParams new_tab_params(
-      GURL("https://example.com"), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams new_tab_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL("https://example.com"),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
   content::WebContents* result =
       payment_handler_contents->GetDelegate()->OpenURLFromTab(
           payment_handler_contents, new_tab_params, base::NullCallback());

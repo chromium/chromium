@@ -339,10 +339,10 @@ void SidePanelHeaderController::OpenInNewTab() {
   base::WeakPtr<SidePanelHeaderController> weak_this =
       weak_pointer_factor_.GetWeakPtr();
   SidePanelMetrics::RecordNewTabButtonClicked(side_panel_entry_->key().id());
-  content::OpenURLParams params(new_tab_url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          new_tab_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   browser_->OpenURL(params, /*navigation_handle_callback=*/{});
 
   // `this` can be destroyed because the side panel might be closed when

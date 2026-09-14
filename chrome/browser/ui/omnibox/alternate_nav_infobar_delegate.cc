@@ -94,8 +94,8 @@ bool AlternateNavInfoBarDelegate::LinkClicked(
   // Pretend the user typed this URL, so that navigating to it will be the
   // default action when it's typed again in the future.
   infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar())->OpenURL(
-      content::OpenURLParams(destination_url_, content::Referrer(), disposition,
-                             ui::PAGE_TRANSITION_TYPED, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          destination_url_, disposition, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   // We should always close, even if the navigation did not occur within this

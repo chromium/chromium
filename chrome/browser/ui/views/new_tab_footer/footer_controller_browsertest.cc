@@ -487,9 +487,10 @@ IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewTest, OpenUrlFromTabInSplit) {
   ASSERT_TRUE(ntp_footer);
 
   const GURL kTargetUrl("https://www.google.com/");
-  content::OpenURLParams params(kTargetUrl, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          kTargetUrl, WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_LINK);
   content::TestNavigationObserver nav_observer(ntp_tab_contents);
   ntp_footer->OpenURLFromTab(ntp_footer->GetWebContents(), params, {});
   nav_observer.Wait();

@@ -48,11 +48,10 @@ BnplTosViewDesktop::BnplTosViewDesktop(
 BnplTosViewDesktop::~BnplTosViewDesktop() = default;
 
 void BnplTosViewDesktop::OpenLink(const GURL& url) {
-  web_contents_->OpenURL(
-      content::OpenURLParams(
-          url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
+  web_contents_->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                             url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK),
+                         /*navigation_handle_callback=*/{});
 }
 
 }  // namespace autofill

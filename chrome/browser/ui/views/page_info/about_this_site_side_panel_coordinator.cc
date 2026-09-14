@@ -31,12 +31,11 @@ constexpr char kStaticLoadingScreenURL[] =
 
 namespace {
 content::OpenURLParams CreateOpenUrlParams(const GURL& url) {
-  return content::OpenURLParams(
+  return content::OpenURLParams::CreateBrowserInitiated(
       net::AppendOrReplaceQueryParameter(
           url, page_info::AboutThisSiteRenderModeParameterName,
           page_info::AboutThisSiteRenderModeParameterValue),
-      content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK);
 }
 }  // namespace
 

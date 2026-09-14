@@ -285,10 +285,11 @@ bool IOSPromoBubbleView::Accept() {
       return false;
     }
     case BubbleType::kQRCode: {
-      content::OpenURLParams params(GURL(config_.qr_code_url),
-                                    content::Referrer(),
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                    ui::PAGE_TRANSITION_LINK, false);
+      content::OpenURLParams params =
+          content::OpenURLParams::CreateBrowserInitiated(
+              GURL(config_.qr_code_url),
+              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              ui::PAGE_TRANSITION_LINK);
 
       if (open_url_callback_) {
         open_url_callback_.Run(params);

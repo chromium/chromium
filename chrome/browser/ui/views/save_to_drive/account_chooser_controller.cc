@@ -205,10 +205,10 @@ void AccountChooserController::ShowAddAccountDialog() {
     return;
   }
   content::WebContents* source_window = tab_->GetContents();
-  content::OpenURLParams params(
-      signin::GetAddAccountURLForDice("", GURL()), content::Referrer(),
-      WindowOpenDisposition::NEW_POPUP, ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          signin::GetAddAccountURLForDice("", GURL()),
+          WindowOpenDisposition::NEW_POPUP, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   add_account_popup_ = source_window->GetDelegate()->OpenURLFromTab(
       source_window, params, /*navigation_handle_callback=*/{});
   ResizeAndFocusAddAccountPopup();

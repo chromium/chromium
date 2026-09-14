@@ -164,18 +164,16 @@ void SearchboxOmniboxClient::OnAutocompleteAccept(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-  web_contents_->OpenURL(
-      content::OpenURLParams(destination_url, content::Referrer(), disposition,
-                             transition, false),
-      /*navigation_handle_callback=*/{});
+  web_contents_->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                             destination_url, disposition, transition),
+                         /*navigation_handle_callback=*/{});
 }
 
 void SearchboxOmniboxClient::OpenUrl(GURL gurl,
                                      WindowOpenDisposition disposition) {
-  web_contents_->OpenURL(
-      content::OpenURLParams(gurl, content::Referrer(), disposition,
-                             ui::PAGE_TRANSITION_GENERATED, false),
-      /*navigation_handle_callback=*/{});
+  web_contents_->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                             gurl, disposition, ui::PAGE_TRANSITION_GENERATED),
+                         /*navigation_handle_callback=*/{});
 }
 
 base::WeakPtr<OmniboxClient> SearchboxOmniboxClient::AsWeakPtr() {

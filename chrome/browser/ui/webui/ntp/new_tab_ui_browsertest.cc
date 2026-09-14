@@ -96,9 +96,9 @@ IN_PROC_BROWSER_TEST_F(NewTabUIProcessPerTabTest, NavBeforeNTPCommits) {
   content::TestNavigationObserver observer(
       browser()->GetTabStripModel()->GetActiveWebContents());
   browser()->OpenURL(
-      OpenURLParams(GURL("data:text/html,hello world"), Referrer(),
-                    WindowOpenDisposition::CURRENT_TAB,
-                    ui::PAGE_TRANSITION_TYPED, false),
+      OpenURLParams::CreateBrowserInitiated(GURL("data:text/html,hello world"),
+                                            WindowOpenDisposition::CURRENT_TAB,
+                                            ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   observer.Wait();
 }

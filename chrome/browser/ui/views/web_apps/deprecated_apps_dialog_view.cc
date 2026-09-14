@@ -217,12 +217,11 @@ void DeprecatedAppsDialogView::InitDialog() {
   learn_more->SetCallback(base::BindRepeating(
       [](content::WebContents* web_contents, const ui::Event& event) {
         web_contents->OpenURL(
-            content::OpenURLParams(
+            content::OpenURLParams::CreateBrowserInitiated(
                 GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
-                content::Referrer(),
                 ui::DispositionFromEventFlags(
                     event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-                ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false),
+                ui::PAGE_TRANSITION_LINK),
             /*navigation_handle_callback=*/{});
       },
       web_contents_));

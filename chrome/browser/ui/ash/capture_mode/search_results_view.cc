@@ -105,11 +105,9 @@ bool SearchResultsView::IsWebContentsCreationOverridden(
             if (self) {
               self->OpenURLFromTab(
                   self->web_contents(),
-                  content::OpenURLParams(
-                      url, content::Referrer(),
-                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                      ui::PAGE_TRANSITION_LINK,
-                      /*is_renderer_initiated=*/false),
+                  content::OpenURLParams::CreateBrowserInitiated(
+                      url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                      ui::PAGE_TRANSITION_LINK),
                   /*navigation_handle_callback=*/{});
             }
           },

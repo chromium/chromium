@@ -1224,11 +1224,10 @@ void Home(BrowserWindowInterface* browser, WindowOpenDisposition disposition) {
     base::RecordAction(
         base::UserMetricsAction("Navigation.Home.NotChromeInternal"));
   }
-  OpenURLParams params(
-      url, Referrer(), disposition,
+  OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
+      url, disposition,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK |
-                                ui::PAGE_TRANSITION_HOME_PAGE),
-      false);
+                                ui::PAGE_TRANSITION_HOME_PAGE));
   params.extra_headers = extra_headers;
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }

@@ -82,9 +82,10 @@ class ExtensionInstallFrictionDialogDelegate : public ui::DialogModelDelegate {
 
     if (original_web_contents_) {
       GURL url(chrome::kCwsEnhancedSafeBrowsingLearnMoreURL);
-      content::OpenURLParams params(
-          url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+      content::OpenURLParams params =
+          content::OpenURLParams::CreateBrowserInitiated(
+              url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              ui::PAGE_TRANSITION_LINK);
       original_web_contents_->OpenURL(params, {});
     }
 

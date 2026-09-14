@@ -295,11 +295,10 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
       navigation_handle_callback =
           base::BindRepeating(&AttachNewTabPageNavigationHandleUserData);
   web_contents_->OpenURL(
-      content::OpenURLParams(tile->url, content::Referrer(), disposition,
-                             tile->is_query_tile
-                                 ? ui::PAGE_TRANSITION_LINK
-                                 : ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-                             /*is_renderer_initiated=*/false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          tile->url, disposition,
+          tile->is_query_tile ? ui::PAGE_TRANSITION_LINK
+                              : ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       std::move(navigation_handle_callback));
 }
 

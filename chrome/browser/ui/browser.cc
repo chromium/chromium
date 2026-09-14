@@ -405,9 +405,8 @@ bool Browser::IsDeleteScheduled() const {
 }
 
 void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
-  OpenURL(content::OpenURLParams(gurl, content::Referrer(), disposition,
-                                 ui::PAGE_TRANSITION_LINK,
-                                 /*is_renderer_initiated=*/false),
+  OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+              gurl, disposition, ui::PAGE_TRANSITION_LINK),
           /*navigation_handle_callback=*/{});
 }
 

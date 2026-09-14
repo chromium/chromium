@@ -44,8 +44,8 @@ void NavigationHandler::HandleNavigateToUrl(const base::ListValue& list) {
       (target_string == "_blank") ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                   : WindowOpenDisposition::CURRENT_TAB);
   web_ui()->GetWebContents()->OpenURL(
-      content::OpenURLParams(GURL(url_string), content::Referrer(), disposition,
-                             ui::PAGE_TRANSITION_LINK, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(url_string), disposition, ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 
   // This may delete us!

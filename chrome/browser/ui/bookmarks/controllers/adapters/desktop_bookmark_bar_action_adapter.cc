@@ -33,9 +33,10 @@ DesktopBookmarkBarActionAdapter::~DesktopBookmarkBarActionAdapter() = default;
 
 void DesktopBookmarkBarActionAdapter::OpenAppsPage(
     WindowOpenDisposition disposition) {
-  content::OpenURLParams params(GURL(chrome::kChromeUIAppsURL),
-                                content::Referrer(), disposition,
-                                ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(chrome::kChromeUIAppsURL), disposition,
+          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   browser_->OpenURL(params, /*navigation_handle_callback=*/{});
   RecordBookmarkAppsPageOpen(BookmarkLaunchLocation::kAttachedBar);
   chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());

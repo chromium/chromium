@@ -557,9 +557,9 @@ void InspectMessageHandler::CreateNativeUIInspectionSession(
   const GURL gurl(url);
   content::WebContents* front_end = inspect_ui->GetDelegate()->OpenURLFromTab(
       inspect_ui,
-      content::OpenURLParams(gurl, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          gurl, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
   // When the front-end is started, disable the launch button.
   inspect_ui_->ShowNativeUILaunchButton(/* enabled = */ false);
@@ -736,9 +736,9 @@ void InspectUI::InspectBrowserWithCustomFrontend(const std::string& source_id,
   WebContents* inspect_ui = web_ui()->GetWebContents();
   WebContents* front_end = inspect_ui->GetDelegate()->OpenURLFromTab(
       inspect_ui,
-      content::OpenURLParams(frontend_url, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          frontend_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 
   // Install devtools bindings.

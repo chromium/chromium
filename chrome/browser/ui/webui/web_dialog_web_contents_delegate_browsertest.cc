@@ -83,9 +83,9 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, DoNothingMethodsTest) {
 IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, OpenURLFromTabTest) {
   test_web_contents_delegate_->OpenURLFromTab(
       nullptr,
-      OpenURLParams(GURL(url::kAboutBlankURL), Referrer(),
-                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                    ui::PAGE_TRANSITION_LINK, false),
+      OpenURLParams::CreateBrowserInitiated(
+          GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
   // This should create a new foreground tab in the existing browser.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -114,8 +114,9 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, DetachTest) {
   GURL url(url::kAboutBlankURL);
   test_web_contents_delegate_->OpenURLFromTab(
       nullptr,
-      OpenURLParams(url, Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                    ui::PAGE_TRANSITION_LINK, false),
+      OpenURLParams::CreateBrowserInitiated(
+          url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
   test_web_contents_delegate_->AddNewContents(
       nullptr, nullptr, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,

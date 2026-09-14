@@ -342,10 +342,9 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
 
 void WebAppInstallFlowDialogDelegate::OnLearnMoreButtonClicked() {
   web_contents()->OpenURL(
-      content::OpenURLParams(
-          GURL(chrome::kInstallDialogFlowLearnMoreURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-          /*is_renderer_initiated=*/false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(chrome::kInstallDialogFlowLearnMoreURL),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
       base::DoNothing());
 }
 

@@ -210,11 +210,11 @@ void OpenDialogInOriginalProfileBookmarksManager(
 
   CHECK(!browser->GetProfile()->IsOffTheRecord());
   // Open BookmarksManager page.
-  browser->OpenURL(content::OpenURLParams(
-                       GURL(chrome::kChromeUIBookmarksURL), content::Referrer(),
-                       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                       ui::PAGE_TRANSITION_LINK, false),
-                   /*navigation_handle_callback=*/{});
+  browser->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(chrome::kChromeUIBookmarksURL),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
+      /*navigation_handle_callback=*/{});
 
   ShowDialogOnRegularProfile(browser, node, target_folder, index, dialog_type,
                              std::move(closed_callback));

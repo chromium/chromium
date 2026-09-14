@@ -2334,8 +2334,9 @@ void ContextualSearchboxHandler::OpenUrl(
       }
       location_bar->Revert();
     }
-    content::OpenURLParams params(url, content::Referrer(), disposition,
-                                  ui::PAGE_TRANSITION_LINK, false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            url, disposition, ui::PAGE_TRANSITION_LINK);
     // If the current tab is part of the context list, navigate in the lens side
     // panel if co-browsing is disabled.
     auto* tab_list = TabListInterface::From(browser_window_interface);
@@ -2377,8 +2378,9 @@ void ContextualSearchboxHandler::OpenUrl(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   if (should_open_url) {
-    content::OpenURLParams params(url, content::Referrer(), disposition,
-                                  ui::PAGE_TRANSITION_LINK, false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            url, disposition, ui::PAGE_TRANSITION_LINK);
     web_contents_->OpenURL(params, std::move(navigation_handle_callback));
   }
 }

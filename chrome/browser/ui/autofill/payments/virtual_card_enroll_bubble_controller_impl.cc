@@ -207,11 +207,10 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
   bubble_state_ = BubbleState::kShowingIconAndBubble;
 #endif
 
-  web_contents()->OpenURL(
-      content::OpenURLParams(url, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK, false),
-      /*navigation_handle_callback=*/{});
+  web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                              url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              ui::PAGE_TRANSITION_LINK),
+                          /*navigation_handle_callback=*/{});
 }
 
 void VirtualCardEnrollBubbleControllerImpl::OnBubbleDiscarded() {

@@ -148,9 +148,9 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, IconDataChanged) {
   base::RunLoop run_loop;
   observer.SetStartLoadingCallback(run_loop.QuitClosure());
   browser()->OpenURL(
-      content::OpenURLParams(
-          embedded_test_server()->GetURL("/title1.html"), content::Referrer(),
-          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK, false),
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/title1.html"),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK),
       base::DoNothing());
   run_loop.Run();
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());

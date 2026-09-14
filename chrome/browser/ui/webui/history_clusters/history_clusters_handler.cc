@@ -128,9 +128,10 @@ class HistoryClustersSidePanelContextMenu
         if (!CanAddURLToHistory(url_)) {
           return;
         }
-        content::OpenURLParams params(url_, content::Referrer(),
-                                      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                                      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+        content::OpenURLParams params =
+            content::OpenURLParams::CreateBrowserInitiated(
+                url_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         GetBrowserWindowInterface(interface_)
             ->OpenURL(params,
                       /*navigation_handle_callback=*/{});
@@ -141,9 +142,10 @@ class HistoryClustersSidePanelContextMenu
         if (!CanAddURLToHistory(url_)) {
           return;
         }
-        content::OpenURLParams params(url_, content::Referrer(),
-                                      WindowOpenDisposition::NEW_WINDOW,
-                                      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+        content::OpenURLParams params =
+            content::OpenURLParams::CreateBrowserInitiated(
+                url_, WindowOpenDisposition::NEW_WINDOW,
+                ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         GetBrowserWindowInterface(interface_)
             ->OpenURL(params,
                       /*navigation_handle_callback=*/{});
@@ -154,9 +156,10 @@ class HistoryClustersSidePanelContextMenu
         if (!CanAddURLToHistory(url_)) {
           return;
         }
-        content::OpenURLParams params(url_, content::Referrer(),
-                                      WindowOpenDisposition::OFF_THE_RECORD,
-                                      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+        content::OpenURLParams params =
+            content::OpenURLParams::CreateBrowserInitiated(
+                url_, WindowOpenDisposition::OFF_THE_RECORD,
+                ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         GetBrowserWindowInterface(interface_)
             ->OpenURL(params,
                       /*navigation_handle_callback=*/{});
@@ -302,9 +305,9 @@ void HistoryClustersHandler::OpenHistoryUrl(
       click_modifiers->middle_button, click_modifiers->alt_key,
       click_modifiers->ctrl_key, click_modifiers->meta_key,
       click_modifiers->shift_key, default_disposition);
-  content::OpenURLParams params(url, content::Referrer(), open_location,
-                                ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, open_location, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   GetBrowserWindowInterface(interface_)
       ->OpenURL(params,
                 /*navigation_handle_callback=*/{});
@@ -473,10 +476,10 @@ void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
   for (const auto& visit_ptr : visits) {
     auto* opened_web_contents =
         GetBrowserWindowInterface(interface_)
-            ->OpenURL(content::OpenURLParams(
-                          visit_ptr->normalized_url, content::Referrer(),
+            ->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                          visit_ptr->normalized_url,
                           WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                          ui::PAGE_TRANSITION_AUTO_BOOKMARK, false),
+                          ui::PAGE_TRANSITION_AUTO_BOOKMARK),
                       /*navigation_handle_callback=*/{});
 
     // Only add those tabs to a new group that actually opened in this browser.

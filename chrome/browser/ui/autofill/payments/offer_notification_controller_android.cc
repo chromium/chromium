@@ -72,11 +72,10 @@ void OfferNotificationControllerAndroid::Dismiss() {
 }
 
 void OfferNotificationControllerAndroid::HandleMessageAction(const GURL& url) {
-  GetWebContents().OpenURL(
-      content::OpenURLParams(url, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK, false),
-      /*navigation_handle_callback=*/{});
+  GetWebContents().OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                               url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui::PAGE_TRANSITION_LINK),
+                           /*navigation_handle_callback=*/{});
 }
 
 void OfferNotificationControllerAndroid::HandleMessageDismiss(

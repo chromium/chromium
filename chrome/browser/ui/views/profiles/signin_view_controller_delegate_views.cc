@@ -748,10 +748,11 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
         BlockNavigationUntilEnterpriseActionTaken(
             browser.GetProfile(), active_contents, dialog_web_contents, email);
 
-    content::OpenURLParams params(active_contents->GetVisibleURL(),
-                                  content::Referrer(),
-                                  WindowOpenDisposition::CURRENT_TAB,
-                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+    content::OpenURLParams params =
+        content::OpenURLParams::CreateBrowserInitiated(
+            active_contents->GetVisibleURL(),
+            WindowOpenDisposition::CURRENT_TAB,
+            ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

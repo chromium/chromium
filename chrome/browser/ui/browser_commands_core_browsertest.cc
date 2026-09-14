@@ -295,8 +295,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BookmarkCurrentTab) {
   GURL url1 = embedded_test_server()->GetURL("/title1.html");
   AddTab(browser(), url1);
   browser()->OpenURL(
-      OpenURLParams(url1, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-                    ui::PAGE_TRANSITION_TYPED, false),
+      OpenURLParams::CreateBrowserInitiated(
+          url1, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
 
   chrome::BookmarkCurrentTab(browser());

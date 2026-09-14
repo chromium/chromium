@@ -99,9 +99,10 @@ void OpenExtensionsShortcutsPage(
   }
   const GURL kUrl(base::StrCat({chrome::kChromeUIExtensionsURL,
                                 chrome::kExtensionConfigureCommandsSubPage}));
-  content::OpenURLParams params(
-      kUrl, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          kUrl, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK);
   web_contents->OpenURL(params, {});
 }
 
