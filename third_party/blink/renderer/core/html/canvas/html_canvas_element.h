@@ -65,6 +65,7 @@ namespace blink {
 class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
 class CanvasHighDynamicRangeOptions;
+class CanvasPaintEventInit;
 class CanvasRenderingContextFactory;
 class DOMMatrix;
 class Element;
@@ -126,6 +127,7 @@ class CORE_EXPORT HTMLCanvasElement final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(paint, kPaint)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(elementgeometryupdate, kElementgeometryupdate)
   void requestPaint();
+  void DispatchPaintEvent(CanvasPaintEventInit* init);
 
   void SetSize(gfx::Size new_size);
 
@@ -219,6 +221,7 @@ class CORE_EXPORT HTMLCanvasElement final
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
 
   bool IsDirty() { return !dirty_rect_.IsEmpty(); }
+  bool IsDispatchingPaintEvent() const { return is_dispatching_paint_event_; }
 
   // Pushes dirty rects onto the backing cc::TextureLayer for a composited
   // canvas. Returns `true` if any invalidations were actually applied,
@@ -473,6 +476,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool disposing_ = false;
   bool canvas_is_clear_ = true;
+  bool is_dispatching_paint_event_ = false;
 
   bool within_set_size_ = false;
   gfx::Rect dirty_rect_;

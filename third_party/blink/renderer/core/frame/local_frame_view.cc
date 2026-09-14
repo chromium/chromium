@@ -1159,8 +1159,7 @@ void LocalFrameView::RunCanvasOnpaintSteps() {
     const HeapVector<Member<Element>> children(*changed_elements);
     CanvasPaintEventInit* init = CanvasPaintEventInit::Create();
     init->setChangedElements(std::move(children));
-    canvas->DispatchEvent(
-        *CanvasPaintEvent::Create(event_type_names::kPaint, init));
+    canvas->DispatchPaintEvent(init);
   }
 }
 

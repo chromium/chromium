@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -66,6 +67,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -78,6 +80,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_draw_listener.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_paint_event.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_resource_tracker.h"
@@ -458,6 +461,17 @@ void HTMLCanvasElement::requestPaint() {
   if (LocalFrameView* view = GetDocument().View()) {
     view->RequestCanvasOnpaint(*this);
   }
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    layout_object->SetShouldCheckForPaintInvalidation();
+    if (auto* layer = layout_object->PaintingLayer()) {
+      layer->SetNeedsRepaint();
+    }
+  }
+}
+
+void HTMLCanvasElement::DispatchPaintEvent(CanvasPaintEventInit* init) {
+  base::AutoReset<bool> dispatching(&is_dispatching_paint_event_, true);
+  DispatchEvent(*CanvasPaintEvent::Create(event_type_names::kPaint, init));
 }
 
 void HTMLCanvasElement::SetSize(gfx::Size new_size) {
@@ -630,11 +644,9 @@ void HTMLCanvasElement::configureHighDynamicRange(
 
 bool HTMLCanvasElement::ShouldSkipPaintInvalidation() const {
   if (IsInCanvasSubtree()) {
-    // Nested <canvas layoutsubtree> elements only record a CustomDataOp
-    // placeholder during paint and resolve their snapshot on demand, so they
-    // do not need paint invalidation when drawn to. Non-layoutsubtree canvases
-    // do need paint invalidation.
-    return layoutSubtree();
+    // Canvases in a canvas subtree must invalidate paint so that ancestor
+    // canvases fire paint events when they change.
+    return false;
   }
   return (context_ && context_->IsComposited()) || (!!surface_layer_bridge_);
 }
@@ -682,12 +694,15 @@ void HTMLCanvasElement::DidDraw(const gfx::Rect& rect) {
   // and only issue invalidations the first time it becomes non-empty.
   if (dirty_rect_.IsEmpty()) {
     if (LayoutObject* layout_object = GetLayoutObject()) {
-      if (layout_object->PreviousVisibilityVisible() &&
-          GetDocument().GetPage()) {
-        GetDocument().GetPage()->Animator().SetHasCanvasInvalidation();
-      }
-      if (!LowLatencyEnabled()) {
-        layout_object->SetShouldCheckForPaintInvalidation();
+      const bool skip_paint_invalidation = is_dispatching_paint_event_;
+      if (!skip_paint_invalidation) {
+        if (layout_object->PreviousVisibilityVisible() &&
+            GetDocument().GetPage()) {
+          GetDocument().GetPage()->Animator().SetHasCanvasInvalidation();
+        }
+        if (!LowLatencyEnabled()) {
+          layout_object->SetShouldCheckForPaintInvalidation();
+        }
       }
     }
   }
