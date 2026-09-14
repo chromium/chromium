@@ -48,6 +48,7 @@
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/pass_key.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -188,12 +189,11 @@ void StorageQueue::Create(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
 
   // Create StorageQueue object.
-  // Cannot use base::MakeRefCounted<StorageQueue>, because constructor is
-  // private.
-  scoped_refptr<StorageQueue> storage_queue = base::WrapRefCounted(
-      new StorageQueue(std::move(sequenced_task_runner), options,
-                       std::move(async_start_upload_cb), encryption_module,
-                       compression_module));
+  scoped_refptr<StorageQueue> storage_queue =
+      base::MakeRefCounted<StorageQueue>(
+          base::PassKey<StorageQueue>(), std::move(sequenced_task_runner),
+          options, std::move(async_start_upload_cb), encryption_module,
+          compression_module);
 
   // Asynchronously run initialization.
   Start<StorageQueueInitContext>(std::move(storage_queue),
@@ -201,6 +201,7 @@ void StorageQueue::Create(
 }
 
 StorageQueue::StorageQueue(
+    base::PassKey<StorageQueue>,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
     const QueueOptions& options,
     UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,

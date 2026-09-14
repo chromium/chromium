@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
@@ -108,7 +109,7 @@ class RemoteDatabaseManagerTest
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    db_ = new RemoteSafeBrowsingDatabaseManager();
+    db_ = base::MakeRefCounted<RemoteSafeBrowsingDatabaseManager>();
     db_->StartOnUIThread(test_shared_loader_factory_,
                          GetTestV4ProtocolConfig());
 

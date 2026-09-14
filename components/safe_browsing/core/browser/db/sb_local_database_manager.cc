@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
@@ -359,9 +360,10 @@ scoped_refptr<SBLocalDatabaseManager> SBLocalDatabaseManager::Create(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     ExtendedReportingLevelCallback extended_reporting_level_callback) {
-  return base::WrapRefCounted(new SBLocalDatabaseManager(
-      base_path, extended_reporting_level_callback, std::move(ui_task_runner),
-      std::move(io_task_runner), nullptr));
+  return base::MakeRefCounted<SBLocalDatabaseManager>(
+      base::PassKey<SBLocalDatabaseManager>(), base_path,
+      extended_reporting_level_callback, std::move(ui_task_runner),
+      std::move(io_task_runner), nullptr);
 }
 
 void SBLocalDatabaseManager::CollectDatabaseManagerInfo(
@@ -380,6 +382,19 @@ void SBLocalDatabaseManager::CollectDatabaseManagerInfo(
         full_hash_cache_info);
   }
 }
+
+SBLocalDatabaseManager::SBLocalDatabaseManager(
+    base::PassKey<SBLocalDatabaseManager, SBLocalDatabaseManagerTest>,
+    const base::FilePath& base_path,
+    ExtendedReportingLevelCallback extended_reporting_level_callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner_for_tests)
+    : SBLocalDatabaseManager(base_path,
+                             extended_reporting_level_callback,
+                             std::move(ui_task_runner),
+                             std::move(io_task_runner),
+                             std::move(task_runner_for_tests)) {}
 
 SBLocalDatabaseManager::SBLocalDatabaseManager(
     const base::FilePath& base_path,

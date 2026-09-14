@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/escape.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
@@ -189,12 +190,13 @@ void PasswordProtectionService::OnOtpHighConfidenceAllowlistCheckCompleted(
 
   // OTP detection is not tied to a specific password field.
   scoped_refptr<PasswordProtectionRequest> request(
-      new PasswordProtectionRequestContent(
+      base::MakeRefCounted<PasswordProtectionRequestContent>(
           web_contents, main_frame_url, /*password_form_action=*/GURL(),
           /*password_form_frame_url=*/GURL(),
           web_contents->GetContentsMimeType(), /*username=*/"",
           PasswordType::PASSWORD_TYPE_UNKNOWN,
-          /*matching_reused_credentials=*/{},
+          /*matching_reused_credentials=*/
+          std::vector<password_manager::MatchingReusedCredential>(),
           LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
           /*password_field_exists=*/false, this, GetRequestTimeoutInMS(),
           std::move(callback)));
@@ -215,7 +217,7 @@ void PasswordProtectionService::StartRequest(
     std::optional<PasswordProtectionRequest::OtpPhishingVerdictCallback>
         otp_phishing_verdict_callback) {
   scoped_refptr<PasswordProtectionRequest> request(
-      new PasswordProtectionRequestContent(
+      base::MakeRefCounted<PasswordProtectionRequestContent>(
           web_contents, main_frame_url, password_form_action,
           password_form_frame_url, web_contents->GetContentsMimeType(),
           username, password_type, matching_reused_credentials, trigger_type,

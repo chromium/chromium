@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -210,14 +211,15 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   // `UnloadTokenDatabase` call is made.
   void LoadTokenDatabase(
       os_crypt_async::OSCryptAsync* os_crypt_override = nullptr) {
-    scoped_refptr<WebDatabaseService> web_database = new WebDatabaseService(
-        temp_dir_.GetPath().AppendASCII(kTestTokenDatabase),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+    scoped_refptr<WebDatabaseService> web_database =
+        base::MakeRefCounted<WebDatabaseService>(
+            temp_dir_.GetPath().AppendASCII(kTestTokenDatabase),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::SingleThreadTaskRunner::GetCurrentDefault());
     web_database->AddTable(std::make_unique<TokenServiceTable>());
     web_database->LoadDatabase(os_crypt_override ? os_crypt_override
                                                  : os_crypt_.get());
-    token_web_data_ = new TokenWebData(
+    token_web_data_ = base::MakeRefCounted<TokenWebData>(
         web_database, base::SingleThreadTaskRunner::GetCurrentDefault());
     token_web_data_->Init(base::NullCallback());
   }

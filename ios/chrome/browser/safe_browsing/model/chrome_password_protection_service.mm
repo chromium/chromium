@@ -9,6 +9,7 @@
 
 #import "base/command_line.h"
 #import "base/feature_list.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -617,7 +618,7 @@ void ChromePasswordProtectionService::StartRequest(
     ShowWarningCallback show_warning_callback) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   scoped_refptr<safe_browsing::PasswordProtectionRequest> request(
-      new safe_browsing::PasswordProtectionRequestIOS(
+      base::MakeRefCounted<safe_browsing::PasswordProtectionRequestIOS>(
           web_state, main_frame_url, web_state->GetContentsMimeType(), username,
           password_type, matching_reused_credentials, trigger_type,
           password_field_exists, this, GetRequestTimeoutInMS()));

@@ -41,7 +41,7 @@ AutofillWebDataService::AutofillWebDataService(
     : WebDataServiceBase(std::move(wdbs), ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)),
       autofill_backend_(nullptr) {
-  autofill_backend_ = new AutofillWebDataBackendImpl(
+  autofill_backend_ = base::MakeRefCounted<AutofillWebDataBackendImpl>(
       wdbs_->GetBackend(), ui_task_runner_, wdbs_->GetDbSequence());
 }
 

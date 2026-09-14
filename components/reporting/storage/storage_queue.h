@@ -29,6 +29,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/timer/timer.h"
+#include "base/types/pass_key.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -84,6 +85,12 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
           completion_cb);
 
+  StorageQueue(base::PassKey<StorageQueue>,
+               scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
+               const QueueOptions& options,
+               UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
+               scoped_refptr<EncryptionModuleInterface> encryption_module,
+               scoped_refptr<CompressionModule> compression_module);
   StorageQueue(const StorageQueue& other) = delete;
   StorageQueue& operator=(const StorageQueue& other) = delete;
 
@@ -262,13 +269,6 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     uint64_t file_position_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
     ResourceManagedBuffer buffer_ GUARDED_BY_CONTEXT(sequence_checker_);
   };
-
-  // Private constructor, to be called by Create factory method only.
-  StorageQueue(scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
-               const QueueOptions& options,
-               UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
-               scoped_refptr<EncryptionModuleInterface> encryption_module,
-               scoped_refptr<CompressionModule> compression_module);
 
   // Initializes the object by enumerating files in the assigned directory
   // and determines the sequence information of the last record.

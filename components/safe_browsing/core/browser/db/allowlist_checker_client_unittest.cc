@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -53,7 +54,7 @@ class AllowlistCheckerClientTest : public testing::Test {
   AllowlistCheckerClientTest() : target_url_("https://example.test") {}
 
   void SetUp() override {
-    database_manager_ = new MockSafeBrowsingDatabaseManager;
+    database_manager_ = base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
   }
 
   void TearDown() override {

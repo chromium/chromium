@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -88,7 +89,7 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
-    db_manager_ = new TestSafeBrowsingDatabaseManager(
+    db_manager_ = base::MakeRefCounted<TestSafeBrowsingDatabaseManager>(
         base::SequencedTaskRunner::GetCurrentDefault());
     db_manager_->StartOnUIThread(test_shared_loader_factory_,
                                  GetTestV4ProtocolConfig());

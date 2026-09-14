@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
@@ -77,7 +78,7 @@ PasswordProtectionRequestContent::CreateForTesting(
     int request_timeout_in_ms,
     std::optional<OtpPhishingVerdictCallback> otp_phishing_verdict_callback) {
   scoped_refptr<PasswordProtectionRequest> request(
-      new PasswordProtectionRequestContent(
+      base::MakeRefCounted<PasswordProtectionRequestContent>(
           web_contents, main_frame_url, password_form_action,
           password_form_frame_url, mime_type, username, password_type,
           matching_reused_credentials, type, password_field_exists, pps,

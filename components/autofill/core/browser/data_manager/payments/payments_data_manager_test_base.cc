@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_base.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
@@ -19,7 +20,7 @@ PaymentsDataManagerTestBase::~PaymentsDataManagerTestBase() = default;
 void PaymentsDataManagerTestBase::SetUpTest() {
   prefs_ = test::PrefServiceForTesting();
   base::FilePath path(WebDatabase::kInMemoryPath);
-  profile_web_database_ = new WebDatabaseService(
+  profile_web_database_ = base::MakeRefCounted<WebDatabaseService>(
       path, base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
@@ -29,19 +30,19 @@ void PaymentsDataManagerTestBase::SetUpTest() {
   profile_web_database_->AddTable(
       std::unique_ptr<WebDatabaseTable>(profile_autofill_table_));
   profile_web_database_->LoadDatabase(os_crypt_.get());
-  profile_database_service_ = new AutofillWebDataService(
+  profile_database_service_ = base::MakeRefCounted<AutofillWebDataService>(
       profile_web_database_, base::SingleThreadTaskRunner::GetCurrentDefault());
   profile_database_service_->Init(base::NullCallback());
 
-  account_web_database_ =
-      new WebDatabaseService(base::FilePath(WebDatabase::kInMemoryPath),
-                             base::SingleThreadTaskRunner::GetCurrentDefault(),
-                             base::SingleThreadTaskRunner::GetCurrentDefault());
+  account_web_database_ = base::MakeRefCounted<WebDatabaseService>(
+      base::FilePath(WebDatabase::kInMemoryPath),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   account_autofill_table_ = new PaymentsAutofillTable;
   account_web_database_->AddTable(
       std::unique_ptr<WebDatabaseTable>(account_autofill_table_));
   account_web_database_->LoadDatabase(os_crypt_.get());
-  account_database_service_ = new AutofillWebDataService(
+  account_database_service_ = base::MakeRefCounted<AutofillWebDataService>(
       account_web_database_, base::SingleThreadTaskRunner::GetCurrentDefault());
   account_database_service_->Init(base::NullCallback());
 }

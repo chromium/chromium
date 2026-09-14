@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -201,7 +202,7 @@ void DataPipeProducer::InitializeNewRequest(CompletionCallback callback) {
   // (i.e., BEST_EFFORT is not enough).
   auto file_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  sequence_state_ = new SequenceState(
+  sequence_state_ = base::MakeRefCounted<SequenceState>(
       std::move(producer_), file_task_runner,
       base::BindOnce(&DataPipeProducer::OnWriteComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback)),

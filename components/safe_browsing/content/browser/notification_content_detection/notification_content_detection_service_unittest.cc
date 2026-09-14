@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -83,7 +84,8 @@ class NotificationContentDetectionServiceTest
     } else {
       scoped_feature_list_.InitAndDisableFeature(
           kGlobalCacheListForGatingNotificationProtections);
-      database_manager_ = new MockSafeBrowsingDatabaseManager();
+      database_manager_ =
+          base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
       database_manager()->SetAllowlistLookupDetailsForUrl(GURL(kAllowlistedUrl),
                                                           /*match=*/true);
       database_manager()->SetAllowlistLookupDetailsForUrl(

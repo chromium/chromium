@@ -288,7 +288,7 @@ class PasswordProtectionServiceTest : public ::testing::Test {
         &test_pref_service_, /*is_off_the_record=*/false,
         /*store_last_modified=*/false, /*restore_session=*/false,
         /*should_record_metrics=*/false);
-    database_manager_ = new MockSafeBrowsingDatabaseManager();
+    database_manager_ = base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
     password_protection_service_ =
         std::make_unique<NiceMock<TestPasswordProtectionService>>(
             database_manager_,
@@ -512,7 +512,7 @@ class PasswordProtectionServiceBaseTest
         &test_pref_service_, false /* is_off_the_record */,
         false /* store_last_modified */, false /* restore_session*/,
         false /* should_record_metrics */);
-    database_manager_ = new MockSafeBrowsingDatabaseManager();
+    database_manager_ = base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
     auto token_fetcher =
         std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();
     raw_token_fetcher_ = token_fetcher.get();
@@ -553,10 +553,11 @@ class PasswordProtectionServiceBaseTest
     EXPECT_CALL(*database_manager_, CheckCsdAllowlistUrl(target_url, _))
         .WillRepeatedly(
             Return(match_allowlist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH));
-    request_ = new PasswordProtectionRequestContent(
+    request_ = base::MakeRefCounted<PasswordProtectionRequestContent>(
         web_contents, target_url, GURL(kFormActionUrl), GURL(kPasswordFrameUrl),
         web_contents->GetContentsMimeType(), kUserName,
-        PasswordType::PASSWORD_TYPE_UNKNOWN, {},
+        PasswordType::PASSWORD_TYPE_UNKNOWN,
+        std::vector<password_manager::MatchingReusedCredential>(),
         LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true,
         password_protection_service_.get(), timeout_in_ms,
         /*otp_phishing_verdict_callback=*/std::nullopt);
@@ -575,7 +576,7 @@ class PasswordProtectionServiceBaseTest
         .WillRepeatedly(
             Return(match_allowlist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH));
 
-    request_ = new PasswordProtectionRequestContent(
+    request_ = base::MakeRefCounted<PasswordProtectionRequestContent>(
         web_contents, target_url, GURL(), GURL(),
         web_contents->GetContentsMimeType(), kUserName, type,
         matching_reused_credentials,
@@ -596,10 +597,11 @@ class PasswordProtectionServiceBaseTest
         .WillRepeatedly(
             Return(match_allowlist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH));
 
-    request_ = new PasswordProtectionRequestContent(
+    request_ = base::MakeRefCounted<PasswordProtectionRequestContent>(
         web_contents, target_url, GURL(), GURL(),
         web_contents->GetContentsMimeType(), "",
-        PasswordType::PASSWORD_TYPE_UNKNOWN, {},
+        PasswordType::PASSWORD_TYPE_UNKNOWN,
+        std::vector<password_manager::MatchingReusedCredential>(),
         LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED, false,
         password_protection_service_.get(), timeout_in_ms,
         std::move(otp_phishing_verdict_callback));

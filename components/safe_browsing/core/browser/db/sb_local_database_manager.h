@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/sb_update_protocol_manager.h"
@@ -37,6 +38,8 @@ namespace V5 {
 class HashList;
 }
 
+class SBLocalDatabaseManagerTest;
+
 typedef unsigned ThreatSeverity;
 
 // Manages the local, on-disk database of updates downloaded from the
@@ -51,6 +54,13 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       ExtendedReportingLevelCallback extended_reporting_level_callback);
 
+  SBLocalDatabaseManager(
+      base::PassKey<SBLocalDatabaseManager, SBLocalDatabaseManagerTest>,
+      const base::FilePath& base_path,
+      ExtendedReportingLevelCallback extended_reporting_level_callback,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner_for_tests);
   SBLocalDatabaseManager(const SBLocalDatabaseManager&) = delete;
   SBLocalDatabaseManager& operator=(const SBLocalDatabaseManager&) = delete;
 

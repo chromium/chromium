@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_tokenizer.h"
@@ -25,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/types/pass_key.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -542,11 +544,10 @@ class SBLocalDatabaseManagerTest : public PlatformTest {
         &SBLocalDatabaseManagerTest::GetExtendedReportingLevel,
         base::Unretained(this));
 
-    sb_local_database_manager_ =
-        base::WrapRefCounted(new SBLocalDatabaseManager(
-            base_dir_.GetPath(), erl_callback_,
-            base::SequencedTaskRunner::GetCurrentDefault(),
-            base::SequencedTaskRunner::GetCurrentDefault(), task_runner_));
+    sb_local_database_manager_ = base::MakeRefCounted<SBLocalDatabaseManager>(
+        base::PassKey<SBLocalDatabaseManagerTest>(), base_dir_.GetPath(),
+        erl_callback_, base::SequencedTaskRunner::GetCurrentDefault(),
+        base::SequencedTaskRunner::GetCurrentDefault(), task_runner_);
 
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
@@ -637,11 +638,10 @@ class SBLocalDatabaseManagerTest : public PlatformTest {
 
   void ResetLocalDatabaseManager() {
     StopLocalDatabaseManager();
-    sb_local_database_manager_ =
-        base::WrapRefCounted(new SBLocalDatabaseManager(
-            base_dir_.GetPath(), erl_callback_,
-            base::SequencedTaskRunner::GetCurrentDefault(),
-            base::SequencedTaskRunner::GetCurrentDefault(), task_runner_));
+    sb_local_database_manager_ = base::MakeRefCounted<SBLocalDatabaseManager>(
+        base::PassKey<SBLocalDatabaseManagerTest>(), base_dir_.GetPath(),
+        erl_callback_, base::SequencedTaskRunner::GetCurrentDefault(),
+        base::SequencedTaskRunner::GetCurrentDefault(), task_runner_);
     StartLocalDatabaseManager();
   }
 
@@ -684,8 +684,8 @@ class SBLocalDatabaseManagerTest : public PlatformTest {
     // ~SBLocalDatabaseManager expects.
     StopLocalDatabaseManager();
     sb_local_database_manager_ =
-        base::WrapRefCounted(new FakeSBLocalDatabaseManager(
-            base_dir_.GetPath(), erl_callback_, task_runner_));
+        base::MakeRefCounted<FakeSBLocalDatabaseManager>(
+            base_dir_.GetPath(), erl_callback_, task_runner_);
     StartLocalDatabaseManager();
     WaitForTasksOnTaskRunner();
   }

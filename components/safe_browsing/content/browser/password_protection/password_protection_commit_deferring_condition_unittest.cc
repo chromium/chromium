@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
@@ -49,7 +50,7 @@ class PasswordProtectionCommitDeferringConditionTest
     credentials.emplace_back("http://2.example.com",
                              GURL("http://example.test"), u"username2");
 
-    request_ = new PasswordProtectionRequestContent(
+    request_ = base::MakeRefCounted<PasswordProtectionRequestContent>(
         /*web_contents=*/RenderViewHostTestHarness::web_contents(),
         /*main_frame_url=*/GURL(),
         /*password_form_action=*/GURL(),
