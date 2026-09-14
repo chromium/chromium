@@ -7,7 +7,6 @@ package org.chromium.chrome.test.transit.ntp;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.Condition.whether;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.view.View;
 
@@ -20,6 +19,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -40,7 +41,12 @@ public class RegularNewTabPageStation extends CtaPageStation {
     public Element<NewTabPage> nativePageElement;
 
     public RegularNewTabPageStation(Config config) {
-        super(config.withIncognito(false).withExpectedUrlSubstring(getOriginalNativeNtpUrl()));
+        super(
+                config.withIncognito(false)
+                        .withExpectedUrlSubstring(
+                                UrlOverrideUtils.isWebUiNtpOverrideEnabled()
+                                        ? UrlConstantResolver.getOriginalWebUiNtpUrl()
+                                        : UrlConstantResolver.getOriginalNativeNtpUrl()));
 
         declareElementFactory(
                 mActivityElement,
@@ -52,18 +58,20 @@ public class RegularNewTabPageStation extends CtaPageStation {
                     }
                 });
 
-        logoElement = declareView(withId(R.id.search_provider_logo));
-        searchBoxElement = declareView(withId(R.id.search_box));
-        ntpMicButtonElement = declareOptionalView(withId(R.id.voice_search_button));
+        if (!UrlOverrideUtils.isWebUiNtpOverrideEnabled()) {
+            logoElement = declareView(withId(R.id.search_provider_logo));
+            searchBoxElement = declareView(withId(R.id.search_box));
+            ntpMicButtonElement = declareOptionalView(withId(R.id.voice_search_button));
 
-        nativePageElement =
-                declareEnterConditionAsElement(
-                        new NativePageCondition<>(NewTabPage.class, loadedTabElement));
-        declareEnterCondition(
-                SimpleConditions.uiThreadCondition(
-                        "Regular NTP is loaded",
-                        nativePageElement,
-                        nativePage -> whether(nativePage.isLoadedForTests())));
+            nativePageElement =
+                    declareEnterConditionAsElement(
+                            new NativePageCondition<>(NewTabPage.class, loadedTabElement));
+            declareEnterCondition(
+                    SimpleConditions.uiThreadCondition(
+                            "Regular NTP is loaded",
+                            nativePageElement,
+                            nativePage -> whether(nativePage.isLoadedForTests())));
+        }
     }
 
     public static Builder<RegularNewTabPageStation> newBuilder() {

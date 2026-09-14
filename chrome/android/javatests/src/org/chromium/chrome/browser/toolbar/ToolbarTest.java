@@ -113,6 +113,8 @@ import org.chromium.ui.base.UiAndroidFeatures;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
+@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class ToolbarTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

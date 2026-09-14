@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -70,6 +71,8 @@ public final class ShareButtonControllerUnitTest {
 
     @Before
     public void setUp() {
+        FeatureOverrides.newBuilder().apply();
+
         mShareDelegateSupplier = ObservableSuppliers.createMonotonic(mShareDelegate);
 
         mContext = RuntimeEnvironment.application;

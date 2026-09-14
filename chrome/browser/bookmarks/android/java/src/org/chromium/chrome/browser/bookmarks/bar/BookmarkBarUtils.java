@@ -180,10 +180,16 @@ public class BookmarkBarUtils {
     // Common histogram names:
     public static final String BOOKMARK_BAR_CLICK = "Bookmarks.BookmarkBar.Click";
 
-    /** Whether the bookmark bar feature is forcibly allowed/disallowed for testing. */
+    /**
+     * Whether the bookmark bar feature is considered compatible with the current activity state
+     * (e.g. window width) for testing.
+     */
     private static @Nullable Boolean sActivityStateBookmarkBarCompatibleForTesting;
 
-    /** Whether the bookmark bar feature is forcibly enabled/disabled for testing. */
+    /**
+     * Whether the bookmark bar feature is considered compatible with the selected device form
+     * factor for testing.
+     */
     private static @Nullable Boolean sDeviceBookmarkBarCompatibleForTesting;
 
     /** Whether the bookmark bar feature is forcibly visible/invisible for testing. */

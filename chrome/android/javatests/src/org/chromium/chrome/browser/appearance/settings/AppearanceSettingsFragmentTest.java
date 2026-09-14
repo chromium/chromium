@@ -264,6 +264,7 @@ public class AppearanceSettingsFragmentTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
+    @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_Desktop() {
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
@@ -284,6 +285,7 @@ public class AppearanceSettingsFragmentTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
+    @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Desktop() {
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
@@ -302,6 +304,7 @@ public class AppearanceSettingsFragmentTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_NonDesktop() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -328,6 +331,7 @@ public class AppearanceSettingsFragmentTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_NonDesktop() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

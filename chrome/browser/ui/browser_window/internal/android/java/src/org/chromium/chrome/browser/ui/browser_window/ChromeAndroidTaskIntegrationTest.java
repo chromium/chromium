@@ -75,8 +75,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-// TODO(http://crbug.com/495529795): Enable side panel and fix this test.
-@DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+@DisableFeatures({
+    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+    // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
+    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
+})
 @DoNotBatch(
         reason =
                 "Tests will be flaky if batched as they create/close windows and change window"

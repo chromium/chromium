@@ -32,13 +32,16 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
@@ -46,6 +49,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.ui.accessibility.KeyboardFocusRow;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -62,6 +66,8 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures(
         ChromeFeatureList.HOME_BUTTON_REMOVAL
                 + ":set_default_to_false_on_homepage_on_desktop/false")
+// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
+@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class KeyboardFocusRowManagerTest {
 
     @Rule
@@ -92,11 +98,12 @@ public class KeyboardFocusRowManagerTest {
                 (TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting();
         mKeyboardFocusRowManager = mTabbedRootUiCoordinator.getKeyboardFocusRowManagerForTesting();
         mOverrideContextRule.setIsDesktop(true);
+        setShowBookmarksBar(false);
     }
 
     @After
     public void tearDown() {
-        setUserPrefsShowBookmarksBar(false);
+        setShowBookmarksBar(false);
     }
 
     @Test
@@ -115,6 +122,7 @@ public class KeyboardFocusRowManagerTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     @Feature("KeyboardShortcuts")
     public void testSwitchKeyboardFocusRow_withTabletTabStrip() {
         // Put something in the content view so we can focus on it.
@@ -155,7 +163,7 @@ public class KeyboardFocusRowManagerTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("KeyboardShortcuts")
     public void testSwitchKeyboardFocusRow_withBookmarksBarOnly() {
-        setUserPrefsShowBookmarksBar(true);
+        setShowBookmarksBar(true);
 
         // Put something in the content view so we can focus on it.
         openNewTabAndFocusContent();
@@ -183,7 +191,8 @@ public class KeyboardFocusRowManagerTest {
     @Feature("KeyboardShortcuts")
     @EnableFeatures({
         ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
-        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE,
+        ChromeFeatureList.BOOKMARKS_BAR_NTP
     })
     public void testSwitchKeyboardFocusRow_withSidePanelOnly() {
         ThreadUtils.runOnUiThreadBlocking(
@@ -223,7 +232,7 @@ public class KeyboardFocusRowManagerTest {
         ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE
     })
     public void testSwitchKeyboardFocusRow_withBookmarksBarAndSidePanel() {
-        setUserPrefsShowBookmarksBar(true);
+        setShowBookmarksBar(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mTabbedRootUiCoordinator.getSidePanelDevFeatureForTesting().toggle());
@@ -262,10 +271,11 @@ public class KeyboardFocusRowManagerTest {
     @Feature("KeyboardShortcuts")
     @EnableFeatures({
         ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
-        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE,
+        ChromeFeatureList.BOOKMARKS_BAR_NTP
     })
     public void testSwitchKeyboardFocusRow_withBookmarksBarOnly_sidePanelFeatureEnabled() {
-        setUserPrefsShowBookmarksBar(true);
+        setShowBookmarksBar(true);
 
         // Put something in the content view so we can focus on it.
         openNewTabAndFocusContent();
@@ -292,7 +302,7 @@ public class KeyboardFocusRowManagerTest {
     @Feature("KeyboardShortcuts")
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testSwitchKeyboardFocusRow_withBookmarkBarFocus() {
-        setUserPrefsShowBookmarksBar(true);
+        setShowBookmarksBar(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 mTabbedRootUiCoordinator::initializeBookmarkBarCoordinatorForTesting);
@@ -479,12 +489,25 @@ public class KeyboardFocusRowManagerTest {
                                 mKeyboardFocusRowManager.getKeyboardFocusRowForTesting()));
     }
 
-    private void setUserPrefsShowBookmarksBar(boolean showBookmarksBar) {
+    private void setShowBookmarksBar(boolean showBookmarksBar) {
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
+                () -> {
+                    Profile profile =
+                            mActivity.getProfileProviderSupplier().get().getOriginalProfile();
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_BAR_NTP)) {
+                        BookmarkBarUtils.setBookmarkBarVisibilityState(
+                                profile,
+                                showBookmarksBar
+                                        ? BookmarkBarVisibilityState.ALWAYS_SHOW
+                                        : BookmarkBarVisibilityState.ALWAYS_HIDE,
+                                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
+                    } else if (BookmarkBarUtils.shouldUseProfileUserPrefs()) {
                         BookmarkBarUtils.setUserPrefsShowBookmarksBar(
-                                mActivity.getProfileProviderSupplier().get().getOriginalProfile(),
-                                showBookmarksBar,
-                                /* fromKeyboardShortcut= */ false));
+                                profile, showBookmarksBar, /* fromKeyboardShortcut= */ false);
+                    } else {
+                        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                                showBookmarksBar, /* fromKeyboardShortcut= */ false);
+                    }
+                });
     }
 }
