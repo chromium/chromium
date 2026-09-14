@@ -92,8 +92,8 @@ public class GlicSplitButtonDelegateBridge implements ChromeAndroidTaskFeature {
     }
 
     @CalledByNative
-    public void triggerGlicActorNudge(String nudgeText) {
-        mDelegate.triggerGlicActorNudge(nudgeText);
+    public void triggerGlicActorNudge(String nudgeLabel) {
+        mDelegate.triggerGlicActorNudge(nudgeLabel);
     }
 
     @CalledByNative

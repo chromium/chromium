@@ -130,12 +130,12 @@ void GlicActorNudgeController::OnStateUpdate(
 }
 
 void GlicActorNudgeController::UpdateNudgeLabelOrRetrigger(
-    std::u16string nudge_label_text,
+    std::u16string nudge_label,
     bool show_bubble) {
   if (IsShowingNudge()) {
-    SetGlicActorNudgeLabel(nudge_label_text);
+    SetGlicActorNudgeLabel(nudge_label);
   } else {
-    TriggerGlicActorNudge(nudge_label_text);
+    TriggerGlicActorNudge(nudge_label);
   }
 
   if (show_bubble) {
@@ -185,12 +185,12 @@ void GlicActorNudgeController::SetGlicActorNudgeLabel(
 }
 
 void GlicActorNudgeController::TriggerGlicActorNudge(
-    const std::u16string& nudge_text) {
+    const std::u16string& nudge_label) {
   CallOnBoth(base::BindRepeating(
-      [](const std::u16string& nudge_text, GlicSplitButtonDelegate& delegate) {
-        delegate.TriggerGlicActorNudge(nudge_text);
+      [](const std::u16string& nudge_label, GlicSplitButtonDelegate& delegate) {
+        delegate.TriggerGlicActorNudge(nudge_label);
       },
-      nudge_text));
+      nudge_label));
 }
 
 void GlicActorNudgeController::ShowBubble() {

@@ -64,7 +64,7 @@ class GlicSplitButtonDelegate : public ActorTaskListBubbleControllerDelegate {
   virtual void SetGlicActorNudgeLabel(const std::u16string& nudge_label);
 
   // Show the actor nudge with text.
-  virtual void TriggerGlicActorNudge(const std::u16string& nudge_text);
+  virtual void TriggerGlicActorNudge(const std::u16string& nudge_label);
 
   // Update the nudge button "pressed state".
   virtual void SetGlicActorNudgePressedState(bool pressed);

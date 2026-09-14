@@ -92,11 +92,11 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
         base::android::ConvertUTF16ToJavaString(env, nudge_label));
   }
 
-  void TriggerGlicActorNudge(const std::u16string& nudge_text) override {
+  void TriggerGlicActorNudge(const std::u16string& nudge_label) override {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_GlicSplitButtonDelegateBridge_triggerGlicActorNudge(
         env, j_delegate_,
-        base::android::ConvertUTF16ToJavaString(env, nudge_text));
+        base::android::ConvertUTF16ToJavaString(env, nudge_label));
   }
 
   void SetGlicActorNudgePressedState(bool pressed) override {

@@ -459,7 +459,7 @@ void TabStripActionContainer::SetGlicActorNudgeLabel(
 }
 
 void TabStripActionContainer::TriggerGlicActorNudge(
-    const std::u16string& nudge_text) {
+    const std::u16string& nudge_label) {
   if (!glic_button_ || !glic_actor_task_icon_) {
     return;
   }
@@ -470,7 +470,7 @@ void TabStripActionContainer::TriggerGlicActorNudge(
     HideTabStripNudge(glic_button_);
     OnGlicButtonAnimationEnded();
   }
-  ShowGlicActorNudge(nudge_text);
+  ShowGlicActorNudge(nudge_label);
 }
 
 void TabStripActionContainer::SetGlicActorNudgePressedState(bool pressed) {
@@ -514,14 +514,14 @@ bool TabStripActionContainer::IsActorTaskListBubbleShowing() {
 }
 
 void TabStripActionContainer::ShowGlicActorNudge(
-    const std::u16string& nudge_text) {
+    const std::u16string& nudge_label) {
   if (!glic_button_ || !glic_actor_task_icon_) {
     return;
   }
   // Start animation for minimizing the glic button.
   glic_button_->Collapse();
   ShowGlicActorTaskIcon();
-  glic_actor_task_icon_->ShowNudgeLabel(nudge_text);
+  glic_actor_task_icon_->ShowNudgeLabel(nudge_label);
   ShowTabStripNudge(glic_actor_task_icon_);
 }
 

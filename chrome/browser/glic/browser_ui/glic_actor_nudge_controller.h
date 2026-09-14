@@ -56,7 +56,7 @@ class GlicActorNudgeController {
   virtual void ShowGlicActorTaskIcon();
   virtual void HideGlicActorTaskIcon();
   virtual void SetGlicActorNudgeLabel(const std::u16string& nudge_label);
-  virtual void TriggerGlicActorNudge(const std::u16string& nudge_text);
+  virtual void TriggerGlicActorNudge(const std::u16string& nudge_label);
   virtual void ShowBubble();
   virtual void CloseBubble();
   virtual bool IsShowingNudge();
@@ -68,7 +68,7 @@ class GlicActorNudgeController {
 
   // Only update the nudge label if it's already showing, otherwise retrigger
   // the nudge. Shows the task list bubble after if show_bubble is true.
-  void UpdateNudgeLabelOrRetrigger(std::u16string nudge_label_text,
+  void UpdateNudgeLabelOrRetrigger(std::u16string nudge_label,
                                    bool show_bubble);
 
   void CallOnBoth(base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn);

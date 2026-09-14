@@ -115,7 +115,7 @@ class GlicActorTaskIconManager : public KeyedService {
 
   using TaskNudgeChangeCallbackList = base::RepeatingCallbackList<void(
       bool show_bubble,
-      actor::ui::ActorTaskNudgeState actor_task_nudge_text)>;
+      actor::ui::ActorTaskNudgeState actor_task_nudge_state)>;
   TaskNudgeChangeCallbackList task_nudge_state_change_callback_list_;
 
   using TaskListBubbleChangeCallbackList =

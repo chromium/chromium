@@ -884,7 +884,7 @@ void ToolbarView::SetGlicActorNudgeLabel(const std::u16string& nudge_label) {
   }
 }
 
-void ToolbarView::TriggerGlicActorNudge(const std::u16string& nudge_text) {
+void ToolbarView::TriggerGlicActorNudge(const std::u16string& nudge_label) {
   if (!glic_button_ || !glic_actor_task_icon_) {
     return;
   }
@@ -894,17 +894,17 @@ void ToolbarView::TriggerGlicActorNudge(const std::u16string& nudge_text) {
     HideToolbarNudge(glic_button_);
     OnGlicButtonAnimationEnded();
   }
-  ShowGlicActorNudge(nudge_text);
+  ShowGlicActorNudge(nudge_label);
 }
 
-void ToolbarView::ShowGlicActorNudge(const std::u16string nudge_text) {
+void ToolbarView::ShowGlicActorNudge(const std::u16string nudge_label) {
   if (!glic_button_ || !glic_actor_task_icon_) {
     return;
   }
   // Start animation for minimizing the glic button.
   glic_button_->Collapse();
   ShowGlicActorTaskIcon();
-  glic_actor_task_icon_->ShowNudgeLabel(nudge_text);
+  glic_actor_task_icon_->ShowNudgeLabel(nudge_label);
   ShowToolbarNudge(glic_actor_task_icon_);
 }
 

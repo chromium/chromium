@@ -68,9 +68,9 @@ public interface GlicSplitButtonDelegate {
     /**
      * Called when native C++ triggers an actor nudge with text.
      *
-     * @param nudgeText The nudge text to show.
+     * @param nudgeLabel The text label for the actor nudge.
      */
-    default void triggerGlicActorNudge(String nudgeText) {}
+    default void triggerGlicActorNudge(String nudgeLabel) {}
 
     /**
      * Called when native C++ updates the actor nudge button pressed state.

@@ -244,9 +244,9 @@ public class StripLayoutTrailingButtonsCoordinator {
                 }
 
                 @Override
-                public void triggerGlicActorNudge(String nudgeText) {
+                public void triggerGlicActorNudge(String nudgeLabel) {
                     mIsGlicActorButtonShowing = true;
-                    mActorNudgeLabel = nudgeText;
+                    mActorNudgeLabel = nudgeLabel;
                     updateTrailingButtonsState(
                             /* animate= */ true, /* forceLayoutChanged= */ false);
                 }

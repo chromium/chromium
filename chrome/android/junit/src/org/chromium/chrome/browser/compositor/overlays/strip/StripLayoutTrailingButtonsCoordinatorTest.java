@@ -769,14 +769,14 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     public void testGlicNudge_FallsBackToDefaultTextOnNarrowScreen() {
         String askGeminiText =
                 mActivity.getString(R.string.glic_button_entrypoint_ask_gemini_label);
-        String nudgeText = "Summarize page";
-        when(mLayerTitleCache.getButtonTextWidth(nudgeText)).thenReturn(150);
+        String nudgeLabel = "Summarize page";
+        when(mLayerTitleCache.getButtonTextWidth(nudgeLabel)).thenReturn(150);
         when(mLayerTitleCache.getButtonTextWidth(askGeminiText)).thenReturn(80);
 
-        mCoordinator.setNudgeLabelForTesting(nudgeText);
+        mCoordinator.setNudgeLabelForTesting(nudgeLabel);
         float minNudgeWidth =
                 mCoordinator.calculateMinRequiredWidthForGlicButton(
-                        nudgeText, /* showDismissButton= */ true);
+                        nudgeLabel, /* showDismissButton= */ true);
         float minFullWidth =
                 mCoordinator.calculateMinRequiredWidthForGlicButton(
                         askGeminiText, /* showDismissButton= */ false);
@@ -789,7 +789,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         onSizeChanged(minNudgeWidth);
         assertTrue(mGlicButton.isVisible());
         assertTrue(mGlicDismissButton.isVisible());
-        assertEquals(nudgeText, mGlicButton.getText());
+        assertEquals(nudgeLabel, mGlicButton.getText());
 
         // 2. minFullWidth <= Width < minNudgeWidth: Nudge dismisses, falls back to "Ask Gemini".
         onSizeChanged(minNudgeWidth - 1.f);
@@ -807,21 +807,22 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         onSizeChanged(minNudgeWidth);
         assertTrue(mGlicButton.isVisible());
         assertTrue(mGlicDismissButton.isVisible());
-        assertEquals(nudgeText, mGlicButton.getText());
+        assertEquals(nudgeLabel, mGlicButton.getText());
     }
 
     @Test
     public void testGlicNudge_HiddenAndSuppressedWhenActorTaskActive() {
         // 1. Display a Glic nudge initially with no active actor task.
-        String initialNudgeText = "Summarize page";
-        mCoordinator.setNudgeLabelForTesting(initialNudgeText);
+        String initialNudgeLabel = "Summarize page";
+        mCoordinator.setNudgeLabelForTesting(initialNudgeLabel);
         ShadowLooper.idleMainLooper();
 
         assertTrue("Glic button should be visible.", mGlicButton.isVisible());
         assertTrue(
                 "Dismiss button should be visible when nudge is shown.",
                 mGlicDismissButton.isVisible());
-        assertEquals("Glic text should show nudge text.", initialNudgeText, mGlicButton.getText());
+        assertEquals(
+                "Glic text should show nudge label.", initialNudgeLabel, mGlicButton.getText());
         assertFalse("Actor button should not be visible initially.", mGlicActorButton.isVisible());
 
         // 2. An actor task starts: actor button should appear, and nudge / dismiss button should
@@ -1023,24 +1024,24 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     public void testGlicActorButton_DegradationOnNarrowScreen() {
         showGlicActorButton();
 
-        String actorNudgeText = "Task done";
+        String actorNudgeLabel = "Task done";
         float minActorNudgeWidth =
                 mCoordinator.calculateMinRequiredWidthForGlicButton(
-                        actorNudgeText, /* showDismissButton= */ false);
+                        actorNudgeLabel, /* showDismissButton= */ false);
 
         // 1. Trigger actor nudge on a wide screen >= minActorNudgeWidth
         onSizeChanged(minActorNudgeWidth);
-        mCoordinator.getGlicSplitButtonDelegateForTesting().triggerGlicActorNudge(actorNudgeText);
+        mCoordinator.getGlicSplitButtonDelegateForTesting().triggerGlicActorNudge(actorNudgeLabel);
         ShadowLooper.idleMainLooper();
 
         assertTrue("Actor button should be visible.", mGlicActorButton.isVisible());
         assertEquals(
                 "Actor button text should be set on wide screen.",
-                actorNudgeText,
+                actorNudgeLabel,
                 mGlicActorButton.getText());
         assertEquals(
                 "Actor button accessibility description should match text on wide screen.",
-                actorNudgeText,
+                actorNudgeLabel,
                 mGlicActorButton.getAccessibilityDescription());
 
         // 2. Narrow screen (minCondensedWidth <= width < minActorNudgeWidth): Actor text collapses.
@@ -1073,11 +1074,11 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertTrue("Actor button should be restored on wide screen.", mGlicActorButton.isVisible());
         assertEquals(
                 "Actor button text should be restored on wide screen.",
-                actorNudgeText,
+                actorNudgeLabel,
                 mGlicActorButton.getText());
         assertEquals(
                 "Actor button accessibility description should be restored on wide screen.",
-                actorNudgeText,
+                actorNudgeLabel,
                 mGlicActorButton.getAccessibilityDescription());
     }
 
