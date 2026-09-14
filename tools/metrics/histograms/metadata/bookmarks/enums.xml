@@ -123,6 +123,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java:BookmarkBarVisibilityStateOnStartUpReason) -->
 
+<!-- LINT.IfChange(BookmarkDesktopPopupOutcome) -->
+
+<enum name="BookmarkDesktopPopupOutcome">
+  <int value="0" label="Saved"/>
+  <int value="1" label="Removed"/>
+  <int value="2" label="Edit Dialog Opened"/>
+  <int value="3" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkDesktopPopupMetrics.java:BookmarkDesktopPopupOutcome) -->
+
 <!-- LINT.IfChange(BookmarkEditOutcome) -->
 
 <enum name="BookmarkEditOutcome">
