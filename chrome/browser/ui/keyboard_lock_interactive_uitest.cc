@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/fullscreen_keyboard_browsertest_base.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -206,16 +208,16 @@ bool KeyboardLockInteractiveBrowserTest::RequestKeyboardLock(
 // JS so that waiting for the promise to resolve in RequestKeyboardLock() is
 // sufficient and WaitForKeyboardLock() can be deleted.
 void KeyboardLockInteractiveBrowserTest::WaitForKeyboardLock() {
-  if (GetExclusiveAccessManager()
-          ->keyboard_lock_controller()
-          ->IsKeyboardLockActive()) {
-    return;
+  if (!GetExclusiveAccessManager()
+           ->keyboard_lock_controller()
+           ->IsKeyboardLockActive()) {
+    base::RunLoop run_loop;
+    GetExclusiveAccessManager()
+        ->keyboard_lock_controller()
+        ->set_lock_state_callback_for_test(run_loop.QuitClosure());
+    run_loop.Run();
   }
-  base::RunLoop run_loop;
-  GetExclusiveAccessManager()
-      ->keyboard_lock_controller()
-      ->set_lock_state_callback_for_test(run_loop.QuitClosure());
-  run_loop.Run();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return IsKeyboardLockActive(); }));
 }
 
 bool KeyboardLockInteractiveBrowserTest::RequestAndWaitForKeyboardLock(
@@ -390,6 +392,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   // request fullscreen again.
   ASSERT_FALSE(IsActiveTabFullscreen());
   ASSERT_TRUE(IsKeyboardLockRequestRegistered());
+  ui_test_utils::ClickOnView(GetActiveBrowser(), VIEW_ID_TAB_CONTAINER);
   ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
   ASSERT_TRUE(IsActiveTabFullscreen());
   ASSERT_TRUE(IsKeyboardLockActive());
