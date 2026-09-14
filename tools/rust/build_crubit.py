@@ -23,15 +23,11 @@ officially supported by the Crubit team.
 '''
 
 import argparse
-import json
+import contextlib
 import os
-import platform
 import shutil
 import sys
 import tempfile
-import urllib
-
-from pathlib import Path
 
 # Get variables and helpers from `//tools/clang/scripts/build.py`.
 sys.path.append(
@@ -69,7 +65,12 @@ CC_BINDINGS_FROM_RS_CARGO_TOML_PATH = os.path.join(
     "Cargo.toml",
 )
 
-EXE = '.exe' if sys.platform == 'win32' else ''
+CRUBIT_BINS = ['cc_bindings_from_rs']
+
+IS_WIN = sys.platform == 'win32'
+IS_MAC = sys.platform == 'darwin'
+
+EXE = '.exe' if IS_WIN else ''
 
 
 def GetLatestCrubitCommit():
@@ -84,12 +85,12 @@ def GetCcBindingsFromRsRustFlags():
     # as seen in
     # https://github.com/rust-lang/rust/blob/b889870082dd0b0e3594bbfbebb4545d54710829/src/bootstrap/src/core/builder/cargo.rs#L285-L306
     # See also https://crbug.com/460482110#comment14 - #comment16
-    if sys.platform == 'darwin':
+    if IS_MAC:
         return [
             "-Zosx-rpath-install-name",
             "-Clink-args=-Wl,-rpath,@loader_path/../lib",
         ]
-    elif sys.platform != 'win32':
+    elif not IS_WIN:
         return [
             "-Clink-args=-Wl,-z,origin",
             "-Clink-args=-Wl,-rpath,$ORIGIN/../lib",
@@ -110,7 +111,7 @@ def GetNativeLibsRustFlags():
     paths here.  In particular `AddZlibToPath(dry_run=False)` must not be used:
     it deletes and rebuilds zlib, and leaves the process CWD inside `zlib_dir`.
     """
-    if sys.platform != 'win32':
+    if not IS_WIN:
         # No native libs needed on other platforms:
         return []
 
@@ -153,13 +154,12 @@ def BuildCrubit(rust_sysroot, out_dir):
         return cargo_result
 
     print(f'Installing Crubit to {RUST_TOOLCHAIN_OUT_DIR} ...')
-    CRUBIT_BINS = ['cc_bindings_from_rs']
-    for bin in CRUBIT_BINS:
-        bin = bin + EXE
-        print(f'    Copying {bin} ...')
+    for bin_name in CRUBIT_BINS:
+        bin_exe = bin_name + EXE
+        print(f'    Copying {bin_exe} ...')
         shutil.copy(
-            os.path.join(release_dir, bin),
-            os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', bin),
+            os.path.join(release_dir, bin_exe),
+            os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', bin_exe),
         )
 
     # `crubit_target_dir` below helps ensure that Chromium can use the same
@@ -212,11 +212,11 @@ def main():
     if not args.skip_checkout:
         CheckoutGitRepo("crubit", CRUBIT_GIT, crubit_revision, CRUBIT_SRC_DIR)
 
-    if args.out_dir:
-        return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, args.out_dir)
-    else:
-        with tempfile.TemporaryDirectory() as out_dir:
-            return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, out_dir)
+    with contextlib.ExitStack() as stack:
+        out_dir = args.out_dir or stack.enter_context(
+            tempfile.TemporaryDirectory()
+        )
+        return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, out_dir)
 
 
 if __name__ == '__main__':

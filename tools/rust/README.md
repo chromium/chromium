@@ -185,68 +185,46 @@ places them.
 Building the `rust_build_tests` GN target is a good way to quickly verify the
 toolchain is working.
 
-## Rolling Crubit tools
-
-Steps to roll the Crubit tools (e.g. `rs_bindings_from_cc` tool)
-to a new version:
-
-- Locally, update `CRUBIT_REVISION` in `update_rust.py`.
-  (Update `CRUBIT_SUB_REVISION` when the build or packaging is changed, but
-  the upstream Rust revision we build from is not changed.)
-
-- Locally, update `crubit_revision` in `//DEPS`, so that it matches
-  the revision from the previous bullet item.
-
-- Run manual tests locally (see the "Building and testing the tools locally"
-  section below).
-  TODO(crbug.com/40226863): These manual steps should
-  be made obsolete once Rust-specific tryjobs cover Crubit
-  tests.
-
 ## Building and testing Crubit locally
 
 ### Prerequisites
 
-#### Bazel
+`build_crubit.py` builds Crubit's `cc_bindings_from_rs` with Cargo. Unlike
+Crubit's open-source build, Bazel is not a prerequisite.
 
-`build_crubit.py` depends on Bazel.
+The script consumes the following
+outputs of an earlier `tools/rust/build_rust.py` run:
 
-To get Bazel, ensure that you have `checkout_bazel` set in your `.gclient` file
-and then rerun `gclient sync`:
+- the Rust sysroot in `//third_party/rust-toolchain`,
+- on Windows, `zlib.lib` and `libxml2s.lib`.
 
-```sh
-$ cat ../.gclient
-solutions = [
-  {
-    "name": "src",
-    "url": "https://chromium.googlesource.com/chromium/src.git",
-    ...
-    "custom_vars": {
-      "checkout_bazel": True,
-      "checkout_crubit": True,
-    },
-  },
-]
-```
+So run `tools/rust/build_rust.py` first.  Alternatively, pass
+`--build-crubit` to it and it will run `build_crubit.py` for you.
 
 ### Building
 
-Just run `tools/rust/build_crubit.py`. So far `build_crubit.py` has only been
-tested on Linux hosts.
+```sh
+$ tools/rust/build_crubit.py
+```
+
+Useful flags:
+
+- `--out-dir=<dir>` caches the Cargo build artifacts in `<dir>` instead of a
+  temporary directory, which makes repeated local runs much faster.
+- `--skip-checkout` keeps the Crubit checkout in
+  `//third_party/rust-toolchain-intermediate/crubit` as it is, so you can
+  build local Crubit changes.
+- `--crubit-force-head-revision` builds Crubit HEAD instead of the pinned
+  `CRUBIT_REVISION`.
 
 ### Deploying
 
-`build_crubit.py` will copy files into the directory specified in the
-(optional) `--install-to` cmdline parameter - for example:
-
-```
-$ tools/rust/build_crubit.py --install-to=third_party/rust-toolchain/bin/
-```
+`build_crubit.py` always installs into `//third_party/rust-toolchain`:
+`cc_bindings_from_rs` goes into `bin/`, and Crubit's support library into
+`lib/third_party/crubit/`.
 
 ### Testing
 
-Crubit tests are under `//build/rust/tests/test_rs_bindings_from_cc`.  Until
-Crubit is built on the bots, the tests are commented out in
-`//build/rust/tests/BUILD.gn`, but they should still be built and run before
-rolling Crubit.  TODO(crbug.com/40226863): Rephrase this paragraph
-after Crubit is built and tested on the bots.
+Crubit tests are under `//build/rust/tests/test_cpp_api_from_rust`.  They
+are part of `base_unittests` on every platform except ChromeOS and Fuchsia
+(see the `//build/rust/tests` dependency in `//base/BUILD.gn`).
