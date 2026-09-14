@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/media_buildflags.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -131,10 +132,16 @@ void* MediaStreamAudioSource::GetClassIdentifier() const {
 
 bool MediaStreamAudioSource::HasSameSessionIdentityProperties(
     const blink::AudioProcessingProperties& selected_properties) const {
+  // Source reuse is evaluated against the initial properties with which
+  // the capture session was created. Comparing against current properties
+  // would make reuse dependent on transient runtime changes, potentially
+  // causing unnecessary duplicate sessions or coupling streams with
+  // conflicting requirements.
   std::optional<blink::AudioProcessingProperties> configured_properties =
-      GetAudioProcessingProperties();
-  if (!configured_properties)
+      GetInitialAudioProcessingProperties();
+  if (!configured_properties) {
     return false;
+  }
 
   return selected_properties.HasSameSessionIdentityProperties(
       *configured_properties);

@@ -292,6 +292,53 @@ TEST(AudioProcessingPropertiesTest, VerifyDefaultProcessingState) {
   EXPECT_EQ(kDefaultProperties.voice_isolation, kVoiceIsolationDefaultValue);
 }
 
+TEST(AudioProcessingPropertiesTest,
+     VoiceIsolationDefinesSessionIdentityUnderChromeWideEchoCancellation) {
+  AudioProcessingProperties properties_1;
+  AudioProcessingProperties properties_2;
+
+  EXPECT_TRUE(properties_1.HasSameSessionIdentityProperties(properties_2));
+
+  properties_2.echo_cancellation_mode = EchoCancellationMode::kDisabled;
+  EXPECT_FALSE(properties_1.HasSameSessionIdentityProperties(properties_2));
+  properties_2.echo_cancellation_mode = properties_1.echo_cancellation_mode;
+
+  properties_2.voice_isolation =
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  EXPECT_FALSE(properties_1.HasSameSessionIdentityProperties(properties_2));
+#else
+  EXPECT_TRUE(properties_1.HasSameSessionIdentityProperties(properties_2));
+#endif
+}
+
+TEST(
+    AudioProcessingPropertiesTest,
+    VoiceIsolationExcludedFromInterlockingPropertiesUnderChromeWideEchoCancellation) {
+  AudioProcessingProperties properties_1;
+  AudioProcessingProperties properties_2;
+
+  EXPECT_TRUE(properties_1.HasSameInterlockingProperties(properties_2));
+
+  properties_2.auto_gain_control = !properties_1.auto_gain_control;
+  EXPECT_FALSE(properties_1.HasSameInterlockingProperties(properties_2));
+  properties_2.auto_gain_control = properties_1.auto_gain_control;
+
+  properties_2.noise_suppression = !properties_1.noise_suppression;
+  EXPECT_FALSE(properties_1.HasSameInterlockingProperties(properties_2));
+  properties_2.noise_suppression = properties_1.noise_suppression;
+
+  properties_2.voice_isolation =
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  // Under chrome-wide AEC, voice isolation is a session identity property and
+  // should NOT be checked in HasSameInterlockingProperties.
+  EXPECT_TRUE(properties_1.HasSameInterlockingProperties(properties_2));
+#else
+  // Without chrome-wide AEC, voice isolation is an interlocking property.
+  EXPECT_FALSE(properties_1.HasSameInterlockingProperties(properties_2));
+#endif
+}
 class MediaStreamAudioProcessingLayoutTest
     : public testing::TestWithParam<
           testing::tuple<EchoCancellationMode, bool, bool>> {};
