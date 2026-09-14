@@ -2777,7 +2777,9 @@ void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
   // same time until it acked the changes. Otherwise, if they simultaneously
   // change bounds, browser's bounds can be clobbered.
   if (view_ && !waiting_for_screen_rects_ack_) {
-    view_->SetBounds(bounds);
+    gfx::Rect constrained_bounds =
+        delegate_ ? delegate_->ConstrainPopupBounds(bounds) : bounds;
+    view_->SetBounds(constrained_bounds);
   }
   std::move(callback).Run();
 }

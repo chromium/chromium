@@ -6070,6 +6070,24 @@ WebContents* WebContentsImpl::ShowCreatedWindow(
                                   nullptr);
 }
 
+gfx::Rect WebContentsImpl::ConstrainPopupBounds(const gfx::Rect& bounds) {
+  if (!base::FeatureList::IsEnabled(features::kLimitPopupWidgetHostPosition)) {
+    return bounds;
+  }
+  // Constrain popup bounds so that the top of the popup is at or below the line
+  // of death (the top of the top-level main frame). See crbug.com/424995036.
+  RenderWidgetHostView* view = GetTopLevelRenderWidgetHostView();
+  if (!view) {
+    return bounds;
+  }
+  gfx::Rect constrained_bounds = bounds;
+  int line_of_death = view->GetViewBounds().y();
+  if (constrained_bounds.y() < line_of_death) {
+    constrained_bounds.set_y(line_of_death);
+  }
+  return constrained_bounds;
+}
+
 void WebContentsImpl::ShowCreatedWidget(ChildProcessId process_id,
                                         int widget_route_id,
                                         const gfx::Rect& initial_rect,
@@ -6133,6 +6151,8 @@ void WebContentsImpl::ShowCreatedWidget(ChildProcessId process_id,
         gfx::Rect(origin.x(), origin.y(), bottom_right.x() - origin.x(),
                   bottom_right.y() - origin.y());
   }
+
+  transformed_rect = ConstrainPopupBounds(transformed_rect);
 
   RenderWidgetHostImpl* render_widget_host_impl = widget_host_view->host();
 

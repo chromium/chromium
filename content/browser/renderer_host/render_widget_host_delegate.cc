@@ -188,6 +188,11 @@ bool RenderWidgetHostDelegate::IsShowingContextMenuOnPage() const {
   return false;
 }
 
+gfx::Rect RenderWidgetHostDelegate::ConstrainPopupBounds(
+    const gfx::Rect& bounds) {
+  return bounds;
+}
+
 int RenderWidgetHostDelegate::GetVirtualKeyboardResizeHeight() {
   return 0;
 }

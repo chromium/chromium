@@ -398,6 +398,11 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
                                  const gfx::Rect& initial_anchor_rect_in_dips) {
   }
 
+  // Constrain popup bounds so that the top of the popup is at or below the
+  // line of death (the top of the top-level main frame). See
+  // crbug.com/424995036.
+  virtual gfx::Rect ConstrainPopupBounds(const gfx::Rect& bounds);
+
   // Returns the amount that this view has been resized by a showing virtual
   // keyboard or 0 if the virtual keyboard is hidden or in a mode that doesn't
   // resize the view.

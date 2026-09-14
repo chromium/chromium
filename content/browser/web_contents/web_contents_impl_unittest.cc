@@ -37,6 +37,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
@@ -95,6 +96,7 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
@@ -4301,6 +4303,42 @@ TEST_F(WebContentsImplTest, MultipleDragProvenancesAreIsolated) {
   EXPECT_EQ(WebContents::FromDragId(contents()->GetBrowserContext(),
                                     WebContents::DragId(id2)),
             contents());
+}
+
+TEST_F(WebContentsImplTest, ConstrainPopupBounds) {
+  TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
+      contents()->GetRenderWidgetHostView());
+  const int kLineOfDeath = 150;
+  view->SetBounds(gfx::Rect(50, kLineOfDeath, 800, 600));
+
+  // A popup whose top is above the line of death is clamped to the line of
+  // death.
+  gfx::Rect above_line_of_death(100, 50, 200, 100);
+  EXPECT_EQ(contents()->ConstrainPopupBounds(above_line_of_death),
+            gfx::Rect(100, kLineOfDeath, 200, 100));
+
+  // A popup whose top is exactly at the line of death is unchanged.
+  gfx::Rect at_line_of_death(100, kLineOfDeath, 200, 100);
+  EXPECT_EQ(contents()->ConstrainPopupBounds(at_line_of_death),
+            at_line_of_death);
+
+  // A popup whose top is below the line of death is unchanged.
+  gfx::Rect below_line_of_death(100, 200, 200, 100);
+  EXPECT_EQ(contents()->ConstrainPopupBounds(below_line_of_death),
+            below_line_of_death);
+
+  // If the line of death moves, clamping respects the new line of death.
+  const int kNewLineOfDeath = 250;
+  view->SetBounds(gfx::Rect(50, kNewLineOfDeath, 800, 600));
+  EXPECT_EQ(contents()->ConstrainPopupBounds(above_line_of_death),
+            gfx::Rect(100, kNewLineOfDeath, 200, 100));
+
+  // When the feature is disabled, popups above the line of death are not
+  // clamped.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLimitPopupWidgetHostPosition);
+  EXPECT_EQ(contents()->ConstrainPopupBounds(above_line_of_death),
+            above_line_of_death);
 }
 
 }  // namespace content
