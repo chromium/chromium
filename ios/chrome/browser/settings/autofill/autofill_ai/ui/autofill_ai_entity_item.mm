@@ -27,6 +27,8 @@
       [[TableViewCellContentConfiguration alloc] init];
 
   contentConfiguration.title = self.name;
+  contentConfiguration.titleNumberOfLines = 1;
+  contentConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
   contentConfiguration.subtitle = self.typeDescription;
   contentConfiguration.trailingText = self.trailingText;
 
