@@ -57,6 +57,16 @@ class TestTabContextualizationController
     is_page_context_eligible_ = is_eligible;
   }
 
+  void CallOnApcAndEligibilityReceivedForGetPageContext(
+      GetPageContextCallback callback,
+      std::unique_ptr<lens::ContextualInputData> data,
+      bool page_context_eligible,
+      optimization_guide::AIPageContentResultOrError result) {
+    OnApcAndEligibilityReceivedForGetPageContext(
+        std::move(callback), std::move(data), page_context_eligible,
+        std::move(result));
+  }
+
  protected:
   bool IsPageContextEligible(const GURL& url,
                              const std::vector<optimization_guide::FrameMetadata>&
@@ -305,6 +315,28 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   content::WebContents* restored_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(restored_contents->WasDiscarded());
+}
+
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       GetPageContextDroppedOnCrossNavigation) {
+  auto* controller = GetTabContextualizationController();
+
+  // Navigate to b.com.
+  GURL current_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_url));
+
+  // Create data that originated from a.com.
+  auto data = std::make_unique<lens::ContextualInputData>();
+  data->page_url = embedded_test_server()->GetURL("a.com", "/empty.html");
+
+  base::test::TestFuture<std::unique_ptr<lens::ContextualInputData>> future;
+  controller->CallOnApcAndEligibilityReceivedForGetPageContext(
+      future.GetCallback(), std::move(data), /*page_context_eligible=*/true,
+      base::ok(optimization_guide::AIPageContentResult()));
+
+  // Because the committed origin (b.com) does not match the request origin
+  // (a.com), the result is dropped and nullptr is returned.
+  EXPECT_EQ(future.Take(), nullptr);
 }
 
 }  // namespace lens

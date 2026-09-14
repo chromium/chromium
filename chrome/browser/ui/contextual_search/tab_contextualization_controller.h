@@ -100,6 +100,15 @@ class TabContextualizationController : public content::WebContentsObserver {
   // Virtual for testing.
   virtual void FetchPageContextInternal(GetPageContextCallback callback);
 
+  // GetApcResultCallback for when the APC and eligibility are received
+  // for the GetPageContext flow. Adds the APC to the contextual input data and
+  // returns it to the callback.
+  void OnApcAndEligibilityReceivedForGetPageContext(
+      GetPageContextCallback callback,
+      std::unique_ptr<lens::ContextualInputData> data,
+      bool page_context_eligible,
+      optimization_guide::AIPageContentResultOrError result);
+
  private:
   // Creates the eligibility API if it has not been created.
   void CreatePageContextEligibilityAPI();
@@ -118,6 +127,10 @@ class TabContextualizationController : public content::WebContentsObserver {
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
+  // TabInterface::WillDetach:
+  void WillDetach(tabs::TabInterface* tab,
+                  tabs::TabInterface::DetachReason reason);
+
   void FlushPendingPageContextCallbacks();
 
   // Gets the annotated page content from the page context eligibility API.
@@ -127,15 +140,6 @@ class TabContextualizationController : public content::WebContentsObserver {
   // page is eligible and returns the result to the callback.
   void OnAnnotatedPageContentReceived(
       GetApcResultCallback callback,
-      optimization_guide::AIPageContentResultOrError result);
-
-  // GetApcResultCallback for when the APC and eligibility are received
-  // for the GetPageContext flow. Adds the APC to the contextual input data and
-  // returns it to the callback.
-  void OnApcAndEligibilityReceivedForGetPageContext(
-      GetPageContextCallback callback,
-      std::unique_ptr<lens::ContextualInputData> data,
-      bool page_context_eligible,
       optimization_guide::AIPageContentResultOrError result);
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -179,7 +183,8 @@ class TabContextualizationController : public content::WebContentsObserver {
 
   const raw_ptr<tabs::TabInterface> tab_;
 
-  base::CallbackListSubscription tab_subscription_;
+  base::CallbackListSubscription will_discard_contents_subscription_;
+  base::CallbackListSubscription will_detach_subscription_;
 
   // Task runner used to downscale the tab screenshot in the background.
   scoped_refptr<base::TaskRunner> screenshot_task_runner_;
@@ -195,6 +200,14 @@ class TabContextualizationController : public content::WebContentsObserver {
   // not received within the timeout period.
   base::OneShotTimer pending_page_context_timer_;
 
+  // Must be the last members.
+  // Used for in-flight contextualization requests (APC, screenshot, PDF bytes).
+  // Invalidated on tab navigation, discard, or detach to prevent cross-origin
+  // leaks.
+  base::WeakPtrFactory<TabContextualizationController>
+      in_flight_weak_ptr_factory_{this};
+
+  // Used for general controller lifecycle and subscriptions.
   base::WeakPtrFactory<TabContextualizationController> weak_ptr_factory_{this};
 };
 
