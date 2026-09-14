@@ -1410,10 +1410,18 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_EventsWithDefaultTimeout) {
   frame.RunUntilMessagePortClosed();
 
   // Verify that the expected events were delivered!
-  ASSERT_EQ(frame.events().size(), 3u) << frame.EventsString();
+  // Delivery of pagehide and unload events via MessagePort races with Frame
+  // destruction, so only beforeunload is guaranteed to be received before the
+  // MessagePort closes.
+  ASSERT_GE(frame.events().size(), 1u) << frame.EventsString();
+  EXPECT_LE(frame.events().size(), 3u) << frame.EventsString();
   EXPECT_EQ(frame.events()[0], kBeforeUnloadEventName);
-  EXPECT_EQ(frame.events()[1], kPageHideEventName);
-  EXPECT_EQ(frame.events()[2], kUnloadEventName);
+  if (frame.events().size() >= 2u) {
+    EXPECT_EQ(frame.events()[1], kPageHideEventName);
+  }
+  if (frame.events().size() >= 3u) {
+    EXPECT_EQ(frame.events()[2], kUnloadEventName);
+  }
 
   EXPECT_EQ(frame.epitaph().Get(), ZX_OK);
 }
@@ -1438,10 +1446,18 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_EventsWithNonZeroTimeout) {
   frame.RunUntilMessagePortClosed();
 
   // Verify that the expected events were delivered!
-  ASSERT_EQ(frame.events().size(), 3u) << frame.EventsString();
+  // Delivery of pagehide and unload events via MessagePort races with Frame
+  // destruction, so only beforeunload is guaranteed to be received before the
+  // MessagePort closes.
+  ASSERT_GE(frame.events().size(), 1u) << frame.EventsString();
+  EXPECT_LE(frame.events().size(), 3u) << frame.EventsString();
   EXPECT_EQ(frame.events()[0], kBeforeUnloadEventName);
-  EXPECT_EQ(frame.events()[1], kPageHideEventName);
-  EXPECT_EQ(frame.events()[2], kUnloadEventName);
+  if (frame.events().size() >= 2u) {
+    EXPECT_EQ(frame.events()[1], kPageHideEventName);
+  }
+  if (frame.events().size() >= 3u) {
+    EXPECT_EQ(frame.events()[2], kUnloadEventName);
+  }
 
   EXPECT_EQ(frame.epitaph().Get(), ZX_OK);
 }
