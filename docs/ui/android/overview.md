@@ -52,3 +52,8 @@ is recreated.
 [`ActivityResultRegistry`](https://developer.android.com/training/basics/intents/result)
 API is introduced to ensure that the in-flight activities' result is caught
 even after base activity's recreation.
+
+## Settings
+
+Settings screens are built using AndroidX preferences and Chromium's settings infrastructure in [//components/browser_ui/settings/android/](/components/browser_ui/settings/android/).
+To ensure settings remain reachable via search and prevent UI discrepancies, see the [Android Settings Search Testing Guide](/components/browser_ui/settings/android/settings_search_testing.md).

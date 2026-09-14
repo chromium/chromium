@@ -314,6 +314,8 @@ used when committed.
 *   [Other build-related Android docs](../build/android/docs/README.md)
 *   [Chrome for Android UI](ui/android/overview.md) - Resources and best practices for
     developing UI
+*   [Android Settings Search Testing](/components/browser_ui/settings/android/settings_search_testing.md) -
+    Testing guide and parity invariants for Android Settings Search.
 
 ### Misc iOS-Specific Docs
 *   [Continuous Build and Test Infrastructure for Chromium for iOS](ios/infra.md)
