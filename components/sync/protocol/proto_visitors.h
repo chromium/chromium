@@ -2204,6 +2204,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSpecifics& proto) {
   VISIT(order);
   VISIT(shipment);
   VISIT(context_token);
+  VISIT(pass_view_url);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::Any& proto) {
