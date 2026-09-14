@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/webapk/webapk_installer.h"
 
+#include <atomic>
 #include <memory>
 #include <utility>
 
@@ -14,7 +15,9 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -27,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -233,6 +237,7 @@ class WebApkInstallerBrowserTest : public AndroidBrowserTest {
   ~WebApkInstallerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->AddDefaultHandlers(base::FilePath(kTestDataDir));
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&WebApkInstallerBrowserTest::HandleWebApkRequest,
@@ -311,6 +316,30 @@ class WebApkInstallerBrowserTest : public AndroidBrowserTest {
     return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   }
 
+  webapps::ShortcutInfo CreateValidShortcutInfo(const GURL& url) {
+    webapps::ShortcutInfo info(url);
+    info.manifest_id = url;
+    info.user_title = u"Test App";
+    info.name = u"Test App";
+    info.short_name = u"Test";
+    info.display = blink::mojom::DisplayMode::kStandalone;
+    info.splash_image_url = url.Resolve(kBestSplashIconUrl);
+    return info;
+  }
+
+  void CallOnFinishedInstall(WebApkInstallService* service,
+                             base::WeakPtr<content::WebContents> web_contents,
+                             const webapps::ShortcutInfo& shortcut_info,
+                             const SkBitmap& primary_icon,
+                             webapps::WebApkInstallResult result) {
+    service->OnFinishedInstall(web_contents, shortcut_info, primary_icon,
+                               result,
+                               /*relax_updates=*/false,
+                               /*webapk_package_name=*/"");
+  }
+
+  int victim_splash_requests() const { return victim_splash_requests_.load(); }
+
  private:
   // Sets default configuration for running WebApkInstaller.
   void SetDefaults() {
@@ -321,10 +350,15 @@ class WebApkInstallerBrowserTest : public AndroidBrowserTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleWebApkRequest(
       const net::test_server::HttpRequest& request) {
+    if (request.relative_url.starts_with("/victim_splash.png")) {
+      victim_splash_requests_++;
+    }
     return (request.relative_url == kServerUrl)
                ? webapk_response_builder_.Run()
                : std::unique_ptr<net::test_server::HttpResponse>();
   }
+
+  std::atomic<int> victim_splash_requests_{0};
 
   // Builds response to the WebAPK creation request.
   WebApkResponseBuilder webapk_response_builder_;
@@ -536,4 +570,85 @@ IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
 
   // Clean up
   base::DeletePathRecursively(outer_file_path);
+}
+
+// Tests that ShortcutHelper::AddToLauncherWithSkBitmap sanitizes a cross-origin
+// WebContents and does not record UKM or fetch splash icons for the navigated
+// origin.
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       AddToLauncherSanitizesCrossOriginWebContents) {
+  GURL victim_url = embedded_test_server()->GetURL("victim.com", "/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), victim_url));
+
+  webapps::ShortcutInfo cross_origin_info =
+      CreateValidShortcutInfo(GURL("https://attacker.com/index.html"));
+  // Point the splash image URL to a path on the victim origin to simulate the
+  // confused-deputy attack scenario from b/540049672.
+  cross_origin_info.splash_image_url = victim_url.Resolve("/victim_splash.png");
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // With a cross-origin WebContents, the pointer is sanitized to nullptr so no
+  // UKM entry is recorded and no splash icon request is sent to the victim.
+  ShortcutHelper::AddToLauncherWithSkBitmap(
+      web_contents(), cross_origin_info,
+      gfx::test::CreateBitmap(1, SK_ColorRED),
+      webapps::InstallableStatusCode::WEBAPK_INSTALL_FAILED);
+  EXPECT_TRUE(ukm_recorder.GetEntries("Webapp.AddToHomeScreen", {}).empty());
+  EXPECT_EQ(0, victim_splash_requests());
+
+  // With a same-origin WebContents, the pointer is retained and UKM is
+  // recorded.
+  webapps::ShortcutInfo same_origin_info = CreateValidShortcutInfo(victim_url);
+  ShortcutHelper::AddToLauncherWithSkBitmap(
+      web_contents(), same_origin_info, gfx::test::CreateBitmap(1, SK_ColorRED),
+      webapps::InstallableStatusCode::WEBAPK_INSTALL_FAILED);
+  EXPECT_EQ(1u, ukm_recorder.GetEntries("Webapp.AddToHomeScreen", {}).size());
+}
+
+// Tests that ShortcutHelper::AddToLauncherWithSkBitmap handles nullptr
+// WebContents safely without crashing or recording UKM.
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       AddToLauncherHandlesNullWebContents) {
+  webapps::ShortcutInfo shortcut_info =
+      CreateValidShortcutInfo(GURL("https://example.com/index.html"));
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  ShortcutHelper::AddToLauncherWithSkBitmap(
+      /*web_contents=*/nullptr, shortcut_info,
+      gfx::test::CreateBitmap(1, SK_ColorRED),
+      webapps::InstallableStatusCode::WEBAPK_INSTALL_FAILED);
+  EXPECT_TRUE(ukm_recorder.GetEntries("Webapp.AddToHomeScreen", {}).empty());
+}
+
+// Tests that WebApkInstallService::OnFinishedInstall on failure triggers
+// shortcut fallback and does not leak a navigated cross-origin WebContents.
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       OnFinishedInstallFallbackSanitizesNavigatedWebContents) {
+  GURL victim_url = embedded_test_server()->GetURL("victim.com", "/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), victim_url));
+
+  webapps::ShortcutInfo cross_origin_info =
+      CreateValidShortcutInfo(GURL("https://attacker.com/index.html"));
+  cross_origin_info.splash_image_url = victim_url.Resolve("/victim_splash.png");
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto* install_service =
+      WebApkInstallServiceFactory::GetForBrowserContext(profile());
+  CallOnFinishedInstall(install_service, web_contents()->GetWeakPtr(),
+                        cross_origin_info,
+                        gfx::test::CreateBitmap(1, SK_ColorRED),
+                        webapps::WebApkInstallResult::SERVER_ERROR);
+  EXPECT_TRUE(ukm_recorder.GetEntries("Webapp.AddToHomeScreen", {}).empty());
+  EXPECT_EQ(0, victim_splash_requests());
+
+  // With a same-origin WebContents, UKM is recorded.
+  webapps::ShortcutInfo same_origin_info = CreateValidShortcutInfo(victim_url);
+  CallOnFinishedInstall(install_service, web_contents()->GetWeakPtr(),
+                        same_origin_info,
+                        gfx::test::CreateBitmap(1, SK_ColorRED),
+                        webapps::WebApkInstallResult::SERVER_ERROR);
+  EXPECT_EQ(1u, ukm_recorder.GetEntries("Webapp.AddToHomeScreen", {}).size());
 }

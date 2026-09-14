@@ -62,6 +62,7 @@ source_set("android_browsertests") {
     ":webapk_sources",
     "//base/test:test_support",
     "//chrome/browser/android",
+    "//chrome/browser/android:shortcut_helper",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/test/base:android_browser_test",

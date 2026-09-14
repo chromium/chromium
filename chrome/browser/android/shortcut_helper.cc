@@ -5,6 +5,7 @@
 #include "chrome/browser/android/shortcut_helper.h"
 
 #include <jni.h>
+
 #include <limits>
 #include <string>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "base/uuid.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/manifest_icon_downloader.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/android/color_utils_android.h"
@@ -50,12 +52,18 @@ void AddWebappWithSkBitmap(content::WebContents* web_contents,
       ui::OptionalSkColorToJavaColor(info.theme_color),
       ui::OptionalSkColorToJavaColor(info.background_color));
 
+  if (!web_contents) {
+    return;
+  }
+
   // Start downloading the splash image in parallel with the app install.
   content::ManifestIconDownloader::Download(
       web_contents, info.splash_image_url, info.ideal_splash_image_size_in_px,
       info.minimum_splash_image_size_in_px,
       /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
-      base::BindOnce(&ShortcutHelper::StoreWebappSplashImage, webapp_id));
+      base::BindOnce(&ShortcutHelper::StoreWebappSplashImage, webapp_id),
+      /* square_only= */ true,
+      web_contents->GetPrimaryMainFrame()->GetGlobalId());
 }
 
 // Adds a shortcut which opens in a browser tab to the launcher.
@@ -96,13 +104,21 @@ void ShortcutHelper::AddToLauncherWithSkBitmap(
     const webapps::ShortcutInfo& info,
     const SkBitmap& icon_bitmap,
     webapps::InstallableStatusCode installable_status) {
-  RecordAddToHomeScreenUKM(web_contents, info, installable_status);
+  content::WebContents* same_origin_web_contents =
+      (web_contents && web_contents->GetPrimaryMainFrame()
+                           ->GetLastCommittedOrigin()
+                           .IsSameOriginWith(info.url))
+          ? web_contents
+          : nullptr;
+
+  RecordAddToHomeScreenUKM(same_origin_web_contents, info, installable_status);
 
   std::string webapp_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   if (info.display == blink::mojom::DisplayMode::kStandalone ||
       info.display == blink::mojom::DisplayMode::kFullscreen ||
       info.display == blink::mojom::DisplayMode::kMinimalUi) {
-    AddWebappWithSkBitmap(web_contents, info, webapp_id, icon_bitmap);
+    AddWebappWithSkBitmap(same_origin_web_contents, info, webapp_id,
+                          icon_bitmap);
     return;
   }
   AddShortcutWithSkBitmap(info, webapp_id, icon_bitmap);

@@ -139,6 +139,8 @@ class WebApkInstallService : public KeyedService {
       bool is_primary_icon_maskable,
       webapps::WebApkInstallResult result);
 
+  friend class WebApkInstallerBrowserTest;
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   // In progress installs's id.

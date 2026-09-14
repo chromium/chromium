@@ -24,8 +24,10 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "url/origin.h"
 
 WebApkInstallService::WebApkInstallService(
     content::BrowserContext* browser_context)
@@ -112,19 +114,26 @@ void WebApkInstallService::OnFinishedInstall(
     const std::string& webapk_package_name) {
   install_ids_.erase(shortcut_info.manifest_id);
 
+  bool is_same_origin =
+      web_contents && web_contents->GetPrimaryMainFrame()
+                          ->GetLastCommittedOrigin()
+                          .IsSameOriginWith(shortcut_info.url);
+
   bool show_failure_notification = base::FeatureList::IsEnabled(
       webapps::features::kWebApkInstallFailureNotification);
   HandleFinishInstallNotificationsAndMaybeLaunch(
-      web_contents.get(), shortcut_info.manifest_id, shortcut_info.url,
-      shortcut_info.short_name, primary_icon,
+      is_same_origin ? web_contents.get() : nullptr, shortcut_info.manifest_id,
+      shortcut_info.url, shortcut_info.short_name, primary_icon,
       shortcut_info.is_primary_icon_maskable, result, webapk_package_name,
       show_failure_notification);
 
   // If the app was successfully installed, we need to notify the app banner
   // manager so that the installability status is reflected elsewhere in the UI.
-  if (result == webapps::WebApkInstallResult::SUCCESS && web_contents) {
-    webapps::AppBannerManager::FromWebContents(web_contents.get())
-        ->OnInstall(shortcut_info.display, true);
+  if (result == webapps::WebApkInstallResult::SUCCESS && is_same_origin) {
+    auto* app_banner_manager =
+        webapps::AppBannerManager::FromWebContents(web_contents.get());
+    CHECK(app_banner_manager);
+    app_banner_manager->OnInstall(shortcut_info.display, true);
   }
 
   if (show_failure_notification) {
@@ -137,13 +146,14 @@ void WebApkInstallService::OnFinishedInstall(
   // this one is still queued (and hence might succeed in the future).
   if (result != webapps::WebApkInstallResult::SUCCESS &&
       result != webapps::WebApkInstallResult::PROBABLE_FAILURE) {
-    if (!web_contents)
-      return;
-
+    // Pass the WebContents pointer if still on the same origin (or nullptr if
+    // destroyed or navigated away). ShortcutHelper::AddToLauncherWithSkBitmap
+    // will also verify same-origin as defense-in-depth before initiating splash
+    // image download or recording UKM.
     // TODO(crbug.com/40584062): Support maskable icons here.
     ShortcutHelper::AddToLauncherWithSkBitmap(
-        web_contents.get(), shortcut_info, primary_icon,
-        webapps::InstallableStatusCode::WEBAPK_INSTALL_FAILED);
+        is_same_origin ? web_contents.get() : nullptr, shortcut_info,
+        primary_icon, webapps::InstallableStatusCode::WEBAPK_INSTALL_FAILED);
   }
 }
 
