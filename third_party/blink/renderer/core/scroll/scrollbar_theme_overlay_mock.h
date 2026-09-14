@@ -64,6 +64,12 @@ class CORE_EXPORT ScrollbarThemeOverlayMock
     return ThumbThickness(scrollbar.ScaleFromDIP(), EScrollbarWidth::kAuto);
   }
 
+  SkColor4f ThumbColor(const Scrollbar& scrollbar) const override {
+    return scrollbar.ScrollbarThumbColor()
+        .value_or(Color::FromSkColor4f({0.5f, 0.5f, 0.5f, 0.5f}))
+        .toSkColor4f();
+  }
+
  private:
   bool IsMockTheme() const final { return true; }
 

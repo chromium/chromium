@@ -174,23 +174,6 @@ void ScrollbarThemeFluent::PaintButton(const PaintInfo& paint_info,
       UsesOverlayScrollbars() ? InsetButtonRect(scrollbar, rect, part) : rect,
       part);
 }
-WebThemeEngine::ScrollbarThumbExtraParams
-ScrollbarThemeFluent::BuildScrollbarThumbExtraParams(
-    const Scrollbar& scrollbar) const {
-  WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
-  if (scrollbar.ScrollbarThumbColor().has_value()) {
-    scrollbar_thumb.thumb_color =
-        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
-  }
-  if (scrollbar.ScrollbarTrackColor().has_value()) {
-    scrollbar_thumb.track_color =
-        scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
-  }
-  scrollbar_thumb.is_thumb_minimal_mode =
-      scrollbar.IsFluentOverlayScrollbarMinimalMode();
-  scrollbar_thumb.is_web_test = WebTestSupport::IsRunningWebTest();
-  return scrollbar_thumb;
-}
 
 gfx::Rect ScrollbarThemeFluent::InsetTrackRect(const Scrollbar& scrollbar,
                                                gfx::Rect rect) const {

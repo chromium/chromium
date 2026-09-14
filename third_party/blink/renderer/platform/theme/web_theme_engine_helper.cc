@@ -58,7 +58,6 @@ WebThemeEngineHelper::AndroidScrollbarStyle() {
         WebThemeEngine::ScrollbarStyle, desktop_style,
         ({/*thumb_thickness=*/8,
           /*scrollbar_margin=*/4,
-          /*color=*/{0.5f, 0.5f, 0.5f, 0.5f},
           /*fade_out_delay=*/ui::GetOverlayScrollbarFadeDelay(),
           /*fade_out_duration=*/ui::GetOverlayScrollbarFadeDuration(),
           /*idle_thickness_scale=*/ui::kOverlayScrollbarIdleThicknessScale}));
@@ -66,8 +65,7 @@ WebThemeEngineHelper::AndroidScrollbarStyle() {
   }
   DEFINE_STATIC_LOCAL(WebThemeEngine::ScrollbarStyle, style,
                       ({/*thumb_thickness=*/4,
-                        /*scrollbar_margin=*/0,
-                        /*color=*/{0.5f, 0.5f, 0.5f, 0.5f}}));
+                        /*scrollbar_margin=*/0}));
   return style;
 }
 

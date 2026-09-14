@@ -124,12 +124,14 @@ SkColor NativeThemeMobile::GetControlColor(
       return dark_mode ? SkColorSetRGB(0x55, 0x55, 0x55)
                        : SkColorSetRGB(0xA3, 0xA3, 0xA3);
     case kScrollbarCornerControlColorId:
+      // Scrollbar corners are not used for overlay scrollbars.
+      NOTREACHED();
     case kScrollbarTrack:
+      return SK_ColorTRANSPARENT;
     case kScrollbarThumb:
     case kScrollbarThumbPressed:
     case kScrollbarThumbHovered:
-      // These colors are unused because Android does not paint scrollbars.
-      NOTREACHED();
+      return SkColorSetARGB(0x80, 0x80, 0x80, 0x80);
     case kButtonBorder:
       return dark_mode ? SkColorSetRGB(0x6B, 0x6B, 0x6B)
                        : SkColorSetRGB(0x76, 0x76, 0x76);

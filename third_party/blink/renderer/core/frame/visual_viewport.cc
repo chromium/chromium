@@ -40,6 +40,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -67,6 +68,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
@@ -74,6 +76,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -1256,9 +1259,15 @@ void VisualViewport::ScrollbarColorChanged() {
 }
 
 void VisualViewport::UpdateScrollbarColor(cc::SolidColorScrollbarLayer& layer) {
-  auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
+  const auto* color_provider = GetPage().GetColorProviderForPainting(
+      UsedColorSchemeScrollbars(), GetPage().GetSettings().GetInForcedColors());
+  WebThemeEngine::ExtraParams params =
+      WebThemeEngine::ScrollbarThumbExtraParams();
+  Color default_color = Color::FromSkColor4f(
+      WebThemeEngineHelper::GetNativeThemeEngine()->GetScrollbarThumbColor(
+          WebThemeEngine::kStateNormal, &params, color_provider));
   layer.SetColor(
-      CSSScrollbarThumbColor().value_or(theme.DefaultColor()).toSkColor4f());
+      CSSScrollbarThumbColor().value_or(default_color).toSkColor4f());
 }
 
 }  // namespace blink

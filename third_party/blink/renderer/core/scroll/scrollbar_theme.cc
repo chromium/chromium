@@ -31,6 +31,7 @@
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
@@ -43,11 +44,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/color/color_provider.h"
-
-#if !BUILDFLAG(IS_MAC)
-#include "third_party/blink/public/platform/web_theme_engine.h"
-#endif
 
 namespace blink {
 
@@ -335,6 +333,32 @@ void ScrollbarTheme::PaintTrackAndButtons(const PaintInfo& paint_info,
     track_rect.Offset(rect.origin() - scrollbar.Location());
     PaintTickmarks(paint_info, scrollbar, track_rect);
   }
+}
+
+WebThemeEngine::ScrollbarThumbExtraParams
+ScrollbarTheme::BuildScrollbarThumbExtraParams(
+    const Scrollbar& scrollbar) const {
+  WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    scrollbar_thumb.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  }
+  if (scrollbar.ScrollbarTrackColor().has_value()) {
+    scrollbar_thumb.track_color =
+        scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
+  }
+  scrollbar_thumb.is_thumb_minimal_mode =
+      scrollbar.IsFluentOverlayScrollbarMinimalMode();
+  scrollbar_thumb.is_web_test = WebTestSupport::IsRunningWebTest();
+  return scrollbar_thumb;
+}
+
+SkColor4f ScrollbarTheme::ThumbColor(const Scrollbar& scrollbar) const {
+  CHECK(UsesSolidColorThumb() || IsSolidColor());
+  WebThemeEngine::ExtraParams params(BuildScrollbarThumbExtraParams(scrollbar));
+  return WebThemeEngineHelper::GetNativeThemeEngine()->GetScrollbarThumbColor(
+      scrollbar.GetStateForPart(kThumbPart), &params,
+      scrollbar.GetColorProvider(scrollbar.UsedColorScheme()));
 }
 
 }  // namespace blink

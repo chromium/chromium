@@ -1563,6 +1563,8 @@ component("platform") {
     "text/writing_mode_utils.h",
     "theme/web_theme_engine_conversions.cc",
     "theme/web_theme_engine_conversions.h",
+    "theme/web_theme_engine_default.cc",
+    "theme/web_theme_engine_default.h",
     "theme/web_theme_engine_helper.cc",
     "theme/web_theme_engine_helper.h",
     "timer.cc",
@@ -1897,11 +1899,6 @@ component("platform") {
     sources += [
       "theme/web_theme_engine_android.cc",
       "theme/web_theme_engine_android.h",
-    ]
-  } else {
-    sources += [
-      "theme/web_theme_engine_default.cc",
-      "theme/web_theme_engine_default.h",
     ]
   }
 
