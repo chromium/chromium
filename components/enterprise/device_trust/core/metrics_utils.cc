@@ -42,9 +42,10 @@ DTHandshakeResult ResponseToResult(const DeviceTrustResponse& response) {
     case DeviceTrustError::kFailedToCreateResponse:
       return DTHandshakeResult::kFailedToCreateResponse;
     case DeviceTrustError::kTooManyRequests:
-      // Admission failure: the request was rejected before the browser-server
-      // handshake began, so there is no handshake outcome to report. Callers
-      // must not log handshake metrics for local admission failures.
+    case DeviceTrustError::kUrlNotAllowed:
+      // Admission / policy failures: the request was rejected locally before
+      // the browser-server handshake began, so there is no handshake outcome
+      // to report. Callers must not log handshake metrics for these failures.
       NOTREACHED();
   }
 }

@@ -53,6 +53,8 @@ const std::string DeviceTrustErrorToString(DeviceTrustError error) {
       return errors::kFailedToCreateResponse;
     case DeviceTrustError::kTooManyRequests:
       return errors::kTooManyRequests;
+    case DeviceTrustError::kUrlNotAllowed:
+      return errors::kUrlNotAllowed;
   }
 }
 

@@ -46,6 +46,8 @@ TEST(CommonTypes, DeviceTrustErrors) {
             "failed_to_create_response");
   EXPECT_EQ(DeviceTrustErrorToString(DeviceTrustError::kTooManyRequests),
             "too_many_requests");
+  EXPECT_EQ(DeviceTrustErrorToString(DeviceTrustError::kUrlNotAllowed),
+            "url_not_allowed");
 }
 
 }  // namespace enterprise_connectors

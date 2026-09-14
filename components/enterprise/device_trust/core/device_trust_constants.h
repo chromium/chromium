@@ -27,6 +27,7 @@ extern const char kTimeout[];
 extern const char kFailedToParseChallenge[];
 extern const char kFailedToCreateResponse[];
 extern const char kTooManyRequests[];
+extern const char kUrlNotAllowed[];
 
 }  // namespace errors
 
