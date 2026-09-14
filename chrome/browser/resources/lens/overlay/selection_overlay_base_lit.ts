@@ -651,7 +651,7 @@ export abstract class SelectionOverlayBaseLitElement extends
     overlayBorderGlow.handlePostSelectionUpdated();
   }
 
-  private updateCanvasSize(containerWidth: number, containerHeight: number) {
+  protected updateCanvasSize(containerWidth: number, containerHeight: number) {
     // Set our own canvas size while preserving the canvas aspect ratio.
     const screenshotHeight =
         this.selectionElements.backgroundImageCanvas.height;

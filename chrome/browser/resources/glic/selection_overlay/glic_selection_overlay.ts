@@ -116,6 +116,64 @@ export class SelectionOverlayElementElement extends
     super.updated(changedProperties);
   }
 
+  // Overridden to log container and screenshot dimensions for diagnosing
+  // unexpected insets / margins (b/512915349). Unlike Lens Overlay, gPointer
+  // is tab-scoped and should never apply side panel margins or insets (unless
+  // the user resizes the browser window).
+  protected override updateCanvasSize(
+      containerWidth: number, containerHeight: number) {
+    super.updateCanvasSize(containerWidth, containerHeight);
+
+    const canvas = this.selectionElements.backgroundImageCanvas;
+    const screenshotWidth = canvas.width;
+    const screenshotHeight = canvas.height;
+    const dpr = window.devicePixelRatio;
+    const diffW = Math.abs(containerWidth - (screenshotWidth / dpr));
+    const diffH = Math.abs(containerHeight - (screenshotHeight / dpr));
+    const doesScreenshotFillContainer = diffW <= 2 && diffH <= 2;
+    const shouldApplyMargins =
+        !doesScreenshotFillContainer || this.sidePanelOpened;
+
+    // Diagnostics for b/512915349: Check the logged values against each
+    // hypothesis:
+    //
+    // Hypothesis 1 (Mojo/State): sidePanelOpened=true
+    // Proves: isSidePanelOpen was erroneously passed as true via Mojo or
+    // setSidePanelOpened() was called, unconditionally applying margins.
+    //
+    // Hypothesis 2 (Fractional DPI): 2px < diffW/diffH <= 4px
+    // Why 2px-4px: SCREENSHOT_RESIZE_TOLERANCE_PIXELS is 2px. Converting
+    // physical pixels to DIPs (physical / devicePixelRatio) on
+    // fractional/Retina displays introduces floating-point and rounding
+    // jitter across layers (Blink layout vs compositor surface vs WebUI).
+    // Differences between 2.01px and ~4px prove subpixel rounding noise
+    // barely crossed the strict 2px threshold, rather than a real layout
+    // shift.
+    //
+    // Hypothesis 3 (Late Resize): diffW >> 5px or changing container dims
+    // Why >> 5px: Differentiates real layout changes from rounding noise
+    // (<=4px). A side panel animation frame shifts layout by 20-60px per
+    // frame (total panel is ~400px), and window resizes shift by
+    // dozens/hundreds of pixels. Diffs >> 5px prove container resized AFTER
+    // the screenshot was captured.
+    //
+    // Hypothesis 4 (Top Chrome/Toolbar): diffW <= 2px, diffH >> 2px (e.g.
+    // 36-72px) Proves: Height mismatch from UI elements (e.g. download shelf,
+    // bookmark bar, or tabstrip bounds offset in C++ capture).
+    if (shouldApplyMargins) {
+      console.error(
+          `[SelectionOverlayDebug] ` +
+          `container=${containerWidth}x${containerHeight}, ` +
+          `screenshot=${screenshotWidth}x${screenshotHeight}, ` +
+          `dpr=${dpr}, ` +
+          `diffW=${diffW.toFixed(2)}, diffH=${diffH.toFixed(2)}, ` +
+          `doesScreenshotFillContainer=${doesScreenshotFillContainer}, ` +
+          `sidePanelOpened=${this.sidePanelOpened}, ` +
+          `isResized=${this.isResized}, ` +
+          `shouldApplyMargins=${shouldApplyMargins}`);
+    }
+  }
+
   override firstUpdated() {
     super.firstUpdated();
     GLIC_BORDER_GLOW_COLORS.forEach((color, index) => {
