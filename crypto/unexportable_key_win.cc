@@ -7,7 +7,6 @@
 #include <ncrypt.h>
 #include <tbs.h>
 
-#include <algorithm>
 #include <array>
 #include <concepts>
 #include <functional>
@@ -18,7 +17,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/bit_cast.h"
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -192,19 +190,6 @@ SecurityStatusOr<void> SetNCryptProperty(NCRYPT_HANDLE handle,
       handle, property, reinterpret_cast<PBYTE>(&value), sizeof(value), 0);
   return SUCCEEDED(status) ? SecurityStatusOr<void>()
                            : base::unexpected(status);
-}
-
-// Reads the first sizeof(T) bytes, bit_casts them as an instance of T and
-// returns it, leaving the remainder in `reader`. Fails if `reader.remaining()`
-// is too small.
-template <typename T>
-  requires(std::is_trivially_copyable_v<T>)
-std::optional<T> Read(base::SpanReader<const uint8_t>& reader) {
-  static constexpr size_t kSize = sizeof(T);
-  ASSIGN_OR_RETURN(base::span span, reader.Read<kSize>());
-  std::array<uint8_t, kSize> arr;
-  std::ranges::copy(span, arr.begin());
-  return base::bit_cast<T>(arr);
 }
 
 // Logs `status` and `selected_algorithm` to an error histogram capturing that
@@ -381,7 +366,8 @@ std::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
   // public key itself.
   // https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/ns-bcrypt-bcrypt_ecckey_blob
   base::SpanReader reader(base::span{pub_key});
-  ASSIGN_OR_RETURN(const auto header, Read<BCRYPT_ECCKEY_BLOB>(reader));
+  ASSIGN_OR_RETURN(const auto header,
+                   reader.ReadNativeEndian<BCRYPT_ECCKEY_BLOB>());
   base::span key_bytes = reader.remaining_span();
   // |cbKey| is documented[1] as "the length, in bytes, of the key". It is
   // not. For ECDSA public keys it is the length of a field element.
@@ -417,7 +403,8 @@ std::optional<std::vector<uint8_t>> GetRSASPKI(NCRYPT_KEY_HANDLE key) {
   // key itself.
   // https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/ns-bcrypt-bcrypt_rsakey_blob
   base::SpanReader reader(base::span{pub_key});
-  ASSIGN_OR_RETURN(const auto header, Read<BCRYPT_RSAKEY_BLOB>(reader));
+  ASSIGN_OR_RETURN(const auto header,
+                   reader.ReadNativeEndian<BCRYPT_RSAKEY_BLOB>());
   base::span key_bytes = reader.remaining_span();
   if (header.Magic != static_cast<ULONG>(BCRYPT_RSAPUBLIC_MAGIC)) {
     return std::nullopt;
@@ -1014,14 +1001,12 @@ std::optional<AttestationStatement> ParseWebAuthnAttestationStatement(
     base::span<const uint8_t> claim_blob) {
   // Magic value for NCRYPT_PCP_TPM_WEB_AUTHN_ATTESTATION_STATEMENT ('KAWA').
   static constexpr uint32_t kPcpTpmWebAuthnAttestationMagic = 0x4B415741;
+  using Header = NCRYPT_PCP_TPM_WEB_AUTHN_ATTESTATION_STATEMENT;
   base::SpanReader reader(claim_blob);
-  ASSIGN_OR_RETURN(
-      const auto header,
-      Read<NCRYPT_PCP_TPM_WEB_AUTHN_ATTESTATION_STATEMENT>(reader));
+  ASSIGN_OR_RETURN(const auto header, reader.ReadNativeEndian<Header>());
 
   if (header.Magic != kPcpTpmWebAuthnAttestationMagic || header.Version != 1 ||
-      header.HeaderSize !=
-          sizeof(NCRYPT_PCP_TPM_WEB_AUTHN_ATTESTATION_STATEMENT)) {
+      header.HeaderSize != sizeof(Header)) {
     return std::nullopt;
   }
 

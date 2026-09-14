@@ -277,6 +277,24 @@ static_assert((SpanReader(span(kConstArray).subspan(1u))
                    .ReadEnumNativeEndian<TestEnum16>() ==
                TestEnum16::kValueLittle));
 
+struct ConstexprStruct {
+  uint8_t a;
+  uint8_t b;
+  uint16_t c;
+  bool operator==(const ConstexprStruct&) const = default;
+};
+
+static_assert(
+    (SpanReader(span(kConstArray)).ReadNativeEndian<ConstexprStruct>() ==
+     ConstexprStruct{.a = 1, .b = 2, .c = 0x0403}));
+
+static_assert((SpanReader(span(kConstArray)).ReadNativeEndian<uint32_t>() ==
+               0x04030201u));
+
+static_assert(!SpanReader(span(kConstArray).subspan(2u))
+                   .ReadNativeEndian<ConstexprStruct>()
+                   .has_value());
+
 TEST(SpanReaderTest, Construct) {
   std::array<const int, 5u> kArray = {1, 2, 3, 4, 5};
 
@@ -895,6 +913,80 @@ TEST(SpanReaderTest, ReadEnum_TooSmall) {
   EXPECT_FALSE(r.ReadEnumLittleEndian<MyEnum4>().has_value());
   EXPECT_FALSE(r.ReadEnumNativeEndian<MyEnum4>().has_value());
   EXPECT_EQ(r.remaining(), 2u);
+}
+
+struct TestHeader {
+  uint32_t magic;
+  uint16_t version;
+  uint16_t flags;
+  bool operator==(const TestHeader&) const = default;
+};
+
+struct TestPayload {
+  uint8_t a;
+  uint8_t b;
+  uint16_t c;
+  bool operator==(const TestPayload&) const = default;
+};
+
+TEST(SpanReaderTest, ReadNativeEndian) {
+  const std::array<uint8_t, 13u> kArray = {
+      0x01, 0x02, 0x03, 0x04,  // magic: 0x04030201
+      0x05, 0x06,              // version: 0x0605
+      0x07, 0x08,              // flags: 0x0807
+      0x09,                    // a: 0x09
+      0x0a,                    // b: 0x0a
+      0x0b, 0x0c,              // c: 0x0c0b
+      0x0d,                    // trailing byte
+  };
+
+  auto r = SpanReader(span(kArray));
+  EXPECT_EQ(r.num_read(), 0u);
+  EXPECT_EQ(r.remaining(), 13u);
+
+  // Read the 8-byte header struct.
+  EXPECT_THAT(r.ReadNativeEndian<TestHeader>(), Optional(TestHeader{
+                                                    .magic = 0x04030201u,
+                                                    .version = 0x0605u,
+                                                    .flags = 0x0807u,
+                                                }));
+  EXPECT_EQ(r.num_read(), 8u);
+  EXPECT_EQ(r.remaining(), 5u);
+
+  // Read the 4-byte payload struct.
+  EXPECT_THAT(r.ReadNativeEndian<TestPayload>(), Optional(TestPayload{
+                                                     .a = 0x09,
+                                                     .b = 0x0a,
+                                                     .c = 0x0c0bu,
+                                                 }));
+  EXPECT_EQ(r.num_read(), 12u);
+  EXPECT_EQ(r.remaining(), 1u);
+
+  // Reading another 4-byte struct fails because only 1 byte remains.
+  EXPECT_FALSE(r.ReadNativeEndian<TestPayload>().has_value());
+  EXPECT_EQ(r.num_read(), 12u);
+  EXPECT_EQ(r.remaining(), 1u);
+
+  // Read the remaining primitive uint8_t.
+  EXPECT_THAT(r.ReadNativeEndian<uint8_t>(), Optional(uint8_t{0x0d}));
+  EXPECT_EQ(r.num_read(), 13u);
+  EXPECT_EQ(r.remaining(), 0u);
+  EXPECT_FALSE(r.ReadNativeEndian<uint8_t>().has_value());
+
+  // Mutable byte span.
+  std::array<uint8_t, 4u> mutable_array = {0x10, 0x20, 0x30, 0x40};
+  auto mutable_reader = SpanReader(span(mutable_array));
+  EXPECT_THAT(mutable_reader.ReadNativeEndian<uint32_t>(),
+              Optional(0x40302010u));
+}
+
+TEST(SpanReaderTest, ReadNativeEndian_TooSmall) {
+  const std::array<uint8_t, 3u> kArray = {0x01, 0x02, 0x03};
+  auto r = SpanReader(span(kArray));
+  EXPECT_FALSE(r.ReadNativeEndian<TestPayload>().has_value());
+  EXPECT_FALSE(r.ReadNativeEndian<uint32_t>().has_value());
+  EXPECT_EQ(r.num_read(), 0u);
+  EXPECT_EQ(r.remaining(), 3u);
 }
 
 }  // namespace

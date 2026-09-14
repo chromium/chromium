@@ -5,10 +5,12 @@
 #ifndef BASE_CONTAINERS_SPAN_READER_H_
 #define BASE_CONTAINERS_SPAN_READER_H_
 
+#include <array>
 #include <concepts>
 #include <optional>
 #include <type_traits>
 
+#include "base/bit_cast.h"
 #include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
 #include "base/numerics/byte_conversions.h"
@@ -230,6 +232,20 @@ class SpanReader<T> : public SpanReaderBase<T> {
 
 #undef BASE_SPANREADER_READ_NON_INT
 #undef BASE_SPANREADER_BOOL_FROM_OPTIONAL
+
+  // Reads a trivially copyable object of type `U` from the span using native
+  // endianness. It advances the internal span by `sizeof(U)` and returns
+  // `std::optional<U>`, which will be `std::nullopt` if there are not enough
+  // bytes.
+  template <typename U>
+    requires(std::is_trivially_copyable_v<U>)
+  constexpr std::optional<U> ReadNativeEndian() {
+    return this->template Read<sizeof(U)>().transform([](auto bytes) {
+      std::array<uint8_t, sizeof(U)> arr;
+      base::span(arr).copy_from(bytes);
+      return base::bit_cast<U>(arr);
+    });
+  }
 };
 
 template <typename ElementType, size_t Extent, typename InternalPtrType>
