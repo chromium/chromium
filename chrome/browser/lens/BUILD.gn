@@ -131,43 +131,26 @@ if (is_android) {
   }
 }
 
-import("//components/optimization_guide/features.gni")
-
-source_set("lens_identity_delegation_helper") {
+source_set("lens_sapisid_generator") {
   sources = [
-    "lens_identity_delegation_helper.cc",
-    "lens_identity_delegation_helper.h",
+    "lens_sapisid_generator.cc",
+    "lens_sapisid_generator.h",
   ]
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//chrome/browser/profiles:profile",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core:optimization_guide_library_holder",
-    "//components/signin/public/identity_manager",
-    "//content/public/browser",
-    "//google_apis/common",
   ]
-
-  if (build_with_internal_optimization_guide && !is_android) {
-    data_deps = [
-      "//components/optimization_guide/internal:optimization_guide_internal",
-    ]
-  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "lens_identity_delegation_helper_unittest.cc" ]
+  sources = [ "lens_sapisid_generator_unittest.cc" ]
   deps = [
-    ":lens_identity_delegation_helper",
+    ":lens_sapisid_generator",
     "//base",
-    "//base/test:test_support",
     "//build:branding_buildflags",
-    "//chrome/test:test_support",
-    "//components/signin/public/identity_manager:test_support",
-    "//content/public/browser",
-    "//content/test:test_support",
     "//testing/gtest",
   ]
 }

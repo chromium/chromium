@@ -12,15 +12,17 @@ IOSContextualSearchService::IOSContextualSearchService(
     TemplateURLService* template_url_service,
     variations::VariationsClient* variations_client,
     version_info::Channel channel,
-    const std::string& locale)
-    : contextual_search::ContextualSearchService(identity_manager,
-                                                 url_loader_factory,
-                                                 template_url_service,
-                                                 variations_client,
-                                                 channel,
-                                                 locale,
-                                                 /*tab_validator=*/nullptr,
-                                                 GetAuthHeadersCallback()) {
+    const std::string& locale,
+    GetAuthHeadersCallback get_auth_headers_callback)
+    : contextual_search::ContextualSearchService(
+          identity_manager,
+          url_loader_factory,
+          template_url_service,
+          variations_client,
+          channel,
+          locale,
+          /*tab_validator=*/nullptr,
+          std::move(get_auth_headers_callback)) {
   // TODO(crbug.com/514803722): Implement and pass TabValidator for iOS.
 }
 

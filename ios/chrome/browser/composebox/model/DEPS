@@ -2,7 +2,10 @@ include_rules = [
   # keep-sorted start
   "+components/contextual_search",
   "+components/contextual_search/internal/ios/composebox_query_controller_ios.h",
+  "+components/google/core/common/google_util.h",
+  "+components/lens/lens_identity_delegation_helper.h",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/variations/model/client",
+  "+ios/public/provider/chrome/browser/lens/lens_api.h",
   # keep-sorted end
 ]

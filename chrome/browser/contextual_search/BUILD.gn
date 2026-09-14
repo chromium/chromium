@@ -14,13 +14,14 @@ source_set("contextual_search") {
 
   deps = [
     "//chrome/browser:browser_process",
-    "//chrome/browser/lens:lens_identity_delegation_helper",
+    "//chrome/browser/lens:lens_sapisid_generator",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/signin",
     "//chrome/common:channel_info",
     "//components/contextual_search:public",
     "//components/contextual_tasks/public",
+    "//components/lens:lens_identity_delegation_helper",
     "//components/tabs:public",
     "//components/url_deduplication",
     "//components/version_info",

@@ -13,7 +13,9 @@ source_set("model") {
     "//components/application_locale_storage",
     "//components/contextual_search:public",
     "//components/contextual_search/internal/ios",
+    "//components/google/core/common",
     "//components/keyed_service/core",
+    "//components/lens:lens_identity_delegation_helper",
     "//components/variations",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/search_engines/model",
@@ -24,6 +26,7 @@ source_set("model") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/variations/model/client",
     "//ios/chrome/common",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/web/public",
     "//services/network/public/cpp",
   ]

@@ -26,7 +26,7 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
-#include "chrome/browser/lens/lens_identity_delegation_helper.h"
+#include "chrome/browser/lens/lens_sapisid_generator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
@@ -39,6 +39,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_identity_delegation_helper.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_payload_construction.h"
@@ -53,6 +54,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/storage_partition.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -2131,7 +2133,10 @@ LensOverlayQueryController::CreateOAuthHeadersAndContinue(
     // The Lens overlay flow always uses the default (first) signed-in user in
     // the cookie jar (authuser=0).
     lens::FetchIdentityDelegationHeaders(
-        profile_, identity_manager_, google_util::kGoogleHomepageURL,
+        profile_->GetDefaultStoragePartition()
+            ->GetCookieManagerForBrowserProcess(),
+        identity_manager_, google_util::kGoogleHomepageURL,
+        base::BindRepeating(&lens::GenerateSapisidHash),
         /*authuser_index=*/0, std::move(callback));
     return nullptr;
   }

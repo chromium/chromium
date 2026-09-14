@@ -2,23 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lens/lens_identity_delegation_helper.h"
+#include "components/lens/lens_identity_delegation_helper.h"
 
-#include "base/compiler_specific.h"
+#include <algorithm>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/check.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
-#include "components/optimization_guide/core/optimization_guide_library_holder.h"
-#include "components/optimization_guide/optimization_guide_buildflags.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -44,6 +47,7 @@ void OnCookiesFetched(
     const std::string& email,
     const std::string& origin,
     size_t account_index,
+    lens::GenerateSapisidHashCallback generate_sapisid_hash_callback,
     base::OnceCallback<void(std::vector<std::string>)> callback,
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
@@ -63,9 +67,10 @@ void OnCookiesFetched(
     return;
   }
 
+  CHECK(generate_sapisid_hash_callback);
   base::Time now = base::Time::Now();
-  std::optional<std::string> auth_header =
-      lens::GenerateSapisidHash(email, sapisid_cookie->Value(), origin, now);
+  std::optional<std::string> auth_header = generate_sapisid_hash_callback.Run(
+      email, sapisid_cookie->Value(), origin, now);
 
   if (auth_header.has_value()) {
     headers.push_back("Authorization");
@@ -81,57 +86,14 @@ void OnCookiesFetched(
 
 namespace lens {
 
-DISABLE_CFI_DLSYM
-std::optional<std::string> GenerateSapisidHash(
-    const std::string& email,
-    const std::string& sapisid_cookie,
-    const std::string& origin,
-    base::Time timestamp) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
-    BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  optimization_guide::OptimizationGuideLibraryHolder* loader =
-      optimization_guide::OptimizationGuideLibraryHolder::GetInstance();
-  if (!loader) {
-    return std::nullopt;
-  }
-  typedef int (*GenerateFunc)(const char*, const char*, const char*, int64_t,
-                              char**);
-  typedef void (*FreeFunc)(char*);
-
-  GenerateFunc generate_func = reinterpret_cast<GenerateFunc>(
-      loader->GetFunctionPointer("GenerateSapisidHash"));
-  FreeFunc free_func =
-      reinterpret_cast<FreeFunc>(loader->GetFunctionPointer("FreeSapisidHash"));
-
-  if (!generate_func || !free_func) {
-    return std::nullopt;
-  }
-
-  char* out_hash = nullptr;
-  int result =
-      generate_func(email.c_str(), sapisid_cookie.c_str(), origin.c_str(),
-                    timestamp.InMillisecondsSinceUnixEpoch(), &out_hash);
-  if (result != 0 || !out_hash) {
-    if (out_hash) {
-      free_func(out_hash);
-    }
-    return std::nullopt;
-  }
-
-  std::string hash_str(out_hash);
-  free_func(out_hash);
-  return hash_str;
-#else
-  return std::nullopt;
-#endif
-}
-
 void FetchIdentityDelegationHeaders(
-    Profile* profile,
+    network::mojom::CookieManager* cookie_manager,
     signin::IdentityManager* identity_manager,
     const std::string& origin,
+    GenerateSapisidHashCallback generate_sapisid_hash_callback,
     std::optional<size_t> authuser_index,
     base::OnceCallback<void(std::vector<std::string>)> callback) {
+  CHECK(generate_sapisid_hash_callback);
   std::string canonical_origin =
       origin.empty() ? "" : url::Origin::Create(GURL(origin)).Serialize();
 
@@ -144,7 +106,7 @@ void FetchIdentityDelegationHeaders(
     std::move(callback).Run(std::move(headers));
   };
 
-  if (!profile || !identity_manager) {
+  if (!cookie_manager || !identity_manager) {
     return_signed_out_headers();
     return;
   }
@@ -204,14 +166,6 @@ void FetchIdentityDelegationHeaders(
       all_accounts[true_authuser_index];
 
   // Fetch cookies for google.com to get SAPISID.
-  network::mojom::CookieManager* cookie_manager =
-      profile->GetDefaultStoragePartition()
-          ->GetCookieManagerForBrowserProcess();
-  if (!cookie_manager) {
-    return_signed_out_headers();
-    return;
-  }
-
   // Use google.com as the GURL for cookie retrieval.
   GURL google_url("https://google.com");
   // We MUST use the selected account's email to generate the SAPISIDHASH.
@@ -222,6 +176,7 @@ void FetchIdentityDelegationHeaders(
       net::CookiePartitionKeyCollection(),
       base::BindOnce(&OnCookiesFetched, selected_account.raw_email,
                      canonical_origin, true_authuser_index,
+                     std::move(generate_sapisid_hash_callback),
                      std::move(callback)));
 }
 

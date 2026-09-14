@@ -145,9 +145,25 @@ mojom("lens_mojo") {
   ]
 }
 
+source_set("lens_identity_delegation_helper") {
+  sources = [
+    "lens_identity_delegation_helper.cc",
+    "lens_identity_delegation_helper.h",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//net",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "lens_identity_delegation_helper_unittest.cc",
     "lens_overlay_request_id_generator_unittest.cc",
     "lens_upload_chunker_unittest.cc",
     "lens_url_utils_unittest.cc",
@@ -155,11 +171,14 @@ source_set("unit_tests") {
 
   deps = [
     ":lens",
+    ":lens_identity_delegation_helper",
     "//base",
     "//base/test:test_support",
     "//components/base32",
     "//components/endpoint_fetcher",
+    "//components/signin/public/identity_manager:test_support",
     "//google_apis/common",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/lens_server_proto:lens_overlay_proto",

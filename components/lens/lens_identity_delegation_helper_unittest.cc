@@ -2,47 +2,75 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lens/lens_identity_delegation_helper.h"
+#include "components/lens/lens_identity_delegation_helper.h"
 
-#include "base/test/mock_callback.h"
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "build/branding_buildflags.h"
-#include "chrome/test/base/testing_profile.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "content/public/browser/storage_partition.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_renderer_host.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_options.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/test/test_cookie_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::ElementsAre;
-using ::testing::IsEmpty;
 
 namespace lens {
 
+namespace {
+
+class FakeCookieManager : public network::TestCookieManager {
+ public:
+  void SetCanonicalCookie(const net::CanonicalCookie& cookie,
+                          const GURL& source_url,
+                          const net::CookieOptions& cookie_options,
+                          SetCanonicalCookieCallback callback) override {
+    cookies_.push_back(cookie);
+    if (callback) {
+      std::move(callback).Run(net::CookieAccessResult());
+    }
+  }
+
+  void GetCookieList(
+      const GURL& url,
+      const net::CookieOptions& cookie_options,
+      const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
+      GetCookieListCallback callback) override {
+    net::CookieAccessResultList result;
+    for (const auto& cookie : cookies_) {
+      result.push_back({cookie, net::CookieAccessResult()});
+    }
+    std::move(callback).Run(result, {});
+  }
+
+ private:
+  std::vector<net::CanonicalCookie> cookies_;
+};
+
+GenerateSapisidHashCallback GetFakeGenerator() {
+  return base::BindRepeating(
+      [](const std::string& email, const std::string& sapisid_cookie,
+         const std::string& origin,
+         base::Time timestamp) -> std::optional<std::string> {
+        return "SAPISIDHASH 12345_fakehash";
+      });
+}
+
+}  // namespace
+
 class LensIdentityDelegationHelperTest : public testing::Test {
  protected:
-  LensIdentityDelegationHelperTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
-
-  void SetUp() override {
-    testing::Test::SetUp();
-    profile_ = std::make_unique<TestingProfile>();
-  }
-
-  void TearDown() override {
-    profile_.reset();
-    testing::Test::TearDown();
-  }
-
   void SetSapisidCookie(const std::string& value) {
-    base::test::TestFuture<net::CookieAccessResult> future;
     auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
         "SAPISID", value, ".google.com", "/", base::Time(), base::Time(),
         base::Time(), base::Time(), /*secure=*/true, /*httponly=*/false,
@@ -50,25 +78,23 @@ class LensIdentityDelegationHelperTest : public testing::Test {
         net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
         net::CookieSourceType::kHTTP);
 
-    profile_->GetDefaultStoragePartition()
-        ->GetCookieManagerForBrowserProcess()
-        ->SetCanonicalCookie(*cookie, GURL("https://google.com"),
-                             net::CookieOptions::MakeAllInclusive(),
-                             future.GetCallback());
-    EXPECT_TRUE(future.Get().status.IsInclude());
+    cookie_manager_.SetCanonicalCookie(*cookie, GURL("https://google.com"),
+                                       net::CookieOptions::MakeAllInclusive(),
+                                       base::DoNothing());
   }
 
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
+  base::test::TaskEnvironment task_environment_;
+  FakeCookieManager cookie_manager_;
   signin::IdentityTestEnvironment identity_test_env_;
 };
 
 TEST_F(LensIdentityDelegationHelperTest,
        FetchIdentityDelegationHeaders_SignedOut) {
   base::test::TestFuture<std::vector<std::string>> future;
-  FetchIdentityDelegationHeaders(
-      profile_.get(), identity_test_env_.identity_manager(),
-      "https://www.google.com", std::nullopt, future.GetCallback());
+  FetchIdentityDelegationHeaders(&cookie_manager_,
+                                 identity_test_env_.identity_manager(),
+                                 "https://www.google.com", GetFakeGenerator(),
+                                 std::nullopt, future.GetCallback());
 
   // Signed out: should only return Origin header.
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
@@ -79,11 +105,12 @@ TEST_F(LensIdentityDelegationHelperTest,
   base::test::TestFuture<std::vector<std::string>> future;
   // Pass an origin with trailing slash and path.
   FetchIdentityDelegationHeaders(
-      profile_.get(), identity_test_env_.identity_manager(),
-      "https://www.google.com/search?q=test/", std::nullopt,
+      &cookie_manager_, identity_test_env_.identity_manager(),
+      "https://www.google.com/search?q=test/", GetFakeGenerator(), std::nullopt,
       future.GetCallback());
 
-  // Origin should be normalized and canonicalized without trailing slash or path.
+  // Origin should be normalized and canonicalized without trailing slash or
+  // path.
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
 }
 
@@ -96,38 +123,13 @@ TEST_F(LensIdentityDelegationHelperTest,
       {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
 
   base::test::TestFuture<std::vector<std::string>> future;
-  FetchIdentityDelegationHeaders(
-      profile_.get(), identity_test_env_.identity_manager(),
-      "https://www.google.com", std::nullopt, future.GetCallback());
+  FetchIdentityDelegationHeaders(&cookie_manager_,
+                                 identity_test_env_.identity_manager(),
+                                 "https://www.google.com", GetFakeGenerator(),
+                                 std::nullopt, future.GetCallback());
 
   // Signed in but no cookie: should only return Origin header.
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
-}
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-TEST_F(LensIdentityDelegationHelperTest, GenerateSapisidHash_GoldenTest) {
-  // Use fixed inputs to verify the hash algorithm.
-  std::string email = "user@gmail.com";
-  std::string sapisid = "sapisid_cookie_value";
-  std::string origin = "https://www.google.com";
-  // 2026-06-12 12:00:00 UTC
-  base::Time timestamp;
-  ASSERT_TRUE(base::Time::FromUTCString("2026-06-12 12:00:00 UTC", &timestamp));
-
-  // Expected values for testing:
-  // timestamp_millis = 1781265600000
-  // hash_source = "user@gmail.com 1781265600000 sapisid_cookie_value
-  // https://www.google.com" SHA1(hash_source) = ... Expected output starts
-  // with: "SAPISIDHASH 1781265600000_"
-
-  std::optional<std::string> hash =
-      GenerateSapisidHash(email, sapisid, origin, timestamp);
-  ASSERT_TRUE(hash.has_value());
-
-  // Verify the exact string that is deterministically generated.
-  EXPECT_EQ(
-      hash.value(),
-      "SAPISIDHASH 1781265600000_9bd27681bae726e0f13c8da3f7ec536243912710_e");
 }
 
 TEST_F(LensIdentityDelegationHelperTest,
@@ -139,16 +141,17 @@ TEST_F(LensIdentityDelegationHelperTest,
   SetSapisidCookie("sapisid_value");
 
   base::test::TestFuture<std::vector<std::string>> future;
-  FetchIdentityDelegationHeaders(
-      profile_.get(), identity_test_env_.identity_manager(),
-      "https://www.google.com", std::nullopt, future.GetCallback());
+  FetchIdentityDelegationHeaders(&cookie_manager_,
+                                 identity_test_env_.identity_manager(),
+                                 "https://www.google.com", GetFakeGenerator(),
+                                 std::nullopt, future.GetCallback());
 
   std::vector<std::string> headers = future.Get();
   ASSERT_EQ(headers.size(), 6u);
   EXPECT_EQ(headers[0], "Origin");
   EXPECT_EQ(headers[1], "https://www.google.com");
   EXPECT_EQ(headers[2], "Authorization");
-  EXPECT_TRUE(headers[3].starts_with("SAPISIDHASH "));
+  EXPECT_EQ(headers[3], "SAPISIDHASH 12345_fakehash");
   EXPECT_EQ(headers[4], "X-Goog-AuthUser");
   EXPECT_EQ(headers[5], "0");  // Index 0 in cookie jar
 }
@@ -157,9 +160,7 @@ TEST_F(LensIdentityDelegationHelperTest,
        FetchIdentityDelegationHeaders_MultipleAccounts_PrimaryMatches) {
   // Primary is user2
   signin::SimpleAccountAvailabilityOptions options;
-
   options.primary_account_consent_level = signin::ConsentLevel::kSignin;
-
   options.gaia_id = GaiaId("gaia_id_2");
 
   identity_test_env_.MakeAccountAvailable("user2@gmail.com", options);
@@ -170,9 +171,10 @@ TEST_F(LensIdentityDelegationHelperTest,
   SetSapisidCookie("sapisid_value");
 
   base::test::TestFuture<std::vector<std::string>> future;
-  FetchIdentityDelegationHeaders(
-      profile_.get(), identity_test_env_.identity_manager(),
-      "https://www.google.com", std::nullopt, future.GetCallback());
+  FetchIdentityDelegationHeaders(&cookie_manager_,
+                                 identity_test_env_.identity_manager(),
+                                 "https://www.google.com", GetFakeGenerator(),
+                                 std::nullopt, future.GetCallback());
 
   std::vector<std::string> headers = future.Get();
   ASSERT_EQ(headers.size(), 6u);
@@ -190,9 +192,10 @@ TEST_F(LensIdentityDelegationHelperTest,
   SetSapisidCookie("sapisid_value");
 
   base::test::TestFuture<std::vector<std::string>> future;
-  FetchIdentityDelegationHeaders(
-      profile_.get(), identity_test_env_.identity_manager(),
-      "https://www.google.com", std::nullopt, future.GetCallback());
+  FetchIdentityDelegationHeaders(&cookie_manager_,
+                                 identity_test_env_.identity_manager(),
+                                 "https://www.google.com", GetFakeGenerator(),
+                                 std::nullopt, future.GetCallback());
 
   // Should fall back to signed-out behavior (Origin header only).
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
@@ -213,9 +216,10 @@ TEST_F(LensIdentityDelegationHelperTest,
               CREDENTIALS_REJECTED_BY_SERVER));
 
   base::test::TestFuture<std::vector<std::string>> future;
-  FetchIdentityDelegationHeaders(
-      profile_.get(), identity_test_env_.identity_manager(),
-      "https://www.google.com", std::nullopt, future.GetCallback());
+  FetchIdentityDelegationHeaders(&cookie_manager_,
+                                 identity_test_env_.identity_manager(),
+                                 "https://www.google.com", GetFakeGenerator(),
+                                 std::nullopt, future.GetCallback());
 
   // Persistent error on primary account: should fall back to signed-out
   // behavior.
@@ -237,9 +241,10 @@ TEST_F(LensIdentityDelegationHelperTest,
               CREDENTIALS_REJECTED_BY_SERVER));
 
   base::test::TestFuture<std::vector<std::string>> future;
-  FetchIdentityDelegationHeaders(
-      profile_.get(), identity_test_env_.identity_manager(),
-      "https://www.google.com", /*authuser_index=*/0, future.GetCallback());
+  FetchIdentityDelegationHeaders(&cookie_manager_,
+                                 identity_test_env_.identity_manager(),
+                                 "https://www.google.com", GetFakeGenerator(),
+                                 /*authuser_index=*/0, future.GetCallback());
 
   // Persistent error on candidate account: should fall back to signed-out
   // behavior.
@@ -253,9 +258,10 @@ TEST_F(LensIdentityDelegationHelperTest,
   SetSapisidCookie("sapisid_value");
 
   base::test::TestFuture<std::vector<std::string>> future;
-  FetchIdentityDelegationHeaders(
-      profile_.get(), identity_test_env_.identity_manager(),
-      "https://www.google.com", /*authuser_index=*/0, future.GetCallback());
+  FetchIdentityDelegationHeaders(&cookie_manager_,
+                                 identity_test_env_.identity_manager(),
+                                 "https://www.google.com", GetFakeGenerator(),
+                                 /*authuser_index=*/0, future.GetCallback());
 
   // Signed out account in cookie jar: should fall back to signed-out behavior.
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
@@ -269,15 +275,15 @@ TEST_F(LensIdentityDelegationHelperTest,
   SetSapisidCookie("sapisid_value");
 
   base::test::TestFuture<std::vector<std::string>> future;
-  FetchIdentityDelegationHeaders(
-      profile_.get(), identity_test_env_.identity_manager(),
-      "https://www.google.com", /*authuser_index=*/1, future.GetCallback());
+  FetchIdentityDelegationHeaders(&cookie_manager_,
+                                 identity_test_env_.identity_manager(),
+                                 "https://www.google.com", GetFakeGenerator(),
+                                 /*authuser_index=*/1, future.GetCallback());
 
   std::vector<std::string> headers = future.Get();
   ASSERT_EQ(headers.size(), 6u);
   EXPECT_EQ(headers[4], "X-Goog-AuthUser");
   EXPECT_EQ(headers[5], "1");
 }
-#endif
 
 }  // namespace lens

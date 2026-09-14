@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 
+#import "base/functional/bind.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/contextual_search/contextual_search_service.h"
+#import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/lens/lens_identity_delegation_helper.h"
 #import "components/variations/variations_client.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service.h"
@@ -18,6 +21,8 @@
 #import "ios/chrome/browser/variations/model/client/variations_client_service.h"
 #import "ios/chrome/browser/variations/model/client/variations_client_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
+#import "services/network/public/mojom/cookie_manager.mojom.h"
 
 // static
 contextual_search::ContextualSearchService*
@@ -55,9 +60,15 @@ ContextualSearchServiceFactory::BuildServiceInstanceFor(
       VariationsClientServiceFactory::GetForProfile(profile);
   return std::make_unique<IOSContextualSearchService>(
       IdentityManagerFactory::GetForProfile(profile),
-      GetApplicationContext()->GetSharedURLLoaderFactory(),
+      profile->GetSharedURLLoaderFactory(),
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       static_cast<variations::VariationsClient*>(variations_client_service),
       ::GetChannel(),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+      base::BindRepeating(
+          &lens::FetchIdentityDelegationHeaders,
+          base::Unretained(profile->GetCookieManager()),
+          IdentityManagerFactory::GetForProfile(profile),
+          google_util::kGoogleHomepageURL,
+          base::BindRepeating(&ios::provider::GenerateLensSapisidHash)));
 }

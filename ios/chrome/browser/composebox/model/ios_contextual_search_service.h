@@ -17,7 +17,9 @@ class IOSContextualSearchService
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client,
       version_info::Channel channel,
-      const std::string& locale);
+      const std::string& locale,
+      GetAuthHeadersCallback get_auth_headers_callback =
+          GetAuthHeadersCallback());
   ~IOSContextualSearchService() override;
 
  protected:

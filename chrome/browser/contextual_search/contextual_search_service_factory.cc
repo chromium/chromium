@@ -6,15 +6,18 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/chrome_contextual_search_session_tab_validator.h"
-#include "chrome/browser/lens/lens_identity_delegation_helper.h"
+#include "chrome/browser/lens/lens_sapisid_generator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/google/core/common/google_util.h"
+#include "components/lens/lens_identity_delegation_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/storage_partition.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 // static
 contextual_search::ContextualSearchService*
@@ -55,7 +58,10 @@ ContextualSearchServiceFactory::BuildServiceInstanceForBrowserContext(
       profile->GetVariationsClient(), chrome::GetChannel(),
       g_browser_process->GetApplicationLocale(), std::move(validator),
       base::BindRepeating(
-          &lens::FetchIdentityDelegationHeaders, base::Unretained(profile),
+          &lens::FetchIdentityDelegationHeaders,
+          base::Unretained(profile->GetDefaultStoragePartition()
+                               ->GetCookieManagerForBrowserProcess()),
           IdentityManagerFactory::GetForProfile(profile),
-          google_util::kGoogleHomepageURL));
+          google_util::kGoogleHomepageURL,
+          base::BindRepeating(&lens::GenerateSapisidHash)));
 }
