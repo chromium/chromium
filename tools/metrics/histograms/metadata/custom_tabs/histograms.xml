@@ -175,23 +175,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.AutoclosedSessionDuration" units="ms"
-    expires_after="2023-08-20">
-  <owner>jinsukkim@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <owner>cct-team@google.com</owner>
-  <summary>
-    Android: Duration in milliseconds of a custom tab session (between onResume
-    and onPause). This is logged for the sessions closed automatically without
-    user intervention. Sessions closed by user input (back press/close button)
-    will not be logged.
-
-    Note that there can be user inputs that go undetected by the logic. So the
-    histogram can contain false positives i.e. session closed by user but
-    regarded as auto-closed.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.Branding.AppIdType"
     enum="CustomTabsBrandingAppIdType" expires_after="2025-07-06">
   <owner>jinsukkim@chromium.org</owner>

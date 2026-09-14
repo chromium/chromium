@@ -103,12 +103,6 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
                 "CustomTabs.CloseCause", mCloseCause, CloseCause.COUNT);
 
         long duration = SystemClock.elapsedRealtime() - mOnStartTimestampMs;
-        // Additional check with |mIsCctFinishing| can eliminate some false positives.
-        // See Javadoc for more details.
-        if (mCloseCause == CloseCause.AUTOCLOSE && mIsCctFinishing.getAsBoolean()) {
-            RecordHistogram.recordLongTimesHistogram(
-                    "CustomTabs.AutoclosedSessionDuration", duration);
-        }
 
         if (mIsCctFinishing.getAsBoolean()) {
             long time = System.currentTimeMillis() / DateUtils.SECOND_IN_MILLIS;
