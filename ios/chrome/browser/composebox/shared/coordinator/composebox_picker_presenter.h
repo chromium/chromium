@@ -109,6 +109,9 @@
 // Presents the Drive file picker.
 - (void)presentDriveFilePicker;
 
+// Dismisses the presented picker.
+- (void)dismissPicker;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_SHARED_COORDINATOR_COMPOSEBOX_PICKER_PRESENTER_H_

@@ -331,10 +331,11 @@ CGFloat const kSheetTopPadding = 40.0f;
   } else {
     [self.inputPlateDelegate composeboxMenuCoordinator:self
                                   didUpdateAttachments:attachments];
-    [_viewController dismissViewControllerAnimated:YES
-                                        completion:^{
-                                          [weakSelf requestMenuDismissal];
-                                        }];
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [weakSelf requestMenuDismissal];
+                           }];
   }
 }
 

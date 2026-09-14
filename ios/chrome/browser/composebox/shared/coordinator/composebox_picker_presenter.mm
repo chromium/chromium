@@ -13,6 +13,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
+#import "base/ios/block_types.h"
 #import "base/memory/weak_ptr.h"
 #import "base/not_fatal_until.h"
 #import "components/contextual_search/input_state_model.h"
@@ -55,11 +56,15 @@ constexpr int kChromeIOSProductId = 71720513;
 @property(nonatomic, strong) id<PrivacyPrimitiveService>
     privacyPrimitiveService;
 
+// The picker being presented.
+@property(nonatomic, weak) UIViewController* picker;
+
 @end
 
 @implementation ComposeboxPickerPresenter {
   // The VC used as a base for presentations.
   __weak UIViewController* _baseViewController;
+
   base::WeakPtr<Browser> _browser;
 
   // Presents snackbars.
@@ -100,9 +105,7 @@ constexpr int kChromeIOSProductId = 71720513;
   UIImagePickerController* picker = [[UIImagePickerController alloc] init];
   picker.delegate = self;
   picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-  [_baseViewController presentViewController:picker
-                                    animated:YES
-                                  completion:nil];
+  [self showPickerViewController:picker];
 }
 
 - (void)presentGalleryPickerWithLimit:(NSUInteger)limit {
@@ -123,10 +126,7 @@ constexpr int kChromeIOSProductId = 71720513;
   PHPickerViewController* picker =
       [[PHPickerViewController alloc] initWithConfiguration:config];
   picker.delegate = self;
-
-  [_baseViewController presentViewController:picker
-                                    animated:YES
-                                  completion:nil];
+  [self showPickerViewController:picker];
 }
 
 - (void)presentFilePicker {
@@ -141,10 +141,7 @@ constexpr int kChromeIOSProductId = 71720513;
 
   picker.allowsMultipleSelection = NO;
   picker.delegate = self;
-
-  [_baseViewController presentViewController:picker
-                                    animated:YES
-                                  completion:nil];
+  [self showPickerViewController:picker];
 }
 
 - (void)presentTabPicker {
@@ -230,6 +227,10 @@ constexpr int kChromeIOSProductId = 71720513;
   }
 
   [self showDriveFilePickerInternal];
+}
+
+- (void)dismissPicker {
+  [self dismissPickerWithCompletion:nil];
 }
 
 - (void)privacyPrimitiveFlowCompletedWithSuccess:(BOOL)success {
@@ -334,12 +335,9 @@ constexpr int kChromeIOSProductId = 71720513;
 - (void)imagePickerController:(UIImagePickerController*)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString*, id>*)info {
   __weak __typeof(self) weakSelf = self;
-  [picker dismissViewControllerAnimated:YES
-                             completion:^{
-                               [weakSelf.delegate
-                                   composeboxPickerPresenterDidDissmissCamera:
-                                       weakSelf];
-                             }];
+  [self dismissPickerWithCompletion:^{
+    [weakSelf.delegate composeboxPickerPresenterDidDissmissCamera:weakSelf];
+  }];
 
   UIImage* image = info[UIImagePickerControllerOriginalImage];
   if (!image) {
@@ -371,21 +369,20 @@ constexpr int kChromeIOSProductId = 71720513;
         forAttachmentType:MobileFuseboxPickerAttachmentType::kCamera];
 
   __weak __typeof(self) weakSelf = self;
-  [picker dismissViewControllerAnimated:YES
-                             completion:^{
-                               [weakSelf.delegate
-                                   composeboxPickerPresenterDidDissmissCamera:
-                                       weakSelf];
-                             }];
+  [self dismissPickerWithCompletion:^{
+    [weakSelf.delegate composeboxPickerPresenterDidDissmissCamera:weakSelf];
+  }];
 }
 
 #pragma mark - PHPickerViewControllerDelegate
 
 - (void)picker:(PHPickerViewController*)picker
     didFinishPicking:(NSArray<PHPickerResult*>*)results {
-  [picker dismissViewControllerAnimated:YES completion:nil];
-
   if (results.count == 0) {
+    // Only dismiss when the picking is NO-OP. Otherwise the dismissal is
+    // handled by the embedder (to e.g.; coordinate multiple dismissals).
+    [self dismissPicker];
+
     [self.metricsRecorder
         recordPickerOutcome:MobileFuseboxPickerOutcome::kManualUserExit
           forAttachmentType:MobileFuseboxPickerAttachmentType::kGallery];
@@ -504,6 +501,17 @@ constexpr int kChromeIOSProductId = 71720513;
   }
   _snackbarPresenter =
       [[ComposeboxSnackbarPresenter alloc] initWithBrowser:_browser.get()];
+}
+
+- (void)showPickerViewController:(UIViewController*)picker {
+  _picker = picker;
+  [_baseViewController presentViewController:picker
+                                    animated:YES
+                                  completion:nil];
+}
+
+- (void)dismissPickerWithCompletion:(ProceduralBlock)completion {
+  [_picker dismissViewControllerAnimated:YES completion:completion];
 }
 
 @end
