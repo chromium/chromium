@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_scroll_position_for_scaled_layout_viewport[0.5]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_scroll_position_for_scaled_layout_viewport[1.0]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_scroll_position_for_scaled_layout_viewport[1.5]
+  TypeError: list indices must be integers or slices, not str
+Harness: the test ran to completion.
+

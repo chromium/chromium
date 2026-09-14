@@ -1,0 +1,29 @@
+This is a wdspec test.
+[FAIL] test_find_by_locator_limit_return_count[css_single]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[xpath_single]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[inner_text_single]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[accessibility_role_single]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[accessibility_name_single]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[accessibility_role_name_single]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[css_multiple]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[xpath_multiple]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[inner_text_multiple]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[accessibility_role_multiple]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[accessibility_name_multiple]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_find_by_locator_limit_return_count[accessibility_role_name_multiple]
+  TypeError: list indices must be integers or slices, not str
+[FAIL] test_several_context_nodes
+  TypeError: list indices must be integers or slices, not str
+Harness: the test ran to completion.
+
