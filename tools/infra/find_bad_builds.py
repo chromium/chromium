@@ -28,7 +28,7 @@ import multiprocessing
 import subprocess
 import sys
 
-# Provided by root level .vpython3 file
+# Provided by root level vpython.toml file
 import pytz
 from dateutil.tz import tzlocal
 

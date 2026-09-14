@@ -132,7 +132,7 @@ Note about vpython:
 Some Python scripts end up mixing protoc output from this copy of protobuf with
 the google.protobuf module from vpython's protobuf. If Python scripts break due
 to the vpython copy of protobuf, you may need to update the version in
-//.vpython3. See https://crbug.com/1320047.
+//vpython.toml. See https://crbug.com/1320047.
 
 Description of the patches:
 

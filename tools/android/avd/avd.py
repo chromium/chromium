@@ -358,7 +358,8 @@ def main(raw_args):
       with open(args.json_output, 'w') as json_file:
         json.dump(metadata, json_file, indent=2)
     else:
-      # Import tabulate only when needed, in case it is not listed in .vpython3.
+      # Import tabulate only when needed, in case it is not listed in
+      # vpython.toml.
       print(tabulate.tabulate(metadata, headers='keys'))
     return 0
 

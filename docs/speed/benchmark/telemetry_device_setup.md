@@ -13,7 +13,7 @@ $ tools/perf/run_benchmark --browser=system dummy_benchmark.noisy_benchmark_1
 ```
 
 Otherwise have a look at the required catapult dependencies listed in the
-[.vpython3](https://chromium.googlesource.com/chromium/src/+/main/.vpython3)
+[vpython.toml](https://chromium.googlesource.com/chromium/src/+/main/vpython.toml)
 spec file.
 
 ## Desktop benchmarks
