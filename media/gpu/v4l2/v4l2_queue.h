@@ -359,7 +359,7 @@ class MEDIA_GPU_EXPORT V4L2RequestsQueue {
 
   // Stores all available requests.
   std::vector<std::unique_ptr<V4L2Request>> requests_;
-  std::queue<V4L2Request*> free_requests_;
+  std::queue<raw_ptr<V4L2Request>> free_requests_;
 
   // Returns a new request file descriptor.
   std::optional<base::ScopedFD> CreateRequestFD();

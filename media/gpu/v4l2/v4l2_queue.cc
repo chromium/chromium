@@ -1871,8 +1871,10 @@ std::optional<base::ScopedFD> V4L2RequestsQueue::CreateRequestFD() {
 std::optional<V4L2RequestRef> V4L2RequestsQueue::GetFreeRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  V4L2Request* request_ptr =
-      free_requests_.empty() ? nullptr : free_requests_.front();
+  V4L2Request* request_ptr = nullptr;
+  if (!free_requests_.empty()) {
+    request_ptr = free_requests_.front();
+  }
   if (request_ptr && request_ptr->IsCompleted()) {
     // Previous request is already completed, just recycle it.
     free_requests_.pop();
