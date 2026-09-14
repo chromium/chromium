@@ -114,16 +114,14 @@ class GlicPinnedTabManagerWithOverrides : public GlicPinnedTabManagerImpl {
 
 class GlicPinnedTabManagerBrowserTest : public GlicBrowserTest {
  public:
-  GlicPinnedTabManagerBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  GlicPinnedTabManagerBrowserTest() {
+    embedded_https_test_server().RegisterRequestHandler(
+        base::BindRepeating(&GlicPinnedTabManagerBrowserTest::HandleRequest,
+                            base::Unretained(this)));
+  }
 
   void SetUpOnMainThread() override {
     GlicBrowserTest::SetUpOnMainThread();
-    https_server_.RegisterRequestHandler(
-        base::BindRepeating(&GlicPinnedTabManagerBrowserTest::HandleRequest,
-                            base::Unretained(this)));
-    https_server_handle_ = https_server_.StartAndReturnHandle();
-    ASSERT_TRUE(https_server_handle_);
 
     auto* metrics = service()->metrics();
     pinned_tab_manager_ = std::make_unique<GlicPinnedTabManagerWithOverrides>(
@@ -161,8 +159,6 @@ class GlicPinnedTabManagerBrowserTest : public GlicBrowserTest {
     return response;
   }
 
-  net::EmbeddedTestServer https_server_;
-  net::test_server::EmbeddedTestServerHandle https_server_handle_;
   std::unique_ptr<GlicPinnedTabManagerWithOverrides> pinned_tab_manager_;
 };
 
@@ -177,11 +173,12 @@ class GlicPinnedTabManagerBrowserTest : public GlicBrowserTest {
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                        MAYBE_ReturnsMultipleCandidatesSortedByActivation) {
   // By default, the browser starts with a single tab open to "about:blank".
-  tabs::TabInterface* tab_1 =
-      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
-  CreateAndActivateTab(https_server_.GetURL("/sentient-toaster-manual"));
-  tabs::TabInterface* tab_3 =
-      CreateAndActivateTab(https_server_.GetURL("/zombie-squirrels"));
+  tabs::TabInterface* tab_1 = CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/why-cats-are-liquid"));
+  CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/sentient-toaster-manual"));
+  tabs::TabInterface* tab_3 = CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/zombie-squirrels"));
 
   FakePinCandidatesObserver observer;
   auto options = mojom::GetPinCandidatesOptions::New();
@@ -225,10 +222,14 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                        MAYBE_SortsCandidatesByQuery) {
   // By default, the browser starts with a single tab open to "about:blank".
-  CreateAndActivateTab(https_server_.GetURL("/how-to-train-your-goldfish"));
-  CreateAndActivateTab(https_server_.GetURL("/the-art-of-the-nap"));
-  CreateAndActivateTab(https_server_.GetURL("/advanced-sock-puppetry"));
-  CreateAndActivateTab(https_server_.GetURL("/pigeon-espionage"));
+  CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/how-to-train-your-goldfish"));
+  CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/the-art-of-the-nap"));
+  CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/advanced-sock-puppetry"));
+  CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/pigeon-espionage"));
 
   FakePinCandidatesObserver observer;
   auto options = mojom::GetPinCandidatesOptions::New();
@@ -249,8 +250,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, PinTabs) {
-  tabs::TabInterface* tab_interface =
-      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
+  tabs::TabInterface* tab_interface = CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -276,8 +277,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, PinTabs) {
 // crashing.
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                        DragPinnedTabsToNewWindow) {
-  tabs::TabInterface* tab_interface =
-      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
+  tabs::TabInterface* tab_interface = CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -293,8 +294,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
-  tabs::TabInterface* tab_interface =
-      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
+  tabs::TabInterface* tab_interface = CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -324,8 +325,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                        UnpinTabOnTabDestroyed) {
-  tabs::TabInterface* tab_interface =
-      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
+  tabs::TabInterface* tab_interface = CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -358,8 +359,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                        VerifyPinnedStatePersistsOnRestore) {
-  tabs::TabInterface* tab_interface =
-      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
+  tabs::TabInterface* tab_interface = CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -368,7 +369,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
 
   // Switch to another tab to ensure the pinned tab is in the background.
-  CreateAndActivateTab(https_server_.GetURL("/sentient-toaster-manual"));
+  CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/sentient-toaster-manual"));
   EXPECT_NE(GetTabListInterface()->GetActiveTab(), tab_interface);
 
   // Discard the pinned tab to simulate a situation where it needs to be
@@ -389,8 +391,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
                        VerifyUnpinningOnBackgroundOriginChange) {
-  tabs::TabInterface* tab_interface =
-      CreateAndActivateTab(https_server_.GetURL("/why-cats-are-liquid"));
+  tabs::TabInterface* tab_interface = CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/why-cats-are-liquid"));
   ASSERT_TRUE(tab_interface);
   const tabs::TabHandle tab_handle = tab_interface->GetHandle();
 
@@ -399,7 +401,8 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
 
   // Switch to another tab to ensure the pinned tab is in the background.
-  CreateAndActivateTab(https_server_.GetURL("/sentient-toaster-manual"));
+  CreateAndActivateTab(
+      embedded_https_test_server().GetURL("/sentient-toaster-manual"));
   EXPECT_NE(GetTabListInterface()->GetActiveTab(), tab_interface);
 
   // Navigate the pinned tab to a different origin.
