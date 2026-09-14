@@ -20196,7 +20196,7 @@
             ]
         }
     ],
-    "UnthrottleAsyncTouchMoves": [
+    "UnthrottleAsyncTouchMovesV2": [
         {
             "platforms": [
                 "android",
@@ -20211,15 +20211,6 @@
                     "name": "Enabled_UnthrottledAlways",
                     "params": {
                         "policy": "unthrottled_always"
-                    },
-                    "enable_features": [
-                        "UnthrottleAsyncTouchMoves"
-                    ]
-                },
-                {
-                    "name": "Enabled_UnthrottledWhenGsuUnconsumed",
-                    "params": {
-                        "policy": "unthrottled_when_gsu_unconsumed"
                     },
                     "enable_features": [
                         "UnthrottleAsyncTouchMoves"
