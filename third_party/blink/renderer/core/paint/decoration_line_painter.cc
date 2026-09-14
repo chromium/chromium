@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 
+#include "cc/paint/color_filter.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
@@ -24,7 +25,7 @@ float RoundDownThickness(float stroke_thickness) {
 
 // True when `flags` describes a flat solid-color fill (no shader, no
 // color/image filter, no draw looper, no path effect, default blend mode)
-// that the cached per-color tile-shader path can render faithfully. SVG
+// that the cached tile-shader path can render faithfully. SVG
 // fill setup may attach a `DrawLooper` (text-shadow) or `ColorFilter`
 // (color-interpolation: linearRGB on a mask) on top of a non-shader paint;
 // guarding against those keeps such effects on the slower full-width
@@ -230,7 +231,7 @@ class WavyGeometry {
 
   gfx::RectF PaintRect(const DecorationGeometry& geometry) const;
 
-  const cc::PaintRecord& TileRecord(const Color& color) const;
+  const cc::PaintRecord& TileRecord() const;
   gfx::RectF TileRect() const {
     // The wavy tile rect is the same size as the wavy pattern rect but at
     // origin (0,0).
@@ -275,7 +276,6 @@ class WavyGeometry {
   gfx::RectF bounds_;
   float thickness_;
   mutable cc::PaintRecord tile_record_;
-  mutable Color tile_record_color_;
 };
 
 gfx::RectF WavyGeometry::PaintRect(const DecorationGeometry& geometry) const {
@@ -303,11 +303,13 @@ gfx::PointF WavyGeometry::PathOrigin(const DecorationGeometry& geometry) const {
          gfx::Vector2dF{bounds_.x(), geometry.wavy_offset};
 }
 
-const cc::PaintRecord& WavyGeometry::TileRecord(const Color& color) const {
-  if (tile_record_color_ != color || tile_record_.empty()) {
+const cc::PaintRecord& WavyGeometry::TileRecord() const {
+  if (tile_record_.empty()) {
+    // Record the tile as an opaque-black mask; the decoration color is
+    // applied at draw time via a color filter on the outer paint flags.
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(color.Rgb());
+    flags.setColor(SK_ColorBLACK);
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(thickness_);
 
@@ -317,7 +319,6 @@ const cc::PaintRecord& WavyGeometry::TileRecord(const Color& color) const {
     canvas->translate(-bounds_.x(), -bounds_.y());
     canvas->drawPath(path_.GetSkPath(), flags);
     tile_record_ = recorder.finishRecordingAsPicture();
-    tile_record_color_ = color;
   }
   return tile_record_;
 }
@@ -492,31 +493,32 @@ void DecorationLinePainter::PaintWavyTextDecoration(
   // SVG fill pass with a paint server / shadow / color filter / blend mode:
   // full-width outline so the paint server applies continuously and any
   // effects attached to the paint flags (looper, color filter, ...) are
-  // honored. Solid-color fills fall through to the cached per-color tile
-  // path below.
+  // honored. Solid-color fills fall through to the cached tile path below.
   if (paint_flags && !IsSimpleSolidFillPaint(*paint_flags)) {
     wavy_geometry.PaintFill(context_, geometry, *paint_flags, auto_dark_mode);
     return;
   }
 
+  // Non-SVG (HTML) callers and solid-color SVG fills: cached tile shader.
+  // The tile is recorded as an opaque-black mask that's shared across all
+  // decorations with the same wave geometry; the color is applied below via a
+  // color filter so the cached record never needs to be rebuilt when colors
+  // change.
+  const gfx::RectF paint_rect = wavy_geometry.PaintRect(geometry);
+  const gfx::RectF tile_rect = wavy_geometry.TileRect();
   // Per the SVG text-decoration spec [1], the decoration paint is the text's
   // fill -- not `text-decoration-color` -- so for solid SVG fills the cached
   // tile path uses the paint's own color.
   // [1] https://svgwg.org/svg2-draft/text.html#TextDecorationProperties
-  const Color color = paint_flags
-                          ? Color::FromSkColor4f(paint_flags->getColor4f())
-                          : decoration_color;
-
-  // Non-SVG (HTML) callers and solid-color SVG fills: cached per-color tile
-  // shader.
-  const gfx::RectF paint_rect = wavy_geometry.PaintRect(geometry);
-  const gfx::RectF tile_rect = wavy_geometry.TileRect();
+  const SkColor4f color =
+      paint_flags ? paint_flags->getColor4f() : decoration_color.toSkColor4f();
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setShader(PaintShader::MakePaintRecord(
-      wavy_geometry.TileRecord(color), gfx::RectFToSkRect(tile_rect),
+      wavy_geometry.TileRecord(), gfx::RectFToSkRect(tile_rect),
       SkTileMode::kRepeat, SkTileMode::kDecal, nullptr));
+  flags.setColorFilter(cc::ColorFilter::MakeBlend(color, SkBlendMode::kSrcIn));
 
   GraphicsContextStateSaver state_saver(context_);
   context_.Translate(paint_rect.x(), paint_rect.y());
