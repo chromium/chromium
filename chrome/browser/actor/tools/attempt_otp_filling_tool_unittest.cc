@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -30,7 +28,6 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/shared_types.h"
 #include "components/actor/core/task_id.h"
@@ -762,7 +759,6 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoTargetFrameWithOtpFound) {
       AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound, 1);
 }
 
-
 TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
@@ -829,64 +825,6 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
   histogram_tester_.ExpectBucketCount(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kPermissionDenied, 1);
-  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
-                                      ActorLoginFlowVerifier::Result::kNoMatch,
-                                      1);
-}
-
-TEST_F(AttemptOtpFillingToolTest,
-       Invoke_ActorLoginVerificationFailed_WithBypassSwitch) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kAttemptOtpFillingBypassLoginCheck);
-  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
-      .WillOnce(Return(CreateValidLoginContext()));
-  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
-  EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
-      .WillOnce(RunOnceCallback<3>(true));
-  EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog).Times(0);
-  auto verifier =
-      std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>(
-          fake_affiliation_service_);
-  EXPECT_CALL(*verifier, VerifyIsActorLoginFlow)
-      .WillOnce(
-          [](content::FrameTreeNodeId otp_frame_id,
-             const url::Origin& otp_frame_origin,
-             const url::Origin& main_frame_origin,
-             std::optional<url::Origin> context_origin,
-             bool should_use_strong_matching,
-             base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
-                 consume_context_callback,
-             base::OnceCallback<void(ActorLoginFlowVerifier::Result)>
-                 callback) {
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    [](base::OnceCallback<
-                           std::optional<autofill::ActorLoginContext>()>
-                           consume_context_callback,
-                       base::OnceCallback<void(ActorLoginFlowVerifier::Result)>
-                           callback) {
-                      std::move(consume_context_callback).Run();
-                      std::move(callback).Run(
-                          ActorLoginFlowVerifier::Result::kNoMatch);
-                    },
-                    std::move(consume_context_callback), std::move(callback)));
-          });
-  PageTarget target(gfx::Point(10, 10));
-  AttemptOtpFillingTool tool = CreateTool(
-      {target}, /*for_signin=*/true,
-      AttemptOtpFillingToolRequest::OtpType::kUnknown, std::move(verifier));
-  SetupSuccessfulTimeOfUseValidation(tool, target);
-
-  TestFuture<ActionResultPtr> future;
-  tool.Invoke(future.GetCallback());
-
-  EXPECT_EQ(kOk, future.Take()->code);
-  histogram_tester_.ExpectBucketCount(
-      kAttemptOtpFillingToolHistogram,
-      AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
                                       ActorLoginFlowVerifier::Result::kNoMatch,
                                       1);

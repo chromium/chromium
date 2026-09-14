@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -31,7 +30,6 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
-#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
@@ -372,17 +370,13 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(
   RecordActorLoginFlowVerification(result);
 
   bool is_actor_login = ActorLoginFlowVerifier::IsSuccess(result);
-  bool bypass_login_check =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAttemptOtpFillingBypassLoginCheck);
   LogJournalEvent("AttemptOtpFillingTool::OnActorLoginFlowChecked",
                   JournalDetailsBuilder()
                       .Add("result", result)
                       .Add("is_actor_login", is_actor_login)
-                      .Add("bypass_login_check", bypass_login_check)
                       .Build());
 
-  requires_confirmation_ = !is_actor_login && !bypass_login_check;
+  requires_confirmation_ = !is_actor_login;
 
   if (requires_confirmation_) {
     LogJournalEvent(

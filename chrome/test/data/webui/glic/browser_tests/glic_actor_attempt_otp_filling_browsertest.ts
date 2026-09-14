@@ -6,7 +6,7 @@
 // chrome/browser/glic/actor/glic_actor_attempt_otp_filling_browsertest.cc
 
 import {ActorTaskStopReason} from '/glic/glic_api/glic_api.js';
-import type {GmailOtpOptInRequest} from '/glic/glic_api/glic_api.js';
+import type {GmailOtpConfirmationRequest, GmailOtpOptInRequest} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestFixtureBase, assertDefined, assertEquals, assertTrue, testMain} from './browser_test_base.js';
 
@@ -41,6 +41,20 @@ class GlicActorAttemptOtpFillingBrowserTest extends ApiTestFixtureBase {
                 resolve(request);
               });
         });
+
+    // Subscribe to the confirmation request if supported.
+    let confirmationSubscription: {unsubscribe: () => void}|undefined;
+    if (this.host.selectGmailOtpConfirmationRequestHandler) {
+      const confirmationSubscriber =
+          this.host.selectGmailOtpConfirmationRequestHandler();
+      if (confirmationSubscriber) {
+        confirmationSubscription =
+            confirmationSubscriber.subscribe(
+                (request: GmailOtpConfirmationRequest) => {
+                  request.onDialogClosed({permissionGranted: true});
+                });
+      }
+    }
 
     // 1. Yield to C++ to navigate the tab and extract APC to find the OTP
     // field. C++ will continue us with { nodeId, documentIdentifier } in
@@ -77,6 +91,7 @@ class GlicActorAttemptOtpFillingBrowserTest extends ApiTestFixtureBase {
     }
 
     await this.host.stopActorTask(taskId, ActorTaskStopReason.TASK_COMPLETE);
+    confirmationSubscription?.unsubscribe();
   }
 
   async testOptInDeclined(): Promise<void> {

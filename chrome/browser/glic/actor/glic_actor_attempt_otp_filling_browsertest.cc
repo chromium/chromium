@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/shared_types.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -88,12 +87,6 @@ class GlicActorAttemptOtpFillingBrowserTest
     EXPECT_CALL(GetMockOtpService(), GetCachedOneTimeTokens())
         .WillRepeatedly(
             []() { return std::vector<one_time_tokens::OneTimeToken>(); });
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    GlicActorFunctionalBrowserTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        ::actor::switches::kAttemptOtpFillingBypassLoginCheck);
   }
 
   void SetUpBrowserContextKeyedServices(
