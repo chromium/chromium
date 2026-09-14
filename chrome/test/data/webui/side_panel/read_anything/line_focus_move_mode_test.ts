@@ -35,15 +35,36 @@ suite('LineFocusMoveMode', () => {
     return metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines');
   }
 
-  function createShortContainer(): HTMLElement {
-    const container = document.createElement('p');
-    container.innerText =
-        'I\'ve heard it said\nThat people come into our lives\nfor a reason.\n';
+  function applyContainerStyles(container: HTMLElement): void {
     container.style.whiteSpace = 'pre';
     container.style.width = 'max-content';
     container.style.margin = '0';
     container.style.fontSize = '20px';
     container.style.lineHeight = '2';
+  }
+
+  function createShortContainer(): HTMLElement {
+    const container = document.createElement('p');
+    container.innerText =
+        'I\'ve heard it said\nThat people come into our lives\nfor a reason.\n';
+    applyContainerStyles(container);
+    document.body.appendChild(container);
+    return container;
+  }
+
+  function createSuperscriptContainer(): HTMLElement {
+    const container = document.createElement('p');
+    applyContainerStyles(container);
+
+    const text1 = document.createTextNode('I\'ve heard it said\n');
+    const sup = document.createElement('sup');
+    sup.textContent = '1';
+    const text2 = document.createTextNode(
+        'That people come into our lives\nfor a reason.\n');
+
+    container.appendChild(text1);
+    container.appendChild(sup);
+    container.appendChild(text2);
     document.body.appendChild(container);
     return container;
   }
@@ -279,6 +300,64 @@ suite('LineFocusMoveMode', () => {
       assertFalse(notifiedContentPositionChange);
       assertTrue(model.getInitiatedScroll());
     });
+
+    test(
+        'onWordBoundary aligns with line when word starts with superscript',
+        () => {
+          const container = createSuperscriptContainer();
+          mode.onActivated(container, defaultHeight);
+          nodeStore.setDomNode(container, 1);
+          const bounds = model.getTextBounds();
+          assertTrue(bounds.length >= 2);
+          const line2 = bounds[1]!;
+
+          const sup = container.querySelector('sup')!;
+          const supRect = sup.getBoundingClientRect();
+          assertLT(supRect.bottom, line2.bottom);
+
+          const segments = [{
+            node: ReadAloudNode.create(sup)!,
+            start: 0,
+            length: 1,
+          }];
+
+          mode.onWordBoundary(segments);
+
+          const expectedScrollDiff =
+              styleMode.getFocalPointForRect(line2) - model.getFocalPoint();
+          assertEquals(expectedScrollDiff, scrollDiffReceived);
+        });
+
+    test(
+        'onWordBoundary aligns with window when word starts with superscript',
+        () => {
+          const windowMoveMode =
+              new LineFocusStaticMoveMode(model, windowMode, delegate);
+          const container = createSuperscriptContainer();
+          windowMoveMode.onActivated(container, defaultHeight);
+          nodeStore.setDomNode(container, 1);
+          const bounds = model.getTextBounds();
+          assertTrue(bounds.length >= 2);
+          const line2 = bounds[1]!;
+
+          const sup = container.querySelector('sup')!;
+          const supRect = sup.getBoundingClientRect();
+          const supCenter = (supRect.top + supRect.bottom) / 2;
+          const line2Center = (line2.top + line2.bottom) / 2;
+          assertLT(supCenter, line2Center);
+
+          const segments = [{
+            node: ReadAloudNode.create(sup)!,
+            start: 0,
+            length: 1,
+          }];
+
+          windowMoveMode.onWordBoundary(segments);
+
+          const expectedScrollDiff =
+              windowMode.getFocalPointForRect(line2) - model.getFocalPoint();
+          assertEquals(expectedScrollDiff, scrollDiffReceived);
+        });
 
     test('onWordBoundary only counts new lines', () => {
       const container = createShortContainer();
@@ -622,6 +701,61 @@ suite('LineFocusMoveMode', () => {
       assertEquals(0, scrollDiffReceived);
       assertTrue(notifiedContentPositionChange);
     });
+
+    test(
+        'onWordBoundary aligns with line when word starts with superscript',
+        () => {
+          const container = createSuperscriptContainer();
+          mode.onActivated(container, defaultHeight);
+          nodeStore.setDomNode(container, 1);
+          const bounds = model.getTextBounds();
+          assertTrue(bounds.length >= 2);
+          const line2 = bounds[1]!;
+
+          const sup = container.querySelector('sup')!;
+          const supRect = sup.getBoundingClientRect();
+          assertLT(supRect.bottom, line2.bottom);
+
+          const segments = [{
+            node: ReadAloudNode.create(sup)!,
+            start: 0,
+            length: 1,
+          }];
+
+          mode.onWordBoundary(segments);
+
+          const expectedFocalPoint = styleMode.getFocalPointForRect(line2);
+          assertEquals(expectedFocalPoint, model.getFocalPoint());
+        });
+
+    test(
+        'onWordBoundary aligns with window when word starts with superscript',
+        () => {
+          const windowMoveMode = createWindowMode();
+          const container = createSuperscriptContainer();
+          windowMoveMode.onActivated(container, defaultHeight);
+          nodeStore.setDomNode(container, 1);
+          const bounds = model.getTextBounds();
+          assertTrue(bounds.length >= 2);
+          const line2 = bounds[1]!;
+
+          const sup = container.querySelector('sup')!;
+          const supRect = sup.getBoundingClientRect();
+          const supCenter = (supRect.top + supRect.bottom) / 2;
+          const line2Center = (line2.top + line2.bottom) / 2;
+          assertLT(supCenter, line2Center);
+
+          const segments = [{
+            node: ReadAloudNode.create(sup)!,
+            start: 0,
+            length: 1,
+          }];
+
+          windowMoveMode.onWordBoundary(segments);
+
+          const expectedFocalPoint = windowMode.getFocalPointForRect(line2);
+          assertEquals(expectedFocalPoint, model.getFocalPoint());
+        });
 
     test('onWordBoundary scrolls if line would go off screen', () => {
       const container = createShortContainer();

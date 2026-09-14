@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getNearestTextBoundaryPoint, getRectIndexAtY, getRectsForSegments, getTextNodeOffsets, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {getNearestTextBoundaryPoint, getRectsForSegments, getTextNodeOffsets, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('DomQueries', () => {
@@ -209,40 +209,6 @@ suite('DomQueries', () => {
 
       assertTrue(rects.length > 0);
       assertRectsSorted(rects);
-    });
-  });
-
-  suite('getRectIndexAtY', () => {
-    const rect1 = {bottom: 30} as DOMRect;
-    const rect2 = {bottom: 60} as DOMRect;
-    const rects = [rect1, rect2];
-
-    test('Y matches first rect returns 0', () => {
-      assertEquals(0, getRectIndexAtY(15, rects, true));
-      assertEquals(0, getRectIndexAtY(15, rects, false));
-    });
-
-    test('Y matches second rect returns 1', () => {
-      assertEquals(1, getRectIndexAtY(45, rects, true));
-      assertEquals(0, getRectIndexAtY(45, rects, false));
-    });
-
-    test('Y in between rects with isForward=true returns current', () => {
-      assertEquals(1, getRectIndexAtY(35, rects, true));
-    });
-
-    test('Y in between rects with isForward=false returns previous', () => {
-      assertEquals(0, getRectIndexAtY(35, rects, false));
-    });
-
-    test('Y before all rects returns first index', () => {
-      assertEquals(0, getRectIndexAtY(0, rects, true));
-      assertEquals(0, getRectIndexAtY(0, rects, false));
-    });
-
-    test('Y past all rects returns last index', () => {
-      assertEquals(1, getRectIndexAtY(65, rects, true));
-      assertEquals(1, getRectIndexAtY(65, rects, false));
     });
   });
 

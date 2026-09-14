@@ -7,10 +7,10 @@ import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import type {Segment} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
-import {getRectIndexAtY, getRectsForSegments} from '../shared/dom_queries.js';
+import {getRectsForSegments} from '../shared/dom_queries.js';
 import type {MetricsBrowserProxy} from '../shared/metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../shared/metrics_browser_proxy.js';
-import {calculateTextBounds} from '../shared/rect_calculations.js';
+import {calculateTextBounds, getLineForRect, getRectIndexAtY} from '../shared/rect_calculations.js';
 
 import type {LineFocusModel} from './line_focus_model.js';
 import type {LineFocusStyleMode} from './line_focus_style_mode.js';
@@ -112,12 +112,14 @@ export abstract class LineFocusMoveMode {
       return;
     }
     const rect = rects[0]!;
+    const targetRect =
+        getLineForRect(rect, this.model_.getTextBounds()) ?? rect;
     if (Math.abs(
             this.model_.getFocalPoint() -
-            this.styleMode_.getFocalPointForRect(rect)) > 2) {
+            this.styleMode_.getFocalPointForRect(targetRect)) > 2) {
       this.metricsBrowserProxy_.incrementLineFocusSpeechLines();
     }
-    this.moveToRect(rect);
+    this.moveToRect(targetRect);
   }
 
   // Returns whether this move mode needs padding to reach all text.

@@ -4,8 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import {getRectIndexAtY} from '../shared/dom_queries.js';
-import {getMostCommonPitch} from '../shared/rect_calculations.js';
+import {getMostCommonPitch, getRectIndexAtY} from '../shared/rect_calculations.js';
 
 import type {LineFocusModel} from './line_focus_model.js';
 import type {LineFocusStyle} from './read_anything_types.js';

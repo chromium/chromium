@@ -61,20 +61,6 @@ export function getRectsForSegments(segments: Segment[]): DOMRect[] {
   return Array.from(new Set(rects)).sort((a, b) => a.bottom - b.bottom);
 }
 
-// Returns the index of the first rect in the given list that matches the
-// given y position.
-export function getRectIndexAtY(
-    y: number, rects: DOMRect[], isForward: boolean): number {
-  let previousY = 0;
-  for (let index = 0; index < rects.length; index++) {
-    const rectBottom = rects[index]!.bottom;
-    if (y >= previousY && y <= rectBottom) {
-      return (isForward || (index <= 0)) ? index : index - 1;
-    }
-    previousY = rectBottom;
-  }
-  return rects.length - 1;
-}
 
 // Normalizes a raw DOM selection boundary point (node, offset) into a clean,
 // visual leaf Text node and character offset representation.
