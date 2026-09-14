@@ -293,19 +293,21 @@ const base::FeatureParam<std::string> kGlicExperimentalTriggeringOptInURL{
 const base::FeatureParam<std::string> kGlicExperimentalTriggeringTabFocusHosts{
     &kGlicExperimentalTriggeringOptInTabFocus,
     "glic-experimental-triggering-tab-focus-hosts",
-    "gemini.google.com,gemini-autopush.corp.google.com"};
+    "gemini.google.com,"
+    "gemini-autopush.corp.google.com,"
+    "gemini-preprod.corp.google.com"};
 
 const base::FeatureParam<std::string>
     kGlicExperimentalTriggeringTabFocusPathSubstring{
         &kGlicExperimentalTriggeringOptInTabFocus,
         "glic-experimental-triggering-tab-focus-path-substring",
-        "/spark,/corp/spark"};
+        "/spark,/corp/spark,/app,/corp/app"};
 
 const base::FeatureParam<std::string>
     kGlicExperimentalTriggeringTabFocusFallbackURL{
         &kGlicExperimentalTriggeringOptInTabFocus,
         "glic-experimental-triggering-tab-focus-fallback-url",
-        "https://gemini.google.com/spark"};
+        "https://gemini.google.com/app"};
 
 const base::FeatureParam<base::TimeDelta> kGlicActorPageToolTimeout{
     &kGlicActor, "glic-actor-page-tool-timeout", base::Seconds(30)};
