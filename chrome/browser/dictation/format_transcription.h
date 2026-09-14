@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DICTATION_FORMAT_TRANSCRIPTION_H_
 #define CHROME_BROWSER_DICTATION_FORMAT_TRANSCRIPTION_H_
 
-#include <optional>
 #include <string>
 #include <string_view>
 
@@ -16,11 +15,13 @@ namespace dictation {
 bool WhitespaceNeeded(std::u16string_view preceding_text,
                       std::u16string_view new_text);
 
+// Trims a trailing period if `text` is a single sentence.
+std::u16string TrimTrailingPeriodIfSingleSentence(std::u16string_view text);
+
 // Formats transcription `text` for insertion into a target element given the
 // text preceding the insertion point.
-std::u16string FormatTranscription(
-    const std::u16string& text,
-    std::optional<std::u16string_view> preceding_text);
+std::u16string FormatTranscription(const std::u16string& text,
+                                   std::u16string_view preceding_text);
 
 }  // namespace dictation
 

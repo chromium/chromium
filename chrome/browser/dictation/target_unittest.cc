@@ -333,12 +333,12 @@ TEST_F(DictationTargetTest, SuccessiveDictationPrependsWhitespace) {
   target.set_text_preceding_selection(u"This is a test.");
 
   target.SetComposition(u"This is another test.", true);
-  EXPECT_EQ(target.last_sent_composition(), u" This is another test.");
+  EXPECT_EQ(target.last_sent_composition(), u" This is another test");
   EXPECT_EQ(target.last_sent_commit(), u"");
 
   target.CommitComposition(u"This is another test.", base::NullCallback());
-  EXPECT_EQ(target.last_sent_composition(), u" This is another test.");
-  EXPECT_EQ(target.last_sent_commit(), u" This is another test.");
+  EXPECT_EQ(target.last_sent_composition(), u" This is another test");
+  EXPECT_EQ(target.last_sent_commit(), u" This is another test");
 }
 
 TEST_F(DictationTargetTest, WhitespacePrependedWithPasteFallback) {
@@ -350,6 +350,35 @@ TEST_F(DictationTargetTest, WhitespacePrependedWithPasteFallback) {
   target.SetComposition(u"world\nagain", true);
   target.CommitComposition(u"world\nagain", base::NullCallback());
   EXPECT_EQ(target.last_sent_paste(), u" world\nagain");
+}
+
+TEST_F(DictationTargetTest, TargetTrimsTrailingPeriodForSingleSentence) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
+
+  target.SetComposition(u"Jane Doe.", true);
+  EXPECT_EQ(target.last_sent_composition(), u"Jane Doe");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+
+  target.CommitComposition(u"Jane Doe.", base::NullCallback());
+  EXPECT_EQ(target.last_sent_composition(), u"Jane Doe");
+  EXPECT_EQ(target.last_sent_commit(), u"Jane Doe");
+}
+
+TEST_F(DictationTargetTest, TargetPreservesTrailingPeriodForMultipleSentences) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
+
+  target.SetComposition(u"First sentence. Second sentence.", true);
+  EXPECT_EQ(target.last_sent_composition(),
+            u"First sentence. Second sentence.");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+
+  target.CommitComposition(u"First sentence. Second sentence.",
+                           base::NullCallback());
+  EXPECT_EQ(target.last_sent_composition(),
+            u"First sentence. Second sentence.");
+  EXPECT_EQ(target.last_sent_commit(), u"First sentence. Second sentence.");
 }
 
 }  // namespace
