@@ -230,7 +230,7 @@ source_set("sb_protocol_config") {
   ]
 }
 
-source_set("v4_protocol_manager_util") {
+source_set("sb_protocol_manager_util") {
   sources = [
     "sb_protocol_manager_util.cc",
     "sb_protocol_manager_util.h",
@@ -249,6 +249,12 @@ source_set("v4_protocol_manager_util") {
     "//net",
     "//url",
   ]
+}
+
+# TODO(crbug.com/362791941): Remove once all references are updated to
+# sb_protocol_manager_util.
+group("v4_protocol_manager_util") {
+  public_deps = [ ":sb_protocol_manager_util" ]
 }
 
 source_set("prefix_iterator") {
