@@ -36,7 +36,7 @@ void HorizontalTabStripOverflowIndicatorView::OnPaint(gfx::Canvas* canvas) {
 
   const ui::ColorProvider* color_provider = GetColorProvider();
   const SkColor base_color =
-      color_provider ? color_provider->GetColor(ui::kColorSysOnSurface)
+      color_provider ? color_provider->GetColor(ui::kColorShadowBase)
                      : SK_ColorBLACK;
 
   const bool is_left = side_ == views::OverflowIndicatorAlignment::kLeft;
