@@ -9,6 +9,7 @@
 
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/task/sequenced_task_runner.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -92,12 +93,11 @@ class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
     base::WeakPtr<UkmRecorder> ptr_;
   };
 
-  // Synchronizes access to |delegates_|.
   // Not using ObserverListThreadSafe since we need to make copies of call
   // arguments.
   mutable base::Lock lock_;
 
-  std::unordered_map<UkmRecorder*, Delegate> delegates_;
+  std::unordered_map<UkmRecorder*, Delegate> delegates_ GUARDED_BY(lock_);
 };
 
 }  // namespace ukm

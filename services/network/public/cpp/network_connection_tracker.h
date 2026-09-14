@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/network_change_notifier.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
@@ -148,11 +149,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
   // The task runner that |this| lives on.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // Protect access to |connection_type_callbacks_|.
   base::Lock lock_;
 
   // Saves user callback if GetConnectionType() cannot complete synchronously.
-  std::list<ConnectionTypeCallback> connection_type_callbacks_;
+  std::list<ConnectionTypeCallback> connection_type_callbacks_
+      GUARDED_BY(lock_);
 
   // |connection_type_| is set on one thread but read on many threads.
   // The default value is -1 before OnInitialConnectionType().
