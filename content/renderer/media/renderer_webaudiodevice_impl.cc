@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -270,7 +271,7 @@ media::OutputDeviceInfo RendererWebAudioDeviceImpl::GetSinkOutputDeviceInfo() {
 
 void RendererWebAudioDeviceImpl::HandleDeviceStatus(
     media::OutputDeviceInfo device_info) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   media::OutputDeviceStatus status = device_info.device_status();
   original_sink_params_ = device_info.output_params();
 
@@ -343,7 +344,7 @@ void RendererWebAudioDeviceImpl::HandleDeviceStatus(
 }
 
 void RendererWebAudioDeviceImpl::InitializeSink() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_sink_initialized_ || !sink_) {
     return;
   }
@@ -371,7 +372,7 @@ RendererWebAudioDeviceImpl::~RendererWebAudioDeviceImpl() {
 }
 
 void RendererWebAudioDeviceImpl::Start() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("webaudio", "RendererWebAudioDeviceImpl::Start", "sink_id",
                sink_descriptor_.SinkId().Utf8());
   SendLogMessage(base::StringPrintf("%s", __func__));
@@ -394,7 +395,7 @@ void RendererWebAudioDeviceImpl::Start() {
 }
 
 void RendererWebAudioDeviceImpl::Pause() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("webaudio", "RendererWebAudioDeviceImpl::Pause", "sink_id",
                sink_descriptor_.SinkId().Utf8());
   SendLogMessage(base::StringPrintf("%s", __func__));
@@ -407,7 +408,7 @@ void RendererWebAudioDeviceImpl::Pause() {
 }
 
 void RendererWebAudioDeviceImpl::Resume() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("webaudio", "RendererWebAudioDeviceImpl::Resume", "sink_id",
                sink_descriptor_.SinkId().Utf8());
   SendLogMessage(base::StringPrintf("%s", __func__));
@@ -417,7 +418,7 @@ void RendererWebAudioDeviceImpl::Resume() {
 }
 
 void RendererWebAudioDeviceImpl::Stop() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("webaudio", "RendererWebAudioDeviceImpl::Stop", "sink_id",
                sink_descriptor_.SinkId().Utf8());
   SendLogMessage(base::StringPrintf("%s", __func__));
@@ -453,7 +454,7 @@ void RendererWebAudioDeviceImpl::SetDetectSilence(
   SendLogMessage(base::StringPrintf("%s({enable_silence_detection=%s})",
                                     __func__,
                                     base::ToString(enable_silence_detection)));
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_detecting_silence_ = enable_silence_detection;
 
   if (silent_sink_suspender_) {
@@ -490,7 +491,7 @@ void RendererWebAudioDeviceImpl::OnRenderError() {
 }
 
 void RendererWebAudioDeviceImpl::NotifyRenderError() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SendLogMessage(base::StringPrintf("%s", __func__));
 
   webaudio_callback_->OnRenderError();
@@ -515,7 +516,7 @@ void RendererWebAudioDeviceImpl::CreateAudioRendererSink() {
                "RendererWebAudioDeviceImpl::CreateAudioRendererSink",
                "sink_type", static_cast<int>(sink_descriptor_.Type()),
                "sink_id", sink_descriptor_.SinkId().Utf8());
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!sink_);
 
   switch (sink_descriptor_.Type()) {
@@ -535,7 +536,7 @@ void RendererWebAudioDeviceImpl::CreateAudioRendererSink() {
 
 media::OutputDeviceStatus
 RendererWebAudioDeviceImpl::MaybeCreateSinkAndGetStatus() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!sink_) {
     CreateAudioRendererSink();
   }

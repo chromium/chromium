@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
@@ -152,8 +152,8 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   const raw_ptr<media::AudioRendererSink::RenderCallback> webaudio_callback_;
 
   // To avoid the need for locking, ensure the control methods of the
-  // blink::WebAudioDevice implementation are called on the same thread.
-  base::ThreadChecker thread_checker_;
+  // blink::WebAudioDevice implementation are called on the same sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<media::AudioRendererSink> sink_;
 
