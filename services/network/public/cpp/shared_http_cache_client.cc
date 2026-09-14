@@ -192,10 +192,6 @@ bool ThreadSafeSet::ShouldEarlyReturn(uint32_t hash) {
     return true;
   }
   if (!set_.has_value()) {
-    // TODO(crbug.com/473666511): The network service should unconditionally
-    // signal when initial hashes are loaded even on empty caches so that `set_`
-    // is initialized, avoiding querying SQLite on empty caches. This will be
-    // addressed in a follow-up CL.
     return false;
   }
   return !set_->contains(hash);

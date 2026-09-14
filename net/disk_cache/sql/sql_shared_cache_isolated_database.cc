@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -167,6 +168,24 @@ SqlSharedCacheIsolatedDatabase::GetSharedReadOnlyConnection() {
   return std::move(*pending_file_set);
 }
 
+namespace {
+SqlSharedCacheIsolatedDatabase::SimFailedCallback*
+    g_global_simulate_db_failure_callback = nullptr;
+}  // namespace
+
+// static
+void SqlSharedCacheIsolatedDatabase::
+    SetGlobalSimulateDbFailureCallbackForTesting(  // IN-TEST
+        SimFailedCallback callback) {
+  if (callback) {
+    static base::NoDestructor<SimFailedCallback> s_callback;
+    *s_callback = std::move(callback);
+    g_global_simulate_db_failure_callback = s_callback.get();
+  } else {
+    g_global_simulate_db_failure_callback = nullptr;
+  }
+}
+
 void SqlSharedCacheIsolatedDatabase::
     SetSimulateDbFailureCallbackForTesting(  // IN-TEST
         SimFailedCallback callback) {
@@ -175,6 +194,10 @@ void SqlSharedCacheIsolatedDatabase::
 
 bool SqlSharedCacheIsolatedDatabase::ShouldSimulateFailure(
     OperationForTesting op) const {
+  if (g_global_simulate_db_failure_callback &&
+      g_global_simulate_db_failure_callback->Run(op)) {
+    return true;
+  }
   return simulate_db_failure_callback_ && simulate_db_failure_callback_.Run(op);
 }
 

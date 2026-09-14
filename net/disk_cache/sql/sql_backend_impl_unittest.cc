@@ -4089,10 +4089,10 @@ TEST_F(SqlBackendImplSharedCacheTest,
       /*on_entry_copied_callback=*/base::NullCallback());
 
   client_ptr->WaitUntilInitialized();
-  client_ptr->WaitUntilOnResourcesAdded(1);
+  client_ptr->WaitUntilOnResourcesAdded(2);
   process_run_loop1.Run();
 
-  EXPECT_EQ(client_ptr->on_resources_added_call_count(), 1u);
+  EXPECT_EQ(client_ptr->on_resources_added_call_count(), 2u);
   EXPECT_THAT(client_ptr->new_hashes(),
               testing::ElementsAre(base::PersistentHash(kUrl1.spec())));
 
@@ -4107,12 +4107,12 @@ TEST_F(SqlBackendImplSharedCacheTest,
       base::ScopedClosureRunner(process_run_loop2.QuitClosure()),
       /*on_entry_copied_callback=*/base::NullCallback());
 
-  client_ptr->WaitUntilOnResourcesAdded(2);
+  client_ptr->WaitUntilOnResourcesAdded(3);
   process_run_loop2.Run();
 
   // Verify that OnResourcesAdded was called again with only the newly added
   // hash.
-  EXPECT_EQ(client_ptr->on_resources_added_call_count(), 2u);
+  EXPECT_EQ(client_ptr->on_resources_added_call_count(), 3u);
   EXPECT_THAT(client_ptr->new_hashes(),
               testing::ElementsAre(base::PersistentHash(kUrl2.spec())));
 
@@ -4151,10 +4151,10 @@ TEST_F(SqlBackendImplSharedCacheTest,
       /*on_entry_copied_callback=*/base::NullCallback());
 
   client_ptr->WaitUntilInitialized();
-  client_ptr->WaitUntilOnResourcesAdded(1);
+  client_ptr->WaitUntilOnResourcesAdded(2);
   process_run_loop1.Run();
 
-  EXPECT_EQ(client_ptr->on_resources_added_call_count(), 1u);
+  EXPECT_EQ(client_ptr->on_resources_added_call_count(), 2u);
   EXPECT_THAT(client_ptr->new_hashes(),
               testing::ElementsAre(base::PersistentHash(kUrl.spec())));
 
@@ -4174,7 +4174,7 @@ TEST_F(SqlBackendImplSharedCacheTest,
 
   // OnResourcesAdded should NOT be called again because the hash is already
   // cached.
-  EXPECT_EQ(client_ptr->on_resources_added_call_count(), 1u);
+  EXPECT_EQ(client_ptr->on_resources_added_call_count(), 2u);
 
   client_ptr->RunDisconnectHandler();
   auto* manager =
@@ -4211,17 +4211,17 @@ TEST_F(SqlBackendImplSharedCacheTest,
       /*on_entry_copied_callback=*/base::NullCallback());
 
   client_ptr1->WaitUntilInitialized();
-  client_ptr1->WaitUntilOnResourcesAdded(1);
+  client_ptr1->WaitUntilOnResourcesAdded(2);
   client_ptr2->WaitUntilInitialized();
-  client_ptr2->WaitUntilOnResourcesAdded(1);
+  client_ptr2->WaitUntilOnResourcesAdded(2);
   process_run_loop.Run();
 
   // Both clients should receive OnResourcesAdded with the new hash.
-  EXPECT_EQ(client_ptr1->on_resources_added_call_count(), 1u);
+  EXPECT_EQ(client_ptr1->on_resources_added_call_count(), 2u);
   EXPECT_THAT(client_ptr1->new_hashes(),
               testing::ElementsAre(base::PersistentHash(kUrl.spec())));
 
-  EXPECT_EQ(client_ptr2->on_resources_added_call_count(), 1u);
+  EXPECT_EQ(client_ptr2->on_resources_added_call_count(), 2u);
   EXPECT_THAT(client_ptr2->new_hashes(),
               testing::ElementsAre(base::PersistentHash(kUrl.spec())));
 
@@ -4267,9 +4267,9 @@ TEST_F(SqlBackendImplSharedCacheTest,
       /*on_entry_copied_callback=*/base::NullCallback());
 
   client_ptr1->WaitUntilInitialized();
-  client_ptr1->WaitUntilOnResourcesAdded(1);
+  client_ptr1->WaitUntilOnResourcesAdded(2);
   client_ptr2->WaitUntilInitialized();
-  client_ptr2->WaitUntilOnResourcesAdded(1);
+  client_ptr2->WaitUntilOnResourcesAdded(2);
   process_run_loop1.Run();
 
   // Disconnect client 1.
@@ -4285,11 +4285,11 @@ TEST_F(SqlBackendImplSharedCacheTest,
       base::ScopedClosureRunner(process_run_loop2.QuitClosure()),
       /*on_entry_copied_callback=*/base::NullCallback());
 
-  client_ptr2->WaitUntilOnResourcesAdded(2);
+  client_ptr2->WaitUntilOnResourcesAdded(3);
   process_run_loop2.Run();
 
-  // client 1 was destroyed upon disconnect, and client 2 receives call count 2.
-  EXPECT_EQ(client_ptr2->on_resources_added_call_count(), 2u);
+  // client 1 was destroyed upon disconnect, and client 2 receives call count 3.
+  EXPECT_EQ(client_ptr2->on_resources_added_call_count(), 3u);
   EXPECT_THAT(client_ptr2->new_hashes(),
               testing::ElementsAre(base::PersistentHash(kUrl2.spec())));
 

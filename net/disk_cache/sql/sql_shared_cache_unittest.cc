@@ -613,6 +613,139 @@ TEST_P(SqlSharedCacheTest, CopyEntriesParseResponseInfoMismatch) {
   VerifyIsolatedDatabaseEntryNotFound(*cache, kKey, SqlSharedCacheRowId(1));
 }
 
+TEST_P(SqlSharedCacheTest, RegisterClientEmptyCacheNotifiesInitialHashes) {
+  base::test::TestFuture<SqlPersistentStore::Error> store_init_future;
+  store_->Initialize(store_init_future.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_EQ(store_init_future.Get(), SqlPersistentStore::Error::kOk);
+
+  auto* manager = store_->shared_cache_manager_for_testing();
+  ASSERT_TRUE(manager);
+
+  net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
+                               net::SchemefulSite(GURL("https://bar.test")));
+
+  // 1. Get cache without DB ID so isolated database is not yet initialized.
+  base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> handle_future1;
+  manager->GetCacheByNik(nik, /*require_shared_cache_db_id=*/false,
+                         handle_future1.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  scoped_refptr<SqlSharedCacheHandle> handle1 = handle_future1.Take();
+  ASSERT_TRUE(handle1);
+  auto* cache = handle1->get();
+
+  // 2. Register client1 before database initialization.
+  auto client1 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr1 = client1.get();
+  cache->RegisterClient(std::move(client1));
+
+  client_ptr1->WaitUntilDisconnectHandlerSet();
+  EXPECT_FALSE(client_ptr1->initialize_called());
+  EXPECT_FALSE(client_ptr1->on_resources_added_called());
+
+  // 3. Trigger DB initialization on the empty cache.
+  base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> handle_future2;
+  manager->GetCacheByNik(nik, /*require_shared_cache_db_id=*/true,
+                         handle_future2.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  scoped_refptr<SqlSharedCacheHandle> handle2 = handle_future2.Take();
+  ASSERT_TRUE(handle2);
+
+  // client1 should receive OnResourcesAdded with empty hashes upon DB load.
+  client_ptr1->WaitUntilInitialized();
+  client_ptr1->WaitUntilOnResourcesAdded(1);
+  EXPECT_EQ(client_ptr1->on_resources_added_call_count(), 1u);
+  EXPECT_TRUE(client_ptr1->new_hashes().empty());
+
+  // 4. Register client2 after database initialization is complete.
+  auto client2 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr2 = client2.get();
+  cache->RegisterClient(std::move(client2));
+
+  // client2 should immediately receive OnResourcesAdded with empty hashes from
+  // cached_hashes_.
+  client_ptr2->WaitUntilInitialized();
+  client_ptr2->WaitUntilOnResourcesAdded(1);
+  EXPECT_EQ(client_ptr2->on_resources_added_call_count(), 1u);
+  EXPECT_TRUE(client_ptr2->new_hashes().empty());
+
+  client_ptr1->RunDisconnectHandler();
+  client_ptr2->RunDisconnectHandler();
+}
+
+TEST_P(SqlSharedCacheTest, RegisterClientLoadHashesErrorNotifiesEmptyHashes) {
+  base::test::TestFuture<SqlPersistentStore::Error> store_init_future;
+  store_->Initialize(store_init_future.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_EQ(store_init_future.Get(), SqlPersistentStore::Error::kOk);
+
+  auto* manager = store_->shared_cache_manager_for_testing();
+  ASSERT_TRUE(manager);
+
+  net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
+                               net::SchemefulSite(GURL("https://bar.test")));
+
+  // 1. Get cache without DB ID so isolated database is not yet initialized.
+  base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> handle_future1;
+  manager->GetCacheByNik(nik, /*require_shared_cache_db_id=*/false,
+                         handle_future1.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  scoped_refptr<SqlSharedCacheHandle> handle1 = handle_future1.Take();
+  ASSERT_TRUE(handle1);
+  auto* cache = handle1->get();
+
+  // 2. Register client1 before database initialization.
+  auto client1 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr1 = client1.get();
+  cache->RegisterClient(std::move(client1));
+
+  client_ptr1->WaitUntilDisconnectHandlerSet();
+  EXPECT_FALSE(client_ptr1->initialize_called());
+  EXPECT_FALSE(client_ptr1->on_resources_added_called());
+
+  // 3. Simulate failure when loading hashes from the isolated database.
+  SqlSharedCacheIsolatedDatabase::SetGlobalSimulateDbFailureCallbackForTesting(
+      base::BindRepeating(
+          [](SqlSharedCacheIsolatedDatabase::OperationForTesting op) {
+            return op ==
+                   SqlSharedCacheIsolatedDatabase::OperationForTesting::kRead;
+          }));
+  base::ScopedClosureRunner reset_simulate_failure(
+      base::BindOnce(&SqlSharedCacheIsolatedDatabase::
+                         SetGlobalSimulateDbFailureCallbackForTesting,
+                     SqlSharedCacheIsolatedDatabase::SimFailedCallback()));
+
+  // 4. Trigger DB initialization on the cache.
+  base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> handle_future2;
+  manager->GetCacheByNik(nik, /*require_shared_cache_db_id=*/true,
+                         handle_future2.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  scoped_refptr<SqlSharedCacheHandle> handle2 = handle_future2.Take();
+  ASSERT_TRUE(handle2);
+
+  // client1 should receive OnResourcesAdded with empty hashes even though
+  // loading hashes failed, allowing ShouldEarlyReturn to return true.
+  client_ptr1->WaitUntilInitialized();
+  client_ptr1->WaitUntilOnResourcesAdded(1);
+  EXPECT_EQ(client_ptr1->on_resources_added_call_count(), 1u);
+  EXPECT_TRUE(client_ptr1->new_hashes().empty());
+
+  // 5. Register client2 after database initialization is complete.
+  auto client2 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr2 = client2.get();
+  cache->RegisterClient(std::move(client2));
+
+  // client2 should immediately receive OnResourcesAdded with empty hashes from
+  // cached_hashes_.
+  client_ptr2->WaitUntilInitialized();
+  client_ptr2->WaitUntilOnResourcesAdded(1);
+  EXPECT_EQ(client_ptr2->on_resources_added_call_count(), 1u);
+  EXPECT_TRUE(client_ptr2->new_hashes().empty());
+
+  client_ptr1->RunDisconnectHandler();
+  client_ptr2->RunDisconnectHandler();
+}
+
 TEST_P(SqlSharedCacheTest,
        CopyEntriesPartialFailureNotifiesOnlySuccessfulHashes) {
   auto handle = CreateAndInitStoreAndCache();

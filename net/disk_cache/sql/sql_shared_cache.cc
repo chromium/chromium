@@ -130,17 +130,22 @@ void SqlSharedCache::OnHashesLoaded(
   if (!cached_hashes_.has_value()) {
     cached_hashes_ = absl::flat_hash_set<uint32_t>();
   }
-  if (!hashes.has_value()) {
-    return;
-  }
-  for (auto hash : *hashes) {
-    cached_hashes_->insert(hash);
+  std::vector<uint32_t> new_hashes;
+  if (hashes.has_value()) {
+    new_hashes = std::move(*hashes);
+    for (auto hash : new_hashes) {
+      cached_hashes_->insert(hash);
+    }
   }
 
-  if (!hashes->empty()) {
-    for (ClientsMap::iterator it(&clients_); !it.IsAtEnd(); it.Advance()) {
-      it.GetCurrentValue()->OnResourcesAdded(*hashes);
-    }
+  // Unconditionally notify all registered clients even if loading hashes
+  // failed or the cache is empty (passing empty `new_hashes`). This ensures the
+  // client-side in-memory filter is initialized so that `ShouldEarlyReturn()`
+  // returns true, gracefully falling back to the network service rather than
+  // querying SQLite on every subresource request when the database is in an
+  // error state.
+  for (ClientsMap::iterator it(&clients_); !it.IsAtEnd(); it.Advance()) {
+    it.GetCurrentValue()->OnResourcesAdded(new_hashes);
   }
 }
 void SqlSharedCache::OnClientDisconnected(

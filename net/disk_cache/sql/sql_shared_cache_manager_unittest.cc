@@ -529,6 +529,7 @@ TEST_P(SqlSharedCacheManagerTest, RegisterClientNewCache) {
   // ID yet.
   EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 1u);
   EXPECT_FALSE(client_ptr->initialize_called());
+  EXPECT_FALSE(client_ptr->on_resources_added_called());
 }
 
 TEST_P(SqlSharedCacheManagerTest, RegisterClientExistingCacheNoDbId) {
@@ -556,6 +557,8 @@ TEST_P(SqlSharedCacheManagerTest, RegisterClientExistingCacheNoDbId) {
   EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 1u);
   EXPECT_FALSE(client_ptr1->initialize_called());
   EXPECT_FALSE(client_ptr2->initialize_called());
+  EXPECT_FALSE(client_ptr1->on_resources_added_called());
+  EXPECT_FALSE(client_ptr2->on_resources_added_called());
 
   // Requesting the cache with require_shared_cache_db_id=true allocates a DB ID
   // and initializes the underlying isolated database.
@@ -570,6 +573,13 @@ TEST_P(SqlSharedCacheManagerTest, RegisterClientExistingCacheNoDbId) {
 
   EXPECT_EQ(client_ptr1->initialize_call_count(), 1u);
   EXPECT_EQ(client_ptr2->initialize_call_count(), 1u);
+
+  client_ptr1->WaitUntilOnResourcesAdded(1);
+  client_ptr2->WaitUntilOnResourcesAdded(1);
+  EXPECT_EQ(client_ptr1->on_resources_added_call_count(), 1u);
+  EXPECT_EQ(client_ptr2->on_resources_added_call_count(), 1u);
+  EXPECT_TRUE(client_ptr1->new_hashes().empty());
+  EXPECT_TRUE(client_ptr2->new_hashes().empty());
 }
 
 TEST_P(SqlSharedCacheManagerTest,
@@ -590,6 +600,7 @@ TEST_P(SqlSharedCacheManagerTest,
   manager->RegisterClient(nik, std::move(client1));
   client_ptr1->WaitUntilDisconnectHandlerSet();
   EXPECT_EQ(client_ptr1->initialize_call_count(), 0u);
+  EXPECT_FALSE(client_ptr1->on_resources_added_called());
 
   // 2. Request cache with require_shared_cache_db_id=true to trigger
   // InitIsolatedDatabase asynchronously.
@@ -615,6 +626,18 @@ TEST_P(SqlSharedCacheManagerTest,
   EXPECT_EQ(client_ptr1->initialize_call_count(), 1u);
   EXPECT_EQ(client_ptr2->initialize_call_count(), 1u);
   EXPECT_EQ(client_ptr3->initialize_call_count(), 1u);
+
+  client_ptr1->WaitUntilOnResourcesAdded(1);
+  client_ptr2->WaitUntilOnResourcesAdded(1);
+  client_ptr3->WaitUntilOnResourcesAdded(1);
+
+  EXPECT_EQ(client_ptr1->on_resources_added_call_count(), 1u);
+  EXPECT_EQ(client_ptr2->on_resources_added_call_count(), 1u);
+  EXPECT_EQ(client_ptr3->on_resources_added_call_count(), 1u);
+
+  EXPECT_TRUE(client_ptr1->new_hashes().empty());
+  EXPECT_TRUE(client_ptr2->new_hashes().empty());
+  EXPECT_TRUE(client_ptr3->new_hashes().empty());
 }
 
 TEST_P(SqlSharedCacheManagerTest, RegisterClientExistingCacheWithDbId) {
@@ -643,6 +666,10 @@ TEST_P(SqlSharedCacheManagerTest, RegisterClientExistingCacheWithDbId) {
   // Now it should be initialized because the DB ID exists.
   client_ptr1->WaitUntilInitialized();
   EXPECT_TRUE(client_ptr1->initialize_called());
+
+  client_ptr1->WaitUntilOnResourcesAdded(1);
+  EXPECT_TRUE(client_ptr1->on_resources_added_called());
+  EXPECT_TRUE(client_ptr1->new_hashes().empty());
 }
 
 TEST_P(SqlSharedCacheManagerTest, RegisterClientDifferentNik) {

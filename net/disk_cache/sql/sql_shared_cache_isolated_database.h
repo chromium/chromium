@@ -156,6 +156,9 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
   using SimFailedCallback =
       base::RepeatingCallback<bool(OperationForTesting op)>;
 
+  static void SetGlobalSimulateDbFailureCallbackForTesting(
+      SimFailedCallback callback);
+
   void SetSimulateDbFailureCallbackForTesting(SimFailedCallback callback);
   bool HasRowForTesting(SqlSharedCacheRowId shared_cache_row_id);
 
