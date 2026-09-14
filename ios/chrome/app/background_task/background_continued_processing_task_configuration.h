@@ -10,6 +10,13 @@
 
 #import "base/ios/block_types.h"
 
+// Default total units of progress for a continued processing task.
+inline constexpr int64_t kDefaultTotalUnitsOfProgress = 1000;
+
+// Default expected number of discrete steps during the linear progress phase of
+// the stepped incremental progress.
+inline constexpr int64_t kDefaultExpectedStepCount = 18;
+
 // Configuration object containing the parameters required to request a
 // background continued processing task.
 @interface BackgroundContinuedProcessingTaskConfiguration : NSObject
@@ -24,8 +31,14 @@
 // the Live Activity interface. Guaranteed to run on the main/UI thread.
 @property(nonatomic, readonly, copy) ProceduralBlock expirationHandler;
 
-// (Optional) Total units of work for progress tracking. Defaults to 100.
+// (Optional) Total units of work for progress tracking. Must be strictly
+// positive. Defaults to `kDefaultTotalUnitsOfProgress`.
 @property(nonatomic) int64_t totalUnits;
+
+// (Optional) Expected number of discrete progress steps for the linear
+// progress phase. Must be strictly positive. Defaults to
+// `kDefaultExpectedStepCount`.
+@property(nonatomic) int64_t expectedStepCount;
 
 // (Optional) The submission strategy for the scheduler to abide by. Defaults to
 // `BGContinuedProcessingTaskRequestSubmissionStrategyQueue`.

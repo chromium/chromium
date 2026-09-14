@@ -37,20 +37,20 @@ class BackgroundContinuedProcessingTaskContextTest : public PlatformTest {
   }
 
   BackgroundContinuedProcessingTaskContext* CreateTestContext(
-      NSString* task_id = @"test.id",
-      ProceduralBlock expiration_handler =
+      NSString* taskId = @"test.id",
+      ProceduralBlock expirationHandler =
           ^{
           },
-      ProceduralBlock finish_handler = nil) {
+      ProceduralBlock finishHandler = nil) {
     BackgroundContinuedProcessingTaskConfiguration* config =
         [[BackgroundContinuedProcessingTaskConfiguration alloc]
                 initWithTitle:kTestTaskTitle
-            expirationHandler:expiration_handler];
+            expirationHandler:expirationHandler];
     config.subtitle = kTestTaskSubtitle;
     return [[BackgroundContinuedProcessingTaskContext alloc]
-        initWithTaskIdentifier:task_id
+        initWithTaskIdentifier:taskId
                  configuration:config
-                 finishHandler:finish_handler];
+                 finishHandler:finishHandler];
   }
 
  protected:
@@ -79,11 +79,11 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
       EXPECT_TRUE(context.isCompleted);
       EXPECT_OCMOCK_VERIFY(mock_scheduler_);
 
-      id mock_task = OCMClassMock([BGContinuedProcessingTask class]);
-      OCMExpect([mock_task setTaskCompletedWithSuccess:YES]);
+      id mockTask = OCMClassMock([BGContinuedProcessingTask class]);
+      OCMExpect([mockTask setTaskCompletedWithSuccess:YES]);
 
-      [context attachUnderlyingTask:mock_task];
-      EXPECT_OCMOCK_VERIFY(mock_task);
+      [context attachUnderlyingTask:mockTask];
+      EXPECT_OCMOCK_VERIFY(mockTask);
     }
 
     // Early completion with failure.
@@ -97,11 +97,11 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
       EXPECT_TRUE(context.isCompleted);
       EXPECT_OCMOCK_VERIFY(mock_scheduler_);
 
-      id mock_task = OCMClassMock([BGContinuedProcessingTask class]);
-      OCMExpect([mock_task setTaskCompletedWithSuccess:NO]);
+      id mockTask = OCMClassMock([BGContinuedProcessingTask class]);
+      OCMExpect([mockTask setTaskCompletedWithSuccess:NO]);
 
-      [context attachUnderlyingTask:mock_task];
-      EXPECT_OCMOCK_VERIFY(mock_task);
+      [context attachUnderlyingTask:mockTask];
+      EXPECT_OCMOCK_VERIFY(mockTask);
     }
   }
 }
@@ -128,10 +128,26 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest, TestPostCompletionSafety) {
   EXPECT_NSEQ(context.subtitle, kTestTaskSubtitle);
 
   [context incrementProgressByUnits:50];
-  EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.0);
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 1.0);
 
   [context setCompletedUnits:50];
-  EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.0);
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 1.0);
+
+  [context incrementStepProgress];
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 1.0);
+  EXPECT_EQ(context.completedUnits, kDefaultTotalUnitsOfProgress);
+
+  BackgroundContinuedProcessingTaskContext* failureContext =
+      CreateTestContext(@"mutation.failure.test.id");
+  [failureContext setTaskCompletedWithSuccess:NO];
+  EXPECT_TRUE(failureContext.isCompleted);
+  [failureContext incrementProgressByUnits:50];
+  EXPECT_DOUBLE_EQ(failureContext.fractionCompleted, 0.0);
+  [failureContext setCompletedUnits:50];
+  EXPECT_DOUBLE_EQ(failureContext.fractionCompleted, 0.0);
+  [failureContext incrementStepProgress];
+  EXPECT_DOUBLE_EQ(failureContext.fractionCompleted, 0.0);
+  EXPECT_EQ(failureContext.completedUnits, 0);
 }
 
 // Tests that setting an empty title fails.
@@ -143,6 +159,117 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest, TestEmptyTitleFails) {
   EXPECT_DEATH_IF_SUPPORTED([context updateTitle:@"" subtitle:@"Bar"], "");
 }
 
+// Tests that configuring invalid progress invariants triggers a crash.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestInvalidConfigurationFails) {
+  BackgroundContinuedProcessingTaskConfiguration* config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:kTestTaskTitle
+          expirationHandler:^{
+          }];
+
+  EXPECT_DEATH_IF_SUPPORTED(config.totalUnits = 0, "");
+  EXPECT_DEATH_IF_SUPPORTED(config.totalUnits = -1, "");
+  EXPECT_DEATH_IF_SUPPORTED(config.expectedStepCount = 0, "");
+  EXPECT_DEATH_IF_SUPPORTED(config.expectedStepCount = -1, "");
+}
+
+// Tests that `incrementStepProgress` behaves correctly for small `totalUnits`
+// edge cases without crashing, stalling, or exceeding `totalUnits` - 1.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestIncrementStepProgressEdgeCases) {
+  // Edge case: `totalUnits` = 1.
+  {
+    BackgroundContinuedProcessingTaskConfiguration* config =
+        [[BackgroundContinuedProcessingTaskConfiguration alloc]
+                initWithTitle:kTestTaskTitle
+            expirationHandler:^{
+            }];
+    config.totalUnits = 1;
+    BackgroundContinuedProcessingTaskContext* context =
+        [[BackgroundContinuedProcessingTaskContext alloc]
+            initWithTaskIdentifier:@"edge.1.test.id"
+                     configuration:config
+                     finishHandler:nil];
+
+    // For `totalUnits` = 1, ceiling is 0; completed units must remain 0 before
+    // completion.
+    [context incrementStepProgress];
+    EXPECT_EQ(context.completedUnits, 0);
+    EXPECT_LT(context.completedUnits, context.totalUnits);
+
+    [context setTaskCompletedWithSuccess:YES];
+    EXPECT_EQ(context.completedUnits, 1);
+  }
+
+  // Edge case: `totalUnits` = 2.
+  {
+    BackgroundContinuedProcessingTaskConfiguration* config =
+        [[BackgroundContinuedProcessingTaskConfiguration alloc]
+                initWithTitle:kTestTaskTitle
+            expirationHandler:^{
+            }];
+    config.totalUnits = 2;
+    BackgroundContinuedProcessingTaskContext* context =
+        [[BackgroundContinuedProcessingTaskContext alloc]
+            initWithTaskIdentifier:@"edge.2.test.id"
+                     configuration:config
+                     finishHandler:nil];
+
+    // For `totalUnits` = 2, linear and asymptotic ceilings are 1.
+    [context incrementStepProgress];
+    EXPECT_EQ(context.completedUnits, 1);
+
+    // Stepping past ceiling remains clamped at 1.
+    [context incrementStepProgress];
+    EXPECT_EQ(context.completedUnits, 1);
+    EXPECT_LT(context.completedUnits, context.totalUnits);
+
+    [context setTaskCompletedWithSuccess:YES];
+    EXPECT_EQ(context.completedUnits, 2);
+  }
+
+  // Edge case: Low-resolution configuration where `linearCeiling` <
+  // `expectedStepCount` (`stepRatio` < 1.0). Each step must strictly advance by
+  // at least +1 unit until reaching the linear and asymptotic ceilings.
+  {
+    BackgroundContinuedProcessingTaskConfiguration* config =
+        [[BackgroundContinuedProcessingTaskConfiguration alloc]
+                initWithTitle:kTestTaskTitle
+            expirationHandler:^{
+            }];
+    config.totalUnits = 10;
+    config.expectedStepCount = 18;
+    BackgroundContinuedProcessingTaskContext* context =
+        [[BackgroundContinuedProcessingTaskContext alloc]
+            initWithTaskIdentifier:@"edge.lowres.test.id"
+                     configuration:config
+                     finishHandler:nil];
+
+    // Linear ceiling is 7. Verify each step strictly increments by at least 1
+    // unit.
+    for (int64_t expectedUnits = 1; expectedUnits <= 7; ++expectedUnits) {
+      [context incrementStepProgress];
+      EXPECT_EQ(context.completedUnits, expectedUnits);
+    }
+
+    // Step into asymptotic phase: ceiling is 9 (std::min(9, round(10 * 0.98))).
+    [context incrementStepProgress];
+    EXPECT_EQ(context.completedUnits, 8);
+
+    [context incrementStepProgress];
+    EXPECT_EQ(context.completedUnits, 9);
+
+    // Capped at asymptotic ceiling (9). Must not reach `totalUnits` (10).
+    [context incrementStepProgress];
+    EXPECT_EQ(context.completedUnits, 9);
+    EXPECT_LT(context.completedUnits, context.totalUnits);
+
+    [context setTaskCompletedWithSuccess:YES];
+    EXPECT_EQ(context.completedUnits, 10);
+  }
+}
+
 // Tests that progress updates update `fractionCompleted` correctly and clamp
 // to valid bounds [0, totalUnits].
 TEST_F(BackgroundContinuedProcessingTaskContextTest, TestProgressTracking) {
@@ -150,20 +277,253 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest, TestProgressTracking) {
       CreateTestContext(@"progress.test.id");
 
   EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.0);
+  EXPECT_EQ(context.completedUnits, 0);
+  EXPECT_EQ(context.totalUnits, kDefaultTotalUnitsOfProgress);
 
-  [context incrementProgressByUnits:25];
+  [context incrementProgressByUnits:0];
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.0);
+  EXPECT_EQ(context.completedUnits, 0);
+  EXPECT_DEATH_IF_SUPPORTED([context incrementProgressByUnits:-5], "");
+
+  [context incrementProgressByUnits:250];
   EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.25);
+  EXPECT_EQ(context.completedUnits, 250);
 
-  [context setCompletedUnits:50];
+  [context setCompletedUnits:500];
   EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.5);
+  EXPECT_EQ(context.completedUnits, 500);
 
-  // Clamping to `totalUnitCount` (default 100).
-  [context incrementProgressByUnits:60];
+  // Clamping to `totalUnitCount` (default 1000).
+  [context incrementProgressByUnits:600];
   EXPECT_DOUBLE_EQ(context.fractionCompleted, 1.0);
+  EXPECT_EQ(context.completedUnits, 1000);
 
   // Clamping to 0.
   [context setCompletedUnits:-10];
   EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.0);
+  EXPECT_EQ(context.completedUnits, 0);
+}
+
+// Tests that `incrementStepProgress` advances linearly up to the linear
+// threshold and asymptotically thereafter without exceeding the asymptotic
+// ceiling.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestIncrementStepProgressLinearAndAsymptotic) {
+  BackgroundContinuedProcessingTaskContext* context =
+      CreateTestContext(@"step.progress.test.id");
+
+  const int64_t linearCeiling = 700;
+  const int64_t asymptoticCeiling = 980;
+
+  EXPECT_EQ(context.completedUnits, 0);
+
+  // Advance to halfway of linear phase.
+  for (int i = 0; i < kDefaultExpectedStepCount / 2; ++i) {
+    [context incrementStepProgress];
+  }
+  EXPECT_EQ(context.completedUnits, 350);
+
+  // Advance to end of linear phase.
+  for (int i = kDefaultExpectedStepCount / 2; i < kDefaultExpectedStepCount;
+       ++i) {
+    [context incrementStepProgress];
+  }
+  EXPECT_EQ(context.completedUnits, linearCeiling);
+
+  // First step in asymptotic phase: remaining = 980 - 700 = 280. 280 / 25 = 11.
+  // Expected = 700 + 11 = 711.
+  [context incrementStepProgress];
+  EXPECT_EQ(context.completedUnits, 711);
+
+  // Subsequent steps should monotonically increase toward the asymptotic
+  // ceiling without regressing or stalling.
+  int64_t previousUnits = context.completedUnits;
+  for (int i = 0; i < 200; ++i) {
+    [context incrementStepProgress];
+    EXPECT_GE(context.completedUnits, previousUnits);
+    if (previousUnits < asymptoticCeiling) {
+      EXPECT_GT(context.completedUnits, previousUnits);
+    } else {
+      EXPECT_EQ(context.completedUnits, asymptoticCeiling);
+    }
+    previousUnits = context.completedUnits;
+  }
+  EXPECT_EQ(context.completedUnits, asymptoticCeiling);
+  EXPECT_LT(context.fractionCompleted, 1.0);
+}
+
+// Tests that a custom `expectedStepCount` value alters the linear progression
+// rate.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestIncrementStepProgressCustomExpectedStepCount) {
+  BackgroundContinuedProcessingTaskConfiguration* config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:kTestTaskTitle
+          expirationHandler:^{
+          }];
+  config.expectedStepCount = 10;
+  BackgroundContinuedProcessingTaskContext* context =
+      [[BackgroundContinuedProcessingTaskContext alloc]
+          initWithTaskIdentifier:@"custom.expected.steps.test.id"
+                   configuration:config
+                   finishHandler:nil];
+
+  const int64_t linearCeiling = 700;
+  const int64_t asymptoticCeiling = 980;
+
+  for (int i = 0; i < 10; ++i) {
+    [context incrementStepProgress];
+  }
+  EXPECT_EQ(context.completedUnits, linearCeiling);
+
+  // 11th step is in asymptotic phase.
+  [context incrementStepProgress];
+  EXPECT_GT(context.completedUnits, linearCeiling);
+  EXPECT_LE(context.completedUnits, asymptoticCeiling);
+
+  // Edge case: `expectedStepCount` = 1 advances immediately to `linearCeiling`.
+  {
+    BackgroundContinuedProcessingTaskConfiguration* singleStepConfig =
+        [[BackgroundContinuedProcessingTaskConfiguration alloc]
+                initWithTitle:kTestTaskTitle
+            expirationHandler:^{
+            }];
+    singleStepConfig.expectedStepCount = 1;
+    BackgroundContinuedProcessingTaskContext* singleStepContext =
+        [[BackgroundContinuedProcessingTaskContext alloc]
+            initWithTaskIdentifier:@"single.step.expected.test.id"
+                     configuration:singleStepConfig
+                     finishHandler:nil];
+
+    [singleStepContext incrementStepProgress];
+    EXPECT_EQ(singleStepContext.completedUnits, linearCeiling);
+
+    // Subsequent step enters asymptotic phase.
+    [singleStepContext incrementStepProgress];
+    EXPECT_GT(singleStepContext.completedUnits, linearCeiling);
+    EXPECT_LE(singleStepContext.completedUnits, asymptoticCeiling);
+  }
+}
+
+// Tests that a custom `totalUnits` value scales both the linear and asymptotic
+// progression phases proportionally.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestIncrementStepProgressCustomTotalUnits) {
+  constexpr int64_t kCustomTotalUnits = 2000;
+  const int64_t linearCeiling = 1400;
+  const int64_t asymptoticCeiling = 1960;
+
+  BackgroundContinuedProcessingTaskConfiguration* config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:kTestTaskTitle
+          expirationHandler:^{
+          }];
+  config.totalUnits = kCustomTotalUnits;
+  BackgroundContinuedProcessingTaskContext* context =
+      [[BackgroundContinuedProcessingTaskContext alloc]
+          initWithTaskIdentifier:@"custom.total.units.test.id"
+                   configuration:config
+                   finishHandler:nil];
+
+  EXPECT_EQ(context.totalUnits, kCustomTotalUnits);
+
+  // Advance through linear phase.
+  for (int i = 0; i < kDefaultExpectedStepCount; ++i) {
+    [context incrementStepProgress];
+  }
+  EXPECT_EQ(context.completedUnits, linearCeiling);
+  EXPECT_NEAR(context.fractionCompleted, 0.70, 0.001);
+
+  // First step into asymptotic phase: remaining = 1960 - 1400 = 560.
+  // 560 / 25 = 22. Expected units = 1400 + 22 = 1422.
+  [context incrementStepProgress];
+  EXPECT_EQ(context.completedUnits, 1422);
+
+  // Advance until asymptotic ceiling is reached.
+  for (int i = 0; i < 200; ++i) {
+    [context incrementStepProgress];
+  }
+  EXPECT_EQ(context.completedUnits, asymptoticCeiling);
+  EXPECT_NEAR(context.fractionCompleted, 0.98, 0.001);
+}
+
+// Tests that interleaved manual progress updates and stepped progress updates
+// advance smoothly and monotonically without crashing or regressing.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestInterleavedManualAndSteppedProgress) {
+  BackgroundContinuedProcessingTaskContext* context =
+      CreateTestContext(@"interleaved.progress.test.id");
+
+  // Step once linearly.
+  [context incrementStepProgress];
+  EXPECT_GT(context.completedUnits, 0);
+  const int64_t step1Units = context.completedUnits;
+
+  // Manually increment past current progress.
+  [context incrementProgressByUnits:200];
+  EXPECT_EQ(context.completedUnits, step1Units + 200);
+  const int64_t manual1Units = context.completedUnits;
+
+  // Continue stepping: should resume from inferred step without crashing.
+  [context incrementStepProgress];
+  EXPECT_GT(context.completedUnits, manual1Units);
+
+  // Manual backward adjustment: decrementing progress should allow stepped
+  // progress to seamlessly infer the lower step and advance forward from there.
+  [context setCompletedUnits:200];
+  EXPECT_EQ(context.completedUnits, 200);
+  [context incrementStepProgress];
+  EXPECT_GT(context.completedUnits, 200);
+  EXPECT_LT(context.completedUnits, 700);
+
+  // Manually jump past linear ceiling (700).
+  [context setCompletedUnits:750];
+  EXPECT_EQ(context.completedUnits, 750);
+
+  // Stepped progress should now advance in asymptotic phase without crashing.
+  [context incrementStepProgress];
+  EXPECT_GT(context.completedUnits, 750);
+  EXPECT_LE(context.completedUnits, 980);
+
+  // Manually jump past asymptotic ceiling (980) into upper tail [980, 1000).
+  [context setCompletedUnits:990];
+  EXPECT_EQ(context.completedUnits, 990);
+
+  // Stepping above the asymptotic ceiling must not regress progress back to
+  // 980.
+  [context incrementStepProgress];
+  EXPECT_EQ(context.completedUnits, 990);
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.99);
+
+  // Jump to 100% completion units.
+  [context setCompletedUnits:1000];
+  EXPECT_EQ(context.completedUnits, 1000);
+
+  // Stepping at maximum units should stay at 1000 without crashing.
+  [context incrementStepProgress];
+  EXPECT_EQ(context.completedUnits, 1000);
+}
+
+// Tests that completing the task with success fills progress to 100%,
+// while completing with failure preserves partial progress.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestTaskCompletedWithSuccessFillsProgress) {
+  BackgroundContinuedProcessingTaskContext* context =
+      CreateTestContext(@"success.progress.test.id");
+
+  [context incrementStepProgress];
+  EXPECT_LT(context.completedUnits, kDefaultTotalUnitsOfProgress);
+
+  [context setTaskCompletedWithSuccess:YES];
+  EXPECT_EQ(context.completedUnits, kDefaultTotalUnitsOfProgress);
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 1.0);
+
+  BackgroundContinuedProcessingTaskContext* failureContext =
+      CreateTestContext(@"failure.progress.test.id");
+  [failureContext incrementStepProgress];
+  const int64_t unitsBeforeFailure = failureContext.completedUnits;
+  [failureContext setTaskCompletedWithSuccess:NO];
+  EXPECT_EQ(failureContext.completedUnits, unitsBeforeFailure);
 }
 
 // Tests that updating progress syncs to the underlying OS task when attached.
@@ -176,21 +536,26 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
   if (@available(iOS 26.0, *)) {
     BackgroundContinuedProcessingTaskContext* context =
         CreateTestContext(@"progress.sync.test.id");
-    [context setCompletedUnits:30];
+    [context setCompletedUnits:300];
 
-    id mock_task = OCMClassMock([BGContinuedProcessingTask class]);
-    NSProgress* task_progress = [NSProgress progressWithTotalUnitCount:100];
-    OCMStub([(BGContinuedProcessingTask*)mock_task progress])
-        .andReturn(task_progress);
+    id mockTask = OCMClassMock([BGContinuedProcessingTask class]);
+    NSProgress* taskProgress =
+        [NSProgress progressWithTotalUnitCount:kDefaultTotalUnitsOfProgress];
+    OCMStub([(BGContinuedProcessingTask*)mockTask progress])
+        .andReturn(taskProgress);
 
-    [context attachUnderlyingTask:mock_task];
-    EXPECT_EQ(task_progress.completedUnitCount, 30);
+    [context attachUnderlyingTask:mockTask];
+    EXPECT_EQ(taskProgress.completedUnitCount, 300);
 
-    [context incrementProgressByUnits:20];
-    EXPECT_EQ(task_progress.completedUnitCount, 50);
+    [context incrementProgressByUnits:200];
+    EXPECT_EQ(taskProgress.completedUnitCount, 500);
 
-    [context setCompletedUnits:80];
-    EXPECT_EQ(task_progress.completedUnitCount, 80);
+    [context setCompletedUnits:800];
+    EXPECT_EQ(taskProgress.completedUnitCount, 800);
+
+    [context incrementStepProgress];
+    EXPECT_EQ(taskProgress.completedUnitCount, context.completedUnits);
+    EXPECT_GT(taskProgress.completedUnitCount, 800);
   }
 }
 
@@ -204,46 +569,47 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
   }
 
   if (@available(iOS 26.0, *)) {
-    __block BOOL expiration_called = NO;
-    __block BOOL os_completed_called = NO;
-    __block BOOL expiration_called_before_os_completion = NO;
-    __block BOOL finish_handler_called = NO;
+    __block BOOL expirationCalled = NO;
+    __block BOOL osCompletedCalled = NO;
+    __block BOOL expirationCalledBeforeOsCompletion = NO;
+    __block BOOL finishHandlerCalled = NO;
 
     BackgroundContinuedProcessingTaskContext* context = CreateTestContext(
         @"expiration.test.id",
         ^{
-          expiration_called = YES;
-          if (!os_completed_called) {
-            expiration_called_before_os_completion = YES;
+          expirationCalled = YES;
+          if (!osCompletedCalled) {
+            expirationCalledBeforeOsCompletion = YES;
           }
         },
         ^{
-          finish_handler_called = YES;
+          finishHandlerCalled = YES;
         });
 
-    __block void (^captured_expiration_handler)(void) = nil;
-    id mock_task = OCMClassMock([BGContinuedProcessingTask class]);
-    OCMStub([(BGContinuedProcessingTask*)mock_task progress])
-        .andReturn([NSProgress progressWithTotalUnitCount:100]);
+    __block void (^capturedExpirationHandler)(void) = nil;
+    id mockTask = OCMClassMock([BGContinuedProcessingTask class]);
+    OCMStub([(BGContinuedProcessingTask*)mockTask progress])
+        .andReturn([NSProgress
+            progressWithTotalUnitCount:kDefaultTotalUnitsOfProgress]);
     OCMStub(
-        [mock_task setExpirationHandler:[OCMArg checkWithBlock:^BOOL(id value) {
-                     captured_expiration_handler = [value copy];
-                     return YES;
-                   }]]);
-    OCMStub([mock_task setTaskCompletedWithSuccess:NO])
+        [mockTask setExpirationHandler:[OCMArg checkWithBlock:^BOOL(id value) {
+                    capturedExpirationHandler = [value copy];
+                    return YES;
+                  }]]);
+    OCMStub([mockTask setTaskCompletedWithSuccess:NO])
         .andDo(^(NSInvocation* invocation) {
-          os_completed_called = YES;
+          osCompletedCalled = YES;
         });
 
-    [context attachUnderlyingTask:mock_task];
-    ASSERT_NE(captured_expiration_handler, nil);
+    [context attachUnderlyingTask:mockTask];
+    ASSERT_NE(capturedExpirationHandler, nil);
 
-    captured_expiration_handler();
+    capturedExpirationHandler();
 
-    EXPECT_TRUE(expiration_called);
-    EXPECT_TRUE(os_completed_called);
-    EXPECT_TRUE(expiration_called_before_os_completion);
-    EXPECT_TRUE(finish_handler_called);
+    EXPECT_TRUE(expirationCalled);
+    EXPECT_TRUE(osCompletedCalled);
+    EXPECT_TRUE(expirationCalledBeforeOsCompletion);
+    EXPECT_TRUE(finishHandlerCalled);
     EXPECT_TRUE(context.isCompleted);
   }
 }
@@ -257,52 +623,53 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
   }
 
   if (@available(iOS 26.0, *)) {
-    __block BOOL expiration_called = NO;
-    __block BOOL finish_handler_called = NO;
-    __block BOOL os_completed_called = NO;
+    __block BOOL expirationCalled = NO;
+    __block BOOL finishHandlerCalled = NO;
+    __block BOOL osCompletedCalled = NO;
     base::test::TestFuture<void> future;
-    base::RepeatingClosure done_callback = future.GetRepeatingCallback();
+    base::RepeatingClosure doneCallback = future.GetRepeatingCallback();
 
     BackgroundContinuedProcessingTaskContext* context = CreateTestContext(
         @"offthread.expiration.test.id",
         ^{
           EXPECT_TRUE(NSThread.isMainThread);
-          expiration_called = YES;
+          expirationCalled = YES;
         },
         ^{
           EXPECT_TRUE(NSThread.isMainThread);
-          finish_handler_called = YES;
-          done_callback.Run();
+          finishHandlerCalled = YES;
+          doneCallback.Run();
         });
 
-    __block void (^captured_expiration_handler)(void) = nil;
-    id mock_task = OCMClassMock([BGContinuedProcessingTask class]);
-    OCMStub([(BGContinuedProcessingTask*)mock_task progress])
-        .andReturn([NSProgress progressWithTotalUnitCount:100]);
+    __block void (^capturedExpirationHandler)(void) = nil;
+    id mockTask = OCMClassMock([BGContinuedProcessingTask class]);
+    OCMStub([(BGContinuedProcessingTask*)mockTask progress])
+        .andReturn([NSProgress
+            progressWithTotalUnitCount:kDefaultTotalUnitsOfProgress]);
     OCMStub(
-        [mock_task setExpirationHandler:[OCMArg checkWithBlock:^BOOL(id value) {
-                     captured_expiration_handler = [value copy];
-                     return YES;
-                   }]]);
-    OCMStub([mock_task setTaskCompletedWithSuccess:NO])
+        [mockTask setExpirationHandler:[OCMArg checkWithBlock:^BOOL(id value) {
+                    capturedExpirationHandler = [value copy];
+                    return YES;
+                  }]]);
+    OCMStub([mockTask setTaskCompletedWithSuccess:NO])
         .andDo(^(NSInvocation* invocation) {
-          os_completed_called = YES;
+          osCompletedCalled = YES;
         });
 
-    [context attachUnderlyingTask:mock_task];
-    ASSERT_NE(captured_expiration_handler, nil);
+    [context attachUnderlyingTask:mockTask];
+    ASSERT_NE(capturedExpirationHandler, nil);
 
     // Invoke the expiration handler on a background thread.
     dispatch_async(
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          captured_expiration_handler();
+          capturedExpirationHandler();
         });
 
     EXPECT_TRUE(future.Wait());
 
-    EXPECT_TRUE(expiration_called);
-    EXPECT_TRUE(finish_handler_called);
-    EXPECT_TRUE(os_completed_called);
+    EXPECT_TRUE(expirationCalled);
+    EXPECT_TRUE(finishHandlerCalled);
+    EXPECT_TRUE(osCompletedCalled);
     EXPECT_TRUE(context.isCompleted);
   }
 }
@@ -316,18 +683,18 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
   }
 
   if (@available(iOS 26.0, *)) {
-    id mock_task = OCMClassMock([BGContinuedProcessingTask class]);
-    OCMStub([(BGContinuedProcessingTask*)mock_task progress])
+    id mockTask = OCMClassMock([BGContinuedProcessingTask class]);
+    OCMStub([(BGContinuedProcessingTask*)mockTask progress])
         .andReturn([NSProgress progressWithTotalUnitCount:100]);
-    OCMExpect([mock_task setTaskCompletedWithSuccess:NO]);
+    OCMExpect([mockTask setTaskCompletedWithSuccess:NO]);
 
     @autoreleasepool {
       BackgroundContinuedProcessingTaskContext* context =
           CreateTestContext(@"drop.active.test.id");
-      [context attachUnderlyingTask:mock_task];
+      [context attachUnderlyingTask:mockTask];
       context = nil;
     }
 
-    EXPECT_OCMOCK_VERIFY(mock_task);
+    EXPECT_OCMOCK_VERIFY(mockTask);
   }
 }

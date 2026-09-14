@@ -29,9 +29,6 @@
 // to the system.
 @property(nonatomic, copy) NSString* subtitle;
 
-// The fraction of work completed (from 0.0 to 1.0).
-@property(nonatomic, readonly) double fractionCompleted;
-
 // Whether the task has already been completed or expired.
 @property(nonatomic, readonly, getter=isCompleted) BOOL completed;
 
@@ -39,11 +36,26 @@
 // Live Activity.
 - (void)updateTitle:(NSString*)title subtitle:(NSString*)subtitle;
 
-// Additively advances the completed progress units.
-- (void)incrementProgressByUnits:(int64_t)units;
+// The fraction of work completed (from 0.0 to 1.0).
+@property(nonatomic, readonly) double fractionCompleted;
+
+// The completed progress units.
+@property(nonatomic, readonly) int64_t completedUnits;
+
+// The total progress units.
+@property(nonatomic, readonly) int64_t totalUnits;
 
 // Sets completed progress units directly.
 - (void)setCompletedUnits:(int64_t)completedUnits;
+
+// Additively advances the completed progress units by `units`.
+- (void)incrementProgressByUnits:(int64_t)units;
+
+// Advances task progress by one discrete step according to the configured
+// stepped progress algorithm (linear progress across `expectedStepCount` steps
+// toward 70% of `totalUnits`, then asymptotic progress approaching 98% of
+// `totalUnits`).
+- (void)incrementStepProgress;
 
 // Signals task completion to the OS and manager.
 - (void)setTaskCompletedWithSuccess:(BOOL)success;

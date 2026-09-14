@@ -272,7 +272,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
     id mock_task = OCMClassMock([BGContinuedProcessingTask class]);
     OCMStub([mock_task identifier]).andReturn(task_identifier);
     OCMStub([(BGContinuedProcessingTask*)mock_task progress])
-        .andReturn([NSProgress progressWithTotalUnitCount:100]);
+        .andReturn([NSProgress
+            progressWithTotalUnitCount:kDefaultTotalUnitsOfProgress]);
     OCMExpect([mock_task setTaskCompletedWithSuccess:YES]);
 
     captured_launch_handler(mock_task);

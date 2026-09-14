@@ -7,13 +7,6 @@
 #import "base/check.h"
 #import "base/check_op.h"
 
-namespace {
-
-// Default total units of progress for a continued processing task.
-constexpr int64_t kDefaultTotalUnits = 100;
-
-}  // namespace
-
 @implementation BackgroundContinuedProcessingTaskConfiguration
 
 #pragma mark - Initializer
@@ -26,7 +19,8 @@ constexpr int64_t kDefaultTotalUnits = 100;
   if ((self = [super init])) {
     _title = [title copy];
     _expirationHandler = [expirationHandler copy];
-    _totalUnits = kDefaultTotalUnits;
+    _totalUnits = kDefaultTotalUnitsOfProgress;
+    _expectedStepCount = kDefaultExpectedStepCount;
     if (@available(iOS 26.0, *)) {
       _strategy = BGContinuedProcessingTaskRequestSubmissionStrategyQueue;
       _requiredResources = BGContinuedProcessingTaskRequestResourcesDefault;
@@ -45,6 +39,11 @@ constexpr int64_t kDefaultTotalUnits = 100;
 - (void)setTotalUnits:(int64_t)totalUnits {
   CHECK_GT(totalUnits, 0);
   _totalUnits = totalUnits;
+}
+
+- (void)setExpectedStepCount:(int64_t)expectedStepCount {
+  CHECK_GT(expectedStepCount, 0);
+  _expectedStepCount = expectedStepCount;
 }
 
 @end
