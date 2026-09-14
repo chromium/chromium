@@ -821,8 +821,7 @@ error-page {
 }
 
 #onboardingTooltip,
-#askGTooltip,
-#lensSearchTooltip {
+#askGTooltip {
   inset: 0;
   pointer-events: none;
   position: absolute;

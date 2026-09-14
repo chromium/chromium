@@ -18,7 +18,6 @@ enum class SmartTabSharingSettingsValue {
 };
 
 extern const char kContextualTasksOnboardingTooltipDismissedCount[];
-extern const char kContextualTasksLensSearchTooltipDismissedCount[];
 extern const char kContextualTasksAskGTooltipDismissedCount[];
 extern const char kContextualTasksShareOpenTabsEveryThread[];
 extern const char kContextualTasksSiteExclusions[];

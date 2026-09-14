@@ -111,9 +111,6 @@ export interface ContextualTasksAppElement {
     composebox?: ContextualTasksComposeboxElement,
     // </if>
     onboardingTooltip?: ContextualTasksOnboardingTooltipElement,
-    // <if expr="not is_android">
-    lensSearchTooltip?: ContextualTasksInfoTooltipElement,
-    // </if>
   };
 }
 
@@ -257,8 +254,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       friendlyZeroStateSubtitle: {type: String},
       occluders_: {type: Array},
       showOnboardingTooltip_: {type: Boolean},
-      showLensSearchTooltip_: {type: Boolean},
-      lensSearchTooltipTarget_: {type: Object},
       askGTooltipTarget_: {type: Object},
       composeboxElement_: {type: Object},
       energyEffectEnabled_: {
@@ -293,9 +288,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       loadTimeData.getBoolean('energyEffectEnabled');
   protected accessor showOnboardingTooltip_: boolean =
       loadTimeData.getBoolean('showOnboardingTooltip');
-  protected accessor showLensSearchTooltip_: boolean =
-      loadTimeData.getBoolean('askGCoBrowseEnabled');
-  protected accessor lensSearchTooltipTarget_: Element|null = null;
   protected accessor askGTooltipTarget_: Element|null = null;
   protected accessor composeboxElement_: Element|null = null;
 
@@ -311,12 +303,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   // <if expr="not is_android">
-  private lensTooltipState_ = new TooltipState(
-      loadTimeData.getBoolean('isLensSearchTooltipDismissCountBelowCap'),
-      loadTimeData.getInteger('lensSearchTooltipSessionImpressionCap'), () => {
-        this.browserProxy_.handler.lensSearchTooltipDismissed();
-        this.updateTooltipVisibility_();
-      });
   private askGTooltipState_ = new TooltipState(
       loadTimeData.getBoolean('isAskGTooltipDismissCountBelowCap'),
       loadTimeData.getInteger('askGTooltipSessionImpressionCap'),
@@ -896,10 +882,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   }
 
   // <if expr="not is_android">
-  private get isLensEntryPointEligible_(): boolean {
-    return !this.isShownInTab_ && this.entryPoint_ === 'omnibox_action';
-  }
-
   private get isAskGEligible_(): boolean {
     return loadTimeData.getBoolean('webUIOmniboxAskGAboutThisPageEnabled') &&
         this.isAskGEntryPointEligible_;
@@ -921,7 +903,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
     if (!isComposeboxAvailable) {
       this.askGTooltipTarget_ = null;
-      this.lensSearchTooltipTarget_ = null;
       if (onboardingTooltip) {
         onboardingTooltip.updateTooltipVisibility(false, null);
         this.onboardingTooltipShowing_ = false;
@@ -936,30 +917,15 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         crComposebox.getAutomaticActiveTabChipElement();
 
     // <if expr="not is_android">
-    const lensSearchTooltip =
-        this.shadowRoot?.querySelector<ContextualTasksInfoTooltipElement>(
-            '#lensSearchTooltip') ||
-        null;
     const askGTooltip =
         this.shadowRoot?.querySelector<ContextualTasksInfoTooltipElement>(
             '#askGTooltip') ||
         null;
 
-    // 1. Calculate AskG tooltip (Prioritized)
+    // Calculate AskG tooltip
     this.askGTooltipTarget_ = this.updateInfoTooltip_(
         this.askGTooltipState_, this.isAskGEligible_, activeTabChipTarget,
         askGTooltip);
-    const askGActive = this.askGTooltipTarget_ !== null;
-
-    // 2. Calculate Lens tooltip
-    const askGDismissed =
-        !loadTimeData.getBoolean('isAskGTooltipDismissCountBelowCap');
-    const lensDependency = loadTimeData.getBoolean('askGCoBrowseEnabled') &&
-        this.isLensEntryPointEligible_ && askGDismissed && !askGActive;
-
-    const lensButton = crComposebox.getLensButtonElement() || null;
-    this.lensSearchTooltipTarget_ = this.updateInfoTooltip_(
-        this.lensTooltipState_, lensDependency, lensButton, lensSearchTooltip);
     // </if>
 
     // 3. Calculate Onboarding tooltip (Suppressed if AskG is eligible)
@@ -996,10 +962,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   protected onAskGTooltipDismissed_() {
     this.askGTooltipState_.dismiss();
-  }
-
-  protected onLensSearchTooltipDismissed_() {
-    this.lensTooltipState_.dismiss();
   }
   // </if>
 

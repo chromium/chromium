@@ -101,10 +101,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
-      isLensSearchTooltipShowing: {
-        type: Boolean,
-        reflect: true,
-      },
       isLensOverlayShowing: {
         type: Boolean,
         reflect: true,
@@ -169,7 +165,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   accessor inToolMode_: boolean = false;
   accessor isZeroState: boolean = false;
   accessor isSidePanel: boolean = false;
-  accessor isLensSearchTooltipShowing: boolean = false;
   accessor isLensOverlayShowing: boolean = false;
   accessor isOverlayOpenForAimVisualSearch: boolean = false;
   accessor inputEnabled: boolean = true;

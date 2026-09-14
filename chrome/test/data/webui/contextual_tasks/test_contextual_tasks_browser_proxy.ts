@@ -215,7 +215,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'isZeroState',
       'moveTaskUiToNewTab',
       'onboardingTooltipDismissed',
-      'lensSearchTooltipDismissed',
       'askGTooltipDismissed',
       'onContextMenuOpened',
       'onFileClickedFromSourcesMenu',
@@ -345,10 +344,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   onboardingTooltipDismissed() {
     this.methodCalled('onboardingTooltipDismissed');
-  }
-
-  lensSearchTooltipDismissed() {
-    this.methodCalled('lensSearchTooltipDismissed');
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
