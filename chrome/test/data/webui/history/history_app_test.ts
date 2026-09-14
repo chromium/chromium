@@ -408,6 +408,11 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
           shouldShow: true,
         }));
 
+    // Some of the tests below assume the query state is fully reset to empty
+    // between tests.
+    window.history.replaceState({}, '', '/');
+    CrRouter.resetForTesting();
+
     element = document.createElement('history-app');
     document.body.appendChild(element);
     return microtasksFinished();
