@@ -37,7 +37,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
@@ -66,7 +65,6 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -205,6 +203,10 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, true);
+                    if (mCoordinator != null) {
+                        mCoordinator.destroy();
+                        mCoordinator = null;
+                    }
                 });
     }
 
@@ -960,10 +962,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    // TODO(crbug.com/428281174): Re-enable when activity recreation issue on Android 16+ is fixed.
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428281174")
     public void testWithExistingAccount_signInWithAddedAccount_activityKilled() {
         HistogramWatcher addAccountStateWatcher =
                 HistogramWatcher.newBuilder()
@@ -984,6 +982,15 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
                 .perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
+
+        // Destroy the previous coordinator before activity recreation to prevent
+        // AccountPickerBottomSheetMediator from leaking the destroyed activity via
+        // FakeAccountManagerFacade observers.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.destroy();
+                    mCoordinator = null;
+                });
 
         // Recreate base activity then confirm account addition.
         mBaseActivityTestRule.recreateActivity();
@@ -1540,6 +1547,10 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         ChromeTabbedActivity baseActivity = mBaseActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    if (mCoordinator != null) {
+                        mCoordinator.destroy();
+                        mCoordinator = null;
+                    }
                     Profile profile =
                             baseActivity.getProfileProviderSupplier().get().getOriginalProfile();
                     OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
