@@ -275,7 +275,7 @@ void BackgroundFetchDelegateBase::FailFetch(const std::string& job_id,
 
   if (auto client = GetClient(unique_id)) {
     client->OnJobCancelled(
-        download_guid, unique_id,
+        unique_id, download_guid,
         blink::mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED);
   }
 }

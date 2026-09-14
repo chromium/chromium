@@ -66,7 +66,10 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//services/metrics/public/cpp:gen_ukm_builders",
     "//services/metrics/public/cpp:ukm_builders",
+    "//skia",
+    "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
     "//url",
   ]
 }
