@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_download_observer.h"
 #include "chrome/browser/download/download_core_service.h"
-#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_offline_content_provider.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/profiles/profile.h"

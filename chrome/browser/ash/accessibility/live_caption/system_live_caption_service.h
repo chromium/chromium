@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"

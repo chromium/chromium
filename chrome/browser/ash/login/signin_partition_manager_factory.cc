@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
 namespace ash::login {
