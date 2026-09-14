@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/chromeos/extensions/login_screen/login/cleanup",
   "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/download/download_dir_util.h",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h",
@@ -33,3 +32,10 @@ include_rules = [
   "+ui/message_center/message_center_observer.h",
   "+ui/message_center/test/message_center_waiter.h",
 ]
+
+specific_include_rules = {
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/policy/policy_test_utils.h",
+    "+chrome/browser/policy/profile_policy_connector.h",
+  ],
+}
