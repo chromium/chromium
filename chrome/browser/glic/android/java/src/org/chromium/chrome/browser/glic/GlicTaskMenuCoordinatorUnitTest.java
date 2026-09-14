@@ -267,4 +267,38 @@ public class GlicTaskMenuCoordinatorUnitTest {
                         /* preventClose= */ false,
                         GlicKeyedService.GlicInvocationSource.TOOLBAR_BUTTON);
     }
+
+    @Test
+    public void testBuildModelListFromRowData_ClickCallsBridge() {
+        GlicSplitButtonDelegateBridge bridge = mock(GlicSplitButtonDelegateBridge.class);
+        GlicTaskMenuCoordinator coordinator =
+                new GlicTaskMenuCoordinator(
+                        mContext,
+                        () -> mTabModelSelector,
+                        mToggleGlicCallback,
+                        bridge,
+                        GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON,
+                        GlicTaskMenuCoordinator.ButtonSource.TAB_STRIP);
+
+        ActorTaskRowData row =
+                new ActorTaskRowData(
+                        /* taskId= */ 42,
+                        "Task",
+                        "Subtitle",
+                        /* isEnabled= */ true,
+                        /* needsReview= */ false,
+                        /* tabId= */ 123);
+
+        ModelList modelList = coordinator.buildModelListFromRowData(Collections.singletonList(row));
+        ListItem item = modelList.get(0);
+
+        View.OnClickListener clickListener = item.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        clickListener.onClick(null);
+
+        verify(mToggleGlicCallback)
+                .onClick(
+                        /* preventClose= */ true,
+                        GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
+        verify(bridge).onTaskRowClicked(42);
+    }
 }

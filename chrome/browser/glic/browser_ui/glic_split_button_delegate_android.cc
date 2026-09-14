@@ -4,13 +4,20 @@
 
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 
+#include <vector>
+
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "chrome/browser/glic/android/jni_headers/ActorTaskRowData_jni.h"
 #include "chrome/browser/glic/android/jni_headers/GlicSplitButtonDelegateBridge_jni.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/actor/core/task_id.h"
 
@@ -98,8 +105,31 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
   }
 
   void ShowActorTaskListBubble() override {
+    Profile* profile = browser_->GetProfile();
+    auto* manager =
+        glic::GlicActorTaskIconManagerFactory::GetForProfile(profile);
+    if (!manager) {
+      return;
+    }
+    std::vector<actor::ui::ActorTaskRowData> rows =
+        ActorTaskListBubbleController::GetActorTaskRowsForBubble(
+            profile, manager->actor_task_list_bubble_rows());
+
+    JNIEnv* env = base::android::AttachCurrentThread();
+    std::vector<base::android::ScopedJavaLocalRef<jobject>> j_rows;
+    j_rows.reserve(rows.size());
+    for (const auto& row : rows) {
+      j_rows.push_back(Java_ActorTaskRowData_Constructor(
+          env, row.task_id.value(),
+          base::android::ConvertUTF8ToJavaString(env, row.title),
+          base::android::ConvertUTF8ToJavaString(env, row.subtitle),
+          row.is_enabled, row.needs_review, row.tab_id));
+    }
     Java_GlicSplitButtonDelegateBridge_showActorTaskListBubble(
-        base::android::AttachCurrentThread(), j_delegate_);
+        env, j_delegate_,
+        base::android::ToTypedJavaArrayOfObjects(
+            env, j_rows,
+            org_chromium_chrome_browser_glic_ActorTaskRowData_clazz(env)));
   }
 
   void CloseActorTaskListBubble() override {
@@ -143,6 +173,15 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
       if (auto* bubble_controller =
               ActorTaskListBubbleController::From(browser_)) {
         bubble_controller->ShowBubble();
+      }
+    }
+  }
+
+  void OnActorTaskListBubbleDismissed() {
+    if (browser_) {
+      if (auto* bubble_controller =
+              ActorTaskListBubbleController::From(browser_)) {
+        bubble_controller->OnBubbleDestroyed();
       }
     }
   }

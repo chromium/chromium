@@ -10,6 +10,7 @@ generate_jni("jni_headers") {
     "//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicEnabling.java",
     "//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/glic/ActorLoginPermission.java",
+    "java/src/org/chromium/chrome/browser/glic/ActorTaskRowData.java",
     "java/src/org/chromium/chrome/browser/glic/GlicActorLoginBridge.java",
     "java/src/org/chromium/chrome/browser/glic/GlicBottomSheetComponentProvider.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelper.java",
@@ -101,6 +102,7 @@ android_library("menu_java") {
 
 android_library("common_java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/glic/ActorTaskRowData.java",
     "java/src/org/chromium/chrome/browser/glic/GlicButtonDelegate.java",
     "java/src/org/chromium/chrome/browser/glic/GlicButtonStateController.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSplitButtonDelegate.java",

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.glic;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.List;
+
 /**
  * Java equivalent of the C++ GlicSplitButtonDelegate for managing Glic split button UI states,
  * nudges, and related entry points.
@@ -77,8 +79,12 @@ public interface GlicSplitButtonDelegate {
      */
     default void setGlicActorNudgePressedState(boolean pressed) {}
 
-    /** Called when native C++ requests showing the actor task list bubble / menu. */
-    default void showActorTaskListBubble() {}
+    /**
+     * Called when native C++ requests showing the actor task list bubble / menu.
+     *
+     * @param rows The prioritized list of task row data to display.
+     */
+    default void showActorTaskListBubble(List<ActorTaskRowData> rows) {}
 
     /** Called when native C++ requests closing the actor task list bubble / menu. */
     default void closeActorTaskListBubble() {}

@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.TextUtils;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.PopupWindow.OnDismissListener;
 
 import androidx.annotation.DrawableRes;
@@ -20,6 +22,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -31,6 +34,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.AttrUtils;
@@ -61,6 +65,7 @@ public class GlicTaskMenuCoordinator {
 
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final GlicButtonDelegate mToggleGlicCallback;
+    private final @Nullable GlicSplitButtonDelegateBridge mDelegateBridge;
     private final @GlicInvocationSource int mInvocationSource;
     private final @ButtonSource int mButtonSource;
     private @Nullable AnchoredPopupWindow mMenuWindow;
@@ -76,7 +81,32 @@ public class GlicTaskMenuCoordinator {
     }
 
     /**
-     * Constructs the task menu coordinator.
+     * Constructs the task menu coordinator with a delegate bridge.
+     *
+     * @param context The Android context.
+     * @param tabModelSelectorSupplier Supplier for the active TabModelSelector.
+     * @param toggleGlicCallback Callback to activate or open the Glic UI sheet panel.
+     * @param delegateBridge Delegate bridge for native task interaction events.
+     * @param invocationSource The Glic invocation source.
+     * @param buttonSource The source button triggering the menu.
+     */
+    public GlicTaskMenuCoordinator(
+            Context context,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
+            GlicButtonDelegate toggleGlicCallback,
+            @Nullable GlicSplitButtonDelegateBridge delegateBridge,
+            @GlicInvocationSource int invocationSource,
+            @ButtonSource int buttonSource) {
+        mContext = context;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mToggleGlicCallback = toggleGlicCallback;
+        mDelegateBridge = delegateBridge;
+        mInvocationSource = invocationSource;
+        mButtonSource = buttonSource;
+    }
+
+    /**
+     * Constructs the task menu coordinator without a delegate bridge.
      *
      * @param context The Android context.
      * @param tabModelSelectorSupplier Supplier for the active TabModelSelector.
@@ -90,12 +120,13 @@ public class GlicTaskMenuCoordinator {
             GlicButtonDelegate toggleGlicCallback,
             @GlicInvocationSource int invocationSource,
             @ButtonSource int buttonSource) {
-        mContext = context;
-
-        mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mToggleGlicCallback = toggleGlicCallback;
-        mInvocationSource = invocationSource;
-        mButtonSource = buttonSource;
+        this(
+                context,
+                tabModelSelectorSupplier,
+                toggleGlicCallback,
+                /* delegateBridge= */ null,
+                invocationSource,
+                buttonSource);
     }
 
     /**
@@ -105,7 +136,8 @@ public class GlicTaskMenuCoordinator {
      * @param tasks The collection of active actor tasks to list.
      */
     public void show(View anchorView, List<ActorTask> tasks) {
-        showInternal(new ViewRectProvider(anchorView), anchorView.getRootView(), tasks);
+        showInternal(
+                new ViewRectProvider(anchorView), anchorView.getRootView(), buildModelList(tasks));
     }
 
     /**
@@ -116,7 +148,20 @@ public class GlicTaskMenuCoordinator {
      * @param tasks The collection of active actor tasks to list.
      */
     public void show(RectProvider rectProvider, View rootView, List<ActorTask> tasks) {
-        showInternal(rectProvider, rootView, tasks);
+        showInternal(rectProvider, rootView, buildModelList(tasks));
+    }
+
+    /**
+     * Displays the task menu anchored to coordinate boundaries supplied by a RectProvider using
+     * pre-computed row data.
+     *
+     * @param rectProvider Coordinates defining the geometric anchor frame.
+     * @param rootView The root view hierarchy stack to inject the popup layer.
+     * @param rows The prioritized list of task rows to list.
+     */
+    public void showFromRowData(
+            RectProvider rectProvider, View rootView, List<ActorTaskRowData> rows) {
+        showInternal(rectProvider, rootView, buildModelListFromRowData(rows));
     }
 
     /** Safely dismisses and tears down the floating task popup window overlay if visible. */
@@ -136,15 +181,17 @@ public class GlicTaskMenuCoordinator {
         return mMenuWindow != null && mMenuWindow.isShowing();
     }
 
-    private void showInternal(RectProvider rectProvider, View rootView, List<ActorTask> tasks) {
-        ModelList modelList = buildModelList(tasks);
+    private void showInternal(RectProvider rectProvider, View rootView, ModelList modelList) {
+        dismiss();
+        if (modelList.isEmpty()) {
+            return;
+        }
 
         ListMenu.Delegate delegate =
                 new ListMenu.Delegate() {
                     @Override
                     public void onItemSelected(PropertyModel model, View view) {
-                        View.OnClickListener listener =
-                                model.get(ListMenuItemProperties.CLICK_LISTENER);
+                        OnClickListener listener = model.get(ListMenuItemProperties.CLICK_LISTENER);
 
                         if (listener != null) {
                             listener.onClick(view);
@@ -189,83 +236,152 @@ public class GlicTaskMenuCoordinator {
                         .setAnimateFromAnchor(true)
                         .setAllowNonTouchableSize(true)
                         .build();
-        if (mOnDismiss != null) {
-            mMenuWindow.addOnDismissListener(mOnDismiss);
-        }
+        mMenuWindow.addOnDismissListener(
+                () -> {
+                    if (mOnDismiss != null) {
+                        mOnDismiss.onDismiss();
+                    }
+                    if (mDelegateBridge != null) {
+                        mDelegateBridge.onActorTaskListBubbleDismissed();
+                    }
+                });
         mMenuWindow.show();
     }
 
+    /** Constructs the model list from a collection of actor task row data. */
+    @VisibleForTesting
+    ModelList buildModelListFromRowData(List<ActorTaskRowData> rows) {
+        ModelList modelList = new ModelList();
+        for (ActorTaskRowData row : rows) {
+            OnClickListener clickListener =
+                    row.isEnabled
+                            ? v -> {
+                                TabModelSelector selector = mTabModelSelectorSupplier.get();
+                                if (selector != null && row.tabId != Tab.INVALID_TAB_ID) {
+                                    TabModelUtils.selectTabById(
+                                            selector, row.tabId, TabSelectionType.FROM_USER);
+                                }
+                                mToggleGlicCallback.onClick(
+                                        /* preventClose= */ true, mInvocationSource);
+                                if (mDelegateBridge != null) {
+                                    mDelegateBridge.onTaskRowClicked(row.taskId);
+                                }
+                                dismiss();
+                            }
+                            : null;
+
+            modelList.add(
+                    buildTaskListItem(
+                            row.title,
+                            row.subtitle,
+                            row.isEnabled,
+                            row.needsReview,
+                            clickListener));
+        }
+
+        maybeAddOpenChatSection(modelList);
+        return modelList;
+    }
+
+    /** Constructs the model list from a collection of actor tasks. */
     @VisibleForTesting
     ModelList buildModelList(List<ActorTask> tasks) {
         ModelList modelList = new ModelList();
-        int endIconWidthPx =
-                AttrUtils.getDimensionPixelSize(mContext, R.attr.glicTaskMenuEndIconWidth);
-        int verticalPaddingPx = 0;
-        if (mButtonSource == ButtonSource.TAB_STRIP) {
-            verticalPaddingPx =
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.glic_task_menu_item_vertical_padding);
-        }
-
         // TODO(crbug.com/498721993): Listen to the task and update menu item when needed.
         for (ActorTask task : tasks) {
-            ListItemBuilder builder =
-                    new ListItemBuilder()
-                            .withTitle(task.getTitle())
-                            .withIsIncognito(false)
-                            .withIsTextEllipsizedAtEnd(true)
-                            .withClickListener(
-                                    v -> {
-                                        switchToActuatingTab(task);
-                                        mToggleGlicCallback.onClick(
-                                                /* preventClose= */ true, mInvocationSource);
-                                        dismiss();
-                                    });
-
             boolean needsReview =
                     GlicButtonStateController.mapTaskStateToButtonState(task.getState())
                             == GlicButtonStateController.ButtonState.NEEDS_REVIEW;
+            String subtitle =
+                    mButtonSource == ButtonSource.TAB_STRIP
+                            ? getTaskSubtitle(mContext, task)
+                            : null;
+            OnClickListener clickListener =
+                    v -> {
+                        switchToActuatingTab(task);
+                        mToggleGlicCallback.onClick(/* preventClose= */ true, mInvocationSource);
+                        if (mDelegateBridge != null) {
+                            mDelegateBridge.onTaskRowClicked(task.getId());
+                        }
+                        dismiss();
+                    };
 
-            if (needsReview) {
-                builder.withStartIconRes(R.drawable.ic_hourglass_empty_24dp);
-            } else {
-                builder.withStartIconRes(R.drawable.ic_arrow_selector_spark_24dp);
-            }
-
-            if (mButtonSource == ButtonSource.TAB_STRIP) {
-                builder.withVerticalPaddingPx(verticalPaddingPx)
-                        .withTextAppearanceStyle(R.style.TextAppearance_TextLarge)
-                        .withSubtitleTextAppearanceStyle(R.style.TextAppearance_TextMedium)
-                        .withSubtitle(getTaskSubtitle(mContext, task));
-            }
-
-            int endIconRes = getEndIconRes(needsReview, mButtonSource == ButtonSource.TAB_STRIP);
-            builder.withEndIconWidth(endIconWidthPx)
-                    .withEndIconRes(endIconRes)
-                    .withShouldTintEndIcon(endIconRes != R.drawable.glic_menu_dot);
-
-            modelList.add(builder.build());
-        }
-
-        if (shouldShowOpenChat()) {
-            // Divider
-            modelList.add(BasicListMenu.buildMenuDivider(false));
-
-            // Open Chat
             modelList.add(
-                    new ListItemBuilder()
-                            .withTitleRes(R.string.glic_open_gemini_label)
-                            .withStartIconRes(R.drawable.ic_spark_24dp)
-                            .withIsIncognito(false)
-                            .withClickListener(
-                                    v -> {
-                                        mToggleGlicCallback.onClick(
-                                                /* preventClose= */ false, mInvocationSource);
-                                        dismiss();
-                                    })
-                            .build());
+                    buildTaskListItem(
+                            task.getTitle(),
+                            subtitle,
+                            /* isEnabled= */ true,
+                            needsReview,
+                            clickListener));
         }
+
+        maybeAddOpenChatSection(modelList);
         return modelList;
+    }
+
+    private ListItem buildTaskListItem(
+            String title,
+            @Nullable String subtitle,
+            boolean isEnabled,
+            boolean needsReview,
+            @Nullable OnClickListener clickListener) {
+        int endIconWidthPx =
+                AttrUtils.getDimensionPixelSize(mContext, R.attr.glicTaskMenuEndIconWidth);
+        ListItemBuilder builder =
+                new ListItemBuilder()
+                        .withTitle(title)
+                        .withIsIncognito(false)
+                        .withIsTextEllipsizedAtEnd(true)
+                        .withEnabled(isEnabled)
+                        .withStartIconRes(
+                                needsReview
+                                        ? R.drawable.ic_hourglass_empty_24dp
+                                        : R.drawable.ic_arrow_selector_spark_24dp);
+
+        if (clickListener != null) {
+            builder.withClickListener(clickListener);
+        }
+
+        if (mButtonSource == ButtonSource.TAB_STRIP) {
+            int verticalPaddingPx =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.glic_task_menu_item_vertical_padding);
+            builder.withVerticalPaddingPx(verticalPaddingPx)
+                    .withTextAppearanceStyle(R.style.TextAppearance_TextLarge)
+                    .withSubtitleTextAppearanceStyle(R.style.TextAppearance_TextMedium);
+            if (!TextUtils.isEmpty(subtitle)) {
+                builder.withSubtitle(subtitle);
+            }
+        }
+
+        int endIconRes = getEndIconRes(needsReview, mButtonSource == ButtonSource.TAB_STRIP);
+        builder.withEndIconWidth(endIconWidthPx)
+                .withEndIconRes(endIconRes)
+                .withShouldTintEndIcon(endIconRes != R.drawable.glic_menu_dot);
+
+        return builder.build();
+    }
+
+    private void maybeAddOpenChatSection(ModelList modelList) {
+        if (!shouldShowOpenChat()) {
+            return;
+        }
+        // Divider
+        modelList.add(BasicListMenu.buildMenuDivider(false));
+
+        // Open Chat
+        modelList.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.glic_open_gemini_label)
+                        .withStartIconRes(R.drawable.ic_spark_24dp)
+                        .withIsIncognito(false)
+                        .withClickListener(
+                                v -> {
+                                    mToggleGlicCallback.onClick(
+                                            /* preventClose= */ false, mInvocationSource);
+                                    dismiss();
+                                })
+                        .build());
     }
 
     private String getTaskSubtitle(Context context, ActorTask task) {
