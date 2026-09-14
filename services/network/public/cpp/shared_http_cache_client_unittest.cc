@@ -33,6 +33,7 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/sql/sql_shared_cache_isolated_database.h"
+#include "net/filter/filter_source_stream_test_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/test/test_with_task_environment.h"
@@ -318,6 +319,96 @@ TEST_F(SharedHttpCacheClientTest, FindSuccess) {
   EXPECT_EQ(GetStringFromBuffers(result->body), expected_body);
 }
 
+TEST_F(SharedHttpCacheClientTest, FindWithContentDecodingGzip) {
+  mojo::Remote<mojom::SharedHttpCacheClientFactory> factory_remote;
+  base::test::TestFuture<void> db_init_future;
+  auto client = SharedHttpCacheClient::CreateAndInit(
+      factory_remote.BindNewPipeAndPassReceiver(),
+      base::SequencedTaskRunner::GetCurrentDefault(), database_task_runner_,
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         db_init_future.GetCallback()));
+
+  const GURL url("https://example.com/compressed.js");
+  const std::string original_body = "function test() { return 42; }";
+  std::vector<uint8_t> compressed =
+      net::CompressGzip(original_body, /*gzip_framing=*/true);
+  std::string compressed_body(compressed.begin(), compressed.end());
+
+  std::string headers = SerializeResponseInfo(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: application/javascript\r\n"
+      "Content-Encoding: gzip\r\n\r\n");
+  auto file_set = PopulateDatabase(url, headers, compressed_body);
+
+  mojo::Remote<mojom::SharedHttpCacheClient> client_remote;
+  factory_remote->CreateClient(std::move(file_set),
+                               client_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(db_init_future.Wait());
+  client_remote->OnResourcesAdded({base::PersistentHash(url.spec())});
+  client_remote.FlushForTesting();
+
+  ResourceRequest request;
+  request.url = url;
+
+  base::test::TestFuture<std::optional<SharedHttpCacheClient::Response>> future;
+  client->Find(request, factory_, future.GetCallback(),
+               base::SequencedTaskRunner::GetCurrentDefault());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(GetStringFromBuffers(result->body), original_body);
+}
+
+TEST_F(SharedHttpCacheClientTest, FindWithContentDecodingMultiChunkGzip) {
+  mojo::Remote<mojom::SharedHttpCacheClientFactory> factory_remote;
+  base::test::TestFuture<void> db_init_future;
+  auto client = SharedHttpCacheClient::CreateAndInit(
+      factory_remote.BindNewPipeAndPassReceiver(),
+      base::SequencedTaskRunner::GetCurrentDefault(), database_task_runner_,
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         db_init_future.GetCallback()));
+
+  const GURL url("https://example.com/large_compressed.js");
+  // Create a 100 KB payload exceeding the 64 KB default decoder buffer size.
+  std::string original_body;
+  original_body.reserve(100 * 1024);
+  for (size_t i = 0; i < 10 * 1024; ++i) {
+    original_body.append("0123456789");
+  }
+  std::vector<uint8_t> compressed =
+      net::CompressGzip(original_body, /*gzip_framing=*/true);
+  std::string compressed_body(compressed.begin(), compressed.end());
+
+  std::string headers = SerializeResponseInfo(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: application/javascript\r\n"
+      "Content-Encoding: gzip\r\n\r\n");
+  auto file_set = PopulateDatabase(url, headers, compressed_body);
+
+  mojo::Remote<mojom::SharedHttpCacheClient> client_remote;
+  factory_remote->CreateClient(std::move(file_set),
+                               client_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(db_init_future.Wait());
+  client_remote->OnResourcesAdded({base::PersistentHash(url.spec())});
+  client_remote.FlushForTesting();
+
+  ResourceRequest request;
+  request.url = url;
+
+  base::test::TestFuture<std::optional<SharedHttpCacheClient::Response>> future;
+  client->Find(request, factory_, future.GetCallback(),
+               base::SequencedTaskRunner::GetCurrentDefault());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  size_t chunk_count = 0;
+  for ([[maybe_unused]] auto buffer : *result->body) {
+    ++chunk_count;
+  }
+  EXPECT_GT(chunk_count, 1u);
+  EXPECT_EQ(GetStringFromBuffers(result->body), original_body);
+}
+
 TEST_F(SharedHttpCacheClientTest, FindNotFoundInDb) {
   mojo::Remote<mojom::SharedHttpCacheClientFactory> factory_remote;
   base::test::TestFuture<void> db_init_future;
@@ -468,6 +559,40 @@ TEST_F(SharedHttpCacheClientTest, ParseAndDecodeInvalidHeaders) {
   EXPECT_FALSE(result.has_value());
 }
 
+TEST_F(SharedHttpCacheClientTest, ParseAndDecodeDecompressionFails) {
+  mojo::Remote<mojom::SharedHttpCacheClientFactory> factory_remote;
+  base::test::TestFuture<void> db_init_future;
+  auto client = SharedHttpCacheClient::CreateAndInit(
+      factory_remote.BindNewPipeAndPassReceiver(),
+      base::SequencedTaskRunner::GetCurrentDefault(), database_task_runner_,
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         db_init_future.GetCallback()));
+
+  const GURL url("https://example.com/corrupt_gzip.js");
+  std::string headers = SerializeResponseInfo(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: application/javascript\r\n"
+      "Content-Encoding: gzip\r\n\r\n");
+  auto file_set = PopulateDatabase(url, headers, "not valid gzip data");
+
+  mojo::Remote<mojom::SharedHttpCacheClient> client_remote;
+  factory_remote->CreateClient(std::move(file_set),
+                               client_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(db_init_future.Wait());
+  client_remote->OnResourcesAdded({base::PersistentHash(url.spec())});
+  client_remote.FlushForTesting();
+
+  ResourceRequest request;
+  request.url = url;
+
+  base::test::TestFuture<std::optional<SharedHttpCacheClient::Response>> future;
+  client->Find(request, factory_, future.GetCallback(),
+               base::SequencedTaskRunner::GetCurrentDefault());
+
+  auto result = future.Take();
+  EXPECT_FALSE(result.has_value());
+}
+
 TEST_F(SharedHttpCacheClientTest, FindEmptyBodyWithoutCompression) {
   mojo::Remote<mojom::SharedHttpCacheClientFactory> factory_remote;
   base::test::TestFuture<void> db_init_future;
@@ -501,6 +626,42 @@ TEST_F(SharedHttpCacheClientTest, FindEmptyBodyWithoutCompression) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->head->content_length, 0);
   EXPECT_EQ(result->body->size(), 0u);
+  EXPECT_EQ(GetStringFromBuffers(result->body), "");
+}
+
+TEST_F(SharedHttpCacheClientTest, ParseAndDecodeEmptyBodyWithCompression) {
+  mojo::Remote<mojom::SharedHttpCacheClientFactory> factory_remote;
+  base::test::TestFuture<void> db_init_future;
+  auto client = SharedHttpCacheClient::CreateAndInit(
+      factory_remote.BindNewPipeAndPassReceiver(),
+      base::SequencedTaskRunner::GetCurrentDefault(), database_task_runner_,
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         db_init_future.GetCallback()));
+
+  const GURL url("https://example.com/empty_gzip.js");
+  std::string headers = SerializeResponseInfo(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: application/javascript\r\n"
+      "Content-Encoding: gzip\r\n\r\n");
+  // Empty body with gzip encoding.
+  auto file_set = PopulateDatabase(url, headers, "");
+
+  mojo::Remote<mojom::SharedHttpCacheClient> client_remote;
+  factory_remote->CreateClient(std::move(file_set),
+                               client_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(db_init_future.Wait());
+  client_remote->OnResourcesAdded({base::PersistentHash(url.spec())});
+  client_remote.FlushForTesting();
+
+  ResourceRequest request;
+  request.url = url;
+
+  base::test::TestFuture<std::optional<SharedHttpCacheClient::Response>> future;
+  client->Find(request, factory_, future.GetCallback(),
+               base::SequencedTaskRunner::GetCurrentDefault());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(GetStringFromBuffers(result->body), "");
 }
 

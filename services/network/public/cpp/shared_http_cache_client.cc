@@ -26,6 +26,7 @@
 #include "net/disk_cache/sql/sql_shared_cache_isolated_database_reader.h"
 #include "net/filter/filter_source_stream.h"
 #include "net/http/http_response_info.h"
+#include "services/network/public/cpp/content_decoding_util.h"
 #include "services/network/public/cpp/data_buffer_factory.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -255,16 +256,21 @@ void DatabaseBackend::ParseAndDecode(
 
   const auto content_encoding_types =
       net::FilterSourceStream::GetContentEncodingTypes(*response_info->headers);
-  if (!content_encoding_types.empty()) {
-    // TODO(crbug.com/473666511): Content decoding will be supported in a
-    // follow-up CL.
-    std::move(callback).Run(std::nullopt);
+  if (content_encoding_types.empty()) {
+    auto buffers = data_buffer_factory->CreateDataBufferList();
+    CHECK(buffers);
+    if (!body->data().empty()) {
+      buffers->Append(std::move(body));
+    }
+    std::move(callback).Run(
+        SharedHttpCacheClient::Response(std::move(head), std::move(buffers)));
     return;
   }
-  auto buffers = data_buffer_factory->CreateDataBufferList();
-  CHECK(buffers);
-  if (!body->data().empty()) {
-    buffers->Append(std::move(body));
+  auto buffers = ContentDecodingUtil::Decode(
+      body->data(), content_encoding_types, *data_buffer_factory.get());
+  if (!buffers) {
+    std::move(callback).Run(std::nullopt);
+    return;
   }
   std::move(callback).Run(
       SharedHttpCacheClient::Response(std::move(head), std::move(buffers)));
