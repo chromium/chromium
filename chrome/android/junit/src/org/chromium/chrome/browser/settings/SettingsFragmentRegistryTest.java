@@ -28,8 +28,6 @@ import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFrag
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.language.settings.LanguagesManager.LanguageListType;
-import org.chromium.chrome.browser.language.settings.SelectLanguageFragment;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.ExtendedPreloadingSettingsFragment;
@@ -218,22 +216,19 @@ public class SettingsFragmentRegistryTest {
     public void testTypedQueryParameterParsing() {
         Bundle bundle =
                 SettingsFragmentRegistry.parseUrlArguments(
-                        "chrome://settings/languages/select?potentialLanguages="
-                                + LanguageListType.TARGET_LANGUAGES);
-        assertEquals(
-                (short) LanguageListType.TARGET_LANGUAGES,
-                bundle.getShort(SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES));
+                        "chrome://settings/siteDetails?site=example.com&fromGrouped=true");
+        assertTrue(bundle.getBoolean(SingleWebsiteSettings.EXTRA_FROM_GROUPED));
 
-        // Malformed numeric parameter should fall back to known good default values.
+        // Malformed numeric parameters should fall back to known good default values.
         Bundle malformedBundle =
                 SettingsFragmentRegistry.parseUrlArguments(
-                        "chrome://settings/languages/select?potentialLanguages=invalid&referrer=abc");
-        assertEquals(
-                (short) LanguageListType.ACCEPT_LANGUAGES,
-                malformedBundle.getShort(SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES));
+                        "chrome://settings/autofill?referrer=abc&optionsReferrer=xyz");
         assertEquals(
                 AutofillSettingsReferrer.SETTINGS_MENU,
                 malformedBundle.getInt(AutofillAndPasswordsFragment.EXTRA_REFERRER));
+        assertEquals(
+                AutofillOptionsReferrer.SETTINGS,
+                malformedBundle.getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
 
         Bundle unknownBundle =
                 SettingsFragmentRegistry.parseUrlArguments(

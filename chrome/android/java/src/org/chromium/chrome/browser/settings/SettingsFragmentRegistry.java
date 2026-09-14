@@ -36,11 +36,7 @@ import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.glic.GlicSettings;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
-import org.chromium.chrome.browser.language.settings.AlwaysTranslateListFragment;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
-import org.chromium.chrome.browser.language.settings.LanguagesManager.LanguageListType;
-import org.chromium.chrome.browser.language.settings.NeverTranslateListFragment;
-import org.chromium.chrome.browser.language.settings.SelectLanguageFragment;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.ExtendedPreloadingSettingsFragment;
@@ -202,10 +198,14 @@ public class SettingsFragmentRegistry {
         registerMapping("/chosenObject", ChosenObjectSettings.class);
 
         // Languages, Downloads, Tabs, Homepage
+        //
+        // Only the top-level languages page is URL routed. The subpages (language picker, always
+        // and never translate lists) exchange the selected language using the androidx Fragment
+        // Result API, which requires the calling fragment to remain on the fragment back stack.
+        // URL navigation replaces detail fragments with addToBackStack=false, which breaks that
+        // contract. See crbug.com/555347875; these routes are restored once the subpages no longer
+        // depend on the fragment back stack.
         registerMapping("/languages", LanguageSettings.class);
-        registerMapping("/languages/select", SelectLanguageFragment.class);
-        registerMapping("/languages/alwaysTranslate", AlwaysTranslateListFragment.class);
-        registerMapping("/languages/neverTranslate", NeverTranslateListFragment.class);
         registerMapping("/downloads", DownloadSettings.class);
 
         // About & Developer
@@ -224,10 +224,6 @@ public class SettingsFragmentRegistry {
         registerParameterMapping("category", SingleCategorySettings.EXTRA_CATEGORY);
         registerParameterMapping("title", SingleCategorySettings.EXTRA_TITLE);
         registerParameterMapping("group", GroupedWebsitesSettings.EXTRA_GROUP);
-        registerShortParameterMapping(
-                "potentialLanguages",
-                SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES,
-                /* defaultValue= */ (short) LanguageListType.ACCEPT_LANGUAGES);
         registerIntParameterMapping(
                 "referrer",
                 AutofillAndPasswordsFragment.EXTRA_REFERRER,
@@ -308,6 +304,9 @@ public class SettingsFragmentRegistry {
                 });
     }
 
+    // Currently unused: its only caller was the "potentialLanguages" mapping, removed along with
+    // the languages subpage routes. Retained for when those routes are re-landed.
+    @SuppressWarnings("unused")
     private static void registerShortParameterMapping(
             String queryParam, String argKey, short defaultValue) {
         registerParameterMapping(

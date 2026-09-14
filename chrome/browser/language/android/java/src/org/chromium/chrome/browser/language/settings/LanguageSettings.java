@@ -405,7 +405,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
             // Use an Intent with extra. Return value is received via onActivityResult.
             Intent intent =
-                    SettingsNavigationFactory.createSettingsNavigation(getContext())
+                    SettingsNavigationFactory.createSettingsNavigation()
                             .createSettingsIntent(
                                     getActivity(), SelectLanguageFragment.class, args);
             startActivityForResult(intent, requestCode);
@@ -423,7 +423,14 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                     assumeNonNull(code);
                     onSelectLanguageResult(requestCode, code);
                 });
-        SettingsNavigationFactory.createSettingsNavigation(getContext())
+        // Deliberately uses the non-tab-scoped navigation. Language selection relies on the
+        // androidx Fragment Result API, which requires this fragment to stay alive on the fragment
+        // back stack until SelectLanguageFragment pops itself. SettingsInTabUrlNav navigates via
+        // Tab.loadUrl() and replaces the detail fragment with addToBackStack=false, which destroys
+        // this fragment (dropping the result listener) and turns the picker's popBackStack() into
+        // a no-op. See crbug.com/555347875; URL navigation is re-landed for languages separately.
+        // Do not change to createSettingsNavigation(getContext()).
+        SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(
                         getActivity(),
                         SelectLanguageFragment.class,
@@ -439,7 +446,11 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     private void setLanguageListPreferenceClickListener(LanguageItemListPreference listPreference) {
         listPreference.setOnPreferenceClickListener(
                 preference -> {
-                    SettingsNavigationFactory.createSettingsNavigation(getContext())
+                    // Deliberately uses the non-tab-scoped navigation so the list page is pushed
+                    // onto the fragment back stack. SelectLanguageFragment, launched from that
+                    // page, returns its result by popping the back stack, so the list page must be
+                    // on it. See the comment in launchSelectLanguage().
+                    SettingsNavigationFactory.createSettingsNavigation()
                             .startSettings(
                                     getActivity(),
                                     listPreference.getFragmentClass(),

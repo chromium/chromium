@@ -166,7 +166,7 @@ public abstract class LanguageItemListFragment extends Fragment
                     if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
                         // Use an Intent with extra. Return value is received via onActivityResult.
                         Intent intent =
-                                SettingsNavigationFactory.createSettingsNavigation(getContext())
+                                SettingsNavigationFactory.createSettingsNavigation()
                                         .createSettingsIntent(
                                                 getActivity(), SelectLanguageFragment.class, args);
                         startActivityForResult(intent, REQUEST_CODE_SELECT_LANGUAGE);
@@ -186,7 +186,12 @@ public abstract class LanguageItemListFragment extends Fragment
                                 assumeNonNull(code);
                                 onSelectLanguageResult(code);
                             });
-                    SettingsNavigationFactory.createSettingsNavigation(getContext())
+                    // Deliberately uses the non-tab-scoped navigation. The result is delivered via
+                    // the androidx Fragment Result API, which requires this fragment to stay alive
+                    // on the fragment back stack until SelectLanguageFragment pops itself.
+                    // SettingsInTabUrlNav would replace and destroy it. See crbug.com/555347875.
+                    // Do not change to createSettingsNavigation(getContext()).
+                    SettingsNavigationFactory.createSettingsNavigation()
                             .startSettings(
                                     getActivity(),
                                     SelectLanguageFragment.class,
