@@ -76,7 +76,10 @@ class CORE_EXPORT ContainerTiming final
     const DOMPaintTimingInfo first_paint_timing_info_;
     const AtomicString identifier_;
     DOMPaintTimingInfo last_new_painted_area_paint_timing_info_;
-    WeakMember<Element> last_new_painted_area_element_;
+    // The largest element, by its own clipped area, painted since the last
+    // entry was emitted, and that area. Both reset on emission.
+    WeakMember<Element> largest_painted_area_element_;
+    uint64_t largest_painted_area_ = 0;
     cc::Region painted_region_;
     bool has_pending_changes_ = false;
   };

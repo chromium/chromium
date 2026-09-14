@@ -79,15 +79,28 @@ void ContainerTiming::Record::MaybeUpdateLastNewPaintedArea(
     const DOMPaintTimingInfo& paint_timing_info,
     Element* element,
     const gfx::Rect& enclosing_rect) {
+  // Nominate the element by its own clipped area, the way LCP selects its
+  // candidates, rather than by the area it newly contributed to the container.
+  // Selecting by the contributed area would hand the overlap between two
+  // elements to whichever happened to paint first, both within a frame and
+  // across loads of the same page. Ties keep the earlier element.
+  //
+  // This runs before the containment check below: content painting entirely
+  // inside the region painted so far is still a contentful paint, it just does
+  // not grow the container. Nothing re-nominates on a repaint, because each
+  // element reaches container timing only once per content it paints.
+  const uint64_t own_painted_area = enclosing_rect.size().Area64();
+  if (own_painted_area > largest_painted_area_) {
+    largest_painted_area_ = own_painted_area;
+    largest_painted_area_element_ = element;
+  }
+
   if (painted_region_.Contains(enclosing_rect)) {
     return;
   }
 
   painted_region_.Union(enclosing_rect);
-
   last_new_painted_area_paint_timing_info_ = paint_timing_info;
-  last_new_painted_area_element_ = element;
-
   has_pending_changes_ = true;
 }
 
@@ -100,12 +113,16 @@ void ContainerTiming::Record::MaybeEmitPerformanceEntry(
   performance->AddContainerTiming(
       last_new_painted_area_paint_timing_info_, painted_region_.bounds(),
       GetRegionSize(painted_region_), container_root, identifier_,
-      last_new_painted_area_element_, first_paint_timing_info_);
+      largest_painted_area_element_, first_paint_timing_info_);
   has_pending_changes_ = false;
+  // Start the comparison over, so the next entry reports the largest element
+  // painted since this one.
+  largest_painted_area_ = 0;
+  largest_painted_area_element_ = nullptr;
 }
 
 void ContainerTiming::Record::Trace(Visitor* visitor) const {
-  visitor->Trace(last_new_painted_area_element_);
+  visitor->Trace(largest_painted_area_element_);
 }
 
 ContainerTiming::Record* ContainerTiming::GetOrCreateRecord(

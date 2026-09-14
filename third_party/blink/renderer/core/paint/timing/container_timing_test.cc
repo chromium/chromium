@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_container_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -42,6 +43,18 @@ class ContainerTimingTest : public PageTestBase {
         DOMWindowPerformance::performance(*GetDocument().domWindow());
     return performance->getBufferedEntriesByType(AtomicString("container"))
         .size();
+  }
+
+  // Returns the last container timing entry emitted, or null if there is none.
+  PerformanceContainerTiming* GetLastContainerEntry() {
+    auto* performance =
+        DOMWindowPerformance::performance(*GetDocument().domWindow());
+    auto entries =
+        performance->getBufferedEntriesByType(AtomicString("container"));
+    if (entries.empty()) {
+      return nullptr;
+    }
+    return To<PerformanceContainerTiming>(entries.back().Get());
   }
 
  private:
@@ -740,6 +753,161 @@ TEST_F(ContainerTimingTest, TextGateUsesTracker) {
   EXPECT_FALSE(TextElementTiming::NeededForTiming(*outside));
   // elementtiming registration is independent of container timing.
   EXPECT_TRUE(TextElementTiming::NeededForTiming(*et));
+}
+
+// lastPaintedElement reports the largest element painted, not whichever
+// painted last.
+TEST_F(ContainerTimingTest, LastPaintedElementIsLargestPainter) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="big">x</div>
+      <div id="small">y</div>
+    </div>
+  )HTML");
+
+  auto* big = GetDocument().getElementById(AtomicString("big"));
+  auto* small = GetDocument().getElementById(AtomicString("small"));
+  ASSERT_TRUE(big);
+  ASSERT_TRUE(small);
+
+  // The smaller one paints last, which is what used to decide the entry.
+  SimulatePaint(big, gfx::RectF(0, 0, 100, 100));
+  SimulatePaint(small, gfx::RectF(200, 200, 10, 10));
+  TriggerPopulateEntries();
+
+  ASSERT_EQ(1u, GetContainerEntryCount());
+  auto* entry = GetLastContainerEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(big, entry->lastPaintedElement());
+}
+
+// The running maximum covers only the paints since the last entry, so a small
+// paint afterwards is the largest element of the next entry.
+TEST_F(ContainerTimingTest, LargestPainterResetsAfterEntry) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="big">x</div>
+      <div id="small">y</div>
+    </div>
+  )HTML");
+
+  auto* big = GetDocument().getElementById(AtomicString("big"));
+  auto* small = GetDocument().getElementById(AtomicString("small"));
+  ASSERT_TRUE(big);
+  ASSERT_TRUE(small);
+
+  SimulatePaint(big, gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+  EXPECT_EQ(big, GetLastContainerEntry()->lastPaintedElement());
+
+  // A new, much smaller area: it did not beat the first paint, but that one
+  // belongs to an entry already emitted.
+  SimulatePaint(small, gfx::RectF(200, 200, 10, 10));
+  TriggerPopulateEntries();
+  ASSERT_EQ(2u, GetContainerEntryCount());
+  EXPECT_EQ(small, GetLastContainerEntry()->lastPaintedElement());
+}
+
+// Elements are compared by their own clipped area, so overlapping elements do
+// not depend on the order they are painted in: the larger one wins whether it
+// paints first or second.
+TEST_F(ContainerTimingTest, LargestPainterIsIndependentOfPaintOrder) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="narrow">x</div>
+      <div id="wide">y</div>
+    </div>
+  )HTML");
+
+  auto* narrow = GetDocument().getElementById(AtomicString("narrow"));
+  auto* wide = GetDocument().getElementById(AtomicString("wide"));
+  ASSERT_TRUE(narrow);
+  ASSERT_TRUE(wide);
+
+  // 100x100 = 10000, painted first.
+  SimulatePaint(narrow, gfx::RectF(100, 0, 100, 100));
+  // 200x100 = 20000, painted second and overlapping all of `narrow`. Crediting
+  // it only the area it newly contributed would leave it at 10000, tying with
+  // `narrow`, which painted first and would keep the entry.
+  SimulatePaint(wide, gfx::RectF(0, 0, 200, 100));
+  TriggerPopulateEntries();
+
+  ASSERT_EQ(1u, GetContainerEntryCount());
+  EXPECT_EQ(wide, GetLastContainerEntry()->lastPaintedElement());
+}
+
+// Area already covered by an earlier entry does not diminish an element: the
+// comparison is on the element's own area, so a large element landing mostly on
+// already-painted area still beats a smaller, entirely new one.
+TEST_F(ContainerTimingTest, LargestPainterUsesOwnAreaNotContributedArea) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="first">x</div>
+      <div id="overlapping">y</div>
+      <div id="fresh">z</div>
+    </div>
+  )HTML");
+
+  auto* first = GetDocument().getElementById(AtomicString("first"));
+  auto* overlapping = GetDocument().getElementById(AtomicString("overlapping"));
+  auto* fresh = GetDocument().getElementById(AtomicString("fresh"));
+  ASSERT_TRUE(first);
+  ASSERT_TRUE(overlapping);
+  ASSERT_TRUE(fresh);
+
+  // First entry covers 100x100.
+  SimulatePaint(first, gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  // 100x120 = 12000 of its own, but all of it except a 100x20 strip was already
+  // painted, so it contributes only 2000 - less than `fresh` contributes.
+  SimulatePaint(overlapping, gfx::RectF(0, 0, 100, 120));
+  // 60x60 = 3600, all of it new area.
+  SimulatePaint(fresh, gfx::RectF(200, 200, 60, 60));
+  TriggerPopulateEntries();
+
+  ASSERT_EQ(2u, GetContainerEntryCount());
+  EXPECT_EQ(overlapping, GetLastContainerEntry()->lastPaintedElement());
+}
+
+// Content painting entirely inside the region painted so far grows nothing, so
+// it emits no entry of its own - but it is a contentful paint, and can be the
+// largest element of whichever entry comes next.
+TEST_F(ContainerTimingTest, LargestPainterCanBeFullyCoveredContent) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="first">x</div>
+      <div id="covered">y</div>
+      <div id="edge">z</div>
+    </div>
+  )HTML");
+
+  auto* first = GetDocument().getElementById(AtomicString("first"));
+  auto* covered = GetDocument().getElementById(AtomicString("covered"));
+  auto* edge = GetDocument().getElementById(AtomicString("edge"));
+  ASSERT_TRUE(first);
+  ASSERT_TRUE(covered);
+  ASSERT_TRUE(edge);
+
+  SimulatePaint(first, gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  // 50x50 = 2500, entirely inside what is already painted: no new area, so on
+  // its own it emits no entry.
+  SimulatePaint(covered, gfx::RectF(10, 10, 50, 50));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  // 100x10 = 1000 of new area, which is what emits the entry - but `covered` is
+  // the larger of the two elements painted since the last one.
+  SimulatePaint(edge, gfx::RectF(0, 100, 100, 10));
+  TriggerPopulateEntries();
+
+  ASSERT_EQ(2u, GetContainerEntryCount());
+  EXPECT_EQ(covered, GetLastContainerEntry()->lastPaintedElement());
 }
 
 class ContainerTimingIframeIsolationTest : public PageTestBase {

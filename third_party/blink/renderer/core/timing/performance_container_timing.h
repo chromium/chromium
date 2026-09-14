@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -68,6 +69,13 @@ class CORE_EXPORT PerformanceContainerTiming final : public PerformanceEntry {
   AtomicString identifier_;
   WeakMember<Element> last_painted_element_;
   DOMHighResTimeStamp first_render_time_;
+};
+
+template <>
+struct DowncastTraits<PerformanceContainerTiming> {
+  static bool AllowFrom(const PerformanceEntry& entry) {
+    return entry.EntryTypeEnum() == PerformanceEntry::EntryType::kContainer;
+  }
 };
 
 }  // namespace blink
