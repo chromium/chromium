@@ -5,6 +5,7 @@
 #include "android_webview/browser/aw_field_trials.h"
 
 #include "android_webview/browser/variations/aw_entropy_providers.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/variations/feature_overrides.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -197,6 +198,21 @@ TEST_F(AwFieldTrialsTest, AllowlistedFeature) {
   base::FeatureList::SetInstance(std::move(feature_list));
 
   EXPECT_TRUE(base::FeatureList::IsEnabled(kAllowlistedFeature));
+}
+
+TEST_F(AwFieldTrialsTest, ResamplingScrollEventsFeatureOverride) {
+  AwFieldTrials aw_field_trials;
+  auto feature_list = std::make_unique<base::FeatureList>();
+
+  aw_field_trials.RegisterFeatureOverrides(feature_list.get());
+  base::FeatureList::SetInstance(std::move(feature_list));
+
+  EXPECT_TRUE(
+      base::FeatureList::IsEnabled(blink::features::kResamplingScrollEvents));
+  EXPECT_EQ(base::GetFieldTrialParamValueByFeature(
+                blink::features::kResamplingScrollEvents,
+                blink::features::kScrollPredictorMaxResampleTime.name),
+            "20ms");
 }
 
 }  // namespace android_webview

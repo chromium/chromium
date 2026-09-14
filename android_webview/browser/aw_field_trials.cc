@@ -10,6 +10,7 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/base_paths_android.h"
 #include "base/check.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "components/content_settings/core/common/features.h"
@@ -76,6 +77,29 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // can be rolled out via Finch.
   aw_feature_overrides.DisableFeature(
       blink::features::kScrollPredictorRefinedHasPrediction);
+
+  // PARAM_OVERRIDDEN: crbug.com/486206884
+  if (!feature_list->HasAssociatedFieldTrialByFeatureName(
+          blink::features::kResamplingScrollEvents.name)) {
+    const char kResamplingScrollEventsWebViewExperiment[] =
+        "ResamplingScrollEventsWebViewExperiment";
+    const char kResamplingScrollEventsWebViewGroup[] =
+        "ResamplingScrollEventsWebViewGroup";
+    base::FieldTrial* resampling_scroll_events_field_trial =
+        base::FieldTrialList::CreateFieldTrial(
+            kResamplingScrollEventsWebViewExperiment,
+            kResamplingScrollEventsWebViewGroup);
+    base::FieldTrialParams params;
+    params.emplace(blink::features::kScrollPredictorMaxResampleTime.name,
+                   "20ms");
+    base::AssociateFieldTrialParams(kResamplingScrollEventsWebViewExperiment,
+                                    kResamplingScrollEventsWebViewGroup,
+                                    params);
+    feature_list->RegisterFieldTrialOverride(
+        blink::features::kResamplingScrollEvents.name,
+        base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE,
+        resampling_scroll_events_field_trial);
+  }
 
   // DISABLED_INCOMPATIBLE: InputVizard is disabled on WebView as it is a
   // Chrome-only feature that moves input handling to the VizCompositor
