@@ -68,7 +68,8 @@ export function getHtml(this: SettingsSyncControlsElement) {
       <div class="cr-row continuation"
           ?hidden="${!this.shouldShowBatchUploadPromo_()}">
         <div class="cr-secondary-text flex" id="batchUploadPromo"
-            .innerHTML="${this.batchUploadPromoHTML_}">
+            .innerHTML="${this.batchUploadPromoHTML_}"
+            @click="${this.onBatchUploadPromoClick_}">
         </div>
       </div>
     </div>

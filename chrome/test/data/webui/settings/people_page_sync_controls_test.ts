@@ -840,6 +840,15 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertTrue(isChildVisible(syncControls, '#batchUploadPromo'));
     assertEquals(localDataCount, pluralStringArgs.itemCount);
 
+    // Simulate an update to sync controls (e.g. prefs change) to trigger a
+    // re-render after the promo was displayed. Check crbug.com/561406312 for
+    // more details.
+    syncControls.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await microtasksFinished();
+
     const batchUploadLinkElement =
         syncControls.shadowRoot.querySelector<HTMLElement>(
             '#openBatchUploadLink');

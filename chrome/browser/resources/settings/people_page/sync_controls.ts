@@ -181,17 +181,6 @@ export class SettingsSyncControlsElement extends
     }
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('batchUploadPromoHTML_')) {
-      this.attachOpenBatchUploadLinkClick_();
-    }
-  }
-
   /**
    * Handler for when the sync preferences are updated.
    */
@@ -215,9 +204,12 @@ export class SettingsSyncControlsElement extends
             'batchUploadPromoLabel', localDataCount);
 
     // We need the HTML representation instead of the string since the string
-    // holds a link.
-    this.batchUploadPromoHTML_ =
-        sanitizeInnerHtml(batchUploadPromoString, {tags: ['a'], attrs: ['id']});
+    // holds a link. Add `aria-labelledby="batchUploadPromo"` so the link is
+    // accessible and labels itself with the full promo text.
+    this.batchUploadPromoHTML_ = sanitizeInnerHtml(
+        batchUploadPromoString.replace(
+            '<a ', '<a aria-labelledby="batchUploadPromo" '),
+        {tags: ['a'], attrs: ['id', 'aria-labelledby']});
   }
 
   protected shouldShowBatchUploadPromo_(): boolean {
@@ -232,29 +224,20 @@ export class SettingsSyncControlsElement extends
     return this.batchUploadPromoHTML_ !== window.trustedTypes!.emptyHTML;
   }
 
-  /** Attach the click action and aria label to the batch upload promo link. */
-  private attachOpenBatchUploadLinkClick_(): void {
-    const element: HTMLElement|null|undefined =
-        this.shadowRoot?.querySelector(`#openBatchUploadLink`);
-    if (element !== null && element !== undefined) {
-      element.addEventListener('click', (me: MouseEvent) => {
-        this.onPromoClicked_(me);
-      });
+  protected onBatchUploadPromoClick_(event: MouseEvent): void {
+    // The click listener is set on the parent container (#batchUploadPromo) via
+    // event delegation so it is not lost when innerHTML is re-evaluated by Lit.
+    // Ensure only clicks on the actual anchor link trigger the action.
+    const target = event.target as HTMLElement;
+    if (target.id === 'openBatchUploadLink') {
+      assert(this.shouldShowBatchUploadPromo_());
 
-      // Since there is a link for the batch upload, we can also be sure that
-      // the containing element exists.
-      const batchUploadElement: HTMLElement|null|undefined =
-          this.shadowRoot?.querySelector(`#batchUploadPromo`);
-      element.setAttribute('aria-label', batchUploadElement!.textContent);
+      // Prevent navigation to href='#' and open the batch upload dialog
+      // instead.
+      event.preventDefault();
+      BatchUploadPromoProxyImpl.getInstance()
+          .handler.onBatchUploadPromoClicked();
     }
-  }
-
-  private onPromoClicked_(event: Event): void {
-    assert(this.shouldShowBatchUploadPromo_());
-
-    // Prevent navigation to href='#' and open the batch upload dialog instead.
-    event.preventDefault();
-    BatchUploadPromoProxyImpl.getInstance().handler.onBatchUploadPromoClicked();
   }
 
   /**
