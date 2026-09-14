@@ -181,9 +181,6 @@ def main():
         help='cache artifacts in specified directory instead of a temp dir.',
     )
     parser.add_argument(
-        '--debug', action='store_true', help=('build Crubit in debug mode')
-    )
-    parser.add_argument(
         '--crubit-force-head-revision',
         action='store_true',
         help=(
