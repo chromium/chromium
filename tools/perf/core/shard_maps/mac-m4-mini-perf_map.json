@@ -6,9 +6,6 @@
             },
             "rendering.desktop.notracing": {
                 "abridged": false
-            },
-            "ad_frames.fencedframe": {
-                "abridged": false
             }
         },
         "crossbench": {

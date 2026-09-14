@@ -1,9 +1,6 @@
 {
     "0": {
         "benchmarks": {
-            "ad_frames.fencedframe": {
-                "abridged": false
-            },
             "blink_perf.accessibility": {
                 "abridged": false
             },
