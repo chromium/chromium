@@ -4,18 +4,17 @@
 
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+
 NSString* const kGeminiPromoConsentFullDetentIdentifier =
     @"GeminiPromoConsentFullDetentIdentifier";
 
 NSString* const kLottieAnimationFirstRunBannerName = @"FRE_Banner";
 
 NSString* const kLottieAnimationFRESummarizeSlideName = @"FRE_Summarize_Slide";
-NSString* const kLottieAnimationFRESummarizeSlideDarkName =
-    @"FRE_Summarize_Slide_Dark";
 NSString* const kLottieAnimationFRESummarizeSlideRTLName =
     @"FRE_Summarize_Slide_RTL";
-NSString* const kLottieAnimationFRESummarizeSlideDarkRTLName =
-    @"FRE_Summarize_Slide_Dark_RTL";
 
 NSString* const kLottieAnimationFREShoppingSlideName = @"FRE_Shopping_Slide";
 NSString* const kLottieAnimationFREShoppingSlideDarkName =
@@ -32,6 +31,46 @@ NSString* const kLottieAnimationFREPlanningSlideRTLName =
     @"FRE_Planning_Slide_RTL";
 NSString* const kLottieAnimationFREPlanningSlideDarkRTLName =
     @"FRE_Planning_Slide_Dark_RTL";
+
+NSDictionary<NSString*, UIColor*>* SummarizeSlideLightModeColorProvider() {
+  return @{
+    @"575B5F" : UIColorFromRGB(0x575B5F),
+    @"1B1C1D" : UIColorFromRGB(0x1B1C1D),
+    @"F0F4F9" : UIColorFromRGB(0xF0F4F9),
+    @"FFFFFF" : UIColorFromRGB(0xFFFFFF),
+    @"BDC1C6" : UIColorFromRGB(0xBDC1C6),
+    @"A8C7FA" : UIColorFromRGB(0xA8C7FA),
+    @"D3E3FD" : UIColorFromRGB(0xD3E3FD),
+    @"CEEAD6" : UIColorFromRGB(0xCEEAD6),
+    @"AECBFA" : UIColorFromRGB(0xAECBFA),
+    @"A8DAB5" : UIColorFromRGB(0xA8DAB5),
+    @"E5EEFE" : UIColorFromRGB(0xE5EEFE),
+    @"ECF4F9" : UIColorFromRGB(0xECF4F9),
+    @"kInvertedTextPrimaryColor" : UIColorFromRGB(0xFFFFFF),
+    @"Floaty-text" : [UIColor colorNamed:kTextPrimaryColor],
+    @"Tab-text" : [UIColor colorNamed:kTextPrimaryColor],
+  };
+}
+
+NSDictionary<NSString*, UIColor*>* SummarizeSlideDarkModeColorProvider() {
+  return @{
+    @"575B5F" : UIColorFromRGB(0xA2A9B0),
+    @"1B1C1D" : UIColorFromRGB(0xFFFFFF),
+    @"F0F4F9" : UIColorFromRGB(0x282A2C),
+    @"FFFFFF" : UIColorFromRGB(0x131314),
+    @"BDC1C6" : UIColorFromRGB(0x000000),
+    @"A8C7FA" : UIColorFromRGB(0x0B57D0),
+    @"D3E3FD" : UIColorFromRGB(0x0842A0),
+    @"CEEAD6" : UIColorFromRGB(0x137333),
+    @"AECBFA" : UIColorFromRGB(0x0842A0),
+    @"A8DAB5" : UIColorFromRGB(0x137333),
+    @"E5EEFE" : UIColorFromRGB(0x052A66),
+    @"ECF4F9" : UIColorFromRGB(0x072A37),
+    @"kInvertedTextPrimaryColor" : UIColorFromRGB(0x000000),
+    @"Floaty-text" : [UIColor colorNamed:kTextPrimaryColor],
+    @"Tab-text" : [UIColor colorNamed:kTextPrimaryColor],
+  };
+}
 
 NSString* const kGeminiFRECarouselScrollViewAccessibilityIdentifier =
     @"GeminiFRECarouselScrollViewAccessibilityIdentifier";

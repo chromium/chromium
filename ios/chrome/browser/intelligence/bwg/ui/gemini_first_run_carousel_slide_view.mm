@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
@@ -29,7 +30,29 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
 
 }  // namespace
 
-@implementation GeminiFirstRunCarouselSlide
+@interface GeminiFirstRunCarouselSlide ()
+
+- (instancetype)initWithAnimationName:(NSString*)animationName
+                    darkAnimationName:(NSString*)darkAnimationName
+                     animationNameRTL:(NSString*)animationNameRTL
+                 darkAnimationNameRTL:(NSString*)darkAnimationNameRTL
+                                title:(NSString*)title
+          animationAccessibilityLabel:(NSString*)animationAccessibilityLabel
+               textProviderDictionary:
+                   (NSDictionary<NSString*, NSString*>*)textProviderDictionary
+               lightModeColorProvider:
+                   (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
+                darkModeColorProvider:
+                    (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider
+    NS_DESIGNATED_INITIALIZER;
+
+@end
+
+@implementation GeminiFirstRunCarouselSlide {
+  NSDictionary<NSString*, UIColor*>* _lightModeColorProvider;
+  NSDictionary<NSString*, UIColor*>* _darkModeColorProvider;
+  BOOL _hasDynamicColors;
+}
 
 - (instancetype)initWithAnimationName:(NSString*)animationName
                     darkAnimationName:(NSString*)darkAnimationName
@@ -39,12 +62,59 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
           animationAccessibilityLabel:(NSString*)animationAccessibilityLabel
                textProviderDictionary:
                    (NSDictionary<NSString*, NSString*>*)textProviderDictionary {
+  CHECK(darkAnimationName.length);
+  CHECK(darkAnimationNameRTL.length);
+  return [self initWithAnimationName:animationName
+                   darkAnimationName:darkAnimationName
+                    animationNameRTL:animationNameRTL
+                darkAnimationNameRTL:darkAnimationNameRTL
+                               title:title
+         animationAccessibilityLabel:animationAccessibilityLabel
+              textProviderDictionary:textProviderDictionary
+              lightModeColorProvider:nil
+               darkModeColorProvider:nil];
+}
+
+- (instancetype)initWithAnimationName:(NSString*)animationName
+                     animationNameRTL:(NSString*)animationNameRTL
+                                title:(NSString*)title
+          animationAccessibilityLabel:(NSString*)animationAccessibilityLabel
+               textProviderDictionary:
+                   (NSDictionary<NSString*, NSString*>*)textProviderDictionary
+               lightModeColorProvider:
+                   (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
+                darkModeColorProvider:
+                    (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider {
+  CHECK(lightModeColorProvider);
+  CHECK(darkModeColorProvider);
+  _hasDynamicColors = YES;
+  return [self initWithAnimationName:animationName
+                   darkAnimationName:nil
+                    animationNameRTL:animationNameRTL
+                darkAnimationNameRTL:nil
+                               title:title
+         animationAccessibilityLabel:animationAccessibilityLabel
+              textProviderDictionary:textProviderDictionary
+              lightModeColorProvider:lightModeColorProvider
+               darkModeColorProvider:darkModeColorProvider];
+}
+
+- (instancetype)initWithAnimationName:(NSString*)animationName
+                    darkAnimationName:(NSString*)darkAnimationName
+                     animationNameRTL:(NSString*)animationNameRTL
+                 darkAnimationNameRTL:(NSString*)darkAnimationNameRTL
+                                title:(NSString*)title
+          animationAccessibilityLabel:(NSString*)animationAccessibilityLabel
+               textProviderDictionary:
+                   (NSDictionary<NSString*, NSString*>*)textProviderDictionary
+               lightModeColorProvider:
+                   (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
+                darkModeColorProvider:
+                    (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider {
   self = [super init];
   if (self) {
     CHECK(animationName.length);
-    CHECK(darkAnimationName.length);
     CHECK(animationNameRTL.length);
-    CHECK(darkAnimationNameRTL.length);
     CHECK(title.length);
     CHECK(animationAccessibilityLabel.length);
     _animationName = [animationName copy];
@@ -54,8 +124,26 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
     _title = [title copy];
     _animationAccessibilityLabel = [animationAccessibilityLabel copy];
     _textProviderDictionary = [textProviderDictionary copy];
+    _lightModeColorProvider = [lightModeColorProvider copy];
+    _darkModeColorProvider = [darkModeColorProvider copy];
   }
   return self;
+}
+
+- (BOOL)hasDynamicColors {
+  return _hasDynamicColors;
+}
+
+- (void)applyDynamicColorsToAnimation:(id<LottieAnimation>)animation {
+  if (!_hasDynamicColors) {
+    return;
+  }
+
+  for (NSString* key in _lightModeColorProvider.allKeys) {
+    UIColor* lightColor = _lightModeColorProvider[key];
+    UIColor* darkColor = _darkModeColorProvider[key];
+    ConfigureAnimationCustomColor(animation, key, lightColor, darkColor);
+  }
 }
 
 @end
@@ -119,6 +207,10 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
 }
 
 - (NSString*)currentAnimationName {
+  if ([_slide hasDynamicColors]) {
+    return [self isRTL] ? _slide.animationNameRTL : _slide.animationName;
+  }
+
   if ([self isRTL]) {
     return [self isDarkMode] ? _slide.darkAnimationNameRTL
                              : _slide.animationNameRTL;
@@ -139,9 +231,12 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
     [animation setDictionaryTextProvider:_slide.textProviderDictionary];
   }
 
+  // Configure dynamic colors if provided.
+  [_slide applyDynamicColorsToAnimation:animation];
+
   animation.animationView.translatesAutoresizingMaskIntoConstraints = NO;
   animation.animationView.contentMode = UIViewContentModeScaleAspectFit;
-  // Hide the text in the lottie as we have custom accesbility labels.
+  // Hide the text in the lottie as we have custom accessibility labels.
   animation.animationView.accessibilityElementsHidden = YES;
   return animation;
 }
@@ -223,6 +318,7 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
   BOOL isLargerText = UIContentSizeCategoryCompareToCategory(
                           self.traitCollection.preferredContentSizeCategory,
                           UIContentSizeCategoryLarge) == NSOrderedDescending;
+  _titleWidthConstraint.active = !isLargerText;
 
   UIFont* titleFont = [self scaledTitleFont];
   _titleLabel.font = titleFont;
@@ -233,24 +329,26 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
   // In compact height, hiding the animation container automatically collapses
   // its height and the vertical stack spacing to 0.
   _animationContainer.hidden = isCompactHeight;
-  if (!isCompactHeight) {
-    // Swap the active Lottie animation when the interface style (light/dark) or
-    // layout direction (LTR/RTL) changes.
-    NSString* targetAnimationName = [self currentAnimationName];
-    if (![_currentAnimationName isEqualToString:targetAnimationName]) {
-      [_lottieAnimation stop];
-      [_lottieAnimation.animationView removeFromSuperview];
-      _lottieAnimation =
-          [self createLottieAnimationWithName:targetAnimationName];
-      _currentAnimationName = [targetAnimationName copy];
-      if (_lottieAnimation.animationView) {
-        [_animationContainer addSubview:_lottieAnimation.animationView];
-        AddSameConstraints(_lottieAnimation.animationView, _animationContainer);
-      }
-    }
+  if (isCompactHeight) {
+    return;
   }
 
-  _titleWidthConstraint.active = !isLargerText;
+  // Swap the active Lottie animation when the interface style (light/dark) or
+  // layout direction (LTR/RTL) changes.
+  NSString* targetAnimationName = [self currentAnimationName];
+  if (![_currentAnimationName isEqualToString:targetAnimationName]) {
+    [_lottieAnimation stop];
+    [_lottieAnimation.animationView removeFromSuperview];
+    _lottieAnimation = [self createLottieAnimationWithName:targetAnimationName];
+    _currentAnimationName = [targetAnimationName copy];
+    if (_lottieAnimation.animationView) {
+      [_animationContainer addSubview:_lottieAnimation.animationView];
+      AddSameConstraints(_lottieAnimation.animationView, _animationContainer);
+    }
+    return;
+  }
+
+  [_slide applyDynamicColorsToAnimation:_lottieAnimation];
 }
 
 @end

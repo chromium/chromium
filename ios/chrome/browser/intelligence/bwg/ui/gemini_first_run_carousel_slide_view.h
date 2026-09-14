@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol LottieAnimation;
+
 // Represents a single slide in the Gemini FRE carousel.
 @interface GeminiFirstRunCarouselSlide : NSObject
 
@@ -37,9 +39,15 @@
 @property(nonatomic, copy, readonly)
     NSDictionary<NSString*, NSString*>* textProviderDictionary;
 
-// Initializer with the Lottie animations for light and dark mode, in both LTR
-// and RTL layout directions, along with the title, accessibility label for
-// the animation artwork, and optional text provider dictionary.
+// Returns whether this slide uses dynamic theme coloring instead of
+// separate dark-mode Lottie assets.
+- (BOOL)hasDynamicColors;
+
+// Applies custom dynamic theme colors to the given Lottie animation.
+- (void)applyDynamicColorsToAnimation:(id<LottieAnimation>)animation;
+
+// Initializes a slide with separate Light/Dark and LTR/RTL Lottie animation
+// assets.
 - (instancetype)initWithAnimationName:(NSString*)animationName
                     darkAnimationName:(NSString*)darkAnimationName
                      animationNameRTL:(NSString*)animationNameRTL
@@ -47,8 +55,19 @@
                                 title:(NSString*)title
           animationAccessibilityLabel:(NSString*)animationAccessibilityLabel
                textProviderDictionary:
+                   (NSDictionary<NSString*, NSString*>*)textProviderDictionary;
+
+// Initializes a slide with dynamic theme coloring.
+- (instancetype)initWithAnimationName:(NSString*)animationName
+                     animationNameRTL:(NSString*)animationNameRTL
+                                title:(NSString*)title
+          animationAccessibilityLabel:(NSString*)animationAccessibilityLabel
+               textProviderDictionary:
                    (NSDictionary<NSString*, NSString*>*)textProviderDictionary
-    NS_DESIGNATED_INITIALIZER;
+               lightModeColorProvider:
+                   (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
+                darkModeColorProvider:
+                    (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider;
 
 - (instancetype)init NS_UNAVAILABLE;
 

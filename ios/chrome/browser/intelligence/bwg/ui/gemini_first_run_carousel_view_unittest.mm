@@ -48,12 +48,12 @@ class GeminiFirstRunCarouselViewTest : public PlatformTest {
 
     slide1_ = [[GeminiFirstRunCarouselSlide alloc]
               initWithAnimationName:kLottieAnimationFRESummarizeSlideName
-                  darkAnimationName:kLottieAnimationFRESummarizeSlideDarkName
                    animationNameRTL:kLottieAnimationFRESummarizeSlideRTLName
-               darkAnimationNameRTL:kLottieAnimationFRESummarizeSlideDarkRTLName
                               title:@"Summarize with Gemini"
         animationAccessibilityLabel:@"Summarize artwork"
-             textProviderDictionary:nil];
+             textProviderDictionary:nil
+             lightModeColorProvider:@{@"color" : UIColor.whiteColor}
+              darkModeColorProvider:@{@"color" : UIColor.blackColor}];
     slide2_ = [[GeminiFirstRunCarouselSlide alloc]
               initWithAnimationName:kLottieAnimationFREShoppingSlideName
                   darkAnimationName:kLottieAnimationFREShoppingSlideDarkName

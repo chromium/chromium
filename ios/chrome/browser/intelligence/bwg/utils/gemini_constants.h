@@ -261,9 +261,7 @@ extern NSString* const kLottieAnimationFirstRunBannerName;
 
 // Lottie animation names for Gemini Visual Rich First Run carousel slides.
 extern NSString* const kLottieAnimationFRESummarizeSlideName;
-extern NSString* const kLottieAnimationFRESummarizeSlideDarkName;
 extern NSString* const kLottieAnimationFRESummarizeSlideRTLName;
-extern NSString* const kLottieAnimationFRESummarizeSlideDarkRTLName;
 
 extern NSString* const kLottieAnimationFREShoppingSlideName;
 extern NSString* const kLottieAnimationFREShoppingSlideDarkName;
@@ -274,6 +272,12 @@ extern NSString* const kLottieAnimationFREPlanningSlideName;
 extern NSString* const kLottieAnimationFREPlanningSlideDarkName;
 extern NSString* const kLottieAnimationFREPlanningSlideRTLName;
 extern NSString* const kLottieAnimationFREPlanningSlideDarkRTLName;
+
+// Returns the color provider dictionary for the Summarize slide in light mode.
+NSDictionary<NSString*, UIColor*>* SummarizeSlideLightModeColorProvider();
+
+// Returns the color provider dictionary for the Summarize slide in dark mode.
+NSDictionary<NSString*, UIColor*>* SummarizeSlideDarkModeColorProvider();
 
 // Accessibility identifier for the Gemini Visual Rich FRE carousel scroll view.
 extern NSString* const kGeminiFRECarouselScrollViewAccessibilityIdentifier;

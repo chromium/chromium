@@ -255,9 +255,7 @@ NSDictionary<NSString*, NSString*>* CreateCarouselTextProvider(
   return @[
     [[GeminiFirstRunCarouselSlide alloc]
               initWithAnimationName:kLottieAnimationFRESummarizeSlideName
-                  darkAnimationName:kLottieAnimationFRESummarizeSlideDarkName
                    animationNameRTL:kLottieAnimationFRESummarizeSlideRTLName
-               darkAnimationNameRTL:kLottieAnimationFRESummarizeSlideDarkRTLName
                               title:summarizeTitle
         animationAccessibilityLabel:
             l10n_util::GetNSString(
@@ -265,7 +263,9 @@ NSDictionary<NSString*, NSString*>* CreateCarouselTextProvider(
              textProviderDictionary:
                  CreateCarouselTextProvider(
                      IDS_IOS_GEMINI_PROMO_CAROUSEL_SUMMARIZE_FLOATY_TEXT,
-                     IDS_IOS_GEMINI_PROMO_CAROUSEL_SUMMARIZE_TAB_TEXT)],
+                     IDS_IOS_GEMINI_PROMO_CAROUSEL_SUMMARIZE_TAB_TEXT)
+             lightModeColorProvider:SummarizeSlideLightModeColorProvider()
+              darkModeColorProvider:SummarizeSlideDarkModeColorProvider()],
     [[GeminiFirstRunCarouselSlide alloc]
               initWithAnimationName:kLottieAnimationFREShoppingSlideName
                   darkAnimationName:kLottieAnimationFREShoppingSlideDarkName

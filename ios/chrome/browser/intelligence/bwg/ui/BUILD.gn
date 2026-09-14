@@ -47,6 +47,7 @@ source_set("ui") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/shared/ui:buildflags",
+    "//ios/chrome/browser/shared/ui/animated_promo:utils",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_util",
@@ -110,8 +111,6 @@ bundle_data("bwg_lottie_resources") {
     "resources/FRE_Shopping_Slide_Dark_RTL.json",
     "resources/FRE_Shopping_Slide_RTL.json",
     "resources/FRE_Summarize_Slide.json",
-    "resources/FRE_Summarize_Slide_Dark.json",
-    "resources/FRE_Summarize_Slide_Dark_RTL.json",
     "resources/FRE_Summarize_Slide_RTL.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]

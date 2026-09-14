@@ -8,6 +8,10 @@ source_set("constants") {
     "gemini_constants.mm",
     "gemini_entry_flow_result.h",
   ]
+  deps = [
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+  ]
 }
 
 source_set("prefs") {

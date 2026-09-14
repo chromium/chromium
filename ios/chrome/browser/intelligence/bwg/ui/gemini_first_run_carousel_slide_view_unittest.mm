@@ -14,44 +14,73 @@ class GeminiFirstRunCarouselSlideViewTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    slide_ = [[GeminiFirstRunCarouselSlide alloc]
+    dynamic_slide_ = [[GeminiFirstRunCarouselSlide alloc]
               initWithAnimationName:kLottieAnimationFRESummarizeSlideName
-                  darkAnimationName:kLottieAnimationFRESummarizeSlideDarkName
                    animationNameRTL:kLottieAnimationFRESummarizeSlideRTLName
-               darkAnimationNameRTL:kLottieAnimationFRESummarizeSlideDarkRTLName
                               title:@"Summarize with Gemini"
         animationAccessibilityLabel:@"Summarize artwork"
+             textProviderDictionary:@{@"key" : @"value"}
+             lightModeColorProvider:@{@"color_key" : UIColor.whiteColor}
+              darkModeColorProvider:@{@"color_key" : UIColor.blackColor}];
+
+    static_slide_ = [[GeminiFirstRunCarouselSlide alloc]
+              initWithAnimationName:kLottieAnimationFREShoppingSlideName
+                  darkAnimationName:kLottieAnimationFREShoppingSlideDarkName
+                   animationNameRTL:kLottieAnimationFREShoppingSlideRTLName
+               darkAnimationNameRTL:kLottieAnimationFREShoppingSlideDarkRTLName
+                              title:@"Shop with Gemini"
+        animationAccessibilityLabel:@"Shop artwork"
              textProviderDictionary:nil];
   }
 
-  GeminiFirstRunCarouselSlide* slide_;
+  GeminiFirstRunCarouselSlide* dynamic_slide_;
+  GeminiFirstRunCarouselSlide* static_slide_;
 };
 
-// Tests that GeminiFirstRunCarouselSlide correctly initializes and stores all
-// properties.
-TEST_F(GeminiFirstRunCarouselSlideViewTest, SlideProperties) {
-  EXPECT_NSEQ(kLottieAnimationFRESummarizeSlideName, slide_.animationName);
-  EXPECT_NSEQ(kLottieAnimationFRESummarizeSlideDarkName,
-              slide_.darkAnimationName);
+// Tests that GeminiFirstRunCarouselSlide correctly initializes and stores
+// dynamic color properties.
+TEST_F(GeminiFirstRunCarouselSlideViewTest, DynamicSlideProperties) {
+  EXPECT_NSEQ(kLottieAnimationFRESummarizeSlideName,
+              dynamic_slide_.animationName);
   EXPECT_NSEQ(kLottieAnimationFRESummarizeSlideRTLName,
-              slide_.animationNameRTL);
-  EXPECT_NSEQ(kLottieAnimationFRESummarizeSlideDarkRTLName,
-              slide_.darkAnimationNameRTL);
-  EXPECT_NSEQ(@"Summarize with Gemini", slide_.title);
-  EXPECT_NSEQ(@"Summarize artwork", slide_.animationAccessibilityLabel);
+              dynamic_slide_.animationNameRTL);
+  EXPECT_NSEQ(nil, dynamic_slide_.darkAnimationName);
+  EXPECT_NSEQ(nil, dynamic_slide_.darkAnimationNameRTL);
+  EXPECT_NSEQ(@"Summarize with Gemini", dynamic_slide_.title);
+  EXPECT_NSEQ(@"Summarize artwork", dynamic_slide_.animationAccessibilityLabel);
+  EXPECT_NSEQ(@"value", dynamic_slide_.textProviderDictionary[@"key"]);
+}
+
+// Tests that GeminiFirstRunCarouselSlide correctly initializes and stores
+// static 4-asset properties.
+TEST_F(GeminiFirstRunCarouselSlideViewTest, StaticSlideProperties) {
+  EXPECT_NSEQ(kLottieAnimationFREShoppingSlideName,
+              static_slide_.animationName);
+  EXPECT_NSEQ(kLottieAnimationFREShoppingSlideDarkName,
+              static_slide_.darkAnimationName);
+  EXPECT_NSEQ(kLottieAnimationFREShoppingSlideRTLName,
+              static_slide_.animationNameRTL);
+  EXPECT_NSEQ(kLottieAnimationFREShoppingSlideDarkRTLName,
+              static_slide_.darkAnimationNameRTL);
+  EXPECT_NSEQ(@"Shop with Gemini", static_slide_.title);
+  EXPECT_NSEQ(@"Shop artwork", static_slide_.animationAccessibilityLabel);
 }
 
 // Tests that the slide view initializes successfully with a valid slide model.
 TEST_F(GeminiFirstRunCarouselSlideViewTest, Initialization) {
-  GeminiFirstRunCarouselSlideView* slideView =
-      [[GeminiFirstRunCarouselSlideView alloc] initWithSlide:slide_];
-  EXPECT_NE(slideView, nil);
+  GeminiFirstRunCarouselSlideView* dynamicSlideView =
+      [[GeminiFirstRunCarouselSlideView alloc] initWithSlide:dynamic_slide_];
+  EXPECT_NE(dynamicSlideView, nil);
+
+  GeminiFirstRunCarouselSlideView* staticSlideView =
+      [[GeminiFirstRunCarouselSlideView alloc] initWithSlide:static_slide_];
+  EXPECT_NE(staticSlideView, nil);
 }
 
 // Tests that animation playback API methods execute cleanly.
 TEST_F(GeminiFirstRunCarouselSlideViewTest, PlayAndResetAnimation) {
   GeminiFirstRunCarouselSlideView* slideView =
-      [[GeminiFirstRunCarouselSlideView alloc] initWithSlide:slide_];
+      [[GeminiFirstRunCarouselSlideView alloc] initWithSlide:dynamic_slide_];
   EXPECT_NE(slideView, nil);
 
   [slideView playAnimation];
