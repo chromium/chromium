@@ -78,16 +78,38 @@ public class WebappAuthenticatorTest {
     @SmallTest
     @Feature({"Webapps"})
     public void testAuthenticationFieldBoundaries() {
-        String url = "https://attacker.example/app/";
-        String icon = "PAYLOAD_LEGIT_ICON";
+        String url = "https://www.example.org/app/";
+        String icon = "PREFIX_SAMPLE_ICON";
         byte[] mac = WebappAuthenticator.getMacForUrlAndIcon(url, icon);
         Assert.assertNotNull(mac);
 
-        // Shift boundary between url and icon
-        String shiftedUrl = "https://attacker.example/app/PAYLOAD_";
-        String shiftedIcon = "LEGIT_ICON";
+        // Shift boundary between url and icon (move prefix from icon to URL)
+        String shiftedUrl = "https://www.example.org/app/PREFIX_";
+        String shiftedIcon = "SAMPLE_ICON";
         Assert.assertEquals(
                 WebappAuthenticator.MAC_INVALID,
                 WebappAuthenticator.verifyMac(shiftedUrl, shiftedIcon, mac));
+
+        // Shift boundary in the opposite direction (move suffix from URL to icon)
+        String shiftedUrl2 = "https://www.example.org/";
+        String shiftedIcon2 = "app/PREFIX_SAMPLE_ICON";
+        Assert.assertEquals(
+                WebappAuthenticator.MAC_INVALID,
+                WebappAuthenticator.verifyMac(shiftedUrl2, shiftedIcon2, mac));
+
+        // Empty icon string handling
+        byte[] emptyIconMac = WebappAuthenticator.getMacForUrlAndIcon(url, "");
+        Assert.assertNotNull(emptyIconMac);
+        Assert.assertEquals(
+                WebappAuthenticator.MAC_TRUSTED,
+                WebappAuthenticator.verifyMac(url, "", emptyIconMac));
+        Assert.assertEquals(
+                WebappAuthenticator.MAC_INVALID,
+                WebappAuthenticator.verifyMac(url, null, emptyIconMac));
+
+        byte[] urlOnlyMac = WebappAuthenticator.getMacForUrl(url);
+        Assert.assertNotNull(urlOnlyMac);
+        Assert.assertEquals(
+                WebappAuthenticator.MAC_LEGACY, WebappAuthenticator.verifyMac(url, "", urlOnlyMac));
     }
 }

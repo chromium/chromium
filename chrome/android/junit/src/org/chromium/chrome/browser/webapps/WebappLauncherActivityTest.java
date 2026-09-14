@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -16,6 +17,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Base64;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -27,11 +29,13 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -152,6 +156,127 @@ public class WebappLauncherActivityTest {
         activity = Robolectric.buildActivity(WebappLauncherActivity.class, intent).setup().get();
 
         nextIntent = Shadows.shadowOf(activity).getNextStartedActivityForResult().intent;
+        assertEquals(
+                "org.chromium.chrome.browser.document.ChromeLauncherActivity",
+                nextIntent.getComponent().getClassName());
+    }
+
+    @Test
+    public void testWebappLaunchWithMacVerifiedIcon() {
+        String icon = "sample_base64_icon";
+        byte[] mac = WebappAuthenticator.getMacForUrlAndIcon(START_URL, icon);
+        assertNotNull(mac);
+        String macB64 = Base64.encodeToString(mac, Base64.DEFAULT);
+
+        Intent intent = new Intent();
+        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
+        intent.putExtra(WebappConstants.EXTRA_ID, "webapp_id_1");
+        intent.putExtra(WebappConstants.EXTRA_URL, START_URL);
+        intent.putExtra(WebappConstants.EXTRA_ICON, icon);
+        intent.putExtra(WebappConstants.EXTRA_MAC, macB64);
+
+        Robolectric.buildActivity(WebappLauncherActivity.class, intent).create();
+
+        Intent launchIntent = getNextStartedActivity();
+        assertNotNull(launchIntent);
+        assertEquals(WebappActivity.class.getName(), launchIntent.getComponent().getClassName());
+        assertTrue(
+                IntentUtils.safeGetBooleanExtra(
+                        launchIntent, WebappConstants.EXTRA_IS_ICON_TRUSTED, false));
+    }
+
+    @Test
+    public void testWebappLaunchWithLegacyMacDoesNotTrustIcon() {
+        String icon = "sample_base64_icon";
+        byte[] legacyMac = WebappAuthenticator.getMacForUrl(START_URL);
+        assertNotNull(legacyMac);
+        String macB64 = Base64.encodeToString(legacyMac, Base64.DEFAULT);
+
+        Intent intent = new Intent();
+        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
+        intent.putExtra(WebappConstants.EXTRA_ID, "webapp_id_2");
+        intent.putExtra(WebappConstants.EXTRA_URL, START_URL);
+        intent.putExtra(WebappConstants.EXTRA_ICON, icon);
+        intent.putExtra(WebappConstants.EXTRA_MAC, macB64);
+        intent.putExtra(WebappConstants.EXTRA_IS_ICON_TRUSTED, true);
+
+        Robolectric.buildActivity(WebappLauncherActivity.class, intent).create();
+
+        Intent launchIntent = getNextStartedActivity();
+        assertNotNull(launchIntent);
+        assertEquals(WebappActivity.class.getName(), launchIntent.getComponent().getClassName());
+        assertFalse(
+                IntentUtils.safeGetBooleanExtra(
+                        launchIntent, WebappConstants.EXTRA_IS_ICON_TRUSTED, false));
+    }
+
+    @Test
+    public void testWebappLaunchWithModifiedIconOpensInTab() {
+        String icon = "sample_base64_icon";
+        byte[] mac = WebappAuthenticator.getMacForUrlAndIcon(START_URL, icon);
+        assertNotNull(mac);
+        String macB64 = Base64.encodeToString(mac, Base64.DEFAULT);
+
+        Intent intent = new Intent();
+        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
+        intent.putExtra(WebappConstants.EXTRA_ID, "webapp_id_3");
+        intent.putExtra(WebappConstants.EXTRA_URL, START_URL);
+        intent.putExtra(WebappConstants.EXTRA_ICON, icon + "_modified");
+        intent.putExtra(WebappConstants.EXTRA_MAC, macB64);
+
+        Activity activity =
+                Robolectric.buildActivity(WebappLauncherActivity.class, intent).setup().get();
+
+        Intent nextIntent = Shadows.shadowOf(activity).getNextStartedActivityForResult().intent;
+        assertNotNull(nextIntent);
+        assertEquals(
+                "org.chromium.chrome.browser.document.ChromeLauncherActivity",
+                nextIntent.getComponent().getClassName());
+    }
+
+    @Test
+    public void testWebappLaunchWithShiftedFieldBoundariesOpensInTab() {
+        String icon = "PREFIX_SAMPLE_ICON";
+        byte[] mac = WebappAuthenticator.getMacForUrlAndIcon(START_URL, icon);
+        assertNotNull(mac);
+        String macB64 = Base64.encodeToString(mac, Base64.DEFAULT);
+
+        Intent intent = new Intent();
+        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
+        intent.putExtra(WebappConstants.EXTRA_ID, "webapp_id_4");
+        intent.putExtra(WebappConstants.EXTRA_URL, START_URL + "PREFIX_");
+        intent.putExtra(WebappConstants.EXTRA_ICON, "SAMPLE_ICON");
+        intent.putExtra(WebappConstants.EXTRA_MAC, macB64);
+
+        Activity activity =
+                Robolectric.buildActivity(WebappLauncherActivity.class, intent).setup().get();
+
+        Intent nextIntent = Shadows.shadowOf(activity).getNextStartedActivityForResult().intent;
+        assertNotNull(nextIntent);
+        assertEquals(
+                "org.chromium.chrome.browser.document.ChromeLauncherActivity",
+                nextIntent.getComponent().getClassName());
+    }
+
+    @Test
+    public void testWebappLaunchWithMalformedMacOpensInTab() {
+        Intent intent = new Intent();
+        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
+        intent.putExtra(WebappConstants.EXTRA_ID, "webapp_id_5");
+        intent.putExtra(WebappConstants.EXTRA_URL, START_URL);
+        intent.putExtra(WebappConstants.EXTRA_ICON, "sample_base64_icon");
+        intent.putExtra(WebappConstants.EXTRA_MAC, "!@#$invalid_base64%$#@!");
+
+        Activity activity =
+                Robolectric.buildActivity(WebappLauncherActivity.class, intent).setup().get();
+
+        Intent nextIntent = Shadows.shadowOf(activity).getNextStartedActivityForResult().intent;
+        assertNotNull(nextIntent);
         assertEquals(
                 "org.chromium.chrome.browser.document.ChromeLauncherActivity",
                 nextIntent.getComponent().getClassName());

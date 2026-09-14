@@ -77,7 +77,7 @@ public class WebappAuthenticator {
     }
 
     /**
-     * Calculates a MAC for the concatenation of a URL and an encoded icon.
+     * Calculates a MAC for a URL and an encoded icon using length-prefixed encoding.
      *
      * @param url A URL for which to calculate a MAC.
      * @param encodedIcon The base64 encoded icon, or null.
@@ -120,6 +120,7 @@ public class WebappAuthenticator {
      *     MAC_INVALID (0) otherwise.
      */
     public static int verifyMac(String url, @Nullable String encodedIcon, byte[] mac) {
+        assert mac != null;
         if (encodedIcon != null) {
             byte[] goodMacWithIcon = getMacForUrlAndIcon(url, encodedIcon);
             if (goodMacWithIcon != null && constantTimeAreArraysEqual(goodMacWithIcon, mac)) {
@@ -135,6 +136,8 @@ public class WebappAuthenticator {
 
     // TODO(palmer): Put this method, and as much of this class as possible, in a utility class.
     private static boolean constantTimeAreArraysEqual(byte[] a, byte[] b) {
+        assert a != null;
+        assert b != null;
         if (a.length != b.length) {
             return false;
         }
