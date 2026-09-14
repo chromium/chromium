@@ -407,6 +407,9 @@ public class SigninButtonCoordinatorTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    // TODO(crbug.com/551756560): Once SIGNIN_BUTTON_PROFILE_MENU is launched, restrict
+    // this test by form factor instead of disabling the flag.
+    @DisableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)
     public void testClickSigninButton_SignedOut() {
         startActivityOnNtp();
 
@@ -422,7 +425,12 @@ public class SigninButtonCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    // TODO(crbug.com/551756560): Once SIGNIN_BUTTON_PROFILE_MENU is launched, restrict
+    // this test by form factor instead of disabling the flag.
+    @DisableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU
+    })
     public void testClickSigninButton_SignedOut_SeamlessSigninDisabled() {
         startActivityOnNtp();
 
@@ -441,6 +449,9 @@ public class SigninButtonCoordinatorTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/551756560): Once SIGNIN_BUTTON_PROFILE_MENU is launched, restrict
+    // this test by form factor instead of disabling the flag.
+    @DisableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)
     public void testClickSigninButton_SignedOut_SigninDisabled() {
         startActivityOnNtp();
 
@@ -462,6 +473,9 @@ public class SigninButtonCoordinatorTest {
     // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    // TODO(crbug.com/551756560): Once SIGNIN_BUTTON_PROFILE_MENU is launched, restrict
+    // this test by form factor instead of disabling the flag.
+    @DisableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)
     public void testClickSigninButton_SignedIn() {
         startActivityOnNtp();
 
