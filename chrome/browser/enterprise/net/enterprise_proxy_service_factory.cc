@@ -11,6 +11,7 @@
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 #include "components/enterprise/net/core/features.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/log/net_log.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
@@ -59,7 +60,8 @@ EnterpriseProxyServiceFactory::BuildServiceInstanceForBrowserContext(
       profile->GetPrefs(),
       EnterpriseNetworkAuthServiceFactory::GetForProfile(profile),
       std::move(url_loader_factory_callback),
-      enterprise::ProfileIdServiceFactory::GetForProfile(profile));
+      enterprise::ProfileIdServiceFactory::GetForProfile(profile),
+      net::NetLog::Get());
 }
 
 bool EnterpriseProxyServiceFactory::ServiceIsCreatedWithBrowserContext() const {

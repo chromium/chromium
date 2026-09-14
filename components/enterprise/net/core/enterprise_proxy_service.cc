@@ -26,6 +26,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "net/base/auth.h"
+#include "net/log/net_log.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source_type.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace enterprise_net {
@@ -36,15 +39,43 @@ constexpr std::string_view kDisguisedErrorCodes[] = {
     "403", "500", "502", "503", "504",
 };
 
-void RecordResultAndRunAuthCallback(
-    base::OnceCallback<void(EnterpriseProxyService::ProxyAuthChallengeResult,
-                            const std::optional<net::AuthCredentials>&)>
-        callback,
-    EnterpriseProxyService::ProxyAuthChallengeResult result,
-    const std::optional<net::AuthCredentials>& credentials) {
-  base::UmaHistogramEnumeration(
-      "Enterprise.SecureGateway.ProxyAuthChallengeResult", result);
-  std::move(callback).Run(result, credentials);
+std::string_view ProxyAuthChallengeResultToString(
+    EnterpriseProxyService::ProxyAuthChallengeResult result) {
+  switch (result) {
+    case EnterpriseProxyService::ProxyAuthChallengeResult::kNotApplicable:
+      return "not_applicable";
+    case EnterpriseProxyService::ProxyAuthChallengeResult::kDisguisedError:
+      return "disguised_error";
+    case EnterpriseProxyService::ProxyAuthChallengeResult::kNoCredentialsNeeded:
+      return "no_credentials_needed";
+    case EnterpriseProxyService::ProxyAuthChallengeResult::
+        kCredentialFetchSuccess:
+      return "token_acquired";
+    case EnterpriseProxyService::ProxyAuthChallengeResult::
+        kCredentialFetchFailure:
+      return "failed";
+    case EnterpriseProxyService::ProxyAuthChallengeResult::kSignInRequired:
+      return "sign_in_required";
+  }
+}
+
+std::string_view TokenFetchErrorToString(TokenFetchError error) {
+  switch (error) {
+    case TokenFetchError::kNoPrimaryAccount:
+      return "no_primary_account";
+    case TokenFetchError::kUnmanagedUser:
+      return "unmanaged_user";
+    case TokenFetchError::kUnsupportedScope:
+      return "unsupported_scope";
+    case TokenFetchError::kInvalidCredentials:
+      return "invalid_credentials";
+    case TokenFetchError::kTransientError:
+      return "transient_error";
+    case TokenFetchError::kAuthError:
+      return "auth_error";
+    case TokenFetchError::kCanceled:
+      return "canceled";
+  }
 }
 
 // Checks whether `realm` header value represents a disguised proxy error.
@@ -80,20 +111,21 @@ const base::DictValue* FindMatchingCachedConfig(
 }  // namespace
 
 struct EnterpriseProxyService::PendingAuthRequest {
+  struct CallbackWithNetLog {
+    ProxyAuthChallengeCallback callback;
+    net::NetLogWithSource net_log;
+  };
+
   PendingAuthRequest(
-      base::OnceCallback<void(ProxyAuthChallengeResult,
-                              const std::optional<net::AuthCredentials>&)>
-          callback,
+      ProxyAuthChallengeCallback callback,
+      net::NetLogWithSource net_log,
       const ProvisioningDomainProxyConfig::ProxyEndpoint& proxy_endpoint)
       : proxy_endpoint(proxy_endpoint) {
-    callbacks.push_back(std::move(callback));
+    callbacks.push_back({std::move(callback), std::move(net_log)});
   }
   ~PendingAuthRequest() = default;
 
-  std::vector<
-      base::OnceCallback<void(ProxyAuthChallengeResult,
-                              const std::optional<net::AuthCredentials>&)>>
-      callbacks;
+  std::vector<CallbackWithNetLog> callbacks;
   ProvisioningDomainProxyConfig::ProxyEndpoint proxy_endpoint;
 };
 
@@ -103,11 +135,15 @@ EnterpriseProxyService::EnterpriseProxyService(
     PrefService* pref_service,
     EnterpriseNetworkAuthService* auth_service,
     GetURLLoaderFactoryCallback url_loader_factory_callback,
-    enterprise::ProfileIdService* profile_id_service)
+    enterprise::ProfileIdService* profile_id_service,
+    net::NetLog* net_log)
     : pref_service_(pref_service),
       auth_service_(auth_service),
       url_loader_factory_callback_(std::move(url_loader_factory_callback)),
-      profile_id_service_(profile_id_service) {
+      profile_id_service_(profile_id_service),
+      net_log_(net::NetLogWithSource::Make(
+          net_log,
+          net::NetLogSourceType::ENTERPRISE_PROXY_SERVICE)) {
   CHECK(pref_service_);
   CHECK(auth_service_);
   CHECK(url_loader_factory_callback_);
@@ -180,17 +216,48 @@ EnterpriseProxyService::GetDynamicRoutingConfig() const {
   return merged_config;
 }
 
+void EnterpriseProxyService::RecordResultAndRunAuthCallback(
+    ProxyAuthChallengeCallback callback,
+    EnterpriseProxyService::ProxyAuthChallengeResult result,
+    const std::optional<net::AuthCredentials>& credentials,
+    const net::NetLogWithSource& challenge_net_log,
+    std::optional<std::string_view> failure_reason) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.SecureGateway.ProxyAuthChallengeResult", result);
+  std::move(callback).Run(result, credentials, challenge_net_log);
+  challenge_net_log.AddEvent(
+      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED, [&] {
+        base::DictValue dict;
+        dict.Set("decision", ProxyAuthChallengeResultToString(result));
+        dict.Set("has_credentials", credentials.has_value());
+        if (failure_reason.has_value()) {
+          dict.Set("failure_reason", *failure_reason);
+        }
+        return dict;
+      });
+}
+
 void EnterpriseProxyService::HandleProxyAuthChallenge(
     const net::AuthChallengeInfo& auth_info,
     const GURL& destination_url,
     const scoped_refptr<net::HttpResponseHeaders>& response_headers,
-    base::OnceCallback<void(ProxyAuthChallengeResult,
-                            const std::optional<net::AuthCredentials>&)>
-        callback) {
+    ProxyAuthChallengeCallback callback) {
+  net::NetLogWithSource challenge_net_log = net::NetLogWithSource::Make(
+      net_log_.net_log(), net::NetLogSourceType::ENTERPRISE_PROXY_SERVICE);
+  challenge_net_log.AddEvent(
+      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RECEIVED, [&] {
+        return base::DictValue()
+            .Set("proxy_url", auth_info.challenger.Serialize())
+            .Set("destination_url", destination_url.possibly_invalid_spec())
+            .Set("auth_scheme", auth_info.scheme)
+            .Set("realm", auth_info.realm)
+            .Set("is_proxy", auth_info.is_proxy);
+      });
+
   if (!auth_info.is_proxy) {
     RecordResultAndRunAuthCallback(std::move(callback),
                                    ProxyAuthChallengeResult::kNotApplicable,
-                                   std::nullopt);
+                                   std::nullopt, challenge_net_log);
     return;
   }
 
@@ -204,7 +271,7 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
   if (!matched_proxy.has_value()) {
     RecordResultAndRunAuthCallback(std::move(callback),
                                    ProxyAuthChallengeResult::kNotApplicable,
-                                   std::nullopt);
+                                   std::nullopt, challenge_net_log);
     return;
   }
 
@@ -217,7 +284,7 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
       matched_proxy->auth->type != AuthType::kProfileBearerToken) {
     RecordResultAndRunAuthCallback(
         std::move(callback), ProxyAuthChallengeResult::kNoCredentialsNeeded,
-        std::nullopt);
+        std::nullopt, challenge_net_log);
     return;
   }
 
@@ -225,7 +292,7 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
       IsDisguisedErrorRealm(auth_info.realm)) {
     RecordResultAndRunAuthCallback(std::move(callback),
                                    ProxyAuthChallengeResult::kDisguisedError,
-                                   std::nullopt);
+                                   std::nullopt, challenge_net_log);
     return;
   }
 
@@ -235,13 +302,13 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
         req->proxy_endpoint.proxy_chain.First().host_port_pair();
     if (host_port.host() == auth_info.challenger.host() &&
         host_port.port() == auth_info.challenger.port()) {
-      req->callbacks.push_back(std::move(callback));
+      req->callbacks.push_back({std::move(callback), challenge_net_log});
       return;
     }
   }
 
-  auto request =
-      std::make_unique<PendingAuthRequest>(std::move(callback), *matched_proxy);
+  auto request = std::make_unique<PendingAuthRequest>(
+      std::move(callback), challenge_net_log, *matched_proxy);
   PendingAuthRequest* request_ptr = request.get();
   pending_auth_requests_.push_back(std::move(request));
 
@@ -253,14 +320,18 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
 
 void EnterpriseProxyService::Shutdown() {
   for (auto& request : pending_auth_requests_) {
-    for (auto& cb : request->callbacks) {
+    for (auto& [cb, req_net_log] : request->callbacks) {
       RecordResultAndRunAuthCallback(
           std::move(cb), ProxyAuthChallengeResult::kCredentialFetchFailure,
-          std::nullopt);
+          std::nullopt, req_net_log, "service_shutdown");
     }
   }
   pending_auth_requests_.clear();
   pref_change_registrar_.RemoveAll();
+  if (!refreshing_managers_.empty()) {
+    // Close any open network pause event if refreshes were in progress.
+    net_log_.EndEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+  }
   refreshing_managers_.clear();
   provisioning_domain_observations_.RemoveAllObservations();
   provisioning_domain_managers_.clear();
@@ -294,7 +365,11 @@ void EnterpriseProxyService::OnProvisioningDomainStateChanged(
 
   const size_t new_count = refreshing_managers_.size();
 
-  if ((old_count == 0 || new_count == 0) && old_count != new_count) {
+  if (old_count == 0 && new_count > 0) {
+    net_log_.BeginEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+    observers_.Notify(&Observer::OnDynamicProxyConfigsStatusChanged);
+  } else if (old_count > 0 && new_count == 0) {
+    net_log_.EndEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
     observers_.Notify(&Observer::OnDynamicProxyConfigsStatusChanged);
   }
 }
@@ -339,6 +414,12 @@ void EnterpriseProxyService::OnPolicyPrefChanged() {
 
 void EnterpriseProxyService::RecreateProvisioningDomainManagers(
     const base::ListValue& policy_domains) {
+  // If managers were currently refreshing, close the pause NetLog event before
+  // destroying them, since manager destruction does not trigger
+  // OnProvisioningDomainStateChanged.
+  if (!refreshing_managers_.empty()) {
+    net_log_.EndEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+  }
   refreshing_managers_.clear();
   provisioning_domain_observations_.RemoveAllObservations();
   provisioning_domain_managers_.clear();
@@ -429,8 +510,11 @@ void EnterpriseProxyService::OnProxyAuthTokenFetched(
          token_result.error() == TokenFetchError::kInvalidCredentials)
             ? ProxyAuthChallengeResult::kSignInRequired
             : ProxyAuthChallengeResult::kCredentialFetchFailure;
-    for (auto& cb : owned_request->callbacks) {
-      RecordResultAndRunAuthCallback(std::move(cb), result, std::nullopt);
+    std::string_view failure_reason =
+        TokenFetchErrorToString(token_result.error());
+    for (auto& [cb, req_net_log] : owned_request->callbacks) {
+      RecordResultAndRunAuthCallback(std::move(cb), result, std::nullopt,
+                                     req_net_log, failure_reason);
     }
     return;
   }
@@ -442,10 +526,10 @@ void EnterpriseProxyService::OnProxyAuthTokenFetched(
 
   net::AuthCredentials credentials(base::UTF8ToUTF16(username),
                                    base::UTF8ToUTF16(password));
-  for (auto& cb : owned_request->callbacks) {
+  for (auto& [cb, req_net_log] : owned_request->callbacks) {
     RecordResultAndRunAuthCallback(
         std::move(cb), ProxyAuthChallengeResult::kCredentialFetchSuccess,
-        credentials);
+        credentials, req_net_log);
   }
 }
 

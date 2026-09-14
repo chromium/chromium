@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/string_number_conversions.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_data.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_service.h"
 #include "components/enterprise/net/core/mock_enterprise_proxy_service.h"
@@ -15,6 +16,11 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/net_errors.h"
+#include "net/log/net_log.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source_type.h"
+#include "net/log/net_log_with_source.h"
+#include "net/log/test_net_log.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -31,6 +37,7 @@ class MockTabHelperDelegate : public EnterpriseProxyTabHelper::Delegate {
 };
 
 }  // namespace
+
 class EnterpriseProxyTabHelperTest : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
@@ -73,13 +80,29 @@ TEST_F(EnterpriseProxyTabHelperTest,
   int64_t nav_id = tab_helper_->active_navigation_id();
   EXPECT_NE(nav_id, 0);
 
+  net::RecordingNetLogObserver observer;
+  net::NetLogWithSource net_log = net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::ENTERPRISE_PROXY_SERVICE);
+
   EnterpriseProxyErrorData error_data(GURL("https://target.example.com"),
                                       GURL("https://proxy.example.com"), 502);
-  error_service_->RecordDisguisedError(nav_id, error_data);
+  error_service_->RecordDisguisedError(nav_id, error_data, net_log);
   EXPECT_TRUE(error_service_->TakeDisguisedError(nav_id).has_value());
 
+  auto saved_entries = observer.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_DISGUISED_ERROR_SAVED);
+  ASSERT_EQ(1u, saved_entries.size());
+  EXPECT_EQ(net_log.source().id, saved_entries[0].source.id);
+  EXPECT_EQ(base::NumberToString(nav_id),
+            *saved_entries[0].params.FindString("navigation_id"));
+  EXPECT_EQ("https://target.example.com/",
+            *saved_entries[0].params.FindString("destination_url"));
+  EXPECT_EQ("https://proxy.example.com/",
+            *saved_entries[0].params.FindString("proxy_url"));
+  EXPECT_EQ(502, saved_entries[0].params.FindInt("error_code"));
+
   // Record again so we can verify cleanup on DidFinishNavigation.
-  error_service_->RecordDisguisedError(nav_id, error_data);
+  error_service_->RecordDisguisedError(nav_id, error_data, net_log);
 
   simulator->Fail(net::ERR_TUNNEL_CONNECTION_FAILED);
   simulator->CommitErrorPage();

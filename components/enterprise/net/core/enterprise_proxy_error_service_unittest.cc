@@ -27,6 +27,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/auth.h"
+#include "net/log/net_log.h"
+#include "net/log/test_net_log.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -112,7 +114,7 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
 
     proxy_service_ = std::make_unique<EnterpriseProxyService>(
         &pref_service_, auth_service_.get(), std::move(callback),
-        &profile_id_service_);
+        &profile_id_service_, net::NetLog::Get());
 
     error_service_ =
         std::make_unique<EnterpriseProxyErrorService>(proxy_service_.get());
@@ -293,9 +295,26 @@ TEST_F(EnterpriseProxyErrorServiceTest,
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, RemoveDisguisedError_CleansUpMap) {
+  net::RecordingNetLogObserver observer;
+  net::NetLogWithSource net_log = net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::ENTERPRISE_PROXY_SERVICE);
+
   EnterpriseProxyErrorData data(GURL("https://target.example.com/page"),
                                 GURL("https://proxy.example.com:443"), 502);
-  error_service_->RecordDisguisedError(kTestNavigationId, data);
+  error_service_->RecordDisguisedError(kTestNavigationId, data, net_log);
+
+  auto saved_entries = observer.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_DISGUISED_ERROR_SAVED);
+  ASSERT_EQ(1u, saved_entries.size());
+  EXPECT_EQ(net_log.source().id, saved_entries[0].source.id);
+  EXPECT_EQ(base::NumberToString(kTestNavigationId),
+            *saved_entries[0].params.FindString("navigation_id"));
+  EXPECT_EQ("https://target.example.com/page",
+            *saved_entries[0].params.FindString("destination_url"));
+  EXPECT_EQ("https://proxy.example.com/",
+            *saved_entries[0].params.FindString("proxy_url"));
+  EXPECT_EQ(502, saved_entries[0].params.FindInt("error_code"));
+
   error_service_->RemoveDisguisedError(kTestNavigationId);
   EXPECT_FALSE(
       error_service_->TakeDisguisedError(kTestNavigationId).has_value());
@@ -363,6 +382,7 @@ class EnterpriseProxyErrorServiceDisguisedErrorTest
 
 TEST_P(EnterpriseProxyErrorServiceDisguisedErrorTest,
        CancelsAuthAndStoresData) {
+  net::RecordingNetLogObserver observer;
   const DisguisedErrorTestCase& test_case = GetParam();
   SetupManagedDomainWithProxy("proxy.example.com");
 
@@ -382,6 +402,32 @@ TEST_P(EnterpriseProxyErrorServiceDisguisedErrorTest,
   // Subsequent Take returns nullopt (consumed).
   EXPECT_FALSE(
       error_service_->TakeDisguisedError(kTestNavigationId).has_value());
+
+  auto received_entries = observer.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RECEIVED);
+  ASSERT_EQ(1u, received_entries.size());
+
+  auto saved_entries = observer.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_DISGUISED_ERROR_SAVED);
+  ASSERT_EQ(1u, saved_entries.size());
+  EXPECT_EQ(base::NumberToString(kTestNavigationId),
+            *saved_entries[0].params.FindString("navigation_id"));
+  EXPECT_EQ("https://target.example.com/test",
+            *saved_entries[0].params.FindString("destination_url"));
+  EXPECT_EQ("https://proxy.example.com/",
+            *saved_entries[0].params.FindString("proxy_url"));
+  EXPECT_EQ(test_case.error_code,
+            saved_entries[0].params.FindInt("error_code"));
+
+  auto resolved_entries = observer.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED);
+  ASSERT_EQ(1u, resolved_entries.size());
+  EXPECT_EQ("disguised_error",
+            *resolved_entries[0].params.FindString("decision"));
+
+  // Verify that all sub-events are tied to the parent challenge event's source.
+  EXPECT_EQ(received_entries[0].source.id, saved_entries[0].source.id);
+  EXPECT_EQ(saved_entries[0].source.id, resolved_entries[0].source.id);
 }
 
 INSTANTIATE_TEST_SUITE_P(

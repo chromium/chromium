@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/error_page/common/localized_error.h"
+#include "net/log/net_log_event_type.h"
 
 namespace enterprise_net {
 
@@ -24,7 +25,19 @@ EnterpriseProxyErrorService::~EnterpriseProxyErrorService() = default;
 
 void EnterpriseProxyErrorService::RecordDisguisedError(
     int64_t navigation_id,
-    EnterpriseProxyErrorData error_data) {
+    EnterpriseProxyErrorData error_data,
+    const net::NetLogWithSource& net_log) {
+  if (navigation_id != 0) {
+    net_log.AddEvent(
+        net::NetLogEventType::ENTERPRISE_PROXY_DISGUISED_ERROR_SAVED, [&] {
+          return base::DictValue()
+              .Set("navigation_id", base::NumberToString(navigation_id))
+              .Set("destination_url",
+                   error_data.destination_url().possibly_invalid_spec())
+              .Set("proxy_url", error_data.proxy_url().possibly_invalid_spec())
+              .Set("error_code", error_data.error_code());
+        });
+  }
   disguised_errors_.insert_or_assign(navigation_id, std::move(error_data));
 }
 
@@ -102,13 +115,15 @@ void EnterpriseProxyErrorService::MaybeRecordErrorForNavigation(
     const GURL& destination_url,
     const GURL& proxy_url,
     int error_code,
-    EnterpriseProxyErrorData::ErrorCategory category) {
+    EnterpriseProxyErrorData::ErrorCategory category,
+    const net::NetLogWithSource& net_log) {
   if (navigation_id <= 0) {
     return;
   }
   RecordDisguisedError(navigation_id,
                        EnterpriseProxyErrorData(destination_url, proxy_url,
-                                                error_code, category));
+                                                error_code, category),
+                       net_log);
 }
 
 void EnterpriseProxyErrorService::OnProxyAuthChallengeResult(
@@ -120,7 +135,8 @@ void EnterpriseProxyErrorService::OnProxyAuthChallengeResult(
     base::OnceCallback<void(const std::optional<net::AuthCredentials>&)>
         coord_callback,
     EnterpriseProxyService::ProxyAuthChallengeResult result,
-    const std::optional<net::AuthCredentials>& credentials) {
+    const std::optional<net::AuthCredentials>& credentials,
+    const net::NetLogWithSource& net_log) {
   switch (result) {
     case EnterpriseProxyService::ProxyAuthChallengeResult::kNotApplicable:
       *handled_flag = false;
@@ -131,21 +147,21 @@ void EnterpriseProxyErrorService::OnProxyAuthChallengeResult(
               ? EnterpriseProxyErrorData::ErrorCategory::kAuthorization
               : EnterpriseProxyErrorData::ErrorCategory::kOther;
       MaybeRecordErrorForNavigation(navigation_id, destination_url, proxy_url,
-                                    error_code, category);
+                                    error_code, category, net_log);
       std::move(coord_callback).Run(std::nullopt);
       return;
     }
     case EnterpriseProxyService::ProxyAuthChallengeResult::kSignInRequired:
       MaybeRecordErrorForNavigation(
           navigation_id, destination_url, proxy_url, error_code,
-          EnterpriseProxyErrorData::ErrorCategory::kAuthentication);
+          EnterpriseProxyErrorData::ErrorCategory::kAuthentication, net_log);
       std::move(coord_callback).Run(std::nullopt);
       return;
     case EnterpriseProxyService::ProxyAuthChallengeResult::
         kCredentialFetchFailure:
       MaybeRecordErrorForNavigation(
           navigation_id, destination_url, proxy_url, error_code,
-          EnterpriseProxyErrorData::ErrorCategory::kOther);
+          EnterpriseProxyErrorData::ErrorCategory::kOther, net_log);
       std::move(coord_callback).Run(std::nullopt);
       return;
     case EnterpriseProxyService::ProxyAuthChallengeResult::kNoCredentialsNeeded:

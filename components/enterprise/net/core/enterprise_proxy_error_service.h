@@ -19,6 +19,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/base/auth.h"
 #include "net/http/http_response_headers.h"
+#include "net/log/net_log_with_source.h"
 #include "url/gurl.h"
 
 namespace enterprise_net {
@@ -36,7 +37,8 @@ class EnterpriseProxyErrorService : public KeyedService {
 
   // Records a disguised proxy error for the specified navigation ID.
   void RecordDisguisedError(int64_t navigation_id,
-                            EnterpriseProxyErrorData error_data);
+                            EnterpriseProxyErrorData error_data,
+                            const net::NetLogWithSource& net_log);
 
   // Retrieves and removes the recorded disguised proxy error for the navigation
   // ID.
@@ -71,7 +73,8 @@ class EnterpriseProxyErrorService : public KeyedService {
       const GURL& destination_url,
       const GURL& proxy_url,
       int error_code,
-      EnterpriseProxyErrorData::ErrorCategory category);
+      EnterpriseProxyErrorData::ErrorCategory category,
+      const net::NetLogWithSource& net_log);
 
   void OnProxyAuthChallengeResult(
       bool* handled_flag,
@@ -82,7 +85,8 @@ class EnterpriseProxyErrorService : public KeyedService {
       base::OnceCallback<void(const std::optional<net::AuthCredentials>&)>
           coord_callback,
       EnterpriseProxyService::ProxyAuthChallengeResult result,
-      const std::optional<net::AuthCredentials>& credentials);
+      const std::optional<net::AuthCredentials>& credentials,
+      const net::NetLogWithSource& net_log);
 
   raw_ptr<EnterpriseProxyService> enterprise_proxy_service_ = nullptr;
   base::flat_map<int64_t, EnterpriseProxyErrorData> disguised_errors_;

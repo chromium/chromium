@@ -27,9 +27,14 @@
 #include "net/base/auth.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_response_headers.h"
+#include "net/log/net_log_with_source.h"
 #include "url/gurl.h"
 
 class PrefService;
+
+namespace net {
+class NetLog;
+}  // namespace net
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -65,11 +70,36 @@ class EnterpriseProxyService
   using GetURLLoaderFactoryCallback =
       base::RepeatingCallback<scoped_refptr<network::SharedURLLoaderFactory>()>;
 
+  // LINT.IfChange(ProxyAuthChallengeResult)
+  enum class ProxyAuthChallengeResult {
+    // No applicable rule for the destination URL & proxy pair
+    kNotApplicable = 0,
+    // The response contains a disguised error from the proxy
+    kDisguisedError,
+    // A matching rule explicitly specifies no auth or non-bearer auth
+    kNoCredentialsNeeded,
+    // Token fetch succeeded and credentials have been returned
+    kCredentialFetchSuccess,
+    // Token fetch failed
+    kCredentialFetchFailure,
+    // Token fetch failed because no primary account exists or credentials are
+    // invalid
+    kSignInRequired,
+    kMaxValue = kSignInRequired,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:EnterpriseProxyAuthChallengeResult)
+
+  using ProxyAuthChallengeCallback =
+      base::OnceCallback<void(ProxyAuthChallengeResult,
+                              const std::optional<net::AuthCredentials>&,
+                              const net::NetLogWithSource&)>;
+
   EnterpriseProxyService(
       PrefService* pref_service,
       EnterpriseNetworkAuthService* auth_service,
       GetURLLoaderFactoryCallback url_loader_factory_callback,
-      enterprise::ProfileIdService* profile_id_service = nullptr);
+      enterprise::ProfileIdService* profile_id_service = nullptr,
+      net::NetLog* net_log = nullptr);
 
   EnterpriseProxyService(const EnterpriseProxyService&) = delete;
   EnterpriseProxyService& operator=(const EnterpriseProxyService&) = delete;
@@ -103,30 +133,6 @@ class EnterpriseProxyService
   // managed Provisioning Domains and active fetch states.
   virtual base::DictValue GetDebugInfo() const;
 
- protected:
-  // Protected constructor for test doubles (e.g. MockEnterpriseProxyService).
-  EnterpriseProxyService();
-
- public:
-  // LINT.IfChange(ProxyAuthChallengeResult)
-  enum class ProxyAuthChallengeResult {
-    // No applicable rule for the destination URL & proxy pair
-    kNotApplicable = 0,
-    // The response contains a disguised error from the proxy
-    kDisguisedError,
-    // A matching rule explicitly specifies no auth or non-bearer auth
-    kNoCredentialsNeeded,
-    // Token fetch succeeded and credentials have been returned
-    kCredentialFetchSuccess,
-    // Token fetch failed
-    kCredentialFetchFailure,
-    // Token fetch failed because no primary account exists or credentials are
-    // invalid
-    kSignInRequired,
-    kMaxValue = kSignInRequired,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:EnterpriseProxyAuthChallengeResult)
-
   // Evaluates a 407 Proxy Authentication challenge against managed dynamic
   // routes and initiates credential fetching if applicable.
   // Note that in-flight auth requests will not adjust for any config changes
@@ -135,10 +141,13 @@ class EnterpriseProxyService
       const net::AuthChallengeInfo& auth_info,
       const GURL& destination_url,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers,
-      base::OnceCallback<void(ProxyAuthChallengeResult,
-                              const std::optional<net::AuthCredentials>&)>
-          callback);
+      ProxyAuthChallengeCallback callback);
 
+ protected:
+  // Protected constructor for test doubles (e.g. MockEnterpriseProxyService).
+  EnterpriseProxyService();
+
+ public:
   // KeyedService:
   void Shutdown() override;
 
@@ -181,6 +190,13 @@ class EnterpriseProxyService
   std::string BuildBasicAuthUsername(
       const std::vector<ProxyExtraHeader>& proxy_headers) const;
 
+  void RecordResultAndRunAuthCallback(
+      ProxyAuthChallengeCallback callback,
+      ProxyAuthChallengeResult result,
+      const std::optional<net::AuthCredentials>& credentials,
+      const net::NetLogWithSource& challenge_net_log,
+      std::optional<std::string_view> failure_reason = std::nullopt);
+
   void OnProxyAuthTokenFetched(PendingAuthRequest* request,
                                AccessTokenResult token_result);
 
@@ -216,6 +232,8 @@ class EnterpriseProxyService
 
   // List of pending proxy auth requests.
   std::vector<std::unique_ptr<PendingAuthRequest>> pending_auth_requests_;
+
+  net::NetLogWithSource net_log_;
 
   base::WeakPtrFactory<EnterpriseProxyService> weak_ptr_factory_{this};
 };

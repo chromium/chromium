@@ -29,6 +29,8 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/log/net_log.h"
+#include "net/log/test_net_log.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -176,10 +178,13 @@ class EnterpriseProxyServiceTest : public testing::Test {
         "en-US", "picture_url");
   }
 
-  void CreateService(
-      enterprise::ProfileIdService* profile_id_service = nullptr) {
+  void CreateService(enterprise::ProfileIdService* profile_id_service = nullptr,
+                     net::NetLog* net_log = nullptr) {
     if (!profile_id_service) {
       profile_id_service = &profile_id_service_;
+    }
+    if (!net_log) {
+      net_log = net::NetLog::Get();
     }
     auto callback = base::BindRepeating(
         [](network::TestURLLoaderFactory* factory)
@@ -189,7 +194,7 @@ class EnterpriseProxyServiceTest : public testing::Test {
         base::Unretained(&test_url_loader_factory_));
     service_ = std::make_unique<EnterpriseProxyService>(
         &pref_service_, auth_service_.get(), std::move(callback),
-        profile_id_service);
+        profile_id_service, net_log);
   }
 
   void SetPolicyDomains(const std::vector<std::string>& domain_ids,
@@ -203,6 +208,7 @@ class EnterpriseProxyServiceTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  net::RecordingNetLogObserver net_log_observer_;
   std::unique_ptr<net::test::MockNetworkChangeNotifier>
       mock_network_change_notifier_ =
           net::test::MockNetworkChangeNotifier::Create();
@@ -261,6 +267,11 @@ TEST_F(EnterpriseProxyServiceTest, MultiDomainServiceLifecycle) {
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
 
+  auto pause_entries = net_log_observer_.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+  ASSERT_EQ(1u, pause_entries.size());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, pause_entries[0].phase);
+
   EXPECT_TRUE(service_->IsRefreshInProgress());
   EXPECT_EQ(3, test_url_loader_factory_.NumPending());
 
@@ -296,8 +307,14 @@ TEST_F(EnterpriseProxyServiceTest, MultiDomainServiceLifecycle) {
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
 
-  // All 3 fetches completed -> counter hits 0.
+  // All 3 fetches completed -> counter hits 0 and network pause ends.
   EXPECT_FALSE(service_->IsRefreshInProgress());
+
+  pause_entries = net_log_observer_.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+  ASSERT_EQ(2u, pause_entries.size());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, pause_entries[0].phase);
+  EXPECT_EQ(net::NetLogEventPhase::END, pause_entries[1].phase);
 
   base::DictValue debug_info_complete = service_->GetDebugInfo();
   EXPECT_FALSE(*debug_info_complete.FindBool("is_refresh_in_progress"));
@@ -832,6 +849,27 @@ TEST_F(EnterpriseProxyServiceTest, MalformedPolicyDoesNotRefresh) {
   service_->RemoveObserver(&observer);
 }
 
+TEST_F(EnterpriseProxyServiceTest, NetLogEmittedOnShutdownDuringNetworkPause) {
+  CreateService();
+
+  SetPolicyDomains({kTestDomain1});
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+
+  auto pause_entries = net_log_observer_.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+  ASSERT_EQ(1u, pause_entries.size());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, pause_entries[0].phase);
+
+  service_->Shutdown();
+
+  pause_entries = net_log_observer_.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+  ASSERT_EQ(2u, pause_entries.size());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, pause_entries[0].phase);
+  EXPECT_EQ(net::NetLogEventPhase::END, pause_entries[1].phase);
+}
+
 class EnterpriseProxyServiceAuthChallengeTest
     : public EnterpriseProxyServiceTest {
  protected:
@@ -874,6 +912,11 @@ class EnterpriseProxyServiceAuthChallengeTest
         "Enterprise.SecureGateway.ProxyAuthChallengeResult", expected_result,
         1);
   }
+
+  using AuthChallengeFuture =
+      base::test::TestFuture<EnterpriseProxyService::ProxyAuthChallengeResult,
+                             const std::optional<net::AuthCredentials>&,
+                             const net::NetLogWithSource&>;
 };
 
 TEST_F(EnterpriseProxyServiceAuthChallengeTest, NotProxyChallenge) {
@@ -881,9 +924,7 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, NotProxyChallenge) {
   net::AuthChallengeInfo auth_info = CreateProxyAuthChallengeInfo();
   auth_info.is_proxy = false;
 
-  base::test::TestFuture<EnterpriseProxyService::ProxyAuthChallengeResult,
-                         const std::optional<net::AuthCredentials>&>
-      future;
+  AuthChallengeFuture future;
   service_->HandleProxyAuthChallenge(auth_info,
                                      GURL("https://foo.example.com/test"),
                                      nullptr, future.GetCallback());
@@ -898,9 +939,7 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, NotProxyChallenge) {
 
 TEST_F(EnterpriseProxyServiceAuthChallengeTest, NotManagedProxy) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<EnterpriseProxyService::ProxyAuthChallengeResult,
-                         const std::optional<net::AuthCredentials>&>
-      future;
+  AuthChallengeFuture future;
   service_->HandleProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("unmanaged-proxy.com"),
       GURL("https://foo.example.com/test"), nullptr, future.GetCallback());
@@ -915,9 +954,7 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, NotManagedProxy) {
 
 TEST_F(EnterpriseProxyServiceAuthChallengeTest, InvalidDestinationUrl) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<EnterpriseProxyService::ProxyAuthChallengeResult,
-                         const std::optional<net::AuthCredentials>&>
-      future;
+  AuthChallengeFuture future;
   service_->HandleProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("proxy1.example.com"), GURL(), nullptr,
       future.GetCallback());
@@ -934,9 +971,7 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, NoCredentialsNeeded) {
   base::HistogramTester histogram_tester;
   SetUpDomainAndSimulateResponse(kTestDomain2, kValidPvdJson2);
 
-  base::test::TestFuture<EnterpriseProxyService::ProxyAuthChallengeResult,
-                         const std::optional<net::AuthCredentials>&>
-      future;
+  AuthChallengeFuture future;
   service_->HandleProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("proxy2.example.com"),
       GURL("https://foo.domain2.com/test"), nullptr, future.GetCallback());
@@ -952,9 +987,7 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, NoCredentialsNeeded) {
 
 TEST_F(EnterpriseProxyServiceAuthChallengeTest, DisguisedErrorRealm) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<EnterpriseProxyService::ProxyAuthChallengeResult,
-                         const std::optional<net::AuthCredentials>&>
-      future;
+  AuthChallengeFuture future;
   service_->HandleProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("proxy1.example.com", 443, "403"),
       GURL("https://foo.example.com/test"), nullptr, future.GetCallback());
@@ -973,9 +1006,7 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, CredentialFetchSuccess) {
       language::prefs::kAcceptLanguages, std::string());
   pref_service_.SetString(language::prefs::kAcceptLanguages, "en-US,en;q=0.9");
 
-  base::test::TestFuture<EnterpriseProxyService::ProxyAuthChallengeResult,
-                         const std::optional<net::AuthCredentials>&>
-      future;
+  AuthChallengeFuture future;
   service_->HandleProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("proxy1.example.com"),
       GURL("https://foo.example.com/test"), nullptr, future.GetCallback());
@@ -997,13 +1028,25 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, CredentialFetchSuccess) {
       "X-Client-ID=test_client"
       "&X-Profile-ID=test_profile_id";
   EXPECT_EQ(base::UTF8ToUTF16(expected_username), future.Get<1>()->username());
+
+  auto received_entries = net_log_observer_.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RECEIVED);
+  ASSERT_EQ(1u, received_entries.size());
+  EXPECT_EQ("https://foo.example.com/test",
+            *received_entries[0].params.FindString("destination_url"));
+
+  auto resolved_entries = net_log_observer_.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED);
+  ASSERT_EQ(1u, resolved_entries.size());
+  EXPECT_EQ("token_acquired",
+            *resolved_entries[0].params.FindString("decision"));
+  EXPECT_FALSE(resolved_entries[0].params.FindString("failure_reason"));
+  EXPECT_EQ(received_entries[0].source.id, resolved_entries[0].source.id);
 }
 
 TEST_F(EnterpriseProxyServiceAuthChallengeTest, CredentialFetchFailure) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<EnterpriseProxyService::ProxyAuthChallengeResult,
-                         const std::optional<net::AuthCredentials>&>
-      future;
+  AuthChallengeFuture future;
   service_->HandleProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("proxy1.example.com"),
       GURL("https://foo.example.com/test"), nullptr, future.GetCallback());
@@ -1018,14 +1061,19 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, CredentialFetchFailure) {
   ExpectChallengeResultHistogram(
       histogram_tester, EnterpriseProxyService::ProxyAuthChallengeResult::
                             kCredentialFetchFailure);
+
+  auto resolved_entries = net_log_observer_.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED);
+  ASSERT_EQ(1u, resolved_entries.size());
+  EXPECT_EQ("failed", *resolved_entries[0].params.FindString("decision"));
+  EXPECT_EQ("transient_error",
+            *resolved_entries[0].params.FindString("failure_reason"));
 }
 
 TEST_F(EnterpriseProxyServiceAuthChallengeTest,
        SignInRequired_InvalidCredentials) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<EnterpriseProxyService::ProxyAuthChallengeResult,
-                         const std::optional<net::AuthCredentials>&>
-      future;
+  AuthChallengeFuture future;
   service_->HandleProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("proxy1.example.com"),
       GURL("https://foo.example.com/test"), nullptr, future.GetCallback());
@@ -1041,6 +1089,36 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest,
   ExpectChallengeResultHistogram(
       histogram_tester,
       EnterpriseProxyService::ProxyAuthChallengeResult::kSignInRequired);
+
+  auto resolved_entries = net_log_observer_.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED);
+  ASSERT_EQ(1u, resolved_entries.size());
+  EXPECT_EQ("sign_in_required",
+            *resolved_entries[0].params.FindString("decision"));
+  EXPECT_EQ("invalid_credentials",
+            *resolved_entries[0].params.FindString("failure_reason"));
+}
+
+TEST_F(EnterpriseProxyServiceAuthChallengeTest,
+       ShutdownDuringPendingAuthRequest) {
+  AuthChallengeFuture future;
+  service_->HandleProxyAuthChallenge(
+      CreateProxyAuthChallengeInfo("proxy1.example.com"),
+      GURL("https://foo.example.com/test"), nullptr, future.GetCallback());
+
+  service_->Shutdown();
+
+  EXPECT_EQ(
+      EnterpriseProxyService::ProxyAuthChallengeResult::kCredentialFetchFailure,
+      future.Get<0>());
+  EXPECT_FALSE(future.Get<1>().has_value());
+
+  auto resolved_entries = net_log_observer_.GetEntriesWithType(
+      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED);
+  ASSERT_EQ(1u, resolved_entries.size());
+  EXPECT_EQ("failed", *resolved_entries[0].params.FindString("decision"));
+  EXPECT_EQ("service_shutdown",
+            *resolved_entries[0].params.FindString("failure_reason"));
 }
 
 }  // namespace

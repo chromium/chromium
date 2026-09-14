@@ -27,6 +27,8 @@ source_set("unit_tests") {
     "//components/tabs:test_support",
     "//content/public/browser",
     "//content/test:test_support",
+    "//net",
+    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
