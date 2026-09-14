@@ -9,9 +9,11 @@ source_set("unit_tests") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/enterprise:impl",
     "//chrome/test:test_support",
     "//components/enterprise:test_support",
+    "//components/enterprise/isolated_mode",
     "//testing/gtest",
   ]
 
