@@ -196,6 +196,11 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       CompleteWithoutLoader();
       return;
     }
+    // Prefetches and subframes do not use the synthetic response loader.
+    if (!service_worker_client_->is_initiated_by_prefetch() &&
+        tentative_resource_request.is_outermost_main_frame) {
+      needs_interception_for_synthetic_response_ = true;
+    }
   }
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -461,9 +466,11 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
     service_worker_client_->AddServiceWorkerToUpdate(active_version);
   }
 
-  // If the router evaluation is needed, always forward to the service worker.
-  // Because the router evaluation is done in ServiceWorkerMainResourceLoader.
-  if (active_version->NeedRouterEvaluate()) {
+  // If the router evaluation or synthetic response is needed, always forward to
+  // the service worker, because they are handled in
+  // ServiceWorkerMainResourceLoader.
+  if (active_version->NeedRouterEvaluate() ||
+      needs_interception_for_synthetic_response_) {
     CreateLoaderAndStartRequest(std::move(find_registration_start_time));
     return;
   }

@@ -97,6 +97,7 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prefetch_test_util.h"
 #include "content/public/test/preloading_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -7966,6 +7967,26 @@ class ServiceWorkerSyntheticResponseBrowserTest
   static constexpr char kHostname[] = "synthetic-response.test";
   static constexpr char kTargetPath[] =
       "/service_worker/synthetic_response?query=";
+  static constexpr std::string_view kWorkerFetchScript = R"(
+    new Promise((resolve, reject) => {
+      const script = `
+        fetch(location.origin + '/service_worker/empty.html')
+          .then(r => r.status)
+          .then(status => postMessage({status}))
+          .catch(err => postMessage({error: err.toString()}));
+      `;
+      const blob = new Blob([script], {type: 'application/javascript'});
+      const worker = new Worker(URL.createObjectURL(blob));
+      worker.onmessage = (e) => {
+        if (e.data.status) {
+          resolve(e.data.status);
+        } else {
+          reject(e.data.error);
+        }
+      };
+      worker.onerror = (err) => reject(err.message);
+    })
+  )";
 
   ServiceWorkerSyntheticResponseBrowserTest()
       : allowed_url_(GURL(base::StrCat({"https://", kHostname, kTargetPath}))) {
@@ -7980,7 +8001,12 @@ class ServiceWorkerSyntheticResponseBrowserTest
             IsUnnecessaryBufferingSkipped() ? "true" : "false"}}},
          {network::features::kURLLoaderUseProvidedResponseBodyStream, {}},
          {network::features::kServiceWorkerSyntheticResponseHeaderCheck, {}}},
-        {});
+        {features::kPrerender2FallbackPrefetchSpecRules,
+         features::kPrefetchPrerenderIntegration});
+    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
+        base::BindRepeating(
+            &ServiceWorkerSyntheticResponseBrowserTest::web_contents,
+            base::Unretained(this)));
   }
 
   ~ServiceWorkerSyntheticResponseBrowserTest() override = default;
@@ -7993,6 +8019,7 @@ class ServiceWorkerSyntheticResponseBrowserTest
     RegisterRequestHandlerForSlowResponsePage(embedded_test_server());
     https_server_->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     RegisterRequestHandlerForSlowResponsePage(https_server());
+    prerender_helper_->RegisterServerRequestMonitor(https_server());
     ASSERT_TRUE(https_server_->InitializeAndListen());
     https_server_->StartAcceptingConnections();
     ServiceWorkerBrowserTest::SetUpOnMainThread();
@@ -8026,6 +8053,10 @@ class ServiceWorkerSyntheticResponseBrowserTest
 
   EvalJsResult GetInnerText() {
     return EvalJs(GetPrimaryMainFrame(), "document.body.innerText;");
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return prerender_helper_.get();
   }
 
  protected:
@@ -8079,14 +8110,22 @@ class ServiceWorkerSyntheticResponseBrowserTest
           const bool is_slow =
               request.GetURL().GetQuery().contains("server_slow");
 
-          std::string headers =
-              "HTTP/1.1 200 OK\r\n"
-              "Connection: close\r\n"
-              "Content-Type: text/html\r\n"
-              "Service-Worker-Synthetic-Response: ?1\r\n"
-              "Content-Security-Policy: script-src 'unsafe-inline'\r\n"
-              "Date: Fri, 27 Jun 2025 10:50:00 JST\r\n"
-              "Test-Duplicated-Header: x\r\n";
+          std::string csp = "script-src 'unsafe-inline'";
+          if (request.GetURL().GetQuery().contains("allow_worker")) {
+            csp += "; worker-src 'self' blob:";
+          }
+
+          std::string headers = base::StrCat({
+              "HTTP/1.1 200 OK\r\n",
+              "Connection: close\r\n",
+              "Content-Type: text/html\r\n",
+              "Service-Worker-Synthetic-Response: ?1\r\n",
+              "Content-Security-Policy: ",
+              csp,
+              "\r\n",
+              "Date: Fri, 27 Jun 2025 10:50:00 JST\r\n",
+              "Test-Duplicated-Header: x\r\n",
+          });
 
           if (request.GetURL().GetQuery().contains(
                   "header_mismatch_ignored_header")) {
@@ -8115,6 +8154,13 @@ class ServiceWorkerSyntheticResponseBrowserTest
                 "content=\"script-src 'nonce-jDHFShrQe4XmmH47DWyhaQ'\" />"
                 "<script nonce=\"jDHFShrQe4XmmH47DWyhaQ\">"
                 "window.is_inline_script_executed=true;</script>";
+          } else if (request.GetURL().GetQuery().contains("allow_worker")) {
+            content =
+                "<meta http-equiv=\"Content-Security-Policy\" "
+                "content=\"script-src 'unsafe-inline'; worker-src 'self' "
+                "blob:; "
+                "connect-src 'self'\" />"
+                "[SyntheticResponse] Response from the network";
           } else {
             content = is_slow ? "[SyntheticResponse] "
                                 "Slow response from the network"
@@ -8139,6 +8185,7 @@ class ServiceWorkerSyntheticResponseBrowserTest
   GURL allowed_url_;
   ContentMockCertVerifier mock_cert_verifier_;
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -8201,6 +8248,153 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
   EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                          "!!navigator.serviceWorker.controller"));
   EXPECT_EQ("[SyntheticResponse] Response from the network", GetInnerText());
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
+                       SubresourceAndWorkerSubresourceBypassServiceWorker) {
+  SetUpMockContentBrowserClient();
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL(kHostname,
+                             base::StrCat({kTargetPath, "foo&allow_worker"}))));
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "!!navigator.serviceWorker.controller"));
+
+  // Main frame subresource fetch should succeed and bypass Service Worker.
+  EXPECT_EQ(200,
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "fetch('/service_worker/empty.html').then(r => r.status)"));
+
+  // Dedicated Worker subresource fetch should also succeed and bypass Service
+  // Worker.
+  EXPECT_EQ(200, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                        kWorkerFetchScript));
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester().ExpectTotalCount("ServiceWorker.Subresource.Handled.Type2",
+                                      0);
+  histogram_tester().ExpectTotalCount(
+      "ServiceWorker.Subresource.Fallbacked.Type2", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
+                       SubresourceBypassServiceWorker_OnReload) {
+  SetUpMockContentBrowserClient();
+  const GURL target_url = https_server()->GetURL(
+      kHostname, base::StrCat({kTargetPath, "foo&allow_worker"}));
+  EXPECT_TRUE(NavigateToURL(shell(), target_url));
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "!!navigator.serviceWorker.controller"));
+
+  // Reload the page.
+  TestNavigationObserver reload_observer(web_contents());
+  shell()->Reload();
+  reload_observer.Wait();
+  EXPECT_TRUE(reload_observer.last_navigation_succeeded());
+
+  // Main frame subresource fetch should succeed and bypass Service Worker.
+  EXPECT_EQ(200,
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "fetch('/service_worker/empty.html').then(r => r.status)"));
+
+  // Dedicated Worker subresource fetch should also succeed and bypass Service
+  // Worker.
+  EXPECT_EQ(200, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                        kWorkerFetchScript));
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester().ExpectTotalCount("ServiceWorker.Subresource.Handled.Type2",
+                                      0);
+  histogram_tester().ExpectTotalCount(
+      "ServiceWorker.Subresource.Fallbacked.Type2", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
+                       SubresourceBypassServiceWorker_OnPrefetch) {
+  SetUpMockContentBrowserClient();
+  const GURL target_url = https_server()->GetURL(
+      kHostname, base::StrCat({kTargetPath, "foo&allow_worker"}));
+  EXPECT_TRUE(NavigateToURL(shell(), target_url));
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "!!navigator.serviceWorker.controller"));
+
+  // Subresource prefetch via <link rel="prefetch"> should succeed and bypass
+  // Service Worker.
+  const std::string_view prefetch_script = R"(
+    new Promise((resolve) => {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = '/service_worker/empty.html';
+      link.onload = () => resolve('loaded');
+      link.onerror = () => resolve('error');
+      document.head.appendChild(link);
+    })
+  )";
+  EXPECT_EQ("loaded", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                             prefetch_script));
+
+  // Regular subresource fetch should also succeed and bypass Service Worker.
+  EXPECT_EQ(200,
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "fetch('/service_worker/empty.html').then(r => r.status)"));
+
+  // Dedicated Worker subresource fetch should also succeed and bypass Service
+  // Worker.
+  EXPECT_EQ(200, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                        kWorkerFetchScript));
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester().ExpectTotalCount("ServiceWorker.Subresource.Handled.Type2",
+                                      0);
+  histogram_tester().ExpectTotalCount(
+      "ServiceWorker.Subresource.Fallbacked.Type2", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
+                       SubresourceBypassServiceWorker_OnPrerender) {
+  SetUpMockContentBrowserClient();
+
+  // Navigate to an initial non-synthetic-response page.
+  const GURL initial_url =
+      https_server()->GetURL(kHostname, "/service_worker/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Prerender the synthetic response target URL.
+  const GURL target_url = https_server()->GetURL(
+      kHostname, base::StrCat({kTargetPath, "foo&allow_worker"}));
+  PrerenderHostId host_id = prerender_helper()->AddPrerender(target_url);
+  ASSERT_TRUE(host_id);
+  RenderFrameHost* prerender_rfh =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(prerender_rfh);
+
+  // Subresource fetch in the prerendered frame before activation should
+  // succeed and bypass Service Worker.
+  EXPECT_EQ(200,
+            EvalJs(prerender_rfh,
+                   "fetch('/service_worker/empty.html').then(r => r.status)"));
+
+  // Activate the prerendered page.
+  prerender_helper()->NavigatePrimaryPage(target_url);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "!!navigator.serviceWorker.controller"));
+
+  // Subresource fetch after activation should also succeed and bypass Service
+  // Worker.
+  EXPECT_EQ(200,
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "fetch('/service_worker/empty.html').then(r => r.status)"));
+
+  // Dedicated Worker subresource fetch after activation should also succeed and
+  // bypass Service Worker.
+  EXPECT_EQ(200, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                        kWorkerFetchScript));
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester().ExpectTotalCount("ServiceWorker.Subresource.Handled.Type2",
+                                      0);
+  histogram_tester().ExpectTotalCount(
+      "ServiceWorker.Subresource.Fallbacked.Type2", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,

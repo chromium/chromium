@@ -614,48 +614,6 @@ GetOrCreateSyntheticRegistration(ServiceWorkerContextCore* context,
   data->policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
 
-  // Add the router rules to let all requests go to network source.
-  {
-    blink::ServiceWorkerRouterRules router_rules;
-    {
-      blink::ServiceWorkerRouterRule rule;
-      {
-        blink::ServiceWorkerRouterOrCondition or_condition;
-        {
-          blink::ServiceWorkerRouterRequestCondition request;
-          request.mode = network::mojom::RequestMode::kNavigate;
-          or_condition.conditions.push_back(
-              blink::ServiceWorkerRouterCondition::WithRequest(
-                  std::move(request)));
-        }
-        {
-          blink::ServiceWorkerRouterNotCondition not_condition;
-          {
-            blink::ServiceWorkerRouterRequestCondition request;
-            request.mode = network::mojom::RequestMode::kNavigate;
-            not_condition.condition =
-                std::make_unique<blink::ServiceWorkerRouterCondition>(
-                    blink::ServiceWorkerRouterCondition::WithRequest(
-                        std::move(request)));
-          }
-          or_condition.conditions.push_back(
-              blink::ServiceWorkerRouterCondition::WithNotCondition(
-                  std::move(not_condition)));
-        }
-        rule.condition = blink::ServiceWorkerRouterCondition::WithOrCondition(
-            std::move(or_condition));
-      }
-      {
-        blink::ServiceWorkerRouterSource source;
-        source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
-        source.network_source = blink::ServiceWorkerRouterNetworkSource{};
-        rule.sources.emplace_back(std::move(source));
-      }
-      router_rules.rules.emplace_back(std::move(rule));
-    }
-    data->router_rules = std::move(router_rules);
-  }
-
   mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
       remote_reference;
   // We don't need to care about the receiver since this is a fake one.

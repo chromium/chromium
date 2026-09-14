@@ -1210,7 +1210,16 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
         blink::mojom::ServiceWorkerFetchHandlerBypassOption::
             kSyntheticResponseDryRunMode);
 
-    return false;
+    ResponseHeadUpdateParams head_update_params;
+    head_update_params.load_timing_info = response_head_->load_timing;
+    if (initial_service_worker_status_.has_value()) {
+      head_update_params.initial_service_worker_status =
+          initial_service_worker_status_.value();
+    }
+    head_update_params.is_synthetic_response_dry_run_mode =
+        is_synthetic_response_used_;
+    Fallback(std::move(head_update_params));
+    return true;
   }
 
   is_synthetic_response_used_ = true;

@@ -171,6 +171,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
   bool force_update_started_;
+  bool needs_interception_for_synthetic_response_ = false;
 
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
