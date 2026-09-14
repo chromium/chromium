@@ -7,4 +7,12 @@ ci/chromeos-arm-generic-rel
 ci/chromeos-arm64-generic-rel
 ci/linux-chromeos-dbg
 ci/linux-chromeos-rel
+try/chromeos-amd64-generic-cfi-thin-lto-rel
+try/chromeos-amd64-generic-dbg
 try/chromeos-amd64-generic-rel
+try/chromeos-arm-generic-dbg
+try/chromeos-arm-generic-rel
+try/chromeos-arm64-generic-rel
+try/linux-chromeos-compile-dbg
+try/linux-chromeos-dbg
+try/linux-chromeos-rel

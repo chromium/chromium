@@ -1,3 +1,6 @@
 ci/linux-rel-cft
 ci/mac-rel-cft
 ci/win-rel-cft
+try/linux-rel-cft
+try/mac-rel-cft
+try/win-rel-cft

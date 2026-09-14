@@ -1,2 +1,3 @@
 ci/linux-gcc-rel
 try/compile-size
+try/linux-gcc-rel

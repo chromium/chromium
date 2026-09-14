@@ -145,6 +145,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -176,6 +177,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    contact_team_email = "clank-engprod@google.com",
 )
 
 try_.builder(
@@ -493,6 +495,7 @@ try_.orchestrator_builder(
         ],
     ),
     compilator = "android-arm64-rel-compilator",
+    contact_team_email = "clank-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
     cq_settings = try_.cq_settings(
         on_default_cq = True,
@@ -1041,6 +1044,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    contact_team_email = "woa-engprod@google.com",
 )
 
 try_.builder(
@@ -1071,6 +1075,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -1086,6 +1091,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -1375,6 +1381,7 @@ try_.builder(
     builderless = not settings.is_main,
     cores = 32 if settings.is_main else 16,
     ssd = True,
+    contact_team_email = "clank-engprod@google.com",
     cq_settings = try_.cq_settings(
         on_default_cq = True,
     ),
@@ -1411,6 +1418,7 @@ try_.builder(
     ),
     cores = 16,
     ssd = True,
+    contact_team_email = "clank-engprod@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/android/java/src/org/chromium/chrome/browser/vr/.+",
@@ -1463,6 +1471,7 @@ try_.builder(
     ),
     cores = 16,
     ssd = True,
+    contact_team_email = "clank-engprod@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/android/java/src/org/chromium/chrome/browser/vr/.+",

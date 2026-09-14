@@ -48,11 +48,13 @@ def _mirror_builder(name = None, **kwargs):
 
 _builder(
     name = "linux-asan-dbg",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/ASAN Debug",
 )
 
 _builder(
     name = "linux-asan-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/ASAN Release",
 )
 
@@ -63,11 +65,13 @@ _builder(
 
 _builder(
     name = "linux-asan-v8-arm-rel",
+    contact_team_email = "v8-infra@google.com",
     mirror_of = "ci/ASan Release (32-bit x86 with V8-ARM)",
 )
 
 _builder(
     name = "linux-asan-media-v8-arm-rel",
+    contact_team_email = "v8-infra@google.com",
     mirror_of = "ci/ASan Release Media (32-bit x86 with V8-ARM)",
 )
 
@@ -79,36 +83,43 @@ _builder(
 
 _builder(
     name = "linux-chromeos-asan-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/ChromiumOS ASAN Release",
 )
 
 _builder(
     name = "linux-msan-chained-origins-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/MSAN Release (chained origins)",
 )
 
 _builder(
     name = "linux-msan-no-origins-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/MSAN Release (no origins)",
 )
 
 _builder(
     name = "linux-tsan-dbg",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/TSAN Debug",
 )
 
 _builder(
     name = "linux-tsan-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/TSAN Release",
 )
 
 _builder(
     name = "linux-ubsan-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/UBSan Release",
 )
 
 _builder(
     name = "linux-ubsan-vptr-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/UBSan vptr Release",
 )
 
@@ -123,6 +134,7 @@ _builder(
     cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/Mac ASAN Release",
 )
 
@@ -146,12 +158,14 @@ _builder(
 _builder(
     name = "win-asan-rel",
     os = os.WINDOWS_DEFAULT,
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/Win ASan Release",
 )
 
 _builder(
     name = "win-asan-media-rel",
     os = os.WINDOWS_DEFAULT,
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     mirror_of = "ci/Win ASan Release Media",
 )
 

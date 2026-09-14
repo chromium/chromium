@@ -22,5 +22,12 @@ try/win-arm64-compile-dbg
 try/win-arm64-dbg
 try/win-arm64-rel
 try/win-clobber-rel
+try/win-official
+try/win-rel
+try/win10-dbg
 try/win11-rel
 try/win32-clobber-rel
+try/win32-official
+try/win_chromium_compile_dbg_ng
+try/win_chromium_compile_rel_ng
+try/win_chromium_x64_rel_ng

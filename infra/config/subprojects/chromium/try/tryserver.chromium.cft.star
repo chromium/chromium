@@ -52,6 +52,7 @@ try_.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+    contact_team_email = "browser-automation-staff@google.com",
     cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
     ),
@@ -77,6 +78,7 @@ try_.builder(
     cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
+    contact_team_email = "browser-automation-staff@google.com",
     cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
     ),
@@ -102,6 +104,7 @@ try_.builder(
         ],
     ),
     os = os.WINDOWS_DEFAULT,
+    contact_team_email = "browser-automation-staff@google.com",
     cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
     ),

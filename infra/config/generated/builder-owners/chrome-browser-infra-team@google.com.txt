@@ -11,4 +11,5 @@ try/linux-chromeos-clobber-rel
 try/linux-clobber-rel
 try/linux-official
 try/linux-presubmit
+try/linux_chromium_archive_rel_ng
 try/mega-cq-launcher

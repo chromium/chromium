@@ -5,4 +5,6 @@ ci/Libfuzzer Upload Linux V8-ARM64 ASan
 ci/Libfuzzer Upload Linux V8-ARM64 ASan Debug
 ci/Libfuzzer Upload Linux32 V8-ARM ASan
 ci/Libfuzzer Upload Linux32 V8-ARM ASan Debug
+try/linux-asan-media-v8-arm-rel
+try/linux-asan-v8-arm-rel
 try/linux-asan-v8-sandbox-testing

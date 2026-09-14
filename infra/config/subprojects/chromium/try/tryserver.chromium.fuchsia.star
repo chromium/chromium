@@ -55,6 +55,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
     # TODO(crbug.com/549757519): Restore to the CQ when test pool is recovered.
     # cq_settings = try_.cq_settings(
     #     location_filters = [
@@ -153,6 +154,7 @@ try_.builder(
     name = "fuchsia-fyi-arm64-dbg",
     mirrors = ["ci/fuchsia-fyi-arm64-dbg"],
     gn_args = "ci/fuchsia-fyi-arm64-dbg",
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
 try_.builder(
@@ -220,6 +222,7 @@ try_.orchestrator_builder(
         ],
     ),
     compilator = "fuchsia-x64-cast-receiver-rel-compilator",
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
     cq_settings = try_.cq_settings(
         on_default_cq = True,

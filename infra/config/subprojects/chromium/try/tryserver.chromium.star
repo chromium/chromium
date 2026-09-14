@@ -121,6 +121,7 @@ try_.builder(
     cores = None,
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
+    contact_team_email = "bling-engprod@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
             "chrome/build/mac-arm.pgo.txt",
@@ -144,6 +145,7 @@ try_.builder(
     ),
     os = os.WINDOWS_DEFAULT,
     ssd = True,
+    contact_team_email = "chrome-desktop-engprod@google.com",
     execution_timeout = 6 * time.hour,
 )
 
@@ -161,5 +163,6 @@ try_.builder(
     ),
     os = os.WINDOWS_DEFAULT,
     ssd = True,
+    contact_team_email = "chrome-desktop-engprod@google.com",
     execution_timeout = 6 * time.hour,
 )

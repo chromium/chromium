@@ -56,8 +56,10 @@ try/3pp-mac-arm64-packager
 try/android-10-arm64-rel
 try/android-10-x86-nofieldtrial-rel
 try/android-10-x86-rel
+try/android-12-x64-dbg
 try/android-12-x64-rel
 try/android-12l-landscape-x64-dbg
+try/android-12l-x64-dbg
 try/android-12l-x64-rel-cq
 try/android-13-x64-rel
 try/android-14-arm64-rel
@@ -74,6 +76,7 @@ try/android-16-x64-rel
 try/android-17-x64-fyi-rel
 try/android-arm-compile-dbg
 try/android-arm64-compile-dbg
+try/android-arm64-rel
 try/android-bfcache-rel
 try/android-canary-x64-fyi-rel
 try/android-clobber-rel
@@ -94,8 +97,13 @@ try/android-desktop-x64-official
 try/android-desktop-x64-rel
 try/android-desktop-x64-rel-compilator
 try/android-official
+try/android-webview-12-x64-dbg
+try/android-webview-13-x64-dbg
 try/android-x64-rel
 try/android-x64-rel-compilator
 try/android-x86-code-coverage
 try/android-x86-rel
 try/android-x86-rel-compilator
+try/android_compile_dbg
+try/android_compile_x64_dbg
+try/android_compile_x86_dbg

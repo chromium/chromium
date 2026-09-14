@@ -115,6 +115,7 @@ try_.builder(
     gn_args = "ci/win-asan",
     cores = 16,
     ssd = True,
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     execution_timeout = 9 * time.hour,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -161,6 +162,7 @@ try_.builder(
     ),
     builderless = False,
     os = os.WINDOWS_ANY,
+    contact_team_email = "chrome-fuzzing-core@google.com",
     cq_settings = try_.cq_settings(
         on_default_cq = True,
     ),
@@ -208,6 +210,7 @@ try_.orchestrator_builder(
         ],
     ),
     compilator = "win-rel-compilator",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -298,6 +301,7 @@ try_.builder(
     cores = 16,
     os = os.WINDOWS_ANY,
     ssd = True,
+    contact_team_email = "chrome-desktop-engprod@google.com",
     cq_settings = try_.cq_settings(
         # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
         # out builder cache
@@ -328,6 +332,7 @@ try_.builder(
             "resource_allowlisting",
         ],
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 try_.builder(
@@ -341,6 +346,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 try_.builder(
@@ -373,6 +379,7 @@ try_.builder(
     cores = 16,
     os = os.WINDOWS_10,
     ssd = True,
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 try_.builder(

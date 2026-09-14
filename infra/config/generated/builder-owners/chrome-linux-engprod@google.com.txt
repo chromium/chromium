@@ -15,5 +15,13 @@ ci/linux-wayland-weston-rel-tests
 try/linux-arm64-dbg
 try/linux-arm64-rel-fyi
 try/linux-arm64-wayland-rel-fyi
+try/linux-bfcache-rel
+try/linux-dcheck-off-rel
+try/linux-extended-tracing-rel
+try/linux-rel
 try/linux-wayland-mutter-rel
 try/linux-wayland-weston-rel
+try/linux_chromium_compile_dbg_ng
+try/linux_chromium_compile_rel_ng
+try/linux_chromium_dbg_ng
+try/network_service_linux
