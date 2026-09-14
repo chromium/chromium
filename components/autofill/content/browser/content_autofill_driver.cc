@@ -110,12 +110,15 @@ FormData Lift(ContentAutofillDriver& source, FormData form) {
   form.set_full_url(StripAuth(unstripped_url));
 
   // The form signature must be calculated after setting FormData::url.
-  FormSignature signature = CalculateFormSignature(form);
+  const FormSignature signature = CalculateFormSignature(form);
+  const FormSignature structural_signature =
+      CalculateStructuralFormSignature(form);
   std::vector<FormFieldData> fields = form.ExtractFields();
   for (FormFieldData& field : fields) {
     field.set_host_frame(form.host_frame());
     field.set_host_form_id(form.renderer_id());
     field.set_host_form_signature(signature);
+    field.set_host_form_structural_signature(structural_signature);
     field.set_origin(rfh.GetLastCommittedOrigin());
     field.set_bounds(Lift(source, field.bounds()));
   }

@@ -343,8 +343,8 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
         f.host_frame_,
         f.renderer_id_,
         !e.contains(kNotRefillRelated) ? f.host_form_id_ : kNoFormId,
-        // host_form_signature_ is not compared because it (also) relies on
-        // other DOM elements.
+        // host_form_signature_ and host_form_structural_signature_ are not
+        // compared because they (also) rely on other DOM elements.
         // origin_ is not compared because by it is initialized to an opaque
         // origin (a random number).
         !e.contains(kNotRefillRelated) ? f.form_control_ax_id_ : kNullId,

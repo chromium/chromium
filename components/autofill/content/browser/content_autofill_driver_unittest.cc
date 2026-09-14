@@ -48,6 +48,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/test_matchers.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/version_info/version_info.h"
@@ -595,6 +596,10 @@ TEST_F(ContentAutofillDriverTest, Lift_Form) {
             url::Origin::CreateFromNormalizedTuple("https", "a.test", 443));
   ASSERT_EQ(form.fields().size(), 1u);
   EXPECT_EQ(form.fields().front().host_frame(), frame_token());
+  EXPECT_EQ(form.fields().front().host_form_signature(),
+            CalculateFormSignature(form));
+  EXPECT_EQ(form.fields().front().host_form_structural_signature(),
+            CalculateStructuralFormSignature(form));
 }
 
 // Test that forms in "about:" without parents have an empty FormData::url.

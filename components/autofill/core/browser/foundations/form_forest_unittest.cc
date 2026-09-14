@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/form_data_test_api.h"
+#include "components/autofill/core/common/signatures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -89,7 +90,10 @@ auto Equals(const FormFieldData& exp) {
       Property("value", &FormFieldData::value, exp.value()),
       Property("label", &FormFieldData::label, exp.label()),
       Property("host_form_signature", &FormFieldData::host_form_signature,
-               exp.host_form_signature()));
+               exp.host_form_signature()),
+      Property("host_form_structural_signature",
+               &FormFieldData::host_form_structural_signature,
+               exp.host_form_structural_signature()));
 }
 
 // The relevant attributes are FormData::global_id(), FormData::fields.
@@ -314,9 +318,14 @@ class FakeAutofillDriver : public TestAutofillDriver {
   [[nodiscard]] FormData Lift(FormData form) {
     form.set_host_frame(GetFrameToken());
     form.set_main_frame_origin(main_origin());
+    const FormSignature signature = CalculateFormSignature(form);
+    const FormSignature structural_signature =
+        CalculateStructuralFormSignature(form);
     for (FormFieldData& field : test_api(form).fields()) {
       field.set_host_frame(form.host_frame());
       field.set_host_form_id(form.renderer_id());
+      field.set_host_form_signature(signature);
+      field.set_host_form_structural_signature(structural_signature);
       field.set_origin(origin());
     }
     return form;

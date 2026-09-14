@@ -410,6 +410,7 @@ testing::Matcher<FormFieldData> FormFieldDataEq(const FormFieldData& expected) {
       FFD_PROPERTY_EQ(renderer_id),
       FFD_PROPERTY_EQ(host_form_id),
       FFD_PROPERTY_EQ(host_form_signature),
+      FFD_PROPERTY_EQ(host_form_structural_signature),
       FFD_PROPERTY_EQ(origin),
       FFD_PROPERTY_EQ(form_control_ax_id),
       FFD_PROPERTY_EQ(max_length),
