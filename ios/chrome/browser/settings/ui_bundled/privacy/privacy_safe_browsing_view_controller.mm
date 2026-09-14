@@ -59,11 +59,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)reportDismissalUserAction {
   base::RecordAction(
       base::UserMetricsAction("MobilePrivacySafeBrowsingSettingsClose"));
+  [self.modelDelegate recordCloseUserAction];
 }
 
 - (void)reportBackUserAction {
   base::RecordAction(
       base::UserMetricsAction("MobilePrivacySafeBrowsingSettingsBack"));
+  [self.modelDelegate recordCloseUserAction];
 }
 
 #pragma mark - PrivacySafeBrowsingConsumer

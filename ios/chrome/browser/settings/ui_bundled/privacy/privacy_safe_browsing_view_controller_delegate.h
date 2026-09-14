@@ -19,6 +19,10 @@
 // changes.
 - (void)selectItem;
 
+// Records the user action for closing the Safe Browsing settings based on
+// the current protection state.
+- (void)recordCloseUserAction;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PRIVACY_PRIVACY_SAFE_BROWSING_VIEW_CONTROLLER_DELEGATE_H_

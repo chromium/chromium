@@ -29,7 +29,7 @@ class SafeBrowsingTaskInfo : public TaskInfo {
     return LevelUpTaskCategory::kSafety;
   }
   std::string GetTriggerUserAction() const override {
-    return "MobilePrivacySafeBrowsingSettingsClose";
+    return "MobilePrivacySafeBrowsingSettingsCloseWithEnhancedProtection";
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(

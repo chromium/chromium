@@ -423,6 +423,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+- (void)recordCloseUserAction {
+  if (!self.userPrefService) {
+    return;
+  }
+  switch (safe_browsing::GetSafeBrowsingState(*self.userPrefService)) {
+    case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePrivacySafeBrowsingSettingsCloseWithEnhancedProtection"));
+      break;
+    case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePrivacySafeBrowsingSettingsCloseWithStandardProtection"));
+      break;
+    case safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePrivacySafeBrowsingSettingsCloseWithNoProtection"));
+      break;
+  }
+}
+
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
