@@ -489,7 +489,9 @@ void GestureNavSimple::OnOverscrollComplete(OverscrollMode overscroll_mode) {
     return;
   }
 
-  CHECK_EQ(mode_, overscroll_mode, base::NotFatalUntil::M158);
+  // TODO(crbug.com/560898605): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(mode_, overscroll_mode);
 
   mode_ = OVERSCROLL_NONE;
   OverscrollSource overscroll_source = source_;
