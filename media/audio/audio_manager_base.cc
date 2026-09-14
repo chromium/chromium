@@ -29,6 +29,7 @@
 #include "media/audio/audio_output_resampler.h"
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/audio/fake_audio_output_stream.h"
+#include "media/base/device_enumeration_outcome.h"
 #include "media/base/media_switches.h"
 
 namespace media {
@@ -93,28 +94,6 @@ void SendLogMessage(const AudioManagerBase::LogCallback& callback,
                     const std::string& message) {
   if (!callback.is_null()) {
     callback.Run("AMB::" + message);
-  }
-}
-
-// Used to log outcomes of audio device enumeration. These values are persisted
-// to logs. Entries should not be renumbered and numeric values should never be
-// reused.
-enum class AudioDeviceEnumerationOutcome {
-  kSuccessEmptyResult = 0,
-  kSuccessNonEmptyResult = 1,
-  kFailureEmptyResult = 2,
-  kFailureNonEmptyResult = 3,
-  kMaxValue = kFailureNonEmptyResult
-};
-
-AudioDeviceEnumerationOutcome GetAudioEnumerationOutcome(bool success,
-                                                         bool has_devices) {
-  if (success) {
-    return has_devices ? AudioDeviceEnumerationOutcome::kSuccessNonEmptyResult
-                       : AudioDeviceEnumerationOutcome::kSuccessEmptyResult;
-  } else {
-    return has_devices ? AudioDeviceEnumerationOutcome::kFailureNonEmptyResult
-                       : AudioDeviceEnumerationOutcome::kFailureEmptyResult;
   }
 }
 
@@ -320,7 +299,7 @@ void AudioManagerBase::GetAudioInputDeviceDescriptions(
       &AudioManagerBase::GetGroupIDInput);
   base::UmaHistogramEnumeration(
       "Media.Audio.InputDeviceEnumerationOutcome",
-      GetAudioEnumerationOutcome(
+      GetDeviceEnumerationOutcome(
           success, /*has_devices=*/!device_descriptions->empty()));
   GetDeviceLogHelper()->LogDeviceList(true, __func__, *device_descriptions);
 }
@@ -335,7 +314,7 @@ void AudioManagerBase::GetAudioOutputDeviceDescriptions(
       &AudioManagerBase::GetGroupIDOutput);
   base::UmaHistogramEnumeration(
       "Media.Audio.OutputDeviceEnumerationOutcome",
-      GetAudioEnumerationOutcome(
+      GetDeviceEnumerationOutcome(
           success, /*has_devices=*/!device_descriptions->empty()));
   GetDeviceLogHelper()->LogDeviceList(false, __func__, *device_descriptions);
 }

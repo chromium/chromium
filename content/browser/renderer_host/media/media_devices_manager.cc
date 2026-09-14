@@ -39,6 +39,7 @@
 #include "content/public/common/content_features.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system.h"
+#include "media/base/device_enumeration_outcome.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
 #include "media/capture/mojom/video_capture_types.mojom-shared.h"
@@ -208,9 +209,14 @@ void ReportVideoEnumerationStart() {
       "Media.MediaDevicesManager.VideoDeviceEnumeration.Start", true);
 }
 
-void ReportVideoEnumerationResult(DeviceEnumerationResult result_code) {
+void ReportVideoEnumerationResult(DeviceEnumerationResult result_code,
+                                  bool has_devices) {
   base::UmaHistogramEnumeration(
       "Media.MediaDevicesManager.VideoDeviceEnumeration.Result", result_code);
+  base::UmaHistogramEnumeration(
+      "Media.Video.InputDeviceEnumerationOutcome",
+      media::GetDeviceEnumerationOutcome(
+          result_code == DeviceEnumerationResult::kSuccess, has_devices));
 }
 
 BrowserContext* GetBrowserContextOnUIThread(
@@ -1478,7 +1484,7 @@ void MediaDevicesManager::VideoInputDevicesEnumerated(
     DeviceEnumerationResult result_code,
     const media::VideoCaptureDeviceDescriptors& descriptors) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M155);
-  ReportVideoEnumerationResult(result_code);
+  ReportVideoEnumerationResult(result_code, !descriptors.empty());
 
   if (result_code != DeviceEnumerationResult::kSuccess) {
     std::string log_message = base::StringPrintf(

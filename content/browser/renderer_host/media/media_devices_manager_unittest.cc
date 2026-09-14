@@ -34,6 +34,7 @@
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/fake_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/device_enumeration_outcome.h"
 #include "media/base/video_facing.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
@@ -486,6 +487,12 @@ class MediaDevicesManagerTest : public ::testing::Test {
     histogram_tester_.ExpectBucketCount(
         "Media.MediaDevicesManager.VideoDeviceEnumeration.Result",
         DeviceEnumerationResult::kUnknownError, error_count);
+    histogram_tester_.ExpectBucketCount(
+        "Media.Video.InputDeviceEnumerationOutcome",
+        media::DeviceEnumerationOutcome::kSuccessNonEmptyResult, success_count);
+    histogram_tester_.ExpectBucketCount(
+        "Media.Video.InputDeviceEnumerationOutcome",
+        media::DeviceEnumerationOutcome::kFailureEmptyResult, error_count);
   }
 
   void InitializeRenderFrameHost() {
@@ -597,6 +604,34 @@ TEST_F(MediaDevicesManagerTest, EnumerateNoCacheVideoInput) {
     run_loop.Run();
   }
   ExpectVideoEnumerationHistogramReport(kNumCalls);
+}
+
+TEST_F(MediaDevicesManagerTest, EnumerateNoCacheVideoEmptyResult) {
+  video_capture_device_factory_->SetToDefaultDevicesConfig(0);
+  EXPECT_CALL(*audio_manager_, MockGetAudioInputDeviceNames(_)).Times(0);
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
+      .Times(kNumCalls);
+  EXPECT_CALL(*audio_manager_, MockGetAudioOutputDeviceNames(_)).Times(0);
+  EXPECT_CALL(*this, MockCallback(_)).Times(kNumCalls);
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
+      true;
+  for (int i = 0; i < kNumCalls; i++) {
+    base::RunLoop run_loop;
+    media_devices_manager_->EnumerateDevices(
+        devices_to_enumerate,
+        base::BindOnce(&MediaDevicesManagerTest::EnumerateCallback,
+                       base::Unretained(this), &run_loop));
+    run_loop.Run();
+  }
+  histogram_tester_.ExpectTotalCount(
+      "Media.MediaDevicesManager.VideoDeviceEnumeration.Start", kNumCalls);
+  histogram_tester_.ExpectBucketCount(
+      "Media.MediaDevicesManager.VideoDeviceEnumeration.Result",
+      DeviceEnumerationResult::kSuccess, kNumCalls);
+  histogram_tester_.ExpectBucketCount(
+      "Media.Video.InputDeviceEnumerationOutcome",
+      media::DeviceEnumerationOutcome::kSuccessEmptyResult, kNumCalls);
 }
 
 TEST_F(MediaDevicesManagerTest, EnumerateNoCacheAudioOutput) {
