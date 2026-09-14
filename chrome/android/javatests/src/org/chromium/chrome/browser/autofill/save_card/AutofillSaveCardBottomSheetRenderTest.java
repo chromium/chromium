@@ -27,6 +27,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
@@ -64,7 +65,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
+                    .setRevision(4)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -117,7 +118,10 @@ public class AutofillSaveCardBottomSheetRenderTest {
 
     @Test
     @Feature({"RenderTest"})
-    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
+    @EnableFeatures({
+        AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS,
+        AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2,
+    })
     public void testUploadSave() throws Exception {
         setUpSaveCardBottomSheetContent(
                 new AutofillSaveCardUiInfo.Builder()
@@ -160,8 +164,52 @@ public class AutofillSaveCardBottomSheetRenderTest {
 
     @Test
     @Feature({"RenderTest"})
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2})
     @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
     public void testUploadSave_WithGradientGoogleLogosDisabled() throws Exception {
+        setUpSaveCardBottomSheetContent(
+                new AutofillSaveCardUiInfo.Builder()
+                        .withIsForUpload(true)
+                        .withLogoIcon(R.drawable.google_pay)
+                        .withLogoIconDescription("Google Pay logo")
+                        .withCardDetail(
+                                new CardDetail(R.drawable.visa_card, "Card label", "Card sublabel"))
+                        .withLegalMessageLines(
+                                Arrays.asList(
+                                        new LegalMessageLine(
+                                                "Legal message line #1",
+                                                Arrays.asList(
+                                                        new Link(
+                                                                /* start= */ 0,
+                                                                /* end= */ 5,
+                                                                /* url= */ "https://example.com"))),
+                                        new LegalMessageLine("Legal message line #2")))
+                        .withTitleText("Title text")
+                        .withConfirmText("Confirm text")
+                        .withCancelText("Cancel text")
+                        .withDescriptionText("Description text.")
+                        .withIsChromeBrandingEnabled(true)
+                        .withCardDescription("")
+                        .withLoadingDescription("")
+                        .withGooglePayPillLogo(R.drawable.googlepay_pill)
+                        .build());
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController.requestShowContent(
+                            mSaveCardBottomSheetContent, /* animate= */ false);
+                });
+        ViewGroup activityContentView =
+                sActivityTestRule.getActivity().findViewById(android.R.id.content);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Render the activity to show the content sheet and its contents.
+        mRenderTestRule.render(activityContentView, "save_card_bottom_sheet_content_upload");
+    }
+
+    @Test
+    @Feature({"RenderTest"})
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2})
+    public void testUploadSave_WithWalletBrandingV2Disabled() throws Exception {
         setUpSaveCardBottomSheetContent(
                 new AutofillSaveCardUiInfo.Builder()
                         .withIsForUpload(true)
@@ -276,7 +324,11 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .with(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, false)
                         .with(
                                 AutofillSaveCardBottomSheetProperties.GOOGLE_PAY_PILL_LOGO,
-                                uiInfo.isForUpload() && uiInfo.isChromeBrandingEnabled()
+                                uiInfo.isForUpload()
+                                                && uiInfo.isChromeBrandingEnabled()
+                                                && ChromeFeatureList.isEnabled(
+                                                        AutofillFeatures
+                                                                .AUTOFILL_ENABLE_WALLET_BRANDING_V2)
                                         ? uiInfo.getGooglePayPillLogoId()
                                         : 0)
                         .build();
