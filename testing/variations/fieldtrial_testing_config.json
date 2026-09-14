@@ -7816,27 +7816,6 @@
             ]
         }
     ],
-    "EnableAccountPreviewData": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260805",
-                    "enable_features": [
-                        "EnableAccountPreviewData",
-                        "EnableAccountPreviewEntityPreviews"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableAccountPreviewPreferredAccount": [
         {
             "platforms": [

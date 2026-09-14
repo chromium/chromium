@@ -28,6 +28,7 @@ class AccountPreviewDataServiceFactory : public ProfileKeyedServiceFactory {
 
  private:
   friend base::NoDestructor<AccountPreviewDataServiceFactory>;
+  friend class AccountPreviewDataServiceFactoryTest;
 
   AccountPreviewDataServiceFactory();
   ~AccountPreviewDataServiceFactory() override;
@@ -38,6 +39,7 @@ class AccountPreviewDataServiceFactory : public ProfileKeyedServiceFactory {
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_ACCOUNT_PREVIEW_DATA_SERVICE_FACTORY_H_

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 
+#include "base/functional/bind.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_profile.h"
@@ -13,8 +14,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
-
 class AccountPreviewDataServiceFactoryTest
     : public base::test::WithFeatureOverride,
       public testing::Test {
@@ -22,19 +21,35 @@ class AccountPreviewDataServiceFactoryTest
   AccountPreviewDataServiceFactoryTest()
       : base::test::WithFeatureOverride(switches::kEnableAccountPreviewData) {}
 
+  static std::unique_ptr<KeyedService> BuildServiceInstance(
+      content::BrowserContext* context) {
+    return AccountPreviewDataServiceFactory::GetInstance()
+        ->BuildServiceInstanceForBrowserContext(context);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
 };
 
 TEST_P(AccountPreviewDataServiceFactoryTest, GetForProfile) {
+  TestingProfile::Builder builder;
+  builder.AddTestingFactory(
+      AccountPreviewDataServiceFactory::GetInstance(),
+      base::BindRepeating(
+          &AccountPreviewDataServiceFactoryTest::BuildServiceInstance));
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
   if (IsParamFeatureEnabled()) {
-    EXPECT_TRUE(AccountPreviewDataServiceFactory::GetForProfile(&profile_));
+    EXPECT_TRUE(AccountPreviewDataServiceFactory::GetForProfile(profile.get()));
   } else {
-    EXPECT_FALSE(AccountPreviewDataServiceFactory::GetForProfile(&profile_));
+    EXPECT_FALSE(
+        AccountPreviewDataServiceFactory::GetForProfile(profile.get()));
   }
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AccountPreviewDataServiceFactoryTest);
+TEST_P(AccountPreviewDataServiceFactoryTest, NullWhileTestingByDefault) {
+  TestingProfile profile;
+  EXPECT_FALSE(AccountPreviewDataServiceFactory::GetForProfile(&profile));
+}
 
-}  // namespace
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AccountPreviewDataServiceFactoryTest);

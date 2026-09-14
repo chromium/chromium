@@ -309,7 +309,7 @@ BASE_FEATURE(kDontIncludeSIDUnsecureCookiesInGaiaAuthFetcher,
 
 // Enables fetching sync preview data from the server for accounts with refresh
 // tokens.
-BASE_FEATURE(kEnableAccountPreviewData, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableAccountPreviewData, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta>
     kAccountPreviewDataPeriodicRefreshTiming{
         &kEnableAccountPreviewData, "AccountPreviewDataPeriodicRefreshTiming",
@@ -326,7 +326,7 @@ const base::FeatureParam<bool> kAccountPreviewDataPersistAccounts{
 // method). This flag has no effect if `kEnableAccountPreviewData` is not
 // enabled.
 BASE_FEATURE(kEnableAccountPreviewEntityPreviews,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether computing and storing the preferred account is enabled.
 // This flag has no effect if `kEnableAccountPreviewData` is not enabled.

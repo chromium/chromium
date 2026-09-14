@@ -83,3 +83,7 @@ bool AccountPreviewDataServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
 }
+
+bool AccountPreviewDataServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
