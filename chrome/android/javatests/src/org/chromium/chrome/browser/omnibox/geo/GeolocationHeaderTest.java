@@ -7,19 +7,18 @@ package org.chromium.chrome.browser.omnibox.geo;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.SystemClock;
-import android.util.Base64;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -45,7 +44,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
-import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.url.GURL;
 
@@ -61,12 +60,22 @@ import org.chromium.url.GURL;
     OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO,
     OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER
 })
+@Batch(Batch.PER_CLASS)
 public class GeolocationHeaderTest {
+    private static final String MOCK_SEARCH_ENGINE_KEYWORD = "googlemock";
+
+    // The server is class scoped so that its port - which is baked into the mock search engine URL
+    // registered with the (process wide) TemplateUrlService - stays stable across the batch.
+    @ClassRule
+    public static final EmbeddedTestServerRule sTestServerRule =
+            new EmbeddedTestServerRule()
+                    .setServerUsesHttps(true)
+                    .setCertificateType(ServerCertificate.CERT_OK);
+
     public @Rule AutoResetCtaTransitTestRule mAutoResetCtaTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private WebPageStation mCurrentWebPageStation;
-    private EmbeddedTestServer mTestServer;
     private String mSearchUrl;
 
     private static final double LOCATION_LAT = 20.3;
@@ -75,24 +84,49 @@ public class GeolocationHeaderTest {
 
     @Before
     public void setUp() {
-        mTestServer =
-                EmbeddedTestServer.createAndStartHTTPSServer(
-                        ContextUtils.getApplicationContext(), ServerCertificate.CERT_OK);
-        mSearchUrl = mTestServer.getURLWithHostName("www.google.com", "/search?q=potatoes");
+        mSearchUrl =
+                sTestServerRule
+                        .getServer()
+                        .getURLWithHostName("www.google.com", "/search?q=potatoes");
 
         mCurrentWebPageStation = mAutoResetCtaTestRule.startOnBlankPage();
         LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(true, true, true);
 
+        // Priming state is static and is not owned by the activity, so it outlives the batch reset.
+        GeolocationHeader.resetStateForTesting();
+
+        setUpMockSearchEngine();
+
+        // With incognito windows, this test will create many windows so we need to increase the
+        // ChromeTabbedActivity instance limit.
+        MultiWindowUtils.setMaxInstancesForTesting(1000);
+    }
+
+    /**
+     * Makes the mock search engine the default one.
+     *
+     * <p>The engine is registered only if the profile does not already have it: it is written to
+     * the profile, which outlives the per-test activity reset. Registration cannot move to a
+     * {@code @BeforeClass} hook, as no profile exists until the activity rule has run.
+     */
+    private void setUpMockSearchEngine() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var profile = mCurrentWebPageStation.getTab().getProfile();
                     var service = TemplateUrlServiceFactory.getForProfile(profile);
-                    service.addSearchEngine(
-                            "Google Mock",
-                            "googlemock",
-                            mTestServer.getURLWithHostName(
-                                    "www.google.com", "/search?q={searchTerms}"));
-                    service.setSearchEngine("googlemock");
+                    if (service.getTemplateUrlForKeyword(MOCK_SEARCH_ENGINE_KEYWORD) == null) {
+                        Assert.assertTrue(
+                                "Could not register the mock search engine.",
+                                service.addSearchEngine(
+                                        "Google Mock",
+                                        MOCK_SEARCH_ENGINE_KEYWORD,
+                                        sTestServerRule
+                                                .getServer()
+                                                .getURLWithHostName(
+                                                        "www.google.com",
+                                                        "/search?q={searchTerms}")));
+                    }
+                    service.setSearchEngine(MOCK_SEARCH_ENGINE_KEYWORD);
                 });
 
         CriteriaHelper.pollUiThread(
@@ -100,29 +134,8 @@ public class GeolocationHeaderTest {
                     var profile = mCurrentWebPageStation.getTab().getProfile();
                     var service = TemplateUrlServiceFactory.getForProfile(profile);
                     var dse = service.getDefaultSearchEngineTemplateUrl();
-                    return dse != null && "googlemock".equals(dse.getKeyword());
+                    return dse != null && MOCK_SEARCH_ENGINE_KEYWORD.equals(dse.getKeyword());
                 });
-
-        // With incognito windows, this test will create many windows so we need to increase the
-        // ChromeTabbedActivity instance limit.
-        MultiWindowUtils.setMaxInstancesForTesting(1000);
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Location"})
-    @DisabledTest(message = "https://crbug.com/416787235")
-    public void testProtoEncoding() {
-        setPermission(ContentSetting.ALLOW);
-        long now = setMockLocationNow();
-
-        // X-Geo should be sent for Google search results page URLs using proto encoding.
-        assertNonNullHeader(mSearchUrl, now, /* isPrecise= */ true);
     }
 
     @Test
@@ -216,59 +229,6 @@ public class GeolocationHeaderTest {
     private void setMockLocation(long time) {
         Location location = generateMockLocation(LocationManager.NETWORK_PROVIDER, time);
         GeolocationTracker.setLocationForTesting(location, null);
-    }
-
-    private void assertNonNullHeader(final String url, final long locationTime, boolean isPrecise) {
-        openBlankPage();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var profile = mCurrentWebPageStation.getTab().getProfile();
-                    var service = TemplateUrlServiceFactory.getForProfile(profile);
-                    assertHeaderEquals(
-                            locationTime,
-                            GeolocationHeader.getGeoHeader(url, profile, service),
-                            isPrecise);
-                });
-    }
-
-    private void assertHeaderEquals(long locationTime, String header, boolean isPrecise) {
-        long timestamp = locationTime * 1000;
-        // Latitude times 1e7.
-        int latitudeE7 = (int) (LOCATION_LAT * 10000000);
-        // Longitude times 1e7.
-        int longitudeE7 = (int) (LOCATION_LONG * 10000000);
-        // Radius of 68% accuracy in mm.
-        int radius = (int) (LOCATION_ACCURACY * 1000);
-
-        // Create a LatLng for the coordinates.
-        PartnerLocationDescriptor.LatLng latlng =
-                PartnerLocationDescriptor.LatLng.newBuilder()
-                        .setLatitudeE7(latitudeE7)
-                        .setLongitudeE7(longitudeE7)
-                        .build();
-
-        // Populate a LocationDescriptor with the LatLng.
-        PartnerLocationDescriptor.LocationDescriptor locationDescriptor =
-                PartnerLocationDescriptor.LocationDescriptor.newBuilder()
-                        .setLatlng(latlng)
-                        // Include role, producer, timestamp and radius.
-                        .setRole(PartnerLocationDescriptor.LocationRole.CURRENT_LOCATION)
-                        .setProducer(PartnerLocationDescriptor.LocationProducer.DEVICE_LOCATION)
-                        .setTimestamp(timestamp)
-                        .setRadius((float) radius)
-                        .setPermissionGranularity(
-                                isPrecise
-                                        ? PartnerLocationDescriptor.PermissionGranularity
-                                                .PERMISSION_GRANULARITY_FINE
-                                        : PartnerLocationDescriptor.PermissionGranularity
-                                                .PERMISSION_GRANULARITY_COARSE)
-                        .build();
-
-        String locationProto =
-                Base64.encodeToString(
-                        locationDescriptor.toByteArray(), Base64.NO_WRAP | Base64.URL_SAFE);
-        String expectedHeader = "X-Geo: w " + locationProto;
-        Assert.assertEquals(expectedHeader, header);
     }
 
     private void setPermission(final @ContentSetting int setting) {

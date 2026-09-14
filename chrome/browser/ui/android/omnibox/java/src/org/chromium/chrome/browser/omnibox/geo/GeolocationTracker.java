@@ -186,6 +186,12 @@ class GeolocationTracker {
         sNetworkLocationForTesting = networkLocationForTesting;
         sGpsLocationForTesting = gpsLocationForTesting;
         sUseLocationForTesting = true;
+        ResettersForTesting.register(
+                () -> {
+                    sNetworkLocationForTesting = null;
+                    sGpsLocationForTesting = null;
+                    sUseLocationForTesting = false;
+                });
     }
 
     static void setLocationAgeForTesting(Long locationAgeForTesting) {
@@ -195,6 +201,7 @@ class GeolocationTracker {
         }
         sLocationAgeForTesting = locationAgeForTesting;
         sUseLocationAgeForTesting = true;
+        ResettersForTesting.register(() -> sUseLocationAgeForTesting = false);
     }
 
     static void setRefreshLastKnownLocationRunnableForTesting(Runnable runnable) {
