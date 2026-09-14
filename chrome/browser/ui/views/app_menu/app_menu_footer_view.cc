@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
 
 #include <memory>
 #include <optional>
@@ -11,13 +11,13 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_button.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
 
-ActionAppMenuFooterView::ActionAppMenuFooterView(
+AppMenuFooterView::AppMenuFooterView(
     actions::ActionItem* footer_action_item,
     views::ActionViewController* action_view_controller,
     base::flat_map<int, raw_ptr<actions::BaseAction>>* command_to_action_map,
@@ -61,7 +61,7 @@ ActionAppMenuFooterView::ActionAppMenuFooterView(
         footer_child_ptr->GetActionId();
     CHECK(action_id.has_value());
 
-    auto button = std::make_unique<ActionAppMenuFooterButton>();
+    auto button = std::make_unique<AppMenuFooterButton>();
     action_view_controller->CreateActionViewRelationship(
         button.get(), footer_child_ptr->GetAsWeakPtr());
     (*command_to_action_map)[action_id.value()] = footer_child.get();
@@ -77,7 +77,7 @@ ActionAppMenuFooterView::ActionAppMenuFooterView(
   }
 }
 
-ActionAppMenuFooterView::~ActionAppMenuFooterView() = default;
+AppMenuFooterView::~AppMenuFooterView() = default;
 
-BEGIN_METADATA(ActionAppMenuFooterView)
+BEGIN_METADATA(AppMenuFooterView)
 END_METADATA

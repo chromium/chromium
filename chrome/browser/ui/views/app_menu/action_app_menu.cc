@@ -10,13 +10,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_block_view.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_chip_view.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
@@ -323,7 +323,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
 
   if (std::u16string* chip_text =
           child_base->GetProperty(AppMenuActionItem::kChipTextKey)) {
-    ActionAppMenuChipView::AttachTo(menu_item, *chip_text);
+    AppMenuChipView::AttachTo(menu_item, *chip_text);
   }
 
   const auto* provider = ChromeLayoutProvider::Get();
@@ -374,7 +374,7 @@ void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
   search_item->set_children_use_full_width(true);
   search_item->set_vertical_margin(0);
 
-  auto search_bar = std::make_unique<ActionAppMenuSearchBarView>();
+  auto search_bar = std::make_unique<AppMenuSearchBarView>();
   search_bar->SetProperty(views::kMarginsKey,
                           ChromeLayoutProvider::Get()->GetInsetsMetric(
                               INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
@@ -389,7 +389,7 @@ void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
   footer_item->set_children_use_full_width(true);
   footer_item->set_vertical_margin(0);
 
-  auto footer_view = std::make_unique<ActionAppMenuFooterView>(
+  auto footer_view = std::make_unique<AppMenuFooterView>(
       footer_action_item, &action_view_controller_, &command_to_action_map_,
       base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
                           base::Unretained(this)));
@@ -425,7 +425,7 @@ void ActionAppMenu::PopulateBlockSection(
   block_item->set_children_use_full_width(true);
   block_item->set_vertical_margin(0);
 
-  auto block_view = std::make_unique<ActionAppMenuBlockView>(
+  auto block_view = std::make_unique<AppMenuBlockView>(
       block_action_item, &action_view_controller_, &command_to_action_map_,
       base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
                           base::Unretained(this)));
@@ -439,7 +439,7 @@ void ActionAppMenu::PopulateCustomRow(views::MenuItemView* view_parent,
                                       actions::BaseAction* custom_action_item) {
   switch (custom_action_item->GetActionItem()->GetActionId().value()) {
     case kActionZoomSubmenu:
-      view_parent->AddChildView(std::make_unique<ActionAppMenuZoomView>(
+      view_parent->AddChildView(std::make_unique<AppMenuZoomView>(
           browser_window_interface_, &action_view_controller_,
           command_to_action_map_, custom_action_item));
       break;

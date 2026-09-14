@@ -28,14 +28,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_block_button.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_block_view.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_button.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_block_button.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -625,13 +625,13 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
   // Check that the container contains child block buttons.
   ASSERT_EQ(block_item->children().size(), 1u);
   auto* block_section_view =
-      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+      views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
   ASSERT_TRUE(block_section_view);
   ASSERT_EQ(block_section_view->children().size(), 3u);
 
   // Verify text override is applied for incognito button.
-  auto* incognito_button = views::AsViewClass<ActionAppMenuBlockButton>(
-      block_section_view->children()[2]);
+  auto* incognito_button =
+      views::AsViewClass<AppMenuBlockButton>(block_section_view->children()[2]);
   ASSERT_TRUE(incognito_button);
   views::Label* incognito_label = nullptr;
   for (views::View* child : incognito_button->children()) {
@@ -645,8 +645,8 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
             l10n_util::GetStringUTF16(IDS_INCOGNITO));
 
   // Verify icon override is applied for new tab button.
-  auto* new_tab_button = views::AsViewClass<ActionAppMenuBlockButton>(
-      block_section_view->children()[0]);
+  auto* new_tab_button =
+      views::AsViewClass<AppMenuBlockButton>(block_section_view->children()[0]);
   ASSERT_TRUE(new_tab_button);
   views::ImageView* new_tab_icon = nullptr;
   for (views::View* child : new_tab_button->children()) {
@@ -716,12 +716,12 @@ TEST_F(ActionAppMenuTest, BlockButtonClickExecutesActionAfterMenuClosed) {
   views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(0);
   ASSERT_NE(block_item, nullptr);
   auto* block_section_view =
-      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+      views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
   ASSERT_TRUE(block_section_view);
 
   // The first child button in the block view is kActionNewTab.
-  auto* new_tab_button = views::AsViewClass<ActionAppMenuBlockButton>(
-      block_section_view->children()[0]);
+  auto* new_tab_button =
+      views::AsViewClass<AppMenuBlockButton>(block_section_view->children()[0]);
   ASSERT_TRUE(new_tab_button);
 
   // Verify strict ordering:
@@ -756,13 +756,13 @@ TEST_F(ActionAppMenuTest, FooterButtonClickExecutesActionAfterMenuClosed) {
   ASSERT_NE(footer_item, nullptr);
 
   auto* footer_view =
-      views::AsViewClass<ActionAppMenuFooterView>(footer_item->children()[0]);
+      views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
   ASSERT_TRUE(footer_view);
 
   // Left container child 0 is kActionOptions (Settings).
   views::View* left_container = footer_view->children()[0];
-  auto* settings_button = views::AsViewClass<ActionAppMenuFooterButton>(
-      left_container->children()[0]);
+  auto* settings_button =
+      views::AsViewClass<AppMenuFooterButton>(left_container->children()[0]);
   ASSERT_TRUE(settings_button);
 
   // Verify strict ordering:
@@ -780,7 +780,7 @@ TEST_F(ActionAppMenuTest, FooterButtonClickExecutesActionAfterMenuClosed) {
 }
 
 // Tests that changing the enabled state of a delegate action item
-// dynamically synchronizes and updates the ActionAppMenuBlockButton view
+// dynamically synchronizes and updates the AppMenuBlockButton view
 // state.
 TEST_F(ActionAppMenuTest, BlockButtonSyncsEnabledStateWithActionItem) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
@@ -793,11 +793,11 @@ TEST_F(ActionAppMenuTest, BlockButtonSyncsEnabledStateWithActionItem) {
   views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(0);
   ASSERT_NE(block_item, nullptr);
   auto* block_section_view =
-      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+      views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
   ASSERT_TRUE(block_section_view);
 
-  auto* new_tab_button = views::AsViewClass<ActionAppMenuBlockButton>(
-      block_section_view->children()[0]);
+  auto* new_tab_button =
+      views::AsViewClass<AppMenuBlockButton>(block_section_view->children()[0]);
   ASSERT_TRUE(new_tab_button);
   EXPECT_TRUE(new_tab_button->GetEnabled());
 
@@ -831,13 +831,13 @@ TEST_F(ActionAppMenuTest, ZoomMenuRowCreationAndChildren) {
   ASSERT_TRUE(zoom_item);
 
   // The custom menu item should have a single child view which is
-  // ActionAppMenuZoomView.
+  // AppMenuZoomView.
   ASSERT_EQ(zoom_item->children().size(), 1u);
   auto* zoom_view =
-      views::AsViewClass<ActionAppMenuZoomView>(zoom_item->children()[0]);
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
   ASSERT_TRUE(zoom_view);
 
-  // ActionAppMenuZoomView should contain the zoom minus button, zoom label,
+  // AppMenuZoomView should contain the zoom minus button, zoom label,
   // zoom plus button, separator, and fullscreen button.
   EXPECT_GE(zoom_view->children().size(), 4u);
 
@@ -926,24 +926,24 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
       submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
   ASSERT_NE(footer_item, nullptr);
 
-  // Check that the footer container is an ActionAppMenuFooterView containing
+  // Check that the footer container is an AppMenuFooterView containing
   // left container, spacer, and right container.
   ASSERT_EQ(footer_item->children().size(), 1u);
   views::View* footer_container = footer_item->children()[0];
-  EXPECT_TRUE(views::IsViewClass<ActionAppMenuFooterView>(footer_container));
+  EXPECT_TRUE(views::IsViewClass<AppMenuFooterView>(footer_container));
   ASSERT_EQ(footer_container->children().size(), 3u);
 
   views::View* left_container = footer_container->children()[0];
   ASSERT_EQ(left_container->children().size(), 2u);  // Settings, Help
-  EXPECT_TRUE(views::IsViewClass<ActionAppMenuFooterButton>(
-      left_container->children()[0]));
-  EXPECT_TRUE(views::IsViewClass<ActionAppMenuFooterButton>(
-      left_container->children()[1]));
+  EXPECT_TRUE(
+      views::IsViewClass<AppMenuFooterButton>(left_container->children()[0]));
+  EXPECT_TRUE(
+      views::IsViewClass<AppMenuFooterButton>(left_container->children()[1]));
 
   views::View* right_container = footer_container->children()[2];
   if (browser_defaults::kShowExitMenuItem) {
     ASSERT_EQ(right_container->children().size(), 1u);  // Exit
-    EXPECT_TRUE(views::IsViewClass<ActionAppMenuFooterButton>(
+    EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(
         right_container->children()[0]));
   } else {
     EXPECT_EQ(right_container->children().size(), 0u);
@@ -980,7 +980,7 @@ TEST_F(ActionAppMenuTest, ZoomLabelUpdatesOnZoomChange) {
   ASSERT_TRUE(zoom_item);
 
   auto* zoom_view =
-      views::AsViewClass<ActionAppMenuZoomView>(zoom_item->children()[0]);
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
   ASSERT_TRUE(zoom_view);
 
   views::Label* const zoom_label = zoom_view->zoom_label_for_testing();
@@ -1020,7 +1020,7 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   menu.RunMenu(button_->button_controller());
   ASSERT_TRUE(menu.IsShowing());
 
-  ActionAppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
   ASSERT_NE(search_bar, nullptr);
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1050,7 +1050,7 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   EXPECT_EQ(block_item->GetTopMargin(), 0);
   ASSERT_EQ(block_item->children().size(), 1u);
   auto* block_view =
-      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+      views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
   ASSERT_TRUE(block_view);
   const gfx::Insets* block_margins =
       block_view->GetProperty(views::kMarginsKey);
@@ -1155,7 +1155,7 @@ TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
   EXPECT_EQ(block_item->GetTopMargin(), 0);
   ASSERT_EQ(block_item->children().size(), 1u);
   auto* block_view =
-      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+      views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
   ASSERT_TRUE(block_view);
   const gfx::Insets* block_margins =
       block_view->GetProperty(views::kMarginsKey);
@@ -1173,7 +1173,7 @@ TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
   EXPECT_EQ(footer_item->GetTopMargin(), 0);
   ASSERT_EQ(footer_item->children().size(), 1u);
   auto* footer_view =
-      views::AsViewClass<ActionAppMenuFooterView>(footer_item->children()[0]);
+      views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
   ASSERT_TRUE(footer_view);
   EXPECT_EQ(footer_view->GetInsets(), gfx::Insets());
   const gfx::Insets* footer_margins =
@@ -1340,11 +1340,11 @@ TEST_F(ActionAppMenuTest, BlockSectionAndMenuHostWidth) {
   EXPECT_EQ(block_item->GetDimensions().children_width, 366);
   EXPECT_EQ(block_item->width(), 366);
 
-  // 3. Verify ActionAppMenuBlockView preferred width (334dp = 3 * 106dp + 2 *
+  // 3. Verify AppMenuBlockView preferred width (334dp = 3 * 106dp + 2 *
   // 8dp) and laid-out width (366dp - 32dp margins = 334dp).
   ASSERT_EQ(block_item->children().size(), 1u);
   auto* block_view =
-      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+      views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
   ASSERT_TRUE(block_view);
   EXPECT_EQ(block_view->GetPreferredSize({}).width(), 334);
   EXPECT_EQ(block_view->width(), 334);
@@ -1353,7 +1353,7 @@ TEST_F(ActionAppMenuTest, BlockSectionAndMenuHostWidth) {
   // width of 106dp.
   ASSERT_EQ(block_view->children().size(), 3u);
   for (views::View* child : block_view->children()) {
-    auto* button = views::AsViewClass<ActionAppMenuBlockButton>(child);
+    auto* button = views::AsViewClass<AppMenuBlockButton>(child);
     ASSERT_TRUE(button);
     EXPECT_EQ(button->GetPreferredSize({}).width(), 106);
     EXPECT_EQ(button->width(), 106);

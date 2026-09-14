@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_SEARCH_BAR_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_SEARCH_BAR_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_BAR_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_BAR_VIEW_H_
 
 #include <memory>
 
@@ -19,18 +19,16 @@ class ImageView;
 }  // namespace views
 
 // Search bar view placed at the top of the Block Style ChroMenu.
-class ActionAppMenuSearchBarView : public views::Textfield,
-                                   public ui::EventObserver {
-  METADATA_HEADER(ActionAppMenuSearchBarView, views::Textfield)
+class AppMenuSearchBarView : public views::Textfield, public ui::EventObserver {
+  METADATA_HEADER(AppMenuSearchBarView, views::Textfield)
 
  public:
   using views::Textfield::OnEvent;
 
-  ActionAppMenuSearchBarView();
-  ActionAppMenuSearchBarView(const ActionAppMenuSearchBarView&) = delete;
-  ActionAppMenuSearchBarView& operator=(const ActionAppMenuSearchBarView&) =
-      delete;
-  ~ActionAppMenuSearchBarView() override;
+  AppMenuSearchBarView();
+  AppMenuSearchBarView(const AppMenuSearchBarView&) = delete;
+  AppMenuSearchBarView& operator=(const AppMenuSearchBarView&) = delete;
+  ~AppMenuSearchBarView() override;
 
   views::ImageView* search_icon_for_testing() { return search_icon_; }
   const views::ImageView* search_icon_for_testing() const {
@@ -57,4 +55,4 @@ class ActionAppMenuSearchBarView : public views::Textfield,
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_SEARCH_BAR_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_BAR_VIEW_H_

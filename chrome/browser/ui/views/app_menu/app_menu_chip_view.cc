@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu_chip_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
 
 #include <memory>
 #include <optional>
@@ -26,7 +26,7 @@ constexpr int kChipCornerRadius = 100;
 constexpr int kChipHeight = 20;
 }  // namespace
 
-ActionAppMenuChipView::ActionAppMenuChipView(const std::u16string& chip_text) {
+AppMenuChipView::AppMenuChipView(const std::u16string& chip_text) {
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   chip_label_ =
@@ -42,19 +42,19 @@ ActionAppMenuChipView::ActionAppMenuChipView(const std::u16string& chip_text) {
   UpdateColors(/*is_selected=*/false);
 }
 
-ActionAppMenuChipView::~ActionAppMenuChipView() = default;
+AppMenuChipView::~AppMenuChipView() = default;
 
 // static
-void ActionAppMenuChipView::AttachTo(views::MenuItemView* menu_item,
-                                     const std::u16string& chip_text) {
+void AppMenuChipView::AttachTo(views::MenuItemView* menu_item,
+                               const std::u16string& chip_text) {
   CHECK(menu_item);
-  auto chip_view = std::make_unique<ActionAppMenuChipView>(chip_text);
+  auto chip_view = std::make_unique<AppMenuChipView>(chip_text);
   chip_view->UpdateColors(menu_item->IsSelected());
 
-  ActionAppMenuChipView* chip_view_ptr = chip_view.get();
+  AppMenuChipView* chip_view_ptr = chip_view.get();
   chip_view->selected_changed_subscription_ =
       menu_item->AddSelectedChangedCallback(base::BindRepeating(
-          [](views::MenuItemView* item, ActionAppMenuChipView* chip) {
+          [](views::MenuItemView* item, AppMenuChipView* chip) {
             chip->UpdateColors(item->IsSelected());
           },
           menu_item, chip_view_ptr));
@@ -78,7 +78,7 @@ void ActionAppMenuChipView::AttachTo(views::MenuItemView* menu_item,
 }
 
 // Set background and text colors according to selected and hover states.
-void ActionAppMenuChipView::UpdateColors(bool is_selected) {
+void AppMenuChipView::UpdateColors(bool is_selected) {
   chip_label_->SetBackground(views::CreateRoundedRectBackground(
       is_selected ? kColorAppMenuChipBackgroundHovered
                   : kColorAppMenuChipBackground,
@@ -86,5 +86,5 @@ void ActionAppMenuChipView::UpdateColors(bool is_selected) {
   chip_label_->SetEnabledColor(kColorAppMenuChipForeground);
 }
 
-BEGIN_METADATA(ActionAppMenuChipView)
+BEGIN_METADATA(AppMenuChipView)
 END_METADATA

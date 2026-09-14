@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu_chip_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
 
 #include <memory>
 #include <string>
@@ -24,22 +24,21 @@
 
 namespace {
 
-class ActionAppMenuChipViewTest : public ActionAppMenuTestBase {
+class AppMenuChipViewTest : public ActionAppMenuTestBase {
  public:
-  ActionAppMenuChipViewTest() = default;
-  ~ActionAppMenuChipViewTest() override = default;
+  AppMenuChipViewTest() = default;
+  ~AppMenuChipViewTest() override = default;
 };
 
-TEST_F(ActionAppMenuChipViewTest, AttachTo_AddsChipAndUpdatesAccessibleName) {
+TEST_F(AppMenuChipViewTest, AttachTo_AddsChipAndUpdatesAccessibleName) {
   views::TestMenuItemView root_item;
   views::MenuItemView* item = root_item.AppendMenuItem(1, u"Profile Title");
 
-  ActionAppMenuChipView::AttachTo(item, u"Signed in");
+  AppMenuChipView::AttachTo(item, u"Signed in");
 
-  // Expect two child views: ActionAppMenuChipView and edge spacing view.
+  // Expect two child views: AppMenuChipView and edge spacing view.
   ASSERT_EQ(item->children().size(), 2u);
-  auto* chip_view =
-      views::AsViewClass<ActionAppMenuChipView>(item->children()[0]);
+  auto* chip_view = views::AsViewClass<AppMenuChipView>(item->children()[0]);
   ASSERT_NE(chip_view, nullptr);
   EXPECT_EQ(chip_view->chip_label_for_testing()->GetText(), u"Signed in");
 
@@ -53,7 +52,7 @@ TEST_F(ActionAppMenuChipViewTest, AttachTo_AddsChipAndUpdatesAccessibleName) {
             expected_accessible_name);
 }
 
-TEST_F(ActionAppMenuChipViewTest, AttachTo_DrivenByChipTextProperty) {
+TEST_F(AppMenuChipViewTest, AttachTo_DrivenByChipTextProperty) {
   auto item = AppMenuActionItem::CreateIndirect(
       kActionNewTab,
       BrowserActions::From(&mock_window_interface_)->root_action_item(),

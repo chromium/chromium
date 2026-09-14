@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu_block_button.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_block_button.h"
 
 #include <memory>
 #include <string_view>
@@ -29,7 +29,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
-ActionAppMenuBlockButton::ActionAppMenuBlockButton(PressedCallback callback)
+AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
     : views::Button(std::move(callback)) {
   const auto* provider = ChromeLayoutProvider::Get();
   const int width =
@@ -85,9 +85,9 @@ ActionAppMenuBlockButton::ActionAppMenuBlockButton(PressedCallback callback)
   label_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
 }
 
-ActionAppMenuBlockButton::~ActionAppMenuBlockButton() = default;
+AppMenuBlockButton::~AppMenuBlockButton() = default;
 
-void ActionAppMenuBlockButton::SetText(std::u16string_view text) {
+void AppMenuBlockButton::SetText(std::u16string_view text) {
   label_->SetText(std::u16string(text));
   if (!text.empty()) {
     GetViewAccessibility().SetName(std::u16string(text));
@@ -95,8 +95,7 @@ void ActionAppMenuBlockButton::SetText(std::u16string_view text) {
   }
 }
 
-void ActionAppMenuBlockButton::SetImageModel(
-    const ui::ImageModel& image_model) {
+void AppMenuBlockButton::SetImageModel(const ui::ImageModel& image_model) {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE);
   if (image_model.IsVectorIcon()) {
@@ -108,11 +107,11 @@ void ActionAppMenuBlockButton::SetImageModel(
   }
 }
 
-class ActionAppMenuBlockButtonActionViewInterface
+class AppMenuBlockButtonActionViewInterface
     : public views::ButtonActionViewInterface {
  public:
-  explicit ActionAppMenuBlockButtonActionViewInterface(
-      ActionAppMenuBlockButton* action_view)
+  explicit AppMenuBlockButtonActionViewInterface(
+      AppMenuBlockButton* action_view)
       : views::ButtonActionViewInterface(action_view),
         action_view_(action_view) {}
 
@@ -131,13 +130,13 @@ class ActionAppMenuBlockButtonActionViewInterface
   }
 
  private:
-  raw_ptr<ActionAppMenuBlockButton> action_view_;
+  raw_ptr<AppMenuBlockButton> action_view_;
 };
 
 std::unique_ptr<views::ActionViewInterface>
-ActionAppMenuBlockButton::GetActionViewInterface() {
-  return std::make_unique<ActionAppMenuBlockButtonActionViewInterface>(this);
+AppMenuBlockButton::GetActionViewInterface() {
+  return std::make_unique<AppMenuBlockButtonActionViewInterface>(this);
 }
 
-BEGIN_METADATA(ActionAppMenuBlockButton)
+BEGIN_METADATA(AppMenuBlockButton)
 END_METADATA

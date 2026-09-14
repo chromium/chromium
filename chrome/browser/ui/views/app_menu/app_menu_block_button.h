@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_BLOCK_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_BLOCK_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_BLOCK_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_BLOCK_BUTTON_H_
 
 #include <memory>
 #include <string_view>
@@ -22,15 +22,14 @@ class ImageModel;
 }  // namespace ui
 
 // Button that represents a block-style menu item in the ChroMenu.
-class ActionAppMenuBlockButton : public views::Button {
-  METADATA_HEADER(ActionAppMenuBlockButton, views::Button)
+class AppMenuBlockButton : public views::Button {
+  METADATA_HEADER(AppMenuBlockButton, views::Button)
 
  public:
-  explicit ActionAppMenuBlockButton(
-      PressedCallback callback = PressedCallback());
-  ActionAppMenuBlockButton(const ActionAppMenuBlockButton&) = delete;
-  ActionAppMenuBlockButton& operator=(const ActionAppMenuBlockButton&) = delete;
-  ~ActionAppMenuBlockButton() override;
+  explicit AppMenuBlockButton(PressedCallback callback = PressedCallback());
+  AppMenuBlockButton(const AppMenuBlockButton&) = delete;
+  AppMenuBlockButton& operator=(const AppMenuBlockButton&) = delete;
+  ~AppMenuBlockButton() override;
 
   void SetText(std::u16string_view text);
   void SetImageModel(const ui::ImageModel& image_model);
@@ -43,7 +42,6 @@ class ActionAppMenuBlockButton : public views::Button {
   raw_ptr<views::Label> label_ = nullptr;
 };
 
-using ActionAppMenuBlockStyleButton = ActionAppMenuBlockButton;
-using AppMenuBlockStyleButton = ActionAppMenuBlockButton;
+using AppMenuBlockStyleButton = AppMenuBlockButton;
 
-#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_BLOCK_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_BLOCK_BUTTON_H_

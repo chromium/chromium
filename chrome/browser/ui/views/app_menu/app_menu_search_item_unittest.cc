@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu_search_item.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_search_item.h"
 
 #include <memory>
 #include <string>
@@ -15,90 +15,86 @@
 
 namespace {
 
-TEST(ActionAppMenuSearchItemTest, BasicProperties) {
+TEST(AppMenuSearchItemTest, BasicProperties) {
   auto action_item = actions::ActionItem::Builder()
                          .SetText(u"New Tab")
                          .SetActionId(kActionNewTab)
                          .Build();
 
   std::vector<std::u16string> synonyms = {u"tab", u"create"};
-  auto search_item = ActionAppMenuSearchItem::Builder()
-                         .SetType(ActionAppMenuSearchItem::Type::kAction)
+  auto search_item = AppMenuSearchItem::Builder()
+                         .SetType(AppMenuSearchItem::Type::kAction)
                          .SetAction(action_item.get())
                          .SetTitle(u"New Tab")
                          .SetSecondaryText(u"Tools")
                          .SetSynonyms(synonyms)
                          .Build();
 
-  EXPECT_EQ(search_item->GetType(), ActionAppMenuSearchItem::Type::kAction);
+  EXPECT_EQ(search_item->GetType(), AppMenuSearchItem::Type::kAction);
   EXPECT_EQ(search_item->GetTitle(), u"New Tab");
   EXPECT_EQ(search_item->GetSecondaryText(), u"Tools");
   EXPECT_EQ(search_item->GetSynonyms(), synonyms);
   EXPECT_EQ(search_item->GetActionItem(), action_item.get());
 }
 
-TEST(ActionAppMenuSearchItemTest, DefaultSecondaryTextAndSynonyms) {
+TEST(AppMenuSearchItemTest, DefaultSecondaryTextAndSynonyms) {
   auto action_item = actions::ActionItem::Builder()
                          .SetText(u"Downloads")
                          .SetActionId(kActionShowDownloads)
                          .Build();
 
-  auto search_item = ActionAppMenuSearchItem::Builder()
-                         .SetType(ActionAppMenuSearchItem::Type::kAction)
+  auto search_item = AppMenuSearchItem::Builder()
+                         .SetType(AppMenuSearchItem::Type::kAction)
                          .SetAction(action_item.get())
                          .SetTitle(u"Downloads")
                          .Build();
 
-  EXPECT_EQ(search_item->GetType(), ActionAppMenuSearchItem::Type::kAction);
+  EXPECT_EQ(search_item->GetType(), AppMenuSearchItem::Type::kAction);
   EXPECT_EQ(search_item->GetTitle(), u"Downloads");
   EXPECT_TRUE(search_item->GetSecondaryText().empty());
   EXPECT_TRUE(search_item->GetSynonyms().empty());
   EXPECT_EQ(search_item->GetActionItem(), action_item.get());
 }
 
-TEST(ActionAppMenuSearchItemTest, Types) {
+TEST(AppMenuSearchItemTest, Types) {
   auto action_item = actions::ActionItem::Builder()
                          .SetText(u"Item")
                          .SetActionId(kActionNewTab)
                          .Build();
 
-  auto action_entry = ActionAppMenuSearchItem::Builder()
-                          .SetType(ActionAppMenuSearchItem::Type::kAction)
+  auto action_entry = AppMenuSearchItem::Builder()
+                          .SetType(AppMenuSearchItem::Type::kAction)
                           .SetAction(action_item.get())
                           .SetTitle(u"Action")
                           .Build();
-  EXPECT_EQ(action_entry->GetType(), ActionAppMenuSearchItem::Type::kAction);
+  EXPECT_EQ(action_entry->GetType(), AppMenuSearchItem::Type::kAction);
 
-  auto bookmark_entry = ActionAppMenuSearchItem::Builder()
-                            .SetType(ActionAppMenuSearchItem::Type::kBookmark)
+  auto bookmark_entry = AppMenuSearchItem::Builder()
+                            .SetType(AppMenuSearchItem::Type::kBookmark)
                             .SetAction(action_item.get())
                             .SetTitle(u"Bookmark")
                             .SetSecondaryText(u"Folder")
                             .Build();
-  EXPECT_EQ(bookmark_entry->GetType(),
-            ActionAppMenuSearchItem::Type::kBookmark);
+  EXPECT_EQ(bookmark_entry->GetType(), AppMenuSearchItem::Type::kBookmark);
   EXPECT_EQ(bookmark_entry->GetTitle(), u"Bookmark");
   EXPECT_EQ(bookmark_entry->GetSecondaryText(), u"Folder");
 
-  auto tab_group_entry = ActionAppMenuSearchItem::Builder()
-                             .SetType(ActionAppMenuSearchItem::Type::kTabGroup)
+  auto tab_group_entry = AppMenuSearchItem::Builder()
+                             .SetType(AppMenuSearchItem::Type::kTabGroup)
                              .SetAction(action_item.get())
                              .SetTitle(u"Work Tabs")
                              .Build();
-  EXPECT_EQ(tab_group_entry->GetType(),
-            ActionAppMenuSearchItem::Type::kTabGroup);
+  EXPECT_EQ(tab_group_entry->GetType(), AppMenuSearchItem::Type::kTabGroup);
 
-  auto recent_tabs_entry =
-      ActionAppMenuSearchItem::Builder()
-          .SetType(ActionAppMenuSearchItem::Type::kRecentTabs)
-          .SetAction(action_item.get())
-          .SetTitle(u"Recent Page")
-          .Build();
-  EXPECT_EQ(recent_tabs_entry->GetType(),
-            ActionAppMenuSearchItem::Type::kRecentTabs);
+  auto recent_tabs_entry = AppMenuSearchItem::Builder()
+                               .SetType(AppMenuSearchItem::Type::kRecentTabs)
+                               .SetAction(action_item.get())
+                               .SetTitle(u"Recent Page")
+                               .Build();
+  EXPECT_EQ(recent_tabs_entry->GetType(), AppMenuSearchItem::Type::kRecentTabs);
 }
 
-TEST(ActionAppMenuSearchItemTest, SupportsIndirectActionItem) {
+TEST(AppMenuSearchItemTest, SupportsIndirectActionItem) {
   auto target_action = actions::ActionItem::Builder()
                            .SetText(u"Target Action")
                            .SetActionId(kActionNewTab)
@@ -106,8 +102,8 @@ TEST(ActionAppMenuSearchItemTest, SupportsIndirectActionItem) {
 
   actions::IndirectActionItem indirect_item(target_action.get());
 
-  auto search_item = ActionAppMenuSearchItem::Builder()
-                         .SetType(ActionAppMenuSearchItem::Type::kAction)
+  auto search_item = AppMenuSearchItem::Builder()
+                         .SetType(AppMenuSearchItem::Type::kAction)
                          .SetAction(&indirect_item)
                          .SetTitle(u"Indirect Title")
                          .Build();
@@ -116,12 +112,12 @@ TEST(ActionAppMenuSearchItemTest, SupportsIndirectActionItem) {
   EXPECT_EQ(search_item->GetActionItem(), target_action.get());
 }
 
-TEST(ActionAppMenuSearchItemTest, WeakPtrExpired) {
+TEST(AppMenuSearchItemTest, WeakPtrExpired) {
   auto action_item =
       actions::ActionItem::Builder().SetText(u"Temporary Action").Build();
 
-  auto search_item = ActionAppMenuSearchItem::Builder()
-                         .SetType(ActionAppMenuSearchItem::Type::kAction)
+  auto search_item = AppMenuSearchItem::Builder()
+                         .SetType(AppMenuSearchItem::Type::kAction)
                          .SetAction(action_item.get())
                          .SetTitle(u"Temporary Action")
                          .SetSecondaryText(u"Context")
@@ -136,14 +132,14 @@ TEST(ActionAppMenuSearchItemTest, WeakPtrExpired) {
   EXPECT_EQ(search_item->GetSecondaryText(), u"Context");
 }
 
-TEST(ActionAppMenuSearchItemTest, BuilderCrashesWhenMissingAttributes) {
+TEST(AppMenuSearchItemTest, BuilderCrashesWhenMissingAttributes) {
   auto action_item = actions::ActionItem::Builder()
                          .SetText(u"Test Action")
                          .SetActionId(kActionNewTab)
                          .Build();
 
   // Missing type crashes.
-  EXPECT_DEATH_IF_SUPPORTED(std::ignore = ActionAppMenuSearchItem::Builder()
+  EXPECT_DEATH_IF_SUPPORTED(std::ignore = AppMenuSearchItem::Builder()
                                               .SetAction(action_item.get())
                                               .SetTitle(u"Title")
                                               .Build(),
@@ -151,30 +147,30 @@ TEST(ActionAppMenuSearchItemTest, BuilderCrashesWhenMissingAttributes) {
 
   // Missing action crashes.
   EXPECT_DEATH_IF_SUPPORTED(
-      std::ignore = ActionAppMenuSearchItem::Builder()
-                        .SetType(ActionAppMenuSearchItem::Type::kAction)
+      std::ignore = AppMenuSearchItem::Builder()
+                        .SetType(AppMenuSearchItem::Type::kAction)
                         .SetTitle(u"Title")
                         .Build(),
       "");
 
   // Missing title crashes.
   EXPECT_DEATH_IF_SUPPORTED(
-      std::ignore = ActionAppMenuSearchItem::Builder()
-                        .SetType(ActionAppMenuSearchItem::Type::kAction)
+      std::ignore = AppMenuSearchItem::Builder()
+                        .SetType(AppMenuSearchItem::Type::kAction)
                         .SetAction(action_item.get())
                         .Build(),
       "");
 }
 
-TEST(ActionAppMenuSearchItemTest, IntegratesWithFuzzyFinder) {
+TEST(AppMenuSearchItemTest, IntegratesWithFuzzyFinder) {
   auto action_item = actions::ActionItem::Builder()
                          .SetText(u"Open New Window")
                          .SetActionId(kActionNewWindow)
                          .Build();
 
   std::vector<std::u16string> synonyms = {u"incognito", u"create session"};
-  auto search_item = ActionAppMenuSearchItem::Builder()
-                         .SetType(ActionAppMenuSearchItem::Type::kAction)
+  auto search_item = AppMenuSearchItem::Builder()
+                         .SetType(AppMenuSearchItem::Type::kAction)
                          .SetAction(action_item.get())
                          .SetTitle(u"Open New Window")
                          .SetSecondaryText(u"File")

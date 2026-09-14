@@ -17,7 +17,7 @@
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class ActionAppMenuManager;
-class ActionAppMenuSearchBarView;
+class AppMenuSearchBarView;
 class BrowserWindowInterface;
 
 namespace actions {
@@ -52,7 +52,7 @@ class ActionAppMenu : public views::MenuDelegate {
   std::optional<SkColor> GetLabelColor(int id) const override;
 
   views::MenuItemView* root_menu_item_for_testing() { return root_; }
-  ActionAppMenuSearchBarView* search_bar_for_testing() { return search_bar_; }
+  AppMenuSearchBarView* search_bar_for_testing() { return search_bar_; }
 
  private:
   void CancelAndEvaluate(actions::ActionId action_id);
@@ -107,7 +107,7 @@ class ActionAppMenu : public views::MenuDelegate {
   raw_ptr<views::MenuItemView> root_ = nullptr;
 
   // The search bar view in the menu, if kChroMenuSearch is enabled.
-  raw_ptr<ActionAppMenuSearchBarView> search_bar_ = nullptr;
+  raw_ptr<AppMenuSearchBarView> search_bar_ = nullptr;
 
   size_t header_count_ = 0;
 

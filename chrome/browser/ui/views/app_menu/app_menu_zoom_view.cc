@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 
 #include <memory>
 #include <string>
@@ -54,7 +54,7 @@ std::unique_ptr<views::Background> CreateZoomButtonBackground() {
 
 }  // namespace
 
-ActionAppMenuZoomView::ActionAppMenuZoomView(
+AppMenuZoomView::AppMenuZoomView(
     BrowserWindowInterface* browser_window_interface,
     views::ActionViewController* action_view_controller,
     base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map,
@@ -80,9 +80,9 @@ ActionAppMenuZoomView::ActionAppMenuZoomView(
   UpdateFullScreenButton();
 }
 
-ActionAppMenuZoomView::~ActionAppMenuZoomView() = default;
+AppMenuZoomView::~AppMenuZoomView() = default;
 
-void ActionAppMenuZoomView::BuildZoomChildControls(
+void AppMenuZoomView::BuildZoomChildControls(
     actions::BaseAction* zoom_row_action_item,
     views::ActionViewController* action_view_controller,
     base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map) {
@@ -120,17 +120,17 @@ void ActionAppMenuZoomView::BuildZoomChildControls(
   CHECK(zoom_fullscreen_button_);
 }
 
-void ActionAppMenuZoomView::OnZoomChanged(
+void AppMenuZoomView::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
   UpdateZoomControls();
 }
 
-void ActionAppMenuZoomView::OnZoomControllerDestroyed(
+void AppMenuZoomView::OnZoomControllerDestroyed(
     zoom::ZoomController* zoom_controller) {
   zoom_observation_.Reset();
 }
 
-void ActionAppMenuZoomView::UpdateZoomControls() {
+void AppMenuZoomView::UpdateZoomControls() {
   content::WebContents* const contents = GetActiveWebContents();
   if (!contents) {
     return;
@@ -141,7 +141,7 @@ void ActionAppMenuZoomView::UpdateZoomControls() {
   zoom_label_->SetText(base::FormatPercent(zoom));
 }
 
-void ActionAppMenuZoomView::UpdateFullScreenButton() {
+void AppMenuZoomView::UpdateFullScreenButton() {
   const bool is_fullscreen =
       browser_window_interface_->GetWindow() &&
       browser_window_interface_->GetWindow()->IsFullscreen();
@@ -179,13 +179,13 @@ void ActionAppMenuZoomView::UpdateFullScreenButton() {
           /*badge_type=*/std::nullopt));
 }
 
-content::WebContents* ActionAppMenuZoomView::GetActiveWebContents() const {
+content::WebContents* AppMenuZoomView::GetActiveWebContents() const {
   tabs::TabInterface* const active_tab =
       browser_window_interface_->GetActiveTabInterface();
   return active_tab ? active_tab->GetContents() : nullptr;
 }
 
-int ActionAppMenuZoomView::GetCurrentZoomPercent() const {
+int AppMenuZoomView::GetCurrentZoomPercent() const {
   content::WebContents* const contents = GetActiveWebContents();
   if (!contents) {
     return 100;
@@ -194,7 +194,7 @@ int ActionAppMenuZoomView::GetCurrentZoomPercent() const {
   return zoom_controller ? zoom_controller->GetZoomPercent() : 100;
 }
 
-std::unique_ptr<views::ImageButton> ActionAppMenuZoomView::CreateZoomButton(
+std::unique_ptr<views::ImageButton> AppMenuZoomView::CreateZoomButton(
     actions::ActionItem* zoom_child) {
   auto button =
       std::make_unique<views::ImageButton>(views::Button::PressedCallback());
@@ -237,5 +237,5 @@ std::unique_ptr<views::ImageButton> ActionAppMenuZoomView::CreateZoomButton(
   return button;
 }
 
-BEGIN_METADATA(ActionAppMenuZoomView)
+BEGIN_METADATA(AppMenuZoomView)
 END_METADATA

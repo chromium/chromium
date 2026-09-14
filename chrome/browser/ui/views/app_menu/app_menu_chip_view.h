@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_CHIP_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_CHIP_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_CHIP_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_CHIP_VIEW_H_
 
 #include <string>
 
@@ -18,14 +18,14 @@ class MenuItemView;
 }  // namespace views
 
 // A status chip view that can be attached to a menu row item.
-class ActionAppMenuChipView : public views::BoxLayoutView {
-  METADATA_HEADER(ActionAppMenuChipView, views::BoxLayoutView)
+class AppMenuChipView : public views::BoxLayoutView {
+  METADATA_HEADER(AppMenuChipView, views::BoxLayoutView)
 
  public:
-  explicit ActionAppMenuChipView(const std::u16string& chip_text);
-  ActionAppMenuChipView(const ActionAppMenuChipView&) = delete;
-  ActionAppMenuChipView& operator=(const ActionAppMenuChipView&) = delete;
-  ~ActionAppMenuChipView() override;
+  explicit AppMenuChipView(const std::u16string& chip_text);
+  AppMenuChipView(const AppMenuChipView&) = delete;
+  AppMenuChipView& operator=(const AppMenuChipView&) = delete;
+  ~AppMenuChipView() override;
 
   // Attaches a status chip to menu_item
   static void AttachTo(views::MenuItemView* menu_item,
@@ -40,4 +40,4 @@ class ActionAppMenuChipView : public views::BoxLayoutView {
   base::CallbackListSubscription selected_changed_subscription_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_CHIP_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_CHIP_VIEW_H_

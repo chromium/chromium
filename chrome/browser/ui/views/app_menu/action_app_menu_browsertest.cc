@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -137,8 +137,7 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
   ActionAppMenu* action_menu = menu_button->action_app_menu();
   ASSERT_TRUE(action_menu);
 
-  ActionAppMenuSearchBarView* search_bar =
-      action_menu->search_bar_for_testing();
+  AppMenuSearchBarView* search_bar = action_menu->search_bar_for_testing();
   ASSERT_TRUE(search_bar);
   EXPECT_TRUE(search_bar->search_icon_for_testing()->GetVisible());
 

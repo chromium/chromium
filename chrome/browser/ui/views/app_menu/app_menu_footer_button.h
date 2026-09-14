@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_FOOTER_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_FOOTER_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_FOOTER_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_FOOTER_BUTTON_H_
 
 #include <memory>
 #include <string_view>
@@ -22,16 +22,14 @@ class ImageModel;
 }  // namespace ui
 
 // Button that represents a footer-style menu item in the Action App Menu.
-class ActionAppMenuFooterButton : public views::Button {
-  METADATA_HEADER(ActionAppMenuFooterButton, views::Button)
+class AppMenuFooterButton : public views::Button {
+  METADATA_HEADER(AppMenuFooterButton, views::Button)
 
  public:
-  explicit ActionAppMenuFooterButton(
-      PressedCallback callback = PressedCallback());
-  ActionAppMenuFooterButton(const ActionAppMenuFooterButton&) = delete;
-  ActionAppMenuFooterButton& operator=(const ActionAppMenuFooterButton&) =
-      delete;
-  ~ActionAppMenuFooterButton() override;
+  explicit AppMenuFooterButton(PressedCallback callback = PressedCallback());
+  AppMenuFooterButton(const AppMenuFooterButton&) = delete;
+  AppMenuFooterButton& operator=(const AppMenuFooterButton&) = delete;
+  ~AppMenuFooterButton() override;
 
   void SetText(std::u16string_view text);
   void SetImageModel(const ui::ImageModel& image_model);
@@ -46,6 +44,4 @@ class ActionAppMenuFooterButton : public views::Button {
   raw_ptr<views::ImageView> submenu_arrow_view_ = nullptr;
 };
 
-using AppMenuFooterButton = ActionAppMenuFooterButton;
-
-#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_FOOTER_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_FOOTER_BUTTON_H_

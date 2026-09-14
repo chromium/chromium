@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu_block_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
 
 #include <memory>
 #include <optional>
@@ -11,15 +11,15 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_block_button.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_block_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/actions/action_view_controller.h"
 
-ActionAppMenuBlockView::ActionAppMenuBlockView(
+AppMenuBlockView::AppMenuBlockView(
     actions::ActionItem* block_action_item,
     views::ActionViewController* action_view_controller,
     base::flat_map<int, raw_ptr<actions::BaseAction>>* command_to_action_map,
@@ -41,7 +41,7 @@ ActionAppMenuBlockView::ActionAppMenuBlockView(
     std::optional<actions::ActionId> action_id = block_child_ptr->GetActionId();
     CHECK(action_id.has_value());
 
-    auto button = std::make_unique<ActionAppMenuBlockButton>();
+    auto button = std::make_unique<AppMenuBlockButton>();
     action_view_controller->CreateActionViewRelationship(
         button.get(), block_child_ptr->GetAsWeakPtr());
     (*command_to_action_map)[action_id.value()] = block_child.get();
@@ -63,7 +63,7 @@ ActionAppMenuBlockView::ActionAppMenuBlockView(
   }
 }
 
-ActionAppMenuBlockView::~ActionAppMenuBlockView() = default;
+AppMenuBlockView::~AppMenuBlockView() = default;
 
-BEGIN_METADATA(ActionAppMenuBlockView)
+BEGIN_METADATA(AppMenuBlockView)
 END_METADATA

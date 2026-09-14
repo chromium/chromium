@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 
 #include <memory>
 #include <utility>
@@ -21,14 +21,14 @@
 
 namespace {
 
-class ActionAppMenuSearchBarViewTest : public ChromeViewsTestBase {
+class AppMenuSearchBarViewTest : public ChromeViewsTestBase {
  public:
-  ActionAppMenuSearchBarViewTest() = default;
-  ~ActionAppMenuSearchBarViewTest() override = default;
+  AppMenuSearchBarViewTest() = default;
+  ~AppMenuSearchBarViewTest() override = default;
 };
 
-TEST_F(ActionAppMenuSearchBarViewTest, InitialProperties) {
-  auto search_bar = std::make_unique<ActionAppMenuSearchBarView>();
+TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
+  auto search_bar = std::make_unique<AppMenuSearchBarView>();
 
   views::ImageView* icon = search_bar->search_icon_for_testing();
   ASSERT_NE(icon, nullptr);
@@ -60,8 +60,8 @@ TEST_F(ActionAppMenuSearchBarViewTest, InitialProperties) {
             views::InkDropHost::InkDropMode::ON);
 }
 
-TEST_F(ActionAppMenuSearchBarViewTest, MouseAndKeyboardInteractions) {
-  auto search_bar = std::make_unique<ActionAppMenuSearchBarView>();
+TEST_F(AppMenuSearchBarViewTest, MouseAndKeyboardInteractions) {
+  auto search_bar = std::make_unique<AppMenuSearchBarView>();
   views::ImageView* icon = search_bar->search_icon_for_testing();
 
   // Mouse press activates focus and enables cursor.
@@ -99,8 +99,8 @@ TEST_F(ActionAppMenuSearchBarViewTest, MouseAndKeyboardInteractions) {
   EXPECT_EQ(search_bar->GetText(), u"");
 }
 
-TEST_F(ActionAppMenuSearchBarViewTest, InactiveIgnoresTyping) {
-  auto search_bar = std::make_unique<ActionAppMenuSearchBarView>();
+TEST_F(AppMenuSearchBarViewTest, InactiveIgnoresTyping) {
+  auto search_bar = std::make_unique<AppMenuSearchBarView>();
   EXPECT_FALSE(search_bar->is_active_for_testing());
 
   ui::KeyEvent key_a(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
@@ -110,18 +110,18 @@ TEST_F(ActionAppMenuSearchBarViewTest, InactiveIgnoresTyping) {
   EXPECT_TRUE(search_bar->GetText().empty());
 }
 
-TEST_F(ActionAppMenuSearchBarViewTest, ActiveOnAddedToWidget) {
+TEST_F(AppMenuSearchBarViewTest, ActiveOnAddedToWidget) {
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* search_bar =
-      widget->SetContentsView(std::make_unique<ActionAppMenuSearchBarView>());
+      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
   EXPECT_TRUE(search_bar->is_active_for_testing());
   EXPECT_TRUE(search_bar->GetCursorEnabled());
 }
 
-TEST_F(ActionAppMenuSearchBarViewTest, DownArrowDeactivatesFocus) {
+TEST_F(AppMenuSearchBarViewTest, DownArrowDeactivatesFocus) {
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* search_bar =
-      widget->SetContentsView(std::make_unique<ActionAppMenuSearchBarView>());
+      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
   EXPECT_TRUE(search_bar->is_active_for_testing());
 
   ui::KeyEvent down_key(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE);

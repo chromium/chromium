@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 
 #include <memory>
 #include <utility>
@@ -25,7 +25,7 @@
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget.h"
 
-ActionAppMenuSearchBarView::ActionAppMenuSearchBarView() {
+AppMenuSearchBarView::AppMenuSearchBarView() {
   const auto* provider = ChromeLayoutProvider::Get();
   int icon_size =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE);
@@ -61,9 +61,9 @@ ActionAppMenuSearchBarView::ActionAppMenuSearchBarView() {
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(), 8);
 }
 
-ActionAppMenuSearchBarView::~ActionAppMenuSearchBarView() = default;
+AppMenuSearchBarView::~AppMenuSearchBarView() = default;
 
-void ActionAppMenuSearchBarView::AddedToWidget() {
+void AppMenuSearchBarView::AddedToWidget() {
   views::Textfield::AddedToWidget();
   SetTextfieldFocused(true);
   if (GetWidget()) {
@@ -72,12 +72,12 @@ void ActionAppMenuSearchBarView::AddedToWidget() {
   }
 }
 
-void ActionAppMenuSearchBarView::RemovedFromWidget() {
+void AppMenuSearchBarView::RemovedFromWidget() {
   event_monitor_.reset();
   views::Textfield::RemovedFromWidget();
 }
 
-void ActionAppMenuSearchBarView::Layout(PassKey) {
+void AppMenuSearchBarView::Layout(PassKey) {
   LayoutSuperclass<views::Textfield>(this);
   if (search_icon_) {
     int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -88,12 +88,12 @@ void ActionAppMenuSearchBarView::Layout(PassKey) {
   }
 }
 
-bool ActionAppMenuSearchBarView::OnMousePressed(const ui::MouseEvent& event) {
+bool AppMenuSearchBarView::OnMousePressed(const ui::MouseEvent& event) {
   SetTextfieldFocused(true);
   return views::Textfield::OnMousePressed(event);
 }
 
-void ActionAppMenuSearchBarView::SetTextfieldFocused(bool focused) {
+void AppMenuSearchBarView::SetTextfieldFocused(bool focused) {
   is_active_ = focused;
   SetCursorEnabled(focused);
   if (focused) {
@@ -104,14 +104,14 @@ void ActionAppMenuSearchBarView::SetTextfieldFocused(bool focused) {
   SchedulePaint();
 }
 
-void ActionAppMenuSearchBarView::OnEvent(const ui::Event& event) {
+void AppMenuSearchBarView::OnEvent(const ui::Event& event) {
   if (event.IsKeyEvent()) {
     ui::KeyEvent key_event = *event.AsKeyEvent();
     HandleKeyEvent(&key_event);
   }
 }
 
-void ActionAppMenuSearchBarView::HandleKeyEvent(ui::KeyEvent* event) {
+void AppMenuSearchBarView::HandleKeyEvent(ui::KeyEvent* event) {
   if (event->type() != ui::EventType::kKeyPressed) {
     return;
   }
@@ -147,5 +147,5 @@ void ActionAppMenuSearchBarView::HandleKeyEvent(ui::KeyEvent* event) {
   event->SetHandled();
 }
 
-BEGIN_METADATA(ActionAppMenuSearchBarView)
+BEGIN_METADATA(AppMenuSearchBarView)
 END_METADATA

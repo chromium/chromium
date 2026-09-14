@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_SEARCH_ITEM_H_
-#define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_SEARCH_ITEM_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_ITEM_H_
+#define CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_ITEM_H_
 
 #include <memory>
 #include <optional>
@@ -21,7 +21,7 @@ class BaseAction;
 
 // Lightweight adapter class bridging an actions::BaseAction (or ActionItem) to
 // the FuzzySearchItem interface used by FuzzyFinder.
-class ActionAppMenuSearchItem : public FuzzySearchItem {
+class AppMenuSearchItem : public FuzzySearchItem {
  public:
   enum class Type {
     kAction,
@@ -45,7 +45,7 @@ class ActionAppMenuSearchItem : public FuzzySearchItem {
     Builder& SetSecondaryText(std::u16string secondary_text);
     Builder& SetSynonyms(std::vector<std::u16string> synonyms);
 
-    [[nodiscard]] std::unique_ptr<ActionAppMenuSearchItem> Build();
+    [[nodiscard]] std::unique_ptr<AppMenuSearchItem> Build();
 
    private:
     std::optional<Type> type_;
@@ -55,10 +55,10 @@ class ActionAppMenuSearchItem : public FuzzySearchItem {
     std::vector<std::u16string> synonyms_;
   };
 
-  ActionAppMenuSearchItem();
-  ActionAppMenuSearchItem(const ActionAppMenuSearchItem&) = delete;
-  ActionAppMenuSearchItem& operator=(const ActionAppMenuSearchItem&) = delete;
-  ~ActionAppMenuSearchItem() override;
+  AppMenuSearchItem();
+  AppMenuSearchItem(const AppMenuSearchItem&) = delete;
+  AppMenuSearchItem& operator=(const AppMenuSearchItem&) = delete;
+  ~AppMenuSearchItem() override;
 
   // FuzzySearchItem:
   const std::u16string& GetTitle() const override;
@@ -86,4 +86,4 @@ class ActionAppMenuSearchItem : public FuzzySearchItem {
   std::vector<std::u16string> synonyms_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_SEARCH_ITEM_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_ITEM_H_

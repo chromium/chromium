@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_ZOOM_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_ZOOM_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_ZOOM_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_ZOOM_VIEW_H_
 
 #include <optional>
 #include <vector>
@@ -35,20 +35,19 @@ class ZoomController;
 }
 
 // Custom horizontal container view for Zoom controls in ActionAppMenu.
-class ActionAppMenuZoomView : public views::BoxLayoutView,
-                              public zoom::ZoomObserver {
-  METADATA_HEADER(ActionAppMenuZoomView, views::BoxLayoutView)
+class AppMenuZoomView : public views::BoxLayoutView, public zoom::ZoomObserver {
+  METADATA_HEADER(AppMenuZoomView, views::BoxLayoutView)
 
  public:
-  ActionAppMenuZoomView(
+  AppMenuZoomView(
       BrowserWindowInterface* browser_window_interface,
       views::ActionViewController* action_view_controller,
       base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map,
       actions::BaseAction* zoom_row_action_item);
 
-  ActionAppMenuZoomView(const ActionAppMenuZoomView&) = delete;
-  ActionAppMenuZoomView& operator=(const ActionAppMenuZoomView&) = delete;
-  ~ActionAppMenuZoomView() override;
+  AppMenuZoomView(const AppMenuZoomView&) = delete;
+  AppMenuZoomView& operator=(const AppMenuZoomView&) = delete;
+  ~AppMenuZoomView() override;
 
   // zoom::ZoomObserver:
   void OnZoomChanged(
@@ -96,4 +95,4 @@ class ActionAppMenuZoomView : public views::BoxLayoutView,
   std::vector<base::CallbackListSubscription> button_subscriptions_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_ZOOM_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_ZOOM_VIEW_H_

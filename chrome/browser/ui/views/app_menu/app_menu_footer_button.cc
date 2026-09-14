@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_button.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 
 #include <memory>
 #include <string_view>
@@ -31,7 +31,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
-ActionAppMenuFooterButton::ActionAppMenuFooterButton(PressedCallback callback)
+AppMenuFooterButton::AppMenuFooterButton(PressedCallback callback)
     : views::Button(std::move(callback)) {
   const auto* provider = ChromeLayoutProvider::Get();
   const int icon_size =
@@ -95,9 +95,9 @@ ActionAppMenuFooterButton::ActionAppMenuFooterButton(PressedCallback callback)
   submenu_arrow_view_->SetVisible(false);
 }
 
-ActionAppMenuFooterButton::~ActionAppMenuFooterButton() = default;
+AppMenuFooterButton::~AppMenuFooterButton() = default;
 
-void ActionAppMenuFooterButton::SetText(std::u16string_view text) {
+void AppMenuFooterButton::SetText(std::u16string_view text) {
   label_->SetText(std::u16string(text));
   if (!text.empty()) {
     GetViewAccessibility().SetName(std::u16string(text));
@@ -105,8 +105,7 @@ void ActionAppMenuFooterButton::SetText(std::u16string_view text) {
   }
 }
 
-void ActionAppMenuFooterButton::SetImageModel(
-    const ui::ImageModel& image_model) {
+void AppMenuFooterButton::SetImageModel(const ui::ImageModel& image_model) {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_ICON_SIZE);
   if (image_model.IsEmpty()) {
@@ -122,7 +121,7 @@ void ActionAppMenuFooterButton::SetImageModel(
   }
 }
 
-void ActionAppMenuFooterButton::SetHasSubmenu(bool has_submenu) {
+void AppMenuFooterButton::SetHasSubmenu(bool has_submenu) {
   if (!has_submenu) {
     submenu_arrow_view_->SetVisible(false);
     return;
@@ -140,12 +139,11 @@ void ActionAppMenuFooterButton::SetHasSubmenu(bool has_submenu) {
 }
 
 // ActionViewInterface implementation to sync ActionItem properties to the
-// ActionAppMenuFooterButton.
-class ActionAppMenuFooterButtonViewInterface
+// AppMenuFooterButton.
+class AppMenuFooterButtonViewInterface
     : public views::ButtonActionViewInterface {
  public:
-  explicit ActionAppMenuFooterButtonViewInterface(
-      ActionAppMenuFooterButton* action_view)
+  explicit AppMenuFooterButtonViewInterface(AppMenuFooterButton* action_view)
       : views::ButtonActionViewInterface(action_view),
         action_view_(action_view) {}
 
@@ -159,13 +157,13 @@ class ActionAppMenuFooterButtonViewInterface
   }
 
  private:
-  raw_ptr<ActionAppMenuFooterButton> action_view_;
+  raw_ptr<AppMenuFooterButton> action_view_;
 };
 
 std::unique_ptr<views::ActionViewInterface>
-ActionAppMenuFooterButton::GetActionViewInterface() {
-  return std::make_unique<ActionAppMenuFooterButtonViewInterface>(this);
+AppMenuFooterButton::GetActionViewInterface() {
+  return std::make_unique<AppMenuFooterButtonViewInterface>(this);
 }
 
-BEGIN_METADATA(ActionAppMenuFooterButton)
+BEGIN_METADATA(AppMenuFooterButton)
 END_METADATA
