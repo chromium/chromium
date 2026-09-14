@@ -310,6 +310,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:table_chart", IconType::kIconSet}},
           {{&vector_icons::kWarningIcon},
            {"webui-toolbar:warning", IconType::kIconSet}},
+          {{&views::kEyeCrossedRefreshOldIcon},
+           {"webui-toolbar:visibility_off", IconType::kIconSet}},
           {{&views::kEyeRefreshOldIcon},
            {"webui-toolbar:visibility", IconType::kIconSet}},
           {{&views::kInfoChromeRefreshOldIcon},
