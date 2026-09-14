@@ -266,6 +266,11 @@ bool AndroidAutofillProvider::IsFormSimilarToCachedForm(
   if (!cached_data_ || !cached_data_->cached_form) {
     return false;
   }
+  if (!std::ranges::equal(cached_data_->cached_form->form().fields(),
+                          form.fields(), {}, &FormFieldData::global_id,
+                          &FormFieldData::global_id)) {
+    return false;
+  }
   if (form_structure) {
     CHECK_EQ(form.global_id(), form_structure->global_id());
     std::unique_ptr<PasswordForm> pw_form =

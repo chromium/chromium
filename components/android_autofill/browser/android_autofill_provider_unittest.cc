@@ -1842,6 +1842,60 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
       PrefillRequestState::kRequestSentFormChanged, 1);
 }
 
+// Tests that the session id used in a prefill request is not reused when
+// the form structure changes by inserting fields before the cached login
+// fields, even if the login fields themselves are still present in the form.
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
+       SessionIdIsNotReusedWhenFieldsAreInserted) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // Upon receiving server predictions a prefill request should be sent.
+  SessionId cache_session_id = SessionId(0);
+  EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormData(form)))
+      .WillOnce(SaveSessionId(&cache_session_id));
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  // Insert a new field at the beginning of the form (e.g. from an iframe or
+  // dynamic DOM insertion).
+  FormData changed_form = form;
+  FormFieldData new_field = CreateTestFormField(
+      /*label=*/"Injected", /*name=*/"injected", /*value=*/"",
+      FormControlType::kInputText);
+  new_field.set_host_frame(main_frame_token());
+  test_api(changed_form).Insert(0, new_field);
+
+  android_autofill_manager().OnFormsSeen({changed_form},
+                                         /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+  SessionId autofill_session_id = SessionId(0);
+  EXPECT_CALL(provider_bridge(),
+              StartAutofillSession(EqualsFormData(changed_form),
+                                   EqualsFieldInfo(/*index=*/0),
+                                   /*has_server_predictions=*/true))
+      .WillOnce(WithArg<0>(SaveSessionId(&autofill_session_id)));
+  android_autofill_manager().OnAskForValuesToFillTest(
+      changed_form, changed_form.fields().front().global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  // A new session id must be used because field indices no longer match the
+  // prefill request.
+  EXPECT_NE(cache_session_id, autofill_session_id);
+  histogram_tester.ExpectUniqueSample(
+      AndroidAutofillProvider::kPrefillRequestStateUma,
+      PrefillRequestState::kRequestSentFormChanged, 1);
+}
+
 // Tests that the session id used in a prefill request is only used once to
 // start an Autofill session. If the user then focuses on a different form
 // before returning to the (formerly) cached form, a new session is started.
