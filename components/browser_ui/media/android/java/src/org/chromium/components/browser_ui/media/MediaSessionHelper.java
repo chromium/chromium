@@ -339,7 +339,6 @@ public class MediaSessionHelper implements MediaImageCallback {
                                 .setPaused(isPaused)
                                 .setOrigin(mOrigin)
                                 .setPrivate(mWebContents.isIncognito())
-                                .setNotificationSmallIcon(R.drawable.chrome_product_vd_24)
                                 .setNotificationLargeIcon(mCurrentMediaImage)
                                 .setMediaSessionImage(mPageMediaImage)
                                 .setActions(
@@ -355,6 +354,11 @@ public class MediaSessionHelper implements MediaImageCallback {
                 // Also show a default icon if we won't get a favicon from {@link mDelegate}. If the
                 // delegate will pass a favicon later, show nothing for now; we expect the favicon
                 // to arrive quickly.
+                // TODO(cchen): This default is Chrome-branded. Unlike the small
+                // icon, it works in any embedder (it is decoded to a bitmap in-process before
+                // reaching the system), but non-Chrome embedders such as WebView end up showing
+                // the Chrome logo as fallback artwork. Move the choice of default artwork into
+                // the Delegate in a follow-up.
                 if (mWebContents.isIncognito()
                         || (mCurrentMediaImage == null && !fetchLargeFaviconImage())) {
                     mNotificationInfoBuilder.setDefaultNotificationLargeIcon(
@@ -525,8 +529,12 @@ public class MediaSessionHelper implements MediaImageCallback {
         /** Returns an intent that brings the associated web contents to the front. */
         Intent createBringTabToFrontIntent();
 
-        /** Returns the {@link LargeIconBridge} to be used while obtaining icons. */
-        LargeIconBridge getLargeIconBridge();
+        /**
+         * Returns the {@link LargeIconBridge} to be used while obtaining icons, or null if the
+         * embedder doesn't provide a LargeIconService (e.g. WebView), in which case favicons won't
+         * be used as fallback artwork.
+         */
+        @Nullable LargeIconBridge getLargeIconBridge();
 
         /**
          * Creates a {@link MediaNotificationInfo.Builder} with basic embedder-specific
@@ -638,6 +646,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         int size = MediaNotificationImageUtils.MINIMAL_MEDIA_IMAGE_SIZE_PX;
         if (mLargeIconBridge == null) {
             mLargeIconBridge = mDelegate.getLargeIconBridge();
+            if (mLargeIconBridge == null) return false;
         }
         LargeIconBridge.LargeIconCallback callback =
                 new LargeIconBridge.LargeIconCallback() {

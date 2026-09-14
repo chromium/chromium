@@ -9,8 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -71,6 +73,9 @@ public class MediaNotificationController {
     // Used to help initialize `mPendingIntentActionSwipe`.
     @VisibleForTesting public @Nullable PendingIntentInitializer mPendingIntentInitializer;
 
+    // In service-less mode, identifies which controller an action broadcast is addressed to, so
+    // multiple live controllers don't process each other's actions.
+    @VisibleForTesting
     public static final String EXTRA_NOTIFICATION_ID =
             "org.chromium.components.browser_ui.media.EXTRA_NOTIFICATION_ID";
 
@@ -103,6 +108,14 @@ public class MediaNotificationController {
 
     // ListenerService running for the notification. Only non-null when showing.
     @VisibleForTesting public @Nullable Service mService;
+
+    // In service-less mode (see Delegate#useForegroundService()), receives the notification
+    // action broadcasts. Only non-null while the notification is showing.
+    private @Nullable BroadcastReceiver mActionReceiver;
+
+    // In service-less mode, tracks whether the notification has been posted. This substitutes for
+    // the `mService != null` checks that gate the service-based lifecycle.
+    private boolean mServicelessNotificationShown;
 
     @VisibleForTesting public Delegate mDelegate;
 
@@ -427,6 +440,22 @@ public class MediaNotificationController {
 
     @VisibleForTesting
     public PendingIntentProvider createPendingIntent(String action) {
+        if (!mDelegate.useForegroundService()) {
+            // Deliver the action as a broadcast to the receiver registered in
+            // registerActionReceiverIfNeeded(). The explicit package keeps the broadcast within
+            // the app. The notification id, both as an extra and as the request code, keeps
+            // concurrent controllers' PendingIntents and broadcasts apart.
+            Intent intent =
+                    new Intent(action)
+                            .setPackage(getContext().getPackageName())
+                            .putExtra(EXTRA_NOTIFICATION_ID, mDelegate.getNotificationId());
+            return PendingIntentProvider.getBroadcast(
+                    getContext(),
+                    /* requestCode= */ mDelegate.getNotificationId(),
+                    intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT
+                            | IntentUtils.getPendingIntentMutabilityFlag(false));
+        }
         Intent intent = assumeNonNull(mDelegate.createServiceIntent()).setAction(action);
         int notificationId = mDelegate.getNotificationId();
         intent.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
@@ -466,7 +495,22 @@ public class MediaNotificationController {
 
     /** An interface for separating embedder-specific logic. */
     public interface Delegate {
-        /** Returns an intent that will start a Service which listens to notification actions. */
+        /**
+         * Whether the notification is attached to a foreground Service started via {@link
+         * #createServiceIntent()}. Embedders that cannot declare a Service in the app manifest
+         * (e.g. WebView, which is loaded into the host app at runtime) return false; the
+         * notification is then posted directly and its action intents are delivered via a broadcast
+         * receiver registered by the controller, at the cost of the process-lifetime guarantees a
+         * foreground service provides.
+         */
+        default boolean useForegroundService() {
+            return true;
+        }
+
+        /**
+         * Returns an intent that will start a Service which listens to notification actions, or
+         * null if {@link #useForegroundService()} is false.
+         */
         @Nullable Intent createServiceIntent();
 
         /** Returns the name of the embedding app. */
@@ -700,6 +744,14 @@ public class MediaNotificationController {
 
         mMediaNotificationInfo = mediaNotificationInfo;
 
+        if (!mDelegate.useForegroundService()) {
+            // Mirror the service path below: don't show a notification for media that starts out
+            // paused. Once shown, keep updating it so pausing makes it dismissible.
+            if (!mServicelessNotificationShown && mediaNotificationInfo.isPaused) return;
+            updateNotification(/* shouldLogNotification= */ !mServicelessNotificationShown);
+            return;
+        }
+
         if (mService == null && mediaNotificationInfo.isPaused) return;
 
         if (mService == null) {
@@ -769,6 +821,8 @@ public class MediaNotificationController {
             mMediaSession = null;
         }
         stopListenerService();
+        unregisterActionReceiver();
+        mServicelessNotificationShown = false;
         mNotificationBuilder = null;
     }
 
@@ -780,6 +834,47 @@ public class MediaNotificationController {
         } else {
             mTimeOfLastPauseMs = -1;
         }
+    }
+
+    /**
+     * In service-less mode, registers the (non-exported) receiver that the notification's action
+     * {@link PendingIntent}s deliver to. No-op if already registered.
+     */
+    private void registerActionReceiverIfNeeded() {
+        if (mActionReceiver != null) return;
+
+        mActionReceiver =
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        String action = intent == null ? null : intent.getAction();
+                        if (action == null) return;
+                        // Every live service-less controller receives every action broadcast;
+                        // only handle the ones addressed to this controller's notification.
+                        if (intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
+                                != mDelegate.getNotificationId()) {
+                            return;
+                        }
+                        processAction(action);
+                    }
+                };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_PLAY);
+        filter.addAction(ACTION_PAUSE);
+        filter.addAction(ACTION_STOP);
+        filter.addAction(ACTION_SWIPE);
+        filter.addAction(ACTION_CANCEL);
+        filter.addAction(ACTION_PREVIOUS_TRACK);
+        filter.addAction(ACTION_NEXT_TRACK);
+        filter.addAction(ACTION_SEEK_FORWARD);
+        filter.addAction(ACTION_SEEK_BACKWARD);
+        ContextUtils.registerNonExportedBroadcastReceiver(getContext(), mActionReceiver, filter);
+    }
+
+    private void unregisterActionReceiver() {
+        if (mActionReceiver == null) return;
+        getContext().unregisterReceiver(mActionReceiver);
+        mActionReceiver = null;
     }
 
     public void queueNotification(MediaNotificationInfo mediaNotificationInfo) {
@@ -861,16 +956,18 @@ public class MediaNotificationController {
 
     @VisibleForTesting
     public boolean updateNotification(boolean shouldLogNotification) {
-        if (mService == null) return false;
         if (mMediaNotificationInfo == null) return false;
+        boolean useForegroundService = mDelegate.useForegroundService();
+        if (useForegroundService && mService == null) return false;
 
         updateMediaSession();
         updateNotificationBuilder();
+        if (!useForegroundService) registerActionReceiverIfNeeded();
 
         NotificationWrapper notification = mNotificationBuilder.buildNotificationWrapper();
 
         boolean success = false;
-        if (mIsForeground) {
+        if (mIsForeground && useForegroundService) {
             success = promoteInternal(notification);
             if (success) {
                 BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
@@ -881,6 +978,7 @@ public class MediaNotificationController {
             manager.notify(notification);
             success = true;
         }
+        if (!useForegroundService) mServicelessNotificationShown = true;
         if (shouldLogNotification) {
             mDelegate.logNotificationShown(notification);
         }
@@ -1041,6 +1139,14 @@ public class MediaNotificationController {
     @RequiresNonNull("mMediaNotificationInfo")
     private void addNotificationButtons(NotificationWrapperBuilder builder) {
         Set<Integer> actions = new HashSet<>();
+
+        // TODO(cchen): The action icons added below are resources of this component. In
+        // embedders whose resources live in the shared-library resource space (WebView), the
+        // system UI cannot resolve them against the host app's package. On Android 13+ this is
+        // masked because the system media controls derive their buttons from the PlaybackState
+        // instead, but on older releases the shade renders these action views directly and
+        // would fail. For service-less mode (see Delegate#useForegroundService()), convert the
+        // action icons to bitmap-backed icons in a follow-up.
 
         // TODO(zqzhang): handle other actions when play/pause is not supported? See
         // https://crbug.com/667500

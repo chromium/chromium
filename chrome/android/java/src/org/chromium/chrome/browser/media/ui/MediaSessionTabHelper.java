@@ -126,9 +126,13 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate, UserD
 
     @Override
     public MediaNotificationInfo.Builder createMediaNotificationInfoBuilder() {
+        // The small icon must be a resource the system can resolve against this app's package,
+        // so it is supplied by the embedder rather than by MediaSessionHelper.
         return new MediaNotificationInfo.Builder()
                 .setInstanceId(assumeNonNull(mTab).getId())
-                .setId(R.id.media_playback_notification);
+                .setId(R.id.media_playback_notification)
+                .setNotificationSmallIcon(
+                        org.chromium.components.browser_ui.media.R.drawable.chrome_product_vd_24);
     }
 
     @Override
