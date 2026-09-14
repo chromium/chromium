@@ -12,7 +12,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -23,8 +24,6 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
@@ -51,7 +50,7 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
 
   void EnsureWindowActive(views::Widget* widget, const char* message) {
     SCOPED_TRACE(message);
-    EXPECT_TRUE(widget);
+    ASSERT_TRUE(widget);
 
     views::test::WaitForWidgetActive(widget, true);
   }
@@ -121,16 +120,12 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     LocationBar* lb = browser_view->toolbar()->location_bar();
+    // Use the `PermissionChipInterface` rather than looking up a
+    // `PermissionChipView`: with the WebUI location bar the chip is a
+    // `WebUIPermissionChip` and no views::Button exists in the widget.
     if (lb->GetChipController()->IsPermissionPromptChipVisible() &&
         !lb->GetChipController()->IsBubbleShowing()) {
-      views::test::ButtonTestApi(
-          views::AsViewClass<views::Button>(
-              views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-                  PermissionChipView::kPermissionRequestChipElementId,
-                  views::ElementTrackerViews::GetContextForView(browser_view))))
-          .NotifyClick(ui::MouseEvent(
-              ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      lb->GetChipController()->chip()->ExecuteForTesting();
       base::RunLoop().RunUntilIdle();
     }
   }
@@ -219,7 +214,11 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
   chrome::FocusLocationBar(browser());
 
   JumpToPreviousOpenTab();
-  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
+  // The focused element may live in a renderer (e.g. the WebUI location bar),
+  // in which case the accelerator round-trips through the renderer and the tab
+  // switch happens asynchronously.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return browser()->GetTabStripModel()->active_index() == 0; }));
 
   OpenBubbleIfRequestChipUiIsShown();
 
@@ -232,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
 
   // Ensure we can switch away with the bubble active.
   JumpToNextOpenTab();
-  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return browser()->GetTabStripModel()->active_index() == 1; }));
 
   browser()->GetWindow()->Activate();
   EnsureWindowActive(browser()->GetWindow(),
