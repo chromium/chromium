@@ -37,6 +37,13 @@ struct SuggestedAction {
   string title;
 };
 
+// Receives suggested actions in segments as they become available (e.g.,
+// immediate default suggestions followed by remote MES suggestions).
+interface SuggestedActionsListener {
+  // Called whenever a batch of suggested actions is available to be appended.
+  OnSuggestedActionsAvailable(array<SuggestedAction> actions);
+};
+
 // `chrome-untrusted://glic/selection-overlay/` WebUI calls this interface to
 // setup the mojo channel.
 interface SelectionOverlayPageHandlerFactory {
@@ -77,7 +84,8 @@ interface SelectionOverlayPageHandler {
   SubmitPrompt(string prompt);
 
   // Requests suggested actions from the browser for the current selection.
-  GetSuggestedActions() => (array<SuggestedAction> actions);
+  // Suggested actions are delivered in segments via `listener`.
+  GetSuggestedActions(pending_remote<SuggestedActionsListener> listener);
 
   // The user executes a suggested action by ID.
   ExecuteSuggestedAction(mojo_base.mojom.UnguessableToken action_id);

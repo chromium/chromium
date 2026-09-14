@@ -24,7 +24,7 @@ import {DragFeature, GestureState} from '/lens/selection_utils.js';
 
 import {getCss} from './glic_selection_overlay.css.js';
 import {getHtml} from './glic_selection_overlay.html.js';
-import {DismissOverlayReason} from './selection_overlay.mojom-webui.js';
+import {DismissOverlayReason, SuggestedActionsListenerCallbackRouter} from './selection_overlay.mojom-webui.js';
 import type {SuggestedAction} from './selection_overlay.mojom-webui.js';
 import type {SelectionOverlayBaseHandlerImpl} from './selection_overlay_base_handler_impl.js';
 
@@ -189,6 +189,7 @@ export class SelectionOverlayElementElement extends
           if (this.currentGesture?.state === GestureState.NOT_STARTED ||
               this.currentGesture?.state === undefined) {
             this.updateFloatingPromptPosition();
+            this.fetchSuggestedActions();
           }
         });
 
@@ -198,13 +199,7 @@ export class SelectionOverlayElementElement extends
     });
 
     if (this.enableSelectionOverlayPrompt) {
-      const handlerImpl = this.baseHandler as SelectionOverlayBaseHandlerImpl;
-      handlerImpl.getSuggestedActions().then((actions: SuggestedAction[]) => {
-        this.suggestedActions = actions;
-        if (this.showFloatingPrompt) {
-          this.updateFloatingPromptPosition();
-        }
-      });
+      this.fetchSuggestedActions();
     }
 
     this.eventTracker_.add(window, 'resize', () => {
@@ -223,6 +218,31 @@ export class SelectionOverlayElementElement extends
     if (primaryColor) {
       this.style.setProperty('--color-primary', primaryColor);
     }
+  }
+
+  private suggestedActionsListenerRouter_:
+      SuggestedActionsListenerCallbackRouter|null = null;
+
+  private fetchSuggestedActions() {
+    if (!this.enableSelectionOverlayPrompt) {
+      return;
+    }
+    if (this.suggestedActionsListenerRouter_) {
+      this.suggestedActionsListenerRouter_.$.close();
+    }
+    this.suggestedActions = [];
+    this.suggestedActionsListenerRouter_ =
+        new SuggestedActionsListenerCallbackRouter();
+    this.suggestedActionsListenerRouter_.onSuggestedActionsAvailable
+        .addListener((actions: SuggestedAction[]) => {
+          this.suggestedActions = [...this.suggestedActions, ...actions];
+          if (this.showFloatingPrompt) {
+            this.updateFloatingPromptPosition();
+          }
+        });
+    const handlerImpl = this.baseHandler as SelectionOverlayBaseHandlerImpl;
+    handlerImpl.getSuggestedActions(
+        this.suggestedActionsListenerRouter_.$.bindNewPipeAndPassRemote());
   }
 
   protected override get defaultCursorIconUrl() {
