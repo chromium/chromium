@@ -156,7 +156,7 @@ def _CreateMutableConstantsDelta(symbols):
   )
   lines, net_added = _SymbolDiffHelper('Mutable Constants', symbols)
 
-  return lines, _SizeDelta('Mutable Constants', 'symbols', 10000, net_added)
+  return lines, _SizeDelta('Mutable Constants', 'symbols', 0, net_added)
 
 
 def _CreateMethodCountDelta(symbols, max_increase):
