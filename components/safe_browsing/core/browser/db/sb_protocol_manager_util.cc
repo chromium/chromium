@@ -180,7 +180,7 @@ const char* GetSbV5UrlPrefix() {
                                        : kSbV5UrlPrefix;
 }
 
-std::string GetReportUrl(const V4ProtocolConfig& config,
+std::string GetReportUrl(const SBProtocolConfig& config,
                          const std::string& method,
                          const ExtendedReportingLevel* reporting_level,
                          const bool is_enhanced_protection) {
@@ -582,7 +582,7 @@ base::TimeDelta SBProtocolManagerUtil::GetNextBackOffInterval(
 void SBProtocolManagerUtil::GetRequestUrlAndHeaders(
     const std::string& request_base64,
     const std::string& method_name,
-    const V4ProtocolConfig& config,
+    const SBProtocolConfig& config,
     GURL* gurl,
     net::HttpRequestHeaders* headers) {
   const char* url_prefix = g_sbv4_url_prefix_for_testing
@@ -882,7 +882,7 @@ void SBProtocolManagerUtil::GeneratePathVariantsToCheck(
 // static
 void SBProtocolManagerUtil::SetClientInfoFromConfig(
     ClientInfo* client_info,
-    const V4ProtocolConfig& config) {
+    const SBProtocolConfig& config) {
   CHECK(client_info, base::NotFatalUntil::M162);
   client_info->set_client_id(config.client_name);
   client_info->set_client_version(config.version);
@@ -891,7 +891,7 @@ void SBProtocolManagerUtil::SetClientInfoFromConfig(
 // static
 void SBProtocolManagerUtil::SetV5UserAgentHeader(
     net::HttpRequestHeaders* headers,
-    const V4ProtocolConfig& config) {
+    const SBProtocolConfig& config) {
   CHECK(headers);
   headers->SetHeader(net::HttpRequestHeaders::kUserAgent,
                      base::StrCat({config.client_name, " ", config.version}));

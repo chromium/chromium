@@ -16,7 +16,7 @@ namespace safe_browsing {
 class DownloadProtectionService;
 class IncidentReportingService;
 class SafeBrowsingDatabaseManager;
-struct V4ProtocolConfig;
+struct SBProtocolConfig;
 
 // Actual ServicesDelegate implementation. Create via
 // ServicesDelegate::Create().
@@ -48,7 +48,7 @@ class ServicesDelegateDesktop : public ServicesDelegate {
 
   void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
-      const V4ProtocolConfig& v4_config) override;
+      const SBProtocolConfig& v4_config) override;
   void StopOnUIThread(bool shutdown) override;
 
   void OnProfileWillBeDestroyed(Profile* profile) override;

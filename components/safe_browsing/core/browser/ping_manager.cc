@@ -268,7 +268,7 @@ std::vector<std::string> PingManager::Persister::ReadAndDeleteReports() {
 
 // static
 std::unique_ptr<PingManager> PingManager::Create(
-    const V4ProtocolConfig& config,
+    const SBProtocolConfig& config,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     base::RepeatingCallback<bool()> get_should_fetch_access_token,
@@ -290,7 +290,7 @@ std::unique_ptr<PingManager> PingManager::Create(
 }
 
 PingManager::PingManager(
-    const V4ProtocolConfig& config,
+    const SBProtocolConfig& config,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     base::RepeatingCallback<bool()> get_should_fetch_access_token,

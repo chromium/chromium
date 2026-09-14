@@ -25,7 +25,7 @@ class V4UpdateProtocolManager : public SBUpdateProtocolManager {
  public:
   V4UpdateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config,
+      const SBProtocolConfig& config,
       V4UpdateCallback update_callback,
       ExtendedReportingLevelCallback extended_reporting_level_callback);
   ~V4UpdateProtocolManager() override;

@@ -45,8 +45,7 @@ namespace safe_browsing {
 
 V5UpdateProtocolManager::V5UpdateProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    // TODO(crbug.com/362791941): remove v4 references
-    const V4ProtocolConfig& config,
+    const SBProtocolConfig& config,
     V5UpdateCallback update_callback)
     : SBUpdateProtocolManager(std::move(url_loader_factory), config),
       update_callback_(update_callback) {

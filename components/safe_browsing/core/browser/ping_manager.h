@@ -108,7 +108,7 @@ class PingManager : public KeyedService {
   };
 
   explicit PingManager(
-      const V4ProtocolConfig& config,
+      const SBProtocolConfig& config,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       base::RepeatingCallback<bool()> get_should_fetch_access_token,
@@ -128,7 +128,7 @@ class PingManager : public KeyedService {
 
   // Create an instance of the safe browsing ping manager.
   static std::unique_ptr<PingManager> Create(
-      const V4ProtocolConfig& config,
+      const SBProtocolConfig& config,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       base::RepeatingCallback<bool()> get_should_fetch_access_token,
@@ -176,7 +176,7 @@ class PingManager : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestReportThreatDetails);
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSanitizeThreatDetailsReport);
 
-  const V4ProtocolConfig config_;
+  const SBProtocolConfig config_;
 
   using Reports = std::set<std::unique_ptr<network::SimpleURLLoader>,
                            base::UniquePtrComparator>;

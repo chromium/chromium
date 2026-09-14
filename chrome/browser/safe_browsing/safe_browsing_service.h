@@ -250,7 +250,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   // Create the default v4 protocol config struct. This just calls into a helper
   // function, but it's still useful so that TestSafeBrowsingService can
   // override it.
-  virtual V4ProtocolConfig GetV4ProtocolConfig() const;
+  virtual SBProtocolConfig GetV4ProtocolConfig() const;
 
  protected:
   // Creates the safe browsing service.  Need to initialize before using.

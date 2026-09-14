@@ -291,7 +291,7 @@ ExtensionsBrowserClient::GetSafeBrowsingDatabaseManager() const {
   return nullptr;
 }
 
-std::optional<safe_browsing::V4ProtocolConfig>
+std::optional<safe_browsing::SBProtocolConfig>
 ExtensionsBrowserClient::GetV4ProtocolConfig() const {
   return std::nullopt;
 }

@@ -188,7 +188,7 @@ void SafeBrowsingDatabaseManager::OnNotificationAbuseFullHashesResponse(
 
 void SafeBrowsingDatabaseManager::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const V4ProtocolConfig& config) {
+    const SBProtocolConfig& config) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   if (!base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {

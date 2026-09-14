@@ -21,9 +21,9 @@
 namespace safe_browsing {
 
 struct ThreatMetadata;
-struct V4ProtocolConfig;
+struct SBProtocolConfig;
 
-V4ProtocolConfig GetTestV4ProtocolConfig(bool disable_auto_update = false);
+SBProtocolConfig GetTestV4ProtocolConfig(bool disable_auto_update = false);
 
 std::ostream& operator<<(std::ostream& os, const ThreatMetadata& meta);
 
@@ -101,7 +101,7 @@ class TestV4GetHashProtocolManager : public V4GetHashProtocolManager {
   TestV4GetHashProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,
-      const V4ProtocolConfig& config);
+      const SBProtocolConfig& config);
 
   void AddToFullHashCache(FullHashInfo fhi);
 };
@@ -115,7 +115,7 @@ class TestV4GetHashProtocolManagerFactory
   std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,
-      const V4ProtocolConfig& config) override;
+      const SBProtocolConfig& config) override;
 
   void AddToFullHashCache(FullHashInfo fhi) { pm_->AddToFullHashCache(fhi); }
 

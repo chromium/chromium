@@ -130,7 +130,7 @@ bool IsHashDetailRelevantForLocalChecks(
 
 V5GetHashProtocolManager::V5GetHashProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const V4ProtocolConfig& config,
+    const SBProtocolConfig& config,
     V5SearchHashesCache* cache)
     : url_loader_factory_(url_loader_factory),
       config_(config),

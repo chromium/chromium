@@ -199,7 +199,7 @@ TEST_F(CrowdDenySafeBrowsingRequestTest, GetV5GetHashProtocolManager) {
 
   safe_browsing::V5GetHashProtocolManager v5_protocol_manager(
       /*url_loader_factory=*/nullptr,
-      safe_browsing::V4ProtocolConfig(/*client_name=*/"test",
+      safe_browsing::SBProtocolConfig(/*client_name=*/"test",
                                       /*disable_auto_update=*/false,
                                       /*key_param=*/"key", /*version=*/"1.0"),
       /*cache=*/nullptr);

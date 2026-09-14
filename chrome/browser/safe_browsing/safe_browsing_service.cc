@@ -506,7 +506,7 @@ void SafeBrowsingServiceImpl::RegisterAllDelayedAnalysis() {
 #endif
 }
 
-V4ProtocolConfig SafeBrowsingServiceImpl::GetV4ProtocolConfig() const {
+SBProtocolConfig SafeBrowsingServiceImpl::GetV4ProtocolConfig() const {
   return safe_browsing::GetV4ProtocolConfig();
 }
 

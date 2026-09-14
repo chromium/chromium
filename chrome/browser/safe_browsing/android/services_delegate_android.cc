@@ -107,7 +107,7 @@ DownloadProtectionService* ServicesDelegateAndroid::GetDownloadService() {
 
 void ServicesDelegateAndroid::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
-    const V4ProtocolConfig& v4_config) {
+    const SBProtocolConfig& v4_config) {
   database_manager_->StartOnUIThread(browser_url_loader_factory, v4_config);
 }
 

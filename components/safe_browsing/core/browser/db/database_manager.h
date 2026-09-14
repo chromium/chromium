@@ -69,7 +69,7 @@ enum class AsyncMatch : int {
   kMaxValue = NO_MATCH,
 };
 
-struct V4ProtocolConfig;
+struct SBProtocolConfig;
 class V4GetHashProtocolManager;
 class V5GetHashProtocolManager;
 
@@ -305,7 +305,7 @@ class SafeBrowsingDatabaseManager
   // base class method at the top of it. This should be called on the UI thread.
   virtual void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config);
+      const SBProtocolConfig& config);
 
   //
   // Method to manage getting database updates of the DatabaseManager.

@@ -21,7 +21,7 @@
 
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
-struct V4ProtocolConfig;
+struct SBProtocolConfig;
 class TestSafeBrowsingDatabaseManager;
 class TestSafeBrowsingUIManager;
 
@@ -53,7 +53,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   TestSafeBrowsingService& operator=(const TestSafeBrowsingService&) = delete;
 
   // SafeBrowsingService overrides
-  V4ProtocolConfig GetV4ProtocolConfig() const override;
+  SBProtocolConfig GetV4ProtocolConfig() const override;
 
   std::string serialized_download_report();
   void ClearDownloadReport();
@@ -68,7 +68,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   // following setters), and then initialized.
   void SetUIManager(TestSafeBrowsingUIManager* ui_manager);
   void SetDatabaseManager(TestSafeBrowsingDatabaseManager* database_manager);
-  void SetV4ProtocolConfig(V4ProtocolConfig* v4_protocol_config);
+  void SetV4ProtocolConfig(SBProtocolConfig* v4_protocol_config);
   const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager()
       const override;
   void UseSBLocalDatabaseManager();
@@ -110,7 +110,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
       content::BrowserContext* browser_context) override;
 
  private:
-  std::unique_ptr<V4ProtocolConfig> v4_protocol_config_;
+  std::unique_ptr<SBProtocolConfig> v4_protocol_config_;
   std::string serialized_download_report_;
   scoped_refptr<SafeBrowsingDatabaseManager> test_database_manager_;
   bool use_sb_local_db_manager_ = false;

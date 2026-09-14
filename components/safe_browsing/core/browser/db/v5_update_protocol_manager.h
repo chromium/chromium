@@ -11,7 +11,6 @@
 // The V5UpdateProtocolManager sends requests to Google Safe Browsing servers
 // for the V5 BatchGetHashLists API. This API is responsible for fetching lists
 // of full hashes or hash prefixes, or updates to those lists.
-// TODO(crbug.com/362791941): remove v4 references
 
 #include <memory>
 #include <optional>
@@ -102,7 +101,7 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
   // and invokes `update_callback` when the results are retrieved.
   V5UpdateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config,
+      const SBProtocolConfig& config,
       V5UpdateCallback update_callback);
 
   struct ListIdentifierAndVersion {

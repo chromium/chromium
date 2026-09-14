@@ -37,7 +37,7 @@ class DownloadProtectionService;
 class IncidentReportingService;
 class SafeBrowsingServiceImpl;
 class SafeBrowsingDatabaseManager;
-struct V4ProtocolConfig;
+struct SBProtocolConfig;
 
 // Abstraction to help organize code for mobile vs full safe browsing modes.
 // This helper class should be owned by a SafeBrowsingServiceImpl, and it
@@ -113,7 +113,7 @@ class ServicesDelegate {
   // database manager.
   virtual void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
-      const V4ProtocolConfig& v4_config) = 0;
+      const SBProtocolConfig& v4_config) = 0;
   virtual void StopOnUIThread(bool shutdown) = 0;
 
   virtual void CreateTelemetryService(Profile* profile) {}

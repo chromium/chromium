@@ -614,7 +614,7 @@ class ExtensionsBrowserClient {
   GetSafeBrowsingDatabaseManager() const;
 
   // Get the default v4 protocol config struct from the safe browsing service.
-  virtual std::optional<safe_browsing::V4ProtocolConfig> GetV4ProtocolConfig()
+  virtual std::optional<safe_browsing::SBProtocolConfig> GetV4ProtocolConfig()
       const;
 
   // Notifies the ExtensionActionRunner that an extension has been granted

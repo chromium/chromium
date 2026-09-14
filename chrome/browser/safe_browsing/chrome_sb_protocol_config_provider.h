@@ -15,7 +15,7 @@ namespace safe_browsing {
 std::string GetProtocolConfigClientName();
 
 // Create the default v4 protocol config struct.
-V4ProtocolConfig GetV4ProtocolConfig();
+SBProtocolConfig GetV4ProtocolConfig();
 
 }  // namespace safe_browsing
 

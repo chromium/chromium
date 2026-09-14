@@ -30,7 +30,7 @@ class HttpRequestHeaders;
 
 namespace safe_browsing {
 
-struct V4ProtocolConfig;
+struct SBProtocolConfig;
 
 // The size of the hash prefix, in bytes. It should be between 4 to 32 (full
 // hash).
@@ -64,7 +64,7 @@ const char* GetSbV5UrlPrefix();
 // Returns the URL to use for sending threat reports and other Safe Browsing
 // hits back to Safe Browsing service.
 std::string GetReportUrl(
-    const V4ProtocolConfig& config,
+    const SBProtocolConfig& config,
     const std::string& method,
     const ExtendedReportingLevel* reporting_level = nullptr,
     const bool is_enhanced_protection = false);
@@ -462,13 +462,13 @@ class SBProtocolManagerUtil {
   // `request_base64` is the serialized request protocol buffer encoded in
   // base 64.
   // `method_name` is the name of the method to call, as specified in the proto,
-  // `config` is an instance of V4ProtocolConfig that stores the client config,
+  // `config` is an instance of SBProtocolConfig that stores the client config,
   // `gurl` is set to the value of the PVer4 request URL,
   // `headers` is populated with the appropriate header values.
   // TODO(crbug.com/372395685): Deprecate with v4.
   static void GetRequestUrlAndHeaders(const std::string& request_base64,
                                       const std::string& method_name,
-                                      const V4ProtocolConfig& config,
+                                      const SBProtocolConfig& config,
                                       GURL* gurl,
                                       net::HttpRequestHeaders* headers);
 
@@ -498,7 +498,7 @@ class SBProtocolManagerUtil {
                                         const HashPrefixStr& hash_prefix);
 
   static void SetClientInfoFromConfig(ClientInfo* client_info,
-                                      const V4ProtocolConfig& config);
+                                      const SBProtocolConfig& config);
 
   // Sets the User-Agent header for a V5 request based on the config.
   // The v5 User-Agent header docs state: "While there is no prescribed format
@@ -512,7 +512,7 @@ class SBProtocolManagerUtil {
   //   - `config`: The protocol configuration containing client name and
   //     version.
   static void SetV5UserAgentHeader(net::HttpRequestHeaders* headers,
-                                   const V4ProtocolConfig& config);
+                                   const SBProtocolConfig& config);
 
   // Stores the client state values for each of the lists in `store_state_map`
   // into `list_client_states`.

@@ -41,7 +41,7 @@ std::string GetProtocolConfigClientName() {
   return client_name;
 }
 
-V4ProtocolConfig GetV4ProtocolConfig() {
+SBProtocolConfig GetV4ProtocolConfig() {
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   return ::safe_browsing::GetV4ProtocolConfig(
       GetProtocolConfigClientName(),

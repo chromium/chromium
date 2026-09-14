@@ -73,7 +73,7 @@ class FakeGetHashProtocolManager : public V4GetHashProtocolManager {
   FakeGetHashProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,
-      const V4ProtocolConfig& config,
+      const SBProtocolConfig& config,
       const FullHashInfos& full_hash_infos)
       : V4GetHashProtocolManager(url_loader_factory, stores_to_check, config),
         full_hash_infos_(full_hash_infos) {}
@@ -100,7 +100,7 @@ class FakeGetHashProtocolManagerFactory
   std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,
-      const V4ProtocolConfig& config) override {
+      const SBProtocolConfig& config) override {
     return std::make_unique<FakeGetHashProtocolManager>(
         url_loader_factory, stores_to_check, config, full_hash_infos_);
   }
@@ -128,7 +128,7 @@ class FakeV5GetHashProtocolManager : public V5GetHashProtocolManager {
  public:
   FakeV5GetHashProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config,
+      const SBProtocolConfig& config,
       V5SearchHashesCache* cache,
       SBThreatType threat_type,
       ThreatMetadata metadata)
@@ -194,7 +194,7 @@ class GetHashProtocolManagerFactoryWithTestUrlLoader
   std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,
-      const V4ProtocolConfig& config) override {
+      const SBProtocolConfig& config) override {
     return base::WrapUnique(new V4GetHashProtocolManager(
         test_shared_loader_factory_, stores_to_check, config));
   }

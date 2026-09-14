@@ -134,7 +134,7 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
   void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config) override;
+      const SBProtocolConfig& config) override;
   void StopOnUIThread(bool shutdown) override;
   bool IsDatabaseReady() const override;
 
@@ -431,7 +431,7 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // `config` is the Safe Browsing protocol configuration.
   void SetupUpdateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config);
+      const SBProtocolConfig& config);
 
   // Updates the `list_client_states_` with the state information in
   // `store_state_map`.

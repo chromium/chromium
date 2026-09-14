@@ -698,7 +698,7 @@ ThreatSource SBLocalDatabaseManager::GetNonBrowseUrlThreatSource() const {
 
 void SBLocalDatabaseManager::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const V4ProtocolConfig& config) {
+    const SBProtocolConfig& config) {
   SafeBrowsingDatabaseManager::StartOnUIThread(url_loader_factory, config);
 
   db_updated_callback_ = base::BindRepeating(
@@ -1495,7 +1495,7 @@ void SBLocalDatabaseManager::SetupDatabase() {
 
 void SBLocalDatabaseManager::SetupUpdateProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const V4ProtocolConfig& config) {
+    const SBProtocolConfig& config) {
   if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
     V5UpdateCallback update_callback =
         base::BindRepeating(&SBLocalDatabaseManager::V5UpdateRequestCompleted,

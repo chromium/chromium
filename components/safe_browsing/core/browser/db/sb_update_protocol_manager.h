@@ -11,7 +11,6 @@
 // The SBUpdateProtocolManager handles formatting and making requests of, and
 // handling responses from, Google's SafeBrowsing servers. The purpose of this
 // class is to get hash prefixes from the SB server for the given set of lists.
-// TODO(crbug.com/362791941): Update/extract v4-specific parts of this file.
 
 #include <memory>
 #include <optional>
@@ -62,7 +61,7 @@ class SBUpdateProtocolManager {
   // SafeBrowsing lists.
   SBUpdateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config);
+      const SBProtocolConfig& config);
 
   // Schedule the next update without backoff.
   virtual void ScheduleNextUpdate(
@@ -125,7 +124,7 @@ class SBUpdateProtocolManager {
   std::optional<base::Time> next_update_time_ = std::nullopt;
 
   // The config of the client making Pver4 requests.
-  const V4ProtocolConfig config_;
+  const SBProtocolConfig config_;
 
   // The URLLoaderFactory we use to issue network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

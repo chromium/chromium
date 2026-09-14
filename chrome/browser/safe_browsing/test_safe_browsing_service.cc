@@ -41,7 +41,7 @@ TestSafeBrowsingService::TestSafeBrowsingService()
 
 TestSafeBrowsingService::~TestSafeBrowsingService() = default;
 
-V4ProtocolConfig TestSafeBrowsingService::GetV4ProtocolConfig() const {
+SBProtocolConfig TestSafeBrowsingService::GetV4ProtocolConfig() const {
   if (v4_protocol_config_)
     return *v4_protocol_config_;
   return SafeBrowsingService::GetV4ProtocolConfig();
@@ -127,7 +127,7 @@ TestSafeBrowsingService::database_manager() const {
 }
 
 void TestSafeBrowsingService::SetV4ProtocolConfig(
-    V4ProtocolConfig* v4_protocol_config) {
+    SBProtocolConfig* v4_protocol_config) {
   v4_protocol_config_.reset(v4_protocol_config);
 }
 // ServicesDelegate::ServicesCreator:

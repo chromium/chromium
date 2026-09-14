@@ -158,7 +158,7 @@ class V4GetHashProtocolManagerFactoryImpl
   std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,
-      const V4ProtocolConfig& config) override {
+      const SBProtocolConfig& config) override {
     return base::WrapUnique(new V4GetHashProtocolManager(
         url_loader_factory, stores_to_check, config));
   }
@@ -217,7 +217,7 @@ V4GetHashProtocolManagerFactory* V4GetHashProtocolManager::factory_ = nullptr;
 std::unique_ptr<V4GetHashProtocolManager> V4GetHashProtocolManager::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const StoresToCheck& stores_to_check,
-    const V4ProtocolConfig& config) {
+    const SBProtocolConfig& config) {
   if (!factory_)
     factory_ = new V4GetHashProtocolManagerFactoryImpl();
   return factory_->CreateProtocolManager(url_loader_factory, stores_to_check,
@@ -234,7 +234,7 @@ void V4GetHashProtocolManager::RegisterFactory(
 V4GetHashProtocolManager::V4GetHashProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const StoresToCheck& stores_to_check,
-    const V4ProtocolConfig& config)
+    const SBProtocolConfig& config)
     : gethash_error_count_(0),
       gethash_back_off_mult_(1),
       next_gethash_time_(Time::FromSecondsSinceUnixEpoch(0)),

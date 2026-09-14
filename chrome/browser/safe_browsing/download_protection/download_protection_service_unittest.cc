@@ -6599,7 +6599,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   safe_browsing::V5GetHashProtocolManager v5_protocol_manager(
       /*url_loader_factory=*/nullptr,
-      safe_browsing::V4ProtocolConfig("test", false, "key", "1.0"),
+      safe_browsing::SBProtocolConfig("test", false, "key", "1.0"),
       /*cache=*/nullptr);
 
   NiceMockDownloadItem item;

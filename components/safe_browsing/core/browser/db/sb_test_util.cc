@@ -24,8 +24,8 @@ const int kDefaultStoreFileSizeInBytes = 320000;
 
 }  // namespace
 
-V4ProtocolConfig GetTestV4ProtocolConfig(bool disable_auto_update) {
-  return V4ProtocolConfig(kClient, disable_auto_update, kKeyParam, kAppVer);
+SBProtocolConfig GetTestV4ProtocolConfig(bool disable_auto_update) {
+  return SBProtocolConfig(kClient, disable_auto_update, kKeyParam, kAppVer);
 }
 
 std::ostream& operator<<(std::ostream& os, const ThreatMetadata& meta) {
@@ -141,7 +141,7 @@ void TestSBDatabaseFactory::MarkPrefixAsBad(ListIdentifier list_id,
 TestV4GetHashProtocolManager::TestV4GetHashProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const StoresToCheck& stores_to_check,
-    const V4ProtocolConfig& config)
+    const SBProtocolConfig& config)
     : V4GetHashProtocolManager(url_loader_factory, stores_to_check, config) {}
 
 void TestV4GetHashProtocolManager::AddToFullHashCache(FullHashInfo fhi) {
@@ -158,7 +158,7 @@ std::unique_ptr<V4GetHashProtocolManager>
 TestV4GetHashProtocolManagerFactory::CreateProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const StoresToCheck& stores_to_check,
-    const V4ProtocolConfig& config) {
+    const SBProtocolConfig& config) {
   auto pm = std::make_unique<TestV4GetHashProtocolManager>(
       url_loader_factory, stores_to_check, config);
   pm_ = pm.get();

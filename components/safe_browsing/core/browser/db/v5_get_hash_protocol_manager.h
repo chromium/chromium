@@ -81,7 +81,7 @@ class V5GetHashProtocolManager : public KeyedService {
   //  - `cache`: The cache to store and retrieve full hash results.
   V5GetHashProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config,
+      const SBProtocolConfig& config,
       V5SearchHashesCache* cache);
 
   V5GetHashProtocolManager(const V5GetHashProtocolManager&) = delete;
@@ -179,7 +179,7 @@ class V5GetHashProtocolManager : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The config of the client making Pver5 requests.
-  const V4ProtocolConfig config_;
+  const SBProtocolConfig config_;
 
   // The shared cache of V5 full hashes.
   raw_ptr<V5SearchHashesCache> cache_;

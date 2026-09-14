@@ -49,7 +49,7 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;
   void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config) override;
+      const SBProtocolConfig& config) override;
   void StopOnUIThread(bool shutdown) override;
   bool IsDatabaseReady() const override;
 

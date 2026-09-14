@@ -160,7 +160,7 @@ class V4GetHashProtocolManager {
   static std::unique_ptr<V4GetHashProtocolManager> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,
-      const V4ProtocolConfig& config);
+      const SBProtocolConfig& config);
 
   // Makes the passed |factory| the factory used to instantiate
   // a V4GetHashProtocolManager. Useful for tests.
@@ -200,7 +200,7 @@ class V4GetHashProtocolManager {
   V4GetHashProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,
-      const V4ProtocolConfig& config);
+      const SBProtocolConfig& config);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest, TestGetHashRequest);
@@ -345,7 +345,7 @@ class V4GetHashProtocolManager {
   base::Time next_gethash_time_;
 
   // The config of the client making Pver4 requests.
-  const V4ProtocolConfig config_;
+  const SBProtocolConfig config_;
 
   // The URLLoaderFactory we use to issue network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -380,7 +380,7 @@ class V4GetHashProtocolManagerFactory {
   virtual std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,
-      const V4ProtocolConfig& config) = 0;
+      const SBProtocolConfig& config) = 0;
 };
 
 #ifndef NDEBUG

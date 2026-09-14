@@ -41,7 +41,7 @@ void BlocklistStateFetcher::Request(const std::string& id,
                                     RequestCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!safe_browsing_config_) {
-    std::optional<safe_browsing::V4ProtocolConfig> config =
+    std::optional<safe_browsing::SBProtocolConfig> config =
         ExtensionsBrowserClient::Get()->GetV4ProtocolConfig();
     if (config) {
       SetSafeBrowsingConfig(*config);
@@ -135,9 +135,9 @@ void BlocklistStateFetcher::SendRequest(const std::string& id) {
 }
 
 void BlocklistStateFetcher::SetSafeBrowsingConfig(
-    const safe_browsing::V4ProtocolConfig& config) {
+    const safe_browsing::SBProtocolConfig& config) {
   safe_browsing_config_ =
-      std::make_unique<safe_browsing::V4ProtocolConfig>(config);
+      std::make_unique<safe_browsing::SBProtocolConfig>(config);
 }
 
 void BlocklistStateFetcher::OnURLLoaderComplete(

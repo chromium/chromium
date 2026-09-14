@@ -43,14 +43,13 @@ int GetTimerStartIntervalSecMax() {
 
 }  // namespace
 
-// TODO(crbug.com/362791941): Update/extract v4-specific parts of this file.
 namespace safe_browsing {
 
 // SBUpdateProtocolManager implementation --------------------------------
 
 SBUpdateProtocolManager::SBUpdateProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const V4ProtocolConfig& config)
+    const SBProtocolConfig& config)
     : next_update_interval_(
           base::Seconds(base::RandIntInclusive(GetTimerStartIntervalSecMin(),
                                                GetTimerStartIntervalSecMax()))),

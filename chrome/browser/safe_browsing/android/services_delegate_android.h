@@ -47,7 +47,7 @@ class ServicesDelegateAndroid : public ServicesDelegate {
 
   void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
-      const V4ProtocolConfig& v4_config) override;
+      const SBProtocolConfig& v4_config) override;
   void StopOnUIThread(bool shutdown) override;
 
   void CreateTelemetryService(Profile* profile) override;
