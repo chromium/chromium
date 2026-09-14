@@ -4,9 +4,13 @@
 
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 
+#include <memory>
+#include <string>
+
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/list_family_members_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
@@ -15,6 +19,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
@@ -23,13 +28,13 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace supervised_user {
 namespace {
 
 constexpr char kExampleURL[] = "http://www.example1.com/123";
 constexpr char kGoogleSearchURL[] = "https://www.google.com/search?q=test";
 constexpr char kGoogleHomeURL[] = "https://www.google.com";
 constexpr char kYoutubeDomain[] = "https://www.youtube.com";
-constexpr char kChildTestEmail[] = "child@example.com";
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 constexpr char kYoutubeAccountsDomain[] = "https://accounts.youtube.com";
@@ -53,27 +58,37 @@ class MockNavigationSubframeHandle : public content::MockNavigationHandle {
 
 class SupervisedUserGoogleAuthNavigationThrottleTest
     : public ChromeRenderViewHostTestHarness {
- public:
+ protected:
+  void SetUp() final {
+    ChromeRenderViewHostTestHarness::SetUp();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+    ChildAccountServiceFactory::GetForProfile(profile());
+  }
+
   void TearDown() final {
     subframe_ = nullptr;
+    identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(profile());
-  }
-
-  void SetUserAsSupervised() {
-    SetPrimaryAccount(identity_manager(), kChildTestEmail,
-                      signin::ConsentLevel::kSignin);
-    profile()->SetIsSupervisedProfile();
-    ASSERT_TRUE(profile()->IsChild());
+    return identity_test_env_adaptor_->identity_test_env()->identity_manager();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {TestingProfile::TestingFactory{
-                ChromeSigninClientFactory::GetInstance(),
-                base::BindRepeating(&BuildTestSigninClient)}};
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                 ChromeSigninClientFactory::GetInstance(),
+                 base::BindRepeating(&BuildTestSigninClient)},
+             // List family members service is also activated for the supervised
+             // profiles; at the same time it periodically queries the token
+             // service to send backend requests. Such interactions would be
+             // difficult and pointless to test in this unit.
+             TestingProfile::TestingFactory{
+                 ListFamilyMembersServiceFactory::GetInstance(),
+                 BrowserContextKeyedServiceFactory::TestingFactory{}}});
   }
 
   std::unique_ptr<content::MockNavigationThrottleRegistry>
@@ -126,22 +141,23 @@ class SupervisedUserGoogleAuthNavigationThrottleTest
  private:
   std::unique_ptr<content::MockNavigationHandle> handle_;
   raw_ptr<content::RenderFrameHost> subframe_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 };
 
 TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
        NavigationForValidSignedinSupervisedUsers) {
-  SetUserAsSupervised();
+  SupervisedUserTestEnvironment::EnableSupervisedAccount(identity_manager());
 #if !BUILDFLAG(IS_ANDROID)
   SetRefreshTokenForPrimaryAccount(identity_manager());
 #endif
+  CoreAccountInfo account_info =
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   signin::SetListAccountsResponseOneAccountWithParams(
-      {kChildTestEmail,
-       identity_manager()
-           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-           .gaia,
-       /* valid = */ true,
-       /* is_signed_out = */ false,
-       /* verified = */ true},
+      {account_info.email, account_info.gaia,
+       /*valid=*/true,
+       /*is_signed_out=*/false,
+       /*verified=*/true},
       GetTestURLLoaderFactory());
   identity_manager()->GetAccountsCookieMutator()->TriggerCookieJarUpdate();
   content::RunAllTasksUntilIdle();
@@ -185,21 +201,20 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
 
 TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
        NavigationForPendingSignedInSupervisedUsers) {
-  SetUserAsSupervised();
+  SupervisedUserTestEnvironment::EnableSupervisedAccount(identity_manager());
 #if !BUILDFLAG(IS_ANDROID)
   SetInvalidRefreshTokenForPrimaryAccount(
       identity_manager(),
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 #endif  // !BUILDFLAG(IS_ANDROID)
   // An invalid, signed-in account is not authenticated.
+  CoreAccountInfo account_info =
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   signin::SetListAccountsResponseOneAccountWithParams(
-      {kChildTestEmail,
-       identity_manager()
-           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-           .gaia,
-       /* valid = */ false,
-       /* is_signed_out = */ false,
-       /* verified = */ true},
+      {account_info.email, account_info.gaia,
+       /*valid=*/false,
+       /*is_signed_out=*/false,
+       /*verified=*/true},
       GetTestURLLoaderFactory());
   identity_manager()->GetAccountsCookieMutator()->TriggerCookieJarUpdate();
   content::RunAllTasksUntilIdle();
@@ -294,16 +309,15 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
 TEST_F(
     SupervisedUserGoogleAuthNavigationThrottleTest,
     NavigationForPendingSignedInSupervisedUsersAllowsYouTubeInfrastructureInSubframes) {
-  SetUserAsSupervised();
+  SupervisedUserTestEnvironment::EnableSupervisedAccount(identity_manager());
   SetInvalidRefreshTokenForPrimaryAccount(
       identity_manager(),
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   // An invalid, signed-in account is not authenticated.
+  CoreAccountInfo account_info =
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   signin::SetListAccountsResponseOneAccountWithParams(
-      {kChildTestEmail,
-       identity_manager()
-           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-           .gaia,
+      {account_info.email, account_info.gaia,
        /*valid=*/false,
        /*is_signed_out=*/false,
        /*verified=*/true},
@@ -348,7 +362,7 @@ TEST_F(
 
 TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
        NavigationForNotFreshSupervisedUsers) {
-  SetUserAsSupervised();
+  SupervisedUserTestEnvironment::EnableSupervisedAccount(identity_manager());
   signin::SetFreshnessOfAccountsInGaiaCookie(identity_manager(), false);
 
   // For supervised users that are stale, navigation to Google and
@@ -396,3 +410,4 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest, NavigationForNonUsers) {
 }
 
 }  // namespace
+}  // namespace supervised_user
