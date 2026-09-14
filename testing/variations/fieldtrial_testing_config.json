@@ -4046,6 +4046,7 @@
                         "MigratedInstallationError": "true",
                         "MigratedInstallerDownloader": "true",
                         "MigratedKnownInterceptionDisclosure": "true",
+                        "MigratedLinkCapturing": "true",
                         "MigratedLocalTestPolicies": "true",
                         "MigratedOSCryptAsyncAvailability": "true",
                         "MigratedObsoleteSystem": "true",
