@@ -286,6 +286,26 @@ TEST(GuestUtilTest, IsGuestOriginAllowedOpaqueOrigin) {
       IsGuestOriginAllowed(url::Origin::Create(GURL("data:text/html,hello"))));
 }
 
+TEST(GuestUtilTest, IsGuestOriginAllowedCorpOrigins) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGlicURLConfig,
+        {{features::kGlicGuestURL.name, "https://cat.fun/party"}}},
+       {features::kGlicCSPConfig,
+        {{features::kGlicAllowedOriginsOverride.name, ""},
+         {features::kGlicApiAllowedOrigins.name, ""}}}},
+      {});
+
+  EXPECT_TRUE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("https://gemini.corp.google.com"))));
+  EXPECT_TRUE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("https://subdomain.corp.google.com"))));
+  EXPECT_FALSE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("http://gemini.corp.google.com"))));
+  EXPECT_FALSE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("https://corp.google.com.attacker.com"))));
+}
+
 }  // namespace
 
 }  // namespace glic

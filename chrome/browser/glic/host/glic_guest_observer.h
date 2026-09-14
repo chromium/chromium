@@ -19,6 +19,8 @@ class GlicWebContentsManager;
 // Observes the Glic guest `WebContents`, enforcing policies (autoplay, Mojo JS
 // bindings) and maintaining container and host associations for Mojo interface
 // routing.
+void GrantAutoplayPermissions(content::NavigationHandle* navigation_handle);
+
 class GlicGuestObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<GlicGuestObserver> {
@@ -48,7 +50,6 @@ class GlicGuestObserver
                              GlicWebContentsManager& contents_manager);
   friend class content::WebContentsUserData<GlicGuestObserver>;
 
-  void GrantAutoplayPermissions(content::NavigationHandle* navigation_handle);
   void MaybeEnableMojoJsBindings(content::NavigationHandle* navigation_handle);
   void MaybeSetBackgroundColor(content::RenderFrameHost* render_frame_host);
 
