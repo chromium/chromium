@@ -64,6 +64,21 @@ namespace ui {
 
 namespace {
 
+std::optional<NativeTheme::PreferredColorScheme>&
+PreferredColorSchemeOverride() {
+  static std::optional<NativeTheme::PreferredColorScheme> value =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceDarkMode)
+          ? std::make_optional(NativeTheme::PreferredColorScheme::kDark)
+          : std::nullopt;
+  return value;
+}
+
+base::RepeatingClosureList& PreferredColorSchemeOverrideCallbacks() {
+  static base::NoDestructor<base::RepeatingClosureList> callbacks;
+  return *callbacks;
+}
+
 #if BUILDFLAG(IS_MAC)
 using NativeUiTheme = NativeThemeMac;
 using WebUiTheme = NativeThemeAura;
@@ -246,6 +261,10 @@ void NativeTheme::BeginObservingOsSettingChanges() {
   os_settings_changed_subscription_ =
       OsSettingsProvider::RegisterOsSettingsChangedCallback(base::BindRepeating(
           &NativeTheme::OnToolkitSettingsChanged, base::Unretained(this)));
+  color_scheme_override_subscription_ =
+      PreferredColorSchemeOverrideCallbacks().Add(
+          base::BindRepeating(&NativeTheme::OnToolkitSettingsChanged,
+                              base::Unretained(this), /*force_notify=*/false));
   UpdateVariablesForToolkitSettings();
 }
 
@@ -371,11 +390,20 @@ NativeTheme::NativeTheme(SystemTheme system_theme)
 
 NativeTheme::~NativeTheme() = default;
 
-bool NativeTheme::IsForcedDarkMode() {
-  static bool kIsForcedDarkMode =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceDarkMode);
-  return kIsForcedDarkMode;
+// static
+void NativeTheme::SetPreferredColorSchemeOverride(
+    std::optional<PreferredColorScheme> color_scheme) {
+  if (PreferredColorSchemeOverride() == color_scheme) {
+    return;
+  }
+  PreferredColorSchemeOverride() = color_scheme;
+  PreferredColorSchemeOverrideCallbacks().Notify();
+}
+
+// static
+std::optional<NativeTheme::PreferredColorScheme>
+NativeTheme::GetPreferredColorSchemeOverride() {
+  return PreferredColorSchemeOverride();
 }
 
 bool NativeTheme::IsForcedHighContrast() {
@@ -594,8 +622,8 @@ ColorProviderKey::ForcedColors NativeTheme::CalculateForcedColors() const {
 
 NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
     const {
-  return IsForcedDarkMode() ? PreferredColorScheme::kDark
-                            : OsSettingsProvider::Get().PreferredColorScheme();
+  return PreferredColorSchemeOverride().value_or(
+      OsSettingsProvider::Get().PreferredColorScheme());
 }
 
 NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {

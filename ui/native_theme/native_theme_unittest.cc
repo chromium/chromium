@@ -50,6 +50,46 @@ TEST_F(NativeThemeTest, PreferredColorScheme) {
   EXPECT_EQ(native_theme->preferred_color_scheme(), kNoPreference);
 }
 
+TEST_F(NativeThemeTest, PreferredColorSchemeOverride) {
+  using enum NativeTheme::PreferredColorScheme;
+  auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
+  os_settings_provider().SetPreferredColorScheme(kLight);
+  struct MockObserver : NativeThemeObserver {
+    void OnNativeThemeUpdated(NativeTheme* observed_theme) override {
+      ++call_count;
+    }
+    int call_count = 0;
+  } observer;
+  base::ScopedObservation<NativeTheme, NativeThemeObserver> observation(
+      &observer);
+  observation.Observe(native_theme);
+  const auto expect_notification_count = [&](int n) {
+    EXPECT_EQ(std::exchange(observer.call_count, 0), n);
+  };
+
+  ASSERT_EQ(NativeTheme::GetPreferredColorSchemeOverride(), std::nullopt);
+  EXPECT_EQ(native_theme->preferred_color_scheme(), kLight);
+
+  NativeTheme::SetPreferredColorSchemeOverride(kDark);
+  expect_notification_count(1);
+  EXPECT_EQ(native_theme->preferred_color_scheme(), kDark);
+
+  os_settings_provider().SetPreferredColorScheme(kNoPreference);
+  expect_notification_count(0);
+  EXPECT_EQ(native_theme->preferred_color_scheme(), kDark);
+
+  NativeTheme::SetPreferredColorSchemeOverride(kDark);
+  expect_notification_count(0);
+
+  NativeTheme::SetPreferredColorSchemeOverride(kLight);
+  expect_notification_count(1);
+  EXPECT_EQ(native_theme->preferred_color_scheme(), kLight);
+
+  NativeTheme::SetPreferredColorSchemeOverride(std::nullopt);
+  expect_notification_count(1);
+  EXPECT_EQ(native_theme->preferred_color_scheme(), kNoPreference);
+}
+
 TEST_F(NativeThemeTest, PreferredContrast) {
   using enum NativeTheme::PreferredContrast;
   const auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
