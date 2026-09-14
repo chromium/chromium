@@ -7970,10 +7970,7 @@ if (!is_android) {
     # These tests are only meant to run on an FYI bot because they
     # test against live sites, as a way to catch potential regressions.
     test("accessibility_live_site_tests") {
-      sources = [
-        "../browser/ash/accessibility/accessibility_live_site_browsertest.cc",
-        "base/interactive_ui_tests_main.cc",
-      ]
+      sources = [ "base/interactive_ui_tests_main.cc" ]
       configs += [ "//build/config:precompiled_headers" ]
 
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -7986,8 +7983,7 @@ if (!is_android) {
         "//chrome:resources",
         "//chrome:strings",
         "//chrome/browser",
-        "//chrome/browser/ash/accessibility",
-        "//chrome/browser/ash/accessibility:test_support",
+        "//chrome/browser/ash/accessibility:live_site_tests",
         "//chrome/browser/devtools",
         "//chrome/renderer",
         "//chrome/test/base:chrome_test_launcher",
