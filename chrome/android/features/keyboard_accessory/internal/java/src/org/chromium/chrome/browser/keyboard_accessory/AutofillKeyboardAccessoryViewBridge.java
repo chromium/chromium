@@ -4,13 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import android.app.Activity;
 import android.graphics.RectF;
-import android.net.Uri;
-import android.text.style.ClickableSpan;
-import android.view.View;
-
-import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -28,10 +22,8 @@ import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.text.SpanApplier;
 import org.chromium.url.GURL;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,7 +31,6 @@ import java.util.Objects;
 @JNINamespace("autofill")
 public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private long mNativeAutofillKeyboardAccessory;
-    private WeakReference<Activity> mActivity;
     private @Nullable MonotonicObservableSupplier<ManualFillingComponent>
             mManualFillingComponentSupplier;
     private @Nullable ManualFillingComponent mManualFillingComponent;
@@ -142,24 +133,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 .onAutofillAiSuppressionDialogClosed(mNativeAutofillKeyboardAccessory, confirmed);
     }
 
-    private CharSequence createMessageWithLink(String body, String link) {
-        if (mActivity.get() == null) {
-            return body;
-        }
-        ClickableSpan span =
-                new ClickableSpan() {
-                    @Override
-                    public void onClick(View view) {
-                        assert mActivity.get() != null;
-                        new CustomTabsIntent.Builder()
-                                .setShowTitle(true)
-                                .build()
-                                .launchUrl(mActivity.get(), Uri.parse(link));
-                    }
-                };
-        return SpanApplier.applySpans(body, new SpanApplier.SpanInfo("<link>", "</link>", span));
-    }
-
     /**
      * Initializes this object. This function should be called at most one time.
      *
@@ -176,7 +149,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             connectToFillingComponent(currentFillingComponent);
         }
 
-        mActivity = windowAndroid.getActivity();
         mNativeAutofillKeyboardAccessory = nativeAutofillKeyboardAccessory;
     }
 
@@ -241,16 +213,11 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             @JniType("std::u16string") String body,
             @JniType("std::u16string") String bodyLink,
             @JniType("std::u16string") String confirmButtonText) {
-
-        CharSequence message = body;
-        if (!bodyLink.isEmpty() && mActivity.get() != null) {
-            message = createMessageWithLink(body, bodyLink);
-        }
-
         assert mManualFillingComponent != null;
         mManualFillingComponent.confirmDeletionOperation(
                 title,
-                message,
+                body,
+                bodyLink,
                 confirmButtonText,
                 () -> this.onDeletionDialogClosed(/* confirmed= */ true),
                 () -> this.onDeletionDialogClosed(/* confirmed= */ false));

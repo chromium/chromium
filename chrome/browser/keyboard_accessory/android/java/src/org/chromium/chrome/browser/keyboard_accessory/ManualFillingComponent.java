@@ -274,14 +274,16 @@ public interface ManualFillingComponent extends BackPressHandler {
      * Show a deletion confimation dialog.
      *
      * @param title A title of the confirmation dialog.
-     * @param message The message of the confirmation dialog.
+     * @param body The body of the confirmation dialog, possibly containing &lt;link&gt; tags.
+     * @param bodyLink The URL to open when the link tag in the body is clicked.
      * @param confirmButtonText The text on the confirmation button.
      * @param confirmedCallback A {@link Runnable} to trigger upon confirmation.
      * @param declinedCallback A {@link Runnable} to trigger upon rejection.
      */
     void confirmDeletionOperation(
             String title,
-            CharSequence message,
+            String body,
+            String bodyLink,
             String confirmButtonText,
             Runnable confirmedCallback,
             Runnable declinedCallback);

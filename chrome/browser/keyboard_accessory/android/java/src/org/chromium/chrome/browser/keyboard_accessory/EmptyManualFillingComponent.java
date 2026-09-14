@@ -133,7 +133,8 @@ public class EmptyManualFillingComponent implements ManualFillingComponent {
     @Override
     public void confirmDeletionOperation(
             String title,
-            CharSequence message,
+            String body,
+            String bodyLink,
             String confirmButtonText,
             Runnable confirmedCallback,
             Runnable declinedCallback) {}

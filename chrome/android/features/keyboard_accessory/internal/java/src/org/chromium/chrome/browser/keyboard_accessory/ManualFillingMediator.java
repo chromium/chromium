@@ -23,6 +23,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProper
 
 import android.content.res.Resources;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.util.SparseArray;
 import android.view.Surface;
 import android.view.View;
@@ -30,6 +31,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
@@ -99,6 +101,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.HashSet;
 import java.util.List;
@@ -843,9 +847,34 @@ class ManualFillingMediator
         if (isInitialized() && mAccessorySheet.isShown()) onCloseAccessorySheet();
     }
 
+    @VisibleForTesting
+    CharSequence formatDeletionMessage(String body, String bodyLink) {
+        if (mActivity == null) {
+            return body;
+        }
+        if (!bodyLink.isEmpty() && body.contains("<link>") && body.contains("</link>")) {
+            ChromeClickableSpan span =
+                    new ChromeClickableSpan(
+                            mActivity,
+                            view ->
+                                    new CustomTabsIntent.Builder()
+                                            .setShowTitle(true)
+                                            .build()
+                                            .launchUrl(mActivity, Uri.parse(bodyLink)));
+            try {
+                return SpanApplier.applySpans(
+                        body, new SpanApplier.SpanInfo("<link>", "</link>", span));
+            } catch (IllegalArgumentException e) {
+                return body;
+            }
+        }
+        return body;
+    }
+
     void confirmDeletionOperation(
             String title,
-            CharSequence message,
+            String body,
+            String bodyLink,
             String confirmButtonText,
             Runnable confirmedCallback,
             Runnable declinedCallback) {
@@ -853,7 +882,7 @@ class ManualFillingMediator
                 mActionConfirmationDialog.show(
                         new ConfirmationDialogParams.Builder(mActivity)
                                 .withTitle(title)
-                                .withDescription(message)
+                                .withDescription(formatDeletionMessage(body, bodyLink))
                                 .withPositiveButton(confirmButtonText)
                                 .withNegativeButton(R.string.cancel)
                                 .withSupportStopShowing(false)
@@ -1368,6 +1397,10 @@ class ManualFillingMediator
 
     ActionConfirmationDialog getActionConfirmationDialogForTesting() {
         return mActionConfirmationDialog;
+    }
+
+    void setActionConfirmationDialogForTesting(ActionConfirmationDialog actionConfirmationDialog) {
+        mActionConfirmationDialog = actionConfirmationDialog;
     }
 
     @VisibleForTesting

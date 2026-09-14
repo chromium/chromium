@@ -249,12 +249,13 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     @Override
     public void confirmDeletionOperation(
             String title,
-            CharSequence message,
+            String body,
+            String bodyLink,
             String confirmButtonText,
             Runnable confirmedCallback,
             Runnable declinedCallback) {
         mMediator.confirmDeletionOperation(
-                title, message, confirmButtonText, confirmedCallback, declinedCallback);
+                title, body, bodyLink, confirmButtonText, confirmedCallback, declinedCallback);
     }
 
     @Override
