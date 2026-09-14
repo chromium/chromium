@@ -42,7 +42,9 @@ blink::mojom::ServiceWorkerInstalledScriptsInfoPtr
 ServiceWorkerInstalledScriptsSender::CreateInfoAndBind() {
   if (base::FeatureList::IsEnabled(
           features::kServiceWorkerStaticRouterConsolidateMainScriptResponse)) {
-    CHECK(!manager_.is_bound(), base::NotFatalUntil::M159);
+    // TODO(crbug.com/560260501): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!manager_.is_bound());
   } else {
     CHECK_EQ(State::kNotStarted, state_, base::NotFatalUntil::M159);
   }
