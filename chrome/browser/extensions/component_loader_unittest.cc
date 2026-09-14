@@ -675,27 +675,6 @@ TEST_F(ComponentLoaderTest,
 }
 
 TEST_F(ComponentLoaderTest,
-       AddAimEligibilityExtensionLoadsBundledIfStagedDirectoryDoesNotExist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kAimEligibilityComponentExtension);
-
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::ScopedPathOverride path_override(component_updater::DIR_COMPONENT_USER,
-                                         temp_dir.GetPath());
-  base::FilePath relative_path = GetAimEligibilityRelativeInstallDir("2.0");
-  // Intentionally do NOT create the relative_path directory on disk.
-
-  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
-  component_loader_prefs::StageExtension(
-      *local_state, extension_misc::kAimEligibilityExtensionId, relative_path,
-      CreateAimEligibilityManifest("2.0"));
-
-  VerifyBundledAimEligibilityExtensionLoaded();
-}
-
-TEST_F(ComponentLoaderTest,
        AddAimEligibilityExtensionLoadsBundledIfStagedPathIsAbsolute) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

@@ -455,10 +455,6 @@ bool ComponentLoader::MaybeLoadStagedExtension(PrefService& local_state,
   CHECK(!staged_info->relative_path.ReferencesParent());
   base::FilePath install_dir =
       user_component_dir.Append(staged_info->relative_path);
-  if (!base::PathExists(install_dir)) {
-    return false;
-  }
-
   if (Add(std::move(staged_info->manifest), install_dir).empty()) {
     return false;
   }
