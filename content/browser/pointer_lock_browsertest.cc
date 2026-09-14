@@ -68,8 +68,7 @@ class ScopedEnableUnadjustedMouseEventsForTesting
 class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewAura {
  public:
   MockPointerLockRenderWidgetHostView(RenderWidgetHost* host)
-      : RenderWidgetHostViewAura(host),
-        host_(RenderWidgetHostImpl::From(host)) {}
+      : RenderWidgetHostViewAura(host) {}
   ~MockPointerLockRenderWidgetHostView() override {
     if (IsPointerLocked()) {
       UnlockPointer();
@@ -87,7 +86,9 @@ class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewAura {
   }
 
   void UnlockPointer() override {
-    host_->LostPointerLock();
+    if (host()) {
+      host()->LostPointerLock();
+    }
     event_handler()->mouse_locked_ = false;
     event_handler()->mouse_locked_unadjusted_movement_.reset();
   }
@@ -106,7 +107,6 @@ class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewAura {
 
   bool HasFocus() override { return has_focus_; }
 
-  raw_ptr<RenderWidgetHostImpl> host_;
   bool has_focus_ = true;
 };
 

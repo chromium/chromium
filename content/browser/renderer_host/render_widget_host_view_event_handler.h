@@ -123,6 +123,8 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   // fullscreen.
   void TrackHost(aura::Window* reference_window);
 
+  void ResetHost();
+
   MouseWheelPhaseHandler& mouse_wheel_phase_handler() {
     return mouse_wheel_phase_handler_;
   }
@@ -306,7 +308,7 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   ui::MotionEventAura pointer_state_;
 
   // The following are not owned. They should outlive |this|
-  const raw_ptr<RenderWidgetHostImpl> host_;
+  raw_ptr<RenderWidgetHostImpl> host_;
   // Should create |this| and own it.
   const raw_ptr<RenderWidgetHostViewBase> host_view_;
   // Optional, used to redirect events to a popup and associated handler.

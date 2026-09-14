@@ -75,7 +75,9 @@ class FlingSchedulerTest : public testing::Test,
   void TearDown() override {
     fling_controller_.reset();
     fling_scheduler_.reset();
-    view_.release()->Destroy();  // 'delete this' is called internally.
+    // 'delete this' is called internally if we are not in the middle of
+    // dispatching input.
+    view_.release()->DestroyOrDefer();
     widget_host_->ShutdownAndDestroyWidget(false);
     widget_host_.reset();
     process_host_->Cleanup();

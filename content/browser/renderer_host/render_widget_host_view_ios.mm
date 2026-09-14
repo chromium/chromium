@@ -13,6 +13,7 @@
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "components/input/events_helper.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/render_widget_host_view_input.h"
 #include "components/input/switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -81,6 +82,8 @@ gfx::Rect GetDefaultSizeForTesting() {
 
 namespace content {
 
+using input::ScopedInputDispatchPin;
+
 // This class holds strongly so we don't leak that in the header of the
 // RenderWidgetHostViewIOS.
 class UIViewHolder {
@@ -120,8 +123,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
   // Let the page-level input event router know about our surface ID
   // namespace for surface-based hit testing.
   if (ShouldRouteEvents()) {
-    host()->delegate()->GetInputEventRouter()->AddFrameSinkIdOwner(
-        GetFrameSinkId(), this);
+    SetIsFrameSinkIdOwner(true);
   }
 
   if (GetTextInputManager()) {
@@ -140,17 +142,24 @@ RenderWidgetHostViewIOS::~RenderWidgetHostViewIOS() {
   gesture_provider_->Shutdown();
 }
 
-void RenderWidgetHostViewIOS::Destroy() {
-  [ui_view_->view_ removeView];
-  host()->render_frame_metadata_provider()->RemoveObserver(this);
+void RenderWidgetHostViewIOS::CleanUpHostObservers() {
+  if (host()) {
+    host()->render_frame_metadata_provider()->RemoveObserver(this);
+    host()->ViewDestroyed();
+  }
+}
+
+void RenderWidgetHostViewIOS::OnDestroyOrDefer() {
+  weak_factory_.InvalidateWeakPtrs();
   if (text_input_manager_) {
     text_input_manager_->RemoveObserver(this);
   }
+}
+
+void RenderWidgetHostViewIOS::DestroyImpl() {
+  [ui_view_->view_ removeView];
   browser_compositor_.reset();
-  // Call this before the derived class is destroyed so that virtual function
-  // calls back into `this` still work.
-  NotifyObserversAboutShutdown();
-  RenderWidgetHostViewBase::Destroy();
+
   delete this;
 }
 
@@ -278,7 +287,7 @@ void RenderWidgetHostViewIOS::UpdateCursor(const ui::Cursor& cursor) {}
 void RenderWidgetHostViewIOS::SetIsLoading(bool is_loading) {}
 
 void RenderWidgetHostViewIOS::RenderProcessGone() {
-  Destroy();
+  DestroyOrDefer();
 }
 
 void RenderWidgetHostViewIOS::ShowWithVisibility(
@@ -420,7 +429,7 @@ SkColor RenderWidgetHostViewIOS::BrowserCompositorIOSGetGutterColor() {
   // When making an element on the page fullscreen the element's background
   // may not match the page's, so use black as the gutter color to avoid
   // flashes of brighter colors during the transition.
-  if (host()->delegate() && host()->delegate()->IsFullscreen()) {
+  if (host() && host()->delegate() && host()->delegate()->IsFullscreen()) {
     return SK_ColorBLACK;
   }
   if (GetBackgroundColor()) {
@@ -430,6 +439,9 @@ SkColor RenderWidgetHostViewIOS::BrowserCompositorIOSGetGutterColor() {
 }
 
 bool RenderWidgetHostViewIOS::OnBrowserCompositorSurfaceIdChanged() {
+  if (!host()) {
+    return false;
+  }
   return host()->SynchronizeVisualProperties();
 }
 
@@ -610,19 +622,18 @@ void RenderWidgetHostViewIOS::SetActive(bool active) {
 }
 
 bool RenderWidgetHostViewIOS::ShouldRouteEvents() const {
-  CHECK(host(), base::NotFatalUntil::M158);
+  if (!host()) {
+    return false;
+  }
   return host()->delegate() && host()->delegate()->GetInputEventRouter();
 }
 
 void RenderWidgetHostViewIOS::OnTouchEvent(blink::WebTouchEvent web_event) {
-  auto weak_this = weak_factory_.GetWeakPtr();
+  ScopedInputDispatchPin pin(this);
   scoped_refptr<ui::FilteredGestureProvider> protector(gesture_provider_);
   ui::FilteredGestureProvider::TouchHandlingResult result =
       protector->OnTouchEvent(MotionEventWeb(web_event));
-  if (!weak_this) {
-    return;
-  }
-  if (!result.succeeded) {
+  if (!result.succeeded || destroy_pending()) {
     return;
   }
 
@@ -643,12 +654,12 @@ void RenderWidgetHostViewIOS::ProcessAckedTouchEvent(
     blink::mojom::InputEventResultState ack_result) {
   const bool event_consumed =
       ack_result == blink::mojom::InputEventResultState::kConsumed;
-  auto weak_this = weak_factory_.GetWeakPtr();
+  ScopedInputDispatchPin pin(this);
   scoped_refptr<ui::FilteredGestureProvider> protector(gesture_provider_);
   protector->OnTouchEventAck(
       touch.event.unique_touch_event_id, event_consumed,
       input::InputEventResultStateIsSetBlocking(ack_result));
-  if (!weak_this) {
+  if (destroy_pending()) {
     return;
   }
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
@@ -687,14 +698,14 @@ void RenderWidgetHostViewIOS::SendGestureEvent(
 void RenderWidgetHostViewIOS::InjectTouchEvent(
     const blink::WebTouchEvent& event,
     const ui::LatencyInfo& latency_info) {
-  auto weak_this = weak_factory_.GetWeakPtr();
+  if (destroy_pending()) {
+    return;
+  }
+  ScopedInputDispatchPin pin(this);
   scoped_refptr<ui::FilteredGestureProvider> protector(gesture_provider_);
   ui::FilteredGestureProvider::TouchHandlingResult result =
       protector->OnTouchEvent(MotionEventWeb(event));
-  if (!weak_this) {
-    return;
-  }
-  if (!result.succeeded) {
+  if (!result.succeeded || destroy_pending()) {
     return;
   }
 
@@ -702,7 +713,7 @@ void RenderWidgetHostViewIOS::InjectTouchEvent(
     blink::WebTouchEvent touch_event(event);
     host()->delegate()->GetInputEventRouter()->RouteTouchEvent(
         this, &touch_event, latency_info);
-  } else {
+  } else if (host()) {
     host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
         event, latency_info);
   }
@@ -711,6 +722,10 @@ void RenderWidgetHostViewIOS::InjectTouchEvent(
 void RenderWidgetHostViewIOS::InjectGestureEvent(
     const blink::WebGestureEvent& event,
     const ui::LatencyInfo& latency_info) {
+  if (!host()) {
+    return;
+  }
+  ScopedInputDispatchPin pin(this);
   if (ShouldRouteEvents()) {
     blink::WebGestureEvent gesture_event(event);
     host()->delegate()->GetInputEventRouter()->RouteGestureEvent(
@@ -724,6 +739,9 @@ void RenderWidgetHostViewIOS::InjectGestureEvent(
 void RenderWidgetHostViewIOS::InjectMouseEvent(
     const blink::WebMouseEvent& web_mouse,
     const ui::LatencyInfo& latency_info) {
+  if (!host()) {
+    return;
+  }
   if (ShouldRouteEvents()) {
     blink::WebMouseEvent mouse_event(web_mouse);
     host()->delegate()->GetInputEventRouter()->RouteMouseEvent(
@@ -736,6 +754,9 @@ void RenderWidgetHostViewIOS::InjectMouseEvent(
 void RenderWidgetHostViewIOS::InjectMouseWheelEvent(
     const blink::WebMouseWheelEvent& web_wheel,
     const ui::LatencyInfo& latency_info) {
+  if (!host()) {
+    return;
+  }
   if (ShouldRouteEvents()) {
     blink::WebMouseWheelEvent mouse_wheel_event(web_wheel);
     host()->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
@@ -794,6 +815,9 @@ RenderWidgetHostImpl* RenderWidgetHostViewIOS::GetActiveWidget() {
 }
 
 void RenderWidgetHostViewIOS::OnFirstResponderChanged() {
+  if (destroy_pending()) {
+    return;
+  }
   bool is_first_responder = [ui_view_->view_ isFirstResponder] ||
                             (IsTesting() && is_getting_focus_);
 

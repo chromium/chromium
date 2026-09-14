@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
                             ->GetPrimaryFrameTree()
                             .root();
 
-  GetWidgetHost()->GetView()->Destroy();
+  GetWidgetHost()->GetView()->DestroyOrDefer();
   SimulateTouchscreenFling(GetWidgetHost());
 
   // As the view is destroyed, there shouldn't be any active fling.

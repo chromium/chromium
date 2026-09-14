@@ -35,6 +35,7 @@
 #include "components/input/input_router.h"
 #include "components/input/mouse_wheel_event_queue.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/input/render_widget_host_view_input.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
@@ -122,6 +123,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
+#include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/gestures/motion_event_aura.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -560,7 +562,15 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     // For guest-views, |view_| is not the view used by |widget_host_|.
     RenderWidgetHostImpl* host = view->host();
     EXPECT_EQ(view, host->GetView());
-    view->Destroy();
+    // Workaround for test artifact: FakeWindowEventDispatcher is installed
+    // after the view window is initialized, so it doesn't observe it and
+    // fails to clean up its gesture state when the window is hidden/removed.
+    // Clean it up manually here to avoid CHECK failure in ~Window().
+    aura::Window* window = view->GetNativeView();
+    aura::Env::GetInstance()->gesture_recognizer()->CancelActiveTouches(window);
+    aura::Env::GetInstance()->gesture_recognizer()->CleanupStateForConsumer(
+        window);
+    view->DestroyOrDefer();
     EXPECT_EQ(nullptr, host->GetView());
   }
 
@@ -657,7 +667,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     if (view_) {
       DestroyView(view_.ExtractAsDangling());
     }
-    parent_view_.ExtractAsDangling()->Destroy();
+    parent_view_.ExtractAsDangling()->DestroyOrDefer();
 
     process_host_->Cleanup();
     site_instance_group_.reset();
@@ -3289,73 +3299,71 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   size_t renderer_count = max_renderer_frames + 1;
   gfx::Rect view_rect(100, 100);
 
-  std::unique_ptr<RenderWidgetHostImpl* []> hosts(
-      new RenderWidgetHostImpl*[renderer_count]);
-  std::unique_ptr<FakeRenderWidgetHostViewAura* []> views(
-      new FakeRenderWidgetHostViewAura*[renderer_count]);
+  std::vector<RenderWidgetHostImpl*> hosts(renderer_count);
+  std::vector<FakeRenderWidgetHostViewAura*> views(renderer_count);
 
   // Create a bunch of renderers.
   for (size_t i = 0; i < renderer_count; ++i) {
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
-    UNSAFE_TODO(hosts[i]) = MockRenderWidgetHostImpl::Create(
+    hosts[i] = MockRenderWidgetHostImpl::Create(
         GetFrameTree(), delegates_.back().get(),
         site_instance_group_->GetSafeRef(), routing_id, /*hidden = */ false);
-    delegates_.back()->set_widget_host(UNSAFE_TODO(hosts[i]));
+    delegates_.back()->set_widget_host(hosts[i]);
 
-    UNSAFE_TODO(views[i] = new FakeRenderWidgetHostViewAura(hosts[i]));
+    views[i] = new FakeRenderWidgetHostViewAura(hosts[i]);
     // Prevent frames from being skipped due to resize, this test does not
     // run a UI compositor so the DelegatedFrameHost doesn't get the chance
     // to release its resize lock once it receives a frame of the expected
     // size.
-    UNSAFE_TODO(views[i])->InitAsChild(nullptr);
-    ParentHostView(UNSAFE_TODO(views[i]), parent_view_);
+    views[i]->InitAsChild(nullptr);
+    ParentHostView(views[i], parent_view_);
 
     // The blink::mojom::Widget interfaces are bound during
     // MockRenderWidgetHostImpl construction.
-    UNSAFE_TODO(hosts[i])->BindFrameWidgetInterfaces(
+    hosts[i]->BindFrameWidgetInterfaces(
         mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>()
             .InitWithNewEndpointAndPassReceiver(),
         TestRenderWidgetHost::CreateStubFrameWidgetRemote());
-    UNSAFE_TODO(hosts[i])->RendererWidgetCreated(/*for_frame_widget=*/true);
+    hosts[i]->RendererWidgetCreated(/*for_frame_widget=*/true);
 
-    UNSAFE_TODO(views[i])->SetSize(view_rect.size());
-    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
+    views[i]->SetSize(view_rect.size());
+    EXPECT_HAS_FRAME(views[i]);
   }
 
   // Make each renderer visible, and swap a frame on it, then make it invisible.
   for (size_t i = 0; i < renderer_count; ++i) {
-    UNSAFE_TODO(views[i])->ShowWithVisibility(PageVisibilityState::kVisible);
-    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
-    UNSAFE_TODO(views[i])->Hide();
+    views[i]->ShowWithVisibility(PageVisibilityState::kVisible);
+    EXPECT_HAS_FRAME(views[i]);
+    views[i]->Hide();
   }
 
   // There should be max_renderer_frames with a frame in it, and one without it.
   // Since the logic is LRU eviction, the first one should be without.
   EXPECT_EVICTED(views[0]);
   for (size_t i = 1; i < renderer_count; ++i)
-    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
+    EXPECT_HAS_FRAME(views[i]);
 
   // LRU renderer is [0], make it visible, it should evict the next LRU [1].
   views[0]->ShowWithVisibility(PageVisibilityState::kVisible);
   EXPECT_HAS_FRAME(views[0]);
-  EXPECT_EVICTED(UNSAFE_TODO(views[1]));
+  EXPECT_EVICTED(views[1]);
   views[0]->Hide();
 
   // LRU renderer is [1], which is still hidden. Showing it and submitting a
   // CompositorFrame to it should evict the next LRU [2].
-  UNSAFE_TODO(views[1])->ShowWithVisibility(PageVisibilityState::kVisible);
+  views[1]->ShowWithVisibility(PageVisibilityState::kVisible);
   EXPECT_HAS_FRAME(views[0]);
-  EXPECT_HAS_FRAME(UNSAFE_TODO(views[1]));
-  EXPECT_EVICTED(UNSAFE_TODO(views[2]));
+  EXPECT_HAS_FRAME(views[1]);
+  EXPECT_EVICTED(views[2]);
   for (size_t i = 3; i < renderer_count; ++i)
-    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
+    EXPECT_HAS_FRAME(views[i]);
 
   // Make all renderers but [0] visible and swap a frame on them, keep [0]
   // hidden, it becomes the LRU.
   for (size_t i = 1; i < renderer_count; ++i) {
-    UNSAFE_TODO(views[i])->ShowWithVisibility(PageVisibilityState::kVisible);
-    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
+    views[i]->ShowWithVisibility(PageVisibilityState::kVisible);
+    EXPECT_HAS_FRAME(views[i]);
   }
   EXPECT_EVICTED(views[0]);
 
@@ -3363,7 +3371,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   // although we're above the limit.
   views[0]->ShowWithVisibility(PageVisibilityState::kVisible);
   for (size_t i = 0; i < renderer_count; ++i)
-    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
+    EXPECT_HAS_FRAME(views[i]);
 
   // Make [0] hidden, it should evict its frame.
   views[0]->Hide();
@@ -3375,9 +3383,9 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   views[0]->Hide();
 
   // Make [1] hidden, resize it. It should advance its fallback.
-  UNSAFE_TODO(views[1])->Hide();
+  views[1]->Hide();
   gfx::Size size2(200, 200);
-  UNSAFE_TODO(views[1])->SetSize(size2);
+  views[1]->SetSize(size2);
   // Show it, it should block until we give it a frame.
   UNSAFE_TODO(views[1])->ShowWithVisibility(PageVisibilityState::kVisible);
   ASSERT_TRUE(UNSAFE_TODO(views[1])
@@ -3392,7 +3400,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
       *UNSAFE_TODO(views[1])->window_->layer()->AsSurface()->GetSurfaceId());
 
   for (size_t i = 0; i < renderer_count; ++i)
-    UNSAFE_TODO(views[i])->Destroy();
+    views[i]->DestroyOrDefer();
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
@@ -6025,14 +6033,14 @@ class RenderWidgetHostViewAuraWithViewHarnessTest
     RenderViewHostImplTestHarness::SetUp();
     // Delete the current RenderWidgetHostView instance before setting
     // the RWHVA as the view.
-    contents()->GetRenderViewHost()->GetWidget()->GetView()->Destroy();
+    contents()->GetRenderViewHost()->GetWidget()->GetView()->DestroyOrDefer();
     // This instance is destroyed in the TearDown method below.
     view_ = new RenderWidgetHostViewAura(
         contents()->GetRenderViewHost()->GetWidget());
   }
 
   void TearDown() override {
-    view_.ExtractAsDangling()->Destroy();
+    view_.ExtractAsDangling()->DestroyOrDefer();
     RenderViewHostImplTestHarness::TearDown();
   }
 
@@ -6207,9 +6215,9 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
   }
 
   void TearDown() override {
-    view_for_first_process_.ExtractAsDangling()->Destroy();
-    view_for_second_process_.ExtractAsDangling()->Destroy();
-    view_for_third_process_.ExtractAsDangling()->Destroy();
+    view_for_first_process_.ExtractAsDangling()->DestroyOrDefer();
+    view_for_second_process_.ExtractAsDangling()->DestroyOrDefer();
+    view_for_third_process_.ExtractAsDangling()->DestroyOrDefer();
 
     for (content::MockRenderWidgetHostImpl* host : widget_hosts_to_cleanup_) {
       host->ShutdownAndDestroyWidget(true);
@@ -7127,7 +7135,7 @@ TEST_F(RenderWidgetHostViewAuraReentrantDestructionIME,
   FakeRenderWidgetHostViewAura* raw_view = view_.get();
   input_method_->set_on_caret_bounds_changed(base::BindLambdaForTesting([&]() {
     widget_host_ = nullptr;
-    view_.ExtractAsDangling()->Destroy();
+    view_.ExtractAsDangling()->DestroyOrDefer();
   }));
 
   // Under ASAN this triggers heap-use-after-free in
@@ -7158,7 +7166,7 @@ TEST_F(RenderWidgetHostViewAuraReentrantDestructionIME,
   input_method_->set_on_text_input_type_changed(
       base::BindLambdaForTesting([&]() {
         widget_host_ = nullptr;
-        view_.ExtractAsDangling()->Destroy();
+        view_.ExtractAsDangling()->DestroyOrDefer();
       }));
 
   ui::mojom::TextInputState state;
@@ -7193,7 +7201,7 @@ TEST_F(RenderWidgetHostViewAuraReentrantDestructionIME,
   input_method_->set_on_set_virtual_keyboard_visibility_if_enabled(
       base::BindLambdaForTesting([&]() {
         widget_host_ = nullptr;
-        view_.ExtractAsDangling()->Destroy();
+        view_.ExtractAsDangling()->DestroyOrDefer();
       }));
 
   ui::mojom::TextInputState state;
@@ -7234,7 +7242,7 @@ TEST_F(RenderWidgetHostViewAuraReentrantDestructionIME,
   input_method_->set_on_detach_text_input_client(
       base::BindLambdaForTesting([&]() {
         widget_host_ = nullptr;
-        view_.ExtractAsDangling()->Destroy();
+        view_.ExtractAsDangling()->DestroyOrDefer();
       }));
 
   // If the weak_ptr check wasn't in place, OnWindowFocused()'s lost-focus
@@ -7809,6 +7817,136 @@ TEST_F(RenderWidgetHostViewAuraTest, ForceSpecifiedDeadline) {
   EXPECT_EQ(5u, parent_view_->GetForceSpecifiedDeadlineForTesting());
   parent_view_->SetForceSpecifiedDeadline(std::nullopt);
   EXPECT_EQ(std::nullopt, parent_view_->GetForceSpecifiedDeadlineForTesting());
+}
+
+TEST_F(RenderWidgetHostViewAuraTest, DeferredDestructionWindowTeardown) {
+  InitViewForFrame(nullptr);
+  aura::client::ParentWindowWithContext(
+      view_->GetNativeView(), aura_test_helper_->GetContext(), gfx::Rect(),
+      display::kInvalidDisplayId);
+
+  // Pin the view to simulate an active input event dispatch.
+  std::optional<input::ScopedInputDispatchPin> pin;
+  pin.emplace(view_);
+
+  // Request destruction. Because the view is pinned, actual deletion is
+  // deferred.
+  view_->DestroyOrDefer();
+  EXPECT_TRUE(view_->destroy_pending());
+  EXPECT_NE(nullptr, view_->GetNativeView());
+
+  // Destroy the native Aura window while destruction is deferred.
+  // In OnWindowDestroyed(), window_ is cleared and the destroy_pending()
+  // check prevents re-entering DestroyOrDefer().
+  aura::Window* window = view_->GetNativeView();
+  aura::Env::GetInstance()->gesture_recognizer()->CancelActiveTouches(window);
+  aura::Env::GetInstance()->gesture_recognizer()->CleanupStateForConsumer(
+      window);
+  delete window;
+  EXPECT_EQ(nullptr, view_->GetNativeView());
+  EXPECT_TRUE(view_->destroy_pending());
+
+  // Any subsequent call to DestroyOrDefer() while pinned should be an
+  // idempotent no-op.
+  view_->DestroyOrDefer();
+  EXPECT_TRUE(view_->destroy_pending());
+
+  // Subsequent input events arriving while destruction is pending should be
+  // safely handled and dropped without crashing or dereferencing host().
+  ui::TouchEvent touch(ui::EventType::kTouchPressed, gfx::Point(10, 10),
+                       ui::EventTimeForNow(),
+                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  view_->OnTouchEvent(&touch);
+  EXPECT_TRUE(touch.handled());
+
+  ui::GestureEventDetails gesture_details(ui::EventType::kGestureTap);
+  ui::GestureEvent gesture(10, 10, 0, ui::EventTimeForNow(), gesture_details);
+  view_->OnGestureEvent(&gesture);
+  EXPECT_TRUE(gesture.handled());
+
+  ui::ScrollEvent scroll(ui::EventType::kScroll, gfx::PointF(10, 10),
+                         gfx::PointF(10, 10), ui::EventTimeForNow(), 0, 0, 10,
+                         0, 10, 1);
+  view_->OnScrollEvent(&scroll);
+  EXPECT_TRUE(scroll.handled());
+
+  // Unpin the view. DestroyImpl() is now invoked, which must see that window_
+  // is null and cleanly delete the view without attempting to delete the
+  // already-destroyed window.
+  view_ = nullptr;
+  pin.reset();
+}
+
+TEST_F(RenderWidgetHostViewAuraTest, WindowDestroyedFirstWhilePinned) {
+  InitViewForFrame(nullptr);
+  aura::client::ParentWindowWithContext(
+      view_->GetNativeView(), aura_test_helper_->GetContext(), gfx::Rect(),
+      display::kInvalidDisplayId);
+
+  // Pin the view to simulate an in-flight input event.
+  std::optional<input::ScopedInputDispatchPin> pin;
+  pin.emplace(view_);
+
+  // Destroy the native Aura window directly while pinned.
+  // OnWindowDestroyed() should run, clear window_, see destroy_pending() is
+  // false, and invoke DestroyOrDefer(). Because the view is pinned,
+  // DestroyOrDefer() sets destroy_pending_ = true and defers DestroyImpl().
+  aura::Window* window = view_->GetNativeView();
+  aura::Env::GetInstance()->gesture_recognizer()->CancelActiveTouches(window);
+  aura::Env::GetInstance()->gesture_recognizer()->CleanupStateForConsumer(
+      window);
+  delete window;
+
+  EXPECT_EQ(nullptr, view_->GetNativeView());
+  EXPECT_TRUE(view_->destroy_pending());
+
+  // A subsequent DestroyOrDefer() (e.g. from RenderWidgetHostImpl::Destroy())
+  // should safely early-out idempotently without crashing.
+  view_->DestroyOrDefer();
+  EXPECT_TRUE(view_->destroy_pending());
+
+  // Unpin the view to complete destruction cleanly.
+  view_ = nullptr;
+  pin.reset();
+}
+
+TEST_F(RenderWidgetHostViewAuraTest, TouchDispatchSurvivesSynchronousDestroy) {
+  InitViewForFrame(nullptr);
+  aura::client::ParentWindowWithContext(
+      view_->GetNativeView(), aura_test_helper_->GetContext(), gfx::Rect(),
+      display::kInvalidDisplayId);
+
+  class ViewDestroyingInputObserver
+      : public RenderWidgetHost::InputEventObserver {
+   public:
+    explicit ViewDestroyingInputObserver(RenderWidgetHostViewAura* view)
+        : view_(view) {}
+    void OnInputEvent(const RenderWidgetHost& host,
+                      const blink::WebInputEvent& event,
+                      InputEventSource source) override {
+      if (view_) {
+        fired_ = true;
+        view_.ExtractAsDangling()->DestroyOrDefer();
+      }
+    }
+    bool fired() const { return fired_; }
+
+   private:
+    raw_ptr<RenderWidgetHostViewAura> view_ = nullptr;
+    bool fired_ = false;
+  };
+
+  FakeRenderWidgetHostViewAura* target_view = view_.ExtractAsDangling();
+  ViewDestroyingInputObserver observer(target_view);
+  widget_host_->AddInputEventObserver(&observer);
+
+  ui::TouchEvent press(ui::EventType::kTouchPressed, gfx::Point(30, 30),
+                       ui::EventTimeForNow(),
+                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  target_view->OnTouchEvent(&press);
+
+  EXPECT_TRUE(observer.fired());
+  widget_host_->RemoveInputEventObserver(&observer);
 }
 
 }  // namespace content

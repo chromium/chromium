@@ -305,6 +305,9 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
 
   using MessageVector = std::vector<std::unique_ptr<DispatchedMessage>>;
   MessageVector GetAndResetDispatchedMessages();
+  const MessageVector& dispatched_messages() const {
+    return dispatched_messages_;
+  }
 
  private:
   mojo::Receiver<blink::mojom::WidgetInputHandler> receiver_{this};

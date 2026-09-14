@@ -293,7 +293,7 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
 }
 
 void RenderWidgetHostViewAndroidTest::TearDown() {
-  render_widget_host_view_android_->Destroy();
+  render_widget_host_view_android_->DestroyOrDefer();
   render_view_host_.reset();
 
   delegate_.reset();

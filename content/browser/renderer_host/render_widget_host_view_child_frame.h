@@ -140,7 +140,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) override;
-  void Destroy() override;
+  void DestroyImpl() override;
+  void OnDestroyOrDefer() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
                                  const gfx::Rect& bounds) override;
@@ -340,6 +341,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   virtual void FirstSurfaceActivation(const viz::SurfaceInfo& surface_info);
 
   void DetachFromTouchSelectionClientManagerIfNecessary();
+  void CleanUpHostObservers() override;
+  void ShutdownAndDisconnect();
 
   gfx::Rect GetViewBoundsHelper(bool without_transform);
 
@@ -407,6 +410,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   // The display feature set for emulation, if any.
   std::optional<DisplayFeature> display_feature_;
+
+  bool disconnected_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewChildFrame> weak_factory_{this};
 };

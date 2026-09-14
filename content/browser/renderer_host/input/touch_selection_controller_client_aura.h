@@ -40,6 +40,8 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
 
   ~TouchSelectionControllerClientAura() override;
 
+  void Detach();
+
   // Called when |rwhva_|'s window is moved, to update the quick menu's
   // position.
   void OnWindowMoved();
@@ -122,6 +124,8 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
    public:
     explicit InternalClient(RenderWidgetHostViewAura* rwhva) : rwhva_(rwhva) {}
     ~InternalClient() final {}
+
+    void Detach() { rwhva_ = nullptr; }
 
     bool SupportsAnimation() const final;
     void SetNeedsAnimate() final;

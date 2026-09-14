@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityObjectLifetimeWinBrowserTest,
   AccessibilityTeardownTestMessageFilter test_message_filter(
       GetLegacyRenderWidgetHostHWND());
 
-  GetView()->Destroy();
+  GetView()->DestroyOrDefer();
 }
 
 class AccessibilityObjectLifetimeUiaWinBrowserTest

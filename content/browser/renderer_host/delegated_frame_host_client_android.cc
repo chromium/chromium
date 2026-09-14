@@ -13,12 +13,15 @@ namespace content {
 
 DelegatedFrameHostClientAndroid::DelegatedFrameHostClientAndroid(
     RenderWidgetHostViewAndroid* render_widget_host_view)
-    : render_widget_host_view_(render_widget_host_view) {
-  render_widget_host_view_->host()->AddInputEventObserver(this);
+    : render_widget_host_view_(render_widget_host_view),
+      host_(render_widget_host_view_->host()->GetWeakPtr()) {
+  host_->AddInputEventObserver(this);
 }
 
 DelegatedFrameHostClientAndroid::~DelegatedFrameHostClientAndroid() {
-  render_widget_host_view_->host()->RemoveInputEventObserver(this);
+  if (host_) {
+    host_->RemoveInputEventObserver(this);
+  }
 }
 
 void DelegatedFrameHostClientAndroid::DidSubmitCompositorFrame() {
@@ -53,6 +56,9 @@ void DelegatedFrameHostClientAndroid::OnSurfaceIdChanged() {
 
 std::vector<viz::SurfaceId>
 DelegatedFrameHostClientAndroid::CollectSurfaceIdsForEviction() const {
+  if (!render_widget_host_view_->host()) {
+    return {};
+  }
   return render_widget_host_view_->host()->CollectSurfaceIdsForEviction();
 }
 

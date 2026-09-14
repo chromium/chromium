@@ -859,7 +859,7 @@ class ViewDestroyingPreTargetHandler : public ui::EventHandler {
     if (event->type() == ui::EventType::kGestureTapDown && view_) {
       RenderWidgetHostViewAura* view_to_destroy = view_;
       view_ = nullptr;
-      view_to_destroy->Destroy();
+      view_to_destroy->DestroyOrDefer();
       gesture_tap_down_seen_ = true;
       root_window_->RemovePreTargetHandler(this);
       root_window_ = nullptr;

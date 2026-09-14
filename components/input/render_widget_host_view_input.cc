@@ -376,4 +376,21 @@ RenderWidgetHostViewInput::GetGestureProvider() {
   return nullptr;
 }
 
+ScopedInputDispatchPin::ScopedInputDispatchPin(RenderWidgetHostViewInput* view)
+    : view_(view) {
+  if (view_) {
+    view_->PinForInputDispatch();
+  }
+}
+
+ScopedInputDispatchPin::~ScopedInputDispatchPin() {
+  if (view_) {
+    // Extract the raw pointer as dangling because UnpinForInputDispatch()
+    // can result in the view being destroyed, which would cause the
+    // raw_ptr member view_ to trigger a dangling pointer check upon
+    // destruction.
+    view_.ExtractAsDangling()->UnpinForInputDispatch();
+  }
+}
+
 }  // namespace input

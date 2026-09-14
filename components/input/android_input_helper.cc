@@ -140,14 +140,14 @@ void AndroidInputHelper::ProcessAckedTouchEvent(
   if (!weak_this) {
     return;
   }
+  auto* rir = view_->GetViewRenderInputRouter();
+  if (!rir) {
+    return;
+  }
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
-      view_->GetViewRenderInputRouter()->delegate() &&
-      view_->GetViewRenderInputRouter()->delegate()->GetInputEventRouter()) {
-    view_->GetViewRenderInputRouter()
-        ->delegate()
-        ->GetInputEventRouter()
-        ->OnHandledTouchStartOrFirstTouchMove(
-            touch.event.unique_touch_event_id);
+      rir->delegate() && rir->delegate()->GetInputEventRouter()) {
+    rir->delegate()->GetInputEventRouter()->OnHandledTouchStartOrFirstTouchMove(
+        touch.event.unique_touch_event_id);
   }
 }
 

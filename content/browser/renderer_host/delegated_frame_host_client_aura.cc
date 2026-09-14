@@ -25,14 +25,16 @@ ui::LayerSurface* DelegatedFrameHostClientAura::GetDelegatedFrameHostLayer()
 }
 
 bool DelegatedFrameHostClientAura::DelegatedFrameHostIsVisible() const {
-  return !render_widget_host_view_->host()->IsHidden();
+  return render_widget_host_view_->host() &&
+         !render_widget_host_view_->host()->IsHidden();
 }
 
 SkColor DelegatedFrameHostClientAura::DelegatedFrameHostGetGutterColor() const {
   // When making an element on the page fullscreen the element's background
   // may not match the page's, so use black as the gutter color to avoid
   // flashes of brighter colors during the transition.
-  if (render_widget_host_view_->host()->delegate() &&
+  if (render_widget_host_view_->host() &&
+      render_widget_host_view_->host()->delegate() &&
       render_widget_host_view_->host()->delegate()->IsFullscreen()) {
     return SK_ColorBLACK;
   }
@@ -59,8 +61,10 @@ void DelegatedFrameHostClientAura::InvalidateLocalSurfaceIdOnEviction() {
 viz::FrameEvictorClient::EvictIds
 DelegatedFrameHostClientAura::CollectSurfaceIdsForEviction() {
   viz::FrameEvictorClient::EvictIds ids;
-  ids.embedded_ids =
-      render_widget_host_view_->host()->CollectSurfaceIdsForEviction();
+  if (render_widget_host_view_->host()) {
+    ids.embedded_ids =
+        render_widget_host_view_->host()->CollectSurfaceIdsForEviction();
+  }
   return ids;
 }
 

@@ -30,6 +30,7 @@
 #include "components/input/cursor_manager.h"
 #include "components/input/events_helper.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/render_widget_host_view_input.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -158,9 +159,10 @@
 using gfx::RectToSkIRect;
 using gfx::SkIRectToRect;
 
-using blink::WebInputEvent;
 using blink::WebGestureEvent;
+using blink::WebInputEvent;
 using blink::WebTouchEvent;
+using input::ScopedInputDispatchPin;
 
 #if BUILDFLAG(IS_WIN)
 DEFINE_UI_CLASS_PROPERTY_TYPE(InputScope)
@@ -624,21 +626,21 @@ void RenderWidgetHostViewAura::HandleBoundsInRootChanged() {
     }
   }
 #endif
-  if (!in_shutdown_) {
+  if (!in_shutdown_ && host()) {
     // Send screen rects through the delegate if there is one. Not every
     // RenderWidgetHost has a delegate (for example, drop-down widgets).
-    if (host_->delegate())
-      host_->delegate()->SendScreenRects();
-    else
-      host_->SendScreenRects();
+    if (host()->delegate()) {
+      host()->delegate()->SendScreenRects();
+    } else {
+      host()->SendScreenRects();
+    }
   }
 
   UpdateInsetsWithVirtualKeyboardEnabled();
 }
 
 void RenderWidgetHostViewAura::ParentHierarchyChanged() {
-  // The window is being destroyed, so just stop observing the position.
-  if (window_->is_destroying()) {
+  if (destroy_pending() || window_->is_destroying()) {
     position_in_root_observer_.reset();
     return;
   }
@@ -893,6 +895,9 @@ void RenderWidgetHostViewAura::ObserveDevicePosturePlatformProvider() {
 
 void RenderWidgetHostViewAura::OnDisplayFeatureBoundsChanged(
     const gfx::Rect& display_feature_bounds) {
+  if (destroy_pending()) {
+    return;
+  }
   if (display_feature_overridden_for_emulation_) {
     return;
   }
@@ -1064,7 +1069,7 @@ void RenderWidgetHostViewAura::SetIsLoading(bool is_loading) {
 
 void RenderWidgetHostViewAura::RenderProcessGone() {
   UpdateCursorIfOverSelf();
-  Destroy();
+  DestroyOrDefer();
 }
 
 void RenderWidgetHostViewAura::ShowWithVisibility(
@@ -1099,21 +1104,35 @@ void RenderWidgetHostViewAura::ShowWithVisibility(
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-void RenderWidgetHostViewAura::Destroy() {
+void RenderWidgetHostViewAura::DestroyImpl() {
   // Beware, this function is not called on all destruction paths. If |window_|
   // has been created, then it will implicitly end up calling
   // ~RenderWidgetHostViewAura when |window_| is destroyed. Otherwise, The
   // destructor is invoked directly from here. So all destruction/cleanup code
   // should happen there, not here.
   in_shutdown_ = true;
-  // Call this here in case any observers need access to `this` before we
-  // destruct the derived class.
-  NotifyObserversAboutShutdown();
 
-  if (window_)
-    delete window_;
-  else
-    delete this;
+  if (window_) {
+    window_observer_.reset();
+    aura::Window* window = window_;
+    window_ = nullptr;
+    if (event_handler_) {
+      event_handler_->set_window(nullptr);
+    }
+    delete window;
+  }
+  delete this;
+}
+
+void RenderWidgetHostViewAura::OnDestroyOrDefer() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (text_input_manager_) {
+    text_input_manager_->RemoveObserver(this);
+  }
+  display_observer_.reset();
+#if BUILDFLAG(IS_WIN)
+  device_posture_observation_.Reset();
+#endif
 }
 
 void RenderWidgetHostViewAura::UpdateTooltipUnderCursor(
@@ -1231,6 +1250,9 @@ void RenderWidgetHostViewAura::ResetFallbackToFirstNavigationSurface() {
 }
 
 void RenderWidgetHostViewAura::OnUnconfirmedTapConvertedToTap() {
+  if (destroy_pending()) {
+    return;
+  }
   if (!window_ || !window_->provider()) {
     return;
   }
@@ -1414,14 +1436,13 @@ void RenderWidgetHostViewAura::ProcessAckedTouchEvent(
       CHECK(!sent_ack);
       // ProcessedTouchEvent() triggers synchronous gesture dispatch, which can
       // lead to focus or window activation changes. Observers of these changes
-      // may synchronously destroy the WebContents and this view. We must guard
-      // this call with a WeakPtr liveness check before dereferencing 'this'
-      // (e.g., via host() or delegate calls below).
-      auto weak_this = weak_ptr_factory_.GetWeakPtr();
+      // may synchronously destroy the WebContents and this view. Guard with
+      // ScopedInputDispatchPin.
+      ScopedInputDispatchPin pin(this);
       window_host->dispatcher()->ProcessedTouchEvent(
           touch.event.unique_touch_event_id, window_, result,
           input::InputEventResultStateIsSetBlocking(ack_result));
-      if (!weak_this) {
+      if (destroy_pending()) {
         return;
       }
       if (touch.event.touch_start_or_first_touch_move &&
@@ -1994,6 +2015,9 @@ bool RenderWidgetHostViewAura::GetTextFromRange(const gfx::Range& range,
 }
 
 void RenderWidgetHostViewAura::OnInputMethodChanged() {
+  if (destroy_pending()) {
+    return;
+  }
   // TODO(suzhe): implement the newly added "locale" property of HTML DOM
   // TextEvent.
 
@@ -2335,6 +2359,9 @@ std::optional<gfx::Size> RenderWidgetHostViewAura::GetMaximumSize() const {
 
 void RenderWidgetHostViewAura::OnBoundsChanged(const gfx::Rect& old_bounds,
                                                const gfx::Rect& new_bounds) {
+  if (destroy_pending()) {
+    return;
+  }
   // OnCaretBoundsChanged() below may call out to a third-party TSF IME on
   // Windows, which can re-entrantly destroy `this`. Use WeakAutoReset so the
   // unwind write does not land in freed memory (AutoReset::scoped_variable_ is
@@ -2383,6 +2410,9 @@ bool RenderWidgetHostViewAura::CanFocus() {
 }
 
 void RenderWidgetHostViewAura::OnCaptureLost() {
+  if (destroy_pending() || !host()) {
+    return;
+  }
   host()->LostCapture();
 }
 
@@ -2393,6 +2423,9 @@ void RenderWidgetHostViewAura::OnPaint(const ui::PaintContext& context) {
 void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {
+  if (destroy_pending()) {
+    return;
+  }
   if (!window_->GetRootWindow())
     return;
 
@@ -2438,9 +2471,17 @@ void RenderWidgetHostViewAura::OnWindowDestroying(aura::Window* window) {
 
 void RenderWidgetHostViewAura::OnWindowDestroyed(aura::Window* window) {
   // This is not called on all destruction paths (e.g. if this view was never
-  // inialized properly to create the window). So the destruction/cleanup code
+  // initialized properly to create the window). So the destruction/cleanup code
   // that do not depend on |window_| should happen in the destructor, not here.
-  delete this;
+  window_observer_.reset();
+  window_ = nullptr;
+  if (event_handler_) {
+    event_handler_->set_window(nullptr);
+  }
+  if (destroy_pending()) {
+    return;
+  }
+  DestroyOrDefer();
 }
 
 void RenderWidgetHostViewAura::OnWindowTargetVisibilityChanged(bool visible) {
@@ -2453,6 +2494,9 @@ bool RenderWidgetHostViewAura::HasHitTestMask() const {
 void RenderWidgetHostViewAura::GetHitTestMask(SkPath* mask) const {}
 
 bool RenderWidgetHostViewAura::RequiresDoubleTapGestureEvents() const {
+  if (!host()) {
+    return false;
+  }
   RenderWidgetHostOwnerDelegate* owner_delegate = host()->owner_delegate();
   // TODO(crbug.com/41432676): Child local roots do not work here?
   if (!owner_delegate)
@@ -2464,6 +2508,11 @@ bool RenderWidgetHostViewAura::RequiresDoubleTapGestureEvents() const {
 // RenderWidgetHostViewAura, ui::EventHandler implementation:
 
 void RenderWidgetHostViewAura::OnKeyEvent(ui::KeyEvent* event) {
+  if (destroy_pending()) {
+    event->SetHandled();
+    return;
+  }
+  ScopedInputDispatchPin pin(this);
   last_pointer_type_ = ui::EventPointerType::kUnknown;
 
 #if BUILDFLAG(IS_WIN)
@@ -2482,6 +2531,9 @@ void RenderWidgetHostViewAura::OnKeyEvent(ui::KeyEvent* event) {
 #endif  // BUILDFLAG(IS_WIN)
 
   event_handler_->OnKeyEvent(event);
+  if (destroy_pending()) {
+    return;
+  }
 
 #if BUILDFLAG(IS_WIN)
   // Synthesize a blink::WebInputEvent::Char event with the Arabic-Indic digit
@@ -2498,6 +2550,11 @@ void RenderWidgetHostViewAura::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void RenderWidgetHostViewAura::OnMouseEvent(ui::MouseEvent* event) {
+  if (destroy_pending()) {
+    event->SetHandled();
+    return;
+  }
+  ScopedInputDispatchPin pin(this);
 #if BUILDFLAG(IS_WIN)
   if (event->type() == ui::EventType::kMouseMoved) {
     if (event->location() == last_mouse_move_location_ &&
@@ -2621,6 +2678,9 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
 void RenderWidgetHostViewAura::StartStylusWritingImpl(
     RenderWidgetHostViewBase* initiating_view,
     OnFocusHandwritingTargetCallback callback) {
+  if (destroy_pending()) {
+    return;
+  }
   StylusHandwritingControllerWin* handwriting_controller =
       StylusHandwritingControllerWin::GetInstance();
   if (!handwriting_controller) {
@@ -2666,6 +2726,9 @@ void RenderWidgetHostViewAura::StartStylusWritingImpl(
 
 void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
     blink::mojom::StylusWritingFocusResultPtr focus_result) {
+  if (destroy_pending()) {
+    return;
+  }
   // TODO(crbug.com/355578906): Update Windows Text Services Framework (TSF)
   // focus, stash relevant character bounds from the renderer, and notify the
   // TSF Shell Handwriting API that focus is set.
@@ -2727,10 +2790,20 @@ void RenderWidgetHostViewAura::OnFocusHandwritingTarget(
 #endif  // BUILDFLAG(IS_WIN)
 
 void RenderWidgetHostViewAura::OnScrollEvent(ui::ScrollEvent* event) {
+  if (destroy_pending()) {
+    event->SetHandled();
+    return;
+  }
+  ScopedInputDispatchPin pin(this);
   event_handler_->OnScrollEvent(event);
 }
 
 void RenderWidgetHostViewAura::OnTouchEvent(ui::TouchEvent* event) {
+  if (destroy_pending()) {
+    event->SetHandled();
+    return;
+  }
+  ScopedInputDispatchPin pin(this);
   last_pointer_type_ = event->pointer_details().pointer_type;
 
 #if BUILDFLAG(IS_WIN)
@@ -2771,6 +2844,11 @@ void RenderWidgetHostViewAura::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void RenderWidgetHostViewAura::OnGestureEvent(ui::GestureEvent* event) {
+  if (destroy_pending()) {
+    event->SetHandled();
+    return;
+  }
+  ScopedInputDispatchPin pin(this);
   last_pointer_type_ = event->details().primary_pointer_type();
   event_handler_->OnGestureEvent(event);
 }
@@ -2881,6 +2959,9 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
 // RenderWidgetHostViewAura, aura::WindowTreeHostObserver implementation:
 
 void RenderWidgetHostViewAura::OnHostMovedInPixels(aura::WindowTreeHost* host) {
+  if (destroy_pending()) {
+    return;
+  }
   TRACE_EVENT0("ui", "RenderWidgetHostViewAura::OnHostMovedInPixels");
 
   UpdateScreenInfo();
@@ -2920,12 +3001,32 @@ void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation(
 
 ////////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostViewAura, private:
+void RenderWidgetHostViewAura::CleanUpHostObservers() {
+  if (host()) {
+    host()->render_frame_metadata_provider()->RemoveObserver(this);
+    // Ask the RWH to drop reference to us.
+    host()->ViewDestroyed();
+  }
+  if (selection_controller_client_) {
+    selection_controller_client_->Detach();
+  }
+  if (window_) {
+    aura::client::SetFocusChangeObserver(window_, nullptr);
+    window_->Hide();
+    if (window_->parent()) {
+      window_->parent()->RemoveChild(window_);
+    }
+  }
+  if (event_handler_) {
+    event_handler_->ResetHost();
+  }
+#if BUILDFLAG(IS_WIN)
+  device_posture_observation_.Reset();
+#endif
+}
 
 RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
-  host()->render_frame_metadata_provider()->RemoveObserver(this);
-
-  // Ask the RWH to drop reference to us.
-  host()->ViewDestroyed();
+  CleanUpHostObservers();
 
   // Dismiss any visible touch selection handles or touch selection menu.
   selection_controller_->HideAndDisallowShowingAutomatically();
@@ -2967,8 +3068,7 @@ RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
   CHECK(!legacy_render_widget_host_HWND_);
 #endif
 
-  if (text_input_manager_)
-    text_input_manager_->RemoveObserver(this);
+  event_handler_.reset();
 }
 
 void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
@@ -2993,6 +3093,9 @@ void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
 }
 
 void RenderWidgetHostViewAura::UpdateFrameSinkIdRegistration() {
+  if (destroy_pending()) {
+    return;
+  }
   RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration();
 
   // This needs to happen only after |window_| has been initialized using
@@ -3013,8 +3116,9 @@ void RenderWidgetHostViewAura::CreateDelegatedFrameHostClient() {
 }
 
 void RenderWidgetHostViewAura::UpdateCursorIfOverSelf() {
-  if (host()->GetProcess()->FastShutdownStarted())
+  if (!host() || host()->GetProcess()->FastShutdownStarted()) {
     return;
+  }
 
   aura::Window* root_window = window_->GetRootWindow();
   if (!root_window)
@@ -3051,6 +3155,9 @@ void RenderWidgetHostViewAura::UpdateCursorIfOverSelf() {
 bool RenderWidgetHostViewAura::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
     const std::optional<viz::LocalSurfaceId>& child_local_surface_id) {
+  if (!host()) {
+    return false;
+  }
   CHECK(window_);
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
 
@@ -3317,6 +3424,9 @@ void RenderWidgetHostViewAura::UpdateLegacyWin() {
 #endif
 
 void RenderWidgetHostViewAura::AddedToRootWindow() {
+  if (destroy_pending()) {
+    return;
+  }
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
 
   window_->GetHost()->AddObserver(this);

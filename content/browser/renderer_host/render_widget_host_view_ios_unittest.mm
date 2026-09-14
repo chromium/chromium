@@ -65,7 +65,7 @@ class RenderWidgetHostViewIOSTest : public RenderViewHostImplTestHarness {
   }
 
   void TearDown() override {
-    rwhv_ios_->Destroy();
+    rwhv_ios_->DestroyOrDefer();
     render_view_host_.reset();
     delegate_.reset();
     process_->Cleanup();

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -17,6 +18,7 @@
 
 namespace content {
 
+class RenderWidgetHostImpl;
 class RenderWidgetHostViewAndroid;
 
 class CONTENT_EXPORT DelegatedFrameHostClientAndroid
@@ -48,6 +50,7 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
   void RecordFrameSubmissionMetrics();
 
   raw_ptr<RenderWidgetHostViewAndroid> render_widget_host_view_;
+  base::WeakPtr<RenderWidgetHostImpl> host_;
 
   int frames_submitted_this_scroll_ = 0u;
 };

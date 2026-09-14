@@ -211,7 +211,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
   void WasOccluded() override;
-  void Destroy() override;
+  void DestroyImpl() override;
+  void OnDestroyOrDefer() override;
   void CreateUnboundedSurface(
       mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
       mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
@@ -442,6 +443,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
                                uint32_t janky_frames) override;
 
   void WasEvicted();
+  bool IsClosing() const { return in_shutdown_; }
 
   void SetWebContentsAccessibility(
       WebContentsAccessibilityAndroid* web_contents_accessibility);
@@ -506,6 +508,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
  protected:
   ~RenderWidgetHostViewAndroid() override;
 
+  void CleanUpHostObservers() override;
+
   // RenderWidgetHostViewBase:
   void UpdateFrameSinkIdRegistration() override;
   void UpdateBackgroundColor() override;
@@ -537,6 +541,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool IsHitTestReady();
 
  private:
+  void ShutdownAndDisconnect();
+
   friend class RenderWidgetHostViewAndroidTest;
   friend class RenderWidgetHostViewAndroidFullscreenRotationTest;
   friend class RenderWidgetHostViewAndroidRotationTest;
@@ -571,6 +577,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
     // Clears flags used to throttle SurfaceSync.
     void Unthrottle();
+
+    void StopTimers();
 
    private:
     friend class RenderWidgetHostViewAndroidRotationTest;
@@ -686,6 +694,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // Window-specific bits that affect widget visibility.
   bool is_window_visible_;
   bool is_window_activity_started_;
+  bool in_shutdown_ = false;
 
   PageVisibilityState page_visibility_ = PageVisibilityState::kHidden;
   Visibility view_visibility_ = Visibility::HIDDEN;
@@ -857,6 +866,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // Used to schedule a single visual properties update on the next vsync tick
   // to achieve fluid resizing.
   bool visual_properties_update_pending_ = false;
+
+  bool disconnected_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewAndroid> weak_ptr_factory_{this};
 };

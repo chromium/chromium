@@ -86,17 +86,12 @@ RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
   }
 #endif  // BUILDFLAG(IS_WIN)
   // We call this here to guarantee that observers are notified before we go
-  // away. However, some subclasses may wish to call this earlier in their
-  // shutdown process, e.g. to force removal from
-  // RenderWidgetHostInputEventRouter's surface map before relinquishing a
-  // host pointer. There is no harm in calling NotifyObserversAboutShutdown()
-  // twice, as the observers are required to de-register on the first call, and
-  // so the second call does nothing.
+  // away. As tests may not call `DestroyOrDefer`.
   NotifyObserversAboutShutdown();
-  // If we have a live reference to |text_input_manager_|, we should unregister
-  // so that the |text_input_manager_| will free its state.
-  if (text_input_manager_)
+  if (text_input_manager_) {
     text_input_manager_->Unregister(this);
+    text_input_manager_ = nullptr;
+  }
 }
 
 RenderWidgetHostImpl* RenderWidgetHostViewBase::GetFocusedWidget() const {
@@ -847,8 +842,53 @@ bool RenderWidgetHostViewBase::HasSize() const {
   return true;
 }
 
-void RenderWidgetHostViewBase::Destroy() {
+void RenderWidgetHostViewBase::DestroyOrDefer() {
+  if (destroy_pending_) {
+    return;
+  }
+  destroy_pending_ = true;
+  if (is_frame_sink_id_owner_ && host() && host()->delegate() &&
+      host()->delegate()->GetInputEventRouter()) {
+    host()->delegate()->GetInputEventRouter()->RemoveFrameSinkIdOwner(
+        GetFrameSinkId());
+  }
+  if (IsPointerLocked()) {
+    UnlockPointer();
+  }
+#if BUILDFLAG(IS_WIN)
+  if (StylusHandwritingControllerWin::IsHandwritingAPIAvailable()) {
+    StylusHandwritingControllerWin::GetInstance()->OnHandwritingViewDestroyed(
+        this);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  OnDestroyOrDefer();
+  NotifyObserversAboutShutdown();
+  CleanUpHostObservers();
+  if (unbounded_surface_window_) {
+    DestroyUnboundedSurface(unbounded_surface_window_->GetWeakPtr());
+  }
+  if (text_input_manager_) {
+    text_input_manager_->Unregister(this);
+    text_input_manager_ = nullptr;
+  }
   host_ = nullptr;
+  weak_factory_.InvalidateWeakPtrs();
+  if (pin_count_ > 0) {
+    return;
+  }
+  DestroyImpl();
+}
+
+void RenderWidgetHostViewBase::PinForInputDispatch() {
+  pin_count_++;
+}
+
+void RenderWidgetHostViewBase::UnpinForInputDispatch() {
+  CHECK(pin_count_ > 0);
+  pin_count_--;
+  if (pin_count_ == 0 && destroy_pending_) {
+    DestroyImpl();
+  }
 }
 
 bool RenderWidgetHostViewBase::CanSynchronizeVisualProperties() {
@@ -1118,6 +1158,9 @@ void RenderWidgetHostViewBase::SetIsFrameSinkIdOwner(bool is_owner) {
 }
 
 void RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration() {
+  if (destroy_pending()) {
+    return;
+  }
   // If Destroy() has been called before we get here, host_ may be null.
   if (!host() || !host()->delegate() ||
       !host()->delegate()->GetInputEventRouter()) {

@@ -129,7 +129,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void UpdateCursor(const ui::Cursor& cursor) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) override;
-  void Destroy() override;
+  void DestroyImpl() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override {}
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
                                  const gfx::Rect& bounds) override {}
@@ -185,6 +185,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void RequestSuccessfulPresentationTimeFromHostOrDelegate(
       blink::RecordContentToVisibleTimeRequest) override;
   void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() override;
+  void CleanUpHostObservers() override {}
 
   viz::FrameSinkId frame_sink_id_;
 

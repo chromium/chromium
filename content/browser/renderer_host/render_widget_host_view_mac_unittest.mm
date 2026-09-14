@@ -26,6 +26,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -1114,7 +1115,7 @@ TEST_F(RenderWidgetHostViewMacTest, CompositionEventAfterDestroy) {
   EXPECT_EQ(40, rect.size.height);
   EXPECT_EQ(range, gfx::Range(actual_range));
 
-  rwhv_mac_->Destroy();
+  rwhv_mac_->DestroyOrDefer();
   actual_range = NSMakeRange(0, 0);
   rect = [rwhv_cocoa_ firstRectForCharacterRange:range.ToNSRange()
                                      actualRange:&actual_range];
@@ -1137,7 +1138,7 @@ class ViewDestroyingInputEventObserver
                     InputEventSource source) override {
     if (view_ && blink::WebInputEvent::IsGestureEventType(event.GetType())) {
       gesture_event_seen_ = true;
-      view_.ExtractAsDangling()->Destroy();
+      view_.ExtractAsDangling()->DestroyOrDefer();
     }
   }
 
@@ -1180,6 +1181,110 @@ TEST_F(RenderWidgetHostViewMacTest,
 
   EXPECT_TRUE(observer.gesture_event_seen());
   host_->RemoveInputEventObserver(&observer);
+}
+
+// An InputEventObserver that synchronously destroys the
+// RenderWidgetHostViewMac when a gesture event is dispatched. This simulates
+// an embedder hook that closes the WebContents in response to a gesture.
+class ViewDestroyingGestureObserver
+    : public RenderWidgetHost::InputEventObserver {
+ public:
+  explicit ViewDestroyingGestureObserver(RenderWidgetHostViewMac* view)
+      : view_(view) {}
+
+  void Arm() { armed_ = true; }
+  bool fired() const { return fired_; }
+
+  void OnInputEvent(const RenderWidgetHost& host,
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
+    if (!armed_ || !view_ ||
+        !blink::WebInputEvent::IsGestureEventType(event.GetType())) {
+      return;
+    }
+    fired_ = true;
+    RenderWidgetHostViewMac* v = view_;
+    view_ = nullptr;
+    // RenderWidgetHostViewMac::DestroyOrDefer() ends in `delete this`.
+    v->DestroyOrDefer();
+  }
+
+ private:
+  raw_ptr<RenderWidgetHostViewMac> view_ = nullptr;
+  bool armed_ = false;
+  bool fired_ = false;
+};
+
+// Regression test: ProcessAckedTouchEvent must not dereference |this| after
+// gesture_provider_.OnTouchEventAck() performs synchronous gesture dispatch
+// that may destroy the view. This is the macOS sibling of the WeakPtr guard
+// already present in RenderWidgetHostViewAura::ProcessAckedTouchEvent.
+//
+// Without the guard, ASAN reports heap-use-after-free when control unwinds
+// back through the freed RenderWidgetHostViewMac (and its by-value
+// |gesture_provider_| member) and reaches the unguarded |host()| load.
+TEST_F(RenderWidgetHostViewMacTest,
+       ProcessAckedTouchEventSurvivesSynchronousDestroy) {
+  ViewDestroyingGestureObserver observer(rwhv_mac_);
+  host_->AddInputEventObserver(&observer);
+
+  // Step 1: Inject a TouchStart so |gesture_provider_| has a pending packet.
+  blink::SyntheticWebTouchEvent touch;
+  touch.PressPoint(10, 10);
+  rwhv_mac_->InjectTouchEvent(touch, ui::LatencyInfo());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !host_->input_handler()->dispatched_messages().empty();
+  }));
+
+  // Ack the TouchStart as not-consumed. This dispatches kGestureTapDown
+  // synchronously via OnGestureEvent (observer not yet armed) and clears
+  // |start_touch_consumed_| so a subsequent scroll-begin is permitted.
+  {
+    auto events = host_->GetAndResetDispatchedMessages();
+    for (auto& msg : events) {
+      if (auto* ev = msg->ToEvent()) {
+        ev->CallCallback(blink::mojom::InputEventResultState::kNotConsumed);
+      }
+    }
+  }
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !host_->input_handler()->dispatched_messages().empty();
+  }));
+  // Drain any gesture events queued to the renderer by the TouchStart ack.
+  std::ignore = host_->GetAndResetDispatchedMessages();
+
+  // Step 2: Inject the first TouchMove past the slop region so the gesture
+  // provider synthesises a kGestureScrollBegin packet.
+  touch.MovePoint(0, 80, 80);
+  rwhv_mac_->InjectTouchEvent(touch, ui::LatencyInfo());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !host_->input_handler()->dispatched_messages().empty();
+  }));
+
+  // Arm the observer so the next synchronous gesture dispatch destroys the
+  // view from inside ProcessAckedTouchEvent.
+  observer.Arm();
+
+  // Ack the first TouchMove as kConsumed. This enters
+  // RenderWidgetHostViewMac::ProcessAckedTouchEvent with
+  //   touch_start_or_first_touch_move == true && event_consumed == true,
+  // and gesture_provider_.OnTouchEventAck() synchronously dispatches the
+  // ScrollBegin gesture, reaching the observer above, which deletes the view.
+  // On return, the unguarded |host()| dereference reads freed memory.
+  {
+    auto events = host_->GetAndResetDispatchedMessages();
+    for (auto& msg : events) {
+      if (auto* ev = msg->ToEvent()) {
+        ev->CallCallback(blink::mojom::InputEventResultState::kConsumed);
+      }
+    }
+  }
+
+  EXPECT_TRUE(observer.fired());
+  host_->RemoveInputEventObserver(&observer);
+  // |rwhv_mac_| was deleted inside the observer; null it so TearDown does not
+  // touch it.
+  rwhv_mac_ = nullptr;
 }
 
 // Verify that |SetActive()| calls |RenderWidgetHostImpl::LostFocus()| and

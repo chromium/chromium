@@ -168,7 +168,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
-  void Destroy() override;
+  void DestroyImpl() override;
+  void OnDestroyOrDefer() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void UpdateTooltip(const std::u16string& tooltip_text) override;
   gfx::Size GetRequestedRendererSize() override;
@@ -554,6 +555,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // Shuts down the render_widget_host_.  This is a separate function so we can
   // invoke it from the message loop.
   void ShutdownHost();
+  void CleanUpHostObservers() override;
+  void ShutdownAndDisconnect();
 
   // Send updated vsync parameters to the top level display.
   void UpdateDisplayVSyncParameters();
@@ -756,6 +759,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // See description of `kDelayUpdateWindowsAfterTextInputStateChanged` for
   // details.
   base::OneShotTimer update_windows_timer_;
+
+  bool disconnected_ = false;
 
   // Factory used to safely scope delayed calls to ShutdownHost().
   base::WeakPtrFactory<RenderWidgetHostViewMac> weak_factory_;

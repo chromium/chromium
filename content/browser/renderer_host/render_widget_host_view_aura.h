@@ -161,7 +161,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
-  void Destroy() override;
+  void DestroyImpl() override;
+  void OnDestroyOrDefer() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void UpdateTooltip(const std::u16string& tooltip_text) override;
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
@@ -509,8 +510,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       blink::RecordContentToVisibleTimeRequest visible_time_request) final;
   void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() final;
 
-  // May be overridden in tests.
   virtual bool ShouldSkipCursorUpdate() const;
+  void CleanUpHostObservers() override;
 
  private:
   friend class DelegatedFrameHostClientAura;

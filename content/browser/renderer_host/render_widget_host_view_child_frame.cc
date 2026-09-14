@@ -82,23 +82,7 @@ RenderWidgetHostViewChildFrame::RenderWidgetHostViewChildFrame(
 }
 
 RenderWidgetHostViewChildFrame::~RenderWidgetHostViewChildFrame() {
-  // TODO(wjmaclean): The next two lines are a speculative fix for
-  // https://crbug.com/760074, based on the theory that perhaps something is
-  // destructing the class without calling Destroy() first.
-  if (frame_connector_)
-    DetachFromTouchSelectionClientManagerIfNecessary();
-
-  if (auto* frame_sink_manager = GetHostFrameSinkManager()) {
-    if (has_frame_sink_hierarchy_registered_) {
-      CHECK(parent_frame_sink_id_.is_valid());
-      frame_sink_manager->UnregisterFrameSinkHierarchy(parent_frame_sink_id_,
-                                                       frame_sink_id_);
-      has_frame_sink_hierarchy_registered_ = false;
-    }
-    if (is_frame_sink_id_owner()) {
-      frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_, this, {});
-    }
-  }
+  ShutdownAndDisconnect();
 }
 
 void RenderWidgetHostViewChildFrame::Init() {
@@ -119,9 +103,11 @@ void RenderWidgetHostViewChildFrame::
     if (manager) {
       manager->RemoveObserver(this);
 #if BUILDFLAG(IS_ANDROID)
-      auto* observer = root_view->GetTouchSelectionControllerInputObserver();
-      if (observer) {
-        host()->RemoveInputEventObserver(observer);
+      if (host()) {
+        auto* observer = root_view->GetTouchSelectionControllerInputObserver();
+        if (observer) {
+          host()->RemoveInputEventObserver(observer);
+        }
       }
 #endif
     }
@@ -151,7 +137,7 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
     if (root_view) {
       auto* input_transfer_handler =
           root_view->GetInputTransferHandlerObserver();
-      if (input_transfer_handler) {
+      if (input_transfer_handler && host()) {
         host()->RemoveInputEventObserver(input_transfer_handler);
       }
     }
@@ -609,28 +595,50 @@ void RenderWidgetHostViewChildFrame::SetIsLoading(bool is_loading) {
 void RenderWidgetHostViewChildFrame::RenderProcessGone() {
   if (frame_connector_)
     frame_connector_->RenderProcessGone();
-  Destroy();
+  DestroyOrDefer();
 }
 
-void RenderWidgetHostViewChildFrame::Destroy() {
-  host()->render_frame_metadata_provider()->RemoveObserver(this);
-
-  // FrameSinkIds registered with RenderWidgetHostInputEventRouter
-  // have already been cleared when RenderWidgetHostViewBase notified its
-  // observers of our impending destruction.
+void RenderWidgetHostViewChildFrame::CleanUpHostObservers() {
   if (frame_connector_) {
     frame_connector_->SetView(nullptr, /*allow_paint_holding=*/false);
     SetFrameConnector(nullptr);
   }
+  if (host()) {
+    host()->render_frame_metadata_provider()->RemoveObserver(this);
+    host()->ViewDestroyed();
+  }
+  ShutdownAndDisconnect();
+}
 
-  // We notify our observers about shutdown here since we are about to release
-  // host_ and do not want any event calls coming from
-  // RenderWidgetHostInputEventRouter afterwards.
-  NotifyObserversAboutShutdown();
-
-  RenderWidgetHostViewBase::Destroy();
-
+void RenderWidgetHostViewChildFrame::DestroyImpl() {
   delete this;
+}
+
+void RenderWidgetHostViewChildFrame::OnDestroyOrDefer() {
+  ShutdownAndDisconnect();
+}
+
+void RenderWidgetHostViewChildFrame::ShutdownAndDisconnect() {
+  if (disconnected_) {
+    return;
+  }
+  disconnected_ = true;
+
+  weak_factory_.InvalidateWeakPtrs();
+
+  DetachFromTouchSelectionClientManagerIfNecessary();
+
+  if (auto* frame_sink_manager = GetHostFrameSinkManager()) {
+    if (has_frame_sink_hierarchy_registered_) {
+      CHECK(parent_frame_sink_id_.is_valid());
+      frame_sink_manager->UnregisterFrameSinkHierarchy(parent_frame_sink_id_,
+                                                       frame_sink_id_);
+      has_frame_sink_hierarchy_registered_ = false;
+    }
+    if (is_frame_sink_id_owner()) {
+      frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_, this, {});
+    }
+  }
 }
 
 void RenderWidgetHostViewChildFrame::UpdateTooltipUnderCursor(
@@ -691,10 +699,11 @@ void RenderWidgetHostViewChildFrame::RegisterFrameSinkId() {
 }
 
 void RenderWidgetHostViewChildFrame::UnregisterFrameSinkId() {
-  CHECK(host(), base::NotFatalUntil::M152);
-  if (host()->delegate() && host()->delegate()->GetInputEventRouter()) {
-    host()->delegate()->GetInputEventRouter()->RemoveFrameSinkIdOwner(
-        frame_sink_id_);
+  if (host()) {
+    if (host()->delegate() && host()->delegate()->GetInputEventRouter()) {
+      host()->delegate()->GetInputEventRouter()->RemoveFrameSinkIdOwner(
+          frame_sink_id_);
+    }
   }
   DetachFromTouchSelectionClientManagerIfNecessary();
 }
@@ -864,6 +873,9 @@ RenderWidgetHostViewChildFrame::ChangePointerLock(
 }
 
 void RenderWidgetHostViewChildFrame::UnlockPointer() {
+  if (!host()) {
+    return;
+  }
   if (host()->delegate() && host()->delegate()->HasPointerLock(host()) &&
       frame_connector_) {
     frame_connector_->UnlockPointer();
@@ -871,8 +883,9 @@ void RenderWidgetHostViewChildFrame::UnlockPointer() {
 }
 
 bool RenderWidgetHostViewChildFrame::IsPointerLocked() {
-  if (!host()->delegate())
+  if (!host() || !host()->delegate()) {
     return false;
+  }
 
   return host()->delegate()->HasPointerLock(host());
 }
