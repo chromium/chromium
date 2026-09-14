@@ -24,8 +24,8 @@ namespace internal {
 
 // An abstract interface for menu runner implementations.
 // Invoke Release() to destroy. Release() deletes immediately if the menu isn't
-// showing. If the menu is showing Release() cancels the menu and when the
-// nested RunMenuAt() call returns deletes itself and the menu.
+// showing. If the menu is showing Release() cancels the menu and deletes itself
+// and the menu once closed.
 class MenuRunnerImplInterface {
  public:
   // Creates a concrete instance for running |menu_model|.
@@ -35,7 +35,7 @@ class MenuRunnerImplInterface {
       int32_t run_types,
       base::RepeatingClosure on_menu_closed_callback);
 
-  // Returns true if we're in a nested run loop running the menu.
+  // Returns true if the menu is currently running.
   virtual bool IsRunning() const = 0;
 
   // See description above class for details.

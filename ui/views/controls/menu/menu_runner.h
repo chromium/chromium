@@ -168,7 +168,7 @@ class VIEWS_EXPORT MenuRunner {
                  std::optional<std::string> show_menu_host_duration_histogram =
                      std::nullopt);
 
-  // Returns true if we're in a nested run loop running the menu.
+  // Returns true if the menu is currently running.
   bool IsRunning() const;
 
   // Hides and cancels the menu. This does nothing if the menu is not open.

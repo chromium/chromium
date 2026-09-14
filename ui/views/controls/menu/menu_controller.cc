@@ -1077,8 +1077,8 @@ void MenuController::OnMouseReleased(SubmenuView* source,
   if (current_mouse_event_target_) {
     // If this was the final mouse button, then remove the forwarding target.
     // We need to do this *before* dispatching the event to the root view
-    // because there's a chance that the event will open a nested (and blocking)
-    // menu, and we need to not have a forwarded root view.
+    // because there's a chance that the event will open a nested menu,
+    // and we need to not have a forwarded root view.
     MenuHostRootView* cached_event_target = current_mouse_event_target_;
     if (!current_mouse_pressed_state_) {
       current_mouse_event_target_ = nullptr;
@@ -3895,13 +3895,12 @@ raw_ptr<MenuItemView> MenuController::ExitTopMostMenu() {
       (nested_menu && exit_type_ == ExitType::kDestroyed)) {
     SetExitType(ExitType::kNone);
   } else if (nested_menu && result) {
-    // We're nested and about to return a value. The caller might enter
-    // another blocking loop. We need to make sure all menus are hidden
-    // before that happens otherwise the menus will stay on screen.
+    // We're nested and about to return a value. We need to make sure all menus
+    // are hidden before that happens otherwise the menus will stay on screen.
     CloseAllNestedMenus();
     SetSelection(nullptr, SELECTION_UPDATE_IMMEDIATELY | SELECTION_EXIT);
 
-    // Set exit_all_, which makes sure all nested loops exit immediately.
+    // Make sure all nested menus exit immediately.
     if (exit_type_ != ExitType::kDestroyed) {
       SetExitType(ExitType::kAll);
     }

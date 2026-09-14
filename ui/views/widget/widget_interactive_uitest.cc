@@ -1997,7 +1997,7 @@ TEST_F(WidgetCaptureTest, ResetCaptureOnGestureEnd) {
 TEST_F(WidgetCaptureTest, DisableCaptureWidgetFromMousePress) {
   // The test creates two widgets: |first| and |second|.
   // The View in |first| makes |second| visible, sets capture on it, and starts
-  // a nested loop (like a menu does). The View in |second| terminates the
+  // a nested loop. The View in |second| terminates the
   // nested loop and closes the widget.
   // The test sends a mouse-press event to |first|, and posts a task to send a
   // release event to |second|, to make sure that the release event is

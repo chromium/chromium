@@ -50,10 +50,7 @@ class VIEWS_EXPORT ContextMenuController {
       const gfx::Point& point,
       ui::mojom::MenuSourceType source_type) = 0;
 
-  // Used as a flag to prevent a re-entrancy in ShowContextMenuForView().
-  // This is most relevant to Linux, where spawning the textfield context menu
-  // spins a nested message loop that processes input events, which may attempt
-  // to trigger another context menu.
+  // Used as a flag to prevent re-entrancy in ShowContextMenuForView().
   bool is_opening_ = false;
 
   base::WeakPtrFactory<ContextMenuController> weak_factory_{this};

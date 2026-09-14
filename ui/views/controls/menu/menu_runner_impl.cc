@@ -95,6 +95,8 @@ void MenuRunnerImpl::Release() {
       return;  // We already canceled.
     }
 
+    // The menu is currently running, we can't delete it immediately.
+    // Instead cancel the menu, and delete ourselves once the menu is closed.
     delete_after_run_ = true;
 
     // Verify that the MenuController is still active. It may have been
@@ -152,13 +154,11 @@ void MenuRunnerImpl::RunMenuAt(
     // There's some other menu open and we're not nested. Cancel the menu.
     MenuController::CancelAllActive();
     if ((run_types & MenuRunner::FOR_DROP) == 0) {
-      // We can't open another menu, otherwise the message loop would become
-      // twice nested. This isn't necessarily a problem, but generally isn't
-      // expected.
+      // Avoid opening another non-drop menu while another active menu is
+      // being canceled.
       return;
     }
-    // Drop menus don't block the message loop, so it's ok to create a new
-    // MenuController.
+    // Drop menus are allowed to create a new MenuController immediately.
     controller = nullptr;
   }
 
