@@ -432,13 +432,6 @@ class ScopedMemTrackerChange {
   uint32_t previous_size_;
 };
 
-bool IsHostTwiddledFormat(GLenum internal_format, GLenum format, GLenum type) {
-  return (internal_format == GL_RGB10_A2 && format == GL_RGBA &&
-          type == GL_UNSIGNED_INT_2_10_10_10_REV) ||
-         (internal_format == GL_SRGB8_ALPHA8 && format == GL_RGBA &&
-          type == GL_UNSIGNED_BYTE);
-}
-
 }  // namespace anonymous
 
 DecoderTextureState::DecoderTextureState(
@@ -457,8 +450,8 @@ DecoderTextureState::DecoderTextureState(
           workarounds.split_level_0_pbo_full_sub_image_2d),
       upload_oversized_mip_levels_via_unpack_buffer(
           workarounds.upload_oversized_mip_levels_via_unpack_buffer),
-      use_tex_sub_image_for_host_twiddled_npot_uploads(
-          workarounds.use_tex_sub_image_for_host_twiddled_npot_uploads) {}
+      use_tex_sub_image_for_client_data_npot_uploads(
+          workarounds.use_tex_sub_image_for_client_data_npot_uploads) {}
 
 TextureManager::DestructionObserver::DestructionObserver() = default;
 
@@ -3000,21 +2993,18 @@ void TextureManager::ValidateAndDoTexSubImage(
     uploaded = true;
   }
 
-  GLenum internal_format = 0;
-  GLenum tex_type = 0;
-  texture->GetLevelType(args.target, args.level, &tex_type, &internal_format);
-
   if (uploaded) {
     // Upload was performed by one of the workarounds above.
   } else if (full_image && !texture->IsImmutable() &&
-             !(texture_state
-                   ->use_tex_sub_image_for_host_twiddled_npot_uploads &&
+             !(texture_state->use_tex_sub_image_for_client_data_npot_uploads &&
                args.command_type ==
                    DoTexSubImageArguments::CommandType::kTexSubImage2D &&
                (!std::has_single_bit(static_cast<uint32_t>(args.width)) ||
-                !std::has_single_bit(static_cast<uint32_t>(args.height))) &&
-               IsHostTwiddledFormat(internal_format, args.format, args.type))) {
+                !std::has_single_bit(static_cast<uint32_t>(args.height))))) {
     TRACE_EVENT0("gpu", "FullImage");
+    GLenum internal_format = 0;
+    GLenum tex_type = 0;
+    texture->GetLevelType(args.target, args.level, &tex_type, &internal_format);
     // NOTE: In OpenGL ES 2/3 border is always zero. If that changes we'll need
     // to look it up.
     if (args.command_type ==
@@ -3468,11 +3458,10 @@ void TextureManager::DoTexImage(DecoderTextureState* texture_state,
                    AdjustTexFormat(feature_info_.get(), args.format), args.type,
                    args.pixels);
     } else {
-      if (texture_state->use_tex_sub_image_for_host_twiddled_npot_uploads &&
+      if (texture_state->use_tex_sub_image_for_client_data_npot_uploads &&
           (args.pixels != nullptr || unpack_buffer_bound) &&
           (!std::has_single_bit(static_cast<uint32_t>(args.width)) ||
-           !std::has_single_bit(static_cast<uint32_t>(args.height))) &&
-          IsHostTwiddledFormat(args.internal_format, args.format, args.type)) {
+           !std::has_single_bit(static_cast<uint32_t>(args.height)))) {
         glTexImage2D(args.target, args.level,
                      AdjustTexInternalFormat(feature_info_.get(),
                                              args.internal_format, args.type),

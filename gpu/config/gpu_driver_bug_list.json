@@ -3893,10 +3893,10 @@
     {
       "id": 494,
       "cr_bugs": [553172761],
-      "description": "For texture formats which would be twiddled on the host CPU, upload via TexSubImage2D instead of TexImage2D.",
+      "description": "Upload non-power-of-two textures via TexSubImage2D instead of TexImage2D when uploading client-side data.",
       "gl_vendor": "Imagination.*",
       "features": [
-        "use_tex_sub_image_for_host_twiddled_npot_uploads"
+        "use_tex_sub_image_for_client_data_npot_uploads"
       ]
     },
     {
