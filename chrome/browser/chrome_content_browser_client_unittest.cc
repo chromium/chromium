@@ -647,7 +647,8 @@ TEST_F(ChromeContentBrowserClientTest,
       net::ERR_PROXY_AUTH_REQUESTED);
 
   ASSERT_TRUE(info);
-  EXPECT_EQ(info->resource_id, IDR_ENTERPRISE_PROXY_ERROR_PAGE_HTML);
+  EXPECT_EQ(info->resource_id,
+            static_cast<uint32_t>(IDR_ENTERPRISE_PROXY_ERROR_PAGE_HTML));
   auto override_param = info->alternative_error_page_params.FindBool(
       error_page::kOverrideErrorPage);
   ASSERT_TRUE(override_param.has_value());

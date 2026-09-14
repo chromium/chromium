@@ -4718,7 +4718,6 @@ test("unit_tests") {
     "../app/llvm_profile_util.cc",
     "../app/llvm_profile_util.h",
     "../app/llvm_profile_util_unittest.cc",
-    "../browser/chrome_content_browser_client_unittest.cc",
     "../common/chrome_content_client_unittest.cc",
     "../common/chrome_paths_unittest.cc",
     "../common/crash_keys_unittest.cc",
