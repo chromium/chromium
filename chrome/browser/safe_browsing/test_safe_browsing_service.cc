@@ -13,7 +13,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/safe_browsing/core/browser/db/sb_protocol_config.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,12 +39,6 @@ TestSafeBrowsingService::TestSafeBrowsingService()
 }
 
 TestSafeBrowsingService::~TestSafeBrowsingService() = default;
-
-SBProtocolConfig TestSafeBrowsingService::GetSBProtocolConfig() const {
-  if (v4_protocol_config_)
-    return *v4_protocol_config_;
-  return SafeBrowsingService::GetSBProtocolConfig();
-}
 
 void TestSafeBrowsingService::UseSBLocalDatabaseManager() {
   use_sb_local_db_manager_ = true;
@@ -126,10 +119,6 @@ TestSafeBrowsingService::database_manager() const {
   return SafeBrowsingService::database_manager();
 }
 
-void TestSafeBrowsingService::SetV4ProtocolConfig(
-    SBProtocolConfig* v4_protocol_config) {
-  v4_protocol_config_.reset(v4_protocol_config);
-}
 // ServicesDelegate::ServicesCreator:
 bool TestSafeBrowsingService::CanCreateDatabaseManager() {
   return !use_sb_local_db_manager_;

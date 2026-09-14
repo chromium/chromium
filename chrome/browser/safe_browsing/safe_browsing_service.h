@@ -247,10 +247,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
       const GURL& permission_prompt_origin,
       base::TimeDelta permission_prompt_display_duration_sec);
 
-  // Create the default SB protocol config struct. This just calls into a helper
-  // function, but it's still useful so that TestSafeBrowsingService can
-  // override it.
-  virtual SBProtocolConfig GetSBProtocolConfig() const;
+  // Create the default SB protocol config struct.
+  SBProtocolConfig GetSBProtocolConfig() const;
 
  protected:
   // Creates the safe browsing service.  Need to initialize before using.

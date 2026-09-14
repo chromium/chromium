@@ -21,7 +21,6 @@
 
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
-struct SBProtocolConfig;
 class TestSafeBrowsingDatabaseManager;
 class TestSafeBrowsingUIManager;
 
@@ -52,23 +51,19 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   TestSafeBrowsingService(const TestSafeBrowsingService&) = delete;
   TestSafeBrowsingService& operator=(const TestSafeBrowsingService&) = delete;
 
-  // SafeBrowsingService overrides
-  SBProtocolConfig GetSBProtocolConfig() const override;
-
   std::string serialized_download_report();
   void ClearDownloadReport();
 
   // In browser tests, the following setters must be called before
   // SafeBrowsingService::Initialize().
   // The preferable way to use these setters is by calling corresponding
-  // TestSafeBrowsingServiceFactory::SetTest[DatabaseManager/UIManager/
-  // ProtocolConfig]() before InProcessBrowserTest::SetUp() is called. Then
-  // inside TestSafeBrowsingServiceFactory::CreateSafeBrowsingService(),
+  // TestSafeBrowsingServiceFactory::SetTest[DatabaseManager/UIManager]() before
+  // InProcessBrowserTest::SetUp() is called. Then inside
+  // TestSafeBrowsingServiceFactory::CreateSafeBrowsingService(),
   // TestSafeBrowsingService instance is created, customised(by using the
   // following setters), and then initialized.
   void SetUIManager(TestSafeBrowsingUIManager* ui_manager);
   void SetDatabaseManager(TestSafeBrowsingDatabaseManager* database_manager);
-  void SetV4ProtocolConfig(SBProtocolConfig* v4_protocol_config);
   const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager()
       const override;
   void UseSBLocalDatabaseManager();
@@ -110,7 +105,6 @@ class TestSafeBrowsingService : public SafeBrowsingService,
       content::BrowserContext* browser_context) override;
 
  private:
-  std::unique_ptr<SBProtocolConfig> v4_protocol_config_;
   std::string serialized_download_report_;
   scoped_refptr<SafeBrowsingDatabaseManager> test_database_manager_;
   bool use_sb_local_db_manager_ = false;
@@ -136,7 +130,7 @@ class TestSafeBrowsingServiceFactory : public SafeBrowsingServiceFactory {
 
   TestSafeBrowsingService* test_safe_browsing_service();
 
-  // Test UI manager, database manager and protocol config need to be set before
+  // Test UI manager and database manager need to be set before
   // SafeBrowsingService::Initialize() is called.
   void SetTestUIManager(TestSafeBrowsingUIManager* ui_manager);
   void SetTestDatabaseManager(
