@@ -88,6 +88,9 @@ UserManagementStatus& UserManagementStatus::operator=(
     UserManagementStatus&&) = default;
 
 UserInterceptionPolicies::UserInterceptionPolicies() = default;
+UserInterceptionPolicies::UserInterceptionPolicies(
+    ProfileSeparationPolicies profile_separation_policies)
+    : profile_separation_policies(std::move(profile_separation_policies)) {}
 UserInterceptionPolicies::~UserInterceptionPolicies() = default;
 UserInterceptionPolicies::UserInterceptionPolicies(
     const UserInterceptionPolicies&) = default;
@@ -243,7 +246,7 @@ void UserCloudManagementStatusFetcher::Finish(
 
   if (callback_) {
     std::move(callback_).Run(std::move(status),
-                            std::move(interception_policies));
+                             std::move(interception_policies));
   }
 }
 

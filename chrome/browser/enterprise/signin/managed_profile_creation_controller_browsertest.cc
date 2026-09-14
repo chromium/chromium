@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/signin/managed_profile_creation_controller.h"
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -322,13 +321,103 @@ const ManagedProfileCreationTestParam kManagedProfileCreationTestParams[] = {
         .expected_primary_account = false,
         .expected_refresh_token = false,
     },
+    /* USER INTERCEPTION POLICIES TEST CASES (DM SERVER) */
+    // - UserInterceptionPolicies: No policies
+    // - User choice: New profile
+    {
+        .test_name =
+            "NoPrimaryAccount_UserInterceptionPolicies_NoPolicies_NewProfile",
+        .user_choice = signin::SIGNIN_CHOICE_NEW_PROFILE,
+        .policies = policy::ProfileSeparationPolicies(),
+        .is_primary_account = false,
+        .has_other_primary_account = false,
+
+        .expected_profile_result = ManagedProfileCreationResult::kNewProfile,
+        .expected_profile_creation_required_by_policy = false,
+        .expected_management_accepted = true,
+        .expected_primary_account = true,
+        .expected_refresh_token = true,
+    },
+    // - UserInterceptionPolicies: Profile creation is enforced by policy
+    // - User choice: New profile
+    {
+        .test_name = "NoPrimaryAccount_UserInterceptionPolicies_"
+                     "EnforcedByPolicy_NewProfile",
+        .user_choice = signin::SIGNIN_CHOICE_NEW_PROFILE,
+        .policies = policy::ProfileSeparationPolicies(
+            /*profile_separation_settings=*/policy::ProfileSeparationSettings::
+                ENFORCED,
+            /*profile_separation_data_migration_settings=*/std::nullopt),
+        .is_primary_account = false,
+        .has_other_primary_account = false,
+
+        .expected_profile_result = ManagedProfileCreationResult::kNewProfile,
+        .expected_profile_creation_required_by_policy = true,
+        .expected_management_accepted = true,
+        .expected_primary_account = true,
+        .expected_refresh_token = true,
+    },
+    // - UserInterceptionPolicies: No policies
+    // - User choice: Convert to managed profile
+    {
+        .test_name =
+            "NoPrimaryAccount_UserInterceptionPolicies_NoPolicies_Continue",
+        .user_choice = signin::SIGNIN_CHOICE_CONTINUE,
+        .policies = policy::ProfileSeparationPolicies(),
+        .is_primary_account = false,
+        .has_other_primary_account = false,
+
+        .expected_profile_result =
+            ManagedProfileCreationResult::kExistingProfile,
+        .expected_profile_creation_required_by_policy = false,
+        .expected_management_accepted = true,
+        .expected_primary_account = true,
+        .expected_refresh_token = true,
+    },
+    // - UserInterceptionPolicies: Profile creation is enforced by policy
+    // - User choice: Convert to managed profile
+    {
+        .test_name = "NoPrimaryAccount_UserInterceptionPolicies_"
+                     "EnforcedByPolicy_Continue",
+        .user_choice = signin::SIGNIN_CHOICE_CONTINUE,
+        .policies = policy::ProfileSeparationPolicies(
+            /*profile_separation_settings=*/policy::ProfileSeparationSettings::
+                ENFORCED,
+            /*profile_separation_data_migration_settings=*/std::nullopt),
+        .is_primary_account = false,
+        .has_other_primary_account = false,
+
+        .expected_profile_result =
+            ManagedProfileCreationResult::kExistingProfile,
+        .expected_profile_creation_required_by_policy = true,
+        .expected_management_accepted = true,
+        .expected_primary_account = true,
+        .expected_refresh_token = true,
+    },
+    // - UserInterceptionPolicies: Profile creation is enforced by policy
+    // - User choice: Cancel
+    {
+        .test_name =
+            "NoPrimaryAccount_UserInterceptionPolicies_EnforcedByPolicy_Cancel",
+        .user_choice = signin::SIGNIN_CHOICE_CANCEL,
+        .policies = policy::ProfileSeparationPolicies(
+            /*profile_separation_settings=*/policy::ProfileSeparationSettings::
+                ENFORCED,
+            /*profile_separation_data_migration_settings=*/std::nullopt),
+        .is_primary_account = false,
+        .has_other_primary_account = false,
+
+        .expected_profile_result = ManagedProfileCreationResult::kNull,
+        .expected_profile_creation_required_by_policy = true,
+        .expected_management_accepted = false,
+        .expected_primary_account = false,
+        .expected_refresh_token = false,
+    },
 };
 
-class ManagedProfileCreationBrowserTest
-    : public SigninBrowserTestBase,
-      public testing::WithParamInterface<ManagedProfileCreationTestParam> {
+class ManagedProfileCreationBrowserTestBase : public SigninBrowserTestBase {
  public:
-  ManagedProfileCreationBrowserTest()
+  ManagedProfileCreationBrowserTestBase()
       : SigninBrowserTestBase(/*use_main_profile=*/true) {}
 
   void SetUpOnMainThread() override {
@@ -380,18 +469,27 @@ class ManagedProfileCreationBrowserTest
   base::ScopedClosureRunner disclaimer_service_resetter_;
 };
 
+class ManagedProfileCreationBrowserTest
+    : public ManagedProfileCreationBrowserTestBase,
+      public testing::WithParamInterface<ManagedProfileCreationTestParam> {
+ public:
+  const ManagedProfileCreationTestParam& GetTestParam() const {
+    return GetParam();
+  }
+};
+
 IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {
   // Arrange:
   AccountInfo other_primary_account_info;
-  if (GetParam().has_other_primary_account) {
+  if (GetTestParam().has_other_primary_account) {
     other_primary_account_info = MakeValidAccountInfoAvailableAndUpdate(
         "alice@example.com", "example.com",
         /*primary_account=*/true);
     // Make sure the we only set one primary account.
-    ASSERT_FALSE(GetParam().is_primary_account);
+    ASSERT_FALSE(GetTestParam().is_primary_account);
   }
   auto account_info = MakeValidAccountInfoAvailableAndUpdate(
-      "bob@example.com", "example.com", GetParam().is_primary_account);
+      "bob@example.com", "example.com", GetTestParam().is_primary_account);
 
   // Act:
   base::test::TestFuture<
@@ -400,7 +498,8 @@ IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {
   auto managed_profile_creation_controller =
       ManagedProfileCreationController::CreateManagedProfileForTesting(
           GetProfile(), account_info, signin_metrics::AccessPoint::kStartPage,
-          future.GetCallback(), GetParam().policies, GetParam().user_choice);
+          future.GetCallback(), GetTestParam().policies,
+          GetTestParam().user_choice);
   ASSERT_TRUE(future.Wait());
   Profile* new_profile =
       future
@@ -410,7 +509,7 @@ IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {
 
   // Verify:
   Profile* verify_profile = nullptr;
-  switch (GetParam().expected_profile_result) {
+  switch (GetTestParam().expected_profile_result) {
     case ManagedProfileCreationResult::kNull:
       EXPECT_EQ(new_profile, nullptr);
       verify_profile = GetProfile();
@@ -425,15 +524,15 @@ IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {
       break;
   }
   EXPECT_EQ(profile_creation_required_by_policy,
-            GetParam().expected_profile_creation_required_by_policy);
+            GetTestParam().expected_profile_creation_required_by_policy);
   EXPECT_EQ(enterprise_util::UserAcceptedAccountManagement(verify_profile),
-            GetParam().expected_management_accepted);
+            GetTestParam().expected_management_accepted);
   EXPECT_EQ(GetIdentityManager(verify_profile)
                 ->HasAccountWithRefreshToken(account_info.GetAccountId()),
-            GetParam().expected_refresh_token);
+            GetTestParam().expected_refresh_token);
 
   // The other primary account should not have been touched.
-  if (GetParam().has_other_primary_account) {
+  if (GetTestParam().has_other_primary_account) {
     EXPECT_TRUE(GetIdentityManager(GetProfile())
                     ->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
                 other_primary_account_info.GetAccountId());
@@ -442,25 +541,26 @@ IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {
                         other_primary_account_info.GetAccountId()));
     EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
   }
-  if (verify_profile != GetProfile() || !GetParam().has_other_primary_account) {
+  if (verify_profile != GetProfile() ||
+      !GetTestParam().has_other_primary_account) {
     EXPECT_EQ(GetIdentityManager(verify_profile)
                   ->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-              GetParam().expected_primary_account);
+              GetTestParam().expected_primary_account);
   }
 
   // Also check the source profile if a new one was created.
-  if (GetParam().expected_profile_result ==
+  if (GetTestParam().expected_profile_result ==
       ManagedProfileCreationResult::kNewProfile) {
     EXPECT_EQ(
         GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-        GetParam().has_other_primary_account);
+        GetTestParam().has_other_primary_account);
     EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
     EXPECT_FALSE(GetIdentityManager()->HasAccountWithRefreshToken(
         account_info.GetAccountId()));
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedProfileCreationBrowserTest,
+IN_PROC_BROWSER_TEST_F(ManagedProfileCreationBrowserTestBase,
                        RestrictSigninPattern_NotAllowed) {
   // Set the restrictive pattern so signin is not allowed.
   g_browser_process->local_state()->SetString(
@@ -501,7 +601,10 @@ IN_PROC_BROWSER_TEST_F(ManagedProfileCreationBrowserTest,
                    ->HasAccountWithRefreshToken(account_info.GetAccountId()));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ManagedProfileCreationBrowserTest,
-                         testing::ValuesIn(kManagedProfileCreationTestParams),
-                         [](const auto& info) { return info.param.test_name; });
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ManagedProfileCreationBrowserTest,
+    testing::ValuesIn(kManagedProfileCreationTestParams),
+    [](const testing::TestParamInfo<ManagedProfileCreationTestParam>& info) {
+      return info.param.test_name;
+    });

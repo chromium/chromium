@@ -65,6 +65,8 @@ struct POLICY_EXPORT UserManagementStatus {
 // Server.
 struct POLICY_EXPORT UserInterceptionPolicies {
   UserInterceptionPolicies();
+  explicit UserInterceptionPolicies(
+      ProfileSeparationPolicies profile_separation_policies);
   ~UserInterceptionPolicies();
   UserInterceptionPolicies(const UserInterceptionPolicies&);
   UserInterceptionPolicies& operator=(const UserInterceptionPolicies&);
@@ -101,8 +103,8 @@ class POLICY_EXPORT UserCloudManagementStatusFetcher {
       base::OnceCallback<void(std::optional<UserManagementStatus>,
                               std::optional<UserInterceptionPolicies>)>;
 
-  // Constructs a fetcher instance. `service` and `url_loader_factory` must not be
-  // null. `should_fetch_policies` specifies whether to request sign-in
+  // Constructs a fetcher instance. `service` and `url_loader_factory` must not
+  // be null. `should_fetch_policies` specifies whether to request sign-in
   // experience policies in addition to the management status.
   UserCloudManagementStatusFetcher(
       DeviceManagementService* service,
@@ -118,12 +120,13 @@ class POLICY_EXPORT UserCloudManagementStatusFetcher {
   // Asynchronously fetches user management status and optional interception
   // policies for `account_id`.
   //
-  // Lifecycle: Creates an internal `UserCloudManagementStatusFetcher` instance
-  // that manages its own lifecycle. Ownership of the fetcher is bound into the
-  // completion callback closure, keeping it alive until the request succeeds,
-  // encounters an error, or times out, after which it is automatically
-  // destroyed. The caller does not own the fetcher and is responsible for
-  // storing the result provided to `callback`.
+  // Self-Managed Lifecycle: Creates a one-shot internal
+  // `UserCloudManagementStatusFetcher` instance whose ownership (`unique_ptr`)
+  // is transferred directly into the completion callback closure. This binds
+  // the fetcher's lifetime to the completion of the asynchronous network and
+  // authentication pipeline, destroying it automatically when the fetch
+  // succeeds, encounters an error, or times out. Callers do not need to retain
+  // an instance.
   static void FetchStatusAndPolicies(
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

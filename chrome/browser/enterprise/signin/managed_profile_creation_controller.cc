@@ -5,11 +5,10 @@
 #include "chrome/browser/enterprise/signin/managed_profile_creation_controller.h"
 
 #include "base/check_is_test.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -30,10 +29,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
-#include "chrome/common/channel_info.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
-#include "components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.h"
-#include "components/policy/core/common/policy_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -71,10 +67,12 @@ ManagedProfileCreationController::ManagedProfileCreationController(
     Profile* source_profile,
     const AccountInfo& account_info,
     signin_metrics::AccessPoint access_point,
-    ManagedProfileCreationControllerCallback callback)
+    ManagedProfileCreationControllerCallback callback,
+    policy::ProfileSeparationPolicies profile_separation_policies)
     : source_profile_(source_profile),
       account_info_(account_info),
       access_point_(access_point),
+      profile_separation_policies_(std::move(profile_separation_policies)),
       callback_(std::move(callback)) {
   CHECK(source_profile_);
   CHECK(!account_info.IsEmpty());
@@ -90,14 +88,19 @@ ManagedProfileCreationController::CreateManagedProfile(
     Profile* source_profile,
     const AccountInfo& account_info,
     signin_metrics::AccessPoint access_point,
-    ManagedProfileCreationControllerCallback callback) {
+    ManagedProfileCreationControllerCallback callback,
+    policy::ProfileSeparationPolicies profile_separation_policies) {
   // TODO(crbug.com/424782757): Log the errors in the callback.
   std::unique_ptr<ManagedProfileCreationController> controller;
   controller.reset(new ManagedProfileCreationController(
-      source_profile, account_info, access_point, std::move(callback)));
-  controller->FetchProfileSeparationPolicies();
+      source_profile, account_info, access_point, std::move(callback),
+      std::move(profile_separation_policies)));
+  if (!controller->Init()) {
+    return nullptr;
+  }
   return controller;
 }
+
 // static
 std::unique_ptr<ManagedProfileCreationController>
 ManagedProfileCreationController::CreateManagedProfileForTesting(
@@ -111,11 +114,14 @@ ManagedProfileCreationController::CreateManagedProfileForTesting(
   CHECK_IS_TEST();
   std::unique_ptr<ManagedProfileCreationController> controller;
   controller.reset(new ManagedProfileCreationController(
-      source_profile, account_info, access_point, std::move(callback)));
-  controller->profile_separation_policies_for_testing_ =
-      std::move(profile_separation_policies);
-  controller->user_choice_for_testing_ = std::move(user_choice);
-  controller->FetchProfileSeparationPolicies();
+      source_profile, account_info, access_point, std::move(callback),
+      profile_separation_policies.value_or(
+          policy::ProfileSeparationPolicies())));
+  controller->user_choice_for_testing_ = user_choice;
+  controller->skip_browser_startup_for_testing_ = true;
+  if (!controller->Init()) {
+    return nullptr;
+  }
   return controller;
 }
 
@@ -123,96 +129,30 @@ void ManagedProfileCreationController::OnProfileWillBeDestroyed(
     Profile* profile) {
   CHECK(profile == source_profile_ || profile == final_profile_);
 
-  if (profile == source_profile_) {
+  const bool is_source_profile = (profile == source_profile_);
+  if (is_source_profile) {
     source_profile_ = nullptr;
     source_profile_observation_.Reset();
-  } else if (profile == final_profile_) {
+  } else {
     final_profile_ = nullptr;
     final_profile_observation_.Reset();
   }
-  policy_fetch_timeout_.Stop();
-  account_level_signin_restriction_policy_fetcher_.reset();
-  if (!callback_.is_null()) {
-    std::move(callback_).Run(
-        base::unexpected(
-            profile == source_profile_
-                ? ManagedProfileCreationFailureReason::kSourceProfileDeleted
-                : ManagedProfileCreationFailureReason::kNewProfileWasDeleted),
-        profile_creation_required_by_policy_);
-  }
+
+  OnProfileCreationDone(base::unexpected(
+      profile == source_profile_
+          ? ManagedProfileCreationFailureReason::kSourceProfileDeleted
+          : ManagedProfileCreationFailureReason::kNewProfileWasDeleted));
 }
 
-void ManagedProfileCreationController::FetchProfileSeparationPolicies() {
-  // We should not fetch the policies twice.
-  CHECK(!policies_received_);
-  CHECK(!account_level_signin_restriction_policy_fetcher_);
-
-  auto policy_fetch_callback = base::BindOnce(
-      &ManagedProfileCreationController::OnProfileSeparationPoliciesReceived,
-      weak_ptr_factory_.GetWeakPtr());
-
-  if (profile_separation_policies_for_testing_.has_value()) {
-    CHECK_IS_TEST();
-    policy::ProfileSeparationPolicies profile_separation_policies =
-        std::exchange(profile_separation_policies_for_testing_, std::nullopt)
-            .value();
-    std::move(policy_fetch_callback)
-        .Run(std::move(profile_separation_policies));
-    return;
-  }
-
-  // If we cannot make network calls, we will not be able to fetch the
-  // account level policies.
-  if (!g_browser_process->system_network_context_manager()) {
-    std::move(policy_fetch_callback).Run(policy::ProfileSeparationPolicies());
-    return;
-  }
-
+bool ManagedProfileCreationController::Init() {
   CHECK(source_profile_);
-  account_level_signin_restriction_policy_fetcher_ =
-      std::make_unique<policy::UserCloudSigninRestrictionPolicyFetcher>(
-          g_browser_process->browser_policy_connector(),
-          g_browser_process->system_network_context_manager()
-              ->GetSharedURLLoaderFactory());
-  account_level_signin_restriction_policy_fetcher_
-      ->GetManagedAccountsSigninRestriction(
-          GetIdentityManager(), account_info_.GetAccountId(),
-          std::move(policy_fetch_callback),
-          policy::utils::IsPolicyTestingEnabled(source_profile_->GetPrefs(),
-                                                chrome::GetChannel())
-              ? source_profile_->GetPrefs()
-                    ->GetDefaultPrefValue(
-                        prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage)
-                    ->GetString()
-              : std::string());
 
-  policy_fetch_timeout_.Start(
-      FROM_HERE, base::Seconds(5),
-      base::BindOnce(&ManagedProfileCreationController::
-                         OnProfileSeparationPoliciesReceived,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     policy::ProfileSeparationPolicies()));
-}
-
-void ManagedProfileCreationController::OnProfileSeparationPoliciesReceived(
-    policy::ProfileSeparationPolicies policies) {
-  policy_fetch_timeout_.Stop();
-  // If the profile was deleted in the meantime, we should not proceed.
-  if (!source_profile_) {
-    // `callback_` will be called with nullptr in OnProfileWillBeDestroyed() so
-    // we are not calling it here.
-    return;
-  }
-  policies_received_ = true;
   profile_creation_required_by_policy_ =
-      signin_util::IsProfileSeparationEnforcedByPolicies(policies);
+      signin_util::IsProfileSeparationEnforcedByPolicies(
+          profile_separation_policies_);
   allows_converting_profile_to_managed_ = signin_util::
       ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
-          source_profile_, policies);
-
-  // The fetcher must be deleted after `policies` have been used to avoid a use
-  // after free.
-  account_level_signin_restriction_policy_fetcher_.reset();
+          source_profile_, profile_separation_policies_);
 
   // If the user is not allowed to sign in, we should not show the disclaimer.
   SigninUIError can_offer_error = CanOfferSignin(
@@ -224,17 +164,15 @@ void ManagedProfileCreationController::OnProfileSeparationPoliciesReceived(
     // out since they cannot sign in to Chrome.
     if (profile_creation_required_by_policy_) {
       Signout();
-    } else {
-      std::move(callback_).Run(base::ok(nullptr),
-                               profile_creation_required_by_policy_);
     }
-    return;
+    OnProfileCreationDone(base::ok(nullptr));
+    return false;
   }
   ShowManagementDisclaimer();
+  return true;
 }
 
 void ManagedProfileCreationController::ShowManagementDisclaimer() {
-  CHECK(policies_received_);
   CHECK(source_profile_);
   BrowserWindowInterface* const browser =
       ProfileBrowserCollection::GetForProfile(source_profile_)
@@ -342,12 +280,18 @@ void ManagedProfileCreationController::
   if (existing_primary_account_id.empty()) {
     auto* primary_account_mutator =
         GetIdentityManager()->GetPrimaryAccountMutator();
-    primary_account_mutator->SetPrimaryAccount(account_info_.GetAccountId(),
-                                               signin::ConsentLevel::kSignin,
-                                               access_point_);
+    auto set_primary_account_result =
+        primary_account_mutator->SetPrimaryAccount(
+            account_info_.GetAccountId(), signin::ConsentLevel::kSignin,
+            access_point_);
+    if (set_primary_account_result !=
+        signin::PrimaryAccountMutator::PrimaryAccountError::kNoError) {
+      OnProfileCreationDone(base::unexpected(
+          ManagedProfileCreationFailureReason::kPrimaryAccountNotSet));
+      return;
+    }
   }
-  std::move(callback_).Run(base::ok(source_profile_),
-                           profile_creation_required_by_policy_);
+  OnProfileCreationDone(base::ok(source_profile_));
 }
 
 void ManagedProfileCreationController::Signout() {
@@ -367,8 +311,7 @@ void ManagedProfileCreationController::Signout() {
         signin_metrics::SourceForRefreshTokenOperation::
             kEnterpriseForcedProfileCreation_UserDecline);
   }
-  std::move(callback_).Run(base::ok(nullptr),
-                           profile_creation_required_by_policy_);
+  OnProfileCreationDone(base::ok(nullptr));
 }
 
 void ManagedProfileCreationController::MoveAccountIntoNewProfile() {
@@ -410,10 +353,8 @@ void ManagedProfileCreationController::OnNewSignedInProfileCreated(
   profile_creator_.reset();
 
   if (!new_profile) {
-    std::move(callback_).Run(
-        base::unexpected(
-            ManagedProfileCreationFailureReason::kProfileCreationFailed),
-        profile_creation_required_by_policy_);
+    OnProfileCreationDone(base::unexpected(
+        ManagedProfileCreationFailureReason::kProfileCreationFailed));
     return;
   }
 
@@ -429,10 +370,8 @@ void ManagedProfileCreationController::OnNewSignedInProfileCreated(
     if (profile_creation_required_by_policy_) {
       Signout();
     } else {
-      std::move(callback_).Run(
-          base::unexpected(
-              ManagedProfileCreationFailureReason::kPrimaryAccountNotSet),
-          profile_creation_required_by_policy_);
+      OnProfileCreationDone(base::unexpected(
+          ManagedProfileCreationFailureReason::kPrimaryAccountNotSet));
     }
     return;
   }
@@ -485,8 +424,14 @@ void ManagedProfileCreationController::OnNewBrowserCreated() {
     return;
   }
   CHECK(enterprise_util::UserAcceptedAccountManagement(final_profile_));
-  std::move(callback_).Run(final_profile_,
-                           profile_creation_required_by_policy_);
+  OnProfileCreationDone(base::ok(final_profile_));
+}
+
+void ManagedProfileCreationController::OnProfileCreationDone(
+    base::expected<Profile*, ManagedProfileCreationFailureReason> result) {
+  if (!callback_.is_null()) {
+    std::move(callback_).Run(result, profile_creation_required_by_policy_);
+  }
 }
 
 signin::IdentityManager*

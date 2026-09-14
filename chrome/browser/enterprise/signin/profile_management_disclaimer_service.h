@@ -36,6 +36,10 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace policy {
+class UserCloudSigninRestrictionPolicyFetcher;
+}  // namespace policy
+
 // Service responsible to show enterprise management disclaimers at startup on
 // the focused browser to profiles where the signed in account is a managed
 // account and the user has yet to accept profile management.
@@ -113,6 +117,8 @@ class ProfileManagementDisclaimerService
 
     std::unique_ptr<ManagedProfileCreationController>
         profile_creation_controller;
+    std::unique_ptr<policy::UserCloudSigninRestrictionPolicyFetcher>
+        user_cloud_signin_restriction_policy_fetcher;
 
     base::WeakPtr<Profile> profile_to_continue_in;
     CoreAccountId account_id;
@@ -163,6 +169,9 @@ class ProfileManagementDisclaimerService
 
   void OnRegisteredForPolicy(bool is_from_cached_registration_result,
                              bool is_managed_account);
+
+  void OnProfileSeparationPoliciesFetched(
+      policy::ProfileSeparationPolicies profile_separation_policies);
 
   // Opens the device signals disclaimer dialog if the following conditions
   // apply for the current profile:

@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -18,10 +17,6 @@ class DiceSignedInProfileCreator;
 class DiceInterceptedSessionStartupHelper;
 class Profile;
 class ProfileAttributesEntry;
-
-namespace policy {
-class UserCloudSigninRestrictionPolicyFetcher;
-}  // namespace policy
 
 namespace signin {
 class IdentityManager;
@@ -39,10 +34,10 @@ using ManagedProfileCreationControllerCallback = base::OnceCallback<
     void(base::expected<Profile*, ManagedProfileCreationFailureReason>, bool)>;
 
 // Used to create a managed profile for a specified account. This class is
-// responsible for fetching the profile separation policies, showing the
-// management disclaimer and either converting the current profile into a
-// managed profile, creating a new profile or signing out depending on the
-// user's choice on the management disclaimer.
+// responsible for showing the enterprise management disclaimer dialog with
+// pre-fetched profile separation policies and either converting the current
+// profile into a managed profile, creating a new separate profile, or signing
+// out depending on the user's explicit choice on the disclaimer.
 class ManagedProfileCreationController : public ProfileObserver {
  public:
   ~ManagedProfileCreationController() override;
@@ -52,10 +47,10 @@ class ManagedProfileCreationController : public ProfileObserver {
   ManagedProfileCreationController& operator=(
       const ManagedProfileCreationController&) = delete;
 
-  // `source_profile` is the profile that is used to fetch the profile
-  // separation policies. It is also the profile that is converted into a
-  // managed profile or signed out if the user chooses the corresponding
-  // options on the management disclaimer.
+  // `source_profile` is the profile that is used as the basis for the sign-in.
+  // It is also the profile that is converted into a managed profile or signed
+  // out if the user chooses the corresponding options on the management
+  // disclaimer.
   // `account_info` is the account that is being used to create the managed
   // profile.
   // `callback` is called when the profile creation is finished. It is called
@@ -64,11 +59,15 @@ class ManagedProfileCreationController : public ProfileObserver {
   // error. Otherwise, it is called with the created or the converted profile
   // and a boolean value that indicates whether the profile creation was
   // required by policy.
+  // `profile_separation_policies` contains the profile separation policies for
+  // the account.
   [[nodiscard]] static std::unique_ptr<ManagedProfileCreationController>
-  CreateManagedProfile(Profile* source_profile,
-                       const AccountInfo& account_info,
-                       signin_metrics::AccessPoint access_point,
-                       ManagedProfileCreationControllerCallback callback);
+  CreateManagedProfile(
+      Profile* source_profile,
+      const AccountInfo& account_info,
+      signin_metrics::AccessPoint access_point,
+      ManagedProfileCreationControllerCallback callback,
+      policy::ProfileSeparationPolicies profile_separation_policies);
 
   [[nodiscard]] static std::unique_ptr<ManagedProfileCreationController>
   CreateManagedProfileForTesting(
@@ -88,11 +87,10 @@ class ManagedProfileCreationController : public ProfileObserver {
       Profile* source_profile,
       const AccountInfo& account_info,
       signin_metrics::AccessPoint access_point,
-      ManagedProfileCreationControllerCallback callback);
+      ManagedProfileCreationControllerCallback callback,
+      policy::ProfileSeparationPolicies profile_separation_policies);
 
-  void FetchProfileSeparationPolicies();
-  void OnProfileSeparationPoliciesReceived(
-      policy::ProfileSeparationPolicies policies);
+  bool Init();
 
   void ShowManagementDisclaimer();
   void OnManagementDisclaimerResult(signin::SigninChoice choice);
@@ -103,24 +101,21 @@ class ManagedProfileCreationController : public ProfileObserver {
   void OnNewSignedInProfileCreated(bool is_new_profile, Profile* new_profile);
   void OnNewBrowserCreated();
 
+  void OnProfileCreationDone(
+      base::expected<Profile*, ManagedProfileCreationFailureReason> result);
+
   signin::IdentityManager* GetIdentityManager();
 
-  // Profile where the signin is initiated. `source_profile_` is also the
-  // profile that is used to fetch the profile separation policies.
+  // Profile where the signin is initiated.
   raw_ptr<Profile> source_profile_ = nullptr;
   raw_ptr<Profile> final_profile_ = nullptr;
   const AccountInfo account_info_;
   const signin_metrics::AccessPoint access_point_;
-  std::unique_ptr<policy::UserCloudSigninRestrictionPolicyFetcher>
-      account_level_signin_restriction_policy_fetcher_;
-  std::optional<policy::ProfileSeparationPolicies>
-      profile_separation_policies_for_testing_;
+  const policy::ProfileSeparationPolicies profile_separation_policies_;
   std::optional<signin::SigninChoice> user_choice_for_testing_;
   bool skip_browser_startup_for_testing_ = false;
-  bool policies_received_ = false;
   bool profile_creation_required_by_policy_ = false;
   bool allows_converting_profile_to_managed_ = true;
-  base::OneShotTimer policy_fetch_timeout_;
   ManagedProfileCreationControllerCallback callback_;
   std::unique_ptr<DiceSignedInProfileCreator> profile_creator_;
   std::unique_ptr<DiceInterceptedSessionStartupHelper> startup_helper_;

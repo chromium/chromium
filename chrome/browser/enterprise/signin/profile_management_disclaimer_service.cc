@@ -160,7 +160,8 @@ void ProfileManagementDisclaimerService::MaybeResetAcceptManagementDisclaimer(
   }
 }
 
-ProfileManagementDisclaimerService::ResetableState::ResetableState() = default;
+ProfileManagementDisclaimerService::ResetableState::ResetableState() =
+    default;
 
 ProfileManagementDisclaimerService::ResetableState::~ResetableState() {
   callbacks.Notify(profile_to_continue_in.get(),
@@ -523,8 +524,35 @@ void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
             base::BindOnce(&ProfileManagementDisclaimerService::
                                OnManagedProfileCreationResult,
                            weak_ptr_factory_.GetWeakPtr()),
-            std::move(profile_separation_policies_for_testing_),
-            std::move(user_choice_for_testing_));
+            profile_separation_policies_for_testing_,
+            user_choice_for_testing_);
+    return;
+  }
+
+  state_->user_cloud_signin_restriction_policy_fetcher =
+      std::make_unique<policy::UserCloudSigninRestrictionPolicyFetcher>(
+          g_browser_process->browser_policy_connector(),
+          g_browser_process->system_network_context_manager()
+              ->GetSharedURLLoaderFactory());
+  state_->user_cloud_signin_restriction_policy_fetcher
+      ->GetManagedAccountsSigninRestriction(
+          GetIdentityManager(), state_->account_id,
+          base::BindOnce(&ProfileManagementDisclaimerService::
+                             OnProfileSeparationPoliciesFetched,
+                         weak_ptr_factory_.GetWeakPtr()),
+          policy::utils::IsPolicyTestingEnabled(profile_->GetPrefs(),
+                                                chrome::GetChannel())
+              ? profile_->GetPrefs()
+                    ->GetDefaultPrefValue(
+                        prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage)
+                    ->GetString()
+              : std::string());
+}
+
+void ProfileManagementDisclaimerService::OnProfileSeparationPoliciesFetched(
+    policy::ProfileSeparationPolicies profile_separation_policies) {
+  if (!state_ || state_->account_id.empty()) {
+    Reset();
     return;
   }
 
@@ -535,7 +563,8 @@ void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
           *state_->access_point,
           base::BindOnce(&ProfileManagementDisclaimerService::
                              OnManagedProfileCreationResult,
-                         weak_ptr_factory_.GetWeakPtr()));
+                         weak_ptr_factory_.GetWeakPtr()),
+          std::move(profile_separation_policies));
 }
 
 void ProfileManagementDisclaimerService::OnManagedProfileCreationResult(
