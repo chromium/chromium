@@ -129,6 +129,7 @@ class HttpProxyAuthTest : public WebTestWithWebState {
   }
 
   void SetUp() override {
+#if TARGET_OS_SIMULATOR
     if (!@available(iOS 18.1, *)) {
       GTEST_SKIP() << "Proxy auth challenges require iOS 18.1+.";
     }
@@ -140,6 +141,10 @@ class HttpProxyAuthTest : public WebTestWithWebState {
     WebTestWithWebState::SetUp();
     delegate_ = std::make_unique<FakeWebStateDelegate>();
     web_state()->SetDelegate(delegate_.get());
+#else
+    // TODO(crbug.com/561568617): Re-enable
+    GTEST_SKIP() << "Proxy auth challenges are only testable on simulators.";
+#endif
   }
 
   void TearDown() override {
