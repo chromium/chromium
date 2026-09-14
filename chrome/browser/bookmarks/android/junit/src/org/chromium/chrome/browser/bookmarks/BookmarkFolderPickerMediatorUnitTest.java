@@ -539,13 +539,15 @@ public class BookmarkFolderPickerMediatorUnitTest {
                         /* isFromBookmarkDialog= */ true);
 
         // At root folder when from another dialog, navigation icon should be visible to allow
-        // returning.
+        // returning, but back press is not handled by mediator so it falls back to the activity.
         mMediator.populateFoldersForParentId(mRootFolderId);
         assertTrue(mModel.get(BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE));
+        assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
 
-        // In a subfolder, navigation icon should also be visible.
+        // In a subfolder, navigation icon should also be visible and back press handled.
         mMediator.populateFoldersForParentId(mMobileFolderId);
         assertTrue(mModel.get(BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE));
+        assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
     }
 
     @Test
