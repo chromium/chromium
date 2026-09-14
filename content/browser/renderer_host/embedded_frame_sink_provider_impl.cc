@@ -109,7 +109,8 @@ void EmbeddedFrameSinkProviderImpl::CreateBundledCompositorFrameSink(
     const viz::FrameSinkBundleId& bundle_id,
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
-  if (frame_sink_id.client_id() != renderer_client_id_) {
+  if (frame_sink_id.client_id() != renderer_client_id_ ||
+      bundle_id.client_id() != renderer_client_id_) {
     receivers_.ReportBadMessage("Invalid client ID");
     return;
   }

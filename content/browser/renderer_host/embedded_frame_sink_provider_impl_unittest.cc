@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -22,6 +23,7 @@
 #include "content/browser/renderer_host/embedded_frame_sink_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom.h"
@@ -323,6 +325,63 @@ TEST_F(EmbeddedFrameSinkProviderImplTest, InvalidClientId) {
   EXPECT_TRUE(efs_client.connection_error());
 
   // Remote should be disconnected after the bad message.
+  EXPECT_FALSE(remote.is_connected());
+}
+
+// Check that trying to create a bundled CompositorFrameSink with a bundle
+// client_id that doesn't match the renderer fails and terminates the
+// connection.
+TEST_F(EmbeddedFrameSinkProviderImplTest,
+       CreateBundledCompositorFrameSink_InvalidBundleClientId) {
+  mojo::Remote<blink::mojom::EmbeddedFrameSinkProvider> remote;
+  provider()->Add(remote.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(remote.is_connected());
+
+  StubEmbeddedFrameSinkClient efs_client;
+  remote->RegisterEmbeddedFrameSink(kFrameSinkParent, kFrameSinkA,
+                                    efs_client.GetInterfaceRemote());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetEmbeddedFrameSink(kFrameSinkA) != nullptr; }));
+  EXPECT_THAT(GetAllCanvases(), ElementsAre(kFrameSinkA));
+
+  constexpr uint32_t kOtherClientId = kRendererClientId + 1;
+  const viz::FrameSinkBundleId invalid_bundle_id(kOtherClientId, 1);
+  EXPECT_NE(kRendererClientId, invalid_bundle_id.client_id());
+
+  mojo::Remote<viz::mojom::CompositorFrameSink> compositor_frame_sink;
+  viz::MockCompositorFrameSinkClient compositor_frame_sink_client;
+  remote->CreateBundledCompositorFrameSink(
+      kFrameSinkA, invalid_bundle_id,
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      compositor_frame_sink.BindNewPipeAndPassReceiver());
+
+  // The bad message should disconnect the provider remote.
+  WaitForConnectionError(&remote);
+  EXPECT_FALSE(remote.is_connected());
+}
+
+// Check that trying to register a FrameSinkBundle with a client_id that
+// doesn't match the renderer fails and terminates the connection.
+TEST_F(EmbeddedFrameSinkProviderImplTest,
+       RegisterEmbeddedFrameSinkBundle_InvalidClientId) {
+  mojo::Remote<blink::mojom::EmbeddedFrameSinkProvider> remote;
+  provider()->Add(remote.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(remote.is_connected());
+
+  constexpr uint32_t kOtherClientId = kRendererClientId + 1;
+  const viz::FrameSinkBundleId invalid_bundle_id(kOtherClientId, 1);
+  EXPECT_NE(kRendererClientId, invalid_bundle_id.client_id());
+
+  mojo::Remote<viz::mojom::FrameSinkBundle> bundle;
+  mojo::PendingRemote<viz::mojom::FrameSinkBundleClient> client;
+  mojo::PendingReceiver<viz::mojom::FrameSinkBundleClient> client_receiver =
+      client.InitWithNewPipeAndPassReceiver();
+  remote->RegisterEmbeddedFrameSinkBundle(invalid_bundle_id,
+                                          bundle.BindNewPipeAndPassReceiver(),
+                                          std::move(client));
+
+  // The bad message should disconnect the provider remote.
+  WaitForConnectionError(&remote);
   EXPECT_FALSE(remote.is_connected());
 }
 
