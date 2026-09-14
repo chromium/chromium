@@ -12,10 +12,14 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** Bottom sheet content to provide data sharing service to TabGridDialog. */
 @NullMarked
 public class TabGridDialogShareBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
+
     private final View mContentView;
 
     public TabGridDialogShareBottomSheetContent(View view) {
@@ -39,6 +43,11 @@ public class TabGridDialogShareBottomSheetContent implements BottomSheetContent 
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {
