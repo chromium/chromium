@@ -1056,8 +1056,16 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   ASSERT_FALSE(bg_color.has_value());
 }
 
+// TODO(crbug.com/558178328): Fails persistently on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_SharedWorkerContextProviderDurationRecorded \
+  DISABLED_SharedWorkerContextProviderDurationRecorded
+#else
+#define MAYBE_SharedWorkerContextProviderDurationRecorded \
+  SharedWorkerContextProviderDurationRecorded
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
-                       SharedWorkerContextProviderDurationRecorded) {
+                       MAYBE_SharedWorkerContextProviderDurationRecorded) {
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(NavigateToURL(
