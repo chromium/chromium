@@ -416,18 +416,41 @@ HistoryBackend::~HistoryBackend() {
 #endif
 }
 
+void HistoryBackend::SetInitParams(
+    bool force_fail,
+    const HistoryDatabaseParams& history_database_params) {
+  force_fail_ = force_fail;
+  history_database_params_ =
+      std::make_unique<HistoryDatabaseParams>(history_database_params);
+}
+
 void HistoryBackend::Init(
     bool force_fail,
     const HistoryDatabaseParams& history_database_params) {
+  if (is_inited_) {
+    return;
+  }
+  SetInitParams(force_fail, history_database_params);
+  InitWithCachedParams();
+}
+
+void HistoryBackend::InitWithCachedParams() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (is_inited_) {
+    return;
+  }
+  CHECK(history_database_params_);
+  is_inited_ = true;
+
   TRACE_EVENT0("browser", "HistoryBackend::Init");
 
-  DCHECK(base::PathExists(history_database_params.history_dir))
+  DCHECK(base::PathExists(history_database_params_->history_dir))
       << "History directory does not exist. If you are in a test make sure "
          "that ~TestingProfile() has not been called or that the "
          "ScopedTempDirectory used outlives this task.";
 
-  if (!force_fail) {
-    InitImpl(history_database_params);
+  if (!force_fail_) {
+    InitImpl(*history_database_params_);
   }
   delegate_->DBLoaded();
 
@@ -436,7 +459,13 @@ void HistoryBackend::Init(
       std::make_unique<ClientTagBasedDataTypeProcessor>(
           syncer::HISTORY,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
-                              history_database_params.channel)));
+                              history_database_params_->channel)));
+
+  // Forward the sync transport state if SetSyncTransportState() was called
+  // before backend initialization.
+  if (sync_transport_state_.has_value()) {
+    history_sync_bridge_->SetSyncTransportState(*sync_transport_state_);
+  }
 
   if (base::FeatureList::IsEnabled(syncer::kSyncJourney)) {
     journeys_sync_bridge_ = std::make_unique<journeys::JourneysSyncBridge>(
@@ -444,7 +473,7 @@ void HistoryBackend::Init(
         std::make_unique<ClientTagBasedDataTypeProcessor>(
             syncer::JOURNEY,
             base::BindRepeating(&syncer::ReportUnrecoverableError,
-                                history_database_params.channel)));
+                                history_database_params_->channel)));
   }
 
   if (db_ && db_->GetDeleteForeignVisitsUntilId() != kInvalidVisitID) {
@@ -452,6 +481,8 @@ void HistoryBackend::Init(
     // browser shutdown. Continue it.
     StartDeletingForeignVisits();
   }
+
+  history_database_params_.reset();
 }
 
 void HistoryBackend::SetOnBackendDestroyTask(
@@ -2069,6 +2100,8 @@ QueryURLAndVisitsResult HistoryBackend::QueryURLAndVisits(
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 HistoryBackend::GetHistorySyncControllerDelegate() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  InitWithCachedParams();
   if (history_sync_bridge_) {
     return history_sync_bridge_->change_processor()->GetControllerDelegate();
   }
@@ -2077,6 +2110,8 @@ HistoryBackend::GetHistorySyncControllerDelegate() {
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 HistoryBackend::GetJourneysSyncControllerDelegate() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  InitWithCachedParams();
   if (journeys_sync_bridge_) {
     return journeys_sync_bridge_->change_processor()->GetControllerDelegate();
   }
@@ -2085,6 +2120,9 @@ HistoryBackend::GetJourneysSyncControllerDelegate() {
 
 void HistoryBackend::SetSyncTransportState(
     syncer::SyncService::TransportState state) {
+  sync_transport_state_ = state;
+  // If the sync bridge has already been created, forward the state immediately;
+  // otherwise, it will be forwarded when InitWithCachedParams() runs.
   if (history_sync_bridge_) {
     history_sync_bridge_->SetSyncTransportState(state);
   }

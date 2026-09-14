@@ -46,6 +46,7 @@ source_set("impl") {
   ]
   deps = [
     "//base",
+    "//chrome/browser:after_startup_task_utils",
     "//chrome/browser/actor",
     "//chrome/browser/bookmarks",
     "//chrome/browser/complex_tasks",

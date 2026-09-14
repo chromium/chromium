@@ -1034,6 +1034,19 @@ void BrowsingHistoryService::OnHistoryDeletions(
   }
 }
 
+void BrowsingHistoryService::HistoryServiceBeingDeleted(
+    HistoryService* history_service) {
+  DCHECK(history_service == local_history_);
+  // BrowsingHistoryService is owned by UI consumers (e.g.
+  // BrowsingHistoryHandler) and can outlive HistoryService during profile
+  // shutdown or test teardown. Reset the observation while HistoryService is
+  // still alive to prevent ~ScopedObservation() from calling RemoveObserver()
+  // on freed memory during destruction, and clear `local_history_` so it does
+  // not dangle.
+  history_service_observation_.Reset();
+  local_history_ = nullptr;
+}
+
 void BrowsingHistoryService::OnWebHistoryDeleted() {
   // TODO(calamity): Only ignore web history deletions when they are actually
   // initiated by us, rather than ignoring them whenever we are deleting.

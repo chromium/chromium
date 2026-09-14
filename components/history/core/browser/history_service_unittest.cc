@@ -40,6 +40,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_client.h"
@@ -52,6 +53,10 @@
 #include "components/history/core/browser/visit_delegate.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_device_info/local_device_info_provider.h"
+#include "components/version_info/channel.h"
 #include "components/visitedlink/core/visited_link.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,6 +113,46 @@ void TestVisitDelegate::AddVisitedLink(const VisitedLink& link) {
     std::move(add_complete_task_).Run();
   }
 }
+
+class TestDeviceInfoTracker : public syncer::DeviceInfoTracker {
+ public:
+  bool IsSyncing() const override { return true; }
+  const syncer::DeviceInfo* GetDeviceInfo(
+      const std::string& client_id) const override {
+    return nullptr;
+  }
+  std::vector<const syncer::DeviceInfo*> GetAllDeviceInfo() const override {
+    return {};
+  }
+  std::vector<const syncer::DeviceInfo*> GetAllChromeDeviceInfo()
+      const override {
+    return {};
+  }
+  void AddObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override {}
+  absl::flat_hash_map<syncer::DeviceInfo::FormFactor, int>
+  CountActiveDevicesByType() const override {
+    return {};
+  }
+  void ForcePulseForTest() override {}
+  bool IsRecentLocalCacheGuid(const std::string& cache_guid) const override {
+    return false;
+  }
+};
+
+class TestLocalDeviceInfoProvider : public syncer::LocalDeviceInfoProvider {
+ public:
+  version_info::Channel GetChannel() const override {
+    return version_info::Channel::UNKNOWN;
+  }
+  const syncer::DeviceInfo* GetLocalDeviceInfo() const override {
+    return nullptr;
+  }
+  base::CallbackListSubscription RegisterOnInitializedCallback(
+      const base::RepeatingClosure& callback) override {
+    return {};
+  }
+};
 
 class HistoryServiceTest : public testing::Test {
  public:
@@ -1661,6 +1706,76 @@ TEST_F(OrderingHistoryServiceTest, EnsureAddPageConstructsSelfLink) {
   ASSERT_TRUE(weak_visit_delegate_);
   EXPECT_TRUE(weak_visit_delegate_->visit_delegate_was_called());
   EXPECT_EQ(weak_visit_delegate_->get_added_links(), expected_links);
+}
+
+TEST_F(HistoryServiceTest, DeferredInitWithSyncControllerDelegate) {
+  // Tear down the default HistoryService created by SetUp().
+  CleanupHistoryService();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDeferHistoryBackendInit);
+
+  history_service_ = std::make_unique<history::HistoryService>();
+  history_service_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
+
+  // The backend init should not be scheduled yet because init is deferred.
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+  EXPECT_FALSE(history_service_->backend_loaded());
+
+  // Getting the sync controller delegate should not cause backend init to be
+  // scheduled or run.
+  auto delegate = history_service_->GetHistorySyncControllerDelegate();
+  ASSERT_TRUE(delegate);
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+  EXPECT_FALSE(history_service_->backend_loaded());
+
+  // Invoking a method on the delegate triggers the DelegateProvider on the
+  // backend sequence, which ensures the backend is initialized.
+  base::test::TestFuture<base::ListValue> future;
+  delegate->GetAllNodesForDebugging(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_TRUE(history_service_->backend_loaded());
+}
+
+TEST_F(HistoryServiceTest, DeferredInitNotTriggeredByEarlyCallsAndShutdown) {
+  // Tear down the default HistoryService created by SetUp().
+  CleanupHistoryService();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDeferHistoryBackendInit);
+
+  TestDeviceInfoTracker device_info_tracker;
+  TestLocalDeviceInfoProvider local_device_info_provider;
+  history_service_ = std::make_unique<history::HistoryService>(
+      nullptr, nullptr, &device_info_tracker, &local_device_info_provider);
+  history_service_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
+
+  // Init() notifies device info and local device cache GUID, which should not
+  // cause backend init to be scheduled.
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+  EXPECT_FALSE(history_service_->backend_loaded());
+
+  // In-memory early calls should also not trigger backend initialization.
+  history_service_->SetCanAddForeignVisitsToSegmentsOnBackend(true);
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+
+  history_service_->SetSyncTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+
+  history_service_->ClearCachedDataForContextID(0);
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+
+  // Setting the destroy task and shutting down should also not trigger backend
+  // initialization.
+  base::RunLoop run_loop;
+  history_service_->SetOnBackendDestroyTask(run_loop.QuitClosure());
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+
+  history_service_->Shutdown();
+  history_service_.reset();
+  run_loop.Run();
 }
 
 }  // namespace history

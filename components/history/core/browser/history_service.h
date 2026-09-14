@@ -77,6 +77,7 @@ class DeleteDirectiveHandler;
 struct DownloadRow;
 struct HistoryAddPageArgs;
 class HistoryBackend;
+class HistoryBackendRunner;
 class HistoryClient;
 class HistoryDBTask;
 struct HistoryDatabaseParams;
@@ -830,13 +831,21 @@ class HistoryService : public KeyedService,
   // pass it on to the HistorySyncBridge.
   void SetSyncTransportState(syncer::SyncService::TransportState state);
 
-  // Override `backend_task_runner_` for testing; needs to be called before
-  // Init.
+  // Ensures that HistoryBackend::Init has been scheduled. If backend
+  // initialization was deferred during startup, this will schedule it
+  // immediately. Safe to call multiple times (subsequent calls are no-ops).
+  void EnsureBackendInitScheduled() const;
+
+  // Override backend task runner for testing; needs to be called before Init().
   void set_backend_task_runner_for_testing(
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    DCHECK(!backend_task_runner_);
-    backend_task_runner_ = std::move(task_runner);
+    DCHECK(!backend_runner_);
+    backend_task_runner_for_testing_ = std::move(task_runner);
   }
+
+  // Returns true if HistoryBackend::Init has been scheduled on the backend
+  // task runner.
+  bool is_backend_init_scheduled_for_testing() const;
 
  protected:
   // These are not currently used, hopefully we can do something in the future
@@ -1147,17 +1156,40 @@ class HistoryService : public KeyedService,
   // each visit added to the VisitedLinks hashtable.
   void LogTransitionMetricsForVisit(ui::PageTransition transition);
 
+  // Returns the backend task runner from `backend_runner_`, ensuring that
+  // HistoryBackend::Init has been scheduled first if it was deferred during
+  // startup. This is called when dispatching queries and requests to
+  // HistoryBackend.
+  base::SequencedTaskRunner* GetBackendTaskRunner() const;
+
+  // Dispatches a task to the backend sequence without triggering backend
+  // initialization. ONLY for in-memory updates (e.g. sync device info,
+  // shutdown) that do not require the database to be open.
+  void PostBackendTaskWithoutInit(const base::Location& from_here,
+                                  base::OnceClosure task);
+
+  bool ShouldDeferBackendInit() const;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The directory containing the History databases.
   base::FilePath history_dir_;
 
-  // The TaskRunner to which HistoryBackend tasks are posted. Nullptr once
-  // Cleanup() is called.
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+  // Manages the backend task runner and initialization of HistoryBackend.
+  // Nullptr once Cleanup() is called.
+  std::unique_ptr<HistoryBackendRunner> backend_runner_;
+
+  // True once Cleanup() has been called.
+  bool is_cleaned_up_ = false;
+
+  // Overridden backend task runner for testing, if set before Init().
+  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_for_testing_;
 
   // This class has most of the implementation. You MUST communicate with this
-  // class ONLY through `backend_task_runner_`.
+  // class ONLY by dispatching tasks through `GetBackendTaskRunner()` (or
+  // `ScheduleTask()`) for tasks that require the database, or through
+  // `PostBackendTaskWithoutInit()` for in-memory tasks that should not trigger
+  // backend initialization.
   //
   // This pointer will be null once Cleanup() has been called, meaning no
   // more tasks should be scheduled.
