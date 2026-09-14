@@ -797,8 +797,17 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ("oom", *reason);
 }
 
+// This test deliberately exhausts memory, which is too slow/flaky under MSan
+// and on debug ChromeOS builds.
+// TODO(crbug.com/402535088): Re-enable on these configurations.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
+#define MAYBE_CrashReportMemoryExhaust DISABLED_CrashReportMemoryExhaust
+#else
+#define MAYBE_CrashReportMemoryExhaust CrashReportMemoryExhaust
+#endif
 IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
-                       DISABLED_ON_ASAN(CrashReportMemoryExhaust)) {
+                       MAYBE_CrashReportMemoryExhaust) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
