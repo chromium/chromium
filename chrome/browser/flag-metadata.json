@@ -1539,6 +1539,14 @@
     "expiry_milestone": 152
   },
   {
+    "name": "browsing-history-improved-hostname-suffix-matching",
+    "owners": [
+      "rainhard@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "browsing-history-similar-visits-grouping",
     "owners": [
       "rainhard@google.com",
