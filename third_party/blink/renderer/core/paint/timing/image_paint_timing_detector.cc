@@ -117,7 +117,7 @@ void ImagePaintTimingDetector::NotifyInteractionTriggeredVideoSrcChange(
   }
 }
 
-bool ImagePaintTimingDetector::RecordImage(
+void ImagePaintTimingDetector::RecordImage(
     const LayoutObject& object,
     const gfx::Size& intrinsic_size,
     const MediaTiming& media_timing,
@@ -126,17 +126,17 @@ bool ImagePaintTimingDetector::RecordImage(
     const gfx::Rect& image_border) {
   Node* node = object.GetNode();
   if (!node) {
-    return false;
+    return;
   }
 
   // Before the image resource starts loading, <img> has no size info. We wait
   // until the size is known.
   if (image_border.IsEmpty()) {
-    return false;
+    return;
   }
 
   if (media_timing.IsBroken()) {
-    return false;
+    return;
   }
 
   gfx::RectF mapped_visual_rect = paint_timing_detector_->CalculateVisualRect(
@@ -164,7 +164,7 @@ bool ImagePaintTimingDetector::RecordImage(
   //    new or old content.
   //  - `record` is non-null: we are still actively measuring this content.
   if (!record && recorded_images_.Contains(record_id_hash)) {
-    return false;
+    return;
   }
 
   // The first frame of an autoplaying <video> races with its poster image if it
@@ -208,7 +208,7 @@ bool ImagePaintTimingDetector::RecordImage(
     // currently implemented. It also appears to violate the PaintTiming spec
     // since "mark paint timing" does not check viewport intersection.
     if (effective_visual_size_result.size == 0u) {
-      return false;
+      return;
     }
 
     record = MakeGarbageCollected<ImageRecord>(
@@ -219,7 +219,7 @@ bool ImagePaintTimingDetector::RecordImage(
       if (auto* manager = GetLargestContentfulPaintManager()) {
         manager->MaybeUpdateLargestIgnoredImage(record);
       }
-      return false;
+      return;
     }
 
     ForEachPaintTimingClient([&](PaintTimingClient* client) {
@@ -259,7 +259,7 @@ bool ImagePaintTimingDetector::RecordImage(
   if (!IsSufficientlyLoadedForReporting(media_timing)) {
     // The first video frame should always be considered sufficiently loaded.
     CHECK(!is_video);
-    return false;
+    return;
   }
 
   // Mark the image as sufficiently loaded first since clients may depend on
@@ -284,13 +284,12 @@ bool ImagePaintTimingDetector::RecordImage(
 
   // No client needs this `record`, so no need to process any further.
   if (!record->IsNeededForPaintTiming()) {
-    return false;
+    return;
   }
 
   // Queue the record for presentation time processing since at least one client
   // needs this `record`.
   images_queued_for_paint_time_.push_back(record);
-  return true;
 }
 
 void ImagePaintTimingDetector::NotifyImageFinished(
