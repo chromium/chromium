@@ -68,8 +68,11 @@ TEST_F(VertexArrayObjectManagerTest, UnbindBuffer) {
   const GLuint kBufferToRemain = 456;
   const GLuint kElementArray = 789;
   bool changed = false;
-  GLuint ids[2] = { 1, 3, };
-  manager_->GenVertexArrays(std::size(ids), ids);
+  std::array<GLuint, 2> ids = {
+      1,
+      3,
+  };
+  manager_->GenVertexArrays(std::size(ids), ids.data());
   // Bind buffers to attribs on 2 vaos.
   for (GLuint id : ids) {
     EXPECT_TRUE(manager_->BindVertexArray(id, &changed));
@@ -112,13 +115,13 @@ TEST_F(VertexArrayObjectManagerTest, UnbindBuffer) {
       kElementArray,
   });
   for (size_t ii = 0; ii < std::size(ids); ++ii) {
-    UNSAFE_TODO(EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed)));
+    EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed));
     for (size_t jj = 0; jj < 4; ++jj) {
       uint32_t param = 1;
       EXPECT_TRUE(manager_->GetVertexAttrib(
           jj, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &param));
       EXPECT_EQ(expected[ii][jj], param)
-          << "id: " << UNSAFE_TODO(ids[ii]) << ", attrib: " << jj;
+          << "id: " << ids[ii] << ", attrib: " << jj;
     }
     EXPECT_EQ(expected_element_array[ii],
               manager_->bound_element_array_buffer());

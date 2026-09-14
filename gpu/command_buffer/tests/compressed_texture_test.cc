@@ -35,10 +35,7 @@ static const auto kPalette = std::to_array<uint16_t>({
     0xFFFF,                  // White.
 });
 static const unsigned kBlockSize = 4;
-static const unsigned kPaletteSize =
-    (kPalette.size() * sizeof(decltype(kPalette)::value_type)) /
-    sizeof(kPalette[0]);
-static const unsigned kTextureWidth = kBlockSize * kPaletteSize;
+static const unsigned kTextureWidth = kBlockSize * kPalette.size();
 static const unsigned kTextureHeight = kBlockSize;
 
 static const char* extension(GLenum format) {
@@ -79,41 +76,39 @@ static GLuint LoadCompressedTexture(const void* data,
 
 GLuint LoadTextureDXT1(bool alpha) {
   const unsigned kStride = 4;
-  uint16_t data[kStride * kPaletteSize];
-  for (unsigned i = 0; i < kPaletteSize; ++i) {
+  std::array<uint16_t, kStride * kPalette.size()> data;
+  for (unsigned i = 0; i < kPalette.size(); ++i) {
     // Each iteration defines a 4x4 block of texture.
     unsigned j = kStride * i;
-    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_0.
-    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_1.
-    UNSAFE_TODO(data[j++]) = kColor0;      // color index.
-    UNSAFE_TODO(data[j++]) = kColor1;      // color index.
+    data[j++] = kPalette[i];  // color_0.
+    data[j++] = kPalette[i];  // color_1.
+    data[j++] = kColor0;      // color index.
+    data[j++] = kColor1;      // color index.
   }
   GLenum format = alpha ?
       GL_COMPRESSED_RGBA_S3TC_DXT1_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-  return LoadCompressedTexture(
-      data, sizeof(data), format, kTextureWidth, kTextureHeight);
+  return LoadCompressedTexture(data.data(), sizeof(data), format, kTextureWidth,
+                               kTextureHeight);
 }
 
 GLuint LoadTextureDXT3() {
   const unsigned kStride = 8;
   const uint16_t kOpaque = 0xFFFF;
-  uint16_t data[kStride * kPaletteSize];
-  for (unsigned i = 0; i < kPaletteSize; ++i) {
+  std::array<uint16_t, kStride * kPalette.size()> data;
+  for (unsigned i = 0; i < kPalette.size(); ++i) {
     // Each iteration defines a 4x4 block of texture.
     unsigned j = kStride * i;
-    UNSAFE_TODO(data[j++]) = kOpaque;      // alpha row 0.
-    UNSAFE_TODO(data[j++]) = kOpaque;      // alpha row 1.
-    UNSAFE_TODO(data[j++]) = kOpaque;      // alpha row 2.
-    UNSAFE_TODO(data[j++]) = kOpaque;      // alpha row 3.
-    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_0.
-    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_1.
-    UNSAFE_TODO(data[j++]) = kColor0;      // color index.
-    UNSAFE_TODO(data[j++]) = kColor1;      // color index.
+    data[j++] = kOpaque;      // alpha row 0.
+    data[j++] = kOpaque;      // alpha row 1.
+    data[j++] = kOpaque;      // alpha row 2.
+    data[j++] = kOpaque;      // alpha row 3.
+    data[j++] = kPalette[i];  // color_0.
+    data[j++] = kPalette[i];  // color_1.
+    data[j++] = kColor0;      // color index.
+    data[j++] = kColor1;      // color index.
   }
-  return LoadCompressedTexture(data,
-                               sizeof(data),
-                               GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
-                               kTextureWidth,
+  return LoadCompressedTexture(data.data(), sizeof(data),
+                               GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, kTextureWidth,
                                kTextureHeight);
 }
 
@@ -121,23 +116,21 @@ GLuint LoadTextureDXT5() {
   const unsigned kStride = 8;
   const uint16_t kClear = 0x0000;
   const uint16_t kAlpha7 = 0xFFFF;  // Opaque alpha index.
-  uint16_t data[kStride * kPaletteSize];
-  for (unsigned i = 0; i < kPaletteSize; ++i) {
+  std::array<uint16_t, kStride * kPalette.size()> data;
+  for (unsigned i = 0; i < kPalette.size(); ++i) {
     // Each iteration defines a 4x4 block of texture.
     unsigned j = kStride * i;
-    UNSAFE_TODO(data[j++]) = kClear;       // alpha_0 | alpha_1.
-    UNSAFE_TODO(data[j++]) = kAlpha7;      // alpha index.
-    UNSAFE_TODO(data[j++]) = kAlpha7;      // alpha index.
-    UNSAFE_TODO(data[j++]) = kAlpha7;      // alpha index.
-    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_0.
-    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_1.
-    UNSAFE_TODO(data[j++]) = kColor0;      // color index.
-    UNSAFE_TODO(data[j++]) = kColor1;      // color index.
+    data[j++] = kClear;       // alpha_0 | alpha_1.
+    data[j++] = kAlpha7;      // alpha index.
+    data[j++] = kAlpha7;      // alpha index.
+    data[j++] = kAlpha7;      // alpha index.
+    data[j++] = kPalette[i];  // color_0.
+    data[j++] = kPalette[i];  // color_1.
+    data[j++] = kColor0;      // color index.
+    data[j++] = kColor1;      // color index.
   }
-  return LoadCompressedTexture(data,
-                               sizeof(data),
-                               GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
-                               kTextureWidth,
+  return LoadCompressedTexture(data.data(), sizeof(data),
+                               GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, kTextureWidth,
                                kTextureHeight);
 }
 
@@ -235,7 +228,7 @@ TEST_P(CompressedTextureTest, Draw) {
   // Verify results.
   int origin[] = {0, 0};
   uint8_t expected_rgba[] = {0, 0, 0, 255};
-  for (unsigned i = 0; i < kPaletteSize; ++i) {
+  for (unsigned i = 0; i < kPalette.size(); ++i) {
     origin[0] = kBlockSize * i;
     ToRGB888(kPalette[i], expected_rgba);
     EXPECT_TRUE(GLTestHelper::CheckPixels(origin[0], origin[1], kBlockSize,

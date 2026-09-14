@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -373,46 +374,48 @@ TEST_F(ProgramInfoManagerTest, GetActiveUniformBlockivCached) {
   UNSAFE_TODO(memcpy(&result[0], &data, sizeof(data)));
   program_->UpdateES3UniformBlocks(result);
   auto kName = std::to_array<const char*>({data.name0, data.name1});
-  auto kIndices =
-      std::to_array<const uint32_t*>({data.indices0, data.indices1});
+  const std::array<base::span<const uint32_t>, 2> kIndices = {data.indices0,
+                                                              data.indices1};
 
   for (uint32_t ii = 0; ii < data.header.num_uniform_blocks; ++ii) {
     ASSERT_GE(2u, data.entry[ii].active_uniforms);
-    GLint params[2];
+    std::array<GLint, 2> params;
     EXPECT_TRUE(program_info_manager_->GetActiveUniformBlockiv(
-        nullptr, kClientProgramId, ii, GL_UNIFORM_BLOCK_BINDING, params));
+        nullptr, kClientProgramId, ii, GL_UNIFORM_BLOCK_BINDING,
+        params.data()));
     EXPECT_EQ(data.entry[ii].binding, static_cast<uint32_t>(params[0]));
 
     EXPECT_TRUE(program_info_manager_->GetActiveUniformBlockiv(
-        nullptr, kClientProgramId, ii, GL_UNIFORM_BLOCK_DATA_SIZE, params));
+        nullptr, kClientProgramId, ii, GL_UNIFORM_BLOCK_DATA_SIZE,
+        params.data()));
     EXPECT_EQ(data.entry[ii].data_size, static_cast<uint32_t>(params[0]));
 
     EXPECT_TRUE(program_info_manager_->GetActiveUniformBlockiv(
-        nullptr, kClientProgramId, ii, GL_UNIFORM_BLOCK_NAME_LENGTH, params));
+        nullptr, kClientProgramId, ii, GL_UNIFORM_BLOCK_NAME_LENGTH,
+        params.data()));
     EXPECT_EQ(strlen(kName[ii]) + 1, static_cast<uint32_t>(params[0]));
 
     EXPECT_TRUE(program_info_manager_->GetActiveUniformBlockiv(
         nullptr, kClientProgramId, ii, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS,
-        params));
+        params.data()));
     EXPECT_EQ(data.entry[ii].active_uniforms, static_cast<uint32_t>(params[0]));
 
     EXPECT_TRUE(program_info_manager_->GetActiveUniformBlockiv(
         nullptr, kClientProgramId, ii, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES,
-        params));
+        params.data()));
     for (uint32_t uu = 0; uu < data.entry[ii].active_uniforms; ++uu) {
-      UNSAFE_TODO(
-          EXPECT_EQ(kIndices[ii][uu], static_cast<uint32_t>(params[uu])));
+      EXPECT_EQ(kIndices[ii][uu], static_cast<uint32_t>(params[uu]));
     }
 
     EXPECT_TRUE(program_info_manager_->GetActiveUniformBlockiv(
         nullptr, kClientProgramId, ii,
-        GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER, params));
+        GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER, params.data()));
     EXPECT_EQ(data.entry[ii].referenced_by_vertex_shader,
               static_cast<uint32_t>(params[0]));
 
     EXPECT_TRUE(program_info_manager_->GetActiveUniformBlockiv(
         nullptr, kClientProgramId, ii,
-        GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER, params));
+        GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER, params.data()));
     EXPECT_EQ(data.entry[ii].referenced_by_fragment_shader,
               static_cast<uint32_t>(params[0]));
   }
@@ -450,51 +453,51 @@ TEST_F(ProgramInfoManagerTest, GetUniformIndices) {
   program_->UpdateES2(result);
 
   {  // Original order.
-    const char* kNames[] = { data.uniform_name0, data.uniform_name1 };
+    const std::array kNames = {data.uniform_name0, data.uniform_name1};
     const auto kIndices = std::to_array<GLuint>({0, 1});
     const GLsizei kCount = 2;
-    GLuint indices[kCount];
+    std::array<GLuint, kCount> indices;
     EXPECT_TRUE(program_info_manager_->GetUniformIndices(
-        nullptr, kClientProgramId, kCount, kNames, indices));
+        nullptr, kClientProgramId, kCount, kNames.data(), indices.data()));
     for (GLsizei ii = 0; ii < kCount; ++ii) {
-      UNSAFE_TODO(EXPECT_EQ(kIndices[ii], indices[ii]));
+      EXPECT_EQ(kIndices[ii], indices[ii]);
     }
   }
 
   {  // Switched order.
-    const char* kNames[] = { data.uniform_name1, data.uniform_name0 };
+    const std::array kNames = {data.uniform_name1, data.uniform_name0};
     const auto kIndices = std::to_array<GLuint>({1, 0});
     const GLsizei kCount = 2;
-    GLuint indices[kCount];
+    std::array<GLuint, kCount> indices;
     EXPECT_TRUE(program_info_manager_->GetUniformIndices(
-        nullptr, kClientProgramId, kCount, kNames, indices));
+        nullptr, kClientProgramId, kCount, kNames.data(), indices.data()));
     for (GLsizei ii = 0; ii < kCount; ++ii) {
-      UNSAFE_TODO(EXPECT_EQ(kIndices[ii], indices[ii]));
+      EXPECT_EQ(kIndices[ii], indices[ii]);
     }
   }
 
   {  // With bad names.
-    const char* kNames[] = { data.uniform_name1, "BadName" };
+    const std::array<const char*, 2> kNames = {data.uniform_name1, "BadName"};
     const auto kIndices = std::to_array<GLuint>({1, GL_INVALID_INDEX});
     const GLsizei kCount = 2;
-    GLuint indices[kCount];
+    std::array<GLuint, kCount> indices;
     EXPECT_TRUE(program_info_manager_->GetUniformIndices(
-        nullptr, kClientProgramId, kCount, kNames, indices));
+        nullptr, kClientProgramId, kCount, kNames.data(), indices.data()));
     for (GLsizei ii = 0; ii < kCount; ++ii) {
-      UNSAFE_TODO(EXPECT_EQ(kIndices[ii], indices[ii]));
+      EXPECT_EQ(kIndices[ii], indices[ii]);
     }
   }
 
   {  // Both "foo" and "foo[0]" are considered valid names for an array,
      // but not "foo[1]".
-    const char* kNames[] = { "bull", "bull[0]", "bull[1]" };
+    const std::array kNames = {"bull", "bull[0]", "bull[1]"};
     const auto kIndices = std::to_array<GLuint>({1, 1, GL_INVALID_INDEX});
     const GLsizei kCount = 3;
-    GLuint indices[kCount];
+    std::array<GLuint, kCount> indices;
     EXPECT_TRUE(program_info_manager_->GetUniformIndices(
-        nullptr, kClientProgramId, kCount, kNames, indices));
+        nullptr, kClientProgramId, kCount, kNames.data(), indices.data()));
     for (GLsizei ii = 0; ii < kCount; ++ii) {
-      UNSAFE_TODO(EXPECT_EQ(kIndices[ii], indices[ii]));
+      EXPECT_EQ(kIndices[ii], indices[ii]);
     }
   }
 }
