@@ -471,4 +471,46 @@ TEST_F(ClipboardJsTest, TestReadFulfillmentSendsNotification) {
   }));
 }
 
+// Test that clipboard requests without user activation (e.g., triggered by an
+// untrusted programmatic click in setTimeout) bypass the native handler and
+// are rejected directly by WebKit's original clipboard function.
+TEST_F(ClipboardJsTest, TestWriteTextWithoutUserActivationDenied) {
+  NSString* html = @"<html><body>"
+                    "<button id=\"triggerBtn\">CLICK ME</button>"
+                    "<script>"
+                    "window.testState = {};"
+                    "const btn = document.getElementById('triggerBtn');"
+                    "btn.addEventListener('click', async (event) => {"
+                    "  window.testState.isTrusted = String(event.isTrusted);"
+                    "  window.testState.isActive = "
+                    "String(navigator.userActivation.isActive);"
+                    "  try {"
+                    "    await navigator.clipboard.writeText('TEST-123');"
+                    "    window.testState.lastResult = 'resolved';"
+                    "  } catch (e) {"
+                    "    window.testState.lastResult = e.name;"
+                    "  }"
+                    "});"
+                    "window.onload = () => {"
+                    "  setTimeout(() => {"
+                    "    btn.click();"
+                    "  }, 0);"
+                    "};"
+                    "</script>"
+                    "</body></html>";
+
+  ASSERT_TRUE(web::test::LoadHtml(web_view(), html,
+                                  [NSURL URLWithString:kHttpsTestUrl]));
+  ASSERT_TRUE(web::test::WaitForInjectedScripts(web_view()));
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return !GetTestStateResult("lastResult").empty();
+  }));
+
+  EXPECT_EQ("false", GetTestStateResult("isTrusted"));
+  EXPECT_EQ("false", GetTestStateResult("isActive"));
+  EXPECT_EQ("NotAllowedError", GetTestStateResult("lastResult"));
+  EXPECT_FALSE(clipboard_handler_.lastReceivedScriptMessage);
+}
+
 }  // namespace web

@@ -75,6 +75,12 @@ function createClipboardOverride<T, A extends any[]>(
     command: string): (...args: A) => Promise<T> {
   // Create a new function that will replace the original clipboard method.
   return function(this: Clipboard, ...args: A): Promise<T> {
+    // Use the original clipboard function directly and let WebKit deny the
+    // clipboard action if there is no user activation.
+    if (!navigator.userActivation.isActive) {
+      return originalFunction.apply(this, args);
+    }
+
     // If there are too many pending requests, evict the oldest one.
     if (pendingClipboardRequests.length >= MAX_PENDING_REQUESTS) {
       const oldestRequest = pendingClipboardRequests.shift();
