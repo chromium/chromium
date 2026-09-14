@@ -868,6 +868,9 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE" desc="Descriptor under the query for enhanced autofill. 'Gemini' is a brand name and should match standard branding guidelines across languages.">
     Find and fill with Gemini
   </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_SEARCH_RESULTS_A11Y_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Screen reader announcement when AtMemory search results are presented to the user." translateable="false">
+    Search results available. Use up and down arrow keys to navigate.
+  </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_FETCHING" desc="Descriptor for the loading state when enhanced autofill is fetching results. 'Gemini' is a brand name and should match standard branding guidelines across languages.">
     Find and fill with Gemini
   </message>
@@ -879,6 +882,9 @@
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_FETCHING_PUTTING_IT_TOGETHER" desc="Loading message shown while putting information together during enhanced autofill search." translateable="false">
     Putting it all together...
+  </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_LOADING_A11Y_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Accessibility announcement read by screen readers when enhanced autofill is loading search results." translateable="false">
+    Loading
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE" desc="This error message is to help users understand that enhanced autofill wasn't able to find and fill relevant info. The technical reason is that the query is not supported by enhanced autofill. It appears on the query results empty state.">
     Couldn't find this info

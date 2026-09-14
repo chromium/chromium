@@ -473,6 +473,7 @@ bool PopupViewViews::Show(
   MaybeAnnounceCurrentTabAndFootnote();
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
+  MaybeAnnounceA11yOverride();
   if (!MaybeA11yFocusInformationalSuggestion()) {
     return false;
   }
@@ -960,6 +961,7 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
 
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
+  MaybeAnnounceA11yOverride();
   if (!MaybeA11yFocusInformationalSuggestion()) {
     return;
   }
@@ -1204,6 +1206,18 @@ void PopupViewViews::MaybeAnnounceLoadingState() {
     a11y_announcer_.Run(l10n_util::GetStringUTF16(
                             IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE),
                         /*polite=*/true);
+  }
+}
+
+void PopupViewViews::MaybeAnnounceA11yOverride() {
+  if (!controller_) {
+    return;
+  }
+  for (const Suggestion& suggestion : controller_->GetSuggestions()) {
+    if (suggestion.a11y_announcement) {
+      a11y_announcer_.Run(*suggestion.a11y_announcement, /*polite=*/true);
+      break;
+    }
   }
 }
 

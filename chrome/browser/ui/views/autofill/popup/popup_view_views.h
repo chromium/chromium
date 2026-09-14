@@ -223,6 +223,10 @@ class PopupViewViews : public PopupBaseView,
   // If the current suggestions are for loading, announces it to the user.
   void MaybeAnnounceLoadingState();
 
+  // Announces the first non-empty `a11y_announcement` found in the current
+  // suggestions.
+  void MaybeAnnounceA11yOverride();
+
   // Announces the title of the currently selected tab in `tabbed_pane_`, if it
   // exists. If the current suggestions also contains a BNPL footnote, announces
   // it to the user in the same message, separated by a comma.

@@ -912,8 +912,13 @@ void AtMemoryManager::AdvanceFetchingSuggestion() {
 void AtMemoryManager::ShowFetchingStateSuggestions() {
   CHECK(popup_state_);
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(
-      CreateFetchingSuggestion(popup_state_->fetching_string_index));
+  Suggestion fetching_suggestion =
+      CreateFetchingSuggestion(popup_state_->fetching_string_index);
+  if (popup_state_->fetching_string_index == 0) {
+    fetching_suggestion.a11y_announcement = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_AT_MEMORY_LOADING_A11Y_ANNOUNCEMENT);
+  }
+  suggestions.emplace_back(std::move(fetching_suggestion));
   MaybeAppendPersonalContextNotice(suggestions);
   SendSuggestions(std::move(suggestions));
 }
@@ -950,6 +955,9 @@ void AtMemoryManager::ShowResultsRetrievedStateSuggestions(
       base::ToVector(result.entries, [&](const MemorySearchResult& entry) {
         return TransformResultIntoSuggestion(entry, app_locale);
       });
+  CHECK(!suggestions.empty());
+  suggestions.front().a11y_announcement = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AT_MEMORY_SEARCH_RESULTS_A11Y_ANNOUNCEMENT);
   MaybeAppendPersonalContextNotice(suggestions);
   SendSuggestions(std::move(suggestions));
 }

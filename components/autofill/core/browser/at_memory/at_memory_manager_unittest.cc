@@ -75,6 +75,7 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Contains;
+using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
@@ -374,6 +375,17 @@ Matcher<Suggestion> EqualsSuggestionWithManageAddressFooter(
   return EqualsAtMemorySuggestion(
       memory_data_type,
       ElementsAre(EqualsSuggestion(SuggestionType::kManageAddress)));
+}
+
+// Matches a Suggestion that has an a11y announcement with the given message id.
+Matcher<Suggestion> HasA11yAnnouncement(int message_id) {
+  return Field(&Suggestion::a11y_announcement,
+               Eq(l10n_util::GetStringUTF16(message_id)));
+}
+
+// Matches a Suggestion that does not have an a11y announcement.
+Matcher<Suggestion> HasNoA11yAnnouncement() {
+  return Field(&Suggestion::a11y_announcement, Eq(std::nullopt));
 }
 
 // Tests that OnFilterChanged with a non-empty filter generates the search
@@ -1925,6 +1937,62 @@ TEST_P(AtMemoryManagerTest,
   task_environment_.FastForwardBy(kFetchingMessageInterval);
   task_environment_.FastForwardBy(kFetchingMessageInterval);
   task_environment_.FastForwardBy(kFetchingMessageInterval);
+}
+
+// Tests that only the initial fetching suggestion has the a11y announcement.
+// Subsequent rotated suggestions do not have it, even after cycling through all
+// messages.
+TEST_P(AtMemoryManagerTest,
+       FetchingState_SetsA11yAnnouncementOnlyForInitialFetchingSuggestion) {
+  SeeFormAndShowPopup();
+
+  {
+    InSequence seq;
+    EXPECT_CALL(update_callback_,
+                Run(ElementsAre(HasA11yAnnouncement(
+                        IDS_AUTOFILL_AT_MEMORY_LOADING_A11Y_ANNOUNCEMENT)),
+                    _));
+    EXPECT_CALL(mock_query_service(), Query);
+    EXPECT_CALL(update_callback_, Run(ElementsAre(HasNoA11yAnnouncement()), _))
+        .Times(4);
+  }
+
+  manager().OnSearchSubmitted(u"query");
+  task_environment_.FastForwardBy(kFetchingMessageInterval * 4);
+}
+
+// Tests that only the first search result suggestion has the a11y announcement.
+// Subsequent results and child suggestions do not have it.
+TEST_P(AtMemoryManagerTest, SearchResults_SetsA11yAnnouncementOnSearchResults) {
+  SeeFormAndShowPopup();
+
+  MemorySearchResult entry1(MemoryDataType::kFlightReservationFlightNumber,
+                            u"Flight number", u"UA123");
+  // Metadata items are converted into child suggestions displayed in
+  // sub-popups.
+  entry1.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationArrivalAirport, u"Destination airport",
+      u"SFO");
+
+  MemorySearchResult entry2(MemoryDataType::kFlightReservationFlightNumber,
+                            u"Flight number", u"LH456");
+
+  std::vector<Suggestion> final_suggestions;
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    {entry1, entry2}, final_suggestions);
+  manager().OnSearchSubmitted(u"query");
+
+  // Only the first suggestion gets the announcement. Child suggestions and
+  // subsequent suggestions should not have an a11y announcement.
+  EXPECT_THAT(
+      final_suggestions,
+      ElementsAre(
+          AllOf(HasA11yAnnouncement(
+                    IDS_AUTOFILL_AT_MEMORY_SEARCH_RESULTS_A11Y_ANNOUNCEMENT),
+                Field(&Suggestion::children,
+                      AllOf(Not(IsEmpty()), Each(HasNoA11yAnnouncement())))),
+          HasNoA11yAnnouncement()));
 }
 
 // Tests that when search results arrive, the fetching timer is cancelled.
