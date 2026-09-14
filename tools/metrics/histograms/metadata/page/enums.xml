@@ -361,6 +361,24 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/paid_content_page_load_metrics_observer.cc:PaidContentState) -->
 
+<!-- LINT.IfChange(SearchPrewarmPrerenderCoverageStatus) -->
+
+<enum name="SearchPrewarmPrerenderCoverageStatus">
+  <int value="0" label="Prerender activated"/>
+  <int value="1" label="Preload process reused (prewarm)"/>
+  <int value="2"
+      label="Current process reused (in-tab / in-process, e.g. SRP to SRP)"/>
+  <int value="3"
+      label="Current process reused with prewarm (in-tab, in process
+             originally prewarmed)"/>
+  <int value="4" label="Other process reused (from process pool or other tab)"/>
+  <int value="5" label="Cold process allocated"/>
+  <int value="6"
+      label="Blank process reused (empty process of about:blank, NTP, etc.)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/google/browser/search_prewarm_coverage_status.h:SearchPrewarmPrerenderCoverageStatus) -->
+
 <!-- LINT.IfChange(SoftNavigationPageLoadMetricsObserverState) -->
 
 <enum name="SoftNavigationPageLoadMetricsObserverState">
