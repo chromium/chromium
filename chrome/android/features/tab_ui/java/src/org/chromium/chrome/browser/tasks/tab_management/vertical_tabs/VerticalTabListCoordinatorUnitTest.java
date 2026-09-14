@@ -75,6 +75,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -132,6 +133,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
@@ -142,6 +144,7 @@ import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -224,6 +227,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
     @Mock private TabContentManager mTabContentManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private BackPressManager mBackPressManager;
     @Mock private TabHoverCardView mTabHoverCardView;
     @Mock private TabGroupHoverCardView mTabGroupHoverCardView;
     @Mock private ServiceStatus mServiceStatus;
@@ -409,6 +413,10 @@ public class VerticalTabListCoordinatorUnitTest {
 
         assertNotNull(mSelectorObserverCaptor.getValue());
         verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.getValue());
+        verify(mBackPressManager)
+                .addHandler(
+                        any(TabSwitcherBackPressHandlerManager.class),
+                        eq(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG));
     }
 
     @Test
@@ -483,8 +491,11 @@ public class VerticalTabListCoordinatorUnitTest {
         SimpleRecyclerViewAdapter pinnedAdapter =
                 (SimpleRecyclerViewAdapter) pinnedRecyclerView.getAdapter();
 
+        when(mBackPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG))
+                .thenReturn(true);
         mCoordinator.destroy();
 
+        verify(mBackPressManager).removeHandler(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
         verify(mTabModelSelector).removeObserver(observer);
         verify(mTabStripContextMenuCoordinator).destroy();
         assertNull(
@@ -1488,7 +1499,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mTabGroupHoverCardViewStub,
                         mTabContentManagerSupplier,
                         mUndoBarThrottle,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        mBackPressManager);
 
         View containerView = mCoordinator.getView();
         containerView.setVisibility(View.VISIBLE);
@@ -3132,6 +3144,30 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testDragHandlerDelegate_HandleInternalDragEnd_No_Drag() {
+        createCoordinator();
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> mainCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(mainCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate mainDelegate = mainCaptor.getValue();
+        assertNotNull(mainDelegate);
+        assertFalse(mainDelegate.isDragInProcess());
+        assertEquals(
+                BackPressHandler.BackPressResult.SUCCESS, mainDelegate.handleInternalDragEnd());
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> pinnedCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mPinnedTabSwitcherDragHandler).setDragHandlerDelegate(pinnedCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate pinnedDelegate = pinnedCaptor.getValue();
+        assertNotNull(pinnedDelegate);
+        assertFalse(pinnedDelegate.isDragInProcess());
+        assertEquals(
+                BackPressHandler.BackPressResult.SUCCESS, pinnedDelegate.handleInternalDragEnd());
+    }
+
+    @Test
+    @SmallTest
     public void testGroupHeaderDragOut_CollapsedGroup_PassesStripDragShadowView() {
         Token tabGroupId = new Token(1L, 2L);
         Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
@@ -4293,7 +4329,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mTabGroupHoverCardViewStub,
                         mTabContentManagerSupplier,
                         mUndoBarThrottle,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        mBackPressManager);
 
         mCoordinator.getCollapseController().setRailCollapseListener(mMockRailCollapseListener);
     }
@@ -4319,7 +4356,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mTabGroupHoverCardViewStub,
                         mTabContentManagerSupplier,
                         mUndoBarThrottle,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        mBackPressManager);
 
         mCoordinator.getCollapseController().setRailCollapseListener(mMockRailCollapseListener);
     }

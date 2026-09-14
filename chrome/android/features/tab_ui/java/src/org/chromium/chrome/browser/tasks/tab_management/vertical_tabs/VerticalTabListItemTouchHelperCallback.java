@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
@@ -535,6 +536,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         }
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+            if (mOnDragStateChangedCallback != null) {
+                mOnDragStateChangedCallback.onResult(true);
+            }
             mHasFiredDragMovementCallback = false;
             TabModel tabModel = mCurrentTabModelSupplier.get();
             if (tabModel == null || !hasTabPropertiesModel(viewHolder)) return;
@@ -556,6 +560,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             assumeNonNull(viewHolder);
             mDragStartTabId = getTabId(viewHolder);
             mDragStartGroupId = getTabGroupId(viewHolder);
+            mIsDragStartGroup =
+                    viewHolder.getItemViewType() == TabProperties.UiType.TAB_GROUP
+                            || isSolitaryChild(viewHolder);
             Tab startTab = tabModel.getTabById(mDragStartTabId);
             mDragStartTabModelIndex =
                     startTab != null ? tabModel.indexOf(startTab) : TabModel.INVALID_TAB_INDEX;
@@ -591,6 +598,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 selectTab(viewHolder, TabSelectionType.FROM_DRAG);
             }
         } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
+            if (mOnDragStateChangedCallback != null) {
+                mOnDragStateChangedCallback.onResult(false);
+            }
             stopThrottling();
             mSelectedViewHolder = null;
             if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX) {
@@ -804,6 +814,20 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        if (mIsDragAbortedByEsc) {
+            if (tabModel != null
+                    && mDragStartTabId != Tab.INVALID_TAB_ID
+                    && mDragStartTabModelIndex != TabModel.INVALID_TAB_INDEX) {
+                // Revert tab or group position in the underlying TabModel.
+                // TODO(crbug.com/553670813): Handle reverting group membership if the tab was
+                // dragged into or out of a tab group during the drag.
+                NestedTabReorderUtils.moveTabOrGroup(
+                        tabModel, mDragStartTabId, mDragStartTabModelIndex, mIsDragStartGroup);
+            }
+            mIsDragAbortedByEsc = false;
+        }
+
         if (viewHolder == mSelectedViewHolder || mSelectedViewHolder == null) {
             stopThrottling();
         }
@@ -866,6 +890,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             mDragStartTabId = Tab.INVALID_TAB_ID;
             mDragStartGroupId = null;
             mDragStartTabModelIndex = TabModel.INVALID_TAB_INDEX;
+            mIsDragStartGroup = false;
             mIsOSNewWindowDrop = false;
         }
         mSavedItemStates.clear();
@@ -1004,7 +1029,14 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     private RecyclerView.@Nullable ViewHolder mCollapsedViewHolder;
     private int mDraggedTabId = Tab.INVALID_TAB_ID;
     private @Nullable Token mDraggedGroupId;
+    private @Nullable Callback<Boolean> mOnDragStateChangedCallback;
     private boolean mIsDraggedGroupHeader;
+    // This boolean is needed so that the tab is put back in its original position when the user
+    // presses the esc key.
+    private boolean mIsDragAbortedByEsc;
+    // This boolean checks whether what the user is dragging is a group or not. It is needed to put
+    // the entire tab group back to its original position when the user presses the esc key.
+    private boolean mIsDragStartGroup;
     private int mDraggedItemViewType = -1;
 
     @VisibleForTesting @Nullable Runnable mDelayedExternalItemRestorationRunnable;
@@ -1108,6 +1140,19 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         }
         info.view.setTranslationY(0f);
         info.view.setTranslationZ(0f);
+    }
+
+    /**
+     * Sets the callback to be notified when the drag state changes between active and idle.
+     *
+     * @param callback Callback receiving {@code true} when drag starts, {@code false} when it ends.
+     */
+    public void setOnDragStateChangedCallback(@Nullable Callback<Boolean> callback) {
+        mOnDragStateChangedCallback = callback;
+    }
+
+    public void markDragAbortedByEsc() {
+        mIsDragAbortedByEsc = true;
     }
 
     /** Cancels any pending delayed restoration of an externally dropped item. */

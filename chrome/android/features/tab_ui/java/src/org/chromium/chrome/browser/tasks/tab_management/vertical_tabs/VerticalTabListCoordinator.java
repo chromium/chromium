@@ -38,6 +38,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
@@ -186,6 +187,9 @@ public class VerticalTabListCoordinator {
     private final VerticalTabHoverController mTabHoverController;
     private final RecyclerView.OnScrollListener mOnScrollListener;
     private final VerticalTabKeyboardHandler mKeyboardHandler;
+    private final BackPressManager mBackPressManager;
+    private final TabSwitcherBackPressHandlerManager mBackPressHandlerManager =
+            new TabSwitcherBackPressHandlerManager();
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable AppHeaderObserver mAppHeaderObserver;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
@@ -330,6 +334,7 @@ public class VerticalTabListCoordinator {
      * @param tabContentManagerSupplier Supplier for the tab content manager.
      * @param undoBarThrottle Throttler for undo bar messages.
      * @param browserControlsStateProvider Provider for browser controls sizing and state.
+     * @param backPressManager Manager for intercepting system back press and physical ESC keys.
      */
     @SuppressLint("ClickableViewAccessibility")
     public VerticalTabListCoordinator(
@@ -351,7 +356,8 @@ public class VerticalTabListCoordinator {
             @Nullable ViewStub tabGroupHoverCardViewStub,
             Supplier<TabContentManager> tabContentManagerSupplier,
             @Nullable UndoBarThrottle undoBarThrottle,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            BackPressManager backPressManager) {
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
         mTabModelSelector = tabModelSelector;
@@ -364,6 +370,10 @@ public class VerticalTabListCoordinator {
         mDataSharingTabManager = dataSharingTabManager;
         mUndoBarThrottle = undoBarThrottle;
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        mBackPressManager = backPressManager;
+        // Register the TabSwitcherBackPressHandlerManager to receive ESC / Back events.
+        mBackPressManager.addHandler(
+                mBackPressHandlerManager, BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
         mTabContentManagerSupplier = tabContentManagerSupplier;
         if (GlicEnabling.isEnabledByFlags() || ContextualTasksUtils.isContextualTasksUiEnabled()) {
             mTabUnderlineManager = new TabUnderlineManager(windowAndroid);
@@ -954,6 +964,9 @@ public class VerticalTabListCoordinator {
         mSpineDecoration.destroy();
         mTabModelSelectorTabModelObserver.destroy();
         mVerticalTabsActiveSupplier.removeObserver(mActiveObserver);
+        if (mBackPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG)) {
+            mBackPressManager.removeHandler(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
+        }
         for (TabSwitcherDragHandler dragHandler : mTabSwitcherDragHandlers) {
             dragHandler.destroy();
         }
@@ -1306,8 +1319,12 @@ public class VerticalTabListCoordinator {
 
         TabSwitcherDragHandler dragHandler =
                 createTabSwitcherDragHandler(activity, tabModelSelector);
+
+        touchHelperCallback.setOnDragStateChangedCallback(dragHandler::onDragStateChanged);
+
         DragHandlerDelegate nonOriginatingDelegate =
-                createNonOriginatingDragHandlerDelegate(recyclerView, dragHandler);
+                createNonOriginatingDragHandlerDelegate(
+                        recyclerView, dragHandler, itemTouchHelper, touchHelperCallback);
         dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
         recyclerView.setOnDragListener(dragHandler);
         if (recyclerView == mRecyclerView) {
@@ -1472,8 +1489,7 @@ public class VerticalTabListCoordinator {
                         activitySupplier,
                         mMultiInstanceManager,
                         dragDropDelegate,
-                        // TODO(crbug.com/518307037): Provide back press handler manager?
-                        new TabSwitcherBackPressHandlerManager(),
+                        mBackPressHandlerManager,
                         /* fadeDragShadow= */ false);
         dragHandler.setTabModelSelector(tabModelSelector);
         mTabSwitcherDragHandlers.add(dragHandler);
@@ -1491,8 +1507,24 @@ public class VerticalTabListCoordinator {
     }
 
     private DragHandlerDelegate createNonOriginatingDragHandlerDelegate(
-            RecyclerView recyclerView, TabSwitcherDragHandler dragHandler) {
+            RecyclerView recyclerView,
+            TabSwitcherDragHandler dragHandler,
+            ItemTouchHelper2 itemTouchHelper,
+            VerticalTabListItemTouchHelperCallback touchHelperCallback) {
         return new DragHandlerDelegate() {
+
+            @Override
+            public boolean isDragInProcess() {
+                return itemTouchHelper.isDragInProcess();
+            }
+
+            @Override
+            public int handleInternalDragEnd() {
+                touchHelperCallback.markDragAbortedByEsc();
+                itemTouchHelper.stopInternalDrag();
+                return BackPressHandler.BackPressResult.SUCCESS;
+            }
+
             @Override
             public boolean handleDragStart(float xPx, float yPx) {
                 mTabHoverController.hideHoverCard();

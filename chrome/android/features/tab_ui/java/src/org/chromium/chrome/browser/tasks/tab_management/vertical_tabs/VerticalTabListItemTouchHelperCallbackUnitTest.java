@@ -47,6 +47,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -96,6 +97,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Mock private TabGridItemLongPressOrchestrator mOrchestrator;
     @Mock private VerticalTabListItemTouchHelperCallback.OnDragOutListener mOnDragOutListener;
+    @Mock private Callback<Boolean> mDragStateChangedCallback;
     @Mock private UndoBarThrottle mUndoBarThrottle;
     @Mock private Canvas mCanvas;
     @Mock private View mItemView;
@@ -578,6 +580,63 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         mCallback.onSelectedChanged(null, ItemTouchHelper.ACTION_STATE_IDLE);
 
         verify(mUndoBarThrottle).stopThrottling(THROTTLE_TOKEN);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnSelectedChanged_NotifiesOnDragStateChangedCallback() {
+        mCallback.setOnDragStateChangedCallback(mDragStateChangedCallback);
+
+        // Transition to drag state.
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        verify(mDragStateChangedCallback).onResult(true);
+
+        // Transition to idle state.
+        mCallback.onSelectedChanged(null, ItemTouchHelper.ACTION_STATE_IDLE);
+        verify(mDragStateChangedCallback).onResult(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testClearView_AbortedByEsc_RevertsSingleTab() {
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+
+        // Mimic a drag -> cancel (ESC key).
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        mCallback.markDragAbortedByEsc();
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        verify(mTabModel).moveTab(1, 0);
+    }
+
+    @Test
+    @SmallTest
+    public void testClearView_AbortedByEsc_RevertsTabGroup() {
+        when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.indexOf(mTab1)).thenReturn(2);
+
+        // Mimic a drag -> cancel (ESC key).
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        mCallback.markDragAbortedByEsc();
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        verify(mTabModel).moveRelatedTabs(1, 2);
+    }
+
+    @Test
+    @SmallTest
+    public void testClearView_NotAbortedByEsc_DoesNotRevertTab() {
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+
+        // Mimic a drag without cancelling.
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        verify(mTabModel, never()).moveTab(anyInt(), anyInt());
+        verify(mTabModel, never()).moveRelatedTabs(anyInt(), anyInt());
     }
 
     @Test

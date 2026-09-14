@@ -2476,7 +2476,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                             R.id.vertical_tab_group_hover_card_holder_stub),
                                     mTabContentManagerSupplier,
                                     mUndoGroupSnackbarController,
-                                    mBrowserControlsManager),
+                                    mBrowserControlsManager,
+                                    mBackPressManager),
                             mIsVerticalTabsActiveSupplier);
             if (mToolbarManager != null) {
                 mToolbarManager.setVerticalTabsAutoHiddenSupplier(
