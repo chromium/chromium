@@ -53,15 +53,6 @@ async function areMatchesShowing(
   return window.getComputedStyle(element.$.matches).display !== 'none';
 }
 
-function getSubmitContainer(element: TestComposeboxMixinElement): HTMLElement {
-  return element.shadowRoot.querySelector('cr-composebox-submit')!;
-}
-
-function getSubmitIcon(element: TestComposeboxMixinElement): HTMLElement {
-  const submitContainer = getSubmitContainer(element);
-  return submitContainer.shadowRoot!.querySelector('#submitIcon')!;
-}
-
 suite('ComposeboxAutocomplete', () => {
   let element: TestComposeboxMixinElement;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
@@ -714,8 +705,7 @@ suite('ComposeboxAutocomplete', () => {
           assertEquals(
               '', getInputValue(element.getInputElement().inputElement));
 
-          const submitButton = getSubmitIcon(element);
-          assertFalse(submitButton.hasAttribute('disabled'));
+          assertFalse(element.$.submit.$.submitIcon.hasAttribute('disabled'));
 
           const keydownEvent = new KeyboardEvent('keydown', {
             bubbles: true,

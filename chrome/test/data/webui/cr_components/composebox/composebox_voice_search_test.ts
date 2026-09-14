@@ -1166,11 +1166,7 @@ suite('ComposeboxVoiceSearch', () => {
     await microtasksFinished();
 
     searchboxHandler.resetResolver('submitQuery');
-    const mainSubmitButton =
-        composeboxElement.shadowRoot.querySelector<HTMLElement>(
-            'cr-composebox-submit');
-    assertTrue(!!mainSubmitButton);
-
+    const mainSubmitButton = composeboxElement.$.submit;
     mainSubmitButton.dispatchEvent(
         new CustomEvent('submit-focusin', {bubbles: true, composed: true}));
     await microtasksFinished();

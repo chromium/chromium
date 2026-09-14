@@ -19,6 +19,7 @@ import type {ComposeboxFileInputsElement} from 'chrome://resources/cr_components
 import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
 import {ComposeboxEmbedderMixin} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import type {ComposeboxSubmitElement} from 'chrome://resources/cr_components/composebox/composebox_submit.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
@@ -38,6 +39,7 @@ export interface TestComposeboxMixinElement {
     input: ComposeboxInputElement,
     inputWrapper: HTMLElement,
     matches: ComposeboxDropdownElement,
+    submit: ComposeboxSubmitElement,
     voiceSearch: ComposeboxVoiceSearchElement,
   };
 }
@@ -118,7 +120,7 @@ export class TestComposeboxMixinElement extends TestElementBase {
                   this.composeboxContextMenuTooltipsEnabled}"
               @tool-click="${this.onToolClick}">
           </cr-composebox-contextual-entrypoint-and-menu>
-          <cr-composebox-submit
+          <cr-composebox-submit id="submit"
               ?disabled="${!this.canSubmitFilesAndInput}"
               .iconType="${this.submitButtonIconType}"
               .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
