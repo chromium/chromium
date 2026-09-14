@@ -1045,11 +1045,15 @@ const FeatureEntry::FeatureVariation kOmniboxDynamicSubmitVariations[] = {
     {"- \"Input has hint", kOmniboxDynamicAimSubmitRhsHint, nullptr}};
 
 
-const FeatureEntry::FeatureParam kOmniboxEverywhereProfilePicker[] = {
-    {"ProfilePicker", "true"}};
-
-const FeatureEntry::FeatureVariation kOmniboxEverywhereVariations[] = {
-    {"with Profile Picker", kOmniboxEverywhereProfilePicker, nullptr}};
+const FeatureEntry::Choice kOmniboxLoomChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "OmniboxEverywhere,IPH_OmniboxEverywhereLensPromo"},
+    {"Enabled with Profile Picker", switches::kEnableFeatures,
+     "OmniboxEverywhere:ProfilePicker/true,IPH_OmniboxEverywhereLensPromo"},
+    {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
+     "OmniboxEverywhere,IPH_OmniboxEverywhereLensPromo"},
+};
 
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageCobrowseAndLensEntrypoint[] = {
@@ -9694,9 +9698,7 @@ const FeatureEntry kFeatureEntries[] = {
                                     "OmniboxDynamicSubmitVariations")},
     {"omnibox-loom", flag_descriptions::kOmniboxLoomName,
      flag_descriptions::kOmniboxLoomDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxEverywhere,
-                                    kOmniboxEverywhereVariations,
-                                    "OmniboxEverywhere")},
+     MULTI_VALUE_TYPE(kOmniboxLoomChoices)},
 
     {"webui-omnibox-aim-popup-disable-animation",
      flag_descriptions::kWebUIOmniboxAimPopupDisableAnimationName,
