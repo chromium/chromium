@@ -102,6 +102,39 @@ void TapSendTabToSelfInActivitySheet() {
   [ChromeEarlGrey tapButtonInActivitySheetWithID:SendTabToSelfButtonLabel()];
 }
 
+// Navigates to the active test page and waits for its target element to load.
+void LoadActivePage(net::EmbeddedTestServer* test_server) {
+  [ChromeEarlGrey
+      loadURL:test_server->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+}
+
+// Configures a target device on the sync server, loads the active test page,
+// signs in with `identity`, and opens the Send Tab to Self modal sheet.
+void SetupActivePageAndOpenModal(net::EmbeddedTestServer* test_server,
+                                 NSString* target_device_name,
+                                 FakeSystemIdentity* identity) {
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:target_device_name
+                         lastUpdatedTimestamp:base::Time::Now()];
+  LoadActivePage(test_server);
+  [SigninEarlGrey signinWithFakeIdentity:identity];
+  [ChromeEarlGreyUI shareCurrentPage];
+  TapSendTabToSelfInActivitySheet();
+}
+
+// Relaunches the app under a clean shutdown policy with `identity` added.
+void RelaunchAppWithIdentity(AppLaunchConfiguration base_config,
+                             FakeSystemIdentity* identity) {
+  base_config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  base_config.additional_args.push_back(base::StrCat({
+    "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
+        [FakeSystemIdentity encodeIdentitiesToBase64:@[ identity ]]
+  }));
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:base_config];
+}
+
 }  // namespace
 
 @interface SendTabToSelfCoordinatorTestCase : ChromeTestCase
@@ -133,10 +166,7 @@ void TapSendTabToSelfInActivitySheet() {
 // Tests that the entry point button is shown to a signed out user, even if
 // there are no device-level accounts.
 - (void)testShowButtonIfSignedOutAndNoDeviceAccount {
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  LoadActivePage(self.testServer);
 
   [ChromeEarlGreyUI shareCurrentPage];
   [ChromeEarlGrey
@@ -149,10 +179,7 @@ void TapSendTabToSelfInActivitySheet() {
 - (void)testShowPromoIfSignedOutAndHasDeviceAccount {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  LoadActivePage(self.testServer);
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
@@ -182,16 +209,8 @@ void TapSendTabToSelfInActivitySheet() {
 }
 
 - (void)testTapManageDevicesOpensMyAccountDevicesPage {
-  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
-                         lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  [ChromeEarlGreyUI shareCurrentPage];
-  TapSendTabToSelfInActivitySheet();
+  SetupActivePageAndOpenModal(self.testServer, kTargetDeviceName,
+                              [FakeSystemIdentity fakeIdentity1]);
 
   // Tap the menu button on the top left.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -213,10 +232,7 @@ void TapSendTabToSelfInActivitySheet() {
 }
 
 - (void)testShowMessageIfSignedInAndNoTargetDevice {
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  LoadActivePage(self.testServer);
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
@@ -249,16 +265,8 @@ void TapSendTabToSelfInActivitySheet() {
 - (void)testShowDevicePickerIfSignedInAndHasTargetDevice {
   // Setting a recent timestamp here is necessary, otherwise the device will be
   // considered expired and won't be displayed.
-  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
-                         lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  [ChromeEarlGreyUI shareCurrentPage];
-  TapSendTabToSelfInActivitySheet();
+  SetupActivePageAndOpenModal(self.testServer, kTargetDeviceName,
+                              [FakeSystemIdentity fakeIdentity1]);
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
@@ -273,17 +281,8 @@ void TapSendTabToSelfInActivitySheet() {
 // Tests that when kSendTabToSelfPostSendToast is enabled, sending a tab to a
 // target device shows a success snackbar toast.
 - (void)testSendTabToSelfAndVerifySuccessSnackbar {
-  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
-                         lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  [ChromeEarlGreyUI shareCurrentPage];
-  TapSendTabToSelfInActivitySheet();
+  SetupActivePageAndOpenModal(self.testServer, kTargetDeviceName, fakeIdentity);
 
   // Verify the device is shown in the device picker.
   [ChromeEarlGrey
@@ -315,16 +314,8 @@ void TapSendTabToSelfInActivitySheet() {
       "This is a long and unique text that should be easy to generate a text "
       "fragment for without any ambiguity.";
 
-  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
-                         lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  [ChromeEarlGreyUI shareCurrentPage];
-  TapSendTabToSelfInActivitySheet();
+  SetupActivePageAndOpenModal(self.testServer, kTargetDeviceName,
+                              [FakeSystemIdentity fakeIdentity1]);
 
   // Verify the device is shown in the device picker.
   [ChromeEarlGrey
@@ -359,16 +350,8 @@ void TapSendTabToSelfInActivitySheet() {
 // Tests that when kSendTabToSelfPostSendToast is enabled, a network failure
 // during send displays an error snackbar toast.
 - (void)testSendTabToSelfAndVerifyErrorSnackbar {
-  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
-                         lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  [ChromeEarlGreyUI shareCurrentPage];
-  TapSendTabToSelfInActivitySheet();
+  SetupActivePageAndOpenModal(self.testServer, kTargetDeviceName,
+                              [FakeSystemIdentity fakeIdentity1]);
 
   // Verify the device is shown in the device picker.
   [ChromeEarlGrey
@@ -668,10 +651,7 @@ void TapSendTabToSelfInActivitySheet() {
 - (void)testLongPressTabSwitcherTabToShowSendToYourDevice {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  LoadActivePage(self.testServer);
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Open tab switcher.
@@ -712,10 +692,7 @@ void TapSendTabToSelfInActivitySheet() {
     testDismissSendToYourDeviceBottomSheetWhenOpenedFromTabSwitcherOnExternalURL {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  LoadActivePage(self.testServer);
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Open tab switcher.
@@ -759,10 +736,7 @@ void TapSendTabToSelfInActivitySheet() {
 - (void)testLongPressTabSwitcherTabToShowSigninPromo {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  LoadActivePage(self.testServer);
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Open tab switcher.
@@ -814,10 +788,7 @@ void TapSendTabToSelfInActivitySheet() {
 - (void)testLongPressOmniboxToShowSendToYourDevice {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  LoadActivePage(self.testServer);
   // Disable EarlGrey's synchronization during sign-in because the concurrent
   // sync/sign-in initialization triggers micro-animations and layouts on the
   // Location Bar steady view, which makes EarlGrey's synchronization hang
@@ -888,16 +859,8 @@ void TapSendTabToSelfInActivitySheet() {
 // Tests that when kSendTabToSelfPostSendToast is disabled, sending a tab to a
 // target device displays the legacy snackbar message.
 - (void)testSendTabToSelfShowsLegacySnackbarWhenPostSendToastDisabled {
-  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
-                         lastUpdatedTimestamp:base::Time::Now()];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  [ChromeEarlGreyUI shareCurrentPage];
-  TapSendTabToSelfInActivitySheet();
+  SetupActivePageAndOpenModal(self.testServer, kTargetDeviceName,
+                              [FakeSystemIdentity fakeIdentity1]);
 
   // Verify the device is shown in the device picker.
   [ChromeEarlGrey
@@ -1156,14 +1119,8 @@ void TapSendTabToSelfInActivitySheet() {
       assertWithMatcher:grey_notNil()];
 
   // Relaunch the app with the fake identity.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  config.additional_args.push_back(base::StrCat({
-    "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
-        [FakeSystemIdentity encodeIdentitiesToBase64:@[ identity ]]
-  }));
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  RelaunchAppWithIdentity([self appConfigurationForTestCase],
+                          [FakeSystemIdentity fakeIdentity1]);
 
   // Enter the Tab Grid.
   OpenTabGridAndWaitTillVisible();
@@ -1215,14 +1172,8 @@ void TapSendTabToSelfInActivitySheet() {
   [ChromeEarlGrey waitForMainTabCount:initialTabCount + 1];
 
   // Relaunch the app with the fake identity.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  config.additional_args.push_back(base::StrCat({
-    "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
-        [FakeSystemIdentity encodeIdentitiesToBase64:@[ identity ]]
-  }));
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  RelaunchAppWithIdentity([self appConfigurationForTestCase],
+                          [FakeSystemIdentity fakeIdentity1]);
 
   // Setup the histogram tester AFTER relaunch, since relaunching wipes the
   // previous app-side histogram tester.
