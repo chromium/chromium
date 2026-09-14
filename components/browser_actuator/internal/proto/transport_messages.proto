@@ -9,7 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package browser_actuator;
 
 import "google/protobuf/any.proto";
-import "components/browser_actuator/proto/actuator_downstream_message.proto";
+import "components/sharing_message/proto/actuator_downstream_message.proto";
 
 // These mirror the internal transport channel message protos. Do not modify
 // without updating the corresponding protos.

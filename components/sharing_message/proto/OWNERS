@@ -1,3 +1,4 @@
+per-file actuator_downstream_message.proto=file://components/browser_actuator/OWNERS
 per-file glic_experimental_triggering.proto=csharrison@chromium.org
 per-file glic_experimental_triggering.proto=nyquist@chromium.org
 per-file glic_experimental_triggering.proto=romanarora@chromium.org

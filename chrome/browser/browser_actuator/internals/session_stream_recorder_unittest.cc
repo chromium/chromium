@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
-#include "components/browser_actuator/proto/actuator_downstream_message.pb.h"
+#include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

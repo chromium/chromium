@@ -15,7 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
-#include "components/browser_actuator/proto/actuator_downstream_message.pb.h"
+#include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace browser_actuator {

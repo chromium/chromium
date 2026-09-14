@@ -8,6 +8,7 @@ include_rules = [
   "+net/base/url_util.h",
   "+components/endpoint_fetcher",
   "+components/signin/public",
+  "+components/sharing_message/proto",
 ]
 
 specific_include_rules = {

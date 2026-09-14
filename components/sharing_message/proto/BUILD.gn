@@ -13,6 +13,7 @@ group("proto_lite") {
 
 proto_library("proto") {
   sources = [
+    "actuator_downstream_message.proto",
     "glic_experimental_triggering.proto",
     "one_time_token_backend_notification.proto",
     "optimization_guide_push_notification.proto",
@@ -23,6 +24,5 @@ proto_library("proto") {
     "sms_fetch_message_test_proto3_optional.proto",
     "timestamp.proto",
   ]
-  deps = [ "//components/browser_actuator/proto" ]
-  import_dirs = [ "//" ]
+  deps = [ "//third_party/protobuf:any_proto" ]
 }

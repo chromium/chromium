@@ -7,13 +7,13 @@ syntax = "proto3";
 option java_multiple_files = true;
 option java_package = "org.chromium.components.sharing_message.proto";
 
+import "actuator_downstream_message.proto";
 import "one_time_token_backend_notification.proto";
 import "glic_experimental_triggering.proto";
 import "optimization_guide_push_notification.proto";
 import "peer_connection_messages.proto";
 import "remote_copy_message.proto";
 import "sms_fetch_message_test_proto3_optional.proto";
-import "components/browser_actuator/proto/actuator_downstream_message.proto";
 
 package components_sharing_message;
 

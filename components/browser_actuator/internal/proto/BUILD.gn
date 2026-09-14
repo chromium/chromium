@@ -12,7 +12,7 @@ proto_library("proto") {
   ]
   sources = [ "transport_messages.proto" ]
   deps = [
-    "//components/browser_actuator/proto",
+    "//components/sharing_message/proto",
     "//third_party/protobuf:any_proto",
   ]
   proto_in_dir = "//"

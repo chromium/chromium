@@ -11,11 +11,11 @@
 #include "base/feature_list.h"
 #include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/browser_actuator/proto/actuator_downstream_message.pb.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/browser_actuator/public/transport_session.h"
+#include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 

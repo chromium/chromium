@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/browser_actuator/proto",
   "+components/sync",
   "+components/keyed_service/core",
   "+net/base",
