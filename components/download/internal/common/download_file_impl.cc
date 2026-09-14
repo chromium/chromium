@@ -240,7 +240,7 @@ void DownloadFileImpl::Initialize(
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Create the obfuscator if enterprise deep scanning is enabled.
-  if (save_info_->needs_obfuscation && !IsParallelDownloadEnabled()) {
+  if (save_info_->needs_obfuscation) {
     obfuscator_ =
         std::make_unique<enterprise_obfuscation::DownloadObfuscator>();
   }

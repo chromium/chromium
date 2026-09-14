@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_destination_observer.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_file_impl.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/mock_input_stream.h"
@@ -1411,6 +1412,42 @@ class DownloadFileTestWithObfuscation : public DownloadFileTest {
 };
 
 TEST_F(DownloadFileTestWithObfuscation, ObfuscationEnabled) {
+  size_t length = strlen(kTestData1) + strlen(kTestData2) + strlen(kTestData3);
+  ASSERT_TRUE(CreateDownloadFile(length, true));
+  const char* chunks[] = {kTestData1, kTestData2, kTestData3};
+
+  EXPECT_CALL(*input_stream_, RegisterDataReadyCallback(_))
+      .Times(1)
+      .RetiresOnSaturation();
+
+  // Append dummy data for obfuscated size verification.
+  expected_data_ += std::string(CalculateObfuscationOverhead(3), '\0');
+  AppendDataToFile(chunks, 3);
+
+  // The download appends an empty chunk at the end of the file when completed,
+  // so we need to append its size.
+  expected_data_ += std::string(kObfuscationChunkOverhead, '\0');
+
+  // Original file hash should be returned, not the obfuscated hash.
+  FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kDataHash);
+
+  // Verify that the file content is obfuscated.
+  std::string file_content;
+  ASSERT_TRUE(
+      base::ReadFileToString(download_file_->FullPath(), &file_content));
+  EXPECT_NE(file_content, std::string(kTestData1) + std::string(kTestData2) +
+                              std::string(kTestData3));
+  // Total size includes the 3 data chunks and the 1 empty termination chunk.
+  EXPECT_EQ(file_content.size(), length + CalculateObfuscationOverhead(4));
+
+  download_file_->Cancel();
+  DestroyDownloadFile(0, false);
+}
+
+TEST_F(DownloadFileTestWithObfuscation,
+       ObfuscationEnabledWithParallelDownloading) {
+  base::test::ScopedFeatureList parallel_feature(
+      features::kParallelDownloading);
   size_t length = strlen(kTestData1) + strlen(kTestData2) + strlen(kTestData3);
   ASSERT_TRUE(CreateDownloadFile(length, true));
   const char* chunks[] = {kTestData1, kTestData2, kTestData3};

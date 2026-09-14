@@ -86,5 +86,15 @@ TEST_F(DownloadJobFactoryTest, DisablesParallelJobWhenFetchedViaServiceWorker) {
   EXPECT_FALSE(job->IsParallelizable());
 }
 
+// Obfuscated downloads write data through a sequential streaming encryptor
+// that cannot operate on out-of-order slices, so the factory must fall back to
+// a non-parallel job whenever obfuscation has been requested.
+TEST_F(DownloadJobFactoryTest, DisablesParallelJobWhenObfuscationRequested) {
+  auto info = CreateParallelizableInfo();
+  info->needs_obfuscation = true;
+  auto job = CreateJob(*info);
+  EXPECT_FALSE(job->IsParallelizable());
+}
+
 }  // namespace
 }  // namespace download

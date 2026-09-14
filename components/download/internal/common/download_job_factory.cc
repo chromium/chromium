@@ -48,6 +48,12 @@ bool IsParallelizableDownload(const DownloadCreateInfo& create_info,
     return false;
   }
 
+  // Obfuscated downloads write data through a sequential streaming encryptor
+  // that cannot operate on out-of-order slices.
+  if (create_info.needs_obfuscation) {
+    return false;
+  }
+
   // A Service Worker fetch handler produces one response from one invocation;
   // its loader cannot be re-driven for parallel range slices.
   if (create_info.fetched_via_service_worker) {

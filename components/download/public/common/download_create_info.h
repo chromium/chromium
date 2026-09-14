@@ -170,6 +170,10 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // responses cannot be served by parallel range requests.
   bool fetched_via_service_worker = false;
 
+  // True if the download needs to be obfuscated on disk. Such downloads cannot
+  // be served by parallel range requests.
+  bool needs_obfuscation = false;
+
   // The request headers that has been sent in the download request.
   DownloadUrlParameters::RequestHeadersType request_headers;
 

@@ -950,8 +950,8 @@ void DownloadManagerImpl::CreateNewDownloadItemToStart(
 
   download::DownloadItemImpl* download = CreateActiveItem(id, *info);
   if (delegate_ && info->save_info) {
-    info->save_info->needs_obfuscation =
-        delegate_->ShouldObfuscateDownload(download);
+    info->needs_obfuscation = delegate_->ShouldObfuscateDownload(download);
+    info->save_info->needs_obfuscation = info->needs_obfuscation;
     info->save_info->total_bytes = info->total_bytes;
   }
   content::devtools_instrumentation::WillBeginDownload(info.get(), download);
