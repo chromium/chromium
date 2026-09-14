@@ -4,38 +4,20 @@
 
 package org.chromium.android_webview;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.StrictMode;
-import android.os.SystemClock;
-import android.os.storage.StorageManager;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.accessibility.AwAccessibilityStateVisibilityManager;
-import org.chromium.android_webview.common.AwFeatureMap;
-import org.chromium.android_webview.common.AwFeatures;
-import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.common.WebViewCachedFlags;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FieldTrialList;
 import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.library_loader.LibraryPrefetcher;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
-import org.chromium.net.NetworkChangeNotifier;
-
-import java.util.UUID;
 
 /** Wrapper for the steps needed to initialize the java and native sides of webview chromium. */
 @JNINamespace("android_webview")
@@ -166,117 +148,6 @@ public final class AwBrowserProcess {
 
     public static boolean isDataDirBasePathOverridden() {
         return sDataDirBasePathOverridden;
-    }
-
-    public static void doNetworkInitializations(Context applicationContext) {
-        try (DualTraceEvent e =
-                DualTraceEvent.scoped("AwBrowserProcess.doNetworkInitializations")) {
-            if (applicationContext.checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                NetworkChangeNotifier.init();
-                NetworkChangeNotifier.setAutoDetectConnectivityState(
-                        new AwNetworkChangeNotifierRegistrationPolicy());
-            }
-        }
-    }
-
-    /**
-     * Post tasks that need to run in the background thread after the browser process has started.
-     */
-    public static void postBackgroundTasks() {
-        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_VERBOSE_LOGGING)) {
-            // Log extra information, for debugging purposes.
-            PostTask.postTask(
-                    TaskTraits.BEST_EFFORT,
-                    () -> {
-                        // TODO(ntfschr): CommandLine can change at any time. For simplicity, only
-                        // log it once during startup.
-                        AwContentsStatics.logCommandLineForDebugging();
-                        // Field trials can be activated at any time. We'll continue logging them as
-                        // they're activated.
-                        FieldTrialList.logActiveTrials();
-                    });
-        }
-
-        PostTask.postTask(
-                TaskTraits.BEST_EFFORT,
-                () -> {
-                    WebViewCachedFlags.get().onStartupCompleted();
-                });
-
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY)
-                && !AwFeatureMap.getInstance()
-                        .getFieldTrialParamByFeatureAsBoolean(
-                                AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY,
-                                "WebViewPrefetchFromRenderer",
-                                true)) {
-            PostTask.postTask(
-                    TaskTraits.BEST_EFFORT,
-                    () -> {
-                        LibraryPrefetcher.prefetchNativeLibraryForWebView();
-                    });
-        }
-
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_RECORD_APP_CACHE_HISTOGRAMS)) {
-            PostTask.postDelayedTask(
-                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                    () -> {
-                        StorageManager storageManager =
-                                (StorageManager)
-                                        ContextUtils.getApplicationContext()
-                                                .getSystemService(Context.STORAGE_SERVICE);
-                        UUID storageUuid =
-                                ContextUtils.getApplicationContext()
-                                        .getApplicationInfo()
-                                        .storageUuid;
-                        long startTimeGetCacheQuotaMs = SystemClock.uptimeMillis();
-                        long cacheQuotaKiloBytes = -1;
-                        try {
-                            // This can throw `SecurityException` if the app doesn't
-                            // have sufficient privileges.
-                            // See crbug.com/422174715
-                            cacheQuotaKiloBytes =
-                                    storageManager.getCacheQuotaBytes(storageUuid) / 1024;
-                            RecordHistogram.recordCount1MHistogram(
-                                    "Android.WebView.CacheQuotaSize", (int) cacheQuotaKiloBytes);
-                        } catch (Exception e) {
-                        } finally {
-                            RecordHistogram.recordTimesHistogram(
-                                    "Android.WebView.GetCacheQuotaSizeTime",
-                                    SystemClock.uptimeMillis() - startTimeGetCacheQuotaMs);
-                        }
-
-                        long startTimeGetCacheSizeMs = SystemClock.uptimeMillis();
-                        long cacheSizeKiloBytes = -1;
-                        try {
-                            // This can throw `SecurityException` if the app doesn't
-                            // have sufficient privileges.
-                            // See crbug.com/422174715
-                            cacheSizeKiloBytes =
-                                    storageManager.getCacheSizeBytes(storageUuid) / 1024;
-                            RecordHistogram.recordCount1MHistogram(
-                                    "Android.WebView.CacheSize", (int) cacheSizeKiloBytes);
-                        } catch (Exception e) {
-                        } finally {
-                            RecordHistogram.recordTimesHistogram(
-                                    "Android.WebView.GetCacheSizeTime",
-                                    SystemClock.uptimeMillis() - startTimeGetCacheSizeMs);
-                        }
-                        if (cacheQuotaKiloBytes != -1 && cacheSizeKiloBytes != -1) {
-                            long quotaRemainingKiloBytes = cacheQuotaKiloBytes - cacheSizeKiloBytes;
-                            if (quotaRemainingKiloBytes >= 0) {
-                                RecordHistogram.recordCount1MHistogram(
-                                        "Android.WebView.CacheSizeWithinQuota",
-                                        (int) quotaRemainingKiloBytes);
-                            } else {
-                                RecordHistogram.recordCount1MHistogram(
-                                        "Android.WebView.CacheSizeExceedsQuota",
-                                        -1 * (int) quotaRemainingKiloBytes);
-                            }
-                        }
-                    },
-                    5000);
-        }
     }
 
     /**
