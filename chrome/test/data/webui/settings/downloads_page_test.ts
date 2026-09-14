@@ -116,11 +116,8 @@ suite('DownloadsHandler', function() {
         downloadsPage.shadowRoot.querySelector<ControlledButtonElement>(
             '#changeDownloadsPath');
     assertTrue(!!button);
-    const crButton = button.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!crButton);
-
-    assertFalse(crButton.disabled);
-    assertFalse(!!button.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+    assertFalse(button.$.button.disabled);
+    assertFalse(!!button.shadowRoot.querySelector('cr-policy-pref-indicator'));
 
     prefsBrowserProxy.fakeApi.sendPrefChanges([{
       key: 'download.default_directory',
@@ -131,8 +128,8 @@ suite('DownloadsHandler', function() {
     }]);
     await microtasksFinished();
 
-    assertTrue(crButton.disabled);
-    assertTrue(!!button.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+    assertTrue(button.$.button.disabled);
+    assertTrue(!!button.shadowRoot.querySelector('cr-policy-pref-indicator'));
   });
 
   test('openAdvancedDownloadsettings', async function() {

@@ -4,80 +4,96 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrPolicyPrefMixin} from '/shared/settings/controls/cr_policy_pref_mixin.js';
-import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrPolicyPrefMixinLit} from '/shared/settings/controls/cr_policy_pref_mixin_lit.js';
 
-import {getTemplate} from './controlled_button.html.js';
-import {PrefKeyObserverMixin} from './pref_key_observer_mixin.js';
+import {getCss} from './controlled_button.css.js';
+import {getHtml} from './controlled_button.html.js';
+import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
+
+export interface ControlledButtonElement {
+  $: {
+    button: CrButtonElement,
+  };
+}
 
 const ControlledButtonElementBase =
-    PrefKeyObserverMixin(CrPolicyPrefMixin(PrefControlMixin(PolymerElement)));
+    CrPolicyPrefMixinLit(PrefKeyObserverMixinLit(CrLitElement));
 
 export class ControlledButtonElement extends ControlledButtonElementBase {
   static get is() {
     return 'controlled-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       endJustified: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      label: String,
+      label: {type: String},
 
       disabled: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      actionClass_: {type: String, value: ''},
+      actionClass_: {type: String},
 
       enforced_: {
         type: Boolean,
-        computed: 'isPrefEnforced(pref.*)',
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  declare endJustified: boolean;
-  declare label: string;
-  declare disabled: boolean;
-  declare private actionClass_: string;
-  declare private enforced_: boolean;
+  accessor endJustified: boolean = false;
+  accessor label: string = '';
+  accessor disabled: boolean = false;
+  protected accessor actionClass_: string = '';
+  protected accessor enforced_: boolean = false;
 
   override connectedCallback() {
-    super.connectedCallback();
-
     if (this.classList.contains('action-button')) {
       this.actionClass_ = 'action-button';
+    }
+
+    super.connectedCallback();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('pref')) {
+      this.enforced_ = this.isPrefEnforced();
     }
   }
 
   /** Focus on the inner cr-button. */
   override focus() {
-    this.shadowRoot!.querySelector('cr-button')!.focus();
+    this.$.button.focus();
   }
 
-  private onIndicatorClick_(e: Event) {
+  protected onIndicatorClick_(e: Event) {
     // Disallow <controlled-button on-click="..."> when controlled.
     e.preventDefault();
     e.stopPropagation();
   }
 
-  private buttonEnabled_(enforced: boolean, disabled: boolean): boolean {
-    return !enforced && !disabled;
+  protected buttonEnabled_(): boolean {
+    return !this.enforced_ && !this.disabled;
   }
 }
 
