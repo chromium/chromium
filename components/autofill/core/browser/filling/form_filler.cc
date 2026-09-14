@@ -279,6 +279,7 @@ DenseSet<FieldFillingSkipReason> GetIgnorableSkipReasons(
     case AutofillTriggerSource::kDevtools:
     case AutofillTriggerSource::kScanCreditCard:
     case AutofillTriggerSource::kProactivePasswordRecovery:
+    case AutofillTriggerSource::kGmailOneTimePasswordAvailable:
     case AutofillTriggerSource::kCreditCardSaveAndFill:
     case AutofillTriggerSource::kProgrammaticRefill:
     case AutofillTriggerSource::kOmniboxAutofill:

@@ -609,6 +609,8 @@ enum AutofillSuggestionTriggerSource {
   kAtMemoryKeyboardShortcut = 25,
   // Suggestions triggered by the AtMemory double Ctrl press.
   kAtMemoryDoubleCtrl = 26,
+  // Suggestions triggered when a Gmail one-time password becomes available.
+  kGmailOneTimePasswordAvailable = 27,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSuggestionTriggerSource)
 

@@ -4545,6 +4545,7 @@ Called by update_autofill_enums.py.-->
   <int value="24" label="AtMemory inactivity nudge"/>
   <int value="25" label="AtMemory keyboard shortcut"/>
   <int value="26" label="AtMemory double Ctrl"/>
+  <int value="27" label="Gmail One-Time Password Available"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/common/mojom/autofill_types.mojom:AutofillSuggestionTriggerSource) -->

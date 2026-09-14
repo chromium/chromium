@@ -436,6 +436,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+    case AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
     case AutofillSuggestionTriggerSource::kGlic:
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
     case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
@@ -465,6 +466,7 @@ bool CanReplaceCurrentSuggestions(AutofillSuggestionTriggerSource source) {
     case mojom::AutofillSuggestionTriggerSource::
         kPasswordManagerProcessedFocusedField:
     case mojom::AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+    case mojom::AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
     case mojom::AutofillSuggestionTriggerSource::kGlic:
     case mojom::AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
     case mojom::AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
@@ -530,6 +532,8 @@ FillingProductSet GetFillingProductsToSuggest(
       return {FillingProduct::kAtMemory};
     case kAtMemoryInactivityNudge:
       return {FillingProduct::kNone};
+    case kGmailOneTimePasswordAvailable:
+      return {FillingProduct::kOneTimePassword};
   }
 }
 
@@ -1929,6 +1933,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kManualFallback:
       case AutofillTriggerSource::kNone:
       case AutofillTriggerSource::kProactivePasswordRecovery:
+      case AutofillTriggerSource::kGmailOneTimePasswordAvailable:
       case AutofillTriggerSource::kProgrammaticRefill:
         NOTREACHED();
     }

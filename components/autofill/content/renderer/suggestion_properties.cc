@@ -26,6 +26,7 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kContentEditableClicked:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+    case AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
     case AutofillSuggestionTriggerSource::kGlic:
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
     case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
@@ -63,6 +64,7 @@ bool ShouldAutofillOnLongValues(
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+    case AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
     case AutofillSuggestionTriggerSource::kGlic:
       return false;
     case AutofillSuggestionTriggerSource::kPasswordManager:
@@ -87,6 +89,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+    case AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
     case AutofillSuggestionTriggerSource::kGlic:
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
     case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
@@ -125,6 +128,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
     case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
+    case AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
       return false;
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:

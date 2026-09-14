@@ -287,6 +287,7 @@ bool ShouldLogAutofillSuggestionShown(
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+    case AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
     case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
       return true;
     case AutofillSuggestionTriggerSource::kTextFieldValueChanged:

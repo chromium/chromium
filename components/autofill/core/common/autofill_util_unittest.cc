@@ -150,4 +150,9 @@ TEST_F(AutofillUtilSelectTest, FindShortestSubstringMatchInSelect) {
                                                              field.options()));
 }
 
+TEST(AutofillUtilTriggerSourceTest, IsAtMemoryTriggerSource) {
+  EXPECT_FALSE(IsAtMemoryTriggerSource(
+      AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable));
+}
+
 }  // namespace autofill
