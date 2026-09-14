@@ -23,8 +23,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.chromium.base.test.util.Criteria.checkThat;
 
 import android.app.Activity;
-import android.os.Build;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,6 +118,7 @@ public class BookmarkSearchBoxRowTest {
                             new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.gravity = Gravity.CENTER;
                     activity.setContentView(contentView, params);
 
                     LayoutInflater layoutInflater = LayoutInflater.from(activity);
@@ -165,11 +166,8 @@ public class BookmarkSearchBoxRowTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/428281174): Re-enable when clicking search_text reliably grants focus on
-    // Android 16+ phones (touches obstructed by top system UI).
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428281174")
+    // TODO(crbug.com/557319392): Touch injection is flaky on Desktop Freeform.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM)
     public void testFocusAndEnter() {
         onView(withId(R.id.search_text)).perform(click());
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(true)));
@@ -252,11 +250,6 @@ public class BookmarkSearchBoxRowTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/428281174): Re-enable when clicking clear_text_button reliably triggers the
-    // runnable on Android 16+ phones (touches obstructed by top system UI).
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428281174")
     public void testClearSearchTextButtonAndRunnable() {
         onView(withId(R.id.clear_text_button)).check(matches(not(isDisplayed())));
 
