@@ -434,8 +434,8 @@ class ManualFillingMediator
         mWindowAndroid = null;
         mActivity = null;
         // The dialog holds the Activity as its Context; clear it to avoid leaking the Activity.
+        dismissConfirmationDialogIfShown();
         mActionConfirmationDialog = null;
-        mConfirmationDialogDismissHandler = null;
     }
 
     boolean onBackPressed() {
@@ -501,9 +501,7 @@ class ManualFillingMediator
         // close (e.g. a scene changed or the screen was turned off).
         mKeyboardAccessory.skipClosingAnimationOnce();
         mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
-        if (mConfirmationDialogDismissHandler != null) {
-            mConfirmationDialogDismissHandler.dismiss(DialogDismissalCause.UNKNOWN);
-        }
+        dismissConfirmationDialogIfShown();
     }
 
     private void onOrientationChange() {
@@ -878,6 +876,7 @@ class ManualFillingMediator
             String confirmButtonText,
             Runnable confirmedCallback,
             Runnable declinedCallback) {
+        dismissConfirmationDialogIfShown();
         mConfirmationDialogDismissHandler =
                 mActionConfirmationDialog.show(
                         new ConfirmationDialogParams.Builder(mActivity)
@@ -903,6 +902,13 @@ class ManualFillingMediator
             declinedCallback.run();
         }
         return DialogDismissType.DISMISS_IMMEDIATELY;
+    }
+
+    private void dismissConfirmationDialogIfShown() {
+        if (mConfirmationDialogDismissHandler != null) {
+            mConfirmationDialogDismissHandler.dismiss(DialogDismissalCause.UNKNOWN);
+            mConfirmationDialogDismissHandler = null;
+        }
     }
 
     /**
@@ -1401,6 +1407,10 @@ class ManualFillingMediator
 
     void setActionConfirmationDialogForTesting(ActionConfirmationDialog actionConfirmationDialog) {
         mActionConfirmationDialog = actionConfirmationDialog;
+    }
+
+    @Nullable DialogHandle getConfirmationDialogDismissHandlerForTesting() {
+        return mConfirmationDialogDismissHandler;
     }
 
     @VisibleForTesting

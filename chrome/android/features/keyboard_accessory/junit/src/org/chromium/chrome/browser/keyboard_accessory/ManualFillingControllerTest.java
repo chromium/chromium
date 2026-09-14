@@ -116,6 +116,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogHandle;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -127,6 +128,7 @@ import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
@@ -2203,5 +2205,78 @@ public class ManualFillingControllerTest {
         String body = "Delete this item without link.";
         CharSequence result = mMediator.formatDeletionMessage(body, "");
         assertThat(result.toString()).isEqualTo(body);
+    }
+
+    @Test
+    public void testDismissConfirmationDialogOnDestroy() {
+        ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
+        DialogHandle mockHandle = mock(DialogHandle.class);
+        when(mockDialog.show(any(), any())).thenReturn(mockHandle);
+        mMediator.setActionConfirmationDialogForTesting(mockDialog);
+
+        mController.confirmDeletionOperation(
+                "Delete title",
+                "Delete message",
+                "",
+                "Delete",
+                mock(Runnable.class),
+                mock(Runnable.class));
+        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mockHandle));
+
+        mController.destroy();
+
+        verify(mockHandle).dismiss(DialogDismissalCause.UNKNOWN);
+        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(nullValue()));
+    }
+
+    @Test
+    public void testDismissConfirmationDialogOnPause() {
+        ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
+        DialogHandle mockHandle = mock(DialogHandle.class);
+        when(mockDialog.show(any(), any())).thenReturn(mockHandle);
+        mMediator.setActionConfirmationDialogForTesting(mockDialog);
+
+        mController.confirmDeletionOperation(
+                "Delete title",
+                "Delete message",
+                "",
+                "Delete",
+                mock(Runnable.class),
+                mock(Runnable.class));
+        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mockHandle));
+
+        mMediator.pause();
+
+        verify(mockHandle).dismiss(DialogDismissalCause.UNKNOWN);
+        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(nullValue()));
+    }
+
+    @Test
+    public void testRepeatedConfirmDeletionOperationDismissesActiveDialog() {
+        ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
+        DialogHandle mockHandle1 = mock(DialogHandle.class);
+        DialogHandle mockHandle2 = mock(DialogHandle.class);
+        when(mockDialog.show(any(), any())).thenReturn(mockHandle1, mockHandle2);
+        mMediator.setActionConfirmationDialogForTesting(mockDialog);
+
+        mController.confirmDeletionOperation(
+                "Delete title 1",
+                "Delete message 1",
+                "",
+                "Delete",
+                mock(Runnable.class),
+                mock(Runnable.class));
+        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mockHandle1));
+
+        mController.confirmDeletionOperation(
+                "Delete title 2",
+                "Delete message 2",
+                "",
+                "Delete",
+                mock(Runnable.class),
+                mock(Runnable.class));
+
+        verify(mockHandle1).dismiss(DialogDismissalCause.UNKNOWN);
+        assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mockHandle2));
     }
 }
