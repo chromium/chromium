@@ -575,7 +575,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // Weak pointers to event monitors for this widget. The event monitors
   // themselves will remove themselves from this list.
-  std::list<NativeWidgetMacEventMonitor*> event_monitors_;
+  std::list<raw_ptr<NativeWidgetMacEventMonitor, DanglingUntriaged>>
+      event_monitors_;
 
   std::unique_ptr<ui::RecyclableCompositorMac> compositor_;
   std::unique_ptr<remote_cocoa::ScopedCGWindowID> scoped_cg_window_id_;

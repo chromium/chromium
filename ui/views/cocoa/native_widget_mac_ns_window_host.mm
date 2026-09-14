@@ -1231,7 +1231,7 @@ bool NativeWidgetMacNSWindowHost::DispatchMonitorEvent(
   auto weak_this = weak_factory_.GetWeakPtr();
 
   *event_handled = false;
-  for (auto* event_monitor : event_monitors_snapshot) {
+  for (NativeWidgetMacEventMonitor* event_monitor : event_monitors_snapshot) {
     // Ensure `event_monitor` was not removed from `event_monitors_` by a
     // previous call to NativeWidgetMacEventMonitorOnEvent.
     if (!std::ranges::contains(event_monitors_, event_monitor)) {
