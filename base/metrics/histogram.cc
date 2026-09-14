@@ -284,6 +284,10 @@ HistogramBase* Histogram::Factory::Build() {
         "DevTools.ExperimentEnabledAtLaunch",
         "DevTools.ExperimentDisabledAtLaunch",
         "DevTools.PanelShown",
+        // TODO(crbug.com/559368036): Remove after CrOS redaction_tool uprev rolls out.
+        "Feedback.RedactionTool.Caller",
+        // TODO(crbug.com/561342361): Remove after CrOS redaction_tool uprev rolls out.
+        "Feedback.RedactionTool",
     };
     if (!std::ranges::contains(kKnownBadHistogramsHashes, name_)) {
       SCOPED_CRASH_KEY_STRING256("MismatchedHistogramArgs", "name",
