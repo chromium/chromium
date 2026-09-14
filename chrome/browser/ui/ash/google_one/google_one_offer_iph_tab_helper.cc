@@ -15,11 +15,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/feature_engagement/feature_engagement_tracker_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -177,7 +177,7 @@ void GoogleOneOfferIphTabHelper::PrimaryPageChanged(content::Page& page) {
   }
 
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+      ash::FeatureEngagementTrackerProvider::Get().Find(user->GetAccountId());
 
   if (!tracker->ShouldTriggerHelpUI(
           feature_engagement::kIPHGoogleOneOfferNotificationFeature)) {

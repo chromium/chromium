@@ -67,6 +67,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/desk_sync_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/favicon_service_provider_impl.h"
+#include "chrome/browser/ash/browser_delegate/keyed_service_provider/feature_engagement_tracker_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/identity_manager_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/sync_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/template_url_service_provider_impl.h"
@@ -963,6 +964,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   app_service_registry_ = std::make_unique<apps::AppServiceRegistry>();
   desk_sync_service_provider_ = std::make_unique<DeskSyncServiceProviderImpl>();
   favicon_service_provider_ = std::make_unique<FaviconServiceProviderImpl>();
+  feature_engagement_tracker_provider_ =
+      std::make_unique<FeatureEngagementTrackerProviderImpl>();
   identity_manager_provider_ = std::make_unique<IdentityManagerProviderImpl>();
   sync_service_provider_ = std::make_unique<SyncServiceProviderImpl>();
   template_url_service_provider_ =
@@ -1898,6 +1901,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   template_url_service_provider_.reset();
   sync_service_provider_.reset();
   identity_manager_provider_.reset();
+  feature_engagement_tracker_provider_.reset();
   favicon_service_provider_.reset();
   desk_sync_service_provider_.reset();
   app_service_registry_.reset();

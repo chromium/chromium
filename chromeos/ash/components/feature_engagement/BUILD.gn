@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+component("feature_engagement_tracker_provider") {
+  public = [ "feature_engagement_tracker_provider.h" ]
+
+  sources = [ "feature_engagement_tracker_provider.cc" ]
+
+  defines = [ "IS_FEATURE_ENGAGEMENT_TRACKER_PROVIDER_IMPL" ]
+
+  deps = [ "//base" ]
+}
