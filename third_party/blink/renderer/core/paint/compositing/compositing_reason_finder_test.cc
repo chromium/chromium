@@ -735,6 +735,31 @@ TEST_P(CompositingReasonFinderTest, CanvasChild) {
                 *grandchild_layout_object));
 }
 
+TEST_P(CompositingReasonFinderTest, CanvasChildWithWillChange) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <canvas id=canvas layoutsubtree>
+      <div drawable id=child style="width: 10px; height: 10px; will-change: -webkit-filter;">
+        <div id=grandchild style="width: 10px; height: 10px; will-change: -webkit-filter;"></div>
+      </div>
+    </canvas>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* child = GetElementById("child");
+  LayoutObject* child_layout_object = child->GetLayoutObject();
+  EXPECT_EQ(CompositingReasons{CompositingReason::kCanvasChild},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *child_layout_object));
+
+  Element* grandchild = GetElementById("grandchild");
+  LayoutObject* grandchild_layout_object = grandchild->GetLayoutObject();
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *grandchild_layout_object));
+}
+
 TEST_P(CompositingReasonFinderTest, CanvasChildSlotted) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
   GetDocument().GetSettings()->SetScriptEnabled(true);

@@ -399,11 +399,9 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
         }
       }
     }
-    if (!reasons.Has(CompositingReason::kCanvasChild)) {
-      // Disable compositing for elements in canvas subtrees other than
-      // drawable elements.
-      return {};
-    }
+    // In canvas subtrees, only drawable elements can have a compositing
+    // reason (kCanvasChild), and no other compositing reasons apply.
+    return reasons;
   }
 
   reasons.PutAll(CompositingReasonsFor3DSceneLeaf(object));
