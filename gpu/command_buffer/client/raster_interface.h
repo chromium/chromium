@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/client/interface_base.h"
 #include "gpu/command_buffer/common/raster_cmd_enums.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -44,6 +45,7 @@ extern "C" typedef const struct _GLcolorSpace* GLcolorSpace;
 
 namespace gpu {
 
+class ClientSharedImage;
 struct Mailbox;
 
 namespace raster {
@@ -70,6 +72,16 @@ class RasterInterface : public InterfaceBase {
                                const gpu::Mailbox& dest_mailbox,
                                const gfx::Rect& source_rect,
                                const gfx::Rect& dest_rect) = 0;
+
+  // Asynchronously writes pixels from caller-owned memory inside
+  // `src_sk_pixmap` into `dest`.
+  // NOTE: This is only for single planar shared images (RGB). For multiplanar
+  // shared images, perform WritePixelsYUV.
+  virtual SyncToken WritePixels(const scoped_refptr<ClientSharedImage>& dest,
+                                const SyncToken& sync_token,
+                                int dst_x_offset,
+                                int dst_y_offset,
+                                const SkPixmap& src_sk_pixmap);
 
   // Asynchronously writes pixels from caller-owned memory inside
   // |src_sk_pixmap| into |dest_mailbox|.

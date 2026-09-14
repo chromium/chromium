@@ -103,15 +103,9 @@ bool WebGpuSharedImageLease::UploadToBackingSharedImage(const SkPixmap& pixmap,
     return false;
   }
 
-  auto access = resource_.shared_image_->BeginRasterAccess(
-      RasterInterface(), resource_.sync_token_, /*readonly=*/false);
-
-  RasterInterface()->WritePixels(
-      resource_.shared_image_->mailbox(), /*dst_x_offset=*/0,
-      /*dst_y_offset=*/0, resource_.shared_image_->GetTextureTarget(), subset);
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  resource_.sync_token_ = sync_token;
-  resource_.shared_image_->UpdateDestructionSyncToken(sync_token);
+  resource_.sync_token_ = RasterInterface()->WritePixels(
+      resource_.shared_image_, resource_.sync_token_, /*dst_x_offset=*/0,
+      /*dst_y_offset=*/0, subset);
 
   resource_.is_cleared_ = true;
 
