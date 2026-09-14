@@ -1263,6 +1263,10 @@ if (!use_litert_tflite) {
       "//third_party/neon_2_sse",
       "//third_party/gemmlowp",
     ]
+    if (build_with_internal_optimization_guide) {
+      public_deps_for_standalone +=
+          [ "//third_party/litert:serialization_schema_litert" ]
+    }
   }
 }
 

@@ -52,6 +52,9 @@ config("warnings_config") {
 # The "public" target for all litert/litert files.
 tflite_group("litert") {
   public_deps = [ ":litert_headers" ]
+  if (build_with_internal_optimization_guide) {
+    public_deps_for_standalone = [ ":serialization_schema_litert" ]
+  }
   conditional_deps = [
     ":litert_c",
     ":litert_compiler",
@@ -84,13 +87,6 @@ config("litert_config") {
 
   if (is_win) {
     defines += [ "_USE_MATH_DEFINES" ]
-  }
-
-  if (build_with_internal_optimization_guide) {
-    include_dirs += [
-      "$root_gen_dir/components/optimization_guide/internal/third_party/ml_drift/src",
-      "//components/optimization_guide/internal/third_party/ml_drift/src",
-    ]
   }
 
   visibility = [
@@ -230,6 +226,7 @@ if (build_with_internal_optimization_guide) {
     visibility = [
       ":*",
       "//components/optimization_guide/internal/*",
+      "//third_party/tflite:*",
     ]
   }
 }
@@ -378,9 +375,6 @@ source_set("litert_headers") {
     "//third_party/flatbuffers",
     "//third_party/zlib",
   ]
-  if (build_with_internal_optimization_guide) {
-    public_deps += [ ":serialization_schema_litert" ]
-  }
   if (use_litert_tflite) {
     public_deps += [ ":tflite_public_headers" ]
   }
@@ -1501,6 +1495,9 @@ if (use_litert_tflite) {
     # target (which is assumed to be for third_party code that is OK to have
     # these switches).
     public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
+    if (build_with_internal_optimization_guide) {
+      public_deps_for_standalone += [ ":serialization_schema_litert" ]
+    }
   }
 
   if (build_with_chromium) {
