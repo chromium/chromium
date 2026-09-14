@@ -183,11 +183,12 @@ impl MessagePipeWatcher {
 
         // Lifetime considerations:
         // The following variables are `move`d into the closure:
-        // - `watcher_state` is weak because the ownership logically belongs only to the
-        //   watcher (we don't want to read them after the watcher dies).
-        // - `runner` is moved directly so that we can guarantee it survives until the
-        //   trap is dropped. We can't rely on `get_current_default` in the trap handler
-        //   because it can run on any thread.
+        // - `watcher_state` is weak because the ownership logically belongs
+        //   only to the watcher (we don't want to read them after the watcher
+        //   dies).
+        // - `runner` is moved directly so that we can guarantee it survives
+        //   until the trap is dropped. We can't rely on `get_current_default`
+        //   in the trap handler because it can run on any thread.
         let watcher_state_weak = Arc::downgrade(&watcher_state);
 
         let trigger_handler = move |trap_event: &TrapEvent| {
@@ -268,7 +269,8 @@ impl MessagePipeWatcher {
             Ok(()) => (),
             Err(TrapError::Cancelled) => {
                 // This indicates the trigger was cancelled, which can only
-                // happen if we're tearing down the watcher. So no need to do anything.
+                // happen if we're tearing down the watcher. So no need to do
+                // anything.
                 return;
             }
             Err(TrapError::FailedPrecondition) => {
@@ -337,7 +339,8 @@ impl MessagePipeWatcher {
     /// handle the remainder over time).
     fn try_arm(watcher_state: &Arc<MessagePipeWatcherState>) {
         if let ArmResult::BlockingEvents(vec) = watcher_state.trap.arm() {
-            // This will post a task that will recursively call `handle_message_on_sequence`
+            // This will post a task that will recursively call
+            // `handle_message_on_sequence`
             Self::process_trap_event(
                 &vec[0],
                 &Arc::downgrade(watcher_state),

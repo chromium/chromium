@@ -239,7 +239,8 @@ where
         mut message: MojomMessage,
         response_callback: Option<T::ResponseCallbackTy>,
     ) {
-        // Set the request ID and stash the callback in the map with that ID as the key
+        // Set the request ID and stash the callback in the map with that ID as
+        // the key
         message.header.request_id = self.next_request_id;
         if let Some(callback) = response_callback {
             let old_entry = self
@@ -248,18 +249,20 @@ where
                 .expect("Mutex should never be poisoned")
                 .insert(self.next_request_id, callback);
             if old_entry.is_some() {
-                // This is technically possible...if we wrap all the way around with request IDs
+                // This is technically possible...if we wrap all the way around
+                // with request IDs
                 panic!("send_message_internal: Tried to insert duplicate response!")
             }
         }
 
-        // Generate the next request ID. Skip 0 in case it gets a special meaning in the
-        // future.
+        // Generate the next request ID. Skip 0 in case it gets a special
+        // meaning in the future.
         self.next_request_id =
             if self.next_request_id == u64::MAX { 1 } else { self.next_request_id + 1 };
 
-        // This can only fail if the other end is closed, in which case we've nothing to
-        // do here (we'll get a disconnection notification separately).
+        // This can only fail if the other end is closed, in which case we've
+        // nothing to do here (we'll get a disconnection notification
+        // separately).
         self.router.send_message(message);
     }
 
@@ -280,7 +283,8 @@ where
         let response_callback = match response_callback {
             Some(callback) => callback,
             None => {
-                // The error here is a reminder to return immediately, which we do
+                // The error here is a reminder to return immediately, which we
+                // do
                 let _ = message.report_bad_message(&format!(
                     "Received message with unknown request_id {}",
                     message.header.request_id

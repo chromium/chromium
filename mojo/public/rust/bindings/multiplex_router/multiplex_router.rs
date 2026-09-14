@@ -201,20 +201,22 @@ impl MultiplexRouter {
             let previous_entry =
                 shared_state.registry.endpoint_map.insert(interface_id, endpoint_info);
 
-            // We should never try to add an interface ID that already exists, since
-            // each pair should be unique. The only way this can happen is if we
-            // get a malicious mojo message.
+            // We should never try to add an interface ID that already exists,
+            // since each pair should be unique. The only way this
+            // can happen is if we get a malicious mojo message.
             if let Some(previous_entry) = previous_entry {
                 // Restore our map to its previous, good state.
                 shared_state.registry.endpoint_map.insert(interface_id, previous_entry);
                 return None;
             }
 
-            // If the underlying message pipe has been disconnected, then we should
-            // immediately schedule the disconnect handler for any new endpoints.
-            // This is only possible if someone tries to send an associated remote/
-            // receiver across a pipe that's already closed; if so, the other endpoint
-            // will be registered, but no messages will ever arrive for it.
+            // If the underlying message pipe has been disconnected, then we
+            // should immediately schedule the disconnect handler
+            // for any new endpoints. This is only possible if
+            // someone tries to send an associated remote/
+            // receiver across a pipe that's already closed; if so, the other
+            // endpoint will be registered, but no messages will
+            // ever arrive for it.
             if shared_state.pipe_closed {
                 shared_state.unscheduled_tasks.push_back(Task::Disconnect(interface_id));
             }
@@ -241,9 +243,9 @@ impl MultiplexRouter {
                 .map(|info_opt| *info_opt = Some(endpoint_info))
                 .expect("bind_interface should only be called for real interface IDs");
             // If the router's underlying pipe has been disconnected, we should
-            // immediately schedule the disconnect router for this endpoint. Note
-            // that if any messages have already arrived for it, those messages will
-            // be processed first.
+            // immediately schedule the disconnect router for this endpoint.
+            // Note that if any messages have already arrived for
+            // it, those messages will be processed first.
             if shared_state.pipe_closed {
                 shared_state.unscheduled_tasks.push_back(Task::Disconnect(interface_id));
             }
@@ -280,9 +282,10 @@ impl MultiplexRouter {
             // will run all _other_ disconnect handlers.
             self.run_all_disconnect_handlers();
         } else {
-            // Otherwise, we need to alert the other side that it is now disconnected.
-            // Mojo handles this automatically for the primary interface, but other
-            // interfaces need to send a special control message.
+            // Otherwise, we need to alert the other side that it is now
+            // disconnected. Mojo handles this automatically for the
+            // primary interface, but other interfaces need to send
+            // a special control message.
             let msg = construct_peer_endpoint_closed_message(interface_id);
             self.endpoint_watcher.with(|watcher| {
                 // The send can only fail if the entire other side is closed,
@@ -319,8 +322,8 @@ impl MultiplexRouter {
             if let Some(RunOrClosePipeInput::PeerAssociatedEndpointClosedEvent(event)) =
                 parse_incoming_control_message(message)
             {
-                // TODO(crbug.com/524990003): Maybe check here if this ID is valid,
-                // and report the message if not.
+                // TODO(crbug.com/524990003): Maybe check here if this ID is
+                // valid, and report the message if not.
                 Task::Disconnect(event.id)
             } else {
                 // Ignore other types of control message for now, and bad
@@ -329,8 +332,8 @@ impl MultiplexRouter {
             }
         };
 
-        // Add this task to the queue to be scheduled later. If the queue is empty,
-        // this will just schedule it immediately.
+        // Add this task to the queue to be scheduled later. If the queue is
+        // empty, this will just schedule it immediately.
         self.shared_state.lock().unwrap().unscheduled_tasks.push_back(task);
 
         self.schedule_all_possible_tasks();
@@ -355,34 +358,41 @@ impl MultiplexRouter {
 
             let endpoint_info = match registry.endpoint_map.get(interface_id) {
                 None => {
-                    // If we failed to find an entry for this interface ID, it means it was
-                    // dropped and removed itself from the map. In that case, we'll never be
-                    // able to handle a task for this ID again, so remove it from the queue.
+                    // If we failed to find an entry for this interface ID, it
+                    // means it was dropped and removed
+                    // itself from the map. In that case, we'll never be
+                    // able to handle a task for this ID again, so remove it
+                    // from the queue.
                     //
-                    // Note that the message can't be for an ID which we haven't _yet_ registered,
-                    // because you can't send messages until one side is bound to a pipe, and that
+                    // Note that the message can't be for an ID which we haven't
+                    // _yet_ registered, because you can't
+                    // send messages until one side is bound to a pipe, and that
                     // process registers both sides.
                     unscheduled_tasks.pop_front();
                     continue;
                 }
                 Some(None) => {
-                    // This ID had an entry in the map, but it hasn't been bound to anything yet.
-                    // We can't handle this message until that happens. To preserve FIFO ordering,
-                    // we can't process any later messages either, so we're done for now.
+                    // This ID had an entry in the map, but it hasn't been bound
+                    // to anything yet. We can't handle this
+                    // message until that happens. To preserve FIFO ordering,
+                    // we can't process any later messages either, so we're done
+                    // for now.
                     return;
                 }
                 Some(Some(endpoint_info)) => endpoint_info,
             };
 
-            // If both the previous checks succeeded, this task can be scheduled now,
-            // so remove it from the queue.
+            // If both the previous checks succeeded, this task can be scheduled
+            // now, so remove it from the queue.
             let task = unscheduled_tasks.pop_front().unwrap();
 
             match task {
                 Task::Disconnect(interface_id) => {
-                    // If it's a disconnect notification, remove the entry from the registry (this
-                    // is guaranteed to run after all messages for that endpoint, so no need to
-                    // keep it around), and run the disconnect handler if one was provided.
+                    // If it's a disconnect notification, remove the entry from
+                    // the registry (this is guaranteed to
+                    // run after all messages for that endpoint, so no need to
+                    // keep it around), and run the disconnect handler if one
+                    // was provided.
                     let endpoint_info =
                         registry.endpoint_map.remove(&interface_id).unwrap().unwrap();
                     if let Some(disconnect_handler) = endpoint_info.disconnect_handler {

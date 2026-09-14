@@ -137,8 +137,8 @@ where
 
     fn try_from_mojom_value(value: MojomValue, context: &Context) -> anyhow::Result<Self> {
         // When we read an associated endpoint from a pipe, we need to alert the
-        // router managing the pipe that it exists, so that it knows how to route
-        // messages it receives for that interface ID.
+        // router managing the pipe that it exists, so that it knows how to
+        // route messages it receives for that interface ID.
         let is_remote = Marker::IS_REMOTE;
         let interface_id = match value {
             MojomValue::PendingAssociatedRemote(interface_id) if is_remote => interface_id,

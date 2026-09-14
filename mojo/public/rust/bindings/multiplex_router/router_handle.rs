@@ -59,8 +59,8 @@ impl RouterHandle {
         }
     }
 
-    // Checks if this router handle has a corresponding pipe and can therefore be
-    // used to send and receive messages.
+    // Checks if this router handle has a corresponding pipe and can therefore
+    // be used to send and receive messages.
     pub(crate) fn ready_for_messages(&self) -> bool {
         match self {
             Self::Primary(_) => true,

@@ -224,28 +224,31 @@ where
     fn bind_self_owned_internal(
         bind_func: impl FnOnce(Option<Box<dyn FnOnce() + Send + 'static>>) -> Self,
     ) -> Weak<Self> {
-        // In order to provide a convenient user interface and also be fully memory
-        // safe, the types here get a little convoluted. We begin by constructing
-        // an `Arc<Mutex<Option<SelfOwnedReceiver>>`. We then pass a strong ref to
-        // that arc into the disconnect handler, so that it will get dropped when
-        // the handler runs. We then initialize the receiver with that handler, and
+        // In order to provide a convenient user interface and also be fully
+        // memory safe, the types here get a little convoluted. We begin
+        // by constructing an `Arc<Mutex<Option<SelfOwnedReceiver>>`. We
+        // then pass a strong ref to that arc into the disconnect
+        // handler, so that it will get dropped when the handler runs.
+        // We then initialize the receiver with that handler, and
         // swap it into the `Option`.
         //
         // However, to hide the details from the user, we want to only return a
         // reference to the receiver itself. To do that, the `SelfOwnedReceiver`
-        // type _also_ has an `Arc`, so we can return a weak reference to just that
-        // part and hide the `Mutex` and `Option` from the user.
+        // type _also_ has an `Arc`, so we can return a weak reference to just
+        // that part and hide the `Mutex` and `Option` from the user.
         //
         // Note that if we ever refit this class to be `unsafe`, then we could
-        // eliminate the outer `Arc` and `Mutex`, and possible the `Option` as well.
+        // eliminate the outer `Arc` and `Mutex`, and possible the `Option` as
+        // well.
 
         let receiver_holder = Arc::new(Mutex::new(None));
         let receiver_holder_clone = Arc::clone(&receiver_holder);
 
         let disconnect_handler = move || {
             // Drop our self-reference. This will cause the receiver
-            // itself to be dropped, unless the user is holding a strong reference
-            // (which they can get by `upgrade`ing the returned `Weak`).
+            // itself to be dropped, unless the user is holding a strong
+            // reference (which they can get by `upgrade`ing the
+            // returned `Weak`).
             drop(receiver_holder_clone);
         };
 
@@ -255,9 +258,9 @@ where
         *receiver_holder.lock().expect("Mutex should never be poisoned") = Some(receiver_strong);
 
         // At this point, the references are:
-        // - receiver_holder: The ref we just wrote to is about to be dropped, but
-        //   there's another strong ref in the disconnect handler, which is the only
-        //   other reference to the holder.
+        // - receiver_holder: The ref we just wrote to is about to be dropped,
+        //   but there's another strong ref in the disconnect handler, which is
+        //   the only other reference to the holder.
         // - receiver: There's a strong reference inside the holder, and a weak
         //   reference which we return here.
 
@@ -266,8 +269,8 @@ where
 
     /// Create a new Receiver from a raw pipe endpoint, bound to the
     /// provided sequence.
-    // This function isn't `pub` because users should always get their `Receiver`s
-    // by `bind`ing a `PendingReceiver`.
+    // This function isn't `pub` because users should always get their
+    // `Receiver`s by `bind`ing a `PendingReceiver`.
     fn new(
         make_handle: impl FnOnce(EndpointInfo) -> RouterHandle,
         state: StateTy,
@@ -317,7 +320,8 @@ where
         // out of the if statement using a type like itertools::Either, if we
         // get that approved for use in chromium.
         if expects_response {
-            // Make sure the request ID in the response header matches the request.
+            // Make sure the request ID in the response header matches the
+            // request.
             let request_id = message.header.request_id;
             state.lock().expect("Mutex should never be poisoned").handle_incoming_message(
                 message,

@@ -81,9 +81,10 @@ impl MojomMessage {
 
 impl From<MojomMessage> for SendableMessage {
     fn from(msg: MojomMessage) -> Self {
-        // This is more of a sanity check. There is nothing stopping us from re-sending
-        // a message given that the handle is there, but we should never end up in that
-        // situation, hence a technical bug somewhere.
+        // This is more of a sanity check. There is nothing stopping us from
+        // re-sending a message given that the handle is there, but we
+        // should never end up in that situation, hence a technical bug
+        // somewhere.
         assert!(msg.raw_message_handle.is_none(), "Cannot re-send an incoming message");
         let (payload, handles) = msg.into_data();
         // This can only fail if we're out of memory

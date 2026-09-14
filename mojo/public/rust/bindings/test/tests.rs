@@ -43,8 +43,8 @@ fn test_watcher_basic() {
     let received_messages: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
     let received_messages_clone = Arc::clone(&received_messages);
 
-    // When we receive a message at the receiver, store it in `received_messages`
-    // and send a simple response.
+    // When we receive a message at the receiver, store it in
+    // `received_messages` and send a simple response.
     let receiver_msg_handler = move |raw_msg: ReadableWithHandlesMessage,
                                      sender: ResponseSender| {
         let msg_contents = String::from_utf8(raw_msg.read_bytes().unwrap().to_vec()).unwrap();
@@ -57,8 +57,8 @@ fn test_watcher_basic() {
 
     let mut response_count = 0;
 
-    // When we get a response, just increment a counter. Once we've gotten three,
-    // all messages have arrived, so stop running tasks
+    // When we get a response, just increment a counter. Once we've gotten
+    // three, all messages have arrived, so stop running tasks
     let sender_msg_handler = move |_, _| {
         response_count += 1;
         if response_count >= 3 {
@@ -474,7 +474,8 @@ fn test_cpp_to_rust_handover() {
     crate::cxx::ffi::CreatePlusSevenMathServiceAndRemote(&mut _service, &mut remote_wrapper);
 
     // Convert the C++ endpoint to the equivalent Rust version.
-    // Since we use the scoped_handle_interop types, this doesn't require `unsafe`!
+    // Since we use the scoped_handle_interop types, this doesn't require
+    // `unsafe`!
     let remote_endpoint =
         system::scoped_handle_interop::ScopedMessagePipeHandleWrapper::into_message_endpoint(
             remote_wrapper,
@@ -554,8 +555,9 @@ fn init_associated_test() -> (
 ) {
     let (pending_remote, pending_receiver) =
         PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
-    // This state object holds the other end of associated endpoints that are sent
-    // across the pipe. We'll clone it so we can get them out again afterwards.
+    // This state object holds the other end of associated endpoints that are
+    // sent across the pipe. We'll clone it so we can get them out again
+    // afterwards.
     let assoc_impl = AssociatedSenderImpl::new();
 
     let run_loop = RunLoop::new();
@@ -881,7 +883,8 @@ fn test_associated_disconnect_cpp() {
         let mut remote = pending_remote.bind();
 
         // Test Rust to C++ disconnection
-        // We create a pair, send the receiver to C++, and drop the remote in Rust.
+        // We create a pair, send the receiver to C++, and drop the remote in
+        // Rust.
         {
             let (assoc_p_rem, assoc_p_rec) = PendingAssociatedRemote::new_pair();
 
@@ -892,7 +895,8 @@ fn test_associated_disconnect_cpp() {
 
             // Register the Rust callback for C++ disconnect
             *CPP_DISCONNECT_CALLBACK.lock().unwrap() = Some(Box::new(move |handler_type| {
-                expect_eq!(handler_type, 2); // C++ PlusSevenMathService (type 2) disconnected
+                expect_eq!(handler_type, 2); // C++ PlusSevenMathService (type
+                                             // 2) disconnected
                 quit();
             }));
 

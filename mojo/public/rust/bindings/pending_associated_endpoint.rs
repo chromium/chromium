@@ -76,10 +76,10 @@ impl AssociatedState {
         router_ref: &impl Registrar,
     ) -> InterfaceId {
         // This removes the endpoint info from the shared state. This is fine:
-        // 1. If it was present, the other side is already finished with the shared
-        //    state
-        // 2. If it was absent, we lost nothing (and the other side will see that
-        //    `router` is present so it won't try to set it later).
+        // 1. If it was present, the other side is already finished with the
+        //    shared state
+        // 2. If it was absent, we lost nothing (and the other side will see
+        //    that `router` is present so it won't try to set it later).
         let mut shared_state = shared_state.lock().unwrap();
         let handle = router_ref
             .register_new_endpoint(None, shared_state.endpoint_info.take())
@@ -212,9 +212,9 @@ where
     /// the router is set, and trying to send a message will panic. This can be
     /// checking using `ready_for_messages`.
     pub(crate) fn register_bound(self, endpoint_info: EndpointInfo) -> RouterHandle {
-        // If we share our state with the other endpoint, lock the mutex so we can
-        // access it. Otherwise, we're a singleton, so we can just register ourselves
-        // and return.
+        // If we share our state with the other endpoint, lock the mutex so we
+        // can access it. Otherwise, we're a singleton, so we can just
+        // register ourselves and return.
         let shared_state = match self.state {
             AssociatedEndpointState::Shared(shared_state) => shared_state,
             AssociatedEndpointState::Singleton(mut handle) => {
@@ -299,8 +299,8 @@ where
     Marker: IsRemote + 'static,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        // There's no good way to print a pending endpoint, so for debugging purposes
-        // we print:
+        // There's no good way to print a pending endpoint, so for debugging
+        // purposes we print:
         // 1. The address of `shared_state`
         // 2. Whether the handle has been set.
         // 3. Whether the endpoint info has been set.

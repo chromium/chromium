@@ -33,7 +33,8 @@ pub const RUN_OR_CLOSE_PIPE_MESSAGE_ID: u32 = 0xFFFFFFFE;
  * *********************************************************** */
 
 #[derive(Debug, PartialEq, Clone, MojomParse)]
-#[mojom(in_bindings_crate)] // Lets us derive `MojomParse` from the bindings crate
+#[mojom(in_bindings_crate)] // Lets us derive `MojomParse` from the bindings
+                            // crate
 pub struct DisconnectReason {
     pub custom_reason: u32,
     pub description: String,

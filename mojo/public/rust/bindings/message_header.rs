@@ -143,9 +143,9 @@ impl MessageHeader {
         if self.interface_ids_ptr == 0 {
             return 0;
         }
-        // Use saturating subtraction to prevent underflow if we got a bad message.
-        // If it happens, we'll probably fail shortly when we try to actually parse the
-        // message.
+        // Use saturating subtraction to prevent underflow if we got a bad
+        // message. If it happens, we'll probably fail shortly when we
+        // try to actually parse the message.
         match self.version {
             1 => 0, // Not present in this version
             2 => self.interface_ids_ptr.saturating_sub(8),

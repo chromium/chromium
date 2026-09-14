@@ -220,9 +220,9 @@ pub trait MojomInterface {
 pub mod internal {
     use super::*;
 
-    // This trait ensures users have called the `register_mojom_state_object_impls`
-    // macro, by being a supertrait of all the bindings-generated interface
-    // traits.
+    // This trait ensures users have called the
+    // `register_mojom_state_object_impls` macro, by being a supertrait of
+    // all the bindings-generated interface traits.
     #[diagnostic::on_unimplemented(
         message = "You must invoke the register_mojom_state_object_impls! macro after implementing an interface",
         label = "this type needs to be declared as a state object",
