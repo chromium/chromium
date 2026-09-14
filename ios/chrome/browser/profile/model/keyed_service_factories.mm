@@ -81,6 +81,9 @@
 #import "ios/chrome/browser/enterprise/groups/model/enterprise_groups_profile_handler_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_network_auth_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller_factory.h"
 #import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
@@ -350,6 +353,9 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   DomainDiversityReporterFactory::GetInstance();
   DownloadFileServiceFactory::GetInstance();
   DownloadRecordServiceFactory::GetInstance();
+  EnterpriseNetworkAuthServiceFactoryIOS::GetInstance();
+  EnterpriseProxyErrorServiceFactoryIOS::GetInstance();
+  EnterpriseProxyServiceFactoryIOS::GetInstance();
   ExternalFileRemoverFactory::GetInstance();
   GeminiCapabilitiesManagerFactory::GetInstance();
   GeminiServiceFactory::GetInstance();
