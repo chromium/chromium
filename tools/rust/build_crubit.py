@@ -99,27 +99,42 @@ def GetCcBindingsFromRsRustFlags():
 
 
 def GetNativeLibsRustFlags():
-    if sys.platform == 'win32':
-        # See https://crbug.com/481661885 to learn why adding `zlib.lib` and
-        # `libxml2s.lib` paths is required to build `cc_bindings_from_rs` on
-        # Windows when using Chromium-built Rust sysroot.
-        #
-        # Note that some of the calls below may be expensive (e.g. downloading
-        # zlib sources and building it) so `GetNativeLibsRustFlags` probably
-        # shouldn't be called in incremental builds (e.g. when
-        # `--skip-checkout` is present).
-        libxml2_lib_path = GetLibXml2Dirs().lib_dir
-        zlib_lib_path = AddZlibToPath()
-        return [
-            f'-Clink-arg=/LIBPATH:{libxml2_lib_path}',
-            f'-Clink-arg=/LIBPATH:{zlib_lib_path}',
-        ]
+    """Returns rustflags needed to link native libs on Windows.
 
-    # No native libs needed on other platforms:
-    return []
+    See https://crbug.com/481661885 to learn why adding `zlib.lib` and
+    `libxml2s.lib` paths is required to build `cc_bindings_from_rs` on Windows
+    when using a Chromium-built Rust sysroot.
+
+    Both libraries are built by the prerequisite `build_rust.py` run (zlib
+    directly, libxml2 as part of the LLVM build), so we only compute their
+    paths here.  In particular `AddZlibToPath(dry_run=False)` must not be used:
+    it deletes and rebuilds zlib, and leaves the process CWD inside `zlib_dir`.
+    """
+    if sys.platform != 'win32':
+        # No native libs needed on other platforms:
+        return []
+
+    libxml2_lib_dir = GetLibXml2Dirs().lib_dir
+    zlib_lib_dir = AddZlibToPath(dry_run=True)
+    # Neither `dry_run=True` nor `GetLibXml2Dirs` checks that the libraries are
+    # really there, so verify here - otherwise a missing prerequisite shows up
+    # much later as an obscure linker error.
+    for lib in [
+        os.path.join(zlib_lib_dir, 'zlib.lib'),
+        os.path.join(libxml2_lib_dir, 'libxml2s.lib'),
+    ]:
+        if not os.path.exists(lib):
+            raise RuntimeError(
+                f'{lib} not found.  Run `tools/rust/build_rust.py` first.'
+            )
+
+    return [
+        f'-Clink-arg=/LIBPATH:{libxml2_lib_dir}',
+        f'-Clink-arg=/LIBPATH:{zlib_lib_dir}',
+    ]
 
 
-def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
+def BuildCrubit(rust_sysroot, out_dir):
     target_dir = os.path.abspath(os.path.join(out_dir, 'target'))
     release_dir = os.path.join(target_dir, 'release')
     home_dir = os.path.join(target_dir, 'cargo_home')
@@ -131,8 +146,7 @@ def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
     cargo_args += ['--target-dir', target_dir]
     cargo_args += ['--manifest-path', CC_BINDINGS_FROM_RS_CARGO_TOML_PATH]
     extra_rustflags = GetCcBindingsFromRsRustFlags()
-    if not skip_checkout:
-        extra_rustflags += GetNativeLibsRustFlags()
+    extra_rustflags += GetNativeLibsRustFlags()
     cargo_result = RunCargo(rust_sysroot, home_dir, cargo_args, extra_rustflags)
     print(f'Building cc_bindings_from_rs ... done.  Result: {cargo_result}')
     if cargo_result:
@@ -199,14 +213,10 @@ def main():
         CheckoutGitRepo("crubit", CRUBIT_GIT, crubit_revision, CRUBIT_SRC_DIR)
 
     if args.out_dir:
-        return BuildCrubit(
-            RUST_TOOLCHAIN_OUT_DIR, args.out_dir, args.skip_checkout
-        )
+        return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, args.out_dir)
     else:
         with tempfile.TemporaryDirectory() as out_dir:
-            return BuildCrubit(
-                RUST_TOOLCHAIN_OUT_DIR, out_dir, args.skip_checkout
-            )
+            return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, out_dir)
 
 
 if __name__ == '__main__':
