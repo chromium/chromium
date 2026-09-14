@@ -84,8 +84,6 @@ class GlicPageHandler : public glic::mojom::PageHandler,
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override;
 
-  void EnableDragResize(bool enabled) override;
-
   // TODO(crbug.com/454120908): Remove this method after WebContents warming is
   // rolled out.
   // Called any time the ready state of the profile changes.

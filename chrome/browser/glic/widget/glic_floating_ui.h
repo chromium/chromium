@@ -76,7 +76,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,
               base::OnceClosure callback) override;
-  void EnableDragResize(bool enabled) override;
+  void SetDragResizeEnabled(bool enabled) override;
   void Attach() override;
   void Detach() override;
   void SetMinimumWidgetSize(const gfx::Size& size) override;

@@ -2565,8 +2565,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithNewTabDaisyChain, testNewTabMetrics) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/520959831): Fix flaky test.
-IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testEnableDragResize) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testEnableDragResize) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
   ASSERT_OK(WaitForGlicClient());
   ASSERT_OK(WaitUntilCanResize(false));
@@ -2576,8 +2575,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testEnableDragResize) {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/520824542): Fix flaky test.
-IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testDisableDragResize) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testDisableDragResize) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
   ASSERT_OK(WaitUntilCanResize(true));
   ExecuteJsTest();
@@ -2587,9 +2585,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testDisableDragResize) {
 
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitiallyNotResizable) {
-  if (GetParam().no_webview) {
-    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
-  }
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
   ExecuteJsTest();
   ASSERT_OK(WaitUntilCanResize(false));
@@ -3325,6 +3320,22 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testReloadWebUi) {
   }));
   ASSERT_TRUE(instance->host().GetPrimaryPageHandlerForTesting());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testReloadDetachedRemainsResizable) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
+  GlicClientConnectionObserver connection_observer(instance);
+  ExecuteJsTest();
+  ASSERT_OK(connection_observer.WaitForConnected());
+  ASSERT_OK(WaitUntilCanResize(true));
+
+  instance->host().Reload();
+  ASSERT_OK(connection_observer.WaitForDisconnected());
+  ExecuteJsTest();
+  ASSERT_OK(connection_observer.WaitForConnected());
+  ASSERT_OK(WaitUntilCanResize(true));
+}
+#endif
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDoNothing) {
   ASSERT_EQ(GetTabListInterface()->GetTabCount(), 1);

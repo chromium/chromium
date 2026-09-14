@@ -1116,7 +1116,7 @@ class GlicWebClientHandler
   }
 
   void EnableDragResize(bool enabled) override {
-    host().EnableDragResize(enabled);
+    host().SetDragResizeEnabled(enabled);
   }
 
   void SetMicrophonePermissionState(

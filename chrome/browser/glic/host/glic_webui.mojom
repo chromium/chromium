@@ -228,10 +228,6 @@ interface PageHandler {
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
 
-  // Set whether the panel can be manually resized, or if the panel hasn't been
-  // created yet, whether it should be resizable when created.
-  EnableDragResize(bool enabled);
-
   // Notifies the PageHandler that the state of the WebUI has changed.
   OnWebUiStateChanged(WebUiState new_state);
 };

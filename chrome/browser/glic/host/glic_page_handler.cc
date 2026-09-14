@@ -321,12 +321,6 @@ void GlicPageHandler::ResizeWidget(const gfx::Size& size,
   host().ResizePanel(size, duration, std::move(callback));
 }
 
-void GlicPageHandler::EnableDragResize(bool enabled) {
-  // features::kGlicUserResize is not checked here because the WebUI page
-  // invokes this method when it is disabled, too (when its state changes).
-  host().EnableDragResize(enabled);
-}
-
 void GlicPageHandler::OnWebUiStateChanged(glic::mojom::WebUiState new_state) {
   host().WebUiStateChanged(this, new_state);
 }

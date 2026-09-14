@@ -258,7 +258,7 @@ void GlicFloatingUi::ActiveWebContentsChanged(
   scoped_modal_dialog_delegate_.SetWebContents(new_contents);
 }
 
-void GlicFloatingUi::EnableDragResize(bool enabled) {
+void GlicFloatingUi::SetDragResizeEnabled(bool enabled) {
   user_resizable_ = enabled;
 
   if (!GetGlicWidget() || !GetGlicWidget()->widget_delegate()) {

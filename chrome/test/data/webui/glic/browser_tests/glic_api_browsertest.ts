@@ -1256,6 +1256,8 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testReloadWebUi() {}
 
+  async testReloadDetachedRemainsResizable() {}
+
   async testDefaultTabContextApiIsUndefinedWhenFeatureDisabled() {
     assertTrue(this.host.getDefaultTabContextPermissionState === undefined);
   }

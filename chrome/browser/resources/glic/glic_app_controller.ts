@@ -110,8 +110,6 @@ export class GlicAppController implements WebviewDelegate {
   private simulateNoConnection: boolean =
       loadTimeData.getBoolean('simulateNoConnection');
 
-  private guestResizeEnabled: boolean = false;
-
   // Present only when loading or after loading is finished. Removed on error.
   private webview?: WebviewController;
   get webviewForTesting(): WebviewController|undefined {
@@ -295,8 +293,6 @@ export class GlicAppController implements WebviewDelegate {
     this.state = newState;
     this.states.get(this.state)!.onEnter?.call(this);
     this.browserProxy.pageHandler.onWebUiStateChanged(this.state);
-    this.browserProxy.pageHandler.enableDragResize(
-        this.state === WebUiState.kReady && this.guestResizeEnabled);
   }
 
   private setErrorState(reason: WebUiErrorReason): void {
@@ -747,7 +743,6 @@ export class GlicAppController implements WebviewDelegate {
       case WebClientState.kUnresponsive:
         break;
       case WebClientState.kError:
-        this.guestResizeEnabled = false;
         this.setErrorState(WebUiErrorReason.CLIENT_ERROR);
         break;
       default:
