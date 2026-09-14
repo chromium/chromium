@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.STYLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
+import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
 import android.content.Context;
 
@@ -264,6 +265,9 @@ class KeyboardAccessoryMediator
             targetIndex = 0;
         } else {
             int step = (direction == NavigationDirection.FORWARD) ? 1 : -1;
+            if (isLayoutRtl()) {
+                step = -step;
+            }
             targetIndex = Math.floorMod(currentIndex + step, items.size());
         }
 

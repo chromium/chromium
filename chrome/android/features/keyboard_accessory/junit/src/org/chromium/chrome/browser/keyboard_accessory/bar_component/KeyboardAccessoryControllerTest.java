@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -54,6 +55,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -104,6 +106,7 @@ import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -1508,6 +1511,52 @@ public class KeyboardAccessoryControllerTest {
         // Simulate backend instructing the UI to update the selected suggestion.
         mCoordinator.setSelectedSuggestion(0);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
+    }
+
+    @Test
+    public void testNavigateSuggestionsInRtl() {
+        LocalizationUtils.setRtlForTesting(true);
+
+        AutofillSuggestion suggestion1 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 1")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(0)
+                        .build();
+        AutofillSuggestion suggestion2 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 2")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(1)
+                        .build();
+        AutofillSuggestion suggestion3 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 3")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(2)
+                        .build();
+
+        mCoordinator.setSuggestions(
+                List.of(suggestion1, suggestion2, suggestion3), mMockAutofillDelegate);
+
+        InOrder inOrder = inOrder(mMockAutofillDelegate);
+
+        // Start at middle suggestion.
+        mCoordinator.setSelectedSuggestion(1);
+
+        // In RTL, navigating forward (Right arrow) moves visually right towards index 0.
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        inOrder.verify(mMockAutofillDelegate).suggestionSelectionStateChanged(0, true);
+
+        // Reset to middle suggestion.
+        mCoordinator.setSelectedSuggestion(1);
+
+        // In RTL, navigating backward (Left arrow) moves visually left towards index 2.
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.BACKWARD));
+        inOrder.verify(mMockAutofillDelegate).suggestionSelectionStateChanged(2, true);
     }
 
     @Test
