@@ -22,10 +22,10 @@
 namespace ash {
 namespace {
 
-constexpr char kUserSearchQuery[] = "search query";
-constexpr char kEscapedUserSearchQuery[] = "search%20query";
-constexpr char kUserVisibleQueryText[] = "test template query text";
-constexpr char kUserVisibleQueryTemplate[] = "test template title";
+std::string user_search_query = "search query";
+std::string escaped_user_search_query = "search%20query";
+std::string user_visible_query_text = "test template query text";
+std::string user_visible_query_template = "test template title";
 
 base::DictValue GetTestTemplateQueryDict(base::Time time = base::Time::Now()) {
   return base::DictValue()
@@ -46,14 +46,14 @@ base::DictValue GetTestTemplateQueryDict(base::Time time = base::Time::Now()) {
                                base::NumberToString(static_cast<int32_t>(
                                    ash::personalization_app::mojom::
                                        SeaPenTemplateOption::kFlowerTypeRose))))
-      .Set("user_visible_query_text", kUserVisibleQueryText)
-      .Set("user_visible_query_template", kUserVisibleQueryTemplate);
+      .Set("user_visible_query_text", user_visible_query_text)
+      .Set("user_visible_query_template", user_visible_query_template);
 }
 
 base::DictValue GetTestFreeformQueryDict(base::Time time = base::Time::Now()) {
   return base::DictValue()
       .Set("creation_time", base::TimeToValue(time))
-      .Set("freeform_query", kEscapedUserSearchQuery);
+      .Set("freeform_query", escaped_user_search_query);
 }
 
 base::DictValue GetTestInvalidTemplateQueryDict(
@@ -104,7 +104,7 @@ TEST_F(SeaPenMetadataUtilsTest, SeaPenTextQueryToDict) {
 
   ash::personalization_app::mojom::SeaPenQueryPtr search_query =
       ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
-          kUserSearchQuery);
+          user_search_query);
 
   base::DictValue result = SeaPenQueryToDict(search_query);
 
@@ -142,7 +142,7 @@ TEST_F(SeaPenMetadataUtilsTest, SeaPenTemplateQueryToDict) {
               ash::personalization_app::mojom::SeaPenTemplateId::kFlower,
               options,
               ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
-                  kUserVisibleQueryText, kUserVisibleQueryTemplate)));
+                  user_visible_query_text, user_visible_query_template)));
 
   base::DictValue result = SeaPenQueryToDict(search_query);
 
@@ -193,7 +193,7 @@ TEST_F(SeaPenMetadataUtilsTest,
               ash::personalization_app::mojom::SeaPenTemplateId::kFlower,
               options,
               ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
-                  kUserVisibleQueryText, kUserVisibleQueryTemplate)));
+                  user_visible_query_text, user_visible_query_template)));
 
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(GetTestTemplateQueryDict());
@@ -205,7 +205,7 @@ TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoValidFreeformData) {
   ash::personalization_app::mojom::SeaPenQueryPtr expected_freeform_query =
       ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
-          kUserSearchQuery);
+          user_search_query);
 
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(GetTestFreeformQueryDict());
@@ -333,7 +333,7 @@ TEST_F(SeaPenMetadataUtilsTest, GetIdFromInvalidFilePath) {
 TEST_F(SeaPenMetadataUtilsTest, GetQueryStringFromTextQuery) {
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(GetTestFreeformQueryDict());
-  EXPECT_EQ(kUserSearchQuery, GetQueryString(recent_image_info));
+  EXPECT_EQ(user_search_query, GetQueryString(recent_image_info));
 }
 
 TEST_F(SeaPenMetadataUtilsTest, GetUnescapedQueryStringFromEscapedTextQuery) {
@@ -351,7 +351,7 @@ TEST_F(SeaPenMetadataUtilsTest, GetUnescapedQueryStringFromEscapedTextQuery) {
 TEST_F(SeaPenMetadataUtilsTest, GetQueryStringFromTemplateQuery) {
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(GetTestTemplateQueryDict());
-  EXPECT_EQ(kUserVisibleQueryText, GetQueryString(recent_image_info));
+  EXPECT_EQ(user_visible_query_text, GetQueryString(recent_image_info));
 }
 
 TEST_F(SeaPenMetadataUtilsTest, GetQueryStringFromNullPtr) {

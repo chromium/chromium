@@ -35,16 +35,18 @@ using testing::Gt;
 using testing::Lt;
 
 constexpr char kUser1[] = "user1@test.com";
+const AccountId account_id_1 =
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId::Literal("1234"));
 
 constexpr char kDummyUrl[] = "https://best_wallpaper/1";
 constexpr char kDummyUrl2[] = "https://best_wallpaper/2";
 constexpr char kDummyUrl3[] = "https://best_wallpaper/3";
 constexpr char kDummyUrl4[] = "https://best_wallpaper/4";
 
-constexpr uint64_t kAssetId = 1;
-constexpr uint64_t kAssetId2 = 2;
-constexpr uint64_t kAssetId3 = 3;
-constexpr uint64_t kAssetId4 = 4;
+const uint64_t kAssetId = 1;
+const uint64_t kAssetId2 = 2;
+const uint64_t kAssetId3 = 3;
+const uint64_t kAssetId4 = 4;
 
 constexpr char kFakeGooglePhotosPhotoId[] = "fake_photo";
 
@@ -158,9 +160,6 @@ class WallpaperPrefManagerTestBase : public testing::Test {
   }
 
  protected:
-  const AccountId account_id_1 =
-      AccountId::FromUserEmailGaiaId(kUser1, GaiaId::Literal("1234"));
-
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
 

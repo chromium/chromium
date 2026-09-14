@@ -166,12 +166,16 @@ std::string GetDummyFileName(const AccountId& account_id) {
 }
 
 constexpr char kUser1[] = "user1@test.com";
-constexpr char kWallpaperFilesId1[] = "user1@test.com-hash";
-constexpr char kFileName1[] = "user1@test.com-file";
+const AccountId kAccountId1 =
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId("1111"));
+const std::string kWallpaperFilesId1 = GetDummyFileId(kAccountId1);
+const std::string kFileName1 = GetDummyFileName(kAccountId1);
 
 constexpr char kUser2[] = "user2@test.com";
-constexpr char kWallpaperFilesId2[] = "user2@test.com-hash";
-constexpr char kFileName2[] = "user2@test.com-file";
+const AccountId kAccountId2 =
+    AccountId::FromUserEmailGaiaId(kUser2, GaiaId("2222"));
+const std::string kWallpaperFilesId2 = GetDummyFileId(kAccountId2);
+const std::string kFileName2 = GetDummyFileName(kAccountId2);
 
 constexpr char kChildEmail[] = "child@test.com";
 
@@ -180,15 +184,15 @@ constexpr char kDummyUrl2[] = "https://best_wallpaper/2";
 constexpr char kDummyUrl3[] = "https://best_wallpaper/3";
 constexpr char kDummyUrl4[] = "https://best_wallpaper/4";
 
-constexpr uint64_t kAssetId = 1;
-constexpr uint64_t kAssetId2 = 2;
-constexpr uint64_t kAssetId3 = 3;
-constexpr uint64_t kAssetId4 = 4;
-constexpr uint64_t kUnitId = 1;
-constexpr uint64_t kUnitId2 = 2;
+const uint64_t kAssetId = 1;
+const uint64_t kAssetId2 = 2;
+const uint64_t kAssetId3 = 3;
+const uint64_t kAssetId4 = 4;
+const uint64_t kUnitId = 1;
+const uint64_t kUnitId2 = 2;
 
-constexpr char kFakeGooglePhotosAlbumId[] = "fake_album";
-constexpr char kFakeGooglePhotosPhotoId[] = "fake_photo";
+const std::string kFakeGooglePhotosAlbumId = "fake_album";
+const std::string kFakeGooglePhotosPhotoId = "fake_photo";
 
 // For checking that the wallpaper changes at approximately the correct time
 // when the "auto" schedule is enabled. The sunrise/set times specified in
@@ -991,10 +995,6 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
   syncer::TestSyncService test_sync_service2_;
   raw_ptr<TestWallpaperDriveFsDelegate> drivefs_delegate_;
 
-  const AccountId kAccountId1 =
-      AccountId::FromUserEmailGaiaId(kUser1, GaiaId("1111"));
-  const AccountId kAccountId2 =
-      AccountId::FromUserEmailGaiaId(kUser2, GaiaId("2222"));
   const AccountId kChildAccountId =
       AccountId::FromUserEmailGaiaId(kChildEmail, GaiaId("child_gaia_id"));
 

@@ -65,7 +65,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
@@ -100,10 +99,11 @@ namespace ash {
 
 namespace {
 
-// Raw pointers to hold test overrides for `Create`. Trivially destructible to
-// eliminate exit-time destructors.
-WallpaperPrefManager* g_test_pref_manager = nullptr;
-WallpaperImageDownloader* g_test_image_downloader = nullptr;
+// Global to hold a WallpaperPrefManager for testing in `Create`.
+std::unique_ptr<WallpaperPrefManager> g_test_pref_manager;
+
+// Global to hold a WallpaperImageDownloader for testing in `Create`.
+std::unique_ptr<WallpaperImageDownloader> g_test_image_downloader;
 
 // The file name of the policy wallpaper.
 constexpr char kPolicyWallpaperFile[] = "policy-controlled.jpeg";
@@ -237,15 +237,13 @@ std::unique_ptr<WallpaperInfo> CreateOnlineWallpaperInfo(
 std::unique_ptr<WallpaperControllerImpl> WallpaperControllerImpl::Create(
     PrefService* local_state) {
   std::unique_ptr<WallpaperPrefManager> pref_manager =
-      g_test_pref_manager ? base::WrapUnique(g_test_pref_manager)
+      g_test_pref_manager ? std::move(g_test_pref_manager)
                           : WallpaperPrefManager::Create(local_state);
-  g_test_pref_manager = nullptr;
 
   std::unique_ptr<WallpaperImageDownloader> wallpaper_image_downloader =
       g_test_image_downloader
-          ? base::WrapUnique(g_test_image_downloader)
+          ? std::move(g_test_image_downloader)
           : std::make_unique<WallpaperImageDownloaderImpl>();
-  g_test_image_downloader = nullptr;
 
   return std::make_unique<WallpaperControllerImpl>(
       std::move(pref_manager), std::move(wallpaper_image_downloader));
@@ -254,15 +252,13 @@ std::unique_ptr<WallpaperControllerImpl> WallpaperControllerImpl::Create(
 // static
 void WallpaperControllerImpl::SetWallpaperPrefManagerForTesting(
     std::unique_ptr<WallpaperPrefManager> pref_manager) {
-  delete g_test_pref_manager;
-  g_test_pref_manager = pref_manager.release();
+  g_test_pref_manager.swap(pref_manager);
 }
 
 // static
 void WallpaperControllerImpl::SetWallpaperImageDownloaderForTesting(
     std::unique_ptr<WallpaperImageDownloader> image_downloader) {
-  delete g_test_image_downloader;
-  g_test_image_downloader = image_downloader.release();
+  g_test_image_downloader.swap(image_downloader);
 }
 
 WallpaperControllerImpl::WallpaperControllerImpl(

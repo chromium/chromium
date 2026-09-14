@@ -44,9 +44,11 @@
 namespace ash {
 namespace {
 
-constexpr char kUser1[] = "user1@test.com";
+const std::string kUser1 = "user1@test.com";
 constexpr std::string_view kExpectedMigrationFileContents =
     "migration_file_contents";
+const AccountId kAccountId1 =
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId::Literal("gaia_id1"));
 constexpr SkColor kDefaultImageColor = SkColorSetARGB(255, 31, 63, 127);
 
 SkBitmap CreateBitmap(SkColor color = kDefaultImageColor) {
@@ -158,10 +160,6 @@ class SeaPenWallpaperManagerTest : public testing::Test {
   base::FilePath GetMigrationSourceDir(const AccountId& account_id) {
     return migration_source_dir_.GetPath().Append(account_id.GetAccountIdKey());
   }
-
- protected:
-  const AccountId kAccountId1 =
-      AccountId::FromUserEmailGaiaId(kUser1, GaiaId::Literal("gaia_id1"));
 
  private:
   base::test::TaskEnvironment task_environment_;
