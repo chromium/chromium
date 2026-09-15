@@ -296,7 +296,9 @@ int SetupSocketOnly() {
   int sock = socket(PF_UNIX, SOCK_STREAM, 0);
   PCHECK(sock >= 0) << "socket() failed";
 
-  DCHECK(base::SetNonBlocking(sock)) << "Failed to make non-blocking socket.";
+  if (!base::SetNonBlocking(sock)) {
+    PLOG(ERROR) << "Failed to make non-blocking socket.";
+  }
   int rv = SetCloseOnExec(sock);
   DCHECK_EQ(0, rv) << "Failed to set CLOEXEC on socket.";
 
@@ -645,8 +647,9 @@ void ProcessSingleton::LinuxWatcher::OnSocketCanReadWithoutBlocking(
     PLOG(ERROR) << "accept() failed";
     return;
   }
-  DCHECK(base::SetNonBlocking(connection_socket))
-      << "Failed to make non-blocking socket.";
+  if (!base::SetNonBlocking(connection_socket)) {
+    PLOG(ERROR) << "Failed to make non-blocking socket.";
+  }
   readers_.insert(
       std::make_unique<SocketReader>(this, ui_task_runner_, connection_socket));
 }
