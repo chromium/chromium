@@ -380,6 +380,7 @@ source_set("impl") {
       ":browser_activity_watcher",
       "//chrome/browser:after_startup_task_utils",
       "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/tabs",
@@ -765,6 +766,9 @@ source_set("platform_browser_tests") {
 
   if (is_chromeos) {
     sources += [ "cros_pre_choice_metrics_manager_browsertest.cc" ]
+  }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
   }
 }
 

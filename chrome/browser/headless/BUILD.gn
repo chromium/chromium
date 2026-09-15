@@ -145,6 +145,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser",
       "//chrome/browser/infobars",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/views/exclusive_access",
       "//chrome/common:constants",
       "//chrome/test:test_support",
@@ -210,9 +211,6 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = []
-  if (is_win) {
-    sources += [ "test/headless_mode_interactive_uitest_win.cc" ]
-  }
   deps = [
     ":initializer",
     "//base",
@@ -225,6 +223,11 @@ source_set("interactive_ui_tests") {
     "//testing/gtest",
     "//ui/gfx",
   ]
+
+  if (is_win) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
+    sources += [ "test/headless_mode_interactive_uitest_win.cc" ]
+  }
   if (use_aura && is_win) {
     deps += [
       "//ui/aura",

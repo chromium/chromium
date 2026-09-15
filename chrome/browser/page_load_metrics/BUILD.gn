@@ -350,6 +350,7 @@ if (!is_android) {
       "//chrome/browser/ssl:cert_verifier_test_support",
       "//chrome/browser/subresource_filter:test_support",
       "//chrome/browser/ui:browser_live_tab_context",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/waap",
       "//chrome/browser/ui/waap:window_metrics_manager",

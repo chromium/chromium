@@ -431,6 +431,7 @@ if (!is_android && !is_chromeos_device) {
     ]
 
     if (is_mac || is_win) {
+      deps += [ "//chrome/browser/ui:browser_window_header" ]
       sources += [ "system/system_permission_settings_interactive_uitest.cc" ]
     }
   }

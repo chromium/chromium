@@ -48,6 +48,7 @@ if (!is_chromeos_device) {
       ":desktop_session_duration",
       "//base",
       "//chrome/browser:chrome_browser_main",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//content/test:test_support",

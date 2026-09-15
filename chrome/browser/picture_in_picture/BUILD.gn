@@ -173,6 +173,7 @@ source_set("impl") {
         [ "auto_picture_in_picture_window_occlusion_helper_web_contents.cc" ]
   }
   if (use_widget_occlusion_helper) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
     sources += [ "auto_picture_in_picture_window_occlusion_helper_widget.cc" ]
   }
   if (use_stub_occlusion_helper) {
@@ -271,6 +272,7 @@ if (!is_android) {
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:bubble_anchor_util",
       "//chrome/browser/ui:recently_audible_helper",
       "//chrome/browser/ui:ui_features",
@@ -333,6 +335,7 @@ if (!is_android) {
       ":test_support_ui",
       "//base/test:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//testing/gtest",
     ]

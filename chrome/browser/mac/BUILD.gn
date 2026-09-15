@@ -143,6 +143,7 @@ source_set("browser_tests") {
     ":mac",
     "//base",
     "//chrome/browser:app_controller_mac",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",

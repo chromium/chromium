@@ -274,6 +274,9 @@ source_set("impl") {
   if (enable_dice_support) {
     sources += [ "multi_profile_credentials_filter.cc" ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
+  }
 }
 
 if (!is_android) {

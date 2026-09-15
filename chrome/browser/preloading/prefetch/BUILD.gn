@@ -88,6 +88,9 @@ source_set("platform_browser_tests") {
   }
 
   data = [ "//chrome/test/data/" ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -173,6 +176,7 @@ if (!is_android) {
       "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
       "//chrome/browser/preloading/prefetch/search_prefetch:impl",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//components/embedder_support",

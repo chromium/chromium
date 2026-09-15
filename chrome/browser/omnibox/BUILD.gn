@@ -63,6 +63,7 @@ if (!is_android) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/test:test_support",
       "//components/content_settings/core/browser",
       "//components/omnibox/browser",
