@@ -123,14 +123,7 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
     return false;
   }
 
-  if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
-    return true;
-  }
-
-  if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
-    return !text_item.HasOverAnnotation();
-  }
-  return !text_item.HasUnderAnnotation();
+  return true;
 }
 
 bool IsDecorationSkipSpace(UChar c) {
@@ -442,8 +435,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     // and nested ruby annotation exist on the same side.
     bool has_over_text_emphasis =
         style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver;
-    if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled() &&
-        ShouldPaintEmphasisMark(style, *layout_object, text_item) &&
+    if (ShouldPaintEmphasisMark(style, *layout_object, text_item) &&
         ((has_over_text_emphasis && text_item.HasOverAnnotation()) ||
          (!has_over_text_emphasis && text_item.HasUnderAnnotation()))) {
       gfx::Rect emphasis_rect = visual_rect;

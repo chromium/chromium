@@ -476,8 +476,7 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
   if (previous_item_style.FontSize() > ruby_style.FontSize()) {
     return false;
   }
-  if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled() &&
-      previous_item_style.GetTextEmphasisMark() != TextEmphasisMark::kNone &&
+  if (previous_item_style.GetTextEmphasisMark() != TextEmphasisMark::kNone &&
       ruby_style.GetRubyPosition() ==
           previous_item_style.GetTextEmphasisLineLogicalSide()) {
     return false;
@@ -544,8 +543,7 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
   if (column_base_line_style.FontSize() < text_item.Style()->FontSize()) {
     return LayoutUnit();
   }
-  if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled() &&
-      text_item.Style()->GetTextEmphasisMark() != TextEmphasisMark::kNone &&
+  if (text_item.Style()->GetTextEmphasisMark() != TextEmphasisMark::kNone &&
       column_base_line_style.GetRubyPosition() ==
           text_item.Style()->GetTextEmphasisLineLogicalSide()) {
     return LayoutUnit();
@@ -786,19 +784,13 @@ AnnotationMetrics ComputeAnnotationOverflow(
   if (annotation_metrics) {
     if (annotation_metrics->ascent) {
       LayoutUnit item_over =
-          line_box_metrics.ascent - annotation_metrics->ascent;
-      if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
-        item_over -= over_emphasis;
-      }
+          line_box_metrics.ascent - annotation_metrics->ascent - over_emphasis;
       content_over = std::min(content_over, item_over);
       has_over_annotation = true;
     }
     if (annotation_metrics->descent) {
-      LayoutUnit item_under =
-          line_box_metrics.ascent + annotation_metrics->descent;
-      if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
-        item_under += under_emphasis;
-      }
+      LayoutUnit item_under = line_box_metrics.ascent +
+                              annotation_metrics->descent + under_emphasis;
       content_under = std::max(content_under, item_under);
       has_under_annotation = true;
     }

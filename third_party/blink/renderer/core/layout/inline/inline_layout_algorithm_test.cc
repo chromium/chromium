@@ -1206,8 +1206,6 @@ TEST_F(InlineLayoutAlgorithmTest, TextEmphasisAsRuby) {
 
 void InlineLayoutAlgorithmTest::TestRubyTextEmphasisAnnotationMetricsVertical(
     WritingMode writing_mode) {
-  ScopedTextEmphasisWithRubyForTest enable_text_emphasis_with_ruby(true);
-
   LoadAhem();
 
   String writing_mode_str = (writing_mode == WritingMode::kVerticalRl)
@@ -1280,8 +1278,6 @@ TEST_F(InlineLayoutAlgorithmTest, RubyTextEmphasisAnnotationMetricsVerticalRl) {
 }
 
 TEST_F(InlineLayoutAlgorithmTest, RubyTextEmphasisAnnotationMetricsHorizontal) {
-  ScopedTextEmphasisWithRubyForTest enable_text_emphasis_with_ruby(true);
-
   LoadAhem();
 
   constexpr LayoutUnit kBaseSize = LayoutUnit(20);
