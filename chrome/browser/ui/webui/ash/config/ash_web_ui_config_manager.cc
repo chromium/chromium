@@ -403,7 +403,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(MakeEcheAppUIConfig());
   AddWebUIConfig(std::make_unique<SensorInfoUIConfig>());
   AddWebUIConfig(std::make_unique<EmojiUIConfig>());
-  AddWebUIConfig(std::make_unique<extended_updates::ExtendedUpdatesUIConfig>());
+  AddWebUIConfig(std::make_unique<extended_updates::ExtendedUpdatesUIConfig>(
+      &local_state_.get()));
   AddWebUIConfig(
       MakeComponentConfigWithDelegate<FilesInternalsUIConfig, FilesInternalsUI,
                                       ChromeFilesInternalsUIDelegate>());
@@ -459,7 +460,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
                   CreatePrintManagementUIController)));
   AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>());
   AddWebUIConfig(MakeRecorderAppUIConfig());
-  AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
+  AddWebUIConfig(
+      std::make_unique<RemoteMaintenanceCurtainUIConfig>(&local_state_.get()));
   AddWebUIConfig(
       MakeComponentConfigWithDelegate<SanitizeDialogUIConfig, SanitizeDialogUI,
                                       ChromeSanitizeUIDelegate>());
@@ -481,7 +483,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(std::make_unique<vc_background_ui::VcBackgroundUIConfig>(
       base::BindRepeating(vc_background_ui::CreateVcBackgroundUI)));
   AddWebUIConfig(std::make_unique<GrowthInternalsUIConfig>());
-  AddWebUIConfig(std::make_unique<FloatingWorkspaceUIConfig>());
+  AddWebUIConfig(
+      std::make_unique<FloatingWorkspaceUIConfig>(&local_state_.get()));
 #if !defined(OFFICIAL_BUILD)
   AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
   AddWebUIConfig(std::make_unique<StatusAreaInternalsUIConfig>());

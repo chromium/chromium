@@ -30,6 +30,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+class PrefService;
+
 namespace content {
 class WebUIDataSource;
 }
@@ -184,7 +186,8 @@ class OobeUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<common::mojom::WebUiSyslogEmitter> receiver);
 
-  static void AddOobeComponents(content::WebUIDataSource* source);
+  static void AddOobeComponents(const PrefService& local_state,
+                                content::WebUIDataSource* source);
 
   bool ready() const { return ready_; }
 

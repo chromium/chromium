@@ -6,6 +6,7 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -18,7 +19,24 @@
 
 namespace ash {
 
-RemoteMaintenanceCurtainUI::RemoteMaintenanceCurtainUI(content::WebUI* web_ui)
+RemoteMaintenanceCurtainUIConfig::RemoteMaintenanceCurtainUIConfig(
+    PrefService* local_state)
+    : WebUIConfig(content::kChromeUIScheme,
+                  ash::kChromeUIRemoteManagementCurtainHost),
+      local_state_(CHECK_DEREF(local_state)) {}
+
+RemoteMaintenanceCurtainUIConfig::~RemoteMaintenanceCurtainUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+RemoteMaintenanceCurtainUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                        const GURL& url) {
+  return std::make_unique<RemoteMaintenanceCurtainUI>(local_state_.get(),
+                                                      web_ui);
+}
+
+RemoteMaintenanceCurtainUI::RemoteMaintenanceCurtainUI(
+    const PrefService& local_state,
+    content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -30,7 +48,7 @@ RemoteMaintenanceCurtainUI::RemoteMaintenanceCurtainUI(content::WebUI* web_ui)
 
   // Add OOBE resources so our WebUI can find the OOBE WebUI resources (css,
   // javascript files, ...) at runtime.
-  OobeUI::AddOobeComponents(source);
+  OobeUI::AddOobeComponents(local_state, source);
 
   // Add localized strings
   source->AddLocalizedString("curtainTitle", IDS_SECURITY_CURTAIN_TITLE);

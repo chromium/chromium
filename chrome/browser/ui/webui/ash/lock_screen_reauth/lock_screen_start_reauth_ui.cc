@@ -155,7 +155,7 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(
       IDR_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_APP_HTML);
 
   // Add OOBE and Gaia Authenticator resources
-  OobeUI::AddOobeComponents(source);
+  OobeUI::AddOobeComponents(CHECK_DEREF(local_state), source);
 }
 
 LockScreenStartReauthUI::~LockScreenStartReauthUI() = default;

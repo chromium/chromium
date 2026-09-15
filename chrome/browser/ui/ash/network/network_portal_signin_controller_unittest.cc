@@ -392,7 +392,8 @@ TEST_F(NetworkPortalSigninControllerTest, FloatingWorkspaceDialog) {
   SimulateLogin();
 
   content::ScopedWebUIConfigRegistration scoped_fws_ui_config(
-      std::make_unique<ash::FloatingWorkspaceUIConfig>());
+      std::make_unique<ash::FloatingWorkspaceUIConfig>(
+          TestingBrowserProcess::GetGlobal()->local_state()));
 
   ash::FloatingWorkspaceDialog::ShowNetworkScreen();
   EXPECT_EQ(GetSigninMode(), SigninMode::kFloatingWorkspaceDialog);

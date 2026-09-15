@@ -401,7 +401,8 @@ class FloatingWorkspaceServiceTest : public testing::Test {
 
     scoped_fws_ui_config_ =
         std::make_unique<content::ScopedWebUIConfigRegistration>(
-            std::make_unique<ash::FloatingWorkspaceUIConfig>());
+            std::make_unique<ash::FloatingWorkspaceUIConfig>(
+                TestingBrowserProcess::GetGlobal()->local_state()));
   }
 
   void TearDown() override {

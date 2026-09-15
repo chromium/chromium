@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_EXTENDED_UPDATES_EXTENDED_UPDATES_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_EXTENDED_UPDATES_EXTENDED_UPDATES_UI_H_
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_page_handler.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -14,6 +15,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
+class PrefService;
+
 namespace ash::extended_updates {
 
 // The WebUI for chrome://extended-updates-dialog
@@ -21,7 +24,7 @@ class ExtendedUpdatesUI
     : public ui::MojoWebDialogUI,
       public ash::extended_updates::mojom::PageHandlerFactory {
  public:
-  explicit ExtendedUpdatesUI(content::WebUI* web_ui);
+  ExtendedUpdatesUI(const PrefService& local_state, content::WebUI* web_ui);
   ExtendedUpdatesUI(const ExtendedUpdatesUI&) = delete;
   ExtendedUpdatesUI& operator=(const ExtendedUpdatesUI&) = delete;
   ~ExtendedUpdatesUI() override;
@@ -46,16 +49,22 @@ class ExtendedUpdatesUI
 };
 
 // The WebUIConfig for chrome://extended-updates-dialog
-class ExtendedUpdatesUIConfig
-    : public content::DefaultWebUIConfig<ExtendedUpdatesUI> {
+class ExtendedUpdatesUIConfig : public content::WebUIConfig {
  public:
-  ExtendedUpdatesUIConfig();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit ExtendedUpdatesUIConfig(PrefService* local_state);
   ExtendedUpdatesUIConfig(const ExtendedUpdatesUIConfig&) = delete;
   ExtendedUpdatesUIConfig& operator=(const ExtendedUpdatesUIConfig&) = delete;
   ~ExtendedUpdatesUIConfig() override;
 
   // content::WebUIConfig overrides.
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 }  // namespace ash::extended_updates

@@ -5,28 +5,42 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_UI_H_
 
-#include "ash/webui/common/chrome_os_webui_config.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+class PrefService;
+
 namespace ash {
 class FloatingWorkspaceUI;
 class FloatingWorkspaceDialogHandler;
 // The WebUIConfig for the FloatingWorkspaceUI class.
-class FloatingWorkspaceUIConfig
-    : public ChromeOSWebUIConfig<FloatingWorkspaceUI> {
+class FloatingWorkspaceUIConfig : public content::WebUIConfig {
  public:
-  FloatingWorkspaceUIConfig();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit FloatingWorkspaceUIConfig(PrefService* local_state);
+  FloatingWorkspaceUIConfig(const FloatingWorkspaceUIConfig&) = delete;
+  FloatingWorkspaceUIConfig& operator=(const FloatingWorkspaceUIConfig&) =
+      delete;
+  ~FloatingWorkspaceUIConfig() override;
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 class FloatingWorkspaceUI : public ui::MojoWebDialogUI {
  public:
-  explicit FloatingWorkspaceUI(content::WebUI* web_ui);
+  FloatingWorkspaceUI(const PrefService& local_state, content::WebUI* web_ui);
   FloatingWorkspaceUI(const FloatingWorkspaceUI&) = delete;
   FloatingWorkspaceUI& operator=(const FloatingWorkspaceUI&) = delete;
   ~FloatingWorkspaceUI() override;
