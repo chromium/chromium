@@ -88,9 +88,11 @@ class SingleLogFileLogSourceTest : public ::testing::Test {
   // Calls source_.Fetch() to start a logs fetch operation. Passes in
   // OnFileRead() as a callback. Runs until Fetch() has completed.
   void FetchFromSource() {
+    base::RunLoop run_loop;
     source_->Fetch(base::BindOnce(&SingleLogFileLogSourceTest::OnFileRead,
-                                  base::Unretained(this)));
-    task_environment_.RunUntilIdle();
+                                  base::Unretained(this))
+                       .Then(run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   // Callback for fetching logs from |source_|. Overwrites the previous stored
