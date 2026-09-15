@@ -2655,33 +2655,36 @@ static_library("ui") {
 
   if (is_linux) {
     sources += [
-      "views/frame/browser_desktop_window_tree_host_linux.cc",
-      "views/frame/browser_desktop_window_tree_host_linux.h",
       "views/frame/browser_native_widget_aura_linux.cc",
       "views/frame/browser_native_widget_aura_linux.h",
-      "views/frame/picture_in_picture_browser_frame_view_linux.cc",
-      "views/frame/picture_in_picture_browser_frame_view_linux.h",
     ]
 
     deps += [
       "//chrome/browser:shell_integration_linux",
       "//chrome/browser/ui/views:eula_dialog_linux",
       "//chrome/browser/ui/views:window_sizer_linux",
+      "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host_linux",
+      "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host_linux_impl",
+      "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view_linux",
       "//ui/linux:linux_ui_factory",
       "//ui/platform_window",
     ]
 
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/views:window_sizer_linux" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ui/views:window_sizer_linux",
+      "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host_linux_impl",
+      "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view_linux",
+    ]
 
     if (use_dbus) {
-      sources += [
-        "views/frame/dbus_appmenu.cc",
-        "views/frame/dbus_appmenu.h",
-        "views/frame/dbus_appmenu_registrar.cc",
-        "views/frame/dbus_appmenu_registrar.h",
+      deps += [
+        "//chrome/browser/ui/views/frame:dbus_appmenu",
+        "//chrome/browser/ui/views/frame:dbus_appmenu_impl",
+        "//chrome/browser/ui/views/frame:dbus_appmenu_registrar",
+        "//components/dbus",
       ]
-      deps += [ "//components/dbus" ]
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/views/frame:dbus_appmenu_impl" ]
     }
   }
 

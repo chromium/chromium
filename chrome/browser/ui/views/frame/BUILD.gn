@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//build/config/ui.gni")
 
 assert(!is_android)
@@ -1145,6 +1146,136 @@ source_set("browser_tests") {
       "//chromeos/ui/frame:test_support",
       "//components/account_id:test_support",
       "//ui/events:test_support",
+    ]
+  }
+}
+
+if (is_linux) {
+  if (use_dbus) {
+    source_set("dbus_appmenu") {
+      public = [ "dbus_appmenu.h" ]
+      public_deps = [
+        "//base",
+        "//chrome/browser:command_updater_impl",
+        "//chrome/browser/profiles:misc",
+        "//chrome/browser/ui/browser_window",
+        "//components/dbus",
+        "//components/history/core/browser",
+        "//components/prefs",
+        "//components/sessions",
+        "//ui/aura",
+        "//ui/menus",
+      ]
+    }
+
+    source_set("dbus_appmenu_impl") {
+      sources = [ "dbus_appmenu.cc" ]
+      public_deps = [
+        ":dbus_appmenu",
+        "//chrome/browser:browser_public_dependencies",
+      ]
+      deps = [
+        ":dbus_appmenu_registrar",
+        "//base",
+        "//build:branding_buildflags",
+        "//chrome/app:command_ids",
+        "//chrome/app:generated_resources",
+        "//chrome/browser:browser_process",
+        "//chrome/browser/feedback:feedback_impl",
+        "//chrome/browser/history",
+        "//chrome/browser/profiles:profile",
+        "//chrome/browser/profiles:profile_manager",
+        "//chrome/browser/sessions",
+        "//chrome/browser/ui:browser_live_tab_context",
+        "//chrome/browser/ui/browser_window",
+        "//chrome/browser/ui/profiles",
+        "//components/bookmarks/common",
+        "//components/history/core/browser",
+        "//components/prefs",
+        "//components/sessions",
+        "//components/strings:components_strings",
+        "//content/public/browser",
+        "//dbus",
+        "//ui/base",
+        "//ui/gfx",
+      ]
+    }
+
+    source_set("dbus_appmenu_registrar") {
+      public = [ "dbus_appmenu_registrar.h" ]
+      sources = [ "dbus_appmenu_registrar.cc" ]
+      public_deps = [
+        "//base",
+        "//components/dbus",
+        "//dbus",
+        "//ui/platform_window",
+      ]
+      deps = [ ":dbus_appmenu" ]
+    }
+  }
+
+  source_set("browser_desktop_window_tree_host_linux") {
+    public = [ "browser_desktop_window_tree_host_linux.h" ]
+    public_deps = [
+      ":browser_desktop_window_tree_host",
+      "//base",
+      "//build:buildflag_header_h",
+      "//build/config/linux/dbus:buildflags",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/linux:linux_ui",
+      "//ui/views",
+    ]
+    if (use_dbus) {
+      public_deps += [ ":dbus_appmenu" ]
+    }
+  }
+
+  source_set("browser_desktop_window_tree_host_linux_impl") {
+    sources = [ "browser_desktop_window_tree_host_linux.cc" ]
+    public_deps = [
+      ":browser_desktop_window_tree_host_linux",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":browser_desktop_window_tree_host",
+      ":safe_invoke",
+      "//base",
+      "//build:buildflag_header_h",
+      "//build/config/linux/dbus:buildflags",
+      "//chrome/browser/ui:browser_init_state",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/tabs:tab_strip",
+      "//chrome/browser/ui/views/tabs/dragging",
+      "//third_party/abseil-cpp:absl",
+      "//ui/base:features",
+      "//ui/base/dragdrop/mojom",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/gfx/geometry",
+      "//ui/linux:linux_ui",
+      "//ui/ozone",
+      "//ui/platform_window",
+      "//ui/views",
+    ]
+    if (use_dbus) {
+      deps += [ ":dbus_appmenu" ]
+    }
+  }
+
+  source_set("picture_in_picture_browser_frame_view_linux") {
+    public = [ "picture_in_picture_browser_frame_view_linux.h" ]
+    sources = [ "picture_in_picture_browser_frame_view_linux.cc" ]
+    public_deps = [ "//ui/linux:linux_ui" ]
+    deps = [
+      "//base",
+      "//base:i18n",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/views:layout_provider",
+      "//skia",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/linux:linux_ui",
+      "//ui/views",
     ]
   }
 }

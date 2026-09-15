@@ -11,10 +11,10 @@
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/linux/device_scale_factor_observer.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"  // nogncheck
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
 #if BUILDFLAG(USE_DBUS)
-#include "chrome/browser/ui/views/frame/dbus_appmenu.h"  // nogncheck
+#include "chrome/browser/ui/views/frame/dbus_appmenu.h"
 #endif
 
 class BrowserWidget;
