@@ -114,7 +114,7 @@ cr-composebox-tool-chip {
 
 /* Voice Search Styles */
 #voiceSearchButton {
-  --cr-icon-button-fill-color: var(--color-composebox-font-light);
+  --cr-icon-button-fill-color: var(--cr-composebox-voice-icon-fill-color);
   --cr-icon-button-hover-background-color: var(--color-composebox-voice-button-hover-background);
   --cr-icon-button-margin-end: 0px;
   --cr-icon-button-margin-start: 0px;
@@ -129,7 +129,8 @@ cr-composebox-tool-chip {
 }
 
 :host([submit-enabled][searchbox-layout-mode='TallBottomContext']) #voiceSearchButton {
-  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 18px);
+  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 6px);
+  margin-inline-end: 6px;
 }
 
 :host([submit-enabled][searchbox-layout-mode='TallBottomContext'][show-dropdown]) #voiceSearchButton {
@@ -141,4 +142,42 @@ cr-composebox-tool-chip {
   position: absolute;
   inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 12px);
   top: 10px;
+}
+
+:host([searchbox-layout-mode='TallBottomContext']) #voiceSearchButton {
+  bottom: 11px;
+}
+
+:host([energy-effect-enabled][searchbox-layout-mode='TallBottomContext']) #voiceSearchButton,
+:host([energy-effect-enabled][searchbox-layout-mode='TallBottomContext'][show-dropdown]) #voiceSearchButton {
+  bottom: 10px;
+  top: unset;
+  inset-inline-end: 14px;
+}
+
+:host([energy-effect-enabled][submit-enabled][searchbox-layout-mode='TallBottomContext']) #voiceSearchButton {
+  inset-inline-end: calc(
+      var(--cr-composebox-submit-width,
+          var(--cr-composebox-submit-container-size)) + 8px);
+  margin-inline-end: 4px;
+}
+
+:host([submit-enabled][searchbox-layout-mode='TallBottomContext'])
+    cr-composebox-submit::part(submit) {
+  bottom: 10px;
+}
+
+:host([energy-effect-enabled][submit-enabled][searchbox-layout-mode='TallBottomContext'])
+    cr-composebox-submit::part(submit) {
+  inset-inline-end: 8px;
+}
+
+:host([submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown]))
+    cr-composebox-submit::part(submit) {
+  bottom: 6px;
+}
+
+:host([energy-effect-enabled][submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown]))
+    cr-composebox-submit::part(submit) {
+  bottom: 10px;
 }

@@ -14,6 +14,7 @@ export function getHtml(this: OmniboxAimAppElement) {
   <cr-omnibox-composebox searchbox-next-enabled id="composebox"
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
       ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
+      ?energy-effect-enabled="${this.energyEffectEnabled_}"
       .showMenuOnClick="${false}"
       .shouldShowGhostFiles="${true}"
       .usePecApi="${this.usePecApi_}"
