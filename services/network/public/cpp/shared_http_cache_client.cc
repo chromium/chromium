@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/hashing_lru_cache.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -30,19 +31,18 @@
 #include "services/network/public/cpp/data_buffer_factory.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace network {
 
 namespace {
 
-// A thread-safe set of persistent URL hashes.
+// A thread-safe LRU cache set of persistent URL hashes.
 // Used to quickly determine whether a requested URL might exist in the
 // shared HTTP cache without thread hopping or disk I/O.
 class ThreadSafeSet : public base::RefCountedThreadSafe<ThreadSafeSet> {
  public:
-  ThreadSafeSet();
+  explicit ThreadSafeSet(size_t max_size);
   ThreadSafeSet(const ThreadSafeSet&) = delete;
   ThreadSafeSet& operator=(const ThreadSafeSet&) = delete;
 
@@ -54,11 +54,9 @@ class ThreadSafeSet : public base::RefCountedThreadSafe<ThreadSafeSet> {
   friend class base::RefCountedThreadSafe<ThreadSafeSet>;
   ~ThreadSafeSet();
 
+  const size_t max_size_;
   base::Lock lock_;
-  // TODO(crbug.com/473666511): Using an unbounded hash set can lead to high
-  // memory usage in long-lived renderers. Use base::LRUCacheSet with a size
-  // limit to cap memory consumption.
-  std::optional<absl::flat_hash_set<uint32_t>> set_ GUARDED_BY(lock_);
+  std::optional<base::HashingLRUCacheSet<uint32_t>> set_ GUARDED_BY(lock_);
   bool init_called_ GUARDED_BY(lock_) = false;
 };
 
@@ -280,7 +278,8 @@ class SharedHttpCacheClientImpl : public SharedHttpCacheClient {
  public:
   SharedHttpCacheClientImpl(
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> database_task_runner,
+      size_t max_cached_url_hashes);
 
   SharedHttpCacheClientImpl(const SharedHttpCacheClientImpl&) = delete;
   SharedHttpCacheClientImpl& operator=(const SharedHttpCacheClientImpl&) =
@@ -307,7 +306,9 @@ class SharedHttpCacheClientImpl : public SharedHttpCacheClient {
   base::SequenceBound<DatabaseBackend> database_backend_;
 };
 
-ThreadSafeSet::ThreadSafeSet() = default;
+ThreadSafeSet::ThreadSafeSet(size_t max_size) : max_size_(max_size) {
+  CHECK_GT(max_size_, 0u);
+}
 ThreadSafeSet::~ThreadSafeSet() = default;
 
 void ThreadSafeSet::Initialize() {
@@ -317,10 +318,11 @@ void ThreadSafeSet::Initialize() {
 void ThreadSafeSet::Insert(const std::vector<uint32_t>& new_hashes) {
   base::AutoLock auto_lock(lock_);
   if (!set_.has_value()) {
-    set_ = absl::flat_hash_set<uint32_t>();
+    set_.emplace(max_size_);
   }
-  for (auto hash : new_hashes) {
-    set_->insert(hash);
+  for (uint32_t hash : new_hashes) {
+    // `LRUCacheBase::Put(value_type&&)` only accepts rvalues.
+    set_->Put(std::move(hash));
   }
 }
 
@@ -334,15 +336,17 @@ bool ThreadSafeSet::ShouldEarlyReturn(uint32_t hash) {
   if (!set_.has_value()) {
     return false;
   }
-  return !set_->contains(hash);
+  return set_->Get(hash) == set_->end();
 }
 
 SharedHttpCacheClientImpl::SharedHttpCacheClientImpl(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> database_task_runner,
+    size_t max_cached_url_hashes)
     : client_task_runner_(std::move(client_task_runner)),
       database_task_runner_(std::move(database_task_runner)),
-      shared_state_(base::MakeRefCounted<ThreadSafeSet>()) {
+      shared_state_(
+          base::MakeRefCounted<ThreadSafeSet>(max_cached_url_hashes)) {
   CHECK(client_task_runner_);
   CHECK(database_task_runner_);
 }
@@ -410,9 +414,11 @@ scoped_refptr<SharedHttpCacheClient> SharedHttpCacheClient::CreateAndInit(
         pending_receiver,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-    base::OnceClosure on_db_reader_initialized_callback) {
+    base::OnceClosure on_db_reader_initialized_callback,
+    size_t max_cached_url_hashes) {
   auto impl = base::MakeRefCounted<SharedHttpCacheClientImpl>(
-      std::move(client_task_runner), std::move(database_task_runner));
+      std::move(client_task_runner), std::move(database_task_runner),
+      max_cached_url_hashes);
   impl->Init(std::move(pending_receiver),
              std::move(on_db_reader_initialized_callback));
   return impl;

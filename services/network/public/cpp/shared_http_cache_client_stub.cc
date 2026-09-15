@@ -25,7 +25,8 @@ scoped_refptr<SharedHttpCacheClient> SharedHttpCacheClient::CreateAndInit(
         pending_receiver,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-    base::OnceClosure on_db_reader_initialized_callback) {
+    base::OnceClosure on_db_reader_initialized_callback,
+    size_t max_cached_url_hashes) {
   // SharedHttpCacheClient is not supported when the SQL disk cache backend
   // is disabled or unavailable on the target platform.
   return nullptr;
