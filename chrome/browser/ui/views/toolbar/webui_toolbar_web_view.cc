@@ -1267,6 +1267,9 @@ void WebUIToolbarWebView::OverflowButtonClicked(
   } else if (identifier == kToolbarSplitTabsToolbarButtonElementId) {
     split_tabs_control_.HandleContextMenuOverflowClick();
     return;
+  } else if (identifier == kToolbarAvatarButtonElementId) {
+    // TODO(crbug.com/491791965): Show avatar menu on click.
+    return;
   } else if (identifier == kToolbarBatterySaverButtonElementId) {
     // TODO(crbug.com/491791965): Handle battery saver button click from
     // overflow menu.

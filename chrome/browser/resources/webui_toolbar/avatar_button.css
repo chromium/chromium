@@ -17,6 +17,10 @@
   interpolate-size: allow-keywords;
 }
 
+:host(.overflow-display-none) {
+  display: none !important;
+}
+
 #button {
   /* Set padding variables for the nested button */
   --toolbar-chip-padding-start: var(--avatar-chip-padding-left);

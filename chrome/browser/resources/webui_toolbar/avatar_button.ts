@@ -15,6 +15,7 @@ import {AvatarToolbarButtonState} from '/shared/toolbar_ui_api_data_model.mojom-
 import {getCss} from './avatar_button.css.js';
 import {getHtml} from './avatar_button.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {OverflowableButtonMixin} from './overflowable_button.js';
 import {HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
@@ -24,7 +25,8 @@ export interface AvatarButtonElement {
   };
 }
 
-const AvatarButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+const AvatarButtonElementBase =
+    HelpBubbleAnchorMixin(OverflowableButtonMixin(CrLitElement));
 
 export class AvatarButtonElement extends AvatarButtonElementBase {
   static get is() {
@@ -71,7 +73,7 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
     }
   }
 
-  protected accessor state: AvatarControlState = {
+  override accessor state: AvatarControlState = {
     state: AvatarToolbarButtonState.kNormal,
     icon: {handleId: 0n},
     text: '',

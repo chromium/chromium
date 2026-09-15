@@ -1020,6 +1020,7 @@ export class ToolbarAppElement extends AppElementBase {
         this.shadowRoot.querySelector<LocationBarElement>('#location-bar')!;
 
     const buttons = [
+      this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#avatar'),
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
           '#split-tabs'),
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#forward'),

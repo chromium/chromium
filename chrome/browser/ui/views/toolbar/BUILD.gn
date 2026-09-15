@@ -565,6 +565,9 @@ if (!is_android && !is_chromeos_device) {
       "//ui/events:test_support",
       "//ui/views",
     ]
+    if (is_chromeos) {
+      deps += [ "//components/user_manager" ]
+    }
     if (toolkit_views) {
       deps += [
         "//chrome/browser/ui:toolbar_controller_util",

@@ -21,10 +21,11 @@ import {getContextMenuPosition} from './toolbar_button.js';
 export interface OverflowableButtonState {
   /**
    * True if the button is pinned / should be shown if there's space for it, and
-   * on the overflow menu if not. Classes are responsible for hiding themselves
+   * on the overflow menu if not. Only needed if button may be hidden, so
+   * undefined is treated as true. Classes are responsible for hiding themselves
    * if false.
    */
-  shouldBeShown: boolean;
+  shouldBeShown?: boolean;
 
   /**
    * When present and true, the button will not be hidden due to overflow,
@@ -48,7 +49,11 @@ export interface OverflowableButtonState {
 type Constructor<T> = new (...args: any[]) => T;
 
 export interface OverflowableButton extends ResponsiveControl {
-  state: OverflowableButtonState;
+  /**
+   * The OverflowableButtonState. Every field in it is optional, so using
+   * OverflowableButtonState directly throws an error here.
+   */
+  state: unknown;
 
   /**
    * Called by subclasses when should show a left-click menu or bubble. Invokes
@@ -88,16 +93,14 @@ export const OverflowableButtonMixin =
           };
         }
 
-        accessor state: OverflowableButtonState = {
-          shouldBeShown: false,
-        };
+        accessor state: OverflowableButtonState = {};
 
         // Local count of context menu requests sent to the browser. Wraps
         // around at 2^32.
         private menuOpenToken_: number = 0;
 
         shouldBeShown(): boolean {
-          return this.state.shouldBeShown;
+          return this.state.shouldBeShown ?? true;
         }
 
         setToMinWidth() {
@@ -150,8 +153,12 @@ export const OverflowableButtonMixin =
 
           // Otherwise, return information about this button. Even disabled
           // buttons should be shown on the menu, if they've overflowed.
-          const innerControl = this.$['button']!;
-          const id = TrackedElementManager.getElementId(this);
+          const innerControl = this.$['button'] as HTMLElement;
+          // Most controls register their own element with
+          // TrackedElementManager, but the Avatar button registers its button
+          // element instead, so we have to handle both cases here.
+          const id = TrackedElementManager.getElementId(this) ||
+              TrackedElementManager.getElementId(innerControl);
           assert(
               id, `No TrackedElementIdentifier found for element ${this.id}`);
           return [{

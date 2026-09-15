@@ -61,21 +61,29 @@ void WebUIToolbarWebViewTestBase::SetUpOnMainThread() {
       ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
 }
 
-ToolbarView* WebUIToolbarWebViewTestBase::GetToolbarView() {
-  return BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
+ToolbarView* WebUIToolbarWebViewTestBase::GetToolbarView(
+    BrowserWindowInterface* browser_instance) {
+  return BrowserView::GetBrowserViewForBrowser(
+             browser_instance ? browser_instance : browser())
+      ->toolbar();
 }
 
-WebUIToolbarWebView* WebUIToolbarWebViewTestBase::GetWebUIToolbar() {
-  return GetToolbarView()->GetWebUIToolbarViewForTesting();
+WebUIToolbarWebView* WebUIToolbarWebViewTestBase::GetWebUIToolbar(
+    BrowserWindowInterface* browser_instance) {
+  return GetToolbarView(browser_instance)->GetWebUIToolbarViewForTesting();
 }
 
-content::WebContents* WebUIToolbarWebViewTestBase::GetWebUIWebContents() {
-  return GetWebUIToolbar()->GetWebContents();
+content::WebContents* WebUIToolbarWebViewTestBase::GetWebUIWebContents(
+    BrowserWindowInterface* browser_instance) {
+  return GetWebUIToolbar(browser_instance)->GetWebContents();
 }
 
-content::EvalJsResult WebUIToolbarWebViewTestBase::SetSpacerWidth(int width) {
-  return content::EvalJs(GetWebUIWebContents(), content::JsReplace(
-                                                    R"((() => {
+content::EvalJsResult WebUIToolbarWebViewTestBase::SetSpacerWidth(
+    int width,
+    BrowserWindowInterface* browser_instance) {
+  return content::EvalJs(GetWebUIWebContents(browser_instance),
+                         content::JsReplace(
+                             R"((() => {
         const app = document.querySelector('toolbar-app');
         let spacer = app.shadowRoot.querySelector('#test-spacer');
         if (!spacer) {
@@ -85,28 +93,32 @@ content::EvalJsResult WebUIToolbarWebViewTestBase::SetSpacerWidth(int width) {
           app.shadowRoot.appendChild(spacer);
         }
         spacer.style.width = $1 + 'px';
+        app.layoutResponsiveControls();
         return true;
       })();)",
-                                                    width));
+                             width));
 }
 
 ui::TrackedElement* WebUIToolbarWebViewTestBase::GetTrackedElement(
-    ui::ElementIdentifier id) {
+    ui::ElementIdentifier id,
+    BrowserWindowInterface* browser_instance) {
   return ui::ElementTracker::GetElementTracker()->GetUniqueElement(
-      id, views::ElementTrackerViews::GetContextForView(GetToolbarView()));
+      id, views::ElementTrackerViews::GetContextForView(
+              GetToolbarView(browser_instance)));
 }
 
 bool WebUIToolbarWebViewTestBase::WaitForTrackedElements(
     const std::vector<ui::ElementIdentifier>& visible,
-    const std::vector<ui::ElementIdentifier>& hidden) {
+    const std::vector<ui::ElementIdentifier>& hidden,
+    BrowserWindowInterface* browser_instance) {
   return base::test::RunUntil([&]() -> bool {
     for (const auto& id : visible) {
-      if (!GetTrackedElement(id)) {
+      if (!GetTrackedElement(id, browser_instance)) {
         return false;
       }
     }
     for (const auto& id : hidden) {
-      if (GetTrackedElement(id)) {
+      if (GetTrackedElement(id, browser_instance)) {
         return false;
       }
     }
@@ -115,14 +127,16 @@ bool WebUIToolbarWebViewTestBase::WaitForTrackedElements(
 }
 
 ui::TrackedElement* WebUIToolbarWebViewTestBase::WaitForTrackedElementVisible(
-    ui::ElementIdentifier id) {
-  EXPECT_TRUE(WaitForTrackedElements({id}));
-  return GetTrackedElement(id);
+    ui::ElementIdentifier id,
+    BrowserWindowInterface* browser_instance) {
+  EXPECT_TRUE(WaitForTrackedElements({id}, {}, browser_instance));
+  return GetTrackedElement(id, browser_instance);
 }
 
 bool WebUIToolbarWebViewTestBase::WaitForTrackedElementHidden(
-    ui::ElementIdentifier id) {
-  return WaitForTrackedElements({}, {id});
+    ui::ElementIdentifier id,
+    BrowserWindowInterface* browser_instance) {
+  return WaitForTrackedElements({}, {id}, browser_instance);
 }
 
 void WebUIToolbarWebViewTestBase::EnableBatterySaverButton(

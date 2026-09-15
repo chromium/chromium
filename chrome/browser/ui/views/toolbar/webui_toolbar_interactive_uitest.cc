@@ -119,6 +119,12 @@
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/user_names.h"  // nogncheck
+#endif
+
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab2Id);
@@ -2558,9 +2564,12 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
 
   // Waits until the overflow button location is available, clicks it, and spins
   // until the menu is created.
-  [[nodiscard]] OverflowMenu* OpenOverflowMenu() {
-    ui::TrackedElement* overflow_element =
-        WaitForTrackedElementVisible(kToolbarOverflowButtonElementId);
+  [[nodiscard]] OverflowMenu* OpenOverflowMenu(
+      BrowserWindowInterface* browser_instance = nullptr) {
+    BrowserWindowInterface* target_browser =
+        browser_instance ? browser_instance : browser();
+    ui::TrackedElement* overflow_element = WaitForTrackedElementVisible(
+        kToolbarOverflowButtonElementId, target_browser);
     if (!overflow_element) {
       return nullptr;
     }
@@ -2574,7 +2583,7 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
     }
 
     WebUIOverflowButton* overflow_button =
-        &GetWebUIToolbar()->overflow_button_for_testing();
+        &GetWebUIToolbar(target_browser)->overflow_button_for_testing();
     // Wait for overflow menu to appear.
     if (!base::test::RunUntil([&]() -> bool {
           auto* menu = overflow_button->overflow_menu_for_testing();
@@ -2657,23 +2666,35 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
   ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
 
-  // Wait for the forward, home, and split-tabs buttons to be hidden and the
-  // overflow button to be visible.
+  // Wait for the forward, home, split-tabs, and avatar buttons to be hidden and
+  // the overflow button to be visible.
   ASSERT_TRUE(WaitForTrackedElements(
       {kToolbarOverflowButtonElementId},
       {kToolbarForwardButtonElementId, kToolbarHomeButtonElementId,
-       kToolbarSplitTabsToolbarButtonElementId}));
+       kToolbarSplitTabsToolbarButtonElementId,
+       kToolbarAvatarButtonElementId}));
 
   OverflowMenu* overflow_menu = OpenOverflowMenu();
   ASSERT_TRUE(overflow_menu);
 
-  // Check that the overflow menu has the three expected buttons in the expected
+  // Check that the overflow menu has the expected buttons in the expected
   // order, and nothing else.
   const ui::SimpleMenuModel* menu_model =
       overflow_menu->menu_model_for_testing();
   ASSERT_TRUE(menu_model);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS should not show the avatar button.
   ASSERT_EQ(menu_model->GetItemCount(), 3u);
+#else  // !BUILDFLAG(IS_CHROMEOS)
+  // Other platforms should show the avatar button.
+  ASSERT_EQ(menu_model->GetItemCount(), 5u);
+  EXPECT_EQ(menu_model->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(menu_model->GetLabelAt(4),
+            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE));
+  EXPECT_TRUE(menu_model->IsEnabledAt(4));
+#endif
 
+  // Forward, home, and split tabs buttons should be shown on all platforms.
   EXPECT_EQ(menu_model->GetLabelAt(0),
             l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
   // The forward button should be disabled, since the back button has never been
@@ -2798,22 +2819,33 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
   ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
 
-  // Wait for forward and home buttons to be hidden and overflow button to be
-  // visible.
+  // Wait for forward, home, and avatar buttons to be hidden and overflow button
+  // to be visible.
   ASSERT_TRUE(WaitForTrackedElements(
       {kToolbarOverflowButtonElementId},
-      {kToolbarForwardButtonElementId, kToolbarHomeButtonElementId}));
+      {kToolbarForwardButtonElementId, kToolbarHomeButtonElementId,
+       kToolbarAvatarButtonElementId}));
 
   OverflowMenu* overflow_menu = OpenOverflowMenu();
   ASSERT_TRUE(overflow_menu);
 
-  // Check that the overflow menu has the two expected buttons in the expected
+  // Check that the overflow menu has the expected buttons in the expected
   // order, and nothing else.
   const ui::SimpleMenuModel* menu_model =
       overflow_menu->menu_model_for_testing();
   ASSERT_TRUE(menu_model);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS should not show the avatar button.
   ASSERT_EQ(menu_model->GetItemCount(), 2u);
+#else  // !BUILDFLAG(IS_CHROMEOS)
+  ASSERT_EQ(menu_model->GetItemCount(), 4u);
+  // Other platforms should show the avatar button.
+  EXPECT_EQ(menu_model->GetTypeAt(2), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(menu_model->GetLabelAt(3),
+            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE));
+#endif
 
+  // Forward and home should be shown on all platforms.
   EXPECT_EQ(menu_model->GetLabelAt(0),
             l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
   // The forward button should be disabled, since the back button has never been
@@ -2876,19 +2908,32 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
   ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
 
-  // Wait for forward button to be hidden and overflow button to be visible.
-  ASSERT_TRUE(WaitForTrackedElements({kToolbarOverflowButtonElementId},
-                                     {kToolbarForwardButtonElementId}));
+  // Wait for forward and avatar buttons to be hidden and overflow button to be
+  // visible.
+  ASSERT_TRUE(WaitForTrackedElements(
+      {kToolbarOverflowButtonElementId},
+      {kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId}));
 
   OverflowMenu* overflow_menu = OpenOverflowMenu();
   ASSERT_TRUE(overflow_menu);
 
-  // Check that the overflow menu has the forward button, and nothing else.
+  // Check that the overflow menu has the forward button, separator, and profile
+  // button.
   const ui::SimpleMenuModel* menu_model =
       overflow_menu->menu_model_for_testing();
   ASSERT_TRUE(menu_model);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS should not show the avatar button.
   ASSERT_EQ(menu_model->GetItemCount(), 1u);
+#else  // !BUILDFLAG(IS_CHROMEOS)
+  // Other platforms should show the avatar button.
+  ASSERT_EQ(menu_model->GetItemCount(), 3u);
+  EXPECT_EQ(menu_model->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(menu_model->GetLabelAt(2),
+            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE));
+#endif
 
+  // Forward button should be shown on all platforms.
   EXPECT_EQ(menu_model->GetLabelAt(0),
             l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
   EXPECT_TRUE(menu_model->IsEnabledAt(0));
@@ -2921,10 +2966,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
   ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
 
-  // Wait for split-tabs button to be hidden and overflow button to be visible.
-  ASSERT_TRUE(
-      WaitForTrackedElements({kToolbarOverflowButtonElementId},
-                             {kToolbarSplitTabsToolbarButtonElementId}));
+  // Wait for split-tabs and avatar buttons to be hidden and overflow button to
+  // be visible.
+  ASSERT_TRUE(WaitForTrackedElements({kToolbarOverflowButtonElementId},
+                                     {kToolbarSplitTabsToolbarButtonElementId,
+                                      kToolbarAvatarButtonElementId}));
 
   // Open the overflow menu.
   OverflowMenu* overflow_menu = OpenOverflowMenu();
@@ -2955,9 +3001,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   }));
 
   // Expect the split-tabs button itself to remain overflowed / not-visible.
-  EXPECT_TRUE(
-      WaitForTrackedElements({kToolbarOverflowButtonElementId},
-                             {kToolbarSplitTabsToolbarButtonElementId}));
+  EXPECT_TRUE(WaitForTrackedElements({kToolbarOverflowButtonElementId},
+                                     {kToolbarSplitTabsToolbarButtonElementId,
+                                      kToolbarAvatarButtonElementId}));
 
   // Open the overflow menu a second time.
   overflow_menu = OpenOverflowMenu();
@@ -3027,11 +3073,22 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   ASSERT_TRUE(overflow_menu);
 
   // Check that the overflow menu has forward, a separator, and battery saver,
-  // in that order.
+  // in that order. Platforms other than ChromeOS also have the avatar button
+  // (and another separator before it).
   const ui::SimpleMenuModel* menu_model =
       overflow_menu->menu_model_for_testing();
   ASSERT_TRUE(menu_model);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS should not show the avatar button.
   ASSERT_EQ(menu_model->GetItemCount(), 3u);
+#else  // !BUILDFLAG(IS_CHROMEOS)
+  // Other platforms should show the avatar button.
+  ASSERT_EQ(menu_model->GetItemCount(), 5u);
+  EXPECT_EQ(menu_model->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(menu_model->GetLabelAt(4),
+            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE));
+  EXPECT_TRUE(menu_model->IsEnabledAt(4));
+#endif
 
   EXPECT_EQ(menu_model->GetLabelAt(0),
             l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD));
@@ -3104,11 +3161,23 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   OverflowMenu* overflow_menu = OpenOverflowMenu();
   ASSERT_TRUE(overflow_menu);
 
-  // Check menu model contents: Forward, <divider>, Downloads.
+  // Check menu model contents: Forward, <divider>, Downloads. Platforms other
+  // than ChromeOS also have the avatar button (and another separator before
+  // it).
   const ui::SimpleMenuModel* menu_model =
       overflow_menu->menu_model_for_testing();
   ASSERT_TRUE(menu_model);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS should not show the avatar button.
   ASSERT_EQ(menu_model->GetItemCount(), 3u);
+#else  // !BUILDFLAG(IS_CHROMEOS)
+  // Other platforms should show the avatar button.
+  ASSERT_EQ(menu_model->GetItemCount(), 5u);
+  EXPECT_EQ(menu_model->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(menu_model->GetLabelAt(4),
+            l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE));
+  EXPECT_TRUE(menu_model->IsEnabledAt(4));
+#endif
 
   EXPECT_EQ(menu_model->GetTypeAt(0), ui::MenuModel::TYPE_COMMAND);
   EXPECT_EQ(menu_model->GetLabelAt(0),
@@ -3132,6 +3201,122 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             GURL(chrome::kChromeUIDownloadsURL));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Test that on ChromeOS, the avatar button on the overflow menu is enabled
+// in an Incognito profile.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowMenuAvatarButtonChromeOSEnabled) {
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito_browser);
+
+  // Wait until avatar button is visible initially.
+  ASSERT_TRUE(WaitForTrackedElements({kToolbarAvatarButtonElementId}, {},
+                                     incognito_browser));
+
+  // Force all overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = incognito_browser->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width(), incognito_browser), true);
+
+  // Wait for avatar button to be hidden and overflow button to be visible.
+  ASSERT_TRUE(WaitForTrackedElements({kToolbarOverflowButtonElementId},
+                                     {kToolbarAvatarButtonElementId},
+                                     incognito_browser));
+
+  // Open the overflow menu.
+  OverflowMenu* overflow_menu = OpenOverflowMenu(incognito_browser);
+  ASSERT_TRUE(overflow_menu);
+
+  // Find the avatar item index in the overflow menu model.
+  const ui::SimpleMenuModel* menu_model =
+      overflow_menu->menu_model_for_testing();
+  ASSERT_TRUE(menu_model);
+  std::optional<size_t> avatar_index;
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    if (menu_model->GetLabelAt(i) ==
+        l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE)) {
+      avatar_index = i;
+      break;
+    }
+  }
+  ASSERT_TRUE(avatar_index.has_value());
+
+  // In Incognito session on ChromeOS, the Avatar button is enabled.
+  EXPECT_TRUE(menu_model->IsEnabledAt(*avatar_index));
+}
+
+class WebUIToolbarChromeOSGuestInteractiveUiTest
+    : public WebUIToolbarFullyEnabledInteractiveUiTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUIToolbarFullyEnabledInteractiveUiTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    user_manager::kGuestUserName);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                    TestingProfile::kTestUserProfileDir);
+  }
+};
+
+// Test that on ChromeOS, in a Guest session, the avatar button appears on the
+// overflow menu and is disabled.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarChromeOSGuestInteractiveUiTest,
+                       OverflowMenuAvatarButtonChromeOSDisabledInGuest) {
+  // Wait until the avatar button state in WebUI is updated to disabled.
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return content::EvalJs(GetWebUIWebContents(), R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            if (!app || !app.shadowRoot) {
+              return false;
+            }
+            const avatar = app.shadowRoot.querySelector('#avatar');
+            if (!avatar || !avatar.shadowRoot) {
+              return false;
+            }
+            const button = avatar.shadowRoot.querySelector('#button');
+            if (!button) {
+              return false;
+            }
+            return button.disabled === true;
+          })()
+        )")
+        .ExtractBool();
+  }));
+
+  // Wait until avatar button is visible initially.
+  ASSERT_TRUE(WaitForTrackedElements({kToolbarAvatarButtonElementId}));
+
+  // Force all overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+
+  // Wait for avatar button to be hidden and overflow button to be visible.
+  ASSERT_TRUE(WaitForTrackedElements({kToolbarOverflowButtonElementId},
+                                     {kToolbarAvatarButtonElementId}));
+
+  // Open the overflow menu.
+  OverflowMenu* overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // Find the avatar item index in the overflow menu model.
+  const ui::SimpleMenuModel* menu_model =
+      overflow_menu->menu_model_for_testing();
+  ASSERT_TRUE(menu_model);
+  std::optional<size_t> avatar_index;
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    if (menu_model->GetLabelAt(i) ==
+        l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE)) {
+      avatar_index = i;
+      break;
+    }
+  }
+  ASSERT_TRUE(avatar_index.has_value());
+
+  // In a Guest session on ChromeOS, the Avatar button is disabled.
+  EXPECT_FALSE(menu_model->IsEnabledAt(*avatar_index));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Test that manual invocations of showOverflowMenu() with an empty list of
 // controls, a list of unknown controls, a list containing a combination of
@@ -3286,12 +3471,13 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
   ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
 
-  // Wait for forward, home, and split-tabs buttons to be hidden and the
+  // Wait for forward, home, split-tabs, and avatar buttons to be hidden and the
   // overflow button to be visible. Not strictly needed.
   ASSERT_TRUE(WaitForTrackedElements(
       {kToolbarOverflowButtonElementId},
       {kToolbarForwardButtonElementId, kToolbarHomeButtonElementId,
-       kToolbarSplitTabsToolbarButtonElementId}));
+       kToolbarSplitTabsToolbarButtonElementId,
+       kToolbarAvatarButtonElementId}));
   // Wait for the accessibility tree to be updated.
   content::WaitForAccessibilityTreeToContainNodeWithName(GetWebUIWebContents(),
                                                          overflow_name);
