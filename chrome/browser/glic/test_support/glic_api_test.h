@@ -209,22 +209,18 @@ class GlicApiBrowserTestMixin : public T {
     Base::AddMockGlicQueryParam("testsrc", js_source_path.value);
 
     Base::embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&GlicApiBrowserTestMixin::SorryHtmlRequestHandler,
-                            base::Unretained(this)));
+        base::BindRepeating(&GlicApiBrowserTestMixin::SorryHtmlRequestHandler));
     Base::embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&GlicApiBrowserTestMixin::FakeRpcRequestHandler,
-                            base::Unretained(this)));
+        base::BindRepeating(&GlicApiBrowserTestMixin::FakeRpcRequestHandler));
 
     Base::embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &GlicApiBrowserTestMixin::OnEmbeddedTestServerHttpRequest,
         base::Unretained(this)));
 
     Base::embedded_https_test_server().RegisterRequestHandler(
-        base::BindRepeating(&GlicApiBrowserTestMixin::SorryHtmlRequestHandler,
-                            base::Unretained(this)));
+        base::BindRepeating(&GlicApiBrowserTestMixin::SorryHtmlRequestHandler));
     Base::embedded_https_test_server().RegisterRequestHandler(
-        base::BindRepeating(&GlicApiBrowserTestMixin::FakeRpcRequestHandler,
-                            base::Unretained(this)));
+        base::BindRepeating(&GlicApiBrowserTestMixin::FakeRpcRequestHandler));
 
     Base::embedded_https_test_server().RegisterRequestMonitor(
         base::BindRepeating(
@@ -416,8 +412,8 @@ class GlicApiBrowserTestMixin : public T {
   const std::optional<base::Value>& step_data() const { return step_data_; }
 
   // Fake handler that returns a "Sorry!" page.
-  std::unique_ptr<net::test_server::HttpResponse> SorryHtmlRequestHandler(
-      const net::test_server::HttpRequest& request) {
+  static std::unique_ptr<net::test_server::HttpResponse>
+  SorryHtmlRequestHandler(const net::test_server::HttpRequest& request) {
     if (request.method != net::test_server::METHOD_GET ||
         request.relative_url != "/glic/browser_tests/sorry.html") {
       return nullptr;
@@ -431,7 +427,7 @@ class GlicApiBrowserTestMixin : public T {
 
   // Fake RPC endpoint that sometimes produces a CORS response.
   // It does not respond to allow preflights, though.
-  std::unique_ptr<net::test_server::HttpResponse> FakeRpcRequestHandler(
+  static std::unique_ptr<net::test_server::HttpResponse> FakeRpcRequestHandler(
       const net::test_server::HttpRequest& request) {
     if (request.method != net::test_server::METHOD_GET ||
         !base::StartsWith(request.relative_url, "/fake-rpc")) {
