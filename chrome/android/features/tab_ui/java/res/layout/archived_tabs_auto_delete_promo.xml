@@ -60,23 +60,28 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.Headline.Primary"
             android:gravity="center_horizontal|top"
             android:text="@string/archived_tabs_auto_delete_promo_title"/>
-        <ScrollView
-            android:id="@+id/promo_description_scrollview"
+        <org.chromium.components.browser_ui.widget.BoundedLinearLayout
             android:layout_width="match_parent"
-            android:layout_height="43dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="24dp"
-            android:scrollbars="none"
-            android:fadeScrollbars="false"
-            android:maxHeight="120dp">
-            <TextView
-                android:id="@+id/promo_description_text"
+            android:orientation="vertical"
+            app:maxHeight="120dp">
+            <ScrollView
+                android:id="@+id/promo_description_scrollview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-                android:lineSpacingExtra="4dp"
-                android:gravity="center_horizontal|top"/>
-        </ScrollView>
+                android:scrollbars="none"
+                android:fadeScrollbars="false">
+                <TextView
+                    android:id="@+id/promo_description_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                    android:lineSpacingExtra="4dp"
+                    android:gravity="center_horizontal|top"/>
+            </ScrollView>
+        </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/promo_yes_button" style="@style/FilledButton"
