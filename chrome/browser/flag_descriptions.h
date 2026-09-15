@@ -1146,12 +1146,6 @@ inline constexpr char kAutofillEnablePayNowPayLaterTabsDescription[] =
     "autofill when buy now pay later options are available for the merchant "
     "webpage.";
 
-inline constexpr char kAutofillEnablePrefetchingRiskDataForRetrievalName[] =
-    "Enable prefetching of risk data during payments autofill retrieval";
-inline constexpr char
-    kAutofillEnablePrefetchingRiskDataForRetrievalDescription[] =
-        "When enabled, risk data is prefetched during payments autofill flows "
-        "to reduce user-perceived latency.";
 
 inline constexpr char kAutofillEnableResurrectingPaymentsUsersName[] =
     "Enable resurrecting churned payments users";

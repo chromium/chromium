@@ -1594,13 +1594,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableLensOnIPad,
                                     kEnableLensOnIPadVariations,
                                     "EnableLensOnIPad")},
-    {"autofill-enable-prefetching-risk-data-for-retrieval",
-     flag_descriptions::kAutofillEnablePrefetchingRiskDataForRetrievalName,
-     flag_descriptions::
-         kAutofillEnablePrefetchingRiskDataForRetrievalDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnablePrefetchingRiskDataForRetrieval)},
     {"page-info-certificate-information",
      flag_descriptions::kViewCertificateInformationName,
      flag_descriptions::kViewCertificateInformationDescription,

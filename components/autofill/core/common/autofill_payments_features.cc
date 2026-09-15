@@ -239,10 +239,6 @@ BASE_FEATURE(kAutofillEnableOmniboxAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillEnablePayNowPayLaterTabs,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, risk data is prefetched during payments autofill flows to
-// reduce user-perceived latency.
-BASE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, users that have previously turned off payments autofill will be
 // prompted to turn it back on in instances where they can benefit from it.

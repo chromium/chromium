@@ -10014,14 +10014,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kTilingWindowResize)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"autofill-enable-prefetching-risk-data-for-retrieval",
-     flag_descriptions::kAutofillEnablePrefetchingRiskDataForRetrievalName,
-     flag_descriptions::
-         kAutofillEnablePrefetchingRiskDataForRetrievalDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnablePrefetchingRiskDataForRetrieval)},
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
     {"enable-user-navigation-capturing-pwa",

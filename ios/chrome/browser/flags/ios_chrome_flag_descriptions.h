@@ -246,13 +246,6 @@ inline constexpr char kAutofillEnableGradientGoogleLogosName[] =
 inline constexpr char kAutofillEnableGradientGoogleLogosDescription[] =
     "When enabled, gradient-style GPay and Wallet branding logos will be used.";
 
-inline constexpr char kAutofillEnablePrefetchingRiskDataForRetrievalName[] =
-    "Enable prefetching of risk data during payments autofill retrieval";
-inline constexpr char
-    kAutofillEnablePrefetchingRiskDataForRetrievalDescription[] =
-        "When enabled, risk data is prefetched during payments autofill flows "
-        "to reduce user-perceived latency.";
-
 inline constexpr char kAutofillEnableWalletBrandingName[] =
     "Update Google Pay branding to Wallet where applicable";
 inline constexpr char kAutofillEnableWalletBrandingDescription[] =
