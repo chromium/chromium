@@ -4,6 +4,7 @@
 
 import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/args.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos)
 
@@ -20,16 +21,21 @@ static_library("smart_dim") {
     "builtin_worker.h",
     "download_worker.cc",
     "download_worker.h",
+    "example_preprocessing.cc",
+    "example_preprocessing.h",
     "metrics.cc",
     "ml_agent.cc",
     "ml_agent.h",
     "ml_agent_util.cc",
     "ml_agent_util.h",
+    "ranker_example_util.cc",
+    "ranker_example_util.h",
     "smart_dim_worker.cc",
     "smart_dim_worker.h",
   ]
 
   deps = [
+    ":smart_dim_proto",
     "//ash/constants",
     "//base",
     "//chrome/browser:resources",
@@ -38,8 +44,6 @@ static_library("smart_dim") {
     "//chrome/common:constants",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",
-    "//components/assist_ranker",
-    "//components/assist_ranker/proto",
     "//components/sessions",
     "//ui/base",
   ]
@@ -49,21 +53,30 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "example_preprocessing_unittest.cc",
     "ml_agent_unittest.cc",
     "ml_agent_util_unittest.cc",
+    "ranker_example_util_unittest.cc",
   ]
 
   deps = [
     ":smart_dim",
+    ":smart_dim_proto",
     "//ash/constants",
     "//base",
     "//chromeos:test_support",
     "//chromeos/dbus/machine_learning",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/cpp:stub",
-    "//components/assist_ranker/proto",
     "//content/test:test_support",
     "//testing/gtest",
+  ]
+}
+
+proto_library("smart_dim_proto") {
+  sources = [
+    "example_preprocessor.proto",
+    "ranker_example.proto",
   ]
 }
 

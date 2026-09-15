@@ -12,7 +12,9 @@ message ExamplePreprocessorConfig {
   repeated string missing_features = 1;
 
   // Boundaries to bucketize a feature.
-  message Boundaries { repeated float boundaries = 1; }
+  message Boundaries {
+    repeated float boundaries = 1;
+  }
 
   // A map of feature_name to boundaries for bucketizing this feature.
   map<string, Boundaries> bucketizers = 2;

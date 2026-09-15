@@ -81,10 +81,11 @@ def Main(args):
     print 'Protobuf file not found: %s' % pb_file
     return 1
 
-  proto_dir = os.path.join(out_dir, 'pyproto/components/assist_ranker/proto')
+  proto_dir = os.path.join(
+      out_dir, 'pyproto/chrome/browser/ash/power/ml/smart_dim')
   if not os.path.isdir(proto_dir):
     print 'Proto directory not found: %s' % proto_dir
-    print 'Build the "components/assist_ranker/proto" target'
+    print 'Build the "chrome/browser/ash/power/ml/smart_dim:smart_dim_proto" target'
     print '  (usually built with chrome)'
     return 1
 

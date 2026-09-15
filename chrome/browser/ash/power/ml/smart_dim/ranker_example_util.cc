@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/assist_ranker/ranker_example_util.h"
+#include "chrome/browser/ash/power/ml/smart_dim/ranker_example_util.h"
 
 namespace assist_ranker {
 
@@ -11,8 +11,9 @@ bool SafeGetFeature(const std::string& key,
                     Feature* feature) {
   auto p_feature = example.features().find(key);
   if (p_feature != example.features().end()) {
-    if (feature)
+    if (feature) {
       *feature = p_feature->second;
+    }
     return true;
   }
   return false;

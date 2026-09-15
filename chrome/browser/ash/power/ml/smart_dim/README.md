@@ -31,7 +31,7 @@ execute the model over an example.
 
 The `tf_native_inference.cc` generated from a TensorFlow model expects input
 features to be represented as a vector of floats. This conversion is handled by
-AssistRanker based on the configuration
+`ExamplePreprocessor` based on the configuration
 provided in `example_preprocessor_config.pb`. The feature-to-float conversion
 depends on the type of the feature. For example, a numerical feature will be
 converted to a corresponding float (possibly normalized). Categorical features
@@ -42,7 +42,7 @@ also be handled, with configurations specified in the
 `print_example_preprocessor_config.py` utility:
 
 ```shell
-./components/assist_ranker/print_example_preprocessor_config.py \
+./chrome/browser/ash/power/ml/smart_dim/print_example_preprocessor_config.py \
   out/Release \
   chrome/browser/ash/power/ml/smart_dim/example_preprocessor_config.pb
 ```

@@ -4,10 +4,6 @@
 
 static_library("assist_ranker") {
   sources = [
-    "example_preprocessing.cc",
-    "example_preprocessing.h",
-    "ranker_example_util.cc",
-    "ranker_example_util.h",
     "ranker_model.cc",
     "ranker_model.h",
     "ranker_model_loader.h",
@@ -31,8 +27,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "example_preprocessing_unittest.cc",
-    "ranker_example_util_unittest.cc",
     "ranker_model_loader_impl_unittest.cc",
     "ranker_model_unittest.cc",
   ]

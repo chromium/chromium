@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/assist_ranker/ranker_example_util.h"
+#include "chrome/browser/ash/power/ml/smart_dim/ranker_example_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 

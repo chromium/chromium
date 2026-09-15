@@ -12,7 +12,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/power/ml",
   "+chrome/grit/browser_resources.h",
-  "+components/assist_ranker",
 ]
 
 specific_include_rules = {

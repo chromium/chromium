@@ -11,15 +11,15 @@
 #include "base/containers/flat_map.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/power/ml/smart_dim/example_preprocessing.h"
+#include "chrome/browser/ash/power/ml/smart_dim/example_preprocessor.pb.h"
 #include "chrome/browser/ash/power/ml/smart_dim/metrics.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent_util.h"
+#include "chrome/browser/ash/power/ml/smart_dim/ranker_example.pb.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger_helpers.h"
 #include "chromeos/services/machine_learning/public/mojom/graph_executor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/tensor.mojom.h"
-#include "components/assist_ranker/example_preprocessing.h"
-#include "components/assist_ranker/proto/example_preprocessor.pb.h"
-#include "components/assist_ranker/proto/ranker_example.pb.h"
 
 namespace ash {
 namespace power {

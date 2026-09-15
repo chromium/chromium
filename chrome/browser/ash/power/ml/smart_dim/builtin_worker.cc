@@ -8,10 +8,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
+#include "chrome/browser/ash/power/ml/smart_dim/example_preprocessor.pb.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent_util.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
-#include "components/assist_ranker/proto/example_preprocessor.pb.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace ash {

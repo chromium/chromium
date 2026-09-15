@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/assist_ranker/example_preprocessing.h"
+#include "chrome/browser/ash/power/ml/smart_dim/example_preprocessing.h"
 
 #include <algorithm>
 
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/assist_ranker/ranker_example_util.h"
+#include "chrome/browser/ash/power/ml/smart_dim/ranker_example_util.h"
 #include "third_party/protobuf/src/google/protobuf/map.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
@@ -93,8 +93,9 @@ int ExamplePreprocessor::AddBucketizedFeatures(
     const RepeatedField<float>& boundaries = bucketizer.second.boundaries();
     int index = 0;
     for (; index < boundaries.size(); ++index) {
-      if (value < boundaries[index])
+      if (value < boundaries[index]) {
         break;
+      }
     }
     // Set one hot feature as features[feature_name] = "index";
     feature_map[feature_name].set_string_value(base::NumberToString(index));

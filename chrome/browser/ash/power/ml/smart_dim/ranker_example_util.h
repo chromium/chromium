@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ASSIST_RANKER_RANKER_EXAMPLE_UTIL_H_
-#define COMPONENTS_ASSIST_RANKER_RANKER_EXAMPLE_UTIL_H_
+#ifndef CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_RANKER_EXAMPLE_UTIL_H_
+#define CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_RANKER_EXAMPLE_UTIL_H_
 
 #include <string>
 
-#include "components/assist_ranker/proto/ranker_example.pb.h"
+#include "chrome/browser/ash/power/ml/smart_dim/ranker_example.pb.h"
 
 namespace assist_ranker {
 
@@ -28,4 +28,4 @@ namespace assist_ranker {
 
 }  // namespace assist_ranker
 
-#endif  // COMPONENTS_ASSIST_RANKER_RANKER_EXAMPLE_UTIL_H_
+#endif  // CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_RANKER_EXAMPLE_UTIL_H_

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ASSIST_RANKER_EXAMPLE_PREPROCESSING_H_
-#define COMPONENTS_ASSIST_RANKER_EXAMPLE_PREPROCESSING_H_
+#ifndef CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_EXAMPLE_PREPROCESSING_H_
+#define CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_EXAMPLE_PREPROCESSING_H_
 
-#include "components/assist_ranker/proto/example_preprocessor.pb.h"
-#include "components/assist_ranker/proto/ranker_example.pb.h"
+#include "chrome/browser/ash/power/ml/smart_dim/example_preprocessor.pb.h"
+#include "chrome/browser/ash/power/ml/smart_dim/ranker_example.pb.h"
 #include "third_party/protobuf/src/google/protobuf/map.h"
 
 namespace assist_ranker {
@@ -146,4 +146,4 @@ class ExampleFloatIterator {
 
 }  // namespace assist_ranker
 
-#endif  // COMPONENTS_ASSIST_RANKER_EXAMPLE_PREPROCESSING_H_
+#endif  // CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_EXAMPLE_PREPROCESSING_H_
