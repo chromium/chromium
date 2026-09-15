@@ -391,39 +391,6 @@ TEST_F(HistoryQueryTest, TextSearchPrefix) {
   EXPECT_TRUE(NthResultIs(results, 1, 3));
 }
 
-TEST_F(HistoryQueryTest, HostSearch) {
-  ASSERT_TRUE(history_.get());
-
-  QueryOptions options;
-  QueryResults results;
-
-  // Query all normal search to make sure all entries appear.
-  options.host_only = false;
-  QueryHistory("example.test", options, &results);
-  EXPECT_EQ(7U, results.size());
-  EXPECT_TRUE(NthResultIs(results, 0, 8));
-  EXPECT_TRUE(NthResultIs(results, 1, 9));
-  EXPECT_TRUE(NthResultIs(results, 2, 10));
-  EXPECT_TRUE(NthResultIs(results, 3, 11));
-  EXPECT_TRUE(NthResultIs(results, 4, 12));
-  EXPECT_TRUE(NthResultIs(results, 5, 13));
-  EXPECT_TRUE(NthResultIs(results, 6, 14));
-
-  // Query with host_only = true to make sure only the host entries show up.
-  options.host_only = true;
-  QueryHistory("example.test", options, &results);
-  EXPECT_EQ(4U, results.size());
-  EXPECT_TRUE(NthResultIs(results, 0, 8));
-  EXPECT_TRUE(NthResultIs(results, 1, 9));
-  EXPECT_TRUE(NthResultIs(results, 2, 10));
-  EXPECT_TRUE(NthResultIs(results, 3, 11));
-
-  // Without kBrowsingHistoryImprovedHostnameSuffixMatching, host matching is
-  // case-sensitive.
-  QueryHistory("ExAmPlE.tEsT", options, &results);
-  EXPECT_EQ(0U, results.size());
-}
-
 // Tests max_count feature for text search queries.
 TEST_F(HistoryQueryTest, TextSearchCount) {
   ASSERT_TRUE(history_.get());
@@ -521,8 +488,37 @@ TEST_F(HistoryQueryTest, HostnameSuffixMatching) {
     AddEntryToHistory(entry);
   }
 
+  // Normal text search matches all entries containing "example.test" in URL or
+  // title (including path and title matches).
+  {
+    QueryOptions options;
+    options.host_only = false;
+    QueryResults results;
+    QueryHistory("example.test", options, &results);
+    EXPECT_EQ(7U, results.size());
+    EXPECT_TRUE(NthResultIs(results, 0, 8));
+    EXPECT_TRUE(NthResultIs(results, 1, 9));
+    EXPECT_TRUE(NthResultIs(results, 2, 10));
+    EXPECT_TRUE(NthResultIs(results, 3, 11));
+    EXPECT_TRUE(NthResultIs(results, 4, 12));
+    EXPECT_TRUE(NthResultIs(results, 5, 13));
+    EXPECT_TRUE(NthResultIs(results, 6, 14));
+  }
+
   QueryOptions options;
   options.host_only = true;
+
+  // With host_only = true, only actual host matches (including HTTP, HTTPS,
+  // and non-standard ports) are returned.
+  {
+    QueryResults results;
+    QueryHistory("example.test", options, &results);
+    EXPECT_EQ(4U, results.size());
+    EXPECT_TRUE(NthResultIs(results, 0, 8));
+    EXPECT_TRUE(NthResultIs(results, 1, 9));
+    EXPECT_TRUE(NthResultIs(results, 2, 10));
+    EXPECT_TRUE(NthResultIs(results, 3, 11));
+  }
 
   // host:example.com matches example.com, www.example.com, and
   // subdomain.example.com.
@@ -562,6 +558,45 @@ TEST_F(HistoryQueryTest, HostnameSuffixMatching) {
     QueryResults results;
     QueryHistory("ExAmPlE.cOm", options, &results);
     EXPECT_EQ(3U, results.size());
+  }
+}
+
+TEST_F(HistoryQueryTest, HostnameSuffixMatchingImprovementsDisabled) {
+  ASSERT_TRUE(history_.get());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kBrowsingHistoryImprovedHostnameSuffixMatching);
+
+  const TestEntry entries[] = {
+      {"http://www.example.com/", "Host WWW Example", 1,
+       base::Time::Now() - base::Days(1)},
+      {"http://subdomain.example.com/", "Host Subdomain Example", 2,
+       base::Time::Now() - base::Days(2)},
+  };
+  for (const auto& entry : entries) {
+    AddEntryToHistory(entry);
+  }
+
+  QueryOptions options;
+  options.host_only = true;
+
+  // With feature disabled, exact host matching is used instead of suffix.
+  // "example.com" only matches example.com (from SetUp), not www.example.com.
+  {
+    QueryResults results;
+    QueryHistory("example.com", options, &results);
+    EXPECT_THAT(results, testing::UnorderedElementsAre(testing::Property(
+                             &URLResult::url, GURL("http://example.com/"))));
+  }
+
+  // With feature disabled, host matching is case-sensitive.
+  {
+    QueryResults results;
+    QueryHistory("ExAmPlE.cOm", options, &results);
+    EXPECT_EQ(0U, results.size());
+    QueryHistory("ExAmPlE.tEsT", options, &results);
+    EXPECT_EQ(0U, results.size());
   }
 }
 
