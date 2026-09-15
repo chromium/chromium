@@ -361,6 +361,7 @@ test("printing_unittests") {
   sources = [
     "backend/print_backend_unittest.cc",
     "backend/print_backend_utils_unittest.cc",
+    "common/metafile_utils_unittest.cc",
     "metafile_skia_unittest.cc",
     "nup_parameters_unittest.cc",
     "page_number_unittest.cc",
@@ -386,6 +387,7 @@ test("printing_unittests") {
     "//printing/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx:test_support",
