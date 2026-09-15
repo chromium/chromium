@@ -577,6 +577,42 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemote) {
                                  }));
 }
 
+TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemoteSuffixMatching) {
+  const char kSubdomainUrl[] = "http://sub.eight.com";
+  AddHistory({{kUrl8, 1, kRemote}, {kSubdomainUrl, 2, kRemote}});
+
+  QueryOptions options;
+  options.max_count = 0;
+  options.host_only = true;
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        kBrowsingHistoryImprovedHostnameSuffixMatching);
+
+    // With feature enabled, both sub.eight.com and eight.com match.
+    EXPECT_THAT(QueryHistory(u"eight.com", options),
+                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
+                                   std::vector<TestResult>{
+                                       {kSubdomainUrl, 2, kRemote},
+                                       {kUrl8, 1, kRemote},
+                                   }));
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        kBrowsingHistoryImprovedHostnameSuffixMatching);
+
+    // With feature disabled, only exact host eight.com matches.
+    EXPECT_THAT(QueryHistory(u"eight.com", options),
+                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
+                                   std::vector<TestResult>{
+                                       {kUrl8, 1, kRemote},
+                                   }));
+  }
+}
+
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalPagingPartial) {
   AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
   EXPECT_THAT(QueryHistory(2), MatchesQueryResult(baseline_time_,
