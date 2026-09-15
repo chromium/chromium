@@ -527,6 +527,7 @@ source_set("browser_tests") {
     "//chrome/browser/speech",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/settings",

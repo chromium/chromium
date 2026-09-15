@@ -29,6 +29,7 @@ static_library("impl") {
     "//chrome/browser/lifetime",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_init_state",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/chromeos/locked_state",

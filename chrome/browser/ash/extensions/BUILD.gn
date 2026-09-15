@@ -202,6 +202,7 @@ source_set("browser_tests") {
     "//chrome/browser/policy:extension_force_install_mixin",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/common",
     "//chrome/test:test_support",

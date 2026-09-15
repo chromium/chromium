@@ -65,6 +65,7 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support_ui",
