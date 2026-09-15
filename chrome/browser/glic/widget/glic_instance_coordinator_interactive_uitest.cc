@@ -408,8 +408,17 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// Flaky on Linux only.
+// TODO(crbug.com/561614245): Deflake and re-enable. Likely the same
+// multi-instance breakage as the two tests above.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AccountInvalidatedWhileGlicOpen \
+  DISABLED_AccountInvalidatedWhileGlicOpen
+#else
+#define MAYBE_AccountInvalidatedWhileGlicOpen AccountInvalidatedWhileGlicOpen
+#endif
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
-                       AccountInvalidatedWhileGlicOpen) {
+                       MAYBE_AccountInvalidatedWhileGlicOpen) {
   TrackGlicInstanceWithTabIndex(0);
   RunTestSequence(
       SimulateGlicHotkey(), WaitForWebUIState(mojom::WebUiState::kReady),
