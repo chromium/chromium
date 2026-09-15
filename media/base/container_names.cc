@@ -29,11 +29,12 @@ namespace container_names {
    (static_cast<uint32_t>(static_cast<uint8_t>(c)) << 8) |  \
    (static_cast<uint32_t>(static_cast<uint8_t>(d))))
 
-#define RCHECK(x)     \
-    do {              \
-      if (!(x))       \
-        return false; \
-    } while (0)
+#define RCHECK(x)   \
+  do {              \
+    if (!(x)) {     \
+      return false; \
+    }               \
+  } while (0)
 
 #define UTF8_BYTE_ORDER_MARK "\xef\xbb\xbf"
 
@@ -82,8 +83,9 @@ static uint64_t ReadBits(BitReader* reader, size_t num_bits) {
   DCHECK((num_bits > 0) && (num_bits <= 64));
   uint64_t value = 0;
 
-  if (!reader->ReadBits(num_bits, &value))
+  if (!reader->ReadBits(num_bits, &value)) {
     return 0;
+  }
 
   return value;
 }
@@ -438,8 +440,9 @@ static bool AdvanceToStartCode(base::span<const uint8_t> buffer,
   uint32_t mask = (1 << num_bits) - 1;
   while (*offset + bytes_needed < buffer.size()) {
     uint32_t next = Read24(buffer.subspan(*offset).first<3>());
-    if (((next >> bits_to_shift) & mask) == start_code)
+    if (((next >> bits_to_shift) & mask) == start_code) {
       return true;
+    }
     ++(*offset);
   }
   return false;
@@ -473,18 +476,21 @@ static bool CheckH261(base::span<const uint8_t> buffer) {
     // out of bits assume that the buffer is correctly formatted.
     uint8_t extra = ReadBits(&reader, 1);
     while (extra == 1) {
-      if (!reader.SkipBits(8))
+      if (!reader.SkipBits(8)) {
         return seen_start_code;
-      if (!reader.ReadBits(1, &extra))
+      }
+      if (!reader.ReadBits(1, &extra)) {
         return seen_start_code;
+      }
     }
 
     // Next should be a Group of Blocks start code. Again, if we run out of
     // bits, then assume that the buffer up to here is correct, and the buffer
     // just happened to end in the middle of a header.
     uint16_t next;
-    if (!reader.ReadBits(16, &next))
+    if (!reader.ReadBits(16, &next)) {
       return seen_start_code;
+    }
     RCHECK(next == 1);
 
     // Move to the next block.
@@ -665,8 +671,9 @@ static bool CheckMJpeg(base::span<const uint8_t> buffer) {
     }
 
     // Success if the next marker code is EOI (end of image)
-    if (code == 0xd9)
+    if (code == 0xd9) {
       return true;
+    }
 
     // Check remaining codes.
     if (code == 0xd8 || code == 1) {
@@ -675,8 +682,9 @@ static bool CheckMJpeg(base::span<const uint8_t> buffer) {
     } else if (code >= 0xd0 && code <= 0xd7) {
       // RST (restart) codes must be in sequence. No other data with header.
       int restart = code & 0x07;
-      if (last_restart >= 0)
+      if (last_restart >= 0) {
         RCHECK(restart == (last_restart + 1) % 8);
+      }
       last_restart = restart;
       offset += 2;
     } else {
@@ -789,16 +797,19 @@ static bool CheckMpeg2ProgramStream(base::span<const uint8_t> buffer) {
       int stream_id = buffer[offset + 3];
 
       // Some stream types are reserved and shouldn't occur.
-      if (mpeg_version == 0)
+      if (mpeg_version == 0) {
         RCHECK(stream_id != 0xbc && stream_id < 0xf0);
-      else
+      } else {
         RCHECK(stream_id != 0xfc && stream_id != 0xfd && stream_id != 0xfe);
+      }
 
       // Some stream types are used for pack headers.
-      if (stream_id == PACK_START_CODE)  // back to outer loop.
+      if (stream_id == PACK_START_CODE) {  // back to outer loop.
         break;
-      if (stream_id == PROGRAM_END_CODE)  // end of stream.
+      }
+      if (stream_id == PROGRAM_END_CODE) {  // end of stream.
         return true;
+      }
 
       int pes_length = Read16(buffer.subspan(offset + 4).first<2>());
       RCHECK(pes_length > 0);
@@ -856,10 +867,11 @@ static bool CheckMpeg2TransportStream(base::span<const uint8_t> buffer) {
 
       // Get adaptation_field_length and verify it.
       int adaptation_field_length = ReadBits(&reader, 8);
-      if (adaptation_field_control == 2)
+      if (adaptation_field_control == 2) {
         RCHECK(adaptation_field_length == 183);
-      else
+      } else {
         RCHECK(adaptation_field_length <= 182);
+      }
     }
 
     // Attempt to determine the packet length on the first packet.
@@ -1102,10 +1114,11 @@ static bool ValidMpegAudioFrameHeader(base::span<const uint8_t> header,
       bitrate = kBitRateTableV2L23[bitrate_index];
     }
   }
-  if (layer == LAYER_1)
+  if (layer == LAYER_1) {
     *framesize = ((12000 * bitrate) / sampling_rate + padding) * 4;
-  else
+  } else {
     *framesize = (144000 * bitrate) / sampling_rate + padding;
+  }
   return (bitrate > 0 && sampling_rate > 0);
 }
 
@@ -1126,8 +1139,9 @@ static bool CheckMp3(base::span<const uint8_t> buffer) {
     int framesize;
     RCHECK(ValidMpegAudioFrameHeader(buffer.subspan(offset), &framesize));
     // Have we seen enough valid headers?
-    if (++numSeen > 10)
+    if (++numSeen > 10) {
       return true;
+    }
     offset += framesize;
   }
   // Off the end of the buffer, return success if a few valid headers seen.
@@ -1227,8 +1241,9 @@ static int GetElementId(BitReader* reader) {
     for (int i = 0; i < 4; ++i) {
       num_bits_to_read += 7;
       if (ReadBits(reader, 1) == 1) {
-        if (reader->bits_available() < num_bits_to_read)
+        if (reader->bits_available() < num_bits_to_read) {
           break;
+        }
         // prefix[] adds back the bits read individually.
         return ReadBits(reader, num_bits_to_read) | prefix[i];
       }
@@ -1248,8 +1263,9 @@ static uint64_t GetVint(BitReader* reader) {
     for (int i = 0; i < 8; ++i) {
       num_bits_to_read += 7;
       if (ReadBits(reader, 1) == 1) {
-        if (reader->bits_available() < num_bits_to_read)
+        if (reader->bits_available() < num_bits_to_read) {
           break;
+        }
         return ReadBits(reader, num_bits_to_read);
       }
     }
