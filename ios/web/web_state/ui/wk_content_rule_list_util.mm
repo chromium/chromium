@@ -37,6 +37,17 @@ NSString* CreateLocalBlockingJsonRuleList() {
     },
   };
 
+  NSDictionary* local_websocket_block = @{
+    @"trigger" : @{
+      @"url-filter" : @"^wss?://.*",
+      @"if-top-url" : local_schemes_urls,
+      @"resource-type" : @[ @"websocket" ],
+    },
+    @"action" : @{
+      @"type" : @"block",
+    },
+  };
+
   NSDictionary* allow_crbug = @{
     @"trigger" : @{
       @"url-filter" : @"^https://bugs\\.chromium\\.org/.*",
@@ -51,10 +62,10 @@ NSString* CreateLocalBlockingJsonRuleList() {
     },
   };
 
-  NSData* json_data =
-      [NSJSONSerialization dataWithJSONObject:@[ local_block, allow_crbug ]
-                                      options:NSJSONWritingPrettyPrinted
-                                        error:nil];
+  NSData* json_data = [NSJSONSerialization
+      dataWithJSONObject:@[ local_block, local_websocket_block, allow_crbug ]
+                 options:NSJSONWritingPrettyPrinted
+                   error:nil];
   NSString* json_string = [[NSString alloc] initWithData:json_data
                                                 encoding:NSUTF8StringEncoding];
   return json_string;

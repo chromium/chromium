@@ -45,6 +45,15 @@ TEST_F(WKContentRuleListUtilTest, LocalResourceJSONBlock) {
   ];
   ASSERT_NSEQ(filtered_types, block_rule[@"trigger"][@"resource-type"]);
   ASSERT_NSEQ(@"block", block_rule[@"action"][@"type"]);
+
+  id websocket_block_rule = json[1];
+  ASSERT_TRUE([websocket_block_rule isKindOfClass:[NSDictionary class]]);
+  ASSERT_NSEQ(filtered_schemes,
+              websocket_block_rule[@"trigger"][@"if-top-url"]);
+  ASSERT_NSEQ(@"^wss?://.*", websocket_block_rule[@"trigger"][@"url-filter"]);
+  ASSERT_NSEQ(@[ @"websocket" ],
+              websocket_block_rule[@"trigger"][@"resource-type"]);
+  ASSERT_NSEQ(@"block", websocket_block_rule[@"action"][@"type"]);
 }
 
 // Tests that the JSON created for mixed content auto-upgrading contains the
