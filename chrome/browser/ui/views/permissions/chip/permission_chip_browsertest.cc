@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -624,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(
   chip_controller->ResetPermissionPromptChip();
 
   browser_view()
-      ->GetLocationBarView()
+      ->GetLocationBar()
       ->GetOmniboxController()
       ->edit_model()
       ->SetInputInProgress(true);
