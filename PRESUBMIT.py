@@ -5,6 +5,9 @@
 
 See https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
 for more details about the presubmit API built into depot_tools.
+
+For speed, checks should short-circuit based on affected file extensions
+(the _Has*Files() methods).
 """
 
 # Pylint directives to disable warnings in cider.
@@ -2781,6 +2784,90 @@ _INVALID_GRD_FILE_LINE = [(r'<file lang=.* path=.*',
                            'Path should come before lang in GRD files.')]
 
 
+# -----------------------------------------------------------------------------
+# File Extension Fast-Path Helpers
+# -----------------------------------------------------------------------------
+# For speed, checks should short-circuit based on affected file extensions
+# (the _Has*Files() methods).
+#
+# When adding checks for a NEW file type or language:
+#   a. Define an extension frozenset, e.g.:
+#        _RUST_EXTENSIONS = frozenset(('.rs', ))
+#   b. Add a helper:
+#        def _HasRustFiles(input_api):
+#            return not _GetAffectedExtensions(
+#                input_api).isdisjoint(_RUST_EXTENSIONS)
+#   c. Add unit test coverage in ExtensionFastPathsTest in PRESUBMIT_test.py.
+# -----------------------------------------------------------------------------
+
+
+def _GetAffectedExtensions(input_api):
+    """Returns a frozenset of lowercase extensions of all affected files."""
+    cached = getattr(input_api, '_cached_affected_extensions', None)
+    if cached is None:
+        cached = _ExtractExtensions(input_api)
+        input_api._cached_affected_extensions = cached
+    return cached
+
+
+def _ExtractExtensions(input_api):
+    """Helper to extract a frozenset of lowercase file extensions."""
+    exts = set()
+    for f in input_api.AffectedFiles(include_deletes=True):
+        basename = input_api.os_path.basename(f.LocalPath()).lower()
+        if basename.startswith('.') and '.' not in basename[1:]:
+            exts.add(basename)
+        else:
+            exts.add(input_api.os_path.splitext(basename)[1])
+    return frozenset(exts)
+
+
+_CXX_EXTENSIONS = frozenset((
+    '.h', '.cc', '.cpp', '.m', '.mm', '.c', '.hxx', '.hpp', '.cxx', '.inl',
+    '.hcc', '.inc',
+))
+_CXX_HEADER_EXTENSIONS = frozenset(('.h', '.hxx', '.hpp', '.inl', '.inc'))
+_KOTLIN_EXTENSIONS = frozenset(('.kt', '.kts'))
+_GN_EXTENSIONS = frozenset(('.gn', '.gni'))
+_MACRO_EXTENSIONS = _CXX_EXTENSIONS | frozenset(
+    ('.mojom', '.s', '.asm', '.rs'))
+
+
+def _HasCPlusPlusFiles(input_api):
+    return not _GetAffectedExtensions(input_api).isdisjoint(_CXX_EXTENSIONS)
+
+
+def _HasCPlusPlusHeaderFiles(input_api):
+    return not _GetAffectedExtensions(
+        input_api).isdisjoint(_CXX_HEADER_EXTENSIONS)
+
+
+def _HasJavaFiles(input_api):
+    return '.java' in _GetAffectedExtensions(input_api)
+
+
+def _HasKotlinFiles(input_api):
+    return not _GetAffectedExtensions(input_api).isdisjoint(_KOTLIN_EXTENSIONS)
+
+
+def _HasPythonFiles(input_api):
+    return '.py' in _GetAffectedExtensions(input_api)
+
+
+def _HasGnFiles(input_api):
+    return not _GetAffectedExtensions(input_api).isdisjoint(_GN_EXTENSIONS)
+
+
+def _HasMojomFiles(input_api):
+    return '.mojom' in _GetAffectedExtensions(input_api)
+
+
+def _HasPotentialMacroFiles(input_api):
+    return not _GetAffectedExtensions(input_api).isdisjoint(_MACRO_EXTENSIONS)
+
+
+
+
 def _IsCPlusPlusFile(input_api, file_path):
     """Returns True if this file contains C++-like code (and not Python,
     Go, Java, MarkDown, ...)"""
@@ -2821,6 +2908,10 @@ def _IsMojomFile(input_api, file_path):
 
 def CheckNoUpstreamDepsOnClank(input_api, output_api):
     """Prevent additions of dependencies from the upstream repo on //clank."""
+    # This check only inspects GN build files (BUILD.gn and *.gni) for //clank
+    # imports, not repository DEPS files.
+    if not _HasGnFiles(input_api):
+        return []
     # clank can depend on clank
     if input_api.change.RepositoryRoot().endswith('clank'):
         return []
@@ -2857,6 +2948,8 @@ def CheckNoProductionCodeUsingTestOnlyFunctions(input_api, output_api):
     that ignores header files and may have some false positives. A
     better implementation would probably need a proper C++ parser.
     """
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     # We only scan .cc files and the like, as the declaration of
     # for-testing functions in header files are hard to distinguish from
     # calls to such functions without a proper C++ parser.
@@ -2924,6 +3017,8 @@ def CheckNoProductionCodeUsingTestOnlyFunctionsJava(input_api, output_api):
     """This is a simplified version of
     CheckNoProductionCodeUsingTestOnlyFunctions for Java files.
     """
+    if not _HasJavaFiles(input_api):
+        return []
     javadoc_start_re = input_api.re.compile(r'^\s*/\*\*')
     javadoc_end_re = input_api.re.compile(r'^\s*\*/')
     name_pattern = r'ForTest(s|ing)?'
@@ -2983,6 +3078,8 @@ def CheckNoProductionCodeUsingTestOnlyFunctionsJava(input_api, output_api):
 
 def CheckNoIOStreamInHeaders(input_api, output_api):
     """Checks to make sure no .h files include <iostream>."""
+    if not _HasCPlusPlusHeaderFiles(input_api):
+        return []
     files = []
     pattern = input_api.re.compile(r'^#include\s*<iostream>',
                                    input_api.re.MULTILINE)
@@ -3005,6 +3102,8 @@ def CheckNoIOStreamInHeaders(input_api, output_api):
 
 def CheckNoStrCatRedefines(input_api, output_api):
     """Checks no windows headers with StrCat redefined are included directly."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     files = []
     files_to_check = (r'.+%s' % _HEADER_EXTENSIONS,
                       r'.+%s' % _IMPLEMENTATION_EXTENSIONS)
@@ -3035,7 +3134,7 @@ def CheckNoStrCatRedefines(input_api, output_api):
     return []
 
 
-def _CheckNoUNIT_TESTInSourceFiles(input_api, f):
+def _CheckNoUNIT_TESTInFile(input_api, f):
     problems = []
 
     unit_test_macro = input_api.re.compile(
@@ -3050,11 +3149,13 @@ def _CheckNoUNIT_TESTInSourceFiles(input_api, f):
 
 def CheckNoUNIT_TESTInSourceFiles(input_api, output_api):
     """Checks to make sure no source files use UNIT_TEST."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     problems = []
     for f in input_api.AffectedFiles():
-        if (not f.LocalPath().endswith(('.cc', '.mm'))):
+        if not f.LocalPath().endswith(('.cc', '.mm')):
             continue
-        problems.extend(_CheckNoUNIT_TESTInSourceFiles(input_api, f))
+        problems.extend(_CheckNoUNIT_TESTInFile(input_api, f))
 
     if not problems:
         return []
@@ -3071,6 +3172,8 @@ def CheckNoDISABLETypoInTests(input_api, output_api):
     instead of DISABLED_. To filter false positives, reports are only generated
     if a corresponding MAYBE_ line exists.
     """
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     problems = []
 
     # The following two patterns are looked for in tandem - is a test labeled
@@ -3124,6 +3227,8 @@ def CheckNoOzonePlatformMacrosInTests(input_api, output_api):
     These are compile-time macros and do not reflect the runtime environment.
     Tests should use runtime checks instead.
     """
+    if not _HasCPlusPlusFiles(input_api):
+        return []
 
     def FilterFile(affected_file):
         res = input_api.FilterSourceFile(
@@ -3160,6 +3265,8 @@ def CheckForgettingMAYBEInTests(input_api, output_api):
     """Checks to make sure tests disabled conditionally are not missing a
     corresponding MAYBE_ prefix.
     """
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     # Expect at least a lowercase character in the test name. This helps rule out
     # false positives with macros wrapping the actual tests name.
     define_maybe_pattern = input_api.re.compile(
@@ -3211,6 +3318,8 @@ def CheckForgettingMAYBEInTests(input_api, output_api):
 
 def CheckDCHECK_IS_ONHasBraces(input_api, output_api):
     """Checks to make sure DCHECK_IS_ON() does not skip the parentheses."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     errors = []
     pattern = input_api.re.compile(r'\bDCHECK_IS_ON\b(?!\(\))',
                                    input_api.re.MULTILINE)
@@ -3234,6 +3343,8 @@ def CheckDCHECK_IS_ONHasBraces(input_api, output_api):
 
 def CheckFlakyTestUsage(input_api, output_api):
     """Check that FlakyTest annotation is our own instead of the android one"""
+    if not _HasJavaFiles(input_api):
+        return []
     pattern = input_api.re.compile(r'import android.test.FlakyTest;')
     files = []
     for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
@@ -3417,6 +3528,8 @@ def CheckNoBannedPatterns(input_api, output_api):
 
 def CheckNoPragmaOnce(input_api, output_api):
     """Make sure #pragma once is not used."""
+    if not _HasCPlusPlusHeaderFiles(input_api):
+        return []
     files = []
     pattern = input_api.re.compile(r'^#pragma\s+once', input_api.re.MULTILINE)
     for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
@@ -3440,6 +3553,8 @@ def CheckNoPragmaOnce(input_api, output_api):
 
 def CheckNoTrinaryTrueFalse(input_api, output_api):
     """Checks to make sure we don't introduce use of foo ? true : false."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     problems = []
     pattern = input_api.re.compile(r'\?\s*(true|false)\s*:\s*(true|false)')
     for f in input_api.AffectedFiles():
@@ -3606,6 +3721,8 @@ def CheckNoAuraWindowPropertyHInHeaders(input_api, output_api):
     """Makes sure we don't include ui/aura/window_property.h
     in header files.
     """
+    if not _HasCPlusPlusHeaderFiles(input_api):
+        return []
     pattern = input_api.re.compile(r'^#include\s*"ui/aura/window_property.h"')
     errors = []
     for f in input_api.AffectedFiles():
@@ -3630,6 +3747,8 @@ def CheckNoInternalHeapIncludes(input_api, output_api):
     third_party/blink/renderer/platform/heap/v8_wrapper from files outside of
     third_party/blink/renderer/platform/heap
     """
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     impl_pattern = input_api.re.compile(
         r'^\s*#include\s*"third_party/blink/renderer/platform/heap/impl/.*"')
     v8_wrapper_pattern = input_api.re.compile(
@@ -4185,6 +4304,8 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
 
 # TODO: add unit tests.
 def CheckSpamLogging(input_api, output_api):
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     file_inclusion_pattern = [r'.+%s' % _IMPLEMENTATION_EXTENSIONS]
     files_to_skip = (
         _EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS +
@@ -4276,6 +4397,8 @@ def CheckSpamLogging(input_api, output_api):
 
 
 def CheckUniquePtrOnUpload(input_api, output_api):
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     # Returns whether |template_str| is of the form <T, U...> for some types T
     # and U, or is invalid due to mismatched angle bracket pairs. Assumes that
     # |template_str| is already in the form <...>.
@@ -4515,11 +4638,7 @@ def CheckParseErrors(input_api, output_api):
 
 def CheckJavaStyle(input_api, output_api):
     """Runs checkstyle on changed java files and returns errors if any exist."""
-
-    # Return early if no java files were modified.
-    if not any(
-            _IsJavaFile(input_api, f.LocalPath())
-            for f in input_api.AffectedFiles()):
+    if not _HasJavaFiles(input_api):
         return []
 
     import sys
@@ -4542,6 +4661,8 @@ def CheckJavaStyle(input_api, output_api):
 
 def CheckPythonDevilInit(input_api, output_api):
     """Checks to make sure devil is initialized correctly in python scripts."""
+    if not _HasPythonFiles(input_api):
+        return []
     script_common_initialize_pattern = input_api.re.compile(
         r'script_common\.InitializeEnvironment\(')
     devil_env_config_initialize = input_api.re.compile(
@@ -5047,6 +5168,8 @@ def CheckUselessForwardDeclarations(input_api, output_api):
        header files do not lead to new useless class or struct forward
        declaration.
     """
+    if not _HasCPlusPlusHeaderFiles(input_api):
+        return []
     results = []
     class_pattern = input_api.re.compile(r'^class\s+(\w+);$',
                                          input_api.re.MULTILINE)
@@ -5611,6 +5734,8 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
 
 def CheckSingletonInHeaders(input_api, output_api):
     """Checks to make sure no header files have |Singleton<|."""
+    if not _HasCPlusPlusHeaderFiles(input_api):
+        return []
 
     def FileFilter(affected_file):
         # It's ok for base/memory/singleton.h to have |Singleton<|.
@@ -5709,6 +5834,8 @@ def CheckNoDeprecatedCss(input_api, output_api):
 
 
 def CheckForRelativeIncludes(input_api, output_api):
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     bad_files = {}
     for f in input_api.AffectedFiles(include_deletes=False):
         if (f.UnixLocalPath().startswith('third_party')
@@ -5752,6 +5879,8 @@ def CheckForCcIncludes(input_api, output_api):
     common error which results in duplicate symbols in object
     files. This may not always break the build until someone later gets
     very confusing linking errors."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     results = []
     for f in input_api.AffectedFiles(include_deletes=False):
         # We let third_party code do whatever it wants
@@ -5927,6 +6056,8 @@ def CheckGnRebasePath(input_api, output_api):
     Developers should use root_build_dir instead of "//" when using target_gen_dir because
     Chromium is sometimes built outside of the source tree.
     """
+    if not _HasGnFiles(input_api):
+        return []
 
     def gn_files(f):
         return input_api.FilterSourceFile(f, files_to_check=(r'.+\.gn', ))
@@ -5958,6 +6089,8 @@ def CheckGnGlobForward(input_api, output_api):
 
     As documented at //build/docs/writing_gn_templates.md
     """
+    if not _HasGnFiles(input_api):
+        return []
 
     def gn_files(f):
         return input_api.FilterSourceFile(f, files_to_check=(r'.+\.gni', ))
@@ -5991,6 +6124,8 @@ def CheckNewHeaderWithoutGnChangeOnUpload(input_api, output_api):
     Note that this is only a heuristic. To be precise, run script:
     build/check_gn_headers.py.
     """
+    if not _HasCPlusPlusHeaderFiles(input_api):
+        return []
 
     def headers(f):
         return input_api.FilterSourceFile(
@@ -6001,6 +6136,8 @@ def CheckNewHeaderWithoutGnChangeOnUpload(input_api, output_api):
         if f.Action() != 'A':
             continue
         new_headers.append(f.LocalPath())
+    if not new_headers:
+        return []
 
     def gn_files(f):
         return input_api.FilterSourceFile(f, files_to_check=(r'.+\.gn', ))
@@ -6119,6 +6256,8 @@ def CheckForTooLargeFiles(input_api, output_api):
 
 def CheckFuzzTargetsOnUpload(input_api, output_api):
     """Checks specific for fuzz target sources."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     EXPORTED_SYMBOLS = [
         'LLVMFuzzerInitialize',
         'LLVMFuzzerCustomMutator',
@@ -6170,6 +6309,8 @@ def CheckFuzzTargetsOnUpload(input_api, output_api):
 
 def CheckNewLLVMStyleFuzzersOnUpload(input_api, output_api):
     """Nudges developers to use FUZZ_TEST instead of legacy LLVM-style fuzzers for new targets."""
+    if not (_HasCPlusPlusFiles(input_api) or _HasGnFiles(input_api)):
+        return []
     fuzzer_targets = []
     fuzzer_sources = []
 
@@ -6500,6 +6641,8 @@ def CheckPatchFiles(input_api, output_api):
 
 
 def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     # Excludes OS_CHROMEOS, which is not defined in build_config.h.
     macro_re = input_api.re.compile(
         r'^\s*#(el)?if.*\bdefined\(((COMPILER_|ARCH_CPU_|WCHAR_T_IS_)[^)]*)')
@@ -6558,6 +6701,8 @@ def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
 
 
 def CheckForSuperfluousStlIncludesInHeaders(input_api, output_api):
+    if not _HasCPlusPlusHeaderFiles(input_api):
+        return []
     stl_include_re = input_api.re.compile(r'^#include\s+<('
                                           r'algorithm|'
                                           r'array|'
@@ -6624,6 +6769,8 @@ def _CheckForDeprecatedOSMacrosInFile(input_api, f):
 
 def CheckForDeprecatedOSMacros(input_api, output_api):
     """Check all affected files for invalid OS macros."""
+    if not _HasPotentialMacroFiles(input_api):
+        return []
     bad_macros = []
     # The OS_ macros are allowed to be used in build/build_config.h.
     config_h_file = input_api.os_path.join('build', 'build_config.h')
@@ -6676,6 +6823,8 @@ def _CheckForInvalidIfDefinedMacrosInFile(input_api, f):
 
 def CheckForInvalidIfDefinedMacros(input_api, output_api):
     """Check all affected files for invalid "if defined" macros."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     SKIPPED_PATHS = [
         'base/allocator/partition_allocator/src/partition_alloc/build_config.h',
         'build/build_config.h',
@@ -6713,6 +6862,8 @@ def CheckForIPCRules(input_api, output_api):
     """Check for same IPC rules described in
     http://www.chromium.org/Home/chromium-security/education/security-tips-for-ipc
     """
+    if not _HasCPlusPlusHeaderFiles(input_api):
+        return []
     base_pattern = r'IPC_ENUM_TRAITS\('
     inclusion_pattern = input_api.re.compile(r'(%s)' % base_pattern)
     comment_pattern = input_api.re.compile(r'//.*(%s)' % base_pattern)
@@ -6766,6 +6917,8 @@ def CheckForIncludeGuards(input_api, output_api):
     should include the string "no-include-guard-because-multiply-included" or
     "no-include-guard-because-pch-file".
     """
+    if not _HasCPlusPlusHeaderFiles(input_api):
+        return []
 
     def is_chromium_header_file(f):
         # We only check header files under the control of the Chromium
@@ -7041,6 +7194,8 @@ def CheckNoMainLayoutSwitcher(input_api, output_api):
     Prevents MainLayoutSwitcher.java (a temporary and deprecated file)
     from appearing in CLs.
     """
+    if not _HasJavaFiles(input_api):
+        return []
 
     # Skip this check if there are no diffs, such as running presubmit with "--all --no_diffs".
     # Otherwise AffectedFiles() will include MainLayoutSwitcher.java even if it's not changed.
@@ -7080,6 +7235,8 @@ def CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api):
     Bans direct references to the cached flag 'sEnableAndroidSidePanel'
     except in AndroidSidePanelEnabledFn.java.
     """
+    if not (_HasJavaFiles(input_api) or _HasKotlinFiles(input_api)):
+        return []
     if input_api.no_diffs:
         return []
 
@@ -7093,12 +7250,16 @@ def CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api):
 
     results = []
     pattern = input_api.re.compile(r'sEnableAndroidSidePanel\b')
-    for f in input_api.AffectedFiles(include_deletes=False):
+    is_java_or_kotlin = lambda f: f.LocalPath().lower().endswith(
+        ('.java', '.kt', '.kts'))
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=is_java_or_kotlin):
         local_path = f.LocalPath()
-        if ('AndroidSidePanelEnabledFn.java' in local_path
-                or 'ChromeFeatureList.java' in local_path
-                or 'PRESUBMIT.py' in local_path
-                or 'PRESUBMIT_test.py' in local_path):
+        basename = input_api.os_path.basename(local_path)
+        if basename in ('AndroidSidePanelEnabledFn.java',
+                        'AndroidSidePanelEnabledFn.kt',
+                        'ChromeFeatureList.java',
+                        'ChromeFeatureList.kt'):
             continue
         for line_num, line in f.ChangedContents():
             if pattern.search(line):
@@ -7589,8 +7750,17 @@ def CheckTranslationExpectations(input_api,
 
 def CheckStableMojomChanges(input_api, output_api):
     """Changes to [Stable] mojom types must preserve backward-compatibility."""
-    no_stable_mojom_checks = input_api.change.GitFootersFromDescription().get(
-        'No-Stable-Mojom-Checks', None)
+    has_mojom = _HasMojomFiles(input_api)
+    footers = input_api.change.GitFootersFromDescription()
+    no_stable_mojom_checks = None
+    if footers:
+        for k, v in footers.items():
+            if k.lower() == 'no-stable-mojom-checks':
+                no_stable_mojom_checks = v
+                break
+
+    if not has_mojom and not no_stable_mojom_checks:
+        return []
 
     expect_stable_mojom_failures = False
     if no_stable_mojom_checks:
@@ -7662,6 +7832,8 @@ def CheckStableMojomChanges(input_api, output_api):
 
 def CheckNoMojomDataViewIncludes(input_api, output_api):
     """Checks that .mojom-data-view.h is not included."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     problems = []
 
     # Exclude files containing 'traits' and specific files.
@@ -7697,6 +7869,8 @@ def CheckNoMojomDataViewIncludes(input_api, output_api):
 
 def CheckDeprecationOfPreferences(input_api, output_api):
     """Removing a preference should come with a deprecation."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
 
     def FilterFile(affected_file):
         """Accept only .cc files and the like."""
@@ -7836,6 +8010,8 @@ def CheckAssertAshOnlyCode(input_api, output_api):
     """Errors if a BUILD.gn file in an ash/ directory doesn't include
     assert(is_chromeos).
     """
+    if not _HasGnFiles(input_api):
+        return []
 
     def FileFilter(affected_file):
         """Includes directories known to be Ash only."""
@@ -7865,6 +8041,8 @@ def CheckAdvancedMemorySafetyChecksUsage(input_api, output_api):
     """Checks that ADVANCED_MEMORY_SAFETY_CHECKS() macro is neither added nor
     removed as it is managed by the memory safety team internally.
     Do not add / remove it manually."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     paths = set([])
     # The regex below matches "ADVANCED_MEMORY_SAFETY_CHECKS(" following a word
     # boundary, but not in a C++ comment.
@@ -7890,6 +8068,8 @@ def CheckPythonShebang(input_api, output_api):
     """Checks that python scripts use #!/usr/bin/env instead of hardcoding a
     system-wide python.
     """
+    if not _HasPythonFiles(input_api):
+        return []
     errors = []
     sources = lambda affected_file: input_api.FilterSourceFile(
         affected_file,
@@ -7920,6 +8100,8 @@ def CheckAndroidTestAnnotations(input_api, output_api):
     2. Robolectric host tests: Must NOT use @Batch or @DoNotBatch annotations.
        Should use BaseRobolectricTestRunner or BaseRobolectricTestRule.
     """
+    if not _HasJavaFiles(input_api):
+        return []
 
     batch_annotation = input_api.re.compile(r'^\s*@Batch')
     do_not_batch_annotation = input_api.re.compile(r'^\s*@DoNotBatch')
@@ -8171,6 +8353,8 @@ def CheckLibcxxRevisionsMatch(input_api, output_api):
 
 def CheckDanglingUntriaged(input_api, output_api):
     """Warn developers adding DanglingUntriaged raw_ptr."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
 
     # Ignore during git presubmit --all.
     #
@@ -8248,6 +8432,8 @@ DanglingUntriaged-notes: <rationale for new untriaged dangling pointers>""")
 
 def CheckInlineConstexprDefinitionsInHeaders(input_api, output_api):
     """Checks that non-static constexpr definitions in headers are inline."""
+    if not _HasCPlusPlusHeaderFiles(input_api):
+        return []
     # In a properly formatted file, constexpr definitions inside classes or
     # structs will have additional whitespace at the beginning of the line.
     # The pattern looks for variables initialized as constexpr kVar = ...; or
@@ -8314,6 +8500,8 @@ def CheckTodoBugReferences(input_api, output_api):
 def CheckNoBrowserStarInUnittests(input_api, output_api):
     """Checks that unit-tests don't contain Browser* variables.
     """
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     problems = []
 
     def FileFilter(affected_file):
@@ -8351,6 +8539,8 @@ def CheckBaseFeatureMacro(input_api, output_api):
 
     Matches both BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE.
     """
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     pattern = input_api.re.compile(
         r'\bBASE_(?:RUNTIME_MUTABLE_)?FEATURE\s*\(\s*([^,]+)\s*,\s*([^,)]+)')
     warnings = []
@@ -8413,6 +8603,8 @@ def CheckBaseFeatureMacro(input_api, output_api):
 
 def CheckBaseFeatureParamMacro(input_api, output_api):
     """Checks for correct usage of BASE_FEATURE_PARAM/ENUM_PARAM macros."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     # Helpers mirroring testing/variations/presubmit/find_features.py so the
     # macro arguments are tokenized consistently (e.g. commas inside quoted
     # string literals or template arguments do not split args incorrectly).
@@ -8526,6 +8718,8 @@ def CheckBaseFeatureParamMacro(input_api, output_api):
 
 def CheckTestFileNamesOnUpload(input_api, output_api):
     """Warns if file names end with _unittests.cc or _browsertests.cc."""
+    if not _HasCPlusPlusFiles(input_api):
+        return []
     bad_files = []
     for f in input_api.AffectedFiles(include_deletes=False):
         local_path = f.LocalPath()
@@ -8579,6 +8773,8 @@ def CheckSettingsChanges(input_api, output_api):
       3. Parity: Scans changed UI code for triggers and verifies mirroring logic
          exists in the indexing block (stripping comments to avoid false hits).
     """
+    if not _HasJavaFiles(input_api):
+        return []
     cc_list = ['jinsukkim@chromium.org', 'adelm@google.com']
 
     registry_filename = 'SearchIndexProviderRegistry.java'
