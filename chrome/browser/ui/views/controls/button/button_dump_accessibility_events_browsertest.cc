@@ -43,9 +43,7 @@ class ButtonDumpAccessibilityEventsTest
   raw_ptr<LabelButton> button_ = nullptr;
 };
 
-// TODO(crbug.com/556545506): Re-enable this test
-IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest,
-                       DISABLED_ButtonClick) {
+IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonClick) {
   SKIP_IF_VIEWS_AX_ENABLED();
   SetFilters(R"(
 @WIN-ALLOW:EVENT_OBJECT_STATECHANGE*

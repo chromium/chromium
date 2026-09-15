@@ -63,8 +63,17 @@ namespace views {
 namespace {
 
 void WaitForNoGhostAXPlatformNodeWin() {
-  EXPECT_TRUE(base::test::RunUntil(
-      [] { return ui::AXPlatformNodeWin::GetCounts().ghost_nodes == 0u; }));
+  const auto get_ghost_count = [] {
+    return ui::AXPlatformNodeWin::GetCounts().ghost_nodes;
+  };
+  if (get_ghost_count() == 0u) {
+    return;
+  }
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return get_ghost_count() == 0u; }))
+      << "Timed out waiting for Windows accessibility event test teardown; "
+      << get_ghost_count()
+      << " AXPlatformNodeWin COM references are still alive.";
 }
 
 }  // namespace
@@ -218,13 +227,18 @@ void DumpAccessibilityEventsViewsTestBase::TearDownOnMainThread() {
 #endif
 
   widget_.reset();
-
-#if BUILDFLAG(IS_WIN)
-  // Let COM/UIA releases finish before gtest's platform-node leak listener.
-  WaitForNoGhostAXPlatformNodeWin();
-#endif
+  scoped_ax_mode_.reset();
 
   InProcessBrowserTest::TearDownOnMainThread();
+}
+
+void DumpAccessibilityEventsViewsTestBase::PostRunTestOnMainThread() {
+  InProcessBrowserTest::PostRunTestOnMainThread();
+#if BUILDFLAG(IS_WIN)
+  // Let COM/UIA releases finish after browser windows close and before
+  // gtest's platform-node leak listener.
+  WaitForNoGhostAXPlatformNodeWin();
+#endif
 }
 
 // static

@@ -52,6 +52,7 @@ class DumpAccessibilityEventsViewsTestBase
   void SetUpOnMainThread() final;
   void TearDown() override;
   void TearDownOnMainThread() override;
+  void PostRunTestOnMainThread() override;
 
   // Returns platform-dependent test parameters (API types × ViewsAX states).
   static std::vector<ViewsEventTestParams> EventTestPasses();
