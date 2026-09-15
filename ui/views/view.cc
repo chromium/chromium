@@ -2797,12 +2797,24 @@ void View::UpdateLayerClipForVisibleBounds(bool remove_layer_clip) {
 void View::ReorderChildLayers(ui::Layer* parent_layer) {
   if (layer() && layer() != parent_layer) {
     DCHECK_EQ(parent_layer, layer()->parent());
+    // Do not restack if this view's layer is not a direct child of
+    // `parent_layer`. Transient states (such as LayerTreeOwner window state
+    // transitions, animations, or unparented views during multi-step tree
+    // construction) can momentarily leave layers unparented or in a separate
+    // layer hierarchy during a layout pass.
+    if (layer()->parent() != parent_layer) {
+      return;
+    }
     for (ui::Layer* layer_above : layers_above_) {
-      parent_layer->StackAtBottom(layer_above);
+      if (layer_above->parent() == parent_layer) {
+        parent_layer->StackAtBottom(layer_above);
+      }
     }
     parent_layer->StackAtBottom(layer());
     for (ui::Layer* layer_below : layers_below_) {
-      parent_layer->StackAtBottom(layer_below);
+      if (layer_below->parent() == parent_layer) {
+        parent_layer->StackAtBottom(layer_below);
+      }
     }
   } else {
     // Iterate backwards through the children so that a child with a layer

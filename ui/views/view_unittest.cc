@@ -6349,6 +6349,27 @@ TEST_F(ViewLayerTest, RemoveLayerFromRegionsWhenNoViewLayer) {
   view->RemoveLayerFromRegions(layer.get());
 }
 
+TEST_F(ViewLayerTest, ReorderChildLayersWithUnparentedRegionLayer) {
+  View root;
+  root.SetPaintToLayer();
+
+  View* v1 = root.AddChildView(std::make_unique<View>());
+  View* v2 = root.AddChildView(std::make_unique<View>());
+  v1->SetPaintToLayer();
+  v2->SetPaintToLayer();
+
+  auto layer = std::make_unique<ui::LayerTextured>();
+  v2->AddLayerToRegion(layer.get(), LayerRegion::kBelow);
+
+  // Detach the region layer from the root layer tree while keeping it in v2's
+  // regions. Reordering views triggers layer reordering and should safely
+  // ignore unparented region layers rather than attempting to stack them
+  // relative to the root layer.
+  root.layer()->Remove(layer.get());
+
+  root.ReorderChildView(v1, 1);
+}
+
 // View::OrphanLayers() captures a bare ui::Layer* `parent` local and loops
 // over GetLayersInOrder() calling parent->Remove(layer) on each iteration.
 // Layer::Remove() synchronously calls StopAnimatingProperty(BOUNDS), which
