@@ -55,6 +55,7 @@ DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kSecurityKeyHidInterfacesAreFido);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kWebHidRecursiveFiltering);
+DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kHidValidateFeatureReportSize);
 
 extern const DEVICE_FEATURES_EXPORT
     base::FeatureParam<device::mojom::LocationProviderManagerMode>

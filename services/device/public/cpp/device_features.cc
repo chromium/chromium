@@ -133,6 +133,11 @@ BASE_FEATURE(kSecurityKeyHidInterfacesAreFido,
 // security bypasses (e.g., nested keyboards or FIDO keys).
 BASE_FEATURE(kWebHidRecursiveFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, feature reports are checked to verify that the buffer size does
+// not exceed the device's maximum feature report size plus the report ID
+// prefix.
+BASE_FEATURE(kHidValidateFeatureReportSize, base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<device::mojom::LocationProviderManagerMode>::Option
     location_provider_manager_mode_options[] = {
         {device::mojom::LocationProviderManagerMode::kNetworkOnly,

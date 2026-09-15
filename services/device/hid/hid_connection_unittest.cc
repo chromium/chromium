@@ -746,4 +746,238 @@ TEST_F(HidConnectionProtectedReportTest, CollectionTypeAffectsProtection) {
   }
 }
 
+TEST_F(HidConnectionProtectedReportTest, OutputReportBufferTooLong) {
+  constexpr uint8_t kTestReportId = 1;
+  constexpr size_t kMaxOutputReportSize = 2;
+  auto collection = mojom::HidCollectionInfo::New();
+  collection->usage = mojom::HidUsageAndPage::New(mojom::kGenericDesktopGamePad,
+                                                  mojom::kPageGenericDesktop);
+  collection->collection_type = mojom::kHIDCollectionTypeApplication;
+  collection->report_ids.push_back(kTestReportId);
+  auto report = mojom::HidReportDescription::New();
+  report->report_id = kTestReportId;
+  collection->output_reports.push_back(std::move(report));
+
+  auto device_info =
+      CreateHidDeviceInfo(std::move(collection),
+                          /*max_input_report_size=*/0, kMaxOutputReportSize,
+                          /*max_feature_report_size=*/0);
+  CreateConnection(device_info);
+
+  // A buffer matching the maximum report size (1 byte report ID + 2 bytes data)
+  // succeeds.
+  {
+    TestFuture<bool> write_future;
+    auto valid_buffer = base::MakeRefCounted<base::RefCountedBytes>(
+        std::vector<uint8_t>{kTestReportId, 0x01, 0x02});
+    connection().Write(valid_buffer, write_future.GetCallback());
+    EXPECT_TRUE(write_future.Get());
+  }
+
+  // A buffer exceeding the maximum report size (1 byte report ID + 3 bytes
+  // data) fails.
+  {
+    TestFuture<bool> write_future;
+    auto long_buffer = base::MakeRefCounted<base::RefCountedBytes>(
+        std::vector<uint8_t>{kTestReportId, 0x01, 0x02, 0x03});
+    connection().Write(long_buffer, write_future.GetCallback());
+    EXPECT_FALSE(write_future.Get());
+  }
+
+  connection().Close();
+}
+
+TEST_F(HidConnectionProtectedReportTest,
+       OutputReportBufferTooLongWithoutReportId) {
+  constexpr size_t kMaxOutputReportSize = 2;
+  auto collection = mojom::HidCollectionInfo::New();
+  collection->usage = mojom::HidUsageAndPage::New(mojom::kGenericDesktopGamePad,
+                                                  mojom::kPageGenericDesktop);
+  collection->collection_type = mojom::kHIDCollectionTypeApplication;
+  auto report = mojom::HidReportDescription::New();
+  report->report_id = 0;
+  collection->output_reports.push_back(std::move(report));
+
+  auto device_info =
+      CreateHidDeviceInfo(std::move(collection),
+                          /*max_input_report_size=*/0, kMaxOutputReportSize,
+                          /*max_feature_report_size=*/0);
+  CreateConnection(device_info);
+
+  // A buffer matching the maximum report size (1 byte report ID 0 + 2 bytes
+  // data) succeeds.
+  {
+    TestFuture<bool> write_future;
+    auto valid_buffer = base::MakeRefCounted<base::RefCountedBytes>(
+        std::vector<uint8_t>{0, 0x01, 0x02});
+    connection().Write(valid_buffer, write_future.GetCallback());
+    EXPECT_TRUE(write_future.Get());
+  }
+
+  // A buffer exceeding the maximum report size (1 byte report ID 0 + 3 bytes
+  // data) fails.
+  {
+    TestFuture<bool> write_future;
+    auto long_buffer = base::MakeRefCounted<base::RefCountedBytes>(
+        std::vector<uint8_t>{0, 0x01, 0x02, 0x03});
+    connection().Write(long_buffer, write_future.GetCallback());
+    EXPECT_FALSE(write_future.Get());
+  }
+
+  connection().Close();
+}
+
+TEST_F(HidConnectionProtectedReportTest, FeatureReportBufferTooLong) {
+  constexpr uint8_t kTestReportId = 1;
+  constexpr size_t kMaxFeatureReportSize = 2;
+  auto collection = mojom::HidCollectionInfo::New();
+  collection->usage = mojom::HidUsageAndPage::New(mojom::kGenericDesktopGamePad,
+                                                  mojom::kPageGenericDesktop);
+  collection->collection_type = mojom::kHIDCollectionTypeApplication;
+  collection->report_ids.push_back(kTestReportId);
+  auto report = mojom::HidReportDescription::New();
+  report->report_id = kTestReportId;
+  collection->feature_reports.push_back(std::move(report));
+
+  auto device_info =
+      CreateHidDeviceInfo(std::move(collection),
+                          /*max_input_report_size=*/0,
+                          /*max_output_report_size=*/0, kMaxFeatureReportSize);
+  CreateConnection(device_info);
+
+  // A buffer matching the maximum report size (1 byte report ID + 2 bytes data)
+  // succeeds.
+  {
+    TestFuture<bool> send_feature_future;
+    auto valid_buffer = base::MakeRefCounted<base::RefCountedBytes>(
+        std::vector<uint8_t>{kTestReportId, 0x01, 0x02});
+    connection().SendFeatureReport(valid_buffer,
+                                   send_feature_future.GetCallback());
+    EXPECT_TRUE(send_feature_future.Get());
+  }
+
+  // A buffer exceeding the maximum report size (1 byte report ID + 3 bytes
+  // data) fails.
+  {
+    TestFuture<bool> send_feature_future;
+    auto long_buffer = base::MakeRefCounted<base::RefCountedBytes>(
+        std::vector<uint8_t>{kTestReportId, 0x01, 0x02, 0x03});
+    connection().SendFeatureReport(long_buffer,
+                                   send_feature_future.GetCallback());
+    EXPECT_FALSE(send_feature_future.Get());
+  }
+
+  connection().Close();
+}
+
+TEST_F(HidConnectionProtectedReportTest,
+       FeatureReportBufferTooLongFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kHidValidateFeatureReportSize);
+
+  constexpr uint8_t kTestReportId = 1;
+  constexpr size_t kMaxFeatureReportSize = 2;
+  auto collection = mojom::HidCollectionInfo::New();
+  collection->usage = mojom::HidUsageAndPage::New(mojom::kGenericDesktopGamePad,
+                                                  mojom::kPageGenericDesktop);
+  collection->collection_type = mojom::kHIDCollectionTypeApplication;
+  collection->report_ids.push_back(kTestReportId);
+  auto report = mojom::HidReportDescription::New();
+  report->report_id = kTestReportId;
+  collection->feature_reports.push_back(std::move(report));
+
+  auto device_info =
+      CreateHidDeviceInfo(std::move(collection),
+                          /*max_input_report_size=*/0,
+                          /*max_output_report_size=*/0, kMaxFeatureReportSize);
+  CreateConnection(device_info);
+
+  // When kHidValidateFeatureReportSize is disabled, an oversized buffer is
+  // permitted.
+  TestFuture<bool> send_feature_future;
+  auto long_buffer = base::MakeRefCounted<base::RefCountedBytes>(
+      std::vector<uint8_t>{kTestReportId, 0x01, 0x02, 0x03});
+  connection().SendFeatureReport(long_buffer,
+                                 send_feature_future.GetCallback());
+  EXPECT_TRUE(send_feature_future.Get());
+
+  connection().Close();
+}
+
+TEST_F(HidConnectionProtectedReportTest,
+       FeatureReportBufferTooLongWithoutReportId) {
+  constexpr size_t kMaxFeatureReportSize = 2;
+  auto collection = mojom::HidCollectionInfo::New();
+  collection->usage = mojom::HidUsageAndPage::New(mojom::kGenericDesktopGamePad,
+                                                  mojom::kPageGenericDesktop);
+  collection->collection_type = mojom::kHIDCollectionTypeApplication;
+  auto report = mojom::HidReportDescription::New();
+  report->report_id = 0;
+  collection->feature_reports.push_back(std::move(report));
+
+  auto device_info =
+      CreateHidDeviceInfo(std::move(collection),
+                          /*max_input_report_size=*/0,
+                          /*max_output_report_size=*/0, kMaxFeatureReportSize);
+  CreateConnection(device_info);
+
+  // A buffer matching the maximum report size (1 byte report ID 0 + 2 bytes
+  // data) succeeds.
+  {
+    TestFuture<bool> send_feature_future;
+    auto valid_buffer = base::MakeRefCounted<base::RefCountedBytes>(
+        std::vector<uint8_t>{0, 0x01, 0x02});
+    connection().SendFeatureReport(valid_buffer,
+                                   send_feature_future.GetCallback());
+    EXPECT_TRUE(send_feature_future.Get());
+  }
+
+  // A buffer exceeding the maximum report size (1 byte report ID 0 + 3 bytes
+  // data) fails.
+  {
+    TestFuture<bool> send_feature_future;
+    auto long_buffer = base::MakeRefCounted<base::RefCountedBytes>(
+        std::vector<uint8_t>{0, 0x01, 0x02, 0x03});
+    connection().SendFeatureReport(long_buffer,
+                                   send_feature_future.GetCallback());
+    EXPECT_FALSE(send_feature_future.Get());
+  }
+
+  connection().Close();
+}
+
+TEST_F(HidConnectionProtectedReportTest,
+       FeatureReportBufferTooLongWithoutReportIdFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kHidValidateFeatureReportSize);
+
+  constexpr size_t kMaxFeatureReportSize = 2;
+  auto collection = mojom::HidCollectionInfo::New();
+  collection->usage = mojom::HidUsageAndPage::New(mojom::kGenericDesktopGamePad,
+                                                  mojom::kPageGenericDesktop);
+  collection->collection_type = mojom::kHIDCollectionTypeApplication;
+  auto report = mojom::HidReportDescription::New();
+  report->report_id = 0;
+  collection->feature_reports.push_back(std::move(report));
+
+  auto device_info =
+      CreateHidDeviceInfo(std::move(collection),
+                          /*max_input_report_size=*/0,
+                          /*max_output_report_size=*/0, kMaxFeatureReportSize);
+  CreateConnection(device_info);
+
+  // When kHidValidateFeatureReportSize is disabled, an oversized buffer is
+  // permitted.
+  TestFuture<bool> send_feature_future;
+  auto long_buffer = base::MakeRefCounted<base::RefCountedBytes>(
+      std::vector<uint8_t>{0, 0x01, 0x02, 0x03});
+  connection().SendFeatureReport(long_buffer,
+                                 send_feature_future.GetCallback());
+  EXPECT_TRUE(send_feature_future.Get());
+
+  connection().Close();
+}
+
 }  // namespace device

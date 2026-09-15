@@ -139,6 +139,14 @@ void HidConnection::SendFeatureReport(
     std::move(callback).Run(false);
     return;
   }
+  if (base::FeatureList::IsEnabled(features::kHidValidateFeatureReportSize) &&
+      buffer->size() > device_info_->max_feature_report_size() + 1) {
+    HID_LOG(USER) << "Feature report buffer too long (" << buffer->size()
+                  << " > " << (device_info_->max_feature_report_size() + 1)
+                  << ").";
+    std::move(callback).Run(false);
+    return;
+  }
   DCHECK_GE(buffer->size(), 1u);
   uint8_t report_id = buffer->data()[0];
   if (device_info_->has_report_id() != (report_id != 0)) {

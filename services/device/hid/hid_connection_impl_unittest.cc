@@ -8,12 +8,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/device_service_test_base.h"
+#include "services/device/public/cpp/device_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -373,6 +375,66 @@ TEST_F(HidConnectionImplTest, WriteZeroLengthFeatureReport) {
   EXPECT_TRUE(write_future.Get());
   ASSERT_TRUE(feature_buffer);
   EXPECT_THAT(feature_buffer->as_vector(), ElementsAre(kTestReportId));
+}
+
+TEST_F(HidConnectionImplTest, WriteOutputReportBufferTooLong) {
+  auto hid_connection = CreateHidConnection(/*with_connection_client=*/false);
+  EXPECT_CALL(mock_connection(), PlatformWrite).Times(0);
+  WriteFuture write_future;
+  hid_connection->Write(
+      kTestReportId,
+      /*buffer=*/std::vector<uint8_t>(kMaxReportSizeBytes + 1, 0x42),
+      write_future.GetCallback());
+  EXPECT_FALSE(write_future.Get());
+}
+
+TEST_F(HidConnectionImplTest, SendFeatureReport) {
+  auto hid_connection = CreateHidConnection(/*with_connection_client=*/false);
+  scoped_refptr<base::RefCountedBytes> feature_buffer;
+  EXPECT_CALL(mock_connection(), PlatformSendFeatureReport)
+      .WillOnce([&feature_buffer](scoped_refptr<base::RefCountedBytes> buffer,
+                                  HidConnectionImpl::WriteCallback callback) {
+        feature_buffer = buffer;
+        std::move(callback).Run(/*success=*/true);
+      });
+  WriteFuture write_future;
+  std::vector<uint8_t> buffer(kMaxReportSizeBytes, 0x42);
+  hid_connection->SendFeatureReport(kTestReportId, buffer,
+                                    write_future.GetCallback());
+  EXPECT_TRUE(write_future.Get());
+  ASSERT_TRUE(feature_buffer);
+  EXPECT_EQ(feature_buffer->size(), kMaxReportSizeBytes + 1);
+  EXPECT_EQ(feature_buffer->as_vector()[0], kTestReportId);
+}
+
+TEST_F(HidConnectionImplTest, SendFeatureReportBufferTooLong) {
+  auto hid_connection = CreateHidConnection(/*with_connection_client=*/false);
+  EXPECT_CALL(mock_connection(), PlatformSendFeatureReport).Times(0);
+  WriteFuture write_future;
+  hid_connection->SendFeatureReport(
+      kTestReportId,
+      /*buffer=*/std::vector<uint8_t>(kMaxReportSizeBytes + 1, 0x42),
+      write_future.GetCallback());
+  EXPECT_FALSE(write_future.Get());
+}
+
+TEST_F(HidConnectionImplTest, SendFeatureReportBufferTooLongFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kHidValidateFeatureReportSize);
+
+  auto hid_connection = CreateHidConnection(/*with_connection_client=*/false);
+  EXPECT_CALL(mock_connection(), PlatformSendFeatureReport)
+      .WillOnce([](scoped_refptr<base::RefCountedBytes> buffer,
+                   HidConnection::WriteCallback callback) {
+        std::move(callback).Run(/*success=*/true);
+      });
+  WriteFuture write_future;
+  hid_connection->SendFeatureReport(
+      kTestReportId,
+      /*buffer=*/std::vector<uint8_t>(kMaxReportSizeBytes + 1, 0x42),
+      write_future.GetCallback());
+  EXPECT_TRUE(write_future.Get());
 }
 
 }  // namespace device
