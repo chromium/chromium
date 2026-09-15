@@ -73,6 +73,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                          {0x94, 0xb2, 0x5a, 0xfe, 0xc6, 0xfe, 0xd9,
                           0x3a}},  // IElevator IID and TypeLib
         // {BB19A0E5-00C6-4966-94B2-5AFEC6FED93A}.
+        .old_elevator_iids = {},
         .tracing_service_clsid = {0x83f69367,
                                   0x442d,
                                   0x447f,
@@ -84,6 +85,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                                 {0x91, 0x74, 0x75, 0xd0, 0xb1, 0x99, 0xd3,
                                  0xcb}},  // ISystemTraceSessionChromium IID and
                                           // TypeLib
+        .old_tracing_service_iids = {},
         .default_channel_name =
             L"",  // Empty default channel name since no update integration.
         .channel_strategy = ChannelStrategy::UNSUPPORTED,

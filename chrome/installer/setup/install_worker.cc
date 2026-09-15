@@ -129,7 +129,8 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
       SERVICE_DEMAND_START, base::CommandLine(elevation_service_path),
       base::CommandLine(base::CommandLine::NO_PROGRAM),
       install_static::GetClientStateKeyPath(),
-      {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
+      {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()},
+      install_static::GetOldElevatorIids());
   list->AddWorkItem(install_service_work_item);
 }
 
@@ -410,7 +411,8 @@ void AddTracingServiceWorkItems(const InstallationState& original_state,
       SERVICE_DEMAND_START, base::CommandLine(tracing_service_path),
       base::CommandLine(base::CommandLine::NO_PROGRAM),
       install_static::GetClientStateKeyPath(), std::vector<GUID>{clsid},
-      std::vector<GUID>{install_static::GetTracingServiceIid()});
+      std::vector<GUID>{install_static::GetTracingServiceIid()},
+      install_static::GetOldTracingServiceIids());
 
   if (install_service) {
     install_service_work_item->set_best_effort(true);

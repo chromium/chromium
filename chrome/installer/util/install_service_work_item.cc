@@ -18,7 +18,8 @@ InstallServiceWorkItem::InstallServiceWorkItem(
     const base::CommandLine& com_service_cmd_line_args,
     const std::wstring& registry_path,
     const std::vector<GUID>& clsids,
-    const std::vector<GUID>& iids)
+    const std::vector<GUID>& iids,
+    base::span<const GUID> previous_iids)
     : impl_(std::make_unique<InstallServiceWorkItemImpl>(
           service_name,
           display_name,
@@ -28,7 +29,8 @@ InstallServiceWorkItem::InstallServiceWorkItem(
           com_service_cmd_line_args,
           registry_path,
           clsids,
-          iids)) {}
+          iids,
+          previous_iids)) {}
 
 InstallServiceWorkItem::~InstallServiceWorkItem() = default;
 
@@ -52,7 +54,7 @@ bool InstallServiceWorkItem::DeleteService(const std::wstring& service_name,
              service_name, /*display_name=*/{}, /*description=*/{},
              SERVICE_DISABLED, base::CommandLine(base::CommandLine::NO_PROGRAM),
              base::CommandLine(base::CommandLine::NO_PROGRAM), registry_path,
-             clsids, iids)
+             clsids, iids, /*previous_iids=*/{})
       .DeleteServiceImpl();
 }
 

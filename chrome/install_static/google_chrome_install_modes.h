@@ -75,6 +75,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                          {0xb5, 0xf4, 0x3a, 0x9b, 0xb6, 0x49, 0x48,
                           0x38}},  // IElevator IID and TypeLib
         // {1BF5208B-295F-4992-B5F4-3A9BB6494838}.
+        .old_elevator_iids = {},
         .tracing_service_clsid = {0x70457024,
                                   0xd309,
                                   0x462c,
@@ -86,7 +87,8 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                                 {0xa8, 0xd7, 0x9e, 0x58, 0xbf, 0x45, 0x53,
                                  0x3e}},  // ISystemTraceSessionChromium IID
                                           // and TypeLib
-        .default_channel_name = L"",      // The empty string means "stable".
+        .old_tracing_service_iids = {},
+        .default_channel_name = L"",  // The empty string means "stable".
         .channel_strategy = ChannelStrategy::FLOATING,
         .supports_system_level = true,  // Supports system-level installs.
         .supports_set_as_default_browser =
@@ -141,6 +143,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                          {0xba, 0x68, 0x23, 0x85, 0xb2, 0xa0, 0x32,
                           0x54}},  // IElevator IID and TypeLib
         // {B96A14B8-D0B0-44D8-BA68-2385B2A03254}.
+        .old_elevator_iids = {},
         .tracing_service_clsid = {0xe64e8e46,
                                   0x6756,
                                   0x467e,
@@ -152,6 +155,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                                 {0xb6, 0xc6, 0xb7, 0xb8, 0xd3, 0x76, 0xa1,
                                  0x2c}},  // ISystemTraceSessionChromium IID and
                                           // TypeLib
+        .old_tracing_service_iids = {},
         .default_channel_name = L"beta",  // Forced channel name.
         .channel_strategy = ChannelStrategy::FIXED,
         .supports_system_level = true,  // Supports system-level installs.
@@ -214,6 +218,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                          {0xae, 0xd6, 0x63, 0xf6, 0x58, 0xcc, 0x85,
                           0xa}},  // IElevator IID and TypeLib
                                   // {3FEFA48E-C8BF-461F-AED6-63F658CC850A}.
+        .old_elevator_iids = {},
         .tracing_service_clsid = {0x48c5c553,
                                   0x20f9,
                                   0x4cdc,
@@ -225,7 +230,8 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                                 {0xb0, 0xcf, 0xdd, 0x17, 0x80, 0x15, 0x8d,
                                  0x55}},  // ISystemTraceSessionChromium IID and
                                           // TypeLib
-        .default_channel_name = L"dev",   // Forced channel name.
+        .old_tracing_service_iids = {},
+        .default_channel_name = L"dev",  // Forced channel name.
         .channel_strategy = ChannelStrategy::FIXED,
         .supports_system_level = true,  // Supports system-level installs.
         .supports_set_as_default_browser =
@@ -286,6 +292,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                          {0x81, 0xe5, 0x3a, 0x5a, 0x97, 0x46, 0x14,
                           0xa}},  // IElevator IID and TypeLib
         // {FF672E9F-0994-4322-81E5-3A5A9746140A}.
+        .old_elevator_iids = {},
         .tracing_service_clsid = {0x48c5c553,
                                   0x20f9,
                                   0x4cdc,
@@ -297,6 +304,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                                 {0xa6, 0x12, 0xa1, 0x80, 0xb3, 0x57, 0x03,
                                  0x75}},  // ISystemTraceSessionChromium IID and
                                           // TypeLib
+        .old_tracing_service_iids = {},
         .default_channel_name = L"canary",  // Forced channel name.
         .channel_strategy = ChannelStrategy::FIXED,
         .supports_system_level =
