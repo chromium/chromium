@@ -820,11 +820,24 @@ const FeatureEntry::FeatureParam kTabBottomSheetResizeWebviewDefaultParam[] = {
 const FeatureEntry::FeatureParam
     kTabBottomSheetResizeWebviewDragDirectionParam[] = {
         {"resizing_strategy", "drag_direction"}};
+const FeatureEntry::FeatureParam
+    kTabBottomSheetResizeWebviewDragDirectionSkeletonParam[] = {
+        {"resizing_strategy", "drag_direction"},
+        {"resizing_placeholder", "skeleton"}};
+
+const FeatureEntry::FeatureParam
+    kTabBottomSheetResizeWebviewDefaultSkeletonParam[] = {
+        {"resizing_strategy", "default"},
+        {"resizing_placeholder", "skeleton"}};
 
 const FeatureEntry::FeatureVariation kTabBottomSheetResizeWebviewVariations[] =
     {{"Default strategy", kTabBottomSheetResizeWebviewDefaultParam, nullptr},
      {"Drag direction strategy", kTabBottomSheetResizeWebviewDragDirectionParam,
-      nullptr}};
+      nullptr},
+     {"Default strategy with Skeleton",
+      kTabBottomSheetResizeWebviewDefaultSkeletonParam, nullptr},
+     {"Drag direction strategy with Skeleton",
+      kTabBottomSheetResizeWebviewDragDirectionSkeletonParam, nullptr}};
 
 const FeatureEntry::FeatureParam kAndroidSidePanelDevFeatureTabScoped[] = {
     {"scope", "tab"}};

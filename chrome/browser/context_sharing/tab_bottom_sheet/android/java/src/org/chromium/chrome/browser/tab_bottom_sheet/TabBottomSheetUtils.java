@@ -27,6 +27,9 @@ public final class TabBottomSheetUtils {
     public static final float SMALL_SCREEN_HEIGHT_RATIO = 0.9f;
     public static final String FULL_HEIGHT_RATIO_PARAM = "full_height_ratio";
     public static final String HALF_HEIGHT_RATIO_PARAM = "half_height_ratio";
+    public static final String RESIZING_PLACEHOLDER_PARAM = "resizing_placeholder";
+    public static final String PLACEHOLDER_SKELETON = "skeleton";
+    public static final String PLACEHOLDER_LEGACY = "legacy";
 
     private static final UnownedUserDataKey<TabBottomSheetManager> MANAGER_KEY =
             new UnownedUserDataKey<>();
@@ -42,6 +45,18 @@ public final class TabBottomSheetUtils {
     public static boolean canResizeWebView() {
         return isTabBottomSheetEnabled()
                 && ChromeFeatureList.sTabBottomSheetResizeWebview.isEnabled();
+    }
+
+    /** Returns the resizing placeholder type configured by feature flag params. */
+    public static String getResizingPlaceholderType() {
+        if (!canResizeWebView()) {
+            return PLACEHOLDER_LEGACY;
+        }
+        String type =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW,
+                        RESIZING_PLACEHOLDER_PARAM);
+        return type.isEmpty() ? PLACEHOLDER_LEGACY : type;
     }
 
     /** Returns the full height ratio for the Tab Bottom Sheet. */

@@ -91,6 +91,56 @@ public class TabBottomSheetUtilsUnitTest {
     }
 
     @Test
+    public void testGetResizingPlaceholderType_Default() {
+        assertEquals(
+                TabBottomSheetUtils.PLACEHOLDER_LEGACY,
+                TabBottomSheetUtils.getResizingPlaceholderType());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
+    })
+    public void testGetResizingPlaceholderType_ResizeEnabledWithoutParam_ReturnsLegacy() {
+        assertEquals(
+                TabBottomSheetUtils.PLACEHOLDER_LEGACY,
+                TabBottomSheetUtils.getResizingPlaceholderType());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW + ":resizing_placeholder/skeleton"
+    })
+    public void testGetResizingPlaceholderType_Skeleton() {
+        assertEquals(
+                TabBottomSheetUtils.PLACEHOLDER_SKELETON,
+                TabBottomSheetUtils.getResizingPlaceholderType());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW + ":resizing_placeholder/legacy"
+    })
+    public void testGetResizingPlaceholderType_Legacy() {
+        assertEquals(
+                TabBottomSheetUtils.PLACEHOLDER_LEGACY,
+                TabBottomSheetUtils.getResizingPlaceholderType());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW + ":resizing_placeholder/skeleton")
+    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
+    public void testGetResizingPlaceholderType_Disabled_ReturnsLegacy() {
+        assertEquals(
+                TabBottomSheetUtils.PLACEHOLDER_LEGACY,
+                TabBottomSheetUtils.getResizingPlaceholderType());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_FULL_HEIGHT)
     public void testGetFullHeightRatio_Default() {
         assertEquals(
