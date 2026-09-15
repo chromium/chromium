@@ -624,12 +624,6 @@ BASE_FEATURE(kEnableNssDbClientCertsRollback,
 // using WiFi QoS/WMM in congested WiFi environments.
 BASE_FEATURE(kEnableWifiQos, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables WiFi QoS to detect and prioritize selected egress network traffic
-// using WiFi QoS/WMM in congested WiFi environments. For an Enterprise enrolled
-// device:
-// - If this flag is enabled, the feature will be controlled by EnableWifiQos;
-// - If this flag is disabled, the feature will be disabled.
-BASE_FEATURE(kEnableWifiQosEnterprise, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables entering overview mode by clicking the wallpaper with the mouse.
 BASE_FEATURE(kEnterOverviewFromWallpaper, base::FEATURE_DISABLED_BY_DEFAULT);
