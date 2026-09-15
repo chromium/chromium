@@ -667,7 +667,7 @@
 <translation id="2130448033692577677">‏چون خط‌مشی DnsOverHttpsMode تنظیم نشده است، ممکن است الگوهایی که مشخص کردید اعمال نشوند.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131511685263818470">‫<ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
-<translation id="2132825047782982803">ترتیب نمایش زیر تصادفی است. هرزمان بخواهید می‌توانید انتخاب پیش‌فرضتان را تغییر دهید.</translation>
+<translation id="2132825047782982803">ترتیب نمایش زیر تصادفی است. هر زمان که بخواهید می‌توانید انتخاب پیش‌فرضتان را تغییر دهید.</translation>
 <translation id="2134584557120247184">بلیت هواپیما</translation>
 <translation id="2137891579555018930">درانتظار اجازه…</translation>
 <translation id="213826338245044447">نشانک‌های تلفن‌ همراه</translation>
@@ -1862,7 +1862,7 @@
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{‏۱ برگه}one{‏# برگه}other{‏# برگه}}</translation>
 <translation id="4153446078232988116">‏‫<ph name="SITE" /> از اتصال ایمن ازطریق HTTPS پشتیبانی نمی‌کند</translation>
 <translation id="4153858337812834972">آخرین زبانه‌ها</translation>
-<translation id="4154277373259957087">‏Chrome‌ اکنون پیش‌از پر کردن روش‌های پرداخت، هویت شما را به‌تأیید می‌رساند. هرزمان بخواهید می‌توانید این گزینه را در <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> به‌روز کنید.</translation>
+<translation id="4154277373259957087">‏Chrome‌ اکنون پیش از پر کردن روش‌های پرداخت، هویت شما را به‌تأیید می‌رساند. هر زمان که بخواهید می‌توانید این گزینه را در <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> به‌روز کنید.</translation>
 <translation id="4157273919218514718">‏پشتیبانی شده توسط «هوش شخصی‌سازی‌شده» با Gemini. <ph name="BEGIN_LINK" />مدیریت تنظیمات<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">به‌روز کردن گواهینامه رانندگی به‌طور امن</translation>
 <translation id="4159784952369912983">بنفش</translation>
@@ -2221,6 +2221,7 @@
 <translation id="4750917950439032686">اطلاعات شما (به‌عنوان مثال، گذرواژه‌ها یا شماره‌ کارت‌های اعتباری) وقتی به این سایت ارسال می‌شوند، خصوصی هستند.</translation>
 <translation id="4754461935447132332">برای سایت‌های ناامن مجاز نیست</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">فیلد کد ترویجی را انتخاب کنید تا پیشنهادهای ذخیره‌شده‌تان را مشاهده و تکمیل کنید</translation>
 <translation id="4757740693289347881">کد معتبر نیست</translation>
 <translation id="4757993714154412917">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. برای ایمن کردن حسابتان، Chromium توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="4758311279753947758">افزودن اطلاعات تماس</translation>
@@ -3153,6 +3154,7 @@
 <translation id="6319672966240656136">‏این سایت مسدود خواهد ماند زیرا «برنامه محافظت پیشرفته Google» را فعال کرده‌اید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">‏تنظیمات DNS خودتان را بررسی کنید</translation>
 <translation id="6322182122604171028">‏استفاده از Windows Hello ممکن نشد</translation>
+<translation id="6326175484149238433">‏حذف از Chrome</translation>
 <translation id="6326947323444967009">‏Chrome را در تنظیمات iOS به‌عنوان مرورگر پیش‌فرض سیستم تنظیم کنید</translation>
 <translation id="6328639280570009161">غیرفعال کردن پیش‌بینی شبکه را امتحان کنید</translation>
 <translation id="6329742260390895689">‏برای تکمیل خودکار اطلاعات، «استفاده از مجوزها در سراسر Google» را در تنظیمات «کیف پول» روشن کنید</translation>
@@ -3412,7 +3414,7 @@
 <translation id="6779348349813025131">‏«مدیر گذرواژه Google» باید به MacOS Keychain دسترسی داشته باشد</translation>
 <translation id="6780449997190414928">‏معمولاً ازطریق اتصال ایمن به این سایت متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="LEARN_MORE" /></translation>
 <translation id="6783857615096909676">‫<ph name="HANDLER_HOSTNAME" /> همیشه اجازه داشته باشد پیوندهای <ph name="PROTOCOL" /> را باز کند</translation>
-<translation id="6785990323398321538">‏هرزمان بخواهید می‌توانید موتور جستجوی پیش‌فرض را در تنظیمات Chrome تغییر دهید.</translation>
+<translation id="6785990323398321538">‏هر زمان که بخواهید می‌توانید موتور جستجوی پیش‌فرض را در تنظیمات Chrome تغییر دهید.</translation>
 <translation id="6786145470008421571">پاکت ۹×۶ اینچی</translation>
 <translation id="6786747875388722282">افزونه‌ها</translation>
 <translation id="6789062271869667677">پیوسته (بلند)</translation>
@@ -3845,6 +3847,7 @@
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">«واقعیت مجازی» این بار اجازه هست</translation>
+<translation id="7517198908921983825">‏پیشنهادشده توسط Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">پاکت سی۱۰</translation>
 <translation id="7518003948725431193">صفحه وبی با این آدرس وب یافت نشد: <ph name="URL" /></translation>
 <translation id="7521387064766892559">جاوا اسکریپت</translation>
@@ -4315,7 +4318,7 @@
 <translation id="8316555157357957253">هم‌اکنون درحال استفاده است</translation>
 <translation id="8319414634934645341">کاربرد کلید توسعه یافته</translation>
 <translation id="831997045666694187">شب</translation>
-<translation id="8321448084834652864">‏هرزمان بخواهید می‌توانید موتور جستجوی پیش‌فرض را در تنظیمات Chromium تغییر دهید.</translation>
+<translation id="8321448084834652864">‏هر زمان که بخواهید می‌توانید موتور جستجوی پیش‌فرض را در تنظیمات Chromium تغییر دهید.</translation>
 <translation id="8321476692217554900">اعلان‌ها</translation>
 <translation id="8323505966575306467">افزودن محافظت بیشتر به گذرواژه‌ها</translation>
 <translation id="832547548543012337">حذف گذرنامه</translation>

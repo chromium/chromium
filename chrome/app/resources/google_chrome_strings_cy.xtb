@@ -231,6 +231,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="3112458742631356345">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd nid yw'r ffeil yn cael ei lawrlwytho'n aml a gall fod yn beryglus</translation>
 <translation id="3119573284443908657">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd bod y ffeil archif yn cynnwys ffeiliau eraill a allai guddio drwgwedd</translation>
 <translation id="3124332159330678621">Gallwch bersonoleiddio Chrome i roi gwedd newydd i'ch porwr</translation>
+<translation id="3125851611828811913">Chwilio a gofynnwch gwestiynau o unrhyw le, hyd yn oed os yw Chrome wedi'i leihau. Yn caniatáu i Chrome redeg yn y cefndir.</translation>
 <translation id="3130333203120345554">Chwiliad newydd</translation>
 <translation id="3135560418014806498">Ychwanegu Proffil Chrome</translation>
 <translation id="3137969841538672700">Llusgwch i chwilio</translation>
@@ -388,6 +389,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="4793679854893018356">Dysgu sut mae Chrome yn eich cadw'n ddiogel</translation>
 <translation id="4799870290441980300">Yn troi nodweddion ychwanegol ymlaen i ddarparu amddiffyniadau cryfaf Chrome</translation>
 <translation id="4828579605166583682">Mae Google Chrome yn ceisio disodli cyfrineiriau presennol. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
+<translation id="4836321460899997044">Proffil Chrome</translation>
 <translation id="4842397268809523050">Nid oedd ChromeOS Flex yn gallu cysoni eich data gan nad yw Cysoni ar gael ar gyfer eich parth.</translation>
 <translation id="4851866215237571846">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi.  I gadw'ch pori ar wahân, mewngofnodwch i Chrome yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">I rannu'ch sgrîn, caniatewch recordio sgrîn ar gyfer Chrome yn y Gosodiadau System</translation>
@@ -505,6 +507,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6014316319780893079">Gydag <ph name="BEGIN_LINK" />offer gan Chrome<ph name="END_LINK" />, gallwch bori'n ddiogel ac aros mewn rheolaeth</translation>
 <translation id="6018578474045062808">Rhowch gynnig ar Google Lens gyda Chrome ar eich ffôn</translation>
 <translation id="6022659036123304283">Personoleiddio Chrome</translation>
+<translation id="6024930613143833266">Chwilio gyda Chrome o unrhyw le</translation>
 <translation id="6025087594896450715">Bydd Google Chrome yn ailddechrau mewn <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="604424701295382420">Piniwyd! Gallwch gyrchu Google Lens eto o'r botwm newydd ar y bar offer</translation>
@@ -595,6 +598,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6750954913813541382">I drwsio gwallau sillafu, mae Chrome yn anfon y testun rydych yn ei deipio yn y porwr at Google</translation>
 <translation id="6760235774835597023">Yn cyflymu gwefannau gydag injan V8 Chrome ond yn lleihau gallu Chrome i wrthsefyll ymosodiadau ychydig. Mae'r gosodiad hwn wedi'i droi ymlaen.</translation>
 <translation id="677276454032249905">Gadael Chrome beth bynnag?</translation>
+<translation id="6777654166489463890">Gofyn am gynnwys y tu allan i Chrome, fel ap neu ffeil arall sydd gennych ar agor</translation>
 <translation id="6794858689789885890">Dileu data gwefan o'ch dyfais bob amser pan fyddwch yn cau Chrome</translation>
 <translation id="6800285125190089494">Mewngofnodwch yn gyflymach i wefannau gan ddefnyddio cyfrineiriau wedi'u cadw ar gyfer Chrome ar iOS</translation>
 <translation id="6831043979455480757">Cyfieithu</translation>
@@ -647,6 +651,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7285990705317078173">Lawrlwythwch Chrome ar eich ffôn i olrhain prisiau a chael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan</translation>
 <translation id="7288567540154601580">Tabiau ac estyniadau</translation>
 <translation id="7296210096911315575">Gwybodaeth bwysig am ddefnydd a diogelwch</translation>
+<translation id="7299899569525778554">Chwilio o'r bwrdd gwaith</translation>
 <translation id="7302361266603927550">Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto. Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
 <translation id="7306401458628386911">Dechreuwch bori ar unwaith: Gall Chrome bellach lansio pan fydd Windows yn cychwyn.</translation>
 <translation id="7308322188646931570">Mae angen mynediad storfa ar Chrome i lawrlwytho ffeiliau</translation>

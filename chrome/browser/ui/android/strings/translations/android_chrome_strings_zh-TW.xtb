@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">為確保你的安全，系統已移除某些網站的權限</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384568202352682721">另存為…</translation>
-<translation id="1384704387250346179">使用 Google 智慧鏡頭翻譯圖片內容 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">你可以查看透過其他應用程式在 Chrome 中開啟連結的歷史記錄。你的 Google 帳戶可能會儲存其他形式的瀏覽記錄，請參閱 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />。</translation>
 <translation id="139752016751285248">價格分析底部功能表已完整開啟</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 搜尋</translation>
@@ -174,7 +173,6 @@
 <translation id="1650979352027263879">已移除外觀偏好設定</translation>
 <translation id="1671236975893690980">正在等候下載…</translation>
 <translation id="1672586136351118594">不要再顯示</translation>
-<translation id="1680919990519905526">選購 Google 智慧鏡頭拍攝的產品<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">並在 <ph name="MONTHS_ARCHIVED" /> 個月後關閉</translation>
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="1696555181932908973">你可以在「<ph name="SITE_ETLD_PLUS_ONE" />」上試著透過其他方法繼續操作。</translation>
@@ -413,6 +411,7 @@
 <translation id="2581165646603367611">這項操作會清除不重要的網站 Cookie、快取等其他資料 (Chrome 會自動判斷資料的重要性)。</translation>
 <translation id="2587052924345400782">已推出新版本</translation>
 <translation id="2593272815202181319">等寬</translation>
+<translation id="2604138917550693049">使用 Google 智慧鏡頭搜尋圖片</translation>
 <translation id="2604446170045642109">你可以在設定中關閉網站的深色主題設定。</translation>
 <translation id="2605017215201958293">運用 AI 朗讀這頁內容</translation>
 <translation id="2607441479295509868">已登出。重新登入即可使用帳戶的書籤、密碼等資訊。</translation>
@@ -1100,7 +1099,6 @@
 <translation id="5355191726083956201">已啟用強化防護功能</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />，固定的無痕分頁，正在分享內容</translation>
 <translation id="5375374982898812658">你將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，且該群組會從你的所有裝置中刪除</translation>
-<translation id="5375577065097716013">使用 Google 智慧鏡頭搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">儲存並分享</translation>
 <translation id="5385892579392932755">筆電</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> 想要使用你在數位錢包中的個人資訊。除非你信任這個網站，否則請勿繼續操作。危險網站可能會誘騙你提供法定姓名或身分證字號等資料。</translation>
@@ -1540,7 +1538,6 @@
 <translation id="6996145122199359148">下載這個網頁</translation>
 <translation id="7007648447224463482">在新視窗中開啟所有書籤</translation>
 <translation id="7013762323294215682">這個密碼金鑰會儲存至密碼管理工具。凡是有權存取密碼管理工具的使用者，都能使用這個密碼金鑰。</translation>
-<translation id="7020741890149022655">新增到閱讀清單 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">在瀏覽器中開啟</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7037994709569287156">將 Chrome 設為預設瀏覽器</translation>
@@ -2043,6 +2040,7 @@
 <translation id="8957528460562961174">如要繼續存取密碼，請立即匯出密碼，然後匯入至偏好的密碼管理工具。由於無法使用 Google Play 服務，Google 密碼管理工具已停止運作。</translation>
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
+<translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8969796057708736017">只要檔案符合貴機構的政策規定，就能順利完成下載</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>

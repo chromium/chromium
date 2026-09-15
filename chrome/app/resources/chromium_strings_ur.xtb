@@ -69,6 +69,7 @@
 <translation id="1793486931176048546">‏فوری رسائی کے لیے Chromium کو اپنے ٹاسک بار میں پن کرنے کی خاطر ونڈو اطلاع میں <ph name="BEGIN_BOLD" />ہاں<ph name="END_BOLD" /> پر کلک کریں۔</translation>
 <translation id="1808667845054772817">‏Chromium کو دوبارہ انسٹال کریں</translation>
 <translation id="1820835682567584003">‏Chromium <ph name="AUTHENTICATION_PURPOSE" /> کی کوشش کر رہا ہے</translation>
+<translation id="1828328511398219809">‏‫<ph name="EXISTING_USER" /> پہلے سے ہی سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کے لیے، اپنی پروفائل میں Chromium میں بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان کریں۔ آپ کو <ph name="DEVICE" /> سے اپنی ایکسٹینشنز اور مزید چیزیں بھی مل جائیں گی۔</translation>
 <translation id="183031085822326697">‏اگلی بار جب آپ اپنے <ph name="DEVICE_TYPE" /> پر Chromium کھولیں گے تو آپ کو Google پاس ورڈ مینیجر استعمال کرنے کے لیے ایک پرامپٹ نظر آئے گا۔</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
 <translation id="18552579716432081">‏براؤزنگ ڈیٹا کو اپنے Google اکاؤنٹ میں برقرار رکھتے ہوئے، صرف اس آلہ سے اسے حذف کرنے کیلئے، <ph name="BEGIN_LINK" />Chromium سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
@@ -191,6 +192,7 @@
 <translation id="3038232873781883849">انسٹال ہونے کا انتظار ہے...</translation>
 <translation id="3045032126857188731">ترجمہ کردہ زبان: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">تاثرات کا ڈائیلاگ بند کریں</translation>
+<translation id="3064717200427679322">‏‫<ph name="EXISTING_USER" /> پہلے سے ہی سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کے لیے، اپنی پروفائل میں Chromium میں بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان کریں۔ آپ کو <ph name="DEVICE" /> سے اپنی پڑھنے کی فہرست اور مزید چیزیں بھی مل جائیں گی۔</translation>
 <translation id="3068187312562070417">‏دیگر Chromium پروفائلز</translation>
 <translation id="3068290154869370196">‏ایکسٹینشنز ایڈ آنز ہیں جو آپ کو Chromium کو حسب ضرورت بنانے دیتے ہیں۔ منظم رہنے سے لے کر روزمرہ کے کاموں کو آسان بنانے تک، ایکسٹینشنز آپ کو Chromium کو اپنا بنانے میں مدد کرتی ہیں۔</translation>
 <translation id="3068515742935458733">‏Google کو کریش کی رپورٹیں اور <ph name="UMA_LINK" /> بھیج کر Chromium کو بہتر بنانے میں مدد کریں</translation>
@@ -292,6 +294,7 @@
 <translation id="4147856324248078748">‏اپنے Chromium کو حسب ضرورت بنائیں</translation>
 <translation id="4148957013307229264">انسٹال جاری…</translation>
 <translation id="419998258129752635">‏<ph name="PAGE_TITLE" /> - نیٹ ورک سائن ان - Chromium</translation>
+<translation id="4208652172235621272">‏‫<ph name="EXISTING_USER" /> پہلے سے ہی سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کے لیے، اپنی پروفائل میں Chromium میں بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان کریں۔ آپ کو اپنے تمام آلات پر اپنی پڑھنے کی فہرست اور مزید چیزیں بھی مل جائیں گی۔</translation>
 <translation id="421369550622382712">‏Chromium کیلئے زبردست ایپس، گیمز، ایکسٹینشنز اور تھیمز دریافت کریں۔</translation>
 <translation id="4217080900579554343">‏اپنے تمام کمپیوٹرز پر یہ ایکسٹینشن اور مزید حاصل کرنے کے لیے، Chromium میں سائن ان کریں</translation>
 <translation id="4217972271355023382">‏اپنے والدین کے اختیارات کے ساتھ آن لائن محفوظ رہنے کے لیے اپنی Chromium پروفائل پر سوئچ کریں جہاں آپ پہلے سے ہی بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان ہیں</translation>
@@ -391,6 +394,7 @@
 <translation id="5382964351116519680">‏‫Chromium کے ساتھ تلاش کھولیں</translation>
 <translation id="5383439451358640070">‏Chromium کے کچھ فائلز کو مسدود کرنے کی وجہ جانیں</translation>
 <translation id="5386450000063123300">‏Chromium کو اپ ڈیٹ کیا جا رہا ہے (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">‏‫<ph name="EXISTING_USER" /> پہلے سے ہی سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کے لیے، اپنی پروفائل میں Chromium میں بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان کریں۔ آپ کو اپنے تمام آلات پر اپنی ایکسٹینشنز اور مزید چیزیں بھی مل جائیں گی۔</translation>
 <translation id="538767207339317086">‏Chromium میں سائن ان کی اجازت دیں</translation>
 <translation id="5405650547142096840">‏Chromium سے ہٹائیں</translation>
 <translation id="5424544524441439284">‏اس سے کارکردگی کم ہو جاتی ہے لیکن Chromium حملوں کا مزید مزاحم ہو جاتا ہے</translation>

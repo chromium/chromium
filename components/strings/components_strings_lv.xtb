@@ -2218,6 +2218,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4750917950439032686">Jūsu informācija (piemēram, paroles vai kredītkaršu numuri) ir privāta, kad tā tiek nosūtīta uz šo vietni.</translation>
 <translation id="4754461935447132332">Nav atļauts nedrošām vietnēm</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Atlasiet akcijas koda lauku, lai skatītu un aizpildītu saglabātos piedāvājumus.</translation>
 <translation id="4757740693289347881">Kods nav derīgs</translation>
 <translation id="4757993714154412917">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium ieteikums jūsu kontu aizsardzībai: pārbaudiet saglabātās paroles.</translation>
 <translation id="4758311279753947758">Pievienot kontaktinformāciju</translation>
@@ -3150,6 +3151,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6319672966240656136">Šī vietne joprojām būs bloķēta, jo piedalāties Google papildu aizsardzības programmā. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk par šo brīdinājumu<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="6321917430147971392">Sistēmas DNS iestatījumu pārbaude</translation>
 <translation id="6322182122604171028">Neizdevās izmantot Windows Hello</translation>
+<translation id="6326175484149238433">Noņemt no pārlūka Chrome</translation>
 <translation id="6326947323444967009">Iestatīt Chrome kā sistēmas noklusējuma pārlūku iOS iestatījumos</translation>
 <translation id="6328639280570009161">Tīkla prognožu atspējošana</translation>
 <translation id="6329742260390895689">Lai automātiski aizpildītu informāciju, lietotnes Maks iestatījumos ieslēdziet iestatījumu “Izmantot sabiedriskā transporta kartes Google tīklā”.</translation>
@@ -3842,6 +3844,7 @@ Papildu informācija:
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Atļauts šoreiz izmantot VR</translation>
+<translation id="7517198908921983825">Gemini ieteikums · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Aploksne C10</translation>
 <translation id="7518003948725431193">Šādā tīmekļa adresē netika atrasta neviena tīmekļa lapa: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

@@ -69,6 +69,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1793486931176048546">Kliknutím na <ph name="BEGIN_BOLD" />Áno<ph name="END_BOLD" /> v upozornení systému Windows pripnite Chromium na panel aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="1808667845054772817">Preinštalovať prehliadač Chromium</translation>
 <translation id="1820835682567584003">Chromium sa pokúša <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">Používateľ <ph name="EXISTING_USER" /> je už prihlásený. Ak chcete, aby bolo vaše prehliadanie naďalej samostatné, prihláste sa vo svojom profile do prehliadača Chromium účtom <ph name="USER_EMAIL_ADDRESS" />. Získate aj rozšírenia a ďalšie položky zo zariadenia <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Pri ďalšom otvorení prehliadača Chromium v zariadení <ph name="DEVICE_TYPE" /> sa zobrazí výzva na používanie Správcu hesiel Google.</translation>
 <translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
 <translation id="18552579716432081">Ak chcete odstrániť dáta prehliadania iba z tohto zariadenia a vo svojom účte Google ich ponechať, <ph name="BEGIN_LINK" />odhláste sa z prehliadača Chromium<ph name="END_LINK" />.</translation>
@@ -191,6 +192,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3038232873781883849">Čaká sa na inštaláciu…</translation>
 <translation id="3045032126857188731">Preložený jazyk: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Zavrieť dialógové okno spätnej väzby</translation>
+<translation id="3064717200427679322">Používateľ <ph name="EXISTING_USER" /> je už prihlásený. Ak chcete, aby bolo vaše prehliadanie naďalej samostatné, prihláste sa vo svojom profile do prehliadača Chromium účtom <ph name="USER_EMAIL_ADDRESS" />. Získate aj čitateľský zoznam a ďalšie položky zo zariadenia <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Ďalšie profily prehliadača Chromium</translation>
 <translation id="3068290154869370196">Rozšírenia sú doplnky, ktorými si môžete prispôsobiť Chromium. Rozšírenia vám pomôžu prispôsobiť si Chromium, či už chcete mať lepší prehľad alebo si zjednodušiť každodenné úlohy.</translation>
 <translation id="3068515742935458733">Pomôcť zlepšiť prehliadač Chromium odosielaním správ o zlyhaní a <ph name="UMA_LINK" /> spoločnosti Google</translation>
@@ -292,6 +294,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4147856324248078748">Prispôsobte si Chromium</translation>
 <translation id="4148957013307229264">Inštaluje sa...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – prihlásenie do siete – Chromium</translation>
+<translation id="4208652172235621272">Používateľ <ph name="EXISTING_USER" /> je už prihlásený. Ak chcete, aby bolo vaše prehliadanie naďalej samostatné, prihláste sa vo svojom profile do prehliadača Chromium účtom <ph name="USER_EMAIL_ADDRESS" />. Vo všetkých svojich zariadeniach získate aj čitateľský zoznam a ďalšie položky.</translation>
 <translation id="421369550622382712">Objavte skvelé aplikácie, hry, rozšírenia a motívy pre prehliadač Chromium.</translation>
 <translation id="4217080900579554343">Ak chcete mať toto rozšírenie a ďalší obsah k dispozícii vo všetkých svojich počítačoch, prihláste sa do prehliadača Chromium</translation>
 <translation id="4217972271355023382">Ak chceš zvýšiť svoju bezpečnosť na internete pomocou vybraných možností tvojho rodiča, prepni na profil Chromium, v ktorom máš už prihlásený účet <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -391,6 +394,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5382964351116519680">Otvoriť vyhľadávanie v prehliadači Chromium</translation>
 <translation id="5383439451358640070">Prečo Chromium blokuje niektoré súbory</translation>
 <translation id="5386450000063123300">Aktualizuje sa Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">Používateľ <ph name="EXISTING_USER" /> je už prihlásený. Ak chcete, aby bolo vaše prehliadanie naďalej samostatné, prihláste sa vo svojom profile do prehliadača Chromium účtom <ph name="USER_EMAIL_ADDRESS" />. Vo všetkých svojich zariadeniach získate aj rozšírenia a ďalšie položky.</translation>
 <translation id="538767207339317086">Povoliť prihlásenie do prehliadača Chromium</translation>
 <translation id="5405650547142096840">Odstrániť z prehliadača Chromium</translation>
 <translation id="5424544524441439284">Zníži výkonnosť, ale prehliadač Chromium bude odolnejší voči útokom</translation>

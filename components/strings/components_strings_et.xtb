@@ -2220,6 +2220,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4750917950439032686">Teie teave (nt paroolid või krediitkaardi numbrid) on sellele saidile saates privaatne.</translation>
 <translation id="4754461935447132332">Pole ebaturvaliste saitide puhul lubatud</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Valige sooduskoodi väli, et vaadata ja täita oma salvestatud pakkumisi.</translation>
 <translation id="4757740693289347881">Kood on kehtetu</translation>
 <translation id="4757993714154412917">Sisestasite äsja oma parooli kahtlasele saidile. Teie kontode turvalisuse tagamiseks soovitab Chromium teil salvestatud paroole kohe kontrollida.</translation>
 <translation id="4758311279753947758">Lisage kontaktteave</translation>
@@ -3152,6 +3153,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6319672966240656136">See sait jääb blokeerituks, kuna kuulute Google’i täiustatud kaitse programmi. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Kontrollige DNS-i seadeid</translation>
 <translation id="6322182122604171028">Funktsiooni Windows Hello ei saa kasutada</translation>
+<translation id="6326175484149238433">Eemalda Chrome'ist</translation>
 <translation id="6326947323444967009">iOS-i seadetes Chrome'i süsteemi vaikebrauseriks määramine</translation>
 <translation id="6328639280570009161">Proovige keelata võrguprognoos</translation>
 <translation id="6329742260390895689">Kui soovite välju oma teabega automaatselt täita, lülitage Walleti seadetes sisse valik „Pääsmete kasutamine kogu Google'is“.</translation>
@@ -3844,6 +3846,7 @@ Lisateave:
 <translation id="7514365320538308">Laadi alla</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR on see kord lubatud</translation>
+<translation id="7517198908921983825">Gemini soovitatud · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Ümbrik C10</translation>
 <translation id="7518003948725431193">Järgneval veebiaadressil ei olnud ühtegi veebilehte: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

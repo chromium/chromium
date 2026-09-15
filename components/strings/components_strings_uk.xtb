@@ -2220,6 +2220,7 @@
 <translation id="4750917950439032686">Ваша інформація (як-от паролі та номери кредитних карток) залишається конфіденційною, коли надсилається на цей сайт.</translation>
 <translation id="4754461935447132332">Заборонено для незахищених сайтів</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Виберіть поле промокоду, щоб переглянути й заповнити збережені пропозиції</translation>
 <translation id="4757740693289347881">Код недійсний</translation>
 <translation id="4757993714154412917">Щойно ви ввели пароль на оманливому сайті. Щоб захистити ваші облікові записи, Chromium радить перевірити збережені паролі.</translation>
 <translation id="4758311279753947758">Додати контактну інформацію</translation>
@@ -3152,6 +3153,7 @@
 <translation id="6319672966240656136">Цей сайт залишатиметься заблокованим, оскільки ви зареєструвалися в Програмі додаткового захисту Google. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Перевірте налаштування DNS</translation>
 <translation id="6322182122604171028">Не вдалося скористатися Windows Hello</translation>
+<translation id="6326175484149238433">Видалити з Chrome</translation>
 <translation id="6326947323444967009">Зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS</translation>
 <translation id="6328639280570009161">Спробуйте вимкнути прогнозування мережі.</translation>
 <translation id="6329742260390895689">Щоб автоматично заповнювати інформацію, увімкніть опцію "Використовувати картки й квитки в сервісах Google" у налаштуваннях Гаманця</translation>
@@ -3844,6 +3846,7 @@
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Надано разовий доступ до віртуальної реальності</translation>
+<translation id="7517198908921983825">Запропоновано Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Не знайдено веб-сторінок для веб-адреси <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

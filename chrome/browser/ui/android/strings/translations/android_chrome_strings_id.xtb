@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">Untuk membantu menjaga keamanan Anda, izin telah dihapus dari beberapa situs</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1384568202352682721">Simpan sebagai…</translation>
-<translation id="1384704387250346179">Terjemahkan gambar dengan Google Lens <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Anda mungkin melihat histori dari aplikasi lain yang membuka link di Chrome. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Sheet bawah analisis harga terbuka sepenuhnya</translation>
 <translation id="1397811292916898096">Telusuri dengan <ph name="PRODUCT_NAME" /></translation>
@@ -174,7 +173,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1650979352027263879">Preferensi tampilan Anda dihapus</translation>
 <translation id="1671236975893690980">Proses download tertunda...</translation>
 <translation id="1672586136351118594">Jangan tampilkan lagi</translation>
-<translation id="1680919990519905526">Beli dengan Google Lens <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020dan ditutup setelah <ph name="MONTHS_ARCHIVED" /> bulan</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="1696555181932908973">Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -413,6 +411,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2581165646603367611">Tindakan ini akan mengosongkan cache dan menghapus cookie, serta data lain dari situs yang dianggap tidak penting oleh Chrome.</translation>
 <translation id="2587052924345400782">Versi baru telah tersedia</translation>
 <translation id="2593272815202181319">Monospace</translation>
+<translation id="2604138917550693049">Telusuri gambar dengan Google Lens</translation>
 <translation id="2604446170045642109">Anda dapat menonaktifkan tema gelap untuk situs di setelan.</translation>
 <translation id="2605017215201958293">Dengarkan halaman ini dengan AI</translation>
 <translation id="2607441479295509868">Logout. Login kembali untuk menggunakan bookmark, sandi, dan lainnya di akun Anda.</translation>
@@ -1100,7 +1099,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, Tab Samaran yang Sedang Berbagi dan Disematkan</translation>
 <translation id="5375374982898812658">Anda akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan grup tersebut akan dihapus dari semua perangkat Anda</translation>
-<translation id="5375577065097716013">Telusuri dengan Google Lens <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">Simpan dan bagikan</translation>
 <translation id="5385892579392932755">laptop Anda</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ingin menggunakan info pribadi dari dompet digital Anda. Lanjutkan hanya jika Anda memercayai situs ini. Situs berbahaya dapat mengelabui Anda agar mengungkapkan hal-hal seperti nama resmi atau nomor tanda pengenal Anda.</translation>
@@ -1540,7 +1538,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6996145122199359148">Download halaman ini</translation>
 <translation id="7007648447224463482">Buka semua di jendela baru</translation>
 <translation id="7013762323294215682">Kunci sandi ini akan disimpan ke pengelola sandi Anda. Siapa pun yang memiliki akses ke pengelola sandi akan dapat menggunakan kunci sandi ini.</translation>
-<translation id="7020741890149022655">Tambah ke daftar bacaan <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Buka di browser</translation>
 <translation id="7029809446516969842">Sandi</translation>
 <translation id="7037994709569287156">Jadikan Chrome sebagai default</translation>
@@ -2043,6 +2040,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8957528460562961174">Untuk mempertahankan akses ke sandi Anda, ekspor sandi sekarang, lalu impor sandi tersebut ke pengelola sandi pilihan Anda. Pengelola Sandi Google berhenti berfungsi karena layanan Google Play tidak tersedia.</translation>
 <translation id="8963117664422609631">Buka setelan situs</translation>
 <translation id="8965591936373831584">ditunda</translation>
+<translation id="8967427617812342790">Tambahkan ke daftar bacaan</translation>
 <translation id="8969796057708736017">Download akan selesai jika file memenuhi kebijakan organisasi Anda</translation>
 <translation id="8970887620466824814">Terjadi error.</translation>
 <translation id="8972098258593396643">Download ke folder default?</translation>

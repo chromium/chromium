@@ -2220,6 +2220,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4750917950439032686">Your information (for example, passwords or credit card numbers) is private when it is sent to this site.</translation>
 <translation id="4754461935447132332">Not allowed for non-secure sites</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Select the promo code field to view and fill your saved offers</translation>
 <translation id="4757740693289347881">Code is invalid</translation>
 <translation id="4757993714154412917">You just entered your password on a deceptive site. To secure your accounts, Chromium recommends checking your saved passwords.</translation>
 <translation id="4758311279753947758">Add contact info</translation>
@@ -3152,6 +3153,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6319672966240656136">This site will remain blocked because you are under Google's Advanced Protection Programme. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Check your DNS settings</translation>
 <translation id="6322182122604171028">Couldn't use Windows Hello</translation>
+<translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6326947323444967009">Set Chrome as the system's default browser in iOS settings</translation>
 <translation id="6328639280570009161">Try disabling network prediction</translation>
 <translation id="6329742260390895689">To autofill your info, turn on 'Use passes across Google' in Wallet settings</translation>
@@ -3844,6 +3846,7 @@ Additional details:
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR allowed this time</translation>
+<translation id="7517198908921983825">Suggested by Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">No web page was found for the web address: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

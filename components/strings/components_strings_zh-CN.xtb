@@ -2216,6 +2216,7 @@
 <translation id="4750917950439032686">您发送给这个网站的信息（例如密码或信用卡号）不会外泄。</translation>
 <translation id="4754461935447132332">不安全的网站不得使用</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">选择促销代码字段，即可查看和填充已保存的优惠信息</translation>
 <translation id="4757740693289347881">代码无效</translation>
 <translation id="4757993714154412917">您刚刚在一个诈骗网站中输入了密码。为保护您的账号安全，Chromium 建议检查您已保存的密码。</translation>
 <translation id="4758311279753947758">添加联系信息</translation>
@@ -3147,6 +3148,7 @@
 <translation id="6319672966240656136">由于您已加入 Google 的高级保护计划，此网站将继续被屏蔽。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">请检查您的DNS设置是否正确</translation>
 <translation id="6322182122604171028">无法使用 Windows Hello</translation>
+<translation id="6326175484149238433">从 Chrome 中移除</translation>
 <translation id="6326947323444967009">在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
 <translation id="6328639280570009161">请尝试停用网络联想查询功能</translation>
 <translation id="6329742260390895689">如需自动填充信息，请在 Google 钱包设置中开启“在各项 Google 产品和服务中使用卡券”</translation>
@@ -3839,6 +3841,7 @@
 <translation id="7514365320538308">下载</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">这次允许使用 VR</translation>
+<translation id="7517198908921983825">来自 Gemini 的建议 · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 信封</translation>
 <translation id="7518003948725431193">找不到与以下网址对应的网页：<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

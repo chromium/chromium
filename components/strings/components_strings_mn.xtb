@@ -3153,6 +3153,7 @@
 <translation id="6319672966240656136">Та Google-н Дэвшилтэт хамгаалалтын хөтөлбөрт байгаа тул энэ сайтыг блоклосон хэвээр үлдэнэ. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">DNS тохиргоогоо шалгана уу</translation>
 <translation id="6322182122604171028">Windows Hello-г ашиглаж чадсангүй</translation>
+<translation id="6326175484149238433">Chrome-оос устга</translation>
 <translation id="6326947323444967009">iOS-н тохиргоонд Chrome-г системийн өгөгдмөл хөтөч болгон тохируулна уу</translation>
 <translation id="6328639280570009161">Сүлжээний таамаглалыг идэвхгүй болгох гээд үзээрэй</translation>
 <translation id="6329742260390895689">Мэдээллээ автоматаар бөглөхийн тулд Wallet-н тохиргооноос "Google дээр карт ашиглах" гэснийг асаана уу</translation>
@@ -3844,6 +3845,7 @@
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR-г энэ удаад зөвшөөрсөн</translation>
+<translation id="7517198908921983825">Gemini-с санал болгосон · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Дугтуй C10</translation>
 <translation id="7518003948725431193">Энэ веб хаягаар хайхад тохирох хуудас олдсонгүй: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

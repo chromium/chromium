@@ -70,6 +70,7 @@
 <translation id="1793486931176048546">Chromium तुरुन्तै एक्सेस गर्न सकियोस् भन्नाका लागि यसलाई आफ्नो टास्कबारमा पिन गर्न Windows को नोटिफिकेसनमा देखिएको <ph name="BEGIN_BOLD" />अँ<ph name="END_BOLD" /> मा क्लिक गर्नुहोस्।</translation>
 <translation id="1808667845054772817">Chromium पुनर्स्थापित गर्नुहोस्</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> प्रयास गर्दै छ</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> ले पहिलेदेखि नै साइन इन गर्नुभएको छ। छुट्टै ब्राउजर प्रयोग गर्न <ph name="USER_EMAIL_ADDRESS" /> मार्फत आफ्नै प्रोफाइल प्रयोग गरी Chromium मा साइन इन गर्नुहोस्। तपाईं <ph name="DEVICE" /> बाट आफ्ना एक्स्टेन्सन र अन्य कुराहरू पनि प्राप्त गर्नु हुने छ।</translation>
 <translation id="183031085822326697">तपाईंले अर्को पटक आफ्नो <ph name="DEVICE_TYPE" /> मा Chromium खोल्दा तपाईंलाई Google पासवर्ड म्यानेजर प्रयोग गर्ने प्रम्प्ट देखाइने छ।</translation>
 <translation id="1838374766361614909">खोजी खाली गर्नुहोस्</translation>
 <translation id="18552579716432081">तपाईंको Google खातामा ब्राउजिङ डेटा यथावत् राखी यो डिभाइसबाट मात्र ब्राउजिङ डेटा मेटाउन <ph name="BEGIN_LINK" />Chromium बाट साइन आउट गर्नुहोस्<ph name="END_LINK" />।</translation>
@@ -192,6 +193,7 @@
 <translation id="3038232873781883849">इन्स्टल गर्ने प्रतीक्षा गरिँदै छ...</translation>
 <translation id="3045032126857188731">अनुवादित भाषा: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">प्रतिक्रिया दिने डायलग बन्द गर्नुहोस्</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> ले पहिलेदेखि नै साइन इन गर्नुभएको छ। छुट्टै ब्राउजर प्रयोग गर्न <ph name="USER_EMAIL_ADDRESS" /> मार्फत आफ्नै प्रोफाइल प्रयोग गरी Chromium मा साइन इन गर्नुहोस्। तपाईं <ph name="DEVICE" /> बाट आफ्नो रिडिङ लिस्ट र अन्य कुराहरू पनि प्राप्त गर्नु हुने छ।</translation>
 <translation id="3068187312562070417">Chromium का अन्य प्रोफाइलहरू</translation>
 <translation id="3068290154869370196">एक्स्टेन्सनहरू भनेका तपाईंलाई Chromium कस्टमाइज गर्ने सुविधा प्रदान गर्ने एडअनहरू हुन्। एक्स्टेन्सनहरूले तपाईंलाई व्यवस्थित रहनेदेखि लिएर दैनिक कार्यहरू सरल बनाउनेसम्मका कार्यहरू गर्न मद्दत गरी Chromium कस्टमाइज गर्न सघाउँछन्।</translation>
 <translation id="3068515742935458733">गुगललाई दुर्घटना प्रतिवेदन र <ph name="UMA_LINK" /> पठाएर राम्रो क्रोमियम बनाउन सहयोग गर्नुहोस् ।</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">आफ्नो Chromium कस्टमाइज गर्नुहोस्</translation>
 <translation id="4148957013307229264">स्थापना गर्दै...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> ले पहिलेदेखि नै साइन इन गर्नुभएको छ। छुट्टै ब्राउजर प्रयोग गर्न <ph name="USER_EMAIL_ADDRESS" /> मार्फत आफ्नै प्रोफाइल प्रयोग गरी Chromium मा साइन इन गर्नुहोस्। तपाईं आफ्ना सबै डिभाइसमा आफ्नो रिडिङ लिस्ट र अन्य कुराहरू पनि प्राप्त गर्नु हुने छ।</translation>
 <translation id="421369550622382712">Chromium का लागि महान एपहरू, खेलहरू, विस्तारहरू र विषयवस्तुहरू पत्ता लगाउनुहोस्।</translation>
 <translation id="4217080900579554343">आफ्ना सबै कम्प्युटरमा यो एक्स्टेन्सनलगायतका कुराहरू प्राप्त गर्न Chromium मा साइन इन गर्नुहोस्</translation>
 <translation id="4217972271355023382">आफ्ना अभिभावकले रोजेका विकल्पहरूका सहायताले अनलाइनमा अझ सुरक्षित रहन तपाईंले <ph name="USER_EMAIL_ADDRESS" /> का रूपमा साइन इन गरिसक्नुभएको Chromium प्रोफाइल प्रयोग गर्नुहोस्</translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Chromium प्रयोग गरी Search खोल्नुहोस्</translation>
 <translation id="5383439451358640070">Chromium ले केही फाइलहरू ब्लक गर्नुको कारण जान्नुहोस्</translation>
 <translation id="5386450000063123300">Chromium लाई अद्यावधिक गर्दै (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> ले पहिलेदेखि नै साइन इन गर्नुभएको छ। छुट्टै ब्राउजर प्रयोग गर्न <ph name="USER_EMAIL_ADDRESS" /> मार्फत आफ्नै प्रोफाइल प्रयोग गरी Chromium मा साइन इन गर्नुहोस्। तपाईं आफ्ना सबै डिभाइसमा आफ्ना एक्स्टेन्सन र अन्य कुराहरू पनि प्राप्त गर्नु हुने छ।</translation>
 <translation id="538767207339317086">Chromium मा साइन इन गर्ने अनुमति दिनुहोस्</translation>
 <translation id="5405650547142096840">क्रोमियमबाट हटाउनुहोस्</translation>
 <translation id="5424544524441439284">पर्फर्मेन्सको स्तर घटाउँछ तर Chromium मा सुरक्षासम्बन्धी आक्रमणहरू हुने सम्भावना भने घटाउँछ</translation>

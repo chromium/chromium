@@ -2216,6 +2216,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4750917950439032686">Vaše údaje (například hesla nebo čísla platebních karet) jsou při odesílání na tento web soukromé.</translation>
 <translation id="4754461935447132332">Není povoleno u nezabezpečených webů</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Výběrem pole pro propagační kód můžete zobrazit a vyplnit uložené nabídky</translation>
 <translation id="4757740693289347881">Kód je neplatný</translation>
 <translation id="4757993714154412917">Právě jste své heslo zadali na klamavém webu. Pokud chcete zabezpečit své účty, Chromium vám doporučuje zkontrolovat uložená hesla.</translation>
 <translation id="4758311279753947758">Přidat kontaktní údaje</translation>
@@ -3147,6 +3148,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6319672966240656136">Tento web zůstane zablokován, protože využíváte program pokročilé ochrany od Googlu. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Zkontrolujte nastavení DNS</translation>
 <translation id="6322182122604171028">Windows Hello nebylo možné použít</translation>
+<translation id="6326175484149238433">Odstranit z Chromu</translation>
 <translation id="6326947323444967009">V nastavení iOS nastavte Chrome jako výchozí prohlížeč</translation>
 <translation id="6328639280570009161">Zkuste deaktivovat předvídání akcí sítě</translation>
 <translation id="6329742260390895689">Pokud chcete automaticky vyplňovat své údaje, zapněte v nastavení Peněženky možnost Používat karty napříč Googlem</translation>
@@ -3838,6 +3840,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7514365320538308">Stáhnout</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR pro tentokrát povolena</translation>
+<translation id="7517198908921983825">Návrh od Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Obálka C10</translation>
 <translation id="7518003948725431193">Na webové adrese <ph name="URL" /> se nepodařilo nalézt žádnou webovou stránku.</translation>
 <translation id="7521387064766892559">JavaScript</translation>

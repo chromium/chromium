@@ -677,6 +677,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1523978563989812243">Motorer för text till tal</translation>
 <translation id="1524563461097350801">Nej tack</translation>
 <translation id="1525740877599838384">Fastställ platsen enbart utifrån wifi</translation>
+<translation id="1526274304859009691">Logga in om du vill ha dina tillägg och annat från <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Namnlöst dokument</translation>
 <translation id="1527336312600375509">Skärmens uppdateringsfrekvens</translation>
 <translation id="152913213824448541">Kontakter för Närdelning</translation>
@@ -6387,6 +6388,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5902400038326841449">Google Lösenordshantering är inaktiverad</translation>
 <translation id="5902892210366342391">Visa varningar innan du besöker osäkra webbplatser i inkognitoläge</translation>
 <translation id="5906457147959147328">Fortsätt tillåta att den här webbplatsen använder identifierare för att spela upp skyddat innehåll</translation>
+<translation id="5906549184882174190">Isolerat</translation>
 <translation id="5906655207909574370">Uppdateringen är nästan klar! Slutför den genom att starta om enheten.</translation>
 <translation id="5906732635754427568">Data kopplad till den här appen tas bort från enheten.</translation>
 <translation id="5906974869830879618">Ange en pinkod</translation>
@@ -6612,6 +6614,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6088475950266477163">Inställningar</translation>
 <translation id="608912389580139775">Om du vill lägga till den här sidan i läslistan klickar du på bokmärkesikonen</translation>
 <translation id="6089289670051481345">Tritanopi</translation>
+<translation id="6090068946774422711">Logga in om du vill få din läslista med mera från <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Ignorerade varningar</translation>
 <translation id="609174145569509836">Rensa lagringsutrymme</translation>
 <translation id="6091761513005122595">Den delade resursen har monterats.</translation>
@@ -7964,6 +7967,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7124712201233930202">Organisationens policyer efterlevdes inte</translation>
 <translation id="7125148293026877011">Radera Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Logga in om du vill ha dina tillägg med mera på alla dina enheter</translation>
 <translation id="7125932261198019860">Kontrollera att skrivaren är ansluten till samma wifi-nätverk som din Chromebook eller använd en USB-kabel. <ph name="LINK_BEGIN" />Läs mer om kompatibilitet<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Nedladdningshistorik</translation>
 <translation id="7130438335435247835">Åtkomstpunktens namn (APN)</translation>
@@ -8817,6 +8821,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7780992949171378848">Skicka en begäran om att välja bort användning av din data till webbplatser</translation>
 <translation id="7782102568078991263">Inga fler förslag från Google</translation>
 <translation id="7782717250816686129">Spara beständig data på inloggningsskärmen och injicera användaruppgifterna i sessionen.</translation>
+<translation id="7782885970382585765">Logga in om du vill ha läslistan med mera på alla dina enheter</translation>
 <translation id="7784020347632229094">Läs mer om kortkommandot</translation>
 <translation id="7784067724422331729">Filen har blockerats av datorns säkerhetsinställningar.</translation>
 <translation id="7784796923038949829">Kan inte läsa eller ändra webbplatsens data</translation>

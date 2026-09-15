@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">விரைவாக அணுகுவதற்கு Chromiumமை உங்கள் செயல் பட்டியில் பின் செய்ய, Windows அறிவிப்பில் <ph name="BEGIN_BOLD" />ஆம்<ph name="END_BOLD" /> என்பதைக் கிளிக் செய்யுங்கள்.</translation>
 <translation id="1808667845054772817">Chromium ஐ மீண்டும்நிறுவு</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> முயல்கிறது</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> ஆக ஏற்கெனவே உள்நுழைந்துள்ளீர்கள். உங்கள் பிரவுசிங்கைத் தனிப்பட்டதாக வைத்திருக்க, Chromiumமில் <ph name="USER_EMAIL_ADDRESS" /> கணக்கின் மூலம் உங்கள் சுயவிவரத்தில் உள்நுழையுங்கள். <ph name="DEVICE" /> கணக்கில் இருந்து உங்கள் நீட்டிப்புகளையும், மேலும் பலவற்றையும் பெறுவீர்கள்.</translation>
 <translation id="183031085822326697">அடுத்த முறை உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் Chromiumமைத் திறக்கும்போது, Google Password Managerரைப் பயன்படுத்தும்படி ஓர் அறிவிப்பு காட்டப்படும்.</translation>
 <translation id="1838374766361614909">தேடலை அழி</translation>
 <translation id="18552579716432081">உலாவிய தரவை உங்கள் Google கணக்கில் இருந்து நீக்காமல் இந்தச் சாதனத்தில் இருந்து மட்டும் நீக்க, <ph name="BEGIN_LINK" />Chromiumமில் இருந்து வெளியேறுங்கள்<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">நிறுவக் காத்திருக்கிறது...</translation>
 <translation id="3045032126857188731">மொழிபெயர்க்கப்படும் மொழி: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">கருத்திற்கான பெட்டியை மூடும்</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> ஆக ஏற்கெனவே உள்நுழைந்துள்ளீர்கள். உங்கள் பிரவுசிங்கைத் தனிப்பட்டதாக வைத்திருக்க, Chromiumமில் <ph name="USER_EMAIL_ADDRESS" /> கணக்கின் மூலம் உங்கள் சுயவிவரத்தில் உள்நுழையுங்கள். <ph name="DEVICE" /> கணக்கில் இருந்து உங்கள் வாசிப்புப் பட்டியலையும், மேலும் பலவற்றையும் பெறுவீர்கள்.</translation>
 <translation id="3068187312562070417">பிற Chromium சுயவிவரங்கள்</translation>
 <translation id="3068290154869370196">நீட்டிப்புகள் என்பவை Chromiumமைப் பிரத்தியேகமாக்க உதவும் செருகு நிரல்கள் ஆகும். ஒழுங்கமைப்பதில் இருந்து அன்றாடப் பணிகளை எளிதாக்குவது வரை, நீட்டிப்புகள் Chromiumமை உங்களுக்கேற்றதாக மாற்ற உதவுகின்றன.</translation>
 <translation id="3068515742935458733">சிதைவு அறிக்கைகளையும் <ph name="UMA_LINK" /> உம் Google க்கு அனுப்புவதன் மூலம் Chromium ஐ மேலும் சிறப்பானதாக்க உதவவும்</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">Chromiumமைப் பிரத்தியேகமாக்கு</translation>
 <translation id="4148957013307229264">நிறுவுகிறது...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - நெட்வொர்க் உள்நுழைவு - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> ஆக ஏற்கெனவே உள்நுழைந்துள்ளீர்கள். உங்கள் பிரவுசிங்கைத் தனிப்பட்டதாக வைத்திருக்க, Chromiumமில் <ph name="USER_EMAIL_ADDRESS" /> கணக்கின் மூலம் உங்கள் சுயவிவரத்தில் உள்நுழையுங்கள். வாசிப்புப் பட்டியலையும், மேலும் பலவற்றையும் உங்களின் எல்லாச் சாதனங்களிலும் பெறுவீர்கள்.</translation>
 <translation id="421369550622382712">Chromiumக்கான சிறந்த ஆப்ஸ், கேம்கள், நீட்டிப்புகள் மற்றும் தீம்களைக் கண்டறியவும்.</translation>
 <translation id="4217080900579554343">உங்களின் எல்லாக் கம்ப்யூட்டர்களிலும் இந்த நீட்டிப்பையும், மேலும் பலவற்றையும் பெற Chromiumமில் உள்நுழையுங்கள்</translation>
 <translation id="4217972271355023382">உங்கள் பெற்றோர் தேர்வுசெய்துள்ள அமைப்புகளுடன் ஆன்லைனில் பாதுகாப்பாக இருக்க, <ph name="USER_EMAIL_ADDRESS" /> என்ற கணக்கில் ஏற்கெனவே உள்நுழைந்துள்ள Chromium சுயவிவரத்திற்கு மாறுங்கள்</translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Chromium மூலம் தேடலைத் திற</translation>
 <translation id="5383439451358640070">சில ஃபைல்களை Chromium ஏன் தடுக்கிறது என்பதைத் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="5386450000063123300">Chromiumஐப் புதுப்பிக்கிறது (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> ஆக ஏற்கெனவே உள்நுழைந்துள்ளீர்கள். உங்கள் பிரவுசிங்கைத் தனிப்பட்டதாக வைத்திருக்க, Chromiumமில் <ph name="USER_EMAIL_ADDRESS" /> கணக்கின் மூலம் உங்கள் சுயவிவரத்தில் உள்நுழையுங்கள். உங்கள் நீட்டிப்புகளையும், மேலும் பலவற்றையும் உங்களின் எல்லாச் சாதனங்களிலும் பெறுவீர்கள்.</translation>
 <translation id="538767207339317086">Chromium உள்நுழைவை அனுமதித்தல்</translation>
 <translation id="5405650547142096840">Chromium இலிருந்து அகற்று</translation>
 <translation id="5424544524441439284">செயல்திறனைக் குறைக்கும், ஆனால் தாக்குதல்களை Chromium தடுக்கும் திறனை அதிகரிக்கும்</translation>

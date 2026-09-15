@@ -70,6 +70,7 @@
 <translation id="1793486931176048546">Fai clic en <ph name="BEGIN_BOLD" />Si<ph name="END_BOLD" /> na notificación de Windows para fixar Chromium na barra de tarefas e poder acceder ao navegador rapidamente.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
 <translation id="1820835682567584003">Chromium está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chromium co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar das extensións e máis cousas do dispositivo: <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">A próxima vez que abras Chromium no teu dispositivo (<ph name="DEVICE_TYPE" />), verás unha solicitude para usar o xestor de contrasinais de Google.</translation>
 <translation id="1838374766361614909">Borrar busca</translation>
 <translation id="18552579716432081">Para eliminar os datos de navegación só deste dispositivo, pero non da túa Conta de Google, tes que <ph name="BEGIN_LINK" />pechar sesión en Chromium<ph name="END_LINK" />.</translation>
@@ -192,6 +193,7 @@
 <translation id="3038232873781883849">Esperando para realizar a instalación…</translation>
 <translation id="3045032126857188731">Idioma de tradución: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Pechar cadro de diálogo de comentarios</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chromium co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar da lista de lectura e máis cousas do dispositivo: <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Outros perfís de Chromium</translation>
 <translation id="3068290154869370196">As extensións son complementos que che permiten personalizar Chromium. Axúdanche a facelo teu, desde manter a organización ata simplificar as tarefas diarias.</translation>
 <translation id="3068515742935458733">Axudar a mellorar Chromium enviando informes sobre fallos e <ph name="UMA_LINK" /> a Google</translation>
@@ -293,6 +295,7 @@
 <translation id="4147856324248078748">Personalizar o teu Chromium</translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> (Inicio de sesión, Chromium)</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chromium co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar da lista de lectura e máis cousas dos teus dispositivos.</translation>
 <translation id="421369550622382712">Descubre aplicacións, xogos, extensións e temas fantásticos para Chromium.</translation>
 <translation id="4217080900579554343">Para obter esta extensión e moito máis en todos os teus ordenadores, inicia sesión en Chromium</translation>
 <translation id="4217972271355023382">Para protexerte en liña coas eleccións dos teus pais, cambia ao teu perfil de Chromium, onde xa tes a sesión iniciada como <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -392,6 +395,7 @@
 <translation id="5382964351116519680">Abrir busca con Chromium</translation>
 <translation id="5383439451358640070">Descubre por que Chromium bloquea algúns ficheiros</translation>
 <translation id="5386450000063123300">Actualizando Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chromium co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar das extensións e máis cousas de todos os teus dispositivos.</translation>
 <translation id="538767207339317086">Permitir inicio de sesión en Chromium</translation>
 <translation id="5405650547142096840">Eliminar de Chromium</translation>
 <translation id="5424544524441439284">Reduce o rendemento, pero fai que Chromium sexa máis resistente aos ataques</translation>

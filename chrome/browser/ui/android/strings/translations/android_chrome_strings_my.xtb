@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">သင့်လုံခြုံရေးအတွက် ကူညီရန် ဝဘ်ဆိုက်အချို့မှ ခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
 <translation id="1384568202352682721">သိမ်းမည့်ပုံစံ…</translation>
-<translation id="1384704387250346179">Google Lens ဖြင့် ပုံကိုပြန်ဆိုရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chrome တွင် လင့်ခ်များဖွင့်သော အခြားအက်ပ်များမှ မှတ်တမ်းများကို မြင်ရနိုင်သည်။ သင့် Google Account သည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံဖြင့် ကြည့်ရှုခြင်းမှတ်တမ်းများ ရှိနေနိုင်သည်။</translation>
 <translation id="139752016751285248">မြင်ကွင်းအပြည့်ဖွင့်ထားသည့် ဈေးနှုန်းသိကောင်းစရာများ အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ဖြင့် ရှာပါ</translation>
@@ -174,7 +173,6 @@
 <translation id="1650979352027263879">သင်၏ အသွင်အပြင် သတ်မှတ်ချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="1671236975893690980">ဒေါင်းလုဒ်လုပ်ရန် စောင့်နေပါသည်...</translation>
 <translation id="1672586136351118594">နောက်ထပ်မပြပါနှင့်</translation>
-<translation id="1680919990519905526">Google Lens ဖြင့်ဝယ်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020<ph name="MONTHS_ARCHIVED" /> လအကြာတွင် ပိတ်သည်</translation>
 <translation id="1689333818294560261">နာမည်ပြောင်</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> တွင် ရှေ့ဆက်ရန် အခြားနည်းလမ်းများ စမ်းကြည့်နိုင်သည်။</translation>
@@ -413,6 +411,7 @@
 <translation id="2581165646603367611">၎င်းသည် Chrome က အရေးကြီးသည်ဟု မယူဆသည့် ကွတ်ကီးများ၊ ယာယီမှတ်ဉာဏ်များနှင့် ဆိုက်များ၏ အခြားဒေတာများကို ရှင်းလင်းလိုက်ပါမည်။</translation>
 <translation id="2587052924345400782">ပိုသစ်သော ဗားရှင်း ရှိပါသည်</translation>
 <translation id="2593272815202181319">Monospace</translation>
+<translation id="2604138917550693049">Google Lens ဖြင့် ပုံရှာဖွေခြင်း</translation>
 <translation id="2604446170045642109">ဆက်တင်တွင် ဝဘ်ဆိုက်များအတွက် အမှောင်နောက်ခံကို ပိတ်နိုင်သည်။</translation>
 <translation id="2605017215201958293">AI သုံး၍ ဤစာမျက်နှာကို နားထောင်ပါ</translation>
 <translation id="2607441479295509868">အကောင့်ထွက်ထားသည်။ လိပ်စာ၊ စကားဝှက် စသည်တို့ကို သင့်အကောင့်တွင် သုံးရန် ပြန်လက်မှတ်ထိုးဝင်ပါ။</translation>
@@ -1100,7 +1099,6 @@
 <translation id="5355191726083956201">'အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှု' ကို ဖွင့်ထားသည်</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် မျှဝေနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="5375374982898812658">သင်သည် “<ph name="GROUP_NAME" />” တဘ်အုပ်စုသုံးခွင့်ကို ချက်ချင်းဆုံးရှုံးမည်ဖြစ်ပြီး ၎င်းကို သင့်စက်အားလုံးမှ ဖျက်ပါမည်</translation>
-<translation id="5375577065097716013">Google Lens ဖြင့် ပုံရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">သိမ်းပြီး မျှဝေရန်</translation>
 <translation id="5385892579392932755">သင့်လက်ပ်တော့</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> က သင့်ဒစ်ဂျစ်တယ် ပိုက်ဆံအိတ်ရှိ ကိုယ်ရေးအချက်အလက်ကို သုံးလိုသည်။ ဤဝဘ်ဆိုက်ကို ယုံကြည်ရမှသာ ရှေ့ဆက်ပါ။ အန္တရာယ်ရှိသော ဝဘ်ဆိုက်များက သင့်တရားဝင်အမည် (သို့) ID နံပါတ်ကဲ့သို့ အရာများကို ဖော်ထုတ်ရန် လှည့်စားနိုင်သည်။</translation>
@@ -1539,7 +1537,6 @@
 <translation id="6996145122199359148">ဤစာမျက်နှာကို ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="7007648447224463482">အားလုံးကို ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="7013762323294215682">ဤလျှို့ဝှက်ကီးကို သင့် Password Manager သို့ သိမ်းပါမည်။ ၎င်းကိုသုံးနိုင်သူများသည် ဤလျှို့ဝှက်ကီးကိုလည်း သုံးနိုင်ပါမည်။</translation>
-<translation id="7020741890149022655">ဖတ်ရန် စာရင်းသို့ ထည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ဘရောက်ဇာတွင် ဖွင့်ပါ</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>
 <translation id="7037994709569287156">Chrome ကို မူရင်းသတ်မှတ်ရန်</translation>
@@ -2042,6 +2039,7 @@
 <translation id="8957528460562961174">သင့်စကားဝှက်များကို ဆက်လက်သုံးနိုင်ရန်အတွက် ၎င်းတို့ကို ယခုထုတ်ယူပြီး သင်နှစ်သက်သည့် စကားဝှက်မန်နေဂျာတွင် ထည့်သွင်းပါ။ Google Play ဝန်ဆောင်မှုများ မရနိုင်သဖြင့် Google Password Manager အလုပ်မလုပ်တော့ပါ။</translation>
 <translation id="8963117664422609631">ဝဘ်ဆိုက်ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="8965591936373831584">ဆိုင်းငံ့ထားသည်</translation>
+<translation id="8967427617812342790">ဖတ်ရန်စာရင်းသို့ ထည့်ပါ</translation>
 <translation id="8969796057708736017">ဖိုင်သည် သင့်အဖွဲ့အစည်း၏ မူဝါဒများနှင့် ကိုက်ညီပါက ဒေါင်းလုဒ်လုပ်ခြင်း ပြီးစီးပါမည်</translation>
 <translation id="8970887620466824814">တစ်ခုခု မှားသွားပါသည်။</translation>
 <translation id="8972098258593396643">မူရင်းဖိုင်တွဲသို့ ဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>

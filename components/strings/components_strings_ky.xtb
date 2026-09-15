@@ -3151,6 +3151,7 @@
 <translation id="6319672966240656136">Бул сайт бөгөттөлгөн бойдон калат, анткени сиз Google'дун Күчөтүлгөн коргоо программасы тарабынан коргоо алып жатасыз. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">DNS параметрлериңизди текшериңиз</translation>
 <translation id="6322182122604171028">Windows Hello'ну колдонуу мүмкүн эмес</translation>
+<translation id="6326175484149238433">Chrome'дон алып салуу</translation>
 <translation id="6326947323444967009">iOS параметрлеринен Chrome'ду системанын демейки серепчиси катары коюу</translation>
 <translation id="6328639280570009161">Тармакты алдын-ала божомолдоо мүмкүнчүлүгүн өчүрүп көрүңүз</translation>
 <translation id="6329742260390895689">Маалыматыңызды автоматтык түрдө киргизүү үчүн Капчыктын параметрлеринен "Google'да билеттерди колдонуу" параметрин күйгүзүңүз</translation>
@@ -3842,6 +3843,7 @@
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR'га бул жолу уруксат берилет</translation>
+<translation id="7517198908921983825">Gemini сунуштады · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Бул веб даректин бир да веб-баракчасы табылган жок: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

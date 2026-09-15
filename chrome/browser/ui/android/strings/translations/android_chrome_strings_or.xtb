@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ କିଛି ସାଇଟରୁ ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="1383876407941801731">ସର୍ଚ୍ଚ</translation>
 <translation id="1384568202352682721">ଏହି ଭାବେ ସେଭ କରନ୍ତୁ…</translation>
-<translation id="1384704387250346179">Google Lens ସହ ଛବି ଅନୁବାଦ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chromeରେ ଲିଙ୍କ ଖୋଲୁଥିବା ଅନ୍ୟ ଆପ୍ସରୁ ଇତିହାସ ଆପଣ ଦେଖିପାରନ୍ତି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଇତିହାସର ଅନ୍ୟ ପ୍ରକାରଗୁଡ଼ିକ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ଥାଇପାରେ।</translation>
 <translation id="139752016751285248">ମୂଲ୍ୟ ଇନସାଇଟ୍ସ ବଟମ ସିଟ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
@@ -174,7 +173,6 @@
 <translation id="1650979352027263879">ଆପଣଙ୍କ ଦେଖାଯିବା ପସନ୍ଦଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="1671236975893690980">ଡାଉନ୍‌ଲୋଡ୍ ବାକି ଅଛି…</translation>
 <translation id="1672586136351118594">ପୁଣି ଦେଖାନ୍ତୁ ନାହିଁ</translation>
-<translation id="1680919990519905526">Google Lens ସହ ଛବି କିଣନ୍ତୁ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020ଏବଂ <ph name="MONTHS_ARCHIVED" /> ମାସ ପରେ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="1689333818294560261">ଡାକନାମ</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />ରେ ଜାରି ରଖିବା ପାଇଁ ଆପଣ ଅନ୍ୟ ଉପାୟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖିପାରିବେ।</translation>
@@ -413,6 +411,7 @@
 <translation id="2581165646603367611">ଏହାଦ୍ୱାରା Chrome ମହତ୍ୱପୂର୍ଣ୍ଣ ବୋଲି ଭାବୁନଥିବା, କୁକିସ୍, କ୍ୟାଶ୍ ଏବଂ ସାଇଟ୍‌ର ଅନ୍ୟାନ୍ୟ ଡାଟାଗୁଡ଼ିକ ଖାଲି ହୋଇଯିବ।</translation>
 <translation id="2587052924345400782">ନୂତନତର ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="2593272815202181319">ମୋନୋସ୍ପେସ୍</translation>
+<translation id="2604138917550693049">Google Lens ମାଧ୍ୟମରେ ଛବି ଖୋଜନ୍ତୁ</translation>
 <translation id="2604446170045642109">ଆପଣ ଆପଣଙ୍କ ସେଟିଂସରେ ସାଇଟଗୁଡ଼ିକ ପାଇଁ ଗାଢ଼ା ଥିମକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="2605017215201958293">AI ମାଧ୍ୟମରେ ଏହି ପୃଷ୍ଠାକୁ ଶୁଣନ୍ତୁ</translation>
 <translation id="2607441479295509868">ସାଇନ ଆଉଟ କରାଯାଇଛି। ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ପୁଣି ସାଇନ ଇନ କରନ୍ତୁ।</translation>
@@ -1100,7 +1099,6 @@
 <translation id="5355191726083956201">ଉନ୍ନତ ସୁରକ୍ଷା ଚାଲୁ ଅଛି</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ସେୟାର କରୁଥିବା ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="5375374982898812658">ଆପଣ ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ଏହା ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରୁ ଡିଲିଟ ହୋଇଯିବ</translation>
-<translation id="5375577065097716013">Google Lens ସହ ଛବି ଖୋଜନ୍ତୁ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">ସେଭ କରି ସେୟାର କରନ୍ତୁ</translation>
 <translation id="5385892579392932755">ଆପଣଙ୍କ ଲାପଟପ</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ଆପଣଙ୍କ ଡିଜିଟାଲ ୱାଲେଟରୁ ବ୍ୟକ୍ତିଗତ ସୂଚନା ବ୍ୟବହାର କରିବାକୁ ଚାହେଁ। ଯଦି ଆପଣ ଏହି ସାଇଟକୁ ବିଶ୍ୱାସ କରନ୍ତି ତେବେ କେବଳ ଜାରି ରଖନ୍ତୁ। ବିପଦଜନକ ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଆଇନଗତ ନାମ କିମ୍ବା ID ନମ୍ବର ପରି ବିଷୟକୁ ପ୍ରକାଶ କରିବା ପାଇଁ ଟ୍ରିକ କରିପାରେ।</translation>
@@ -1540,7 +1538,6 @@
 <translation id="6996145122199359148">ଏହି ପୃଷ୍ଠା ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="7007648447224463482">ସବୁ ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="7013762323294215682">ଏହି ପାସକୀ'କୁ ଆପଣଙ୍କ Password Managerରେ ସେଭ କରାଯିବ। ଏହି ପାସକୀ'କୁ ଆକ୍ସେସ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ଏହାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ।</translation>
-<translation id="7020741890149022655">ପଢ଼ିବା ତାଲିକାରେ ଯୋଗ କରନ୍ତୁ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ବ୍ରାଉଜର୍‌ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="7029809446516969842">ପାସୱାର୍ଡଗୁଡିକ</translation>
 <translation id="7037994709569287156">Chromeକୁ ଡିଫଲ୍ଟ କରନ୍ତୁ</translation>
@@ -2043,6 +2040,7 @@
 <translation id="8957528460562961174">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଆକ୍ସେସ ଜାରି ରଖିବା ପାଇଁ, ସେଗୁଡ଼ିକୁ ଏବେ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ ଏବଂ ତାପରେ ସେଗୁଡ଼ିକୁ ଆପଣଙ୍କର ପସନ୍ଦର ପାସୱାର୍ଡ ପରିଚାଳକକୁ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ। Google Play ସେବାଗୁଡ଼ିକ ଉପଲବ୍ଧ ନଥିବାରୁ Google Password Manager କାମ କରିବା ବନ୍ଦ କରିଦେଇଛି।</translation>
 <translation id="8963117664422609631">ସାଇଟ୍ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8965591936373831584">ବାକି ଅଛି</translation>
+<translation id="8967427617812342790">ପଢ଼ିବା ତାଲିକାରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8969796057708736017">ଯଦି ଫାଇଲ ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତିଗୁଡ଼ିକୁ ପୂରଣ କରେ, ତେବେ ଆପଣଙ୍କ ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ହେବ</translation>
 <translation id="8970887620466824814">କିଛି ଭୁଲ ହୋଇଗଲା।</translation>
 <translation id="8972098258593396643">ଡିଫଲ୍ଟ ଫୋଲ୍ଡର୍‍କୁ ଡାଉନ୍‍‍ଲୋଡ୍ କରିବେ କି?</translation>

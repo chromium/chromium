@@ -3151,6 +3151,7 @@
 <translation id="6319672966240656136">Այս կայքն արգելափակված կմնա, քանի որ դուք միացել եք Google-ի Լրացուցիչ պաշտպանության ծրագրին։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Ստուգեք ձեր DNS կարգավորումները</translation>
 <translation id="6322182122604171028">Չհաջողվեց օգտագործել Windows Hello-ն</translation>
+<translation id="6326175484149238433">Հեռացնել Chrome-ից</translation>
 <translation id="6326947323444967009">Դարձրեք Chrome-ը համակարգի կանխադրված դիտարկիչ iOS-ի կարգավորումներում</translation>
 <translation id="6328639280570009161">Անջատեք ցանցի գործողությունների կանխատեսումը</translation>
 <translation id="6329742260390895689">Ձեր տեղեկություններն ավտոմատ լրացնելու համար Wallet-ի կարգավորումներում միացրեք «Օգտագործել անցաքարտերը Google-ում» կարգավորումը</translation>
@@ -3842,6 +3843,7 @@
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Տրամադրվել է VR-ի մեկանգամյա օգտագործման թույլտվություն</translation>
+<translation id="7517198908921983825">Առաջարկվել է Gemini-ի կողմից · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Վեբէջ չի գտնվել վեբ հասցեի համար՝ <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

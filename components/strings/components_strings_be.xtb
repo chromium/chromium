@@ -2220,6 +2220,7 @@
 <translation id="4750917950439032686">Ваша інфармацыя (напрыклад, паролі або нумары крэдытных картак) пры адпраўцы на гэты сайт застаецца прыватнай.</translation>
 <translation id="4754461935447132332">Забаронена на сайтах, якія не з’яўляюцца бяспечнымі</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Выберыце поле "Прома-код", каб праглядзець і запоўніць звесткі пра захаваныя прапановы</translation>
 <translation id="4757740693289347881">Няправільны код</translation>
 <translation id="4757993714154412917">Вы толькі што ўвялі свой пароль на сайце, вядомым падманнымі паводзінамі. Chromium рэкамендуе вам праверыць захаваныя паролі, каб абараніць свае ўліковыя запісы.</translation>
 <translation id="4758311279753947758">Дадаць кантактную інфармацыю</translation>
@@ -3151,6 +3152,7 @@
 <translation id="6319672966240656136">Гэты сайт застанецца заблакіраваным, бо вы ўдзельнічаеце ў Праграме Палепшанай абароны Google. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Праверце налады DNS</translation>
 <translation id="6322182122604171028">Не ўдалося выкарыстаць Windows Hello</translation>
+<translation id="6326175484149238433">Выдаліць з Chrome</translation>
 <translation id="6326947323444967009">Зрабіць Chrome стандартным браўзерам сістэмы ў наладах iOS</translation>
 <translation id="6328639280570009161">Паспрабуйце выключыць прагназаванне сеткі</translation>
 <translation id="6329742260390895689">Каб выкарыстоўваць аўтазапаўненне, у наладах Кашалька ўключыце функцыю "Выкарыстоўваць карткі ў сэрвісах Google"</translation>
@@ -3843,6 +3845,7 @@
 <translation id="7514365320538308">Спампаваць</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Гэтым разам доступ да VR дазволены</translation>
+<translation id="7517198908921983825">Прапанавана Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Канверт C10</translation>
 <translation id="7518003948725431193">Не знойдзена вэб-старонкі па вэб-адрасе <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

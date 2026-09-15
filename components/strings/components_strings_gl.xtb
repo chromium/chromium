@@ -2220,6 +2220,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4750917950439032686">A túa información (por exemplo, os contrasinais ou os números da tarxeta de crédito) mantense en privado cando se envía a este sitio.</translation>
 <translation id="4754461935447132332">Non se permite para os sitios non seguros</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Selecciona o campo do código promocional para ver e completar as ofertas gardadas</translation>
 <translation id="4757740693289347881">O código non é válido</translation>
 <translation id="4757993714154412917">Acabas de escribir o teu contrasinal nun sitio enganoso. Para protexer as túas contas, Chromium recoméndache que comprobes os contrasinais que tes gardados.</translation>
 <translation id="4758311279753947758">Engadir información de contacto</translation>
@@ -3152,6 +3153,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6319672966240656136">Este sitio permanecerá bloqueado porque estás no programa Protección avanzada de Google. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Comproba a configuración de DNS</translation>
 <translation id="6322182122604171028">Non se puido utilizar Windows Hello</translation>
+<translation id="6326175484149238433">Eliminar de Chrome</translation>
 <translation id="6326947323444967009">Establecer Chrome como navegador predeterminado do sistema na configuración de iOS</translation>
 <translation id="6328639280570009161">Proba a desactivar a predición da rede</translation>
 <translation id="6329742260390895689">Para autocompletar a túa información, na configuración de Wallet activa Usar pases en Google</translation>
@@ -3843,6 +3845,7 @@ Detalles adicionais:
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Permitiuse a RV neste momento</translation>
+<translation id="7517198908921983825">Suxestión de Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">Non se atopou ningunha páxina web para o enderezo web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

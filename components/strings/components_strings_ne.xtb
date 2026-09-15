@@ -2218,6 +2218,7 @@
 <translation id="4750917950439032686">यस साइटमा तपाईँको जानकारी (उदाहरणका लागि पासवर्ड वा क्रेडिट कार्डको नम्बर) पठाउँदा त्यो निजी रहन्छ।</translation>
 <translation id="4754461935447132332">असुरक्षित साइटका हकमा अनुमति दिइँदैन</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">आफूले सेभ गरेका अफरहरू हेर्न र भर्न प्रवर्धनात्मक कोडको फिल्ड चयन गर्नुहोस्</translation>
 <translation id="4757740693289347881">कोड अवैध छ</translation>
 <translation id="4757993714154412917">तपाईंले भर्खरै कुनै असुरक्षित साइटमा आफ्नो पासवर्ड हाल्नुभएको छ। तपाईंका खाताहरूको सुरक्षार्थ Chromium तपाईंलाई तपाईंका सेभ गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
 <translation id="4758311279753947758">सम्पर्क बारे जानकारी थप्नुहोस्</translation>
@@ -3150,6 +3151,7 @@
 <translation id="6319672966240656136">तपाईं Google को सुरक्षासम्बन्धी उन्नत कार्यक्रममा सामेल हुनुभएकाले यो साइट ब्लक गरिराखिने छ। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">तपाइँको डिएनएस सेटिङहरू हेर्नुहोस्</translation>
 <translation id="6322182122604171028">Windows Hello प्रयोग गर्न सकिएन</translation>
+<translation id="6326175484149238433">Chrome बाट हटाउनुहोस्</translation>
 <translation id="6326947323444967009">iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्नुहोस्</translation>
 <translation id="6328639280570009161">सञ्जाल भविष्यवाणि असक्षम गर्नुहोस्</translation>
 <translation id="6329742260390895689">आफ्नो जानकारी अटोफिल गर्न Wallet का सेटिङमा गई "Google का विभिन्न सेवामा पासहरू प्रयोग गर्नुहोस्" अन गर्नुहोस्</translation>
@@ -3841,6 +3843,7 @@
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">यस पटकका लागि VR प्रयोग गर्ने अनुमति दिइएको छ</translation>
+<translation id="7517198908921983825">Gemini ले सिफारिस गरेको · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">निम्न वेब ठेगानाको लागि कुनैपनि वेबपृष्ठ फेला परेन: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

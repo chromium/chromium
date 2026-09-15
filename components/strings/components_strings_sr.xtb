@@ -3152,6 +3152,7 @@
 <translation id="6319672966240656136">Овај сајт ће остати блокиран јер сте део Google програма напредне заштите. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Проверите DNS подешавања</translation>
 <translation id="6322182122604171028">Коришћење функције Windows Hello није успело</translation>
+<translation id="6326175484149238433">Уклони из Chrome-а</translation>
 <translation id="6326947323444967009">Подесите Chrome као подразумевани прегледач система у подешавањима iOS-а</translation>
 <translation id="6328639280570009161">Покушајте да онемогућите предвиђање мреже</translation>
 <translation id="6329742260390895689">Да бисте аутоматски попуњавали информације, у подешавањима Новчаника укључите опцију Користи карте свуда на Google-у</translation>
@@ -3844,6 +3845,7 @@
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">ВР је дозвољен овај пут</translation>
+<translation id="7517198908921983825">Предлаже Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Коверта C10</translation>
 <translation id="7518003948725431193">Ниједна веб-страница није пронађена за веб адресу: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

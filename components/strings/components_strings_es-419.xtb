@@ -3153,6 +3153,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6319672966240656136">Este sitio permanecerá bloqueado porque formas parte del Programa de Protección Avanzada de Google. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Revisa la configuración de DNS.</translation>
 <translation id="6322182122604171028">No se pudo usar Windows Hello</translation>
+<translation id="6326175484149238433">Quitar de Chrome</translation>
 <translation id="6326947323444967009">Establece Chrome como el navegador predeterminado del sistema en la configuración de iOS</translation>
 <translation id="6328639280570009161">Intenta inhabilitar la predicción de red.</translation>
 <translation id="6329742260390895689">Para autocompletar tu información, activa la opción "Usar pases en todos los servicios de Google" en la configuración de la Billetera</translation>
@@ -3845,6 +3846,7 @@ Detalles adicionales:
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Se permitió la RV esta vez</translation>
+<translation id="7517198908921983825">Sugerida por Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">No se encontró una página web para la siguiente dirección web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Κάντε κλικ στο κουμπί <ph name="BEGIN_BOLD" />Ναι<ph name="END_BOLD" /> στην ειδοποίηση των Windows, για να καρφιτσώσετε το Chromium στη γραμμή εργαλείων για γρήγορη πρόσβαση.</translation>
 <translation id="1808667845054772817">Επανεγκατάσταση του Chromium</translation>
 <translation id="1820835682567584003">Το Chromium προσπαθεί να <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">Ο χρήστης <ph name="EXISTING_USER" /> είναι ήδη συνδεδεμένος. Για να διατηρείτε ξεχωριστά τις δραστηριότητες περιήγησής σας, συνδεθείτε στο Chromium με το δικό σας προφίλ ως <ph name="USER_EMAIL_ADDRESS" />. Θα έχετε επίσης πρόσβαση στις επεκτάσεις σας και σε άλλα στοιχεία από τη συσκευή <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Την επόμενη φορά που θα ανοίξετε το Chromium στη συσκευή <ph name="DEVICE_TYPE" />, θα δείτε μια προτροπή για χρήση της Διαχείρισης κωδικών πρόσβασης Google.</translation>
 <translation id="1838374766361614909">Διαγραφή αναζητήσεων</translation>
 <translation id="18552579716432081">Για να διαγράψετε τα δεδομένα περιήγησης μόνο από αυτή τη συσκευή και να τα διατηρήσετε στον Λογαριασμό σας Google, <ph name="BEGIN_LINK" />αποσυνδεθείτε από το Chromium<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">Αναμονή για εγκατάσταση…</translation>
 <translation id="3045032126857188731">Γλώσσα μετάφρασης: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Κλείσιμο παραθύρου διαλόγου σχολίων</translation>
+<translation id="3064717200427679322">Ο χρήστης <ph name="EXISTING_USER" /> είναι ήδη συνδεδεμένος. Για να διατηρείτε ξεχωριστά τις δραστηριότητες περιήγησής σας, συνδεθείτε στο Chromium με το δικό σας προφίλ ως <ph name="USER_EMAIL_ADDRESS" />. Θα έχετε επίσης πρόσβαση στη λίστα ανάγνωσης και σε άλλα στοιχεία από τη συσκευή <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Άλλα προφίλ Chromium</translation>
 <translation id="3068290154869370196">Οι επεκτάσεις είναι πρόσθετα που σας επιτρέπουν να προσαρμόζετε το Chromium. Από την οργάνωση έως την απλοποίηση των καθημερινών εργασιών, οι επεκτάσεις σάς βοηθούν να προσαρμόζετε το Chromium στις ανάγκες σας.</translation>
 <translation id="3068515742935458733">Βοηθήστε μας να κάνουμε το Chromium καλύτερο, αποστέλλωντας αναφορές σφαλμάτων και <ph name="UMA_LINK" /> στην Google</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">Π&amp;ροσαρμογή του Chromium</translation>
 <translation id="4148957013307229264">Γίνεται εγκατάσταση...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Σύνδεση δικτύου - Chromium</translation>
+<translation id="4208652172235621272">Ο χρήστης <ph name="EXISTING_USER" /> είναι ήδη συνδεδεμένος. Για να διατηρείτε ξεχωριστά τις δραστηριότητες περιήγησής σας, συνδεθείτε στο Chromium με το δικό σας προφίλ ως <ph name="USER_EMAIL_ADDRESS" />. Θα έχετε επίσης πρόσβαση στη λίστα ανάγνωσης και σε άλλα στοιχεία σε όλες τις συσκευές σας.</translation>
 <translation id="421369550622382712">Ανακαλύψτε καταπληκτικές εφαρμογές, παιχνίδια, επεκτάσεις και θέματα για το Chromium.</translation>
 <translation id="4217080900579554343">Για να λάβετε αυτή την επέκταση και άλλα στοιχεία σε όλους τους υπολογιστές σας, συνδεθείτε στο Chromium</translation>
 <translation id="4217972271355023382">Για να είσαι πιο ασφαλής στο διαδίκτυο με τις επιλογές του γονέα σου, επίλεξε το προφίλ Chromium στο οποίο έχεις ήδη συνδεθεί ως <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Άνοιγμα αναζήτησης με το Chromium</translation>
 <translation id="5383439451358640070">Μάθετε γιατί το Chromium αποκλείει ορισμένα αρχεία</translation>
 <translation id="5386450000063123300">Ενημέρωση του Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">Ο χρήστης <ph name="EXISTING_USER" /> είναι ήδη συνδεδεμένος. Για να διατηρείτε ξεχωριστά τις δραστηριότητες περιήγησής σας, συνδεθείτε στο Chromium με το δικό σας προφίλ ως <ph name="USER_EMAIL_ADDRESS" />. Θα έχετε επίσης πρόσβαση στις επεκτάσεις σας και σε άλλα στοιχεία σε όλες τις συσκευές σας.</translation>
 <translation id="538767207339317086">Να επιτρέπεται η σύνδεση στο Chromium</translation>
 <translation id="5405650547142096840">Κατάργηση από το Chromium</translation>
 <translation id="5424544524441439284">Μειώνει την απόδοση αλλά καθιστά το Chromium πιο ανθεκτικό σε επιθέσεις</translation>

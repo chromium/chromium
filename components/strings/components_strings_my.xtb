@@ -3152,6 +3152,7 @@
 <translation id="6319672966240656136">သင်သည် Google ၏ Advanced Protection Program အောက်တွင် ရှိနေသောကြောင့် ဤဝဘ်ဆိုက်ကို ဆက်ပိတ်ထားပါမည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ဤသတိပေးချက်အကြောင်း ပိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">သင်၏ DNS ဆက်တင်များကို စစ်ကြည့်ပါ</translation>
 <translation id="6322182122604171028">Windows Hello ကို အသုံးပြု၍ မရပါ</translation>
+<translation id="6326175484149238433">Chrome ထဲမှ ဖယ်ရှားပစ်ရန်</translation>
 <translation id="6326947323444967009">Chrome ကို iOS ဆက်တင်များတွင် စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="6328639280570009161">ကွန်ရက် ခန့်မှန်းမှုကို ပိတ်ထားရန် ကြိုးစားပါ</translation>
 <translation id="6329742260390895689">သင့်အချက်အလက်ကို အော်တိုဖြည့်ရန် Wallet ဆက်တင်များတွင် “Google ၌ ပါ့စ်များသုံးရန်” ကို ဖွင့်ပါ</translation>
@@ -3844,6 +3845,7 @@
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">ဤတစ်ကြိမ်တွင် VR ကို ခွင့်ပြုထားသည်</translation>
+<translation id="7517198908921983825">Gemini က အကြံပြုထားသည် · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 စာအိတ်</translation>
 <translation id="7518003948725431193">ဝဘ် လိပ်စာ အတွက် ဝဘ် စာမျက်နှာများကို ရှာမတွေ့ခဲ့ပါ: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

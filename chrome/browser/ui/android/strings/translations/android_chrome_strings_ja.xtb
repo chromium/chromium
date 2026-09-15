@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">安全を確保するため、いくつかのサイトから権限を削除しました</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1384568202352682721">名前を付けて保存…</translation>
-<translation id="1384704387250346179">Google レンズで画像を翻訳 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chrome でリンクを開く他のアプリの履歴が表示されることがあります。お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="139752016751285248">価格分析情報のボトムシートが最大の高さで開かれています</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> で検索</translation>
@@ -174,7 +173,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1650979352027263879">デザインの設定を削除しました</translation>
 <translation id="1671236975893690980">ダウンロードを待機しています...</translation>
 <translation id="1672586136351118594">次回から表示しない</translation>
-<translation id="1680919990519905526">Google レンズで画像を購入 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">。その後 <ph name="MONTHS_ARCHIVED" /> か月後に閉じられます</translation>
 <translation id="1689333818294560261">ニックネーム</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> で続行するには、別の方法をお試しください。</translation>
@@ -413,6 +411,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2581165646603367611">Chrome で重要度が低いと判断されるサイトの Cookie やキャッシュなどのデータを削除します。</translation>
 <translation id="2587052924345400782">新しいバージョンをご利用いただけます</translation>
 <translation id="2593272815202181319">等幅</translation>
+<translation id="2604138917550693049">Google レンズで画像を検索</translation>
 <translation id="2604446170045642109">このサイトのダークモードを設定でオフにできます。</translation>
 <translation id="2605017215201958293">AI でこのページを読み上げます</translation>
 <translation id="2607441479295509868">ログアウトしました。再度ログインすると、アカウントのブックマークやパスワードなどを使用できます。</translation>
@@ -1100,7 +1099,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />、固定の共有シークレット タブ</translation>
 <translation id="5375374982898812658">「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
-<translation id="5375577065097716013">Google レンズで画像を検索 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">保存して共有</translation>
 <translation id="5385892579392932755">ノートパソコン</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> は、デジタル ウォレットの個人情報の使用を求めています。このサイトを信頼できる場合のみ続行してください。危険なサイトでは、ユーザーを騙して戸籍上の姓名や ID 番号などを開示させる可能性があります。</translation>
@@ -1540,7 +1538,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6996145122199359148">このページをダウンロード</translation>
 <translation id="7007648447224463482">すべてを新しいウィンドウで開く</translation>
 <translation id="7013762323294215682">このパスキーはパスワード マネージャーに保存されます。パスワード マネージャーにアクセスできるユーザーなら誰でも、このパスキーを使用できます。</translation>
-<translation id="7020741890149022655">リーディング リストに追加<ph name="BEGIN_NEW" />新規<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ブラウザで開く</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7037994709569287156">Chrome をデフォルトに設定</translation>
@@ -2043,6 +2040,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8957528460562961174">パスワードを引き続き使用できるようにするには、今すぐパスワードをエクスポートして、お好みのパスワード マネージャーにインポートしてください。Google Play 開発者サービスを使用できないため、Google パスワード マネージャーは動作を停止しています。</translation>
 <translation id="8963117664422609631">サイトの設定に移動</translation>
 <translation id="8965591936373831584">保留中</translation>
+<translation id="8967427617812342790">リーディング リストに追加</translation>
 <translation id="8969796057708736017">ファイルが組織のポリシーに準拠している場合はダウンロードされます</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>

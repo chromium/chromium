@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">మిమ్మల్ని సురక్షితంగా ఉంచడంలో సహాయపడటానికి, సైట్‌ల నుండి అనుమతులు తీసివేయబడ్డాయి</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="1384568202352682721">ఇలా సేవ్ చేయండి…</translation>
-<translation id="1384704387250346179"><ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /> Google Lensతో ఇమేజ్‌ను అనువదించండి</translation>
 <translation id="1390418506739274310">మీరు Chromeలో లింక్‌లను తెరిచే ఇతర యాప్‌ల నుండి హిస్టరీని చూడవచ్చు. మీ Google ఖాతా <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />వెబ్‌సైట్‌లో ఇతర ఫారమ్‌లో ఉన్న బ్రౌజింగ్ హిస్టరీని కలిగి ఉండవచ్చు.</translation>
 <translation id="139752016751285248">ధరల గణాంకాల దిగువున ఉన్న షీట్ ఎక్కువ ఎత్తులో తెరవబడింది</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />తో వెతకండి</translation>
@@ -174,7 +173,6 @@
 <translation id="1650979352027263879">మీ కనిపించే తీరు ప్రాధాన్యతలు తీసివేయబడ్డాయి</translation>
 <translation id="1671236975893690980">డౌన్‌లోడ్ పెండింగ్‌లో ఉంది…</translation>
 <translation id="1672586136351118594">మళ్లీ చూపవద్దు</translation>
-<translation id="1680919990519905526">Google Lensతో కొనడానికి ఫోటో <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020,<ph name="MONTHS_ARCHIVED" /> నెలల తర్వాత మూసివేయబడతాయి</translation>
 <translation id="1689333818294560261">మారుపేరు</translation>
 <translation id="1696555181932908973">మీరు <ph name="SITE_ETLD_PLUS_ONE" />లో కొనసాగించడానికి ఇతర మార్గాలను ట్రై చేయవచ్చు.</translation>
@@ -413,6 +411,7 @@
 <translation id="2581165646603367611">ఇది Chrome ముఖ్యమైనదిగా భావించని కుక్కీలు, కాష్, సైట్‌ల ఇతర డేటాను తీసివేస్తుంది.</translation>
 <translation id="2587052924345400782">సరికొత్త వెర్షన్ ఉంది</translation>
 <translation id="2593272815202181319">మోనోస్పేస్</translation>
+<translation id="2604138917550693049">Google Lens ఇమేజ్ సెర్చ్</translation>
 <translation id="2604446170045642109">మీరు మీ సెట్టింగ్‌లలో సైట్‌ల కోసం ముదురు రంగు రూపాన్ని ఆఫ్ చేయవచ్చు.</translation>
 <translation id="2605017215201958293">AIతో ఈ పేజీని వినండి</translation>
 <translation id="2607441479295509868">సైన్ అవుట్ చేశారు. మీ ఖాతాలో బుక్‌మార్క్‌లను, పాస్‌వర్డ్‌లను, అలాగే మరిన్నింటిని ఉపయోగించడానికి తిరిగి సైన్ ఇన్ చేయండి.</translation>
@@ -1100,7 +1099,6 @@
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో కంటెంట్‌ను షేర్ చేసే పిన్ చేసిన ట్యాబ్</translation>
 <translation id="5375374982898812658">మీరు వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అది మీ అన్ని పరికరాల నుండి తొలగించబడుతుంది</translation>
-<translation id="5375577065097716013">Google Lens ఇమేజ్ సెర్చ్ <ph name="BEGIN_NEW" />న్యూ<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">సేవ్ చేసి, షేర్ చేయండి</translation>
 <translation id="5385892579392932755">మీ ల్యాప్‌టాప్</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> మీ డిజిటల్ వాలెట్ నుండి వ్యక్తిగత సమాచారాన్ని ఉపయోగించాలనుకుంటోంది. మీరు ఈ సైట్‌ను విశ్వసిస్తేనే మాత్రమే కొనసాగించండి. ప్రమాదకరమైన సైట్‌లు మీ చట్టపరమైన పేరు లేదా ID నంబర్ వంటి విషయాలను బహిర్గతం చేసేలా మిమ్మల్ని మోసం చేయవచ్చు.</translation>
@@ -1538,7 +1536,6 @@
 <translation id="6996145122199359148">ఈ పేజీని డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7007648447224463482">అన్నీ కొత్త విండోలో తెరవండి</translation>
 <translation id="7013762323294215682">ఈ పాస్-కీ మీ password managerకు సేవ్ చేయబడుతుంది. దీనికి యాక్సెస్ ఉన్న ఎవరైనా ఈ పాస్-కీని ఉపయోగించగలరు.</translation>
-<translation id="7020741890149022655"><ph name="BEGIN_NEW" />న్యూ<ph name="END_NEW" /> రీడింగ్ లిస్టుకు చేర్చండి</translation>
 <translation id="7022756207310403729">బ్రౌజర్‌లో తెరువు</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
 <translation id="7037994709569287156">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
@@ -2041,6 +2038,7 @@
 <translation id="8957528460562961174">మీ పాస్‌వర్డ్‌లకు యాక్సెస్‌ను కొనసాగించడానికి, వాటిని ఇప్పుడే ఎగుమతి చేసి, ఆపై వాటిని మీకు నచ్చిన పాస్‌వర్డ్ మేనేజర్‌కు దిగుమతి చేసుకోండి. Google Play సర్వీసులు అందుబాటులో లేనందున Google Password Manager పనిచేయడం ఆగిపోయింది.</translation>
 <translation id="8963117664422609631">సైట్ సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="8965591936373831584">పెండింగ్‌లో ఉంది</translation>
+<translation id="8967427617812342790">పఠనా లిస్ట్‌కు జోడించండి</translation>
 <translation id="8969796057708736017">ఫైల్ మీ సంస్థ పాలసీలకు అనుగుణంగా ఉంటే మీ డౌన్‌లోడ్ పూర్తవుతుంది</translation>
 <translation id="8970887620466824814">ఏదో తప్పు జరిగింది.</translation>
 <translation id="8972098258593396643">డిఫాల్ట్ ఫోల్డర్‌కు డౌన్‌లోడ్ చేయాలా?</translation>

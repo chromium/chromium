@@ -2220,6 +2220,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4750917950439032686">La teva informació (com ara les contrasenyes o els números de targeta de crèdit) és privada quan s'envia a aquest lloc web.</translation>
 <translation id="4754461935447132332">No s'admet en llocs web no segurs</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Selecciona el camp del codi promocional per veure i emplenar les ofertes desades</translation>
 <translation id="4757740693289347881">El codi no és vàlid</translation>
 <translation id="4757993714154412917">Acabes d'introduir la contrasenya en un lloc web enganyós. Per protegir els teus comptes, Chromium et recomana que comprovis les contrasenyes desades.</translation>
 <translation id="4758311279753947758">Afegiu informació de contacte</translation>
@@ -3152,6 +3153,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6319672966240656136">Aquest lloc web es mantindrà bloquejat perquè ets en el programa Protecció avançada de Google. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació sobre aquest advertiment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Reviseu la configuració de DNS</translation>
 <translation id="6322182122604171028">No s'ha pogut fer servir Windows Hello</translation>
+<translation id="6326175484149238433">Suprimeix de Chrome</translation>
 <translation id="6326947323444967009">Estableix Chrome com a navegador predeterminat del sistema a la configuració d'iOS</translation>
 <translation id="6328639280570009161">Proveu de desactivar la predicció de xarxa</translation>
 <translation id="6329742260390895689">Per emplenar automàticament la teva informació, activa l'opció "Utilitza passis en tot Google" a la configuració de Wallet</translation>
@@ -3844,6 +3846,7 @@ Detalls addicionals:
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">S'ha permès la RV aquesta vegada</translation>
+<translation id="7517198908921983825">Suggerit per Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">No s'ha trobat cap pàgina web per a l'adreça: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

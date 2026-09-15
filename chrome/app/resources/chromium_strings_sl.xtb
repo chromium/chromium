@@ -70,6 +70,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1793486931176048546">Kliknite <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> v obvestilu sistema Windows, če želite Chromium pripeti v opravilno vrstico za hitri dostop.</translation>
 <translation id="1808667845054772817">Vnovična namestitev Chromiuma</translation>
 <translation id="1820835682567584003">Chromium poskuša <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. V napravi <ph name="DEVICE" /> boste imeli na voljo tudi razširitve in drugo.</translation>
 <translation id="183031085822326697">Ko boste naslednjič odprli Chromium v napravi <ph name="DEVICE_TYPE" />, bo prikazan poziv za uporabo Googlovega upravitelja gesel.</translation>
 <translation id="1838374766361614909">Čiščenje iskanja</translation>
 <translation id="18552579716432081">Če želite izbrisati podatke brskanja samo iz te naprave, v računu Google pa jih želite ohraniti, <ph name="BEGIN_LINK" />se odjavite iz Chromiuma<ph name="END_LINK" />.</translation>
@@ -192,6 +193,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3038232873781883849">Čakanje na namestitev …</translation>
 <translation id="3045032126857188731">Jezik prevoda: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Zapiranje pogovornega okna za povratne informacije</translation>
+<translation id="3064717200427679322">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. V napravi <ph name="DEVICE" /> boste imeli na voljo tudi bralni seznam in drugo.</translation>
 <translation id="3068187312562070417">Drugi profili v Chromiumu</translation>
 <translation id="3068290154869370196">Razširitve so dodatki, s katerimi lahko prilagodite Chromium. Razširitve vam pomagajo, da Chromium prilagodite svojim potrebam, od organiziranja do poenostavljanja vsakodnevnih opravil.</translation>
 <translation id="3068515742935458733">Pomagajte izboljšati Chromium – Googlu pošiljajte poročila o zrušitvah in ta dokument: <ph name="UMA_LINK" />.</translation>
@@ -293,6 +295,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4147856324248078748">P&amp;rilagodite Chromium</translation>
 <translation id="4148957013307229264">Nameščanje ...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Prijava v omrežje – Chromium</translation>
+<translation id="4208652172235621272">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. V vseh svojih napravah boste imeli na voljo tudi bralni seznam in drugo.</translation>
 <translation id="421369550622382712">Odkrijte zanimive aplikacije, igre, razširitve in teme za Chromium.</translation>
 <translation id="4217080900579554343">Če želite dostopati do te razširitve in drugega v vseh računalnikih, se prijavite v Chromium</translation>
 <translation id="4217972271355023382">Zaradi večje varnosti v spletu s starševimi izbirami preklopi na svoj profil v Chromiumu, kjer si že prijavljen(-a) kot <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -392,6 +395,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5382964351116519680">Odpiranje iskanja s Chromiumom</translation>
 <translation id="5383439451358640070">Preberite, zakaj Chromium blokira nekatere datoteke</translation>
 <translation id="5386450000063123300">Posodabljanje Chromiuma (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. V vseh svojih napravah boste imeli na voljo tudi razširitve in drugo.</translation>
 <translation id="538767207339317086">Omogočanje prijave v Chromium</translation>
 <translation id="5405650547142096840">Odstrani iz Chromiuma</translation>
 <translation id="5424544524441439284">Zmanjša učinkovitost delovanja, vendar je Chromium odpornejši proti napadom</translation>

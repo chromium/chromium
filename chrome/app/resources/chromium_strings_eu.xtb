@@ -69,6 +69,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1793486931176048546">Chromium zereginen barran ainguratzeko eta bizkor atzitzeko, sakatu <ph name="BEGIN_BOLD" />Bai<ph name="END_BOLD" /> Windows-en jakinarazpenean.</translation>
 <translation id="1808667845054772817">Instalatu berriro Chromium</translation>
 <translation id="1820835682567584003">Chromium-ek <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada. Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chromium-en zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />). <ph name="DEVICE" /> gailuko luzapenak eta bestelako datuak ere eskuratuko dituzu.</translation>
 <translation id="183031085822326697"><ph name="DEVICE_TYPE" /> gailuan Chromium irekitzen duzun hurrengo aldian, Google-ren Pasahitz-kudeatzailea erabiltzeko eskatuko zaizu.</translation>
 <translation id="1838374766361614909">Garbitu bilaketa</translation>
 <translation id="18552579716432081">Zure arakatze-datuak gailu honetatik soilik ezabatzeko, baina haiek Google-ko kontuan mantentzeko, <ph name="BEGIN_LINK" />amaitu saioa Chromium-en<ph name="END_LINK" />.</translation>
@@ -191,6 +192,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3038232873781883849">Instalatzeko zain…</translation>
 <translation id="3045032126857188731">Xede-hizkuntza: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Itxi oharrak bidaltzeko leihoa</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada. Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chromium-en zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />). <ph name="DEVICE" /> gailuko irakurketa-zerrenda eta bestelako datuak ere eskuratuko dituzu.</translation>
 <translation id="3068187312562070417">Chromium-eko beste profilak</translation>
 <translation id="3068290154869370196">Chromium pertsonalizatzeko aukera ematen dizuten gehigarriak dira luzapenak. Antolatuta egotetik, eguneroko zereginak sinplifikatzera, luzapenek Chromium zure beharretara egokitzen laguntzen dizute.</translation>
 <translation id="3068515742935458733">Lagundu Chromium hobetzen hutsegite-txostenak eta <ph name="UMA_LINK" /> Google-ra bidalita</translation>
@@ -292,6 +294,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4147856324248078748">Pertsonalizat&amp;u Chromium</translation>
 <translation id="4148957013307229264">Instalatzen…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Hasi saioa sarean - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada. Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chromium-en zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />). Irakurketa-zerrenda eta bestelako datuak ere eskuratuko dituzu gailu guztietan.</translation>
 <translation id="421369550622382712">Ezagutu Chromium-erako aplikazio, joko, luzapen eta gai bikainak.</translation>
 <translation id="4217080900579554343">Luzapen hori eta gauza gehiago ordenagailu guztietan lortzeko, hasi saioa Chromium-en</translation>
 <translation id="4217972271355023382">Gurasoen aukerekin sarean seguruago egoteko, aldatu zure Chromium-eko profilera, bertan <ph name="USER_EMAIL_ADDRESS" /> gisa saioa hasita baitaukazu jada</translation>
@@ -391,6 +394,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5382964351116519680">Ireki bilaketa Chromium-ekin</translation>
 <translation id="5383439451358640070">Ikusi zergatik blokeatzen dituen Chromium-ek fitxategi batzuk</translation>
 <translation id="5386450000063123300">Chromium eguneratzen (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada. Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chromium-en zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />). Luzapenak eta bestelako datuak ere eskuratuko dituzu gailu guztietan.</translation>
 <translation id="538767207339317086">Baimendu Chromium-en saioa hastea</translation>
 <translation id="5405650547142096840">Kendu Chromium-etik</translation>
 <translation id="5424544524441439284">Errendimendua gutxitzen du, baina Chromium erasoen aurrean indartzen du</translation>

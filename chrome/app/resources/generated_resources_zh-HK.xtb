@@ -677,6 +677,7 @@
 <translation id="1523978563989812243">「文字轉語音」引擎</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
 <translation id="1525740877599838384">只使用 Wi-Fi 確定位置</translation>
+<translation id="1526274304859009691">登入即可取用<ph name="DEVICE" />上的擴充程式及其他內容</translation>
 <translation id="1526560967942511387">無標題文件</translation>
 <translation id="1527336312600375509">顯示器重新整理頻率</translation>
 <translation id="152913213824448541">「咫尺共享」聯絡人</translation>
@@ -6380,6 +6381,7 @@
 <translation id="5902400038326841449">「Google 密碼管理工具」已關閉</translation>
 <translation id="5902892210366342391">在透過無痕模式前往不安全的網站前先顯示警告</translation>
 <translation id="5906457147959147328">繼續允許此網站使用識別碼來播放受保護的內容</translation>
+<translation id="5906549184882174190">已隔離</translation>
 <translation id="5906655207909574370">即將更新至最新版本！重新啟動您的裝置即可完成更新程序。</translation>
 <translation id="5906732635754427568">系統會從裝置中移除與此應用程式相關的資料。</translation>
 <translation id="5906974869830879618">請輸入 PIN</translation>
@@ -6604,6 +6606,7 @@
 <translation id="6088475950266477163">設定(&amp;G)</translation>
 <translation id="608912389580139775">如要將網頁加入您的閱讀清單，請按一下「書籤」圖示</translation>
 <translation id="6089289670051481345">藍色弱視</translation>
+<translation id="6090068946774422711">登入即可取用<ph name="DEVICE" />上的閱讀清單及其他內容</translation>
 <translation id="6090760257419195752">已關閉的警告</translation>
 <translation id="609174145569509836">清理儲存空間</translation>
 <translation id="6091761513005122595">已成功連接共用裝置。</translation>
@@ -7956,6 +7959,7 @@
 <translation id="7124712201233930202">不符合您機構的政策規定</translation>
 <translation id="7125148293026877011">刪除 Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /> 鍵</translation>
+<translation id="7125576351373654452">登入即可在你的所有裝置上取用擴充程式及其他內容</translation>
 <translation id="7125932261198019860">請確保打印機已連線至 Chromecast 所用的 Wi-Fi 網絡，或使用 USB 連接線。<ph name="LINK_BEGIN" />進一步瞭解兼容性<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">下載記錄</translation>
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
@@ -8806,6 +8810,7 @@
 <translation id="7780992949171378848">向網站傳送退出使用資料要求</translation>
 <translation id="7782102568078991263">沒有來自 Google 的建議</translation>
 <translation id="7782717250816686129">儲存登入畫面中的永久資料，並在工作階段中插入憑證。</translation>
+<translation id="7782885970382585765">登入即可在你的所有裝置上取用閱讀清單及其他內容</translation>
 <translation id="7784020347632229094">進一步了解鍵盤快速鍵</translation>
 <translation id="7784067724422331729">您的電腦安全性設定封鎖了這個檔案。</translation>
 <translation id="7784796923038949829">無法讀取或變更網站資料</translation>

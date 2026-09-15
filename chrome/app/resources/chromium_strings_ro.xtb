@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Dă clic pe <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> în notificarea Windows ca să fixezi Chromium în bara de activități pentru acces rapid.</translation>
 <translation id="1808667845054772817">Reinstalați Chromium</translation>
 <translation id="1820835682567584003">Chromium încearcă să <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa extensiile și alte date de pe <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Data viitoare când deschizi Chromium pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a folosi Managerul de parole Google.</translation>
 <translation id="1838374766361614909">Șterge căutarea</translation>
 <translation id="18552579716432081">Pentru a șterge datele de navigare doar de pe acest dispozitiv, dar nu și din Contul Google, <ph name="BEGIN_LINK" />deconectează-te de la Chromium<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">Se așteaptă instalarea…</translation>
 <translation id="3045032126857188731">Limba traducerii: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Închide dialogul de feedback</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa lista de lecturi și alte date de pe <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Alte profiluri Chromium</translation>
 <translation id="3068290154869370196">Extensiile sunt suplimente cu care poți personaliza Chromium. De la organizare la simplificarea activităților de zi cu zi, extensiile te ajută să adaptezi browserul Chromium.</translation>
 <translation id="3068515742935458733">Contribuie la îmbunătățirea proiectului Chromium trimițând la Google rapoarte de blocare și <ph name="UMA_LINK" /></translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">P&amp;ersonalizează Chromium</translation>
 <translation id="4148957013307229264">Se instalează...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – conectare la rețea – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa lista de lecturi și alte date de pe toate dispozitivele.</translation>
 <translation id="421369550622382712">Descoperă aplicații, jocuri, extensii și teme extraordinare pentru Chromium.</translation>
 <translation id="4217080900579554343">Pentru a accesa această extensie și altele pe toate computerele, conectează-te la Chromium</translation>
 <translation id="4217972271355023382">Pentru a fi mai în siguranță online cu alegerile părintelui tău, treci la profilul Chromium în care te-ai conectat deja ca <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Deschide căutarea cu Chromium</translation>
 <translation id="5383439451358640070">Află de ce Chromium blochează unele fișiere</translation>
 <translation id="5386450000063123300">Chromium se actualizează (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa extensiile și alte date de pe toate dispozitivele.</translation>
 <translation id="538767207339317086">Permite conectarea la Chromium</translation>
 <translation id="5405650547142096840">Eliminați din Chromium</translation>
 <translation id="5424544524441439284">Reduce performanța, dar face Chromium mai rezistent la atacuri</translation>

@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Clique em <ph name="BEGIN_BOLD" />Sim<ph name="END_BOLD" /> na notificação do Windows para afixar o Chromium à barra de tarefas para um acesso rápido.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
 <translation id="1820835682567584003">O Chromium está a tentar <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso às suas extensões e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Da próxima vez que abrir o Chromium no seu <ph name="DEVICE_TYPE" />, é apresentada uma indicação para usar o Gestor de Palavras-passe da Google.</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="18552579716432081">Para eliminar os dados de navegação apenas deste dispositivo e mantê-los na sua Conta Google, <ph name="BEGIN_LINK" />termine sessão no Chromium<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">A aguardar a instalação…</translation>
 <translation id="3045032126857188731">Idioma traduzido: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Fechar caixa de diálogo de feedback</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso à sua Lista de leitura e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Outros perfis do Chromium</translation>
 <translation id="3068290154869370196">As extensões são suplementos que lhe permitem personalizar o Chromium. Desde manter a organização a simplificar tarefas diárias, as extensões ajudam a personalizar o Chromium.</translation>
 <translation id="3068515742935458733">Ajudar a melhorar o Chromium ao enviar relatórios de falhas e <ph name="UMA_LINK" /> à Google</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">P&amp;ersonalizar o Chromium</translation>
 <translation id="4148957013307229264">A instalar...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Início de sessão na rede – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso à sua Lista de leitura e muito mais em todos os seus dispositivos.</translation>
 <translation id="421369550622382712">Descubra aplicações, jogos, extensões e temas fantásticos para o Chromium.</translation>
 <translation id="4217080900579554343">Para usar esta extensão e muito mais em todos os seus computadores, inicie sessão no Chromium</translation>
 <translation id="4217972271355023382">Para teres mais segurança online com as escolhas dos teus pais, muda para o teu perfil do Chromium onde já tens sessão iniciada como <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Abrir pesquisa com o Chromium</translation>
 <translation id="5383439451358640070">Saiba por que motivo o Chromium bloqueia alguns ficheiros</translation>
 <translation id="5386450000063123300">A atualizar o Chromium (<ph name="PROGRESS_PERCENT" />)…</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso às suas extensões e muito mais em todos os seus dispositivos.</translation>
 <translation id="538767207339317086">Permitir o início de sessão no Chromium</translation>
 <translation id="5405650547142096840">Remover do Chromium</translation>
 <translation id="5424544524441439284">Reduz o desempenho, mas torna o Chromium mais resistente a ataques</translation>

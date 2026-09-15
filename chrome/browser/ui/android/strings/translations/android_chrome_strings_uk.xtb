@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">Щоб захистити вас, ми скасували дозволи для деяких сайтів</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1384568202352682721">Зберегти як…</translation>
-<translation id="1384704387250346179">Переклад через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Ви можете побачити історію інших додатків, які відкривають посилання в Chrome. Історія вебперегляду може також зберігатись у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Нижній екран із відомостями про ціни відкрито на всю висоту</translation>
 <translation id="1397811292916898096">Шукати в <ph name="PRODUCT_NAME" /></translation>
@@ -174,7 +173,6 @@
 <translation id="1650979352027263879">Налаштування зовнішнього вигляду вилучено</translation>
 <translation id="1671236975893690980">Очікується завантаження…</translation>
 <translation id="1672586136351118594">Більше не показувати</translation>
-<translation id="1680919990519905526">Купити через Об’єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020й закрито через <ph name="MONTHS_ARCHIVED" /> міс.</translation>
 <translation id="1689333818294560261">Псевдонім</translation>
 <translation id="1696555181932908973">Ви можете спробувати інші способи ввійти на сайті <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -413,6 +411,7 @@
 <translation id="2581165646603367611">Буде видалено файли cookie, кеш та інші дані сайтів, які Chrome визначив як неважливі.</translation>
 <translation id="2587052924345400782">Доступна новіша версія</translation>
 <translation id="2593272815202181319">Однакової ширини</translation>
+<translation id="2604138917550693049">Пошук зображень через Google Об’єктив</translation>
 <translation id="2604446170045642109">Ви можете вимкнути темну тему для сайтів у налаштуваннях.</translation>
 <translation id="2605017215201958293">Прослухайте цю сторінку за допомогою ШІ</translation>
 <translation id="2607441479295509868">Ви вийшли з облікового запису. Увійдіть, щоб використовувати закладки, паролі тощо.</translation>
@@ -1100,7 +1099,6 @@
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" /> (закріплена анонімна вкладка, до якої надано доступ іншим користувачам)</translation>
 <translation id="5375374982898812658">Ви відразу втратите доступ до групи вкладок "<ph name="GROUP_NAME" />", і її буде видалено з усіх ваших пристроїв</translation>
-<translation id="5375577065097716013">Шукати через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">Зберегти й поділитися</translation>
 <translation id="5385892579392932755">ваш ноутбук</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> хоче використовувати особисту інформацію з вашого цифрового гаманця. Продовжуйте, лише якщо довіряєте цьому сайту. На небезпечних сайтах вас можуть обманом змусити розкрити своє ім’я або номер офіційного посвідчення особи.</translation>
@@ -1540,7 +1538,6 @@
 <translation id="6996145122199359148">Завантажити цю сторінку</translation>
 <translation id="7007648447224463482">Відкривати в новому вікні</translation>
 <translation id="7013762323294215682">Цей ключ доступу буде збережено в Менеджері паролів. Усі, хто має доступ до цього ключа, зможуть використовувати його.</translation>
-<translation id="7020741890149022655">Додати в список читання <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Відкрити у вебпереглядачі</translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="7037994709569287156">Зробити Chrome вебпереглядачем за умовчанням</translation>
@@ -2043,6 +2040,7 @@
 <translation id="8957528460562961174">Щоб зберегти доступ до своїх паролів, експортуйте їх зараз і імпортуйте у вибраний менеджер паролів. Google Менеджер паролів припинив роботу, оскільки сервіси Google Play недоступні.</translation>
 <translation id="8963117664422609631">Перейти до налаштувань сайту</translation>
 <translation id="8965591936373831584">очікується</translation>
+<translation id="8967427617812342790">Додати в список читання</translation>
 <translation id="8969796057708736017">Завантаження завершиться, якщо файл відповідає правилам вашої організації</translation>
 <translation id="8970887620466824814">Сталася помилка.</translation>
 <translation id="8972098258593396643">Завантажити в папку за умовчанням?</translation>

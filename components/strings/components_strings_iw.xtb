@@ -3157,6 +3157,7 @@ Del</translation>
 <translation id="6319672966240656136">‏האתר הזה יישאר חסום כי החשבון שלך פועל במסגרת תוכנית ההגנה המתקדמת של Google. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">‏יש לבדוק את הגדרות ה-DNS</translation>
 <translation id="6322182122604171028">‏לא ניתן היה להשתמש ב-Windows Hello</translation>
+<translation id="6326175484149238433">‏הסרה מ-Chrome</translation>
 <translation id="6326947323444967009">‏הגדרת Chrome כדפדפן ברירת המחדל של המערכת בהגדרות iOS</translation>
 <translation id="6328639280570009161">יש לנסות להשבית את חיזוי הרשת</translation>
 <translation id="6329742260390895689">‏כדי למלא את הפרטים באופן אוטומטי, צריך להפעיל את ההגדרה "שימוש בכרטיסים בשירותי Google" ב-Wallet</translation>
@@ -3849,6 +3850,7 @@ Del</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">‏יש אישור לשימוש חד-פעמי ב-VR</translation>
+<translation id="7517198908921983825">‏הצעה של Gemini · ‏<ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">‏מעטפה – C10</translation>
 <translation id="7518003948725431193">לא נמצא דף אינטרנט עבור כתובת האינטרנט: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

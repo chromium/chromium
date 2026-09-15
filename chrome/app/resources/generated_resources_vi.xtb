@@ -677,6 +677,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1523978563989812243">Các công cụ chuyển văn bản sang lời nói</translation>
 <translation id="1524563461097350801">Không, cảm ơn</translation>
 <translation id="1525740877599838384">Chỉ sử dụng Wi-Fi để xác định vị trí</translation>
+<translation id="1526274304859009691">Đăng nhập để sử dụng các tiện ích và nhiều nội dung khác trên <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Tài liệu không Tên</translation>
 <translation id="1527336312600375509">Tốc độ làm mới màn hình</translation>
 <translation id="152913213824448541">Người liên hệ Chia sẻ lân cận</translation>
@@ -6387,6 +6388,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5902400038326841449">Trình quản lý mật khẩu của Google hiện đang tắt</translation>
 <translation id="5902892210366342391">Hiện cảnh báo trước khi truy cập vào các trang web không an toàn ở Chế độ ẩn danh</translation>
 <translation id="5906457147959147328">Tiếp tục cho phép trang web này dùng giá trị nhận dạng để phát nội dung được bảo vệ</translation>
+<translation id="5906549184882174190">Tách biệt</translation>
 <translation id="5906655207909574370">Gần được cập nhật! Hãy khởi động lại thiết bị của bạn để hoàn tất cập nhật.</translation>
 <translation id="5906732635754427568">Dữ liệu được liên kết với ứng dụng này sẽ bị xóa khỏi thiết bị này.</translation>
 <translation id="5906974869830879618">Vui lòng nhập mã PIN</translation>
@@ -6612,6 +6614,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6088475950266477163">Cài đặt</translation>
 <translation id="608912389580139775">Để thêm trang này vào danh sách đọc, hãy nhấp vào biểu tượng Dấu trang</translation>
 <translation id="6089289670051481345">Mù màu xanh dương và vàng</translation>
+<translation id="6090068946774422711">Đăng nhập để sử dụng danh sách đọc và nhiều nội dung khác trên <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Cảnh báo đã đóng</translation>
 <translation id="609174145569509836">Dọn dẹp bộ nhớ</translation>
 <translation id="6091761513005122595">Đã kết nối thành công với thư mục chia sẻ.</translation>
@@ -7966,6 +7969,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7124712201233930202">Tệp tải xuống không đáp ứng các chính sách của tổ chức</translation>
 <translation id="7125148293026877011">Xóa Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Đăng nhập để sử dụng các tiện ích và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="7125932261198019860">Đảm bảo máy in kết nối với cùng một mạng Wi-Fi như Chromebook. Nếu không, hãy sử dụng cáp USB. <ph name="LINK_BEGIN" />Tìm hiểu thêm về khả năng tương thích<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Nhật ký tải xuống</translation>
 <translation id="7130438335435247835">Tên điểm truy cập (APN)</translation>
@@ -8819,6 +8823,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7780992949171378848">Gửi yêu cầu không sử dụng dữ liệu của bạn đến các trang web</translation>
 <translation id="7782102568078991263">Không có đề xuất nào khác từ Google</translation>
 <translation id="7782717250816686129">Lưu trữ dữ liệu liên tục trên màn hình đăng nhập và đưa thông tin xác thực vào phiên.</translation>
+<translation id="7782885970382585765">Đăng nhập để sử dụng danh sách đọc và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="7784020347632229094">Tìm hiểu thêm về phím tắt</translation>
 <translation id="7784067724422331729">Cài đặt bảo mật trên máy tính của bạn đã chặn tệp này.</translation>
 <translation id="7784796923038949829">Không thể đọc hoặc thay đổi dữ liệu của trang web</translation>

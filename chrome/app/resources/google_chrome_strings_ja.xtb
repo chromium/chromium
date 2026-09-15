@@ -94,6 +94,7 @@
 <translation id="1873233029667955273">Google Chrome はデフォルトのブラウザとして設定されていません</translation>
 <translation id="1874309113135274312">Google Chrome ベータ版（mDNS-In）</translation>
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。すべてのデバイスで同じ拡張機能などを使用できます。</translation>
 <translation id="1880677175115548835">テキストを選択</translation>
 <translation id="1896602904211344018">Chrome アプリを入手</translation>
 <translation id="1919130412786645364">Chrome へのログインを許可する</translation>
@@ -537,6 +538,7 @@
 <translation id="6334815226785304306">Google Chrome を既定のブラウザに設定してタスクバーに固定する</translation>
 <translation id="63540178978900677">Chrome は既定のブラウザではなくなりました。Chrome を既定のブラウザにしますか？</translation>
 <translation id="6360449101159168105">Chrome を高速に保つため、このタブがアクティブでないときにメモリを解放しました。このサイトを常にアクティブにするよう選択できます。</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。すべてのデバイスで同じリーディング リストなどを使用できます。</translation>
 <translation id="6388799252195623474">このページについて調べて</translation>
 <translation id="6412673304250309937">Chrome に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chrome を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、組織は Chrome を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
@@ -651,7 +653,7 @@
 <translation id="7452987490177144319">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chrome の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}other{# 分間使用しなかった場合、組織は Chrome の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}}</translation>
 <translation id="7466577301922356468">このデータを Google に自動送信すると、Chrome の機能向上に役立ちます。この設定はいつでも変更できます。</translation>
 <translation id="7477130805345743099">Chrome で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
-<translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
+<translation id="7481213027396403996">Chrome の最強の保護機能を利用</translation>
 <translation id="749228101751499733">Chrome にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。<ph name="SHORTCUT" /> キーを押すと Google サービスの設定を変更できます。</translation>
 <translation id="7496017508659652909">ページがプリロードされ、閲覧と検索をすばやく行えるようになります。<ph name="BEGIN_LINK" />ページのプリロードの詳細<ph name="END_LINK" /></translation>
 <translation id="7510190804000607802">ヒント: Google の優れた機能をいつでも手元に</translation>
@@ -697,6 +699,7 @@
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
 <translation id="7847170235260850604">Windows の起動時に Chrome を自動で起動する</translation>
 <translation id="7849037457735762883">前回開いていたページを開く: Chrome で再起動するたびにタブを復元できます。この機能をオンにするには、</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。<ph name="DEVICE" /> の拡張機能などを使用できます。</translation>
 <translation id="7869620795354551924">保存したパスワードを使用するには、QR コードのサイトから iOS 版 Chrome をダウンロードして Google アカウントにログインします</translation>
 <translation id="7872446069773932638">ダウンロードしています... 残り <ph name="SECONDS" /> 秒です</translation>
 <translation id="7886087451482920026">Google レンズでテキストを選択します</translation>
@@ -794,6 +797,7 @@
 <translation id="8679801911857917785">この拡張機能では、Chrome の起動時に表示されるページも制御されます。</translation>
 <translation id="8712637175834984815">理解しました</translation>
 <translation id="8712767363896337380">アップデートが適用されました。更新を完了するには Chrome を再起動してください。</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。<ph name="DEVICE" /> のリーディング リストなどを使用できます。</translation>
 <translation id="8718062187489036808">Chrome からログアウト</translation>
 <translation id="873133009373065397">Google Chrome では既定のブラウザを判定または設定できません</translation>
 <translation id="8747073452963259673">検索範囲の左下隅: 左 <ph name="LEFT" />%、下 <ph name="BOTTOM" />%</translation>

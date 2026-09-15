@@ -1351,6 +1351,7 @@
 <translation id="2026367923222947564">ទំព័រ​ពេញ</translation>
 <translation id="2026377162111110983">សំឡេង​នៅកន្លែង</translation>
 <translation id="2028449514182362831">មុខងារដែលត្រូវការឧបករណ៍​ចាប់​ចលនានឹងមិនដំណើរការទេ</translation>
+<translation id="2029064269235798707">ជ្រើសរើសផ្លូវកាត់​ក្ដារ​ចុច</translation>
 <translation id="202918510990975568">បញ្ចូល​ពាក្យសម្ងាត់​របស់អ្នក ដើម្បី​កំណត់​រចនាសម្ព័ន្ធ​សុវត្ថិភាព និងការចូលគណនី</translation>
 <translation id="2030455719695904263">ផ្ទាំងប៉ះ</translation>
 <translation id="2030803782168502207">ដក​ការជាវ​ចេញពី​ឧបករណ៍</translation>
@@ -1442,6 +1443,7 @@
 <translation id="2111670510994270194">ផ្ទាំងថ្មី​ទៅខាង​ស្ដាំ</translation>
 <translation id="2111778868023567359">អ្នក​នឹងមិនឃើញ​ក្រុមផ្ទាំង​នៅលើ​ទំព័រនេះ​ទៀតទេ</translation>
 <translation id="2112554630428445878">សូមស្វាគមន៍ <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">មើលវិញ្ញាបនបត្រដែលបាននាំចូលពី macOS</translation>
 <translation id="21133533946938348">ដៅផ្ទាំង</translation>
 <translation id="2113479184312716848">បើកឯកសារ...</translation>
@@ -1997,6 +1999,7 @@
 <translation id="252513908494776481">សួរអំពី​ផ្ទាំងនេះ</translation>
 <translation id="2525746158911982776">ការដំឡើងកំណែមិនបានសម្រេចទេ ដោយសារប្រព័ន្ធខ្វះទំហំផ្ទុកគ្រប់គ្រាន់។</translation>
 <translation id="2525842906387880861">អ្នកនឹង​មើលមិន​ឃើញការណែនាំនៅលើ​ទំព័រនេះ​ទៀតទេ</translation>
+<translation id="2526346836766369775">&amp;ផ្ទាំង​ដាច់ដោយ​ឡែកថ្មី</translation>
 <translation id="2526590354069164005">ដេស៍ថប</translation>
 <translation id="2526619973349913024">រក​មើល​កំណែ​ថ្មី</translation>
 <translation id="2527167509808613699">ប្រភេទនៃការភ្ជាប់ណាមួយ</translation>
@@ -2282,6 +2285,7 @@
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2740876196999178364">កូដសម្ងាត់​ទាំងនេះ​ត្រូវបានរក្សាទុក​តែនៅលើ​ឧបករណ៍​នេះ​ប៉ុណ្ណោះ។ កូដសម្ងាត់​ទាំងនេះមិនត្រូវបានរក្សាទុក​ទៅ​ក្នុងគណនី Google របស់អ្នកទេ។</translation>
 <translation id="2741912629735277980">បង្ហាញ UI នៅលើអេក្រង់ចូល</translation>
+<translation id="274229007420507506">ផ្លាស់ប្ដូរផ្លូវកាត់នៅក្នុង <ph name="BEGIN_LINK" />"ការកំណត់"<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053">មិនអាច​ប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ឥឡូវនេះបានទេ។</translation>
 <translation id="2743301740238894839">ចាប់ផ្ដើម</translation>
 <translation id="2743378970365831481">ដើម្បី​រក្សាទុក​ពាក្យ​សម្ងាត់​របស់អ្នក​ទៅ​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់ សូម​ចុចរូប​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់​នៅក្នុង​របារ​ទីតាំង</translation>
@@ -2631,6 +2635,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{មិនបាន​ប្ដូរគ្រាប់ចុច​តាមបំណងទេ}=1{បាន​ប្ដូរគ្រាប់ចុច 1 តាមបំណង}other{បាន​ប្ដូរគ្រាប់ចុច {COUNT} តាមបំណង}}</translation>
 <translation id="3002864108328203174">សន្លឹក​ខាងក្រោម Gemini ពាក់កណ្ដាល​អេក្រង់។</translation>
 <translation id="3003144360685731741">បណ្តាញដែលចូលចិត្ត</translation>
+<translation id="3003152206838282768">កំពុងបំពេញកិច្ចការកម្មវិធី Gemini របស់អ្នកនៅក្នុង Chrome។ ពិនិត្យមើល Chrome ដើម្បីទទួលបានព័ត៌មានថ្មីៗបន្ថែមទៀត</translation>
 <translation id="3003253259757197230">URL ដែលអ្នកចូលមើលត្រូវបានផ្ញើទៅ Google ដើម្បីព្យាករ​គេហទំព័រដែលអ្នក​ប្រហែលជា​ចូលមើលបន្ទាប់ និងដើម្បីបង្ហាញដល់អ្នកនូវព័ត៌មានបន្ថែមអំពីទំព័រដែលអ្នកកំពុងចូលមើល</translation>
 <translation id="3003623123441819449">ឃ្លាំងសម្ងាត់ CSS</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> របស់អ្នក​នឹង​បង្កើត​ការតភ្ជាប់ Wi-Fi ជាលក្ខណៈ​ឯកជន។</translation>
@@ -5077,6 +5082,7 @@
 <translation id="4864805589453749318">ជ្រើសរើស​មាតាបិតា​ដែលកំពុងផ្ដល់​ការអនុញ្ញាតឱ្យ​បញ្ចូល​គណនី​សាលារៀន។</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (បានទប់ស្កាត់)</translation>
 <translation id="486505726797718946">​បានសន្សំសំចៃអង្គចងចាំ​</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />៖ កំពុងបំពេញកិច្ចការកម្មវិធី Gemini របស់អ្នកនៅក្នុង Chrome។ ពិនិត្យមើល Chrome ដើម្បីទទួលបានព័ត៌មានថ្មីៗបន្ថែមទៀត</translation>
 <translation id="486635084936119914">បើក​ប្រភេទឯកសារជាក់លាក់ដោយស្វ័យប្រវត្តិ បន្ទាប់ពីទាញយករួចហើយ</translation>
 <translation id="4868284252360267853">បច្ចុប្បន្ន ប្រអប់នេះ​មិនត្រូវបានផ្ដោតទេ។ សូមចុច "Command-Shift-Option A" ដើម្បីផ្ដោតលើ​ប្រអប់នេះ។</translation>
 <translation id="4869170227080975044">អាន​ព័ត៌មានអំពី​បណ្ដាញ ChromeOS</translation>
@@ -7708,6 +7714,7 @@
 <translation id="6916818963747321523">ពង្រីក​ទាំងអស់</translation>
 <translation id="6917873303492266709">ដើម្បី​ចែករំលែក ចូលរួម និង​សហការ​នៅក្នុង​ក្រុមផ្ទាំង សូមបើកការកំណត់ រួចបើក "អនុញ្ញាតការចូល Chrome"</translation>
 <translation id="6919354101107095996">សូមព្យាយាម​ចូលគេហទំព័រ។ បន្ទាប់មក ទាញយក​ម្ដងទៀត</translation>
+<translation id="6919461818524183254">ជ្រើសរើស​ផ្លូវកាត់</translation>
 <translation id="6919952941889172531">បើកការរុករកដោយសុវត្ថិភាពបន្ថែមសម្រាប់កម្រងព័ត៌មាន Chrome នេះដែរឬ?</translation>
 <translation id="6920989436227028121">បើកផ្ទាំងធម្មតា</translation>
 <translation id="6921104647315081813">សម្អាត​សកម្មភាព</translation>
@@ -8546,6 +8553,7 @@
 <translation id="7578137152457315135">ការកំណត់​ស្នាម​ម្រាមដៃ</translation>
 <translation id="7578692661782707876">សូមបញ្ចូលលេខ​កូដ​បញ្ជាក់របស់អ្នក។</translation>
 <translation id="757941033127302446">បានចូលគណនី</translation>
+<translation id="7580311608678791180">បើក​ពីរបារកិច្ចការ Windows</translation>
 <translation id="7581462281756524039">ឧបករណ៍សម្អាត</translation>
 <translation id="7582582252461552277">ពេញចិត្តបណ្តាញនេះ</translation>
 <translation id="7582844466922312471">ទិន្នន័យទូរស័ព្ទ</translation>
@@ -8559,6 +8567,7 @@
 <translation id="7590883480672980941">ការកំណត់ការបញ្ចូល</translation>
 <translation id="7592060599656252486">មួយ​ចំនួន</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (កំហុសឆ្គងលេខកូដ <ph name="ERROR_CODE" />)។</translation>
+<translation id="7597816893408026784">បើក​ពីរបារម៉ឺនុយ Mac</translation>
 <translation id="7600054753482800821">&amp;គ្រប់គ្រង​ម៉ាស៊ីន​ស្វែងរក និង​ការស្វែងរក​នៅលើគេហទំព័រ</translation>
 <translation id="7600218158048761260">Google ថាស​ត្រូវបានបិទ​សម្រាប់​ប្រភេទ​គណនីនេះ។</translation>
 <translation id="7600965453749440009">មិនបកប្រែភាសា <ph name="LANGUAGE" /> ទៀតឡើយ</translation>
@@ -9244,6 +9253,7 @@
 <translation id="8102139037507939978">លុប​ព័ត៌មានបញ្ជាក់​អត្តសញ្ញាណ​បុគ្គល​ពី system_logs.txt។</translation>
 <translation id="810362914482827094">ស្វែងរកកូដសម្ងាត់</translation>
 <translation id="8104088837833760645">ទាញយក​កម្រងព័ត៌មាន eSIM</translation>
+<translation id="8104388155778519213">ចែករំលែក​អ្វីដែលមាន​នៅលើ​អេក្រង់​របស់អ្នក​តាមរយៈ Google Lens</translation>
 <translation id="8104778744208707085">ត្រូវការ​ការយកចិត្ត​ទុកដាក់​ពីអ្នក</translation>
 <translation id="8105273883928376822">សូម​ចូលគណនី ដើម្បី​បន្ត។</translation>
 <translation id="8106114112474206597">ប្រើ “i” ដើម្បីចុចប៊ូតុងម៉ៅស៍</translation>

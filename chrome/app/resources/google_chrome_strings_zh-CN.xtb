@@ -94,6 +94,7 @@
 <translation id="1873233029667955273">Google Chrome 不是您的默认浏览器</translation>
 <translation id="1874309113135274312">Google Chrome 测试版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本太旧</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" />已登录。若要分开保存您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可在所有设备上获取扩展程序等内容。</translation>
 <translation id="1880677175115548835">选择文字</translation>
 <translation id="1896602904211344018">获取 Chrome 应用</translation>
 <translation id="1919130412786645364">允许登录 Chrome</translation>
@@ -540,6 +541,7 @@
 <translation id="6334815226785304306">将 Google Chrome 设为默认浏览器并固定到任务栏</translation>
 <translation id="63540178978900677">Chrome 不再是默认浏览器。要将 Chrome 设为默认浏览器吗？</translation>
 <translation id="6360449101159168105">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chrome 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" />已登录。若要分开保存您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可在所有设备上获取阅读清单等内容。</translation>
 <translation id="6388799252195623474">帮我解决这个问题</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{您的组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
@@ -700,6 +702,7 @@
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7847170235260850604">在 Windows 启动时启动 Chrome</translation>
 <translation id="7849037457735762883">从上次停下的地方继续：Chrome 可在您每次重启后恢复标签页。如需开启此功能，请前往</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" />已登录。若要分开保存您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可以获取<ph name="DEVICE" />中的扩展程序等内容。</translation>
 <translation id="7869620795354551924">如需使用已保存的密码，请扫描二维码、下载 iOS 版 Chrome 应用，并登录您的 Google 账号</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
 <translation id="7886087451482920026">选择要使用 Google 智能镜头搜索的文字</translation>
@@ -797,6 +800,7 @@
 <translation id="8679801911857917785">它还能够控制Chrome启动后显示的页面。</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8712767363896337380">离最新版本只有一步之遥了！重新启动 Chrome 即可完成更新。</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" />已登录。若要分开保存您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可以获取<ph name="DEVICE" />中的阅读清单等内容。</translation>
 <translation id="8718062187489036808">在 Chrome 中退出账号</translation>
 <translation id="873133009373065397">Google Chrome 无法确定或设置默认浏览器</translation>
 <translation id="8747073452963259673">搜索区域的左下角：左侧 <ph name="LEFT" />%，底部 <ph name="BOTTOM" />%</translation>

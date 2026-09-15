@@ -676,6 +676,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1523978563989812243">Mechanizmy zamiany tekstu na mowę</translation>
 <translation id="1524563461097350801">Nie, dziękuję</translation>
 <translation id="1525740877599838384">Do określania lokalizacji używaj tylko Wi-Fi</translation>
+<translation id="1526274304859009691">Zaloguj się, aby mieć dostęp do rozszerzeń oraz innych danych z urządzenia <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Dokument bez tytułu</translation>
 <translation id="1527336312600375509">Częstotliwość odświeżania monitora</translation>
 <translation id="152913213824448541">Kontakty wykorzystywane przez Udostępnianie w pobliżu</translation>
@@ -6359,6 +6360,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5902400038326841449">Menedżer haseł Google jest wyłączony</translation>
 <translation id="5902892210366342391">Wyświetlaj ostrzeżenia przed wejściem na niezabezpieczone strony w trybie incognito</translation>
 <translation id="5906457147959147328">Nadal zezwalaj tej stronie na używanie identyfikatorów do odtwarzania treści chronionych</translation>
+<translation id="5906549184882174190">Tryb przeglądania prywatnego</translation>
 <translation id="5906655207909574370">Już prawie gotowe. Uruchom ponownie urządzenie, by zakończyć aktualizację.</translation>
 <translation id="5906732635754427568">Dane powiązane z tą aplikacją zostaną usunięte z urządzenia.</translation>
 <translation id="5906974869830879618">Podaj kod PIN</translation>
@@ -6584,6 +6586,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6088475950266477163">Ustawi&amp;enia</translation>
 <translation id="608912389580139775">Aby dodać tę stronę do listy Do przeczytania, kliknij ikonę Zakładka</translation>
 <translation id="6089289670051481345">Tritanomalia</translation>
+<translation id="6090068946774422711">Zaloguj się, aby mieć dostęp do listy Do przeczytania oraz innych danych z urządzenia <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Zamknięte ostrzeżenia</translation>
 <translation id="609174145569509836">Zwolnij miejsce na dane</translation>
 <translation id="6091761513005122595">Udział został podłączony.</translation>
@@ -7938,6 +7941,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7124712201233930202">Brak zgodności z zasadami organizacji</translation>
 <translation id="7125148293026877011">Usuń Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Zaloguj się, aby mieć dostęp do rozszerzeń oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="7125932261198019860">Upewnij się, że drukarka jest połączona z tą samą siecią Wi-Fi co Chromebook lub użyj kabla USB. <ph name="LINK_BEGIN" />Więcej informacji o zgodności<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historia pobierania</translation>
 <translation id="7130438335435247835">Nazwa punktu dostępu (APN)</translation>
@@ -8790,6 +8794,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7780992949171378848">Wysyłaj do witryn żądanie rezygnacji dotyczące wykorzystywania Twoich danych</translation>
 <translation id="7782102568078991263">Nie pokazuj sugestii od Google</translation>
 <translation id="7782717250816686129">Przechowuj trwałe dane na ekranie logowania i wstawiaj do sesji dane uwierzytelniające.</translation>
+<translation id="7782885970382585765">Zaloguj się, aby mieć dostęp do listy Do przeczytania oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="7784020347632229094">Więcej informacji o skrócie klawiszowym</translation>
 <translation id="7784067724422331729">Ustawienia zabezpieczeń na komputerze zablokowały ten plik.</translation>
 <translation id="7784796923038949829">Nie udało się odczytać ani zmienić danych strony internetowej</translation>

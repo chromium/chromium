@@ -677,6 +677,7 @@
 <translation id="1523978563989812243">텍스트 음성 변환 엔진</translation>
 <translation id="1524563461097350801">나중에</translation>
 <translation id="1525740877599838384">위치 파악에 Wi-Fi만 사용</translation>
+<translation id="1526274304859009691"><ph name="DEVICE" />에서 내 확장 프로그램 등을 사용하려면 로그인하세요</translation>
 <translation id="1526560967942511387">제목 없는 문서</translation>
 <translation id="1527336312600375509">모니터 새로고침 빈도</translation>
 <translation id="152913213824448541">Nearby Share 연락처</translation>
@@ -6386,6 +6387,7 @@
 <translation id="5902400038326841449">Google 비밀번호 관리자가 사용 중지됨</translation>
 <translation id="5902892210366342391">시크릿 모드에서 안전하지 않은 사이트로 이동하기 전에 경고를 표시합니다.</translation>
 <translation id="5906457147959147328">이 사이트에서 보호된 콘텐츠를 재생하기 위해 식별자를 계속 사용하도록 허용</translation>
+<translation id="5906549184882174190">보안 시크릿 창</translation>
 <translation id="5906655207909574370">업데이트가 거의 완료되었습니다. 업데이트를 완료하려면 기기를 다시 시작하세요.</translation>
 <translation id="5906732635754427568">이 앱과 관련된 데이터가 이 기기에서 삭제됩니다.</translation>
 <translation id="5906974869830879618">PIN 입력</translation>
@@ -6611,6 +6613,7 @@
 <translation id="6088475950266477163">설정(&amp;G)</translation>
 <translation id="608912389580139775">읽기 목록에 이 페이지를 추가하려면 북마크 아이콘을 클릭하세요.</translation>
 <translation id="6089289670051481345">청색약</translation>
+<translation id="6090068946774422711"><ph name="DEVICE" />에서 내 읽기 목록 등을 사용하려면 로그인하세요</translation>
 <translation id="6090760257419195752">닫은 경고</translation>
 <translation id="609174145569509836">스토리지 정리하기</translation>
 <translation id="6091761513005122595">공유가 성공적으로 마운트되었습니다.</translation>
@@ -7963,6 +7966,7 @@
 <translation id="7124712201233930202">조직의 정책을 준수하지 않습니다.</translation>
 <translation id="7125148293026877011">Crostini 삭제</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">모든 기기에서 내 확장 프로그램 등을 사용하려면 로그인하세요</translation>
 <translation id="7125932261198019860">프린터가 Chromebook과 동일한 Wi-Fi 네트워크에 연결되어 있거나 USB 케이블을 사용해야 합니다. <ph name="LINK_BEGIN" />호환성 자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">다운로드 기록</translation>
 <translation id="7130438335435247835">액세스포인트 네임(APN)</translation>
@@ -8815,6 +8819,7 @@
 <translation id="7780992949171378848">사이트에 내 데이터 사용에 관한 거부 요청 보내기</translation>
 <translation id="7782102568078991263">Google의 추천 단어 없음</translation>
 <translation id="7782717250816686129">로그인 화면의 지속 데이터를 저장하고 세션에 사용자 인증 정보를 삽입합니다.</translation>
+<translation id="7782885970382585765">모든 기기에서 내 읽기 목록 등을 사용하려면 로그인하세요</translation>
 <translation id="7784020347632229094">키보드 단축키에 대해 자세히 알아보기</translation>
 <translation id="7784067724422331729">컴퓨터의 보안 설정에 의해 파일이 차단되었습니다.</translation>
 <translation id="7784796923038949829">사이트 데이터를 읽거나 변경할 수 없음</translation>

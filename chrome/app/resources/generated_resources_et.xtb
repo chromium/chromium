@@ -677,6 +677,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1523978563989812243">Kõnesünteesi mootorid</translation>
 <translation id="1524563461097350801">Ei, tänan</translation>
 <translation id="1525740877599838384">Asukoha määramine ainult WiFi-ühenduse kaudu</translation>
+<translation id="1526274304859009691">Logige sisse, et pääseda juurde laiendustele ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="1526560967942511387">Pealkirjata dokument</translation>
 <translation id="1527336312600375509">Kuvari värskendamissagedus</translation>
 <translation id="152913213824448541">Läheduses jagamine – kontaktid</translation>
@@ -6378,6 +6379,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5902400038326841449">Google'i paroolihaldur on välja lülitatud</translation>
 <translation id="5902892210366342391">Inkognito režiimis enne ebaturvalistele saitidele minemist kuvatakse hoiatused</translation>
 <translation id="5906457147959147328">Luba sellel saidil jätkuvalt kaitstud sisu esitamiseks identifikaatoreid kasutada</translation>
+<translation id="5906549184882174190">Isoleeritud</translation>
 <translation id="5906655207909574370">Seade on peaaegu ajakohane. Värskenduse lõpuleviimiseks taaskäivitage seade.</translation>
 <translation id="5906732635754427568">Selle rakendusega seostatud andmed eemaldatakse seadmest.</translation>
 <translation id="5906974869830879618">Sisestage PIN-kood</translation>
@@ -6603,6 +6605,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6088475950266477163">Sead&amp;ed</translation>
 <translation id="608912389580139775">Selle lehe lisamiseks lugemisloendisse klõpsake järjehoidjaikoonil</translation>
 <translation id="6089289670051481345">Tritanomaalia</translation>
+<translation id="6090068946774422711">Logige sisse, et pääseda juurde lugemisloendile ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="6090760257419195752">Hoiatustest loobuti</translation>
 <translation id="609174145569509836">Vabastage salvestusruumi</translation>
 <translation id="6091761513005122595">Jagatava üksuse ühendamine õnnestus.</translation>
@@ -7955,6 +7958,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7124712201233930202">Vastuolu teie organisatsiooni reeglitega</translation>
 <translation id="7125148293026877011">Crostini kustutamine</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma laiendustele ja muule sisule.</translation>
 <translation id="7125932261198019860">Veenduge, et teie printer oleks ühendatud Chromebookiga samasse WiFi-võrku, või kasutage USB-kaablit. <ph name="LINK_BEGIN" />Lisateave ühilduvuse kohta<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Allalaadimiste ajalugu</translation>
 <translation id="7130438335435247835">Pääsupunkti nimi (APN)</translation>
@@ -8808,6 +8812,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7780992949171378848">Saitidele loobumistaotluse saatmine seoses teie andmete kasutamisega</translation>
 <translation id="7782102568078991263">Google'ilt ei ole rohkem soovitusi</translation>
 <translation id="7782717250816686129">Salvestage püsivad andmed sisselogimiskuvale ja sisestage seansis mandaat.</translation>
+<translation id="7782885970382585765">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma lugemisloendile ja muule sisule.</translation>
 <translation id="7784020347632229094">Lisateave klaviatuuri otsetee kohta</translation>
 <translation id="7784067724422331729">Teie arvuti turvaseaded blokeerisid selle faili.</translation>
 <translation id="7784796923038949829">Saidi andmeid ei saa lugeda ega muuta</translation>

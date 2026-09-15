@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Kiireks juurdepääsuks klõpsake Windowsi märguandes nupul <ph name="BEGIN_BOLD" />Jah<ph name="END_BOLD" />, et kinnitada Chromium tegumiribale</translation>
 <translation id="1808667845054772817">Installi Chromium uuesti</translation>
 <translation id="1820835682567584003">Chromium püüab teha järgmist: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma laiendustele ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Järgmine kord, kui avate oma seadmes <ph name="DEVICE_TYPE" /> Chromiumi, kuvatakse teile Google'i paroolihalduri kasutamise viip.</translation>
 <translation id="1838374766361614909">Otsingu kustutamine</translation>
 <translation id="18552579716432081">Sirvimisandmete kustutamiseks ainult sellest seadmest, kuid jättes need oma Google'i kontole alles, <ph name="BEGIN_LINK" />logige Chromiumist välja<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">Installimise ootamine …</translation>
 <translation id="3045032126857188731">Tõlgitud keel: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Sulge tagasisidedialoog</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma lugemisloendile ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Muud Chromiumi profiilid</translation>
 <translation id="3068290154869370196">Laiendused on pistikprogrammid, mis võimaldavad teil Chromiumi kohandada. Laiendused aitavad teil Chromiumi enda vajaduste järgi kohandada, olgu selleks siis asjade organiseerimine või igapäevaste toimingute lihtsustamine.</translation>
 <translation id="3068515742935458733">Aidake Chromiumi täiustada, saates Google'ile krahhiaruandeid ja lingi <ph name="UMA_LINK" /></translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">K&amp;ohandage oma Chromiumit</translation>
 <translation id="4148957013307229264">Installimine ...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – võrku sisselogimine – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete kõigis seadmetes juurde oma lugemisloendile ja muule.</translation>
 <translation id="421369550622382712">Avastage Chromiumi jaoks suurepäraseid rakendusi, mänge, laiendusi ja teemasid.</translation>
 <translation id="4217080900579554343">Selleks et saada see laiendus ja muu kõikidesse oma arvutisse, logige Chromiumisse sisse</translation>
 <translation id="4217972271355023382">Et kaitsta ennast veebis paremini vanema valikute abil, lülitu Chromiumi profiilile, millele oled kasutajana <ph name="USER_EMAIL_ADDRESS" /> juba sisse logitud</translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Ava otsing Chromiumiga</translation>
 <translation id="5383439451358640070">Vaadake, miks Chromium mõned failid blokeerib</translation>
 <translation id="5386450000063123300">Chromiumi värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete kõigis seadmetes juurde oma laiendustele ja muule.</translation>
 <translation id="538767207339317086">Luba Chromiumisse sisselogimine</translation>
 <translation id="5405650547142096840">Eemalda Chromiumist</translation>
 <translation id="5424544524441439284">Vähendab jõudlust, kuid muudab Chromiumi rünnakutele vastupidavamaks</translation>

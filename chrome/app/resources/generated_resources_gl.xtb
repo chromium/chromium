@@ -676,6 +676,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1523978563989812243">Motores de conversión de texto a voz</translation>
 <translation id="1524563461097350801">Non, grazas</translation>
 <translation id="1525740877599838384">Utilizar só a wifi para determinar a localización</translation>
+<translation id="1526274304859009691">Inicia sesión para acceder ás extensións e máis cousas do dispositivo: <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Documento sen título</translation>
 <translation id="1527336312600375509">Frecuencia de actualización do monitor</translation>
 <translation id="152913213824448541">Contactos de Compartir por Nearby</translation>
@@ -6375,6 +6376,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5902400038326841449">O xestor de contrasinais de Google está desactivado</translation>
 <translation id="5902892210366342391">Mostrar advertencias antes de acceder a sitios pouco seguros no modo de incógnito</translation>
 <translation id="5906457147959147328">Continuar permitindo que este sitio use identificadores para reproducir contido protexido</translation>
+<translation id="5906549184882174190">Illado</translation>
 <translation id="5906655207909574370">A actualización case rematou. Reinicia o dispositivo para finalizala.</translation>
 <translation id="5906732635754427568">Os datos asociados con esta aplicación quitaranse deste dispositivo.</translation>
 <translation id="5906974869830879618">Introduce un PIN</translation>
@@ -6599,6 +6601,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6088475950266477163">Configura&amp;ción</translation>
 <translation id="608912389580139775">Para engadir esta páxina á túa lista de lectura, fai clic na icona dos marcadores</translation>
 <translation id="6089289670051481345">Tritanomalía</translation>
+<translation id="6090068946774422711">Inicia sesión para acceder á lista de lectura e máis cousas do dispositivo: <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Advertencias ignoradas</translation>
 <translation id="609174145569509836">Liberar almacenamento</translation>
 <translation id="6091761513005122595">A localización compartida montouse correctamente.</translation>
@@ -7950,6 +7953,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7124712201233930202">Non se cumpren as políticas da túa organización</translation>
 <translation id="7125148293026877011">Eliminar Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Inicia sesión para acceder ás extensións e máis cousas de todos os teus dispositivos</translation>
 <translation id="7125932261198019860">Asegúrate de que a impresora estea conectada á mesma rede wifi que o teu Chromebook ou usa un cable USB. <ph name="LINK_BEGIN" />Máis información sobre a compatibilidade<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historial de descargas</translation>
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
@@ -8803,6 +8807,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7780992949171378848">Envía unha solicitude aos sitios para rexeitar o uso dos teus datos</translation>
 <translation id="7782102568078991263">Non hai máis suxestións de Google</translation>
 <translation id="7782717250816686129">Almacenar os datos persistentes na pantalla de inicio de sesión e inserir as credenciais na sesión.</translation>
+<translation id="7782885970382585765">Inicia sesión para poder acceder á lista de lectura e máis cousas de todos os teus dispositivos</translation>
 <translation id="7784020347632229094">Máis información sobre os atallos de teclado</translation>
 <translation id="7784067724422331729">A configuración de seguranza do teu ordenador bloqueou este ficheiro.</translation>
 <translation id="7784796923038949829">Non se puideron ler ou cambiar os datos do sitio</translation>

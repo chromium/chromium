@@ -676,6 +676,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1523978563989812243">Testua ahots bihurtzeko eginbidearen motorrak</translation>
 <translation id="1524563461097350801">Ez, eskerrik asko</translation>
 <translation id="1525740877599838384">Erabili soilik wifi-sarea kokapena zehazteko</translation>
+<translation id="1526274304859009691">Hasi saioa <ph name="DEVICE" /> gailuko luzapenak eta bestelako datuak eskuratzeko</translation>
 <translation id="1526560967942511387">Titulurik gabeko dokumentua</translation>
 <translation id="1527336312600375509">Monitorearen freskatze-abiadura</translation>
 <translation id="152913213824448541">Nearby Share-k erabilitako kontaktuak</translation>
@@ -6367,6 +6368,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5902400038326841449">Google-ren Pasahitz-kudeatzailea desaktibatuta dago</translation>
 <translation id="5902892210366342391">Erakutsi abisuak ezkutuko moduan webgune ez-seguruetara joan aurretik</translation>
 <translation id="5906457147959147328">Jarraitu identifikatzaileak erabiltzeko baimena ematen webgune honi babestutako edukia erreproduzi dezan</translation>
+<translation id="5906549184882174190">Isolatuta</translation>
 <translation id="5906655207909574370">Ia amaitu dugu! Eguneratzen amaitzeko, berrabiarazi gailua.</translation>
 <translation id="5906732635754427568">Aplikazio honekin erlazionatutako datu guztiak kenduko dira gailu honetatik.</translation>
 <translation id="5906974869830879618">Idatzi PINa</translation>
@@ -6591,6 +6593,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6088475950266477163">Ezarpenak</translation>
 <translation id="608912389580139775">Orria irakurketa-zerrendan gehitzeko, sakatu laster-markaren ikonoa</translation>
 <translation id="6089289670051481345">Tritanomalia</translation>
+<translation id="6090068946774422711">Hasi saioa <ph name="DEVICE" /> gailuko irakurketa-zerrenda eta bestelako datuak eskuratzeko</translation>
 <translation id="6090760257419195752">Baztertutako abisuak</translation>
 <translation id="609174145569509836">Garbitu biltegia</translation>
 <translation id="6091761513005122595">Muntatu da fitxategiak partekatzeko biltegia.</translation>
@@ -7942,6 +7945,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7124712201233930202">Ez dira gordetzen erakundearen gidalerroak</translation>
 <translation id="7125148293026877011">Ezabatu Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Hasi saioa luzapenak eta bestelako datuak gailu guztietan eskuratzeko</translation>
 <translation id="7125932261198019860">Ziurtatu inprimagailua Chromebook-aren wifi-sare berera konektatuta dagoela, edo erabili USB kable bat. <ph name="LINK_BEGIN" />Lortu bateragarritasunari buruzko informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Deskargen historia</translation>
 <translation id="7130438335435247835">Sarbide-puntuaren izena (APNa)</translation>
@@ -8794,6 +8798,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7780992949171378848">Bidali webguneei zure datuak ez erabiltzeko eskaera</translation>
 <translation id="7782102568078991263">Google-k ez du iradokizun gehiagorik</translation>
 <translation id="7782717250816686129">Saio-hasierako pantailan datu iraunkorrak gorde eta saioa hasteko kredentzialak idatzi.</translation>
+<translation id="7782885970382585765">Hasi saioa irakurketa-zerrenda eta bestelako datuak gailu guztietan eskuratzeko</translation>
 <translation id="7784020347632229094">Lortu lasterbideari buruzko informazio gehiago</translation>
 <translation id="7784067724422331729">Fitxategia blokeatu da ordenagailuan dituzun segurtasun-ezarpenen ondorioz</translation>
 <translation id="7784796923038949829">Ezin dira irakurri edo aldatu webguneko datuak</translation>

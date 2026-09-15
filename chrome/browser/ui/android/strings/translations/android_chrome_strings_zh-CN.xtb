@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">为保护您的安全，Chrome 已移除某些网站的权限</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384568202352682721">另存为…</translation>
-<translation id="1384704387250346179">使用 Google 智能镜头翻译图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">您可能会看到在 Chrome 中打开了链接的其他应用的历史记录。您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="139752016751285248">显示价格分析的底部动作条已全屏打开</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 进行搜索</translation>
@@ -174,7 +173,6 @@
 <translation id="1650979352027263879">已移除外观偏好设置</translation>
 <translation id="1671236975893690980">正在等待下载…</translation>
 <translation id="1672586136351118594">不再显示</translation>
-<translation id="1680919990519905526">使用 Google 智能镜头搜索图中商品信息<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">，并会在 <ph name="MONTHS_ARCHIVED" /> 个月后关闭</translation>
 <translation id="1689333818294560261">别名</translation>
 <translation id="1696555181932908973">您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
@@ -413,6 +411,7 @@
 <translation id="2581165646603367611">这会清除 Chrome 认为不重要的网站的 Cookie、缓存和其他数据。</translation>
 <translation id="2587052924345400782">新版本已推出</translation>
 <translation id="2593272815202181319">等宽</translation>
+<translation id="2604138917550693049">使用 Google 智能镜头搜索图片</translation>
 <translation id="2604446170045642109">您可在设置中为网站关闭深色主题。</translation>
 <translation id="2605017215201958293">利用 AI 聆听此网页的内容</translation>
 <translation id="2607441479295509868">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
@@ -1100,7 +1099,6 @@
 <translation id="5355191726083956201">已开启增强型保护</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />，已固定的无痕式标签页，正在共享内容</translation>
 <translation id="5375374982898812658">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从您的所有设备中删除</translation>
-<translation id="5375577065097716013">使用 Google 智能镜头搜索图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">保存并分享</translation>
 <translation id="5385892579392932755">您的笔记本电脑</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> 想使用您数字钱包中的个人信息。除非您信任此网站，否则请勿继续操作。危险网站可能会诱骗您泄露法定全名或身份证号码等信息。</translation>
@@ -1540,7 +1538,6 @@
 <translation id="6996145122199359148">下载此网页</translation>
 <translation id="7007648447224463482">在新窗口中打开所有网址</translation>
 <translation id="7013762323294215682">此通行密钥将保存到密码管理工具。任何有权访问密码管理工具的用户都能使用此通行密钥。</translation>
-<translation id="7020741890149022655">添加到阅读清单<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">在浏览器中打开</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7037994709569287156">将 Chrome 设为默认浏览器</translation>
@@ -2041,6 +2038,7 @@
 <translation id="8957528460562961174">如需继续使用您的密码，请立即将其导出，然后将其导入您偏好的密码管理工具。由于未安装 Google Play 服务，Google 密码管理工具已停止运行。</translation>
 <translation id="8963117664422609631">转到网站设置</translation>
 <translation id="8965591936373831584">待下载</translation>
+<translation id="8967427617812342790">添加到阅读清单</translation>
 <translation id="8969796057708736017">如果该文件符合您所在组织的政策，下载将会完成</translation>
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="8972098258593396643">是否下载到默认文件夹？</translation>

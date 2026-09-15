@@ -2221,6 +2221,7 @@
 <translation id="4750917950439032686">আপনার তথ্য (উদাহরণস্বরূপ, পাসওয়ার্ড বা ক্রেডিট কার্ড নম্বর) যখন এই সাইটে পাঠানো হয় তখন সেটি ব্যক্তিগত থাকে।</translation>
 <translation id="4754461935447132332">শুধুমাত্র সুরক্ষিত সাইটের ক্ষেত্রেই অনুমতি দেওয়া আছে</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">আপনার সেভ করা অফার দেখতে ও অটোফিল করতে প্রোমো কোড ফিল্ড বেছে নিন</translation>
 <translation id="4757740693289347881">কোডটি ভুল</translation>
 <translation id="4757993714154412917">আপনি এইমাত্র একটি প্রতারণামূলক সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্ট সুরক্ষিত করার জন্য, Chromium আপনার সেভ করা পাসওয়ার্ড চেক করে নিতে সাজেস্ট করছে।</translation>
 <translation id="4758311279753947758">পরিচিতির তথ্য জুড়ুন</translation>
@@ -3152,6 +3153,7 @@
 <translation id="6319672966240656136">Google-এর উন্নত সুরক্ষা প্রোগ্রাম চালু করায় এই ব্লক করা থাকবে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">আপনার DNS সেটিংস পরীক্ষা করুন</translation>
 <translation id="6322182122604171028">Windows Hello ব্যবহার করা যায়নি</translation>
+<translation id="6326175484149238433">Chrome থেকে সরান</translation>
 <translation id="6326947323444967009">iOS সেটিংসে Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
 <translation id="6328639280570009161">নেটওয়ার্ক পূর্বানুমান নিষ্ক্রিয় করার চেষ্টা করুন</translation>
 <translation id="6329742260390895689">আপনার তথ্য অটোফিল করতে, Wallet সেটিংসে “Google জুড়ে পাস ব্যবহার করুন” বিকল্প চালু করুন</translation>
@@ -3844,6 +3846,7 @@
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">এই মুহূর্তে ভিআর (VR) ব্যবহার করার অনুমতি রয়েছে</translation>
+<translation id="7517198908921983825">Gemini-র মাধ্যমে সাজেস্ট করা হয়েছে · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">এনভেলপ C10</translation>
 <translation id="7518003948725431193">No webpage was found for the web address: <ph name="URL" /></translation>
 <translation id="7521387064766892559">জাভাস্ক্রিপ্ট</translation>

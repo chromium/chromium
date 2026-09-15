@@ -676,6 +676,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1523978563989812243">Motoare pentru redarea vocală a textului</translation>
 <translation id="1524563461097350801">Nu, mulțumesc</translation>
 <translation id="1525740877599838384">Folosește numai rețeaua Wi-Fi pentru a detecta locația</translation>
+<translation id="1526274304859009691">Conectează-te pentru a accesa extensiile și alte date de pe <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Document fără titlu</translation>
 <translation id="1527336312600375509">Rata de actualizare a monitorului</translation>
 <translation id="152913213824448541">persoane de contact pentru Trimiterea în apropiere</translation>
@@ -6371,6 +6372,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5902400038326841449">Managerul de parole Google este dezactivat</translation>
 <translation id="5902892210366342391">Vezi avertismente înainte de a accesa site-uri nesigure în modul incognito</translation>
 <translation id="5906457147959147328">Permite în continuare acestui site să folosească identificatori pentru a reda conținut protejat</translation>
+<translation id="5906549184882174190">Izolată</translation>
 <translation id="5906655207909574370">Aproape actualizat! Repornește dispozitivul pentru a finaliza actualizarea.</translation>
 <translation id="5906732635754427568">Datele asociate acestei aplicații vor fi eliminate de pe dispozitiv.</translation>
 <translation id="5906974869830879618">Introdu un cod PIN</translation>
@@ -6596,6 +6598,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6088475950266477163">Setă&amp;ri</translation>
 <translation id="608912389580139775">Pentru a adăuga pagina în lista de lecturi, dă clic pe pictograma Marcaj</translation>
 <translation id="6089289670051481345">Tritanomalie</translation>
+<translation id="6090068946774422711">Conectează-te pentru a accesa lista de lecturi și alte date de pe <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Avertismente respinse</translation>
 <translation id="609174145569509836">Eliberează spațiu de stocare</translation>
 <translation id="6091761513005122595">Dispozitivul de stocare în rețea a fost montat.</translation>
@@ -7950,6 +7953,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7124712201233930202">Nu sunt respectate politicile organizației</translation>
 <translation id="7125148293026877011">Șterge Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Conectează-te pentru a-ți accesa extensiile și alte date de pe toate dispozitivele</translation>
 <translation id="7125932261198019860">Asigură-te că imprimanta este conectată la aceeași rețea Wi-Fi ca Chromebookul sau folosește un cablu USB. <ph name="LINK_BEGIN" />Află mai multe despre compatibilitate<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Istoricul descărcărilor</translation>
 <translation id="7130438335435247835">Numele punctului de acces (APN)</translation>
@@ -8803,6 +8807,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7780992949171378848">Trimite o solicitare de renunțare la site-uri privind folosirea datelor tale</translation>
 <translation id="7782102568078991263">Nu mai există sugestii de la Google</translation>
 <translation id="7782717250816686129">Stochează datele persistente pe ecranul de conectare și introdu datele de conectare în sesiune.</translation>
+<translation id="7782885970382585765">Conectează-te pentru a-ți accesa lista de lecturi și altele de pe toate dispozitivele</translation>
 <translation id="7784020347632229094">Află mai multe despre comanda rapidă de la tastatură</translation>
 <translation id="7784067724422331729">Setările de securitate de pe computer au blocat acest fișier.</translation>
 <translation id="7784796923038949829">Nu se pot citi sau modifica datele site-ului</translation>

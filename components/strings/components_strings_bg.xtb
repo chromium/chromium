@@ -2220,6 +2220,7 @@
 <translation id="4750917950439032686">Информацията ви (например пароли или номера на кредитни карти) е частна, когато се изпраща до този сайт.</translation>
 <translation id="4754461935447132332">Не е разрешено за незащитени сайтове</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Изберете полето за промоционален код, за да прегледате и попълните запазените си оферти</translation>
 <translation id="4757740693289347881">Кодът е невалиден</translation>
 <translation id="4757993714154412917">Току-що въведохте паролата си в измамнически сайт. За да защитите профилите си, Chromium препоръчва да проверите запазените си пароли.</translation>
 <translation id="4758311279753947758">Добавяне на информация за връзка</translation>
@@ -3152,6 +3153,7 @@
 <translation id="6319672966240656136">Този сайт ще остане блокиран, защото участвате в програмата „Разширена защита“ на Google. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Проверете настройките си за DNS</translation>
 <translation id="6322182122604171028">Windows Hello не можа да се използва</translation>
+<translation id="6326175484149238433">Премахване от Chrome</translation>
 <translation id="6326947323444967009">Задаване на Chrome като браузъра по подразбиране за системата в настройките на iOS</translation>
 <translation id="6328639280570009161">Опитайте да деактивирате предвижданията за мрежата</translation>
 <translation id="6329742260390895689">За да попълвате автоматично информацията си, включете „Използване на карти в Google“ в настройките на Wallet</translation>
@@ -3844,6 +3846,7 @@
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Достъпът до VR е разрешен този път</translation>
+<translation id="7517198908921983825">Предложено от Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Плик C10</translation>
 <translation id="7518003948725431193">Не е намерена уеб страница за уеб адреса: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

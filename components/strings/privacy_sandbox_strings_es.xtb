@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
 <translation id="1184166532603925201">Cuando estás en modo Incógnito, Chrome impide que los sitios usen cookies de terceros</translation>
+<translation id="1365023215312302966">Los sitios no pueden usar cookies de terceros para personalizar contenido y anuncios, ni para conocer las acciones que realizas en otros sitios</translation>
 <translation id="1569440020357229235">Cuando estás en modo Incógnito, los sitios no pueden usar cookies de terceros. Si un sitio que depende de estas cookies no funciona, puedes <ph name="BEGIN_LINK" />probar a darle acceso temporal a cookies de terceros<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Es posible que no puedas usar las funciones de algunos sitios</translation>
 <translation id="2183376768278472507">Si un sitio no funciona correctamente, puedes probar a permitir las cookies de terceros de un sitio concreto que visites</translation>
 <translation id="2235344399760031203">Se han bloqueado las cookies de terceros</translation>
+<translation id="2360633687155619995">Los sitios no pueden usar cookies de terceros para personalizar contenido y anuncios, ni para conocer las acciones que realizas en otros sitios. Es posible que no puedas usar algunas funciones de los sitios correctamente.</translation>
 <translation id="2496115946829713659">Los sitios pueden usar cookies de terceros para personalizar contenido y anuncios, así como para conocer las acciones que realizas en otros sitios</translation>
 <translation id="3045333309254072201">Cuando estás en modo Incógnito, los sitios no pueden usar cookies de terceros. Si un sitio que depende de estas cookies no funciona, puedes <ph name="START_LINK" />probar a darle acceso temporal a cookies de terceros<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Los sitios que dependen de cookies de terceros deberían funcionar correctamente</translation>

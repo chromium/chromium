@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">To help keep you safe, permissions were removed from some sites</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384568202352682721">Save as…</translation>
-<translation id="1384704387250346179">Translate image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">You may see the history from other apps that open links in Chrome. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Price insights bottom sheet opened at full height</translation>
 <translation id="1397811292916898096">Search with <ph name="PRODUCT_NAME" /></translation>
@@ -174,7 +173,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1650979352027263879">Removed your appearance preferences</translation>
 <translation id="1671236975893690980">Download pending...</translation>
 <translation id="1672586136351118594">Don‘t show again</translation>
-<translation id="1680919990519905526">Shop image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020and closed after <ph name="MONTHS_ARCHIVED" /> months</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1696555181932908973">You can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -413,6 +411,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2581165646603367611">This will clear cookies, cache and other data of sites Chrome doesn't think is important.</translation>
 <translation id="2587052924345400782">Newer version is available</translation>
 <translation id="2593272815202181319">Monospace</translation>
+<translation id="2604138917550693049">Search image with Google Lens</translation>
 <translation id="2604446170045642109">You can turn off Dark theme for sites in your settings.</translation>
 <translation id="2605017215201958293">Listen to this page with AI</translation>
 <translation id="2607441479295509868">Signed out. Sign back in to use the bookmarks, passwords and more in your account.</translation>
@@ -1100,7 +1099,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5355191726083956201">Enhanced protection is on</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, pinned sharing Incognito tab</translation>
 <translation id="5375374982898812658">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>
-<translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">Save and share</translation>
 <translation id="5385892579392932755">your laptop</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> wants to use personal info from your digital wallet. Only continue if you trust this site. Dangerous sites might trick you into revealing things like your legal name or ID number.</translation>
@@ -1540,7 +1538,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6996145122199359148">Download this page</translation>
 <translation id="7007648447224463482">Open all in new window</translation>
 <translation id="7013762323294215682">This passkey will be saved to your password manager. Anyone with access to it will be able to use this passkey.</translation>
-<translation id="7020741890149022655">Add to reading list <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Open in browser</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7037994709569287156">Make Chrome default</translation>
@@ -2043,6 +2040,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8957528460562961174">To keep access to your passwords, export them now and then import them to your preferred password manager. Google Password Manager stopped working because Google Play services isn't available.</translation>
 <translation id="8963117664422609631">Go to site settings</translation>
 <translation id="8965591936373831584">pending</translation>
+<translation id="8967427617812342790">Add to reading list</translation>
 <translation id="8969796057708736017">Your download will complete if the file meets your organisation's policies</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8972098258593396643">Download to default folder?</translation>

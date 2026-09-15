@@ -2215,6 +2215,7 @@
 <translation id="4750917950439032686">మీ సమాచారాన్ని (ఉదాహరణకు, పాస్‌వర్డ్‌లు లేదా క్రెడిట్ కార్డ్ నంబర్‌లు) ఈ సైట్‌కు పంపినప్పుడు అది ప్రైవేట్‌గా ఉంచబడుతుంది.</translation>
 <translation id="4754461935447132332">సురక్షితం కాని సైట్‌లకు అనుమతి లేదు</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">మీరు సేవ్ చేసిన ఆఫర్‌లను చూడటానికి, పూరించడానికి ప్రోమో కోడ్ ఫీల్డ్‌ను ఎంచుకోండి</translation>
 <translation id="4757740693289347881">కోడ్ చెల్లదు</translation>
 <translation id="4757993714154412917">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. మీ ఖాతాలను సురక్షితంగా ఉంచడానికి, Chromium మీ సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయాలని సిఫార్సు చేస్తోంది.</translation>
 <translation id="4758311279753947758">సంప్రదింపు సమాచారాన్ని జోడించండి</translation>
@@ -3147,6 +3148,7 @@
 <translation id="6319672966240656136">మీరు Google అడ్వాన్స్‌డ్ ప్రొటెక్షన్ ప్రోగ్రామ్ కింద ఉన్నందున ఈ సైట్ బ్లాక్ చేయబడి ఉంటుంది. <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">మీ DNS సెట్టింగ్‌లను చెక్ చేయండి</translation>
 <translation id="6322182122604171028">Windows Helloను ఉపయోగించడం సాధ్యం కాలేదు</translation>
+<translation id="6326175484149238433">Chrome నుండి తీసివేయండి</translation>
 <translation id="6326947323444967009">iOS సెట్టింగ్‌లలో Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="6328639280570009161">నెట్‌వర్క్ సూచనను నిలిపివేసి ప్రయత్నించండి</translation>
 <translation id="6329742260390895689">మీ సమాచారాన్ని ఆటోఫిల్ చేయడానికి, Wallet సెట్టింగ్‌లలో "Google అంతటా పాస్‌లను ఉపయోగించండి"ని ఆన్ చేయండి</translation>
@@ -3839,6 +3841,7 @@
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">ఈ సమయంలో VRకు అనుమతి ఉంది</translation>
+<translation id="7517198908921983825">Gemini అందించిన సూచన · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">ఎన్వలప్ C10</translation>
 <translation id="7518003948725431193">వెబ్ అడ్రస్‌కు వెబ్‌పేజీ కనుగొనబడలేదు: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

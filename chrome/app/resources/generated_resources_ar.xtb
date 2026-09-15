@@ -677,6 +677,7 @@
 <translation id="1523978563989812243">محرّكات "تحويل النص إلى كلام"</translation>
 <translation id="1524563461097350801">لا، شكرًا</translation>
 <translation id="1525740877599838384">‏استخدام شبكة Wi-Fi فقط لتحديد الموقع الجغرافي</translation>
+<translation id="1526274304859009691">يمكنك تسجيل الدخول للوصول إلى الإضافات وغيرها من <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">مستند بلا عنوان</translation>
 <translation id="1527336312600375509">معدّل إعادة تحميل شاشة العرض</translation>
 <translation id="152913213824448541">جهات الاتصال التي تستخدم ميزة "المشاركة عن قرب"</translation>
@@ -6375,6 +6376,7 @@
 <translation id="5902400038326841449">‏"مدير كلمات المرور في Google" غير مفعَّل</translation>
 <translation id="5902892210366342391">عرض تحذيرات قبل الانتقال إلى المواقع الإلكترونية غير الآمنة في "وضع التصفُّح المتخفي"</translation>
 <translation id="5906457147959147328">مواصلة السماح لهذا الموقع الإلكتروني باستخدام المعرّفات لتشغيل المحتوى المحمي</translation>
+<translation id="5906549184882174190">تطبيق معزول</translation>
 <translation id="5906655207909574370">أوشك التحديث على الانتهاء! أعِد تشغيل الجهاز لإنهاء التحديث.</translation>
 <translation id="5906732635754427568">ستتم إزالة البيانات المقترنة بهذا التطبيق من هذا الجهاز.</translation>
 <translation id="5906974869830879618">يُرجى إدخال رقم تعريف شخصي</translation>
@@ -6600,6 +6602,7 @@
 <translation id="6088475950266477163">الإعدادات</translation>
 <translation id="608912389580139775">لإضافة هذه الصفحة إلى "قائمة القراءة"، انقر على رمز الإشارات المرجعية.</translation>
 <translation id="6089289670051481345">غَمَشُ الأزرق</translation>
+<translation id="6090068946774422711">يمكنك تسجيل الدخول للوصول إلى قائمة القراءة وغيرها من <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">التحذيرات المغلقة</translation>
 <translation id="609174145569509836">إخلاء مساحة التخزين</translation>
 <translation id="6091761513005122595">تم تحميل المشاركة بنجاح.</translation>
@@ -7960,6 +7963,7 @@
 <translation id="7124712201233930202">لا يستوفي الملف متطلبات سياسات مؤسستك.</translation>
 <translation id="7125148293026877011">‏حذف نظام التشغيل Crostini</translation>
 <translation id="7125177678433853645">‫<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">يمكنك تسجيل الدخول للوصول إلى الإضافات وغيرها على جميع أجهزتك</translation>
 <translation id="7125932261198019860">‏تأكَّد من اتصال الطابعة وجهاز Chromebook بشبكة Wi-Fi نفسها أو استخدِم كابل USB. <ph name="LINK_BEGIN" />مزيد من المعلومات حول التوافق<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">سجل التنزيل</translation>
 <translation id="7130438335435247835">‏اسم نقطة الوصول (APN)</translation>
@@ -8813,6 +8817,7 @@
 <translation id="7780992949171378848">إرسال طلب إلى المواقع الإلكترونية لإيقاف استخدام بياناتك</translation>
 <translation id="7782102568078991263">‏ليس هناك المزيد من الاقتراحات من Google</translation>
 <translation id="7782717250816686129">يمكنك تخزين البيانات الثابتة في شاشة تسجيل الدخول وإدخال بيانات الاعتماد في الجلسة.</translation>
+<translation id="7782885970382585765">يمكنك تسجيل الدخول للوصول إلى قائمة القراءة وغيرها على جميع أجهزتك</translation>
 <translation id="7784020347632229094">مزيد من المعلومات عن اختصار لوحة المفاتيح</translation>
 <translation id="7784067724422331729">حظرت إعدادات الأمان بجهاز الكمبيوتر هذا الملف.</translation>
 <translation id="7784796923038949829">يتعذَّر الاطِّلاع على بيانات الموقع الإلكتروني أو تغييرها</translation>

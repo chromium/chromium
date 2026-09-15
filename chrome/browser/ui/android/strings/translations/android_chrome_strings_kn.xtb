@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿಡಲು ಸಹಾಯ ಮಾಡಲು, ಕೆಲವು ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1383876407941801731">ಹುಡುಕಿ</translation>
 <translation id="1384568202352682721">ಹೀಗೆ ಸೇವ್ ಮಾಡಿ…</translation>
-<translation id="1384704387250346179">Google Lens ಬಳಸಿ ಚಿತ್ರವನ್ನು ಅನುವಾದಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chrome ನಲ್ಲಿ ಇತರ ಆ್ಯಪ್‌ಗಳಿಂದ ತೆರೆಯಲಾದ ಲಿಂಕ್‌ಗಳ ಇತಿಹಾಸವನ್ನು ನೀವು ನೋಡಲು ಸಾಧ್ಯವಾಗಬಹುದು. ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
 <translation id="139752016751285248">ದರದ ಒಳನೋಟಗಳ ಕೆಳಭಾಗದ ಶೀಟ್ ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ಮೂಲಕ ಹುಡುಕಿ</translation>
@@ -174,7 +173,6 @@
 <translation id="1650979352027263879">ನಿಮ್ಮ ಗೋಚರತೆಯ ಆದ್ಯತೆಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1671236975893690980">ಡೌನ್‌ಲೋಡ್ ಬಾಕಿ ಉಳಿದಿದೆ...</translation>
 <translation id="1672586136351118594">ಮತ್ತೊಮ್ಮೆ ತೋರಿಸಬೇಡಿ</translation>
-<translation id="1680919990519905526">Google Lens ಮೂಲಕ ಚಿತ್ರ ಖರೀದಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020ಮತ್ತು <ph name="MONTHS_ARCHIVED" /> ತಿಂಗಳ ನಂತರ ಮುಚ್ಚಲಾಗುತ್ತದೆ</translation>
 <translation id="1689333818294560261">ಅಡ್ಡಹೆಸರು</translation>
 <translation id="1696555181932908973">ನೀವು <ph name="SITE_ETLD_PLUS_ONE" /> ನಲ್ಲಿ ಮುಂದುವರಿಯಲು ಇತರ ಮಾರ್ಗಗಳನ್ನು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
@@ -413,6 +411,7 @@
 <translation id="2581165646603367611">ಇದು ಕುಕೀಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಪ್ರಮುಖವಲ್ಲವೆಂದು Chrome ಭಾವಿಸುವ ಸೈಟ್‌ಗಳ ಇತರ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="2587052924345400782">ಹೊಸ ಆವೃತ್ತಿಯು ಲಭ್ಯವಿದೆ</translation>
 <translation id="2593272815202181319">ಮೊನೋಸ್ಪೇಸ್</translation>
+<translation id="2604138917550693049">Google Lens ಬಳಸಿಕೊಂಡು ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="2604446170045642109">ನೀವು ಸೈಟ್‌ಗಳ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="2605017215201958293">AI ಮೂಲಕ ಈ ಪುಟವನ್ನು ಆಲಿಸಿ</translation>
 <translation id="2607441479295509868">ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ನೋಡಲು ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
@@ -1099,7 +1098,6 @@
 <translation id="5355191726083956201">ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಿದ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="5375374982898812658">ನೀವು ತಕ್ಷಣವೇ <ph name="GROUP_NAME" /> ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ ಮತ್ತು ಅದನ್ನು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
-<translation id="5375577065097716013">Google Lens ಬಳಸಿ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">ಸೇವ್ ಮಾಡಿ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="5385892579392932755">ನಿಮ್ಮ ಲ್ಯಾಪ್‌ಟಾಪ್</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ನಿಮ್ಮ ಡಿಜಿಟಲ್ ವಾಲೆಟ್‌ನಿಂದ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ. ನೀವು ಈ ಸೈಟ್ ಅನ್ನು ನಂಬಿದರೆ ಮಾತ್ರ ಮುಂದುವರಿಯಿರಿ. ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಕಾನೂನು ಬದ್ಧ ಹೆಸರು ಅಥವಾ ID ಸಂಖ್ಯೆಯಂತಹ ವಿಷಯಗಳನ್ನು ಬಹಿರಂಗಪಡಿಸುವಂತೆ ನಿಮ್ಮನ್ನು ಮೋಸಗೊಳಿಸಬಹುದು.</translation>
@@ -1539,7 +1537,6 @@
 <translation id="6996145122199359148">ಈ ಪುಟವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="7007648447224463482">ಎಲ್ಲವನ್ನೂ ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="7013762323294215682">ಈ ಪಾಸ್‌ಕೀ ಅನ್ನು ನಿಮ್ಮ Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ. ಅದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುವ ಯಾರಿಗಾದರೂ ಈ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.</translation>
-<translation id="7020741890149022655"><ph name="BEGIN_NEW" />ಹೊಸ<ph name="END_NEW" /> ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="7022756207310403729">ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="7037994709569287156">Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
@@ -2042,6 +2039,7 @@
 <translation id="8957528460562961174">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಉಳಿಸಿಕೊಳ್ಳಲು, ಅವುಗಳನ್ನು ಈಗಲೇ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ ಮತ್ತು ನಂತರ ಅವುಗಳನ್ನು ನಿಮ್ಮ ಆದ್ಯತೆಯ ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕಕ್ಕೆ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಿ. Google Play ಸೇವೆಗಳು ಲಭ್ಯವಿಲ್ಲದ ಕಾರಣ, Google Password Manager ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿದೆ.</translation>
 <translation id="8963117664422609631">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="8965591936373831584">ಬಾಕಿ ಉಳಿದಿರುವುದು</translation>
+<translation id="8967427617812342790">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="8969796057708736017">ಫೈಲ್ ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಗಳನ್ನು ಪೂರೈಸಿದರೆ ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="8970887620466824814">ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="8972098258593396643">ಡೀಫಾಲ್ಟ್ ಫೋಲ್ಡರ್‌ಗೆ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಬೇಕೆ?</translation>

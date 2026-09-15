@@ -3152,6 +3152,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6319672966240656136">Ce site restera bloqué, car vous faites partie du programme de protection avancée de Google. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Vérifier vos paramètres DNS</translation>
 <translation id="6322182122604171028">Impossible d'utiliser Windows Hello</translation>
+<translation id="6326175484149238433">Supprimer de Google Chrome</translation>
 <translation id="6326947323444967009">Définir Chrome comme navigateur par défaut du système dans les réglages iOS</translation>
 <translation id="6328639280570009161">Essayez de désactiver la prédiction du réseau</translation>
 <translation id="6329742260390895689">Pour remplir automatiquement vos informations, activez « Utiliser des cartes partout sur Google » dans les paramètres de Portefeuille</translation>
@@ -3843,6 +3844,7 @@ Détails supplémentaires :
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">RV autorisée cette fois</translation>
+<translation id="7517198908921983825">Suggéré par Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Enveloppe C10</translation>
 <translation id="7518003948725431193">Aucune page Web trouvée à l'adresse : <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

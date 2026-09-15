@@ -94,6 +94,7 @@
 <translation id="1873233029667955273">Google Chrome er ikke standardnettleseren din</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS – inn)</translation>
 <translation id="1877026089748256423">Chrome er utdatert</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> er allerede logget på. For å holde surfingen din atskilt, logg på Chrome i din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du får også utvidelsene med mer på alle enhetene dine.</translation>
 <translation id="1880677175115548835">Merk tekst</translation>
 <translation id="1896602904211344018">Skaff deg Chrome-appen</translation>
 <translation id="1919130412786645364">Tillat Chrome-pålogging</translation>
@@ -540,6 +541,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6334815226785304306">Gjør Google Chrome til standardnettleser, og fest den til oppgavelinjen</translation>
 <translation id="63540178978900677">Chrome er ikke lenger standardnettleseren din. Vil du bruke Chrome som standardnettleseren?</translation>
 <translation id="6360449101159168105">Mens denne fanen var inaktiv, ble minnet frigjort for å holde Chrome rask. Du kan velge å alltid ekskludere dette nettstedet fra å gjøres inaktivt.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> er allerede logget på. For å holde surfingen din atskilt, logg på Chrome i din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du får også leselisten med mer på alle enhetene dine.</translation>
 <translation id="6388799252195623474">hjelp meg med dette</translation>
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasjonen din lukker Chrome-nettleseren automatisk når den ikke har vært i bruk på ett minutt. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}other{Organisasjonen din lukker Chrome-nettleseren automatisk når den ikke har vært i bruk på # minutter. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}}</translation>
@@ -700,6 +702,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="7845233973568007926">Installasjonen er fullført. Start datamaskinen på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Start Chrome når Windows starter</translation>
 <translation id="7849037457735762883">Fortsett der du avsluttet: Chrome kan gjenopprette fanene dine hver gang du starter på nytt. For å slå på dette, gå til</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> er allerede logget på. For å holde surfingen din atskilt, logg på Chrome i din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du får også utvidelsene med mer fra <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">For å bruke de lagrede passordene dine, følg QR-koden, last ned Chrome for iOS, og logg på Google-kontoen din</translation>
 <translation id="7872446069773932638">Laster ned … <ph name="SECONDS" /> sekund(er) igjen</translation>
 <translation id="7886087451482920026">Marker tekst med Google Lens</translation>
@@ -797,6 +800,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="8679801911857917785">Den styrer også hvilken side som vises når du starter Chrome.</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8712767363896337380">Nesten ferdig oppdatert! Start Chrome på nytt for å fullføre oppdateringen.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> er allerede logget på. For å holde surfingen din atskilt, logg på Chrome i din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du får også leselisten med mer fra <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Logg av Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan ikke fastslå eller angi standardnettleseren</translation>
 <translation id="8747073452963259673">nederst til venstre i søkefeltet: venstre <ph name="LEFT" /> %, nederst <ph name="BOTTOM" /> %</translation>

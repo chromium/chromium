@@ -2219,6 +2219,7 @@
 <translation id="4750917950439032686">Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер не несиелік карта нөмірлері) құпия сақталады.</translation>
 <translation id="4754461935447132332">Қауіпсіз емес сайттар үшін рұқсат етілмеген.</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Сақталған ұсыныстарды көру және толтыру үшін промокод өрісін таңдаңыз.</translation>
 <translation id="4757740693289347881">Код жарамсыз.</translation>
 <translation id="4757993714154412917">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Аккаунттарыңызды қорғау үшін Chromium сақталған құпия сөздеріңізді тексеруді ұсынады.</translation>
 <translation id="4758311279753947758">Контакт ақпаратын қосу</translation>
@@ -3151,6 +3152,7 @@
 <translation id="6319672966240656136">Бұл сайт блокталған күйі қалады, себебі Google-дың күшейтілген қорғаныс бағдарламасы жұмыс істеп жатыр. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">DNS параметрлерін тексеріңіз</translation>
 <translation id="6322182122604171028">Windows Hello платформасын пайдалану мүмкін болмады</translation>
+<translation id="6326175484149238433">Chrome бағдарламасынан жою</translation>
 <translation id="6326947323444967009">Chrome-ды iOS параметрлерінде жүйенің әдепкі браузері етіп орнату</translation>
 <translation id="6328639280570009161">Желілік болжамды өшіруге әрекет ету</translation>
 <translation id="6329742260390895689">Ақпаратты автоматты түрде толтыру үшін Wallet параметрлерінде "Билеттерді Google-да пайдалану" параметрін қосыңыз.</translation>
@@ -3842,6 +3844,7 @@
 <translation id="7514365320538308">Жүктеу</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR-ға осы жолы рұқсат берілген.</translation>
+<translation id="7517198908921983825">Gemini ұсынған · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 хатқалтасы</translation>
 <translation id="7518003948725431193">Веб-мекенжай үшін веб-бет табылмады: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

@@ -676,6 +676,7 @@
 <translation id="1523978563989812243">Мәтінді дыбыстау жүйелері</translation>
 <translation id="1524563461097350801">Жоқ, рақмет</translation>
 <translation id="1525740877599838384">Орынды анықтау үшін тек Wi-Fi желісін қолдану</translation>
+<translation id="1526274304859009691"><ph name="DEVICE" /> құрылғысынан кеңейтімдер мен басқа деректерді алу үшін аккаунтқа кіріңіз.</translation>
 <translation id="1526560967942511387">Атаусыз құжат</translation>
 <translation id="1527336312600375509">Мониторды жаңарту жиілігі</translation>
 <translation id="152913213824448541">Nearby Share контактілері</translation>
@@ -6368,6 +6369,7 @@
 <translation id="5902400038326841449">Google Password Manager өшірілген</translation>
 <translation id="5902892210366342391">Инкогнито режимінде қауіпті сайттарға кіру алдында ескертулер көрсетілсін</translation>
 <translation id="5906457147959147328">Бұл сайтқа қорғалған контентті ойнату үшін идентификаторларды пайдалануға рұқсат беруді жалғастыру</translation>
+<translation id="5906549184882174190">Оқшау</translation>
 <translation id="5906655207909574370">Сәл қалды. Жаңартуды аяқтау үшін құрылғыны қайта іске қосыңыз.</translation>
 <translation id="5906732635754427568">Бұл қолданбамен байланыстырылған деректер бұл құрылғыдан өшіріледі.</translation>
 <translation id="5906974869830879618">PIN кодын енгізіңіз</translation>
@@ -6592,6 +6594,7 @@
 <translation id="6088475950266477163">Параметр&amp;лер</translation>
 <translation id="608912389580139775">Бұл бетті оқу тізіміне қосу үшін "Бетбелгі" белгішесін басыңыз.</translation>
 <translation id="6089289670051481345">Тританомалия</translation>
+<translation id="6090068946774422711"><ph name="DEVICE" /> құрылғысынан оқу тізімі мен басқа деректерді алу үшін аккаунтқа кіріңіз.</translation>
 <translation id="6090760257419195752">Жабылған ескертулер</translation>
 <translation id="609174145569509836">Жадты тазалау</translation>
 <translation id="6091761513005122595">Ортақ файл орнатылды.</translation>
@@ -7943,6 +7946,7 @@
 <translation id="7124712201233930202">Ұйымыңыздың саясаттарына сәйкес келмейді</translation>
 <translation id="7125148293026877011">Crostini жүйесін жою</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Кеңейтімдерді және т.б. ақпаратты барлық құрылғыдан алу үшін аккаунтқа кіріңіз.</translation>
 <translation id="7125932261198019860">Принтер Chromebook құрылғыңызбен бірдей Wi-Fi желісіне қосылғанына көз жеткізіңіз немесе USB кабелін пайдаланыңыз. <ph name="LINK_BEGIN" />Үйлесімділік туралы толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Жүктеу журналы</translation>
 <translation id="7130438335435247835">Кіру нүктесінің атауы (APN)</translation>
@@ -8795,6 +8799,7 @@
 <translation id="7780992949171378848">Сайттарға деректеріңізді пайдаланудан бас тарту туралы сұрау жіберу</translation>
 <translation id="7782102568078991263">Басқа Google ұсыныстары жоқ</translation>
 <translation id="7782717250816686129">Тұрақты деректерді кіру экранында сақтаңыз және тіркелу деректерін сеансқа енгізіңіз.</translation>
+<translation id="7782885970382585765">Оқу тізімін және т.б. ақпаратты барлық құрылғыдан алу үшін аккаунтқа кіріңіз.</translation>
 <translation id="7784020347632229094">Пернелер тіркесімі туралы толық ақпарат</translation>
 <translation id="7784067724422331729">Компьютеріңіздегі қауіпсіздік параметрлері бұл файлды бөгеді.</translation>
 <translation id="7784796923038949829">Сайттың деректерін оқу немесе өзгерту мүмкін емес</translation>

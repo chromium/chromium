@@ -3149,6 +3149,7 @@
 <translation id="6319672966240656136">ನೀವು Google ನ ಸುಧಾರಿತ ರಕ್ಷಣಾ ಪ್ರೋಗ್ರಾಂನ ಅಡಿಯಲ್ಲಿರುವುದರಿಂದ ಈ ಸೈಟ್ ನಿರ್ಬಂಧಿತವಾಗಿರುತ್ತದೆ. <ph name="BEGIN_LEARN_MORE_LINK" />ಈ ಎಚ್ಚರಿಕೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">ನಿಮ್ಮ DNS ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6322182122604171028">Windows Hello ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="6326175484149238433">Chrome ನಿಂದ ತೆಗೆದುಹಾಕು</translation>
 <translation id="6326947323444967009">iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಅನ್ನು ಸಿಸ್ಟಂನ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="6328639280570009161">ನೆಟ್‌ವರ್ಕ್ ಮುನ್ಸೂಚನೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6329742260390895689">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಲು, Wallet ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ "Google ನಾದ್ಯಂತ ಪಾಸ್‌ಗಳನ್ನು ಬಳಸಿ" ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -3840,6 +3841,7 @@
 <translation id="7514365320538308">ಡೌನ್‌ಲೋಡ್</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">ಈ ಬಾರಿ VR ಗೆ ಅವಕಾಶ ನೀಡಲಾಗಿದೆ</translation>
+<translation id="7517198908921983825">Gemini ಮೂಲಕ ಸೂಚಿಸಲಾಗಿದೆ · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">ಎನ್ವಲಪ್ C10</translation>
 <translation id="7518003948725431193">ಈ ವೆಬ್ ವಿಳಾಸಕ್ಕಾಗಿ ಯಾವುದೇ ವೆಬ್ ಪುಟವು ಕಂಡುಬರಲಿಲ್ಲ: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

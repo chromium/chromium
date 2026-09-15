@@ -70,6 +70,7 @@
 <translation id="1793486931176048546">ਤਤਕਾਲ ਪਹੁੰਚ ਲਈ Chromium ਨੂੰ ਆਪਣੀ ਟਾਸਕਬਾਰ 'ਤੇ ਪਿੰਨ ਕਰਨ ਵਾਸਤੇ Windows ਸੂਚਨਾ ਵਿੱਚ <ph name="BEGIN_BOLD" />ਹਾਂ<ph name="END_BOLD" /> 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="1808667845054772817">Chromium ਨੂੰ ਮੁੜ ਇੰਸਟੌਲ ਕਰੋ</translation>
 <translation id="1820835682567584003">Chromium ਵੱਲੋਂ <ph name="AUTHENTICATION_PURPOSE" /> ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> ਨੇ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਆਪਣੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵੱਖਰਾ ਰੱਖਣ ਲਈ, Chromium ਦੇ ਅੰਦਰ ਆਪਣੇ ਖੁਦ ਦੇ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ <ph name="DEVICE" /> ਤੋਂ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="183031085822326697">ਅਗਲੀ ਵਾਰ ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Chromium ਖੋਲ੍ਹੋਗੇ, ਤਾਂ ਤੁਹਾਨੂੰ Google Password Manager ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਇੱਕ ਪ੍ਰੋਂਪਟ ਦਿਖਾਈ ਦੇਵੇਗਾ।</translation>
 <translation id="1838374766361614909">ਖੋਜ ਹਟਾਓ</translation>
 <translation id="18552579716432081">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਡਾਟੇ ਨੂੰ ਰੱਖਿਅਤ ਰੱਖਦੇ ਹੋਏ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਮਿਟਾਉਣ ਲਈ, <ph name="BEGIN_LINK" />Chromium ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ<ph name="END_LINK" />।</translation>
@@ -192,6 +193,7 @@
 <translation id="3038232873781883849">ਸਥਾਪਤ ਕਰਨ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="3045032126857188731">ਅਨੁਵਾਦਿਤ ਭਾਸ਼ਾ: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">ਵਿਚਾਰ ਵਿੰਡੋ ਬੰਦ ਕਰੋ</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> ਨੇ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਆਪਣੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵੱਖਰਾ ਰੱਖਣ ਲਈ, Chromium ਦੇ ਅੰਦਰ ਆਪਣੇ ਖੁਦ ਦੇ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ <ph name="DEVICE" /> ਤੋਂ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="3068187312562070417">ਹੋਰ Chromium ਪ੍ਰੋਫਾਈਲਾਂ</translation>
 <translation id="3068290154869370196">ਐਕਸਟੈਂਸ਼ਨਾਂ ਐਡ-ਆਨ ਹੁੰਦੀਆਂ ਹਨ, ਜੋ ਤੁਹਾਨੂੰ Chromium ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਦਿੰਦੀਆਂ ਹਨ। ਵਿਵਸਥਿਤ ਰਹਿਣ ਤੋਂ ਲੈ ਕੇ ਰੋਜ਼ਾਨਾ ਦੇ ਕਾਰਜਾਂ ਨੂੰ ਸਰਲ ਬਣਾਉਣ ਤੱਕ, ਐਕਸਟੈਂਸ਼ਨਾਂ Chromium ਨੂੰ ਆਪਣੇ ਮੁਤਾਬਕ ਵਿਉਂਤਬੱਧ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਦੀਆਂ ਹਨ।</translation>
 <translation id="3068515742935458733">Chromium ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ Google ਨੂੰ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਅਤੇ <ph name="UMA_LINK" /> ਭੇਜੋ</translation>
@@ -293,6 +295,7 @@
 <translation id="4147856324248078748">ਆਪਣੇ Chromium ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="4148957013307229264">ਇੰਸਟੌਲ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - ਨੈੱਟਵਰਕ ਸਾਈਨ-ਇਨ - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> ਨੇ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਆਪਣੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵੱਖਰਾ ਰੱਖਣ ਲਈ, Chromium ਦੇ ਅੰਦਰ ਆਪਣੇ ਖੁਦ ਦੇ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="421369550622382712">Chromium ਲਈ ਸ਼ਾਨਦਾਰ ਐਪਸ, ਗੇਮਸ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਵਿਸ਼ੇ ਖੋਜੋ।</translation>
 <translation id="4217080900579554343">ਆਪਣੇ ਸਾਰੇ ਕੰਪਿਊਟਰਾਂ 'ਤੇ ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="4217972271355023382">ਆਪਣੇ ਮਾਂ-ਪਿਓ ਦੀ ਚੋਣ ਵਾਲੇ ਵਿਕਲਪਾਂ ਨਾਲ ਆਨਲਾਈਨ ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ, ਆਪਣੇ Chromium ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਸਵਿੱਚ ਕਰੋ ਜਿੱਥੇ ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
@@ -392,6 +395,7 @@
 <translation id="5382964351116519680">Chromium ਨਾਲ ਖੋਜ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="5383439451358640070">ਜਾਣੋ ਕਿ Chromium ਕੁਝ ਫ਼ਾਈਲਾਂ ਨੂੰ ਬਲਾਕ ਕਿਉਂ ਕਰਦਾ ਹੈ</translation>
 <translation id="5386450000063123300">Chromium ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> ਨੇ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਆਪਣੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵੱਖਰਾ ਰੱਖਣ ਲਈ, Chromium ਦੇ ਅੰਦਰ ਆਪਣੇ ਖੁਦ ਦੇ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="538767207339317086">Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਿਓ</translation>
 <translation id="5405650547142096840">Chromium ਤੋਂ ਹਟਾਓ</translation>
 <translation id="5424544524441439284">ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਘਟਾਉਂਦਾ ਹੈ ਪਰ Chromium ਨੂੰ ਅਟੈਕਾਂ ਪ੍ਰਤੀ ਵਧੇਰੇ ਰੋਧਕ ਬਣਾਉਂਦਾ ਹੈ</translation>

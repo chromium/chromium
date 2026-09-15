@@ -2216,6 +2216,7 @@
 <translation id="4750917950439032686">আপোনাৰ তথ্য (উদাহৰণ স্বৰুপে পাছৱৰ্ড বা ক্ৰেডিট কাৰ্ডৰ নম্বৰ) এই ছাইটলৈ পঠিওৱাৰ পিছতো ব্যক্তিগত হৈ থাকিব।</translation>
 <translation id="4754461935447132332">অসুৰক্ষিত ছাইটসমূহৰ বাবে অনুমতি নাই</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">আপোনাৰ ছেভ কৰি থোৱা অফাৰসমূহ চাবলৈ আৰু পূৰ কৰিবলৈ প্ৰ’ম’ ক’ডৰ ক্ষেত্ৰটো বাছনি কৰক</translation>
 <translation id="4757740693289347881">ক’ডটো অমান্য</translation>
 <translation id="4757993714154412917">আপুনি এটা প্ৰৱঞ্চনামূলক ছাইটত এইমাত্ৰ নিজৰ পাছৱৰ্ডটো দিছে। আপোনাৰ একাউণ্টসমূহ সুৰক্ষিত কৰিবলৈ Chromiumএ আপোনাৰ ছেভ হৈ থকা পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="4758311279753947758">সম্পর্কৰ তথ্য যোগ কৰক</translation>
@@ -3147,6 +3148,7 @@
 <translation id="6319672966240656136">আপুনি Googleৰ সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাৰ প্ৰ’গ্ৰামৰ অংশ হোৱা বাবে এই ছাইটটো অৱৰোধ হৈয়ে থাকিব। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">আপোনাৰ DNS ছেটিং পৰীক্ষা কৰক</translation>
 <translation id="6322182122604171028">Windows Hello ব্যৱহাৰ কৰিব পৰা নগ’ল</translation>
+<translation id="6326175484149238433">Chromeৰ পৰা আঁতৰাওক</translation>
 <translation id="6326947323444967009">iOS ছেটিঙত Chromeক ছিষ্টেমৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
 <translation id="6328639280570009161">নেটৱৰ্কৰ পূৰ্বানুমান অক্ষম কৰি চাওক</translation>
 <translation id="6329742260390895689">আপোনাৰ তথ্য স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবলৈ, Walletৰ ছেটিঙত "সমগ্ৰ Googleত পাছ ব্যৱহাৰ কৰক" অন কৰক</translation>
@@ -3838,6 +3840,7 @@
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">এই সময়ত VRৰ অনুমতি আছে</translation>
+<translation id="7517198908921983825">Geminiএ দিয়া পৰামৰ্শ · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">এনভেল’প C10</translation>
 <translation id="7518003948725431193">এই ৱেব ঠিকনাটোৰ বাবে কোনো ৱেবপৃষ্ঠা বিচাৰি পোৱা নাই: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

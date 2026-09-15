@@ -676,6 +676,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1523978563989812243">Moduly převodu textu na řeč</translation>
 <translation id="1524563461097350801">Ne, díky</translation>
 <translation id="1525740877599838384">K určování polohy používat pouze Wi-Fi</translation>
+<translation id="1526274304859009691">Pokud chcete získat svá rozšíření a další položky z následujícího zařízení, přihlaste se: <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Dokument bez názvu</translation>
 <translation id="1527336312600375509">Obnovovací frekvence monitoru</translation>
 <translation id="152913213824448541">Kontakty pro sdílení nablízko</translation>
@@ -6367,6 +6368,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5902400038326841449">Správce hesel Google je vypnutý</translation>
 <translation id="5902892210366342391">Před přechodem na nezabezpečené weby v anonymním režimu zobrazovat upozornění</translation>
 <translation id="5906457147959147328">Dál tomuto webu povolovat používat identifikátory k přehrávání chráněného obsahu</translation>
+<translation id="5906549184882174190">Izolováno</translation>
 <translation id="5906655207909574370">Aktualizace je téměř hotova! Dokončíte ji restartováním zařízení.</translation>
 <translation id="5906732635754427568">Data přidružená k této aplikaci z tohoto zařízení budou odstraněna.</translation>
 <translation id="5906974869830879618">Zadejte PIN</translation>
@@ -6591,6 +6593,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6088475950266477163">&amp;Nastavení</translation>
 <translation id="608912389580139775">Pokud tuto stránku chcete přidat do seznamu ke čtení, klikněte na ikonu záložky</translation>
 <translation id="6089289670051481345">Tritanomálie</translation>
+<translation id="6090068946774422711">Pokud chcete získat svůj seznam četby a další položky z následujícího zařízení, přihlaste se: <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Zavřená upozornění</translation>
 <translation id="609174145569509836">Vyčistit úložiště</translation>
 <translation id="6091761513005122595">Sdílená složka byla úspěšně připojena.</translation>
@@ -7947,6 +7950,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7124712201233930202">Nejsou splněny zásady vaší organizace</translation>
 <translation id="7125148293026877011">Smazat Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Přihlaste se, ať máte rozšíření a další obsah na všech svých zařízeních</translation>
 <translation id="7125932261198019860">Zkontrolujte, zda je tiskárna připojena ke stejné síti Wi-Fi jako Chromebook, nebo použijte kabel USB. <ph name="LINK_BEGIN" />Další informace o kompatibilitě<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historie stahování</translation>
 <translation id="7130438335435247835">Název přístupového bodu</translation>
@@ -8799,6 +8803,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7780992949171378848">Odeslat webům žádost o odhlášení z používání vašich dat</translation>
 <translation id="7782102568078991263">Žádné další návrhy z Googlu</translation>
 <translation id="7782717250816686129">Uchovávání trvalých dat na obrazovce přihlášení a vkládání identifikačních údajů do relace.</translation>
+<translation id="7782885970382585765">Přihlaste se, ať máte seznam četby a další obsah na všech svých zařízeních</translation>
 <translation id="7784020347632229094">Další informace o klávesové zkratce</translation>
 <translation id="7784067724422331729">Tento soubor byl zablokován nastavením zabezpečení vašeho počítače.</translation>
 <translation id="7784796923038949829">Nelze přečíst či změnit data webu</translation>

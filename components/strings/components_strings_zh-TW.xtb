@@ -2218,6 +2218,7 @@
 <translation id="4750917950439032686">你傳送給這個網站的資訊 (例如密碼或信用卡號碼) 不會外洩。</translation>
 <translation id="4754461935447132332">禁止用於不安全的網站</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">選取優惠碼欄位，即可查看並填入已儲存的優惠</translation>
 <translation id="4757740693289347881">安全碼無效</translation>
 <translation id="4757993714154412917">你剛才在詐騙網站上輸入了密碼。為確保帳戶安全，Chromium 建議你檢查已儲存的密碼。</translation>
 <translation id="4758311279753947758">新增聯絡資訊</translation>
@@ -3150,6 +3151,7 @@
 <translation id="6319672966240656136">你已加入 Google 進階保護計畫，因此這個網站將維持封鎖狀態。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">檢查 DNS 設定</translation>
 <translation id="6322182122604171028">無法使用 Windows Hello</translation>
+<translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6326947323444967009">在 iOS 設定中將 Chrome 設為系統的預設瀏覽器</translation>
 <translation id="6328639280570009161">建議停用網路預測功能</translation>
 <translation id="6329742260390895689">如要自動填入資訊，請前往 Google 錢包設定開啟「在各項 Google 服務中使用憑證」</translation>
@@ -3842,6 +3844,7 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">這次允許使用 VR</translation>
+<translation id="7517198908921983825">Gemini 提供的建議 · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">找不到此網址的網頁：<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

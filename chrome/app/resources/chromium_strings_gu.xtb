@@ -70,6 +70,7 @@
 <translation id="1793486931176048546">ઝડપી ઍક્સેસ માટે Chromiumને તમારા ટાસ્કબાર પર પિન કરવા માટે Windows નોટિફિકેશનમાં <ph name="BEGIN_BOLD" />હા<ph name="END_BOLD" /> પર ક્લિક કરો</translation>
 <translation id="1808667845054772817">Chromium ફરીથી ઇન્સ્ટોલ કરો</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" />નો પ્રયાસ કરી રહ્યું છે</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> દ્વારા પહેલેથી જ સાઇન ઇન કરવામાં આવ્યું છે. તમારું બ્રાઉઝિંગ અલગ રાખવા માટે, તમારી પોતાની પ્રોફાઇલમાં Chromiumમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કરો. તમને <ph name="DEVICE" />માંથી તમારા એક્સ્ટેન્શન અને બીજું પણ ઘણું મળશે.</translation>
 <translation id="183031085822326697">આગલી વખતે જ્યારે તમે તમારા <ph name="DEVICE_TYPE" /> પર Chromium ખોલો, ત્યારે તમને Google Password Managerનો ઉપયોગ કરવા માટેનો પ્રૉમ્પ્ટ દેખાશે.</translation>
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
 <translation id="18552579716432081">તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગ ડેટા રાખીને તેને માત્ર આ ડિવાઇસમાંથી ડિલીટ કરવા માટે, <ph name="BEGIN_LINK" />Chromiumમાંથી સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
@@ -192,6 +193,7 @@
 <translation id="3038232873781883849">ઇન્સ્ટૉલ થવાની રાહ જોઈ રહ્યાં છીએ...</translation>
 <translation id="3045032126857188731">અનુવાદિત ભાષા: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">પ્રતિસાદનો સંવાદ બંધ કરો</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> દ્વારા પહેલેથી જ સાઇન ઇન કરવામાં આવ્યું છે. તમારું બ્રાઉઝિંગ અલગ રાખવા માટે, તમારી પોતાની પ્રોફાઇલમાં Chromiumમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કરો. તમને <ph name="DEVICE" />માંથી તમારી વાંચન સૂચિ અને બીજું પણ ઘણું મળશે.</translation>
 <translation id="3068187312562070417">અન્ય Chromium પ્રોફાઇલ</translation>
 <translation id="3068290154869370196">એક્સ્ટેન્શન એવા ઍડ-ઑન હોય છે જે તમને Chromiumને કસ્ટમાઇઝ કરવાની મંજૂરી આપે છે. સુવ્યવસ્થિત રહેવાથી લઈને રોજિંદા કાર્યોને સરળ બનાવવા સુધી, એક્સ્ટેન્શન તમને Chromiumને તમારું પોતાનું બનાવવામાં મદદ કરે છે.</translation>
 <translation id="3068515742935458733">ક્રૅશ રિપોર્ટ અને <ph name="UMA_LINK" /> Googleને મોકલીને Chromium ને વધુ સારું બનાવવામાં મદદ કરો.</translation>
@@ -293,6 +295,7 @@
 <translation id="4147856324248078748">તમારા Chromiumને કસ્ટમાઇઝ કરો</translation>
 <translation id="4148957013307229264">ઇન્સ્ટોલ કરી રહ્યું છે...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> દ્વારા પહેલેથી જ સાઇન ઇન કરવામાં આવ્યું છે. તમારું બ્રાઉઝિંગ અલગ રાખવા માટે, તમારી પોતાની પ્રોફાઇલમાં Chromiumમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કરો. તમને તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ અને બીજું પણ ઘણું મળશે.</translation>
 <translation id="421369550622382712">Chromium માટે શ્રેષ્ઠ એપ્લીકેશન્સ, રમતો, એક્સટેન્શન્સ અને થીમ્સ શોધો.</translation>
 <translation id="4217080900579554343">તમારા બધા કમ્પ્યૂટર પર આ એક્સ્ટેન્શન અને અન્ય ઘણું બધું મેળવવા માટે Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="4217972271355023382">તમારા માતાપિતાની પસંદગીઓ સાથે ઑનલાઇન વધુ સલામત રહેવા માટે, તમારી Chromium પ્રોફાઇલ પર સ્વિચ કરો, જેમાં તમે પહેલેથી <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન થયા છો</translation>
@@ -392,6 +395,7 @@
 <translation id="5382964351116519680">Chromium વડે શોધ ખોલો</translation>
 <translation id="5383439451358640070">Chromium શા માટે અમુક ફાઇલો બ્લૉક કરે છે, તે જાણો</translation>
 <translation id="5386450000063123300">Chromium અપડેટ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> દ્વારા પહેલેથી જ સાઇન ઇન કરવામાં આવ્યું છે. તમારું બ્રાઉઝિંગ અલગ રાખવા માટે, તમારી પોતાની પ્રોફાઇલમાં Chromiumમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કરો. તમને તમારા બધા ડિવાઇસ પર તમારા એક્સ્ટેન્શન અને બીજું ઘણું મળશે.</translation>
 <translation id="538767207339317086">Chromiumમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="5405650547142096840">Chromium માંથી દૂર કરો</translation>
 <translation id="5424544524441439284">પર્ફોર્મન્સ ઘટાડે છે પરંતુ Chromiumને અટૅક સામે વધુ પ્રતિરોધક બનાવે છે</translation>

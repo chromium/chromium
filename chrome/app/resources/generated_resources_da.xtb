@@ -677,6 +677,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1523978563989812243">Maskiner til oplæsning</translation>
 <translation id="1524563461097350801">Nej tak</translation>
 <translation id="1525740877599838384">Brug kun Wi-Fi til at fastslå placeringen</translation>
+<translation id="1526274304859009691">Log ind for at få adgang til dine udvidelser og meget mere fra <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Unavngivet dokument</translation>
 <translation id="1527336312600375509">Opdateringshastighed for skærm</translation>
 <translation id="152913213824448541">Kontakter til Deling tæt på</translation>
@@ -6388,6 +6389,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5902400038326841449">Google Adgangskodeadministrator er deaktiveret</translation>
 <translation id="5902892210366342391">Få advarsler, inden du går til usikre websites i inkognitotilstand</translation>
 <translation id="5906457147959147328">Tillad fortsat, at dette website bruger id'er til at afspille beskyttet indhold</translation>
+<translation id="5906549184882174190">Isoleret</translation>
 <translation id="5906655207909574370">Næsten opdateret. Genstart din enhed for at afslutte opdateringen.</translation>
 <translation id="5906732635754427568">Data, der er knyttet til denne app, bliver fjernet fra enheden.</translation>
 <translation id="5906974869830879618">Angiv en pinkode</translation>
@@ -6613,6 +6615,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6088475950266477163">Indstillinger</translation>
 <translation id="608912389580139775">Klik på bogmærkeikonet for at føje denne side til din læseliste</translation>
 <translation id="6089289670051481345">Tritanomali</translation>
+<translation id="6090068946774422711">Log ind for at få adgang til din læseliste og meget mere fra <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Lukkede advarsler</translation>
 <translation id="609174145569509836">Frigør plads</translation>
 <translation id="6091761513005122595">Delingen blev anvendt.</translation>
@@ -7967,6 +7970,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7124712201233930202">Din organisations politikker overholdes ikke</translation>
 <translation id="7125148293026877011">Slet Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Log ind for at få adgang til dine udvidelser og meget mere på alle dine enheder</translation>
 <translation id="7125932261198019860">Sørg for, at din printer er tilsluttet det samme Wi-Fi-netværk som din Chromebook, eller brug et USB-kabel. <ph name="LINK_BEGIN" />Få flere oplysninger om kompatibilitet<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Downloadhistorik</translation>
 <translation id="7130438335435247835">Adgangspunkt (APN)</translation>
@@ -8820,6 +8824,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7780992949171378848">Send en anmodning om fravalg til websites vedrørende brugen af dine data</translation>
 <translation id="7782102568078991263">Ikke flere forslag fra Google</translation>
 <translation id="7782717250816686129">Gem vedvarende data på loginskærmen, og brug loginoplysninger i sessionen.</translation>
+<translation id="7782885970382585765">Log ind for at få adgang til din læseliste og meget mere på alle dine enheder</translation>
 <translation id="7784020347632229094">Få flere oplysninger om tastaturgenvejen</translation>
 <translation id="7784067724422331729">Sikkerhedsindstillingerne på din computer blokerede denne fil.</translation>
 <translation id="7784796923038949829">Kan hverken læse eller ændre websitedata</translation>

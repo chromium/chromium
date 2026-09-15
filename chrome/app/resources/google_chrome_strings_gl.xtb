@@ -98,6 +98,7 @@
 <translation id="1873233029667955273">Google Chrome non é o teu navegador predeterminado</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome está desactualizado</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar das extensións e máis cousas de todos os teus dispositivos.</translation>
 <translation id="1880677175115548835">Selecciona texto</translation>
 <translation id="1896602904211344018">Descargar a aplicación Chrome</translation>
 <translation id="1919130412786645364">Permitir inicio de sesión en Chrome</translation>
@@ -548,6 +549,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6334815226785304306">Definir Google Chrome como o navegador predeterminado e fixalo na barra de tarefas</translation>
 <translation id="63540178978900677">Chrome xa non é o teu navegador predeterminado. Queres que Chrome sexa o navegador predeterminado?</translation>
 <translation id="6360449101159168105">Mentres esta pestana estaba inactiva, liberouse memoria para que Chrome siga funcionando rápido. Podes optar por excluír este sitio para que nunca estea inactivo.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar da lista de lectura e máis cousas dos teus dispositivos.</translation>
 <translation id="6388799252195623474">axúdame con isto</translation>
 <translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{A túa organización pechará Chrome automaticamente cando leve 1 minuto sen usarse. Os datos de navegación (entre os que se poderían incluír o historial, os datos da función de autocompletar e as descargas) eliminaranse.}other{A túa organización pechará Chrome automaticamente cando leve # minutos sen usarse. Os datos de navegación (entre os que se poderían incluír o historial, os datos da función de autocompletar e as descargas) eliminaranse.}}</translation>
@@ -708,6 +710,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7845233973568007926">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o ordenador.</translation>
 <translation id="7847170235260850604">Abrir Chrome cando se inicie Windows</translation>
 <translation id="7849037457735762883">Retoma a actividade onde a deixaches: Chrome pode restaurar as pestanas cada vez que o reinicies. Para activar esta opción, vai a</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar das extensións e máis cousas do dispositivo: <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Para poder usar os contrasinais gardados, escanea o código QR, descarga Chrome para iOS e inicia sesión na túa Conta de Google</translation>
 <translation id="7872446069773932638">Descargando… Tempo restante: <ph name="SECONDS" /> s</translation>
 <translation id="7886087451482920026">Selecciona o texto con Google Lens</translation>
@@ -805,6 +808,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="8679801911857917785">Tamén controla a páxina que se mostra ao iniciar Chrome.</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8712767363896337380">A actualización está a piques de rematar. Para que finalice, reinicia Chrome.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar da lista de lectura e máis cousas do dispositivo: <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Pechar sesión en Chrome</translation>
 <translation id="873133009373065397">Google Chrome non pode determinar nin establecer o navegador predeterminado</translation>
 <translation id="8747073452963259673">esquina inferior esquerda da área de busca: <ph name="LEFT" /> % á esquerda, <ph name="BOTTOM" /> % abaixo</translation>

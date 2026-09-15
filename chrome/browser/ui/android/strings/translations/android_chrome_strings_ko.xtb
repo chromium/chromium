@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">안전을 위해 일부 사이트에서 권한이 삭제되었습니다</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1384568202352682721">다른 이름으로 저장…</translation>
-<translation id="1384704387250346179">Google 렌즈로 이미지 번역 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chrome에서 링크를 열어 다른 앱의 방문 기록을 볼 수 있습니다. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 방문 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="139752016751285248">가격 정보 하단 시트가 전체 높이로 열림</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />에서 검색</translation>
@@ -174,7 +173,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1650979352027263879">모양 환경설정이 삭제되었습니다.</translation>
 <translation id="1671236975893690980">다운로드 대기 중...</translation>
 <translation id="1672586136351118594">다시 표시하지 않음</translation>
-<translation id="1680919990519905526">Google 렌즈로 이미지의 상품 구입 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020<ph name="MONTHS_ARCHIVED" />개월 후에 닫힙니다</translation>
 <translation id="1689333818294560261">닉네임</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />에서 계속하려면 다른 방법을 시도해 보세요.</translation>
@@ -413,6 +411,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2581165646603367611">이를 통해 쿠키, 캐시 및 Chrome에서 중요하다고 간주하지 않는 사이트의 기타 데이터가 삭제됩니다.</translation>
 <translation id="2587052924345400782">최신 버전 사용 가능</translation>
 <translation id="2593272815202181319">고정폭</translation>
+<translation id="2604138917550693049">Google 렌즈로 이미지 검색</translation>
 <translation id="2604446170045642109">설정에서 사이트의 어두운 테마를 사용 중지할 수 있습니다.</translation>
 <translation id="2605017215201958293">AI로 이 페이지의 내용 듣기</translation>
 <translation id="2607441479295509868">로그아웃했습니다. 내 계정에서 북마크, 비밀번호 등을 사용하려면 다시 로그인하세요.</translation>
@@ -1100,7 +1099,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, 고정되고 공유 중인 시크릿 탭</translation>
 <translation id="5375374982898812658">'<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
-<translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">저장 및 공유</translation>
 <translation id="5385892579392932755">내 노트북</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />에서 디지털 지갑의 개인 정보를 사용하려고 합니다. 이 사이트를 신뢰하는 경우에만 계속 진행하세요. 위험한 사이트는 사용자를 속여 법적 이름이나 신분증 번호 등을 공개하도록 유도할 수 있습니다.</translation>
@@ -1540,7 +1538,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6996145122199359148">이 페이지 다운로드</translation>
 <translation id="7007648447224463482">모두 새 창에서 열기</translation>
 <translation id="7013762323294215682">이 패스키는 비밀번호 관리자에 저장됩니다. 패스키에 액세스할 수 있는 사용자는 모두 이 패스키를 사용할 수 있습니다.</translation>
-<translation id="7020741890149022655">읽기 목록에 추가 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">브라우저에서 열기</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7037994709569287156">Chrome을 기본값으로 설정</translation>
@@ -2043,6 +2040,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8957528460562961174">비밀번호에 계속 액세스하려면 지금 비밀번호를 내보낸 후 원하는 비밀번호 관리자로 가져오세요. Google Play 서비스를 사용할 수 없으므로 Google 비밀번호 관리자 작동이 중지되었습니다.</translation>
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
 <translation id="8965591936373831584">보류 중</translation>
+<translation id="8967427617812342790">읽기 목록에 추가</translation>
 <translation id="8969796057708736017">파일이 조직의 정책을 준수하는 경우 다운로드가 완료됩니다.</translation>
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="8972098258593396643">기본 폴더에 다운로드하시겠습니까?</translation>

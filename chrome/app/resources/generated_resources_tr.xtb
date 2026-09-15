@@ -676,6 +676,7 @@
 <translation id="1523978563989812243">Metin okuma motorları</translation>
 <translation id="1524563461097350801">Hayır, teşekkürler</translation>
 <translation id="1525740877599838384">Konumu belirlemek için yalnızca kablosuz ağ kullan</translation>
+<translation id="1526274304859009691"><ph name="DEVICE" /> içindeki uzantılarınıza ve diğer öğelere erişmek için oturum açın</translation>
 <translation id="1526560967942511387">Adsız Doküman</translation>
 <translation id="1527336312600375509">Monitör yenileme hızı</translation>
 <translation id="152913213824448541">Yakındakilerle Paylaş kişileri</translation>
@@ -6372,6 +6373,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5902400038326841449">Google Şifre Yöneticisi devre dışı</translation>
 <translation id="5902892210366342391">Gizli modda güvenli olmayan sitelere gitmeden önce uyarı göster</translation>
 <translation id="5906457147959147328">Bu sitenin, korumalı içerik oynatmak için kimlik kullanmasına izin vermeye devam et</translation>
+<translation id="5906549184882174190">Yalıtılmış</translation>
 <translation id="5906655207909574370">Az kaldı! Güncellemeyi tamamlamak için cihazınızı yeniden başlatın.</translation>
 <translation id="5906732635754427568">Bu uygulamayla ilişkili veriler bu cihazdan kaldırılacak.</translation>
 <translation id="5906974869830879618">Lütfen bir PIN girin</translation>
@@ -6597,6 +6599,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6088475950266477163">Ayar&amp;lar</translation>
 <translation id="608912389580139775">Bu sayfayı okuma listenize eklemek için Yer İşareti simgesini tıklayın</translation>
 <translation id="6089289670051481345">Tritanomali</translation>
+<translation id="6090068946774422711"><ph name="DEVICE" /> cihazınızdaki okuma listenize ve diğer öğelere erişmek için oturum açın</translation>
 <translation id="6090760257419195752">Yok sayılan uyarılar</translation>
 <translation id="609174145569509836">Depolama alanında yer aç</translation>
 <translation id="6091761513005122595">Paylaşım başarıyla eklendi.</translation>
@@ -7949,6 +7952,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7124712201233930202">Kuruluşunuzun politikalarına uyulmadı.</translation>
 <translation id="7125148293026877011">Crostini'yi sil</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Uzantılarınıza ve daha fazlasına tüm cihazlarınızdan ulaşmak için oturum açın</translation>
 <translation id="7125932261198019860">Yazıcınızın Chromebook'unuzla aynı kablosuz ağa bağlı olduğundan emin olun veya USB kablosu kullanın. <ph name="LINK_BEGIN" />Uyumluluk hakkında daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
 <translation id="7127980134843952133">İndirme geçmişi</translation>
 <translation id="7130438335435247835">Erişim noktası adı (APN)</translation>
@@ -8801,6 +8805,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7780992949171378848">Sitelere, verilerinizin kullanımıyla ilgili kapsam dışında kalma isteği gönderin</translation>
 <translation id="7782102568078991263">Google'dan başka öneri yok</translation>
 <translation id="7782717250816686129">Kalıcı verileri giriş ekranında depolama ve kimlik bilgilerini oturuma ekleme.</translation>
+<translation id="7782885970382585765">Tüm cihazlarınızdaki okuma listenize ve diğer öğelere erişmek için oturum açın</translation>
 <translation id="7784020347632229094">Klavye kısayolu hakkında daha fazla bilgi</translation>
 <translation id="7784067724422331729">Bilgisayarınızdaki güvenlik ayarları bu dosyayı engelledi.</translation>
 <translation id="7784796923038949829">Sitenin verileri okunamıyor veya değiştirilemiyor</translation>

@@ -2220,6 +2220,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4750917950439032686">As suas informações (por exemplo, palavras-passe ou números de cartões de crédito) são privadas quando são enviadas para este site.</translation>
 <translation id="4754461935447132332">Não permitida para sites não seguros</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Selecione o campo de código promocional para ver e preencher as suas ofertas guardadas</translation>
 <translation id="4757740693289347881">O código é inválido</translation>
 <translation id="4757993714154412917">Acabou de introduzir a sua palavra-passe num site fraudulento. Para proteger as suas contas, o Chromium recomenda verificar as palavras-chave guardadas.</translation>
 <translation id="4758311279753947758">Adicionar informações de contacto</translation>
@@ -3152,6 +3153,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6319672966240656136">Este site vai permanecer bloqueado porque está no Programa de Proteção avançada da Google. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Rever as definições do DNS</translation>
 <translation id="6322182122604171028">Não foi possível utilizar o Windows Hello</translation>
+<translation id="6326175484149238433">Remover do Chrome</translation>
 <translation id="6326947323444967009">Defina o Chrome como o navegador predefinido do sistema nas definições do iOS</translation>
 <translation id="6328639280570009161">Tente desativar a previsão de rede</translation>
 <translation id="6329742260390895689">Para preencher automaticamente as suas informações, ative a opção "Usar passes na rede Google" nas definições da Carteira</translation>
@@ -3843,6 +3845,7 @@ Detalhes adicionais:
 <translation id="7514365320538308">Transferir</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">RV permitida desta vez</translation>
+<translation id="7517198908921983825">Sugerido pelo Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Não foi encontrada qualquer página Web para o endereço Web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

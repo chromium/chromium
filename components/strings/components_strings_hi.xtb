@@ -3153,6 +3153,7 @@
 <translation id="6319672966240656136">यह साइट ब्लॉक ही रहेगी, क्योंकि आपने Google के Advanced Protection Program के लिए ऑप्ट-इन किया है. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">अपनी DNS सेटिंग जांचे</translation>
 <translation id="6322182122604171028">Windows Hello का इस्तेमाल नहीं किया जा सका</translation>
+<translation id="6326175484149238433">Chrome से हटाएं</translation>
 <translation id="6326947323444967009">iOS की सेटिंग में, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करें</translation>
 <translation id="6328639280570009161">नेटवर्क पूर्वानुमान को अक्षम करके देखें</translation>
 <translation id="6329742260390895689">अपनी जानकारी ऑटोमैटिक तरीके से भरने के लिए, Wallet की सेटिंग में जाकर "Google के सभी प्लैटफ़ॉर्म पर पास इस्तेमाल करें" को चालू करें</translation>
@@ -3845,6 +3846,7 @@
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">इस बार वीआर की अनुमति दी गई</translation>
+<translation id="7517198908921983825">Gemini ने सुझाया है · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="7518003948725431193">इस वेब पते के लिए कोई वेब पेज नहीं मिला था: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

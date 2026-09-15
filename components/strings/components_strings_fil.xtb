@@ -1428,6 +1428,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3432601291244612633">Isara ang page</translation>
 <translation id="3434025015623587566">Nangangailangan ng karagdagang access ang Google Password Manager</translation>
 <translation id="343474037147570563">Ipinapadala sa Google Cloud o mga third party para sa pagsusuri ang mga file na ina-upload o ina-attach mo. Halimbawa, puwedeng i-scan ang mga ito para sa sensitibong data o malware at puwede itong i-store batay sa mga patakaran ng kumpanya at posibleng nakikita ito ng iyong administrator.</translation>
+<translation id="3435267628744367511">Pindutin ang Ctrl nang dalawang beses sa anumang form para maghanap at mapunan ng impormasyon nang hindi lumilipat ng tab</translation>
 <translation id="3435557549311968410">Tuloy-tuloy (Maikli)</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3436125638121079308">Awtomatikong i-share ang mga nauugnay na tab para sa mas mahuhusay na sagot sa thread na ito?</translation>
@@ -2894,6 +2895,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">Na-save ang card</translation>
 <translation id="5887687176710214216">Huling binisita kahapon</translation>
+<translation id="5887791684215121787">Pindutin ang ⌘ ⌘ sa anumang form para maghanap at mapunan ng impormasyon nang hindi lumilipat ng tab</translation>
 <translation id="5889251770650310375">Para makuha ang iyong history mula sa iba mo pang device, i-verify na ikaw ito at i-sync ang iyong history at mga tab. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="5895187275912066135">Ibinigay Noong</translation>
@@ -3152,6 +3154,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6319672966240656136">Mananatiling naka-block ang site na ito dahil nasa ilalim ka ng Programang Advanced na Proteksyon ng Google. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa tungkol sa babalang ito<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Suriin ang iyong mga setting ng DNS</translation>
 <translation id="6322182122604171028">Hindi magamit ang Windows Hello</translation>
+<translation id="6326175484149238433">Alisin sa Chrome</translation>
 <translation id="6326947323444967009">Itakda ang Chrome bilang default na browser ng system sa mga setting ng iOS</translation>
 <translation id="6328639280570009161">Subukang i-disable ang paghula ng network</translation>
 <translation id="6329742260390895689">Para i-autofill ang iyong impormasyon, i-on ang "Gumamit ng mga pass sa buong Google" sa mga setting ng Wallet</translation>
@@ -3844,6 +3847,7 @@ Mga karagdagang detalye:
 <translation id="7514365320538308">I-download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Pinapayagan ang VR sa pagkakataong ito</translation>
+<translation id="7517198908921983825">Iminumungkahi ng Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Walang webpage na nahanap para sa web address:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

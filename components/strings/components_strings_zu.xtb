@@ -2217,6 +2217,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="4750917950439032686">Ulwazi lakho (isibonelo, amaphasiwedi noma izinombolo zekhadi lesikweletu) luyimfihlo uma luthunyelwa kuleli sayithi.</translation>
 <translation id="4754461935447132332">Akuvumelekile kumasayithi angavikelwanga</translation>
 <translation id="4756501505996488486">I-PRC 16K</translation>
+<translation id="4757119894147311267">Khetha inkambu yekhodi yephromo ukuze ubuke futhi ugcwalise imititilizo yakho elondoloziwe</translation>
 <translation id="4757740693289347881">Ikhodi ayivumelekile</translation>
 <translation id="4757993714154412917">Usanda kufaka iphasiwedi yakho kusayithi elikhohlisayo. Ukuze uvikele ama-akhawunti akho, i-Chromium incoma ukuhlola amaphasiwedi akho alondoloziwe.</translation>
 <translation id="4758311279753947758">Engeza imininingwane yokuxhumana</translation>
@@ -3149,6 +3150,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="6319672966240656136">Leli sayithi lizohlala livinjiwe ngoba ungaphansi Kohlelo Lokuvikela Okuthuthukile lweGoogle. <ph name="BEGIN_LEARN_MORE_LINK" />Funda kabanzi mayelana nalesi sixwayiso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Hlola izilungiselelo zakho ze-DNS</translation>
 <translation id="6322182122604171028">Ayikwazanga ukusebenzisa i-Windows Hello</translation>
+<translation id="6326175484149238433">Susa kusuka ku-Chrome</translation>
 <translation id="6326947323444967009">Setha i-Chrome njengebhrawuza ezenzakalelayo yesistimu kumasethingi e-iOS</translation>
 <translation id="6328639280570009161">Zama ukukhubaza ukuqagela kwenethiwekhi</translation>
 <translation id="6329742260390895689">Ukuze ugcwalise ngokuzenzekelayo imininingwane yakho, vula okuthi "Sebenzisa izimvume kuyo yonke iGoogle" kumasethingi eWallet</translation>
@@ -3840,6 +3842,7 @@ Imininingwane engeziwe:
 <translation id="7514365320538308">Landa</translation>
 <translation id="7515998400212163428">I-Android</translation>
 <translation id="7516123895971374904">I-VR ivunyelwe ngalesi sikhathi</translation>
+<translation id="7517198908921983825">Iphakanyiswe yiGemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Imvilophu ye-C10</translation>
 <translation id="7518003948725431193">Alikho ikhasi lewebhu eliye latholwa kukheli lewebhu: <ph name="URL" /></translation>
 <translation id="7521387064766892559">I-JavaScript</translation>

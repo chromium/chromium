@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1184166532603925201">Khi bạn ở chế độ ẩn danh, Chrome sẽ chặn các trang web sử dụng cookie của bên thứ ba</translation>
+<translation id="1365023215312302966">Các trang web không thể sử dụng cookie của bên thứ ba để cá nhân hoá nội dung và quảng cáo, cũng như để tìm hiểu về thao tác bạn thực hiện trên các trang web khác</translation>
 <translation id="1569440020357229235">Khi bạn ở chế độ ẩn danh, các trang web sẽ không thể sử dụng cookie của bên thứ ba. Nếu một trang web phụ thuộc vào các cookie này không hoạt động, bạn có thể <ph name="BEGIN_LINK" />thử cấp cho trang web đó quyền truy cập tạm thời vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Các tính năng trên một số trang web có thể không hoạt động</translation>
 <translation id="2183376768278472507">Nếu một trang web bạn ghé thăm không hoạt động như dự kiến, bạn có thể thử cho phép trang web đó sử dụng cookie của bên thứ ba</translation>
 <translation id="2235344399760031203">Đã chặn cookie của bên thứ ba</translation>
+<translation id="2360633687155619995">Các trang web không thể sử dụng cookie của bên thứ ba để cá nhân hoá nội dung và quảng cáo, cũng như tìm hiểu về những thao tác bạn thực hiện trên các trang web khác. Một số tính năng của trang web có thể không hoạt động như dự kiến.</translation>
 <translation id="2496115946829713659">Các trang web có thể sử dụng cookie của bên thứ ba để cá nhân hoá nội dung và quảng cáo, cũng như tìm hiểu về những thao tác bạn thực hiện trên các trang web khác</translation>
 <translation id="3045333309254072201">Khi bạn ở chế độ ẩn danh, các trang web sẽ không thể sử dụng cookie của bên thứ ba. Nếu một trang web phụ thuộc vào các cookie này không hoạt động, bạn có thể <ph name="START_LINK" />thử cấp cho trang web đó quyền truy cập tạm thời vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Các trang web dựa vào cookie của bên thứ ba sẽ hoạt động như dự kiến</translation>

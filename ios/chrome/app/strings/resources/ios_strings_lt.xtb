@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Siūlyti išsaugoti slaptažodžius ir prieigos raktus</translation>
 <translation id="1794893174442046596">Skirtukų grupė</translation>
 <translation id="1807893857950749072">Leisti kainų stebėjimo pranešimus…</translation>
+<translation id="1808142805674973090">Perjungti režimus</translation>
 <translation id="1809929083618343438">Tai atlikus pasirinkta informacija pašalinama iš „Chrome“, bet ši informacija neištrinama iš „Google“ paskyros.</translation>
 <translation id="1810976980198522421">Atšaukti</translation>
 <translation id="1815941218935345331">Slaptažodis</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">Nėra interneto ryšio.</translation>
 <translation id="3782614601387961027">Uždaryti perspėjimą</translation>
 <translation id="3789841737615482174">Įdiegti</translation>
+<translation id="3793603310364129123">Mažiau veiksmų, spartesnis susiejimas</translation>
 <translation id="380329542618494757">Vardas ir pavardė</translation>
 <translation id="3803696231112616155">Siūlyti versti šią svetainę</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Išjungti Žemėlapių peržiūras</translation>
 <translation id="5474397204728336997">Šeimos grupės slaptažodžiai, nauji tinkinimai ir kt. Palieskite, kad sužinotumėte daugiau.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Slaptažodis neimportuotas}=1{Importuotas {count} slaptažodis}one{Importuotas {count} slaptažodis}few{Importuoti {count} slaptažodžiai}many{Importuota {count} slaptažodžio}other{Importuota {count} slaptažodžių}}</translation>
+<translation id="5477188385487393357">Praleisti kopijavimą ir įklijavimą</translation>
 <translation id="5478327362747197944">Kurkite Kalendoriaus įvykius tiesiogiai spustelėdami datą tinklalapyje.</translation>
 <translation id="5482922178977937393">Ar norėtumėte gauti pranešimus apie naujienas, sportą ir kt. pagal savo pomėgius?</translation>
 <translation id="5483838506518938965">Viskas nustatyta</translation>
@@ -1747,6 +1750,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6585618849026997638">Galite grįžti į jums svarbų puslapį pridėję žymę</translation>
 <translation id="6589001036857939353">Sujungti tikslias kopijas</translation>
 <translation id="659407965921887085">Šioje kortelėje rodomi produktų, kuriuos šiuo metu stebite, kainų sumažėjimai žiniatinklyje</translation>
+<translation id="6596324345367949437">„Gemini“ nepasiekiama inkognito režimu</translation>
 <translation id="6596481460663245319">Ieškoti vaizdo „Google“</translation>
 <translation id="6601302169302852717">Vaizdas, išsaugotas „Google“ nuotraukose <ph name="USER_EMAIL" /> paskyroje</translation>
 <translation id="6602173570135186741">Automatinis pildymas ir slaptažodžiai</translation>
@@ -2113,6 +2117,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7772948288262733182">Sveiki sugrįžę</translation>
 <translation id="777637629667389858">Kai esate prisijungę, esate apsaugoti „Google“ paslaugose.</translation>
 <translation id="7776604279034196531">Pasiekti skaitymo režimą iš adreso juostos, kai pasiekiama</translation>
+<translation id="7780992949171378848">Siųsti atsisakymo užklausą svetainėms dėl jūsų duomenų naudojimo</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7788474973847076315">Fotografuoti</translation>
 <translation id="7788868432173225918">Atsisakyti išplėstinio rodinio</translation>

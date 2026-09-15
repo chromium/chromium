@@ -676,6 +676,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1523978563989812243">Motori di sintesi vocale</translation>
 <translation id="1524563461097350801">No, grazie</translation>
 <translation id="1525740877599838384">Usa solo la rete Wi-Fi per stabilire la posizione</translation>
+<translation id="1526274304859009691">Accedi per avere a disposizione le tue estensioni e molto altro da <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Documento senza titolo</translation>
 <translation id="1527336312600375509">Frequenza di aggiornamento del monitor</translation>
 <translation id="152913213824448541">Contatti Condivisione nelle vicinanze</translation>
@@ -6370,6 +6371,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5902400038326841449">Il Gestore delle password di Google è disattivato</translation>
 <translation id="5902892210366342391">Visualizza gli avvisi prima di visitare siti non sicuri in modalità Incognito</translation>
 <translation id="5906457147959147328">Continua a consentire a questo sito di usare identificatori per riprodurre contenuti protetti</translation>
+<translation id="5906549184882174190">Isolato</translation>
 <translation id="5906655207909574370">Aggiornamento quasi completato. Riavvia il dispositivo per terminare l'aggiornamento.</translation>
 <translation id="5906732635754427568">I dati associati a questa app verranno rimossi dal dispositivo.</translation>
 <translation id="5906974869830879618">Inserisci un PIN</translation>
@@ -6594,6 +6596,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6088475950266477163">Impostazio&amp;ni</translation>
 <translation id="608912389580139775">Fai clic sull'icona dei preferiti per aggiungere questa pagina al tuo elenco di lettura</translation>
 <translation id="6089289670051481345">Tritanomalia</translation>
+<translation id="6090068946774422711">Accedi per avere a disposizione il tuo elenco di lettura e molto altro da <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Avvisi ignorati</translation>
 <translation id="609174145569509836">Libera spazio di archiviazione</translation>
 <translation id="6091761513005122595">Condivisione montata correttamente.</translation>
@@ -7946,6 +7949,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7124712201233930202">Le policy della tua organizzazione non sono state rispettate</translation>
 <translation id="7125148293026877011">Eliminare Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Accedi per avere a disposizione le tue estensioni e molto altro su tutti i dispositivi</translation>
 <translation id="7125932261198019860">Assicurati che la tua stampante sia collegata alla stessa rete Wi-Fi a cui è collegato Chromebook oppure usa un cavo USB. <ph name="LINK_BEGIN" />Scopri di più sulla compatibilità<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Cronologia download</translation>
 <translation id="7130438335435247835">Nome punto di accesso (APN)</translation>
@@ -8098,7 +8102,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7249764475759804559">Includi questa app come opzione per l'apertura dei file</translation>
 <translation id="7250616558727237648">Il dispositivo con cui hai tentato di condividere il file non ha risposto. Riprova.</translation>
 <translation id="7251635775446614726">Messaggio dell'amministratore: "<ph name="CUSTOM_MESSAGE" />"</translation>
-<translation id="725310308981256997">Chiedere informazioni su questa pagina?</translation>
+<translation id="725310308981256997">Vuoi informazioni su questa pagina?</translation>
 <translation id="7253521419891527137">&amp;Ulteriori informazioni</translation>
 <translation id="725497546968438223">Pulsante della cartella Preferiti</translation>
 <translation id="7255935316994522020">Applica</translation>
@@ -8799,6 +8803,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7780992949171378848">Invia una richiesta di revoca del consenso ai siti in merito all'utilizzo dei tuoi dati</translation>
 <translation id="7782102568078991263">Nessun altro suggerimento da Google</translation>
 <translation id="7782717250816686129">Archivia i dati persistenti nella schermata di accesso e inserisci le credenziali nella sessione.</translation>
+<translation id="7782885970382585765">Accedi per avere a disposizione il tuo elenco di lettura e molto altro su tutti i dispositivi</translation>
 <translation id="7784020347632229094">Scopri di più sulla scorciatoia da tastiera</translation>
 <translation id="7784067724422331729">Le impostazioni di sicurezza del computer hanno bloccato questo file.</translation>
 <translation id="7784796923038949829">Impossibile leggere i dati del sito o modificarli</translation>

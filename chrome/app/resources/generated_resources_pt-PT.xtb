@@ -676,6 +676,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1523978563989812243">Motores da conversão de texto em voz</translation>
 <translation id="1524563461097350801">Não</translation>
 <translation id="1525740877599838384">Usar apenas Wi-Fi para determinar a localização</translation>
+<translation id="1526274304859009691">Inicie sessão para aceder às suas extensões e muito mais do <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Documento sem nome</translation>
 <translation id="1527336312600375509">Taxa de atualização do monitor</translation>
 <translation id="152913213824448541">Contactos da funcionalidade Partilhar na proximidade</translation>
@@ -6376,6 +6377,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5902400038326841449">O Gestor de Palavras-passe da Google está desativado</translation>
 <translation id="5902892210366342391">Ver avisos antes de aceder a sites inseguros no Modo de navegação anónima</translation>
 <translation id="5906457147959147328">Continuar a permitir que este site use identificadores para reproduzir conteúdo protegido</translation>
+<translation id="5906549184882174190">Isolado</translation>
 <translation id="5906655207909574370">Quase atualizado! Reinicie o dispositivo para concluir a atualização.</translation>
 <translation id="5906732635754427568">Os dados associados a esta aplicação serão removidos deste dispositivo.</translation>
 <translation id="5906974869830879618">Introduza um PIN.</translation>
@@ -6601,6 +6603,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6088475950266477163">Definiçõ&amp;es</translation>
 <translation id="608912389580139775">Para adicionar esta página à sua Lista de leitura, clique no ícone de marcador</translation>
 <translation id="6089289670051481345">Tritanomalia</translation>
+<translation id="6090068946774422711">Inicie sessão para aceder à sua Lista de leitura e muito mais do <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Avisos ignorados</translation>
 <translation id="609174145569509836">Limpar armazenamento</translation>
 <translation id="6091761513005122595">A partilha foi montada com êxito.</translation>
@@ -7953,6 +7956,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7124712201233930202">As políticas da sua organização não foram cumpridas</translation>
 <translation id="7125148293026877011">Eliminar Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Inicie sessão para aceder às suas extensões e muito mais em todos os seus dispositivos</translation>
 <translation id="7125932261198019860">Certifique-se de que a impressora está ligada à mesma rede Wi-Fi que o Chromebook ou use um cabo USB. <ph name="LINK_BEGIN" />Saiba mais acerca da compatibilidade<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Histórico de transferências</translation>
 <translation id="7130438335435247835">Nome do Ponto de Acesso (APN)</translation>
@@ -8806,6 +8810,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7780992949171378848">Enviar pedido de desativação aos sites relativamente à utilização dos seus dados</translation>
 <translation id="7782102568078991263">Não há mais sugestões do Google</translation>
 <translation id="7782717250816686129">Armazenar dados persistentes no ecrã de início de sessão e injetar credenciais na sessão.</translation>
+<translation id="7782885970382585765">Inicie sessão para aceder à sua Lista de leitura e muito mais em todos os seus dispositivos</translation>
 <translation id="7784020347632229094">Saiba mais sobre o atalho de teclado</translation>
 <translation id="7784067724422331729">As definições de segurança do computador bloquearam este ficheiro.</translation>
 <translation id="7784796923038949829">Não é possível ler nem alterar os dados do site.</translation>

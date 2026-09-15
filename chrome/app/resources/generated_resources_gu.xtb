@@ -676,6 +676,7 @@
 <translation id="1523978563989812243">ટેક્સ્ટ ટૂ સ્પીચ એન્જિન</translation>
 <translation id="1524563461097350801">ના, આભાર</translation>
 <translation id="1525740877599838384">સ્થાન નક્કી કરવા માટે માત્ર વાઇ-ફાઇનો ઉપયોગ કરો</translation>
+<translation id="1526274304859009691"><ph name="DEVICE" />માંથી તમારા એક્સ્ટેન્શન અને બીજું ઘણું મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="1526560967942511387">નામ વિનાનો દસ્તાવેજ</translation>
 <translation id="1527336312600375509">રિફ્રેશ થવાના રેટને મૉનિટર કરો</translation>
 <translation id="152913213824448541">'નજીકના શેર' સંપર્કો</translation>
@@ -6376,6 +6377,7 @@
 <translation id="5902400038326841449">Google Password Manager બંધ છે</translation>
 <translation id="5902892210366342391">છૂપા મોડમાં અસુરક્ષિત સાઇટ પર જતાં પહેલાં ચેતવણીઓ જુઓ</translation>
 <translation id="5906457147959147328">આ સાઇટને સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે ઓળખકર્તાઓનો ઉપયોગ કરવાની મંજૂરી આપવાનું ચાલુ રાખો</translation>
+<translation id="5906549184882174190">અલગ રાખ્યું છે</translation>
 <translation id="5906655207909574370">અપ ટૂ ડેટ થવામાં છે! અપડેટ કરવાનું સમાપ્ત કરવા માટે તમારા ઉપકરણને પુનઃપ્રારંભ કરો.</translation>
 <translation id="5906732635754427568">આ ઍપ્લિકેશન સાથે સંકળાયેલ ડેટાને આ ઉપકરણમાંથી દૂર કરવામાં આવશે.</translation>
 <translation id="5906974869830879618">કૃપા કરીને પિન દાખલ કરો</translation>
@@ -6602,6 +6604,7 @@ USB ડિવાઇસ</translation>
 <translation id="6088475950266477163">સેટિં&amp;ગ</translation>
 <translation id="608912389580139775">આ પેજને તમારી વાંચન સૂચિમાં ઉમેરવા માટે, બુકમાર્ક આઇકન પર ક્લિક કરો</translation>
 <translation id="6089289670051481345">વાદળી-પીળો રંગ ન દેખાવાની ખામી</translation>
+<translation id="6090068946774422711"><ph name="DEVICE" />માંથી તમારી વાંચન સૂચિ અને બીજું ઘણું મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="6090760257419195752">છોડી દીધેલી ચેતવણીઓ</translation>
 <translation id="609174145569509836">સ્ટોરેજ સાફ કરો</translation>
 <translation id="6091761513005122595">શેર સફળતાપૂર્વક માઉન્ટ થયું.</translation>
@@ -7956,6 +7959,7 @@ USB ડિવાઇસ</translation>
 <translation id="7124712201233930202">તમારી સંસ્થાની પૉલિસીઓનું અનુપાલન થયું નથી</translation>
 <translation id="7125148293026877011">Crostini ડિલીટ કરો</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">તમારા બધા ડિવાઇસ પર તમારા એક્સ્ટેન્શન અને બીજું ઘણું મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="7125932261198019860">જેની સાથે તમારી Chromebook કનેક્ટ થયેલી હોય, તે વાઇ-ફાઇ નેટવર્કની સાથે જ તમારું પ્રિન્ટર કનેક્ટ થયેલું છે તેની ખાતરી કરો અથવા કોઈ USB કેબલનો ઉપયોગ કરો. <ph name="LINK_BEGIN" />સુસંગતતા વિશે વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ડાઉનલોડ ઇતિહાસ</translation>
 <translation id="7130438335435247835">ઍક્સેસ પૉઇન્ટનું નામ (APN)</translation>
@@ -8809,6 +8813,7 @@ USB ડિવાઇસ</translation>
 <translation id="7780992949171378848">તમારા ડેટાના ઉપયોગ સંબંધિત સાઇટને નાપસંદ કરવાની વિનંતી મોકલો</translation>
 <translation id="7782102568078991263">Google દ્વારા કોઈ વધુ સૂચનો</translation>
 <translation id="7782717250816686129">નિરંતર ડેટાને લૉગ ઇન સ્ક્રીન પર સ્ટોર કરો અને સત્રમાં લૉગ ઇન વિગતો ભરો.</translation>
+<translation id="7782885970382585765">તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ અને બીજું ઘણું મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="7784020347632229094">કીબોર્ડ શૉર્ટકટ વિશે વધુ જાણો</translation>
 <translation id="7784067724422331729">તમારા કમ્પ્યુટર પરની સુરક્ષા સેટિંગે આ ફાઇલ બ્લૉક કરી છે.</translation>
 <translation id="7784796923038949829">સાઇટના ડેટાને વાંચી કે બદલી શકતા નથી</translation>

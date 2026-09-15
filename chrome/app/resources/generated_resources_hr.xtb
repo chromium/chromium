@@ -676,6 +676,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1523978563989812243">Alati za pretvaranje teksta u govor</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
 <translation id="1525740877599838384">Za utvrđivanje lokacije upotrebljava se samo Wi-Fi</translation>
+<translation id="1526274304859009691">Prijavite se da biste mogli pristupati svojim proširenjima i drugim podacima s uređaja <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Neimenovani dokument</translation>
 <translation id="1527336312600375509">Učestalost osvježavanja monitora</translation>
 <translation id="152913213824448541">Kontakti dijeljenja u blizini</translation>
@@ -6370,6 +6371,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5902400038326841449">Google upravitelj zaporki je isključen</translation>
 <translation id="5902892210366342391">Prikaži upozorenja prije prelaska na nesigurne web-lokacije u anonimnom načinu</translation>
 <translation id="5906457147959147328">I dalje dopuštaj ovoj web-lokaciji da upotrebljava identifikatore za reprodukciju zaštićenog sadržaja</translation>
+<translation id="5906549184882174190">Izolirano</translation>
 <translation id="5906655207909574370">Ažuriranje će uskoro biti gotovo. Za dovršetak ponovo pokrenite uređaj.</translation>
 <translation id="5906732635754427568">Podaci povezani s tom aplikacijom uklonit će se s uređaja.</translation>
 <translation id="5906974869830879618">Unesite PIN</translation>
@@ -6594,6 +6596,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6088475950266477163">Postavke</translation>
 <translation id="608912389580139775">Da biste dodali ovu stranicu na popis za čitanje, kliknite ikonu Oznaka</translation>
 <translation id="6089289670051481345">Tritanomalija</translation>
+<translation id="6090068946774422711">Prijavite se da biste mogli pristupati svom popisu za čitanje i drugim podacima s uređaja <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Odbačena upozorenja</translation>
 <translation id="609174145569509836">Oslobađanje pohrane</translation>
 <translation id="6091761513005122595">Dijeljenje je učitano.</translation>
@@ -7950,6 +7953,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7124712201233930202">Pravila vaše organizacije nisu zadovoljena</translation>
 <translation id="7125148293026877011">Brisanje Crostinija</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Prijavite se da biste mogli pristupati svojim proširenjima i drugim podacima na svim svojim uređajima</translation>
 <translation id="7125932261198019860">Pisač mora biti povezan s istom Wi-Fi mrežom kao i Chromebook ili upotrijebite USB kabel. <ph name="LINK_BEGIN" />Saznajte više o kompatibilnosti<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Povijest preuzimanja</translation>
 <translation id="7130438335435247835">Pristupna točka (APN)</translation>
@@ -8803,6 +8807,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7780992949171378848">Pošaljite zahtjev za isključivanje web-lokacijama u vezi s upotrebom vaših podataka</translation>
 <translation id="7782102568078991263">Nema više prijedloga iz Googlea</translation>
 <translation id="7782717250816686129">Pohrani trajne podatke na zaslonu za prijavu, a vjerodajnice umetni u sesiju.</translation>
+<translation id="7782885970382585765">Prijavite se da biste imali pristup svom popisu za čitanje i drugim podacima na svim svojim uređajima</translation>
 <translation id="7784020347632229094">Saznajte više o tipkovnom prečacu</translation>
 <translation id="7784067724422331729">Sigurnosne postavke na vašem računalu blokirale su ovu datoteku.</translation>
 <translation id="7784796923038949829">Podaci web-lokacije ne mogu se čitati niti promijeniti</translation>

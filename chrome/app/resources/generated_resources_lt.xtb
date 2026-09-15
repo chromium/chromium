@@ -1442,6 +1442,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2111670510994270194">Naujas skirtukas dešinėje</translation>
 <translation id="2111778868023567359">Daugiau nematysite skirtukų grupių šiame puslapyje</translation>
 <translation id="2112554630428445878">Sveiki, <ph name="USERNAME" />!</translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Peržiūrėti iš „macOS“ importuotus sertifikatus</translation>
 <translation id="21133533946938348">Pažymėti skirtuką</translation>
 <translation id="2113479184312716848">Atidaryti &amp;failą...</translation>
@@ -1997,6 +1998,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="252513908494776481">Klauskite apie šį skirtuką</translation>
 <translation id="2525746158911982776">Atnaujinti nepavyko, nes sistemoje nepakanka saugyklos vietos.</translation>
 <translation id="2525842906387880861">Nebematysite pasiūlymų šiame puslapyje</translation>
+<translation id="2526346836766369775">Naujas izoliuotas &amp;skirtukas</translation>
 <translation id="2526590354069164005">Darbalaukis</translation>
 <translation id="2526619973349913024">Patikrinti, ar yra naujinių</translation>
 <translation id="2527167509808613699">Bet koks ryšys</translation>
@@ -8557,6 +8559,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7578137152457315135">Kontrolinio kodo nustatymai</translation>
 <translation id="7578692661782707876">Įveskite patvirtinimo kodą.</translation>
 <translation id="757941033127302446">Prisijungta</translation>
+<translation id="7580311608678791180">Atidarykite iš „Windows“ užduočių juostos</translation>
 <translation id="7581462281756524039">Valymo įrankis</translation>
 <translation id="7582582252461552277">Rinktis šį tinklą</translation>
 <translation id="7582844466922312471">Duomenys mobiliesiems</translation>
@@ -8570,6 +8573,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7590883480672980941">Įvesties nustatymai</translation>
 <translation id="7592060599656252486">Kai kurie</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (klaidos kodas: <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Atidarykite iš „Mac“ meniu juostos</translation>
 <translation id="7600054753482800821">&amp;Tvarkyti paieškos variklius ir svetainių paiešką</translation>
 <translation id="7600218158048761260">Šio tipo paskyroje „Google“ diskas išjungtas.</translation>
 <translation id="7600965453749440009">Niekada neversti <ph name="LANGUAGE" /></translation>
@@ -9255,6 +9259,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8102139037507939978">Panaikinti asmens identifikavimo informaciją iš „system_logs.txt“.</translation>
 <translation id="810362914482827094">Ieškoti slaptažodžių</translation>
 <translation id="8104088837833760645">Atsisiųsti „eSIM“ kortelės profilį</translation>
+<translation id="8104388155778519213">Bendrinkite ekrane esantį turinį su „Google Lens“</translation>
 <translation id="8104778744208707085">Reikia atkreipti dėmesį</translation>
 <translation id="8105273883928376822">Prisijunkite, kad galėtumėte tęsti.</translation>
 <translation id="8106114112474206597">Naudokite „i“, kad paspaustumėte pelės mygtuką</translation>

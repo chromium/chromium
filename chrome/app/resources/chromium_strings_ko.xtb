@@ -69,6 +69,7 @@
 <translation id="1793486931176048546">빠른 액세스를 위해 Windows 알림에서 <ph name="BEGIN_BOLD" />예<ph name="END_BOLD" /> 버튼을 클릭하여 Chromium을 태스크 바에 고정합니다.</translation>
 <translation id="1808667845054772817">Chromium 재설치</translation>
 <translation id="1820835682567584003">Chromium에서 <ph name="AUTHENTICATION_PURPOSE" />을(를) 시도하는 중입니다.</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 <ph name="DEVICE" />에서 내 확장 프로그램 등을 사용할 수 있습니다.</translation>
 <translation id="183031085822326697">다음번에 <ph name="DEVICE_TYPE" />에서 Chromium을 열면 Google 비밀번호 관리자를 사용하라는 메시지가 표시됩니다.</translation>
 <translation id="1838374766361614909">검색어 지우기</translation>
 <translation id="18552579716432081">인터넷 사용 기록을 이 기기에서만 삭제하고 Google 계정에서는 유지하려면 <ph name="BEGIN_LINK" />Chromium에서 로그아웃<ph name="END_LINK" />하세요.</translation>
@@ -191,6 +192,7 @@
 <translation id="3038232873781883849">설치 대기 중...</translation>
 <translation id="3045032126857188731">번역된 언어, <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">의견 닫기 대화상자</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 <ph name="DEVICE" />에서 내 읽기 목록 등을 사용할 수 있습니다.</translation>
 <translation id="3068187312562070417">기타 Chromium 프로필</translation>
 <translation id="3068290154869370196">확장 프로그램은 Chromium을 맞춤설정할 수 있는 부가기능입니다. 정리부터 일상적인 할 일을 간소화하는 것까지, 확장 프로그램을 통해 Chromium을 나만의 브라우저로 만들 수 있습니다.</translation>
 <translation id="3068515742935458733">비정상 종료 보고서와 <ph name="UMA_LINK" />을(를) Google로 전송하여 Chromium 개선에 참여합니다.</translation>
@@ -292,6 +294,7 @@
 <translation id="4147856324248078748">Chromium 맞춤설정(&amp;U)</translation>
 <translation id="4148957013307229264">설치 중...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 모든 기기에서 내 읽기 목록 등을 사용할 수 있습니다.</translation>
 <translation id="421369550622382712">Chromium에 유용한 앱, 게임, 확장 프로그램, 테마를 찾아보세요.</translation>
 <translation id="4217080900579554343">모든 컴퓨터에서 이 확장 프로그램 등을 사용하려면 Chromium에 로그인하세요.</translation>
 <translation id="4217972271355023382">부모님의 선택을 통해 온라인에서 더 안전하게 보호하려면 이미 <ph name="USER_EMAIL_ADDRESS" />님으로 로그인되어 있는 Chromium 프로필로 전환하세요.</translation>
@@ -391,6 +394,7 @@
 <translation id="5382964351116519680">Chromium으로 검색 열기</translation>
 <translation id="5383439451358640070">Chromium에서 일부 파일을 차단하는 이유 알아보기</translation>
 <translation id="5386450000063123300">Chromium 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 모든 기기에서 내 확장 프로그램 등을 사용할 수 있습니다.</translation>
 <translation id="538767207339317086">Chromium 로그인 허용</translation>
 <translation id="5405650547142096840">Chromium에서 제거</translation>
 <translation id="5424544524441439284">성능은 감소하지만 Chromium의 공격에 대한 저항력이 강화됨</translation>

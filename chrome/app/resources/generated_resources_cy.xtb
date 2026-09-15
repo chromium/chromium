@@ -1442,6 +1442,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2111670510994270194">Tab newydd i'r dde</translation>
 <translation id="2111778868023567359">Ni welwch Grwpiau Tabiau ar y dudalen hon eto</translation>
 <translation id="2112554630428445878">Croeso, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Gweld tystysgrifau a fewnforiwyd o macOS</translation>
 <translation id="21133533946938348">Pinio'r Tab</translation>
 <translation id="2113479184312716848">Agor &amp;Ffeil…</translation>
@@ -1997,6 +1998,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="252513908494776481">Gofyn am y tab hwn</translation>
 <translation id="2525746158911982776">Methodd y diweddariad oherwydd nad oes gan y system ddigon o le storio.</translation>
 <translation id="2525842906387880861">Ni fyddwch yn gweld awgrymiadau ar y dudalen hon eto</translation>
+<translation id="2526346836766369775">&amp;Tab Ynysig Newydd</translation>
 <translation id="2526590354069164005">Bwrdd gwaith</translation>
 <translation id="2526619973349913024">Gwiriwch am ddiweddariad</translation>
 <translation id="2527167509808613699">Unrhyw fath o gysylltiad</translation>
@@ -8557,6 +8559,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7578137152457315135">Gosodiadau olion bysedd</translation>
 <translation id="7578692661782707876">Rhowch eich cod cadarnhad.</translation>
 <translation id="757941033127302446">Wedi mewngofnodi</translation>
+<translation id="7580311608678791180">Agor o far tasgau Windows</translation>
 <translation id="7581462281756524039">Offeryn glanhau</translation>
 <translation id="7582582252461552277">Hoffi'r rhwydwaith hwn</translation>
 <translation id="7582844466922312471">Data Symudol</translation>
@@ -8570,6 +8573,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7590883480672980941">Gosodiadau mewnbynnu</translation>
 <translation id="7592060599656252486">Rhai</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (cod gwall <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Agor o far dewislen Mac</translation>
 <translation id="7600054753482800821">&amp;Rheoli peiriannau chwilio a chwilio gwefan</translation>
 <translation id="7600218158048761260">Mae Google Drive wedi'i analluogi ar gyfer y math hwn o gyfrif.</translation>
 <translation id="7600965453749440009">Peidio byth â chyfieithu <ph name="LANGUAGE" /></translation>
@@ -9255,6 +9259,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8102139037507939978">Tynnu Gwybodaeth Adnabod Bersonol o system_logs.txt.</translation>
 <translation id="810362914482827094">Chwilio codau pas</translation>
 <translation id="8104088837833760645">Lawrlwytho proffil eSIM</translation>
+<translation id="8104388155778519213">Rhannu yr hyn sydd ar eich sgrîn gyda Google Lens</translation>
 <translation id="8104778744208707085">Angen eich sylw</translation>
 <translation id="8105273883928376822">Mewngofnodwch i barhau.</translation>
 <translation id="8106114112474206597">Defnyddiwch “i” i bwyso botwm llygoden</translation>

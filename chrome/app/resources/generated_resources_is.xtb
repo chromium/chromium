@@ -677,6 +677,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1523978563989812243">Talgervilsvélar</translation>
 <translation id="1524563461097350801">Nei, takk</translation>
 <translation id="1525740877599838384">Nota aðeins Wi-Fi til að ákvarða staðsetningu</translation>
+<translation id="1526274304859009691">Skráðu þig inn til að sækja viðbæturnar þínar og fleira úr <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Ónefnt skjal</translation>
 <translation id="1527336312600375509">Endurnýjunartíðni skjás</translation>
 <translation id="152913213824448541">Tengiliðir Nærdeilingar</translation>
@@ -6387,6 +6388,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5902400038326841449">Slökkt er á Google-aðgangsorðastjórnun</translation>
 <translation id="5902892210366342391">Sjá viðvaranir áður en farið er á ótrygg vefsvæði í huliðsstillingu</translation>
 <translation id="5906457147959147328">Halda áfram að leyfa þessu vefsvæði að nota auðkenni til að spila varið efni</translation>
+<translation id="5906549184882174190">Einangrað</translation>
 <translation id="5906655207909574370">Uppfærslan er næstum tilbúin! Endurræstu tækið til að ljúka uppfærslunni.</translation>
 <translation id="5906732635754427568">Gögn sem tengjast þessu forriti verða fjarlægð úr tækinu.</translation>
 <translation id="5906974869830879618">Sláðu inn PIN-númer</translation>
@@ -6612,6 +6614,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6088475950266477163">Stillingar</translation>
 <translation id="608912389580139775">Smelltu á bókamerkistáknið til að bæta þessari síðu við leslistann</translation>
 <translation id="6089289670051481345">Blálitaskerðing (tritanomaly)</translation>
+<translation id="6090068946774422711">Skráðu þig inn til að sækja leslistann þinn og fleira úr <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Hunsaðar viðvaranir</translation>
 <translation id="609174145569509836">Losa um geymslurými</translation>
 <translation id="6091761513005122595">Deilt efni var tengt.</translation>
@@ -7965,6 +7968,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7124712201233930202">Þetta stenst ekki reglur fyrirtækisins</translation>
 <translation id="7125148293026877011">Eyða Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Skráðu þig inn til að sækja viðbæturnar þínar og fleira í öllum tækjunum þínum</translation>
 <translation id="7125932261198019860">Gakktu úr skugga um að prentarinn sé tengdur sama Wi-Fi neti og Chromebook-tölvan eða notaðu USB-snúru. <ph name="LINK_BEGIN" />Nánar um samhæfi<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Niðurhalsferill</translation>
 <translation id="7130438335435247835">Heiti aðgangsstaðar (APN)</translation>
@@ -8818,6 +8822,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7780992949171378848">Senda beiðni um afþökkun til vefsvæða varðandi notkun á gögnunum þínum</translation>
 <translation id="7782102568078991263">Ekki fleiri tillögur frá Google</translation>
 <translation id="7782717250816686129">Geymdu varanleg gögn á innskráningarskjánum og gefðu upp skilríki til að hefja lotu.</translation>
+<translation id="7782885970382585765">Skráðu þig inn til að fá leslistann þinn og fleira í öllum tækjunum þínum</translation>
 <translation id="7784020347632229094">Nánar um flýtilykilinn</translation>
 <translation id="7784067724422331729">Öryggisstillingar tölvunnar þinnar útilokuðu þessa skrá.</translation>
 <translation id="7784796923038949829">Ekki er hægt að lesa eða breyta gögnum vefsvæðis</translation>

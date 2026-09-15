@@ -98,6 +98,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1873233029667955273">Google Chrome är inte din standardwebbläsare</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-in)</translation>
 <translation id="1877026089748256423">Den här versionen av Chrome är inaktuell</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> är redan inloggad. Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även dina tillägg med mera på alla dina enheter.</translation>
 <translation id="1880677175115548835">Markera text</translation>
 <translation id="1896602904211344018">Skaffa Chrome-appen</translation>
 <translation id="1919130412786645364">Tillåt inloggning i Chrome</translation>
@@ -548,6 +549,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6334815226785304306">Ställ in Google Chrome som standardwebbläsare och fäst den på aktivitetsfältet</translation>
 <translation id="63540178978900677">Chrome är inte längre din standardwebbläsare. Vill du använda Chrome som standardwebbläsare?</translation>
 <translation id="6360449101159168105">När den här fliken var inaktiv frigjordes minne för att hålla Chrome snabbt. Du kan välja att aldrig inaktivera den här webbplatsen.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> är redan inloggad. Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även din läslista med mera på alla dina enheter.</translation>
 <translation id="6388799252195623474">hjälp mig med det här</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisationen avslutar Chrome automatiskt när det inte har använts på 1 minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Organisationen avslutar Chrome automatiskt när det inte har använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
@@ -708,6 +710,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Starta Chrome när Windows startas</translation>
 <translation id="7849037457735762883">Fortsätt där du slutade: Chrome kan återställa dina flikar varje gång du startar om. Aktivera detta genom att öppna</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> är redan inloggad. Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även dina tillägg med mera från <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Om du vill använda sparade lösenord skannar du QR-koden, laddar ned Chrome för iOS och loggar in på ditt Google-konto</translation>
 <translation id="7872446069773932638">Laddar ned … <ph name="SECONDS" /> sekund/sekunder återstår</translation>
 <translation id="7886087451482920026">Välj text med Google Lens</translation>
@@ -805,6 +808,7 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="8679801911857917785">Det styr också vilken sida som visas när du startar Chrome.</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8712767363896337380">Uppdateringen är snart klar! Starta om Chrome för att slutföra uppdateringen.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> är redan inloggad. Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även din läslista med mera från <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Logga ut från Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan inte fastställa eller ange standardwebbläsaren</translation>
 <translation id="8747073452963259673">nedre vänstra hörnet av sökområdet: <ph name="LEFT" /> % åt vänster, <ph name="BOTTOM" /> % nedåt</translation>

@@ -2220,6 +2220,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4750917950439032686">Jou inligting (byvoorbeeld, wagwoorde en kredietkaartnommers) is privaat wanneer dit na hierdie werf gestuur word.</translation>
 <translation id="4754461935447132332">Nie toegelaat vir onveilige werwe nie</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Kies die promosiekodeveld om jou gestoorde aanbiedings te bekyk en in te vul</translation>
 <translation id="4757740693289347881">Kode is ongeldig</translation>
 <translation id="4757993714154412917">Jy het sopas jou wagwoord op 'n bedrieglike werf ingevoer. Chromium beveel aan dat jy jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
 <translation id="4758311279753947758">Voeg kontakinligting by</translation>
@@ -3152,6 +3153,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6319672966240656136">Hierdie werf sal geblokkeer bly want jy is onder Google se Gevorderde Beskerming-program. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">Gaan jou DNS-instellings na</translation>
 <translation id="6322182122604171028">Kon nie Windows Hello gebruik nie</translation>
+<translation id="6326175484149238433">Verwyder van Chrome af</translation>
 <translation id="6326947323444967009">Stel Chrome in iOS-instellings as die stelsel se verstekblaaier</translation>
 <translation id="6328639280570009161">Probeer om netwerkvoorspelling te deaktiveer</translation>
 <translation id="6329742260390895689">Skakel “Gebruik passe oral op Google” in Wallet-instellings aan om jou inligting te outovul</translation>
@@ -3843,6 +3845,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7514365320538308">Laai af</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR word hierdie keer toegelaat</translation>
+<translation id="7517198908921983825">Voorgestel deur Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Koevert C10</translation>
 <translation id="7518003948725431193">Geen webbladsy is vir die volgende webadres gevind nie: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

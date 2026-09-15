@@ -69,6 +69,7 @@
 <translation id="1793486931176048546">Chromium-ге жылдам кіру үшін оны тапсырмалар жолағына бекітіңіз. Ол үшін Windows хабарландыруындағы <ph name="BEGIN_BOLD" />Иә<ph name="END_BOLD" /> түймесін басыңыз.</translation>
 <translation id="1808667845054772817">Chromium қайта орнату</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> қолданып көрейін деп жатыр</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> әлдеқашан кірді. Браузерді пайдалану тарихын бөлек сақтау үшін Chromium-ге <ph name="USER_EMAIL_ADDRESS" /> ретінде жеке профиліңізбен кіріңіз. Кеңейтімдер мен басқа деректер <ph name="DEVICE" /> құрылғысында қолжетімді болады.</translation>
 <translation id="183031085822326697">Келесі жолы Chromium-ді <ph name="DEVICE_TYPE" /> құрылғысынан ашқан кезде, Google Password Manager-ді пайдалану туралы нұсқауды көресіз.</translation>
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
 <translation id="18552579716432081">Браузерді пайдалану деректерін Google аккаунтында сақтай отырып, тек осы құрылғыдан жою үшін <ph name="BEGIN_LINK" />Chromium-де аккаунттан шығыңыз<ph name="END_LINK" />.</translation>
@@ -191,6 +192,7 @@
 <translation id="3038232873781883849">Сәлден соң орнатыла бастайды…</translation>
 <translation id="3045032126857188731">Аударма тілі: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">"Пікір" диалогтік терезесін жабу</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> әлдеқашан кірді. Браузерді пайдалану тарихын бөлек сақтау үшін Chromium-ге <ph name="USER_EMAIL_ADDRESS" /> ретінде жеке профиліңізбен кіріңіз. Оқу тізімі мен басқа деректерді <ph name="DEVICE" /> құрылғысынан да аласыз.</translation>
 <translation id="3068187312562070417">Басқа Chromium профильдері</translation>
 <translation id="3068290154869370196">Кеңейтімдер – Chromium браузерін бейімдеуге мүмкіндік беретін қосымшалар. Олар Chromium-ді өзіңізге ыңғайлы етіп реттеуге, күнделікті тапсырмаларды жеңілдетуге көмектеседі.</translation>
 <translation id="3068515742935458733">Google компаниясына жаңылыс туралы есептер және <ph name="UMA_LINK" /> жіберу арқылы Chromium жақсартуға көмектесіңіз</translation>
@@ -292,6 +294,7 @@
 <translation id="4147856324248078748">Chromium браузеріңізді бейімдеңіз</translation>
 <translation id="4148957013307229264">Орнатылуда…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> –Желіге кіру – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> әлдеқашан кірді. Браузерді пайдалану тарихын бөлек сақтау үшін Chromium-ге <ph name="USER_EMAIL_ADDRESS" /> ретінде жеке профиліңізбен кіріңіз. Оқу тізімі мен басқа деректер барлық құрылғыда қолжетімді болады.</translation>
 <translation id="421369550622382712">Chromium үшін тамаша қолданбалар, ойындар мен тақырыптарды таба аласыз.</translation>
 <translation id="4217080900579554343">Осы кеңейтімді және тағы басқасын компьютерлеріңізге орнату үшін Chromium аккаунтына кіріңіз.</translation>
 <translation id="4217972271355023382">Ата-анаңыздың таңдауымен интернетті қауіпсіз пайдалану үшін <ph name="USER_EMAIL_ADDRESS" /> ретінде кірген Chromium профиліңізге ауысыңыз.</translation>
@@ -391,6 +394,7 @@
 <translation id="5382964351116519680">Chromium-мен іздеу функциясын ашу</translation>
 <translation id="5383439451358640070">Неліктен Chromium кейбір файлдарды блоктайтыны туралы ақпарат алыңыз</translation>
 <translation id="5386450000063123300">Chromium жаңартылуда (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> әлдеқашан кірді. Браузерді пайдалану тарихын бөлек сақтау үшін Chromium-ге <ph name="USER_EMAIL_ADDRESS" /> ретінде жеке профиліңізбен кіріңіз. Кеңейтімдер мен басқа деректер барлық құрылғыда қолжетімді болады.</translation>
 <translation id="538767207339317086">Chromium браузеріне кіруге рұқсат ету</translation>
 <translation id="5405650547142096840">Chromium-нен жою</translation>
 <translation id="5424544524441439284">Өнімділік азаяды, бірақ Chromium шабуылдарға төзімді болады.</translation>

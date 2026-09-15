@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">Para mapanatili kang ligtas, inalis ang mga pahintulot sa ilang site</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1384568202352682721">I-save bilang…</translation>
-<translation id="1384704387250346179">Isalin sa Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Puwede mong makita ang history mula sa iba pang app na nagbubukas ng mga link sa Chrome. Posibleng may iba pang uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Binuksan nang buo ang bottom sheet ng mga insight sa presyo</translation>
 <translation id="1397811292916898096">Maghanap gamit ang <ph name="PRODUCT_NAME" /></translation>
@@ -174,7 +173,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1650979352027263879">Inalis ang iyong mga preference sa hitsura</translation>
 <translation id="1671236975893690980">Nakabinbin ang pag-download...</translation>
 <translation id="1672586136351118594">Huwag ipakitang muli</translation>
-<translation id="1680919990519905526">Mamili ng larawan sa Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020at isinasara pagkalipas ng <ph name="MONTHS_ARCHIVED" /> (na) buwan</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1696555181932908973">Puwede kang sumubok ng iba pang paraan para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -413,6 +411,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2581165646603367611">Iki-clear nito ang cookies, cache at iba pang data ng mga site na sa tingin ng Chrome ay hindi mahalaga.</translation>
 <translation id="2587052924345400782">May available na mas bagong bersyon</translation>
 <translation id="2593272815202181319">Monospace</translation>
+<translation id="2604138917550693049">Hanapin gamit ang Google Lens</translation>
 <translation id="2604446170045642109">Puwede mong i-off ang madilim na tema para sa mga site sa iyong mga setting.</translation>
 <translation id="2605017215201958293">Pakinggan ang page na ito gamit ang AI</translation>
 <translation id="2607441479295509868">Naka-sign out. Mag-sign in ulit para magamit ang mga bookmark, password, at higit pa sa iyong account.</translation>
@@ -788,6 +787,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="4162867837470729563">Nakabukas nang buo ang taas ang listahan ng mga opsyon sa pagbabahagi.</translation>
 <translation id="4164642020717536140">Mabilis at secure na pag-browse sa web</translation>
 <translation id="4165077084524712774">Higit pang tool</translation>
+<translation id="4169156312706405526">Mag-attach ng mga file mula sa Drive</translation>
 <translation id="4170577491341606575">Kinukuha ang iyong bagay-bagay\u2026</translation>
 <translation id="4172051516777682613">Palaging ipakita</translation>
 <translation id="4176838562184310003">Hindi nag-shut down nang tama ang Chrome at puwede nitong subukang i-restore ang iyong mga nawalang window at tab. Posibleng ma-minimize ang ilang window kapag na-restore.</translation>
@@ -1100,7 +1100,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5355191726083956201">Naka-on ang Enhanced Protection</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, Naka-pin at Nagshe-share na Tab na Incognito</translation>
 <translation id="5375374982898812658">Mawawalan ka kaagad ng access sa grupo ng tab na “<ph name="GROUP_NAME" />,” at ide-delete ito sa lahat ng device mo</translation>
-<translation id="5375577065097716013">Hanapin sa Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">I-save at i-share</translation>
 <translation id="5385892579392932755">iyong laptop</translation>
 <translation id="5390367025924544771">Gustong gamitin ng <ph name="WEBSITE_ORIGIN" /> ang personal na impormasyon mula sa iyong digital wallet. Magpatuloy lang kung pinagkakatiwalaan mo ang site na ito. Posibleng linlangin ka ng mga mapanganib na site na magbunyag ng mga bagay tulad ng iyong legal na pangalan o numero ng ID.</translation>
@@ -1540,7 +1539,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6996145122199359148">I-download ang page na ito</translation>
 <translation id="7007648447224463482">Buksan ang lahat sa bagong window</translation>
 <translation id="7013762323294215682">Mase-save ang passkey na ito sa iyong password manager. Magagamit ng sinumang may access dito ang passkey na ito.</translation>
-<translation id="7020741890149022655">Idagdag sa reading list <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Buksan sa browser</translation>
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="7037994709569287156">Gawing default ang Chrome</translation>
@@ -2043,6 +2041,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8957528460562961174">Para mapanatili ang access sa iyong mga password, i-export na ngayon ang mga ito at pagkatapos ay i-import ang mga ito sa gusto mong password manager. Huminto sa paggana ang Google Password Manager dahil hindi available ang mga serbisyo ng Google Play.</translation>
 <translation id="8963117664422609631">Pumunta sa mga setting ng site</translation>
 <translation id="8965591936373831584">nakabinbin</translation>
+<translation id="8967427617812342790">Idagdag sa listahan ng babasahin</translation>
 <translation id="8969796057708736017">Matatapos ang iyong pag-download kung natutugunan ng file ang mga patakaran ng organisasyon mo</translation>
 <translation id="8970887620466824814">Nagkaproblema.</translation>
 <translation id="8972098258593396643">I-download sa default na folder?</translation>

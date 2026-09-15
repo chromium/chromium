@@ -98,6 +98,7 @@
 <translation id="1873233029667955273">Google Chrome 並非您的預設瀏覽器</translation>
 <translation id="1874309113135274312">Google Chrome 測試版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chrome 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可在你的所有裝置上取用擴充程式及其他內容。</translation>
 <translation id="1880677175115548835">選擇文字</translation>
 <translation id="1896602904211344018">取得 Chrome 應用程式</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
@@ -547,6 +548,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6334815226785304306">將 Google Chrome 設定為預設瀏覽器並固定到工作列</translation>
 <translation id="63540178978900677">Chrome 不再是你的預設瀏覽器。要將 Chrome 設定為預設瀏覽器嗎？</translation>
 <translation id="6360449101159168105">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chrome 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chrome 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可在你的所有裝置上取用閱讀清單及其他內容。</translation>
 <translation id="6388799252195623474">幫幫我</translation>
 <translation id="6412673304250309937">使用儲存在 Chrome 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{根據機構規定，Chrome 會在閒置 1 分鐘後自動關閉。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}other{根據機構規定，Chrome 會在閒置 # 分鐘後自動關閉。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}}</translation>
@@ -707,6 +709,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7845233973568007926">多謝安裝。您必須先重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7847170235260850604">在 Windows 啟動時開啟 Chrome</translation>
 <translation id="7849037457735762883">開啟上次瀏覽的內容：Chrome 可以在每次重新啟動後還原分頁。如要開啟此功能，請前往</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chrome 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可取用<ph name="DEVICE" />上的擴充程式及其他內容。</translation>
 <translation id="7869620795354551924">如要使用已儲存的密碼，請掃瞄 QR 碼下載 iOS 版 Chrome，並登入 Google 帳戶</translation>
 <translation id="7872446069773932638">正在下載… 剩餘 <ph name="SECONDS" /> 秒</translation>
 <translation id="7886087451482920026">使用「Google 智能鏡頭」選取文字</translation>
@@ -804,6 +807,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8679801911857917785">這個擴充功能也會管制 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8712767363896337380">即將更新至最新版本！重新啟動 Chrome 即可完成更新程序。</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chrome 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可取用<ph name="DEVICE" />上的閱讀清單及其他內容。</translation>
 <translation id="8718062187489036808">登出 Chrome</translation>
 <translation id="873133009373065397">Google Chrome 無法偵測或設定預設瀏覽器</translation>
 <translation id="8747073452963259673">搜尋區域嘅左下角：距左側 <ph name="LEFT" />%，距底部 <ph name="BOTTOM" />%</translation>

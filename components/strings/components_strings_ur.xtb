@@ -2221,6 +2221,7 @@
 <translation id="4750917950439032686">جب آپ کی معلومات (مثلاً، پاس ورڈز یا کریڈٹ کارڈ نمبرز) اس سائٹ پر بھیجی جاتی ہے تو اس وقت وہ نجی ہوتی ہے۔</translation>
 <translation id="4754461935447132332">غیر محفوظ سائٹس کیلئے اجازت نہیں ہے</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">اپنی محفوظ کردہ پیشکشوں کو دیکھنے اور پُر کرنے کے لیے پرومو کوڈ فیلڈ کو منتخب کریں</translation>
 <translation id="4757740693289347881">کوڈ غلط ہے</translation>
 <translation id="4757993714154412917">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ اپنے اکاؤنٹس کو محفوظ کرنے کے لیے، Chromium آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="4758311279753947758">رابطے کی معلومات شامل کریں</translation>
@@ -3154,6 +3155,7 @@
 <translation id="6319672966240656136">‏یہ سائٹ مسدود رہے گی کیونکہ آپ Google کے اعلی تحفظ کے پروگرام کے تحت ہیں۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">‏اپنی DNS ترتیبات چیک کریں</translation>
 <translation id="6322182122604171028">‏Windows Hello کا استعمال نہیں کیا جا سکا</translation>
+<translation id="6326175484149238433">‏Chrome سے ہٹائیں</translation>
 <translation id="6326947323444967009">‏iOS کی ترتیبات میں Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
 <translation id="6328639280570009161">نیٹ ورک کی پیشین گوئی غیر فعال کرنے کی کوشش کریں</translation>
 <translation id="6329742260390895689">‏اپنی معلومات کو آٹو فل کرنے کیلئے، والٹ کی ترتیبات میں "پورے Google پر پاسز کا استعمال کریں" کو آن کریں</translation>
@@ -3845,6 +3847,7 @@
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">‏اس بار VR کی اجازت دی گئی</translation>
+<translation id="7517198908921983825">‏‫Gemini کی طرف سے تجویز کردہ · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">‏C10 لفافہ</translation>
 <translation id="7518003948725431193">ویب پتہ کیلئے کوئی نیا ویب صفحہ نہیں ملا تھا: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

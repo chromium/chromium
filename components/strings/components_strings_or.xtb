@@ -2217,6 +2217,7 @@
 <translation id="4750917950439032686">ଅପଣଙ୍କର ସୂଚନା (ଉଦାହରଣ ସ୍ୱରୂପ, ପାସ୍‍ୱର୍ଡ କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡ ନମ୍ବର) ଏହି ସାଇଟ୍‍କୁ ଯେତେବେଳେ ପଠାଯାଏ, ସେତେବେଳେ ବ୍ୟକ୍ତିଗତ ଥାଏ।</translation>
 <translation id="4754461935447132332">ଅସୁରକ୍ଷିତ ସାଇଟଗୁଡ଼ିକ ପାଇଁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ଅଫରଗୁଡ଼ିକୁ ଭ୍ୟୁ କରିବା ଏବଂ ପୂରଣ କରିବା ପାଇଁ ପ୍ରୋମୋ କୋଡ ଫିଲ୍ଡକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4757740693289347881">କୋଡ ଅବୈଧ ଅଟେ</translation>
 <translation id="4757993714154412917">ଆପଣ ଏବେ ଏକ ପ୍ରତାରଣାମୂଳକ ସାଇଟରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଲେଖିଛନ୍ତି। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ କରିବା ପାଇଁ, Chromium ଆପଣଙ୍କ ଦ୍ୱାରା ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକର ଯାଞ୍ଚ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
 <translation id="4758311279753947758">ଯୋଗାଯୋଗ ସୂଚନା ଯୋଗ କରନ୍ତୁ</translation>
@@ -3148,6 +3149,7 @@
 <translation id="6319672966240656136">ଆପଣ Googleର Advanced Protection Program ଅଧୀନରେ ଥିବା ଯୋଗୁଁ ଏହି ସାଇଟ ବ୍ଲକ ହୋଇ ରହିବ। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">ଆପଣଙ୍କର DNS ସେଟିଂସ୍ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6322182122604171028">Windows Hello ବ୍ୟବହାର କରାଯାଇପାରିଲା ନାହିଁ</translation>
+<translation id="6326175484149238433">Chromeରୁ କାଢ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="6326947323444967009">iOS ସେଟିଂସରେ Chromeକୁ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="6328639280570009161">ନେଟ୍‌ୱର୍କ ପୁର୍ବାନୁମାନ ଅକ୍ଷମ କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6329742260390895689">ଆପଣଙ୍କ ସୂଚନାକୁ ଅଟୋଫିଲ କରିବା ପାଇଁ, Wallet ସେଟିଂସରେ "ସମଗ୍ର Googleରେ ପାସଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ"କୁ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -3839,6 +3841,7 @@
 <translation id="7514365320538308">ଡାଉନ୍‌‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">ଏହି ଥର VRକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
+<translation id="7517198908921983825">Gemini ଦ୍ୱାରା ପରାମର୍ଶ ଦିଆଯାଇଛି · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">ଏନଭେଲପ C10</translation>
 <translation id="7518003948725431193">ଏହି ୱେବ୍ ଠିକଣା ପାଇଁ କୌଣସି ୱେବ୍‌ପୃଷ୍ଠା ମିଳିଲା ନାହିଁ: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

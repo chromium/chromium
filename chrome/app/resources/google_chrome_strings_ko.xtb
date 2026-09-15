@@ -98,6 +98,7 @@
 <translation id="1873233029667955273">Chrome이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="1874309113135274312">Chrome 베타(mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 모든 기기에서 내 확장 프로그램 등을 사용할 수 있습니다.</translation>
 <translation id="1880677175115548835">텍스트 선택</translation>
 <translation id="1896602904211344018">Chrome 앱 다운로드</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
@@ -547,6 +548,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6334815226785304306">Chrome을 기본 브라우저로 설정하고 태스크 바에 고정합니다.</translation>
 <translation id="63540178978900677">Chrome이 더 이상 기본 브라우저가 아닙니다. Chrome을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="6360449101159168105">이 탭이 비활성 상태인 동안 Chrome의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 모든 기기에서 내 읽기 목록 등을 사용할 수 있습니다.</translation>
 <translation id="6388799252195623474">이 문제 해결을 도와줘.</translation>
 <translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Chrome을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}other{Chrome을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}}</translation>
@@ -707,6 +709,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7845233973568007926">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 컴퓨터를 다시 시작해야 합니다.</translation>
 <translation id="7847170235260850604">Windows 시작 시 Chrome 실행</translation>
 <translation id="7849037457735762883">중단한 위치에서 계속하기: Chrome에서는 다시 시작할 때마다 탭을 복원할 수 있습니다. 이 기능을 사용 설정하려면 다음으로 이동하세요.</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 <ph name="DEVICE" />에서 내 확장 프로그램 등을 사용할 수 있습니다.</translation>
 <translation id="7869620795354551924">저장된 비밀번호를 사용하려면 QR 코드를 따라가 iOS용 Chrome을 다운로드하고 Google 계정에 로그인하세요.</translation>
 <translation id="7872446069773932638">다운로드 중... <ph name="SECONDS" />초 남았습니다.</translation>
 <translation id="7886087451482920026">Google 렌즈로 텍스트 선택</translation>
@@ -804,6 +807,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8679801911857917785">또한 Chrome을 시작할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8712767363896337380">업데이트가 거의 완료되었습니다. 업데이트를 마치려면 Chrome을 다시 실행하세요.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 <ph name="DEVICE" />에서 내 읽기 목록 등을 사용할 수 있습니다.</translation>
 <translation id="8718062187489036808">Chrome에서 로그아웃</translation>
 <translation id="873133009373065397">Chrome에서 기본 브라우저를 확인하거나 설정할 수 없습니다.</translation>
 <translation id="8747073452963259673">검색 영역의 왼쪽 하단: 왼쪽 <ph name="LEFT" />%, 하단 <ph name="BOTTOM" />%</translation>

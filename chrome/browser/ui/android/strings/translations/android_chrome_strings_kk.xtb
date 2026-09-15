@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">Сізді қорғау үшін рұқсаттар кейбір сайттардан өшірілді.</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1384568202352682721">Басқаша сақтау…</translation>
-<translation id="1384704387250346179">Google Lens арқылы аудару <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Сілтемелерді Chrome-нан ашатын кейбір қолданбалардың тарихы көрсетілуі ықтимал. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> мекенжайында Google аккаунтымен браузерді қолдану тарихының басқа түрлері болуы мүмкін.</translation>
 <translation id="139752016751285248">Баға статистикасының толығымен ашылған төменгі парақшасы</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> арқылы іздеу</translation>
@@ -174,7 +173,6 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="1650979352027263879">Көрініс параметрлері өшірілді.</translation>
 <translation id="1671236975893690980">Жүктеу күтілуде…</translation>
 <translation id="1672586136351118594">Қайта көрсетілмесін</translation>
-<translation id="1680919990519905526">Суретті Google Lens арқылы сатып алу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020және <ph name="MONTHS_ARCHIVED" /> айдан кейін жабылады</translation>
 <translation id="1689333818294560261">Лақап ат</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> сайтында жұмысты жалғастырудың басқа жолдарын байқап көрсеңіз болады.</translation>
@@ -413,6 +411,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2581165646603367611">Сookie файлдары, кэш және маңызды емес деп саналатын сайттың басқа деректері өшіріледі.</translation>
 <translation id="2587052924345400782">Жаңа нұсқасы қолжетімді</translation>
 <translation id="2593272815202181319">Моноенді</translation>
+<translation id="2604138917550693049">Суретті Google Lens арқылы іздеу</translation>
 <translation id="2604446170045642109">Сайттар үшін қараңғы режимді параметрлерден өшіруге болады.</translation>
 <translation id="2605017215201958293">Жасанды интеллект көмегімен осы бетті тыңдау</translation>
 <translation id="2607441479295509868">Аккаунттан шыққансыз. Аккаунтыңызда бетбелгілерді, құпия сөздерді және т.б. пайдалану үшін аккаунтқа қайта кіріңіз.</translation>
@@ -1100,7 +1099,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5355191726083956201">Жақсартылған қорғаныс қосулы.</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, бөлісудің бекітілген инкогнито қойындысы</translation>
 <translation id="5375374982898812658">"<ph name="GROUP_NAME" />" қойындылар тобын пайдалану рұқсатынан бірден айырылып қаласыз. Бұл топ барлық құрылғыңыздан жойылады.</translation>
-<translation id="5375577065097716013">Суретті Google Lens арқылы іздеу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">Сақтау және бөлісу</translation>
 <translation id="5385892579392932755">ноутбугіңізден</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> цифрлық әмияныңыздағы жеке ақпаратыңызды пайдалануға рұқсат сұрайды. Сайтқа сенсеңіз ғана жалғастырыңыз. Қауіпті сайттар толық аты-жөніңіз не жеке куәлік нөмірі сияқты ақпаратты алдап ашқызуы мүмкін.</translation>
@@ -1540,7 +1538,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6996145122199359148">Бұл бетті жүктеп алу</translation>
 <translation id="7007648447224463482">Барлығын жаңа терезеде ашу</translation>
 <translation id="7013762323294215682">Бұл кіру кілті Password Manager-ге сақталады. Оған кіре алатын кез келген адам осы кіру кілтіне де қол жеткізеді.</translation>
-<translation id="7020741890149022655">Оқу тізіміне қосу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Браузерден ашу</translation>
 <translation id="7029809446516969842">Құпия сөздер</translation>
 <translation id="7037994709569287156">Chrome-ды әдепкі браузер қылу</translation>
@@ -2043,6 +2040,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8957528460562961174">Құпия сөздерді пайдалану рұқсатын сақтау үшін оларды қазір экспорттап, кейін қажетті Password Manager-ге импорттаңыз. Google Password Manager жұмысы тоқтады, себебі Google Play қызметтері қолжетімді емес.</translation>
 <translation id="8963117664422609631">Сайт параметрлеріне өту</translation>
 <translation id="8965591936373831584">күтілуде</translation>
+<translation id="8967427617812342790">Оқу тізіміне қосу</translation>
 <translation id="8969796057708736017">Файл ұйымыңыздың саясаттарына сәйкес келсе, жүктеп алу аяқталады.</translation>
 <translation id="8970887620466824814">Бірдеңе дұрыс болмады.</translation>
 <translation id="8972098258593396643">Әдепкі қалтаға жүктеп алынсын ба?</translation>

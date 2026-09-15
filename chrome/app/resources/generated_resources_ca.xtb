@@ -676,6 +676,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1523978563989812243">Motors de text a parla</translation>
 <translation id="1524563461097350801">No, gràcies</translation>
 <translation id="1525740877599838384">Utilitza només una xarxa Wi-Fi per determinar la ubicació</translation>
+<translation id="1526274304859009691">Inicia la sessió per obtenir les extensions i altres dades de <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Document sense títol</translation>
 <translation id="1527336312600375509">Freqüència d'actualització del monitor</translation>
 <translation id="152913213824448541">Contactes de Compartició Nearby</translation>
@@ -6369,6 +6370,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5902400038326841449">El gestor de contrasenyes de Google està desactivat</translation>
 <translation id="5902892210366342391">Mostra advertiments abans d'anar a llocs web no segurs en mode d'incògnit</translation>
 <translation id="5906457147959147328">Continua permetent que aquest lloc web utilitzi identificadors per reproduir contingut protegit</translation>
+<translation id="5906549184882174190">Aïllat</translation>
 <translation id="5906655207909574370">Gairebé has acabat amb l'actualització. Reinicia el dispositiu per completar-la.</translation>
 <translation id="5906732635754427568">Les dades associades a aquesta aplicació se suprimiran del dispositiu.</translation>
 <translation id="5906974869830879618">Introdueix un PIN</translation>
@@ -6593,6 +6595,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6088475950266477163">Configura&amp;ció</translation>
 <translation id="608912389580139775">Per afegir aquesta pàgina a la llista de lectura, fes clic a la icona d'adreça d'interès</translation>
 <translation id="6089289670051481345">Tritanomalia</translation>
+<translation id="6090068946774422711">Inicia la sessió per obtenir la llista de lectura i altres dades de <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Advertiments ignorats</translation>
 <translation id="609174145569509836">Allibera emmagatzematge</translation>
 <translation id="6091761513005122595">L'ús compartit s'ha activat correctament.</translation>
@@ -7945,6 +7948,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7124712201233930202">No es compleixen les polítiques de la teva organització</translation>
 <translation id="7125148293026877011">Suprimeix Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Inicia la sessió per obtenir les extensions i altres dades en tots els teus dispositius</translation>
 <translation id="7125932261198019860">Assegura't que la impressora estigui connectada a la mateixa xarxa Wi-Fi que el Chromebook o fes servir un cable USB. <ph name="LINK_BEGIN" />Més informació sobre la compatibilitat<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historial de baixades</translation>
 <translation id="7130438335435247835">Nom del punt d'accés Wi-Fi (APN)</translation>
@@ -8798,6 +8802,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7780992949171378848">Envia una sol·licitud de desactivació als llocs web pel que fa a l'ús de les teves dades</translation>
 <translation id="7782102568078991263">Cap suggeriment més de Google</translation>
 <translation id="7782717250816686129">Emmagatzema les dades permanents a la pàgina d'inici de sessió i insereix les credencials per iniciar la sessió.</translation>
+<translation id="7782885970382585765">Inicia la sessió per obtenir la llista de lectura i altres dades en tots els teus dispositius</translation>
 <translation id="7784020347632229094">Més informació sobre les tecles de drecera</translation>
 <translation id="7784067724422331729">La configuració de seguretat del vostre ordinador ha bloquejat aquest fitxer.</translation>
 <translation id="7784796923038949829">No es poden llegir o canviar les dades del lloc web</translation>

@@ -2220,6 +2220,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4750917950439032686">Bilgileriniz (örneğin şifreler veya kredi kartı numaraları), bu siteye gönderilirken gizli olur.</translation>
 <translation id="4754461935447132332">Güvenli olmayan siteler için izin verilmiyor</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Kayıtlı fırsatlarınızı görüntülemek ve doldurmak için promosyon kodu alanını seçin</translation>
 <translation id="4757740693289347881">Kod geçersiz</translation>
 <translation id="4757993714154412917">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chromium, hesaplarınızın güvenliğini sağlamak için kayıtlı şifrelerinizi kontrol etmenizi öneriyor.</translation>
 <translation id="4758311279753947758">İletişim bilgilerinizi ekleyin</translation>
@@ -3152,6 +3153,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6319672966240656136">Google'ın Gelişmiş Koruma Programı kapsamında olduğunuz için bu site engellenmeye devam edecek. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="6321917430147971392">DNS ayarlarınızı kontrol edin</translation>
 <translation id="6322182122604171028">Windows Hello kullanılamadı</translation>
+<translation id="6326175484149238433">Chrome'dan kaldır</translation>
 <translation id="6326947323444967009">Chrome'u iOS ayarlarından sistemin varsayılan tarayıcısı olarak ayarlayın.</translation>
 <translation id="6328639280570009161">Ağ tahmin özelliğini devre dışı bırakmayı deneyin</translation>
 <translation id="6329742260390895689">Bilgilerinizi otomatik doldurmak için Cüzdan ayarlarında "Kartlarınızı Google'da kullanın" ayarını etkinleştirin</translation>
@@ -3844,6 +3846,7 @@ Ek ayrıntılar:
 <translation id="7514365320538308">İndir</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR'ye bu sefer izin verildi</translation>
+<translation id="7517198908921983825">Gemini tarafından önerildi · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Zarf C10</translation>
 <translation id="7518003948725431193">Şu web adresi için web sayfası bulunamadı:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
