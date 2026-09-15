@@ -17,6 +17,20 @@ pub(crate) const MAX_SECTION_LENGTHS_CBOR_SIZE: u64 = 8192;
 /// The maximum size of a metadata section allowed in this implementation.
 pub const MAX_METADATA_SECTION_SIZE: u64 = 1024 * 1024;
 
+/// The maximum size of the response header CBOR.
+/// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-responses
+/// "The length of the headers byte string in a response MUST be less than
+/// 524288 (512*1024) bytes, and recipients MUST fail to load a response with
+/// longer headers"
+pub const MAX_RESPONSE_HEADER_LENGTH: u64 = 512 * 1024;
+
+/// The number of items in a response array (headers byte string, payload byte
+/// string). https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-responses
+pub(crate) const RESPONSE_ARRAY_SIZE: u64 = 2;
+
+/// The initial buffer size for reading an item from the response section.
+pub const INITIAL_BUFFER_SIZE_FOR_RESPONSE: u64 = 4096;
+
 /// Initial buffer size for reading magic bytes and top-level headers (24
 /// bytes): 1 byte (array header) + 9 bytes (magic byte string) + 5 bytes
 /// (version byte string) + 9 bytes (max section-lengths CBOR header).
@@ -58,8 +72,8 @@ pub(crate) const VERSION_B2_BYTES: &[u8] = b"b2\0\0";
 /// ```
 pub(crate) const VERSION_B1_BYTES: &[u8] = b"b1\0\0";
 
-/// Canonical Web Bundle section names.
-/// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-sections-and-length
+/// Section names.
+/// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-bundle-sections
 pub const CRITICAL_SECTION: &str = "critical";
 pub const INDEX_SECTION: &str = "index";
 pub const PRIMARY_SECTION: &str = "primary";

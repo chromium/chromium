@@ -7,95 +7,33 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/span.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "components/cbor/reader.h"
-#include "components/web_package/input_reader.h"
+#include "base/strings/string_view_util.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/rust/web_package_rust.h"
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
-#include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/http/http_util.h"
 
 namespace web_package {
 
 namespace {
 
-// The maximum size of the response header CBOR.
-constexpr uint64_t kMaxResponseHeaderLength = 512 * 1024;
-
-// The initial buffer size for reading an item from the response section.
-constexpr uint64_t kInitialBufferSizeForResponse = 4096;
-
-struct ParsedHeaders {
-  base::flat_map<std::string, std::string> headers;
-  base::flat_map<std::string, std::string> pseudos;
-};
-
-// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-responses
-//   headers = {* bstr => bstr}
-std::optional<ParsedHeaders> ConvertCBORValueToHeaders(
-    const cbor::Value& headers_value) {
-  // |headers_value| of headers must be a map.
-  if (!headers_value.is_map()) {
-    return std::nullopt;
-  }
-
-  ParsedHeaders result;
-
-  for (const auto& item : headers_value.GetMap()) {
-    if (!item.first.is_bytestring() || !item.second.is_bytestring()) {
-      return std::nullopt;
-    }
-    std::string_view name = item.first.GetBytestringAsString();
-    std::string_view value = item.second.GetBytestringAsString();
-
-    // If name contains any upper-case or non-ASCII characters, return an error.
-    // This matches the requirement in Section 8.1.2 of [RFC7540].
-    if (!base::IsStringASCII(name) ||
-        std::ranges::any_of(name, base::IsAsciiUpper<char>)) {
-      return std::nullopt;
-    }
-
-    if (!name.empty() && name[0] == ':') {
-      // pseudos[name] must not exist, because CBOR maps cannot contain
-      // duplicate keys. This is ensured by cbor::Reader.
-      DCHECK(!result.pseudos.contains(name));
-      result.pseudos.insert(
-          std::make_pair(std::string(name), std::string(value)));
-      continue;
-    }
-
-    // Both name and value must be valid.
-    if (!net::HttpUtil::IsValidHeaderName(name) ||
-        !net::HttpUtil::IsValidHeaderValue(value)) {
-      return std::nullopt;
-    }
-
-    // headers[name] must not exist, because CBOR maps cannot contain duplicate
-    // keys. This is ensured by cbor::Reader.
-    DCHECK(!result.headers.contains(name));
-
-    result.headers.insert(
-        std::make_pair(std::string(name), std::string(value)));
-  }
-
-  return result;
-}
 
 GURL ParseExchangeURL(std::string_view str, const GURL& base_url) {
   DCHECK(base_url.is_empty() || base_url.is_valid());
@@ -435,7 +373,7 @@ class WebBundleParser::ResponseParser
       override {
     CHECK(!result_callback_.is_null());
     complete_callback_ = std::move(callback);
-    StartWithBufferSize(kInitialBufferSizeForResponse);
+    StartWithBufferSize(rust::INITIAL_BUFFER_SIZE_FOR_RESPONSE);
   }
 
  private:
@@ -446,115 +384,36 @@ class WebBundleParser::ResponseParser
         base::BindOnce(&ResponseParser::ParseResponseHeader,
                        weak_factory_.GetWeakPtr(), length));
   }
-  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-responses
-  //   responses = [*response]
-  //   response = [headers: bstr .cbor headers, payload: bstr]
-  //   headers = {* bstr => bstr}
   void ParseResponseHeader(uint64_t expected_data_length,
                            const std::optional<std::vector<uint8_t>>& data) {
     if (!data || data->size() != expected_data_length) {
       RunErrorCallback("Error reading response header.");
       return;
     }
-    InputReader input(*data);
 
-    // |response| must be an array of length 2 (headers and payload).
-    auto num_elements = input.ReadCBORHeader(CBORType::kArray);
-    if (!num_elements || *num_elements != 2) {
-      RunErrorCallback("Array size of response must be 2.");
+    auto parse_res =
+        rust::parse_response(*data, response_offset_, response_length_);
+    if (!parse_res.has_value()) {
+      RunErrorCallback(parse_res.error().message);
       return;
     }
-
-    auto header_length = input.ReadCBORHeader(CBORType::kByteString);
-    if (!header_length) {
-      RunErrorCallback("Cannot parse response header length.");
-      return;
-    }
-
-    // "The length of the headers byte string in a response MUST be less than
-    // 524288 (512*1024) bytes, and recipients MUST fail to load a response with
-    // longer headers"
-    if (*header_length >= kMaxResponseHeaderLength) {
-      RunErrorCallback("Response header is too big.");
-      return;
-    }
-
-    // If we don't have enough data for the headers and the CBOR header of the
-    // payload, re-read with a larger buffer size.
-    const uint64_t required_buffer_size = std::min(
-        input.CurrentOffset() + *header_length + kMaxCBORItemHeaderSize,
-        response_length_);
-    if (data->size() < required_buffer_size) {
+    if (parse_res->needs_more_data) {
       DVLOG(1) << "Re-reading response header with a buffer of size "
-               << required_buffer_size;
-      StartWithBufferSize(required_buffer_size);
-      return;
-    }
-
-    // Parse headers.
-    auto headers_bytes = input.ReadBytes(*header_length);
-    if (!headers_bytes) {
-      RunErrorCallback("Cannot read response headers.");
-      return;
-    }
-    cbor::Reader::DecoderError error;
-    std::optional<cbor::Value> headers_value =
-        cbor::Reader::Read(*headers_bytes, &error);
-    if (!headers_value) {
-      RunErrorCallback("Cannot parse response headers.");
-      return;
-    }
-
-    auto parsed_headers = ConvertCBORValueToHeaders(*headers_value);
-    if (!parsed_headers) {
-      RunErrorCallback("Cannot parse response headers.");
-      return;
-    }
-
-    // "Each response's headers MUST include a :status pseudo-header with
-    // exactly 3 ASCII decimal digits and MUST NOT include any other
-    // pseudo-headers."
-    const auto pseudo_status = parsed_headers->pseudos.find(":status");
-    if (parsed_headers->pseudos.size() != 1 ||
-        pseudo_status == parsed_headers->pseudos.end()) {
-      RunErrorCallback(
-          "Response headers map must have exactly one pseudo-header, :status.");
-      return;
-    }
-    int status;
-    const auto& status_str = pseudo_status->second;
-    if (status_str.size() != 3 ||
-        !std::ranges::all_of(status_str, base::IsAsciiDigit<char>) ||
-        !base::StringToInt(status_str, &status)) {
-      RunErrorCallback(":status must be 3 ASCII decimal digits.");
-      return;
-    }
-
-    // Parse payload.
-    auto payload_length = input.ReadCBORHeader(CBORType::kByteString);
-    if (!payload_length) {
-      RunErrorCallback("Cannot parse response payload length.");
-      return;
-    }
-
-    // "If a response's payload is not empty, its headers MUST include a
-    // Content-Type header (Section 8.3 of [I-D.ietf-httpbis-semantics])."
-    if (*payload_length > 0 &&
-        !parsed_headers->headers.contains("content-type")) {
-      RunErrorCallback("Non-empty response must have a content-type header.");
-      return;
-    }
-
-    if (input.CurrentOffset() + *payload_length != response_length_) {
-      RunErrorCallback("Unexpected payload length.");
+               << parse_res->required_buffer_size;
+      StartWithBufferSize(parse_res->required_buffer_size);
       return;
     }
 
     mojom::BundleResponsePtr response = mojom::BundleResponse::New();
-    response->response_code = status;
-    response->response_headers = std::move(parsed_headers->headers);
-    response->payload_offset = response_offset_ + input.CurrentOffset();
-    response->payload_length = *payload_length;
+    response->response_code = parse_res->response_code;
+    response->response_headers = base::MakeFlatMap<std::string, std::string>(
+        parse_res->headers, {}, [](const rust::HeaderEntry& header) {
+          return std::make_pair(
+              std::string(base::as_string_view(header.name.to_span())),
+              std::string(base::as_string_view(header.value.to_span())));
+        });
+    response->payload_offset = parse_res->payload_offset;
+    response->payload_length = parse_res->payload_length;
     RunSuccessCallback(std::move(response));
   }
 
@@ -564,13 +423,15 @@ class WebBundleParser::ResponseParser
                             nullptr));
   }
 
-  void RunErrorCallback(const std::string& message,
+  void RunErrorCallback(const std::string_view message,
                         mojom::BundleParseErrorType error_type =
                             mojom::BundleParseErrorType::kFormatError) {
+    auto err = mojom::BundleResponseParseError::New();
+    err->type = error_type;
+    err->message = message;
     std::move(complete_callback_)
-        .Run(base::BindOnce(
-            std::move(result_callback_), nullptr,
-            mojom::BundleResponseParseError::New(error_type, message)));
+        .Run(base::BindOnce(std::move(result_callback_), nullptr,
+                            std::move(err)));
   }
 
   const raw_ref<mojo::Remote<mojom::BundleDataSource>> data_source_;

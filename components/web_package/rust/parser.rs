@@ -8,11 +8,14 @@ use alloc::vec::Vec;
 
 use crate::constants::{
     BUNDLE_MAGIC_BYTES, CRITICAL_SECTION, DEPRECATED_B1_TOP_LEVEL_ARRAY_SIZE, INDEX_SECTION,
-    MAX_CBOR_ITEM_HEADER_SIZE, MAX_SECTION_LENGTHS_CBOR_SIZE, PRIMARY_SECTION, RESPONSES_SECTION,
-    TOP_LEVEL_ARRAY_SIZE, TRAILING_LENGTH_NUM_BYTES, VERSION_B1_BYTES, VERSION_B2_BYTES,
+    MAX_CBOR_ITEM_HEADER_SIZE, MAX_RESPONSE_HEADER_LENGTH, MAX_SECTION_LENGTHS_CBOR_SIZE,
+    PRIMARY_SECTION, RESPONSES_SECTION, RESPONSE_ARRAY_SIZE, TOP_LEVEL_ARRAY_SIZE,
+    TRAILING_LENGTH_NUM_BYTES, VERSION_B1_BYTES, VERSION_B2_BYTES,
 };
+use crate::http::{is_valid_header_name, is_valid_header_value};
 use crate::types::{
-    BundleHeaderResult, MagicAndVersionResult, ParseError, ParsedIndexEntry, SectionOffsetEntry,
+    BundleHeaderResult, HeaderEntry, MagicAndVersionResult, ParseError, ParsedIndexEntry,
+    ResponseParseResult, SectionOffsetEntry,
 };
 
 fn is_metadata_section(name: &str) -> bool {
@@ -25,6 +28,10 @@ fn is_known_section(name: &str) -> bool {
 
 /// Helper for incremental, sequential CBOR decoding with uniform error
 /// reporting.
+///
+/// Encapsulates `cbor::Decoder` and a data slice, providing combinators that
+/// match expected CBOR events while mapping both decoding errors and unexpected
+/// event types to a single, consistent `ParseError`.
 struct BundleDecoder<'a> {
     decoder: cbor::Decoder,
     slice: &'a [u8],
@@ -43,6 +50,17 @@ impl<'a> BundleDecoder<'a> {
     fn expect_array_start(&mut self, err_msg: &'static str) -> Result<u64, ParseError> {
         match self.decoder.next_event(&mut self.slice) {
             Ok(cbor::CborEvent::ArrayStart(n)) => Ok(n),
+            _ => Err(ParseError::format(err_msg)),
+        }
+    }
+
+    fn expect_exact_array_start(
+        &mut self,
+        count: u64,
+        err_msg: &'static str,
+    ) -> Result<(), ParseError> {
+        match self.decoder.next_event(&mut self.slice) {
+            Ok(cbor::CborEvent::ArrayStart(n)) if n == count => Ok(()),
             _ => Err(ParseError::format(err_msg)),
         }
     }
@@ -428,4 +446,142 @@ pub fn parse_primary_section(data: &[u8]) -> Result<&str, ParseError> {
         };
         Ok(url)
     })
+}
+
+fn err_cannot_parse_headers() -> ParseError {
+    ParseError::format("Cannot parse response headers.")
+}
+
+fn err_invalid_pseudo_header() -> ParseError {
+    ParseError::format("Response headers map must have exactly one pseudo-header, :status.")
+}
+
+fn err_unexpected_payload_length() -> ParseError {
+    ParseError::format("Unexpected payload length.")
+}
+
+/// Parses the `:status` pseudo-header value into an HTTP status code integer.
+/// The value must consist of exactly 3 ASCII decimal digits.
+fn parse_status_code(v: &[u8]) -> Result<i32, ParseError> {
+    match v {
+        &[d0 @ b'0'..=b'9', d1 @ b'0'..=b'9', d2 @ b'0'..=b'9'] => {
+            // Convert 3 ASCII decimal digit bytes into a 3-digit integer status code.
+            Ok((d0 - b'0') as i32 * 100 + (d1 - b'0') as i32 * 10 + (d2 - b'0') as i32)
+        }
+        _ => Err(ParseError::format(":status must be 3 ASCII decimal digits.")),
+    }
+}
+
+/// Parses a response from the responses section, checking buffer adequacy,
+/// extracting and validating HTTP headers, and computing payload boundaries.
+///
+/// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-responses
+///
+/// CDDL structure:
+/// ```text
+/// responses = [*response]
+/// response = [headers: bstr .cbor headers, payload: bstr]
+/// headers = {* bstr => bstr}
+/// ```
+///
+/// Validates:
+/// 1. Array size of response is exactly 2 (headers byte string, payload byte
+///    string).
+/// 2. Header byte string length is less than 512KB (524,288 bytes): "The length
+///    of the headers byte string in a response MUST be less than 524288
+///    (512*1024) bytes, and recipients MUST fail to load a response with longer
+///    headers"
+/// 3. Verifies if the provided buffer contains enough data for the headers and
+///    the CBOR header of the payload. If insufficient, returns
+///    `ResponseParseResult::needs_more`.
+/// 4. Headers map contains exactly one `:status` pseudo-header consisting of 3
+///    ASCII digits: "Each response's headers MUST include a :status
+///    pseudo-header with exactly 3 ASCII decimal digits and MUST NOT include
+///    any other pseudo-headers."
+/// 5. Validates header field names and values (per RFC 9110, RFC 9112, and RFC
+///    9113; see `http.rs`).
+/// 6. Non-empty payload requires a `content-type` header: "If a response's
+///    payload is not empty, its headers MUST include a Content-Type header
+///    (Section 8.3 of RFC 9110, https://www.rfc-editor.org/rfc/rfc9110.html#section-8.3)."
+/// 7. Consumed header bytes + payload length equals `response_length`.
+pub fn parse_response<'a>(
+    data: &'a [u8],
+    response_offset: u64,
+    response_length: u64,
+) -> Result<ResponseParseResult<'a>, ParseError> {
+    let mut decoder = BundleDecoder::new(data);
+    decoder.expect_exact_array_start(RESPONSE_ARRAY_SIZE, "Array size of response must be 2.")?;
+
+    let header_len = decoder.expect_bytes_start("Cannot parse response header length.")?;
+    if header_len >= MAX_RESPONSE_HEADER_LENGTH {
+        return Err(ParseError::format("Response header is too big."));
+    }
+
+    let consumed_so_far = decoder.bytes_consumed();
+    let required_buffer_size = (consumed_so_far as u64)
+        .saturating_add(header_len)
+        .saturating_add(MAX_CBOR_ITEM_HEADER_SIZE)
+        .min(response_length);
+    if (data.len() as u64) < required_buffer_size {
+        return Ok(ResponseParseResult::needs_more(required_buffer_size));
+    }
+
+    let header_bytes = decoder
+        .decoder
+        .read_complete_bytestring(&mut decoder.slice)
+        .map_err(|_| ParseError::format("Cannot read response headers."))?;
+
+    let Ok(cbor::Value::Map(map)) = parse_exact_cbor(header_bytes) else {
+        return Err(err_cannot_parse_headers());
+    };
+
+    let mut status_code = None;
+    let mut headers = Vec::with_capacity(map.len().saturating_sub(1));
+    let mut has_content_type = false;
+
+    for cbor::MapEntry { key, value } in map {
+        let cbor::MapKey::Bytestring(k) = key else {
+            return Err(err_cannot_parse_headers());
+        };
+        let cbor::Value::Bytestring(v) = value else {
+            return Err(err_cannot_parse_headers());
+        };
+
+        match k {
+            // HTTP/2 pseudo-header fields start with ':' per RFC 9113 Section 8.3.
+            // Each response's headers MUST include exactly one :status pseudo-header
+            // and MUST NOT include any other pseudo-headers.
+            b":status" if status_code.is_none() => {
+                status_code = Some(parse_status_code(v)?);
+            }
+            [b':', ..] => return Err(err_invalid_pseudo_header()),
+            _ => {
+                if !is_valid_header_name(k) || !is_valid_header_value(v) {
+                    return Err(err_cannot_parse_headers());
+                }
+                has_content_type |= k == b"content-type";
+                headers.push(HeaderEntry { name: k, value: v });
+            }
+        }
+    }
+
+    let Some(status_code) = status_code else {
+        return Err(err_invalid_pseudo_header());
+    };
+
+    let payload_len = decoder.expect_bytes_start("Cannot parse response payload length.")?;
+    if payload_len > 0 && !has_content_type {
+        return Err(ParseError::format("Non-empty response must have a content-type header."));
+    }
+
+    let consumed_header_bytes = decoder.bytes_consumed() as u64;
+    if consumed_header_bytes.checked_add(payload_len) != Some(response_length) {
+        return Err(err_unexpected_payload_length());
+    }
+
+    let Some(payload_offset) = response_offset.checked_add(consumed_header_bytes) else {
+        return Err(err_unexpected_payload_length());
+    };
+
+    Ok(ResponseParseResult::success(status_code, headers, payload_offset, payload_len))
 }

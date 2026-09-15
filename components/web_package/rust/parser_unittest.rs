@@ -6,7 +6,7 @@ use cbor::{Map, MapEntry, MapKey, Value};
 use rust_gtest_interop::prelude::*;
 use web_package_rust::{
     parse_bundle_header, parse_critical_section, parse_index_section, parse_magic_and_version,
-    parse_primary_section, parse_trailing_length,
+    parse_primary_section, parse_response, parse_trailing_length,
 };
 
 #[gtest(WebPackageRustTest, TestTrailingLength)]
@@ -391,4 +391,269 @@ fn test_primary_section() {
     let invalid_cbor = cbor::write(&Value::Int(42));
     let err = parse_primary_section(&invalid_cbor).unwrap_err();
     expect_eq!(err.message, "Primary section must be a string.");
+}
+
+#[gtest(WebPackageRustTest, TestResponseParsing)]
+fn test_response_parsing() {
+    let headers_cbor = cbor::write(&Value::Map(Map::from(vec![
+        MapEntry::from((MapKey::Bytestring(b":status"), Value::Bytestring(b"200"))),
+        MapEntry::from((MapKey::Bytestring(b"content-type"), Value::Bytestring(b"text/plain"))),
+    ])));
+
+    // response: [ headers: bstr, payload: bstr ]
+    let response_cbor = cbor::write(&Value::Array(vec![
+        Value::Bytestring(&headers_cbor),
+        Value::Bytestring(b"Hello World"),
+    ]));
+
+    let res = parse_response(&response_cbor, 5000, response_cbor.len() as u64).unwrap();
+    expect_false!(res.needs_more_data);
+    expect_eq!(res.response_code, 200);
+    expect_eq!(res.headers.len(), 1usize);
+    expect_eq!(res.headers[0].name, b"content-type");
+    expect_eq!(res.headers[0].value, b"text/plain");
+    expect_eq!(res.payload_length, 11);
+    expect_eq!(res.payload_offset, 5000 + (response_cbor.len() as u64 - 11));
+}
+
+/// RFC 9110 Section 5.5 (https://www.rfc-editor.org/rfc/rfc9110.html#section-5.5)
+/// allows `obs-text` (`%x80-FF`) in a field value and directs recipients to
+/// treat those octets as opaque data, so a value that is not valid UTF-8 must
+/// still be accepted.
+#[gtest(WebPackageRustTest, TestResponseNonUtf8HeaderValue)]
+fn test_response_non_utf8_header_value() {
+    // "café.pdf" encoded as ISO-8859-1, which is not valid UTF-8.
+    let latin1_value = b"attachment; filename=\"caf\xe9.pdf\"";
+    let headers_cbor = cbor::write(&Value::Map(Map::from(vec![
+        MapEntry::from((MapKey::Bytestring(b":status"), Value::Bytestring(b"200"))),
+        MapEntry::from((
+            MapKey::Bytestring(b"content-disposition"),
+            Value::Bytestring(latin1_value),
+        )),
+        MapEntry::from((MapKey::Bytestring(b"content-type"), Value::Bytestring(b"text/plain"))),
+    ])));
+
+    let response_cbor = cbor::write(&Value::Array(vec![
+        Value::Bytestring(&headers_cbor),
+        Value::Bytestring(b"Hello World"),
+    ]));
+
+    let res = parse_response(&response_cbor, 0, response_cbor.len() as u64).unwrap();
+    expect_eq!(res.response_code, 200);
+    expect_eq!(res.headers.len(), 2usize);
+    // CBOR map keys are ordered by length first, then bytewise, so the shorter
+    // "content-type" key precedes "content-disposition".
+    expect_eq!(res.headers[0].name, b"content-type");
+    expect_eq!(res.headers[0].value, b"text/plain");
+    expect_eq!(res.headers[1].name, b"content-disposition");
+    expect_eq!(res.headers[1].value, latin1_value);
+}
+
+#[gtest(WebPackageRustTest, TestResponseMissingStatus)]
+fn test_response_missing_status() {
+    let headers_cbor = cbor::write(&Value::Map(Map::from(vec![MapEntry::from((
+        MapKey::Bytestring(b"content-type"),
+        Value::Bytestring(b"text/plain"),
+    ))])));
+
+    let response_cbor = cbor::write(&Value::Array(vec![
+        Value::Bytestring(&headers_cbor),
+        Value::Bytestring(b"payload"),
+    ]));
+
+    let err = parse_response(&response_cbor, 0, response_cbor.len() as u64).unwrap_err();
+    expect_eq!(err.message, "Response headers map must have exactly one pseudo-header, :status.");
+}
+
+#[gtest(WebPackageRustTest, TestResponseExtraPseudoHeader)]
+fn test_response_extra_pseudo_header() {
+    for extra_pseudo in
+        [b":path".as_slice(), b":method".as_slice(), b":foo".as_slice(), b":Status".as_slice()]
+    {
+        let headers_cbor = cbor::write(&Value::Map(Map::from(vec![
+            MapEntry::from((MapKey::Bytestring(b":status"), Value::Bytestring(b"200"))),
+            MapEntry::from((MapKey::Bytestring(extra_pseudo), Value::Bytestring(b""))),
+            MapEntry::from((MapKey::Bytestring(b"content-type"), Value::Bytestring(b"text/plain"))),
+        ])));
+
+        let response_cbor = cbor::write(&Value::Array(vec![
+            Value::Bytestring(&headers_cbor),
+            Value::Bytestring(b"payload"),
+        ]));
+
+        let err = parse_response(&response_cbor, 0, response_cbor.len() as u64).unwrap_err();
+        expect_eq!(
+            err.message,
+            "Response headers map must have exactly one pseudo-header, :status."
+        );
+    }
+}
+
+#[gtest(WebPackageRustTest, TestResponseNeedsMoreData)]
+fn test_response_needs_more_data() {
+    let headers_cbor = cbor::write(&Value::Map(Map::from(vec![
+        MapEntry::from((MapKey::Bytestring(b":status"), Value::Bytestring(b"200"))),
+        MapEntry::from((MapKey::Bytestring(b"content-type"), Value::Bytestring(b"text/plain"))),
+    ])));
+
+    let response_cbor = cbor::write(&Value::Array(vec![
+        Value::Bytestring(&headers_cbor),
+        Value::Bytestring(b"payload"),
+    ]));
+
+    // Pass only a truncated prefix (e.g. 5 bytes)
+    let truncated = &response_cbor[..5];
+    let res = parse_response(truncated, 0, response_cbor.len() as u64).unwrap();
+    expect_true!(res.needs_more_data);
+    expect_true!(res.required_buffer_size > 5);
+}
+
+#[gtest(WebPackageRustTest, TestResponseEmptyPayloadWithoutContentType)]
+fn test_response_empty_payload_without_content_type() {
+    let headers_cbor = cbor::write(&Value::Map(Map::from(vec![MapEntry::from((
+        MapKey::Bytestring(b":status"),
+        Value::Bytestring(b"204"),
+    ))])));
+
+    let response_cbor =
+        cbor::write(&Value::Array(vec![Value::Bytestring(&headers_cbor), Value::Bytestring(b"")]));
+
+    let res = parse_response(&response_cbor, 5000, response_cbor.len() as u64).unwrap();
+    expect_false!(res.needs_more_data);
+    expect_eq!(res.response_code, 204);
+    expect_eq!(res.headers.len(), 0usize);
+    expect_eq!(res.payload_length, 0);
+    expect_eq!(res.payload_offset, 5000 + response_cbor.len() as u64);
+}
+
+#[gtest(WebPackageRustTest, TestResponseNonEmptyPayloadWithoutContentType)]
+fn test_response_non_empty_payload_without_content_type() {
+    let headers_cbor = cbor::write(&Value::Map(Map::from(vec![MapEntry::from((
+        MapKey::Bytestring(b":status"),
+        Value::Bytestring(b"200"),
+    ))])));
+
+    let response_cbor = cbor::write(&Value::Array(vec![
+        Value::Bytestring(&headers_cbor),
+        Value::Bytestring(b"some non-empty payload"),
+    ]));
+
+    let err = parse_response(&response_cbor, 0, response_cbor.len() as u64).unwrap_err();
+    expect_eq!(err.message, "Non-empty response must have a content-type header.");
+}
+
+#[gtest(WebPackageRustTest, TestResponseHeaderTooBig)]
+fn test_response_header_too_big() {
+    // CBOR: Array of 2 elements (0x82), followed by a byte string of length 512KB
+    // (524288 bytes). In CBOR: 0x5a followed by 4 bytes: 0x00, 0x08, 0x00,
+    // 0x00.
+    let response_cbor = [0x82, 0x5A, 0x00, 0x08, 0x00, 0x00];
+    let err = parse_response(&response_cbor, 0, 1_000_000).unwrap_err();
+    expect_eq!(err.message, "Response header is too big.");
+}
+
+#[gtest(WebPackageRustTest, TestResponseUppercaseHeaderName)]
+fn test_response_uppercase_header_name() {
+    let headers_cbor = cbor::write(&Value::Map(Map::from(vec![
+        MapEntry::from((MapKey::Bytestring(b":status"), Value::Bytestring(b"200"))),
+        MapEntry::from((MapKey::Bytestring(b"Content-Type"), Value::Bytestring(b"text/plain"))),
+    ])));
+
+    let response_cbor = cbor::write(&Value::Array(vec![
+        Value::Bytestring(&headers_cbor),
+        Value::Bytestring(b"Hello"),
+    ]));
+
+    let err = parse_response(&response_cbor, 0, response_cbor.len() as u64).unwrap_err();
+    expect_eq!(err.message, "Cannot parse response headers.");
+}
+
+#[gtest(WebPackageRustTest, TestResponseDisallowedHeaderValueChars)]
+fn test_response_disallowed_header_value_chars() {
+    for invalid_val in
+        [b"text/\0plain".as_slice(), b"text/\rplain".as_slice(), b"text/\nplain".as_slice()]
+    {
+        let headers_cbor = cbor::write(&Value::Map(Map::from(vec![
+            MapEntry::from((MapKey::Bytestring(b":status"), Value::Bytestring(b"200"))),
+            MapEntry::from((MapKey::Bytestring(b"content-type"), Value::Bytestring(invalid_val))),
+        ])));
+
+        let response_cbor = cbor::write(&Value::Array(vec![
+            Value::Bytestring(&headers_cbor),
+            Value::Bytestring(b"Hello"),
+        ]));
+
+        let err = parse_response(&response_cbor, 0, response_cbor.len() as u64).unwrap_err();
+        expect_eq!(err.message, "Cannot parse response headers.");
+    }
+}
+
+#[gtest(WebPackageRustTest, TestResponsePayloadLengthMismatchAndOverflow)]
+fn test_response_payload_length_mismatch_and_overflow() {
+    let headers_cbor = cbor::write(&Value::Map(Map::from(vec![
+        MapEntry::from((MapKey::Bytestring(b":status"), Value::Bytestring(b"200"))),
+        MapEntry::from((MapKey::Bytestring(b"content-type"), Value::Bytestring(b"text/plain"))),
+    ])));
+
+    let response_cbor = cbor::write(&Value::Array(vec![
+        Value::Bytestring(&headers_cbor),
+        Value::Bytestring(b"Hello World"),
+    ]));
+
+    // Mismatch: response_length greater than actual length.
+    let err = parse_response(&response_cbor, 0, (response_cbor.len() as u64) + 1).unwrap_err();
+    expect_eq!(err.message, "Unexpected payload length.");
+
+    // Mismatch: response_length smaller than actual length.
+    let err = parse_response(&response_cbor, 0, (response_cbor.len() as u64) - 1).unwrap_err();
+    expect_eq!(err.message, "Unexpected payload length.");
+
+    // Overflow in payload_offset calculation: response_offset +
+    // consumed_header_bytes overflows.
+    let err = parse_response(&response_cbor, u64::MAX, response_cbor.len() as u64).unwrap_err();
+    expect_eq!(err.message, "Unexpected payload length.");
+
+    // Overflow in total_len calculation: consumed_header_bytes + payload_len
+    // overflows. Construct response with valid headers bytestring followed by
+    // 0x5B (8-byte length) with u64::MAX.
+    let mut overflow_cbor = Vec::new();
+    overflow_cbor.push(0x82); // Array of 2
+    let headers_bstr = cbor::write(&Value::Bytestring(&headers_cbor));
+    overflow_cbor.extend_from_slice(&headers_bstr);
+    // Payload byte string with u64::MAX length: 0x5B followed by 8 0xFF bytes.
+    overflow_cbor.push(0x5B);
+    overflow_cbor.extend_from_slice(&[0xFF; 8]);
+    let err = parse_response(&overflow_cbor, 0, overflow_cbor.len() as u64).unwrap_err();
+    expect_eq!(err.message, "Unexpected payload length.");
+}
+
+#[gtest(WebPackageRustTest, TestResponseArraySizeNotTwo)]
+fn test_response_array_size_not_two() {
+    let resp_3 = cbor::write(&Value::Array(vec![
+        Value::Bytestring(b""),
+        Value::Bytestring(b""),
+        Value::Bytestring(b""),
+    ]));
+    let err = parse_response(&resp_3, 0, resp_3.len() as u64).unwrap_err();
+    expect_eq!(err.message, "Array size of response must be 2.");
+
+    let resp_1 = cbor::write(&Value::Array(vec![Value::Bytestring(b"")]));
+    let err = parse_response(&resp_1, 0, resp_1.len() as u64).unwrap_err();
+    expect_eq!(err.message, "Array size of response must be 2.");
+}
+
+#[gtest(WebPackageRustTest, TestResponseStatusInvalidDigits)]
+fn test_response_status_invalid_digits() {
+    for bad_status in [b"20".as_slice(), b"2000".as_slice(), b"20a".as_slice()] {
+        let headers_cbor = cbor::write(&Value::Map(Map::from(vec![
+            MapEntry::from((MapKey::Bytestring(b":status"), Value::Bytestring(bad_status))),
+            MapEntry::from((MapKey::Bytestring(b"content-type"), Value::Bytestring(b"text/plain"))),
+        ])));
+        let response_cbor = cbor::write(&Value::Array(vec![
+            Value::Bytestring(&headers_cbor),
+            Value::Bytestring(b"payload"),
+        ]));
+        let err = parse_response(&response_cbor, 0, response_cbor.len() as u64).unwrap_err();
+        expect_eq!(err.message, ":status must be 3 ASCII decimal digits.");
+    }
 }

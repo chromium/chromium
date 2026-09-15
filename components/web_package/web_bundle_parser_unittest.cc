@@ -457,6 +457,29 @@ TEST_F(WebBundleParserTest, InvalidHeaderValue) {
   ASSERT_FALSE(ParseResponse(&data_source, location));
 }
 
+// RFC 9110 Section 5.5 permits obs-text (%x80-FF) in a field value and directs
+// recipients to treat those octets as opaque data, so a value that is not valid
+// UTF-8 must be preserved rather than rejected.
+TEST_F(WebBundleParserTest, NonUtf8HeaderValue) {
+  // "café.pdf" encoded as ISO-8859-1, which is not valid UTF-8.
+  const std::string kLatin1Value = "attachment; filename=\"caf\xe9.pdf\"";
+  WebBundleBuilder builder;
+  builder.AddExchange("https://test.example.com/",
+                      {{":status", "200"},
+                       {"content-type", "text/plain"},
+                       {"content-disposition", kLatin1Value}},
+                      "payload");
+  TestDataSource data_source(builder.CreateBundle());
+
+  mojom::BundleMetadataPtr metadata = ParseUnsignedBundle(&data_source).first;
+  ASSERT_TRUE(metadata);
+  auto location = FindResponse(metadata, GURL("https://test.example.com/"));
+  ASSERT_TRUE(location);
+  auto response = ParseResponse(&data_source, location);
+  ASSERT_TRUE(response);
+  EXPECT_EQ(response->response_headers["content-disposition"], kLatin1Value);
+}
+
 TEST_F(WebBundleParserTest, NoContentTypeWithNonEmptyContent) {
   WebBundleBuilder builder;
   builder.AddExchange("https://test.example.com/", {{":status", "200"}},

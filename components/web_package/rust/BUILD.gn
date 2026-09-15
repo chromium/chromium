@@ -9,6 +9,7 @@ rust_static_library("web_package_rust") {
   crate_root = "lib.rs"
   sources = [
     "constants.rs",
+    "http.rs",
     "parser.rs",
     "types.rs",
     crate_root,
@@ -28,6 +29,7 @@ rust_static_library("web_package_rust_unittests") {
   is_gtest_unittests = true
   crate_root = "web_package_rust_unittests.rs"
   sources = [
+    "http_unittest.rs",
     "parser_unittest.rs",
     crate_root,
   ]
