@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -17,6 +18,7 @@
 #include "base/time/time.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/test/test_context_provider.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
@@ -478,7 +480,12 @@ TEST_F(MappableSharedImageVideoFramePoolTest, ReuseFirstResource) {
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(2u, sii_->shared_image_count());
   EXPECT_EQ(frame->shared_image()->mailbox(), mailbox);
-  EXPECT_NE(frame->acquire_sync_token(), sync_token);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_NE(frame->acquire_sync_token(), sync_token);
+  } else {
+    EXPECT_FALSE(frame->acquire_sync_token().HasData());
+  }
 }
 
 TEST_F(MappableSharedImageVideoFramePoolTest, DropResourceWhenSizeIsDifferent) {

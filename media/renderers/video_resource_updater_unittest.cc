@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -23,6 +24,7 @@
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "skia/ext/skcolorspace_primaries.h"
@@ -905,8 +907,13 @@ TEST_F(VideoResourceUpdaterTest, GenerateSyncTokenOnTextureCopy) {
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
 
-  EXPECT_TRUE(resource.resource.sync_token().HasData());
-  EXPECT_NE(resource.resource.sync_token(), kMailboxSyncToken);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_TRUE(resource.resource.sync_token().HasData());
+    EXPECT_NE(resource.resource.sync_token(), kMailboxSyncToken);
+  } else {
+    EXPECT_FALSE(resource.resource.sync_token().HasData());
+  }
 }
 
 // NV12 VideoFrames backed by a single native texture can be sampled out
