@@ -3754,7 +3754,7 @@ static Font* ComputeInitialLetterFont(const ComputedStyle& style,
 //  * inline-sizing.
 // Additionally, all of the sizing properties and box-sizing also apply to
 // initial letters (see [css-sizing-3]).
-const ComputedStyle* StyleResolver::StyleForInitialLetterText(
+const ComputedStyle& StyleResolver::StyleForInitialLetterText(
     const ComputedStyle& initial_letter_box_style,
     const ComputedStyle& paragraph_style) {
   DCHECK(paragraph_style.InitialLetter().IsNormal());
@@ -3767,7 +3767,7 @@ const ComputedStyle* StyleResolver::StyleForInitialLetterText(
   builder.SetVerticalAlign(EVerticalAlign::kBaseline);
   builder.SetBaseTextDecorationData(
       initial_letter_box_style.AppliedTextDecorationData());
-  return builder.TakeStyle();
+  return *builder.TakeStyle();
 }
 
 StyleRulePositionTry* StyleResolver::ResolvePositionTryRule(

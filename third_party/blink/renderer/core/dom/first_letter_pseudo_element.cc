@@ -505,15 +505,13 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
       GetDocument(), old_text.Impl(), 0, length);
   letter->SetFirstLetterPseudoElement(this);
   if (GetLayoutObject()->IsInitialLetterBox()) [[unlikely]] {
-    const LayoutBlock& paragraph = *GetLayoutObject()->ContainingBlock();
     // TODO(crbug.com/1393280): Once we can store used font somewhere, we should
     // compute initial-letter font during layout to take proper effective style.
     const ComputedStyle& paragraph_style =
-        paragraph.EffectiveStyle(StyleVariant::kFirstLine);
-    const ComputedStyle& initial_letter_text_style =
-        *GetDocument().GetStyleResolver().StyleForInitialLetterText(
-            *letter_style, paragraph_style);
-    letter->SetStyle(initial_letter_text_style);
+        GetLayoutObject()->ContainingBlock()->EffectiveStyle(
+            StyleVariant::kFirstLine);
+    letter->SetStyle(GetDocument().GetStyleResolver().StyleForInitialLetterText(
+        *letter_style, paragraph_style));
   } else {
     letter->SetStyle(*letter_style);
   }

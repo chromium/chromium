@@ -146,7 +146,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   // Returns `ComputedStyle` for rendering initial letter text.
   // `initial_letter_box_style` should have non-normal `initial-letter`
   // property.
-  const ComputedStyle* StyleForInitialLetterText(
+  const ComputedStyle& StyleForInitialLetterText(
       const ComputedStyle& initial_letter_box_style,
       const ComputedStyle& paragraph_style);
 

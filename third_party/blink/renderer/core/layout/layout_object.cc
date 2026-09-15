@@ -3006,7 +3006,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
   if (IsText() && Parent() && Parent()->IsInitialLetterBox()) [[unlikely]] {
     // Note: `Parent()` can be null for text for generated contents.
     // See "accessibility/css-generated-content.html"
-    SetStyle(*GetDocument().GetStyleResolver().StyleForInitialLetterText(
+    SetStyle(GetDocument().GetStyleResolver().StyleForInitialLetterText(
         pseudo_style, Parent()->ContainingBlock()->StyleRef()));
     return;
   }
