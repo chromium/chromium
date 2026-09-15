@@ -34,6 +34,7 @@
 #include "chrome/browser/extensions/extension_garbage_collector.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_api.h"
@@ -1817,8 +1818,8 @@ TEST_P(SingleRulesetTest, GetMatchedRulesInvalidTabID) {
       base::MakeRefCounted<DeclarativeNetRequestGetMatchedRulesFunction>();
   function->set_extension(extension());
 
-  std::string expected_error = ErrorUtils::FormatErrorMessage(
-      declarative_net_request::kTabNotFoundError, "-9001");
+  std::string expected_error =
+      ErrorUtils::FormatErrorMessage(kTabNotFoundError, "-9001");
 
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), R"([{ "tabId": -9001 }])" /* args */, browser_context());

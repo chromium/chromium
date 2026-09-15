@@ -21,6 +21,7 @@
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/sessions/core/session_id.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_types.h"
@@ -284,7 +285,7 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
                                     &web_contents, nullptr) ||
       !window) {
     return base::unexpected(ErrorUtils::FormatErrorMessage(
-        ExtensionTabUtil::kTabNotFoundError, base::ToString(tab_id)));
+        kTabNotFoundError, base::ToString(tab_id)));
   }
 
   BrowserWindowInterface* browser_window = window->GetBrowserWindowInterface();
@@ -372,7 +373,7 @@ base::expected<bool, std::string> SidePanelService::CloseSidePanelForTab(
                                     &web_contents, /*tab_index=*/nullptr) ||
       !web_contents) {
     return base::unexpected(ErrorUtils::FormatErrorMessage(
-        ExtensionTabUtil::kTabNotFoundError, base::ToString(tab_id)));
+        kTabNotFoundError, base::ToString(tab_id)));
   }
 
   // Retrieve the corresponding browser window, since the active side panel for

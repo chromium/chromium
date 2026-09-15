@@ -13,6 +13,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api/permissions/permissions_api_helpers.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_function.h"
@@ -50,7 +51,6 @@ const char kUserGestureRequiredError[] =
     "This function must be called during a user gesture";
 constexpr char kMustSpecifyDocumentIdOrTabIdError[] =
     "Must specify either 'documentId' or 'tabId'.";
-constexpr char kTabNotFoundError[] = "No tab with ID '*'.";
 constexpr char kInvalidDocumentIdError[] = "No document with ID '*'.";
 constexpr char kExtensionHasSiteAccessError[] =
     "Extension cannot add a host access request for a host it already has "

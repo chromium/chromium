@@ -511,7 +511,7 @@ int MoveTabToWindow(ExtensionFunction* function,
   TabListInterface* source_tab_list = TabListInterface::From(source_browser);
   ::tabs::TabInterface* tab = source_tab_list->GetTab(source_index);
   if (!tab) {
-    *error = ErrorUtils::FormatErrorMessage(ExtensionTabUtil::kTabNotFoundError,
+    *error = ErrorUtils::FormatErrorMessage(kTabNotFoundError,
                                             base::NumberToString(tab_id));
     return -1;
   }
@@ -754,8 +754,8 @@ bool GetTabById(int tab_id,
   }
 
   if (error_out) {
-    *error_out = ErrorUtils::FormatErrorMessage(
-        ExtensionTabUtil::kTabNotFoundError, base::NumberToString(tab_id));
+    *error_out = ErrorUtils::FormatErrorMessage(kTabNotFoundError,
+                                                base::NumberToString(tab_id));
   }
 
   return false;
@@ -2169,8 +2169,7 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
                                       include_incognito_information(), nullptr,
                                       &opener, nullptr)) {
       return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-          ExtensionTabUtil::kTabNotFoundError,
-          base::NumberToString(*opener_tab_id_))));
+          kTabNotFoundError, base::NumberToString(*opener_tab_id_))));
     }
   }
 
@@ -2209,8 +2208,7 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
                                         &target_window_controller,
                                         &target_contents, &target_index)) {
         return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-            ExtensionTabUtil::kTabNotFoundError,
-            base::NumberToString(*split_with_tab_id_))));
+            kTabNotFoundError, base::NumberToString(*split_with_tab_id_))));
       }
 
       // 2. Check that the split-with tab is not already in a split view.
@@ -2691,9 +2689,8 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     if (!ExtensionTabUtil::GetTabById(opener_id, browser_context(),
                                       include_incognito_information(),
                                       &opener_contents)) {
-      return RespondNow(Error(
-          ErrorUtils::FormatErrorMessage(ExtensionTabUtil::kTabNotFoundError,
-                                         base::NumberToString(opener_id))));
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kTabNotFoundError, base::NumberToString(opener_id))));
     }
 
     ::tabs::TabInterface* opener_tab =

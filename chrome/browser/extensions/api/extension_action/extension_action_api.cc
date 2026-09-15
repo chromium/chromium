@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/common/color_parser.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
@@ -66,7 +67,6 @@ namespace {
 // Errors.
 const char kNoExtensionActionError[] =
     "This extension has no action specified.";
-const char kNoTabError[] = "No tab with id: *.";
 constexpr char kOpenPopupError[] =
     "Failed to show popup either because there is an existing popup or another "
     "error occurred.";
@@ -201,7 +201,8 @@ ExtensionFunction::ResponseAction ExtensionActionFunction::Run() {
                                  include_incognito_information(),
                                  &contents_out_param);
     if (!contents_out_param) {
-      return RespondNow(Error(kNoTabError, base::NumberToString(tab_id_)));
+      return RespondNow(
+          Error(kTabNotFoundError, base::NumberToString(tab_id_)));
     }
     contents_ = contents_out_param;
   } else {

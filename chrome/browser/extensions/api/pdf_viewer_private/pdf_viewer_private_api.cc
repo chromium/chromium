@@ -28,6 +28,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
@@ -205,7 +206,7 @@ PdfViewerPrivateSaveToDriveFunction::RunSaveToDriveFlow(
   // It is possible the tab associated with this call has been closed.
   if (!SaveToDriveFlow::HasValidTabId(render_frame_host())) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-        ExtensionTabUtil::kTabNotFoundError,
+        kTabNotFoundError,
         base::NumberToString(save_to_drive::GetTabId(render_frame_host())))));
   }
 

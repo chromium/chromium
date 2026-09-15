@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/search/search_api.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -17,6 +18,7 @@
 #include "components/search_engines/util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -98,8 +100,8 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
   if (tab_id) {
     if (!ExtensionTabUtil::GetTabById(
             *tab_id, profile, include_incognito_information(), &web_contents)) {
-      return RespondNow(
-          Error(base::StringPrintf("No tab with id: %d.", *tab_id)));
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kTabNotFoundError, base::NumberToString(*tab_id))));
     }
     // If tab_id was specified, disposition couldn't have been (checked above).
     DCHECK_EQ(Disposition::kNone, disposition);

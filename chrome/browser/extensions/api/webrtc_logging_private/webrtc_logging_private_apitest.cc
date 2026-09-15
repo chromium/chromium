@@ -34,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
@@ -453,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,
   // RunFunctionAndExpectError() uses GetProfile() which returns the
   // on-the-record profile. So the incognito tab must not be found.
   RunFunctionAndExpectError<WebrtcLoggingPrivateStartFunction>(
-      parameters, "No tab with id: *.");
+      parameters, extensions::kTabNotFoundError);
 }
 
 // Tests WebRTC diagnostic logging. Sets up the browser to save the multipart

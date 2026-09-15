@@ -19,6 +19,7 @@
 #include "chrome/common/extensions/api/odfs_config_private.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/api/constants.h"
 
 namespace extensions {
 
@@ -130,7 +131,7 @@ OdfsConfigPrivateOpenInOfficeAppFunction::Run() {
                                     /*include_incognito=*/true,
                                     &web_contents)) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-        ExtensionTabUtil::kTabNotFoundError, base::NumberToString(tab_id))));
+        kTabNotFoundError, base::NumberToString(tab_id))));
   }
 
   // Tabs in incognito or guest mode should never be reparented.

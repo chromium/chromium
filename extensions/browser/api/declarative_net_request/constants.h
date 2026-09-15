@@ -264,7 +264,6 @@ extern const char kEnabledRulesetCountExceeded[];
 extern const char kDisabledStaticRuleCountExceeded[];
 
 // setExtensionActionOptions API errors.
-extern const char kTabNotFoundError[];
 extern const char kIncrementActionCountWithoutUseAsBadgeTextError[];
 
 // testMatchOutcome API errors.

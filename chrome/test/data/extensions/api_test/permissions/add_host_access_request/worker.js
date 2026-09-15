@@ -41,7 +41,7 @@ chrome.test.runTests([
     const request = {tabId: tabId};
     await chrome.test.assertPromiseRejects(
         chrome.permissions.addHostAccessRequest(request),
-        `Error: No tab with ID '${tabId}'.`);
+        `Error: No tab with id: ${tabId}.`);
 
     chrome.test.succeed();
   },

@@ -19,6 +19,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
@@ -441,7 +442,7 @@ TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveNoActiveBrowser) {
 
   EXPECT_EQ(
       ErrorUtils::FormatErrorMessage(
-          ExtensionTabUtil::kTabNotFoundError,
+          kTabNotFoundError,
           base::NumberToString(save_to_drive::GetTabId(extension_host()))),
       api_test_utils::RunFunctionAndReturnError(function, R"(["ORIGINAL"])",
                                                 profile()));

@@ -49,8 +49,6 @@ class WindowController;
 // Provides various utility functions that help manipulate tabs.
 class ExtensionTabUtil {
  public:
-  static constexpr char kTabNotFoundError[] = "No tab with id: *.";
-
   static constexpr char kNoCrashBrowserError[] =
       "I'm sorry. I'm afraid I can't do that.";
   static constexpr char kCanOnlyMoveTabsWithinNormalWindowsError[] =

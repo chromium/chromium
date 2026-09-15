@@ -33,6 +33,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -194,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
   EXPECT_EQ(
       GURL(kExampleUrl),
       browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
-  EXPECT_EQ(ErrorUtils::FormatErrorMessage(ExtensionTabUtil::kTabNotFoundError,
+  EXPECT_EQ(ErrorUtils::FormatErrorMessage(kTabNotFoundError,
                                            base::NumberToString(tab_id)),
             error);
 }

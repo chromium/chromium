@@ -73,6 +73,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
@@ -2315,7 +2316,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithInvalidId) {
   EXPECT_FALSE(GetTabListInterface()->GetTab(1)->GetContents()->WasDiscarded());
 
   // Check error message.
-  EXPECT_TRUE(base::MatchPattern(error, ExtensionTabUtil::kTabNotFoundError));
+  EXPECT_TRUE(base::MatchPattern(error, kTabNotFoundError));
 }
 
 // Tests chrome.tabs.discard for an incognito tab when the extension doesn't
@@ -2350,7 +2351,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardIncognitoWithoutPermission) {
   std::string error = utils::RunFunctionAndReturnError(
       discard.get(), base::StringPrintf("[%u]", tab_id), profile());
   EXPECT_FALSE(incognito_web_contents->WasDiscarded());
-  EXPECT_TRUE(base::MatchPattern(error, ExtensionTabUtil::kTabNotFoundError));
+  EXPECT_TRUE(base::MatchPattern(error, kTabNotFoundError));
 
   // Now run without passing an id. The extension only has access to the normal
   // tabs, so only the normal tabs should be discardable.
@@ -3304,10 +3305,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, CannotZoomInvalidTab) {
 
   int bogus_id = tab_id + 100;
   std::string error = RunSetZoomExpectError(bogus_id, 3.14159);
-  EXPECT_TRUE(base::MatchPattern(error, ExtensionTabUtil::kTabNotFoundError));
+  EXPECT_TRUE(base::MatchPattern(error, kTabNotFoundError));
 
   error = RunSetZoomSettingsExpectError(bogus_id, "manual", "per-tab");
-  EXPECT_TRUE(base::MatchPattern(error, ExtensionTabUtil::kTabNotFoundError));
+  EXPECT_TRUE(base::MatchPattern(error, kTabNotFoundError));
 
   const char kNewTestTabArgs[] = "chrome://version/";
   web_contents = OpenUrlAndWaitForLoad(GURL(kNewTestTabArgs));
@@ -4573,7 +4574,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveNonExistentTab) {
                 function.get(),
                 base::StringPrintf(R"([%d, {"index": 0}])", kNonExistentTabId),
                 profile()),
-            base::StringPrintf("No tab with id: %d.", kNonExistentTabId));
+            ErrorUtils::FormatErrorMessage(
+                kTabNotFoundError, base::NumberToString(kNonExistentTabId)));
 }
 
 // Test that the tabs.move() function correctly rearranges sets of tabs within a

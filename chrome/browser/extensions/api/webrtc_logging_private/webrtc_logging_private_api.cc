@@ -25,6 +25,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/error_utils.h"
 
@@ -161,9 +162,8 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
   if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
                                     include_incognito_information(),
                                     &contents)) {
-    *error = extensions::ErrorUtils::FormatErrorMessage(
-        extensions::ExtensionTabUtil::kTabNotFoundError,
-        base::NumberToString(tab_id));
+    *error = ErrorUtils::FormatErrorMessage(kTabNotFoundError,
+                                            base::NumberToString(tab_id));
     return nullptr;
   }
   if (!contents) {

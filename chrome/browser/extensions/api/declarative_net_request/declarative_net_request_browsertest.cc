@@ -84,6 +84,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_transport_simple_test_server.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -4715,8 +4716,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       SetExtensionActionOptions(
           extension->id(),
           base::StringPrintf("{tabUpdate: {tabId: %d, increment: 10}}", 999)),
-      ErrorUtils::FormatErrorMessage(declarative_net_request::kTabNotFoundError,
-                                     "999"));
+      ErrorUtils::FormatErrorMessage(kTabNotFoundError, "999"));
   EXPECT_EQ("11", action->GetDisplayBadgeText(tab_id));
 
   // The action count should continue to increment when an action is taken.

@@ -146,7 +146,6 @@ const char kDisabledStaticRuleCountExceeded[] =
     "The number of disabled static rules exceeds the disabled rule count "
     "limit.";
 
-const char kTabNotFoundError[] = "No tab with id: *.";
 const char kIncrementActionCountWithoutUseAsBadgeTextError[] =
     "Cannot increment action count unless displaying action count as badge "
     "text.";

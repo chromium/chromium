@@ -18,6 +18,8 @@ enum class ExtensionSearchRedirectedByApi {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ExtensionSearchRedirectedByApi)
 
+inline constexpr char kTabNotFoundError[] = "No tab with id: *.";
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_CONSTANTS_H_

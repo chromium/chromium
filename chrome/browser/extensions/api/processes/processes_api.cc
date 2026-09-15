@@ -32,6 +32,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/common/error_utils.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
@@ -464,8 +465,7 @@ ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
   if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
                                     include_incognito_information(),
                                     &contents)) {
-    return RespondNow(Error(ExtensionTabUtil::kTabNotFoundError,
-                            base::NumberToString(tab_id)));
+    return RespondNow(Error(kTabNotFoundError, base::NumberToString(tab_id)));
   }
 
   // TODO(crbug.com/41345944): chrome.processes.getProcessIdForTab API
