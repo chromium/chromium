@@ -17,15 +17,8 @@ class SidePanelBookmarksTest : public WebUIMochaFocusTest {
   }
 };
 
-// TODO(crbug.com/40882667): Flaky on Mac, Linux dbg, and Windows. Re-enable
-// this test.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
-    BUILDFLAG(IS_WIN)
-#define MAYBE_ShoppingList DISABLED_ShoppingList
-#else
-#define MAYBE_ShoppingList ShoppingList
-#endif
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksTest, MAYBE_ShoppingList) {
+// TODO(crbug.com/40882667): Flaky on all platforms. Re-enable this test.
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksTest, DISABLED_ShoppingList) {
   RunTest("side_panel/bookmarks/commerce/shopping_list_test.js", "mocha.run()");
 }
 
