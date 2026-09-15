@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -373,10 +374,16 @@ TEST(ContainerNamesTest, FileCheckSWF) {
 
 // Try a few non containers.
 TEST(ContainerNamesTest, FileCheckUNKNOWN) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath text_file =
+      temp_dir.GetPath().AppendASCII("plain_text.txt");
+  ASSERT_TRUE(base::WriteFile(text_file,
+                              "This is plain text, not a media container.\n"));
+
   TestFile(MediaContainerName::kContainerUnknown,
            GetTestDataFilePath("ten_byte_file"));
-  TestFile(MediaContainerName::kContainerUnknown,
-           GetTestDataFilePath("README.md"));
+  TestFile(MediaContainerName::kContainerUnknown, text_file);
   TestFile(MediaContainerName::kContainerUnknown,
            GetTestDataFilePath("webm_vp8_track_entry"));
 }
