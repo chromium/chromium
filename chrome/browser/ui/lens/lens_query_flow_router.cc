@@ -706,6 +706,10 @@ void LensQueryFlowRouter::OnContextUploadStatusChanged(
   }
 }
 
+void LensQueryFlowRouter::OnControllerDestroyed() {
+  context_upload_status_observation_.Reset();
+}
+
 void LensQueryFlowRouter::SendInteractionToContextualTasks(
     std::unique_ptr<CreateSearchUrlRequestInfo> request_info) {
   if (!eligibility_logged_in_session_) {

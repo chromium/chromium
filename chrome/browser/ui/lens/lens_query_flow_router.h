@@ -147,6 +147,9 @@ class LensQueryFlowRouter
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type);
 
+  // Testing method to trigger the controller destroyed callback.
+  void OnControllerDestroyedForTesting() { OnControllerDestroyed(); }
+
   // Handles the interaction response from the server.
   void HandleInteractionResponse(
       std::optional<lens::ImageCrop> image_crop,
@@ -198,6 +201,7 @@ class LensQueryFlowRouter
       contextual_search::ContextUploadStatus context_upload_status,
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type) override;
+  void OnControllerDestroyed() override;
 
   // Callbacks for DesktopQueryContextualizerDelegate:
   contextual_search::ContextualSearchSessionHandle* GetOrCreateSessionHandle();
