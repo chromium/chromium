@@ -67,6 +67,10 @@ BASE_FEATURE(kAndroidDesktopUAPlatform, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidDesktopUASpoofAsChromeOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the architecture in the User-Agent client hints for Android
+// desktop will report the actual device CPU architecture instead of "x86".
+BASE_FEATURE(kAndroidDesktopUACPUArch, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Gated prewarming of system fonts on Android to background threads.
 BASE_FEATURE(kAndroidSystemFontPrewarming, base::FEATURE_DISABLED_BY_DEFAULT);
 

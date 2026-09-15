@@ -376,6 +376,22 @@ std::string BuildCpuInfo() {
   return cpuinfo;
 }
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+std::string GetPosixCpuArchitecture() {
+  std::string cpu_info = BuildCpuInfo();
+  if (base::StartsWith(cpu_info, "arm") ||
+      base::StartsWith(cpu_info, "aarch")) {
+    return "arm";
+  } else if ((base::StartsWith(cpu_info, "i") && cpu_info.length() >= 4 &&
+              cpu_info.substr(2, 2) == "86") ||
+             base::StartsWith(cpu_info, "x86")) {
+    return "x86";
+  }
+  DLOG(WARNING) << "Unrecognized CPU Architecture";
+  return std::string();
+}
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+
 // Returns the OS version.
 // On Android, the string will only include the build number and model if
 // relevant enums indicate they should be included.
@@ -737,24 +753,13 @@ std::string GetCpuArchitecture() {
 #elif BUILDFLAG(IS_IOS)
   return "arm";
 #elif BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/433345971) The user agent string should contain the actual
-  // cpu type information obtained from the Android device. Same for the cpu bit
-  // count in #GetCpuBitness below.
   if (base::android::device_info::is_desktop() ||
       base::android::device_info::is_xr()) {
-    return "x86";
+    return GetAndroidDesktopCpuArchitecture();
   }
   return std::string();
 #elif BUILDFLAG(IS_POSIX)
-  std::string cpu_info = BuildCpuInfo();
-  if (base::StartsWith(cpu_info, "arm") ||
-      base::StartsWith(cpu_info, "aarch")) {
-    return "arm";
-  } else if ((base::StartsWith(cpu_info, "i") &&
-              cpu_info.substr(2, 2) == "86") ||
-             base::StartsWith(cpu_info, "x86")) {
-    return "x86";
-  }
+  return GetPosixCpuArchitecture();
 #elif BUILDFLAG(IS_FUCHSIA)
   std::string cpu_arch = base::SysInfo::ProcessCPUArchitecture();
   if (base::StartsWith(cpu_arch, "x86")) {
@@ -915,6 +920,14 @@ std::string GetAndroidOSInfo(
   }
 
   return android_info_str;
+}
+
+std::string GetAndroidDesktopCpuArchitecture() {
+  // TODO(crbug.com/433345971): Avoid hardcoding x86 when flag is disabled.
+  if (base::FeatureList::IsEnabled(blink::features::kAndroidDesktopUACPUArch)) {
+    return GetPosixCpuArchitecture();
+  }
+  return "x86";
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

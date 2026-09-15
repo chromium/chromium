@@ -700,32 +700,37 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadataForXrDevice) {
   base::android::device_info::set_is_xr_for_testing();
   EXPECT_EQ(base::android::device_info::is_xr(), true);
 
-  // By default (flag disabled), it should return Linux.
+  // By default (both flags disabled), it should return Linux x86_64.
   EXPECT_EQ(GetUnifiedPlatformForTesting(), "X11; Linux x86_64");
 
   auto metadata = GetUserAgentMetadata();
   EXPECT_EQ(metadata.platform, "Linux");
 
+  // Verify the XR specific info set when both flags are disabled.
+  // TODO(crbug.com/433345971): Avoid hardcoding x86 when both flags are
+  // disabled.
+  EXPECT_EQ(metadata.architecture, "x86");
+  EXPECT_EQ(metadata.bitness, "64");
+  EXPECT_EQ(metadata.mobile, false);
+  EXPECT_EQ(metadata.platform_version, "");
+
   // Enable the flag to spoof as ChromeOS.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        blink::features::kAndroidDesktopUASpoofAsChromeOS);
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kAndroidDesktopUASpoofAsChromeOS,
+                              blink::features::kAndroidDesktopUACPUArch},
+        /*disabled_features=*/{});
 
+    std::string expected_arch = GetCpuArchitecture();
     // Get unified platform of the user-agent on xr device.
     EXPECT_EQ(GetUnifiedPlatformForTesting(), "X11; CrOS x86_64 14541.0.0");
 
     auto metadata_cros = GetUserAgentMetadata();
     EXPECT_EQ(metadata_cros.platform, "Chrome OS");
+    EXPECT_EQ(metadata_cros.architecture, expected_arch);
+    EXPECT_EQ(metadata_cros.bitness, "64");
   }
-
-  // Verify the XR specific info set.
-  // TODO(crbug.com/433345971) The user agent string should contain the actual
-  // cpu type information obtained from the Android device.
-  EXPECT_EQ(metadata.architecture, "x86");
-  EXPECT_EQ(metadata.bitness, "64");
-  EXPECT_EQ(metadata.mobile, false);
-  EXPECT_EQ(metadata.platform_version, "");
 
   // Verify user-agent client-hints form-factors
   std::vector<std::string> expected_form_factors = {"Desktop", "XR"};
@@ -744,6 +749,9 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadataForXrDevice) {
     base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
     EXPECT_EQ(metadata_with_feature.platform_version,
               base::StringPrintf("%d.%d.%d", major, minor, bugfix));
+    std::string expected_arch = GetCpuArchitecture();
+    EXPECT_EQ(metadata_with_feature.architecture, expected_arch);
+    EXPECT_EQ(metadata_with_feature.bitness, "64");
   }
 
   // Restore the device info.

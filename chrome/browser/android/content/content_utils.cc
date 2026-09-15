@@ -53,8 +53,9 @@ static void JNI_ContentUtils_SetUserAgentOverride(
   spoofed_ua.ua_metadata_override->form_factors =
       embedder_support::GetFormFactorsClientHint(metadata, /*is_mobile=*/false);
   // Match the above "CpuInfo" string, which is also the most common Linux
-  // CPU architecture and bitness.`
-  spoofed_ua.ua_metadata_override->architecture = "x86";
+  // CPU architecture and bitness.
+  spoofed_ua.ua_metadata_override->architecture =
+      embedder_support::GetAndroidDesktopCpuArchitecture();
   spoofed_ua.ua_metadata_override->bitness = "64";
   spoofed_ua.ua_metadata_override->wow64 = false;
 

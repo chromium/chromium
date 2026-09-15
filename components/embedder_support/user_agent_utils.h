@@ -144,6 +144,10 @@ std::string BuildUnifiedPlatformUAFromProductAndExtraOs(
 std::string GetAndroidOSInfo(
     IncludeAndroidBuildNumber include_android_build_number,
     IncludeAndroidModel include_android_model);
+
+// Returns the CPU architecture for Android desktop or desktop mode ("arm" or
+// "x86").
+std::string GetAndroidDesktopCpuArchitecture();
 #endif
 
 // Builds a full user agent string given a string describing the OS and a
