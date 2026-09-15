@@ -12,7 +12,9 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/i18n/chinese_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
+#include "base/i18n/tag_converters.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -267,14 +269,19 @@ LanguageCode GetLanguageCode(std::string_view language_name) {
 
 const std::u16string GetLanguageDisplayName(std::string_view language_name,
                                             std::string_view display_locale) {
-  if (language_name.substr(0, 3) == kChineseLocaleNoCountry) {
-    return l10n_util::GetDisplayNameForLocale(language_name.substr(0, 8),
-                                              display_locale, true);
-
-  } else {
-    return l10n_util::GetDisplayNameForLocaleWithoutCountry(
-        language_name, display_locale, true);
+  std::optional<LanguageTag> language_tag_name =
+      GetLanguageTagFromString(language_name);
+  std::optional<LanguageTag> display_locale_tag =
+      GetLanguageTagFromString(display_locale);
+  if (!language_tag_name || !display_locale_tag) {
+    return std::u16string();
   }
+
+  return l10n_util::GetDisplayNameForLocale(
+      base::i18n::IsChinese(*language_tag_name)
+          ? *language_tag_name
+          : language_tag_name->WithLanguageSubtagOnly(),
+      *display_locale_tag, true);
 }
 
 const std::string GetInstallationSuccessTimeMetricForLanguagePack(

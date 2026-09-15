@@ -10,6 +10,8 @@
 #include "ash/style/typography.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -189,10 +191,16 @@ void SetResultTo(ResultView* result_view,
       base::UTF8ToUTF16(translation_result->text_to_translate));
 
   if (design != Design::kCurrent) {
-    std::u16string display_name_locale =
-        l10n_util::GetDisplayNameForLocaleWithoutCountry(
-            translation_result->source_locale, application_locale,
-            /*is_for_ui=*/true);
+    std::u16string display_name_locale;
+    std::optional<base::i18n::LanguageTag> locale_tag =
+        base::i18n::GetLanguageTagFromString(translation_result->source_locale);
+    std::optional<base::i18n::LanguageTag> display_locale_tag =
+        base::i18n::GetLanguageTagFromString(application_locale);
+    if (locale_tag && display_locale_tag) {
+      display_name_locale = l10n_util::GetDisplayNameForLocale(
+          locale_tag->WithLanguageSubtagOnly(), *display_locale_tag,
+          /*is_for_ui=*/true);
+    }
     if (!display_name_locale.empty()) {
       result_view->SetFirstLineSubText(display_name_locale);
     }

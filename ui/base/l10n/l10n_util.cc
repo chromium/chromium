@@ -339,24 +339,6 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
                                  disallow_default);
 }
 
-std::u16string GetDisplayNameForLocaleWithoutCountry(
-    std::string_view locale,
-    std::string_view display_locale,
-    bool is_for_ui,
-    bool disallow_default) {
-  std::optional<LanguageTag> locale_tag = GetLanguageTagFromString(locale);
-  std::optional<LanguageTag> display_locale_tag =
-      GetLanguageTagFromString(display_locale);
-
-  if (!locale_tag || !display_locale_tag) {
-    return std::u16string();
-  }
-
-  return GetDisplayNameForLocale(locale_tag->WithLanguageSubtagOnly(),
-                                 *display_locale_tag, is_for_ui,
-                                 disallow_default);
-}
-
 #if !BUILDFLAG(IS_IOS)
 std::u16string GetDisplayNameForCountry(std::string_view country_code,
                                         std::string_view display_locale) {

@@ -550,21 +550,27 @@ void CheckUiDisplayNameForLocale(const std::string& locale,
   }
 }
 
-TEST_F(L10nUtilTest, GetDisplayNameForLocaleWithoutCountry) {
-  ASSERT_EQ(u"English", l10n_util::GetDisplayNameForLocaleWithoutCountry(
-                            "en-US", "en", false));
-  ASSERT_EQ(u"English", l10n_util::GetDisplayNameForLocaleWithoutCountry(
-                            "en-GB", "en", false));
-  ASSERT_EQ(u"English", l10n_util::GetDisplayNameForLocaleWithoutCountry(
-                            "en-AU", "en", false));
-  ASSERT_EQ(u"English", l10n_util::GetDisplayNameForLocaleWithoutCountry(
-                            "en", "en", false));
-  EXPECT_EQ(u"Spanish", l10n_util::GetDisplayNameForLocaleWithoutCountry(
-                            "es-419", "en", false));
-  EXPECT_EQ(u"Chinese", l10n_util::GetDisplayNameForLocaleWithoutCountry(
-                            "zh-CH", "en", false));
-  EXPECT_EQ(u"Chinese", l10n_util::GetDisplayNameForLocaleWithoutCountry(
-                            "zh-TW", "en", false));
+TEST_F(L10nUtilTest, GetDisplayNameForLocaleWithLanguageSubtagOnly) {
+  auto test_display_name = [](std::string_view locale,
+                              std::string_view display_locale, bool is_for_ui) {
+    std::optional<base::i18n::LanguageTag> locale_tag =
+        base::i18n::GetLanguageTagFromString(locale);
+    std::optional<base::i18n::LanguageTag> display_locale_tag =
+        base::i18n::GetLanguageTagFromString(display_locale);
+    if (!locale_tag || !display_locale_tag) {
+      return std::u16string();
+    }
+    return l10n_util::GetDisplayNameForLocale(
+        locale_tag->WithLanguageSubtagOnly(), *display_locale_tag, is_for_ui);
+  };
+
+  ASSERT_EQ(u"English", test_display_name("en-US", "en", false));
+  ASSERT_EQ(u"English", test_display_name("en-GB", "en", false));
+  ASSERT_EQ(u"English", test_display_name("en-AU", "en", false));
+  ASSERT_EQ(u"English", test_display_name("en", "en", false));
+  EXPECT_EQ(u"Spanish", test_display_name("es-419", "en", false));
+  EXPECT_EQ(u"Chinese", test_display_name("zh-CH", "en", false));
+  EXPECT_EQ(u"Chinese", test_display_name("zh-TW", "en", false));
 }
 
 TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
