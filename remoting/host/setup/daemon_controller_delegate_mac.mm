@@ -191,6 +191,22 @@ void ElevateAndSetConfig(base::DictValue config,
       std::move(done).Run(DaemonController::RESULT_FAILED);
       return;
     }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    launch_data_type_t response_type = launch_data_get_type(response.get());
+    if (response_type == LAUNCH_DATA_ERRNO) {
+      int error = launch_data_get_errno(response.get());
+      if (error != 0) {
+        LOG(ERROR) << "STARTJOB failed: "
+                   << logging::SystemErrorCodeToString(error) << " (" << error
+                   << ")";
+        std::move(done).Run(DaemonController::RESULT_FAILED);
+        return;
+      }
+    } else if (response_type != LAUNCH_DATA_DICTIONARY) {
+      LOG(WARNING) << "STARTJOB returned unexpected type: " << response_type;
+    }
+#pragma clang diagnostic pop
   }
   std::move(done).Run(DaemonController::RESULT_OK);
 }
