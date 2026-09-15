@@ -242,13 +242,12 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
   NativeValueTraitsStringAdapter(const NativeValueTraitsStringAdapter&) =
       delete;
   NativeValueTraitsStringAdapter(NativeValueTraitsStringAdapter&&) = default;
-  explicit NativeValueTraitsStringAdapter(v8::Isolate* isolate,
-                                          v8::Local<v8::String> value)
+  NativeValueTraitsStringAdapter(v8::Isolate* isolate,
+                                 v8::Local<v8::String> value)
       : v8_string_(value), isolate_(isolate) {}
-  explicit NativeValueTraitsStringAdapter(v8::Isolate* isolate,
-                                          const String& value)
+  NativeValueTraitsStringAdapter(v8::Isolate* isolate, const String& value)
       : isolate_(isolate), wtf_string_(value) {}
-  explicit NativeValueTraitsStringAdapter(v8::Isolate* isolate, int32_t value)
+  NativeValueTraitsStringAdapter(v8::Isolate* isolate, int32_t value)
       : isolate_(isolate), wtf_string_(ToBlinkString(value)) {}
 
   NativeValueTraitsStringAdapter& operator=(
@@ -293,7 +292,7 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
   // a performance gain on MacOS arm (see crbug.com/1482549).
   v8::Local<v8::String> v8_string_;
   v8::Isolate* isolate_ = nullptr;
-  String wtf_string_;
+  mutable String wtf_string_;
   mutable StringView::StackBackingStore string_view_backing_store_;
 };
 

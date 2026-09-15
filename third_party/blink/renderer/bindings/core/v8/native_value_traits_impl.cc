@@ -28,7 +28,12 @@ StringView NativeValueTraitsStringAdapter::ToStringView() const& {
   // to satisfy all RVO constraints.
   if (StringResourceBase* string_resource =
           StringResourceBase::GetExternalizedString(isolate_, v8_string_)) {
-    return string_resource->GetAtomicString(isolate_).Impl();
+    // Note that we request (and keep) a non-atomic String, but the underlying
+    // string is likely already atomic as per externalization logic below.
+    // Transition from a WTF::String with an atomic impl to WTF::AtomicString
+    // is trivial and can be done on the blink impl side as required.
+    wtf_string_ = string_resource->GetWTFString();
+    return wtf_string_.Impl();
   }
 
   uint32_t length = v8_string_->Length();
