@@ -24,7 +24,6 @@ source_set("contextual_tasks") {
     "active_task_context_provider_impl.h",
     "ai_mode_context_library_converter.h",
     "aim_message_poster.h",
-    "aim_user_agent_tab_helper.h",
     "contextual_tasks_auto_suggestion_manager.h",
     "contextual_tasks_composebox_handler_interface.h",
     "contextual_tasks_context_scoring_utils.h",
@@ -107,7 +106,6 @@ source_set("impl") {
   sources = [
     "active_task_context_provider_impl.cc",
     "ai_mode_context_library_converter.cc",
-    "aim_user_agent_tab_helper.cc",
     "contextual_tasks_auto_suggestion_manager.cc",
     "contextual_tasks_context_model_executor.cc",
     "contextual_tasks_context_model_executor.h",
@@ -186,7 +184,6 @@ source_set("impl") {
     "//components/contextual_search:public",
     "//components/contextual_tasks/internal",
     "//components/contextual_tasks/public",
-    "//components/embedder_support:user_agent",
     "//components/favicon/core",
     "//components/history/core/browser",
     "//components/keyed_service/core",
