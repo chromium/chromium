@@ -141,16 +141,27 @@ public final class PointerLockEventHelper {
             }
         }
 
+        int action = event.getAction();
+        int buttonState = event.getButtonState();
+
+        if (action == MotionEvent.ACTION_BUTTON_RELEASE) {
+            // The released button identifies the changed button, but must not remain in the
+            // bitmask of buttons that are still pressed.
+            buttonState &= ~event.getActionButton();
+        } else if (action == MotionEvent.ACTION_UP) {
+            buttonState = 0;
+        }
+
         MotionEvent ret =
                 MotionEvent.obtain(
                         event.getDownTime(),
                         event.getEventTime(),
-                        event.getAction(),
+                        action,
                         event.getPointerCount(),
                         getPointerPropertiesForEvent(event),
                         pointerCoordsList,
                         event.getMetaState(),
-                        event.getButtonState(),
+                        buttonState,
                         event.getXPrecision(),
                         event.getYPrecision(),
                         event.getDeviceId(),

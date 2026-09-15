@@ -855,6 +855,16 @@ public class EventForwarder {
         boolean shouldConvertToMouseEvent =
                 isTrackpadToMouseEventConversionEnabled()
                         && event.isFromSource(InputDevice.SOURCE_TOUCHPAD);
+        // The MotionEvent.obtain() overload used by transformCapturedPointerEvent() does not
+        // preserve actionButton. Save it before transforming physical mouse events. A captured
+        // trackpad may also use SOURCE_MOUSE_RELATIVE, but is identified by TOOL_TYPE_FINGER and
+        // must continue passing 0 so WebMouseEventBuilder::Build() in
+        // web_input_event_builders_android.cc derives the changed button from buttonState.
+        int actionButton =
+                event.isFromSource(InputDevice.SOURCE_MOUSE_RELATIVE)
+                                && event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE
+                        ? getMouseEventActionButton(event)
+                        : 0;
         event = mPointerLockEventHelper.transformCapturedPointerEvent(event, deviceRotation);
 
         if (!event.isFromSource(InputDevice.SOURCE_MOUSE)) {
@@ -903,7 +913,7 @@ public class EventForwarder {
                             event,
                             MotionEventUtils.getEventTimeNanos(event),
                             event.getActionMasked(),
-                            getMouseEventActionButton(event),
+                            actionButton,
                             shouldConvertToMouseEvent
                                     ? MotionEvent.TOOL_TYPE_MOUSE
                                     : event.getToolType(0));

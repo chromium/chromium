@@ -382,6 +382,94 @@ public class EventForwarderTest {
         testCapturedPointerTrackpadMultiTouchClickEvent(3, MotionEvent.BUTTON_TERTIARY);
     }
 
+    @Test
+    public void testCapturedPointerMouseReleasePreservesActionButton() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+        MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
+        properties.id = 0;
+        properties.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+        MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+        MotionEvent event =
+                spy(
+                        MotionEvent.obtain(
+                                /* downTime= */ 0,
+                                /* eventTime= */ 0,
+                                MotionEvent.ACTION_BUTTON_RELEASE,
+                                /* pointerCount= */ 1,
+                                new MotionEvent.PointerProperties[] {properties},
+                                new MotionEvent.PointerCoords[] {coords},
+                                /* metaState= */ 0,
+                                /* buttonState= */ MotionEvent.BUTTON_SECONDARY,
+                                /* xPrecision= */ 1f,
+                                /* yPrecision= */ 1f,
+                                /* deviceId= */ 1,
+                                /* edgeFlags= */ 0,
+                                InputDevice.SOURCE_MOUSE_RELATIVE,
+                                /* flags= */ 0));
+        doReturn(MotionEvent.BUTTON_SECONDARY).when(event).getActionButton();
+        long eventTimeNanos = MotionEventUtils.getEventTimeNanos(event);
+
+        eventForwarder.onCapturedPointerEvent(event, Surface.ROTATION_0);
+
+        ArgumentCaptor<MotionEvent> captor = ArgumentCaptor.forClass(MotionEvent.class);
+        verify(mNativeMock)
+                .onMouseEvent(
+                        eq(NATIVE_EVENT_FORWARDER_ID),
+                        captor.capture(),
+                        eq(eventTimeNanos),
+                        eq(MotionEvent.ACTION_BUTTON_RELEASE),
+                        eq(MotionEvent.BUTTON_SECONDARY),
+                        eq(MotionEvent.TOOL_TYPE_MOUSE));
+        Assert.assertEquals(0, captor.getValue().getButtonState());
+        eventForwarder.destroy();
+    }
+
+    @Test
+    public void testCapturedPointerRelativeTrackpadReleaseUsesButtonStateFallback() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+        MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
+        properties.id = 0;
+        properties.toolType = MotionEvent.TOOL_TYPE_FINGER;
+        MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+        MotionEvent event =
+                spy(
+                        MotionEvent.obtain(
+                                /* downTime= */ 0,
+                                /* eventTime= */ 0,
+                                MotionEvent.ACTION_BUTTON_RELEASE,
+                                /* pointerCount= */ 1,
+                                new MotionEvent.PointerProperties[] {properties},
+                                new MotionEvent.PointerCoords[] {coords},
+                                /* metaState= */ 0,
+                                /* buttonState= */ MotionEvent.BUTTON_SECONDARY,
+                                /* xPrecision= */ 1f,
+                                /* yPrecision= */ 1f,
+                                /* deviceId= */ 1,
+                                /* edgeFlags= */ 0,
+                                InputDevice.SOURCE_MOUSE_RELATIVE,
+                                /* flags= */ 0));
+        // Captured trackpads may report BUTTON_PRIMARY as actionButton even for a two-finger
+        // secondary click. The buttonState fallback must remain authoritative for this path.
+        doReturn(MotionEvent.BUTTON_PRIMARY).when(event).getActionButton();
+        long eventTimeNanos = MotionEventUtils.getEventTimeNanos(event);
+
+        eventForwarder.onCapturedPointerEvent(event, Surface.ROTATION_0);
+
+        ArgumentCaptor<MotionEvent> captor = ArgumentCaptor.forClass(MotionEvent.class);
+        verify(mNativeMock)
+                .onMouseEvent(
+                        eq(NATIVE_EVENT_FORWARDER_ID),
+                        captor.capture(),
+                        eq(eventTimeNanos),
+                        eq(MotionEvent.ACTION_BUTTON_RELEASE),
+                        eq(0),
+                        eq(MotionEvent.TOOL_TYPE_FINGER));
+        Assert.assertEquals(MotionEvent.BUTTON_SECONDARY, captor.getValue().getButtonState());
+        eventForwarder.destroy();
+    }
+
     private void testCapturedPointerTrackpadMultiTouchClickEvent(int pointersCnt, int buttonState) {
         EventForwarder eventForwarder =
                 new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
