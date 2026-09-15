@@ -767,7 +767,8 @@ import java.util.function.Supplier;
                             /* selected= */ false,
                             PopupButtonType.RECENT_TAB,
                             /* protoId= */ 0,
-                            /* hasColor= */ favicon != null));
+                            /* hasColor= */ favicon != null,
+                            /* tooltip= */ ""));
         }
         return buttons;
     }
@@ -1024,7 +1025,8 @@ import java.util.function.Supplier;
                 selected,
                 PopupButtonType.TOOL,
                 ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
-                /* hasColor= */ false);
+                /* hasColor= */ false,
+                /* tooltip= */ "");
     }
 
     private void launchCamera() {
@@ -1303,6 +1305,7 @@ import java.util.function.Supplier;
             if (!inputState.isToolVisible(toolMode)) continue;
 
             String label = toolConfig.getMenuLabel();
+            String tooltip = toolConfig.getMenuTooltip();
             int iconId =
                     toolConfig.hasIcon() && toolConfig.getIcon().hasIconId()
                             ? toolConfig.getIcon().getIconIdValue()
@@ -1329,7 +1332,8 @@ import java.util.function.Supplier;
                             selected,
                             PopupButtonType.TOOL,
                             toolMode,
-                            hasColor));
+                            hasColor,
+                            tooltip));
         }
 
         boolean showTools = !toolButtonDataList.isEmpty();
@@ -1351,6 +1355,7 @@ import java.util.function.Supplier;
             int modelMode = modelConfig.getModelValue();
             if (inputState.isModelVisible(modelMode)) {
                 boolean selected = isAimRequest && inputState.activeModel == modelMode;
+                String tooltip = modelConfig.getMenuTooltip();
                 int iconId =
                         modelConfig.hasIcon() && modelConfig.getIcon().hasIconId()
                                 ? modelConfig.getIcon().getIconIdValue()
@@ -1364,7 +1369,8 @@ import java.util.function.Supplier;
                                 selected,
                                 PopupButtonType.MODEL,
                                 modelMode,
-                                /* hasColor= */ false));
+                                /* hasColor= */ false,
+                                tooltip));
             }
         }
         boolean showModelPicker = modelButtonDataList.size() >= 2;

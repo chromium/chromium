@@ -802,6 +802,29 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void toolButtonTooltip_setsTooltipText() {
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
+                List.of(
+                        new PopupButtonDataBuilder()
+                                .withText("custom tool")
+                                .withType(PopupButtonType.TOOL)
+                                .withTooltip("custom tooltip")
+                                .build()));
+        assertEquals("custom tooltip", getDynamicToolButton(0).getTooltipText());
+
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
+                List.of(
+                        new PopupButtonDataBuilder()
+                                .withText("custom tool")
+                                .withType(PopupButtonType.TOOL)
+                                .withTooltip("")
+                                .build()));
+        assertNull(getDynamicToolButton(0).getTooltipText());
+    }
+
+    @Test
     public void recentTabsDividersAndHeadersVisibility_setsVisibility() {
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE, true);
         assertEquals(View.VISIBLE, mPopup.mRecentTabsDivider.getVisibility());
@@ -900,6 +923,7 @@ public class FuseboxViewBinderUnitTest {
         private boolean mSelected;
         private @PopupButtonType int mType = PopupButtonType.MODEL;
         private @Nullable Bitmap mCustomIcon;
+        private String mTooltip = "";
 
         PopupButtonDataBuilder withOnClicked(Runnable onClicked) {
             mOnClicked = onClicked;
@@ -936,6 +960,11 @@ public class FuseboxViewBinderUnitTest {
             return this;
         }
 
+        PopupButtonDataBuilder withTooltip(String tooltip) {
+            mTooltip = tooltip;
+            return this;
+        }
+
         PopupButtonData build() {
             if (mType == PopupButtonType.RECENT_TAB) {
                 return new PopupButtonData(
@@ -946,7 +975,8 @@ public class FuseboxViewBinderUnitTest {
                         /* selected= */ mSelected,
                         mType,
                         /* protoId= */ 0,
-                        /* hasColor= */ mCustomIcon != null);
+                        /* hasColor= */ mCustomIcon != null,
+                        mTooltip);
             } else {
                 return new PopupButtonData(
                         (data) -> mOnClicked.run(),
@@ -956,7 +986,8 @@ public class FuseboxViewBinderUnitTest {
                         /* selected= */ mSelected,
                         mType,
                         /* protoId= */ 0,
-                        /* hasColor= */ false);
+                        /* hasColor= */ false,
+                        mTooltip);
             }
         }
     }

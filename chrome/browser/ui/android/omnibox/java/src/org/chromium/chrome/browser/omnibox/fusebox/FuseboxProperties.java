@@ -77,6 +77,7 @@ class FuseboxProperties {
         public final @PopupButtonType int type;
         public final int protoId;
         public final boolean hasColor;
+        public final String tooltip;
 
         public PopupButtonData(
                 Callback<PopupButtonData> onClicked,
@@ -86,7 +87,8 @@ class FuseboxProperties {
                 boolean selected,
                 @PopupButtonType int type,
                 int protoId,
-                boolean hasColor) {
+                boolean hasColor,
+                String tooltip) {
             this.onClicked = onClicked.bind(this);
             this.text = text;
             this.iconId = iconId;
@@ -96,6 +98,7 @@ class FuseboxProperties {
             this.type = type;
             this.protoId = protoId;
             this.hasColor = hasColor;
+            this.tooltip = tooltip;
         }
 
         public PopupButtonData(
@@ -106,7 +109,8 @@ class FuseboxProperties {
                 boolean selected,
                 @PopupButtonType int type,
                 int protoId,
-                boolean hasColor) {
+                boolean hasColor,
+                String tooltip) {
             this.onClicked = onClicked.bind(this);
             this.text = text;
             this.iconId = 0;
@@ -116,6 +120,7 @@ class FuseboxProperties {
             this.type = type;
             this.protoId = protoId;
             this.hasColor = hasColor;
+            this.tooltip = tooltip;
         }
     }
 

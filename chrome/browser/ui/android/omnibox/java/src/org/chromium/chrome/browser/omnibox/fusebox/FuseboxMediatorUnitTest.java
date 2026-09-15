@@ -2697,6 +2697,66 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testOnInputStateChange_toolAndModelTooltip() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        recreateMediator();
+
+        ToolConfig toolWithTooltip =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .setMenuTooltip("Deep Search Tooltip")
+                        .build();
+        ToolConfig toolNoTooltip =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas")
+                        .build();
+
+        ModelConfig modelWithTooltip =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setMenuLabel("Auto")
+                        .setMenuTooltip("Auto Tooltip")
+                        .build();
+        ModelConfig modelNoTooltip =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Flash")
+                        .build();
+
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedTools(
+                                ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
+                                ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withToolConfigs(
+                                new byte[][] {
+                                    toolWithTooltip.toByteArray(), toolNoTooltip.toByteArray()
+                                })
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withModelConfigs(
+                                new byte[][] {
+                                    modelWithTooltip.toByteArray(), modelNoTooltip.toByteArray()
+                                })
+                        .build();
+        mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
+
+        List<PopupButtonData> tools = mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        assertEquals(2, tools.size());
+        assertEquals("Deep Search Tooltip", tools.get(0).tooltip);
+        assertEquals("", tools.get(1).tooltip);
+
+        List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertEquals(2, models.size());
+        assertEquals("Auto Tooltip", models.get(0).tooltip);
+        assertEquals("", models.get(1).tooltip);
+    }
+
+    @Test
     public void testHandleKeyEvent() {
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_IMAGE);

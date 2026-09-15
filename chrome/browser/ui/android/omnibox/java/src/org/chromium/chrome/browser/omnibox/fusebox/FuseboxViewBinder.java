@@ -376,6 +376,7 @@ class FuseboxViewBinder {
             PopupButtonData data,
             @BrandedColorScheme int brandedColorScheme) {
         buttonView.setOnClickListener((v) -> data.onClicked.run());
+        buttonView.setTooltipText(data.tooltip);
         TextView actionText = (TextView) buttonView.findViewById(R.id.action_text);
         actionText.setText(data.text);
         if (data.type == PopupButtonType.RECENT_TAB) {
