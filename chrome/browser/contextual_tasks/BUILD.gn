@@ -675,6 +675,7 @@ source_set("unit_tests") {
   } else {
     sources += [
       "contextual_tasks_panel_host_desktop_unittest.cc",
+      "contextual_tasks_permission_chip_unittest.cc",
       "contextual_tasks_utils_unittest.cc",
       "contextual_tasks_web_contents_user_data_unittest.cc",
       "contextual_tasks_web_view_unittest.cc",
