@@ -15,9 +15,23 @@ class ProxyServiceController;
 // them with `ProfileIOS`.
 class ProxyServiceControllerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
+  ProxyServiceControllerFactory(const ProxyServiceControllerFactory&) = delete;
+  ProxyServiceControllerFactory& operator=(
+      const ProxyServiceControllerFactory&) = delete;
+  ProxyServiceControllerFactory(ProxyServiceControllerFactory&&) = delete;
+  ProxyServiceControllerFactory& operator=(ProxyServiceControllerFactory&&) =
+      delete;
+
+  // Returns the `ProxyServiceController` associated with `profile`, or nullptr
+  // if enterprise dynamic route fetching is disabled or `profile` is incognito.
   static ProxyServiceController* GetForProfile(ProfileIOS* profile);
 
+  // Returns the singleton instance of `ProxyServiceControllerFactory`.
   static ProxyServiceControllerFactory* GetInstance();
+
+  // Returns the default factory used to build `ProxyServiceController`. Can be
+  // registered with `AddTestingFactory` to use real instances during testing.
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<ProxyServiceControllerFactory>;

@@ -11,6 +11,11 @@
 // configuration and observing enterprise proxy route updates.
 class ProxyServiceController : public KeyedService {
  public:
+  ProxyServiceController(const ProxyServiceController&) = delete;
+  ProxyServiceController& operator=(const ProxyServiceController&) = delete;
+  ProxyServiceController(ProxyServiceController&&) = delete;
+  ProxyServiceController& operator=(ProxyServiceController&&) = delete;
+
   ProxyServiceController();
   ~ProxyServiceController() override;
 };
