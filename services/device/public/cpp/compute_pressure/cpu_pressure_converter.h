@@ -7,20 +7,24 @@
 
 #include <array>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/timer/timer.h"
+#include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
 
 namespace device {
 
+class SharedRandomizationState;
+
 class CpuPressureConverter final {
  public:
-  CpuPressureConverter() = default;
+  CpuPressureConverter();
 
   CpuPressureConverter(const CpuPressureConverter&) = delete;
   CpuPressureConverter& operator=(const CpuPressureConverter&) = delete;
 
-  ~CpuPressureConverter() = default;
+  ~CpuPressureConverter();
 
   // Returns the current thresholds being used for each mojom::PressureState,
   // taking state randomization into account.
@@ -34,35 +38,22 @@ class CpuPressureConverter final {
 
   void EnableStateRandomizationMitigation();
 
-  void DisableStateRandomizationMigitation();
+  void DisableStateRandomizationMitigation();
 
-  base::TimeDelta GetRandomizationTimeForTesting() const {
-    return randomization_time_;
-  }
+  base::TimeDelta GetRandomizationTimeForTesting() const;
 
   // Calculate PressureState based on cpu_utilization.
   // The range is between 0.0 and 1.0.
   mojom::PressureState CalculateState(const double cpu_utilization);
 
  private:
-  // Implements the "break calibration" mitigation by toggling the
-  // |state_randomization_requested_| flag every |randomization_time_|
-  // interval.
-  void ToggleStateRandomization();
-
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Variable storing |randomization_timer_| time.
-  base::TimeDelta randomization_time_;
-
-  // Drive randomization interval by invoking `ToggleStateRandomization()`.
-  base::OneShotTimer randomization_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Flag to indicate that state randomization has been requested.
-  bool state_randomization_requested_ = false;
+  scoped_refptr<SharedRandomizationState> shared_randomization_state_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Last state stored as index instead of value.
-  size_t last_state_index_ =
+  size_t last_state_index_ GUARDED_BY_CONTEXT(sequence_checker_) =
       static_cast<size_t>(mojom::PressureState::kNominal);
 };
 

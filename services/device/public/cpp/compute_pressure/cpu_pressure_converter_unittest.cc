@@ -4,10 +4,13 @@
 
 #include "services/device/public/cpp/compute_pressure/cpu_pressure_converter.h"
 
+#include <memory>
+
 #include "base/sequence_checker.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -162,14 +165,71 @@ TEST_F(CpuPressureConverterTest, CheckBreakCalibrationMitigation) {
   EXPECT_THAT(converter_.CalculateState(0.86),
               mojom::PressureState(mojom::PressureState::kSerious));
 
-  // First toggling.
+  // First transition: switch to randomized thresholds.
   task_environment_.FastForwardBy(converter_.GetRandomizationTimeForTesting());
   EXPECT_THAT(converter_.CalculateState(0.86),
               mojom::PressureState(mojom::PressureState::kCritical));
-  // Second toggling.
+  // Second transition: switch back to base thresholds.
   task_environment_.FastForwardBy(converter_.GetRandomizationTimeForTesting());
   EXPECT_THAT(converter_.CalculateState(0.86),
               mojom::PressureState(mojom::PressureState::kSerious));
+}
+
+TEST_F(CpuPressureConverterTest,
+       BreakCalibrationMitigationSharedAcrossInstances) {
+  CpuPressureConverter converter2;
+
+  converter_.EnableStateRandomizationMitigation();
+  converter2.EnableStateRandomizationMitigation();
+
+  // Utilization of 0.55 lies in the divergence band:
+  // - Base thresholds: 0.55 <= 0.6 -> kNominal
+  // - Randomized thresholds: 0.55 > 0.5 and <= 0.8 -> kFair
+
+  // Initially, both converters are in base threshold state.
+  EXPECT_EQ(converter_.CalculateState(0.55), mojom::PressureState::kNominal);
+  EXPECT_EQ(converter2.CalculateState(0.55), mojom::PressureState::kNominal);
+
+  // First transition: both converters synchronously switch to randomized
+  // thresholds.
+  task_environment_.FastForwardBy(converter_.GetRandomizationTimeForTesting());
+  EXPECT_EQ(converter_.CalculateState(0.55), mojom::PressureState::kFair);
+  EXPECT_EQ(converter2.CalculateState(0.55), mojom::PressureState::kFair);
+
+  // Second transition: both converters synchronously switch back to base
+  // thresholds.
+  task_environment_.FastForwardBy(converter_.GetRandomizationTimeForTesting());
+  EXPECT_EQ(converter_.CalculateState(0.55), mojom::PressureState::kNominal);
+  EXPECT_EQ(converter2.CalculateState(0.55), mojom::PressureState::kNominal);
+}
+
+TEST_F(CpuPressureConverterTest,
+       BreakCalibrationMitigationSharedStateLifecycle) {
+  auto converter1 = std::make_unique<CpuPressureConverter>();
+  auto converter2 = std::make_unique<CpuPressureConverter>();
+
+  converter1->EnableStateRandomizationMitigation();
+  converter2->EnableStateRandomizationMitigation();
+
+  // Advance time partially.
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  // Destroy converter1. converter2 must remain valid and keep the shared timer
+  // alive.
+  converter1.reset();
+  EXPECT_EQ(converter2->CalculateState(0.55), mojom::PressureState::kNominal);
+
+  // Destroy converter2. All references are released; g_shared_state must be
+  // cleaned up.
+  converter2.reset();
+
+  // A newly created converter starts cleanly with base thresholds and a new
+  // timer.
+  CpuPressureConverter converter3;
+  converter3.EnableStateRandomizationMitigation();
+  EXPECT_EQ(converter3.CalculateState(0.55), mojom::PressureState::kNominal);
+  task_environment_.FastForwardBy(converter3.GetRandomizationTimeForTesting());
+  EXPECT_EQ(converter3.CalculateState(0.55), mojom::PressureState::kFair);
 }
 
 }  // namespace device
