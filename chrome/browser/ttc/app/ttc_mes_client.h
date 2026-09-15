@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_TTC_MES_CLIENT_H_
-#define CHROME_BROWSER_TTC_TTC_MES_CLIENT_H_
+#ifndef CHROME_BROWSER_TTC_APP_TTC_MES_CLIENT_H_
+#define CHROME_BROWSER_TTC_APP_TTC_MES_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/ttc/app/ttc_backend.h"
 #include "chrome/browser/ttc/tool_definition.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/ttc.pb.h"
@@ -25,29 +26,12 @@ namespace ttc {
 
 // Client for establishing and maintaining a bidirectional streaming session
 // with the Model Execution Service (MES) for TTC using
-// OptimizationGuideKeyedService.
+// OptimizationGuideKeyedService. Implements the TtcBackend interface.
 class TtcMesClient
-    : public optimization_guide::RemoteModelExecutionSession::Observer {
+    : public TtcBackend,
+      public optimization_guide::RemoteModelExecutionSession::Observer {
  public:
-  class Observer {
-   public:
-    virtual ~Observer() = default;
-    virtual void OnStreamingStateChanged(bool connected,
-                                         const std::string& session_id,
-                                         const std::string& error_message) = 0;
-    virtual void OnTranscriptions(const std::string& input_transcription,
-                                  const std::string& output_transcription) = 0;
-    virtual void OnAudioOutput(const std::vector<uint8_t>& audio_data,
-                               int64_t sequence_number) = 0;
-    virtual void OnGenerationStateChanged(bool started,
-                                          bool completed,
-                                          bool interrupted) = 0;
-    using ToolResponseCallback =
-        base::OnceCallback<void(base::DictValue response)>;
-    virtual void OnToolCall(const std::string& name,
-                            base::DictValue arguments,
-                            ToolResponseCallback response_callback) {}
-  };
+  using Observer = TtcBackend::Observer;
 
   TtcMesClient(Profile* profile, Observer* observer);
   ~TtcMesClient() override;
@@ -55,36 +39,28 @@ class TtcMesClient
   TtcMesClient(const TtcMesClient&) = delete;
   TtcMesClient& operator=(const TtcMesClient&) = delete;
 
-  // Starts the streaming session with the MES backend.
-  void Connect();
-
-  // Sends dynamic tool definitions to the MES server.
-  void SendToolSetUpdate(const std::vector<ToolDefinition>& tools);
-
-  // Sends raw PCM audio chunk to the MES server.
-  void SendAudioChunk(const std::vector<uint8_t>& audio_data);
-
-  // Submits a user text query to the MES server.
-  void SendTextInput(const std::string& text);
-
-  // Sends active tab context update to the MES server.
+  // TtcBackend implementation:
+  void set_observer(Observer* observer) override;
+  void Connect() override;
+  void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) override;
+  void SendAudioChunk(const std::vector<uint8_t>& audio_data) override;
+  void SendTextInput(const std::string& text) override;
   void SendContextUpdate(
       const GURL& url,
       const std::string& title,
-      const optimization_guide::proto::AnnotatedPageContent& apc);
-
-  // Reports the sequence number of audio played out to speakers.
-  void ReportPlaybackStatus(int64_t last_played_sequence_number);
-
-  // Closes the active session gracefully.
-  void Close();
-
-  bool is_connected() const { return is_connected_; }
+      const optimization_guide::proto::AnnotatedPageContent& apc) override;
+  void ReportPlaybackStatus(int64_t last_played_sequence_number) override;
+  void Close() override;
+  bool is_connected() const override;
 
   // optimization_guide::RemoteModelExecutionSession::Observer:
   void OnConnectionStateChanged(
       optimization_guide::RemoteModelExecutionSession::ConnectionState state)
       override;
+
+ protected:
+  // Constructor for unit test mocks.
+  TtcMesClient();
 
  private:
   void OnStreamingResult(
@@ -109,4 +85,4 @@ class TtcMesClient
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_TTC_MES_CLIENT_H_
+#endif  // CHROME_BROWSER_TTC_APP_TTC_MES_CLIENT_H_

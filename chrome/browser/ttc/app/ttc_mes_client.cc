@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/ttc_mes_client.h"
+#include "chrome/browser/ttc/app/ttc_mes_client.h"
 
 #include <utility>
 
@@ -43,6 +43,8 @@ ToProtoVerbalization(ToolDefinition::Verbalization verbalization) {
 
 }  // namespace
 
+TtcMesClient::TtcMesClient() = default;
+
 TtcMesClient::TtcMesClient(Profile* profile, Observer* observer)
     : profile_(profile), observer_(observer) {
   CHECK(profile_);
@@ -51,6 +53,10 @@ TtcMesClient::TtcMesClient(Profile* profile, Observer* observer)
 
 TtcMesClient::~TtcMesClient() {
   Close();
+}
+
+void TtcMesClient::set_observer(Observer* observer) {
+  observer_ = observer;
 }
 
 void TtcMesClient::Connect() {
@@ -285,6 +291,10 @@ void TtcMesClient::Close() {
   }
   is_connected_ = false;
   session_id_.clear();
+}
+
+bool TtcMesClient::is_connected() const {
+  return is_connected_;
 }
 
 }  // namespace ttc

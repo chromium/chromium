@@ -1,0 +1,47 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("app") {
+  sources = [
+    "audio_controller.cc",
+    "audio_controller.h",
+    "conversation_impl.cc",
+    "conversation_impl.h",
+    "ttc_backend.h",
+    "ttc_mes_client.cc",
+    "ttc_mes_client.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ttc:ttc",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//media",
+    "//url",
+  ]
+  deps = [
+    "//content/public/browser",
+    "//services/audio/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "audio_controller_unittest.cc",
+    "conversation_impl_unittest.cc",
+  ]
+  deps = [
+    ":app",
+    "//base/test:test_support",
+    "//chrome/browser/ttc:ttc",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

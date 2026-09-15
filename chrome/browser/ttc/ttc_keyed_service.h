@@ -38,6 +38,7 @@ class TtcKeyedService : public KeyedService {
   // This is a no-op if no session is currently in progress.
   void EndSession();
 
+  Profile* profile() { return profile_; }
   SessionController* session_controller() { return session_controller_.get(); }
 
  private:

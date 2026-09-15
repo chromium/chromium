@@ -4,6 +4,7 @@
 
 source_set("ttc") {
   public = [
+    "conversation.h",
     "features.h",
     "session_controller.h",
     "session_view.h",
@@ -11,7 +12,6 @@ source_set("ttc") {
     "tool_definition.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
-    "ttc_mes_client.h",
   ]
   public_deps = [
     "//base",
@@ -35,12 +35,12 @@ source_set("impl") {
     "tool_definition.cc",
     "ttc_keyed_service.cc",
     "ttc_keyed_service_factory.cc",
-    "ttc_mes_client.cc",
   ]
   deps = [
     ":ttc",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ttc/app:app",
     "//components/keyed_service/core",
     "//content/public/browser",
   ]
@@ -55,13 +55,18 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ttc_keyed_service_unittest.cc" ]
+  sources = [
+    "session_controller_impl_unittest.cc",
+    "ttc_keyed_service_unittest.cc",
+  ]
   deps = [
     ":impl",
     ":ttc",
     "//base/test:test_support",
+    "//chrome/browser/ttc/app:unit_tests",
     "//chrome/test:test_support",
     "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

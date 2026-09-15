@@ -13,6 +13,7 @@
 
 namespace ttc {
 
+class Conversation;
 class SessionView;
 class TtcKeyedService;
 
@@ -24,10 +25,17 @@ class SessionControllerImpl : public SessionController,
   SessionControllerImpl(const SessionControllerImpl&) = delete;
   SessionControllerImpl& operator=(const SessionControllerImpl&) = delete;
 
+  // SessionController implementation:
+  Conversation* GetConversation() override;
+
+  SessionView* session_view() { return session_view_.get(); }
+
  private:
   // Safe because TtcKeyedService owns this object and outlives it. Gets
   // assigned on construction.
   const raw_ref<TtcKeyedService> service_;
+
+  std::unique_ptr<Conversation> conversation_;
   std::unique_ptr<SessionView> session_view_;
 };
 

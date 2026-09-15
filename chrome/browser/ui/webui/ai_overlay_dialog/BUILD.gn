@@ -31,6 +31,7 @@ source_set("ai_overlay_dialog") {
     ":mojo_bindings",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/ttc",
+    "//chrome/browser/ttc/app:app",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/ai_overlay_dialog",
     "//chrome/browser/ui/browser_window",

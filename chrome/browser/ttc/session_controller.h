@@ -7,9 +7,16 @@
 
 namespace ttc {
 
+class Conversation;
+
+// High-level lifecycle coordinator for a TTC session. Manages the lifetime
+// of the session UI (SessionView) and the model interaction (Conversation).
+// Agnostic of the underlying MES transport protocol.
 class SessionController {
  public:
   virtual ~SessionController() = default;
+
+  virtual Conversation* GetConversation() = 0;
 };
 
 }  // namespace ttc
