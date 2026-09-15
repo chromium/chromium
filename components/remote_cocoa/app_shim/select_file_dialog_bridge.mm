@@ -12,6 +12,7 @@
 #include "base/apple/bridging.h"
 #import "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
 #import "base/mac/mac_util.h"
@@ -19,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -465,8 +467,14 @@ void SelectFileDialogBridge::Show(
   const bool can_host_sheet =
       sheet_parent && (sheet_parent.styleMask & NSWindowStyleMaskTitled) &&
       sheet_parent.level == NSNormalWindowLevel;
+  const bool can_host_auxiliary_sheet =
+      base::FeatureList::IsEnabled(
+          remote_cocoa::features::kMacFullScreenAuxiliaryFileDialog) &&
+      sheet_parent &&
+      (sheet_parent.collectionBehavior &
+       NSWindowCollectionBehaviorFullScreenAuxiliary);
 
-  if (can_host_sheet) {
+  if (can_host_sheet || can_host_auxiliary_sheet) {
     [panel_ beginSheetModalForWindow:sheet_parent
                    completionHandler:^(NSInteger result) {
                      ended_callback.Run(result != NSModalResponseOK);
