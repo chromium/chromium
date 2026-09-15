@@ -1,0 +1,28 @@
+owners:
+- giovax@chromium.org
+- file://apps/DEPRECATION_OWNERS
+caption: Force allow admin-installed Chrome Apps
+desc: |-
+  Setting this policy to True allows admin-installed Chrome Apps to continue to run and be installed, regardless of the default Chrome Apps enablement.
+
+  Leaving this policy unset or setting this policy to False will use the default behavior defined on the device.
+
+  Attempting to launch a disabled Chrome App will show the user a message explaining why the app was not launched and suggesting to contact their IT department.
+
+  ChromeOS M184 will be the last ChromeOS milestone that will support Chrome Apps.
+future_on:
+- chrome_os
+features:
+  dynamic_refresh: true
+  per_profile: false
+type: main
+schema:
+  type: boolean
+items:
+- caption: Allow admin-installed Chrome Apps to run.
+  value: true
+- caption: Use default behavior.
+  value: false
+default: false
+example_value: false
+tags: []

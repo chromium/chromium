@@ -2918,6 +2918,11 @@ inline constexpr char kUptimeLimit[] = "automatic_reboot.uptime_limit";
 // Kiosk related Prefs
 //-----------------------------------------------------------------------------
 
+// A boolean pref which determines whether admin-installed Chrome Apps are
+// allowed to run despite deprecation.
+inline constexpr char kAdminInstalledChromeAppsForceAllowed[] =
+    "admin_installed_chrome_apps_force_allowed";
+
 // A boolean pref to change the kiosk active WiFi credentials scope from in
 // session level to the device level.
 inline constexpr char kKioskActiveWiFiCredentialsScopeChangeEnabled[] =

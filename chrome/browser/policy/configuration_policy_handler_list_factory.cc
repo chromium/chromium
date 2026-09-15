@@ -2248,6 +2248,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kKioskChromeAppsForceAllowed,
     ash::prefs::kKioskChromeAppsForceAllowed,
     base::Value::Type::BOOLEAN },
+  { key::kAdminInstalledChromeAppsForceAllowed,
+    ash::prefs::kAdminInstalledChromeAppsForceAllowed,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)

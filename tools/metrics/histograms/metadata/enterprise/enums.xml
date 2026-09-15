@@ -2536,6 +2536,7 @@ chromium-metrics-reviews@google.com.
   <int value="1483" label="ExtensionReviewPromptsEnabled"/>
   <int value="1484" label="BackgroundTabFreezingEnabled"/>
   <int value="1485" label="ShowInputOptionsInShelfEnabled"/>
+  <int value="1486" label="AdminInstalledChromeAppsForceAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
