@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_default_negotiator.h"
@@ -16,11 +17,15 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -48,11 +53,18 @@ policy::DeviceManagementService* GetDeviceManagementService() {
   return connector->device_management_service();
 }
 
+// Returns the AccountId for `profile`, which is only ever annotated on the
+// original profile -- unwrap to it first in case `profile` is off-the-record.
+const AccountId& GetAccountId(Profile* profile) {
+  return CHECK_DEREF(
+      ash::AnnotatedAccountId::Get(profile->GetOriginalProfile()));
+}
+
 // Returns the Device Account Id. Assumes that |profile| is the only Profile
 // on Chrome OS.
 CoreAccountId GetDeviceAccountId(Profile* profile) {
   const auto* const identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      ash::IdentityManagerProvider::Get().Find(GetAccountId(profile));
 
   // The account is the same whether or not the user consented to browser sync.
   return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
@@ -62,7 +74,7 @@ std::unique_ptr<ArcAndroidManagementChecker> CreateAndroidManagementChecker(
     Profile* profile,
     bool retry_on_error) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      ash::IdentityManagerProvider::Get().Find(GetAccountId(profile));
   const CoreAccountId device_account_id = GetDeviceAccountId(profile);
   return std::make_unique<ArcAndroidManagementChecker>(
       profile, identity_manager, device_account_id, retry_on_error,

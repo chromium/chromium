@@ -25,11 +25,13 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -207,6 +209,20 @@ void ArcAppTest::PostProfileSetUp(Profile* profile) {
   }
 
   arc::ResetArcAllowedCheckForTesting(profile_);
+
+  // Nothing else in this test process registers an
+  // ash::IdentityManagerProvider; ArcPlayStoreEnabledPreferenceHandler (below)
+  // needs one.
+  identity_manager_provider_ =
+      std::make_unique<ash::FakeIdentityManagerProvider>();
+  // Register under the profile's annotated AccountId, which is the key the
+  // production lookup uses. It's absent in UserManagerMode::kDoNothing when
+  // the fixture doesn't annotate the profile itself; the map then stays empty
+  // and Find() returns nullptr, as before this CL.
+  if (const AccountId* account_id = ash::AnnotatedAccountId::Get(profile_)) {
+    identity_manager_provider_->SetIdentityManagerForAccount(
+        *account_id, IdentityManagerFactory::GetForProfile(profile_));
+  }
 
   // ArcServiceLauncher::MaybeSetProfile:
   CHECK(arc_session_manager_);
@@ -416,6 +432,7 @@ void ArcAppTest::PreProfileTearDown() {
   }
   app_instance_.reset();
   arc_play_store_enabled_preference_handler_.reset();
+  identity_manager_provider_.reset();
 
   CHECK(arc_session_manager_);
   arc_session_manager_->Shutdown();

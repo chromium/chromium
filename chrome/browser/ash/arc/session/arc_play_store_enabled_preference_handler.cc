@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -15,9 +16,10 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -132,13 +134,15 @@ void ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged() {
 
       // Tell Consent Auditor that the Play Store consent was revoked.
       signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(profile_);
+          ash::IdentityManagerProvider::Get().Find(CHECK_DEREF(
+              ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile())));
       // TODO(crbug.com/40579665): Fix unrelated tests that are not properly
       // setting up the state of identity_manager and enable the DCHECK instead
       // of the conditional below.
       // DCHECK(identity_manager->HasPrimaryAccount(
       //            signin::ConsentLevel::kSignin));
-      if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      if (identity_manager &&
+          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
         // This class doesn't care about browser sync consent.
         const GaiaId gaia_id =
             identity_manager

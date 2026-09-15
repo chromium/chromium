@@ -29,7 +29,6 @@ include_rules = [
   "+chrome/browser/net",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/shelf",
@@ -51,7 +50,12 @@ specific_include_rules = {
   "arc_session_manager_browsertest\\.cc": [
     "+chrome/browser/ash/test",
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/signin",
     "+chrome/browser/ui/browser_window.h",
+  ],
+
+  "arc_session_manager_unittest\\.cc": [
+    "+chrome/browser/signin",
   ],
 
   "arc_play_store_enabled_preference_handler\\.cc": [
@@ -59,6 +63,7 @@ specific_include_rules = {
   ],
 
   "arc_play_store_enabled_preference_handler_unittest\\.cc": [
+    "+chrome/browser/signin",
     "+chrome/grit",
   ],
 }

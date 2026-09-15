@@ -35,6 +35,7 @@ specific_include_rules = {
   ],
   "arc_app_test\\.cc": [
     "+chrome/browser/apps/app_service",
+    "+chrome/browser/signin",
   ],
   "arc_app_unittest\\.cc": [
     "+chrome/browser/apps/app_service",

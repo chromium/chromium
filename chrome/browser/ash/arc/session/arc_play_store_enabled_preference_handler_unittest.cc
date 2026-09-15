@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
@@ -102,6 +103,12 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
                     base::BindRepeating(&BuildFakeConsentAuditor))}));
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    // Nothing else in this test registers an ash::IdentityManagerProvider.
+    identity_manager_provider_ =
+        std::make_unique<ash::FakeIdentityManagerProvider>();
+    identity_manager_provider_->SetIdentityManagerForAccount(
+        kTestAccountId, identity_test_env_profile_adaptor_->identity_test_env()
+                            ->identity_manager());
 
     user_manager_->OnUserProfileCreated(kTestAccountId, profile_->GetPrefs());
 
@@ -124,6 +131,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     preference_handler_.reset();
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
+    identity_manager_provider_.reset();
     identity_test_env_profile_adaptor_.reset();
 
     user_manager_->OnUserProfileWillBeDestroyed(kTestAccountId);
@@ -176,6 +184,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
+  std::unique_ptr<ash::FakeIdentityManagerProvider> identity_manager_provider_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;

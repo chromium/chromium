@@ -32,6 +32,10 @@ namespace user_manager {
 class User;
 }
 
+namespace ash {
+class FakeIdentityManagerProvider;
+}
+
 class ArcAppListPrefs;
 class Profile;
 
@@ -194,6 +198,10 @@ class ArcAppTest {
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<arc::ArcPlayStoreEnabledPreferenceHandler>
       arc_play_store_enabled_preference_handler_;
+  // Nothing else in this test process registers an
+  // ash::IdentityManagerProvider; ArcPlayStoreEnabledPreferenceHandler needs
+  // one, so provide it here.
+  std::unique_ptr<ash::FakeIdentityManagerProvider> identity_manager_provider_;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   std::unique_ptr<arc::FakeCompatibilityModeInstance>
       compatibility_mode_instance_;
