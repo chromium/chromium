@@ -9,15 +9,18 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
   <!-- go/keep-sorted start -->
   <dimen name="bookmark_desktop_toolbar_title_margin_start">16dp</dimen>
-  <dimen name="bookmark_popup_buttons_margin_top">24dp</dimen>
+  <dimen name="bookmark_popup_bottom_padding">16dp</dimen>
+  <dimen name="bookmark_popup_buttons_margin_top">8dp</dimen>
   <dimen name="bookmark_popup_close_button_margin">-12dp</dimen>
-  <dimen name="bookmark_popup_folder_icon_container_size">32dp</dimen>
+  <dimen name="bookmark_popup_content_margin_top">16dp</dimen>
+  <dimen name="bookmark_popup_folder_icon_container_size">36dp</dimen>
   <dimen name="bookmark_popup_folder_icon_size">24dp</dimen>
-  <dimen name="bookmark_popup_folder_row_height">48dp</dimen>
-  <dimen name="bookmark_popup_folder_row_margin_top">20dp</dimen>
+  <dimen name="bookmark_popup_folder_row_height">36dp</dimen>
+  <dimen name="bookmark_popup_folder_row_margin_top">16dp</dimen>
   <dimen name="bookmark_popup_folder_spacer_width">12dp</dimen>
   <dimen name="bookmark_popup_folder_view_padding">12dp</dimen>
-  <dimen name="bookmark_popup_image_size">120dp</dimen>
+  <dimen name="bookmark_popup_image_margin_top">20dp</dimen>
+  <dimen name="bookmark_popup_image_size">96dp</dimen>
   <dimen name="bookmark_popup_input_padding">16dp</dimen>
   <dimen name="bookmark_popup_padding">20dp</dimen>
   <dimen name="bookmark_popup_remove_button_margin_end">16dp</dimen>

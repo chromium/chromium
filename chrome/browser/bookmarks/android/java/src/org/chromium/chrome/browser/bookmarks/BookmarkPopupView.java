@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,6 +24,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /** View for the desktop android bookmark popup. */
 @NullMarked
@@ -62,6 +63,17 @@ public class BookmarkPopupView extends ConstraintLayout {
         mPriceTrackingSwitch = findViewById(R.id.price_tracking_switch);
     }
 
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN && mTitleView.hasFocus()) {
+            mTitleView.clearFocus();
+            KeyboardVisibilityDelegate.getInstance().hideKeyboard(mTitleView);
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
     /** Sets the header text of the popup (e.g., "Bookmark added"). */
     public void setHeaderText(String headerText) {
         mHeaderTextView.setText(headerText);
@@ -69,23 +81,14 @@ public class BookmarkPopupView extends ConstraintLayout {
     }
 
     /** Focuses the editable title field when the popup is shown. */
-    @SuppressWarnings("AccessibilityFocus")
     public void focusTitleInput() {
-        mTitleView.post(
-                () -> {
-                    mTitleView.requestFocus();
-                    mTitleView.selectAll();
-                    mTitleView.performAccessibilityAction(
-                            AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
-                    mTitleView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                });
+        mTitleView.post(() -> mTitleView.requestFocus());
     }
 
     /** Sets the bookmark title text in the editable title field. */
     public void setTitle(String title) {
         if (!TextUtils.equals(mTitleView.getText(), title)) {
             mTitleView.setText(title);
-            mTitleView.selectAll();
         }
     }
 

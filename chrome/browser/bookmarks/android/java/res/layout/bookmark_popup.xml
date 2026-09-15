@@ -11,14 +11,15 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/bookmark_popup_width"
     android:layout_height="wrap_content"
-    android:padding="@dimen/bookmark_popup_padding"
+    android:paddingHorizontal="@dimen/bookmark_popup_padding"
+    android:paddingTop="@dimen/bookmark_popup_padding"
+    android:paddingBottom="@dimen/bookmark_popup_bottom_padding"
+    android:clipToPadding="false"
     tools:ignore="UnusedResources,SpUsage">
 
     <!-- Popup Title and Close Button -->
     <TextView
         android:id="@+id/popup_title"
-        android:accessibilityTraversalBefore="@id/close_button"
-        android:nextFocusForward="@+id/close_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/bookmark_added"
@@ -30,9 +31,6 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/close_button"
-        android:accessibilityTraversalAfter="@id/popup_title"
-        android:accessibilityTraversalBefore="@id/bookmark_title"
-        android:nextFocusForward="@+id/bookmark_title"
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="@dimen/min_touch_target_size"
         android:layout_marginTop="@dimen/bookmark_popup_close_button_margin"
@@ -49,10 +47,11 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         android:layout_width="@dimen/bookmark_popup_image_size"
         android:layout_height="@dimen/bookmark_popup_image_size"
+        android:layout_marginTop="@dimen/bookmark_popup_image_margin_top"
         android:background=
             "@drawable/rounded_rectangle_surface_container_low"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/close_button">
+        app:layout_constraintTop_toBottomOf="@id/popup_title">
 
         <org.chromium.components.browser_ui.widget.RoundedCornerImageView
             android:id="@+id/bookmark_image"
@@ -62,14 +61,10 @@ found in the LICENSE file.
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:background="@drawable/rounded_rectangle_surface"
-            app:cornerRadiusBottomStart=
-                "@dimen/default_rounded_corner_radius"
-            app:cornerRadiusBottomEnd=
-                "@dimen/default_rounded_corner_radius"
-            app:cornerRadiusTopStart=
-                "@dimen/default_rounded_corner_radius"
-            app:cornerRadiusTopEnd=
-                "@dimen/default_rounded_corner_radius"
+            app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+            app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
+            app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+            app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
             android:importantForAccessibility="no" />
     </FrameLayout>
 
@@ -79,58 +74,50 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="@dimen/bookmark_popup_title_input_height"
         android:layout_marginStart="@dimen/bookmark_popup_row_margin_start"
+        android:layout_marginTop="@dimen/bookmark_popup_content_margin_top"
         app:layout_goneMarginStart="0dp"
         app:helperTextEnabled="false"
         app:errorEnabled="false"
         app:layout_constraintStart_toEndOf="@id/bookmark_image_container"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/bookmark_image_container"
+        app:layout_constraintTop_toBottomOf="@id/popup_title"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         app:hintTextAppearance="@style/TextAppearance.BookmarkPopup.Hint">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/bookmark_title"
-            android:selectAllOnFocus="true"
-            android:accessibilityTraversalAfter="@id/close_button"
-            android:accessibilityTraversalBefore="@id/folder_picker_row"
-            android:nextFocusForward="@+id/folder_picker_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/bookmark_name"
             android:inputType="textNoSuggestions"
             android:maxLines="1"
+            android:selectAllOnFocus="true"
             android:paddingStart="@dimen/bookmark_popup_input_padding"
             android:paddingEnd="@dimen/bookmark_popup_input_padding"
             android:paddingVertical="0dp"
-            android:textAppearance="@style/TextAppearance.BookmarkPopup.Input">
-            <requestFocus />
-        </com.google.android.material.textfield.TextInputEditText>
+            android:textAppearance=
+                "@style/TextAppearance.BookmarkPopup.Input" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Folder Row Container Replica -->
     <LinearLayout
         android:id="@+id/folder_picker_row"
-        android:accessibilityTraversalAfter="@id/bookmark_title"
-        android:accessibilityTraversalBefore="@id/remove_button"
-        android:nextFocusForward="@+id/remove_button"
         android:layout_width="0dp"
         android:layout_height="@dimen/bookmark_popup_folder_row_height"
         android:layout_marginStart="@dimen/bookmark_popup_row_margin_start"
         app:layout_goneMarginStart="0dp"
         android:layout_marginTop=
             "@dimen/bookmark_popup_folder_row_margin_top"
-        android:background="@drawable/rounded_rectangle_surface_container_low"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="@dimen/bookmark_popup_folder_view_padding"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
+        android:background="@drawable/bookmark_bar_ripple"
         app:layout_constraintStart_toEndOf="@id/bookmark_image_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title_input_layout">
 
         <!-- Folder Icon -->
-        <ImageView
+        <org.chromium.components.browser_ui.widget.RoundedCornerImageView
             android:id="@+id/folder_icon"
             android:layout_width=
                 "@dimen/bookmark_popup_folder_icon_container_size"
@@ -138,9 +125,13 @@ found in the LICENSE file.
                 "@dimen/bookmark_popup_folder_icon_container_size"
             android:scaleType="center"
             android:importantForAccessibility="no"
-            android:src="@drawable/ic_folder_blue_24dp"
-            app:tint="@color/default_icon_color_tint_list"
-            android:background="@drawable/rounded_rectangle_surface" />
+            android:src="@drawable/ic_folder_outline_24dp"
+            app:tint="?attr/colorOnPrimaryContainer"
+            app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+            app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
+            app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+            app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+            app:roundedfillColor="?attr/colorPrimaryContainer" />
 
         <View
             android:layout_width=
@@ -189,7 +180,7 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingVertical="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/normal_content_bottom_barrier">
@@ -251,9 +242,6 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/remove_button"
-            android:accessibilityTraversalAfter="@id/folder_picker_row"
-            android:accessibilityTraversalBefore="@id/done_button"
-            android:nextFocusForward="@+id/done_button"
             style="@style/TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -264,7 +252,6 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/done_button"
-            android:accessibilityTraversalAfter="@id/remove_button"
             style="@style/FilledButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
