@@ -122,7 +122,10 @@ enum class SaveCardPromptOffer {
   // The prompt may have been for a card update instead of a new card upload, in
   // which case CVC is required, but it was missing.
   kCvcMissingForPotentialUpdate = 3,
-  kMaxValue = kCvcMissingForPotentialUpdate,
+  // The prompt was for a UnionPay card which requires CVC for upload, but CVC
+  // was missing.
+  kCvcMissingForUnionPayUpload = 4,
+  kMaxValue = kCvcMissingForUnionPayUpload,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
