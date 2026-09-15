@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_request_headers.h"
 #include "net/socket/socket_tag.h"
@@ -50,6 +51,10 @@ struct NET_EXPORT BidirectionalStreamRequestInfo {
   // Suggests the period the broken connection detector should use to check
   // the status of the connection.
   base::TimeDelta heartbeat_interval;
+
+  // The target network to bind this stream to, or kInvalidNetworkHandle to
+  // use the default network.
+  handles::NetworkHandle target_network = handles::kInvalidNetworkHandle;
 };
 
 }  // namespace net

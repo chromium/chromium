@@ -208,6 +208,7 @@ void BidirectionalStream::StartRequest() {
   http_request_info.method = request_info_->method;
   http_request_info.extra_headers = request_info_->extra_headers;
   http_request_info.socket_tag = request_info_->socket_tag;
+  http_request_info.target_network = request_info_->target_network;
   stream_request_ =
       session_->http_stream_factory()->RequestBidirectionalStreamImpl(
           http_request_info, request_info_->priority, /*allowed_bad_certs=*/{},

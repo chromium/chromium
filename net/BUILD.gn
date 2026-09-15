@@ -2991,6 +2991,7 @@ target(_test_target_type, "net_unittests") {
     "first_party_sets/global_first_party_sets_unittest.cc",
     "first_party_sets/sets_mutation_unittest.cc",
     "http/alternative_service_unittest.cc",
+    "http/bidirectional_stream_multinetwork_unittest.cc",
     "http/bidirectional_stream_unittest.cc",
     "http/broken_alternative_services_unittest.cc",
     "http/http_auth_cache_unittest.cc",
