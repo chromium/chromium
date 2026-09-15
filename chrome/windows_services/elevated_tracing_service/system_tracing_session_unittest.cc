@@ -13,13 +13,13 @@
 #include "base/test/task_environment.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "chrome/common/win/eventlog_messages.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/windows_services/elevated_tracing_service/elevated_tracing_service_delegate.h"
 #include "chrome/windows_services/elevated_tracing_service/session_registry.h"
 #include "chrome/windows_services/service_program/service.h"
 #include "chrome/windows_services/service_program/test_support/scoped_mock_context.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -100,7 +100,9 @@ TEST_F(SystemTracingSessionTest, AcceptInvitation) {
   unknown.Reset();
 
   DWORD pid = base::kNullProcessId;
-  ASSERT_EQ(trace_session->AcceptInvitation(nullptr, &pid), E_INVALIDARG);
-  ASSERT_EQ(trace_session->AcceptInvitation(L"", &pid), E_INVALIDARG);
-  ASSERT_EQ(trace_session->AcceptInvitation(L"invalid", nullptr), E_INVALIDARG);
+  ASSERT_EQ(trace_session->AcceptInvitation(0, &pid), E_INVALIDARG);
+  ASSERT_EQ(trace_session->AcceptInvitation(1, nullptr), E_INVALIDARG);
+  ASSERT_EQ(trace_session->AcceptInvitation(
+                base::win::HandleToUint32(::GetCurrentProcess()), &pid),
+            E_INVALIDARG);
 }
