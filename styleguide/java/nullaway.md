@@ -17,7 +17,7 @@ targets without `chromium_code = false`.
 * [JSpecify mode] is enabled.
    * `@Nullable` is `TYPE_USE`.
    * Non-annotated means non-null (no need for `@NonNull`).
-   * Nullness of local variables is inferred.
+   * Nullness of local variables is inferred (do not annotate them with `@Nullable`).
 * Copies of [supported annotations] exist under
   `org.chromium.build.annotations`.
     * These are a part of `//build/android:build_java`, which for convenience,
