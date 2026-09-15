@@ -2531,6 +2531,12 @@ if (_is_default_toolchain) {
     extra_args = [
       "--approve-app-links",
       "org.chromium.chrome.tests.support:www.example.com",
+
+      # Limit intra-shard retries to 1 (2 attempts max per shard, down from 3)
+      # to mitigate CQ demand spikes when many tests break and reduce tolerance
+      # to introducing flakes, while preserving 2 retries (3 attempts) for
+      # other test suites (crbug.com/465148828).
+      "--num-retries=1",
     ]
   }
 
