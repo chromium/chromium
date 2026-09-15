@@ -98,7 +98,6 @@ BASE_DECLARE_FEATURE(kAuxiliarySearchHistoryDonation);
 BASE_DECLARE_FEATURE(kAvoidDoubleMultiwindowChanges);
 BASE_DECLARE_FEATURE(kAvoidRecreateOnTouchscreenOrColorModeChange);
 BASE_DECLARE_FEATURE(kBackGestureReflectsDesktopBehavior);
-BASE_DECLARE_FEATURE(kBackgroundThreadPool);
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
 BASE_DECLARE_FEATURE(kBookmarkPaneAndroid);
 BASE_DECLARE_FEATURE(kBookmarksBarContextMenu);
