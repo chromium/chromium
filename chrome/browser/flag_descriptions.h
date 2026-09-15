@@ -5696,6 +5696,10 @@ inline constexpr char kAutoResizeMinimumPageScaleFactorName[] =
 inline constexpr char kAutoResizeMinimumPageScaleFactorDescription[] =
     "Enables setting the minimum page scale factor to 1.0 during auto-resize.";
 
+inline constexpr char kCCTEarlyInitPowerManagerName[] = "CCT Early Init PowerManager";
+inline constexpr char kCCTEarlyInitPowerManagerDescription[] =
+    "Initializes PowerManager in CustomTabActivityTimeoutHandler during constructor instead of in onStop.";
+
 inline constexpr char kCctTabResumptionName[] = "Custom Tabs Tab Resumption";
 inline constexpr char kCctTabResumptionDescription[] =
     "Enables showing tab resumption suggestions within Custom Tabs.";

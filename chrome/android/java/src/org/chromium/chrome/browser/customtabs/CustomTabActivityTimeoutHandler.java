@@ -58,19 +58,27 @@ class CustomTabActivityTimeoutHandler {
     private boolean mOutcomeRecorded;
 
     @Nullable private final PendingIntent mEmbedderClosingIntent;
+    @Nullable private final PowerManager mPowerManager;
 
     // Timestamp of when the user left the activity, used for timeout logic.
     private long mLeaveTimestamp = -1;
     // Whether the activity is launching an external activity.
     private boolean mIsLaunchingExternalActivity;
 
-    CustomTabActivityTimeoutHandler(Runnable finishActivityRunnable, Intent intent) {
+    CustomTabActivityTimeoutHandler(
+            Context context, Runnable finishActivityRunnable, Intent intent) {
         mIsTimeoutEnabled = isTimeoutEnabled(intent);
 
         // Always set after mIsTimeoutEnabled
         mTimeoutMinutes = getTimeoutMinutes(intent);
         mEmbedderClosingIntent = getEmbedderClosingIntent(intent);
         mFinishActivityRunnable = finishActivityRunnable;
+
+        if (mIsTimeoutEnabled && ChromeFeatureList.sCctEarlyInitPowerManager.isEnabled()) {
+            mPowerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        } else {
+            mPowerManager = null;
+        }
     }
 
     /** To be called from {@link Activity#onStart()}. */
@@ -89,8 +97,13 @@ class CustomTabActivityTimeoutHandler {
         // can be recorded when the user returns or the activity is destroyed.
         mOutcomeRecorded = false;
 
-        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        boolean isLockingScreenAction = !powerManager.isInteractive();
+        PowerManager powerManager;
+        if (ChromeFeatureList.sCctEarlyInitPowerManager.isEnabled()) {
+            powerManager = mPowerManager;
+        } else {
+            powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        }
+        boolean isLockingScreenAction = powerManager != null && !powerManager.isInteractive();
 
         if (isLockingScreenAction) {
             mLeaveTimestamp = -1;
