@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use cbor::Value;
+use cbor::{Map, MapEntry, MapKey, Value};
 use rust_gtest_interop::prelude::*;
-use web_package_rust::{parse_bundle_header, parse_magic_and_version, parse_trailing_length};
+use web_package_rust::{
+    parse_bundle_header, parse_critical_section, parse_index_section, parse_magic_and_version,
+    parse_primary_section, parse_trailing_length,
+};
 
 #[gtest(WebPackageRustTest, TestTrailingLength)]
 fn test_trailing_length() {
@@ -283,4 +286,109 @@ fn test_bundle_header_errors() {
     let res_neg = parse_bundle_header(&neg_len_data, neg_len_cbor.len() as u64, 0);
     expect_true!(res_neg.is_err());
     expect_eq!(res_neg.unwrap_err().message, "Cannot parse section-lengths.");
+}
+
+#[gtest(WebPackageRustTest, TestIndexSection)]
+fn test_index_section() {
+    let index_cbor = cbor::write(&Value::Map(Map::from(vec![
+        MapEntry::from((
+            MapKey::String("https://example.com/a"),
+            Value::Array(vec![Value::Int(0), Value::Int(50)]),
+        )),
+        MapEntry::from((
+            MapKey::String("https://example.com/b"),
+            Value::Array(vec![Value::Int(50), Value::Int(150)]),
+        )),
+    ])));
+
+    let entries = parse_index_section(&index_cbor, 2000, 200).unwrap();
+    expect_eq!(entries.len(), 2usize);
+    expect_eq!(entries[0].url, "https://example.com/a");
+    expect_eq!(entries[0].offset, 2000);
+    expect_eq!(entries[0].length, 50);
+
+    expect_eq!(entries[1].url, "https://example.com/b");
+    expect_eq!(entries[1].offset, 2050);
+    expect_eq!(entries[1].length, 150);
+
+    // Response out of range
+    let invalid_cbor = cbor::write(&Value::Map(Map::from(vec![MapEntry::from((
+        MapKey::String("https://example.com/c"),
+        Value::Array(vec![Value::Int(100), Value::Int(150)]),
+    ))])));
+    let err = parse_index_section(&invalid_cbor, 2000, 200).unwrap_err();
+    expect_eq!(err.message, "Index section: response out of range.");
+
+    // Not a map
+    let not_a_map = cbor::write(&Value::Array(vec![Value::Int(1)]));
+    let err = parse_index_section(&not_a_map, 0, 100).unwrap_err();
+    expect_eq!(err.message, "Index section must be a map.");
+
+    // Value not an array
+    let val_not_array = cbor::write(&Value::Map(Map::from(vec![MapEntry::from((
+        MapKey::String("https://example.com/a"),
+        Value::Int(1),
+    ))])));
+    let err = parse_index_section(&val_not_array, 0, 100).unwrap_err();
+    expect_eq!(err.message, "Index section: value must be an array.");
+
+    // Array size != 2
+    let array_len_3 = cbor::write(&Value::Map(Map::from(vec![MapEntry::from((
+        MapKey::String("https://example.com/a"),
+        Value::Array(vec![Value::Int(0), Value::Int(50), Value::Int(100)]),
+    ))])));
+    let err = parse_index_section(&array_len_3, 0, 100).unwrap_err();
+    expect_eq!(
+        err.message,
+        "Index section: the size of a response array per URL should be exactly 2."
+    );
+
+    // Negative offset
+    let neg_offset = cbor::write(&Value::Map(Map::from(vec![MapEntry::from((
+        MapKey::String("https://example.com/a"),
+        Value::Array(vec![Value::Int(-1), Value::Int(50)]),
+    ))])));
+    let err = parse_index_section(&neg_offset, 0, 100).unwrap_err();
+    expect_eq!(err.message, "Index section: offset and length values must be unsigned.");
+
+    // Non-string key
+    let non_str_key = cbor::write(&Value::Map(Map::from(vec![MapEntry::from((
+        MapKey::Int(42),
+        Value::Array(vec![Value::Int(0), Value::Int(50)]),
+    ))])));
+    let err = parse_index_section(&non_str_key, 0, 100).unwrap_err();
+    expect_eq!(err.message, "Index section: key must be a string.");
+}
+
+#[gtest(WebPackageRustTest, TestCriticalSection)]
+fn test_critical_section() {
+    let valid_cbor =
+        cbor::write(&Value::Array(vec![Value::String("index"), Value::String("responses")]));
+    expect_true!(parse_critical_section(&valid_cbor).is_ok());
+
+    let invalid_cbor = cbor::write(&Value::Array(vec![Value::String("unknown_sec")]));
+    let err = parse_critical_section(&invalid_cbor).unwrap_err();
+    expect_eq!(err.message, "Unknown critical section.");
+}
+
+#[gtest(WebPackageRustTest, TestCriticalSectionErrors)]
+fn test_critical_section_errors() {
+    let not_an_array = cbor::write(&Value::Int(42));
+    let err = parse_critical_section(&not_an_array).unwrap_err();
+    expect_eq!(err.message, "Critical section must be an array.");
+
+    let non_string_elem = cbor::write(&Value::Array(vec![Value::Int(42)]));
+    let err = parse_critical_section(&non_string_elem).unwrap_err();
+    expect_eq!(err.message, "Non-string element in the critical section.");
+}
+
+#[gtest(WebPackageRustTest, TestPrimarySection)]
+fn test_primary_section() {
+    let valid_cbor = cbor::write(&Value::String("https://example.com/primary"));
+    let url = parse_primary_section(&valid_cbor).unwrap();
+    expect_eq!(url, "https://example.com/primary");
+
+    let invalid_cbor = cbor::write(&Value::Int(42));
+    let err = parse_primary_section(&invalid_cbor).unwrap_err();
+    expect_eq!(err.message, "Primary section must be a string.");
 }

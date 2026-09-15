@@ -19,9 +19,9 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "components/cbor/reader.h"
 #include "components/web_package/input_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -35,25 +35,11 @@ namespace web_package {
 
 namespace {
 
-// The maximum size of a metadata section allowed in this implementation.
-constexpr uint64_t kMaxMetadataSectionSize = 1 * 1024 * 1024;
-
 // The maximum size of the response header CBOR.
 constexpr uint64_t kMaxResponseHeaderLength = 512 * 1024;
 
 // The initial buffer size for reading an item from the response section.
 constexpr uint64_t kInitialBufferSizeForResponse = 4096;
-
-// Section names.
-constexpr char kCriticalSection[] = "critical";
-constexpr char kIndexSection[] = "index";
-constexpr char kPrimarySection[] = "primary";
-constexpr char kResponsesSection[] = "responses";
-
-bool IsMetadataSection(const std::string& name) {
-  return (name == kCriticalSection || name == kIndexSection ||
-          name == kPrimarySection);
-}
 
 struct ParsedHeaders {
   base::flat_map<std::string, std::string> headers;
@@ -306,7 +292,7 @@ class WebBundleParser::MetadataParser
   void ReadMetadataSections(size_t section_index) {
     if (section_index < metadata_sections_to_read_.size()) {
       const auto& section = metadata_sections_to_read_[section_index];
-      if (section.length > kMaxMetadataSectionSize) {
+      if (section.length > rust::MAX_METADATA_SECTION_SIZE) {
         RunErrorCallback(
             "Metadata sections larger than 1MB are not supported.");
         return;
@@ -337,150 +323,56 @@ class WebBundleParser::MetadataParser
       return;
     }
 
-    // Parse the section contents as a CBOR item.
-    cbor::Reader::DecoderError error;
-    std::optional<cbor::Value> section_value =
-        cbor::Reader::Read(*data, &error);
-    if (!section_value) {
-      RunErrorCallback(std::string("Error parsing section contents as CBOR: ") +
-                       cbor::Reader::ErrorCodeToString(error));
-      return;
-    }
-
     const auto& name = metadata_sections_to_read_[section_index].name;
-    // Note: Parse*Section() delete |this| on failure.
-    if (name == kIndexSection) {
-      if (!ParseIndexSection(*section_value)) {
+    if (name == rust::INDEX_SECTION) {
+      auto res = rust::parse_index_section(*data, responses_section_offset_,
+                                           responses_section_length_);
+      if (!res.has_value()) {
+        RunErrorCallback(res.error().message);
         return;
       }
-    } else if (name == kCriticalSection) {
-      if (!ParseCriticalSection(*section_value)) {
+      std::vector<std::pair<GURL, mojom::BundleResponseLocationPtr>> requests;
+      requests.reserve(res->size());
+      for (const auto& entry : *res) {
+        GURL parsed_url = ParseExchangeURL(entry.url, base_url_);
+        if (!parsed_url.is_valid()) {
+          std::string message = base::StrCat({"Index section: exchange URL \"",
+                                              entry.url, "\" is not valid."});
+          if (base_url_.is_empty()) {
+            message += " (Relative URLs are not allowed in this context.)";
+          }
+          RunErrorCallback(message);
+          return;
+        }
+        requests.emplace_back(
+            std::move(parsed_url),
+            mojom::BundleResponseLocation::New(entry.offset, entry.length));
+      }
+      metadata_->requests =
+          base::flat_map<GURL, mojom::BundleResponseLocationPtr>(
+              std::move(requests));
+    } else if (name == rust::CRITICAL_SECTION) {
+      if (auto res = rust::parse_critical_section(*data); !res.has_value()) {
+        RunErrorCallback(res.error().message);
         return;
       }
-    } else if (name == kPrimarySection) {
-      if (!ParsePrimarySection(*section_value)) {
+    } else if (name == rust::PRIMARY_SECTION) {
+      auto res = rust::parse_primary_section(*data);
+      if (!res.has_value()) {
+        RunErrorCallback(res.error().message);
         return;
       }
+      GURL parsed_url = ParseExchangeURL(*res, base_url_);
+      if (!parsed_url.is_valid()) {
+        RunErrorCallback("Primary URL is not a valid exchange URL.");
+        return;
+      }
+      metadata_->primary_url = std::move(parsed_url);
     } else {
       NOTREACHED();
     }
     // Read the next metadata section.
     ReadMetadataSections(section_index + 1);
-  }
-
-  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-the-index-section
-  // The index section has the following structure:
-  //   index = {* whatwg-url => [ location-in-responses ] }
-  //   location-in-responses = (offset: uint, length: uint)
-  bool ParseIndexSection(const cbor::Value& section_value) {
-    // |section_value| of index section must be a map.
-    if (!section_value.is_map()) {
-      RunErrorCallback("Index section must be a map.");
-      return false;
-    }
-
-    base::flat_map<GURL, mojom::BundleResponseLocationPtr> requests;
-
-    const uint64_t responses_section_offset = responses_section_offset_;
-    const uint64_t responses_section_length = responses_section_length_;
-
-    // For each (url, responses) entry in the index map.
-    for (const auto& item : section_value.GetMap()) {
-      if (!item.first.is_string()) {
-        RunErrorCallback("Index section: key must be a string.");
-        return false;
-      }
-      if (!item.second.is_array()) {
-        RunErrorCallback("Index section: value must be an array.");
-        return false;
-      }
-      const std::string& url = item.first.GetString();
-      const cbor::Value::ArrayValue& responses_array = item.second.GetArray();
-
-      GURL parsed_url = ParseExchangeURL(url, base_url_);
-
-      if (!parsed_url.is_valid()) {
-        std::string message = base::StringPrintf(
-            "Index section: exchange URL \"%s\" is not valid.", url.c_str());
-        if (base_url_.is_empty()) {
-          message += " (Relative URLs are not allowed in this context.)";
-        }
-        RunErrorCallback(message);
-        return false;
-      }
-
-      if (responses_array.size() != 2) {
-        RunErrorCallback(
-            "Index section: the size of a response array per URL should be "
-            "exactly 2.");
-        return false;
-      }
-      if (!responses_array[0].is_unsigned() ||
-          !responses_array[1].is_unsigned()) {
-        RunErrorCallback(
-            "Index section: offset and length values must be unsigned.");
-        return false;
-      }
-      uint64_t offset = responses_array[0].GetUnsigned();
-      uint64_t length = responses_array[1].GetUnsigned();
-
-      uint64_t response_end;
-      if (!base::CheckAdd(offset, length).AssignIfValid(&response_end) ||
-          response_end > responses_section_length) {
-        RunErrorCallback("Index section: response out of range.");
-        return false;
-      }
-      uint64_t offset_within_stream = responses_section_offset + offset;
-
-      requests.insert(std::make_pair(
-          parsed_url,
-          mojom::BundleResponseLocation::New(offset_within_stream, length)));
-    }
-
-    metadata_->requests = std::move(requests);
-    return true;
-  }
-
-  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#critical-section
-  //   critical = [*tstr]
-  bool ParseCriticalSection(const cbor::Value& section_value) {
-    if (!section_value.is_array()) {
-      RunErrorCallback("Critical section must be an array.");
-      return false;
-    }
-    // "If the client has not implemented a section named by one of the items in
-    // this list, the client MUST fail to parse the bundle as a whole."
-    for (const cbor::Value& elem : section_value.GetArray()) {
-      if (!elem.is_string()) {
-        RunErrorCallback("Non-string element in the critical section.");
-        return false;
-      }
-      const auto& section_name = elem.GetString();
-      if (!IsMetadataSection(section_name) &&
-          section_name != kResponsesSection) {
-        RunErrorCallback("Unknown critical section.");
-        return false;
-      }
-    }
-    return true;
-  }
-
-  // https://github.com/WICG/webpackage/blob/main/extensions/primary-section.md
-  //  primary = whatwg-url
-  bool ParsePrimarySection(const cbor::Value& section_value) {
-    if (!section_value.is_string()) {
-      RunErrorCallback("Primary section must be a string.");
-      return false;
-    }
-
-    GURL parsed_url = ParseExchangeURL(section_value.GetString(), base_url_);
-
-    if (!parsed_url.is_valid()) {
-      RunErrorCallback("Primary URL is not a valid exchange URL.");
-      return false;
-    }
-    metadata_->primary_url = std::move(parsed_url);
-    return true;
   }
 
   void RunSuccessCallback() {

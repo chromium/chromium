@@ -14,6 +14,9 @@ pub const TRAILING_LENGTH_NUM_BYTES: usize = 8;
 /// section-lengths item longer than this."
 pub(crate) const MAX_SECTION_LENGTHS_CBOR_SIZE: u64 = 8192;
 
+/// The maximum size of a metadata section allowed in this implementation.
+pub const MAX_METADATA_SECTION_SIZE: u64 = 1024 * 1024;
+
 /// Initial buffer size for reading magic bytes and top-level headers (24
 /// bytes): 1 byte (array header) + 9 bytes (magic byte string) + 5 bytes
 /// (version byte string) + 9 bytes (max section-lengths CBOR header).
@@ -57,7 +60,7 @@ pub(crate) const VERSION_B1_BYTES: &[u8] = b"b1\0\0";
 
 /// Canonical Web Bundle section names.
 /// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-sections-and-length
-pub(crate) const CRITICAL_SECTION: &str = "critical";
-pub(crate) const INDEX_SECTION: &str = "index";
-pub(crate) const PRIMARY_SECTION: &str = "primary";
-pub(crate) const RESPONSES_SECTION: &str = "responses";
+pub const CRITICAL_SECTION: &str = "critical";
+pub const INDEX_SECTION: &str = "index";
+pub const PRIMARY_SECTION: &str = "primary";
+pub const RESPONSES_SECTION: &str = "responses";

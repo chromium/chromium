@@ -45,3 +45,11 @@ pub struct BundleHeaderResult {
     pub responses_offset: u64,
     pub responses_length: u64,
 }
+
+#[repr(C)]
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ParsedIndexEntry<'a> {
+    pub url: &'a str,
+    pub offset: u64,
+    pub length: u64,
+}

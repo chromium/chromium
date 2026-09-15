@@ -11,10 +11,16 @@ use crate::constants::{
     MAX_CBOR_ITEM_HEADER_SIZE, MAX_SECTION_LENGTHS_CBOR_SIZE, PRIMARY_SECTION, RESPONSES_SECTION,
     TOP_LEVEL_ARRAY_SIZE, TRAILING_LENGTH_NUM_BYTES, VERSION_B1_BYTES, VERSION_B2_BYTES,
 };
-use crate::types::{BundleHeaderResult, MagicAndVersionResult, ParseError, SectionOffsetEntry};
+use crate::types::{
+    BundleHeaderResult, MagicAndVersionResult, ParseError, ParsedIndexEntry, SectionOffsetEntry,
+};
 
 fn is_metadata_section(name: &str) -> bool {
     matches!(name, CRITICAL_SECTION | INDEX_SECTION | PRIMARY_SECTION)
+}
+
+fn is_known_section(name: &str) -> bool {
+    is_metadata_section(name) || name == RESPONSES_SECTION
 }
 
 /// Helper for incremental, sequential CBOR decoding with uniform error
@@ -77,6 +83,17 @@ fn parse_exact_cbor<'a>(data: &'a [u8]) -> Result<cbor::Value<'a>, cbor::Error> 
         Ok(_) => Err(cbor::Error::ExtraneousData),
         Err(err) => Err(err),
     }
+}
+
+/// Parses a metadata section's CBOR, formatting CBOR decoder errors with the
+/// section error prefix.
+fn parse_section_cbor<'a, T>(
+    data: &'a [u8],
+    matcher: impl FnOnce(cbor::Value<'a>) -> Result<T, ParseError>,
+) -> Result<T, ParseError> {
+    parse_exact_cbor(data)
+        .map_err(|_| ParseError::format("Cannot parse section contents as CBOR."))
+        .and_then(matcher)
 }
 
 /// Parses the 8-byte big-endian trailing length field at the end of a bundle
@@ -307,4 +324,108 @@ pub fn parse_bundle_header(
         parse_section_offsets(&section_lengths, sections_start)?;
 
     Ok(BundleHeaderResult { metadata_sections, responses_offset, responses_length })
+}
+
+fn parse_response_location(value: &cbor::Value<'_>) -> Result<(u64, u64), ParseError> {
+    let cbor::Value::Array(arr) = value else {
+        return Err(ParseError::format("Index section: value must be an array."));
+    };
+    match arr.as_slice() {
+        [cbor::Value::Int(offset @ 0..), cbor::Value::Int(length @ 0..)] => {
+            Ok((*offset as u64, *length as u64))
+        }
+        [_, _] => {
+            Err(ParseError::format("Index section: offset and length values must be unsigned."))
+        }
+        _ => Err(ParseError::format(
+            "Index section: the size of a response array per URL should be exactly 2.",
+        )),
+    }
+}
+
+fn parse_index_entry<'a>(
+    key: cbor::MapKey<'a>,
+    value: &cbor::Value<'_>,
+    responses_offset: u64,
+    responses_length: u64,
+) -> Result<ParsedIndexEntry<'a>, ParseError> {
+    let cbor::MapKey::String(url) = key else {
+        return Err(ParseError::format("Index section: key must be a string."));
+    };
+    let (offset, length) = parse_response_location(value)?;
+    match (offset.checked_add(length), responses_offset.checked_add(offset)) {
+        (Some(end), Some(offset_within_stream)) if end <= responses_length => {
+            Ok(ParsedIndexEntry { url, offset: offset_within_stream, length })
+        }
+        _ => Err(ParseError::format("Index section: response out of range.")),
+    }
+}
+
+/// Parses the `index` metadata section, returning entries with absolute
+/// payload offsets into the responses section.
+///
+/// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-the-index-section
+///
+/// The index section has the following structure:
+///   index = {* whatwg-url => [ location-in-responses ] }
+///   location-in-responses = (offset: uint, length: uint)
+pub fn parse_index_section<'a>(
+    data: &'a [u8],
+    responses_offset: u64,
+    responses_length: u64,
+) -> Result<Vec<ParsedIndexEntry<'a>>, ParseError> {
+    parse_section_cbor(data, |val| {
+        let cbor::Value::Map(map) = val else {
+            return Err(ParseError::format("Index section must be a map."));
+        };
+        map.into_iter()
+            .map(|cbor::MapEntry { key, value }| {
+                parse_index_entry(key, &value, responses_offset, responses_length)
+            })
+            .collect()
+    })
+}
+
+fn validate_critical_element(elem: &cbor::Value<'_>) -> Result<(), ParseError> {
+    match elem {
+        cbor::Value::String(name) if is_known_section(name) => Ok(()),
+        cbor::Value::String(_) => Err(ParseError::format("Unknown critical section.")),
+        _ => Err(ParseError::format("Non-string element in the critical section.")),
+    }
+}
+
+/// Parses and validates the `critical` metadata section.
+///
+/// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#critical-section
+///
+///   critical = [*tstr]
+///
+/// "If the client has not implemented a section named by one of the items in
+/// this list, the client MUST fail to parse the bundle as a whole."
+// Uses `Result<bool, ...>` instead of `Result<(), ...>` because Crubit does not
+// yet support generating bindings for the unit type `()` (b/259749095).
+pub fn parse_critical_section(data: &[u8]) -> Result<bool, ParseError> {
+    parse_section_cbor(data, |val| {
+        let cbor::Value::Array(arr) = val else {
+            return Err(ParseError::format("Critical section must be an array."));
+        };
+        for elem in &arr {
+            validate_critical_element(elem)?;
+        }
+        Ok(true)
+    })
+}
+
+/// Parses the `primary` metadata section, returning the primary URL string.
+///
+/// https://github.com/WICG/webpackage/blob/main/extensions/primary-section.md
+///
+///   primary = whatwg-url
+pub fn parse_primary_section(data: &[u8]) -> Result<&str, ParseError> {
+    parse_section_cbor(data, |val| {
+        let cbor::Value::String(url) = val else {
+            return Err(ParseError::format("Primary section must be a string."));
+        };
+        Ok(url)
+    })
 }
