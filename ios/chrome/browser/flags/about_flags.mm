@@ -2788,6 +2788,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          safe_browsing::kClientSideDetectionEnabledIos,
          kClientSideDetectionEnforcementVariations,
          "ClientSideDetectionEnabledIos")},
+    {"browsing-history-filter-by-device",
+     flag_descriptions::kBrowsingHistoryFilterByDeviceName,
+     flag_descriptions::kBrowsingHistoryFilterByDeviceDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(history::kBrowsingHistoryFilterByDevice)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

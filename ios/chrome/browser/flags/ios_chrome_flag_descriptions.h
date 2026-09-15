@@ -370,6 +370,11 @@ inline constexpr char kBreakpadNoDelayInitialUploadDescription[] =
     "disabled, initial upload is delayed until deferred initialization. This "
     "does not affect recovery mode.";
 
+inline constexpr char kBrowsingHistoryFilterByDeviceName[] =
+    "Filter Browsing History By Device";
+inline constexpr char kBrowsingHistoryFilterByDeviceDescription[] =
+    "Enables browser history filtering by device.";
+
 inline constexpr char kBuildExternalPrivacyContextName[] =
     "Build external privacy context";
 inline constexpr char kBuildExternalPrivacyContextDescription[] =

@@ -14076,6 +14076,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          history::kBrowsingHistoryImprovedHostnameSuffixMatching)},
 
+    {"browsing-history-filter-by-device",
+     flag_descriptions::kBrowsingHistoryFilterByDeviceName,
+     flag_descriptions::kBrowsingHistoryFilterByDeviceDescription, kOsAll,
+     FEATURE_VALUE_TYPE(history::kBrowsingHistoryFilterByDevice)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"cct-early-init-power-manager",
      flag_descriptions::kCCTEarlyInitPowerManagerName,

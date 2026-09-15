@@ -1534,6 +1534,15 @@
     "expiry_milestone": 152
   },
   {
+    "name": "browsing-history-filter-by-device",
+    "owners": [
+      "rainhard@google.com",
+      "aisulu@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "browsing-history-improved-hostname-suffix-matching",
     "owners": [
       "rainhard@google.com",

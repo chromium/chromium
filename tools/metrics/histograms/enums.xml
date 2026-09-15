@@ -13926,6 +13926,7 @@ from previous Chrome versions.
       label="disable-proximity-auth-bluetooth-low-energy-discovery"/>
   <int value="-275503658" label="SpeakOnMuteOptInNudgePrefsReset:enabled"/>
   <int value="-275164173" label="QuickUnlockPinSignin:enabled"/>
+  <int value="-275092272" label="BrowsingHistoryFilterByDevice:enabled"/>
   <int value="-274866908" label="UndoableTabClosureRework:disabled"/>
   <int value="-273821346"
       label="MaintainShelfStateWhenEnteringOverview:disabled"/>
@@ -15337,6 +15338,7 @@ from previous Chrome versions.
   <int value="168955875" label="FullscreenAnimateTabs:disabled"/>
   <int value="169306486"
       label="AndroidOpenIncognitoAsWindowRestrictions:enabled"/>
+  <int value="169482578" label="BrowsingHistoryFilterByDevice:disabled"/>
   <int value="169986702" label="FirmwareUpdateJelly:enabled"/>
   <int value="170101645" label="PageInfoAboutThisSiteMoreInfo:disabled"/>
   <int value="171273307" label="SystemEmojiPickerClipboard:disabled"/>
