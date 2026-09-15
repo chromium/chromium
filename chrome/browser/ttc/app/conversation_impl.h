@@ -59,6 +59,7 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
   void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) override;
+  void OnPageContextChanged() override;
 
   // TtcBackend::Observer implementation:
   void OnStreamingStateChanged(bool connected,

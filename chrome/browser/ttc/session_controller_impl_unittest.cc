@@ -37,6 +37,7 @@ class FakeConversation : public Conversation {
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) override {}
   void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) override {}
+  void OnPageContextChanged() override {}
 
   bool is_started() const { return is_started_; }
 

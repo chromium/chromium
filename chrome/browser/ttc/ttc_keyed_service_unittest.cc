@@ -38,6 +38,8 @@ class FakeConversation : public Conversation {
       const optimization_guide::proto::AnnotatedPageContent& apc) override {}
   void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) override {}
 
+  void OnPageContextChanged() override {}
+
  private:
   bool is_started_ = false;
   base::ObserverList<Observer> observers_;

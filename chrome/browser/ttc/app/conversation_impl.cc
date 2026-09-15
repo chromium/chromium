@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/numerics/byte_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
@@ -116,6 +117,10 @@ void ConversationImpl::SendToolSetUpdate(
   if (backend_) {
     backend_->SendToolSetUpdate(tools);
   }
+}
+
+void ConversationImpl::OnPageContextChanged() {
+  NOTIMPLEMENTED();
 }
 
 std::vector<uint8_t> Downsample48kHzTo16kHz(

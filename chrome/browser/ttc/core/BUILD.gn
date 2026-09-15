@@ -1,0 +1,83 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("core") {
+  public = [
+    "page_context.h",
+    "ttc_page_context_monitor.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/content/browser",
+    "//components/page_content_annotations/content",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "page_context.cc",
+    "ttc_page_context_monitor.cc",
+  ]
+  public_deps = [ ":core" ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/content/browser",
+    "//content/public/browser",
+  ]
+}
+
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "test_utils.cc",
+      "test_utils.h",
+      "ttc_core_browser_test_base.cc",
+      "ttc_core_browser_test_base.h",
+    ]
+    public_deps = [
+      ":core",
+      "//base",
+      "//chrome/browser/ttc",
+      "//chrome/test:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//content/public/browser",
+      "//testing/gmock",
+      "//url",
+    ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ttc:impl",
+      "//components/keyed_service/core",
+      "//net:test_support",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "page_context_monitor_browsertest.cc" ]
+    deps = [
+      ":core",
+      ":impl",
+      ":test_support",
+      "//base",
+      "//chrome/browser/ttc",
+      "//chrome/test:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:browsertest_support",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//url",
+    ]
+  }
+}

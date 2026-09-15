@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TTC_SESSION_CONTROLLER_H_
 #define CHROME_BROWSER_TTC_SESSION_CONTROLLER_H_
 
+#include "chrome/browser/ttc/core/page_context.h"
+
 namespace ttc {
 
 class Conversation;
@@ -17,6 +19,10 @@ class SessionController {
   virtual ~SessionController() = default;
 
   virtual Conversation* GetConversation() = 0;
+
+  // Fetches the context of the page this session is operating on, invoking
+  // `callback` with the result.
+  virtual void GetPageContext(FetchCompleteCallback callback) = 0;
 };
 
 }  // namespace ttc

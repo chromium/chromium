@@ -18,6 +18,7 @@ source_set("ttc") {
     "//chrome/browser/actor",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ttc/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//url",
@@ -40,7 +41,8 @@ source_set("impl") {
     ":ttc",
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ttc/app:app",
+    "//chrome/browser/ttc/app",
+    "//chrome/browser/ttc/core",
     "//components/keyed_service/core",
     "//content/public/browser",
   ]
@@ -48,6 +50,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//components/tabs:public",
       "//url",
     ]
   }

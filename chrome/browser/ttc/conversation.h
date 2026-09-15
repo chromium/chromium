@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_TTC_CONVERSATION_H_
 #define CHROME_BROWSER_TTC_CONVERSATION_H_
 
-#include <stdint.h>
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -69,11 +67,17 @@ class Conversation {
 
   // Sends user text, context, or tool messages to the model.
   virtual void SendTextInput(const std::string& text) = 0;
+  // TODO(bokan): Conversation should pull page context using
+  // SessionController::GetPageContext. Remove this path.
   virtual void SendContextUpdate(
       const GURL& url,
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) = 0;
   virtual void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) = 0;
+
+  // Invoked when the page the session is operating on has changed, and so the
+  // conversation's page context may be stale.
+  virtual void OnPageContextChanged() = 0;
 };
 
 }  // namespace ttc
