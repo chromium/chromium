@@ -8,7 +8,6 @@ import "mojo/public/mojom/base/uuid.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "url/mojom/url.mojom";
-import "ui/base/mojom/window_open_disposition.mojom";
 
 // Struct representing an injected input which can be text only,
 // contain a modality chip, or both, and allows immediate submission.
@@ -136,15 +135,19 @@ interface PageHandler {
   // Opens the Feedback page in a new tab.
   OpenFeedbackUi();
 
+  // Note: The following help UI methods are intentionally parameterless to
+  // prevent compromised renderers from injecting arbitrary URLs or dispositions
+  // (crbug.com/523750306). Target URLs and dispositions are resolved entirely
+  // within the browser process.
+
   // Opens the onboarding help page in a new tab.
   OpenOnboardingHelpUi();
 
   // Opens the overflow menu help page in a new tab.
   OpenOverflowMenuHelpUi();
 
-  // Open the URL with window open disposition.
-  // Used for handling newwindow event inside <webview>.
-  OpenUrl(url.mojom.Url url, ui.mojom.WindowOpenDisposition disposition);
+  // Opens the Ask G help page in a new tab.
+  OpenAskGHelpUi();
 
   // Moves the contents of the side panel to a new tab.
   MoveTaskUiToNewTab();

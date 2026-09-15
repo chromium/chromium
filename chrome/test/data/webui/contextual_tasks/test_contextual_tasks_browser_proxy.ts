@@ -230,7 +230,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'openMyActivityUi',
       'openOnboardingHelpUi',
       'openOverflowMenuHelpUi',
-      'openUrl',
+      'openAskGHelpUi',
       'reopenTabs',
       'setTaskId',
       'setThreadTitle',
@@ -343,8 +343,9 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     this.methodCalled('openOverflowMenuHelpUi');
   }
 
-  openUrl(url: Url|string, disposition: number) {
-    this.methodCalled('openUrl', url, disposition);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  openAskGHelpUi() {
+    this.methodCalled('openAskGHelpUi');
   }
 
   onboardingTooltipDismissed() {

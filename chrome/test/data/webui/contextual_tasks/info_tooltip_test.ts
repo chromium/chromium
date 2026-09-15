@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import type {ContextualTasksInfoTooltipElement} from 'chrome://contextual-tasks/info_tooltip.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -195,8 +194,9 @@ suite('InfoTooltipTest', () => {
     link.click();
     await microtasksFinished();
 
-    const [url, disposition] = await testProxy.handler.whenCalled('openUrl');
-    assertEquals('https://example.com/', url);
-    assertEquals(WindowOpenDisposition.NEW_FOREGROUND_TAB, disposition);
+    // The anchor keeps its href for hover/middle-click, but the click is
+    // handled by a parameterless Mojo call so no renderer-supplied URL is
+    // passed to the browser process.
+    await testProxy.handler.whenCalled('openAskGHelpUi');
   });
 });
