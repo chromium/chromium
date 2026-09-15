@@ -95,9 +95,7 @@ bool ColumnGapAccumulator::LastMainGapIsStartSpanner() const {
 const GapGeometry* ColumnGapAccumulator::BuildGapGeometry(
     const BoxFragmentBuilder& container_builder,
     LayoutUnit column_inline_size) {
-  if ((gap_geometry_->CrossGapCount() == 0 &&
-       gap_geometry_->MainGapCount() == 0) ||
-      !first_column_offset_.has_value()) {
+  if (!first_column_offset_.has_value()) {
     return nullptr;
   }
 
@@ -110,8 +108,20 @@ const GapGeometry* ColumnGapAccumulator::BuildGapGeometry(
       inline_offset =
           gap_geometry_->GetCrossGaps().back().GetGapOffset().inline_offset +
           column_gap_size_ / 2 + column_inline_size + column_gap_size_;
+    } else {
+      // If all content fits in the first column, no gaps have been recorded.
+      // Rules may still be needed beside the empty columns. Move past the
+      // first column and one full gap to find where the second column
+      // would start.
+      inline_offset = first_column_offset_->inline_offset + column_inline_size +
+                      column_gap_size_;
     }
     AddCrossGap(inline_offset);
+  }
+
+  if (gap_geometry_->CrossGapCount() == 0 &&
+      gap_geometry_->MainGapCount() == 0) {
+    return nullptr;
   }
 
   LayoutUnit content_inline_end =
