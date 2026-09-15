@@ -28,6 +28,7 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 }
 
@@ -104,6 +105,11 @@ class TabHelper : public content::WebContentsObserver,
   // Displays the reload page bubble if the tab is visible and reload extensions
   // are pending.
   void ShowReloadBubbleIfVisible();
+
+  // Records telemetry for extension-initiated navigations that redirect away
+  // from the default search engine results page to a cross-site destination.
+  void MaybeRecordSearchRedirectMetrics(
+      content::NavigationHandle* navigation_handle);
 
   raw_ptr<Profile> profile_;
 

@@ -5,6 +5,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -12,15 +13,23 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/api/constants.h"
+#include "extensions/browser/background_script_executor.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 
 namespace extensions {
 
@@ -58,6 +67,8 @@ class ExtensionScriptTrackerBrowserTest : public ExtensionBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  content::WebContents* web_contents() { return GetWebContents(); }
+
   GURL SetUpDefaultSearchEngine(const std::string& host = "example.com",
                                 const std::string& path = "/empty.html") {
     TemplateURLService* template_url_service =
@@ -78,6 +89,77 @@ class ExtensionScriptTrackerBrowserTest : public ExtensionBrowserTest {
   GURL GetDefaultSearchResultUrl(const std::string& host = "example.com",
                                  const std::string& path = "/empty.html") {
     return embedded_test_server()->GetURL(host, path + "?q=test");
+  }
+
+  // Returns a redirect search engine results URL.
+  GURL GetRedirectSearchResultUrl(const std::string& host = "redirect.example",
+                                  const std::string& path = "/empty.html") {
+    return embedded_test_server()->GetURL(host, path + "?q=redirected");
+  }
+
+  // Loads an extension with a content script matching `matches_pattern` that
+  // creates a button ("#redirect_button") that sets `window.location.href` to
+  // `target_url` (optionally asynchronously via setTimeout if `async` is true)
+  // and sends a "ready" message.
+  const Extension* LoadRedirectExtension(
+      TestExtensionDir& test_dir,
+      const GURL& target_url,
+      const std::string& matches_pattern = "http://*/*",
+      bool async = false) {
+    test_dir.WriteManifest(base::StringPrintf(R"({
+      "name": "Search Redirector Extension",
+      "version": "0.1",
+      "manifest_version": 3,
+      "content_scripts": [{
+        "matches": ["%s"],
+        "js": ["content_script.js"],
+        "run_at": "document_end"
+      }]
+    })",
+                                              matches_pattern.c_str()));
+
+    std::string click_handler =
+        "window.location.href = '" + target_url.spec() + "';";
+    if (async) {
+      click_handler = "setTimeout(() => { " + click_handler + " }, 10);";
+    }
+
+    test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
+                       base::StringPrintf(R"(
+      const button = document.createElement('button');
+      button.id = 'redirect_button';
+      button.onclick = () => {
+        %s
+      };
+      document.body.appendChild(button);
+      chrome.test.sendMessage('ready');
+    )",
+                                          click_handler.c_str()));
+
+    const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+    EXPECT_TRUE(extension);
+    return extension;
+  }
+
+  // Navigates to `start_url`, waits for the content script to be ready,
+  // clicks the redirect button (with or without user gesture), and waits for
+  // the navigation to finish.
+  void TriggerRedirect(const GURL& start_url, bool with_user_gesture) {
+    ExtensionTestMessageListener listener("ready");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+    content::TestNavigationObserver redirect_observer(web_contents());
+    if (with_user_gesture) {
+      content::SimulateMouseClickOrTapElementWithId(web_contents(),
+                                                    "redirect_button");
+    } else {
+      EXPECT_TRUE(content::ExecJs(
+          web_contents(), "document.getElementById('redirect_button').click();",
+          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    }
+    redirect_observer.WaitForNavigationFinished();
+    EXPECT_TRUE(redirect_observer.last_navigation_succeeded());
   }
 
   GURL RegisterScriptResponse(const std::string& host,
@@ -1226,4 +1308,303 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       RedirectWithoutUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL search_url = GetDefaultSearchResultUrl();
+  GURL redirect_url = GetRedirectSearchResultUrl();
+
+  TestExtensionDir test_dir;
+  const Extension* extension = LoadRedirectExtension(test_dir, redirect_url);
+  ASSERT_TRUE(extension);
+
+  TriggerRedirect(search_url, /*with_user_gesture=*/false);
+  EXPECT_EQ(redirect_url, web_contents()->GetLastCommittedURL());
+
+  auto entries1 = ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_ContentScript_DSERedirect::kEntryName);
+  ASSERT_EQ(1u, entries1.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries1[0],
+      ukm::builders::Extensions_ContentScript_DSERedirect::kSeenName, true);
+  EXPECT_EQ(ukm::GetSourceIdType(entries1[0]->source_id),
+            ukm::SourceIdType::EXTENSION_ID);
+
+  auto entries2 = ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_SearchRedirect::kEntryName);
+  ASSERT_EQ(1u, entries2.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries2[0], ukm::builders::Extensions_SearchRedirect::kApiName,
+      static_cast<int64_t>(ExtensionSearchRedirectedByApi::kContentScript));
+  EXPECT_EQ(ukm::GetSourceIdType(entries2[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       AsyncRedirectWithoutUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL search_url = GetDefaultSearchResultUrl();
+  GURL redirect_url = GetRedirectSearchResultUrl();
+
+  TestExtensionDir test_dir;
+  const Extension* extension = LoadRedirectExtension(
+      test_dir, redirect_url, "http://*/*", /*async=*/true);
+  ASSERT_TRUE(extension);
+
+  TriggerRedirect(search_url, /*with_user_gesture=*/false);
+  EXPECT_EQ(redirect_url, web_contents()->GetLastCommittedURL());
+
+  auto entries1 = ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_ContentScript_DSERedirect::kEntryName);
+  ASSERT_EQ(1u, entries1.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries1[0],
+      ukm::builders::Extensions_ContentScript_DSERedirect::kSeenName, true);
+  EXPECT_EQ(ukm::GetSourceIdType(entries1[0]->source_id),
+            ukm::SourceIdType::EXTENSION_ID);
+
+  auto entries2 = ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_SearchRedirect::kEntryName);
+  ASSERT_EQ(1u, entries2.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries2[0], ukm::builders::Extensions_SearchRedirect::kApiName,
+      static_cast<int64_t>(ExtensionSearchRedirectedByApi::kContentScript));
+  EXPECT_EQ(ukm::GetSourceIdType(entries2[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       RedirectWithUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL search_url = GetDefaultSearchResultUrl();
+  GURL redirect_url = GetRedirectSearchResultUrl();
+
+  TestExtensionDir test_dir;
+  const Extension* extension = LoadRedirectExtension(test_dir, redirect_url);
+  ASSERT_TRUE(extension);
+
+  TriggerRedirect(search_url, /*with_user_gesture=*/true);
+  EXPECT_EQ(redirect_url, web_contents()->GetLastCommittedURL());
+
+  EXPECT_TRUE(
+      ukm_recorder
+          .GetEntriesByName(
+              ukm::builders::Extensions_ContentScript_DSERedirect::kEntryName)
+          .empty());
+  EXPECT_TRUE(ukm_recorder
+                  .GetEntriesByName(
+                      ukm::builders::Extensions_SearchRedirect::kEntryName)
+                  .empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       SameSiteRedirectWithoutUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL search_url = GetDefaultSearchResultUrl();
+  GURL same_site_url =
+      embedded_test_server()->GetURL(search_url.host(), "/empty.html?page=2");
+
+  TestExtensionDir test_dir;
+  const Extension* extension = LoadRedirectExtension(test_dir, same_site_url);
+  ASSERT_TRUE(extension);
+
+  TriggerRedirect(search_url, /*with_user_gesture=*/false);
+  EXPECT_EQ(same_site_url, web_contents()->GetLastCommittedURL());
+
+  EXPECT_TRUE(
+      ukm_recorder
+          .GetEntriesByName(
+              ukm::builders::Extensions_ContentScript_DSERedirect::kEntryName)
+          .empty());
+  EXPECT_TRUE(ukm_recorder
+                  .GetEntriesByName(
+                      ukm::builders::Extensions_SearchRedirect::kEntryName)
+                  .empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       ErrorPageRedirectWithoutUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL search_url = GetDefaultSearchResultUrl();
+  GURL redirect_error_url =
+      embedded_test_server()->GetURL("redirect.example", "/close-socket");
+
+  TestExtensionDir test_dir;
+  const Extension* extension =
+      LoadRedirectExtension(test_dir, redirect_error_url);
+  ASSERT_TRUE(extension);
+
+  ExtensionTestMessageListener listener("ready");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  content::TestNavigationObserver redirect_observer(web_contents());
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('redirect_button').click();",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  redirect_observer.WaitForNavigationFinished();
+
+  EXPECT_FALSE(redirect_observer.last_navigation_succeeded());
+
+  EXPECT_TRUE(
+      ukm_recorder
+          .GetEntriesByName(
+              ukm::builders::Extensions_ContentScript_DSERedirect::kEntryName)
+          .empty());
+  EXPECT_TRUE(ukm_recorder
+                  .GetEntriesByName(
+                      ukm::builders::Extensions_SearchRedirect::kEntryName)
+                  .empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       ServerRedirectWithoutUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL search_url = GetDefaultSearchResultUrl();
+  GURL redirect_url = GetRedirectSearchResultUrl();
+  GURL redirect_intermediate_url = embedded_test_server()->GetURL(
+      search_url.host(), "/server-redirect?" + redirect_url.spec());
+
+  TestExtensionDir test_dir;
+  const Extension* extension =
+      LoadRedirectExtension(test_dir, redirect_intermediate_url);
+  ASSERT_TRUE(extension);
+
+  TriggerRedirect(search_url, /*with_user_gesture=*/false);
+  EXPECT_EQ(redirect_url, web_contents()->GetLastCommittedURL());
+
+  auto entries1 = ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_ContentScript_DSERedirect::kEntryName);
+  ASSERT_EQ(1u, entries1.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries1[0],
+      ukm::builders::Extensions_ContentScript_DSERedirect::kSeenName, true);
+  EXPECT_EQ(ukm::GetSourceIdType(entries1[0]->source_id),
+            ukm::SourceIdType::EXTENSION_ID);
+
+  auto entries2 = ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_SearchRedirect::kEntryName);
+  ASSERT_EQ(1u, entries2.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries2[0], ukm::builders::Extensions_SearchRedirect::kApiName,
+      static_cast<int64_t>(ExtensionSearchRedirectedByApi::kContentScript));
+  EXPECT_EQ(ukm::GetSourceIdType(entries2[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       ExecuteScriptRedirectWithoutUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL search_url = GetDefaultSearchResultUrl();
+  GURL redirect_url = GetRedirectSearchResultUrl();
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      base::StringPrintf(R"({
+    "name": "Programmatic Redirector Extension",
+    "version": "0.1",
+    "manifest_version": 3,
+    "background": {
+      "service_worker": "background.js"
+    },
+    "permissions": ["scripting"],
+    "host_permissions": ["http://%s/*"]
+  })",
+                         std::string(search_url.host()).c_str()));
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Service worker");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents());
+  content::TestNavigationObserver redirect_observer(web_contents());
+
+  static constexpr char kScript[] = R"(
+    chrome.scripting.executeScript({
+      target: {tabId: $1},
+      args: [$2],
+      func: (targetUrl) => {
+        window.location.href = targetUrl;
+      }
+    });
+  )";
+  BackgroundScriptExecutor::ExecuteScriptAsync(
+      profile(), extension->id(),
+      content::JsReplace(kScript, tab_id, redirect_url.spec()));
+  redirect_observer.WaitForNavigationFinished();
+
+  EXPECT_TRUE(redirect_observer.last_navigation_succeeded());
+  EXPECT_EQ(redirect_url, web_contents()->GetLastCommittedURL());
+
+  auto entries1 = ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_ContentScript_DSERedirect::kEntryName);
+  ASSERT_EQ(1u, entries1.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries1[0],
+      ukm::builders::Extensions_ContentScript_DSERedirect::kSeenName, true);
+  EXPECT_EQ(ukm::GetSourceIdType(entries1[0]->source_id),
+            ukm::SourceIdType::EXTENSION_ID);
+
+  auto entries2 = ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_SearchRedirect::kEntryName);
+  ASSERT_EQ(1u, entries2.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries2[0], ukm::builders::Extensions_SearchRedirect::kApiName,
+      static_cast<int64_t>(ExtensionSearchRedirectedByApi::kContentScript));
+  EXPECT_EQ(ukm::GetSourceIdType(entries2[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       DisabledExtensionRedirectWithoutUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL search_url = GetDefaultSearchResultUrl();
+  GURL redirect_url = GetRedirectSearchResultUrl();
+
+  TestExtensionDir test_dir;
+  const Extension* extension = LoadRedirectExtension(test_dir, redirect_url);
+  ASSERT_TRUE(extension);
+  ExtensionId extension_id = extension->id();
+
+  ExtensionTestMessageListener listener("ready");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  // Pause the redirect so the extension can be disabled after the navigation
+  // has started (and captured the script injector id) but before it commits.
+  content::TestNavigationManager nav_manager(web_contents(), redirect_url);
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('redirect_button').click();",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+
+  DisableExtension(extension_id);
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_EQ(redirect_url, web_contents()->GetLastCommittedURL());
+
+  // No metrics should be recorded, since the extension named by the script
+  // injector id is no longer enabled on this profile.
+  EXPECT_TRUE(
+      ukm_recorder
+          .GetEntriesByName(
+              ukm::builders::Extensions_ContentScript_DSERedirect::kEntryName)
+          .empty());
+  EXPECT_TRUE(ukm_recorder
+                  .GetEntriesByName(
+                      ukm::builders::Extensions_SearchRedirect::kEntryName)
+                  .empty());
+}
+
 }  // namespace extensions

@@ -52,6 +52,7 @@ class ExtensionContextMenuModel;
 class MetricsPrivateRecordExtensionUsageUkmFunction;
 class TabsUpdateFunction;
 class TabsRemoveFunction;
+class TabHelper;
 namespace declarative_net_request {
 class RulesetManager;
 }  // namespace declarative_net_request
@@ -173,6 +174,9 @@ class METRICS_EXPORT UkmRecorder {
       const GURL& extension_url);
   static SourceId GetSourceIdForExtensionUrl(
       base::PassKey<extensions::TabsRemoveFunction>,
+      const GURL& extension_url);
+  static SourceId GetSourceIdForExtensionUrl(
+      base::PassKey<extensions::TabHelper>,
       const GURL& extension_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL to the

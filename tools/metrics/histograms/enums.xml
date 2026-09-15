@@ -3804,6 +3804,7 @@ shown properly on the user-facing crash UI.
 <enum name="ExtensionSearchRedirectedByApi">
   <int value="0" label="DeclarativeNetRequest"/>
   <int value="1" label="TabsUpdate"/>
+  <int value="2" label="ContentScript"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/api/constants.h:ExtensionSearchRedirectedByApi) -->

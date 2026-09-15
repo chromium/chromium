@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/common/buildflags.h"
+#include "components/crx_file/id_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -24,9 +26,12 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative_content/content_rules_registry.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
@@ -35,6 +40,9 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission.h"
+#include "net/base/schemeful_site.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
@@ -230,6 +238,59 @@ void TabHelper::DidFinishNavigation(
   // page refresh.
   reload_required_ = false;
   reload_extensions_.clear();
+
+  MaybeRecordSearchRedirectMetrics(navigation_handle);
+}
+
+void TabHelper::MaybeRecordSearchRedirectMetrics(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage() ||
+      !navigation_handle->IsRendererInitiated() ||
+      navigation_handle->HasUserGesture()) {
+    return;
+  }
+
+  const std::string& script_injector_id =
+      navigation_handle->GetScriptInjectorHost();
+  if (script_injector_id.empty() ||
+      !crx_file::id_util::IdIsValid(script_injector_id)) {
+    return;
+  }
+
+  // Ensure the extension is currently installed and active on this profile.
+  const Extension* extension =
+      ExtensionRegistry::Get(profile_)->enabled_extensions().GetByID(
+          script_injector_id);
+  if (!extension) {
+    return;
+  }
+
+  if (net::SchemefulSite::IsSameSite(
+          navigation_handle->GetPreviousPrimaryMainFrameURL(),
+          navigation_handle->GetURL())) {
+    return;
+  }
+
+  if (!ExtensionsBrowserClient::Get()->IsDefaultSearchEngineRedirect(
+          profile_, script_injector_id,
+          navigation_handle->GetPreviousPrimaryMainFrameURL(),
+          navigation_handle->GetURL())) {
+    return;
+  }
+
+  ukm::builders::Extensions_ContentScript_DSERedirect(
+      ukm::UkmRecorder::GetSourceIdForExtensionUrl(
+          base::PassKey<TabHelper>(),
+          Extension::GetBaseURLFromExtensionId(script_injector_id)))
+      .SetSeen(true)
+      .Record(ukm::UkmRecorder::Get());
+
+  ukm::builders::Extensions_SearchRedirect(
+      navigation_handle->GetNextPageUkmSourceId())
+      .SetApi(
+          static_cast<int64_t>(ExtensionSearchRedirectedByApi::kContentScript))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void TabHelper::DidCloneToNewWebContents(WebContents* old_web_contents,
