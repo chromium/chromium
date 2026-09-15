@@ -102,8 +102,9 @@ enum UIDismissalReason {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordManagerUIDismissalReason)
 
 // Enum representing the different leak detection dialogs shown to the user.
-// Corresponds to LeakDetectionDialogType suffix in histogram_suffixes_list.xml
-// and PasswordLeakDetectionDialogType in enums.xml.
+// Corresponds to the DialogType token in
+// tools/metrics/histograms/metadata/password/histograms.xml and
+// PasswordLeakDetectionDialogType in enums.xml.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // In case of adding a new type, NEXT VALUE: 4.

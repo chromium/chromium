@@ -10,7 +10,8 @@ namespace download {
 // The source of download.
 // Used in UMA metrics and persisted to disk.
 // Entries in this enum can only be appended instead of being deleted or reused.
-// Any changes here also needs to apply to histogram_suffixes_list.xml.
+// Any changes here also need to apply to DownloadSource in
+// tools/metrics/histograms/metadata/download/histograms.xml.
 enum class DownloadSource {
   // The source is unknown.
   UNKNOWN = 0,

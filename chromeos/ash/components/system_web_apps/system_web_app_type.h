@@ -144,9 +144,10 @@ enum class SystemWebAppType {
 
   // When adding a new System App, remember to:
   //
-  // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
-  //    (histogram_suffixes_list.xml). The suffix name should match the App's
-  //    |internal_name|. This is for reporting per-app install results.
+  // 1. Add a corresponding variant to Webapp.InstallResult.{Type} in
+  //    tools/metrics/histograms/metadata/webapps/histograms.xml. The variant
+  //    name should match "System.Apps." + the App's |internal_name|. This is
+  //    for reporting per-app install results.
   //
   // 2. Add a corresponding proto enum entry (with the same numerical value) to
   //    SystemWebAppDataProto in system_web_app_data.proto. This is for
