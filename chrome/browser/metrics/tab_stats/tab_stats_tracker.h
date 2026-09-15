@@ -111,74 +111,101 @@ class TabStatsTracker :
    public:
     // The name of the histogram that records the number of tabs total at resume
     // from sleep/hibernate.
-    static const char kNumberOfTabsOnResumeHistogramName[];
+    static constexpr char kNumberOfTabsOnResumeHistogramName[] =
+        "Tabs.NumberOfTabsOnResume";
 
     // The name of the histogram that records the maximum number of tabs opened
     // in a day.
-    static const char kMaxTabsInADayHistogramName[];
+    static constexpr char kMaxTabsInADayHistogramName[] = "Tabs.MaxTabsInADay";
 
     // The name of the histogram that records the maximum number of tabs opened
     // in the same window in a day.
-    static const char kMaxTabsPerWindowInADayHistogramName[];
+    static constexpr char kMaxTabsPerWindowInADayHistogramName[] =
+        "Tabs.MaxTabsPerWindowInADay";
 
     // The name of the histogram that records the maximum number of windows
     // opened in a day.
-    static const char kMaxWindowsInADayHistogramName[];
+    static constexpr char kMaxWindowsInADayHistogramName[] =
+        "Tabs.MaxWindowsInADay";
 
     // The name of the histograms that records the current number of
     // tabs/windows.
-    static const char kTabCountHistogramName[];
-    static const char kWindowCountHistogramName[];
+    static constexpr char kTabCountHistogramName[] = "Tabs.TabCount";
+    static constexpr char kWindowCountHistogramName[] = "Tabs.WindowCount";
 
     // The name of the histogram that records each window's width, in DIPs.
-    static const char kWindowWidthHistogramName[];
+    static constexpr char kWindowWidthHistogramName[] = "Tabs.WindowWidth";
 
     // The name of the histogram that records if a window's vertical tab strip
     // is collapsed.
-    static const char kVerticalTabStripCollapseStateHistogramName[];
+    static constexpr char kVerticalTabStripCollapseStateHistogramName[] =
+        "Tabs.VerticalTabs.CollapseState";
 
     // The name of the histogram that records the keyboard tab switch mode.
-    static const char kKeyboardTabSwitchModeHistogramName[];
+    static constexpr char kKeyboardTabSwitchModeHistogramName[] =
+        "TabStrip.Tab.KeyboardTabSwitchMode";
 
     // The name of the histogram that records if a window's tab strip is in
     // focus mode.
-    static const char kFocusModeIsActiveHistogramName[];
+    static constexpr char kFocusModeIsActiveHistogramName[] =
+        "Tabs.FocusMode.IsActive";
 
     // The name of the histogram that records the number of pinned tabs in the
     // tab strip.
-    static const char kPinnedTabCountHistogramName[];
+    static constexpr char kPinnedTabCountHistogramName[] =
+        "Tabs.PinnedTabCount";
 
     // The name of the histogram that records if the tab search button is pinned
     // in the tab strip.
-    static const char kTabSearchIsPinnedHistogramName[];
+    static constexpr char kTabSearchIsPinnedHistogramName[] =
+        "Tabs.TabSearch.IsPinned";
 
     // The names of the histograms that record daily discard/reload counts
     // caused for each discard reason.
-    static const char kDailyDiscardsExternalHistogramName[];
-    static const char kDailyDiscardsUrgentHistogramName[];
-    static const char kDailyDiscardsProactiveHistogramName[];
-    static const char kDailyDiscardsSuggestedHistogramName[];
-    static const char kDailyDiscardsFrozenWithGrowingMemoryHistogramName[];
-    static const char kDailyReloadsExternalHistogramName[];
-    static const char kDailyReloadsUrgentHistogramName[];
-    static const char kDailyReloadsProactiveHistogramName[];
-    static const char kDailyReloadsSuggestedHistogramName[];
-    static const char kDailyReloadsFrozenWithGrowingMemoryHistogramName[];
+    static constexpr char kDailyDiscardsExternalHistogramName[] =
+        "Discarding.DailyDiscards.External";
+    static constexpr char kDailyDiscardsUrgentHistogramName[] =
+        "Discarding.DailyDiscards.Urgent";
+    static constexpr char kDailyDiscardsProactiveHistogramName[] =
+        "Discarding.DailyDiscards.Proactive";
+    static constexpr char kDailyDiscardsSuggestedHistogramName[] =
+        "Discarding.DailyDiscards.Suggested";
+    static constexpr char kDailyDiscardsFrozenWithGrowingMemoryHistogramName[] =
+        "Discarding.DailyDiscards.FrozenWithGrowingMemory";
+    static constexpr char kDailyReloadsExternalHistogramName[] =
+        "Discarding.DailyReloads.External";
+    static constexpr char kDailyReloadsUrgentHistogramName[] =
+        "Discarding.DailyReloads.Urgent";
+    static constexpr char kDailyReloadsProactiveHistogramName[] =
+        "Discarding.DailyReloads.Proactive";
+    static constexpr char kDailyReloadsSuggestedHistogramName[] =
+        "Discarding.DailyReloads.Suggested";
+    static constexpr char kDailyReloadsFrozenWithGrowingMemoryHistogramName[] =
+        "Discarding.DailyReloads.FrozenWithGrowingMemory";
 
     // The names of the histograms that record duplicate tab data.
-    static const char kTabDuplicateCountSingleWindowHistogramName[];
-    static const char kTabDuplicateCountAllProfileWindowsHistogramName[];
-    static const char kTabDuplicatePercentageSingleWindowHistogramName[];
-    static const char kTabDuplicatePercentageAllProfileWindowsHistogramName[];
-    static const char
-        kTabDuplicateExcludingFragmentsCountSingleWindowHistogramName[];
-    static const char
-        kTabDuplicateExcludingFragmentsCountAllProfileWindowsHistogramName[];
-    static const char
-        kTabDuplicateExcludingFragmentsPercentageSingleWindowHistogramName[];
-    static const char
+    static constexpr char kTabDuplicateCountSingleWindowHistogramName[] =
+        "Tabs.Duplicates.Count.SingleWindow";
+    static constexpr char kTabDuplicateCountAllProfileWindowsHistogramName[] =
+        "Tabs.Duplicates.Count.AllProfileWindows";
+    static constexpr char kTabDuplicatePercentageSingleWindowHistogramName[] =
+        "Tabs.Duplicates.Percentage.SingleWindow";
+    static constexpr char
+        kTabDuplicatePercentageAllProfileWindowsHistogramName[] =
+            "Tabs.Duplicates.Percentage.AllProfileWindows";
+    static constexpr char
+        kTabDuplicateExcludingFragmentsCountSingleWindowHistogramName[] =
+            "Tabs.DuplicatesExcludingFragments.Count.SingleWindow";
+    static constexpr char
+        kTabDuplicateExcludingFragmentsCountAllProfileWindowsHistogramName[] =
+            "Tabs.DuplicatesExcludingFragments.Count.AllProfileWindows";
+    static constexpr char
+        kTabDuplicateExcludingFragmentsPercentageSingleWindowHistogramName[] =
+            "Tabs.DuplicatesExcludingFragments.Percentage.SingleWindow";
+    static constexpr char
         kTabDuplicateExcludingFragmentsPercentageAllProfileWindowsHistogramName
-            [];
+            [] = "Tabs.DuplicatesExcludingFragments.Percentage."
+                 "AllProfileWindows";
 
     UmaStatsReportingDelegate() = default;
 
