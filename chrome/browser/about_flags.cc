@@ -14072,7 +14072,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBrowsingHistoryImprovedHostnameSuffixMatchingName,
      flag_descriptions::
          kBrowsingHistoryImprovedHostnameSuffixMatchingDescription,
-     kOsDesktop,
+     kOsAll,
      FEATURE_VALUE_TYPE(
          history::kBrowsingHistoryImprovedHostnameSuffixMatching)},
 
