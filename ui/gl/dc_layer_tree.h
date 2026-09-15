@@ -123,9 +123,8 @@ class GL_EXPORT DCLayerTree {
 
   // Called by SwapChainPresenter to initialize video processor that can handle
   // at least given input and output size.  The video processor is shared across
-  // layers so the same one can be reused if it's large enough.  Returns true on
-  // success.
-  VideoProcessorWrapper* InitializeVideoProcessor(
+  // layers so the same one can be reused if it's large enough.
+  base::expected<VideoProcessorWrapper*, CommitError> InitializeVideoProcessor(
       const gfx::Size& input_size,
       const gfx::Size& output_size,
       bool is_hdr_output,

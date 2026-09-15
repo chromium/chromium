@@ -35,8 +35,6 @@ constexpr std::string_view CommitErrorReasonToString(
       return "Unknown";
     case CommitError::Reason::kIDCompositionDeviceCommit:
       return "IDCompositionDeviceCommit";
-    case CommitError::Reason::kPresentToSwapChain:
-      return "PresentToSwapChain";
     case CommitError::Reason::kSolidColorSurfacePoolCreateSurface:
       return "SolidColorSurfacePoolCreateSurface";
     case CommitError::Reason::kSolidColorSurfaceBeginDraw:
@@ -55,6 +53,49 @@ constexpr std::string_view CommitErrorReasonToString(
       return "SolidColorTexturePoolBeginAccess";
     case CommitError::Reason::kIDCompositionDevice6PresentCompositionTextures:
       return "IDCompositionDevice6PresentCompositionTextures";
+    case CommitError::Reason::kInitializeVideoProcessorD3D11DeviceAsVideoDevice:
+      return "InitializeVideoProcessorD3D11DeviceAsVideoDevice";
+    case CommitError::Reason::
+        kInitializeVideoProcessorCreateVideoProcessorEnumerator:
+      return "InitializeVideoProcessorCreateVideoProcessorEnumerator";
+    case CommitError::Reason::kInitializeVideoProcessorCreateVideoProcessor:
+      return "InitializeVideoProcessorCreateVideoProcessor";
+    case CommitError::Reason::kPresentToSwapChainCreateSurfaceFromHandle:
+      return "PresentToSwapChainCreateSurfaceFromHandle";
+    case CommitError::Reason::kPresentToSwapChainCreateVideoProcessorInputView:
+      return "PresentToSwapChainCreateVideoProcessorInputView";
+    case CommitError::Reason::kPresentToSwapChainCreateVideoProcessorOutputView:
+      return "PresentToSwapChainCreateVideoProcessorOutputView";
+    case CommitError::Reason::kPresentToSwapChainVideoProcessorBlt:
+      return "PresentToSwapChainVideoProcessorBlt";
+    case CommitError::Reason::
+        kPresentToSwapChainCreateSwapChainForCompositionSurfaceHandle:
+      return "PresentToSwapChainCreateSwapChainForCompositionSurfaceHandle";
+    case CommitError::Reason::kPresentToSwapChainFirstPresent:
+      return "PresentToSwapChainFirstPresent";
+    case CommitError::Reason::kPresentToSwapChainPresentBuffer:
+      return "PresentToSwapChainPresentBuffer";
+    case CommitError::Reason::kPresentToSwapChainPresent:
+      return "PresentToSwapChainPresent";
+    case CommitError::Reason::kPresentToSwapChainSdrRevertMissingVideoProcessor:
+      return "PresentToSwapChainSdrRevertMissingVideoProcessor";
+    case CommitError::Reason::
+        kPresentToSwapChainSdrRevertCreateVideoProcessorOutputView:
+      return "PresentToSwapChainSdrRevertCreateVideoProcessorOutputView";
+    case CommitError::Reason::kPresentToSwapChainSdrRevertSetColorSpace:
+      return "PresentToSwapChainSdrRevertSetColorSpace";
+    case CommitError::Reason::kUploadVideoImageInvalidPixmapData:
+      return "UploadVideoImageInvalidPixmapData";
+    case CommitError::Reason::kUploadVideoImageInvalidPixmapSize:
+      return "UploadVideoImageInvalidPixmapSize";
+    case CommitError::Reason::kUploadVideoImageInvalidPixmapStride:
+      return "UploadVideoImageInvalidPixmapStride";
+    case CommitError::Reason::kUploadVideoImageCreateStagingTexture:
+      return "UploadVideoImageCreateStagingTexture";
+    case CommitError::Reason::kUploadVideoImageMapStagingTexture:
+      return "UploadVideoImageMapStagingTexture";
+    case CommitError::Reason::kUploadVideoImageCreateCopyTexture:
+      return "UploadVideoImageCreateCopyTexture";
   }
 }
 

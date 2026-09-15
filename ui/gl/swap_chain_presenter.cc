@@ -13,6 +13,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -585,25 +587,28 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
   return swap_chain_format_;
 }
 
-Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
-    const gfx::Size& texture_size,
-    base::span<const uint8_t> shm_video_pixmap,
-    size_t pixmap_stride) {
+base::expected<Microsoft::WRL::ComPtr<ID3D11Texture2D>, CommitError>
+SwapChainPresenter::UploadVideoImage(const gfx::Size& texture_size,
+                                     base::span<const uint8_t> shm_video_pixmap,
+                                     size_t pixmap_stride) {
   if (!shm_video_pixmap.data()) {
     DLOG(ERROR) << "Invalid NV12 pixmap data.";
-    return nullptr;
+    return base::unexpected(
+        CommitError{CommitError::Reason::kUploadVideoImageInvalidPixmapData});
   }
 
   if (texture_size.width() % 2 != 0 || texture_size.height() % 2 != 0) {
     DLOG(ERROR) << "Invalid NV12 pixmap size.";
-    return nullptr;
+    return base::unexpected(
+        CommitError{CommitError::Reason::kUploadVideoImageInvalidPixmapSize});
   }
 
   const auto cols = static_cast<size_t>(texture_size.width());
   const auto rows = static_cast<size_t>(texture_size.height());
   if (pixmap_stride < cols) {
     DLOG(ERROR) << "Invalid NV12 pixmap stride.";
-    return nullptr;
+    return base::unexpected(
+        CommitError{CommitError::Reason::kUploadVideoImageInvalidPixmapStride});
   }
 
   TRACE_EVENT1("gpu", "SwapChainPresenter::UploadVideoImage", "size",
@@ -635,7 +640,8 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
       DLOG(ERROR) << "Creating D3D11 video staging texture failed: "
                   << logging::SystemErrorCodeToString(hr);
       DisableDirectCompositionOverlays();
-      return nullptr;
+      return base::unexpected(CommitError{
+          CommitError::Reason::kUploadVideoImageCreateStagingTexture, hr});
     }
     DCHECK(staging_texture_);
     staging_texture_size_ = texture_size;
@@ -658,7 +664,8 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Mapping D3D11 video staging texture failed: "
                 << logging::SystemErrorCodeToString(hr);
-    return nullptr;
+    return base::unexpected(CommitError{
+        CommitError::Reason::kUploadVideoImageMapStagingTexture, hr});
   }
 
   size_t dest_stride = mapped_resource.RowPitch;
@@ -702,7 +709,8 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
       DLOG(ERROR) << "Creating D3D11 video upload texture failed: "
                   << logging::SystemErrorCodeToString(hr);
       DisableDirectCompositionOverlays();
-      return nullptr;
+      return base::unexpected(CommitError{
+          CommitError::Reason::kUploadVideoImageCreateCopyTexture, hr});
     }
     DCHECK(copy_texture_);
     hr = SetDebugName(copy_texture_.Get(), "SwapChainPresenter_Copy");
@@ -989,12 +997,11 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
   return true;
 }
 
-std::optional<DCLayerOverlayImage> SwapChainPresenter::PresentToSwapChain(
+base::expected<DCLayerOverlayImage, CommitError>
+SwapChainPresenter::PresentToSwapChain(
     DCLayerOverlayParams& overlay,
     std::optional<OverlayPositionAdjustment>& overlay_position_adjustment) {
-  if (!SetupPresentToSwapChain(overlay)) {
-    return std::nullopt;
-  }
+  RETURN_IF_ERROR(SetupPresentToSwapChain(overlay));
 
   if (overlay.video_params.is_full_screen_video) {
     const gfx::Size monitor_size =
@@ -1008,14 +1015,13 @@ std::optional<DCLayerOverlayImage> SwapChainPresenter::PresentToSwapChain(
     }
   }
 
-  if (!FinishPresentToSwapChain()) {
-    return std::nullopt;
-  }
+  RETURN_IF_ERROR(FinishPresentToSwapChain());
 
   return DCLayerOverlayImage(content_size_, content_);
 }
 
-bool SwapChainPresenter::SetupPresentToSwapChain(DCLayerOverlayParams& params) {
+base::expected<void, CommitError> SwapChainPresenter::SetupPresentToSwapChain(
+    DCLayerOverlayParams& params) {
   DCHECK(params.overlay_image);
   DCHECK_NE(params.overlay_image->type(),
             DCLayerOverlayType::kDCompVisualContent);
@@ -1044,7 +1050,7 @@ bool SwapChainPresenter::SetupPresentToSwapChain(DCLayerOverlayParams& params) {
     // https://crbug.com/1077645
     DLOG(ERROR) << "Video D3D11 texture is missing";
     ReleaseSwapChainResources();
-    return true;
+    return base::ok();
   }
 
   // Do not create a swap chain if swap chain size will be empty.
@@ -1052,7 +1058,7 @@ bool SwapChainPresenter::SetupPresentToSwapChain(DCLayerOverlayParams& params) {
     ReleaseSwapChainResources();
     swap_chain_size_ = swap_chain_size;
     content_size_ = swap_chain_size;
-    return true;
+    return base::ok();
   }
 
   bool swap_chain_resized = swap_chain_size_ != swap_chain_size;
@@ -1109,7 +1115,7 @@ bool SwapChainPresenter::SetupPresentToSwapChain(DCLayerOverlayParams& params) {
 
   if (swap_chain_ && !swap_chain_resized && !swap_chain_format_changed &&
       !toggle_protected_video && !contents_changed) {
-    return true;
+    return base::ok();
   }
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture =
@@ -1121,17 +1127,19 @@ bool SwapChainPresenter::SetupPresentToSwapChain(DCLayerOverlayParams& params) {
                                   swap_chain_size, swap_chain_format,
                                   params.transform)) {
     last_overlay_image_ = std::move(params.overlay_image);
-    return true;
+    return base::ok();
   }
 
   // Reallocate swap chain if contents or properties change.
   if (!swap_chain_ || swap_chain_resized || swap_chain_format_changed ||
       toggle_protected_video) {
-    if (!ReallocateSwapChain(swap_chain_size, swap_chain_format,
-                             params.video_params.protected_video_type)) {
-      ReleaseSwapChainResources();
-      return false;
-    }
+    RETURN_IF_ERROR(
+        ReallocateSwapChain(swap_chain_size, swap_chain_format,
+                            params.video_params.protected_video_type),
+        [this](CommitError error) {
+          ReleaseSwapChainResources();
+          return error;
+        });
   }
 
   if (input_texture) {
@@ -1140,9 +1148,11 @@ bool SwapChainPresenter::SetupPresentToSwapChain(DCLayerOverlayParams& params) {
   } else {
     // TODO: Add P010 overlay for software decoder frame pixmap from
     // crbug.com/338686911.
-    input_texture = UNSAFE_TODO(UploadVideoImage(
-        params.overlay_image->size(), params.overlay_image->shm_video_pixmap(),
-        params.overlay_image->pixmap_stride()));
+    ASSIGN_OR_RETURN(
+        input_texture,
+        UNSAFE_TODO(UploadVideoImage(params.overlay_image->size(),
+                                     params.overlay_image->shm_video_pixmap(),
+                                     params.overlay_image->pixmap_stride())));
     input_level = 0;
   }
 
@@ -1162,11 +1172,10 @@ bool SwapChainPresenter::SetupPresentToSwapChain(DCLayerOverlayParams& params) {
     stream_metadata = HDRMetadataHelperWin::HDRMetadataToDXGI(hdr_metadata);
   }
 
-  if (!VideoProcessorBlt(std::move(input_texture), input_level,
-                         gfx::ToNearestRect(params.content_rect),
-                         input_color_space, stream_metadata, use_vp_auto_hdr)) {
-    return false;
-  }
+  RETURN_IF_ERROR(VideoProcessorBlt(std::move(input_texture), input_level,
+                                    gfx::ToNearestRect(params.content_rect),
+                                    input_color_space, stream_metadata,
+                                    use_vp_auto_hdr));
 
   HRESULT hr;
   if (first_present_) {
@@ -1185,7 +1194,8 @@ bool SwapChainPresenter::SetupPresentToSwapChain(DCLayerOverlayParams& params) {
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
         LOG(ERROR) << "Present failed: "
                    << logging::SystemErrorCodeToString(hr);
-        return false;
+        return base::unexpected(CommitError{
+            CommitError::Reason::kPresentToSwapChainFirstPresent, hr});
       }
 
       Microsoft::WRL::ComPtr<ID3D11Texture2D> dest_texture;
@@ -1217,7 +1227,7 @@ bool SwapChainPresenter::SetupPresentToSwapChain(DCLayerOverlayParams& params) {
   pending_swap_buffer_ = 0;
 
   last_overlay_image_ = std::move(params.overlay_image);
-  return true;
+  return base::ok();
 }
 
 bool SwapChainPresenter::TryDisablePrimaryPlane(
@@ -1272,7 +1282,8 @@ bool SwapChainPresenter::TryDisablePrimaryPlane(
   return false;
 }
 
-bool SwapChainPresenter::FinishPresentToSwapChain() {
+base::expected<void, CommitError>
+SwapChainPresenter::FinishPresentToSwapChain() {
   if (IsMediaFoundationSurfaceProxy()) {
     CHECK(last_overlay_image_->dcomp_surface_proxy());
     CHECK(pending_dcomp_surface_rect_in_window_);
@@ -1289,7 +1300,8 @@ bool SwapChainPresenter::FinishPresentToSwapChain() {
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
         LOG(ERROR) << "PresentBuffer failed: "
                    << logging::SystemErrorCodeToString(hr);
-        return false;
+        return base::unexpected(CommitError{
+            CommitError::Reason::kPresentToSwapChainPresentBuffer, hr});
       }
     } else {
       CHECK_EQ(pending_swap_buffer_.value(), 0u);
@@ -1308,14 +1320,15 @@ bool SwapChainPresenter::FinishPresentToSwapChain() {
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
         LOG(ERROR) << "Present failed: "
                    << logging::SystemErrorCodeToString(hr);
-        return false;
+        return base::unexpected(
+            CommitError{CommitError::Reason::kPresentToSwapChainPresent, hr});
       }
     }
     pending_swap_buffer_.reset();
     RecordPresentationStatistics();
   }
 
-  return true;
+  return base::ok();
 }
 // static
 base::win::ScopedHandle
@@ -1380,7 +1393,8 @@ void SwapChainPresenter::RecordPresentationStatistics() {
   }
 }
 
-bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params) {
+base::expected<void, CommitError> SwapChainPresenter::PresentDCOMPSurface(
+    DCLayerOverlayParams& params) {
   auto* dcomp_surface_proxy = params.overlay_image->dcomp_surface_proxy();
   last_overlay_image_ = std::move(params.overlay_image);
 
@@ -1449,7 +1463,7 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params) {
     ReleaseDCOMPSurfaceResourcesIfNeeded();
     DVLOG(2) << __func__ << " this=" << this
              << " dcomp_surface_proxy size (1x1) path.";
-    return true;
+    return base::ok();
   }
 
   // This visual's content was a different DC surface.
@@ -1465,7 +1479,8 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params) {
     if (FAILED(hr)) {
       LOG(ERROR) << "CreateSurfaceFromHandle failed: "
                  << logging::SystemErrorCodeToString(hr);
-      return false;
+      return base::unexpected(CommitError{
+          CommitError::Reason::kPresentToSwapChainCreateSurfaceFromHandle, hr});
     }
 
     content_ = dcomp_surface.Get();
@@ -1473,7 +1488,7 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params) {
     dcomp_surface_handle_ = surface_handle;
   }
 
-  return true;
+  return base::ok();
 }
 
 void SwapChainPresenter::ReleaseDCOMPSurfaceResourcesIfNeeded() {
@@ -1487,7 +1502,7 @@ void SwapChainPresenter::ReleaseDCOMPSurfaceResourcesIfNeeded() {
   }
 }
 
-bool SwapChainPresenter::VideoProcessorBlt(
+base::expected<void, CommitError> SwapChainPresenter::VideoProcessorBlt(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture,
     UINT input_level,
     const gfx::Rect& content_rect,
@@ -1505,12 +1520,10 @@ bool SwapChainPresenter::VideoProcessorBlt(
   gfx::ColorSpace output_color_space =
       GetOutputColorSpace(src_color_space, is_yuv_swapchain);
   bool video_processor_recreated = false;
-  VideoProcessorWrapper* video_processor_wrapper =
-      layer_tree_->InitializeVideoProcessor(
-          content_rect.size(), swap_chain_size_, output_color_space.IsHDR(),
-          video_processor_recreated);
-  if (!video_processor_wrapper)
-    return false;
+  ASSIGN_OR_RETURN(VideoProcessorWrapper * video_processor_wrapper,
+                   layer_tree_->InitializeVideoProcessor(
+                       content_rect.size(), swap_chain_size_,
+                       output_color_space.IsHDR(), video_processor_recreated));
 
   Microsoft::WRL::ComPtr<ID3D11VideoContext1> video_context =
       video_processor_wrapper->video_context;
@@ -1580,7 +1593,9 @@ bool SwapChainPresenter::VideoProcessorBlt(
     if (FAILED(hr)) {
       LOG(ERROR) << "CreateVideoProcessorInputView failed: "
                  << logging::SystemErrorCodeToString(hr);
-      return false;
+      return base::unexpected(CommitError{
+          CommitError::Reason::kPresentToSwapChainCreateVideoProcessorInputView,
+          hr});
     }
 
     D3D11_VIDEO_PROCESSOR_STREAM stream = {};
@@ -1613,7 +1628,10 @@ bool SwapChainPresenter::VideoProcessorBlt(
       if (FAILED(hr)) {
         LOG(ERROR) << "CreateVideoProcessorOutputView failed: "
                    << logging::SystemErrorCodeToString(hr);
-        return false;
+        return base::unexpected(
+            CommitError{CommitError::Reason::
+                            kPresentToSwapChainCreateVideoProcessorOutputView,
+                        hr});
       }
       DCHECK(output_view_);
     }
@@ -1624,11 +1642,9 @@ bool SwapChainPresenter::VideoProcessorBlt(
                            use_vp_auto_hdr);
       if (FAILED(hr)) {
         if (use_vp_auto_hdr) {
-          if (!RevertSwapChainToSDR(video_device, video_processor,
-                                    video_processor_enumerator, video_context,
-                                    src_color_space)) {
-            return false;
-          }
+          RETURN_IF_ERROR(RevertSwapChainToSDR(video_device, video_processor,
+                                               video_processor_enumerator,
+                                               video_context, src_color_space));
 
           use_vp_auto_hdr = false;
         }
@@ -1683,11 +1699,9 @@ bool SwapChainPresenter::VideoProcessorBlt(
       ToggleVpAutoHDR(gpu_vendor_id_, driver_supports_vp_auto_hdr,
                       video_context.Get(), video_processor.Get(), false);
 
-      if (!RevertSwapChainToSDR(video_device, video_processor,
-                                video_processor_enumerator, video_context,
-                                src_color_space)) {
-        return false;
-      }
+      RETURN_IF_ERROR(RevertSwapChainToSDR(video_device, video_processor,
+                                           video_processor_enumerator,
+                                           video_context, src_color_space));
 
       {
         TRACE_EVENT0("gpu", "ID3D11VideoContext::VideoProcessorBlt");
@@ -1711,11 +1725,12 @@ bool SwapChainPresenter::VideoProcessorBlt(
       if (hr == E_NOTIMPL) {
         DisableDirectCompositionOverlays();
       }
-      return false;
+      return base::unexpected(CommitError{
+          CommitError::Reason::kPresentToSwapChainVideoProcessorBlt, hr});
     }
   }
 
-  return true;
+  return base::ok();
 }
 
 void SwapChainPresenter::ReleaseSwapChainResources() {
@@ -1738,7 +1753,7 @@ void SwapChainPresenter::ReleaseSwapChainResources() {
   }
 }
 
-bool SwapChainPresenter::ReallocateSwapChain(
+base::expected<void, CommitError> SwapChainPresenter::ReallocateSwapChain(
     const gfx::Size& swap_chain_size,
     DXGI_FORMAT swap_chain_format,
     gfx::ProtectedVideoType protected_video_type) {
@@ -1867,7 +1882,10 @@ bool SwapChainPresenter::ReallocateSwapChain(
                  << " swap chain of size " << swap_chain_size.ToString() << ": "
                  << logging::SystemErrorCodeToString(hr)
                  << ". Disable overlay swap chains";
-      return false;
+      return base::unexpected(CommitError{
+          CommitError::Reason::
+              kPresentToSwapChainCreateSwapChainForCompositionSurfaceHandle,
+          hr});
     }
 
     CHECK_EQ(swap_chain1.As(&swap_chain), S_OK);
@@ -1903,7 +1921,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
       !layer_tree_->disable_vp_auto_hdr() && IsVpAutoHDREnabled(gpu_vendor_id_);
   enable_vp_super_resolution_ = !layer_tree_->disable_vp_super_resolution();
 
-  return true;
+  return base::ok();
 }
 
 void SwapChainPresenter::OnBatteryPowerStatusChange(
@@ -1945,7 +1963,7 @@ SwapChainPresenter::GetSwapChainMedia() const {
   return nullptr;
 }
 
-bool SwapChainPresenter::RevertSwapChainToSDR(
+base::expected<void, CommitError> SwapChainPresenter::RevertSwapChainToSDR(
     Microsoft::WRL::ComPtr<ID3D11VideoDevice1> video_device,
     Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor,
     Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
@@ -1954,20 +1972,23 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
     const gfx::ColorSpace& input_color_space) {
   if (!video_device || !video_processor || !video_processor_enumerator ||
       !context1) {
-    return false;
+    return base::unexpected(
+        CommitError{CommitError::Reason::
+                        kPresentToSwapChainSdrRevertMissingVideoProcessor});
   }
 
   // Restore the SDR swap chain and output view
-  if (!ReallocateSwapChain(
-          gfx::Size(swap_chain_size_),
-          GetSwapChainFormat(swap_chain_protected_video_type_,
-                             /*use_hdr_swap_chain=*/false,
-                             /*use_p010_for_sdr_swap_chain=*/false,
-                             input_color_space),
-          swap_chain_protected_video_type_)) {
-    ReleaseSwapChainResources();
-    return false;
-  }
+  RETURN_IF_ERROR(ReallocateSwapChain(
+                      gfx::Size(swap_chain_size_),
+                      GetSwapChainFormat(swap_chain_protected_video_type_,
+                                         /*use_hdr_swap_chain=*/false,
+                                         /*use_p010_for_sdr_swap_chain=*/false,
+                                         input_color_space),
+                      swap_chain_protected_video_type_),
+                  [this](CommitError error) {
+                    ReleaseSwapChainResources();
+                    return error;
+                  });
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_buffer;
   swap_chain_->GetBuffer(0, IID_PPV_ARGS(&swap_chain_buffer));
@@ -1980,7 +2001,10 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
   if (FAILED(hr)) {
     LOG(ERROR) << "CreateVideoProcessorOutputView failed: "
                << logging::SystemErrorCodeToString(hr);
-    return false;
+    return base::unexpected(CommitError{
+        CommitError::Reason::
+            kPresentToSwapChainSdrRevertCreateVideoProcessorOutputView,
+        hr});
   }
   DCHECK(output_view_);
 
@@ -1997,10 +2021,11 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
   if (FAILED(hr)) {
     LOG(ERROR) << "SetColorSpace1 failed: "
                << logging::SystemErrorCodeToString(hr);
-    return false;
+    return base::unexpected(CommitError{
+        CommitError::Reason::kPresentToSwapChainSdrRevertSetColorSpace, hr});
   }
 
-  return true;
+  return base::ok();
 }
 
 bool SwapChainPresenter::IsMediaFoundationSurfaceProxy() const {
