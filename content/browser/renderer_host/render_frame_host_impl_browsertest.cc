@@ -10544,6 +10544,7 @@ class RenderFrameHostImplConnectionAllowlistBrowserTest
       URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
       return true;
     }
+
     return false;
   }
 
@@ -11180,6 +11181,230 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
             nav_observer.last_net_error_code());
   EXPECT_TRUE(
       new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+}
+
+// Verify that direct click on an <a href> (without download attribute) to a
+// non-allowlisted origin is blocked by Connection-Allowlist, while direct click
+// to an allowlisted same-origin succeeds.
+// Bug: crbug.com/555145143
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistAnchorClickNavigation) {
+  GURL url(https_server()->GetURL("a.com", "/connection_allowlist.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL same_origin_url(https_server()->GetURL("a.com", "/title1.html"));
+  GURL cross_origin_url(https_server()->GetURL("b.com", "/title2.html"));
+
+  // 1. Direct click on a same-origin <a href> in the same frame should succeed.
+  {
+    TestFrameNavigationObserver nav_observer(
+        web_contents()->GetPrimaryMainFrame());
+    ExecuteScriptAsync(web_contents()->GetPrimaryMainFrame(),
+                       JsReplace(R"(
+                         let a = document.createElement('a');
+                         a.id = 'same_origin_link';
+                         a.href = $1;
+                         a.textContent = 'Same Origin Link';
+                         document.body.appendChild(a);
+                         a.click();
+                       )",
+                                 same_origin_url));
+    nav_observer.Wait();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
+    EXPECT_EQ(same_origin_url,
+              web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+    EXPECT_TRUE(web_contents()
+                    ->GetPrimaryMainFrame()
+                    ->GetLastCommittedOrigin()
+                    .IsSameOriginWith(same_origin_url));
+  }
+
+  // Navigate back to the original document to apply the connection allowlist.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // 2. Direct click on a cross-origin (non-allowlisted) <a href> in the same
+  // frame should fail with net::ERR_NETWORK_ACCESS_REVOKED.
+  {
+    TestFrameNavigationObserver nav_observer(
+        web_contents()->GetPrimaryMainFrame());
+    ExecuteScriptAsync(web_contents()->GetPrimaryMainFrame(),
+                       JsReplace(R"(
+                         let a = document.createElement('a');
+                         a.id = 'cross_origin_link';
+                         a.href = $1;
+                         a.textContent = 'Cross Origin Link';
+                         document.body.appendChild(a);
+                         a.click();
+                       )",
+                                 cross_origin_url));
+    nav_observer.Wait();
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+              nav_observer.last_net_error_code());
+    EXPECT_TRUE(web_contents()
+                    ->GetPrimaryMainFrame()
+                    ->GetLastCommittedOrigin()
+                    .opaque());
+  }
+
+  // Navigate back to the original document to apply the connection allowlist.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // 3. Direct click on a cross-origin <a href target="_blank"> should open a
+  // new tab and the navigation should be blocked with
+  // net::ERR_NETWORK_ACCESS_REVOKED.
+  {
+    WebContentsAddedObserver new_tab_observer;
+    TestNavigationObserver nav_observer(cross_origin_url);
+    nav_observer.StartWatchingNewWebContents();
+
+    EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       JsReplace(R"(
+                         let a = document.createElement('a');
+                         a.id = 'cross_origin_blank_link';
+                         a.href = $1;
+                         a.target = '_blank';
+                         a.textContent = 'Cross Origin Blank Link';
+                         document.body.appendChild(a);
+                         a.click();
+                       )",
+                                 cross_origin_url)));
+
+    WebContents* new_contents = new_tab_observer.GetWebContents();
+    ASSERT_TRUE(new_contents);
+    nav_observer.Wait();
+
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+              nav_observer.last_net_error_code());
+    EXPECT_TRUE(
+        new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+  }
+}
+
+// Verify that direct click on an <a href> link inside an iframe with an empty
+// Connection-Allowlist: () is blocked by Connection-Allowlist with
+// net::ERR_NETWORK_ACCESS_REVOKED.
+// Bug: crbug.com/555145143
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistIframeAnchorClickEmptyAllowlist) {
+  GURL parent_url(https_server()->GetURL("a.com", "/page_with_iframe.html"));
+  GURL child_url(
+      https_server()->GetURL("a.com", "/connection_allowlist_empty.html"));
+
+  RenderFrameHostImpl* main_rfh = nullptr;
+  RenderFrameHostImpl* child_rfh = nullptr;
+
+  auto setup_parent_and_child = [&]() {
+    ASSERT_TRUE(NavigateToURL(shell(), parent_url));
+    ASSERT_TRUE(NavigateIframeToURL(web_contents(), "test_iframe", child_url));
+    main_rfh = root_frame_host();
+    ASSERT_EQ(1u, main_rfh->child_count());
+    child_rfh = main_rfh->child_at(0)->current_frame_host();
+    ASSERT_TRUE(child_rfh);
+    EXPECT_EQ(child_url, child_rfh->GetLastCommittedURL());
+  };
+
+  // 1. Click a link inside the iframe to navigate same-origin (/title1.html).
+  // Because Connection-Allowlist is empty (), even same-origin navigations
+  // initiated by the iframe must be blocked.
+  {
+    setup_parent_and_child();
+
+    GURL same_origin_url(https_server()->GetURL("a.com", "/title1.html"));
+    TestFrameNavigationObserver nav_observer(child_rfh);
+    ExecuteScriptAsync(child_rfh, JsReplace(R"(
+                         let a = document.createElement('a');
+                         a.id = 'link';
+                         a.href = $1;
+                         document.body.appendChild(a);
+                         a.click();
+                       )",
+                                            same_origin_url));
+    nav_observer.Wait();
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+              nav_observer.last_net_error_code());
+    EXPECT_TRUE(main_rfh->child_at(0)
+                    ->current_frame_host()
+                    ->GetLastCommittedOrigin()
+                    .opaque());
+  }
+
+  // 2. Test when the link inside the iframe navigates to a cross-site URL.
+  GURL cross_site_url(https_server()->GetURL("b.com", "/title2.html"));
+  {
+    setup_parent_and_child();
+
+    TestFrameNavigationObserver nav_observer(child_rfh);
+    ExecuteScriptAsync(child_rfh, JsReplace(R"(
+                         let a = document.createElement('a');
+                         a.id = 'link';
+                         a.href = $1;
+                         document.body.appendChild(a);
+                         a.click();
+                       )",
+                                            cross_site_url));
+    nav_observer.Wait();
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+              nav_observer.last_net_error_code());
+    EXPECT_TRUE(main_rfh->child_at(0)
+                    ->current_frame_host()
+                    ->GetLastCommittedOrigin()
+                    .opaque());
+  }
+
+  // 3. Test when the link inside the iframe has target="_blank".
+  {
+    setup_parent_and_child();
+
+    WebContentsAddedObserver new_tab_observer;
+    TestNavigationObserver nav_observer(cross_site_url);
+    nav_observer.StartWatchingNewWebContents();
+
+    EXPECT_TRUE(ExecJs(child_rfh, JsReplace(R"(
+                         let a = document.createElement('a');
+                         a.id = 'blank_link';
+                         a.href = $1;
+                         a.target = '_blank';
+                         document.body.appendChild(a);
+                         a.click();
+                       )",
+                                            cross_site_url)));
+
+    WebContents* new_contents = new_tab_observer.GetWebContents();
+    ASSERT_TRUE(new_contents);
+    nav_observer.Wait();
+
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+              nav_observer.last_net_error_code());
+    EXPECT_TRUE(
+        new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+  }
+
+  // 4. Test when the link inside the iframe has target="_top".
+  {
+    setup_parent_and_child();
+
+    TestFrameNavigationObserver nav_observer(main_rfh);
+    ExecuteScriptAsync(child_rfh, JsReplace(R"(
+                         let a = document.createElement('a');
+                         a.id = 'top_link';
+                         a.href = $1;
+                         a.target = '_top';
+                         document.body.appendChild(a);
+                         a.click();
+                       )",
+                                            cross_site_url));
+    nav_observer.Wait();
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+              nav_observer.last_net_error_code());
+    EXPECT_TRUE(root_frame_host()->GetLastCommittedOrigin().opaque());
+  }
 }
 
 // Verify that any navigation always creates a network restrictions token.
