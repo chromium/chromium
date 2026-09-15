@@ -2707,6 +2707,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          key::kOnFileAttachedEnterpriseConnector,
+          enterprise_connectors::kOnFileAttachedPref,
+          enterprise_connectors::kOnFileAttachedScopePref, chrome_schema));
+
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           key::kOnFileDownloadedEnterpriseConnector,
           enterprise_connectors::kOnFileDownloadedPref,
           enterprise_connectors::kOnFileDownloadedScopePref, chrome_schema));
@@ -2883,12 +2890,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kOnDataCopiedEnterpriseConnector,
           enterprise_connectors::kOnDataCopiedPref,
           enterprise_connectors::kOnDataCopiedScopePref, chrome_schema));
-  handlers->AddHandler(
-      std::make_unique<
-          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
-          key::kOnFileAttachedEnterpriseConnector,
-          enterprise_connectors::kOnFileAttachedPref,
-          enterprise_connectors::kOnFileAttachedScopePref, chrome_schema));
 #if BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
       std::make_unique<

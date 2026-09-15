@@ -94,21 +94,20 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   registry->RegisterListPref(kOnDataCopiedPref);
-  registry->RegisterListPref(kOnFileAttachedPref);
   registry->RegisterListPref(kOnPrintPref);
-#if BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterListPref(kOnFileTransferPref);
-#endif
-  registry->RegisterIntegerPref(kOnFileAttachedScopePref, 0);
   registry->RegisterIntegerPref(kOnPrintScopePref, 0);
   registry->RegisterIntegerPref(kOnDataCopiedScopePref, 0);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterListPref(kOnFileTransferPref);
   registry->RegisterIntegerPref(kOnFileTransferScopePref, 0);
 #endif
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #if !BUILDFLAG(IS_IOS)
   RegisterDeviceTrustConnectorProfilePrefs(registry);
+  registry->RegisterListPref(kOnFileAttachedPref);
+  registry->RegisterIntegerPref(kOnFileAttachedScopePref, 0);
 #endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
