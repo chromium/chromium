@@ -203,7 +203,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // Even if no parts are invalidated, the scrollbar may need to be redrawn
   // if, for instance, the thumb moves without changing the appearance of any
   // part.
-  void SetNeedsPaintInvalidation(ScrollbarPart invalid_parts);
+  void SetNeedsPaintInvalidation(int invalid_parts);
 
   CompositorElementId GetElementId() const;
 

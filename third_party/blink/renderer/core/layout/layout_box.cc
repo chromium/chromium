@@ -3992,7 +3992,7 @@ void LayoutBox::InvalidatePaintForTickmarks() {
   Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
   if (!scrollbar)
     return;
-  scrollbar->SetNeedsPaintInvalidation(static_cast<ScrollbarPart>(~kThumbPart));
+  scrollbar->SetNeedsPaintInvalidation(~kThumbPart);
 }
 
 static bool HasInsetBoxShadow(const ComputedStyle& style) {

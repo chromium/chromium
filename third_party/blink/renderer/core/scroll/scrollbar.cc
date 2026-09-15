@@ -186,9 +186,8 @@ void Scrollbar::OffsetDidChange(mojom::blink::ScrollType scroll_type) {
   int old_thumb_position = GetTheme().ThumbPosition(*this);
   current_pos_ = position;
 
-  ScrollbarPart invalid_parts =
-      GetTheme().PartsToInvalidateOnThumbPositionChange(*this, old_position,
-                                                        position);
+  int invalid_parts = GetTheme().PartsToInvalidateOnThumbPositionChange(
+      *this, old_position, position);
   SetNeedsPaintInvalidation(invalid_parts);
 
   // Don't update the pressed position if scroll anchoring takes place as
@@ -359,7 +358,7 @@ void Scrollbar::SetHoveredPart(ScrollbarPart part) {
   if (part == hovered_part_)
     return;
 
-  auto invalid_parts = static_cast<ScrollbarPart>(hovered_part_ | part);
+  int invalid_parts = hovered_part_ | part;
   hovered_part_ = part;
   // When there's a pressed part, we don't draw a hovered state, so there's no
   // reason to invalidate.
@@ -375,11 +374,11 @@ void Scrollbar::SetPressedPart(ScrollbarPart part, WebInputEvent::Type type) {
 
   ScrollbarPart old_pressed_part = pressed_part_;
   pressed_part_ = part;
-  SetNeedsPaintInvalidation(static_cast<ScrollbarPart>(
+  SetNeedsPaintInvalidation(
       old_pressed_part |
       // When we no longer have a pressed part, we can start drawing a hovered
       // state on the hovered part.
-      hovered_part_ | pressed_part_));
+      hovered_part_ | pressed_part_);
 
   if (scrollable_area_ && part != kNoPart) {
     scrollable_area_->DidScrollWithScrollbar(part, Orientation(), type);
@@ -858,7 +857,7 @@ float Scrollbar::ScrollableAreaTargetPos() const {
          scrollable_area_->MinimumScrollOffset().y();
 }
 
-void Scrollbar::SetNeedsPaintInvalidation(ScrollbarPart invalid_parts) {
+void Scrollbar::SetNeedsPaintInvalidation(int invalid_parts) {
   needs_update_display_ = true;
   if (theme_->ShouldRepaintAllPartsOnInvalidation()) {
     invalid_parts = kAllParts;

@@ -66,7 +66,7 @@ bool ScrollbarThemeOverlay::ShouldRepaintAllPartsOnInvalidation() const {
   return false;
 }
 
-ScrollbarPart ScrollbarThemeOverlay::PartsToInvalidateOnThumbPositionChange(
+int ScrollbarThemeOverlay::PartsToInvalidateOnThumbPositionChange(
     const Scrollbar&,
     float old_position,
     float new_position) const {

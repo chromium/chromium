@@ -56,7 +56,7 @@ class ScrollbarThemeWithMockInvalidation : public ScrollbarThemeOverlayMock {
  public:
   MOCK_CONST_METHOD0(ShouldRepaintAllPartsOnInvalidation, bool());
   MOCK_CONST_METHOD3(PartsToInvalidateOnThumbPositionChange,
-                     ScrollbarPart(const Scrollbar&, float, float));
+                     int(const Scrollbar&, float, float));
 };
 
 }  // namespace

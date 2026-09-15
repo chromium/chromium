@@ -67,10 +67,9 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
                   const gfx::Rect&) override;
 
   bool ShouldRepaintAllPartsOnInvalidation() const override;
-  ScrollbarPart PartsToInvalidateOnThumbPositionChange(
-      const Scrollbar&,
-      float old_position,
-      float new_position) const override;
+  int PartsToInvalidateOnThumbPositionChange(const Scrollbar&,
+                                             float old_position,
+                                             float new_position) const override;
 
   bool ShouldCenterOnThumb(const Scrollbar&,
                            const WebMouseEvent&) const override;

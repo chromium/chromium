@@ -137,7 +137,7 @@ bool ScrollbarThemeMac::ShouldDragDocumentInsteadOfThumb(
   return (event.GetModifiers() & WebInputEvent::Modifiers::kAltKey) != 0;
 }
 
-ScrollbarPart ScrollbarThemeMac::PartsToInvalidateOnThumbPositionChange(
+int ScrollbarThemeMac::PartsToInvalidateOnThumbPositionChange(
     const Scrollbar& scrollbar,
     float old_position,
     float new_position) const {

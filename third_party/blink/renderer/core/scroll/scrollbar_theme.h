@@ -98,10 +98,9 @@ class CORE_EXPORT ScrollbarTheme {
 
   // Returns parts of the scrollbar which must be repainted following a change
   // in the thumb position, given scroll positions before and after.
-  virtual ScrollbarPart PartsToInvalidateOnThumbPositionChange(
-      const Scrollbar&,
-      float old_position,
-      float new_position) const {
+  virtual int PartsToInvalidateOnThumbPositionChange(const Scrollbar&,
+                                                     float old_position,
+                                                     float new_position) const {
     return kAllParts;
   }
 

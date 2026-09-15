@@ -368,17 +368,17 @@ bool ScrollbarThemeAura::ShouldRepaintAllPartsOnInvalidation() const {
   return false;
 }
 
-ScrollbarPart ScrollbarThemeAura::PartsToInvalidateOnThumbPositionChange(
+int ScrollbarThemeAura::PartsToInvalidateOnThumbPositionChange(
     const Scrollbar& scrollbar,
     float old_position,
     float new_position) const {
-  ScrollbarPart invalid_parts = kNoPart;
+  int invalid_parts = kNoPart;
   static const ScrollbarPart kButtonParts[] = {kBackButtonStartPart,
                                                kForwardButtonEndPart};
   for (ScrollbarPart part : kButtonParts) {
     if (ButtonPartPaintingParams(scrollbar, old_position, part) !=
         ButtonPartPaintingParams(scrollbar, new_position, part))
-      invalid_parts = static_cast<ScrollbarPart>(invalid_parts | part);
+      invalid_parts |= part;
   }
   return invalid_parts;
 }

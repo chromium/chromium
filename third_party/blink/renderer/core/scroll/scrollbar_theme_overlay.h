@@ -43,10 +43,9 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
 
   bool ShouldRepaintAllPartsOnInvalidation() const override;
 
-  ScrollbarPart PartsToInvalidateOnThumbPositionChange(
-      const Scrollbar&,
-      float old_position,
-      float new_position) const override;
+  int PartsToInvalidateOnThumbPositionChange(const Scrollbar&,
+                                             float old_position,
+                                             float new_position) const override;
 
   int ScrollbarThickness(float scale_from_dip,
                          EScrollbarWidth scrollbar_width) const override;
