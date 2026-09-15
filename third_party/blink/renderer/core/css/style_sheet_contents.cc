@@ -877,8 +877,11 @@ MixinMap& StyleSheetContents::ExtractMixins(const MediaQueryEvaluator& medium) {
 
 RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium,
                                            const MixinMap& mixins) {
-  if (rule_set_ &&
-      rule_set_->DependingOnOutdatedMixins(mixins.map_identifier)) {
+  const bool rebuild_for_mixins =
+      rule_set_ && rule_set_->DependingOnOutdatedMixins(mixins.map_identifier);
+  if (rebuild_for_mixins) {
+    TRACE_EVENT_BEGIN("blink,blink_style",
+                      "StyleSheetContents::rebuildRuleSetForMixins");
     rule_set_ = nullptr;
     if (rule_set_diff_) {
       rule_set_diff_->MarkUnrepresentable();
@@ -898,6 +901,9 @@ RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium,
       rule_set_diff_->NewRuleSetCreated(rule_set_);
     }
     rule_set_->CompactRulesIfNeeded();
+  }
+  if (rebuild_for_mixins) {
+    TRACE_EVENT_END("blink,blink_style");
   }
   return *rule_set_.Get();
 }

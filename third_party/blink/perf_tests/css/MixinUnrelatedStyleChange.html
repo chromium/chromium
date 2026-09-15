@@ -1,0 +1,33 @@
+<!doctype html>
+<style>
+  @mixin --perf-mixin() {
+    @result {
+      color: red;
+    }
+  }
+</style>
+<style id="unrelated">
+  #unused {
+    color: red;
+  }
+</style>
+<script src="../resources/runner.js"></script>
+<script src="resources/mixin-invalidation.js"></script>
+<script>
+  const unrelatedStyle = document.querySelector('#unrelated');
+
+  window.onload = () => {
+    measureMixinInvalidation({
+      description:
+          'Measures unrelated style changes while shadows use a parent mixin.',
+      mixinUserCount: SHADOW_COUNT,
+      mutate: useGreen => {
+        unrelatedStyle.textContent = `
+          #unused {
+            color: ${useGreen ? 'green' : 'red'};
+          }
+        `;
+      },
+    });
+  };
+</script>

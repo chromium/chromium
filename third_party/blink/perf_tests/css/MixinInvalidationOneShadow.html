@@ -1,0 +1,30 @@
+<!doctype html>
+<style id="mixin">
+  @mixin --perf-mixin() {
+    @result {
+      color: red;
+    }
+  }
+</style>
+<script src="../resources/runner.js"></script>
+<script src="resources/mixin-invalidation.js"></script>
+<script>
+  const mixinStyle = document.querySelector('#mixin');
+
+  window.onload = () => {
+    measureMixinInvalidation({
+      description:
+          'Measures changing a parent mixin used by one of many shadow trees.',
+      mixinUserCount: 1,
+      mutate: useGreen => {
+        mixinStyle.textContent = `
+          @mixin --perf-mixin() {
+            @result {
+              color: ${useGreen ? 'green' : 'red'};
+            }
+          }
+        `;
+      },
+    });
+  };
+</script>
