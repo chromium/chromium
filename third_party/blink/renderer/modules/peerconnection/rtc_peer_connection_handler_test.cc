@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_peer_connection_handler_client.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_request.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -243,6 +244,20 @@ class DummyRTCVoidRequest final : public RTCVoidRequest {
 
  private:
   bool was_called_ = false;
+};
+
+class DummyRTCSessionDescriptionRequest final
+    : public RTCSessionDescriptionRequest {
+ public:
+  bool failed() const { return failed_; }
+
+  void RequestSucceeded(RTCSessionDescriptionPlatform*) override {
+    ADD_FAILURE() << "Expected session description creation to fail";
+  }
+  void RequestFailed(const webrtc::RTCError&) override { failed_ = true; }
+
+ private:
+  bool failed_ = false;
 };
 
 void OnStatsDelivered(std::unique_ptr<RTCStatsReportPlatform>* result,
@@ -676,21 +691,35 @@ TEST_F(RTCPeerConnectionHandlerTest, NoCallbacksToClientAfterStop) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, CreateOffer) {
-  // TODO(perkj): Can blink::RTCSessionDescriptionRequest be changed so
-  // the |request| requestSucceeded can be tested? Currently the |request|
-  // object can not be initialized from a unit test.
+  // TODO(perkj): Make MockPeerConnectionImpl return a successful session
+  // description so RTCSessionDescriptionRequest::RequestSucceeded can be
+  // tested.
   EXPECT_FALSE(mock_peer_connection_->created_session_description());
   pc_handler_->CreateOffer(nullptr /*RTCSessionDescriptionRequest*/, nullptr);
   EXPECT_TRUE(mock_peer_connection_->created_session_description());
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, CreateAnswer) {
-  // TODO(perkj): Can blink::RTCSessionDescriptionRequest be changed so
-  // the |request| requestSucceeded can be tested? Currently the |request|
-  // object can not be initialized from a unit test.
+  // TODO(perkj): Make MockPeerConnectionImpl return a successful session
+  // description so RTCSessionDescriptionRequest::RequestSucceeded can be
+  // tested.
   EXPECT_FALSE(mock_peer_connection_->created_session_description());
   pc_handler_->CreateAnswer(nullptr /*RTCSessionDescriptionRequest*/, nullptr);
   EXPECT_TRUE(mock_peer_connection_->created_session_description());
+}
+
+TEST_F(RTCPeerConnectionHandlerTest, ReportsSynchronousCreationFailures) {
+  mock_peer_connection_->set_fail_session_description_synchronously(true);
+  DummyRTCSessionDescriptionRequest* offer_request =
+      MakeGarbageCollected<DummyRTCSessionDescriptionRequest>();
+  DummyRTCSessionDescriptionRequest* answer_request =
+      MakeGarbageCollected<DummyRTCSessionDescriptionRequest>();
+
+  EXPECT_TRUE(pc_handler_->CreateOffer(offer_request, nullptr).empty());
+  pc_handler_->CreateAnswer(answer_request, nullptr);
+
+  EXPECT_TRUE(offer_request->failed());
+  EXPECT_TRUE(answer_request->failed());
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, setLocalDescription) {

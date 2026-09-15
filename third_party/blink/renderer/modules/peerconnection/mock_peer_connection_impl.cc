@@ -536,6 +536,9 @@ void MockPeerConnectionImpl::CreateOffer(
     const RTCOfferAnswerOptions& options) {
   DCHECK(observer);
   created_session_description_ = true;
+  if (fail_session_description_synchronously_) {
+    observer->OnFailure(webrtc::RTCError(webrtc::RTCErrorType::INVALID_STATE));
+  }
 }
 
 void MockPeerConnectionImpl::CreateAnswer(
@@ -543,6 +546,9 @@ void MockPeerConnectionImpl::CreateAnswer(
     const RTCOfferAnswerOptions& options) {
   DCHECK(observer);
   created_session_description_ = true;
+  if (fail_session_description_synchronously_) {
+    observer->OnFailure(webrtc::RTCError(webrtc::RTCErrorType::INVALID_STATE));
+  }
 }
 
 void MockPeerConnectionImpl::SetLocalDescriptionWorker(

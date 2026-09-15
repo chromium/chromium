@@ -1,31 +1,11 @@
 This is a testharness.js-based test.
-[FAIL] createOffer must detect InvalidStateError synchronously when chain is empty (prerequisite)
-  assert_equals: expected "InvalidStateError" but got "Error"
-[FAIL] createAnswer must detect InvalidStateError synchronously when chain is empty (prerequisite)
-  assert_equals: promise rejected on same task expected "rejected" but got "pending"
-[FAIL] isOperationsChainEmpty detects empty in stable
-  assert_true: Empty to start expected true got false
-[FAIL] isOperationsChainEmpty detects empty in have-local-offer
-  assert_true: Empty to start expected true got false
-[FAIL] isOperationsChainEmpty detects empty in have-remote-offer
-  assert_equals: isOperationsChainEmpty is working expected "InvalidStateError" but got "Error"
 [FAIL] createAnswer uses operations chain
-  assert_equals: isOperationsChainEmpty is working expected "InvalidStateError" but got "Error"
+  assert_false: Non-empty chain expected false got true
 [FAIL] setLocalDescription uses operations chain
-  assert_true: Empty before expected true got false
-[FAIL] setRemoteDescription uses operations chain
-  assert_true: Empty before expected true got false
+  assert_false: Non-empty chain expected false got true
 [FAIL] addIceCandidate uses operations chain
-  assert_equals: isOperationsChainEmpty is working expected "InvalidStateError" but got "Error"
-[FAIL] Firing of negotiationneeded does NOT use operations chain
-  assert_true: Empty chain expected true got false
+  assert_false: Non-empty chain expected false got true
 [FAIL] replaceTrack uses operations chain
-  assert_true: Empty chain expected true got false
-[FAIL] pc.getStats does NOT use the operations chain
-  assert_true: Empty chain expected true got false
-[FAIL] sender.getStats does NOT use the operations chain
-  assert_true: Empty chain expected true got false
-[FAIL] receiver.getStats does NOT use the operations chain
-  assert_true: Empty chain expected true got false
+  assert_false: Non-empty chain expected false got true
 Harness: the test ran to completion.
 

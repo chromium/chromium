@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -149,6 +150,25 @@ class CreateSessionDescriptionRequest
       const base::WeakPtr<RTCPeerConnectionHandler>& handler)
       : main_thread_(main_thread), webkit_request_(request) {}
 
+  // Bound capture on the signaling thread immediately around the native call
+  // so a callback from a later signaling task is never treated as synchronous.
+  void BeginSynchronousFailureCapture() {
+    DCHECK(!capture_synchronous_failure_);
+    DCHECK(!synchronous_failure_);
+    capture_synchronous_failure_ = true;
+  }
+
+  void EndSynchronousFailureCapture() {
+    DCHECK(capture_synchronous_failure_);
+    capture_synchronous_failure_ = false;
+  }
+
+  std::optional<webrtc::RTCError> TakeSynchronousFailure() {
+    DCHECK(main_thread_->BelongsToCurrentThread());
+    DCHECK(!capture_synchronous_failure_);
+    return std::exchange(synchronous_failure_, std::nullopt);
+  }
+
   void OnSuccess(webrtc::SessionDescriptionInterface* desc) override {
     // Explicitly take ownership of desc - as documented in the webrtc lib
     // comment.
@@ -173,6 +193,11 @@ class CreateSessionDescriptionRequest
   }
   void OnFailure(webrtc::RTCError error) override {
     if (!main_thread_->BelongsToCurrentThread()) {
+      if (capture_synchronous_failure_) {
+        DCHECK(!synchronous_failure_);
+        synchronous_failure_ = std::move(error);
+        return;
+      }
       BindPostTask(
           main_thread_,
           CrossThreadBindOnce(
@@ -200,6 +225,10 @@ class CreateSessionDescriptionRequest
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   CrossThreadPersistent<RTCSessionDescriptionRequest> webkit_request_;
+  // State written on the signaling thread is consumed on the main thread only
+  // after the synchronous signaling-thread call returns.
+  bool capture_synchronous_failure_ = false;
+  std::optional<webrtc::RTCError> synchronous_failure_;
 };
 
 void GetRTCStatsOnSignalingThread(
@@ -880,6 +909,9 @@ RTCPeerConnectionHandler::CreateOffer(RTCSessionDescriptionRequest* request,
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::createOffer");
 
   webrtc::PeerConnectionInterface::RTCOfferAnswerOptions webrtc_options;
+  // Explicit WebRTC-PC createOffer() calls have stricter signaling-state
+  // requirements than libwebrtc's internal JSEP offer creation.
+  webrtc_options.restrict_offer_to_stable_or_have_local_offer = true;
   if (options) {
     webrtc_options.offer_to_receive_audio = options->OfferToReceiveAudio();
     webrtc_options.offer_to_receive_video = options->OfferToReceiveVideo();
@@ -901,6 +933,11 @@ RTCPeerConnectionHandler::CreateOffer(RTCSessionDescriptionRequest* request,
           std::move(webrtc_options),
           CrossThreadUnretained(&transceiver_state_surfacer))),
       "CreateOfferOnSignalingThread");
+  if (std::optional<webrtc::RTCError> error =
+          description_request->TakeSynchronousFailure()) {
+    description_request->OnFailure(std::move(*error));
+    return {};
+  }
   DCHECK(transceiver_state_surfacer.is_initialized());
 
   auto transceiver_states = transceiver_state_surfacer.ObtainStates();
@@ -917,7 +954,10 @@ void RTCPeerConnectionHandler::CreateOfferOnSignalingThread(
     webrtc::CreateSessionDescriptionObserver* observer,
     webrtc::PeerConnectionInterface::RTCOfferAnswerOptions offer_options,
     blink::TransceiverStateSurfacer* transceiver_state_surfacer) {
+  auto* request = static_cast<CreateSessionDescriptionRequest*>(observer);
+  request->BeginSynchronousFailureCapture();
   native_peer_connection_->CreateOffer(observer, offer_options);
+  request->EndSynchronousFailureCapture();
   std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
       transceivers = native_peer_connection_->GetTransceivers();
   transceiver_state_surfacer->Initialize(
@@ -929,6 +969,7 @@ void RTCPeerConnectionHandler::CreateAnswer(
     blink::RTCAnswerOptionsPlatform* options) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::createAnswer");
+
   scoped_refptr<CreateSessionDescriptionRequest> description_request(
       new webrtc::RefCountedObject<CreateSessionDescriptionRequest>(
           task_runner_, request, weak_factory_.GetWeakPtr()));
@@ -937,8 +978,27 @@ void RTCPeerConnectionHandler::CreateAnswer(
   if (options) {
     webrtc_options.voice_activity_detection = options->VoiceActivityDetection();
   }
-  native_peer_connection_->CreateAnswer(description_request.get(),
-                                        webrtc_options);
+  // Bracket CreateAnswer() on the signaling thread so an inline failure can be
+  // distinguished from a later asynchronous callback.
+  RunSynchronousOnceClosureOnSignalingThread(
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          &RTCPeerConnectionHandler::CreateAnswerOnSignalingThread,
+          CrossThreadUnretained(this),
+          CrossThreadUnretained(description_request.get()), webrtc_options)),
+      "CreateAnswerOnSignalingThread");
+  if (std::optional<webrtc::RTCError> error =
+          description_request->TakeSynchronousFailure()) {
+    description_request->OnFailure(std::move(*error));
+  }
+}
+
+void RTCPeerConnectionHandler::CreateAnswerOnSignalingThread(
+    webrtc::CreateSessionDescriptionObserver* observer,
+    webrtc::PeerConnectionInterface::RTCOfferAnswerOptions answer_options) {
+  auto* request = static_cast<CreateSessionDescriptionRequest*>(observer);
+  request->BeginSynchronousFailureCapture();
+  native_peer_connection_->CreateAnswer(observer, answer_options);
+  request->EndSynchronousFailureCapture();
 }
 
 bool IsOfferOrAnswer(const webrtc::SessionDescriptionInterface* native_desc) {
