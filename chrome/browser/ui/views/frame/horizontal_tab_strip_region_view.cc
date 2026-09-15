@@ -1024,9 +1024,14 @@ gfx::Point HorizontalTabStripRegionViewNew::GetLinkDropArrowPosition(
   return gfx::Point(target_x, target_y);
 }
 
-void HorizontalTabStripRegionViewNew::OnTabStripViewSet() {
+void HorizontalTabStripRegionViewNew::AddTabStripView(
+    std::unique_ptr<views::View> view) {
+  view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred));
   const size_t index = combo_button_ ? 1 : 0;
-  ReorderChildView(tab_strip_view(), index);
+  AddChildViewAt(std::move(view), index);
 }
 
 void HorizontalTabStripRegionViewNew::UpdateButtonBorders() {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/callback_list.h"
@@ -197,8 +198,8 @@ class VerticalTabStripRegionView final
 
   void HandleMouseExited();
 
-  void OnTabStripViewSet() override;
-  void OnTabStripViewWillClear() override;
+  void AddTabStripView(std::unique_ptr<views::View> view) override;
+  std::unique_ptr<views::View> RemoveTabStripView(views::View* view) override;
 
   void OnCollapseStateChanged(
       tabs::VerticalTabStripCollapseState collapse_state);

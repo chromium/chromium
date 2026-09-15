@@ -709,17 +709,22 @@ void VerticalTabStripRegionView::ClickEventHandler::OnMouseEvent(
   }
 }
 
-void VerticalTabStripRegionView::OnTabStripViewSet() {
-  tab_strip_view()->SetProperty(
+void VerticalTabStripRegionView::AddTabStripView(
+    std::unique_ptr<views::View> view) {
+  view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kPreferred));
-  tab_strip_view()->SetProperty(
+  view->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(
           GetLayoutConstant(
               LayoutConstant::kVerticalTabStripCollapsedVerticalPadding),
           0));
+
+  std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
+  CHECK(separator_index.has_value());
+  AddChildViewAt(std::move(view), separator_index.value() + 1);
 
   // Pre-set the animation values to the appropriate state.
   auto* const animation_controller =
@@ -740,20 +745,17 @@ void VerticalTabStripRegionView::OnTabStripViewSet() {
               &VerticalTabStripRegionView::OnExpandOnHoverEnabledChanged,
               base::Unretained(this)));
 
-  std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
-  CHECK(separator_index.has_value());
-  ReorderChildView(tab_strip_view(), separator_index.value() + 1);
-
   OnCollapseStateChanged(state_controller_->GetCollapseState());
 }
 
-void VerticalTabStripRegionView::OnTabStripViewWillClear() {
+std::unique_ptr<views::View> VerticalTabStripRegionView::RemoveTabStripView(
+    views::View* view) {
   on_animation_update_subscription_.reset();
   expand_on_hover_enabled_changed_subscription_.reset();
   omnibox_tab_helper_observation_.Reset();
-
   ResetExpandOnHoverTimers();
   is_expanded_on_hover_ = false;
+  return RemoveChildViewT(view);
 }
 
 void VerticalTabStripRegionView::OnCollapseStateChanged(

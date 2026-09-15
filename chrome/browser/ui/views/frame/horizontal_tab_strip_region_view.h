@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_HORIZONTAL_TAB_STRIP_REGION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_HORIZONTAL_TAB_STRIP_REGION_VIEW_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
@@ -169,7 +171,7 @@ class HorizontalTabStripRegionViewNew : public BaseTabStripRegionView {
       DropArrow::Direction* direction) override;
 
  private:
-  void OnTabStripViewSet() override;
+  void AddTabStripView(std::unique_ptr<views::View> view) override;
 
   void UpdateButtonBorders();
 

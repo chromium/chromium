@@ -108,8 +108,24 @@ class BaseTabStripRegionView : public TabStripRegionView,
   TabStripOrientation orientation() const { return orientation_; }
 
  protected:
-  virtual void OnTabStripViewSet() {}
-  virtual void OnTabStripViewWillClear() {}
+  // Adds the tab strip view at the correct location and index in the tab strip
+  // region view hierarchy. Also sets any other required properties, registers
+  // any required listeners, and does any other initialization required when the
+  // tab strip is set.
+  //
+  // Default behavior adds `view` as a child of `this`.
+  //
+  // Note that `view` does not need to be added as a direct child of `this`, but
+  // if you place it elsewhere, you will also have to override
+  // `RemoveTabStripView()` to correctly remove and retrieve it.
+  virtual void AddTabStripView(std::unique_ptr<views::View> view);
+
+  // Removes the tab strip view from this view's hierarchy and returns it. Also
+  // does any other required teardown, resetting of state, releasing of
+  // listeners, etc.
+  //
+  // Default behavior attempts to remove `view` as a child of `this`.
+  virtual std::unique_ptr<views::View> RemoveTabStripView(views::View* view);
 
   void RecordNewTabButtonPressed();
   virtual void OnActiveTabChanged(const tabs::TabInterface* active_tab);

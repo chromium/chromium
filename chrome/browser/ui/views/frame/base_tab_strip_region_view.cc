@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 
+#include <memory>
 #include <variant>
 
 #include "base/callback_list.h"
@@ -421,30 +422,43 @@ TabDragTarget* BaseTabStripRegionView::GetTabDragTarget(
 
 views::View* BaseTabStripRegionView::SetTabStripView(
     std::unique_ptr<views::View> view) {
-  CHECK(views::IsViewClass<TabStripView>(view.get()));
-  tab_strip_view_ = static_cast<TabStripView*>(view.get());
+  tab_strip_view_ = views::AsViewClass<TabStripView>(view.get());
+  CHECK(tab_strip_view_);
 
-  AddChildView(std::move(view));
-
-  tab_strip_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
+  // Add the tab strip. Note that it may not be added as a direct child of
+  // `this`, but should appear in the hierarchy.
+  AddTabStripView(std::move(view));
+  CHECK(Contains(tab_strip_view_));
 
   on_active_tab_changed_subscription_ =
       root_node_->RegisterOnActiveTabChangedCallback(base::BindRepeating(
           &BaseTabStripRegionView::OnActiveTabChanged, base::Unretained(this)));
 
-  OnTabStripViewSet();
   return tab_strip_view_;
 }
 
 void BaseTabStripRegionView::ClearTabStripView(views::View* view) {
   CHECK(tab_strip_view_);
-  CHECK(tab_strip_view_ == view);
+  CHECK_EQ(tab_strip_view_, view);
   on_active_tab_changed_subscription_.reset();
-  OnTabStripViewWillClear();
-  RemoveChildViewT(std::exchange(tab_strip_view_, nullptr));
+
+  // Remove the tab strip. Note that the tab strip may not be a direct child of
+  // `this`. Hold onto the result temporarily so we can verify the view was
+  // removed without possibility of UAF.
+  const auto to_delete =
+      RemoveTabStripView(std::exchange(tab_strip_view_, nullptr));
+  CHECK_EQ(view, to_delete.get());
+}
+
+void BaseTabStripRegionView::AddTabStripView(
+    std::unique_ptr<views::View> view) {
+  AddChildView(std::move(view));
+}
+
+std::unique_ptr<views::View> BaseTabStripRegionView::RemoveTabStripView(
+    views::View* view) {
+  CHECK(Contains(view));
+  return view->parent()->RemoveChildViewT(view);
 }
 
 void BaseTabStripRegionView::RecordNewTabButtonPressed() {
