@@ -9,6 +9,7 @@ import androidx.annotation.Px;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -16,8 +17,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Coordinates the bottom sheet UI lifecycle, state transitions, and event notifications. */
 @NullMarked
 class BottomSheetMediator {
+    private static final GlowSpec DEFAULT_GLOW_SPEC = new GlowSpec(0, GlowSpec.ShadowSize.DEFAULT);
+
     private final PropertyModel mModel;
     private final ObserverList<BottomSheetObserver> mObservers = new ObserverList<>();
+
+    private @Nullable BottomSheetContent mSheetContent;
 
     /**
      * Creates a new BottomSheetMediator.
@@ -59,6 +64,48 @@ class BottomSheetMediator {
     /** Clears all registered observers when destroying the mediator. */
     void destroy() {
         mObservers.clear();
+    }
+
+    /**
+     * Updates the close button visibility in the model.
+     *
+     * @param isPopup Whether the sheet is currently displayed in desktop popup mode.
+     * @param content The current sheet content.
+     */
+    void updateCloseButton(boolean isPopup, @Nullable BottomSheetContent content) {
+        boolean showCloseButton = isPopup && BottomSheetUtils.isSheetNonModal(content);
+        mModel.set(BottomSheetProperties.CLOSE_BUTTON_VISIBILITY, showCloseButton);
+    }
+
+    /**
+     * Gets the current sheet content.
+     *
+     * @return The current {@link BottomSheetContent}, or null.
+     */
+    @Nullable BottomSheetContent getCurrentSheetContent() {
+        return mSheetContent;
+    }
+
+    /**
+     * Sets the current sheet content and pushes content views and glow spec to the model.
+     *
+     * @param content The new {@link BottomSheetContent}, or null.
+     */
+    void setSheetContent(@Nullable BottomSheetContent content) {
+        mSheetContent = content;
+        mModel.set(
+                BottomSheetProperties.CONTENT_VIEW,
+                content != null ? content.getContentView() : null);
+        mModel.set(
+                BottomSheetProperties.TOOLBAR_VIEW,
+                content != null ? content.getToolbarView() : null);
+        mModel.set(BottomSheetProperties.GLOW_SPEC, getGlowSpecOrDefault(content));
+    }
+
+    private GlowSpec getGlowSpecOrDefault(@Nullable BottomSheetContent content) {
+        if (content == null) return DEFAULT_GLOW_SPEC;
+        GlowSpec spec = content.getSheetBackgroundGlowSpecOverride();
+        return spec != null ? spec : DEFAULT_GLOW_SPEC;
     }
 
     /**
