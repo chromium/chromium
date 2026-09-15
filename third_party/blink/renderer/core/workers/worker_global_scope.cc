@@ -496,6 +496,36 @@ ExecutionContext* WorkerGlobalScope::GetExecutionContext() const {
   return const_cast<WorkerGlobalScope*>(this);
 }
 
+// [Worker]
+// https://html.spec.whatwg.org/C/#run-a-worker
+// [ServiceWorker]
+// https://w3c.github.io/ServiceWorker/#run-service-worker-algorithm
+void WorkerGlobalScope::RunClassicScript(
+    const KURL& response_url,
+    network::mojom::ReferrerPolicy response_referrer_policy,
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
+    DocumentPolicy::DocumentPolicyBundle response_document_policy,
+    const Vector<String>* response_origin_trial_tokens,
+    const String& source_code,
+    std::unique_ptr<Vector<uint8_t>> cached_meta_data,
+    const v8_inspector::V8StackTraceId& stack_id) {
+  // [Worker] Step 12, performFetch, Step 3.
+  //
+  // [ServiceWorker] Step 8.1: "Set workerGlobalScope to be the result of
+  // running the Setup ServiceWorkerGlobalScope algorithm with serviceWorker."
+  // [spec text]
+  Initialize(response_url, response_referrer_policy, std::move(response_csp),
+             std::move(response_document_policy), response_origin_trial_tokens);
+
+  // [Worker] Step 12, onComplete, Step 10. "run the classic script script."
+  // [spec text]
+  //
+  // [ServiceWorker] Step 9.4.1. "Set evaluationStatus to the result of running
+  // the classic script script." [spec text]
+  EvaluateClassicScript(response_url, source_code, std::move(cached_meta_data),
+                        stack_id);
+}
+
 void WorkerGlobalScope::EvaluateClassicScript(
     const KURL& script_url,
     String source_code,

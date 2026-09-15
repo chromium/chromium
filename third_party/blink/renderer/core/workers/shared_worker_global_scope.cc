@@ -249,19 +249,15 @@ void SharedWorkerGlobalScope::DidFetchClassicScript(
         kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
   }
 
-  // Step 12.3-12.6 are implemented in Initialize().
-  Initialize(classic_script_loader->ResponseURL(), response_referrer_policy,
-             classic_script_loader->GetContentSecurityPolicy()
-                 ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
-                                   ->GetParsedPolicies())
-                 : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-             classic_script_loader->GetDocumentPolicy(),
-             classic_script_loader->OriginTrialTokens());
-
-  // Step 12.7. "Asynchronously complete the perform the fetch steps with
-  // response."
-  EvaluateClassicScript(
-      classic_script_loader->ResponseURL(), classic_script_loader->SourceText(),
+  RunClassicScript(
+      classic_script_loader->ResponseURL(), response_referrer_policy,
+      classic_script_loader->GetContentSecurityPolicy()
+          ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
+                            ->GetParsedPolicies())
+          : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      classic_script_loader->GetDocumentPolicy(),
+      classic_script_loader->OriginTrialTokens(),
+      classic_script_loader->SourceText(),
       classic_script_loader->ReleaseCachedMetadata(), stack_id);
 }
 

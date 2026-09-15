@@ -449,17 +449,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       const KURL& script_url,
       const v8_inspector::V8StackTraceId& stack_id);
 
-  // https://w3c.github.io/ServiceWorker/#run-service-worker-algorithm
-  void RunClassicScript(
-      const KURL& response_url,
-      network::mojom::ReferrerPolicy response_referrer_policy,
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-      DocumentPolicy::DocumentPolicyBundle response_document_policy,
-      const Vector<String>* response_origin_trial_tokens,
-      const String& source_code,
-      std::unique_ptr<Vector<uint8_t>> cached_meta_data,
-      const v8_inspector::V8StackTraceId&);
-
   // Counts the |script_size| and |cached_metadata_size| for UMA to measure the
   // number of scripts and the total bytes of scripts.
   void CountScriptInternal(size_t script_size, size_t cached_metadata_size);

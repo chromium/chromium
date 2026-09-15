@@ -564,27 +564,6 @@ void ServiceWorkerGlobalScope::LoadAndRunInstalledClassicScript(
       script_data->TakeSourceText(), script_data->TakeMetaData(), stack_id);
 }
 
-// https://w3c.github.io/ServiceWorker/#run-service-worker-algorithm
-void ServiceWorkerGlobalScope::RunClassicScript(
-    const KURL& response_url,
-    network::mojom::ReferrerPolicy response_referrer_policy,
-    Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-    DocumentPolicy::DocumentPolicyBundle response_document_policy,
-    const Vector<String>* response_origin_trial_tokens,
-    const String& source_code,
-    std::unique_ptr<Vector<uint8_t>> cached_meta_data,
-    const v8_inspector::V8StackTraceId& stack_id) {
-  // Step 4.5-4.11 are implemented in Initialize().
-  Initialize(response_url, response_referrer_policy, std::move(response_csp),
-             std::move(response_document_policy), response_origin_trial_tokens);
-
-  // Step 4.12. "Let evaluationStatus be the result of running the classic
-  // script script if script is a classic script, otherwise, the result of
-  // running the module script script if script is a module script."
-  EvaluateClassicScript(response_url, source_code, std::move(cached_meta_data),
-                        stack_id);
-}
-
 ServiceWorkerClients* ServiceWorkerGlobalScope::clients() {
   if (!clients_)
     clients_ = ServiceWorkerClients::Create();

@@ -117,7 +117,7 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
     // Legacy on-the-main-thread worker script fetch (to be removed):
-    // Pass dummy origin trial tokens here as it is already set to outside's
+    // Pass null origin trial tokens here as it is already set to outside's
     // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
     global_scope->Initialize(response_script_url, response_referrer_policy,
                              std::move(response_csp),
@@ -527,21 +527,17 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
         kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
   }
 
-  // Step 12.3-12.6 are implemented in Initialize().
-  // Pass dummy origin trial tokens here as it is already set to outside's
-  // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
-  Initialize(classic_script_loader->ResponseURL(), response_referrer_policy,
-             classic_script_loader->GetContentSecurityPolicy()
-                 ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
-                                   ->GetParsedPolicies())
-                 : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-             classic_script_loader->GetDocumentPolicy(),
-             nullptr /* response_origin_trial_tokens */);
-
-  // Step 12.7. "Asynchronously complete the perform the fetch steps with
-  // response."
-  EvaluateClassicScript(
-      classic_script_loader->ResponseURL(), classic_script_loader->SourceText(),
+  RunClassicScript(
+      classic_script_loader->ResponseURL(), response_referrer_policy,
+      classic_script_loader->GetContentSecurityPolicy()
+          ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
+                            ->GetParsedPolicies())
+          : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      classic_script_loader->GetDocumentPolicy(),
+      // Pass dummy origin trial tokens here as it is already set to outside's
+      // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
+      /*response_origin_trial_tokens=*/nullptr,
+      classic_script_loader->SourceText(),
       classic_script_loader->ReleaseCachedMetadata(), stack_id);
 }
 
