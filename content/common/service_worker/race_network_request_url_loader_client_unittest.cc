@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "content/common/features.h"
 #include "content/common/service_worker/race_network_request_write_buffer_manager.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/load_timing_internal_info.h"
@@ -791,5 +792,51 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
 
   // Owner should NOT have received/committed the race network response.
   EXPECT_FALSE(owner()->committed_response_head());
+}
+
+TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
+       AutoPreload_RedirectReceivedFirst_FetchHandlerFallback) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kServiceWorkerAutoPreload);
+
+  const uint32_t data_pipe_capacity_num_bytes = 8;
+  SetUpURLLoaderClient(data_pipe_capacity_num_bytes);
+
+  // When AutoPreload is enabled, the commit responsibility is initially set to
+  // kServiceWorker.
+  owner()->SetCommitResponsibility(
+      ServiceWorkerResourceLoader::FetchResponseFrom::kServiceWorker);
+
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = GURL("https://example.com/redirected");
+  redirect_info.status_code = 302;
+  redirect_info.new_method = "GET";
+
+  network::mojom::URLResponseHeadPtr head(
+      network::CreateURLResponseHead(net::HTTP_FOUND));
+
+  client()->OnReceiveRedirect(redirect_info, std::move(head));
+
+  // Since commit responsibility was kServiceWorker, the redirect was forwarded
+  // to the fetch handler and not yet handled by the owner.
+  EXPECT_EQ(client()->state(),
+            ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kRedirect);
+  EXPECT_FALSE(owner()->received_redirect_info().has_value());
+
+  // When the fetch handler completes with a fallback, commit responsibility is
+  // transitioned through kAutoPreloadHandlingFallback to
+  // kWithoutServiceWorker, and
+  // CommitAndCompleteResponseIfDataTransferFinished() is invoked.
+  owner()->SetCommitResponsibility(
+      ServiceWorkerResourceLoader::FetchResponseFrom::
+          kAutoPreloadHandlingFallback);
+  owner()->SetCommitResponsibility(
+      ServiceWorkerResourceLoader::FetchResponseFrom::kWithoutServiceWorker);
+  client()->CommitAndCompleteResponseIfDataTransferFinished();
+
+  // The owner should now receive the redirect information.
+  ASSERT_TRUE(owner()->received_redirect_info().has_value());
+  EXPECT_EQ(owner()->received_redirect_info()->new_url,
+            GURL("https://example.com/redirected"));
 }
 }  // namespace content

@@ -37,6 +37,10 @@ namespace content {
 BASE_FEATURE(kServiceWorkerRaceNetworkRequestDeprecateTwoPhaseWrite,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for crbug.com/559592113.
+BASE_FEATURE(kServiceWorkerAutoPreloadFixRedirectHang,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 const char kMainResourceHistogramLoadTiming[] =
     "ServiceWorker.LoadTiming.MainFrame.MainResource";
@@ -259,6 +263,10 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   data_consume_policy_ = DataConsumePolicy::kForwardingOnly;
   response_received_time_ = base::TimeTicks::Now();
   redirected_ = true;
+  if (base::FeatureList::IsEnabled(kServiceWorkerAutoPreloadFixRedirectHang)) {
+    redirect_info_ = redirect_info;
+    head_ = head.Clone();
+  }
 
   // TODO(crbug.com/40258805): Return a redirect response to |owner| as a
   // RaceNetworkRequest result without breaking the cache storage compatibility.
@@ -309,8 +317,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
       // This happens when the fetch handler is faster and the result is
       // fallback. In this case in-flight RaceNetworkRequest will be used as a
       // fallback request.
-      owner_->HandleRedirect(redirect_info, head);
-      MaybeCompleteRedirectResponse(/*run_completion_callback=*/true);
+      HandleRedirect(redirect_info, head);
       return;
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
       NOTREACHED();
@@ -382,6 +389,16 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
   if (run_completion_callback) {
     MaybeRunCloneCompletedForFetchHandlerCallback();
   }
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::HandleRedirect(
+    const net::RedirectInfo& redirect_info,
+    const network::mojom::URLResponseHeadPtr& head) {
+  if (!owner_) {
+    return;
+  }
+  owner_->HandleRedirect(redirect_info, head);
+  MaybeCompleteRedirectResponse(/*run_completion_callback=*/true);
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse() {
@@ -537,6 +554,19 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::
     CommitAndCompleteResponseIfDataTransferFinished() {
+  // When AutoPreload is active, a 302 redirect from the network request may
+  // arrive while the fetch handler is still running. In that case, the redirect
+  // is forwarded to the fetch handler without committing to `owner_` in case
+  // the fetch handler responds. If the fetch handler subsequently falls back,
+  // this method is called to commit the response. For redirects, there is no
+  // body to transfer, so forward the buffered redirect to `owner_` immediately.
+  if (base::FeatureList::IsEnabled(kServiceWorkerAutoPreloadFixRedirectHang) &&
+      state_ == State::kRedirect) {
+    CHECK(redirect_info_.has_value());
+    CHECK(head_);
+    HandleRedirect(*redirect_info_, head_);
+    return;
+  }
   if (state_ == State::kDataTransferFinished) {
     CommitResponse();
     // Step back to State::kDataTransferFinished since MaybeCompleteResponse()
