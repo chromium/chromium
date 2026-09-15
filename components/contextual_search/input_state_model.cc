@@ -896,10 +896,10 @@ void InputStateModel::RebuildAllowedInputTypes() {
   }
 
   // Fallback for drive if not already present in SearchboxConfig and drive is
-  // supported. This option is available even on signout when the signin promo
+  // supported. This option is available on signout when the signin promo
   // feature flag is enabled, which will prompt the signin promo when clicked.
-  if (!contains(omnibox::INPUT_TYPE_DRIVE) && IsDriveSupported() &&
-      sharing_enabled) {
+  if (!contains(omnibox::INPUT_TYPE_DRIVE) && !is_signed_in_ &&
+      IsDriveSupported() && sharing_enabled) {
     state_.allowed_input_types.push_back(omnibox::INPUT_TYPE_DRIVE);
   }
 }
