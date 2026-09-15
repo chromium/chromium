@@ -151,6 +151,7 @@ source_set("test_support") {
   deps = [
     "//chrome/browser/safe_browsing",
     "//chrome/common",
+    "//chrome/test/base:chrome_test_utils",
     "//components/blocked_content",
     "//components/content_settings/browser",
     "//components/subresource_filter/core/browser",

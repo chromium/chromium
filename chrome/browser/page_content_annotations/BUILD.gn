@@ -195,6 +195,7 @@ if (is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/page_content_annotations/content",
       "//components/page_content_annotations/core",
@@ -301,6 +302,7 @@ source_set("test_support") {
     "//mojo/public/cpp/bindings",
   ]
   deps = [
+    "//chrome/test/base:chrome_test_utils",
     "//content/public/browser",
     "//content/test:test_support",
     "//net:test_support",

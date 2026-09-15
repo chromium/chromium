@@ -673,6 +673,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/segmentation_platform",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//components/segmentation_platform/public:test_support",
     "//content/test:test_support",
     "//testing/gmock",

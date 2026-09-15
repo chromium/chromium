@@ -48,6 +48,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//components/content_settings/core/common",
     "//components/private_verification_tokens/common:private_verification_tokens_database",
     "//components/private_verification_tokens/common:private_verification_tokens_issuer_config",

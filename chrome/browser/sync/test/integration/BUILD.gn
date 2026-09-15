@@ -41,6 +41,7 @@ source_set("sync_integration_tests_impl") {
     "//chrome/test:test_support",
     "//chrome/test/base:browser_test_waiters",
     "//chrome/test/base:browser_tests_runner",
+    "//chrome/test/base:chrome_test_utils",
     "//components/account_settings",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",

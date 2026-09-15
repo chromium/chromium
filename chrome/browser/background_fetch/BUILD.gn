@@ -114,6 +114,7 @@ if (is_android) {
       "//chrome/browser/offline_items_collection",
       "//chrome/browser/profiles",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//components/background_fetch",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",

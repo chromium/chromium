@@ -117,6 +117,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/payments/browser_binding:browsertests",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//chrome/test/payments:test_support",
     "//components/payments/content",
     "//components/payments/content:test_support",

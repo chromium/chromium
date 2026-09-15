@@ -61,6 +61,7 @@ if (is_android) {
       "//chrome/browser/preloading:test_support",
       "//chrome/common:constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//components/site_isolation",
     ]
   }

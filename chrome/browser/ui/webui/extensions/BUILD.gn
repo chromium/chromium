@@ -140,6 +140,7 @@ if (enable_extensions_core) {
       "//chrome/browser/profiles:profile",
       "//chrome/common",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//content/public/browser",
       "//content/test:test_support",
       "//extensions/browser",

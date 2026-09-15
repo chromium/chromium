@@ -4,6 +4,7 @@
 
 #include "chrome/browser/banners/app_banner_manager_browsertest_base.h"
 
+#include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/url_util.h"

@@ -272,6 +272,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/navigator",
     "//chrome/browser/webdata_services",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//chrome/test/base:test_switches",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/common:test_support",

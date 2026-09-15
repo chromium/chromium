@@ -752,6 +752,7 @@ source_set("platform_browser_tests") {
     "//base",
     "//chrome/browser:chrome_browser_main",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//content/test:test_support",
     "//media:test_support",
     "//testing/gtest",

@@ -302,6 +302,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/ui/navigator",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
   ]
   if (!is_android) {
     deps += [

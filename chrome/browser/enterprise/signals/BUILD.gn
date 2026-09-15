@@ -50,6 +50,7 @@ if (is_android) {
       "//base",
       "//chrome/browser/enterprise:impl",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//content/test:test_support",
       "//testing/gmock",
     ]

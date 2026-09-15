@@ -80,6 +80,7 @@ if (!is_android || enable_desktop_android_extensions) {
       "//chrome/common:constants",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//components/prefs",
       "//content/test:test_support",
       "//third_party/blink/public/common:headers",

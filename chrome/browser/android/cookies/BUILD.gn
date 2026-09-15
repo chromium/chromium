@@ -39,6 +39,7 @@ if (is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/tab",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//content/test:test_support",
       "//net",
       "//net:test_support",

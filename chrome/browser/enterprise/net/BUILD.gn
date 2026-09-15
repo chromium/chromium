@@ -17,6 +17,7 @@ source_set("platform_browser_tests") {
     "//base",
     "//chrome/browser/enterprise/test:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//components/proxy_config",
     "//content/test:test_support",
     "//testing/gmock",

@@ -55,6 +55,7 @@ if (enable_arcore) {
       "//chrome/browser/profiles:profile",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//components/prefs",
       "//content/public/browser",
       "//content/test:test_support",

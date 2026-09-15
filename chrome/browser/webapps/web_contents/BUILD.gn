@@ -13,6 +13,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//components/webapps/browser",
     "//content/public/browser",
     "//content/test:test_support",

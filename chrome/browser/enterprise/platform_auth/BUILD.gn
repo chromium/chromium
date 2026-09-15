@@ -151,6 +151,7 @@ if (is_android) {
       "//chrome/android:chrome_jni_headers",
       "//chrome/browser/enterprise:impl",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//content/test:test_support",
       "//testing/gmock",
     ]

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "url/gurl.h"
 

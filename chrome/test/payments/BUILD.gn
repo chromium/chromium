@@ -23,6 +23,7 @@ static_library("test_support") {
     "//chrome/browser/payments",
     "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//components/autofill/core/browser:test_support",
     "//components/payments/content",
     "//components/payments/content:test_support",

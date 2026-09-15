@@ -1187,6 +1187,7 @@ if (safe_browsing_mode != 0) {
       "//chrome/browser/policy:test_support",
       "//chrome/browser/safe_browsing:metrics_collector",
       "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+      "//chrome/test/base:chrome_test_utils",
       "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/security_interstitials/content:security_interstitial_page",
       "//content/test:test_support",
@@ -1211,6 +1212,7 @@ if (safe_browsing_mode != 0) {
     deps = [
       ":safe_browsing",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//components/metrics:content",
       "//components/safe_browsing/content/browser:client_side_detection",
       "//components/safe_browsing/content/browser:client_side_detection_service",

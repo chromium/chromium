@@ -771,6 +771,7 @@ if (is_android) {
         "//chrome/browser/profiles:profile",
         "//chrome/browser/sync",
         "//chrome/test:test_support",
+        "//chrome/test/base:chrome_test_utils",
         "//components/messages/android/test:test_support_cpp",
         "//components/safe_search_api:test_support",
         "//components/supervised_user/core/browser:test_support",

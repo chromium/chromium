@@ -241,6 +241,7 @@ source_set("test_support") {
     "//chrome/browser/policy:impl",
     "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
@@ -317,6 +318,7 @@ source_set("test_support") {
       "//ui/snapshot",
     ]
   }
+  public_deps = [ "//chrome/test/base:chrome_test_utils" ]
 }
 
 # Browser tests for specific policies.
@@ -356,6 +358,7 @@ source_set("policy_specific_browser_tests") {
     "//chrome/browser/ui/autofill",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/heap_profiling/in_process",
@@ -507,6 +510,7 @@ source_set("browser_tests") {
     "//chrome/common",
     "//chrome/test:test_support",
     "//chrome/test/base:browser_test_waiters",
+    "//chrome/test/base:chrome_test_utils",
     "//chrome/test/base:profile_lifecycle_test_utils",
     "//components/enterprise",
     "//components/enterprise:test_support",
@@ -760,6 +764,7 @@ source_set("android_browsertests") {
     "//chrome/browser/content_settings",
     "//chrome/browser/site_protection:utils",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//content/test:test_support",
     "//testing/gmock",
   ]
@@ -779,6 +784,7 @@ source_set("platform_browser_tests") {
     ":test_support",
     "//base",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//components/enterprise:test_support",
     "//components/policy/core/browser",
     "//components/policy/core/browser:pref_mapping_test_support",

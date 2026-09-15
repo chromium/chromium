@@ -12,6 +12,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//content/test:test_support",
     "//third_party/blink/public/common",
   ]

@@ -98,6 +98,7 @@ if (is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//components/policy/core/common",
       "//components/policy/test_support",
       "//content/test:test_support",
