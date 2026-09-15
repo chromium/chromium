@@ -8528,6 +8528,7 @@ crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/ca
 crbug.com/441912460 [ Mac ] external/wpt/webrtc/rtp-stats-lifetime.https.html?interop-2026 [ Failure Pass ]
 crbug.com/441912460 [ Mac ] external/wpt/webrtc/rtp-stats-lifetime.https.html?rest [ Failure Pass ]
 crbug.com/441912460 [ Mac ] external/wpt/webrtc-stats/rtp-stats-creation.html [ Failure Pass ]
+crbug.com/441912460 [ Mac ] external/wpt/webrtc-stats/stats-creation.html [ Skip Timeout ]
 crbug.com/441912460 [ Mac ] fast/peerconnection/RTCPeerconnection-insertable-streams.html [ Failure Pass ]
 crbug.com/441912460 [ Mac ] external/wpt/webrtc/RTCPeerConnection-addTransceiver-renegotiation.https.html [ Failure Pass ]
 crbug.com/441912460 [ Mac ] external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Pass ]
