@@ -676,21 +676,21 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    public void updateFuseboxState_tablet_drafting_isDisabled() {
+    public void updateFuseboxState_tablet_drafting_isCompact() {
         mInput.setDisplayState(DisplayState.DRAFTING);
         recreateMediator();
 
-        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
     @Config(qualifiers = "sw600dp")
-    public void updateFuseboxState_tablet_aiMode_drafting_isDisabled() {
+    public void updateFuseboxState_tablet_aiMode_drafting_isCompact() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mInput.setDisplayState(DisplayState.DRAFTING);
         recreateMediator();
 
-        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test

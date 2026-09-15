@@ -82,7 +82,6 @@ import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -498,19 +497,7 @@ import java.util.function.Supplier;
                 || mInput.getDisplayState() == DisplayState.DRAFTING_NO_FOCUS) {
             targetState = FuseboxState.DISABLED;
         } else if (mInput.getDisplayState() == DisplayState.DRAFTING) {
-            // Note: FuseboxState semantics have diverged significantly across form factors:
-            // - On Tablet, COMPACT activates the floating pop-out overlay container, negative
-            //   margins, and elevated translations. Setting DISABLED keeps the omnibox collapsed
-            //   in the toolbar slot during drafting (crbug.com/552571006).
-            // - On Phone, COMPACT leaves the omnibox single-line in the toolbar while enabling the
-            //   '+' button affordance in StatusView (crbug.com/557024450).
-            // (On Desktop/AL, COMPACT and DISABLED behave identically under SUGGESTIONS_POPOVER).
-            // TODO(crbug.com/559120802): Refactor FuseboxState to decouple the '+' affordance from
-            // container layout geometry.
-            targetState =
-                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                            ? FuseboxState.DISABLED
-                            : FuseboxState.COMPACT;
+            targetState = FuseboxState.COMPACT;
         } else {
             boolean isPopover =
                     mModel.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
