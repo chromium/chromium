@@ -477,6 +477,7 @@ bool ModifyRequestHeadersForAction(
 // |header_actions| maps a header name to a list of operations to be performed
 // on the header.
 bool ModifyResponseHeadersForAction(
+    const GURL& url,
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
     const DNRRequestAction& request_action,
@@ -504,10 +505,15 @@ bool ModifyResponseHeadersForAction(
         }
       };
 
+  extensions::ExtensionsAPIClient* api_client =
+      extensions::ExtensionsAPIClient::Get();
   for (const DNRRequestAction::HeaderInfo& header_info :
        request_action.response_headers_to_modify) {
     bool header_modified = false;
     const std::string& header = header_info.header;
+    if (api_client && api_client->ShouldHideResponseHeader(url, header)) {
+      continue;
+    }
 
     DNRHeaderAction header_action(&header_info, &request_action.extension_id);
     auto iter = header_actions->find(header);
@@ -1601,8 +1607,8 @@ void MergeOnHeadersReceivedResponses(
   std::map<std::string_view, std::vector<DNRHeaderAction>> dnr_header_actions;
   for (const auto& action : *request.dnr_actions) {
     bool headers_modified_for_action = ModifyResponseHeadersForAction(
-        original_response_headers, override_response_headers, action,
-        &dnr_header_actions);
+        request.url, original_response_headers, override_response_headers,
+        action, &dnr_header_actions);
 
     *response_headers_modified |= headers_modified_for_action;
     if (headers_modified_for_action) {

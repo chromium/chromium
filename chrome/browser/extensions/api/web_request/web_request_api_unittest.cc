@@ -80,6 +80,7 @@ using helpers::ExtraInfoSpec;
 using helpers::InDecreasingExtensionInstallationTimeOrder;
 using helpers::MergeCancelOfResponses;
 using helpers::MergeOnBeforeRequestResponses;
+using helpers::MergeOnHeadersReceivedResponses;
 using helpers::RequestCookieModification;
 using helpers::ResponseCookieModification;
 using helpers::ResponseHeader;
@@ -93,6 +94,7 @@ namespace extensions {
 namespace {
 
 constexpr const char kExampleUrl[] = "http://example.com";
+constexpr const char kGaiaHeader[] = "x-chrome-id-consistency-response";
 
 // Returns whether |warnings| contains an extension for |extension_id|.
 bool HasIgnoredAction(const helpers::IgnoredActions& ignored_actions,
@@ -105,6 +107,43 @@ bool HasIgnoredAction(const helpers::IgnoredActions& ignored_actions,
     }
   }
   return false;
+}
+
+scoped_refptr<net::HttpResponseHeaders> MergeOnHeadersReceivedResponses(
+    const GURL& url,
+    scoped_refptr<net::HttpResponseHeaders> base_headers,
+    std::vector<DNRRequestAction> dnr_actions,
+    bool* response_headers_modified,
+    std::vector<const DNRRequestAction*>* matched_actions) {
+  WebRequestInfoInitParams info_params;
+  info_params.url = url;
+  WebRequestInfo info(std::move(info_params));
+  info.dnr_actions = std::move(dnr_actions);
+
+  helpers::IgnoredActions ignored_actions;
+  EventResponseDeltas deltas;
+  GURL preserve_fragment_on_redirect_url;
+  std::optional<ExtensionId> extension_id;
+  scoped_refptr<net::HttpResponseHeaders> new_headers;
+
+  helpers::MergeOnHeadersReceivedResponses(
+      info, deltas, base_headers.get(), &new_headers,
+      &preserve_fragment_on_redirect_url, &extension_id, &ignored_actions,
+      response_headers_modified, matched_actions);
+  return new_headers;
+}
+
+scoped_refptr<net::HttpResponseHeaders> MergeOnHeadersReceivedResponses(
+    const GURL& url,
+    scoped_refptr<net::HttpResponseHeaders> base_headers,
+    DNRRequestAction dnr_action,
+    bool* response_headers_modified,
+    std::vector<const DNRRequestAction*>* matched_actions) {
+  std::vector<DNRRequestAction> dnr_actions;
+  dnr_actions.push_back(std::move(dnr_action));
+  return MergeOnHeadersReceivedResponses(
+      url, base_headers, std::move(dnr_actions), response_headers_modified,
+      matched_actions);
 }
 
 }  // namespace
@@ -2380,6 +2419,186 @@ TEST(ExtensionWebRequestHelpersTest,
 
   // There should be no entry for the "warning" header because it was not
   // removed.
+}
+
+// Tests that declarative net request actions cannot modify response headers
+// hidden by ExtensionsAPIClient::ShouldHideResponseHeader() (such as
+// x-chrome-id-consistency-response on Gaia URLs), whether injecting, mutating,
+// or removing the header.
+TEST(ExtensionWebRequestHelpersTest,
+     TestMergeOnHeadersReceivedResponses_DNRCannotModifyHiddenHeaders) {
+  using HeaderInfo = DNRRequestAction::HeaderInfo;
+  const GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
+  const GURL non_gaia_url = GURL(kExampleUrl);
+
+  // When the header is initially absent on the server response:
+  {
+    char base_headers_string[] =
+        "HTTP/1.0 200 OK\r\n"
+        "X-Control: server_value\r\n"
+        "\r\n";
+    auto base_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(base_headers_string));
+
+    auto make_action = [] {
+      DNRRequestAction action =
+          CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
+      action.extension_id = "ext_1";
+      action.response_headers_to_modify = {HeaderInfo(
+          kGaiaHeader, dnr_api::HeaderOperation::kSet, "injected_value")};
+      return action;
+    };
+
+    // Gaia URL: extension cannot inject a new Gaia header.
+    {
+      bool headers_modified = false;
+      std::vector<const DNRRequestAction*> matched_actions;
+      auto new_headers =
+          MergeOnHeadersReceivedResponses(gaia_url, base_headers, make_action(),
+                                          &headers_modified, &matched_actions);
+      EXPECT_FALSE(headers_modified);
+      EXPECT_FALSE(new_headers);
+      EXPECT_TRUE(matched_actions.empty());
+      EXPECT_FALSE(base_headers->HasHeader(kGaiaHeader));
+    }
+
+    // Control: non-Gaia URL allows injecting the header.
+    {
+      bool headers_modified = false;
+      std::vector<const DNRRequestAction*> matched_actions;
+      auto new_headers = MergeOnHeadersReceivedResponses(
+          non_gaia_url, base_headers, make_action(), &headers_modified,
+          &matched_actions);
+      ASSERT_TRUE(new_headers);
+      EXPECT_TRUE(headers_modified);
+      EXPECT_EQ(1u, matched_actions.size());
+      EXPECT_EQ("injected_value",
+                new_headers->GetNormalizedHeader(kGaiaHeader));
+    }
+  }
+
+  // When the header is initially present on the server response:
+  {
+    char base_headers_string[] =
+        "HTTP/1.0 200 OK\r\n"
+        "X-Chrome-ID-Consistency-Response: server_value\r\n"
+        "X-Control: server_control\r\n"
+        "\r\n";
+    auto base_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(base_headers_string));
+
+    // Gaia URL: cannot overwrite (kSet).
+    {
+      DNRRequestAction action =
+          CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
+      action.extension_id = "ext_1";
+      action.response_headers_to_modify = {HeaderInfo(
+          kGaiaHeader, dnr_api::HeaderOperation::kSet, "overwrite_value")};
+
+      bool headers_modified = false;
+      std::vector<const DNRRequestAction*> matched_actions;
+      auto new_headers = MergeOnHeadersReceivedResponses(
+          gaia_url, base_headers, std::move(action), &headers_modified,
+          &matched_actions);
+      EXPECT_FALSE(headers_modified);
+      EXPECT_FALSE(new_headers);
+      EXPECT_TRUE(matched_actions.empty());
+      EXPECT_EQ("server_value", base_headers->GetNormalizedHeader(kGaiaHeader));
+    }
+
+    // Gaia URL: cannot append (kAppend).
+    {
+      DNRRequestAction action =
+          CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
+      action.extension_id = "ext_1";
+      action.response_headers_to_modify = {HeaderInfo(
+          kGaiaHeader, dnr_api::HeaderOperation::kAppend, "append_value")};
+
+      bool headers_modified = false;
+      std::vector<const DNRRequestAction*> matched_actions;
+      auto new_headers = MergeOnHeadersReceivedResponses(
+          gaia_url, base_headers, std::move(action), &headers_modified,
+          &matched_actions);
+      EXPECT_FALSE(headers_modified);
+      EXPECT_FALSE(new_headers);
+      EXPECT_TRUE(matched_actions.empty());
+      EXPECT_EQ("server_value", base_headers->GetNormalizedHeader(kGaiaHeader));
+    }
+
+    // Gaia URL: cannot remove (kRemove).
+    {
+      DNRRequestAction action =
+          CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
+      action.extension_id = "ext_1";
+      action.response_headers_to_modify = {HeaderInfo(
+          kGaiaHeader, dnr_api::HeaderOperation::kRemove, std::nullopt)};
+
+      bool headers_modified = false;
+      std::vector<const DNRRequestAction*> matched_actions;
+      auto new_headers = MergeOnHeadersReceivedResponses(
+          gaia_url, base_headers, std::move(action), &headers_modified,
+          &matched_actions);
+      EXPECT_FALSE(headers_modified);
+      EXPECT_FALSE(new_headers);
+      EXPECT_TRUE(matched_actions.empty());
+      EXPECT_TRUE(base_headers->HasHeader(kGaiaHeader));
+      EXPECT_EQ("server_value", base_headers->GetNormalizedHeader(kGaiaHeader));
+    }
+
+    // Control: non-Gaia URL allows removal.
+    {
+      DNRRequestAction action =
+          CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
+      action.extension_id = "ext_1";
+      action.response_headers_to_modify = {HeaderInfo(
+          kGaiaHeader, dnr_api::HeaderOperation::kRemove, std::nullopt)};
+
+      bool headers_modified = false;
+      std::vector<const DNRRequestAction*> matched_actions;
+      auto new_headers = MergeOnHeadersReceivedResponses(
+          non_gaia_url, base_headers, std::move(action), &headers_modified,
+          &matched_actions);
+      ASSERT_TRUE(new_headers);
+      EXPECT_TRUE(headers_modified);
+      EXPECT_EQ(1u, matched_actions.size());
+      EXPECT_FALSE(new_headers->HasHeader(kGaiaHeader));
+    }
+  }
+}
+
+// Tests that when a declarative net request rule modifies multiple headers,
+// restricted headers are dropped while unrestricted headers are still applied.
+TEST(ExtensionWebRequestHelpersTest,
+     TestMergeOnHeadersReceivedResponses_DNRPartialHeaderModification) {
+  using HeaderInfo = DNRRequestAction::HeaderInfo;
+  const GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
+
+  char base_headers_string[] =
+      "HTTP/1.0 200 OK\r\n"
+      "X-Control: server_value\r\n"
+      "\r\n";
+  auto base_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(base_headers_string));
+
+  DNRRequestAction action =
+      CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
+  action.extension_id = "ext_1";
+  action.response_headers_to_modify = {
+      HeaderInfo(kGaiaHeader, dnr_api::HeaderOperation::kSet, "bad_val_1"),
+      HeaderInfo(kGaiaHeader, dnr_api::HeaderOperation::kAppend, "bad_val_2"),
+      HeaderInfo("x-control", dnr_api::HeaderOperation::kSet, "good_val")};
+
+  // Gaia URL: hidden headers are dropped, but allowed header is applied.
+  bool headers_modified = false;
+  std::vector<const DNRRequestAction*> matched_actions;
+  auto new_headers =
+      MergeOnHeadersReceivedResponses(gaia_url, base_headers, std::move(action),
+                                      &headers_modified, &matched_actions);
+  ASSERT_TRUE(new_headers);
+  EXPECT_TRUE(headers_modified);
+  EXPECT_EQ(1u, matched_actions.size());
+  EXPECT_FALSE(new_headers->HasHeader(kGaiaHeader));
+  EXPECT_EQ("good_val", new_headers->GetNormalizedHeader("X-Control"));
 }
 
 TEST(ExtensionWebRequestHelpersTest, TestMergeOnAuthRequiredResponses) {
