@@ -20,9 +20,13 @@ namespace drive {
 
 namespace {
 
-// Base URL for the embedded ConsentKit UI.
+// Base URL for the desktop ConsentKit UI, loaded in an iframe.
 constexpr char kConsentKitBaseUrl[] =
     "https://consent.google.com/signedin/landing";
+
+// Base URL for the mobile ConsentKit UI, loaded top-level in a WebView.
+constexpr char kConsentKitWebViewBaseUrl[] =
+    "https://consent.google.com/signedin/embedded/landing";
 
 }  // namespace
 
@@ -60,6 +64,10 @@ void ConsentKitUrlBuilder::SetHostOrigins(
 
 void ConsentKitUrlBuilder::SetDarkMode(bool is_dark_mode) {
   is_dark_mode_ = is_dark_mode;
+}
+
+void ConsentKitUrlBuilder::SetUseWebViewEndpoint(bool use_web_view_endpoint) {
+  use_web_view_endpoint_ = use_web_view_endpoint;
 }
 
 GURL ConsentKitUrlBuilder::Build() {
@@ -115,15 +123,18 @@ GURL ConsentKitUrlBuilder::Build() {
   }
 
   // --- Assemble URL ---
-  GURL url(kConsentKitBaseUrl);
+  GURL url(use_web_view_endpoint_ ? kConsentKitWebViewBaseUrl
+                                  : kConsentKitBaseUrl);
 
   // Required Parameters:
   url = net::AppendQueryParameter(url, "ppc", json_config);
   url = net::AppendQueryParameter(url, "authuser",
                                   base::NumberToString(session_index_));
   url = net::AppendQueryParameter(url, "hl", locale_);
-  for (const auto& origin : host_origins_) {
-    url = net::AppendQueryParameter(url, "origin", origin);
+  if (!use_web_view_endpoint_) {
+    for (const auto& origin : host_origins_) {
+      url = net::AppendQueryParameter(url, "origin", origin);
+    }
   }
   url = net::AppendQueryParameter(url, "allowNonWebView", "true");
 

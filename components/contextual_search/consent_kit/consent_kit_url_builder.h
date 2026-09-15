@@ -32,10 +32,13 @@ class ConsentKitUrlBuilder {
   void SetProductId(int32_t product_id);
   void SetProductSurface(int32_t product_surface);
   void SetEntrypointId(const std::string& entrypoint_id);
-  // Sets the allowed host origins for the handshake.
+  // Sets the allowed host origins for the handshake. Ignored when
+  // SetUseWebViewEndpoint(true) is set.
   void SetHostOrigins(std::vector<std::string> host_origins);
   // Sets whether the dialog should render in dark mode.
   void SetDarkMode(bool is_dark_mode);
+  // Selects the mobile endpoint, which is loaded top-level in a WebView.
+  void SetUseWebViewEndpoint(bool use_web_view_endpoint);
 
   // Builds the ConsentKit URL. Returns an invalid GURL on serialization
   // failure.
@@ -49,6 +52,7 @@ class ConsentKitUrlBuilder {
   int32_t product_surface_ = 0;
   std::string entrypoint_id_;
   bool is_dark_mode_ = false;
+  bool use_web_view_endpoint_ = false;
   std::vector<std::string> host_origins_ = {
       "chrome-untrusted://drive-picker-host", "chrome://drive-picker-host"};
 };
