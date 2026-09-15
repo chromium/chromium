@@ -82,9 +82,6 @@ virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/
 # TODO(crbug.com/393152490): Pending Web Bluetooth Permission API integration for running in headless shell.
 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/*
 
-#webui browser is mostly implemented in `//chrome` layer.
-virtual/webui-browser/*
-
 # Extension APIs can reach into the `//chrome` layer.
 external/wpt/web-extensions/*
 
