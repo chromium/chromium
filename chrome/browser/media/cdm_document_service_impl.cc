@@ -71,7 +71,7 @@ std::vector<uint8_t> GetStorageIdSaltFromProfile(
   DCHECK(rfh);
   Profile* profile =
       Profile::FromBrowserContext(rfh->GetProcess()->GetBrowserContext());
-  return MediaStorageIdSalt::GetSalt(profile->GetPrefs());
+  return MediaStorageIdSalt::GetSalt(profile);
 }
 
 #endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)

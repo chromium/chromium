@@ -10,9 +10,9 @@
 #include <vector>
 
 class PrefRegistrySimple;
-class PrefService;
+class Profile;
 
-// MediaStorageIDSalt is responsible for creating and retrieving a salt string
+// MediaStorageIdSalt is responsible for creating and retrieving a salt string
 // that is used when creating Storage IDs.
 class MediaStorageIdSalt {
  public:
@@ -22,8 +22,10 @@ class MediaStorageIdSalt {
   MediaStorageIdSalt(const MediaStorageIdSalt&) = delete;
   MediaStorageIdSalt& operator=(const MediaStorageIdSalt&) = delete;
 
-  // Retrieves the current salt. If one does not currently exist it is created.
-  static std::vector<uint8_t> GetSalt(PrefService* pref_service);
+  // Retrieves the current salt for `profile`. If one does not currently exist
+  // it is created. For off-the-record profiles, an ephemeral in-memory salt is
+  // used.
+  static std::vector<uint8_t> GetSalt(Profile* profile);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 };
