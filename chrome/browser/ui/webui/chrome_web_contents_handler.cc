@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/base_window.h"
@@ -133,6 +134,13 @@ void ChromeWebContentsHandler::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  if (!profile || GetBrowserWindowCreationStatusForProfile(*profile) !=
+                      BrowserWindowInterface::CreationStatus::kOk) {
+    listener->FileSelectionCanceled();
+    return;
+  }
   FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                    params);
 }

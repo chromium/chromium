@@ -949,6 +949,7 @@ if (!is_android) {
       "//net",
       "//testing/gtest",
       "//ui/gfx/geometry",
+      "//ui/shell_dialogs:test_support",
       "//ui/web_dialogs",
       "//ui/web_dialogs:test_support",
       "//ui/webui:test_support",
