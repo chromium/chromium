@@ -147,7 +147,8 @@ class PhoneObject final {
   bool IsValidNumber() const { return i18n_number_ != nullptr; }
 
  private:
-  // The region code for this phone number, inferred during parsing.
+  // The region code for this phone number, inferred during parsing. May be
+  // empty or "ZZ" if the region cannot be inferred.
   std::string region_;
 
   // The parsed number and its components.

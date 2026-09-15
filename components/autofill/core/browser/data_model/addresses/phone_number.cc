@@ -31,10 +31,9 @@ namespace autofill {
 
 namespace {
 
-// Returns the region code for this phone number, which is an ISO 3166 2-letter
-// country code.  The returned value is based on the `profile`; if the `profile`
-// does not have a country code associated with it, falls back to the country
-// code corresponding to the `app_locale`.
+// Returns the region code for `profile`, which is an ISO 3166 2-letter country
+// code. If the `profile` does not have a country code associated with it, falls
+// back to the country code corresponding to the `app_locale`.
 std::string GetRegion(const AutofillProfile& profile,
                       std::string_view app_locale) {
   std::u16string country_code = profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
@@ -417,8 +416,9 @@ std::optional<std::u16string> PhoneNumber::PhoneCombineHelper::GetRegionCode()
         i18n::PhoneObject(number, std::string(kUnknownRegion),
                           /*infer_country_code=*/false)
             .region();
-    return region.empty() ? std::nullopt
-                          : std::optional(base::UTF8ToUTF16(region));
+    return region.empty() || region == kUnknownRegion
+               ? std::nullopt
+               : std::optional(base::UTF8ToUTF16(region));
   };
 
   // Prefer using the whole phone number over separate number components if

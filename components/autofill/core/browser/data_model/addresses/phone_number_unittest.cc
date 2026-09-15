@@ -379,6 +379,24 @@ TEST(PhoneCombineHelperTest, GetRegionCodeNationalWholeNumber) {
   EXPECT_FALSE(helper.GetRegionCode());
 }
 
+// Tests that invalid region codes are handled correctly in `GetRegionCode()`.
+TEST(PhoneCombineHelperTest, GetRegionCodeInvalidRegionCodes) {
+  PhoneNumber::PhoneCombineHelper helper;
+
+  helper.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"");
+  EXPECT_FALSE(helper.GetRegionCode());
+
+  // Invalid region code means the number is not valid, leading to an empty
+  // region code.
+  helper.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"+99 123456789");
+  EXPECT_FALSE(helper.GetRegionCode());
+
+  // Area code 123 does not exist in NANP. Thus, region cannot be resolved
+  // for an otherwise possible number, leading to region code "ZZ".
+  helper.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"+1 123 4567890");
+  EXPECT_FALSE(helper.GetRegionCode());
+}
+
 TEST(PhoneNumberTest, InternationalPhoneHomeCityAndNumber_US) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
