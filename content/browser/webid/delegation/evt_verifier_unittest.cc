@@ -159,7 +159,7 @@ TEST_F(EvtVerifierTest, SuccessfulVerification) {
       EvtVerifier::Result::kVerified);
 }
 
-TEST_F(EvtVerifierTest, CaseInsensitiveEmailMatch) {
+TEST_F(EvtVerifierTest, CaseMismatchedEmailRejected) {
   TokenOptions options;
   options.evt_email = "TeSt@ExAmPlE.CoM";
   options.expected_email = "test@example.com";
@@ -167,7 +167,7 @@ TEST_F(EvtVerifierTest, CaseInsensitiveEmailMatch) {
   EXPECT_EQ(
       EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
                           ctx.rp_origin, ctx.email, ctx.nonce, ctx.browser_jwk),
-      EvtVerifier::Result::kVerified);
+      EvtVerifier::Result::kSdJwtInvalidEmail);
 }
 
 TEST_F(EvtVerifierTest, ExpiredEvtRejected) {

@@ -1906,25 +1906,29 @@ TEST_F(EmailVerifierDelegateTest,
       ::features::kEmailVerificationProtocol};
 
   FormStructure* form = SetUpValidForm();
-  std::string lower_email = "mixedcase@example.com";
+  std::string normalized_email = "mixedcase@example.com";
+  std::string raw_email = "MixedCase@Example.COM";
 
   client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
   EmailVerificationStrikeDatabase strike_db(client().GetStrikeDatabase());
-  std::string strike_id = EmailVerificationStrikeDatabase::GetId(lower_email);
+  std::string strike_id =
+      EmailVerificationStrikeDatabase::GetId(normalized_email);
 
-  // 1. Decline with mixed-case email (u"MixedCase@Example.COM").
-  EXPECT_CALL(email_verifier(), CheckIfVerifiable(lower_email, _, _))
+  // 1. Fill mixed-case email (u"MixedCase@Example.COM") and decline prompt
+  // (which displays normalized email).
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(raw_email, _, _))
       .WillOnce(RunOnceCallback<2>(
-          CreateVerifiableResult(lower_email),
+          CreateVerifiableResult(raw_email),
           blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(100)));
-  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+  EXPECT_CALL(client(), ShowEmailVerificationPopup(
+                            _, _, base::UTF8ToUTF16(normalized_email), _))
       .WillOnce(RunOnceCallback<3>(
           AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
   EXPECT_CALL(email_verifier(), Verify).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
-  profile.SetRawInfo(EMAIL_ADDRESS, u"MixedCase@Example.COM");
+  profile.SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16(raw_email));
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
@@ -1946,7 +1950,7 @@ TEST_F(EmailVerifierDelegateTest,
     EXPECT_CALL(email_verifier(), Verify).Times(0);
     EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
 
-    profile.SetRawInfo(EMAIL_ADDRESS, u"mixedcase@example.com");
+    profile.SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16(normalized_email));
     delegate().OnFillOrPreviewForm(
         manager(), form->global_id(), form->field(0)->global_id(),
         mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
@@ -1984,7 +1988,8 @@ TEST_F(EmailVerifierDelegateTest,
       ::features::kEmailVerificationProtocol};
 
   FormStructure* form = SetUpValidForm();
-  std::string lower_email = "mixedcase@example.com";
+  std::string normalized_email = "mixedcase@example.com";
+  std::string raw_email = "MixedCase@Example.COM";
 
   PrefService* prefs = client().GetPrefs();
   ASSERT_TRUE(prefs);
@@ -1993,11 +1998,11 @@ TEST_F(EmailVerifierDelegateTest,
   email_dict.Set("allowed", true);
   email_dict.Set("issuer_site", "https://example.com");
   email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
-  update->Set(lower_email, std::move(email_dict));
+  update->Set(normalized_email, std::move(email_dict));
 
-  EXPECT_CALL(email_verifier(), CheckIfVerifiable(lower_email, _, _))
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(raw_email, _, _))
       .WillOnce(RunOnceCallback<2>(
-          CreateVerifiableResult(lower_email),
+          CreateVerifiableResult(raw_email),
           blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(100)));
 
@@ -2014,10 +2019,10 @@ TEST_F(EmailVerifierDelegateTest,
                     base::Milliseconds(200))));
 
   EXPECT_CALL(driver(), SendEmailVerificationToken(form->field(0)->global_id(),
-                                                   lower_email, "test_token"));
+                                                   raw_email, "test_token"));
 
   AutofillProfile profile = test::GetFullProfile();
-  profile.SetRawInfo(EMAIL_ADDRESS, u"MixedCase@Example.COM");
+  profile.SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16(raw_email));
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
@@ -2037,16 +2042,17 @@ TEST_F(EmailVerifierDelegateTest,
       ::features::kEmailVerificationProtocol};
 
   FormStructure* form = SetUpValidForm();
-  std::string lower_email = "mixedcase@example.com";
+  std::string normalized_email = "mixedcase@example.com";
+  std::string raw_email = "MixedCase@Example.COM";
 
-  EXPECT_CALL(email_verifier(), CheckIfVerifiable(lower_email, _, _))
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(raw_email, _, _))
       .WillOnce(RunOnceCallback<2>(
-          CreateVerifiableResult(lower_email),
+          CreateVerifiableResult(raw_email),
           blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(100)));
 
   EXPECT_CALL(client(), ShowEmailVerificationPopup(
-                            _, _, std::u16string(u"mixedcase@example.com"), _))
+                            _, _, base::UTF8ToUTF16(normalized_email), _))
       .WillOnce(RunOnceCallback<3>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
 
@@ -2057,10 +2063,10 @@ TEST_F(EmailVerifierDelegateTest,
           base::Milliseconds(200)));
 
   EXPECT_CALL(driver(), SendEmailVerificationToken(form->field(0)->global_id(),
-                                                   lower_email, "test_token"));
+                                                   raw_email, "test_token"));
 
   AutofillProfile profile = test::GetFullProfile();
-  profile.SetRawInfo(EMAIL_ADDRESS, u"MixedCase@Example.COM");
+  profile.SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16(raw_email));
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
@@ -2073,24 +2079,26 @@ TEST_F(EmailVerifierDelegateTest,
   ASSERT_TRUE(prefs);
   const base::DictValue& state =
       prefs->GetDict(prefs::kAutofillEmailVerificationState);
-  EXPECT_TRUE(state.contains(lower_email));
-  EXPECT_FALSE(state.contains("MixedCase@Example.COM"));
+  EXPECT_TRUE(state.contains(normalized_email));
+  EXPECT_FALSE(state.contains(raw_email));
 }
 
 // Verifies that OnFieldLostFocus deduplicates email values case-insensitively.
 TEST_F(EmailVerifierDelegateTest,
        OnFieldLostFocus_DeduplicatesCaseInsensitive) {
   FormStructure* form = SetUpValidForm();
-  std::string lower_email = "mixedcase@example.com";
+  std::string normalized_email = "mixedcase@example.com";
+  std::string raw_email = "MixedCase@Example.COM";
 
   // Expect exactly ONE verification trigger.
-  EXPECT_CALL(email_verifier(), CheckIfVerifiable(lower_email, _, _))
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(raw_email, _, _))
       .WillOnce(RunOnceCallback<2>(
-          CreateVerifiableResult(lower_email),
+          CreateVerifiableResult(raw_email),
           blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(100)));
 
-  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+  EXPECT_CALL(client(), ShowEmailVerificationPopup(
+                            _, _, base::UTF8ToUTF16(normalized_email), _))
       .WillOnce(RunOnceCallback<3>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
 
@@ -2100,8 +2108,11 @@ TEST_F(EmailVerifierDelegateTest,
           blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(200)));
 
+  EXPECT_CALL(driver(), SendEmailVerificationToken(form->field(0)->global_id(),
+                                                   raw_email, "test_token"));
+
   // 1. Edit with mixed-case and lose focus -> triggers verification.
-  form->field(0)->set_value(u"MixedCase@Example.COM");
+  form->field(0)->set_value(base::UTF8ToUTF16(raw_email));
   form->field(0)->AddFieldModifier(FieldModifier::kUser);
 
   delegate().OnAfterFocusOnFormField(manager(), form->global_id(),

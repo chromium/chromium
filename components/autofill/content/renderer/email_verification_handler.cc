@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -134,10 +133,8 @@ void EmailVerificationHandler::WillSendSubmitEvent(
       // still matches the email address used during verification.
       std::u16string current_email = email_element.Value().Utf16();
       std::u16string original_email = base::UTF8ToUTF16(info.email);
-      if (base::i18n::FoldCase(
-              base::TrimWhitespace(current_email, base::TRIM_ALL)) !=
-          base::i18n::FoldCase(
-              base::TrimWhitespace(original_email, base::TRIM_ALL))) {
+      if (base::TrimWhitespace(current_email, base::TRIM_ALL) !=
+          base::TrimWhitespace(original_email, base::TRIM_ALL)) {
         continue;
       }
 

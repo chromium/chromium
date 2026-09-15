@@ -182,7 +182,7 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
 
   void Verify(base::WeakPtr<AutofillManager> manager,
               FieldGlobalId email_field_id,
-              std::string email_utf8,
+              std::string email,
               const std::string& nonce,
               const content::webid::EmailVerifier::Result& result);
 
@@ -198,7 +198,7 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
   void OnEmailVerificationDecision(
       base::WeakPtr<AutofillManager> manager,
       FieldGlobalId email_field_id,
-      std::string email_utf8,
+      std::string email,
       std::string nonce,
       content::webid::EmailVerifier::Result result,
       AutofillClient::EmailVerificationPermissionUiStatus ui_status);

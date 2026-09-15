@@ -100,6 +100,46 @@ TEST_F(EmailVerificationHandlerTest,
   EXPECT_EQ(verification_element.Value().Utf16(), u"");
 }
 
+// Tests that the verification token is NOT injected if the email field's
+// casing has changed since verification (e.g., user edits casing before
+// submit, or page scripts/auto-capitalization alter the input). RPs perform
+// byte-for-byte matching of the token's email claim against the submitted form
+// email, so mismatched casing would cause verification failure.
+TEST_F(EmailVerificationHandlerTest,
+       EmailVerificationHandlerDoesNotShareTokenIfEmailCaseChanges) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(R"(<body>
+    <form id="form">
+      <input type="email" id="email" value="a@example.com">
+      <input type="hidden" id="verification"
+             autocomplete="email-verification-token">
+    </form>
+  </body>)");
+  WaitForFormsSeen();
+
+  blink::WebFormElement form_element =
+      GetWebElementById("form").DynamicTo<blink::WebFormElement>();
+  blink::WebFormControlElement email_element =
+      GetFormControlElementById("email");
+  blink::WebFormControlElement verification_element =
+      GetFormControlElementById("verification");
+
+  EXPECT_CALL(autofill_driver(), FormWithEmailVerificationTokenSubmitted(_, _))
+      .Times(0);
+
+  autofill_agent().SendEmailVerificationToken(
+      form_util::GetFieldRendererId(email_element), "a@example.com",
+      "evt_token_123");
+
+  email_element.SetValue(blink::WebString::FromUtf16(u"A@example.com"));
+
+  test_api(autofill_agent())
+      .email_verification_handler()
+      .WillSendSubmitEvent(form_element);
+
+  EXPECT_EQ(verification_element.Value().Utf16(), u"");
+}
+
 // Tests that the verification token is NOT injected if the email field has
 // been cleared since verification.
 TEST_F(EmailVerificationHandlerTest,
