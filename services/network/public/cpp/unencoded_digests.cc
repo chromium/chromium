@@ -65,8 +65,9 @@ mojom::UnencodedDigestsPtr ParseUnencodedDigestsFromHeaders(
 
     // Skip entries that cannot be parsed as byte sequences.
     const std::string* digest_string = nullptr;
-    if (auto item_and_params = value.GetWithParamsIfItem()) {
-      digest_string = item_and_params->first.GetIfByteSequence();
+    if (const net::structured_headers::ParameterizedItem* item =
+            value.GetIfItem()) {
+      digest_string = item->item.GetIfByteSequence();
     }
 
     if (!digest_string) {

@@ -95,20 +95,20 @@ bool ExtractRedemptionRecordsFromHeader(
   }
 
   for (const auto& issuer_and_params : *maybe_list) {
-    auto item_and_params = issuer_and_params.GetWithParamsIfItem();
-    if (!item_and_params.has_value()) {
+    const net::structured_headers::ParameterizedItem* item =
+        issuer_and_params.GetIfItem();
+    if (!item) {
       *error_out = "Non-item in the RR header's list";
       return false;
     }
 
-    const std::string* issuer_string = item_and_params->first.GetIfString();
+    const std::string* issuer_string = item->item.GetIfString();
     if (!issuer_string) {
       *error_out = "Non-string item in the RR header's list";
       return false;
     }
 
-    const net::structured_headers::Parameters& params_for_issuer =
-        item_and_params->second;
+    const net::structured_headers::Parameters& params_for_issuer = item->params;
     if (params_for_issuer.size() != 1) {
       *error_out =
           base::StrCat({"Unexpected number of parameters for RR header list "

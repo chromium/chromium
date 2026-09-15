@@ -200,11 +200,12 @@ bool HttpNoVarySearchData::HasBooleanParamsMember(
   if (it == dict->end()) {
     return false;
   }
-  const auto item_and_params = it->second.GetWithParamsIfItem();
-  if (!item_and_params.has_value()) {
+  const net::structured_headers::ParameterizedItem* item =
+      it->second.GetIfItem();
+  if (!item) {
     return false;
   }
-  return item_and_params->first.is_boolean();
+  return item->item.is_boolean();
 }
 
 bool HttpNoVarySearchData::operator==(const HttpNoVarySearchData& rhs) const =
@@ -250,10 +251,9 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   // Populate `vary_on_key_order` based on the `key-order` key.
   if (auto keyorder_it = dict.find(keys::kKeyOrder);
       keyorder_it != dict.end()) {
-    const auto item_with_params = keyorder_it->second.GetWithParamsIfItem();
-    const bool* boolean = item_with_params.has_value()
-                              ? item_with_params->first.GetIfBoolean()
-                              : nullptr;
+    const net::structured_headers::ParameterizedItem* item =
+        keyorder_it->second.GetIfItem();
+    const bool* boolean = item ? item->item.GetIfBoolean() : nullptr;
     if (!boolean) {
       return base::unexpected(ParseErrorEnum::kNonBooleanKeyOrder);
     }
@@ -263,14 +263,16 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   // Populate `affected_params` or `vary_by_default` based on the "params" key.
   if (auto params_it = dict.find(keys::kParams); params_it != dict.end()) {
     const auto& params = params_it->second;
-    if (const auto inner_list_and_params = params.GetWithParamsIfInnerList()) {
-      auto keys = ParseStringList(inner_list_and_params->first);
+    if (const net::structured_headers::InnerList* inner_list =
+            params.GetIfInnerList()) {
+      auto keys = ParseStringList(inner_list->items);
       if (!keys.has_value()) {
         return base::unexpected(ParseErrorEnum::kParamsNotStringList);
       }
       affected_params = std::move(*keys);
-    } else if (const auto item_and_params = params.GetWithParamsIfItem()) {
-      if (const bool* boolean = item_and_params->first.GetIfBoolean()) {
+    } else if (const net::structured_headers::ParameterizedItem* item =
+                   params.GetIfItem()) {
+      if (const bool* boolean = item->item.GetIfBoolean()) {
         vary_by_default = !*boolean;
       } else {
         return base::unexpected(ParseErrorEnum::kParamsNotStringList);
@@ -288,12 +290,12 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
     if (vary_by_default) {
       return base::unexpected(ParseErrorEnum::kExceptWithoutTrueParams);
     }
-    const auto inner_list_with_params =
-        excepted_params.GetWithParamsIfInnerList();
-    if (!inner_list_with_params.has_value()) {
+    const net::structured_headers::InnerList* inner_list =
+        excepted_params.GetIfInnerList();
+    if (!inner_list) {
       return base::unexpected(ParseErrorEnum::kExceptNotStringList);
     }
-    auto keys = ParseStringList(inner_list_with_params->first);
+    auto keys = ParseStringList(inner_list->items);
     if (!keys.has_value()) {
       return base::unexpected(ParseErrorEnum::kExceptNotStringList);
     }

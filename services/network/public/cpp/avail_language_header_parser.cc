@@ -26,9 +26,10 @@ std::optional<std::vector<std::string>> ParseAvailLanguage(
   }
 
   for (const auto& list_item : maybe_list.value()) {
-    const auto item_and_params = list_item.GetWithParamsIfItem();
+    const net::structured_headers::ParameterizedItem* item =
+        list_item.GetIfItem();
     // Make sure not a nested list.
-    if (!item_and_params.has_value() || !item_and_params->first.is_token()) {
+    if (!item || !item->item.is_token()) {
       return std::nullopt;
     }
   }
@@ -41,7 +42,7 @@ std::optional<std::vector<std::string>> ParseAvailLanguage(
   for (auto& list_item : maybe_list.value()) {
     // Dereferencing these is safe due to the `is_token` check and early return
     // above.
-    auto [item, params] = *list_item.GetWithParamsIfItem();
+    auto& [item, params] = *list_item.GetIfItem();
     std::string* token_value = item.GetIfToken();
     // If the language is default like `en;d`, insert the language `en` into the
     // beginning of the list.

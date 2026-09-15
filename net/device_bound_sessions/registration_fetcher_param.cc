@@ -156,14 +156,14 @@ RegistrationFetcherParam::RegistrationFetcherParam(
 std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     const GURL& request_url,
     const structured_headers::ParameterizedMember& session_registration) {
-  const auto inner_list_and_params =
-      session_registration.GetWithParamsIfInnerList();
-  if (!inner_list_and_params.has_value()) {
+  const net::structured_headers::InnerList* inner_list =
+      session_registration.GetIfInnerList();
+  if (!inner_list) {
     return std::nullopt;
   }
 
   std::vector<crypto::sign::SignatureKind> supported_algos =
-      ParseSupportedAlgorithms(inner_list_and_params->first);
+      ParseSupportedAlgorithms(inner_list->items);
   if (supported_algos.empty()) {
     return std::nullopt;
   }
@@ -175,7 +175,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
   std::optional<GURL> provider_url;
   std::optional<Session::Id> provider_session_id;
   bool aik_required = false;
-  for (const auto& [key, value] : inner_list_and_params->second) {
+  for (const auto& [key, value] : inner_list->params) {
     // The keys for the parameters are unique and must be lower case.
     // Quiche (https://quiche.googlesource.com/quiche), used here,
     // will currently pick the last if there is more than one.

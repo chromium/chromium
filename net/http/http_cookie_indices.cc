@@ -37,13 +37,13 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
   std::vector<std::string> cookie_names;
   cookie_names.reserve(list->size());
   for (const structured_headers::ParameterizedMember& member : *list) {
-    const auto item_and_params = member.GetWithParamsIfItem();
-    if (!item_and_params.has_value()) {
+    const net::structured_headers::ParameterizedItem* item = member.GetIfItem();
+    if (!item) {
       // Inner list not permitted here.
       return std::nullopt;
     }
 
-    const std::string* name = item_and_params->first.GetIfString();
+    const std::string* name = item->item.GetIfString();
     if (!name) {
       // Non-string items are not permitted here.
       return std::nullopt;

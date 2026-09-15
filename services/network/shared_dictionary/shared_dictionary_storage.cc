@@ -56,15 +56,14 @@ class DictionaryHeaderInfo {
 
 net::structured_headers::Item* GetIfItem(
     net::structured_headers::ParameterizedMember& member LIFETIME_BOUND) {
-  auto item_and_params = member.GetWithParamsIfItem();
-  return item_and_params.has_value() ? &item_and_params->first : nullptr;
+  net::structured_headers::ParameterizedItem* item = member.GetIfItem();
+  return item ? &item->item : nullptr;
 }
 
 std::vector<net::structured_headers::ParameterizedItem>* GetIfInnerList(
     net::structured_headers::ParameterizedMember& member LIFETIME_BOUND) {
-  auto inner_list_and_params = member.GetWithParamsIfInnerList();
-  return inner_list_and_params.has_value() ? &inner_list_and_params->first
-                                           : nullptr;
+  net::structured_headers::InnerList* inner_list = member.GetIfInnerList();
+  return inner_list ? &inner_list->items : nullptr;
 }
 
 base::TimeDelta CalculateExpiration(const net::HttpResponseHeaders& headers,

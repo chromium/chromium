@@ -46,13 +46,13 @@ mojom::SupportsLoadingModePtr ParseSupportsLoadingMode(
   for (const net::structured_headers::ParameterizedMember& member : *list) {
     // No supported mode currently is specified as an inner list or takes
     // parameters.
-    const auto item_and_params = member.GetWithParamsIfItem();
-    if (!item_and_params.has_value() || !item_and_params->second.empty()) {
+    const net::structured_headers::ParameterizedItem* item = member.GetIfItem();
+    if (!item || !item->params.empty()) {
       continue;
     }
 
     // All supported modes are tokens.
-    const std::string* token = item_and_params->first.GetIfToken();
+    const std::string* token = item->item.GetIfToken();
     if (!token) {
       continue;
     }
