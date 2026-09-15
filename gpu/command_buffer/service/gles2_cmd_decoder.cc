@@ -2591,12 +2591,25 @@ ScopedBufferReattacher::ScopedBufferReattacher(GLES2DecoderImpl* decoder,
   Initialize();
 }
 
+bool IsLayeredTextureTarget(GLenum texture_target) {
+  switch (texture_target) {
+    case GL_TEXTURE_2D_ARRAY:
+    case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+    case GL_TEXTURE_3D:
+    case GL_TEXTURE_CUBE_MAP:
+    case GL_TEXTURE_CUBE_MAP_ARRAY:
+      return true;
+    default:
+      return false;
+  }
+}
+
 void ScopedBufferReattacher::Initialize() {
   const bool reattach_depth_stencil =
       decoder_->workarounds().reattach_fbo_depth_stencil_on_reallocation;
   const bool reattach_layer_increase =
       decoder_->workarounds().reattach_texture_to_fbo_after_layer_increase &&
-      texture_ref_ && texture_ref_->texture()->target() == GL_TEXTURE_2D_ARRAY;
+      texture_ref_ && IsLayeredTextureTarget(texture_ref_->texture()->target());
   if (!reattach_depth_stencil && !reattach_layer_increase) {
     return;
   }
