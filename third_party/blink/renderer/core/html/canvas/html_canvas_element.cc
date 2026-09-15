@@ -287,10 +287,12 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     return false;
   }
 
-  if (!frame->PrepareTransferableResource(out_resource,
-                                          /*needs_verified_synctoken=*/false)) {
-    auto exported_resource =
-        base::MakeRefCounted<ExportedCanvasResource>(std::move(frame));
+  auto exported_resource =
+      base::MakeRefCounted<ExportedCanvasResource>(std::move(frame));
+
+  if (!exported_resource->PrepareTransferableResource(
+          out_resource,
+          /*needs_verified_synctoken=*/false)) {
     return false;
   }
   // TODO(https://crbug.com/1475955): HDR metadata should be propagated to
@@ -301,22 +303,16 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   out_resource->hdr_metadata = hdr_metadata_;
 
   if (*out_resource == cc_layer_->current_transferable_resource()) {
-    // If the resource did not change, the release will be handled correctly
-    // when the callback from the previous frame is dispatched. But we need to
-    // drop ref to the current resource.
-    auto exported_resource =
-        base::MakeRefCounted<ExportedCanvasResource>(std::move(frame));
+    // If resource didn't change, we don't need to trigger the update.
     return false;
   }
   // Note: frame is kept alive via a reference kept in out_release_callback.
   *out_release_callback = blink::BindOnce(
-      [](scoped_refptr<CanvasResource> canvas_resource,
+      [](scoped_refptr<ExportedCanvasResource> exported_resource,
          const gpu::SyncToken& sync_token, bool is_lost) {
-        auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
-            std::move(canvas_resource));
         exported_resource->EndDisplayCompositorAccess(sync_token, is_lost);
       },
-      std::move(frame));
+      std::move(exported_resource));
 
   return true;
 }
