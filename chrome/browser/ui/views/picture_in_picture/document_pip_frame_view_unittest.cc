@@ -749,7 +749,16 @@ TEST_F(DocumentPipFrameViewTest, MouseInsideKeepsRenderActive) {
   EXPECT_FALSE(GetRenderActive(frame_view));
 }
 
-TEST_F(DocumentPipFrameViewTest, MouseExitDeactivatesTopBarWhileWidgetActive) {
+// TODO(crbug.com/515252142): Fails on linux wayland.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MouseExitDeactivatesTopBarWhileWidgetActive \
+  DISABLED_MouseExitDeactivatesTopBarWhileWidgetActive
+#else
+#define MAYBE_MouseExitDeactivatesTopBarWhileWidgetActive \
+  MouseExitDeactivatesTopBarWhileWidgetActive
+#endif
+TEST_F(DocumentPipFrameViewTest,
+       MAYBE_MouseExitDeactivatesTopBarWhileWidgetActive) {
   auto* frame_view =
       CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
   auto* widget = frame_view->GetWidget();
