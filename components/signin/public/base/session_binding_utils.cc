@@ -22,8 +22,8 @@
 #include "base/values.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "crypto/ecdsa_utils.h"
+#include "crypto/hash.h"
 #include "crypto/keypair.h"
-#include "crypto/sha2.h"
 #include "crypto/sign.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -177,15 +177,15 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
     crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> pubkey,
     base::Time timestamp) {
-  std::string jti = std::visit(
-      absl::Overload{[](const TokenBindingAuthCode& auth_code) {
-                       return Base64UrlEncode(
-                           crypto::SHA256HashString(auth_code.value()));
-                     },
-                     [](const TokenBindingChallenge& challenge) {
-                       return challenge.value();
-                     }},
-      auth_code_or_challenge);
+  std::string jti =
+      std::visit(absl::Overload{[](const TokenBindingAuthCode& auth_code) {
+                                  return Base64UrlEncode(
+                                      crypto::hash::Sha256(auth_code.value()));
+                                },
+                                [](const TokenBindingChallenge& challenge) {
+                                  return challenge.value();
+                                }},
+                 auth_code_or_challenge);
   auto payload =
       base::DictValue()
           .Set("sub", client_id)
@@ -234,7 +234,7 @@ std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
                      .Set("sub", client_id)
                      .Set("aud", RemoveQueryAndFragment(destination_url).spec())
                      .Set("jti", challenge)
-                     .Set("iss", Base64UrlEncode(crypto::SHA256Hash(pubkey)))
+                     .Set("iss", Base64UrlEncode(crypto::hash::Sha256(pubkey)))
                      .Set("namespace", name_space);
   if (!ephemeral_public_key.empty()) {
     payload.Set("ephemeral_key",

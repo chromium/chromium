@@ -8,14 +8,16 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "crypto/sha2.h"
+#include "base/strings/string_view_util.h"
+#include "crypto/hash.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace signin {
 
 // static
 GaiaIdHash GaiaIdHash::FromGaiaId(const GaiaId& gaia_id) {
-  return FromBinary(crypto::SHA256HashString(gaia_id.ToString()));
+  return FromBinary(std::string(
+      base::as_string_view(crypto::hash::Sha256(gaia_id.ToString()))));
 }
 
 // static
@@ -53,7 +55,7 @@ std::string GaiaIdHash::ToBase64() const {
 }
 
 bool GaiaIdHash::IsValid() const {
-  return gaia_id_hash_.size() == crypto::kSHA256Length;
+  return gaia_id_hash_.size() == crypto::hash::kSha256Size;
 }
 
 }  // namespace signin

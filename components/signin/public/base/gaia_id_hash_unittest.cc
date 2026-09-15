@@ -5,7 +5,8 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 
 #include "base/base64.h"
-#include "crypto/sha2.h"
+#include "base/strings/string_view_util.h"
+#include "crypto/hash.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,7 +23,8 @@ TEST(GaiaIdHashTest, ShouldBeDeterministic) {
 
 TEST(GaiaIdHashTest, ShouldHash) {
   const GaiaId gaia_id("user_gaia_id");
-  const std::string gaia_id_hash = crypto::SHA256HashString(gaia_id.ToString());
+  const std::string gaia_id_hash = std::string(
+      base::as_string_view(crypto::hash::Sha256(gaia_id.ToString())));
   std::string gaia_id_base64_hash = base::Base64Encode(gaia_id_hash);
 
   GaiaIdHash hash = GaiaIdHash::FromGaiaId(gaia_id);
@@ -38,7 +40,7 @@ TEST(GaiaIdHashTest, ShouldBase64EncodeDecode) {
 }
 
 TEST(GaiaIdHashTest, ShouldBeInvalid) {
-  // Hash must be of length crypto::kSHA256Length.
+  // Hash must be of length crypto::hash::kSha256Size.
   GaiaIdHash hash1 = GaiaIdHash::FromBinary("too_short_hash");
   EXPECT_FALSE(hash1.IsValid());
 

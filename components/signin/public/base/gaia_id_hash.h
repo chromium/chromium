@@ -28,7 +28,7 @@ class GaiaIdHash {
   }
   static GaiaIdHash FromGaiaId(const GaiaId& gaia_id);
   // |gaia_id_hash| is a string representing the binary hash of the gaia id. If
-  // the input isn't of length crypto::kSHA256Length, it returns an invalid
+  // the input isn't of length crypto::hash::kSha256Size, it returns an invalid
   // GaiaIdHash object.
   static GaiaIdHash FromBinary(std::string gaia_id_hash);
   // If |gaia_id_base64_hash| isn't well-formed Base64 string, or doesn't decode
