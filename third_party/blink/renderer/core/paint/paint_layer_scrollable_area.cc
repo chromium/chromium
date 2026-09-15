@@ -1396,9 +1396,9 @@ bool PaintLayerScrollableArea::HasVerticalOverflow() const {
 
 bool PaintLayerScrollableArea::CanPropagateScroll() const {
   auto* box = GetLayoutBox();
-  // TODO(crbug.com/425353152): Remove the visibility check.
   if (!box || !box->IsScrollContainer() ||
-      box->StyleRef().Visibility() != EVisibility::kVisible) {
+      (!RuntimeEnabledFeatures::ScrollVisibilityHiddenScrollersEnabled() &&
+       box->StyleRef().Visibility() != EVisibility::kVisible)) {
     return true;
   }
   if ((box->StyleRef().OverscrollBehaviorX() != EOverscrollBehavior::kAuto &&
@@ -2645,9 +2645,8 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
     frame_view->RemoveScrollAnchoringScrollableArea(this);
   }
 
-  // TODO(crbug.com/425353152): Should be able to scroll invisible scroll
-  // containers.
   bool is_visible =
+      RuntimeEnabledFeatures::ScrollVisibilityHiddenScrollersEnabled() ||
       GetLayoutBox()->StyleRef().Visibility() == EVisibility::kVisible;
   bool did_scroll_overflow = scrolls_overflow_;
   if (auto* layout_view = DynamicTo<LayoutView>(GetLayoutBox())) {
