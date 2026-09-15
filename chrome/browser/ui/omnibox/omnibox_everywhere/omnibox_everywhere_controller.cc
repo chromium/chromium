@@ -389,6 +389,16 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
     }
   }
 
+  // Ignore invocations while a screenshot capture flow (the native OS screen
+  // picker, Chrome's default desktop media picker, or the region selection
+  // overlay) owns the screen. The widget is deliberately hidden for the
+  // duration of that flow; re-showing it would obscure the picker and could
+  // leak the UI into the captured screenshot. The widget is restored when the
+  // flow completes or is cancelled.
+  if (ui_manager_->IsScreenshareCaptureInProgress()) {
+    return;
+  }
+
   SetTargetProfile(profile);
   switch (source) {
     case InvocationSource::kGlobalHotkey:
