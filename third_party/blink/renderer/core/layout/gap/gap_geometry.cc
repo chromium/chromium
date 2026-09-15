@@ -24,9 +24,11 @@ GridLanesMainGapSegmentWalker::GridLanesMainGapSegmentWalker(
   if (cross_direction_ == kForRows) {
     content_start_ = gap_geometry.GetContentBlockStart();
     content_end_ = gap_geometry.GetContentBlockEnd();
+    cross_gap_width_ = gap_geometry.GetBlockGapSize();
   } else {
     content_start_ = gap_geometry.GetContentInlineStart();
     content_end_ = gap_geometry.GetContentInlineEnd();
+    cross_gap_width_ = gap_geometry.GetInlineGapSize();
   }
 
   CHECK_EQ(gap_geometry.GetContainerType(),
@@ -52,6 +54,17 @@ LayoutUnit GridLanesMainGapSegmentWalker::CrossGapOffset(
     wtf_size_t index) const {
   CHECK_LT(index, gap_geometry_.CrossGapCount());
   return gap_geometry_.GetCrossGaps()[index].GetGapOffset(cross_direction_);
+}
+
+LayoutUnit GridLanesMainGapSegmentWalker::NextCrossGapOffset() const {
+  LayoutUnit offset = content_end_;
+  if (!before_.AtEnd()) {
+    offset = std::min(offset, CrossGapOffset(before_.CrossGapIndex()));
+  }
+  if (!after_.AtEnd()) {
+    offset = std::min(offset, CrossGapOffset(after_.CrossGapIndex()));
+  }
+  return offset;
 }
 
 void GridLanesMainGapSegmentWalker::SkipGapsAtOrBeforeContentStart() {
@@ -83,21 +96,7 @@ GridLanesMainGapSegmentWalker::Next() {
 
   Segment segment{content_end_, before_.ConsumedCount(),
                   after_.ConsumedCount()};
-  if (before_.AtEnd() && after_.AtEnd()) {
-    finished_ = true;
-    return segment;
-  }
-
-  LayoutUnit offset;
-  if (before_.AtEnd()) {
-    offset = CrossGapOffset(after_.CrossGapIndex());
-  } else if (after_.AtEnd()) {
-    offset = CrossGapOffset(before_.CrossGapIndex());
-  } else {
-    offset = std::min(CrossGapOffset(before_.CrossGapIndex()),
-                      CrossGapOffset(after_.CrossGapIndex()));
-  }
-
+  const LayoutUnit offset = NextCrossGapOffset();
   if (offset >= content_end_) {
     finished_ = true;
     return segment;
@@ -107,6 +106,12 @@ GridLanesMainGapSegmentWalker::Next() {
   ConsumeRunAtOffset(after_, offset);
 
   segment.end_offset = offset;
+  segment.continues_overlap_window = next_gutter_overlaps_current_;
+
+  // Touching gutters and content boundaries do not extend the overlap window.
+  const LayoutUnit next_offset = NextCrossGapOffset();
+  next_gutter_overlaps_current_ =
+      next_offset < content_end_ && next_offset - offset < cross_gap_width_;
   return segment;
 }
 
@@ -482,20 +487,10 @@ void GapGeometry::GenerateMainIntersectionList(
   }
 
   switch (GetContainerType()) {
-    case ContainerType::kGridLanes: {
-      GridLanesMainGapSegmentWalker walker(*this, gap_index);
-      intersections.reserve(walker.IntersectionCapacity());
-      const LayoutUnit content_start = direction == kForColumns
-                                           ? content_block_start_
-                                           : content_inline_start_;
-      intersections.emplace_back(content_start,
-                                 cursor.GetNextGapSegmentState());
-      while (auto segment = walker.Next()) {
-        intersections.emplace_back(segment->end_offset,
-                                   cursor.GetNextGapSegmentState());
-      }
+    case ContainerType::kGridLanes:
+      GenerateMainIntersectionListForGridLanes(direction, gap_index,
+                                               intersections, cursor);
       break;
-    }
     case ContainerType::kGrid:
     case ContainerType::kMultiColumn:
       GenerateMainIntersectionListForGridAndMulticol(direction, intersections,
@@ -505,6 +500,58 @@ void GapGeometry::GenerateMainIntersectionList(
       GenerateMainIntersectionListForFlex(direction, gap_index, intersections,
                                           cursor);
       break;
+  }
+}
+
+void GapGeometry::GenerateMainIntersectionListForGridLanes(
+    GridTrackSizingDirection direction,
+    wtf_size_t gap_index,
+    Vector<GapIntersection>& intersections,
+    GapSegmentStateCursor& cursor) const {
+  GridLanesMainGapSegmentWalker walker(*this, gap_index);
+  intersections.reserve(walker.IntersectionCapacity());
+  const LayoutUnit content_start =
+      direction == kForColumns ? content_block_start_ : content_inline_start_;
+  intersections.emplace_back(content_start, cursor.GetNextGapSegmentState());
+
+  // Segments are initially generated using the center of each crossing
+  // gutter. Intersections from overlapping gutters are then reduced to an
+  // opening/closing pair. Advance the state cursor for every intersection
+  // produced by the walker, including those not kept in the pair, so spanner
+  // states remain aligned with the correct segments.
+  while (auto segment = walker.Next()) {
+    const GapSegmentState outgoing_state = cursor.GetNextGapSegmentState();
+    if (!segment->continues_overlap_window) {
+      intersections.emplace_back(segment->end_offset, outgoing_state,
+                                 OverlapWindowState::kNone);
+      continue;
+    }
+
+    // An existing window is stored as an opening/closing pair. If the last
+    // intersection closes a window, extend that window to the new gutter.
+    if (intersections.back().IsOverlapWindowClose()) {
+      CHECK_GE(intersections.size(), 3u);
+      GapIntersection& opening = intersections[intersections.size() - 2];
+      CHECK(opening.IsOverlapWindowOpen());
+      GapIntersection& closing = intersections.back();
+
+      // Moving the closing intersection to the new gutter puts the segment
+      // after its current position inside the window. Add that segment's
+      // blocked state to the opening before updating the closing position.
+      GapSegmentState interior_state = opening.SegmentState();
+      interior_state |= closing.SegmentState();
+      opening.SetSegmentState(interior_state);
+      closing.SetOffset(segment->end_offset);
+      closing.SetSegmentState(outgoing_state);
+      continue;
+    }
+
+    // The first overlapping pair establishes the window. Subsequent centers
+    // move only its closing point, but retain both the interior blocked
+    // state and the outgoing state separately.
+    intersections.back().SetOverlapState(OverlapWindowState::kWindowOpen);
+    intersections.emplace_back(segment->end_offset, outgoing_state,
+                               OverlapWindowState::kWindowClose);
   }
 }
 
@@ -1057,11 +1104,11 @@ LayoutUnit GapGeometry::GetMaxInsetWidth(
     wtf_size_t intersection_index,
     bool is_main_gap,
     const Vector<GapIntersection>& intersections) const {
-  // For all intersection points other than flex main-direction overlap
-  // intersections, the max inset width is the same as the width of the cross
-  // gutter width since the gaps are always uniform.
   const GapIntersection& intersection = intersections[intersection_index];
-  if (GetContainerType() != ContainerType::kFlex ||
+  // Flex and grid-lanes main-direction overlap intersections use the full
+  // window. Other intersections use the width of the crossing gutter.
+  if ((GetContainerType() != ContainerType::kFlex &&
+       GetContainerType() != ContainerType::kGridLanes) ||
       !IsMainDirection(track_direction) || !intersection.HasOverlapState()) {
     return GetCrossWidthForIntersection(track_direction, gap_index,
                                         intersection_index, is_main_gap,
@@ -1072,20 +1119,26 @@ LayoutUnit GapGeometry::GetMaxInsetWidth(
                                        intersections.size(), is_main_gap,
                                        intersections));
 
-  // For flex main-direction overlap intersections, compute the interior width
-  // as the distance of the overlap window, which is defined by the two
-  // intersections that bound the window. The start and end of the window are
-  // determined by the offsets of the two overlap intersections.
-  const GapIntersection& open_intersection =
-      intersections[intersection.IsOverlapWindowOpen()
-                        ? intersection_index
-                        : intersection_index - 1];
-  const GapIntersection& close_intersection =
-      intersections[intersection.IsOverlapWindowClose()
-                        ? intersection_index
-                        : intersection_index + 1];
+  // For flex and grid-lanes main-direction overlap intersections, compute the
+  // interior width as the size of the overlap window, which is defined by the
+  // two intersections that bound it. The start and end of the window are
+  // determined by their offsets and crossing gutter widths. The opening and
+  // closing intersections are adjacent in the list.
+  const wtf_size_t opening_index = intersection.IsOverlapWindowOpen()
+                                       ? intersection_index
+                                       : intersection_index - 1;
+  const GapIntersection& open_intersection = intersections[opening_index];
+  const GapIntersection& close_intersection = intersections[opening_index + 1];
   CHECK(open_intersection.IsOverlapWindowOpen());
   CHECK(close_intersection.IsOverlapWindowClose());
+
+  // Grid lanes' gutters have a uniform width.
+  if (GetContainerType() == ContainerType::kGridLanes) {
+    return close_intersection.GetOffset() - open_intersection.GetOffset() +
+           GetCrossWidthForIntersection(track_direction, gap_index,
+                                        intersection_index, is_main_gap,
+                                        intersections);
+  }
 
   // Get the per-line gap size for each intersection based on which side
   // of the main gap it originates from.

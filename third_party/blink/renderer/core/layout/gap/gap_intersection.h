@@ -66,6 +66,13 @@ class CORE_EXPORT GapIntersection {
       : offset_(offset), segment_state_(segment_state) {}
 
   GapIntersection(LayoutUnit offset,
+                  GapSegmentState segment_state,
+                  OverlapWindowState overlap_state)
+      : offset_(offset),
+        extra_state_(ExtraIntersectionState{.overlap_state = overlap_state}),
+        segment_state_(segment_state) {}
+
+  GapIntersection(LayoutUnit offset,
                   OverlapWindowState state,
                   bool is_above_main_gap)
       : offset_(offset),
@@ -131,6 +138,7 @@ class CORE_EXPORT GapIntersection {
   }
 
   const GapSegmentState& SegmentState() const { return segment_state_; }
+  void SetSegmentState(GapSegmentState state) { segment_state_ = state; }
 
  private:
   LayoutUnit offset_;
@@ -140,7 +148,11 @@ class CORE_EXPORT GapIntersection {
   // overlap window state. Absent for aligned modes such as grid and multicol.
   std::optional<ExtraIntersectionState> extra_state_;
 
-  // Tracks whether this segment is blocked by a spanning item.
+  // State of the segment between this intersection and the next.
+  // At a grid-lanes overlap-window opening, kBlocked means a spanner blocks
+  // at least one segment inside the window. This helps decide whether rule
+  // segments can be joined across the window. The states before and after
+  // the window are stored on the preceding and closing intersections.
   GapSegmentState segment_state_{GapSegmentState::kNone};
 };
 

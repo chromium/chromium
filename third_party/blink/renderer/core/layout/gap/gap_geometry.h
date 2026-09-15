@@ -75,6 +75,15 @@ class GridLanesMainGapSegmentWalker {
     LayoutUnit end_offset;
     wtf_size_t before_occupant_index;
     wtf_size_t after_occupant_index;
+    // Whether the crossing gutter at `end_offset` overlaps the preceding
+    // crossing gutter. False for the first gutter, since there is no previous
+    // gutter to overlap. It is also false when the gutters' edges only touch,
+    // when there is space between them, or when `end_offset` marks the end of
+    // the container's content.
+    //
+    // For more about overlap windows see:
+    // https://www.w3.org/TR/css-gaps-1/#segment-endpoints
+    bool continues_overlap_window = false;
   };
 
   GridLanesMainGapSegmentWalker(const GapGeometry& gap_geometry,
@@ -116,6 +125,9 @@ class GridLanesMainGapSegmentWalker {
   };
 
   LayoutUnit CrossGapOffset(wtf_size_t index) const;
+  // Returns the next crossing offset from either lane, limited to content-end.
+  // Does not advance either cursor.
+  LayoutUnit NextCrossGapOffset() const;
   void SkipGapsAtOrBeforeContentStart();
   void SkipRunAtOrBeforeContentStart(CrossGapRunCursor& run);
   void ConsumeRunAtOffset(CrossGapRunCursor& run, LayoutUnit offset);
@@ -124,9 +136,13 @@ class GridLanesMainGapSegmentWalker {
   GridTrackSizingDirection cross_direction_;
   LayoutUnit content_start_;
   LayoutUnit content_end_;
+  LayoutUnit cross_gap_width_;
   CrossGapRunCursor before_;
   CrossGapRunCursor after_;
   wtf_size_t intersection_capacity_ = 0;
+
+  // Whether the next crossing gutter overlaps the current one.
+  bool next_gutter_overlaps_current_ = false;
   bool finished_ = false;
 };
 
@@ -516,12 +532,12 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       const Vector<int>& cross_decoration_widths) const;
 
   // Returns the base width used to resolve percentage inset values at the
-  // intersection located at `intersection_index`. Cap intersections return 0.
+  // intersection located at `intersection_index`. Container edges return 0.
   // For most junction intersections, this is the cross width at that point
-  // (via `GetCrossWidthForIntersection()`). For flex main-direction overlap
-  // intersections, this instead returns the overlap window size. Takes
-  // `intersections` list because logic here depends on neighboring entries to
-  // detect overlaps.
+  // (via `GetCrossWidthForIntersection()`). For flex and grid lanes
+  // main-direction overlap intersections, this instead returns the overlap
+  // window size. Takes `intersections` list because logic here depends on
+  // neighboring entries to detect overlaps.
   LayoutUnit GetMaxInsetWidth(
       GridTrackSizingDirection track_direction,
       wtf_size_t gap_index,
@@ -651,6 +667,13 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
       Vector<GapIntersection>& intersections) const;
+
+  // Fills `intersections` for a grid-lanes main gap at `gap_index`.
+  void GenerateMainIntersectionListForGridLanes(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index,
+      Vector<GapIntersection>& intersections,
+      GapSegmentStateCursor& cursor) const;
 
   // Fills `intersections` for a grid or multicol main gap.
   void GenerateMainIntersectionListForGridAndMulticol(

@@ -57,6 +57,14 @@ bool ShouldMoveIntersectionStartForward(
     return !is_rule_segment_visible;
   }
 
+  // A rule segment cannot start at the opening of a grid-lanes overlap window
+  // because the start of the overlap window marks the end of a segment.
+  if (gap_geometry.GetContainerType() ==
+          GapGeometry::ContainerType::kGridLanes &&
+      intersections[start_index].IsOverlapWindowOpen()) {
+    return true;
+  }
+
   const BlockedStatus blocked_status =
       GapGeometry::BlockedStatusFromGapStates(intersections, start_index);
   // Advance start if the segment it's blocked after or not visible.
@@ -98,6 +106,21 @@ bool ShouldMoveIntersectionEndForward(
   //
   // https://drafts.csswg.org/css-gaps-1/#determine-pairs-of-gap-decoration-endpoints
   if (rule_break == RuleBreak::kNormal) {
+    if (gap_geometry.GetContainerType() ==
+            GapGeometry::ContainerType::kGridLanes &&
+        intersections[end_index].IsOverlapWindowOpen()) {
+      // Continue the rule across the window only if no spanner blocks either
+      // the window or the segment after it.
+      if (blocked_status.HasBlockedStatus(BlockedStatus::kBlockedAfter)) {
+        return false;
+      }
+
+      const GapIntersection& closing = intersections[end_index + 1];
+      CHECK(closing.IsOverlapWindowClose());
+      // TODO(javiercon): We'll need a check for visibility here once we
+      // implement rule-visibility-items for grid lanes.
+      return !closing.SegmentState().HasGapStatus(GapSegmentState::kBlocked);
+    }
     // Move forward only if the intersection is NOT blocked after.
     return !blocked_status.HasBlockedStatus(BlockedStatus::kBlockedAfter);
   }
@@ -397,11 +420,10 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
           cross_rule_visibility, intersections);
 
       // The `*inset_width` is the base value against which percentage inset
-      // values are resolved. It is `0` for cap intersections (endpoints with
-      // no crossing decoration to join with). For junction intersections it is
-      // typically the cross gap width at that point. However, for flex
-      // main-direction overlap intersections, the inset width is the size of
-      // the overlap window.
+      // values are resolved. It is `0` at container edges. For other
+      // intersections it is typically the cross gap width at that point.
+      // However, for flex and grid-lanes main-direction overlap intersections,
+      // the inset width is the size of the overlap window.
       const LayoutUnit start_max_inset_width = gap_geometry.GetMaxInsetWidth(
           track_direction, gap_index, start, is_main, intersections);
       const LayoutUnit end_max_inset_width = gap_geometry.GetMaxInsetWidth(
