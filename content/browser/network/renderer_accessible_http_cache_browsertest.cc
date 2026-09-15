@@ -65,7 +65,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleCustomResponse(
   }
   if (path == "/custom_resource/acao_origin.js") {
     auto response = CreateScriptResponse();
-    response->AddCustomHeader("Access-Control-Allow-Origin", "http://a.test");
+    response->AddCustomHeader("Access-Control-Allow-Origin", "https://a.test");
     return response;
   }
   if (path == "/custom_resource/corp_same_origin.js") {
@@ -141,10 +141,13 @@ class RendererAccessibleHttpCacheBrowserTestBase : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->RegisterRequestHandler(
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    embedded_https_test_server().RegisterRequestHandler(
         base::BindRepeating(&HandleCustomResponse));
-    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
-    ASSERT_TRUE(embedded_test_server()->Start());
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "content/test/data");
+    ASSERT_TRUE(embedded_https_test_server().Start());
     ContentBrowserTest::SetUpOnMainThread();
     // When creating a network context,
     // ContentBrowserClient::ConfigureNetworkContextParams() is called, where
@@ -163,7 +166,7 @@ class RendererAccessibleHttpCacheBrowserTestBase : public ContentBrowserTest {
 
  protected:
   GURL GetURL(std::string_view path) {
-    return embedded_test_server()->GetURL("a.test", path);
+    return embedded_https_test_server().GetURL("a.test", path);
   }
 
   network::mojom::NetworkContext* GetNetworkContext() {

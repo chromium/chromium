@@ -30,6 +30,7 @@
 #include "services/network/public/cpp/content_decoding_util.h"
 #include "services/network/public/cpp/data_buffer_factory.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_http_cache_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -377,16 +378,12 @@ void SharedHttpCacheClientImpl::Find(
     scoped_refptr<DataBufferFactory> data_buffer_factory,
     base::OnceCallback<void(std::optional<Response>)> callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  // TODO(crbug.com/473666511): Ineligible requests for cache lookup (e.g.
-  // non-GET HTTP methods, loading flags such as LOAD_DISABLE_CACHE, non-HTTP
-  // schemes) must also be skipped here. Implement this in a follow-up CL.
-  const base::TimeTicks request_start = base::TimeTicks::Now();
-  const base::Time request_start_time = base::Time::Now();
-  if (request.is_revalidating || request.revalidation_etag ||
-      request.revalidation_last_modified) {
+  if (!IsRequestEligibleForSharedHttpCacheLookup(request)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
+  const base::TimeTicks request_start = base::TimeTicks::Now();
+  const base::Time request_start_time = base::Time::Now();
   if (ShouldEarlyReturn(request.url)) {
     std::move(callback).Run(std::nullopt);
     return;
