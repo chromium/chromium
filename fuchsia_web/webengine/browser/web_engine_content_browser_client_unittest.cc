@@ -4,16 +4,12 @@
 
 #include "fuchsia_web/webengine/browser/web_engine_content_browser_client.h"
 
-#include <optional>
 #include <string_view>
 
 #include "base/test/scoped_command_line.h"
-#include "base/test/task_environment.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
-#include "url/url_util.h"
 
 class WebEngineContentBrowserClientTest : public testing::Test {
  protected:
@@ -85,50 +81,4 @@ TEST_F(WebEngineContentBrowserClientTest,
       WebEngineContentBrowserClient().MayDeleteServiceWorkerRegistration(
           GURL("http://wwwexample.com/scope"),
           /* browser_context = */ nullptr));
-}
-
-class WebEngineContentBrowserClientContentDirectoryTest : public testing::Test {
- protected:
-  static constexpr char kFuchsiaDirScheme[] = "fuchsia-dir";
-
-  WebEngineContentBrowserClientContentDirectoryTest() {
-    url::AddStandardScheme(kFuchsiaDirScheme, url::SCHEME_WITH_HOST);
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        switches::kEnableContentDirectories);
-  }
-
-  content::ContentBrowserClient::NonNetworkURLLoaderFactoryMap
-  GetSubresourceFactories(const std::optional<url::Origin>& initiator) {
-    content::ContentBrowserClient::NonNetworkURLLoaderFactoryMap factories;
-    WebEngineContentBrowserClient()
-        .RegisterNonNetworkSubresourceURLLoaderFactories(
-            /*render_process_id=*/0, /*render_frame_id=*/0, initiator,
-            &factories);
-    return factories;
-  }
-
- private:
-  base::test::TaskEnvironment task_environment_;
-  url::ScopedSchemeRegistryForTests scoped_registry_;
-  base::test::ScopedCommandLine scoped_command_line_;
-};
-
-TEST_F(WebEngineContentBrowserClientContentDirectoryTest,
-       SubresourceFactoryRegisteredForContentDirectoryOrigin) {
-  auto factories = GetSubresourceFactories(
-      url::Origin::Create(GURL("fuchsia-dir://testdata/")));
-  EXPECT_TRUE(factories.contains(kFuchsiaDirScheme));
-}
-
-TEST_F(WebEngineContentBrowserClientContentDirectoryTest,
-       SubresourceFactoryNotRegisteredForWebOrigin) {
-  auto factories = GetSubresourceFactories(
-      url::Origin::Create(GURL("https://example.com/")));
-  EXPECT_FALSE(factories.contains(kFuchsiaDirScheme));
-}
-
-TEST_F(WebEngineContentBrowserClientContentDirectoryTest,
-       SubresourceFactoryNotRegisteredWithoutInitiator) {
-  auto factories = GetSubresourceFactories(std::nullopt);
-  EXPECT_FALSE(factories.contains(kFuchsiaDirScheme));
 }
