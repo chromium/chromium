@@ -324,10 +324,22 @@ TEST_F(BufferPoolTest, AllocateBlockResultHistogram) {
   histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
                                      /*sample=*/false, 1);
   histogram_tester.ExpectBucketCount(
-      "Mojo.Ipcz.BufferPoolAllocateBlockFailureSize",
+      "Mojo.Ipcz.BufferPoolAllocateBlockFailureSize2",
       /*sample=*/kBlockAllocationSize64Bytes, 1);
   histogram_tester.ExpectTotalCount(
-      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize", 0);
+      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize2", 0);
+
+  // Check allocation failure with an unmapped block size falling into kOther.
+  constexpr int kBlockAllocationSizeOther = 0;
+  failed = pool.AllocateBlock(2 * 1024 * 1024);
+  EXPECT_TRUE(failed.is_null());
+  histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
+                                     /*sample=*/false, 2);
+  histogram_tester.ExpectBucketCount(
+      "Mojo.Ipcz.BufferPoolAllocateBlockFailureSize2",
+      /*sample=*/kBlockAllocationSizeOther, 1);
+  histogram_tester.ExpectTotalCount(
+      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize2", 0);
 
   // Check successful allocation.
   constexpr size_t kBufferSize = 4096;
@@ -342,7 +354,7 @@ TEST_F(BufferPoolTest, AllocateBlockResultHistogram) {
   histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
                                      /*sample=*/true, 1);
   histogram_tester.ExpectBucketCount(
-      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize",
+      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize2",
       /*sample=*/kBlockAllocationSize64Bytes, 1);
 }
 

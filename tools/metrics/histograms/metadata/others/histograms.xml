@@ -2992,7 +2992,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Mojo.Ipcz.BufferPoolAllocateBlockFailureSize"
+<histogram name="Mojo.Ipcz.BufferPoolAllocateBlockFailureSize2"
     enum="IpczBlockAllocationSize" expires_after="2027-02-01">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
@@ -3000,6 +3000,8 @@ chromium-metrics-reviews@google.com.
     Logs the block size category of a failed shared memory block allocation
     attempt in an ipcz BufferPool. Logged on every failed block allocation
     attempt in BufferPool::AllocateBlock. Subsampled to 1/1000.
+
+    Version 2 expands bucket coverage up to 1 MB.
   </summary>
 </histogram>
 
@@ -3014,7 +3016,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize"
+<histogram name="Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize2"
     enum="IpczBlockAllocationSize" expires_after="2027-02-01">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
@@ -3022,6 +3024,8 @@ chromium-metrics-reviews@google.com.
     Logs the block size category of a successful shared memory block allocation
     attempt in an ipcz BufferPool. Logged on every successful block allocation
     attempt in BufferPool::AllocateBlock. Subsampled to 1/1000.
+
+    Version 2 expands bucket coverage up to 1 MB.
   </summary>
 </histogram>
 

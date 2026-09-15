@@ -236,6 +236,14 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="1 KB"/>
   <int value="6" label="2 KB"/>
   <int value="7" label="4 KB"/>
+  <int value="8" label="8 KB"/>
+  <int value="9" label="16 KB"/>
+  <int value="10" label="32 KB"/>
+  <int value="11" label="64 KB"/>
+  <int value="12" label="128 KB"/>
+  <int value="13" label="256 KB"/>
+  <int value="14" label="512 KB"/>
+  <int value="15" label="1 MB"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/ipcz/src/ipcz/buffer_pool.cc:IpczBlockAllocationSize)

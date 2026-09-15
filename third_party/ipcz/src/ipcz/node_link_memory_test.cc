@@ -369,17 +369,17 @@ TEST_F(NodeLinkMemoryTest, AllocateFragmentHistogram) {
   histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
                                      /*sample=*/true, 1);
   histogram_tester.ExpectBucketCount(
-      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize", /*sample=*/1, 1);
+      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize2", /*sample=*/1, 1);
 
   // Failed allocation for an unregistered size (8192 bytes).
   Fragment failed = memory_a().AllocateFragment(8192);
   EXPECT_TRUE(failed.is_null());
   histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
                                      /*sample=*/false, 1);
-  constexpr int kBlockAllocationSizeOther = 0;
+  constexpr int kBlockAllocationSize8KB = 8;
   histogram_tester.ExpectBucketCount(
-      "Mojo.Ipcz.BufferPoolAllocateBlockFailureSize",
-      /*sample=*/kBlockAllocationSizeOther, 1);
+      "Mojo.Ipcz.BufferPoolAllocateBlockFailureSize2",
+      /*sample=*/kBlockAllocationSize8KB, 1);
 }
 
 TEST_F(NodeLinkMemoryTest, AllocateRouterLinkStateHistogram) {
@@ -398,10 +398,10 @@ TEST_F(NodeLinkMemoryTest, AllocateRouterLinkStateHistogram) {
                                      /*sample=*/true, 1);
   constexpr int kBlockAllocationSize64Bytes = 1;
   histogram_tester.ExpectBucketCount(
-      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize",
+      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize2",
       /*sample=*/kBlockAllocationSize64Bytes, 1);
   histogram_tester.ExpectBucketCount(
-      "Mojo.Ipcz.BufferPoolAllocateBlockFailureSize",
+      "Mojo.Ipcz.BufferPoolAllocateBlockFailureSize2",
       /*sample=*/kBlockAllocationSize64Bytes, 0);
 }
 

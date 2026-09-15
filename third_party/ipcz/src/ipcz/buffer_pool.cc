@@ -31,7 +31,15 @@ enum class BlockAllocationSize {
   k1KB = 5,
   k2KB = 6,
   k4KB = 7,
-  kMaxValue = k4KB,
+  k8KB = 8,
+  k16KB = 9,
+  k32KB = 10,
+  k64KB = 11,
+  k128KB = 12,
+  k256KB = 13,
+  k512KB = 14,
+  k1MB = 15,
+  kMaxValue = k1MB,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:IpczBlockAllocationSize)
 
@@ -51,6 +59,22 @@ BlockAllocationSize BlockSizeToBucket(size_t block_size) {
       return BlockAllocationSize::k2KB;
     case 4096:
       return BlockAllocationSize::k4KB;
+    case 8192:
+      return BlockAllocationSize::k8KB;
+    case 16384:
+      return BlockAllocationSize::k16KB;
+    case 32768:
+      return BlockAllocationSize::k32KB;
+    case 65536:
+      return BlockAllocationSize::k64KB;
+    case 131072:
+      return BlockAllocationSize::k128KB;
+    case 262144:
+      return BlockAllocationSize::k256KB;
+    case 524288:
+      return BlockAllocationSize::k512KB;
+    case 1048576:
+      return BlockAllocationSize::k1MB;
     default:
       return BlockAllocationSize::kOther;
   }
@@ -63,10 +87,10 @@ void RecordAllocateBlockResult(size_t block_size, bool success) {
   UMA_HISTOGRAM_BOOLEAN("Mojo.Ipcz.BufferPoolAllocateBlockResult", success);
   const BlockAllocationSize bucket = BlockSizeToBucket(block_size);
   if (success) {
-    UMA_HISTOGRAM_ENUMERATION("Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize",
+    UMA_HISTOGRAM_ENUMERATION("Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize2",
                               bucket);
   } else {
-    UMA_HISTOGRAM_ENUMERATION("Mojo.Ipcz.BufferPoolAllocateBlockFailureSize",
+    UMA_HISTOGRAM_ENUMERATION("Mojo.Ipcz.BufferPoolAllocateBlockFailureSize2",
                               bucket);
   }
 }
