@@ -7,9 +7,9 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -50,25 +50,18 @@ class PrintingOAuth2HttpExchangeTest : public testing::Test {
       net::HttpStatusCode error_code = net::HttpStatusCode::HTTP_BAD_REQUEST) {
     url_loader_factory_.AddResponse(GURL(def.url), std::move(def.response_head),
                                     def.response_content, def.compl_status);
+    base::test::TestFuture<printing::oauth2::StatusCode> future;
     http_exchange_.Exchange(
         "GET", GURL(def.url), printing::oauth2::ContentFormat::kEmpty,
         static_cast<int>(success_code), static_cast<int>(error_code),
-        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
-        base::BindOnce(&PrintingOAuth2HttpExchangeTest::ExchangeCallback,
-                       base::Unretained(this)));
-    task_environment_.RunUntilIdle();
-    return callback_status_;
-  }
-  // This callback is used by the method above.
-  void ExchangeCallback(printing::oauth2::StatusCode status) {
-    callback_status_ = status;
+        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS, future.GetCallback());
+    return future.Get();
   }
 
  protected:
   network::TestURLLoaderFactory url_loader_factory_;
   printing::oauth2::HttpExchange http_exchange_;
   base::test::TaskEnvironment task_environment_;
-  printing::oauth2::StatusCode callback_status_;
 };
 
 constexpr char kExampleContent[] = R"({
