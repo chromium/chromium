@@ -8,18 +8,14 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
-
-class PrefService;
 
 namespace ash {
 
 class OobeTestAPIHandler : public BaseWebUIHandler {
  public:
-  // `local_state` must be non-null and must outlive `this`.
-  explicit OobeTestAPIHandler(PrefService* local_state);
+  OobeTestAPIHandler();
   ~OobeTestAPIHandler() override;
   OobeTestAPIHandler(const OobeTestAPIHandler&) = delete;
   OobeTestAPIHandler& operator=(const OobeTestAPIHandler&) = delete;
@@ -45,8 +41,6 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void HandleGetShouldSkipTouchpadScroll(const std::string& callback_id);
   void HandleGetMetricsClientID(const std::string& callback_id);
   void HandleGetShouldSkipSplitModifierScreen(const std::string& callback_id);
-
-  const raw_ref<PrefService> local_state_;
 };
 
 }  // namespace ash

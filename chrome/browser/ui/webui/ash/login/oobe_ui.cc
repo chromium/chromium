@@ -772,7 +772,7 @@ OobeUI::OobeUI(
 
   bool enable_test_api = command_line->HasSwitch(switches::kEnableOobeTestAPI);
   if (enable_test_api) {
-    AddWebUIHandler(std::make_unique<OobeTestAPIHandler>(&local_state));
+    AddWebUIHandler(std::make_unique<OobeTestAPIHandler>());
   }
 
   base::DictValue localized_strings = GetLocalizedStrings();
