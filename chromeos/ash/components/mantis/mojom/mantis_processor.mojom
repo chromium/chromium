@@ -8,7 +8,7 @@
 module mantis.mojom;
 
 // A specific error Mantis encountered when processing the request.
-[Stable, Extensible]
+[Extensible]
 enum MantisError {
   [Default] kUnknownError,
   [MinVersion=1] kProcessorNotInitialized,
@@ -21,14 +21,13 @@ enum MantisError {
 };
 
 // The result of image after processed by Mantis, or an error if any.
-[Stable]
 union MantisResult {
   MantisError error;
   array<uint8> result_image;
 };
 
 // This enum type identifies the result of Trust & Safety checking.
-[Stable, Extensible]
+[Extensible]
 enum SafetyClassifierVerdict {
   kPass,
   [Default] kFail,
@@ -43,14 +42,13 @@ enum SafetyClassifierVerdict {
 // in world space, with units in Density-Independent Pixels (DIP).
 // The event fields are defined in:
 // http://google3/third_party/sketchology/proto/scene_change.proto;l=123;rcl=693325121
-[Stable]
 struct TouchPoint {
   float x@0;
   float y@1;
 };
 
 // This enum type identifies the segmentation mode.
-[Stable, Extensible]
+[Extensible]
 enum SegmentationMode {
   [Default] kScribble,
   kLasso,
@@ -61,7 +59,6 @@ enum SegmentationMode {
 //
 // This interface is served by `odmld` process in CrOS to be used by image
 // editing UI (e.g. Media App WebUI).
-[Stable]
 interface MantisProcessor {
   // Inpaints the image based on the mask and seed. Pass the same `seed` across
   // method calls to get identical result. The `image`, `mask`, and `result` are

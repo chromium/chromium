@@ -28,7 +28,7 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 // numeric values should never be reused.
 // Keep this enum in sync with MachineLearningServiceDocumentScannerResultEvent
 // in tools/metrics/histograms/metadata/cros_ml/enums.xml.
-[Stable, Extensible]
+[Extensible]
 enum DocumentScannerResultStatus {
   OK = 0,
   ERROR = 1,
@@ -36,7 +36,6 @@ enum DocumentScannerResultStatus {
 
 // The configuration for document scanner.
 // Next min field ID: 2
-[Stable]
 struct DocumentScannerConfig {
   string deprecated_library_dlc_path@0;
 
@@ -46,7 +45,6 @@ struct DocumentScannerConfig {
 
 // The corner detection response.
 // Next min field ID: 2
-[Stable]
 struct DetectCornersResult {
   // Status of the result. Even when there is no corners detected, the detection
   // can still be considered successful if there is no error occurs.
@@ -58,7 +56,6 @@ struct DetectCornersResult {
 
 // The post processing response.
 // Next min field ID: 2
-[Stable]
 struct DoPostProcessingResult {
   // Status of the result.
   DocumentScannerResultStatus status@0;
@@ -69,7 +66,6 @@ struct DoPostProcessingResult {
 
 // The mojom interface for performing document scanning.
 // Next ordinal: 3
-[Stable]
 interface DocumentScanner {
   // Detect document corners for given `nv12_image` which is in 256x256 size.
   DetectCornersFromNV12Image@0(

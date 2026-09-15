@@ -12,7 +12,6 @@ module chromeos.machine_learning.web_platform.mojom;
 // "//third_party/blink/public/mojom/handwriting/handwriting.mojom"
 // Notice that some modifications are made,
 //   1. The module is changed to `chromeos.machine_learning.web_platform.mojom`.
-//   2. `[Stable]` tags are added.
 //   3. Interface `HandwritingRecognitionService`
 //      and `CreateHandwritingRecognizerResult` are removed because they not
 //      used here.
@@ -26,7 +25,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Represents a single point in a handwriting stroke.
 // Corresponds to handwriting_point.idl.
-[Stable]
 struct HandwritingPoint {
   // Represent the horizontal (location.x) and vertical (location.y) location
   // of the point.
@@ -39,7 +37,6 @@ struct HandwritingPoint {
 
 // Represents a stroke which is just a series of points.
 // Corresponds to handwriting_stroke.idl.
-[Stable]
 struct HandwritingStroke {
   array<HandwritingPoint> points;
 };
@@ -52,7 +49,6 @@ struct HandwritingStroke {
 // The reason we need this struct is that different parts of one single stroke
 // can belong to different grapheme detected.
 // Corresponds to handwriting_drawing_segment.idl.
-[Stable]
 struct HandwritingDrawingSegment {
   // The index of the corresponding stroke in the input stroke array.
   uint32 stroke_index;
@@ -66,7 +62,6 @@ struct HandwritingDrawingSegment {
 
 // Represents a segment detected.
 // Corresponds to handwriting_segment.idl.
-[Stable]
 struct HandwritingSegment {
   // The string representation of this grapheme.
   string grapheme;
@@ -81,7 +76,6 @@ struct HandwritingSegment {
 // Represents one single prediction result.
 // The final prediction output is an array of it.
 // Corresponds to handwriting_prediction.idl.
-[Stable]
 struct HandwritingPrediction {
   string text;
   array<HandwritingSegment> segmentation_result;
@@ -89,7 +83,6 @@ struct HandwritingPrediction {
 
 // Represents the hints provided to the recognizer for better performance.
 // Corresponds to handwriting_hints.idl.
-[Stable]
 struct HandwritingHints {
   // The type of content to be recognized. The recognizer may use these to
   // better rank the recognition results. (e.g. "text", "email", "number",
@@ -111,7 +104,6 @@ struct HandwritingHints {
 
 // Used in creating recognizer.
 // Corresponds to handwriting_model_constraint.idl.
-[Stable]
 struct HandwritingModelConstraint {
   // Languages are IETF BCP 47 language tags, e.g., "en", "zh-CN", "zh-Hans".
   array<string> languages;
@@ -120,7 +112,6 @@ struct HandwritingModelConstraint {
 // Interface for a renderer to use a specific handwriting recognition backend.
 // The browser handles the requests and forwards them to the appropriate
 // backend.
-[Stable]
 interface HandwritingRecognizer {
   // Does the recognition and outputs the prediction result.
   // This is used by IDL API `blink::HandwritingDrawing::getPrediction`.

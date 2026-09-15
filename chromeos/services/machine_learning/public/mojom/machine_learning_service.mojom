@@ -35,7 +35,7 @@ import "chromeos/services/machine_learning/public/mojom/web_platform_handwriting
 // numeric values should never be reused.
 // Keep this enum in sync with MachineLearningServiceLoadModelResultEvent in
 // tools/metrics/histograms/metadata/cros_ml/enums.xml.
-[Stable, Extensible]
+[Extensible]
 enum LoadModelResult {
   OK = 0,
   MODEL_SPEC_ERROR = 1,
@@ -47,7 +47,6 @@ enum LoadModelResult {
 // Top-level interface between Chromium browser process and the ML Service
 // daemon.
 // Next ordinal: 14
-[Stable, Uuid="9e5e4750-40cc-4eda-ac09-3457d06a45ab"]
 interface MachineLearningService {
   // Binds another pipe to this instance.
   Clone@5(pending_receiver<MachineLearningService> receiver);

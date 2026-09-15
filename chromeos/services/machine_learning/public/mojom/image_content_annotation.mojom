@@ -20,13 +20,11 @@ module chromeos.machine_learning.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 
-[Stable]
 struct ImageAnnotatorConfig {
   // User's locale.
   string locale@0;
 };
 
-[Stable]
 struct ImageAnnotationScore {
   // Id of the recognized entity, 0-N.
   int32 id@0;
@@ -51,9 +49,8 @@ struct ImageAnnotationScore {
 
 // Result struct for image annotation requests.
 // Maps to AnnotationScoreList in proto.
-[Stable]
 struct ImageAnnotationResult {
-  [Stable, Extensible]
+  [Extensible]
   enum Status {
     [Default] OK = 0,
     ERROR = 1,
@@ -63,7 +60,6 @@ struct ImageAnnotationResult {
 };
 
 // Used to annotate images with image annotations (context).
-[Stable]
 interface ImageContentAnnotator {
   // Annotate image contents from raw RGB image bytes.
   AnnotateRawImage@0(mojo_base.mojom.ReadOnlySharedMemoryRegion rgb_bytes,

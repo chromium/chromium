@@ -21,7 +21,6 @@ module chromeos.machine_learning.mojom;
 
 // Represents a single completion candidate
 // Next ordinal: 2
-[Stable]
 struct NextWordCompletionCandidate {
   // The completing text suggested
   string text@0;
@@ -31,7 +30,7 @@ struct NextWordCompletionCandidate {
 };
 
 // The mode with which a suggestion should be used by a consumer
-[Stable, Extensible]
+[Extensible]
 enum TextSuggestionMode {
    // A prediction suggestion is the text predicted after a word. For example
    // the preceding text could be "how are", and the suggested text would be
@@ -47,7 +46,6 @@ enum TextSuggestionMode {
 
 // Defines a query for text suggestions
 // Next ordinal: 3
-[Stable]
 struct TextSuggesterQuery {
   // The text used to generate suggestions
   string text@0;
@@ -61,7 +59,6 @@ struct TextSuggesterQuery {
 
 // Represents a single generated multi word suggestion candidate.
 // Next ordinal: 2
-[Stable]
 struct MultiWordSuggestionCandidate {
   // The text suggested
   string text@0;
@@ -77,17 +74,15 @@ struct MultiWordSuggestionCandidate {
 // requires establishing a [Default] field.
 //
 // Next ordinal: 1
-[Stable]
 union TextSuggestionCandidate {
   MultiWordSuggestionCandidate multi_word@0;
 };
 
 // The result to text suggestion queries, contains any candidates generated.
 // Next ordinal: 2
-[Stable]
 struct TextSuggesterResult {
   // Status of the response
-  [Stable, Extensible]
+  [Extensible]
   enum Status {
     // Text suggestions generated successfully
     OK = 0,
@@ -105,7 +100,7 @@ struct TextSuggesterResult {
 // Experiment groups for multi word suggestions. See the following go link for
 // more details on the experiments: go/cros-text-suggester-experiment-defs
 // Next value: 8
-[Stable, Extensible]
+[Extensible]
 enum MultiWordExperimentGroup {
   [Default] kDefault = 0,
   kGboard = 1,
@@ -120,7 +115,6 @@ enum MultiWordExperimentGroup {
 
 // Encapsulates any settings details for a TextSuggester
 // Next ordinal: 1
-[Stable]
 struct TextSuggesterSpec {
   // The experimental group for multi word suggestions
   MultiWordExperimentGroup multi_word_experiment@0;
@@ -129,7 +123,6 @@ struct TextSuggesterSpec {
 // The top level interface for requesting text based suggestions in the Chromium
 // browser process from the sandboxed ML service process.
 // Next ordinal: 1
-[Stable]
 interface TextSuggester {
   // Generates text suggestions from the given context
   Suggest@0(TextSuggesterQuery query) => (TextSuggesterResult result);

@@ -25,7 +25,7 @@ import "mojo/public/mojom/base/time.mojom";
 // Keep this enum in sync with
 // MachineLearningServiceLoadHeatmapPalmRejectionResult in
 // tools/metrics/histograms/metadata/cros_ml/enums.xml.
-[Stable, Extensible]
+[Extensible]
 enum LoadHeatmapPalmRejectionResult {
   // The service was loaded successfully.
   OK = 0,
@@ -44,7 +44,6 @@ enum LoadHeatmapPalmRejectionResult {
 };
 
 // Configs to set up heatmap palm rejection service.
-[Stable]
 struct HeatmapPalmRejectionConfig {
   // The path to the heatmap palm rejection TF model on device.
   string tf_model_path;
@@ -63,7 +62,6 @@ struct HeatmapPalmRejectionConfig {
 };
 
 // The result of processing a frame of heatmap data.
-[Stable]
 struct HeatmapProcessedEvent {
   // The timestamp of the heatmap event.
   mojo_base.mojom.Time timestamp;
@@ -73,7 +71,6 @@ struct HeatmapProcessedEvent {
 
 // The client of heatmap palm rejection service, which will receive the palm
 // rejection results.
-[Stable]
 interface HeatmapPalmRejectionClient {
   // This is how the client receives heatmap palm rejection results;
   OnHeatmapProcessedEvent@0(HeatmapProcessedEvent event);
@@ -84,7 +81,6 @@ interface HeatmapPalmRejectionClient {
 // beyond the width or height of the heatmap will be treated as no-op. These
 // values are human provided configuration values based on observed heatmap
 // dimensions and the expected input shape to the ML model.
-[Stable]
 struct CropHeatmap {
   // Number of rows of data to crop from the bottom.
   uint8 bottom_crop;

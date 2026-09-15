@@ -12,7 +12,7 @@ import "chromeos/services/machine_learning/public/mojom/text_classifier.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 
 // The feature status used to restrict Mantis functionality if applicable.
-[Stable, Extensible]
+[Extensible]
 enum MantisFeatureStatus {
   [Default] kDeviceNotSupported,
   kARCVMDisabled,
@@ -20,7 +20,7 @@ enum MantisFeatureStatus {
 };
 
 // The model initialization result.
-[Stable, Extensible]
+[Extensible]
 enum InitializeResult {
   kSuccess,
   kGpuBlocked,
@@ -29,7 +29,6 @@ enum InitializeResult {
 };
 
 // An observer to report the current platform model loading progress.
-[Stable]
 interface PlatformModelProgressObserver {
   // The progress value is between 0.0 and 1.0.
   Progress@0(double progress);
@@ -41,7 +40,6 @@ interface PlatformModelProgressObserver {
 //
 // This interface is served by `odmld` process in CrOS to be used by image
 // editing UI (e.g. Media App WebUI).
-[Stable]
 interface MantisService {
   // Gets Mantis feature status which can be used to restrict Mantis
   // functionality by returning a status other than kAvailable.

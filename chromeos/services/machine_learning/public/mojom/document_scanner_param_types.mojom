@@ -17,7 +17,7 @@
 module chromeos.machine_learning.mojom;
 
 // Image rotation in clockwise direction.
-[Stable, Extensible]
+[Extensible]
 enum Rotation {
   // 0 degree rotation (no rotation).
   ROTATION_0 = 0,

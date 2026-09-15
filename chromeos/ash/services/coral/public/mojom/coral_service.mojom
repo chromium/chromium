@@ -14,7 +14,6 @@ import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/token.mojom";
 
 // Represents metadata of a Chrome tab entity.
-[Stable]
 struct Tab {
   // This is the exact title string of a tab shown on UI.
   string title@0;
@@ -24,7 +23,6 @@ struct Tab {
 };
 
 // Represents metadata of an ARC app entity.
-[Stable]
 struct App {
   // This is the exact title string of an ARC app shown on UI.
   string title@0;
@@ -36,7 +34,7 @@ struct App {
 
 // Entity types that the coral service supports. For each of the entity type
 // coral service has a way of formatting them into embedding prompts.
-[Stable, Extensible]
+[Extensible]
 union Entity {
   // For backward compatibility. In mojom, when deserializing variants of an
   // extensible union that are introduced in newer versions than the version
@@ -51,7 +49,6 @@ union Entity {
 };
 
 // Configurable options of the embedding engine.
-[Stable]
 struct EmbeddingOptions {
   // When set to true, the embedding engine will validate whether the entity is
   // considered "safe" by querying the SafetyService, and "unsafe" entities
@@ -63,7 +60,6 @@ struct EmbeddingOptions {
 // Configurable options of the clustering engine.
 // TODO(b/358531135): Decide the cluster algorithm we want to use and add
 // the algorithm options.
-[Stable]
 struct ClusteringOptions {
   // 0 means min items in cluster is 0, which effectively means there is no
   // limit.
@@ -77,7 +73,6 @@ struct ClusteringOptions {
 };
 
 // Configurable options of the title generation engine.
-[Stable]
 struct TitleGenerationOptions {
   // Max characters allowed in the generated title. 0 is a special value
   // meaning there is no limitation of maximum number of characters.
@@ -87,7 +82,7 @@ struct TitleGenerationOptions {
   string? language_code@1;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum CoralError {
   // Error enums that are introduced in a newer version will be mapped to this.
   // Other than that, implementations should choose a value below or add a new
@@ -103,7 +98,6 @@ enum CoralError {
   kClusteringError = 4,
 };
 
-[Stable]
 struct Group {
   // A random id that uniquely identifies the group.
   mojo_base.mojom.Token id@0;
@@ -118,7 +112,6 @@ struct Group {
   array<Entity> entities@2;
 };
 
-[Stable]
 struct GroupRequest {
   array<Entity> entities@0;
   EmbeddingOptions embedding_options@1;
@@ -151,13 +144,11 @@ struct GroupRequest {
   array<Entity>? suppression_context@4;
 };
 
-[Stable]
 struct GroupResponse {
   // This is sorted by descending rank of importance.
   array<Group> groups@0;
 };
 
-[Stable]
 union GroupResult {
   // Meaning that the request failed.
   CoralError error;
@@ -165,17 +156,14 @@ union GroupResult {
   GroupResponse response;
 };
 
-[Stable]
 struct CacheEmbeddingsRequest {
   array<Entity> entities@0;
   EmbeddingOptions embedding_options@1;
 };
 
 // Does not yet contain any fields.
-[Stable]
 struct CacheEmbeddingsResponse {};
 
-[Stable]
 union CacheEmbeddingsResult {
   // Meaning that the request failed.
   CoralError error;
@@ -188,7 +176,6 @@ union CacheEmbeddingsResult {
 // time compared to the grouping process, so this observer is used such that
 // `CoralService::Group` can return the groupings without titles first, then
 // update the title through this observer when they are ready.
-[Stable]
 interface TitleObserver {
   // Updates the title of the group with id `group_id` to `title`.
   // Currently this should be called exactly once for each group with null
@@ -200,7 +187,6 @@ interface TitleObserver {
 
 // The actual processor that handles the grouping requests from the client.
 // This will be initialized and returned by CoralService.
-[Stable]
 interface CoralProcessor {
   // Group the request entities into suitable groups with titles. When the
   // observer is passed, the service could return groups with null title
@@ -217,7 +203,6 @@ interface CoralProcessor {
 // The ChromeOS odml daemon implements this service interface, utilizing the on
 // device models for backend logic. Ash Chrome is the client, implementing
 // UI features using this coral service.
-[Stable]
 interface CoralService {
   // This method is deprecated. Calling it before full deprecation will still
   // work as
@@ -236,6 +221,10 @@ interface CoralService {
   PrepareResource@2();
 
   // Initializes the processor with ML Service and prepare necessary resources.
+  // Language code can be specified such that we will install the title
+  // generation model of the specified language on initialization. The language
+  // code follows the ISO 639-2 language code definition. If not set, EN is
+  // assumed.
   [MinVersion=1]
   Initialize@3(
       pending_remote<chromeos.machine_learning.mojom.MachineLearningService>?
