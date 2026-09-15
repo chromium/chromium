@@ -187,8 +187,8 @@ fn test_build_sign_command() {
     let validation_ticket = &[7, 8, 9, 10];
     let cmd = tpm::build_sign_command(key_handle, digest, validation_ticket);
 
-    // Header (10) + Handle (4) + AuthSize (4) + Session (9) + digest prefix (2) +
-    // digest len (3) + sig_alg TPM_ALG_NULL (2) + ticket len (4) = 38
+    // Header (10) + Handle (4) + AuthSize (4) + Session (9) + digest prefix (2)
+    // + digest len (3) + sig_alg TPM_ALG_NULL (2) + ticket len (4) = 38
     expect_eq!(cmd.len(), 38);
 
     let mut reader = tpm::Reader::new(&cmd);
@@ -861,6 +861,212 @@ fn test_flush_context_tpm_error() {
     let result = tpm::parse_flush_context_response(&resp);
     expect_true!(matches!(result.result, tpm::ffi::ParseResult::TpmErrorResponse));
     expect_eq!(result.tpm_response_code, 0x100);
+}
+
+struct CreatePrimaryResponseBuilder {
+    tag: u16,
+    rc: u32,
+    object_handle: u32,
+    /// Bytes standing in for the response parameters that follow
+    /// `objectHandle`. The parser does not read them, but a real TPM always
+    /// sends them, so the tests cover their presence.
+    body: Vec<u8>,
+}
+
+impl CreatePrimaryResponseBuilder {
+    fn new() -> Self {
+        Self {
+            tag: tpm::TpmSt::TPM_ST_SESSIONS.repr,
+            rc: 0,
+            object_handle: 0x80FFFFFF,
+            body: vec![0xAA; 8],
+        }
+    }
+
+    fn set_tag(mut self, tag: u16) -> Self {
+        self.tag = tag;
+        self
+    }
+
+    fn set_rc(mut self, rc: u32) -> Self {
+        self.rc = rc;
+        self
+    }
+
+    fn set_object_handle(mut self, object_handle: u32) -> Self {
+        self.object_handle = object_handle;
+        self
+    }
+
+    fn set_body(mut self, body: Vec<u8>) -> Self {
+        self.body = body;
+        self
+    }
+
+    fn build(self) -> Vec<u8> {
+        let total_size = 14 + self.body.len();
+        let mut writer = tpm::Writer::with_capacity(total_size);
+        writer.write_u16(self.tag);
+        writer.write_u32(total_size as u32);
+        writer.write_u32(self.rc);
+        writer.write_u32(self.object_handle);
+        writer.write_bytes(&self.body);
+        writer.into_inner()
+    }
+}
+
+#[gtest(TpmTest, BuildCreatePrimaryEccSrkCommand)]
+fn test_build_create_primary_ecc_srk_command() {
+    let cmd = tpm::build_create_primary_ecc_srk_command();
+    expect_eq!(cmd.len(), 67);
+
+    let mut reader = tpm::Reader::new(&cmd);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmSt::TPM_ST_SESSIONS.repr);
+    expect_eq!(reader.read_u32().unwrap(), 67);
+    expect_eq!(reader.read_u32().unwrap(), tpm::TpmCc::TPM_CC_CREATE_PRIMARY.repr);
+
+    // Primary handle: the owner hierarchy, not a parent object.
+    expect_eq!(reader.read_u32().unwrap(), tpm::TpmRh::TPM_RH_OWNER.repr);
+
+    // Auth session
+    expect_eq!(reader.read_u32().unwrap(), 9);
+    expect_eq!(reader.read_u32().unwrap(), tpm::TpmRh::TPM_RS_PW.repr);
+    expect_eq!(reader.read_u16().unwrap(), 0);
+    expect_eq!(reader.read_u8().unwrap(), 0);
+    expect_eq!(reader.read_u16().unwrap(), 0);
+
+    // inSensitive (size 4, userAuth 0, data 0)
+    expect_eq!(reader.read_u16().unwrap(), 4);
+    expect_eq!(reader.read_u16().unwrap(), 0);
+    expect_eq!(reader.read_u16().unwrap(), 0);
+
+    // inPublic (size 26)
+    expect_eq!(reader.read_u16().unwrap(), 26);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmAlgPublic::TPM_ALG_ECC.repr);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmAlgHash::TPM_ALG_SHA256.repr);
+    expect_eq!(reader.read_u32().unwrap(), tpm::ECC_SRK_OBJECT_ATTRIBUTES);
+    expect_eq!(reader.read_u16().unwrap(), 0); // authPolicy
+
+    // parameters (TPMS_ECC_PARMS). A storage key carries real symmetric
+    // parameters, unlike the AIK's null symmetric definition.
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmAlgSymmetric::TPM_ALG_AES.repr);
+    expect_eq!(reader.read_u16().unwrap(), 128); // keyBits
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmAlgSymmetric::TPM_ALG_CFB.repr);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmAlgSigScheme::TPM_ALG_NULL.repr); // scheme
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmEccCurve::TPM_ECC_NIST_P256.repr); // curveID
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmAlgSigScheme::TPM_ALG_NULL.repr); // kdf
+
+    // unique
+    expect_eq!(reader.read_u16().unwrap(), 0); // x
+    expect_eq!(reader.read_u16().unwrap(), 0); // y
+
+    // outsideInfo
+    expect_eq!(reader.read_u16().unwrap(), 0);
+
+    // creationPCR
+    expect_eq!(reader.read_u32().unwrap(), 0);
+
+    expect_true!(reader.is_empty());
+}
+
+#[gtest(TpmTest, BuildCreatePrimaryEccSrkCommandGoldenBytes)]
+fn test_build_create_primary_ecc_srk_command_golden_bytes() {
+    // Byte-for-byte expectation, not just a field-by-field one. A primary key
+    // is derived from the template, so any change to these bytes silently
+    // produces a *different* key: objects wrapped under it would stop loading
+    // under the provider's own SRK, with no error at the point of the mistake.
+    //
+    // These are the exact bytes that were verified against a discrete TPM to
+    // reproduce the key the Platform Crypto Provider persists at 0x81000009.
+    #[rustfmt::skip]
+    const EXPECTED: [u8; 67] = [
+        0x80, 0x02,             // tag: TPM_ST_SESSIONS
+        0x00, 0x00, 0x00, 0x43, // commandSize: 67
+        0x00, 0x00, 0x01, 0x31, // commandCode: TPM_CC_CREATE_PRIMARY
+        0x40, 0x00, 0x00, 0x01, // primaryHandle: TPM_RH_OWNER
+        0x00, 0x00, 0x00, 0x09, // authorizationSize: 9
+        0x40, 0x00, 0x00, 0x09, // sessionHandle: TPM_RS_PW
+        0x00, 0x00,             // nonce: empty
+        0x00,                   // sessionAttributes
+        0x00, 0x00,             // hmac: empty
+        0x00, 0x04,             // inSensitive size
+        0x00, 0x00,             // userAuth: empty
+        0x00, 0x00,             // data: empty
+        0x00, 0x1A,             // inPublic size: 26
+        0x00, 0x23,             // type: TPM_ALG_ECC
+        0x00, 0x0B,             // nameAlg: TPM_ALG_SHA256
+        0x00, 0x03, 0x04, 0x72, // objectAttributes
+        0x00, 0x00,             // authPolicy: empty
+        0x00, 0x06,             // symmetric.algorithm: TPM_ALG_AES
+        0x00, 0x80,             // symmetric.keyBits: 128
+        0x00, 0x43,             // symmetric.mode: TPM_ALG_CFB
+        0x00, 0x10,             // scheme: TPM_ALG_NULL
+        0x00, 0x03,             // curveID: TPM_ECC_NIST_P256
+        0x00, 0x10,             // kdf: TPM_ALG_NULL
+        0x00, 0x00,             // unique.x: empty
+        0x00, 0x00,             // unique.y: empty
+        0x00, 0x00,             // outsideInfo: empty
+        0x00, 0x00, 0x00, 0x00, // creationPCR: empty
+    ];
+
+    expect_eq!(tpm::build_create_primary_ecc_srk_command(), EXPECTED.to_vec());
+}
+
+#[gtest(TpmParserTest, CreatePrimaryHappyPath)]
+fn test_create_primary_happy_path() {
+    let resp = CreatePrimaryResponseBuilder::new().set_object_handle(0x80000001).build();
+
+    let result = tpm::parse_create_primary_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::Ok));
+    expect_eq!(result.status.tpm_response_code, 0);
+    expect_eq!(result.object_handle, 0x80000001);
+}
+
+#[gtest(TpmParserTest, CreatePrimaryIgnoresTrailingParameters)]
+fn test_create_primary_ignores_trailing_parameters() {
+    // The parser deliberately stops after `objectHandle`, so a long parameter
+    // area must not be treated as an error.
+    let resp = CreatePrimaryResponseBuilder::new().set_body(vec![0x5A; 256]).build();
+
+    let result = tpm::parse_create_primary_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::Ok));
+    expect_eq!(result.object_handle, 0x80FFFFFF);
+}
+
+#[gtest(TpmParserTest, CreatePrimaryTpmError)]
+fn test_create_primary_tpm_error() {
+    // TPM_RC_AUTH_FAIL, what a machine with non-empty owner authorization
+    // returns.
+    let resp = CreatePrimaryResponseBuilder::new().set_rc(0x98E).build();
+
+    let result = tpm::parse_create_primary_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::TpmErrorResponse));
+    expect_eq!(result.status.tpm_response_code, 0x98E);
+    expect_eq!(result.object_handle, 0);
+}
+
+#[gtest(TpmParserTest, CreatePrimaryWrongTag)]
+fn test_create_primary_wrong_tag() {
+    let resp =
+        CreatePrimaryResponseBuilder::new().set_tag(tpm::TpmSt::TPM_ST_NO_SESSIONS.repr).build();
+
+    let result = tpm::parse_create_primary_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::WrongType));
+    expect_eq!(result.object_handle, 0);
+}
+
+#[gtest(TpmParserTest, CreatePrimaryMissingHandle)]
+fn test_create_primary_missing_handle() {
+    // A well-formed header that ends before `objectHandle`.
+    let mut writer = tpm::Writer::with_capacity(10);
+    writer.write_u16(tpm::TpmSt::TPM_ST_SESSIONS.repr);
+    writer.write_u32(10);
+    writer.write_u32(0);
+    let resp = writer.into_inner();
+
+    let result = tpm::parse_create_primary_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::BufferTooSmall));
+    expect_eq!(result.object_handle, 0);
 }
 
 #[gtest(TpmTest, BuildCreateAikCommandEccP256)]

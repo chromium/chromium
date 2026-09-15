@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 pub use ffi::{
-    CreateResponse, ResponseStatus, TpmAlgHash, TpmAlgPublic, TpmAlgSigScheme, TpmCc, TpmConstant,
-    TpmEccCurve, TpmRh, TpmSt,
+    CreatePrimaryResponse, CreateResponse, ResponseStatus, TpmAlgHash, TpmAlgPublic,
+    TpmAlgSigScheme, TpmAlgSymmetric, TpmCc, TpmConstant, TpmEccCurve, TpmRh, TpmSt,
 };
 
 /// Size of a standard TPM command header (Tag + Size + CommandCode).
@@ -24,6 +24,22 @@ pub const TPM_MAX_BUFFER_SIZE: usize = 1024;
 /// fixedTPM (0x02) | fixedParent (0x10) | sensitiveDataOrigin (0x20) |
 /// userWithAuth (0x40) | restricted (0x10000) | sign (0x40000) = 0x00050072.
 pub const AIK_OBJECT_ATTRIBUTES: u32 = 0x00050072;
+
+/// Object attributes for the ECC Storage Root Key (SRK).
+/// fixedTPM (0x02) | fixedParent (0x10) | sensitiveDataOrigin (0x20) |
+/// userWithAuth (0x40) | noDA (0x400) | restricted (0x10000) | decrypt
+/// (0x20000) = 0x00030472.
+///
+/// This is the TCG reference template for an ECC storage primary key, and is
+/// also what the Windows Platform Crypto Provider persists at handle
+/// 0x81000009. The values have to match exactly: a primary key is derived
+/// deterministically from the storage seed and its template, so any difference
+/// here produces a different key, and objects wrapped under it would no longer
+/// load under the provider's own SRK.
+pub const ECC_SRK_OBJECT_ATTRIBUTES: u32 = 0x00030472;
+
+/// Symmetric key size of the ECC SRK's storage parameters, in bits.
+const ECC_SRK_SYM_KEY_BITS: u16 = 128;
 
 /// Errors that can occur during TPM response parsing.
 #[derive(Debug)]
@@ -122,6 +138,16 @@ pub mod ffi {
         out_public: Vec<u8>,
     }
 
+    /// Response from parsing a TPM2_CreatePrimary command.
+    #[cxx_name = "RawCreatePrimaryResponse"]
+    struct CreatePrimaryResponse {
+        /// The outcome of the parsing operation.
+        status: ResponseStatus,
+        /// Handle of the transient primary object created by the TPM. The
+        /// caller owns it and must release it with TPM2_FlushContext.
+        object_handle: u32,
+    }
+
     /// Response from parsing a TPM2_Hash command.
     #[cxx_name = "RawHashResponse"]
     struct HashResponse {
@@ -210,6 +236,20 @@ pub mod ffi {
         TPM_ALG_ECDSA = 0x0018,
     }
 
+    /// TPM Symmetric Algorithms and Modes, as used in a TPMT_SYM_DEF_OBJECT.
+    /// The two fields are drawn from the same TPM_ALG_ID space but are
+    /// separately constrained: the algorithm is a TPMI_ALG_SYM_OBJECT and the
+    /// mode a TPMI_ALG_SYM_MODE. See
+    /// https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf.
+    #[derive(Debug, PartialEq, Eq)]
+    #[repr(u16)]
+    enum TpmAlgSymmetric {
+        /// TPM_ALG_AES is the AES block cipher.
+        TPM_ALG_AES = 0x0006,
+        /// TPM_ALG_CFB is the cipher feedback mode of operation.
+        TPM_ALG_CFB = 0x0043,
+    }
+
     /// TPM ECC Curves. See https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=46 for details.
     #[derive(Debug)]
     #[repr(u16)]
@@ -248,6 +288,8 @@ pub mod ffi {
     #[derive(Debug)]
     #[repr(u32)]
     enum TpmCc {
+        /// TPM_CC_CREATE_PRIMARY is the command code for TPM2_CreatePrimary.
+        TPM_CC_CREATE_PRIMARY = 0x00000131,
         /// TPM_CC_SEQUENCE_COMPLETE is the command code for
         /// TPM2_SequenceComplete.
         TPM_CC_SEQUENCE_COMPLETE = 0x0000013E,
@@ -345,6 +387,31 @@ pub mod ffi {
         /// code, the serialized `TPM2B_PRIVATE` structure, and the serialized
         /// `TPM2B_PUBLIC` structure.
         fn parse_create_response(resp: &[u8]) -> CreateResponse;
+
+        /// Builds a TPM2_CreatePrimary command buffer for the ECC Storage Root
+        /// Key, under the owner hierarchy.
+        ///
+        /// The template is fixed to ECC P-256 with SHA-256 and AES-128-CFB
+        /// storage parameters: it has to reproduce the key that the Platform
+        /// Crypto Provider persists at 0x81000009, so it takes no parameters.
+        ///
+        /// # Returns
+        ///
+        /// A `Vec<u8>` containing the serialized command buffer.
+        fn build_create_primary_ecc_srk_command() -> Vec<u8>;
+
+        /// Parses a TPM2_CreatePrimary response.
+        ///
+        /// # Arguments
+        ///
+        /// * `resp` - The raw byte response from the TPM2_CreatePrimary
+        ///   command.
+        ///
+        /// # Returns
+        ///
+        /// A `CreatePrimaryResponse` containing the parsing result, any TPM
+        /// error code, and the handle of the created transient object.
+        fn parse_create_primary_response(resp: &[u8]) -> CreatePrimaryResponse;
 
         /// Builds a TPM2_FlushContext command buffer.
         fn build_flush_context_command(handle: u32) -> Vec<u8>;
@@ -770,6 +837,134 @@ pub fn build_create_aik_command(
     writer.into_inner()
 }
 
+/// Builds a TPM2_CreatePrimary command for the ECC Storage Root Key (SRK),
+/// created under the owner hierarchy.
+///
+/// The resulting object is transient: the caller owns the returned handle and
+/// must release it with TPM2_FlushContext. Transient object slots are a scarce
+/// TPM resource, so failing to do so will eventually make key creation fail
+/// with TPM_RC_OBJECT_MEMORY.
+///
+/// A primary key is derived deterministically from the hierarchy's seed and the
+/// template, so this recreates the same key every time, and the same key that
+/// the Platform Crypto Provider persists at handle 0x81000009. That is what
+/// makes it usable as a drop-in parent: objects wrapped under it still load
+/// under the provider's own SRK.
+///
+/// A TPM CreatePrimary command has the following structure (Table 174 in
+/// Part 3):
+///
+/// Header:
+/// | Type                | Name                                |
+/// |---------------------|-------------------------------------|
+/// | TPMI_ST_COMMAND_TAG | tag (TPM_ST_SESSIONS)               |
+/// | UINT32              | commandSize                         |
+/// | TPM_CC              | commandCode (TPM_CC_CREATE_PRIMARY) |
+///
+/// Handles:
+/// | Type                | Name                     |
+/// |---------------------|--------------------------|
+/// | TPMI_RH_HIERARCHY   | primaryHandle            |
+///
+/// Parameters:
+/// | Type                   | Name        |
+/// |------------------------|-------------|
+/// | TPM2B_SENSITIVE_CREATE | inSensitive |
+/// | TPM2B_PUBLIC           | inPublic    |
+/// | TPM2B_DATA             | outsideInfo |
+/// | TPML_PCR_SELECTION     | creationPCR |
+///
+/// See Table 174 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf.
+pub fn build_create_primary_ecc_srk_command() -> Vec<u8> {
+    // TPMS_ECC_PARMS for a storage key: an AES-128-CFB symmetric definition, a
+    // null signing scheme, the curve, and a null KDF.
+    let symmetric_size = 2 // algorithm
+        + 2 // keyBits
+        + 2; // mode
+    let public_parms_size = symmetric_size
+        + 2 // scheme (TPM_ALG_NULL, no further fields)
+        + 2 // curveID
+        + 2; // kdf (TPM_ALG_NULL, no further fields)
+
+    let unique_size = 2 // x size (0)
+        + 2; // y size (0)
+
+    let tpmt_public_size = 2 // type
+        + 2 // nameAlg
+        + 4 // objectAttributes
+        + 2 // authPolicy size (0)
+        + public_parms_size
+        + unique_size;
+
+    let in_sensitive_size = 2 // size (4)
+        + 2 // userAuth size (0)
+        + 2; // data size (0)
+
+    let in_public_size = 2 // size
+        + tpmt_public_size;
+
+    let outside_info_size = 2; // size (0)
+    let creation_pcr_size = 4; // count (0)
+
+    let total_size = TPM_HEADER_SIZE
+        + TPM_HANDLE_SIZE // primaryHandle
+        + TPM_AUTH_SIZE_SIZE
+        + TPM_SESSION_SIZE
+        + in_sensitive_size
+        + in_public_size
+        + outside_info_size
+        + creation_pcr_size;
+
+    let mut writer = Writer::with_capacity(total_size);
+
+    // 1. Command Header
+    writer.write_command_header(TpmSt::TPM_ST_SESSIONS, total_size, TpmCc::TPM_CC_CREATE_PRIMARY);
+
+    // 2. Handles
+    writer.write_u32(TpmRh::TPM_RH_OWNER.repr);
+
+    // 3. Authorization Area
+    writer.write_password_sessions(1);
+
+    // 4. Command Parameters
+    // inSensitive (TPM2B_SENSITIVE_CREATE)
+    writer.write_u16(4); // size of TPMS_SENSITIVE_CREATE
+    writer.write_u16(0); // userAuth size
+    writer.write_u16(0); // data size
+
+    // inPublic (TPM2B_PUBLIC)
+    writer.write_u16(u16::try_from(tpmt_public_size).unwrap());
+    writer.write_u16(TpmAlgPublic::TPM_ALG_ECC.repr);
+    writer.write_u16(TpmAlgHash::TPM_ALG_SHA256.repr);
+    writer.write_u32(ECC_SRK_OBJECT_ATTRIBUTES);
+    writer.write_u16(0); // authPolicy (empty TPM2B_DIGEST)
+
+    // parameters (TPMS_ECC_PARMS)
+    // symmetric (TPMT_SYM_DEF_OBJECT). Unlike a signing key, a storage key
+    // carries real symmetric parameters: they are the algorithm used to encrypt
+    // the sensitive area of its children.
+    writer.write_u16(TpmAlgSymmetric::TPM_ALG_AES.repr);
+    writer.write_u16(ECC_SRK_SYM_KEY_BITS);
+    writer.write_u16(TpmAlgSymmetric::TPM_ALG_CFB.repr);
+    // scheme (TPMT_ECC_SCHEME). A restricted decryption key cannot sign.
+    writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr);
+    writer.write_u16(TpmEccCurve::TPM_ECC_NIST_P256.repr);
+    // kdf (TPMT_KDF_SCHEME)
+    writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr);
+
+    // unique (TPMS_ECC_POINT)
+    writer.write_u16(0); // x
+    writer.write_u16(0); // y
+
+    // outsideInfo (TPM2B_DATA)
+    writer.write_u16(0);
+
+    // creationPCR (TPML_PCR_SELECTION)
+    writer.write_u32(0);
+
+    writer.into_inner()
+}
+
 /// Represents a TPMS_AUTH_RESPONSE structure
 ///
 /// | Type         | Name               |
@@ -882,6 +1077,57 @@ impl<'a> From<Result<CreateData<'a>, TpmParseError>> for ffi::CreateResponse {
 /// `TPM2B_PUBLIC` structure.
 pub fn parse_create_response(resp: &[u8]) -> ffi::CreateResponse {
     parse_create_response_impl(resp).into()
+}
+
+/// Parses a TPM2_CreatePrimary response and returns the handle of the created
+/// transient object.
+///
+/// | Type           | Name           |
+/// |----------------|----------------|
+/// | TPM_HANDLE     | objectHandle   |
+/// | UINT32         | parameterSize  |
+/// | TPM2B_PUBLIC   | outPublic      |
+/// | TPM2B_CREATION_DATA | creationData |
+/// | TPM2B_DIGEST   | creationHash   |
+/// | TPMT_TK_CREATION | creationTicket |
+/// | TPM2B_NAME     | name           |
+///
+/// See Table 174 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf.
+///
+/// Only `objectHandle` is read. The remaining parameters describe a key whose
+/// public area the caller already knows (it is fixed by the template) and whose
+/// creation data is not used, so they are deliberately left unparsed and
+/// `ensure_empty()` is not called.
+fn parse_create_primary_response_impl(resp: &[u8]) -> Result<u32, TpmParseError> {
+    let mut reader = Reader::new(resp);
+    let header = reader.read_response_header(resp.len())?;
+    if header.tag != TpmSt::TPM_ST_SESSIONS {
+        return Err(TpmParseError::WrongType);
+    }
+
+    reader.read_u32().ok_or(TpmParseError::BufferTooSmall)
+}
+
+impl From<TpmParseError> for ffi::CreatePrimaryResponse {
+    fn from(err: TpmParseError) -> Self {
+        ffi::CreatePrimaryResponse { status: err.into(), object_handle: 0 }
+    }
+}
+
+impl From<Result<u32, TpmParseError>> for ffi::CreatePrimaryResponse {
+    fn from(result: Result<u32, TpmParseError>) -> Self {
+        match result {
+            Ok(object_handle) => {
+                ffi::CreatePrimaryResponse { status: ffi::ResponseStatus::OK, object_handle }
+            }
+            Err(err) => err.into(),
+        }
+    }
+}
+
+/// Parses a TPM2_CreatePrimary response.
+pub fn parse_create_primary_response(resp: &[u8]) -> ffi::CreatePrimaryResponse {
+    parse_create_primary_response_impl(resp).into()
 }
 
 /// Enum representing the signature data for different algorithms.
