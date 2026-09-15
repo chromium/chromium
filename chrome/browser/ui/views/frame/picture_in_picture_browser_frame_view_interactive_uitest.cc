@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -30,7 +31,9 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_interface.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
+#include "chrome/browser/ui/views/picture_in_picture/pip_top_bar_animation_controller.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
@@ -52,9 +55,12 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/animation/widget_fade_animator.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
+#include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/themes/theme_service.h"
@@ -71,6 +77,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+class DocumentPipFrameViewTestApi {
+ public:
+  static PipTopBarAnimationController* GetAnimationController(
+      DocumentPipFrameView* frame_view) {
+    return frame_view->animation_controller_.get();
+  }
+};
 
 class DocumentPipHostTestApi {
  public:
@@ -539,6 +553,80 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "Standalone" : "BrowserBacked";
                          });
 
+class PictureInPictureTitleActivationTest
+    : public PictureInPictureBrowserFrameViewTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool UseStandaloneDocumentPip() const override { return GetParam(); }
+
+  views::View* GetPipFrameView() {
+    return GetPipWidget()->non_client_view()->frame_view();
+  }
+
+  bool IsPointInPIPFrameView(gfx::Point point_in_screen) {
+    views::View::ConvertPointFromScreen(GetPipFrameView(), &point_in_screen);
+    return GetPipFrameView()->GetLocalBounds().Contains(point_in_screen);
+  }
+
+  views::View* GetBackToTabButton() {
+    return UseStandaloneDocumentPip()
+               ? GetStandaloneFrameView()->GetBackToTabButtonForTesting()
+               : pip_frame_view()->GetBackToTabButtonForTesting();
+  }
+
+  views::View* GetCloseButton() {
+    return UseStandaloneDocumentPip()
+               ? GetStandaloneFrameView()->GetCloseButtonForTesting()
+               : pip_frame_view()->GetCloseButtonForTesting();
+  }
+
+  views::Label* GetWindowTitle() {
+    return UseStandaloneDocumentPip()
+               ? GetStandaloneFrameView()->GetWindowTitleForTesting()
+               : pip_frame_view()->GetWindowTitleForTesting();
+  }
+
+  void UpdateTopBarView(bool active) {
+    if (UseStandaloneDocumentPip()) {
+      GetStandaloneAnimationController()->SetTopBarActiveStatus(active);
+    } else {
+      pip_frame_view()->UpdateTopBarView(active);
+    }
+  }
+
+  std::vector<raw_ptr<gfx::Animation>> GetTopBarAnimations(bool active) {
+    if (!UseStandaloneDocumentPip()) {
+      return active ? pip_frame_view()->GetRenderActiveAnimationsForTesting()
+                    : pip_frame_view()->GetRenderInactiveAnimationsForTesting();
+    }
+    auto* controller = GetStandaloneAnimationController();
+    const auto animations =
+        active ? controller->GetActiveTransitionAnimationsForTesting()
+               : controller->GetInactiveTransitionAnimationsForTesting();
+    return {animations.begin(), animations.end()};
+  }
+
+ private:
+  DocumentPipFrameView* GetStandaloneFrameView() {
+    auto* frame_view =
+        views::AsViewClass<DocumentPipFrameView>(GetPipFrameView());
+    CHECK(frame_view);
+    return frame_view;
+  }
+
+  PipTopBarAnimationController* GetStandaloneAnimationController() {
+    return DocumentPipFrameViewTestApi::GetAnimationController(
+        GetStandaloneFrameView());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PictureInPictureTitleActivationTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
 #if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 // TODO(jazzhsu): Fix test on MAC and Wayland. Test currently not working on
 // those platforms because if we send mouse move event outside of the pip window
@@ -549,19 +637,17 @@ INSTANTIATE_TEST_SUITE_P(All,
 #else
 #define MAYBE_TitleActivation DISABLED_TitleActivation
 #endif
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureTitleActivationTest,
                        MAYBE_TitleActivation) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
   // Move mouse to the center of the pip window should activate title.
-  gfx::Point center = pip_frame_view()->GetLocalBounds().CenterPoint();
-  views::View::ConvertPointToScreen(pip_frame_view(), &center);
+  gfx::Point center = GetPipFrameView()->GetLocalBounds().CenterPoint();
+  views::View::ConvertPointToScreen(GetPipFrameView(), &center);
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(center));
-  WaitForTopBarAnimations(
-      pip_frame_view()->GetRenderActiveAnimationsForTesting());
-  ASSERT_TRUE(
-      IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
-  ASSERT_TRUE(IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+  WaitForTopBarAnimations(GetTopBarAnimations(/*active=*/true));
+  ASSERT_TRUE(IsButtonVisible(GetBackToTabButton()));
+  ASSERT_TRUE(IsButtonVisible(GetCloseButton()));
 
   // Move mouse to the top-left corner of the main browser window (out side of
   // the pip window) should deactivate the title.
@@ -570,48 +656,38 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       BrowserView::GetBrowserViewForBrowser(browser()), &outside);
   ASSERT_FALSE(IsPointInPIPFrameView(outside));
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(outside));
-  WaitForTopBarAnimations(
-      pip_frame_view()->GetRenderInactiveAnimationsForTesting());
-  ASSERT_FALSE(
-      IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
-  ASSERT_FALSE(IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+  WaitForTopBarAnimations(GetTopBarAnimations(/*active=*/false));
+  ASSERT_FALSE(IsButtonVisible(GetBackToTabButton()));
+  ASSERT_FALSE(IsButtonVisible(GetCloseButton()));
 
   // Move mouse back in pip window should activate title.
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(center));
-  WaitForTopBarAnimations(
-      pip_frame_view()->GetRenderActiveAnimationsForTesting());
-  ASSERT_TRUE(
-      IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
-  ASSERT_TRUE(IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+  WaitForTopBarAnimations(GetTopBarAnimations(/*active=*/true));
+  ASSERT_TRUE(IsButtonVisible(GetBackToTabButton()));
+  ASSERT_TRUE(IsButtonVisible(GetCloseButton()));
 }
 
 // Verifies that PipTopBarAnimationController::Delegate is wired up correctly:
-// activating/deactivating the top bar via UpdateTopBarView() should drive
+// activating/deactivating the top bar should drive
 // ApplyTopBarForegroundColor() through to the window title, changing its
 // enabled color between the active and inactive steady states.
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureTitleActivationTest,
                        TopBarForegroundColorChangesWithActivation) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
-  pip_frame_view()->UpdateTopBarView(/*render_active=*/false);
-  WaitForTopBarAnimations(
-      pip_frame_view()->GetRenderInactiveAnimationsForTesting());
-  const SkColor inactive_color =
-      pip_frame_view()->GetWindowTitleForTesting()->GetEnabledColor();
+  UpdateTopBarView(/*active=*/false);
+  WaitForTopBarAnimations(GetTopBarAnimations(/*active=*/false));
+  const SkColor inactive_color = GetWindowTitle()->GetEnabledColor();
 
-  pip_frame_view()->UpdateTopBarView(/*render_active=*/true);
-  WaitForTopBarAnimations(
-      pip_frame_view()->GetRenderActiveAnimationsForTesting());
-  const SkColor active_color =
-      pip_frame_view()->GetWindowTitleForTesting()->GetEnabledColor();
+  UpdateTopBarView(/*active=*/true);
+  WaitForTopBarAnimations(GetTopBarAnimations(/*active=*/true));
+  const SkColor active_color = GetWindowTitle()->GetEnabledColor();
 
   EXPECT_NE(inactive_color, active_color);
 
-  pip_frame_view()->UpdateTopBarView(/*render_active=*/false);
-  WaitForTopBarAnimations(
-      pip_frame_view()->GetRenderInactiveAnimationsForTesting());
-  EXPECT_EQ(inactive_color,
-            pip_frame_view()->GetWindowTitleForTesting()->GetEnabledColor());
+  UpdateTopBarView(/*active=*/false);
+  WaitForTopBarAnimations(GetTopBarAnimations(/*active=*/false));
+  EXPECT_EQ(inactive_color, GetWindowTitle()->GetEnabledColor());
 }
 
 IN_PROC_BROWSER_TEST_P(PictureInPictureChildDialogResizeTest,
@@ -1214,7 +1290,7 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureChildDialogResizeTest,
       child_dialog->GetContentsView()->GetCanProcessEventsWithinSubtree());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureTitleActivationTest,
                        TitleActivatesWithOverlayView) {
   // Verify that the title bar is on when the overlay view is shown.
 
@@ -1231,11 +1307,9 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
   // The title buttons should be visible.
-  WaitForTopBarAnimations(
-      pip_frame_view()->GetRenderActiveAnimationsForTesting());
-  ASSERT_TRUE(
-      IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
-  ASSERT_TRUE(IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+  WaitForTopBarAnimations(GetTopBarAnimations(/*active=*/true));
+  ASSERT_TRUE(IsButtonVisible(GetBackToTabButton()));
+  ASSERT_TRUE(IsButtonVisible(GetCloseButton()));
 }
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,

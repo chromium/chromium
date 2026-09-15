@@ -169,6 +169,7 @@ class DocumentPipFrameView : public views::FrameView,
 
  private:
   friend class DocumentPipFrameViewTest;
+  friend class DocumentPipFrameViewTestApi;
   class WindowEventObserver;
   // Minimal LocationBarModelDelegate backed by the opener WebContents.
   class LocationBarModelDelegateImpl;
