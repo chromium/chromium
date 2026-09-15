@@ -14,9 +14,7 @@ namespace blink {
 class CORE_EXPORT CSSDefaultNonInterpolableValue final
     : public NonInterpolableValue {
  public:
-  using AttrTainted = base::StrongAlias<class AttrTaintedTag, bool>;
-  explicit CSSDefaultNonInterpolableValue(const CSSValue*,
-                                          AttrTainted is_attr_tainted);
+  explicit CSSDefaultNonInterpolableValue(const CSSValue*);
   ~CSSDefaultNonInterpolableValue() final = default;
 
   void Trace(Visitor* visitor) const override {
@@ -26,15 +24,10 @@ class CORE_EXPORT CSSDefaultNonInterpolableValue final
 
   const CSSValue* CssValue() const { return css_value_.Get(); }
 
-  bool IsAttrTainted() const { return is_attr_tainted_; }
-
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
   Member<const CSSValue> css_value_;
-  // Interpolable types (e.g., <number>) are handled via TransitionKeyframe and
-  // CSSInterpolationEnvironment::IsAttrTainted() instead.
-  bool is_attr_tainted_;
 };
 
 template <>
@@ -86,7 +79,8 @@ class CSSDefaultInterpolationType : public InterpolationType {
 
   void Apply(const InterpolableValue&,
              const NonInterpolableValue*,
-             CSSInterpolationEnvironment&) const final;
+             CSSInterpolationEnvironment&,
+             bool is_attr_tainted = false) const final;
 };
 
 }  // namespace blink

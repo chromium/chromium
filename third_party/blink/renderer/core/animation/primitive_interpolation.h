@@ -53,11 +53,13 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
       const InterpolationType* type,
       InterpolableValue* start,
       InterpolableValue* end,
-      const NonInterpolableValue* non_interpolable_value)
+      const NonInterpolableValue* non_interpolable_value,
+      bool is_attr_tainted = false)
       : type_(type),
         start_(start),
         end_(end),
-        non_interpolable_value_(non_interpolable_value) {
+        non_interpolable_value_(non_interpolable_value),
+        is_attr_tainted_(is_attr_tainted) {
     DCHECK(start_);
     DCHECK(end_);
   }
@@ -68,7 +70,7 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
 
   TypedInterpolationValue* InitialValue() const {
     return MakeGarbageCollected<TypedInterpolationValue>(
-        type_, start_->Clone(), non_interpolable_value_);
+        type_, start_->Clone(), non_interpolable_value_, is_attr_tainted_);
   }
 
   const InterpolableValue* StartValue() const override { return start_; }
@@ -103,6 +105,7 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
   Member<InterpolableValue> start_;
   Member<InterpolableValue> end_;
   Member<const NonInterpolableValue> non_interpolable_value_;
+  const bool is_attr_tainted_ = false;
 };
 
 // Represents a pair of incompatible keyframes that fall back to 50% flip

@@ -92,7 +92,8 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
 
   void Apply(const InterpolableValue&,
              const NonInterpolableValue*,
-             CSSInterpolationEnvironment&) const final;
+             CSSInterpolationEnvironment&,
+             bool is_attr_tainted = false) const final;
   virtual void ApplyStandardPropertyValue(const InterpolableValue&,
                                           const NonInterpolableValue*,
                                           StyleResolverState&) const = 0;
@@ -117,7 +118,8 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
 
   void ApplyCustomPropertyValue(const InterpolableValue&,
                                 const NonInterpolableValue*,
-                                CSSInterpolationEnvironment&) const;
+                                CSSInterpolationEnvironment&,
+                                bool is_attr_tainted) const;
 
   WeakMember<const PropertyRegistration> registration_;
 };

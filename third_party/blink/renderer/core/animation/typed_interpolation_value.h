@@ -20,15 +20,21 @@ class TypedInterpolationValue
   TypedInterpolationValue(
       const InterpolationType* type,
       InterpolableValue* interpolable_value,
-      const NonInterpolableValue* non_interpolable_value = nullptr)
-      : type_(type), value_(interpolable_value, non_interpolable_value) {
+      const NonInterpolableValue* non_interpolable_value = nullptr,
+      bool is_attr_tainted = false)
+      : type_(type),
+        value_(interpolable_value, non_interpolable_value, is_attr_tainted) {
+    DCHECK(value_.interpolable_value);
+  }
+
+  TypedInterpolationValue(const InterpolationType* type,
+                          InterpolationValue value)
+      : type_(type), value_(std::move(value)) {
     DCHECK(value_.interpolable_value);
   }
 
   TypedInterpolationValue* Clone() const {
-    InterpolationValue copy = value_.Clone();
-    return MakeGarbageCollected<TypedInterpolationValue>(
-        type_, copy.interpolable_value, copy.non_interpolable_value);
+    return MakeGarbageCollected<TypedInterpolationValue>(type_, value_.Clone());
   }
 
   const InterpolationType* GetType() const { return type_; }
@@ -41,6 +47,8 @@ class TypedInterpolationValue
   const InterpolationValue& Value() const { return value_; }
 
   InterpolationValue& MutableValue() { return value_; }
+
+  bool IsAttrTainted() const { return value_.is_attr_tainted; }
 
   void Trace(Visitor* v) const {
     v->Trace(type_);

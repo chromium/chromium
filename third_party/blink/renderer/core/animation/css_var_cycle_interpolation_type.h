@@ -57,7 +57,8 @@ class CSSVarCycleInterpolationType : public InterpolationType {
 
   void Apply(const InterpolableValue&,
              const NonInterpolableValue*,
-             CSSInterpolationEnvironment&) const final;
+             CSSInterpolationEnvironment&,
+             bool is_attr_tainted = false) const final;
 
   WeakMember<const PropertyRegistration> registration_;
 };

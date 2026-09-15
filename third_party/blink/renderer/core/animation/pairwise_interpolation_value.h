@@ -20,17 +20,20 @@ struct PairwiseInterpolationValue {
   PairwiseInterpolationValue(
       InterpolableValue* start_interpolable_value,
       InterpolableValue* end_interpolable_value,
-      const NonInterpolableValue* non_interpolable_value = nullptr)
+      const NonInterpolableValue* non_interpolable_value = nullptr,
+      bool is_attr_tainted = false)
       : start_interpolable_value(start_interpolable_value),
         end_interpolable_value(end_interpolable_value),
-        non_interpolable_value(non_interpolable_value) {}
+        non_interpolable_value(non_interpolable_value),
+        is_attr_tainted(is_attr_tainted) {}
 
   PairwiseInterpolationValue(std::nullptr_t) {}
 
   PairwiseInterpolationValue(PairwiseInterpolationValue&& other)
       : start_interpolable_value(other.start_interpolable_value),
         end_interpolable_value(other.end_interpolable_value),
-        non_interpolable_value(std::move(other.non_interpolable_value)) {}
+        non_interpolable_value(std::move(other.non_interpolable_value)),
+        is_attr_tainted(other.is_attr_tainted) {}
 
   operator bool() const { return start_interpolable_value.Get(); }
 
@@ -43,6 +46,7 @@ struct PairwiseInterpolationValue {
   Member<InterpolableValue> start_interpolable_value;
   Member<InterpolableValue> end_interpolable_value;
   Member<const NonInterpolableValue> non_interpolable_value;
+  bool is_attr_tainted = false;
 };
 
 }  // namespace blink

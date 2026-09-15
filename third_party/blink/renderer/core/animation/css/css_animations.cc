@@ -2643,9 +2643,9 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   }
 
   InterpolationTypesMap map(registry, state.animating_element.GetDocument());
-  CSSInterpolationEnvironment old_environment(map, *state.before_change_style,
-                                              after_change_style);
-  CSSInterpolationEnvironment new_environment(map, after_change_style,
+  CSSInterpolationEnvironment old_environment(
+      property, map, *state.before_change_style, after_change_style);
+  CSSInterpolationEnvironment new_environment(property, map, after_change_style,
                                               after_change_style);
   const InterpolationType* transition_type = nullptr;
   InterpolationValue start = nullptr;
@@ -2734,14 +2734,12 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     }
     start = InterpolationValue(
         MakeGarbageCollected<InterpolableList>(0),
-        MakeGarbageCollected<CSSDefaultNonInterpolableValue>(
-            start_css_value,
-            CSSDefaultNonInterpolableValue::AttrTainted(is_attr_tainted)));
+        MakeGarbageCollected<CSSDefaultNonInterpolableValue>(start_css_value),
+        is_attr_tainted);
     end = InterpolationValue(
         MakeGarbageCollected<InterpolableList>(0),
-        MakeGarbageCollected<CSSDefaultNonInterpolableValue>(
-            end_css_value,
-            CSSDefaultNonInterpolableValue::AttrTainted(is_attr_tainted)));
+        MakeGarbageCollected<CSSDefaultNonInterpolableValue>(end_css_value),
+        is_attr_tainted);
   }
 
   // If the interpolated transform lists contain any singular matrices, a
@@ -2803,18 +2801,18 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
       MakeGarbageCollected<TransitionKeyframe>(property);
   start_keyframe->SetValue(MakeGarbageCollected<TypedInterpolationValue>(
       transition_type, start.interpolable_value->Clone(),
-      start.non_interpolable_value));
+      start.non_interpolable_value, start.is_attr_tainted || is_attr_tainted));
   start_keyframe->SetOffset(0);
-  start_keyframe->SetIsAttrTainted(is_attr_tainted);
+  start_keyframe->SetIsAttrTainted(start.is_attr_tainted || is_attr_tainted);
   keyframes.push_back(start_keyframe);
 
   TransitionKeyframe* end_keyframe =
       MakeGarbageCollected<TransitionKeyframe>(property);
   end_keyframe->SetValue(MakeGarbageCollected<TypedInterpolationValue>(
       transition_type, end.interpolable_value->Clone(),
-      end.non_interpolable_value));
+      end.non_interpolable_value, end.is_attr_tainted || is_attr_tainted));
   end_keyframe->SetOffset(1);
-  end_keyframe->SetIsAttrTainted(is_attr_tainted);
+  end_keyframe->SetIsAttrTainted(end.is_attr_tainted || is_attr_tainted);
   keyframes.push_back(end_keyframe);
 
   if (property.GetCSSProperty().IsCompositableProperty() &&

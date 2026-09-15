@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_INTERPOLATION_ENVIRONMENT_H_
 
 #include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
+#include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -19,27 +20,34 @@ class CSSInterpolationEnvironment {
   STACK_ALLOCATED();
 
  public:
-  CSSInterpolationEnvironment(const InterpolationTypesMap& map,
+  CSSInterpolationEnvironment(const PropertyHandle& property,
+                              const InterpolationTypesMap& map,
                               StyleResolverState& state,
                               StyleCascade* cascade,
                               CascadeResolver* cascade_resolver)
-      : interpolation_types_map_(map),
+      : property_(property),
+        interpolation_types_map_(map),
         state_(&state),
         base_style_(state.StyleBuilder().GetBaseComputedStyle()),
         animation_controls_style_(base_style_),
         cascade_(cascade),
         cascade_resolver_(cascade_resolver) {}
 
-  CSSInterpolationEnvironment(const InterpolationTypesMap& map,
+  CSSInterpolationEnvironment(const PropertyHandle& property,
+                              const InterpolationTypesMap& map,
                               StyleResolverState& state)
-      : interpolation_types_map_(map), state_(&state) {}
+      : property_(property), interpolation_types_map_(map), state_(&state) {}
 
-  CSSInterpolationEnvironment(const InterpolationTypesMap& map,
+  CSSInterpolationEnvironment(const PropertyHandle& property,
+                              const InterpolationTypesMap& map,
                               const ComputedStyle& base_style,
                               const ComputedStyle& animation_controls_style)
-      : interpolation_types_map_(map),
+      : property_(property),
+        interpolation_types_map_(map),
         base_style_(&base_style),
         animation_controls_style_(&animation_controls_style) {}
+
+  const PropertyHandle& GetProperty() const { return property_; }
 
   const InterpolationTypesMap& GetInterpolationTypesMap() const {
     return interpolation_types_map_;
@@ -76,26 +84,16 @@ class CSSInterpolationEnvironment {
   // (if any).
   //
   // TODO(crbug.com/985023): This effective violates const.
-  const CSSValue* Resolve(const PropertyHandle&,
-                          const CSSValue*,
-                          const TreeScope*) const;
-
-  // Set by the caller of InterpolationType::Apply when one of the values
-  // being interpolated originated from attr(), so that the applied value can
-  // be marked as attr-tainted.
-  bool IsAttrTainted() const { return is_attr_tainted_; }
-  void SetIsAttrTainted(bool is_attr_tainted) {
-    is_attr_tainted_ = is_attr_tainted;
-  }
+  const CSSValue* Resolve(const CSSValue*, const TreeScope*) const;
 
  private:
+  PropertyHandle property_;
   const InterpolationTypesMap& interpolation_types_map_;
   StyleResolverState* state_ = nullptr;
   const ComputedStyle* base_style_ = nullptr;
   const ComputedStyle* animation_controls_style_ = nullptr;
   StyleCascade* cascade_ = nullptr;
   CascadeResolver* cascade_resolver_ = nullptr;
-  bool is_attr_tainted_ = false;
 };
 
 }  // namespace blink

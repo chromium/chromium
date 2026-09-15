@@ -72,7 +72,13 @@ class CORE_EXPORT InterpolationType
         end_keyframe, environment, underlying, conversion_checkers);
     if (!end)
       return nullptr;
-    return MaybeMergeSingles(std::move(start), std::move(end));
+    bool is_attr_tainted = start.is_attr_tainted || end.is_attr_tainted;
+    PairwiseInterpolationValue result =
+        MaybeMergeSingles(std::move(start), std::move(end));
+    if (result) {
+      result.is_attr_tainted = is_attr_tainted;
+    }
+    return result;
   }
 
   virtual InterpolationValue MaybeConvertSingle(
@@ -86,9 +92,9 @@ class CORE_EXPORT InterpolationType
       InterpolationValue&& end) const {
     DCHECK(!start.non_interpolable_value);
     DCHECK(!end.non_interpolable_value);
-    return PairwiseInterpolationValue(std::move(start.interpolable_value),
-                                      std::move(end.interpolable_value),
-                                      nullptr);
+    return PairwiseInterpolationValue(
+        std::move(start.interpolable_value), std::move(end.interpolable_value),
+        nullptr, start.is_attr_tainted || end.is_attr_tainted);
   }
 
   virtual InterpolationValue MaybeConvertUnderlyingValue(
@@ -101,7 +107,8 @@ class CORE_EXPORT InterpolationType
 
   virtual void Apply(const InterpolableValue&,
                      const NonInterpolableValue*,
-                     CSSInterpolationEnvironment&) const = 0;
+                     CSSInterpolationEnvironment&,
+                     bool is_attr_tainted = false) const = 0;
 
   // If this returns true, then transition-behavior:allow-discrete must be set
   // in order to use this InterpolationType. Discrete properties generally don't

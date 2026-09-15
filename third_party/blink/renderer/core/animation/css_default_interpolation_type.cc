@@ -7,15 +7,15 @@
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 
 namespace blink {
 
 CSSDefaultNonInterpolableValue::CSSDefaultNonInterpolableValue(
-    const CSSValue* css_value,
-    AttrTainted is_attr_tainted)
-    : css_value_(css_value), is_attr_tainted_(is_attr_tainted) {
+    const CSSValue* css_value)
+    : css_value_(css_value) {
   DCHECK(css_value_);
 }
 
@@ -35,7 +35,7 @@ InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
     return nullptr;
   }
 
-  css_value = environment.Resolve(GetProperty(), css_value, tree_scope);
+  css_value = environment.Resolve(css_value, tree_scope);
   if (!css_value) {
     // Custom property cycle. CSSDefaultInterpolationType *must* succeed
     // at creating a value (for non-neutral keyframes), since this
@@ -48,10 +48,18 @@ InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
     css_value = cssvalue::CSSUnsetValue::Create();
   }
 
+  bool is_attr_tainted = false;
+  if (const auto* unparsed =
+          DynamicTo<CSSUnparsedDeclarationValue>(css_value)) {
+    if (unparsed->VariableDataValue()) {
+      is_attr_tainted = unparsed->VariableDataValue()->IsAttrTainted();
+    }
+  }
+
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(0),
-      MakeGarbageCollected<CSSDefaultNonInterpolableValue>(
-          css_value, CSSDefaultNonInterpolableValue::AttrTainted(false)));
+      MakeGarbageCollected<CSSDefaultNonInterpolableValue>(css_value),
+      is_attr_tainted);
 }
 
 void CSSDefaultInterpolationType::Composite(
@@ -65,14 +73,14 @@ void CSSDefaultInterpolationType::Composite(
 void CSSDefaultInterpolationType::Apply(
     const InterpolableValue&,
     const NonInterpolableValue* non_interpolable_value,
-    CSSInterpolationEnvironment& environment) const {
+    CSSInterpolationEnvironment& environment,
+    bool is_attr_tainted) const {
   DCHECK(
       To<CSSDefaultNonInterpolableValue>(non_interpolable_value)->CssValue());
   CSSProperty::ValueModeFlags value_mode_flags =
       static_cast<CSSProperty::ValueModeFlags>(
           CSSProperty::ValueMode::kAnimated);
-  if (To<CSSDefaultNonInterpolableValue>(non_interpolable_value)
-          ->IsAttrTainted()) {
+  if (is_attr_tainted) {
     value_mode_flags |= static_cast<CSSProperty::ValueModeFlags>(
         CSSProperty::ValueMode::kAttrTainted);
   }

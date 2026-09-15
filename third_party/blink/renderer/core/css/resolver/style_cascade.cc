@@ -899,7 +899,8 @@ void StyleCascade::ApplyInterpolation(
 
   InterpolationTypesMap map(state_.GetDocument().GetPropertyRegistry(),
                             state_.GetDocument());
-  CSSInterpolationEnvironment environment(map, state_, this, &resolver);
+  CSSInterpolationEnvironment environment(ToPropertyHandle(property, priority),
+                                          map, state_, this, &resolver);
 
   const Interpolation& interpolation = *interpolations.front();
   if (IsA<InvalidatableInterpolation>(interpolation)) {

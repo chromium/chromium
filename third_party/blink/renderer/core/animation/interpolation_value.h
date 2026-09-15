@@ -21,19 +21,23 @@ struct CORE_EXPORT InterpolationValue {
 
   explicit InterpolationValue(
       InterpolableValue* interpolable_value,
-      const NonInterpolableValue* non_interpolable_value = nullptr)
+      const NonInterpolableValue* non_interpolable_value = nullptr,
+      bool is_attr_tainted = false)
       : interpolable_value(interpolable_value),
-        non_interpolable_value(non_interpolable_value) {}
+        non_interpolable_value(non_interpolable_value),
+        is_attr_tainted(is_attr_tainted) {}
 
   InterpolationValue(std::nullptr_t) {}
 
   InterpolationValue(InterpolationValue&& other)
       : interpolable_value(std::move(other.interpolable_value)),
-        non_interpolable_value(std::move(other.non_interpolable_value)) {}
+        non_interpolable_value(std::move(other.non_interpolable_value)),
+        is_attr_tainted(other.is_attr_tainted) {}
 
   void operator=(InterpolationValue&& other) {
     interpolable_value = std::move(other.interpolable_value);
     non_interpolable_value = std::move(other.non_interpolable_value);
+    is_attr_tainted = other.is_attr_tainted;
   }
 
   operator bool() const { return interpolable_value.Get(); }
@@ -41,12 +45,13 @@ struct CORE_EXPORT InterpolationValue {
   InterpolationValue Clone() const {
     return InterpolationValue(
         interpolable_value ? interpolable_value->Clone() : nullptr,
-        non_interpolable_value);
+        non_interpolable_value, is_attr_tainted);
   }
 
   void Clear() {
     interpolable_value = nullptr;
     non_interpolable_value = nullptr;
+    is_attr_tainted = false;
   }
 
   void Trace(Visitor* v) const {
@@ -56,6 +61,7 @@ struct CORE_EXPORT InterpolationValue {
 
   Member<InterpolableValue> interpolable_value;
   Member<const NonInterpolableValue> non_interpolable_value;
+  bool is_attr_tainted = false;
 };
 
 // Wrapper to be used with MakeGarbageCollected<>.

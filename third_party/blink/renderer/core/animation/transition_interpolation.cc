@@ -50,14 +50,14 @@ TransitionInterpolation::CurrentNonInterpolableValue() const {
 
 void TransitionInterpolation::Apply(
     CSSInterpolationEnvironment& environment) const {
-  environment.SetIsAttrTainted(is_attr_tainted_);
   type_->Apply(CurrentInterpolableValue(), CurrentNonInterpolableValue(),
-               environment);
+               environment, is_attr_tainted_);
 }
 
 TypedInterpolationValue* TransitionInterpolation::GetInterpolatedValue() const {
   return MakeGarbageCollected<TypedInterpolationValue>(
-      type_, CurrentInterpolableValue().Clone(), CurrentNonInterpolableValue());
+      type_, CurrentInterpolableValue().Clone(), CurrentNonInterpolableValue(),
+      is_attr_tainted_);
 }
 
 }  // namespace blink

@@ -40,8 +40,7 @@ class CycleChecker : public InterpolationType::ConversionChecker {
  private:
   bool IsValid(const CSSInterpolationEnvironment& environment,
                const InterpolationValue&) const final {
-    bool cycle_detected =
-        !environment.Resolve(property_, value_, keyframe_tree_scope_);
+    bool cycle_detected = !environment.Resolve(value_, keyframe_tree_scope_);
     return cycle_detected == cycle_detected_;
   }
 
@@ -88,8 +87,7 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
   }
 
   PropertyHandle property = GetProperty();
-  bool cycle_detected =
-      !environment.Resolve(property, value, keyframe_tree_scope);
+  bool cycle_detected = !environment.Resolve(value, keyframe_tree_scope);
   conversion_checkers.push_back(MakeGarbageCollected<CycleChecker>(
       property, *value, keyframe_tree_scope, cycle_detected));
   return cycle_detected ? CreateCycleDetectedValue() : nullptr;
@@ -144,7 +142,8 @@ void CSSVarCycleInterpolationType::Composite(
 void CSSVarCycleInterpolationType::Apply(
     const InterpolableValue&,
     const NonInterpolableValue*,
-    CSSInterpolationEnvironment& environment) const {
+    CSSInterpolationEnvironment& environment,
+    bool is_attr_tainted) const {
   StyleBuilder::ApplyProperty(GetProperty().GetCSSPropertyName(),
                               environment.GetState(),
                               *cssvalue::CSSUnsetValue::Create());
