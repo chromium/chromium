@@ -232,6 +232,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       .availableVoices="${this.availableVoices}"
       .localeToDisplayName="${this.localeToDisplayName}"
       .selectedLang="${this.selectedVoice?.lang || ''}"
+      .selectedVoice="${this.selectedVoice}"
+      .previewVoicePlaying="${this.previewVoicePlaying}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </audio-menu>
   <text-menu

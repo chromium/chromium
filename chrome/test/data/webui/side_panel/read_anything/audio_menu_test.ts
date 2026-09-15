@@ -4,12 +4,13 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AudioMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {AudioMenuElement, VoiceSelectionDialogElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {DEFAULT_SETTINGS, ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, setupTestEnvironment, stubAnimationFrame, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
+import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, createSpeechSynthesisVoice, setupTestEnvironment, stubAnimationFrame, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -178,4 +179,94 @@ suite('AudioMenuElement', () => {
 
     assertFalse(!!audioMenu.shadowRoot.querySelector('accent-menu'));
   });
+
+  test(
+      'opens and closes voice selection dialog from audio menu action item',
+      async () => {
+        createAudioMenu();
+        assertFalse(
+            !!audioMenu.shadowRoot.querySelector('voice-selection-dialog'));
+
+        const whenOpenFired =
+            eventToPromise(ToolbarEvent.VOICE_MENU_OPEN, audioMenu);
+        audioMenu.$.menu.dispatchEvent(
+            new CustomEvent('open-voice-selection-dialog'));
+        await whenOpenFired;
+        await microtasksFinished();
+
+        const dialog =
+            audioMenu.shadowRoot.querySelector<VoiceSelectionDialogElement>(
+                'voice-selection-dialog');
+        assertTrue(!!dialog);
+
+        const whenCloseFired =
+            eventToPromise(ToolbarEvent.VOICE_MENU_CLOSE, audioMenu);
+        dialog.dispatchEvent(new CustomEvent('close'));
+        await whenCloseFired;
+        await microtasksFinished();
+
+        assertFalse(
+            !!audioMenu.shadowRoot.querySelector('voice-selection-dialog'));
+      });
+
+  test(
+      'voice item title uses voiceSelectionLabel when selectedVoice is null',
+      async () => {
+        createAudioMenu();
+        await microtasksFinished();
+
+        const voiceGroup = audioMenu.$.menu.menuGroups[0]!;
+        assertEquals(
+            loadTimeData.getString('voiceSelectionLabel'),
+            voiceGroup.items[0]!.title);
+      });
+
+  test('voice item title updates when selectedVoice changes', async () => {
+    createAudioMenu();
+    const voice = createSpeechSynthesisVoice(
+        {name: 'Google US English (Natural)', lang: 'en-US'});
+    audioMenu.selectedVoice = voice;
+    await microtasksFinished();
+
+    const voiceGroup = audioMenu.$.menu.menuGroups[0]!;
+    assertEquals(voice.name, voiceGroup.items[0]!.title);
+  });
+
+  // <if expr="not is_chromeos">
+  test('voice item title uses system label for non-Google voice', async () => {
+    createAudioMenu();
+    const systemVoice =
+        createSpeechSynthesisVoice({name: 'David', lang: 'en-US'});
+    audioMenu.selectedVoice = systemVoice;
+    await microtasksFinished();
+
+    const voiceGroup = audioMenu.$.menu.menuGroups[0]!;
+    assertEquals(
+        loadTimeData.getString('systemVoiceLabel'), voiceGroup.items[0]!.title);
+  });
+  // </if>
+
+  test(
+      'voice group contains voice and accent items with correct event names',
+      () => {
+        createAudioMenu();
+        assertEquals(2, audioMenu.$.menu.menuGroups.length);
+
+        const voiceGroup = audioMenu.$.menu.menuGroups[0]!;
+        assertEquals(2, voiceGroup.items.length);
+
+        const voiceItem = voiceGroup.items[0]!;
+        assertEquals('open-voice-selection-dialog', voiceItem.eventName);
+        const expectedVoiceIcon =
+            loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'read-anything:voice-selection' :
+            'read-anything:voice-selection-old';
+        assertEquals(expectedVoiceIcon, voiceItem.icon);
+
+        const accentItem = voiceGroup.items[1]!;
+        assertEquals('open-accent-menu', accentItem.eventName);
+        assertEquals('read-anything:translate', accentItem.icon);
+        assertEquals(
+            loadTimeData.getString('accentMenuLabel'), accentItem.title);
+      });
 });

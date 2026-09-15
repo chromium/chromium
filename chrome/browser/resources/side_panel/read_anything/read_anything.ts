@@ -43,6 +43,7 @@ export {LINE_FOCUS_FEATURE_NAME} from './menus/line_focus_menu.js';
 export type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 export type {MediaMenuElement} from './menus/media_menu.js';
 export type {LanguageDropdownItem, MenuGroup, MenuStateItem, Notification} from './menus/menu_util.js';
+export {SettingsItemType} from './menus/menu_util.js';
 export type {PresentationMenuElement} from './menus/presentation_menu.js';
 export type {RateMenuElement} from './menus/rate_menu.js';
 export type {SettingsMenuElement} from './menus/settings_menu.js';

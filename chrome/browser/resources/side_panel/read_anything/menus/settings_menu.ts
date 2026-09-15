@@ -303,7 +303,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       SettingsOption.MEDIA,
       SettingsOption.TEXT,
       SettingsOption.AUDIO,
-      SettingsOption.VOICE_SELECTION,
     ];
 
     if (this.visualBrowserProxy_.isLineFocusEnabled()) {

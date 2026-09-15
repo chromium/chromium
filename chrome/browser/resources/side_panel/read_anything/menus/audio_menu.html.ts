@@ -16,8 +16,21 @@ export function getHtml(this: AudioMenuElement) {
     .nonModal="${this.nonModal}"
     .closeOnClick="${false}"
     @highlight-change="${this.onHighlightChange_}"
-    @open-accent-menu="${this.onOpenAccentMenu_}">
+    @open-accent-menu="${this.onOpenAccentMenu_}"
+    @open-voice-selection-dialog="${this.onOpenVoiceSelectionDialog_}">
 </grouped-action-menu>
+
+${this.showVoiceSelectionDialog_ ? html`
+  <voice-selection-dialog
+      id="voiceSelectionDialog"
+      .selectedVoice="${this.selectedVoice}"
+      .availableVoices="${this.availableVoices}"
+      .enabledLangs="${this.enabledLangs}"
+      .localeToDisplayName="${this.localeToDisplayName}"
+      .previewVoicePlaying="${this.previewVoicePlaying}"
+      @close="${this.onVoiceSelectionDialogClose_}">
+  </voice-selection-dialog>
+` : ''}
 
 ${this.showAccentMenuDialog_ ? html`
   <accent-menu id="accentMenu"
