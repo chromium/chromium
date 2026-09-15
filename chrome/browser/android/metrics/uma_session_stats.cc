@@ -122,9 +122,6 @@ void UmaSessionStats::UmaResumeSession() {
 void UmaSessionStats::UmaEndSession() {
   // Only close the record if this is the last session.
   if (active_session_count_ == 1) {
-    // closing_active_session_ maintains the previous (incorrect) behavior of
-    // Session.IsActive.
-    base::AutoReset<bool> auto_reset(&closing_active_session_, true);
     const base::TimeDelta duration =
         session_time_tracker_.EndForegroundSession();
 
@@ -152,23 +149,14 @@ void UmaSessionStats::UmaEndSession() {
 
   // This function closes the UMA log, which in turn calls
   // ProvideCurrentSessionData() on all metrics providers, where we record
-  // Session.IsActive.
+  // Session.IsActive2.
   // Decrement session count after collecting session metrics or
-  // Session.IsActive will be wrong.
+  // Session.IsActive2 will be wrong.
   --active_session_count_;
   DCHECK_GE(active_session_count_, 0);
 }
 
 void UmaSessionStats::ProvideCurrentSessionData() {
-  // Session.IsActive historically gave the wrong value when closing an active
-  // session as we decremented the session count before closing the session.
-  // Maintain the incorrect logic for the old version of the histogram.
-  // TODO(https://crbug.com/464285583): Deprecate Session.IsActive on all
-  // platforms and replace it with Session.IsActive2 after we measure any
-  // metrics shifts.
-  base::UmaHistogramBoolean(
-      "Session.IsActive",
-      active_session_count_ > (closing_active_session_ ? 1 : 0));
   const bool is_active = active_session_count_ != 0;
   base::UmaHistogramBoolean("Session.IsActive2", is_active);
   if (is_active) {
