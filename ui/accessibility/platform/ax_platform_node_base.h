@@ -33,6 +33,7 @@
 
 namespace ui {
 
+struct AXActionData;
 struct AXNodeData;
 
 // TODO(nektar): Move this struct over to AXNode so that it can be accessed by
@@ -573,6 +574,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // their native representations.
   TextSelectionResult GetTextSelection(TextSelection* selection);
   TextSelectionResult SetTextSelection(const TextSelection& selection);
+  // Builds an action from positions ordered as anchor and focus.
+  static AXActionData CreateTextSelectionAction(const AXPosition& anchor,
+                                                const AXPosition& focus);
   TextSelectionResult ClearTextSelection();
 
   // Selection helper functions.

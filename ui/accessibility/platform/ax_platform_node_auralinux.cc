@@ -4674,39 +4674,59 @@ GArray* AXPlatformNodeAuraLinux::GetDocumentTextSelections() {
   }
 
   auto promote_endpoint_to_hypertext_parent =
-      [](raw_ptr<AXPlatformNodeBase>& endpoint_object, int& endpoint_offset) {
+      [](raw_ptr<AXPlatformNodeBase>& endpoint_object, int& endpoint_offset,
+         ax::mojom::MoveDirection direction) {
         auto* endpoint_node =
             static_cast<AXPlatformNodeAuraLinux*>(endpoint_object.get());
-        if (!endpoint_node->IsText()) {
-          return;
+        // Skip static-text leaves and objects without ATK Text. An image's
+        // parent might also lack ATK Text, e.g. an SVG, so keep looking up
+        // the ancestors.
+        auto* parent = endpoint_node;
+        while (parent && (parent->IsText() ||
+                          !ATK_IS_TEXT(parent->GetNativeViewAccessible()))) {
+          parent = FromAtkObject(parent->GetParent());
         }
-
-        auto* parent = FromAtkObject(endpoint_node->GetParent());
-        if (!parent || !ATK_IS_TEXT(parent->GetNativeViewAccessible())) {
+        if (!parent || parent == endpoint_node) {
           return;
         }
 
         // AT-SPI clients consume text from hypertext objects rather than their
         // static-text leaves, so expose an endpoint relative to its hypertext
-        // parent.
-        int parent_offset = parent->GetHypertextOffsetFromEndpoint(
-            endpoint_node, endpoint_offset);
-        if (parent_offset >= 0) {
-          endpoint_object = parent;
-          endpoint_offset = parent_offset;
+        // parent. The parent can be a leaf, e.g. <button>Save</button>, which
+        // exposes "Save" itself instead of exposing its static-text child.
+        const AXNode* parent_anchor =
+            parent->GetDelegate()->CreateTextPositionAt(0)->GetAnchor();
+        AXPosition position =
+            endpoint_node->GetDelegate()
+                ->CreateTextPositionAt(endpoint_offset)
+                ->CreateAncestorPosition(parent_anchor, direction);
+        if (position->IsNullPosition()) {
+          return;
         }
+        endpoint_object = parent;
+        endpoint_offset = position->text_offset();
       };
+  // If an exact position isn't available, move the endpoints into the range.
   promote_endpoint_to_hypertext_parent(selection.start_object,
-                                       selection.start_offset);
+                                       selection.start_offset,
+                                       ax::mojom::MoveDirection::kForward);
   promote_endpoint_to_hypertext_parent(selection.end_object,
-                                       selection.end_offset);
+                                       selection.end_offset,
+                                       ax::mojom::MoveDirection::kBackward);
 
   // Deliberately report a collapsed range as no selection from AT-SPI
   // Document.GetTextSelections(). AT-SPI does not consider a caret to be a
   // text selection, regardless of whether the range was collapsed through
   // SetTextSelections() or by user interaction.
-  if (selection.start_object == selection.end_object &&
-      selection.start_offset == selection.end_offset) {
+  // Also omit ranges whose endpoints crossed during promotion.
+  AXPosition start_position = selection.start_object->GetDelegate()
+                                  ->CreateTextPositionAt(selection.start_offset)
+                                  ->AsLeafTextPosition();
+  AXPosition end_position = selection.end_object->GetDelegate()
+                                ->CreateTextPositionAt(selection.end_offset)
+                                ->AsLeafTextPosition();
+  std::optional<int> position_order = start_position->CompareTo(*end_position);
+  if (!position_order || *position_order >= 0) {
     return selections;
   }
 
@@ -4771,22 +4791,22 @@ bool AXPlatformNodeAuraLinux::SetDocumentTextSelections(GArray* selections) {
     return false;
   }
 
-  TextSelection selection = {
-      .start_object = start_node,
-      .start_offset = static_cast<int>(
-          start_node->UnicodeToUTF16OffsetInText(atk_selection.start_offset)),
-      .end_object = end_node,
-      .end_offset = static_cast<int>(
-          end_node->UnicodeToUTF16OffsetInText(atk_selection.end_offset)),
-      .start_is_active = static_cast<bool>(atk_selection.start_is_active),
+  auto to_dom_position = [](AXPlatformNodeAuraLinux* node, int offset) {
+    int utf16_offset = node->UnicodeToUTF16OffsetInText(offset);
+    // Prefer the end of the previous child when the offset falls on a boundary.
+    AXPosition position =
+        node->GetDelegate()
+            ->CreateTextPositionAt(utf16_offset,
+                                   ax::mojom::TextAffinity::kUpstream)
+            ->AsDomSelectionPosition();
+    // Skip ignored nodes that share this text offset.
+    return position->AsUnignoredSelectionPosition(
+        AXPositionAdjustmentBehavior::kMoveForward);
   };
 
   AXPosition start_position =
-      start_node->HypertextOffsetToEndpoint(selection.start_offset)
-          ->AsDomSelectionPosition();
-  AXPosition end_position =
-      end_node->HypertextOffsetToEndpoint(selection.end_offset)
-          ->AsDomSelectionPosition();
+      to_dom_position(start_node, atk_selection.start_offset);
+  AXPosition end_position = to_dom_position(end_node, atk_selection.end_offset);
   if (start_position->IsNullPosition() || end_position->IsNullPosition()) {
     return false;
   }
@@ -4799,7 +4819,40 @@ bool AXPlatformNodeAuraLinux::SetDocumentTextSelections(GArray* selections) {
     return false;
   }
 
-  return SetTextSelection(selection) == TextSelectionResult::kSuccess;
+  if (atk_selection.start_is_active) {
+    std::swap(start_position, end_position);
+  }
+  AXActionData action_data =
+      CreateTextSelectionAction(start_position, end_position);
+  auto adjust_image_endpoint = [this](const AXPosition& position,
+                                      AXNodeID& node_id, int& offset) {
+    auto* endpoint_node = GetDelegate()->GetFromTreeIDAndNodeID(
+        position->tree_id(), position->anchor_id());
+    if (!endpoint_node) {
+      return false;
+    }
+    if (ATK_IS_TEXT(endpoint_node->GetNativeViewAccessible())) {
+      return true;
+    }
+    const AXNode* node = position->GetAnchor();
+    const AXNode* parent = node->GetUnignoredParent();
+    if (!parent) {
+      return false;
+    }
+    // The action handler expects an index among unignored children. Preserve
+    // the side of the image: offset 0 is before it, and offset 1 is after it.
+    node_id = parent->id();
+    offset = static_cast<int>(node->GetUnignoredIndexInParent()) +
+             (position->AtEndOfAnchor() ? 1 : 0);
+    return true;
+  };
+  if (!adjust_image_endpoint(start_position, action_data.anchor_node_id,
+                             action_data.anchor_offset) ||
+      !adjust_image_endpoint(end_position, action_data.focus_node_id,
+                             action_data.focus_offset)) {
+    return false;
+  }
+  return GetDelegate()->AccessibilityPerformAction(action_data);
 }
 
 //
